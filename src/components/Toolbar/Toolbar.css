@@ -1,8 +1,4 @@
 .Toolbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 36px;
   /*background-color: #011526;*/
   /*background-color: var(--nav-bg-color);*/
@@ -30,7 +26,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
   border-radius: 4px;
   height: 24px;
   min-width: 24px;

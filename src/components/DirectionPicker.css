@@ -12,7 +12,6 @@
   font-size: 10px;
   line-height: 23px;
   text-align: center;
-  cursor: pointer;
   border: 1px solid #d4d4d4;
   border-right: 0;
 }
@@ -36,10 +35,11 @@
 }
 
 .DirectionPicker__Button:hover {
-  /*background: #011b32;*/
+  background-color: #f1f1f1;
 }
 
-.DirectionPicker__Button--Active {
+.DirectionPicker__Button--Active,
+.DirectionPicker__Button--Active:hover {
   /*background: #033663;*/
   background-color: #e8e7e8;
 }

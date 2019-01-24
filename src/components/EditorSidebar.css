@@ -2,7 +2,7 @@
   position: fixed;
   width: 300px;
   right: -300px;
-  top: 37px;
+  top: 35px;
   bottom: 0px;
   background-color: var(--sidebar-bg-color);
   border-left: 1px solid #d0d0d0;
@@ -29,6 +29,10 @@
   border-top: 1px solid #dadada;
   text-align: left;
   padding: 0 10px;
+}
+
+.EditorSidebar h2:first-child {
+  border-top: 0px solid #dadada;
 }
 
 .EditorSidebar label {

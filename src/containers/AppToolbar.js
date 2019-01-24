@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import {
   Toolbar,
   ToolbarSpacer,
-  ToolbarButton
+  ToolbarButton,
+  ToolbarDropdownButton
 } from "../components/Toolbar/Toolbar";
+import { Menu, MenuItem } from "../components/Menu";
 import { PlayIcon, DownloadIcon } from "../components/Icons";
 import { connect } from "react-redux";
 import * as actions from "../actions";
@@ -14,9 +16,14 @@ class AppToolbar extends Component {
 
     return (
       <Toolbar>
-        <ToolbarButton>
-          World Editor <small>▼</small>
-        </ToolbarButton>
+        <ToolbarDropdownButton title="Game World">
+          <MenuItem>Overview</MenuItem>
+          <MenuItem>Game World</MenuItem>
+          <MenuItem>Sprites</MenuItem>
+          <MenuItem>Backgrounds</MenuItem>
+          <MenuItem>Tiles</MenuItem>
+          <MenuItem>Script</MenuItem>
+        </ToolbarDropdownButton>
         <ToolbarSpacer />
         {name || "Untitled"}
         <ToolbarSpacer />

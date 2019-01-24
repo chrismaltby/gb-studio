@@ -27,7 +27,6 @@
 
 .ToolsSidebar__Item:hover {
   background-color: #e8e7e8;
-  cursor: pointer;
 }
 
 .ToolsSidebar__Item--Selected,

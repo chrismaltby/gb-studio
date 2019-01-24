@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Component } from "react";
+import { Menu, MenuOverlay } from "../Menu";
 
 export const Toolbar = props => <div className="Toolbar" {...props} />;
 export const ToolbarButton = props => (
@@ -7,3 +8,31 @@ export const ToolbarButton = props => (
 export const ToolbarSpacer = props => (
   <div className="Toolbar__Spacer" {...props} />
 );
+
+export class ToolbarDropdownButton extends Component {
+  constructor() {
+    super();
+    this.state = {
+      open: false
+    };
+  }
+
+  toggleOpen = () => {
+    this.setState({ open: !this.state.open });
+  };
+
+  render() {
+    const { children, title, ...props } = this.props;
+    const { open } = this.state;
+
+    return (
+      <div className="Toolbar__DropdownButton" {...props}>
+        <ToolbarButton onClick={this.toggleOpen}>
+          {title} <small>▼</small>
+        </ToolbarButton>
+        {open && <MenuOverlay onClick={this.toggleOpen} />}
+        {open && <Menu>{children}</Menu>}
+      </div>
+    );
+  }
+}
