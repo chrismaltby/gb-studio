@@ -1,0 +1,25 @@
+.ToolbarButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  border-radius: 4px;
+  height: 26px;
+  width: 40px;
+  background: linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%);
+  border: 1px solid #9f9e9e;
+  box-shadow: 0px 1px #c5c5c5;
+}
+
+.ToolbarButton + .ToolbarButton {
+  margin-left: 5px;
+}
+
+.ToolbarButton:active {
+  background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
+}
+
+.ToolbarButton svg {
+  width: 17px;
+  height: 17px;
+}

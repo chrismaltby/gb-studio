@@ -4,10 +4,21 @@
   left: 0;
   right: 0;
   height: 36px;
-  background-color: #011526;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+  /*background-color: #011526;*/
+  /*background-color: var(--nav-bg-color);*/
+  background: linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%);
+  border-bottom: 1px solid #abaaab;
+  /*box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);*/
   display: flex;
+  align-items: center;
+  padding-left: 60px;
+  padding-right: 5px;
+  user-select: none;
   -webkit-app-region: drag;
+}
+
+.Navbar:window-inactive {
+  background: red;
 }
 
 .Navbar__Logo {
@@ -33,18 +44,20 @@
 
 .Navbar__Item {
   line-height: 36px;
-  color: #fff;
+  color: #3b3a3b;
   padding: 0 20px;
   cursor: pointer;
 }
 
 .Navbar__Item--Active {
   background-color: #011b32;
+  color: #fff;
 }
 
 .Navbar__Item--Active,
 .Navbar__Item--Active:hover {
   background-color: #033663;
+  color: #fff;
 }
 
 .Navbar__Spacer {

@@ -1,0 +1,65 @@
+.Toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  /*background-color: #011526;*/
+  /*background-color: var(--nav-bg-color);*/
+  background: linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%);
+  border-bottom: 1px solid #abaaab;
+  /*box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);*/
+  display: flex;
+  align-items: center;
+  padding-left: 80px;
+  padding-right: 10px;
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+.App--Blur .Toolbar {
+  background: #f6f6f6;
+  border-bottom: 1px solid #d1d1d1;
+}
+
+.Toolbar__Spacer {
+  flex: 1;
+}
+
+.Toolbar__Button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 24px;
+  min-width: 24px;
+  background: linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%);
+  border: 1px solid #9f9e9e;
+  box-shadow: 0px 1px #c5c5c5;
+  white-space: nowrap;
+  padding: 0px 8px;
+}
+
+.App--Blur .Toolbar__Button {
+  opacity: 0.5;
+}
+
+.Toolbar__Button small {
+  display: inline-block;
+  padding-left: 5px;
+  font-size: 12px;
+}
+
+.Toolbar__Button + .Toolbar__Button {
+  margin-left: 5px;
+}
+
+.Toolbar__Button:active {
+  background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
+}
+
+.Toolbar__Button svg {
+  width: 17px;
+  height: 17px;
+}

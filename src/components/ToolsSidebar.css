@@ -3,10 +3,12 @@
   width: 36px;
   left: 5px;
   top: 41px;
-  background-color: #011526;
+  /*background-color: #011526;*/
+  background-color: var(--sidebar-bg-color);
+  border: 1px solid #d0d0d0;
   border-radius: 4px;
   padding: 4px 0;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 1);
+  /*box-shadow: 0px 1px 10px rgba(0, 0, 0, 1);*/
 }
 
 .ToolsSidebar__Item {
@@ -19,16 +21,16 @@
 }
 
 .ToolsSidebar svg {
-  fill: #fff;
+  fill: var(--main-text-color);
   width: 20px;
 }
 
 .ToolsSidebar__Item:hover {
-  background-color: #011b32;
+  background-color: #e8e7e8;
   cursor: pointer;
 }
 
 .ToolsSidebar__Item--Selected,
 .ToolsSidebar__Item--Selected:hover {
-  background-color: #033663;
+  background-color: #cdcdcd;
 }

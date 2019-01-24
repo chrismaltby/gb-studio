@@ -1,23 +1,52 @@
-@import url('./components/Actor.css');
-@import url('./components/AddCommandButton.css');
-@import url('./components/Button.css');
-@import url('./components/Connections.css');
-@import url('./components/DirectionPicker.css');
-@import url('./components/EditorSidebar.css');
-@import url('./components/FilesSidebar.css');
-@import url('./components/ImageViewer.css');
-@import url('./components/Map.css');
-@import url('./components/Menu.css');
-@import url('./components/Navbar.css');
-@import url('./components/ScriptEditor.css');
-@import url('./components/StatusBar.css');
-@import url('./components/ToolsSidebar.css');
-@import url('./components/World.css');
+@import url("./variables.css");
+@import url("./components/Actor.css");
+@import url("./components/AddCommandButton.css");
+@import url("./components/Button.css");
+@import url("./components/Connections.css");
+@import url("./components/DirectionPicker.css");
+@import url("./components/EditorSidebar.css");
+@import url("./components/FilesSidebar.css");
+@import url("./components/ImageViewer.css");
+@import url("./components/Map.css");
+@import url("./components/Menu.css");
+@import url("./components/Navbar.css");
+@import url("./components/ScriptEditor.css");
+@import url("./components/StatusBar.css");
+@import url("./components/ToolsSidebar.css");
+@import url("./components/World.css");
+@import url("./components/Toolbar/ToolbarButton.css");
+@import url("./components/Toolbar/Toolbar.css");
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
 
 body {
-  background: #ccc;
+  background: var(--main-bg-color);
+  color: var(--main-text-color);
+  margin: 0px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 12px;
+}
+
+#App {
+  width: 100%;
+  height: 100%;
 }
 
 .App {
-  font-size: 12px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.App__Content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 }

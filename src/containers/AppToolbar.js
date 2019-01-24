@@ -1,18 +1,38 @@
 import React, { Component } from "react";
-import cx from "classnames";
+import {
+  Toolbar,
+  ToolbarSpacer,
+  ToolbarButton
+} from "../components/Toolbar/Toolbar";
+import { PlayIcon, DownloadIcon } from "../components/Icons";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import Button from "./Button";
-import ToolbarButton from "./Toolbar/ToolbarButton";
-import { PlayIcon, DownloadIcon } from "./Icons";
 
-class Navbar extends Component {
+class AppToolbar extends Component {
   render() {
     const { name, modified, section, setSection } = this.props;
 
     return (
-      <div className="Navbar">
-        <div className="Navbar__Name">{name}</div>
+      <Toolbar>
+        <ToolbarButton>
+          World Editor <small>▼</small>
+        </ToolbarButton>
+        <ToolbarSpacer />
+        {name || "Untitled"}
+        <ToolbarSpacer />
+        <ToolbarButton>
+          <PlayIcon />
+        </ToolbarButton>
+        <ToolbarButton>
+          <DownloadIcon />
+        </ToolbarButton>
+      </Toolbar>
+    );
+
+    /*
+
+      <div className="AppToolbar">
+        <div className="AppToolbar__Name">{name}</div>
         {[
           {
             id: "editor",
@@ -30,15 +50,15 @@ class Navbar extends Component {
           <div
             key={item.id}
             onClick={() => setSection(item.id)}
-            className={cx("Navbar__Item", {
-              "Navbar__Item--Active": item.id === section
+            className={cx("AppToolbar__Item", {
+              "AppToolbar__Item--Active": item.id === section
             })}
           >
             {item.name}
           </div>
         ))}
 
-        <div className="Navbar__Spacer" />
+        <div className="AppToolbar__Spacer" />
 
         <ToolbarButton>
           <PlayIcon />
@@ -48,12 +68,13 @@ class Navbar extends Component {
         </ToolbarButton>
 
         {modified && (
-          <div className="Navbar__Save">
+          <div className="AppToolbar__Save">
             <Button onClick={this.props.saveWorld}>Save</Button>
           </div>
         )}
       </div>
     );
+    */
   }
 }
 
@@ -73,4 +94,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Navbar);
+)(AppToolbar);

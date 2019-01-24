@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import cx from "classnames";
 import World from "./components/World";
-import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
+import AppToolbar from "./containers/AppToolbar";
 import ToolsSidebar from "./components/ToolsSidebar";
 import StatusBar from "./components/StatusBar";
 import EditorSidebar from "./components/EditorSidebar";
@@ -9,23 +11,61 @@ import ImagesSection from "./components/ImagesSection";
 import SpritesSection from "./components/SpritesSection";
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      blur: false
+    };
+  }
+
+  componentWillMount() {
+    window.addEventListener("blur", this.onBlur);
+    window.addEventListener("focus", this.onFocus);
+  }
+
+  onBlur = () => {
+    console.log("ON BLUR");
+    this.setState({ blur: true });
+  };
+
+  onFocus = () => {
+    this.setState({ blur: false });
+  };
+
   render() {
     const { section } = this.props;
+    const { blur } = this.state;
     return (
-      <div className="App">
+      <div className={cx("App", { "App--Blur": blur })}>
+        <AppToolbar />
         {section === "editor" && (
-          <div>
-            <World />
-            <ToolsSidebar />
-            <EditorSidebar />
-            <StatusBar />
+          <div className="App__Content">
+            <div className="WorldEditor">
+              <World />
+              <ToolsSidebar />
+              <EditorSidebar />
+              <StatusBar />
+            </div>
           </div>
         )}
-        {section === "images" && <ImagesSection />}
-        {section === "spriteSheets" && <SpritesSection />}
-        <Navbar />
       </div>
     );
+
+    // return (
+    //   <div className="App">
+    //     {section === "editor" && (
+    //       <div>
+    //         <World />
+    //         <ToolsSidebar />
+    //         <EditorSidebar />
+    //         <StatusBar />
+    //       </div>
+    //     )}
+    //     {section === "images" && <ImagesSection />}
+    //     {section === "spriteSheets" && <SpritesSection />}
+    //     <Navbar />
+    //   </div>
+    // );
   }
 }
 
