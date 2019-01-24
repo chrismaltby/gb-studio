@@ -4,7 +4,6 @@ import cx from "classnames";
 import * as actions from "../actions";
 import getCoords from "../lib/getCoords";
 import Actor from "./Actor";
-import "./Map.css";
 
 class Map extends Component {
   constructor() {

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import Map from "./Map";
 import Connections from "./Connections";
 import * as actions from "../actions";
-import "./World.css";
 
 class World extends Component {
   constructor(props) {

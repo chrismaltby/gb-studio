@@ -1,5 +1,4 @@
 import React from "react";
-import "./Connections.css";
 
 const scriptMapTransition = script => {
   return script.filter(action => {

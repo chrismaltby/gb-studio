@@ -5,7 +5,6 @@ import TriggerEditor from "./TriggerEditor";
 import ActorEditor from "./ActorEditor";
 import MapEditor from "./MapEditor";
 import WorldEditor from "./WorldEditor";
-import "./EditorSidebar.css";
 
 class EditorSidebar extends Component {
   render() {

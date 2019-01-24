@@ -3,7 +3,6 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Button from "./Button";
-import "./Navbar.css";
 
 class Navbar extends Component {
   render() {

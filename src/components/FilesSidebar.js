@@ -4,7 +4,6 @@ import cx from "classnames";
 import { PlusIcon } from "./Icons";
 import Button from "./Button";
 import * as actions from "../actions";
-import "./FilesSidebar.css";
 
 class FilesSidebar extends Component {
   constructor(props) {

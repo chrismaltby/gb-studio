@@ -13,7 +13,6 @@ import DirectionPicker from "./DirectionPicker";
 import FadeSpeedSelect from "./FadeSpeedSelect";
 import CameraSpeedSelect from "./CameraSpeedSelect";
 import * as actions from "../actions";
-import "./ScriptEditor.css";
 
 const uuid = a => {
   return a

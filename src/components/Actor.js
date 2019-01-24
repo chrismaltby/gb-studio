@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import "./Actor.css";
 
 class Actor extends Component {
   constructor(props) {

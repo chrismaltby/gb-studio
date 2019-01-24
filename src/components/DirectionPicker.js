@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import cx from "classnames";
-import "./DirectionPicker.css";
 
 class DirectionPicker extends Component {
   render() {
