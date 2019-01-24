@@ -1,0 +1,167 @@
+.ScriptEditor {
+  clear: both;
+  padding: 10px;
+  /*background-color: #fff;*/
+  width: 100%;
+  /*border: 1px solid #ccc;*/
+  box-sizing: border-box;
+  text-align: left;
+  /*background-color: blue;*/
+}
+
+.ActionMini {
+  position: relative;
+  user-select: none;
+  /*border-bottom: 1px solid #ccc;*/
+  /*padding: 10px;*/
+  padding-bottom: 10px;
+}
+
+.ActionMini:last-child {
+  padding-bottom: 0;
+}
+
+.ActionMini__Content {
+  /*overflow: hidden;*/
+  font-size: 12px;
+  background-color: #0a1f38;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: -1px 1px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.ActionMini__Command {
+  /*  background: red;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;*/
+  min-height: 28px;
+  line-height: 28px;
+  /*display: inline-block;*/
+  font-weight: bold;
+  padding: 0 5px;
+}
+
+.ActionMini__Command:hover {
+  /*background-color: rgba(0, 0, 0, 0.2);*/
+  cursor: move;
+}
+
+.ActionMini__Remove {
+  position: absolute;
+  top: 0px;
+  right: 4px;
+  padding: 7px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ActionMini__Remove svg {
+  width: 9px;
+  height: 9px;
+  fill: #fff;
+}
+
+.ActionMini:hover > .ActionMini__Content > .ActionMini__Remove {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.ActionMini__Else {
+  padding: 5px;
+  font-weight: bold;
+}
+
+.ActionMini--Dragging {
+  display: none;
+}
+
+.ActionMini--Over:before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 38px;
+  margin-top: -5px;
+  margin-bottom: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.ActionMini--Over svg {
+  display: none;
+}
+
+.ActionMini--Dragging:before {
+  display: none;
+}
+
+.ActionMini__Children {
+  /*border-top: 1px solid #ccc;*/
+  /*margin-bottom: -1px;*/
+  /*border-left: 10px solid #ccc;*/
+  background-color: #033663;
+  padding: 5px;
+}
+
+.ActionMini__Args {
+  /*padding: 5px;*/
+  /*display: flex;*/
+  display: inline-block;
+}
+
+.ActionMini__Arg {
+  display: inline-block;
+  margin-right: 5px;
+}
+.ActionMini__Arg strong:after {
+  content: ":";
+}
+
+.ActionMini__Arg strong {
+  /*margin-right: 5px;*/
+}
+
+.ActionMini__Form {
+  padding: 5px;
+}
+
+.ActionMini__Form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+}
+
+.ActionMini__FormRow {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.ActionMini__Flex {
+  display: flex;
+  align-items: center;
+}
+
+.ActionMini__Link {
+  text-decoration: underline;
+}
+
+.EditorSidebar .ActionMini__Form label {
+  padding: 5px;
+  width: auto;
+  white-space: nowrap;
+}
+.EditorSidebar .ActionMini__Form input,
+.EditorSidebar .ActionMini__Form .Select,
+.EditorSidebar .ActionMini__Form .DirectionPicker__Button {
+  margin-top: 0;
+}
+
+.Output {
+  /*position: fixed;*/
+  /* right: 0;
+  top: 0;*/
+  /*bottom: 0;*/
+  width: 300px;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  overflow: auto;
+}

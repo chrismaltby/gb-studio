@@ -1,0 +1,58 @@
+.FilesSidebar {
+  position: fixed;
+  width: 300px;
+  left: 0px;
+  top: 36px;
+  bottom: 0px;
+  background-color: #011526;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.FilesSidebar__Search {
+  display: flex;
+  padding: 10px;
+}
+
+.FilesSidebar input {
+  border-radius: 4px;
+  border: 0px;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #01060d;
+  color: #fff;
+  resize: none;
+}
+
+.FilesSidebar__Search .Button {
+  margin-left: 5px;
+  padding: 5px 15px;
+}
+
+.FilesSidebar__Search svg {
+  width: 10px;
+  height: 10px;
+  fill: #fff;
+}
+
+.FilesSidebar input:focus {
+  outline: none;
+  box-shadow: 0px 0px 0px 1px #03a9f4;
+}
+
+.FilesSidebar__ListItem {
+  padding: 5px 10px;
+  color: #fff;
+}
+
+.FilesSidebar__ListItem:hover {
+  background-color: #0a1f38;
+  cursor: pointer;
+}
+
+.FilesSidebar__ListItem--Active:hover,
+.FilesSidebar__ListItem--Active {
+  background-color: #033663;
+  cursor: pointer;
+}

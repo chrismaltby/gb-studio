@@ -1,0 +1,14 @@
+.Button {
+  display: inline-block;
+  background-color: #00060d;
+  color: #fff;
+  border-radius: 4px;
+  padding: 10px 25px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.Button:hover {
+  background-color: #000;
+  cursor: pointer;
+}

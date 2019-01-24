@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" type="text/css" href="./App.css">
 </head>
-<body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
+<body style="overflow: hidden; margin: 0" >
   <div id="App"></div>
 </body>
 
 <script type="text/jsx">
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
+import { Provider } from "react-redux";
+import * as actions from "./actions";
+import configureStore from "./store/configureStore";
+
+const store = configureStore();
+
+console.log(store)
 
 const render = () => {
   const App = require('./app').default;
-  ReactDOM.render(<AppContainer><App /></AppContainer>, document.getElementById('App'));
+  ReactDOM.render(<Provider store={store}><AppContainer><App /></AppContainer></Provider>, document.getElementById('App'));
 }
 
 render();
 if (module.hot) {
   module.hot.accept(render);
 }
+
 </script>
 </html>

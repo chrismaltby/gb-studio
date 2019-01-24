@@ -1,0 +1,20 @@
+.Menu {
+  position: absolute;
+  background-color: #033663;
+  border-radius: 4px;
+  padding: 4px 0;
+  overflow: auto;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 1);
+  min-width: 100px;
+  z-index: 100;
+}
+
+.MenuItem {
+  padding: 5px;
+  color: #fff;
+}
+
+.MenuItem:hover {
+  background-color: #0a1f38;
+  cursor: pointer;
+}

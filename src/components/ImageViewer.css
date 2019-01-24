@@ -1,0 +1,28 @@
+.ImageViewer {
+  position: fixed;
+  left: 300px;
+  right: 0px;
+  top: 36px;
+  bottom: 0px;
+  background-color: #00060d;
+  overflow: auto;
+}
+
+.ImageViewer__Content {
+  background-image: url("/img/grid.png");
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ImageViewer__Image {
+  /*  width: 256px;
+  height: 256px;*/
+  background-color: #fff;
+}
+
+.ImageViewer__Image img {
+  display: block;
+}

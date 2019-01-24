@@ -1,0 +1,125 @@
+.EditorSidebar {
+  position: fixed;
+  width: 300px;
+  right: -300px;
+  top: 36px;
+  bottom: 0px;
+  background-color: #011526;
+  overflow: auto;
+  padding: 0px;
+  box-sizing: border-box;
+  transition: right 0.3s ease-in-out;
+}
+
+.EditorSidebar--Open {
+  right: 0px;
+}
+
+.EditorSidebar h2 {
+  clear: both;
+  height: 36px;
+  line-height: 36px;
+  margin: 0px;
+  font-size: 14px;
+  font-weight: normal;
+  color: #fff;
+  background-color: #033663;
+  text-align: left;
+  padding: 0 10px;
+}
+
+.EditorSidebar label {
+  float: left;
+  display: block;
+  width: 100%;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 13px;
+  /*padding-left: 15px;*/
+}
+
+.EditorSidebar label.HalfWidth {
+  width: 50%;
+}
+
+.EditorSidebar input,
+.EditorSidebar textarea {
+  margin-top: 5px;
+  /*margin-left: -5px;*/
+  margin-right: 5px;
+  border-radius: 4px;
+  border: 0px;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #01060d;
+  color: #fff;
+  resize: none;
+}
+
+.EditorSidebar .Select select {
+  -webkit-appearance: none;
+  border-radius: 4px;
+  border: 0px;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #01060d;
+  color: #fff;
+}
+
+.EditorSidebar input:focus,
+.EditorSidebar textarea:focus,
+.EditorSidebar select:focus {
+  outline: none;
+  box-shadow: 0px 0px 0px 1px #03a9f4;
+}
+
+.EditorSidebar .Select {
+  display: inline-block;
+  width: 100%;
+  position: relative;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+.EditorSidebar .Select:after {
+  content: "▼";
+  font-size: 8px;
+  color: #fff;
+  width: 20px;
+  height: 23px;
+  line-height: 23px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.EditorSidebar__Save {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.EditorSidebar__Padding {
+  padding: 10px;
+}
+
+.EditorSidebar__DeleteButton {
+  float: right;
+  fill: #fff;
+}
+
+.EditorSidebar__DeleteButton svg {
+  width: 10px;
+  height: 10px;
+}
+
+.EditorSidebar .Checkbox {
+  width: auto;
+  display: inline-block;
+}

@@ -1,0 +1,59 @@
+.Navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background-color: #011526;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+}
+
+.Navbar__Logo {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  align-items: center;
+  background-color: #033663;
+  fill: #011b32;
+  cursor: pointer;
+}
+
+.Navbar__Logo:hover {
+  fill: #fff;
+}
+
+.Navbar__Name {
+  line-height: 36px;
+  color: #fff;
+  padding: 0 10px;
+}
+
+.Navbar__Item {
+  line-height: 36px;
+  color: #fff;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.Navbar__Item--Active {
+  background-color: #011b32;
+}
+
+.Navbar__Item--Active,
+.Navbar__Item--Active:hover {
+  background-color: #033663;
+}
+
+.Navbar__Spacer {
+  flex: 1;
+}
+
+.Navbar .Button {
+  background-color: #000;
+  border-radius: 0px;
+  border: 0;
+  height: 100%;
+  box-sizing: border-box;
+}

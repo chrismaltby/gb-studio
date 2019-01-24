@@ -1,0 +1,7 @@
+.Connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  stroke-width: 2px;
+  pointer-events: none;
+}

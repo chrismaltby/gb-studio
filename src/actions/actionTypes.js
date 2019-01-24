@@ -1,0 +1,42 @@
+export const SET_TOOL = "SET_TOOL";
+export const SET_SECTION = "SET_SECTION";
+export const SET_NAVIGATION_ID = "SET_NAVIGATION_ID";
+
+export const WORLD_LOAD_REQUEST = "WORLD_LOAD_REQUEST";
+export const WORLD_LOAD_SUCCESS = "WORLD_LOAD_SUCCESS";
+export const WORLD_LOAD_FAILURE = "WORLD_LOAD_FAILURE";
+
+export const WORLD_SAVE_REQUEST = "WORLD_SAVE_REQUEST";
+export const WORLD_SAVE_SUCCESS = "WORLD_SAVE_SUCCESS";
+export const WORLD_SAVE_FAILURE = "WORLD_SAVE_FAILURE";
+
+export const ADD_MAP = "ADD_MAP";
+export const MOVE_MAP = "MOVE_MAP";
+export const EDIT_MAP = "EDIT_MAP";
+export const REMOVE_MAP = "REMOVE_MAP";
+export const SELECT_MAP = "SELECT_MAP";
+
+export const ADD_ACTOR = "ADD_ACTOR";
+export const MOVE_ACTOR = "MOVE_ACTOR";
+export const REMOVE_ACTOR = "REMOVE_ACTOR";
+export const REMOVE_ACTOR_AT = "REMOVE_ACTOR_AT";
+export const SELECT_ACTOR = "SELECT_ACTOR";
+export const EDIT_ACTOR = "EDIT_ACTOR";
+
+export const ADD_TRIGGER = "CREATE_TRIGGER";
+export const RESIZE_TRIGGER = "RESIZE_TRIGGER";
+export const MOVE_TRIGGER = "MOVE_TRIGGER";
+export const REMOVE_TRIGGER = "REMOVE_TRIGGER";
+export const REMOVE_TRIGGER_AT = "REMOVE_TRIGGER_AT";
+export const EDIT_TRIGGER = "EDIT_TRIGGER";
+export const SELECT_TRIGGER = "SELECT_TRIGGER";
+
+export const ADD_COLLISION_TILE = "ADD_COLLISION_TILE";
+export const REMOVE_COLLISION_TILE = "REMOVE_COLLISION_TILE";
+
+export const RENAME_FLAG = "RENAME_FLAG";
+
+export const SET_STATUS = "SET_STATUS";
+
+export const SELECT_WORLD = "SELECT_WORLD";
+export const EDIT_WORLD = "EDIT_WORLD";

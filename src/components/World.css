@@ -1,0 +1,30 @@
+.World {
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 36px;
+  bottom: 0px;
+  background-color: #00060d;
+  overflow: auto;
+}
+
+.World__Grid {
+  min-width: 100%;
+  min-height: 100%;
+  background-image: url("/img/grid.png");
+}
+
+.World__Content {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.World__NewMap {
+  position: absolute;
+  cursor: pointer;
+  background-color: rgba(3, 54, 99, 0.5);
+  width: 256px;
+  height: 256px;
+  border-radius: 4px;
+}

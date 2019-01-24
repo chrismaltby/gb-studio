@@ -1,0 +1,12 @@
+.Actor {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  background-color: rgba(0, 255, 0, 0.4);
+  outline: 1px solid rgba(0, 255, 0, 1);
+}
+
+.Actor canvas {
+  position: relative;
+  top: -8px;
+}

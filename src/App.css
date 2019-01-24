@@ -1,0 +1,10 @@
+@import url('./components/Menu.css');
+@import url('./components/ToolsSidebar.css');
+
+body {
+  background: #ccc;
+}
+
+.App {
+  font-size: 12px;
+}

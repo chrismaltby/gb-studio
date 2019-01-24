@@ -6,7 +6,7 @@
           ["env", { "targets": { "electron": "1.6.0" } }],
           "react"
         ],
-        "plugins": ["transform-async-to-generator", "transform-es2015-classes", "react-hot-loader/babel"],
+        "plugins": ["transform-class-properties", "transform-async-to-generator", "transform-object-rest-spread", "transform-es2015-classes", "react-hot-loader/babel"],
         "sourceMaps": "inline"
       }
     },
@@ -16,7 +16,7 @@
           ["env", { "targets": { "electron": "1.6.0" } }],
           "react"
         ],
-        "plugins": ["transform-async-to-generator", "transform-es2015-classes"],
+        "plugins": ["transform-class-properties", "transform-async-to-generator", "transform-object-rest-spread", "transform-es2015-classes"],
         "sourceMaps": "none"
       }
     }
