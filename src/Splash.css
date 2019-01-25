@@ -17,6 +17,8 @@
 .Splash__Tab {
   display: flex;
   padding: 20px 30px;
+  position: relative;
+  overflow: hidden;
 }
 
 .Splash__Tab--Active {
@@ -25,6 +27,16 @@
 
 .Splash--Blur .Splash__Tab--Active {
   border-bottom: 4px solid #ccc;
+}
+
+.Splash__TabOpen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  outline: none;
+  opacity: 0;
 }
 
 .Splash__FlexSpacer {

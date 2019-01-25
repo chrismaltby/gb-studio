@@ -4,6 +4,7 @@ import cx from "classnames";
 import { DotsIcon } from "./components/Icons";
 import stripInvalidFilenameCharacters from "./lib/stripInvalidFilenameCharacters";
 import createProject, { ERR_PROJECT_EXISTS } from "./lib/createProject";
+import { ipcRenderer } from "electron";
 
 class Splash extends Component {
   constructor() {
@@ -59,14 +60,21 @@ class Splash extends Component {
     }
   };
 
+  onOpenFolder = e => {
+    if (e.target.files && e.target.files[0]) {
+      ipcRenderer.send("open-project", { projectPath: e.target.files[0].path });
+    }
+  };
+
   onSubmit = async e => {
     const { name, target, path } = this.state;
     try {
-      await createProject({
+      const projectPath = await createProject({
         name,
         target,
         path
       });
+      ipcRenderer.send("open-project", { projectPath });
     } catch (e) {
       if (e === ERR_PROJECT_EXISTS) {
         this.setState({ nameError: "Project already exists" });
@@ -97,13 +105,23 @@ class Splash extends Component {
             Recent
           </div>
           <div className="Splash__FlexSpacer" />
-          <div className="Splash__Tab">Open</div>
+
+          <div className="Splash__Tab">
+            Open
+            <input
+              type="file"
+              directory=""
+              webkitdirectory=""
+              className="Splash__TabOpen"
+              onChange={this.onOpenFolder}
+            />
+          </div>
         </div>
 
         {tab === "new" ? (
           <div className="Splash__Content">
             <div className="Splash__FormGroup">
-              <label className={nameError && "Splash__Label--Error"}>
+              <label className={nameError ? "Splash__Label--Error" : ""}>
                 {nameError ? nameError : "Project name"}
               </label>
               <input value={name} onChange={this.onChange("name")} />

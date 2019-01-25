@@ -16,6 +16,8 @@ const createProject = async options => {
 
   await fs.ensureDir(projectPath);
   await fs.copy(templatePath, projectPath);
+
+  return projectPath;
 };
 
 export default createProject;
