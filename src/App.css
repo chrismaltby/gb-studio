@@ -1,4 +1,5 @@
 @import url("./variables.css");
+@import url("./Splash.css");
 @import url("./components/Actor.css");
 @import url("./components/AddCommandButton.css");
 @import url("./components/Button.css");
@@ -29,7 +30,7 @@ body {
   margin: 0px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 12px;
+  font-size: 13px;
 }
 
 #App {

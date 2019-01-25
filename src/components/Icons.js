@@ -1,5 +1,11 @@
 import React from "react";
 
+export const DotsIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M6 12c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3zm9 0c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z" />
+  </svg>
+);
+
 export const DownloadIcon = () => (
   <svg
     width="24"

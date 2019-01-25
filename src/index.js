@@ -6,10 +6,44 @@ import windowStateKeeper from 'electron-window-state';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let splashWindow;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
+
+const createSplash = async () => {
+
+  // Create the browser window.
+  splashWindow = new BrowserWindow({
+    width: 700,
+    height: 432,
+    resizable: false
+  });
+
+  // and load the index.html of the app.
+  splashWindow.loadURL(`file://${__dirname}/splash.html`);
+
+  // Open the DevTools.
+  if (isDevMode) {
+    console.log("IS DEV MODE")
+    await installExtension(REACT_DEVELOPER_TOOLS);
+    // installExtension(REDUX_DEVTOOLS)
+    //   .then((name) => console.log(`Added Extension:  ${name}`))
+    //   .catch((err) => console.log('An error occurred: ', err));
+    await installExtension(REDUX_DEVTOOLS);
+    splashWindow.webContents.openDevTools();
+  }
+
+  // Emitted when the window is closed.
+  splashWindow.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    splashWindow = null;
+  });
+
+}
 
 const createWindow = async () => {
 
@@ -24,10 +58,10 @@ const createWindow = async () => {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    'x': mainWindowState.x,
-    'y': mainWindowState.y,
-    'width': mainWindowState.width,
-    'height': mainWindowState.height,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
     titleBarStyle: 'hiddenInset'
   });
 
@@ -35,8 +69,6 @@ const createWindow = async () => {
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
-
-
 
   // Open the DevTools.
   if (isDevMode) {
@@ -61,7 +93,7 @@ const createWindow = async () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', createSplash);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -75,8 +107,8 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
+  if (splashWindow === null && mainWindow === null) {
+    createSplash();
   }
 });
 
