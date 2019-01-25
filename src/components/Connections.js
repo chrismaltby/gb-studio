@@ -6,14 +6,21 @@ const scriptMapTransition = script => {
   });
 };
 
-export default ({ maps }) => {
+export default ({ maps, zoom }) => {
   const width =
     Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
   const height =
     Math.max.apply(null, maps.map(map => 20 + map.y + map.height * 8)) + 100;
 
   return (
-    <svg className="Connections" width={width} height={height}>
+    <svg
+      className="Connections"
+      width={width}
+      height={height}
+      style={{
+        strokeWidth: 2 / zoom
+      }}
+    >
       {maps.map(map =>
         [].concat(map.triggers || [], map.actors || []).map((object, index) => {
           const transitions = scriptMapTransition(object.script || []);

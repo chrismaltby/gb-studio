@@ -5,6 +5,7 @@ import installExtension, {
 } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
+import "./menu";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -118,7 +119,7 @@ const createWindow = async projectPath => {
 app.on("ready", () => {
   // createSplash()
   createWindow(
-    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
   );
 });
 

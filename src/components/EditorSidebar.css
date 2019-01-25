@@ -131,6 +131,7 @@
 .EditorSidebar__DeleteButton svg {
   width: 10px;
   height: 10px;
+  fill: var(--main-text-color);
 }
 
 .EditorSidebar .Checkbox {

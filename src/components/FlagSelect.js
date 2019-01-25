@@ -10,11 +10,11 @@ class FlagSelect extends Component {
     const { flagNames, dispatch, ...rest } = this.props;
     return (
       <select {...rest}>
-        {flags.map((flag, index) =>
+        {flags.map((flag, index) => (
           <option key={index} value={index}>
             {flagNames[index] ? flagNames[index] : "Flag " + flag}
           </option>
-        )}
+        ))}
       </select>
     );
   }
@@ -22,8 +22,8 @@ class FlagSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    flagNames: state.world.flags
-      ? state.world.flags.reduce((memo, flag) => {
+    flagNames: state.project.flags
+      ? state.project.flags.reduce((memo, flag) => {
           return {
             ...memo,
             [flag.id]: flag.name

@@ -8,7 +8,9 @@ export default {
   },
   project: {
     settings: {
-      zoom: 100
+      zoom: 200,
+      showCollisions: true,
+      showConnections: true
     }
   },
   world: {},

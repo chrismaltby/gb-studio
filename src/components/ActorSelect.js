@@ -7,18 +7,20 @@ class ActorSelect extends Component {
     return (
       <select {...rest}>
         <option>None</option>
-        {actors.map((actor, index) =>
+        {actors.map((actor, index) => (
           <option key={actor.id} value={actor.id}>
             {actor.name || "Actor " + (index + 1)}
           </option>
-        )}
+        ))}
       </select>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const map = state.world.maps.find(map => map.id === state.navigation.mapId);
+  const map = state.project.scenes.find(
+    map => map.id === state.navigation.mapId
+  );
   const actors = map ? map.actors : [];
   return {
     actors

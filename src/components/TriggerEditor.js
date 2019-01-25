@@ -102,9 +102,9 @@ function mapStateToProps(state, props) {
     modified: state.modified,
     editor: state.editor,
     trigger:
-      state.world &&
-      state.world.maps &&
-      state.world.maps.find(map => map.id === props.map).triggers[props.id]
+      state.project &&
+      state.project.scenes &&
+      state.project.scenes.find(map => map.id === props.map).triggers[props.id]
   };
 }
 
@@ -113,4 +113,7 @@ const mapDispatchToProps = {
   removeTrigger: actions.removeTrigger
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TriggerEditor);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TriggerEditor);

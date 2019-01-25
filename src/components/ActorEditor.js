@@ -78,8 +78,7 @@ class ActorEditor extends Component {
           </span>
         </label>
 
-        {spriteSheet &&
-          spriteSheet.type !== "static" &&
+        {spriteSheet && spriteSheet.type !== "static" && (
           <div>
             <label className="HalfWidth">
               Movement Type
@@ -97,7 +96,8 @@ class ActorEditor extends Component {
                 onChange={this.onEdit("direction")}
               />
             </label>
-          </div>}
+          </div>
+        )}
 
         <h2>Actor Script</h2>
 
@@ -108,12 +108,13 @@ class ActorEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { modified, editor, world } = state;
+  const { modified, editor, project } = state;
   const actor =
-    world.maps && world.maps.find(map => map.id === props.map).actors[props.id];
+    project.scenes &&
+    project.scenes.find(map => map.id === props.map).actors[props.id];
   const spriteSheet =
     actor &&
-    world.spriteSheets.find(
+    project.spriteSheets.find(
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
   console.log({ actor, spriteSheet });
@@ -130,4 +131,7 @@ const mapDispatchToProps = {
   removeActor: actions.removeActor
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ActorEditor);

@@ -802,7 +802,7 @@ class ScriptEditor extends Component {
             onRenameFlag={this.onRenameFlag}
           />
         ))}
-        {JSON.stringify(value, null, 4)}
+        {false && JSON.stringify(value, null, 4)}
 
         {/* <div className="Output">
           {output.map((line, num) =>
@@ -827,7 +827,7 @@ ScriptEditor.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    flags: state.world.flags
+    flags: state.project.flags
   };
 }
 

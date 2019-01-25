@@ -26,14 +26,14 @@ class Map extends Component {
   }
 
   onMouseMove = e => {
-    const { id, tool, editor, map, showCollisions } = this.props;
+    const { id, tool, editor, map, showCollisions, zoomRatio } = this.props;
     const { creating, downX, downY } = this.state;
 
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
     const y = e.pageY - pos.top;
-    const tX = Math.floor(x / 8);
-    const tY = Math.floor(y / 8);
+    const tX = Math.floor(x / (8 * zoomRatio));
+    const tY = Math.floor(y / (8 * zoomRatio));
 
     if (creating) {
       if (tool === "collisions") {
@@ -145,7 +145,7 @@ class Map extends Component {
   };
 
   onMoveDrag = e => {
-    const { id } = this.props;
+    const { id, zoomRatio } = this.props;
     const { dragging } = this.state;
     if (dragging) {
       const dragX = e.pageX - this.lastPageX;
@@ -154,7 +154,7 @@ class Map extends Component {
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      this.props.moveMap(id, dragX, dragY);
+      this.props.moveMap(id, dragX / zoomRatio, dragY / zoomRatio);
     }
   };
 
@@ -258,30 +258,32 @@ class Map extends Component {
             />
           ))}
           {showCollisions &&
-            collisions.map((collision, index) =>
-              collision ? (
-                <div
-                  key={index}
-                  className="Map__Collision"
-                  style={{
-                    top: Math.floor(index / width) * 8,
-                    left: (index % width) * 8,
-                    width: 8,
-                    height: 8
-                  }}
-                />
-              ) : (
-                undefined
-              )
+            collisions.map(
+              (collision, index) =>
+                collision ? (
+                  <div
+                    key={index}
+                    className="Map__Collision"
+                    style={{
+                      top: Math.floor(index / width) * 8,
+                      left: (index % width) * 8,
+                      width: 8,
+                      height: 8
+                    }}
+                  />
+                ) : (
+                  undefined
+                )
             )}
           {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
           ))}
-          {tool === "actor" && hover && (
-            <div className="Map__Ghost">
-              <Actor x={hoverX} y={hoverY} />
-            </div>
-          )}
+          {tool === "actor" &&
+            hover && (
+              <div className="Map__Ghost">
+                <Actor x={hoverX} y={hoverY} />
+              </div>
+            )}
           {hover && (
             <div
               className="Map__Hover"
@@ -311,7 +313,12 @@ function mapStateToProps(state, props) {
     worldId: state.project.id,
     showCollisions:
       (state.project.settings && state.project.settings.showCollisions) ||
-      state.tools.selected === "collisions"
+      state.tools.selected === "collisions",
+    zoomRatio:
+      ((state.project &&
+        state.project.settings &&
+        state.project.settings.zoom) ||
+        100) / 100
   };
 }
 
