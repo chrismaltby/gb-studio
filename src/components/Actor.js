@@ -30,10 +30,12 @@ class Actor extends Component {
   }
 
   imageSrc = props => {
-    return `${process.env.REACT_APP_API_ENDPOINT}/assets/${
-      props.projectId
-    }/spriteSheets/${props.spriteSheet && props.spriteSheet.filename}`;
+    return `${props.projectPath}/assets/sprites/${props.spriteSheet &&
+      props.spriteSheet.filename}`;
   };
+
+  // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
+  // `url("${projectPath}/assets/maps/${image}")`
 
   loadImage = props => {
     this.src = this.imageSrc(props);
@@ -117,6 +119,7 @@ function mapStateToProps(state, props) {
       spriteSheet => spriteSheet.id === props.actor.spriteSheetId
     );
   return {
+    projectPath: state.document && state.document.path,
     spriteSheet,
     projectId: state.project.id
   };

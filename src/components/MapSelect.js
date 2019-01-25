@@ -19,7 +19,7 @@ class MapSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    maps: (state.projects && state.projects.maps) || []
+    maps: (state.project && state.project.scenes) || []
   };
 }
 

@@ -88,18 +88,17 @@ class World extends Component {
               <Map id={map.id} map={map} />
             </div>
           ))}
-          {showConnections && <Connections maps={maps} zoom={zoomRatio} />}
-          {tool === "map" &&
-            hover && (
-              <div
-                className="World__NewMap"
-                onClick={this.onAddMap}
-                style={{
-                  left: hoverX,
-                  top: hoverY
-                }}
-              />
-            )}
+          {showConnections && <Connections maps={maps} zoomRatio={zoomRatio} />}
+          {tool === "map" && hover && (
+            <div
+              className="World__NewMap"
+              onClick={this.onAddMap}
+              style={{
+                left: hoverX,
+                top: hoverY
+              }}
+            />
+          )}
         </div>
       </div>
     );

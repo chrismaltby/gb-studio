@@ -1,5 +1,6 @@
 .AddCommandButton {
   position: relative;
+  padding: 10px;
 }
 
 .AddCommandButton .Button {
@@ -11,12 +12,11 @@
   left: 4px;
   right: 4px;
   /*background-color: #0a1f38;*/
-  background-color: #033663;
-
-  color: #fff;
+  background-color: #ffffff;
   padding-bottom: 4px;
   border-radius: 4px;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 1);
+  font-size: 13px;
+  box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);
 }
 
 .AddCommandButton__Menu--Upwards {
@@ -42,14 +42,15 @@
 }
 
 .EditorSidebar .AddCommandButton__ListItem {
-  padding: 5px;
+  /* padding: 5px; */
+  padding: 6px 10px;
 }
 
 .EditorSidebar .AddCommandButton__ListItem:hover {
-  background-color: #0a1f38;
+  background-color: #e8e7e8;
   cursor: pointer;
 }
 
 .EditorSidebar .AddCommandButton__ListDivider {
-  border-bottom: 1px solid #0a1f38;
+  border-bottom: 1px solid #e8e7e8;
 }

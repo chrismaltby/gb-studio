@@ -209,7 +209,8 @@ class ActionMini extends Component {
         <div
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
-            "ActionMini--Over": isOverCurrent
+            "ActionMini--Over": isOverCurrent,
+            "ActionMini--Conditional": command === "IF_FLAG"
           })}
         >
           <div className="ActionMini__Content">

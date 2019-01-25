@@ -7,11 +7,11 @@ class ImageSelect extends Component {
     return (
       <select {...rest}>
         <option>None</option>
-        {images.map(image =>
+        {images.map(image => (
           <option key={image.id} value={image.id}>
             {image.name}
           </option>
-        )}
+        ))}
       </select>
     );
   }
@@ -19,7 +19,7 @@ class ImageSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    images: (state.world && state.world.images) || []
+    images: (state.project && state.project.images) || []
   };
 }
 

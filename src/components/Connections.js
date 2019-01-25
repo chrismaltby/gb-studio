@@ -6,7 +6,7 @@ const scriptMapTransition = script => {
   });
 };
 
-export default ({ maps, zoom }) => {
+export default ({ maps, zoomRatio }) => {
   const width =
     Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
   const height =
@@ -18,7 +18,7 @@ export default ({ maps, zoom }) => {
       width={width}
       height={height}
       style={{
-        strokeWidth: 2 / zoom
+        strokeWidth: 2 / zoomRatio
       }}
     >
       {maps.map(map =>
@@ -30,19 +30,33 @@ export default ({ maps, zoom }) => {
               return null;
             }
             const x1 = map.x + (object.x + (object.width || 2) / 2) * 8;
-            const x2 = destMap.x + transition.args.x * 8 + 4;
+            const x2 = destMap.x + transition.args.x * 8 + 5;
             const y1 = 20 + map.y + (object.y + (object.height || 1) / 2) * 8;
-            const y2 = 20 + destMap.y + transition.args.y * 8 + 4;
+            const y2 = 20 + destMap.y + transition.args.y * 8 + 5;
             const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
             const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
             return (
-              <path
-                key={map.id + "_" + index}
-                d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
-                e="M10 80 Q 95 10 180 80"
-                stroke="orange"
-                fill="transparent"
-              />
+              <g>
+                <path
+                  key={map.id + "_" + index}
+                  d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
+                  e="M10 80 Q 95 10 180 80"
+                  stroke="#00bcd4"
+                  fill="transparent"
+                />
+                <rect
+                  x={x2 - 4}
+                  y={y2 - 4}
+                  rx={4}
+                  ry={4}
+                  width={16}
+                  height={8}
+                  style={{
+                    fill: "#00bcd4"
+                    // opacity: 0.5
+                  }}
+                />
+              </g>
             );
           });
         })

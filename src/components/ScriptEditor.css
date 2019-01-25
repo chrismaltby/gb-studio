@@ -1,7 +1,7 @@
 .ScriptEditor {
   clear: both;
-  padding: 10px;
-  /*background-color: #fff;*/
+  /* padding: 10px; */
+  background-color: #fff;
   width: 100%;
   /*border: 1px solid #ccc;*/
   box-sizing: border-box;
@@ -14,20 +14,17 @@
   user-select: none;
   /*border-bottom: 1px solid #ccc;*/
   /*padding: 10px;*/
-  padding-bottom: 10px;
-}
-
-.ActionMini:last-child {
-  padding-bottom: 0;
+  /* padding-bottom: 10px; */
 }
 
 .ActionMini__Content {
   /*overflow: hidden;*/
   font-size: 12px;
-  background-color: #0a1f38;
-  color: #fff;
-  border-radius: 4px;
-  box-shadow: -1px 1px 2px 1px rgba(0, 0, 0, 0.2);
+  /* background-color: #0a1f38; */
+  /* color: #fff; */
+  border-bottom: 1px solid #dadada;
+  /* border-radius: 4px; */
+  /* box-shadow: -1px 1px 2px 1px rgba(0, 0, 0, 0.2); */
 }
 
 .ActionMini__Command {
@@ -38,12 +35,95 @@
   line-height: 28px;
   /*display: inline-block;*/
   font-weight: bold;
-  padding: 0 5px;
+  padding: 0 10px;
 }
 
 .ActionMini__Command:hover {
   /*background-color: rgba(0, 0, 0, 0.2);*/
   cursor: move;
+}
+
+/* Conditional Level 1 */
+
+.ActionMini--Conditional {
+  border-left: 2px solid var(--conditional-level1);
+}
+
+.ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
+  background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional > .ActionMini__Content > .ActionMini__Else {
+  background: var(--conditional-level1);
+}
+
+/* Conditional Level 2 */
+
+.ActionMini--Conditional .ActionMini--Conditional {
+  border-left: 2px solid var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  background: var(--conditional-level2);
+}
+
+/* Conditional Level 3 */
+
+.ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
+  border-left: 2px solid var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  background: var(--conditional-level3);
+}
+
+/* Conditional Level 4 */
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional {
+  border-left: 2px solid var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  background: var(--conditional-level4);
 }
 
 .ActionMini__Remove {
@@ -58,7 +138,7 @@
 .ActionMini__Remove svg {
   width: 9px;
   height: 9px;
-  fill: #fff;
+  fill: #000;
 }
 
 .ActionMini:hover > .ActionMini__Content > .ActionMini__Remove {
@@ -94,12 +174,20 @@
 }
 
 .ActionMini__Children {
-  /*border-top: 1px solid #ccc;*/
-  /*margin-bottom: -1px;*/
-  /*border-left: 10px solid #ccc;*/
-  background-color: #033663;
-  padding: 5px;
+  padding-left: 5px;
+  padding-top: 5px;
+  /* margin-left: 10px; */
+  /* padding: 5px; */
+  /* border-left: 2px solid red; */
 }
+
+/* .ActionMini__Children .ActionMini__Children {
+  border-left: 2px solid green;
+}
+
+.ActionMini__Children .ActionMini__Children .ActionMini__Children {
+  border-left: 2px solid blue;
+} */
 
 .ActionMini__Args {
   /*padding: 5px;*/
@@ -120,7 +208,7 @@
 }
 
 .ActionMini__Form {
-  padding: 5px;
+  padding: 5px 10px;
 }
 
 .ActionMini__Form textarea {

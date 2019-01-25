@@ -7,11 +7,11 @@ class SpriteSheetSelect extends Component {
     return (
       <select {...rest}>
         <option>None</option>
-        {spriteSheets.map(spriteSheet =>
+        {spriteSheets.map(spriteSheet => (
           <option key={spriteSheet.id} value={spriteSheet.id}>
             {spriteSheet.name} ({spriteSheet.type})
           </option>
-        )}
+        ))}
       </select>
     );
   }
@@ -19,7 +19,7 @@ class SpriteSheetSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    spriteSheets: (state.world && state.world.spriteSheets) || []
+    spriteSheets: (state.project && state.project.spriteSheets) || []
   };
 }
 
