@@ -52,6 +52,7 @@
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
+    "fs-extra": "^7.0.1",
     "react": "^16.3.2",
     "react-dnd": "^2.6.0",
     "react-dnd-html5-backend": "^2.6.0",

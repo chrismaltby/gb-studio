@@ -2,13 +2,19 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 import { DotsIcon } from "./components/Icons";
+import stripInvalidFilenameCharacters from "./lib/stripInvalidFilenameCharacters";
+import createProject, { ERR_PROJECT_EXISTS } from "./lib/createProject";
 
 class Splash extends Component {
   constructor() {
     super();
     this.state = {
       blur: false,
-      tab: "new"
+      tab: "new",
+      name: "Untitled",
+      target: "gbhtml",
+      path: "/Users/cmaltby/Projects/",
+      nameError: null
     };
   }
 
@@ -34,9 +40,43 @@ class Splash extends Component {
     this.setState({ tab });
   };
 
+  onChange = key => e => {
+    let value = e.currentTarget.value;
+    if (key === "name") {
+      value = stripInvalidFilenameCharacters(value);
+    }
+    this.setState({
+      [key]: value,
+      nameError: false
+    });
+  };
+
+  onSelectFolder = e => {
+    if (e.target.files && e.target.files[0]) {
+      this.setState({
+        path: e.target.files[0].path + "/"
+      });
+    }
+  };
+
+  onSubmit = async e => {
+    const { name, target, path } = this.state;
+    try {
+      await createProject({
+        name,
+        target,
+        path
+      });
+    } catch (e) {
+      if (e === ERR_PROJECT_EXISTS) {
+        this.setState({ nameError: "Project already exists" });
+      }
+    }
+  };
+
   render() {
     const { section } = this.props;
-    const { blur, tab } = this.state;
+    const { blur, tab, name, target, path, nameError } = this.state;
     return (
       <div className={cx("Splash", { "Splash--Blur": blur })}>
         <div className="Splash__Tabs">
@@ -63,20 +103,22 @@ class Splash extends Component {
         {tab === "new" ? (
           <div className="Splash__Content">
             <div className="Splash__FormGroup">
-              <label>Project name</label>
-              <input />
+              <label className={nameError && "Splash__Label--Error"}>
+                {nameError ? nameError : "Project name"}
+              </label>
+              <input value={name} onChange={this.onChange("name")} />
             </div>
 
             <div className="Splash__FormGroup">
               <label>Target system</label>
-              <select>
-                <option>HTML</option>
+              <select value={target} onChange={this.onChange("target")}>
+                <option value="gbhtml">HTML</option>
               </select>
             </div>
 
             <div className="Splash__FormGroup">
               <label>Path</label>
-              <input />
+              <input value={path} onChange={this.onChange("path")} />
               <div className="Splash__InputButton">
                 <DotsIcon />
               </div>
@@ -85,17 +127,20 @@ class Splash extends Component {
                 directory=""
                 webkitdirectory=""
                 className="Splash__InputButton"
+                onChange={this.onSelectFolder}
               />
             </div>
             <div className="Splash__FlexSpacer" />
 
             <div>
-              <div className="Splash__Button">Create</div>
+              <div className="Splash__Button" onClick={this.onSubmit}>
+                Create
+              </div>
             </div>
           </div>
         ) : (
           tab === "recent" && (
-            <div className="Splash__Content">Recent: Not implemented</div>
+            <div className="Splash__Content">Not implemented</div>
           )
         )}
       </div>

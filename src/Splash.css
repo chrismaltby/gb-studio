@@ -50,12 +50,17 @@
 .Splash__FormGroup label {
   color: #999;
   padding-bottom: 5px;
+  user-select: none;
+}
+
+.Splash__FormGroup label.Splash__Label--Error {
+  color: #e91e63;
 }
 
 .Splash__FormGroup input,
 .Splash__FormGroup select {
   height: 28px;
-  font-size: 20px;
+  font-size: 18px;
   padding: 5px 10px;
   border-radius: 0px;
   background: #fff;
@@ -102,4 +107,8 @@ input.Splash__InputButton {
   color: #fff;
   border-radius: 4px;
   user-select: none;
+}
+
+.Splash--Blur .Splash__Button {
+  background-color: #ccc;
 }
