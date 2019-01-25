@@ -5,6 +5,7 @@ import project from "./projectReducer";
 import modified from "./modifiedReducer";
 import editor from "./editorReducer";
 import navigation from "./navigationReducer";
+import document from "./documentReducer";
 
 const rootReducer = combineReducers({
   tools,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   editor,
   // world,
   project,
+  document,
   navigation
 });
 

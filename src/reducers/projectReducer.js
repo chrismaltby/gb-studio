@@ -19,14 +19,18 @@ import {
   EDIT_TRIGGER,
   MOVE_TRIGGER,
   RENAME_FLAG,
-  EDIT_PROJECT
+  EDIT_PROJECT,
+  ZOOM_IN,
+  ZOOM_OUT,
+  ZOOM_RESET
 } from "../actions/actionTypes";
 import uuid from "../lib/uuid";
+import deepmerge from "deepmerge";
 
-export default function world(state = initialState.world, action) {
+export default function project(state = initialState.project, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS:
-      return action.data;
+      return deepmerge(state, action.data);
     case ADD_MAP:
       return {
         ...state,
@@ -382,6 +386,30 @@ export default function world(state = initialState.world, action) {
       return {
         ...state,
         ...action.values
+      };
+    case ZOOM_IN:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          zoom: Math.min(800, state.settings.zoom * 2)
+        }
+      };
+    case ZOOM_OUT:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          zoom: Math.max(25, state.settings.zoom / 2)
+        }
+      };
+    case ZOOM_RESET:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          zoom: 100
+        }
       };
     default:
       return state;

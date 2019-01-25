@@ -6,7 +6,7 @@ export const loadProject = path => async dispatch => {
   dispatch({ type: types.PROJECT_LOAD_REQUEST });
   try {
     const data = await loadProjectData(path);
-    dispatch({ type: types.PROJECT_LOAD_SUCCESS, data });
+    dispatch({ type: types.PROJECT_LOAD_SUCCESS, data, path });
   } catch (e) {
     console.log(e);
     dispatch({ type: types.PROJECT_LOAD_FAILURE });
@@ -162,4 +162,16 @@ export const editWorld = values => {
 
 export const editProject = values => {
   return { type: types.EDIT_PROJECT, values };
+};
+
+export const zoomIn = () => {
+  return { type: types.ZOOM_IN };
+};
+
+export const zoomOut = () => {
+  return { type: types.ZOOM_OUT };
+};
+
+export const zoomReset = () => {
+  return { type: types.ZOOM_RESET };
 };

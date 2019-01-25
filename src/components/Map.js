@@ -199,6 +199,7 @@ class Map extends Component {
       worldId,
       width,
       height,
+      projectPath,
       showCollisions
     } = this.props;
     const { x, y, triggers = [], collisions = [], actors = [] } = map;
@@ -232,10 +233,8 @@ class Map extends Component {
             height: height * 8,
             backgroundImage:
               image &&
-              'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
-            // `url("${
-            //   process.env.REACT_APP_API_ENDPOINT
-            // }/assets/${worldId}/images/${image}")`
+              // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
+              `url("${projectPath}/assets/maps/${image}")`
           }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
@@ -303,6 +302,7 @@ function mapStateToProps(state, props) {
     image => image.id === props.map.imageId
   );
   return {
+    projectPath: state.document && state.document.path,
     tool: state.tools.selected,
     editor: state.editor,
     image: image && image.filename,

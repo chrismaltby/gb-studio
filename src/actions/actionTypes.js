@@ -46,3 +46,7 @@ export const SELECT_WORLD = "SELECT_WORLD";
 export const EDIT_WORLD = "EDIT_WORLD";
 
 export const EDIT_PROJECT = "EDIT_PROJECT";
+
+export const ZOOM_IN = "ZOOM_IN";
+export const ZOOM_OUT = "ZOOM_OUT";
+export const ZOOM_RESET = "ZOOM_RESET";

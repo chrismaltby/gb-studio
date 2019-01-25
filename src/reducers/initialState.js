@@ -2,7 +2,15 @@ export default {
   tools: {
     selected: "select"
   },
-  project: {},
+  document: {
+    path: "",
+    modified: false
+  },
+  project: {
+    settings: {
+      zoom: 100
+    }
+  },
   world: {},
   editor: {
     type: "world",

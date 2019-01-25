@@ -117,7 +117,9 @@ const createWindow = async projectPath => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   // createSplash()
-  createWindow("/Users/cmaltby/Projects/Untitled GB Game");
+  createWindow(
+    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+  );
 });
 
 // Quit when all windows are closed.

@@ -79,6 +79,21 @@
   border-radius: 20px;
   height: 16px;
   min-width: 16px;
+  line-height: 16px;
   box-shadow: none;
   border: 0;
+  padding: 0;
+}
+
+.Toolbar__Button .Toolbar__Button:first-child {
+  margin-right: 10px;
+}
+
+.Toolbar__Button .Toolbar__Button:last-child {
+  margin-left: 10px;
+}
+
+.Toolbar__Button .Toolbar__Button svg {
+  width: 8px;
+  height: 8px;
 }

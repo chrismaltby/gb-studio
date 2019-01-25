@@ -6,7 +6,12 @@ import {
   ToolbarDropdownButton
 } from "../components/Toolbar/Toolbar";
 import { Menu, MenuItem } from "../components/Menu";
-import { PlayIcon, DownloadIcon } from "../components/Icons";
+import {
+  PlayIcon,
+  DownloadIcon,
+  PlusIcon,
+  MinusIcon
+} from "../components/Icons";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -24,8 +29,26 @@ class AppToolbar extends Component {
     this.props.setSection(section);
   };
 
+  onZoomIn = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.zoomIn();
+  };
+
+  onZoomOut = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.zoomOut();
+  };
+
+  onZoomReset = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.zoomReset();
+  };
+
   render() {
-    const { name, modified, section = "overview" } = this.props;
+    const { name, modified, section = "overview", zoom } = this.props;
     return (
       <Toolbar>
         <ToolbarDropdownButton
@@ -38,11 +61,18 @@ class AppToolbar extends Component {
             </MenuItem>
           ))}
         </ToolbarDropdownButton>
-        <ToolbarButton>
-          <ToolbarButton>-</ToolbarButton>100%
+        <ToolbarButton style={{ width: 90 }}>
+          <ToolbarButton onClick={this.onZoomOut}>
+            <MinusIcon />
+          </ToolbarButton>
+          <div onClick={this.onZoomReset}>{Math.round(zoom)}%</div>
+          <ToolbarButton onClick={this.onZoomIn}>
+            <PlusIcon />
+          </ToolbarButton>
         </ToolbarButton>
         <ToolbarSpacer />
         {name || "Untitled"}
+        <ToolbarSpacer />
         <ToolbarSpacer />
         <ToolbarButton>
           <PlayIcon />
@@ -59,13 +89,17 @@ function mapStateToProps(state) {
   return {
     modified: state.modified,
     name: state.project && state.project.name,
-    section: state.navigation.section
+    section: state.navigation.section,
+    zoom: state.project && state.project.settings && state.project.settings.zoom
   };
 }
 
 const mapDispatchToProps = {
   saveWorld: actions.saveWorld,
-  setSection: actions.setSection
+  setSection: actions.setSection,
+  zoomIn: actions.zoomIn,
+  zoomOut: actions.zoomOut,
+  zoomReset: actions.zoomReset
 };
 
 export default connect(
