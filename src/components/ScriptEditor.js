@@ -20,9 +20,9 @@ const uuid = a => {
     : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
 };
 
-const trim4lines = string => {
+const trim2lines = string => {
   return string
-    .replace(/^([^\n]*\n[^\n]*\n[^\n]*\n[^\n]*)[\w\W]*/g, "$1")
+    .replace(/^([^\n]*\n[^\n]*)[\w\W]*/g, "$1")
     .split("\n")
     .map(line => line.substring(0, 18))
     .join("\n");
@@ -225,7 +225,7 @@ class ActionMini extends Component {
             {command === "TEXT" ? (
               <div className="ActionMini__Form">
                 <textarea
-                  rows="4"
+                  rows="2"
                   style={{
                     textTransform: "uppercase",
                     fontFamily: "monospace"
@@ -233,7 +233,7 @@ class ActionMini extends Component {
                   value={action.args.text}
                   onChange={e => {
                     onEdit(id, {
-                      text: trim4lines(e.currentTarget.value)
+                      text: trim2lines(e.currentTarget.value)
                     });
                   }}
                 />

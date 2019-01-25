@@ -8,7 +8,7 @@ export default {
   },
   project: {
     settings: {
-      zoom: 200,
+      zoom: 100,
       showCollisions: true,
       showConnections: true
     }

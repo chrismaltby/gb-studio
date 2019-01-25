@@ -36,6 +36,7 @@
   /*display: inline-block;*/
   font-weight: bold;
   padding: 0 10px;
+  background: #efefef;
 }
 
 .ActionMini__Command:hover {
@@ -174,11 +175,15 @@
 }
 
 .ActionMini__Children {
-  padding-left: 5px;
+  /* padding-left: 5px; */
   padding-top: 5px;
   /* margin-left: 10px; */
   /* padding: 5px; */
   /* border-left: 2px solid red; */
+}
+
+.ActionMini--Conditional > .ActionMini__Content > .ActionMini__Children {
+  margin-left: 5px;
 }
 
 /* .ActionMini__Children .ActionMini__Children {
@@ -214,7 +219,7 @@
 .ActionMini__Form textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 0;
+  height: auto;
 }
 
 .ActionMini__FormRow {
