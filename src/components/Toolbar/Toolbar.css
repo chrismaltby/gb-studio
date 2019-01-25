@@ -1,4 +1,6 @@
 .Toolbar {
+  /* position: relative; */
+  /* z-index: 900; */
   height: 36px;
   /*background-color: #011526;*/
   /*background-color: var(--nav-bg-color);*/
@@ -11,6 +13,10 @@
   padding-right: 10px;
   user-select: none;
   -webkit-app-region: drag;
+}
+
+.full-screen .Toolbar {
+  padding-left: 10px;
 }
 
 .App--Blur .Toolbar {

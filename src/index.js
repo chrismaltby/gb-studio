@@ -20,7 +20,9 @@ const createSplash = async () => {
   splashWindow = new BrowserWindow({
     width: 700,
     height: 432,
-    resizable: false
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false
   });
 
   // and load the index.html of the app.
@@ -68,7 +70,9 @@ const createWindow = async projectPath => {
   mainWindowState.manage(mainWindow);
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(
+    `file://${__dirname}/index.html?path=${encodeURIComponent(projectPath)}`
+  );
 
   // Open the DevTools.
   if (isDevMode) {
@@ -84,6 +88,16 @@ const createWindow = async projectPath => {
   mainWindow.webContents.on("did-finish-load", function() {
     mainWindow.webContents.send("ping", "whoooooooh!");
     mainWindow.webContents.send("open-project", projectPath);
+  });
+
+  mainWindow.on("enter-full-screen", () => {
+    console.log("FULL SCREEN");
+    mainWindow.webContents.send("enter-full-screen");
+  });
+
+  mainWindow.on("leave-full-screen", () => {
+    console.log("EXIT FULL SCREEN");
+    mainWindow.webContents.send("leave-full-screen");
   });
 
   // Emitted when the window is closed.
@@ -121,11 +135,24 @@ ipcMain.on("open-project", async (event, arg) => {
   console.log(arg);
 
   // Validate folder
-  const projectPath = { arg };
+  const { projectPath } = arg;
 
   splashWindow.close();
 
+  console.log({ arg, projectPath });
+
   await createWindow(projectPath);
+});
+
+ipcMain.on("check-full-screen", async (event, arg) => {
+  console.log("CHECK FULLSCREEN");
+  if (mainWindow.isFullScreen()) {
+    console.log("CHECK FULLSCREEN 1");
+    mainWindow.webContents.send("enter-full-screen");
+  } else {
+    console.log("CHECK FULLSCREEN 2");
+    mainWindow.webContents.send("leave-full-screen");
+  }
 });
 
 // In this file you can include the rest of your app's specific main process

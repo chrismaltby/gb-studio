@@ -1,35 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <link rel="stylesheet" type="text/css" href="./App.css">
-</head>
-<body>
-  <div id="App"></div>
-</body>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" type="text/css" href="./App.css" />
+  </head>
+  <body>
+    <div id="App"></div>
+  </body>
 
-<script type="text/jsx">
+  <script type="text/jsx">
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {AppContainer} from 'react-hot-loader';
-import { Provider } from "react-redux";
-import * as actions from "./actions";
-import configureStore from "./store/configureStore";
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+    import {AppContainer} from 'react-hot-loader';
+    import { Provider } from "react-redux";
+    import * as actions from "./actions";
+    import configureStore from "./store/configureStore";
+    import { ipcRenderer } from "electron";
 
-const store = configureStore();
+    const store = configureStore();
 
-console.log(store)
+    console.log(store)
+    console.log(window.href)
 
-const render = () => {
-  const App = require('./app').default;
-  ReactDOM.render(<Provider store={store}><AppContainer><App /></AppContainer></Provider>, document.getElementById('App'));
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectPath = urlParams.get('path');
+    console.log(window.location.search);
+    console.log({projectPath})
 
-render();
-if (module.hot) {
-  module.hot.accept(render);
-}
+    ipcRenderer.on("enter-full-screen", () => {
+      document.body.className="full-screen";
+    })
 
-</script>
+    ipcRenderer.on("leave-full-screen", () => {
+      document.body.className="";
+    })
+
+    console.log("CHECK FULLSCREEN??")
+    ipcRenderer.send("check-full-screen", {})
+
+    const render = () => {
+      const App = require('./app').default;
+      ReactDOM.render(<Provider store={store}><AppContainer><App /></AppContainer></Provider>, document.getElementById('App'));
+    }
+
+    render();
+    if (module.hot) {
+      module.hot.accept(render);
+    }
+  </script>
 </html>
