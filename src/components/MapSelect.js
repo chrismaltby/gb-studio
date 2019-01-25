@@ -7,11 +7,11 @@ class MapSelect extends Component {
     return (
       <select {...rest}>
         <option>None</option>
-        {maps.map(map =>
+        {maps.map(map => (
           <option key={map.id} value={map.id}>
             {map.name}
           </option>
-        )}
+        ))}
       </select>
     );
   }
@@ -19,7 +19,7 @@ class MapSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    maps: state.world.maps || []
+    maps: (state.projects && state.projects.maps) || []
   };
 }
 

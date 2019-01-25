@@ -10,35 +10,30 @@ class WorldEditor extends Component {
       ? e.currentTarget.type === "number"
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.type === "checkbox"
-          ? e.currentTarget.checked
-          : e.currentTarget.value
+        ? e.currentTarget.checked
+        : e.currentTarget.value
       : e;
-    this.props.editWorld({
+    this.props.editProject({
       [key]: value
     });
   };
 
   render() {
-    const { world } = this.props;
+    const { project, settings } = this.props;
 
-    if (!world) {
+    if (!project) {
       return <div />;
     }
 
     return (
       <div className="WorldEditor">
-        <h2>Game</h2>
-
-        <label>
-          Game name
-          <input value={world.name} onChange={this.onEdit("name")} />
-        </label>
+        <h2>Settings</h2>
 
         <label>
           <input
             type="checkbox"
             className="Checkbox"
-            checked={world.showCollisions}
+            checked={settings.showCollisions}
             onChange={this.onEdit("showCollisions")}
           />
           Show Collisions
@@ -48,7 +43,7 @@ class WorldEditor extends Component {
           <input
             type="checkbox"
             className="Checkbox"
-            checked={world.showConnections}
+            checked={settings.showConnections}
             onChange={this.onEdit("showConnections")}
           />
           Show Connections
@@ -59,7 +54,7 @@ class WorldEditor extends Component {
         <label>
           <div className="Select">
             <MapSelect
-              value={world.startMapId}
+              value={project.startMapId}
               onChange={this.onEdit("startMapId")}
             />
           </div>
@@ -68,7 +63,7 @@ class WorldEditor extends Component {
           X
           <input
             type="number"
-            value={world.startX}
+            value={project.startX}
             min={1}
             onChange={this.onEdit("startX")}
           />
@@ -78,7 +73,7 @@ class WorldEditor extends Component {
           Y
           <input
             type="number"
-            value={world.startY}
+            value={project.startY}
             min={1}
             onChange={this.onEdit("startY")}
           />
@@ -86,7 +81,7 @@ class WorldEditor extends Component {
 
         <label>
           <DirectionPicker
-            value={world.startDirection}
+            value={project.startDirection}
             onChange={this.onEdit("startDirection")}
           />
         </label>
@@ -97,12 +92,16 @@ class WorldEditor extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    world: state.world
+    project: state.project,
+    settings: (state.project && state.project.settings) || {}
   };
 }
 
 const mapDispatchToProps = {
-  editWorld: actions.editWorld
+  editProject: actions.editProject
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(WorldEditor);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WorldEditor);

@@ -61,6 +61,10 @@
   margin-left: 5px;
 }
 
+.Toolbar__DropdownButton + .Toolbar__Button {
+  margin-left: 5px;
+}
+
 .Toolbar__Button:active {
   background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
 }
@@ -68,4 +72,13 @@
 .Toolbar__Button svg {
   width: 17px;
   height: 17px;
+}
+
+.Toolbar__Button .Toolbar__Button {
+  background: #ccc;
+  border-radius: 20px;
+  height: 16px;
+  min-width: 16px;
+  box-shadow: none;
+  border: 0;
 }

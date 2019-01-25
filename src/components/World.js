@@ -56,8 +56,7 @@ class World extends Component {
         <div className="World__Content">
           {maps.map(map => (
             <div>
-              MAP
-              {false && <Map key={map.id} id={map.id} map={map} />}
+              <Map key={map.id} id={map.id} map={map} />
             </div>
           ))}
           {showConnections && <Connections maps={maps} />}
@@ -81,7 +80,8 @@ function mapStateToProps(state) {
   return {
     tool: state.tools.selected,
     maps: state.project && state.project.scenes,
-    showConnections: state.project.showConnections
+    showConnections:
+      state.project.settings && state.project.settings.showConnections
   };
 }
 

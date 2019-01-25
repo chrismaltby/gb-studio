@@ -30,12 +30,12 @@ export default function world(state = initialState.world, action) {
     case ADD_MAP:
       return {
         ...state,
-        maps: [].concat(state.maps, {
+        scenes: [].concat(state.scenes, {
           id: uuid(),
           name: "New Map",
           image: null,
-          x: action.x,
-          y: action.y,
+          x: Math.max(50, action.x),
+          y: Math.max(10, action.y),
           width: 32,
           height: 32,
           actors: [],
@@ -46,21 +46,21 @@ export default function world(state = initialState.world, action) {
     case MOVE_MAP:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
           return {
             ...map,
-            x: map.x + action.moveX,
-            y: map.y + action.moveY
+            x: Math.max(50, map.x + action.moveX),
+            y: Math.max(10, map.y + action.moveY)
           };
         })
       };
     case EDIT_MAP:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -73,14 +73,14 @@ export default function world(state = initialState.world, action) {
     case REMOVE_MAP:
       return {
         ...state,
-        maps: state.maps.filter(map => {
+        scenes: state.scenes.filter(map => {
           return map.id !== action.mapId;
         })
       };
     case ADD_ACTOR:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -104,7 +104,7 @@ export default function world(state = initialState.world, action) {
     case MOVE_ACTOR:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -126,7 +126,7 @@ export default function world(state = initialState.world, action) {
     case EDIT_ACTOR:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -147,7 +147,7 @@ export default function world(state = initialState.world, action) {
     case REMOVE_ACTOR:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -162,7 +162,7 @@ export default function world(state = initialState.world, action) {
     case REMOVE_ACTOR_AT:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -178,9 +178,13 @@ export default function world(state = initialState.world, action) {
         })
       };
     case ADD_COLLISION_TILE: {
+      console.log("ADD_COLLISION_TILE", {
+        a: state
+      });
+
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -208,7 +212,7 @@ export default function world(state = initialState.world, action) {
     case REMOVE_COLLISION_TILE: {
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -236,7 +240,7 @@ export default function world(state = initialState.world, action) {
     case ADD_TRIGGER:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -258,7 +262,7 @@ export default function world(state = initialState.world, action) {
     case REMOVE_TRIGGER:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -273,7 +277,7 @@ export default function world(state = initialState.world, action) {
     case REMOVE_TRIGGER_AT: {
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -294,7 +298,7 @@ export default function world(state = initialState.world, action) {
     case RESIZE_TRIGGER:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -318,7 +322,7 @@ export default function world(state = initialState.world, action) {
     case EDIT_TRIGGER:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }
@@ -339,7 +343,7 @@ export default function world(state = initialState.world, action) {
     case MOVE_TRIGGER:
       return {
         ...state,
-        maps: state.maps.map(map => {
+        scenes: state.scenes.map(map => {
           if (map.id !== action.mapId) {
             return map;
           }

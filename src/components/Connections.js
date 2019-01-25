@@ -8,9 +8,9 @@ const scriptMapTransition = script => {
 
 export default ({ maps }) => {
   const width =
-    Math.max.apply(null, maps.map(map => 40 + map.x + map.width * 8)) + 100;
+    Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
   const height =
-    Math.max.apply(null, maps.map(map => 40 + map.y + map.height * 8)) + 100;
+    Math.max.apply(null, maps.map(map => 20 + map.y + map.height * 8)) + 100;
 
   return (
     <svg className="Connections" width={width} height={height}>
@@ -22,12 +22,12 @@ export default ({ maps }) => {
             if (!destMap) {
               return null;
             }
-            const x1 = 20 + map.x + (object.x + (object.width || 2) / 2) * 8;
-            const x2 = 20 + destMap.x + transition.args.x * 8 + 4;
+            const x1 = map.x + (object.x + (object.width || 2) / 2) * 8;
+            const x2 = destMap.x + transition.args.x * 8 + 4;
             const y1 = 20 + map.y + (object.y + (object.height || 1) / 2) * 8;
             const y2 = 20 + destMap.y + transition.args.y * 8 + 4;
-            const qx = x1 < x2 ? (x1 + x2) * 1 / 2.1 : (x1 + x2) * 1 / 1.9;
-            const qy = y1 < y2 ? (y1 + y2) * 1 / 2.1 : (y1 + y2) * 1 / 1.9;
+            const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
+            const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
             return (
               <path
                 key={map.id + "_" + index}

@@ -38,6 +38,9 @@ class AppToolbar extends Component {
             </MenuItem>
           ))}
         </ToolbarDropdownButton>
+        <ToolbarButton>
+          <ToolbarButton>-</ToolbarButton>100%
+        </ToolbarButton>
         <ToolbarSpacer />
         {name || "Untitled"}
         <ToolbarSpacer />

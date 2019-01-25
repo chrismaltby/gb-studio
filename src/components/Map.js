@@ -205,9 +205,13 @@ class Map extends Component {
 
     const { hover, hoverX, hoverY } = this.state;
 
+    const mapSelected = editor.type === "maps" && editor.map === id;
+
+    console.log("EDITOR", editor, id, map);
+
     return (
       <div
-        className="Map"
+        className={cx("Map", { "Map--Selected": mapSelected })}
         style={{
           top: y,
           left: x
@@ -228,14 +232,16 @@ class Map extends Component {
             height: height * 8,
             backgroundImage:
               image &&
-              `url("${process.env
-                .REACT_APP_API_ENDPOINT}/assets/${worldId}/images/${image}")`
+              'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
+            // `url("${
+            //   process.env.REACT_APP_API_ENDPOINT
+            // }/assets/${worldId}/images/${image}")`
           }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
           onMouseLeave={this.onMouseLeave}
         >
-          {triggers.map((trigger, index) =>
+          {triggers.map((trigger, index) => (
             <div
               key={index}
               className={cx("Map__Trigger", {
@@ -251,39 +257,41 @@ class Map extends Component {
                 height: trigger.height * 8
               }}
             />
-          )}
+          ))}
           {showCollisions &&
-            collisions.map(
-              (collision, index) =>
-                collision
-                  ? <div
-                      key={index}
-                      className="Map__Collision"
-                      style={{
-                        top: Math.floor(index / width) * 8,
-                        left: index % width * 8,
-                        width: 8,
-                        height: 8
-                      }}
-                    />
-                  : undefined
+            collisions.map((collision, index) =>
+              collision ? (
+                <div
+                  key={index}
+                  className="Map__Collision"
+                  style={{
+                    top: Math.floor(index / width) * 8,
+                    left: (index % width) * 8,
+                    width: 8,
+                    height: 8
+                  }}
+                />
+              ) : (
+                undefined
+              )
             )}
-          {actors.map((actor, index) =>
+          {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
-          )}
-          {tool === "actor" &&
-            hover &&
+          ))}
+          {tool === "actor" && hover && (
             <div className="Map__Ghost">
               <Actor x={hoverX} y={hoverY} />
-            </div>}
-          {hover &&
+            </div>
+          )}
+          {hover && (
             <div
               className="Map__Hover"
               style={{
                 top: hoverY * 8,
                 left: hoverX * 8
               }}
-            />}
+            />
+          )}
         </div>
       </div>
     );
@@ -291,7 +299,7 @@ class Map extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const image = state.world.images.find(
+  const image = state.project.images.find(
     image => image.id === props.map.imageId
   );
   return {
@@ -300,9 +308,10 @@ function mapStateToProps(state, props) {
     image: image && image.filename,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
-    worldId: state.world.id,
+    worldId: state.project.id,
     showCollisions:
-      state.world.showCollisions || state.tools.selected === "collisions"
+      (state.project.settings && state.project.settings.showCollisions) ||
+      state.tools.selected === "collisions"
   };
 }
 
@@ -324,4 +333,7 @@ const mapDispatchToProps = {
   setStatus: actions.setStatus
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Map);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Map);

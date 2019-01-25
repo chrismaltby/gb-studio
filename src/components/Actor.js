@@ -30,9 +30,9 @@ class Actor extends Component {
   }
 
   imageSrc = props => {
-    return `${process.env
-      .REACT_APP_API_ENDPOINT}/assets/${props.worldId}/spriteSheets/${props.spriteSheet &&
-      props.spriteSheet.filename}`;
+    return `${process.env.REACT_APP_API_ENDPOINT}/assets/${
+      props.projectId
+    }/spriteSheets/${props.spriteSheet && props.spriteSheet.filename}`;
   };
 
   loadImage = props => {
@@ -58,14 +58,18 @@ class Actor extends Component {
       const directionOffset =
         direction === "up"
           ? 1
-          : direction === "left" || direction === "right" ? 2 : 0;
+          : direction === "left" || direction === "right"
+          ? 2
+          : 0;
 
       const spriteOffset =
         spriteSheet.type === "static"
           ? 0
           : spriteSheet.type === "actor"
-            ? directionOffset
-            : spriteSheet.type === "actor_animated" ? directionOffset * 2 : 0;
+          ? directionOffset
+          : spriteSheet.type === "actor_animated"
+          ? directionOffset * 2
+          : 0;
 
       tmpCanvas.width = tmpCanvas.height = 16;
       if (direction === "left" && spriteSheet.type !== "static") {
@@ -109,12 +113,12 @@ class Actor extends Component {
 function mapStateToProps(state, props) {
   const spriteSheet =
     props.actor &&
-    state.world.spriteSheets.find(
+    state.project.spriteSheets.find(
       spriteSheet => spriteSheet.id === props.actor.spriteSheetId
     );
   return {
     spriteSheet,
-    worldId: state.world.id
+    projectId: state.project.id
   };
 }
 

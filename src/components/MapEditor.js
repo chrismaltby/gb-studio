@@ -23,6 +23,8 @@ class MapEditor extends Component {
   render() {
     const { map } = this.props;
 
+    console.log("MAP", map);
+
     if (!map) {
       return <div />;
     }
@@ -56,13 +58,18 @@ class MapEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
+  console.log({
+    mapId: props.id,
+    maps: state.project.maps,
+    project: state.project
+  });
   return {
     modified: state.modified,
     editor: state.editor,
     map:
-      state.world &&
-      state.world.maps &&
-      state.world.maps.find(map => map.id === props.id)
+      state.project &&
+      state.project.scenes &&
+      state.project.scenes.find(map => map.id === props.id)
   };
 }
 
@@ -71,4 +78,7 @@ const mapDispatchToProps = {
   removeMap: actions.removeMap
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapEditor);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MapEditor);

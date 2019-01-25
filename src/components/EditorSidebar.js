@@ -10,21 +10,15 @@ class EditorSidebar extends Component {
   render() {
     const { editor } = this.props;
     const editorForm =
-      editor.type === "triggers"
-        ? <TriggerEditor
-            key={editor.index}
-            id={editor.index}
-            map={editor.map}
-          />
-        : editor.type === "actors"
-          ? <ActorEditor
-              key={editor.index}
-              id={editor.index}
-              map={editor.map}
-            />
-          : editor.type === "maps"
-            ? <MapEditor key={editor.map} id={editor.map} />
-            : editor.type === "world" ? <WorldEditor /> : null;
+      editor.type === "triggers" ? (
+        <TriggerEditor key={editor.index} id={editor.index} map={editor.map} />
+      ) : editor.type === "actors" ? (
+        <ActorEditor key={editor.index} id={editor.index} map={editor.map} />
+      ) : editor.type === "maps" ? (
+        <MapEditor key={editor.map} id={editor.map} />
+      ) : editor.type === "world" ? (
+        <WorldEditor />
+      ) : null;
     return (
       <div
         className={cx("EditorSidebar", {
@@ -45,4 +39,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditorSidebar);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditorSidebar);

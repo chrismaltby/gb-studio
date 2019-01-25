@@ -1,14 +1,14 @@
 .Map {
   position: absolute;
-  padding: 20px;
-  border-radius: 16px;
+  padding-top: 20px;
+  /* border-radius: 16px; */
   user-select: none;
   text-align: center;
 }
 
-.Map:hover {
+/* .Map:hover {
   background-color: #011020;
-}
+} */
 
 .Map__Name {
   position: absolute;
@@ -16,7 +16,7 @@
   left: 0px;
   right: 0px;
   line-height: 20px;
-  color: #fff;
+  color: #ccc;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1.4px;
@@ -27,6 +27,12 @@
   background-color: #fff;
   background-repeat: no-repeat;
   overflow: hidden;
+  /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #fff;
+}
+
+.Map--Selected .Map__Image {
+  outline: 2px solid #03a9f4;
 }
 
 .Map__Hover {

@@ -1,9 +1,12 @@
 .StatusBar {
   position: fixed;
-  bottom: 10px;
-  left: 10px;
-  background-color: #011526;
-  color: #fff;
-  border-radius: 4px;
+  bottom: 0px;
+  left: 0px;
+  /* background-color: #011526; */
+  /* color: #fff; */
+  background-color: var(--sidebar-bg-color);
+  border-top: 1px solid #d0d0d0;
+  border-right: 1px solid #d0d0d0;
+  border-top-right-radius: 4px;
   padding: 4px 10px;
 }

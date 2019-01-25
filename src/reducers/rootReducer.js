@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   tools,
   modified,
   editor,
-  world,
+  // world,
   project,
   navigation
 });
