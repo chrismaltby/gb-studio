@@ -1,4 +1,17 @@
 import * as types from "./actionTypes";
+import loadProjectData from "../lib/loadProjectData";
+
+export const loadProject = path => async dispatch => {
+  console.log("LOAD PROJECT REQUEST", path);
+  dispatch({ type: types.PROJECT_LOAD_REQUEST });
+  try {
+    const data = await loadProjectData(path);
+    dispatch({ type: types.PROJECT_LOAD_SUCCESS, data });
+  } catch (e) {
+    console.log(e);
+    dispatch({ type: types.PROJECT_LOAD_FAILURE });
+  }
+};
 
 export const loadWorld = id => async dispatch => {
   dispatch({ type: types.WORLD_LOAD_REQUEST });
@@ -145,4 +158,8 @@ export const selectWorld = () => {
 
 export const editWorld = values => {
   return { type: types.EDIT_WORLD, values };
+};
+
+export const editProject = values => {
+  return { type: types.EDIT_PROJECT, values };
 };

@@ -28,10 +28,11 @@ export class ToolbarDropdownButton extends Component {
     return (
       <div className="Toolbar__DropdownButton" {...props}>
         <ToolbarButton onClick={this.toggleOpen}>
-          {title} <small>▼</small>
+          <div>{title}</div>
+          <small>▼</small>
         </ToolbarButton>
         {open && <MenuOverlay onClick={this.toggleOpen} />}
-        {open && <Menu>{children}</Menu>}
+        {open && <Menu onClick={this.toggleOpen}>{children}</Menu>}
       </div>
     );
   }

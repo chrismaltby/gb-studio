@@ -19,7 +19,7 @@
     import { Provider } from "react-redux";
     import * as actions from "./actions";
     import configureStore from "./store/configureStore";
-    import { ipcRenderer } from "electron";
+    import "./lib/handleFullScreen";
 
     const store = configureStore();
 
@@ -28,19 +28,8 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const projectPath = urlParams.get('path');
-    console.log(window.location.search);
-    console.log({projectPath})
 
-    ipcRenderer.on("enter-full-screen", () => {
-      document.body.className="full-screen";
-    })
-
-    ipcRenderer.on("leave-full-screen", () => {
-      document.body.className="";
-    })
-
-    console.log("CHECK FULLSCREEN??")
-    ipcRenderer.send("check-full-screen", {})
+    store.dispatch(actions.loadProject(projectPath));
 
     const render = () => {
       const App = require('./app').default;

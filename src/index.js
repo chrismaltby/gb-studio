@@ -8,8 +8,8 @@ import windowStateKeeper from "electron-window-state";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
-let splashWindow;
+let mainWindow = null;
+let splashWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -74,6 +74,9 @@ const createWindow = async projectPath => {
     `file://${__dirname}/index.html?path=${encodeURIComponent(projectPath)}`
   );
 
+  mainWindow.setRepresentedFilename(projectPath + "/project.json");
+  mainWindow.setDocumentEdited(true);
+
   // Open the DevTools.
   if (isDevMode) {
     console.log("IS DEV MODE");
@@ -112,7 +115,10 @@ const createWindow = async projectPath => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createSplash);
+app.on("ready", () => {
+  // createSplash()
+  createWindow("/Users/cmaltby/Projects/Untitled GB Game");
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {

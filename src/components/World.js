@@ -35,6 +35,8 @@ class World extends Component {
     const { maps, tool, showConnections } = this.props;
     const { hover, hoverX, hoverY } = this.state;
 
+    console.log({ maps });
+
     if (!maps) {
       return <div />;
     }
@@ -52,10 +54,14 @@ class World extends Component {
           onClick={() => this.props.selectWorld()}
         />
         <div className="World__Content">
-          {maps.map(map => <Map key={map.id} id={map.id} map={map} />)}
+          {maps.map(map => (
+            <div>
+              MAP
+              {false && <Map key={map.id} id={map.id} map={map} />}
+            </div>
+          ))}
           {showConnections && <Connections maps={maps} />}
-          {tool === "map" &&
-            hover &&
+          {tool === "map" && hover && (
             <div
               className="World__NewMap"
               onClick={this.onAddMap}
@@ -63,7 +69,8 @@ class World extends Component {
                 left: hoverX,
                 top: hoverY
               }}
-            />}
+            />
+          )}
         </div>
       </div>
     );
@@ -73,8 +80,8 @@ class World extends Component {
 function mapStateToProps(state) {
   return {
     tool: state.tools.selected,
-    maps: state.world && state.world.maps,
-    showConnections: state.world.showConnections
+    maps: state.project && state.project.scenes,
+    showConnections: state.project.showConnections
   };
 }
 
@@ -84,4 +91,7 @@ const mapDispatchToProps = {
   selectWorld: actions.selectWorld
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(World);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(World);

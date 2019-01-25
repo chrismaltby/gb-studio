@@ -9,6 +9,7 @@ import StatusBar from "./components/StatusBar";
 import EditorSidebar from "./components/EditorSidebar";
 import ImagesSection from "./components/ImagesSection";
 import SpritesSection from "./components/SpritesSection";
+import OverviewPage from "./containers/pages/OverviewPage";
 
 class App extends Component {
   constructor() {
@@ -38,16 +39,17 @@ class App extends Component {
     return (
       <div className={cx("App", { "App--Blur": blur })}>
         <AppToolbar />
-        {section === "editor" && (
-          <div className="App__Content">
+        <div className="App__Content">
+          {section === "overview" && <OverviewPage />}
+          {section === "world" && (
             <div className="WorldEditor">
               <World />
               <ToolsSidebar />
               <EditorSidebar />
               <StatusBar />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
 

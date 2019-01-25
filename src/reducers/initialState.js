@@ -2,6 +2,7 @@ export default {
   tools: {
     selected: "select"
   },
+  project: {},
   world: {},
   editor: {
     type: "world",
@@ -9,7 +10,7 @@ export default {
     index: 0
   },
   navigation: {
-    section: "editor",
+    section: "world",
     status: {}
   }
 };
