@@ -36,9 +36,8 @@ export default ({ maps, zoomRatio }) => {
             const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
             const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
             return (
-              <g>
+              <g key={map.id + "_" + index}>
                 <path
-                  key={map.id + "_" + index}
                   d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
                   e="M10 80 Q 95 10 180 80"
                   stroke="#00bcd4"

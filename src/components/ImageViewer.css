@@ -1,10 +1,10 @@
 .ImageViewer {
   position: fixed;
-  left: 300px;
-  right: 0px;
+  right: 300px;
+  left: 0px;
   top: 36px;
   bottom: 0px;
-  background-color: #00060d;
+  /* background-color: #00060d; */
   overflow: auto;
 }
 
@@ -21,8 +21,10 @@
   /*  width: 256px;
   height: 256px;*/
   background-color: #fff;
+  transition: 0.3s transform ease-in-out;
 }
 
 .ImageViewer__Image img {
   display: block;
+  image-rendering: pixelated;
 }

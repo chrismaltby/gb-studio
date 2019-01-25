@@ -3,18 +3,18 @@ import { connect } from "react-redux";
 
 class ImageViewer extends Component {
   render() {
-    const { section, worldId, image } = this.props;
+    const { projectPath, image, folder, zoomRatio } = this.props;
     return (
       <div className="ImageViewer">
         <div className="ImageViewer__Content">
-          {image &&
-            <div className="ImageViewer__Image">
-              <img
-                alt=""
-                src={`${process.env
-                  .REACT_APP_API_ENDPOINT}/assets/${worldId}/${section}/${image}`}
-              />
-            </div>}
+          {image && (
+            <div
+              className="ImageViewer__Image"
+              style={{ transform: `scale(${zoomRatio})` }}
+            >
+              <img alt="" src={`${projectPath}/assets/${folder}/${image}`} />
+            </div>
+          )}
         </div>
       </div>
     );
@@ -24,12 +24,21 @@ class ImageViewer extends Component {
 function mapStateToProps(state) {
   const { id, section } = state.navigation;
   const files =
-    section === "images" ? state.world.images : state.world.spriteSheets;
+    section === "backgrounds"
+      ? state.project.images
+      : state.project.spriteSheets;
+  const folder = section === "backgrounds" ? "backgrounds" : "sprites";
   const image = files.find(file => file.id === id);
   return {
-    section,
-    worldId: state.world.id,
-    image: image && image.filename
+    projectPath: state.document && state.document.path,
+    projectId: state.project.id,
+    image: image && image.filename,
+    folder,
+    zoomRatio:
+      ((state.project &&
+        state.project.settings &&
+        state.project.settings.zoom) ||
+        100) / 100
   };
 }
 

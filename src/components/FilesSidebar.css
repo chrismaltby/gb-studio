@@ -1,10 +1,11 @@
 .FilesSidebar {
   position: fixed;
   width: 300px;
-  left: 0px;
+  right: 0px;
   top: 36px;
   bottom: 0px;
-  background-color: #011526;
+  background-color: var(--sidebar-bg-color);
+  border-left: 1px solid #d0d0d0;
   overflow: auto;
   box-sizing: border-box;
 }
@@ -43,16 +44,17 @@
 
 .FilesSidebar__ListItem {
   padding: 5px 10px;
-  color: #fff;
+  /* color: #fff; */
 }
 
 .FilesSidebar__ListItem:hover {
-  background-color: #0a1f38;
+  /* background-color: #0a1f38; */
   cursor: pointer;
 }
 
 .FilesSidebar__ListItem--Active:hover,
 .FilesSidebar__ListItem--Active {
-  background-color: #033663;
+  /* background-color: #033663; */
+  background-color: #e8e7e8;
   cursor: pointer;
 }

@@ -8,8 +8,8 @@ class ImagesSection extends Component {
     const { images } = this.props;
     return (
       <div>
-        <FilesSidebar files={images} />
         <ImageViewer />
+        <FilesSidebar files={images} />
       </div>
     );
   }
@@ -17,7 +17,7 @@ class ImagesSection extends Component {
 
 function mapStateToProps(state) {
   return {
-    images: state.world && state.world.images ? state.world.images : []
+    images: state.project && state.project.images ? state.project.images : []
   };
 }
 

@@ -49,6 +49,8 @@ class App extends Component {
               <StatusBar />
             </div>
           )}
+          {section === "backgrounds" && <ImagesSection />}
+          {section === "sprites" && <SpritesSection />}
         </div>
       </div>
     );

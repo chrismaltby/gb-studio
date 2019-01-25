@@ -234,7 +234,7 @@ class Map extends Component {
             backgroundImage:
               image &&
               // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
-              `url("${projectPath}/assets/maps/${image}")`
+              `url("${projectPath}/assets/backgrounds/${image}")`
           }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
@@ -258,32 +258,30 @@ class Map extends Component {
             />
           ))}
           {showCollisions &&
-            collisions.map(
-              (collision, index) =>
-                collision ? (
-                  <div
-                    key={index}
-                    className="Map__Collision"
-                    style={{
-                      top: Math.floor(index / width) * 8,
-                      left: (index % width) * 8,
-                      width: 8,
-                      height: 8
-                    }}
-                  />
-                ) : (
-                  undefined
-                )
+            collisions.map((collision, index) =>
+              collision ? (
+                <div
+                  key={index}
+                  className="Map__Collision"
+                  style={{
+                    top: Math.floor(index / width) * 8,
+                    left: (index % width) * 8,
+                    width: 8,
+                    height: 8
+                  }}
+                />
+              ) : (
+                undefined
+              )
             )}
           {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
           ))}
-          {tool === "actor" &&
-            hover && (
-              <div className="Map__Ghost">
-                <Actor x={hoverX} y={hoverY} />
-              </div>
-            )}
+          {tool === "actor" && hover && (
+            <div className="Map__Ghost">
+              <Actor x={hoverX} y={hoverY} />
+            </div>
+          )}
           {hover && (
             <div
               className="Map__Hover"
