@@ -8,9 +8,10 @@
 }
 
 .World__Grid {
-  /*  min-width: 100%;
-  min-height: 100%;*/
-  transition: 0.3s width ease-in-out, 0.3s height ease-in-out;
+  /* min-width: 100%;
+  min-height: 100%; */
+  /* transition: 0.3s width ease-in-out, 0.3s height ease-in-out; */
+  position: absolute;
 }
 
 .World__Content {

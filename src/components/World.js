@@ -24,12 +24,12 @@ class World extends Component {
   onMouseMove = e => {
     const { zoomRatio } = this.props;
     const boundingRect = e.currentTarget.getBoundingClientRect();
-    const x = e.pageX + e.currentTarget.scrollLeft - 128;
-    const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 128;
+    const x = e.pageX + e.currentTarget.scrollLeft - 0;
+    const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
     this.setState({
       hover: true,
-      hoverX: x / zoomRatio,
-      hoverY: y / zoomRatio
+      hoverX: x / zoomRatio - 128,
+      hoverY: y / zoomRatio - 128
     });
   };
 
@@ -68,10 +68,18 @@ class World extends Component {
       return <div />;
     }
 
-    const width =
-      Math.max.apply(null, maps.map(map => 40 + map.x + map.width * 8)) + 400;
-    const height =
-      Math.max.apply(null, maps.map(map => 40 + map.y + map.height * 8)) + 100;
+    // const mapsWidth =
+    //   zoomRatio * Math.max.apply(null, maps.map(map => map.x + map.width * 8));
+    // const mapsHeight =
+    //   Math.max.apply(null, maps.map(map => 40 + map.y + map.height * 8)) + 100;
+
+    const mapsWidth =
+      Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
+    const mapsHeight =
+      Math.max.apply(null, maps.map(map => 20 + map.y + map.height * 8)) + 100;
+
+    const width = Math.max((window.innerWidth - 300) / zoomRatio, mapsWidth);
+    const height = Math.max((window.innerHeight - 35) / zoomRatio, mapsHeight);
 
     return (
       <div
@@ -83,6 +91,11 @@ class World extends Component {
           className="World__Content"
           style={{ transform: `scale(${zoomRatio})` }}
         >
+          <div
+            className="World__Grid"
+            style={{ width, height }}
+            onClick={this.props.selectWorld}
+          />
           {maps.map(map => (
             <div key={map.id}>
               <Map id={map.id} map={map} />

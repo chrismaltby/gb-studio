@@ -41,17 +41,19 @@ class FilesSidebar extends Component {
             <PlusIcon />
           </Button>
         </div>
-        {filesList.map(file =>
+        {filesList.map((file, index) => (
           <div
             key={file.id}
             onClick={() => setNavigationId(file.id)}
             className={cx("FilesSidebar__ListItem", {
-              "FilesSidebar__ListItem--Active": file.id === id
+              "FilesSidebar__ListItem--Active": id
+                ? file.id === id
+                : index === 0
             })}
           >
             {file.name}
           </div>
-        )}
+        ))}
       </div>
     );
   }
@@ -67,4 +69,7 @@ const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(FilesSidebar);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FilesSidebar);

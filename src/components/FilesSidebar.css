@@ -21,8 +21,7 @@
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
-  background-color: #01060d;
-  color: #fff;
+  background-color: #fff;
   resize: none;
 }
 
@@ -34,7 +33,7 @@
 .FilesSidebar__Search svg {
   width: 10px;
   height: 10px;
-  fill: #fff;
+  fill: var(--main-text-color);
 }
 
 .FilesSidebar input:focus {

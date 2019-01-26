@@ -28,7 +28,7 @@ function mapStateToProps(state) {
       ? state.project.images
       : state.project.spriteSheets;
   const folder = section === "backgrounds" ? "backgrounds" : "sprites";
-  const image = files.find(file => file.id === id);
+  const image = files.find(file => file.id === id) || files[0];
   return {
     projectPath: state.document && state.document.path,
     projectId: state.project.id,
