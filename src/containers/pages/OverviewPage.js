@@ -16,7 +16,8 @@ class OverviewPage extends Component {
           height: "100%",
           //   background: "purple",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          overflowX: "hidden"
         }}
       >
         <div style={{ padding: 40 }}>

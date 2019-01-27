@@ -10,6 +10,7 @@ import EditorSidebar from "./components/EditorSidebar";
 import ImagesSection from "./components/ImagesSection";
 import SpritesSection from "./components/SpritesSection";
 import OverviewPage from "./containers/pages/OverviewPage";
+import ScriptPage from "./containers/pages/ScriptPage";
 
 class App extends Component {
   constructor() {
@@ -51,6 +52,7 @@ class App extends Component {
           )}
           {section === "backgrounds" && <ImagesSection />}
           {section === "sprites" && <SpritesSection />}
+          {section === "script" && <ScriptPage />}
         </div>
       </div>
     );

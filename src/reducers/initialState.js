@@ -20,7 +20,7 @@ export default {
     index: 0
   },
   navigation: {
-    section: "world",
+    section: "script",
     status: {}
   }
 };

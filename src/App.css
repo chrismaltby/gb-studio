@@ -17,6 +17,8 @@
 @import url("./components/World.css");
 @import url("./components/Toolbar/ToolbarButton.css");
 @import url("./components/Toolbar/Toolbar.css");
+@import url("./components/library/Forms.css");
+@import url("./components/library/PageHeader.css");
 
 html,
 body {

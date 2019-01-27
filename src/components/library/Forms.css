@@ -1,0 +1,29 @@
+.Textarea {
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #d4d4d4;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: monospace;
+}
+
+.Textarea--Small {
+}
+
+.Textarea--Large {
+  padding: 20px;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.Textarea--Borderless {
+  padding: 0px;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.Textarea--FixedSize {
+  resize: none;
+}
