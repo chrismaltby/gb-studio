@@ -30,3 +30,7 @@
 .Button:active {
   background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
 }
+
+.ButtonToolbar__Spacer {
+  flex: 1;
+}

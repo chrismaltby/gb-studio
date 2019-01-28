@@ -1,5 +1,6 @@
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/loadProjectData";
+import runCmd from "../lib/runCmd";
 
 export const loadProject = path => async dispatch => {
   console.log("LOAD PROJECT REQUEST", path);
@@ -174,4 +175,40 @@ export const zoomOut = () => {
 
 export const zoomReset = () => {
   return { type: types.ZOOM_RESET };
+};
+
+export const consoleClear = () => {
+  return { type: types.CMD_CLEAR };
+};
+
+export const runBuild = () => async (dispatch, getState) => {
+  dispatch({ type: types.CMD_START });
+  dispatch({ type: types.SET_SECTION, section: "build" });
+
+  const state = getState();
+  const projectPath = state.document && state.document.path;
+
+  let env = Object.create(process.env);
+  env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
+  //             "/opt/emsdk/emscripten/1.38.6/:/Users/cmaltby/bin:/Users/cmaltby/Library/Python/3.6/bin:/opt/gbdk/bin:/usr/local/opt/go/libexec/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/puppetlabs/pdk/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki"
+
+  if (projectPath) {
+    runCmd(
+      "/usr/bin/make",
+      ["web"],
+      {
+        cwd: "/Users/cmaltby/Sites/test/gbdkjs-example-jrpg2",
+        env
+      },
+      out => {
+        if (out.type === "out") {
+          dispatch({ type: types.CMD_STD_OUT, text: out.text });
+        } else if (out.type === "err") {
+          dispatch({ type: types.CMD_STD_ERR, text: out.text });
+        } else {
+          dispatch({ type: types.CMD_STD_OUT, text: out.text });
+        }
+      }
+    );
+  }
 };

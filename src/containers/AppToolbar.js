@@ -51,6 +51,10 @@ class AppToolbar extends Component {
     this.props.zoomReset();
   };
 
+  onRun = e => {
+    this.props.runBuild();
+  };
+
   openProjectFolder = e => {
     shell.openItem(this.props.projectPath);
   };
@@ -89,7 +93,7 @@ class AppToolbar extends Component {
           <DownloadIcon />
         </ToolbarButton>
         <ToolbarFixedSpacer />
-        <ToolbarButton>
+        <ToolbarButton onClick={this.onRun}>
           <PlayIcon />
         </ToolbarButton>
       </Toolbar>
@@ -112,7 +116,8 @@ const mapDispatchToProps = {
   setSection: actions.setSection,
   zoomIn: actions.zoomIn,
   zoomOut: actions.zoomOut,
-  zoomReset: actions.zoomReset
+  zoomReset: actions.zoomReset,
+  runBuild: actions.runBuild
 };
 
 export default connect(

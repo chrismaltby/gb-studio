@@ -22,12 +22,18 @@ export default function console(state = initialState.console, action) {
     case CMD_STD_OUT:
       return {
         ...state,
-        output: [].concat(state.output, { type: "out", text: action.text })
+        output: [].concat(state.output.slice(-100), {
+          type: "out",
+          text: action.text
+        })
       };
     case CMD_STD_ERR:
       return {
         ...state,
-        output: [].concat(state.output, { type: "err", text: action.text })
+        output: [].concat(state.output.slice(-100), {
+          type: "err",
+          text: action.text
+        })
       };
     case CMD_COMPLETE:
       return {
