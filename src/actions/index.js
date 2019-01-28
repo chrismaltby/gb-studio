@@ -1,6 +1,8 @@
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/loadProjectData";
 import runCmd from "../lib/runCmd";
+import compileProject from "../lib/compile/compile";
+import fs from "fs-extra";
 
 export const loadProject = path => async dispatch => {
   console.log("LOAD PROJECT REQUEST", path);
@@ -187,11 +189,21 @@ export const runBuild = buildType => async (dispatch, getState) => {
 
   const state = getState();
   const projectPath = state.document && state.document.path;
+  const buildPath = "/private/tmp/build";
+  const gbSrcPath = `${__dirname}/../data/src/gb/`;
+
+  await compileProject(projectPath, "/private/tmp/build");
+
+  await fs.unlink(gbSrcPath + "/include/banks.h");
+  await fs.unlink(gbSrcPath + "/src/data");
+  await fs.ensureSymlink(
+    buildPath + "/banks.h",
+    gbSrcPath + "/include/banks.h"
+  );
+  await fs.ensureSymlink(buildPath, gbSrcPath + "/src/data");
 
   let env = Object.create(process.env);
   env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
-
-  const cwd = `${__dirname}/../data/src/gb/`;
 
   if (projectPath) {
     return new Promise((resolve, reject) =>
@@ -199,7 +211,7 @@ export const runBuild = buildType => async (dispatch, getState) => {
         "/usr/bin/make",
         [buildType],
         {
-          cwd,
+          cwd: gbSrcPath,
           env
         },
         out => {

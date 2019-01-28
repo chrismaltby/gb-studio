@@ -29,11 +29,11 @@ class BuildPage extends Component {
 
   onRun = async e => {
     try {
+      console.log(
+        "PATH",
+        `file://${__dirname}/../../data/src/gb/build/web/index.html`
+      );
       await this.props.runBuild("web");
-      alert("READY");
-    } catch (e) {
-      alert("FAIL");
-
       let previewWindow = new BrowserWindow({
         width: 480,
         height: 454,
@@ -44,8 +44,12 @@ class BuildPage extends Component {
 
       // and load the index.html of the app.
       previewWindow.loadURL(
-        `file://${__dirname}/../../data/build/web/index.html`
+        `file://${__dirname}/../../data/src/gb/build/web/index.html`
+        // `file://${__dirname}/../../data/build/web/index.html`
       );
+    } catch (e) {
+      console.error("FAIL");
+      console.error(e);
     }
   };
 
