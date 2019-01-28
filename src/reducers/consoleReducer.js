@@ -17,7 +17,8 @@ export default function console(state = initialState.console, action) {
     case CMD_START:
       return {
         ...state,
-        status: "running"
+        status: "running",
+        output: []
       };
     case CMD_STD_OUT:
       return {

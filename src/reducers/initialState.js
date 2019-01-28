@@ -24,20 +24,7 @@ export default {
     status: {}
   },
   console: {
-    status: "running",
-    output: [
-      {
-        type: "out",
-        text: "Building xyz"
-      },
-      {
-        type: "out",
-        text: "..."
-      },
-      {
-        type: "err",
-        text: "Failed"
-      }
-    ]
+    status: "idle",
+    output: []
   }
 };

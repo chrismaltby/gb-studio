@@ -119,7 +119,7 @@ const createWindow = async projectPath => {
 app.on("ready", () => {
   // createSplash()
   createWindow(
-    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
   );
 });
 
@@ -154,12 +154,9 @@ ipcMain.on("open-project", async (event, arg) => {
 });
 
 ipcMain.on("check-full-screen", async (event, arg) => {
-  console.log("CHECK FULLSCREEN");
   if (mainWindow.isFullScreen()) {
-    console.log("CHECK FULLSCREEN 1");
     mainWindow.webContents.send("enter-full-screen");
   } else {
-    console.log("CHECK FULLSCREEN 2");
     mainWindow.webContents.send("leave-full-screen");
   }
 });

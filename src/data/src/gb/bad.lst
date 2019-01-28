@@ -1,0 +1,7206 @@
+ ;--------------------------------------------------------
+ ; File Created by SDCC : FreeWare ANSI-C Compiler
+ ; Version 2.3.1 Wed Sep 12 21:58:11 2018
+ 
+ ;--------------------------------------------------------
+ 	.module lcc983290
+ 	
+ ;--------------------------------------------------------
+ ; Public variables in this module
+ ;--------------------------------------------------------
+ 	.globl _BattleUpdate_b
+ 	.globl _LoadBattle_b
+ 	.globl _test_counter
+ 	.globl _rerender_menu
+ 	.globl _battle_order
+ 	.globl _player_ptr
+ 	.globl _menu_ptr
+ 	.globl _screen_quake
+ 	.globl _ui_quake
+ 	.globl _enemy_party_size
+ 	.globl _joy_auto_speed
+ 	.globl _joy_auto
+ 	.globl _cursor_max
+ 	.globl _cursor_index
+ 	.globl _player_index
+ 	.globl _battle_actor_cursor
+ 	.globl _battle_actors
+ 	.globl _battle_turn_state
+ 	.globl _battle_state
+ 	.globl _battle_bank
+ 	.globl _BattleRender
+ 	.globl _ubyte_len
+ 	.globl _LPad
+ 	.globl _InventoryMax
+ 	.globl _SubClamp
+ 	.globl _AddClamp
+ 	.globl _NextAliveTarget
+ 	.globl _FirstAlivePlayer
+ 	.globl _NextAlivePlayerAfter
+ 	.globl _PreviousAlivePlayerBefore
+ 	.globl _NextAliveTargetAfter
+ 	.globl _PreviousAliveTargetBefore
+ 	.globl _PerformNextAction
+ 	.globl _UpdateEnemyActions
+ 	.globl _UpdateBattleOrder
+ 	.globl _DrawBattleMenu
+ 	.globl _BattleHandleInput
+ ;--------------------------------------------------------
+ ; special function registers
+ ;--------------------------------------------------------
+ ;--------------------------------------------------------
+ ; special function bits 
+ ;--------------------------------------------------------
+ ;--------------------------------------------------------
+ ; internal ram data
+ ;--------------------------------------------------------
+ 	.area _DATA
+ _battle_bank::
+ 	.ds 1
+ _battle_state::
+ 	.ds 1
+ _battle_turn_state::
+ 	.ds 1
+ _battle_actors::
+ 	.ds 210
+ _battle_actor_cursor::
+ 	.ds 1
+ _player_index::
+ 	.ds 1
+ _cursor_index::
+ 	.ds 1
+ _cursor_max::
+ 	.ds 1
+ _joy_auto::
+ 	.ds 1
+ _joy_auto_speed::
+ 	.ds 1
+ _enemy_party_size::
+ 	.ds 1
+ _ui_quake::
+ 	.ds 1
+ _screen_quake::
+ 	.ds 1
+ _menu_ptr::
+ 	.ds 2
+ _player_ptr::
+ 	.ds 2
+ _battle_order::
+ 	.ds 6
+ _rerender_menu::
+ 	.ds 1
+ _test_counter::
+ 	.ds 1
+ ;--------------------------------------------------------
+ ; overlayable items in internal ram 
+ ;--------------------------------------------------------
+ 	.area _OVERLAY
+ ;--------------------------------------------------------
+ ; indirectly addressable internal ram data
+ ;--------------------------------------------------------
+ 	.area _ISEG
+ ;--------------------------------------------------------
+ ; bit data
+ ;--------------------------------------------------------
+ 	.area _BSEG
+ ;--------------------------------------------------------
+ ; external ram data
+ ;--------------------------------------------------------
+ 	.area _XSEG
+ ;--------------------------------------------------------
+ ; global & static initialisations
+ ;--------------------------------------------------------
+ 	.area _GSINIT
+ 	.area _GSFINAL
+ 	.area _GSINIT
+ ;	src/Battle_b.c 13
+ ;	genAssign
+ ;	AOP_HL for _battle_bank
+ 	ld	hl,#_battle_bank
+ 	ld	(hl),#0x09
+ ;	src/Battle_b.c 24
+ ;	genAssign
+ ;	AOP_HL for _enemy_party_size
+ 	ld	hl,#_enemy_party_size
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 29
+ ;	src/Battle_b.c 906
+ ;	genArrayInit
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_battle_order
+ 	call	__initrleblock
+ 	.db	6
+ 	.db	0x00, 0x01, 0x02, 0x03, 0x04, 0x05
+ 	.db	0
+ ;	src/Battle_b.c 31
+ ;	genAssign
+ ;	AOP_HL for _rerender_menu
+ 	ld	hl,#_rerender_menu
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 32
+ ;	genAssign
+ ;	AOP_HL for _test_counter
+ 	ld	hl,#_test_counter
+ 	ld	(hl),#0x00
+ ;--------------------------------------------------------
+ ; Home
+ ;--------------------------------------------------------
+ 	.area _HOME
+ 	.area _CODE
+ ;--------------------------------------------------------
+ ; code
+ ;--------------------------------------------------------
+ 	.area _CODE_9
+ ;	src/Battle_b.c 52
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function LoadBattle_b
+ ; ---------------------------------
+ ___LoadBattle_b_start:
+ _LoadBattle_b:
+ 	lda	sp,-15(sp)
+ ;	src/Battle_b.c 56
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_display_off
+ ;	src/Battle_b.c 58
+ ;	genAssign
+ 	ld	bc,#0xFF4B
+ ;	genAssign (pointer)
+ 	ld	a,#0x07
+ 	ld	(bc),a
+ ;	src/Battle_b.c 59
+ ;	genAssign
+ 	ld	bc,#0xFF4A
+ ;	genAssign (pointer)
+ 	ld	a,#0x60
+ 	ld	(bc),a
+ ;	src/Battle_b.c 62
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_tiles
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0xC000
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedBkgData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 63
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_cursor
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0200
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedSpriteData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 64
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_menu_cursor
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0202
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedSpriteData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 65
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_player1
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0404
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedSpriteData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 66
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_player2
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0408
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedSpriteData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 67
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_monster
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x400C
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedSpriteData
+ 	lda	sp,5(sp)
+ ;	src/Battle_b.c 70
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0000
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 71
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x7C2C
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x00
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 74
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0201
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 75
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x7850
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x01
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 78
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0402
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 79
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x6828
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x02
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 80
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0603
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 81
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x6830
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 84
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0804
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 85
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x6840
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x04
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 86
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0A05
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ ;	src/Battle_b.c 87
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x6848
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x05
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 90
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00105$:
+ ;	genCmpLt
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	cp	#0x08
+ 	jp	nc,00108$
+ ;	src/Battle_b.c 91
+ ;	genAssign
+ 	ld	b,#0x00
+ ;	genLabel
+ 00101$:
+ ;	genCmpLt
+ 	ld	a,b
+ 	cp	#0x04
+ 	ld	a,#0x00
+ 	rla
+ 	ld	c,a
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,c
+ 	jp	z,00107$
+ ;	src/Battle_b.c 92
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	AOP_STK for _LoadBattle_b_sloc0_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	add	a,a
+ 	add	a,a
+ 	dec	hl
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc0_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc1_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,b
+ 	dec	hl
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_sloc1_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,a
+ 	dec	hl
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc2_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0x0C
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_sloc4_1_0
+ 	ld	a,b
+ 	sla	a
+ 	rl	a
+ 	rl	a
+ 	and	a,#0xF8
+ 	dec	hl
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc4_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc5_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0x06
+ 	dec	hl
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc5_1_0
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	AOP_STK for _LoadBattle_b_sloc6_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,14(sp)
+ 	add	a,(hl)
+ 	lda	hl,7(sp)
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _LoadBattle_b_sloc3_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc6_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_set_sprite_tile
+ 	lda	sp,2(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 93
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_sloc7_1_0
+ 	ld	a,b
+ 	sla	a
+ 	rl	a
+ 	rl	a
+ 	rl	a
+ 	and	a,#0xF0
+ 	lda	hl,6(sp)
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc7_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc8_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0x20
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	AOP_STK for _LoadBattle_b_sloc9_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	sla	a
+ 	rl	a
+ 	rl	a
+ 	and	a,#0xF8
+ 	lda	hl,4(sp)
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc9_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc10_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0x38
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _LoadBattle_b_sloc8_1_0
+ 	inc	hl
+ 	inc	hl
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc10_1_0
+ 	dec	hl
+ 	dec	hl
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc6_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 91
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x01
+ 	lda	hl,2(sp)
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ 	ld      (hl),a
+ 	ld      b,a
+ ;	genGoto
+ 	jp	00101$
+ ;	genLabel
+ 00107$:
+ ;	src/Battle_b.c 90
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,14(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00105$
+ ;	genLabel
+ 00108$:
+ ;	src/Battle_b.c 97
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00113$:
+ ;	genCmpLt
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	cp	#0x08
+ 	jp	nc,00116$
+ ;	src/Battle_b.c 98
+ ;	genAssign
+ 	ld	b,#0x00
+ ;	genLabel
+ 00109$:
+ ;	genCmpLt
+ 	ld	a,b
+ 	cp	#0x08
+ 	ld	a,#0x00
+ 	rla
+ 	ld	c,a
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,c
+ 	jp	z,00115$
+ ;	src/Battle_b.c 99
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ 	ld	a,b
+ 	add	a,a
+ 	add	a,a
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ ;	genLeftShift
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	AOP_STK for _LoadBattle_b_sloc10_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	add	a,a
+ 	add	a,a
+ 	lda	hl,3(sp)
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#_btl_bg
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0404
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ 	lda	hl,8(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc10_1_0
+ 	inc	hl
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedBkgTiles
+ 	lda	sp,7(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 98
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc9_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x01
+ 	lda	hl,4(sp)
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_sloc9_1_0
+ 	ld      (hl),a
+ 	ld      b,a
+ ;	genGoto
+ 	jp	00109$
+ ;	genLabel
+ 00115$:
+ ;	src/Battle_b.c 97
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,14(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00113$
+ ;	genLabel
+ 00116$:
+ ;	src/Battle_b.c 107
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00117$:
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	c,a
+ ;	genCmpEq
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl)
+ 	cp	c
+ 	jp	z,00120$
+ 00133$:
+ ;	src/Battle_b.c 108
+ ;	genMult
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ 	lda	hl,14(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPlus
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_battle_actors
+ 	add	hl,bc
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_sloc12_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#0x0004
+ 	add	hl,bc
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#__str_0
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc12_1_0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_strcpy
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 109
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#__str_1
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _LoadBattle_b_sloc12_1_0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_strcat
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 110
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x000E
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	e,l
+ 	ld	d,h
+ 	ld	a,#0xE7
+ 	ld	(de),a
+ 	inc	de
+ 	ld	a,#0x03
+ 	ld	(de),a
+ ;	src/Battle_b.c 111
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0010
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	e,l
+ 	ld	d,h
+ 	ld	a,#0xE7
+ 	ld	(de),a
+ 	inc	de
+ 	ld	a,#0x03
+ 	ld	(de),a
+ ;	src/Battle_b.c 112
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0012
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	e,l
+ 	ld	d,h
+ 	ld	a,#0x63
+ 	ld	(de),a
+ 	inc	de
+ 	ld	a,#0x00
+ 	ld	(de),a
+ ;	src/Battle_b.c 113
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0014
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	e,l
+ 	ld	d,h
+ 	ld	a,#0x63
+ 	ld	(de),a
+ 	inc	de
+ 	ld	a,#0x00
+ 	ld	(de),a
+ ;	src/Battle_b.c 114
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0016
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x63
+ ;	src/Battle_b.c 115
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0017
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x63
+ ;	src/Battle_b.c 116
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0018
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x63
+ ;	src/Battle_b.c 117
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0019
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x63
+ ;	src/Battle_b.c 118
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001A
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x63
+ ;	src/Battle_b.c 120
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001B
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 121
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001C
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 122
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001D
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x02
+ ;	src/Battle_b.c 123
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001E
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 124
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x001F
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 125
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0020
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 126
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0021
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 127
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0022
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 129
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0023
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 130
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0024
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 131
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0025
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 132
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0026
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 133
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0027
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 134
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0028
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 135
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0029
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 107
+ ;	genPlus
+ ;	AOP_STK for _LoadBattle_b_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,14(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00117$
+ ;	genLabel
+ 00120$:
+ ;	src/Battle_b.c 142
+ ;	genAssign (pointer)
+ 	ld	de,#_battle_actors
+ 	ld	a,#0x20
+ 	ld	(de),a
+ ;	src/Battle_b.c 143
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#_battle_actors + 1
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x58
+ ;	src/Battle_b.c 144
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#_battle_actors + 42
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x38
+ ;	src/Battle_b.c 145
+ ;	genPlus
+ ;	genPlusIncr
+ 	inc	hl
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x58
+ ;	src/Battle_b.c 146
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#_battle_actors + 84
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x20
+ ;	src/Battle_b.c 147
+ ;	genPlus
+ ;	genPlusIncr
+ 	inc	hl
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x0C
+ ;	src/Battle_b.c 150
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 151
+ ;	genAssign
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 152
+ ;	genAssign
+ ;	AOP_HL for _joy_auto
+ 	ld	hl,#_joy_auto
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 153
+ ;	genAssign
+ ;	AOP_HL for _joy_auto_speed
+ 	ld	hl,#_joy_auto_speed
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 154
+ ;	genAssign
+ ;	AOP_HL for _cursor_max
+ 	ld	hl,#_cursor_max
+ 	ld	(hl),#0x03
+ ;	src/Battle_b.c 157
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_DrawBattleMenu
+ ;	src/Battle_b.c 159
+ ;	genAssign
+ 	ld	bc,#0xFF40
+ ;	genAssign
+ ;	AOP_STK for _LoadBattle_b_sloc12_1_0
+ 	lda	hl,0(sp)
+ 	ld	(hl),#0x40
+ 	inc	hl
+ 	ld	(hl),#0xFF
+ ;	genPointerGet
+ ;	AOP_STK for _LoadBattle_b_sloc12_1_0
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genOr
+ ;	AOP_STK for _LoadBattle_b_sloc11_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	or	a,#0x80
+ ;	genAssign (pointer)
+ 	ld	(bc),a
+ ;	genLabel
+ 00121$:
+ ;	genEndFunction
+ 	lda	sp,15(sp)
+ 	ret
+ ___LoadBattle_b_end:
+ __str_0:
+ 	.db 0x00
+ __str_1:
+ 	.ascii "TESTING"
+        47
+ 	.db 0x00
+ ;	src/Battle_b.c 162
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function BattleUpdate_b
+ ; ---------------------------------
+ ___BattleUpdate_b_start:
+ _BattleUpdate_b:
+ 	
+ ;	src/Battle_b.c 164
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_BattleHandleInput
+ ;	src/Battle_b.c 165
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_BattleRender
+ ;	genLabel
+ 00101$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___BattleUpdate_b_end:
+ ;	src/Battle_b.c 169
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function BattleRender
+ ; ---------------------------------
+ ___BattleRender_start:
+ _BattleRender:
+ 	lda	sp,-7(sp)
+ ;	src/Battle_b.c 171
+ ;	genAssign
+ 	ld	bc,#0xFF43
+ ;	genAssign (pointer)
+ 	ld	a,#0x00
+ 	ld	(bc),a
+ ;	src/Battle_b.c 172
+ ;	genAssign
+ 	ld	bc,#0xFF4B
+ ;	genAssign (pointer)
+ 	ld	a,#0x07
+ 	ld	(bc),a
+ ;	src/Battle_b.c 173
+ ;	genAssign
+ 	ld	bc,#0xFF4A
+ ;	genAssign (pointer)
+ 	ld	a,#0x60
+ 	ld	(bc),a
+ ;	src/Battle_b.c 175
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 1
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x05
+ 	jp	nz,00138$
+ 	ld	a,#0x01
+ 	jr	00139$
+ 00138$:
+ 	xor	a,a
+ 00139$:
+ 	ld	c,a
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,c
+ 	jp	z,00111$
+ ;	src/Battle_b.c 176
+ ;	genAssign (pointer)
+ 	ld	de,#_menu_ptr
+ 	ld	a,#0x00
+ 	ld	(de),a
+ ;	src/Battle_b.c 177
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#_menu_ptr + 1
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x00
+ ;	genGoto
+ 	jp	00112$
+ ;	genLabel
+ 00111$:
+ ;	src/Battle_b.c 183
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	nz,00108$
+ 	jr	00141$
+ 00140$:
+ 	jp	00108$
+ 00141$:
+ ;	src/Battle_b.c 184
+ ;	src/Battle_b.c 185
+ ;	genMult
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,5(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	src/Battle_b.c 186
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0002
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,5(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,2(sp)
+ ;	genRightShift
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	srl	a
+ 	lda	hl,5(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,(hl)
+ ;	genMinus
+ 	ld	b,a
+ 	add	a,#0xFC
+ 	ld	b,a
+ ;	genAssign (pointer)
+ 	ld	de,#_player_ptr
+ 	ld	a,b
+ 	ld	(de),a
+ ;	src/Battle_b.c 187
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_player_ptr
+ 	ld	hl,#0x0001
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,5(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	src/Battle_b.c 188
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,3(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0001
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ ;	genMinus
+ 	ld	b,a
+ 	add	a,#0x0D
+ 	ld	b,a
+ ;	genRightShift
+ ;	AOP_HL for _time
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	ld	hl,#_time
+ 	ld	a,(hl)
+ 	srl	a
+ 	srl	a
+ 	srl	a
+ 	lda	hl,0(sp)
+ ;	genAnd
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	and	a,#0x03
+ 	inc	hl
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,(hl)
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	(de),a
+ ;	genGoto
+ 	jp	00112$
+ ;	genLabel
+ 00108$:
+ ;	src/Battle_b.c 190
+ ;	genAssign (pointer)
+ 	ld	de,#_menu_ptr
+ 	ld	a,#0x50
+ 	ld	(de),a
+ ;	src/Battle_b.c 191
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x01
+ 	jp	nz,00105$
+ 	jr	00143$
+ 00142$:
+ 	jp	00105$
+ 00143$:
+ ;	src/Battle_b.c 192
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_menu_ptr
+ 	ld	hl,#0x0001
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genLeftShift
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld      (hl-),a
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld	(hl),a
+ 	ld	a,#0x03+1
+ 	jr	00145$
+ 00144$:
+ 	lda	hl,5(sp)
+ 	sla	(hl)
+ 	inc	hl
+ 	rl	(hl)
+ 00145$:
+ 	dec	a
+ 	jr	nz,00144$
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0080
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genCast
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	dec	hl
+ 	ld	a,(hl)
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	lda	hl,0(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	(de),a
+ ;	genGoto
+ 	jp	00106$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 193
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x02
+ 	jp	z,00101$
+ 00146$:
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	nz,00106$
+ 	jr	00148$
+ 00147$:
+ 	jp	00106$
+ 00148$:
+ ;	genLabel
+ 00101$:
+ ;	src/Battle_b.c 194
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_menu_ptr
+ 	ld	hl,#0x0001
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	a,#0x04
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	__moduchar_rrx_s
+ 	ld	b,e
+ 	lda	sp,2(sp)
+ 	pop	hl
+ 	ld	c,l
+ ;	genCast
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	lda	hl,3(sp)
+ 	ld	(hl),b
+ 	inc	hl
+ 	ld	(hl),#0x00
+ ;	genLeftShift
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld      (hl-),a
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld	(hl),a
+ 	ld	a,#0x03+1
+ 	jr	00150$
+ 00149$:
+ 	lda	hl,5(sp)
+ 	sla	(hl)
+ 	inc	hl
+ 	rl	(hl)
+ 00150$:
+ 	dec	a
+ 	jr	nz,00149$
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc0_1_0
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0078
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genCast
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	dec	hl
+ 	ld	a,(hl)
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	lda	hl,0(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	(de),a
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 196
+ ;	genMult
+ ;	AOP_HL for _player_index
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	ld	hl,#_player_index
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x002C
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genCast
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	dec	hl
+ 	ld	a,(hl)
+ ;	genAssign (pointer)
+ 	ld	de,#_player_ptr
+ 	ld	(de),a
+ ;	src/Battle_b.c 197
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#_player_ptr + 1
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x7C
+ ;	genLabel
+ 00112$:
+ ;	src/Battle_b.c 214
+ ;	genCmpGt
+ ;	AOP_HL for _ui_quake
+ 	ld	a,#0x00
+ 	ld	hl,#_ui_quake
+ 	sub	a,(hl)
+ 	jp	nc,00116$
+ ;	src/Battle_b.c 215
+ ;	genAssign
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	lda	hl,0(sp)
+ 	ld	(hl),#0x4B
+ 	inc	hl
+ 	ld	(hl),#0xFF
+ ;	genAssign
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	inc	hl
+ 	inc	hl
+ 	ld	(hl),#0x4B
+ 	inc	hl
+ 	ld	(hl),#0xFF
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc1_1_0
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genAnd
+ ;	AOP_HL for _ui_quake
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld	hl,#_ui_quake
+ 	ld	a,(hl)
+ 	and	a,#0x03
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ ;	genMinus
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld	a,b
+ 	sub	a,(hl)
+ 	ld	b,a
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	dec	hl
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,b
+ 	ld	(de),a
+ ;	src/Battle_b.c 218
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,c
+ 	jp	nz,00114$
+ ;	src/Battle_b.c 219
+ ;	genPointerGet
+ 	ld	de,#_menu_ptr
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genAnd
+ ;	AOP_HL for _ui_quake
+ 	ld	hl,#_ui_quake
+ 	ld	a,(hl)
+ 	and	a,#0x02
+ 	ld	b,a
+ ;	genMinus
+ 	ld	a,c
+ 	sub	a,b
+ 	ld	c,a
+ ;	genAssign (pointer)
+ 	ld	de,#_menu_ptr
+ 	ld	a,c
+ 	ld	(de),a
+ ;	genLabel
+ 00114$:
+ ;	src/Battle_b.c 221
+ ;	genMinus
+ ;	AOP_HL for _ui_quake
+ 	ld	hl,#_ui_quake
+ 	dec	(hl)
+ ;	genLabel
+ 00116$:
+ ;	src/Battle_b.c 224
+ ;	genCmpGt
+ ;	AOP_HL for _screen_quake
+ 	ld	a,#0x00
+ 	ld	hl,#_screen_quake
+ 	sub	a,(hl)
+ 	jp	nc,00118$
+ ;	src/Battle_b.c 225
+ ;	genAssign
+ 	ld	bc,#0xFF43
+ ;	genAssign
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	lda	hl,0(sp)
+ 	ld	(hl),#0x43
+ 	inc	hl
+ 	ld	(hl),#0xFF
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genAnd
+ ;	AOP_HL for _screen_quake
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	ld	hl,#_screen_quake
+ 	ld	a,(hl)
+ 	and	a,#0x05
+ 	lda	hl,0(sp)
+ ;	genPlus
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	(hl+),a
+ 	inc	hl
+ 	ld	a,(hl)
+ 	dec	hl
+ 	dec	hl
+ 	add	a,(hl)
+ ;	genAssign (pointer)
+ 	ld	(bc),a
+ ;	src/Battle_b.c 226
+ ;	genMinus
+ ;	AOP_HL for _screen_quake
+ 	ld	hl,#_screen_quake
+ 	dec	(hl)
+ ;	genLabel
+ 00118$:
+ ;	src/Battle_b.c 229
+ ;	genAnd
+ ;	AOP_HL for _time
+ 	ld	hl,#_time
+ 	ld	a,(hl)
+ 	and	a,#0x01
+ ;	genCmpEq
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	c,a
+ 	or	a,a
+ 	jp	nz,00120$
+ 	jr	00152$
+ 00151$:
+ 	jp	00120$
+ 00152$:
+ ;	src/Battle_b.c 230
+ ;	genAssign
+ 	ld	bc,#0xFF42
+ ;	genPointerGet
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ 	ld	a,(bc)
+ 	lda	hl,0(sp)
+ ;	genMinus
+ ;	AOP_STK for _BattleRender_sloc3_1_0
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0xFF
+ 	inc	hl
+ 	inc	hl
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleRender_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	ld	(bc),a
+ ;	genLabel
+ 00120$:
+ ;	src/Battle_b.c 234
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	bc,#_menu_ptr + 1
+ ;	genPointerGet
+ 	ld	a,(bc)
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	de,#_menu_ptr
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,c
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x01
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 235
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	bc,#_player_ptr + 1
+ ;	genPointerGet
+ 	ld	a,(bc)
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	de,#_player_ptr
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,c
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x00
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_move_sprite
+ 	lda	sp,3(sp)
+ ;	src/Battle_b.c 237
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	nz,00122$
+ 	jr	00154$
+ 00153$:
+ 	jp	00122$
+ 00154$:
+ ;	src/Battle_b.c 238
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x4000
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_prop
+ 	lda	sp,2(sp)
+ ;	genGoto
+ 	jp	00123$
+ ;	genLabel
+ 00122$:
+ ;	src/Battle_b.c 240
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0000
+ 	push	hl
+ ;	genCall
+ 	call	_set_sprite_prop
+ 	lda	sp,2(sp)
+ ;	genLabel
+ 00123$:
+ ;	src/Battle_b.c 248
+ ;	genIfx
+ ;	AOP_HL for _rerender_menu
+ 	xor	a,a
+ 	ld	hl,#_rerender_menu
+ 	or	a,(hl)
+ 	jp	z,00126$
+ ;	src/Battle_b.c 249
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_DrawBattleMenu
+ ;	src/Battle_b.c 250
+ ;	genAssign
+ ;	AOP_HL for _rerender_menu
+ 	ld	hl,#_rerender_menu
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00126$:
+ ;	genEndFunction
+ 	lda	sp,7(sp)
+ 	ret
+ ___BattleRender_end:
+ ;	src/Battle_b.c 254
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function ubyte_len
+ ; ---------------------------------
+ ___ubyte_len_start:
+ _ubyte_len:
+ 	
+ ;	src/Battle_b.c 256
+ ;	genCmpLt
+ ;	AOP_STK for 
+ 	lda	hl,2(sp)
+ 	ld	a,(hl)
+ 	cp	#0x0A
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 257
+ ;	genRet
+ 	ld	e,#0x01
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 258
+ ;	genCmpLt
+ ;	AOP_STK for 
+ 	lda	hl,2(sp)
+ 	ld	a,(hl)
+ 	cp	#0x64
+ 	jp	nc,00102$
+ ;	src/Battle_b.c 259
+ ;	genRet
+ 	ld	e,#0x02
+ 	jp	00107$
+ ;	genLabel
+ 00102$:
+ ;	src/Battle_b.c 261
+ ;	genRet
+ 	ld	e,#0x03
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___ubyte_len_end:
+ ;	src/Battle_b.c 265
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function LPad
+ ; ---------------------------------
+ ___LPad_start:
+ _LPad:
+ 	lda	sp,-3(sp)
+ ;	src/Battle_b.c 269
+ ;	genCast
+ ;	AOP_STK for 
+ 	lda	hl,7(sp)
+ 	ld	c,(hl)
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,c
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_ubyte_len
+ 	lda	sp,1(sp)
+ ;	src/Battle_b.c 271
+ ;	genMinus
+ ;	AOP_STK for 
+ 	lda	hl,10(sp)
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	ld	c,a
+ ;	genAssign
+ 	ld	b,c
+ ;	genLabel
+ 00105$:
+ ;	genCmpEq
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	a,b
+ 	cp	a,#0xFF
+ 	jp	z,00108$
+ 00114$:
+ ;	src/Battle_b.c 272
+ ;	genIfx
+ ;	AOP_STK for 
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	or	a,(hl)
+ 	jp	nz,00101$
+ ;	genCmpEq
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	a,b
+ 	cp	c
+ 	jp	nz,00102$
+ 	jr	00116$
+ 00115$:
+ 	jp	00102$
+ 00116$:
+ ;	genLabel
+ 00101$:
+ ;	src/Battle_b.c 273
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x000A
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for 
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	__moduint_rrx_s
+ ;	AOP_STK for _LPad_sloc0_1_0
+ 	lda	hl,7(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	genCast
+ ;	AOP_STK for _LPad_sloc0_1_0
+ ;	AOP_STK for _LPad_rem_1_1
+ 	lda	hl,0(sp)
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	src/Battle_b.c 274
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x000A
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for 
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	__divuint_rrx_s
+ ;	AOP_STK for 
+ 	lda	hl,14(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	genAssign
+ ;	(operands are equal 4)
+ ;	src/Battle_b.c 275
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for _LPad_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	l,b
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _LPad_rem_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	inc	hl
+ 	ld	a,(hl)
+ 	add	a,#0x30
+ ;	genAssign (pointer)
+ ;	AOP_STK for _LPad_sloc0_1_0
+ 	dec	hl
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	(de),a
+ ;	genGoto
+ 	jp	00107$
+ ;	genLabel
+ 00102$:
+ ;	src/Battle_b.c 277
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for _LPad_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	l,b
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genAssign (pointer)
+ ;	AOP_STK for _LPad_sloc0_1_0
+ ;	AOP_STK for 
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	lda	hl,9(sp)
+ 	ld	a,(hl)
+ 	ld	(de),a
+ ;	genLabel
+ 00107$:
+ ;	src/Battle_b.c 271
+ ;	genMinus
+ 	dec	b
+ ;	genGoto
+ 	jp	00105$
+ ;	genLabel
+ 00108$:
+ ;	src/Battle_b.c 280
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for 
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	lda	hl,10(sp)
+ 	ld	l,(hl)
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genAssign (pointer)
+ 	ld	a,#0x00
+ 	ld	(bc),a
+ ;	genLabel
+ 00109$:
+ ;	genEndFunction
+ 	lda	sp,3(sp)
+ 	ret
+ ___LPad_end:
+ ;	src/Battle_b.c 284
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function InventoryMax
+ ; ---------------------------------
+ ___InventoryMax_start:
+ _InventoryMax:
+ 	lda	sp,-2(sp)
+ ;	src/Battle_b.c 287
+ ;	genAssign
+ 	ld	c,#0x63
+ ;	genLabel
+ 00103$:
+ ;	genCmpLt
+ 	ld	a,c
+ 	cp	#0x00
+ 	jp	c,00106$
+ ;	src/Battle_b.c 288
+ ;	genPlus
+ ;	AOP_STK for _InventoryMax_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_inventory
+ 	ld	l,c
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _InventoryMax_sloc0_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 289
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	b,c
+ 	inc	b
+ ;	genRet
+ 	ld	e,b
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 287
+ ;	genMinus
+ 	dec	c
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 292
+ ;	genRet
+ 	ld	e,#0x00
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,2(sp)
+ 	ret
+ ___InventoryMax_end:
+ ;	src/Battle_b.c 296
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function SubClamp
+ ; ---------------------------------
+ ___SubClamp_start:
+ _SubClamp:
+ 	
+ ;	src/Battle_b.c 298
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for 
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	lda	hl,6(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genCmpGt
+ ;	AOP_STK for 
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	sub	a,c
+ 	inc	hl
+ 	ld	a,(hl)
+ 	sbc	a,b
+ 	jp	nc,00102$
+ ;	src/Battle_b.c 299
+ ;	genMinus
+ ;	AOP_STK for 
+ ;	AOP_STK for 
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	ld	a,e
+ 	sub	a,l
+ 	ld	e,a
+ 	ld	a,d
+ 	sbc	a,h
+ 	ld	b,a
+ 	ld	c,e
+ ;	genRet
+ 	ld	e,c
+ 	ld	d,b
+ 	jp	00104$
+ ;	genLabel
+ 00102$:
+ ;	src/Battle_b.c 301
+ ;	genRet
+ ;	AOP_STK for 
+ 	lda	hl,6(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ ;	genLabel
+ 00104$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___SubClamp_end:
+ ;	src/Battle_b.c 305
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function AddClamp
+ ; ---------------------------------
+ ___AddClamp_start:
+ _AddClamp:
+ 	
+ ;	src/Battle_b.c 307
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for 
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genCmpGt
+ ;	AOP_STK for 
+ 	lda	hl,6(sp)
+ 	ld	a,(hl)
+ 	sub	a,c
+ 	inc	hl
+ 	ld	a,(hl)
+ 	sbc	a,b
+ 	jp	c,00102$
+ ;	src/Battle_b.c 308
+ ;	genRet
+ 	ld	e,c
+ 	ld	d,b
+ 	jp	00104$
+ ;	genLabel
+ 00102$:
+ ;	src/Battle_b.c 310
+ ;	genRet
+ ;	AOP_STK for 
+ 	lda	hl,6(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ ;	genLabel
+ 00104$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___AddClamp_end:
+ ;	src/Battle_b.c 314
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function NextAliveTarget
+ ; ---------------------------------
+ ___NextAliveTarget_start:
+ _NextAliveTarget:
+ 	lda	sp,-5(sp)
+ ;	src/Battle_b.c 317
+ ;	genCmpLt
+ ;	AOP_STK for 
+ ;	AOP_HL for _party_size
+ 	lda	hl,7(sp)
+ 	ld	a,(hl)
+ 	ld	hl,#_party_size
+ 	sub	a,(hl)
+ 	jp	nc,00109$
+ ;	src/Battle_b.c 319
+ ;	genAssign
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ 	lda	hl,4(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00111$:
+ ;	genCmpEq
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	AOP_HL for _party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	cp	(hl)
+ 	jr	nz,00130$
+ 	jp	00110$
+ 00130$:
+ ;	src/Battle_b.c 320
+ ;	genMult
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ 	lda	hl,4(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00113$
+ ;	src/Battle_b.c 321
+ ;	genRet
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ 	lda	hl,4(sp)
+ 	ld	e,(hl)
+ 	jp	00119$
+ ;	genLabel
+ 00113$:
+ ;	src/Battle_b.c 319
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,4(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00111$
+ ;	genLabel
+ 00109$:
+ ;	src/Battle_b.c 326
+ ;	genCmpEq
+ ;	AOP_HL for _enemy_party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_enemy_party_size
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	nz,00104$
+ 	jr	00132$
+ 00131$:
+ 	jp	00104$
+ 00132$:
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	genPlusIncr
+ 	ld	hl,#_party_size
+ 	ld	c,(hl)
+ 	inc	c
+ ;	genMult
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ 	ld	e,c
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x000E
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,0(sp)
+ 	ld	(hl),a
+ 	inc	de
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genCmpGt
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ 	ld	a,#0x00
+ 	dec	hl
+ 	sub	a,(hl)
+ 	ld	a,#0x00
+ 	inc	hl
+ 	sbc	a,(hl)
+ 	jp	nc,00104$
+ ;	src/Battle_b.c 327
+ ;	genRet
+ 	ld	e,c
+ 	jp	00119$
+ ;	genLabel
+ 00104$:
+ ;	src/Battle_b.c 329
+ ;	genAssign
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ 	lda	hl,4(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00115$:
+ ;	genCmpEq
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	AOP_HL for _enemy_party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_enemy_party_size
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	cp	(hl)
+ 	jr	nz,00133$
+ 	jp	00110$
+ 00133$:
+ ;	src/Battle_b.c 330
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	add	a,(hl)
+ 	ld	c,a
+ ;	genMult
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ 	ld	e,c
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x000E
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _NextAliveTarget_sloc1_1_0
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ 	inc	de
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genCmpGt
+ ;	AOP_STK for _NextAliveTarget_sloc0_1_0
+ 	ld	a,#0x00
+ 	dec	hl
+ 	sub	a,(hl)
+ 	ld	a,#0x00
+ 	inc	hl
+ 	sbc	a,(hl)
+ 	jp	nc,00117$
+ ;	src/Battle_b.c 331
+ ;	genRet
+ 	ld	e,c
+ 	jp	00119$
+ ;	genLabel
+ 00117$:
+ ;	src/Battle_b.c 329
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTarget_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,4(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00115$
+ ;	genLabel
+ 00110$:
+ ;	src/Battle_b.c 335
+ ;	genRet
+ 	ld	e,#0xFF
+ ;	genLabel
+ 00119$:
+ ;	genEndFunction
+ 	lda	sp,5(sp)
+ 	ret
+ ___NextAliveTarget_end:
+ ;	src/Battle_b.c 338
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function FirstAlivePlayer
+ ; ---------------------------------
+ ___FirstAlivePlayer_start:
+ _FirstAlivePlayer:
+ 	lda	sp,-3(sp)
+ ;	src/Battle_b.c 341
+ ;	genAssign
+ ;	AOP_STK for _FirstAlivePlayer_i_1_1
+ 	lda	hl,2(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00103$:
+ ;	genCmpEq
+ ;	AOP_STK for _FirstAlivePlayer_i_1_1
+ ;	AOP_HL for _party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	lda	hl,2(sp)
+ 	cp	(hl)
+ 	jr	nz,00112$
+ 	jp	00106$
+ 00112$:
+ ;	src/Battle_b.c 342
+ ;	genMult
+ ;	AOP_STK for _FirstAlivePlayer_i_1_1
+ ;	AOP_STK for _FirstAlivePlayer_sloc0_1_0
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _FirstAlivePlayer_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 343
+ ;	genRet
+ ;	AOP_STK for _FirstAlivePlayer_i_1_1
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 341
+ ;	genPlus
+ ;	AOP_STK for _FirstAlivePlayer_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,2(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 346
+ ;	genRet
+ 	ld	e,#0xFF
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,3(sp)
+ 	ret
+ ___FirstAlivePlayer_end:
+ ;	src/Battle_b.c 349
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function NextAlivePlayerAfter
+ ; ---------------------------------
+ ___NextAlivePlayerAfter_start:
+ _NextAlivePlayerAfter:
+ 	lda	sp,-3(sp)
+ ;	src/Battle_b.c 352
+ ;	genPlus
+ ;	AOP_STK for 
+ ;	AOP_STK for _NextAlivePlayerAfter_i_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,5(sp)
+ 	ld	a,(hl)
+ 	add	a,#0x01
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ ;	genLabel
+ 00103$:
+ ;	genCmpEq
+ ;	AOP_STK for _NextAlivePlayerAfter_i_1_1
+ ;	AOP_HL for _party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	lda	hl,2(sp)
+ 	cp	(hl)
+ 	jr	nz,00112$
+ 	jp	00106$
+ 00112$:
+ ;	src/Battle_b.c 353
+ ;	genMult
+ ;	AOP_STK for _NextAlivePlayerAfter_i_1_1
+ ;	AOP_STK for _NextAlivePlayerAfter_sloc0_1_0
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAlivePlayerAfter_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 354
+ ;	genRet
+ ;	AOP_STK for _NextAlivePlayerAfter_i_1_1
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 352
+ ;	genPlus
+ ;	AOP_STK for _NextAlivePlayerAfter_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,2(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 357
+ ;	genRet
+ 	ld	e,#0xFF
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,3(sp)
+ 	ret
+ ___NextAlivePlayerAfter_end:
+ ;	src/Battle_b.c 360
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function PreviousAlivePlayerBefore
+ ; ---------------------------------
+ ___PreviousAlivePlayerBefore_start:
+ _PreviousAlivePlayerBefore:
+ 	lda	sp,-3(sp)
+ ;	src/Battle_b.c 363
+ ;	genMinus
+ ;	AOP_STK for 
+ ;	AOP_STK for _PreviousAlivePlayerBefore_i_1_1
+ 	lda	hl,5(sp)
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ ;	genLabel
+ 00103$:
+ ;	genCmpLt
+ ;	AOP_STK for _PreviousAlivePlayerBefore_i_1_1
+ 	lda	hl,2(sp)
+ 	ld	a,(hl)
+ 	cp	#0x00
+ 	jp	c,00106$
+ ;	src/Battle_b.c 364
+ ;	genMult
+ ;	AOP_STK for _PreviousAlivePlayerBefore_i_1_1
+ ;	AOP_STK for _PreviousAlivePlayerBefore_sloc0_1_0
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _PreviousAlivePlayerBefore_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 365
+ ;	genRet
+ ;	AOP_STK for _PreviousAlivePlayerBefore_i_1_1
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 363
+ ;	genMinus
+ ;	AOP_STK for _PreviousAlivePlayerBefore_i_1_1
+ 	lda	hl,2(sp)
+ 	dec	(hl)
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 368
+ ;	genRet
+ 	ld	e,#0xFF
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,3(sp)
+ 	ret
+ ___PreviousAlivePlayerBefore_end:
+ ;	src/Battle_b.c 371
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function NextAliveTargetAfter
+ ; ---------------------------------
+ ___NextAliveTargetAfter_start:
+ _NextAliveTargetAfter:
+ 	lda	sp,-5(sp)
+ ;	src/Battle_b.c 374
+ ;	genAssign
+ ;	AOP_STK for 
+ ;	AOP_STK for _NextAliveTargetAfter_n_1_1
+ 	lda	hl,7(sp)
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ ;	src/Battle_b.c 375
+ ;	genAssign
+ ;	AOP_STK for _NextAliveTargetAfter_i_1_1
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00103$:
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	b,a
+ ;	genCmpLt
+ ;	AOP_STK for _NextAliveTargetAfter_i_1_1
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	sub	a,b
+ 	jp	nc,00106$
+ ;	src/Battle_b.c 376
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTargetAfter_n_1_1
+ ;	AOP_STK for _NextAliveTargetAfter_sloc0_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	a,(hl)
+ 	add	a,#0x01
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _NextAliveTargetAfter_sloc0_1_0
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	__moduchar_rrx_s
+ 	ld	b,e
+ 	lda	sp,2(sp)
+ ;	genAssign
+ ;	AOP_STK for _NextAliveTargetAfter_n_1_1
+ 	lda	hl,3(sp)
+ 	ld	(hl),b
+ ;	src/Battle_b.c 377
+ ;	genMult
+ ;	AOP_STK for _NextAliveTargetAfter_n_1_1
+ ;	AOP_STK for _NextAliveTargetAfter_sloc1_1_0
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTargetAfter_sloc1_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 378
+ ;	genRet
+ ;	AOP_STK for _NextAliveTargetAfter_n_1_1
+ 	lda	hl,3(sp)
+ 	ld	e,(hl)
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 375
+ ;	genPlus
+ ;	AOP_STK for _NextAliveTargetAfter_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,4(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 381
+ ;	genRet
+ ;	AOP_STK for 
+ 	lda	hl,7(sp)
+ 	ld	e,(hl)
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,5(sp)
+ 	ret
+ ___NextAliveTargetAfter_end:
+ ;	src/Battle_b.c 384
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function PreviousAliveTargetBefore
+ ; ---------------------------------
+ ___PreviousAliveTargetBefore_start:
+ _PreviousAliveTargetBefore:
+ 	lda	sp,-6(sp)
+ ;	src/Battle_b.c 387
+ ;	genAssign
+ ;	AOP_STK for 
+ ;	AOP_STK for _PreviousAliveTargetBefore_n_1_1
+ 	lda	hl,8(sp)
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ ;	src/Battle_b.c 388
+ ;	genAssign
+ ;	AOP_STK for _PreviousAliveTargetBefore_i_1_1
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00103$:
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	b,a
+ ;	genCmpLt
+ ;	AOP_STK for _PreviousAliveTargetBefore_i_1_1
+ 	lda	hl,5(sp)
+ 	ld	a,(hl)
+ 	sub	a,b
+ 	jp	nc,00106$
+ ;	src/Battle_b.c 390
+ ;	genPlus
+ ;	AOP_STK for _PreviousAliveTargetBefore_n_1_1
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	dec	hl
+ 	add	a,(hl)
+ 	dec	hl
+ ;	genMinus
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc0_1_0
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc1_1_0
+ 	ld      (hl),a
+ 	ld      a,a
+ 	add	a,#0xFF
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc1_1_0
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	__moduchar_rrx_s
+ 	ld	b,e
+ 	lda	sp,2(sp)
+ ;	genAssign
+ ;	AOP_STK for _PreviousAliveTargetBefore_n_1_1
+ 	lda	hl,4(sp)
+ 	ld	(hl),b
+ ;	src/Battle_b.c 391
+ ;	genMult
+ ;	AOP_STK for _PreviousAliveTargetBefore_n_1_1
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc2_1_0
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _PreviousAliveTargetBefore_sloc2_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x0E
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	c,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	ld	a,#0x00
+ 	sbc	a,c
+ 	jp	nc,00105$
+ ;	src/Battle_b.c 392
+ ;	genRet
+ ;	AOP_STK for _PreviousAliveTargetBefore_n_1_1
+ 	lda	hl,4(sp)
+ 	ld	e,(hl)
+ 	jp	00107$
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 388
+ ;	genPlus
+ ;	AOP_STK for _PreviousAliveTargetBefore_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,5(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00103$
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 395
+ ;	genRet
+ ;	AOP_STK for 
+ 	lda	hl,8(sp)
+ 	ld	e,(hl)
+ ;	genLabel
+ 00107$:
+ ;	genEndFunction
+ 	lda	sp,6(sp)
+ 	ret
+ ___PreviousAliveTargetBefore_end:
+ ;	src/Battle_b.c 398
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function PerformNextAction
+ ; ---------------------------------
+ ___PerformNextAction_start:
+ _PerformNextAction:
+ 	
+ ;	src/Battle_b.c 401
+ ;	genLabel
+ 00101$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___PerformNextAction_end:
+ ;	src/Battle_b.c 403
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function UpdateEnemyActions
+ ; ---------------------------------
+ ___UpdateEnemyActions_start:
+ _UpdateEnemyActions:
+ 	
+ ;	src/Battle_b.c 406
+ ;	genLabel
+ 00101$:
+ ;	genEndFunction
+ 	
+ 	ret
+ ___UpdateEnemyActions_end:
+ ;	src/Battle_b.c 408
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function UpdateBattleOrder
+ ; ---------------------------------
+ ___UpdateBattleOrder_start:
+ _UpdateBattleOrder:
+ 	lda	sp,-26(sp)
+ ;	src/Battle_b.c 411
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	c,a
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_size_1_1
+ 	lda	hl,24(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 415
+ ;	genLabel
+ 00103$:
+ ;	src/Battle_b.c 416
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_switched_1_1
+ 	lda	hl,23(sp)
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 417
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ 	inc	hl
+ 	inc	hl
+ 	ld	(hl),#0x01
+ ;	genLabel
+ 00106$:
+ ;	genCmpEq
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ ;	AOP_STK for _UpdateBattleOrder_size_1_1
+ ; genCmpEq: left 1, right 1, result 1
+ 	lda	hl,24(sp)
+ 	ld	a,(hl+)
+ 	cp	(hl)
+ 	jr	nz,00116$
+ 	ld	a,#0x01
+ 	jr	00117$
+ 00116$:
+ 	xor	a,a
+ 00117$:
+ ;	genIfx
+ 	or	a,a
+ 	jp	nz,00104$
+ ;	src/Battle_b.c 418
+ ;	genMinus
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ ;	AOP_STK for _UpdateBattleOrder_sloc12_1_0
+ 	lda	hl,25(sp)
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,1(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_sloc12_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc0_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_order
+ 	ld	l,(hl)
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,20(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _UpdateBattleOrder_sloc0_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genMult
+ ;	AOP_STK for _UpdateBattleOrder_sloc1_1_0
+ 	ld	e,b
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,18(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_sloc1_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc2_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,16(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_sloc2_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x001A
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,14(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _UpdateBattleOrder_sloc3_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc4_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	dec	hl
+ 	dec	hl
+ 	ld	(hl),a
+ ;	src/Battle_b.c 419
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ ;	AOP_STK for _UpdateBattleOrder_sloc5_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_order
+ 	lda	hl,25(sp)
+ 	ld	l,(hl)
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,11(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _UpdateBattleOrder_sloc5_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc6_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	dec	hl
+ 	dec	hl
+ ;	genMult
+ ;	AOP_STK for _UpdateBattleOrder_sloc6_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc7_1_0
+ 	ld      (hl),a
+ 	ld      e,a
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,8(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_sloc7_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc8_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,6(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_sloc8_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc9_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x001A
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,4(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _UpdateBattleOrder_sloc9_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc10_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	dec	hl
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genCmpLt
+ ;	AOP_STK for _UpdateBattleOrder_sloc4_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc10_1_0
+ ;	AOP_STK for _UpdateBattleOrder_sloc11_1_0
+ 	lda	hl,13(sp)
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	sub	a,(hl)
+ 	ld	a,#0x00
+ 	rla
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genIfx
+ ;	AOP_STK for _UpdateBattleOrder_sloc11_1_0
+ 	xor	a,a
+ 	or	a,(hl)
+ 	jp	z,00108$
+ ;	src/Battle_b.c 420
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_sloc6_1_0
+ 	lda	hl,10(sp)
+ 	ld	c,(hl)
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_temp_1_1
+ 	lda	hl,22(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 421
+ ;	genAssign (pointer)
+ ;	AOP_STK for _UpdateBattleOrder_sloc5_1_0
+ 	lda	hl,11(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,b
+ 	ld	(de),a
+ ;	src/Battle_b.c 422
+ ;	genAssign (pointer)
+ ;	AOP_STK for _UpdateBattleOrder_sloc0_1_0
+ ;	AOP_STK for _UpdateBattleOrder_temp_1_1
+ 	lda	hl,20(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	inc	hl
+ 	ld	a,(hl)
+ 	ld	(de),a
+ ;	src/Battle_b.c 423
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_switched_1_1
+ 	inc	hl
+ 	ld	(hl),#0x01
+ ;	genLabel
+ 00108$:
+ ;	src/Battle_b.c 417
+ ;	genPlus
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ ;	AOP_STK for _UpdateBattleOrder_sloc13_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,25(sp)
+ 	ld	a,(hl)
+ 	add	a,#0x01
+ 	lda	hl,0(sp)
+ ;	genAssign
+ ;	AOP_STK for _UpdateBattleOrder_sloc13_1_0
+ ;	AOP_STK for _UpdateBattleOrder_i_1_1
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,25(sp)
+ 	ld	(hl),a
+ ;	genGoto
+ 	jp	00106$
+ ;	genLabel
+ 00104$:
+ ;	src/Battle_b.c 426
+ ;	genIfx
+ ;	AOP_STK for _UpdateBattleOrder_switched_1_1
+ 	xor	a,a
+ 	lda	hl,23(sp)
+ 	or	a,(hl)
+ 	jp	nz,00103$
+ ;	genLabel
+ 00110$:
+ ;	genEndFunction
+ 	lda	sp,26(sp)
+ 	ret
+ ___UpdateBattleOrder_end:
+ ;	src/Battle_b.c 429
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function DrawBattleMenu
+ ; ---------------------------------
+ ___DrawBattleMenu_start:
+ _DrawBattleMenu:
+ 	lda	sp,-36(sp)
+ ;	src/Battle_b.c 436
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_display_off
+ ;	src/Battle_b.c 438
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#_btl_stage
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0214
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0000
+ 	push	hl
+ ;	genIpush
+ 	ld	a,#0x03
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_SetBankedWinTiles
+ 	lda	sp,7(sp)
+ ;	src/Battle_b.c 440
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x05
+ 	jp	z,00119$
+ 00142$:
+ ;	src/Battle_b.c 443
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0414
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0200
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawFrame
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 444
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0301
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_2
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 445
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0401
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_3
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 447
+ ;	genMult
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPlus
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_battle_actors
+ 	add	hl,bc
+ 	ld	c,l
+ 	ld	b,h
+ ;	genAssign
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ 	lda	hl,9(sp)
+ 	ld	(hl),c
+ 	inc	hl
+ 	ld	(hl),b
+ ;	src/Battle_b.c 450
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x000E
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,7(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	ld	c,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genAddrOf
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,7(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0320
+ 	push	hl
+ ;	genIpush
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_LPad
+ 	lda	sp,6(sp)
+ ;	src/Battle_b.c 451
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,9(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0010
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPointerGet
+ 	ld	e,c
+ 	ld	d,b
+ 	ld	a,(de)
+ 	ld	c,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genAddrOf
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,18(sp)
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,5(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_4
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,8(sp)
+ ;	src/Battle_b.c 452
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0302
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 456
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,9(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0012
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPointerGet
+ 	ld	e,c
+ 	ld	d,b
+ 	ld	a,(de)
+ 	ld	c,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0320
+ 	push	hl
+ ;	genIpush
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_LPad
+ 	lda	sp,6(sp)
+ ;	src/Battle_b.c 457
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,9(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0014
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPointerGet
+ 	ld	e,c
+ 	ld	d,b
+ 	ld	a,(de)
+ 	ld	c,a
+ 	inc	de
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,9(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_5
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,8(sp)
+ ;	src/Battle_b.c 458
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0402
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 460
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x01
+ 	jp	nz,00115$
+ 	jr	00144$
+ 00143$:
+ 	jp	00115$
+ 00144$:
+ ;	src/Battle_b.c 461
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x050B
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0109
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawFrame
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 462
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x020A
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_6
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 463
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x030A
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_7
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 464
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x040A
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_8
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	genGoto
+ 	jp	00119$
+ ;	genLabel
+ 00115$:
+ ;	src/Battle_b.c 465
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x02
+ 	jp	nz,00112$
+ 	jr	00146$
+ 00145$:
+ 	jp	00112$
+ 00146$:
+ ;	src/Battle_b.c 466
+ ;	genRightShift
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	c,(hl)
+ 	srl	c
+ 	srl	c
+ ;	genOr
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ 	lda	hl,12(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 467
+ ;	genPlus
+ ;	AOP_HL for _cursor_max
+ ;	genPlusIncr
+ 	ld	hl,#_cursor_max
+ 	ld	b,(hl)
+ 	inc	b
+ 	inc	b
+ 	inc	b
+ 	inc	b
+ ;	genMinus
+ 	dec	b
+ ;	genRightShift
+ ; Removed redundent load
+ 	srl	b
+ 	srl	b
+ ;	genOr
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ 	lda	hl,11(sp)
+ 	ld	(hl),b
+ ;	src/Battle_b.c 469
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x060B
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0009
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawFrame
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 471
+ ;	genCmpGt
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ 	ld	a,#0x01
+ 	lda	hl,11(sp)
+ 	sub	a,(hl)
+ 	jp	nc,00102$
+ ;	src/Battle_b.c 472
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	ld	(hl),a
+ 	lda	hl,11(sp)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ ;	genPlusIncr
+ 	lda	hl,12(sp)
+ 	ld	c,(hl)
+ 	inc	c
+ ;	genCast
+ ; Removed redundent load
+ 	ld	a,c
+ 	rla	
+ 	sbc	a,a
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	lda	hl,3(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	push	bc
+ ;	genIpush
+ 	ld	hl,#__str_9
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,8(sp)
+ ;	src/Battle_b.c 473
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0510
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	genLabel
+ 00102$:
+ ;	src/Battle_b.c 476
+ ;	genAssign
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ 	lda	hl,13(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00120$:
+ ;	genCmpEq
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,13(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	z,00119$
+ 00147$:
+ ;	src/Battle_b.c 477
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,9(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x001B
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genLeftShift
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl)
+ 	add	a,a
+ 	add	a,a
+ 	lda	hl,3(sp)
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,13(sp)
+ 	add	a,(hl)
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	l,(hl)
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPointerGet
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	lda	hl,2(sp)
+ ;	genCmpEq
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	cp	a,#0xFF
+ 	jp	z,00122$
+ 00148$:
+ ;	src/Battle_b.c 478
+ ;	genMult
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_skills
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0010
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,3(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,0(sp)
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,3(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0220
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,13(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_LPad
+ 	lda	sp,6(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 479
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,13(sp)
+ 	ld	a,(hl)
+ 	add	a,#0x01
+ 	lda	hl,0(sp)
+ 	ld	(hl),a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genMult
+ 	ld	e,b
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,#<_skills
+ 	add	a,b
+ 	ld	b,a
+ 	ld	a,#>_skills
+ 	adc	a,c
+ 	ld	c,a
+ ;	genCast
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	lda	hl,0(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x0A
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	l,b
+ 	ld	h,c
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 480
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	lda	hl,0(sp)
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x11
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc0_1_0
+ 	lda	hl,9(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	genLabel
+ 00122$:
+ ;	src/Battle_b.c 476
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,13(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00120$
+ ;	genLabel
+ 00112$:
+ ;	src/Battle_b.c 483
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	nz,00119$
+ 	jr	00150$
+ 00149$:
+ 	jp	00119$
+ 00150$:
+ ;	src/Battle_b.c 484
+ ;	genRightShift
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	c,(hl)
+ 	srl	c
+ 	srl	c
+ ;	genOr
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ 	lda	hl,12(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 485
+ ;	genPlus
+ ;	AOP_HL for _cursor_max
+ ;	genPlusIncr
+ 	ld	hl,#_cursor_max
+ 	ld	c,(hl)
+ 	inc	c
+ 	inc	c
+ 	inc	c
+ 	inc	c
+ ;	genMinus
+ 	dec	c
+ ;	genRightShift
+ ; Removed redundent load
+ 	srl	c
+ 	srl	c
+ ;	genOr
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ 	lda	hl,11(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 487
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x060B
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0009
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawFrame
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 489
+ ;	genCmpGt
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ 	ld	a,#0x01
+ 	lda	hl,11(sp)
+ 	sub	a,(hl)
+ 	jp	nc,00106$
+ ;	src/Battle_b.c 490
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_max_pages_1_1
+ 	ld	c,(hl)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	ld	b,a
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	inc	hl
+ 	ld	a,(hl)
+ 	add	a,#0x01
+ 	lda	hl,0(sp)
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,3(sp)
+ 	ld	(hl),a
+ 	lda	hl,0(sp)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_10
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,8(sp)
+ ;	src/Battle_b.c 491
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0510
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	genLabel
+ 00106$:
+ ;	src/Battle_b.c 494
+ ;	genAssign
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ 	lda	hl,13(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00124$:
+ ;	genCmpEq
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,13(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	z,00119$
+ 00151$:
+ ;	src/Battle_b.c 495
+ ;	genLeftShift
+ ;	AOP_STK for _DrawBattleMenu_page_1_1
+ 	lda	hl,12(sp)
+ 	ld	a,(hl)
+ 	add	a,a
+ 	add	a,a
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	c,a
+ 	inc	hl
+ 	add	a,(hl)
+ 	ld	c,a
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_inventory
+ 	ld	l,c
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genCmpGt
+ 	ld	a,#0x00
+ 	sub	a,b
+ 	jp	nc,00126$
+ ;	src/Battle_b.c 496
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	dec	hl
+ 	ld	(hl),b
+ 	ld	a,b
+ 	rla	
+ 	sbc	a,a
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_11
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,11(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,6(sp)
+ 	pop	hl
+ 	ld	c,l
+ ;	src/Battle_b.c 497
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,13(sp)
+ 	ld	b,(hl)
+ 	inc	b
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	lda	hl,0(sp)
+ 	ld	(hl),c
+ 	inc	hl
+ 	ld	(hl),#0x00
+ ;	genLeftShift
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	dec	hl
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ 	ld	a,#0x04+1
+ 	jr	00153$
+ 00152$:
+ 	lda	hl,3(sp)
+ 	sla	(hl)
+ 	inc	hl
+ 	rl	(hl)
+ 00153$:
+ 	dec	a
+ 	jr	nz,00152$
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_items
+ 	lda	hl,3(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genCast
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	dec	hl
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x0A
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc2_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ 	pop	hl
+ 	ld	b,h
+ ;	src/Battle_b.c 498
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	a,b
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ 	ld	a,#0x11
+ 	push	af
+ 	inc	sp
+ ;	genIpush
+ ;	AOP_STK for _DrawBattleMenu_sloc1_1_0
+ 	lda	hl,7(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	genLabel
+ 00126$:
+ ;	src/Battle_b.c 494
+ ;	genPlus
+ ;	AOP_STK for _DrawBattleMenu_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,13(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00124$
+ ;	genLabel
+ 00119$:
+ ;	src/Battle_b.c 504
+ ;	genAssign
+ 	ld	bc,#0xFF40
+ ;	genAssign
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ 	lda	hl,0(sp)
+ 	ld	(hl),#0x40
+ 	inc	hl
+ 	ld	(hl),#0xFF
+ ;	genPointerGet
+ ;	AOP_STK for _DrawBattleMenu_sloc4_1_0
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genOr
+ ;	AOP_STK for _DrawBattleMenu_sloc3_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	or	a,#0x80
+ ;	genAssign (pointer)
+ 	ld	(bc),a
+ ;	genLabel
+ 00128$:
+ ;	genEndFunction
+ 	lda	sp,36(sp)
+ 	ret
+ ___DrawBattleMenu_end:
+ __str_2:
+ 	.db 0x22
+ 	.db 0x00
+ __str_3:
+ 	.ascii "#"
+ 	.db 0x00
+ __str_4:
+ 	.ascii "%s/%u"
+ 	.db 0x00
+ __str_5:
+ 	.ascii "%s/%u"
+ 	.db 0x00
+ __str_6:
+ 	.ascii "FIGHT"
+ 	.db 0x00
+ __str_7:
+ 	.ascii "SKILL"
+ 	.db 0x00
+ __str_8:
+ 	.ascii "ITEMS"
+ 	.db 0x00
+ __str_9:
+ 	.ascii "%u/%u"
+ 	.db 0x00
+ __str_10:
+ 	.ascii "%u/%u"
+ 	.db 0x00
+ __str_11:
+ 	.ascii "X%u"
+ 	.db 0x00
+ ;	src/Battle_b.c 507
+ ;	genLabel
+ ;	genFunction
+ ;	---------------------------------
+ ; Function BattleHandleInput
+ ; ---------------------------------
+ ___BattleHandleInput_start:
+ _BattleHandleInput:
+ 	lda	sp,-52(sp)
+ ;	src/Battle_b.c 514
+ ;	genMult
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPlus
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_battle_actors
+ 	add	hl,bc
+ 	ld	c,l
+ 	ld	b,h
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ 	lda	hl,44(sp)
+ 	ld	(hl),c
+ 	inc	hl
+ 	ld	(hl),b
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ ;	(registers are the same)
+ ;	src/Battle_b.c 517
+ ;	genIfx
+ ;	AOP_HL for _joy
+ 	xor	a,a
+ 	ld	hl,#_joy
+ 	or	a,(hl)
+ 	jp	z,00194$
+ ;	genCmpEq
+ ;	AOP_HL for _prev_joy
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_prev_joy
+ 	ld	a,(hl)
+ 	or	a,a
+ 	jp	nz,00194$
+ 	jr	00251$
+ 00250$:
+ 	jp	00194$
+ 00251$:
+ ;	src/Battle_b.c 518
+ ;	genPlus
+ ;	AOP_HL for _test_counter
+ ;	genPlusIncr
+ 	ld	hl,#_test_counter
+ 	inc	(hl)
+ ;	src/Battle_b.c 521
+ ;	genCmpLt
+ ;	AOP_HL for _battle_state
+ ;	AOP_STK for _BattleHandleInput_sloc0_1_0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	#0x01
+ 	ld	a,#0x00
+ 	rla
+ 	lda	hl,13(sp)
+ 	ld	(hl),a
+ ;	genIfx
+ ;	AOP_STK for _BattleHandleInput_sloc0_1_0
+ 	xor	a,a
+ 	or	a,(hl)
+ 	jp	nz,00127$
+ ;	genCmpGt
+ ;	AOP_HL for _battle_state
+ 	ld	a,#0x04
+ 	ld	hl,#_battle_state
+ 	sub	a,(hl)
+ 	jp	c,00127$
+ ;	genMinus
+ ;	AOP_HL for _battle_state
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,12(sp)
+ ;	genJumpTab
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ 	ld      (hl),a
+ 	ld      e,a
+ 	ld	d,#0x00
+ 	ld	hl,#00252$
+ 	add	hl,de
+ 	add	hl,de
+ 	add	hl,de
+ 	jp	(hl)
+ 00252$:
+ 	jp	00103$
+ 	jp	00102$
+ 	jp	00101$
+ 	jp	00118$
+ ;	src/Battle_b.c 525
+ ;	genLabel
+ 00103$:
+ ;	genLabel
+ 00102$:
+ ;	genLabel
+ 00101$:
+ ;	genRightShift
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_page_1_1
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	srl	a
+ 	srl	a
+ 	lda	hl,48(sp)
+ 	ld	(hl),a
+ ;	src/Battle_b.c 526
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x04
+ 	jr	nz,00253$
+ 	jp	00105$
+ 00253$:
+ ;	src/Battle_b.c 527
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,10(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0000
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0001
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,16(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_SubClamp
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,19(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,6(sp)
+ 	pop	bc
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ;	AOP_HL for _cursor_index
+ 	lda	hl,10(sp)
+ 	ld	a,(hl)
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),a
+ ;	genLabel
+ 00105$:
+ ;	src/Battle_b.c 529
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x08
+ 	jr	nz,00254$
+ 	jp	00107$
+ 00254$:
+ ;	src/Battle_b.c 530
+ ;	genMinus
+ ;	AOP_HL for _cursor_max
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	ld	hl,#_cursor_max
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,10(sp)
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ; Removed redundent load
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,10(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0001
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,16(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_AddClamp
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,17(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,6(sp)
+ 	pop	bc
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_HL for _cursor_index
+ 	lda	hl,8(sp)
+ 	ld	a,(hl)
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),a
+ ;	genLabel
+ 00107$:
+ ;	src/Battle_b.c 533
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x02
+ 	jr	nz,00255$
+ 	jp	00109$
+ 00255$:
+ ;	src/Battle_b.c 534
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0000
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0004
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_SubClamp
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,17(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,6(sp)
+ 	pop	bc
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_HL for _cursor_index
+ 	lda	hl,8(sp)
+ 	ld	a,(hl)
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),a
+ ;	genLabel
+ 00109$:
+ ;	src/Battle_b.c 536
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x01
+ 	jr	nz,00256$
+ 	jp	00111$
+ 00256$:
+ ;	src/Battle_b.c 537
+ ;	genMinus
+ ;	AOP_HL for _cursor_max
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_cursor_max
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,8(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#0x0004
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_AddClamp
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,17(sp)
+ 	ld	(hl),d
+ 	dec	hl
+ 	ld	(hl),e
+ 	lda	sp,6(sp)
+ 	pop	bc
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_HL for _cursor_index
+ 	lda	hl,8(sp)
+ 	ld	a,(hl)
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),a
+ ;	genLabel
+ 00111$:
+ ;	src/Battle_b.c 540
+ ;	genRightShift
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	srl	a
+ 	srl	a
+ 	lda	hl,8(sp)
+ 	ld	(hl),a
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_STK for _BattleHandleInput_page_1_1
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,48(sp)
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	cp	(hl)
+ 	jr	nz,00257$
+ 	jp	00127$
+ 00257$:
+ ;	src/Battle_b.c 541
+ ;	genAssign
+ ;	AOP_HL for _rerender_menu
+ 	ld	hl,#_rerender_menu
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 543
+ ;	genGoto
+ 	jp	00127$
+ ;	src/Battle_b.c 550
+ ;	genLabel
+ 00118$:
+ ;	src/Battle_b.c 545
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x04
+ 	jr	nz,00258$
+ 	jp	00117$
+ 00258$:
+ ;	src/Battle_b.c 546
+ ;	genCmpLt
+ ;	AOP_HL for _cursor_index
+ ;	AOP_HL for _party_size
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	ld	hl,#_party_size
+ 	sub	a,(hl)
+ 	jp	nc,00117$
+ ;	src/Battle_b.c 547
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _party_size
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genLabel
+ 00117$:
+ ;	src/Battle_b.c 550
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x08
+ 	jr	nz,00259$
+ 	jp	00122$
+ 00259$:
+ ;	src/Battle_b.c 551
+ ;	genCmpLt
+ ;	AOP_HL for _cursor_index
+ ;	AOP_HL for _party_size
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	ld	hl,#_party_size
+ 	sub	a,(hl)
+ 	jp	c,00122$
+ ;	src/Battle_b.c 552
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	a,#0x00
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genLabel
+ 00122$:
+ ;	src/Battle_b.c 555
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x02
+ 	jr	nz,00260$
+ 	jp	00124$
+ 00260$:
+ ;	src/Battle_b.c 556
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_PreviousAliveTargetBefore
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genLabel
+ 00124$:
+ ;	src/Battle_b.c 559
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x01
+ 	jr	nz,00261$
+ 	jp	00127$
+ 00261$:
+ ;	src/Battle_b.c 560
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTargetAfter
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 563
+ ;	genLabel
+ 00127$:
+ ;	src/Battle_b.c 566
+ ;	genIfx
+ ;	AOP_STK for _BattleHandleInput_sloc0_1_0
+ 	xor	a,a
+ 	lda	hl,13(sp)
+ 	or	a,(hl)
+ 	jp	nz,00162$
+ ;	genCmpGt
+ ;	AOP_HL for _battle_state
+ 	ld	a,#0x04
+ 	ld	hl,#_battle_state
+ 	sub	a,(hl)
+ 	jp	c,00162$
+ ;	genMinus
+ ;	AOP_HL for _battle_state
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	lda	hl,8(sp)
+ ;	genJumpTab
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld      (hl),a
+ 	ld      e,a
+ 	ld	d,#0x00
+ 	ld	hl,#00262$
+ 	add	hl,de
+ 	add	hl,de
+ 	add	hl,de
+ 	jp	(hl)
+ 00262$:
+ 	jp	00136$
+ 	jp	00150$
+ 	jp	00161$
+ 	jp	00139$
+ ;	src/Battle_b.c 596
+ ;	genLabel
+ 00136$:
+ ;	src/Battle_b.c 568
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x10
+ 	jr	nz,00263$
+ 	jp	00162$
+ 00263$:
+ ;	src/Battle_b.c 569
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,44(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0029
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,8(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ ; Removed redundent load
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	(hl+),a
+ 	inc	hl
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#0x0029
+ 	add	hl,bc
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,10(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ ; Removed redundent load
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	(hl+),a
+ 	inc	hl
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_HL for _player_index
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	lda	hl,6(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,7(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_HL for _test_counter
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,5(sp)
+ 	ld	(hl),a
+ ;	genAddrOf
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_12
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,12(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 570
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0200
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,6(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 573
+ ;	genCmpEq
+ ;	AOP_HL for _cursor_index
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	or	a,a
+ 	jp	nz,00132$
+ 	jr	00265$
+ 00264$:
+ 	jp	00132$
+ 00265$:
+ ;	src/Battle_b.c 574
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x04
+ ;	src/Battle_b.c 575
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0027
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 577
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _party_size
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 578
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	AOP_HL for _cursor_max
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	hl,#_cursor_max
+ 	ld	(hl),a
+ ;	genGoto
+ 	jp	00162$
+ ;	genLabel
+ 00132$:
+ ;	src/Battle_b.c 579
+ ;	genCmpEq
+ ;	AOP_HL for _cursor_index
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	cp	a,#0x01
+ 	jp	nz,00266$
+ 	ld	a,#0x01
+ 	jr	00267$
+ 00266$:
+ 	xor	a,a
+ 00267$:
+ ;	src/Battle_b.c 596
+ ;	genGoto
+ 	jp	00162$
+ ;	src/Battle_b.c 604
+ ;	genLabel
+ 00139$:
+ ;	src/Battle_b.c 598
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x10
+ 	jr	nz,00268$
+ 	jp	00162$
+ 00268$:
+ ;	src/Battle_b.c 599
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,44(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0029
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	ld	l,a
+ 	ld	h,d
+ ;	genAssign (pointer)
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ ;	src/Battle_b.c 601
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,2(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,3(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#0x0029
+ 	add	hl,bc
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,4(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ; Removed redundent load
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	(hl+),a
+ 	inc	hl
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	dec	hl
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_HL for _player_index
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	lda	hl,6(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,7(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_HL for _test_counter
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,9(sp)
+ 	ld	(hl),a
+ ;	genAddrOf
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,10(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	lda	hl,8(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,16(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_13
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,22(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,12(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 602
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0100
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 604
+ ;	genGoto
+ 	jp	00162$
+ ;	src/Battle_b.c 625
+ ;	genLabel
+ 00150$:
+ ;	src/Battle_b.c 606
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x10
+ 	jr	nz,00269$
+ 	jp	00162$
+ 00269$:
+ ;	src/Battle_b.c 607
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#0x001B
+ 	add	hl,bc
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genAssign
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	ld	e,#0x00
+ 	lda	hl,4(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),e
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,6(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,2(sp)
+ ;	genMult
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld      (hl),a
+ 	ld      e,a
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,4(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_skill_1_1
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_skills
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,50(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_skill_1_1
+ ;	(registers are the same)
+ ;	src/Battle_b.c 608
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_skill_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0010
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#0x0012
+ 	add	hl,bc
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,6(sp)
+ 	ld	(hl),a
+ 	inc	de
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	dec	hl
+ 	dec	hl
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genCmpGt
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,6(sp)
+ 	ld	a,(hl)
+ 	lda	hl,2(sp)
+ 	sub	a,(hl)
+ 	lda	hl,7(sp)
+ 	ld	a,(hl)
+ 	lda	hl,3(sp)
+ 	sbc	a,(hl)
+ 	jp	c,00146$
+ ;	src/Battle_b.c 609
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x04
+ ;	src/Battle_b.c 610
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0027
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x02
+ ;	src/Battle_b.c 612
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0028
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	ld	(hl),a
+ ;	src/Battle_b.c 613
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_skill_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,50(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x000B
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	cp	a,#0x02
+ 	jp	z,00140$
+ 00270$:
+ ;	src/Battle_b.c 614
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	z,00140$
+ 00271$:
+ ;	src/Battle_b.c 615
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	nz,00141$
+ 	jr	00273$
+ 00272$:
+ 	jp	00141$
+ 00273$:
+ ;	genLabel
+ 00140$:
+ ;	src/Battle_b.c 616
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genGoto
+ 	jp	00142$
+ ;	genLabel
+ 00141$:
+ ;	src/Battle_b.c 618
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _party_size
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genLabel
+ 00142$:
+ ;	src/Battle_b.c 620
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	AOP_HL for _cursor_max
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	hl,#_cursor_max
+ 	ld	(hl),a
+ ;	genGoto
+ 	jp	00162$
+ ;	genLabel
+ 00146$:
+ ;	src/Battle_b.c 622
+ ;	genAssign
+ ;	AOP_HL for _ui_quake
+ 	ld	hl,#_ui_quake
+ 	ld	(hl),#0x0F
+ ;	src/Battle_b.c 625
+ ;	genGoto
+ 	jp	00162$
+ ;	src/Battle_b.c 651
+ ;	genLabel
+ 00161$:
+ ;	src/Battle_b.c 627
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x10
+ 	jr	nz,00274$
+ 	jp	00162$
+ 00274$:
+ ;	src/Battle_b.c 628
+ ;	genPlus
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_inventory
+ 	ld	hl,#_cursor_index
+ 	ld	l,(hl)
+ 	ld	h,#0x00
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	or	a,a
+ 	jp	nz,00157$
+ 	jr	00276$
+ 00275$:
+ 	jp	00157$
+ 00276$:
+ ;	src/Battle_b.c 629
+ ;	genAssign
+ ;	AOP_HL for _ui_quake
+ 	ld	hl,#_ui_quake
+ 	ld	(hl),#0x0F
+ ;	genGoto
+ 	jp	00162$
+ ;	genLabel
+ 00157$:
+ ;	src/Battle_b.c 631
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x04
+ ;	src/Battle_b.c 632
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0027
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ 	ld	(hl),#0x03
+ ;	src/Battle_b.c 634
+ ;	genPlus
+ ;	genPlusIncr
+ 	ld	hl,#0x0028
+ 	add	hl,bc
+ ;	genAssign (pointer)
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	ld	(hl),a
+ ;	src/Battle_b.c 638
+ ;	genMinus
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,4(sp)
+ 	ld	a,(hl)
+ 	add	a,#0xFF
+ 	inc	hl
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genAssign (pointer)
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	lda	hl,6(sp)
+ 	ld	a,(hl)
+ 	ld	(de),a
+ ;	src/Battle_b.c 640
+ ;	genCast
+ ;	AOP_HL for _cursor_index
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	ld	hl,#_cursor_index
+ 	ld	a,(hl)
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),#0x00
+ ;	genLeftShift
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld      (hl-),a
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld	(hl),a
+ 	ld	a,#0x04+1
+ 	jr	00278$
+ 00277$:
+ 	lda	hl,4(sp)
+ 	sla	(hl)
+ 	inc	hl
+ 	rl	(hl)
+ 00278$:
+ 	dec	a
+ 	jr	nz,00277$
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_items
+ 	lda	hl,4(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	dec	hl
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x000B
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,4(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	lda	hl,2(sp)
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	cp	a,#0x02
+ 	jp	z,00151$
+ 00279$:
+ ;	src/Battle_b.c 641
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,2(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	z,00151$
+ 00280$:
+ ;	src/Battle_b.c 642
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	lda	hl,2(sp)
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	nz,00152$
+ 	jr	00282$
+ 00281$:
+ 	jp	00152$
+ 00282$:
+ ;	genLabel
+ 00151$:
+ ;	src/Battle_b.c 643
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genGoto
+ 	jp	00153$
+ ;	genLabel
+ 00152$:
+ ;	src/Battle_b.c 645
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_HL for _party_size
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAliveTarget
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),e
+ 	lda	sp,1(sp)
+ 	pop	bc
+ ;	genLabel
+ 00153$:
+ ;	src/Battle_b.c 648
+ ;	genPlus
+ ;	AOP_HL for _party_size
+ ;	AOP_HL for _enemy_party_size
+ ;	AOP_HL for _cursor_max
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	ld	hl,#_enemy_party_size
+ 	add	a,(hl)
+ 	ld	hl,#_cursor_max
+ 	ld	(hl),a
+ ;	src/Battle_b.c 651
+ ;	genLabel
+ 00162$:
+ ;	src/Battle_b.c 696
+ ;	genAnd
+ ;	AOP_HL for _joy
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	and	a,#0x10
+ 	jr	nz,00283$
+ 	jp	00188$
+ 00283$:
+ ;	src/Battle_b.c 697
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x04
+ 	jp	z,00176$
+ 00284$:
+ ;	src/Battle_b.c 707
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x01
+ 	jp	z,00176$
+ 00285$:
+ ;	src/Battle_b.c 742
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x02
+ 	jp	z,00176$
+ 00286$:
+ ;	src/Battle_b.c 760
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x03
+ 	jp	nz,00287$
+ 	ld	a,#0x01
+ 	jr	00288$
+ 00287$:
+ 	xor	a,a
+ 00288$:
+ ;	src/Battle_b.c 785
+ ;	genLabel
+ 00176$:
+ ;	src/Battle_b.c 795
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,44(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0029
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,2(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,7(sp)
+ 	ld	(hl),a
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,c
+ 	add	a,#0x29
+ 	ld	c,a
+ 	ld	a,b
+ 	adc	a,#0x00
+ 	ld	b,a
+ ;	genPointerGet
+ 	ld	a,(bc)
+ ;	genCast
+ ; Removed redundent load
+ 	ld	c,a
+ 	rla	
+ 	sbc	a,a
+ 	ld	b,a
+ ;	genCast
+ ;	AOP_HL for _player_index
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,5(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_HL for _test_counter
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	ld	(hl),a
+ 	ld	hl,#_test_counter
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,9(sp)
+ 	ld	(hl),a
+ ;	genAddrOf
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,10(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,6(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	push	bc
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	lda	hl,8(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_14
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,20(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,12(sp)
+ ;	src/Battle_b.c 796
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0300
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 799
+ ;	genCast
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	c,(hl)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	ld	b,a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	push	bc
+ ;	genIpush
+ 	ld	hl,#__str_15
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,6(sp)
+ ;	src/Battle_b.c 800
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0110
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,12(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 802
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_actor_1_1
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	lda	hl,44(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	hl,#0x0027
+ 	add	hl,de
+ 	ld	c,l
+ 	ld	b,h
+ ;	genPointerGet
+ 	ld	a,(bc)
+ 	ld	c,a
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_command_1_1
+ 	lda	hl,47(sp)
+ 	ld	(hl),c
+ ;	src/Battle_b.c 803
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ;	AOP_STK for _BattleHandleInput_target_1_1
+ 	lda	hl,2(sp)
+ 	ld	e,(hl)
+ 	inc	hl
+ 	ld	d,(hl)
+ 	ld	a,(de)
+ 	lda	hl,46(sp)
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_target_1_1
+ ;	(registers are the same)
+ ;	src/Battle_b.c 810
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_target_1_1
+ ; genCmpEq: left 1, right 1, result 1
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	cp	a,#0xFF
+ 	jp	nz,00289$
+ 	ld	a,#0x01
+ 	jr	00290$
+ 00289$:
+ 	xor	a,a
+ 00290$:
+ 	ld	b,a
+ ;	genNot
+ 	xor	a,a
+ 	or	a,b
+ 	sub	a,#0x01
+ 	ld	a,#0x00
+ 	rla
+ 	ld	c,a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	lda	hl,2(sp)
+ 	ld	(hl),c
+ 	ld	a,c
+ 	rla	
+ 	sbc	a,a
+ 	inc	hl
+ 	ld	(hl),a
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_command_1_1
+ ; genCmpEq: left 1, right 1, result 1
+ 	lda	hl,47(sp)
+ 	ld	a,(hl)
+ 	or	a,a
+ 	jp	nz,00291$
+ 	ld	a,#0x01
+ 	jr	00292$
+ 00291$:
+ 	xor	a,a
+ 00292$:
+ 	ld	c,a
+ ;	genNot
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	xor	a,a
+ 	or	a,c
+ 	sub	a,#0x01
+ 	ld	a,#0x00
+ 	rla
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	ld	a,(hl+)
+ 	inc	hl
+ 	ld      (hl-),a
+ 	dec	hl
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,7(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_target_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	lda	hl,46(sp)
+ 	ld	a,(hl)
+ 	lda	hl,4(sp)
+ 	ld	(hl),a
+ 	lda	hl,46(sp)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,5(sp)
+ 	ld	(hl),a
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_command_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,47(sp)
+ 	ld	a,(hl)
+ 	lda	hl,8(sp)
+ 	ld	(hl),a
+ 	lda	hl,47(sp)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,9(sp)
+ 	ld	(hl),a
+ ;	genCmpEq
+ ;	AOP_HL for _battle_state
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ ; genCmpEq: left 1, right 1, result 1
+ 	ld	hl,#_battle_state
+ 	ld	a,(hl)
+ 	cp	a,#0x05
+ 	jp	nz,00293$
+ 	ld	a,#0x01
+ 	jr	00294$
+ 00293$:
+ 	xor	a,a
+ 00294$:
+ 	lda	hl,12(sp)
+ 	ld	(hl),a
+ ;	genNot
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc0_1_0
+ 	xor	a,a
+ 	or	a,(hl)
+ 	sub	a,#0x01
+ 	ld	a,#0x00
+ 	rla
+ 	inc	hl
+ ;	genCast
+ ;	AOP_STK for _BattleHandleInput_sloc0_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	lda	hl,0(sp)
+ 	ld	(hl),a
+ 	lda	hl,13(sp)
+ 	ld	a,(hl)
+ 	rla	
+ 	sbc	a,a
+ 	lda	hl,1(sp)
+ 	ld	(hl),a
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	inc	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc4_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc5_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc3_1_0
+ 	lda	hl,16(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ 	lda	hl,10(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_16
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,24(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_sprintf
+ 	lda	sp,14(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 811
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+ 	push	bc
+ 	ld	hl,#0x0500
+ 	push	hl
+ ;	genIpush
+ ;	AOP_STK for _BattleHandleInput_sloc2_1_0
+ 	lda	hl,14(sp)
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ 	pop	bc
+ ;	src/Battle_b.c 814
+ ;	genIfx
+ ;	AOP_STK for _BattleHandleInput_sloc1_1_0
+ 	xor	a,a
+ 	lda	hl,12(sp)
+ 	or	a,(hl)
+ 	jp	nz,00188$
+ ;	src/Battle_b.c 819
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,c
+ 	jp	nz,00188$
+ ;	src/Battle_b.c 820
+ ;	genIfx
+ 	xor	a,a
+ 	or	a,b
+ 	jp	nz,00188$
+ ;	src/Battle_b.c 821
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	ld	hl,#0x0100
+ 	push	hl
+ ;	genIpush
+ 	ld	hl,#__str_17
+ 	push	hl
+ ;	genCall
+ 	call	_UIDrawText
+ 	lda	sp,4(sp)
+ ;	src/Battle_b.c 824
+ ;	genIpush
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	a,(hl)
+ 	push	af
+ 	inc	sp
+ ;	genCall
+ 	call	_NextAlivePlayerAfter
+ 	ld	c,e
+ 	lda	sp,1(sp)
+ ;	genAssign
+ ;	(registers are the same)
+ ;	src/Battle_b.c 825
+ ;	genCmpEq
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	a,c
+ 	cp	a,#0xFF
+ 	jp	z,00180$
+ 00295$:
+ ;	src/Battle_b.c 827
+ ;	genAssign
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	(hl),c
+ ;	src/Battle_b.c 828
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 829
+ ;	genAssign
+ ;	AOP_HL for _cursor_index
+ 	ld	hl,#_cursor_index
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 830
+ ;	genAssign
+ ;	AOP_HL for _cursor_max
+ 	ld	hl,#_cursor_max
+ 	ld	(hl),#0x03
+ ;	src/Battle_b.c 831
+ ;	genAssign
+ ;	AOP_HL for _rerender_menu
+ 	ld	hl,#_rerender_menu
+ 	ld	(hl),#0x01
+ ;	genGoto
+ 	jp	00188$
+ ;	genLabel
+ 00180$:
+ ;	src/Battle_b.c 835
+ ;	genAssign
+ ;	AOP_HL for _battle_state
+ 	ld	hl,#_battle_state
+ 	ld	(hl),#0x05
+ ;	src/Battle_b.c 836
+ ;	genAssign
+ ;	AOP_HL for _player_index
+ 	ld	hl,#_player_index
+ 	ld	(hl),#0xFF
+ ;	src/Battle_b.c 837
+ ;	genAssign
+ ;	AOP_HL for _battle_actor_cursor
+ 	ld	hl,#_battle_actor_cursor
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 838
+ ;	genAssign
+ ;	AOP_HL for _battle_turn_state
+ 	ld	hl,#_battle_turn_state
+ 	ld	(hl),#0x00
+ ;	src/Battle_b.c 842
+ ;	genAssign
+ ;	AOP_STK for _BattleHandleInput_i_1_1
+ 	lda	hl,49(sp)
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00199$:
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_i_1_1
+ ;	AOP_HL for _party_size
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_party_size
+ 	ld	a,(hl)
+ 	lda	hl,49(sp)
+ 	cp	(hl)
+ 	jr	nz,00296$
+ 	jp	00202$
+ 00296$:
+ ;	src/Battle_b.c 843
+ ;	genMult
+ ;	AOP_STK for _BattleHandleInput_i_1_1
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ 	lda	hl,49(sp)
+ 	ld	e,(hl)
+ 	ld	d,#0x00
+ 	ld	l,e
+ 	ld	h,d
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	add	hl,hl
+ 	add	hl,de
+ 	add	hl,hl
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	de,#_battle_actors
+ 	dec	hl
+ 	ld	a,(hl+)
+ 	ld	h,(hl)
+ 	ld	l,a
+ 	add	hl,de
+ 	ld	b,l
+ 	ld	c,h
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	hl,#0x0027
+ 	add	hl,de
+ 	ld	a,l
+ 	ld	d,h
+ 	lda	hl,0(sp)
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ 	ld	(hl+),a
+ 	ld	(hl),d
+ 	ld	e,a
+ 	ld	a,(de)
+ 	inc	hl
+ ;	genCmpEq
+ ;	AOP_STK for _BattleHandleInput_sloc6_1_0
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	cp	a,#0x03
+ 	jp	nz,00201$
+ 	jr	00298$
+ 00297$:
+ 	jp	00201$
+ 00298$:
+ ;	src/Battle_b.c 844
+ ;	genPlus
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,b
+ 	add	a,#0x28
+ 	ld	b,a
+ 	ld	a,c
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	ld	b,a
+ ;	genPlus
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld	a,#<_inventory
+ 	add	a,b
+ 	ld	b,a
+ 	ld	a,#>_inventory
+ 	adc	a,#0x00
+ 	ld	c,a
+ ;	genPointerGet
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	a,(de)
+ 	lda	hl,0(sp)
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_sloc7_1_0
+ ;	genPlusIncr
+ ;	Can't optimise plus by inc, falling back to the normal way
+ 	ld      (hl),a
+ ; Removed redundent load
+ 	add	a,#0x01
+ ;	genAssign (pointer)
+ 	ld	e,b
+ 	ld	d,c
+ 	ld	(de),a
+ ;	genLabel
+ 00201$:
+ ;	src/Battle_b.c 842
+ ;	genPlus
+ ;	AOP_STK for _BattleHandleInput_i_1_1
+ ;	genPlusIncr
+ 	lda	hl,49(sp)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00199$
+ ;	genLabel
+ 00202$:
+ ;	src/Battle_b.c 848
+ ;	genAssign
+ ;	AOP_HL for _rerender_menu
+ 	ld	hl,#_rerender_menu
+ 	ld	(hl),#0x01
+ ;	src/Battle_b.c 849
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_UpdateBattleOrder
+ ;	src/Battle_b.c 850
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_UpdateEnemyActions
+ ;	src/Battle_b.c 851
+ ;	genCall
+ ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+ 	call	_PerformNextAction
+ ;	genLabel
+ 00188$:
+ ;	src/Battle_b.c 891
+ ;	genMinus
+ ;	AOP_HL for _joy_auto_speed
+ ;	AOP_HL for _joy_auto
+ 	ld	a,#0x14
+ 	ld	hl,#_joy_auto_speed
+ 	sub	a,(hl)
+ 	ld	hl,#_joy_auto
+ 	ld	(hl),a
+ ;	src/Battle_b.c 894
+ ;	genCmpLt
+ ;	AOP_HL for _joy_auto_speed
+ 	ld	hl,#_joy_auto_speed
+ 	ld	a,(hl)
+ 	cp	#0x10
+ 	jp	nc,00195$
+ ;	src/Battle_b.c 895
+ ;	genPlus
+ ;	AOP_HL for _joy_auto_speed
+ ;	genPlusIncr
+ 	inc	(hl)
+ 	inc	(hl)
+ 	inc	(hl)
+ 	inc	(hl)
+ ;	genGoto
+ 	jp	00195$
+ ;	genLabel
+ 00194$:
+ ;	src/Battle_b.c 897
+ ;	genCmpEq
+ ;	AOP_HL for _joy
+ ; genCmpEq: left 1, right 1, result 0
+ 	ld	hl,#_joy
+ 	ld	a,(hl)
+ 	or	a,a
+ 	jp	nz,00195$
+ 	jr	00300$
+ 00299$:
+ 	jp	00195$
+ 00300$:
+ ;	src/Battle_b.c 898
+ ;	genAssign
+ ;	AOP_HL for _joy_auto_speed
+ 	ld	hl,#_joy_auto_speed
+ 	ld	(hl),#0x00
+ ;	genLabel
+ 00195$:
+ ;	src/Battle_b.c 901
+ ;	genCmpGt
+ ;	AOP_HL for _joy_auto
+ 	ld	a,#0x00
+ 	ld	hl,#_joy_auto
+ 	sub	a,(hl)
+ 	jp	nc,00203$
+ ;	src/Battle_b.c 902
+ ;	genMinus
+ ;	AOP_HL for _joy_auto
+ 	dec	(hl)
+ ;	genLabel
+ 00203$:
+ ;	genEndFunction
+ 	lda	sp,52(sp)
+ 	ret
+ ___BattleHandleInput_end:
+ __str_12:
+ 	.ascii "%u CI%u BT%u AT%u"
+        75 20 42 54 25 75
+        20 41 54 25 75
+ 	.db 0x00
+ __str_13:
+ 	.ascii "%u CI%u BT%u AT%u"
+        75 20 42 54 25 75
+        20 41 54 25 75
+ 	.db 0x00
+ __str_14:
+ 	.ascii "%u CI%u BT%u AT%u"
+        75 20 42 54 25 75
+        20 41 54 25 75
+ 	.db 0x00
+ __str_15:
+ 	.ascii "S=%u"
+ 	.db 0x00
+ __str_16:
+ 	.ascii "E%u C%u CT%u CO%u TO%uXXXX"
+        75 20 43 54 25 75
+        20 43 4F 25 75 20
+        54 4F 25 75 58 58
+        58 58
+ 	.db 0x00
+ __str_17:
+ 	.ascii "SET COMMAND"
+        4D 4D 41 4E 44
+ 	.db 0x00
+ 	.area _CODE_9
+Boy Z80-like CPU), page 1.
+
+Symbol Table
+
+        072D GR
+        0F8A GR
+        0350 GR
+        0349 GR
+        0B61 GR
+        086D GR
+        06CC GR
+        0626 GR
+        0000 GR
+        08C6 GR
+        074E GR
+        097A GR
+        0A68 GR
+        0923 GR
+        09EF GR
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        06FB GR
+        **** GX
+        **** GX
+        0A6A GR
+        0A69 GR
+        074E R
+        072D R
+        17FC R
+        0F8A R
+        0609 R
+        0350 R
+        0350 R
+        0349 R
+        0F58 R
+        0B61 R
+        08C6 R
+        086D R
+        06FB R
+        06CC R
+        06CC R
+        0626 R
+        0340 R
+        0000 R
+        0923 R
+rt      08C6 R
+        09EF R
+rt      097A R
+        086D R
+        074E R
+        0A69 R
+        0A68 R
+e_end   097A R
+e_sta   0923 R
+e_end   0A68 R
+e_sta   09EF R
+        072D R
+        06FB R
+        0B61 R
+        0A6A R
+        0A6A R
+        0A69 R
+        0626 R
+        0609 R
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        0340 R
+        0341 R
+        0F80 R
+        0F86 R
+        17FC R
+        180E R
+        1820 R
+        1832 R
+        1837 R
+        1852 R
+        0F58 R
+        0F5A R
+        0F5C R
+        0F62 R
+        0F68 R
+        0F6E R
+        0F74 R
+        0F7A R
+        00D5 GR
+        0003 GR
+        0000 GR
+        00E2 GR
+        0001 GR
+        0002 GR
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        00D7 GR
+        00D8 GR
+        **** GX
+        00DB GR
+        **** GX
+        **** GX
+        **** GX
+        00D9 GR
+        00DA GR
+        00DE GR
+        **** GX
+        **** GX
+        00D6 GR
+        00E0 GR
+        **** GX
+        00E8 GR
+        00DD GR
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        **** GX
+        00E9 GR
+        **** GX
+        0609 GR
+        00DC GR
+
+Boy Z80-like CPU), page 2.
+
+Area Table
+
+         size    0   flags 0
+         size   EA   flags 0
+         size    0   flags 0
+         size    0   flags 0
+         size    0   flags 0
+         size    0   flags 0
+         size   22   flags 0
+         size    0   flags 0
+         size    0   flags 0
+         size 185E   flags 0

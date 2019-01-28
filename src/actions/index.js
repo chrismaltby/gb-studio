@@ -181,7 +181,7 @@ export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
 
-export const runBuild = () => async (dispatch, getState) => {
+export const runBuild = buildType => async (dispatch, getState) => {
   dispatch({ type: types.CMD_START });
   dispatch({ type: types.SET_SECTION, section: "build" });
 
@@ -190,25 +190,37 @@ export const runBuild = () => async (dispatch, getState) => {
 
   let env = Object.create(process.env);
   env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
-  //             "/opt/emsdk/emscripten/1.38.6/:/Users/cmaltby/bin:/Users/cmaltby/Library/Python/3.6/bin:/opt/gbdk/bin:/usr/local/opt/go/libexec/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/puppetlabs/pdk/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki"
+
+  const cwd = `${__dirname}/../data/src/gb/`;
 
   if (projectPath) {
-    runCmd(
-      "/usr/bin/make",
-      ["web"],
-      {
-        cwd: "/Users/cmaltby/Sites/test/gbdkjs-example-jrpg2",
-        env
-      },
-      out => {
-        if (out.type === "out") {
-          dispatch({ type: types.CMD_STD_OUT, text: out.text });
-        } else if (out.type === "err") {
-          dispatch({ type: types.CMD_STD_ERR, text: out.text });
-        } else {
-          dispatch({ type: types.CMD_STD_OUT, text: out.text });
+    return new Promise((resolve, reject) =>
+      runCmd(
+        "/usr/bin/make",
+        [buildType],
+        {
+          cwd,
+          env
+        },
+        out => {
+          if (out.type === "out") {
+            dispatch({ type: types.CMD_STD_OUT, text: out.text });
+          } else if (out.type === "err") {
+            dispatch({ type: types.CMD_STD_ERR, text: out.text });
+          } else if (out.type === "complete") {
+            if (out.text) {
+              dispatch({ type: types.CMD_STD_ERR, text: out.text });
+              dispatch({ type: types.CMD_COMPLETE });
+              reject(out.text);
+            } else {
+              dispatch({ type: types.CMD_COMPLETE });
+              resolve();
+            }
+          } else {
+            dispatch({ type: types.CMD_STD_OUT, text: out.text });
+          }
         }
-      }
+      )
     );
   }
 };

@@ -1,0 +1,976 @@
+AREA .  .ABS.
+	RADIX HEX
+	BASE 0000
+	SIZE 0000
+	ATTRIB ABS OVR
+	GLOBALS
+		l__HEAP	0000
+		l__BSEG	0000
+		l_.  .ABS.	0000
+		l__GSFINAL	0000
+		l__ISEG	0000
+		s_.  .ABS.	0000
+		s__HEADER	0000
+		l__XSEG	0000
+		.init	0000
+		l__OVERLAY	0000
+		l__LIT	0000
+		l__GSINITTAIL	0001
+		l__BSS	005E
+		l__BASE	01DA
+		l__HEADER	01E1
+		s__CODE	0200
+		l__HOME	0312
+		l__DATA	0418
+		l__CODE_4	098D
+		l__CODE_11	0A6B
+		l__CODE	1038
+		l__GSINIT	10B8
+		l__CODE_3	10E0
+		s__HOME	1238
+		s__BASE	154A
+		s__LIT	1724
+		s__GSINIT	1724
+		l__CODE_15	1A27
+		l__CODE_9	1AF1
+		l__CODE_8	1B79
+		l__CODE_13	1D60
+		l__CODE_14	1F20
+		l__CODE_12	200E
+		l__CODE_5	2080
+		l__CODE_6	254A
+		s__GSINITTAIL	27DC
+		s__GSFINAL	27DD
+		l__CODE_7	29F3
+		l__CODE_2	2FA1
+		l__CODE_10	374F
+		s__CODE_10	4000
+		s__CODE_11	4000
+		s__CODE_12	4000
+		s__CODE_13	4000
+		s__CODE_14	4000
+		s__CODE_15	4000
+		s__CODE_2	4000
+		s__CODE_3	4000
+		s__CODE_4	4000
+		s__CODE_5	4000
+		s__CODE_6	4000
+		s__CODE_7	4000
+		s__CODE_8	4000
+		s__CODE_9	4000
+		.OAM	C000
+		s__DATA	C0A0
+		s__BSS	C4B8
+		s__HEAP	C516
+		s__BSEG	C516
+		s__ISEG	C516
+		s__XSEG	C516
+		s__OVERLAY	C516
+		.STACK	E000
+		.refresh_OAM	FF80
+AREA _CODE
+	RADIX HEX
+	BASE 0200
+	SIZE 1038
+	ATTRIB REL CON
+	GLOBALS
+		_SetBankedBkgData	0200
+		_SetBankedBkgTiles	0222
+		_SetBankedWinTiles	024C
+		_SetBankedSpriteData	0276
+		_ReadBankedUBYTE	0298
+		_StrCpyBanked	02B1
+		_main	02E3
+		_game_loop	0457
+		_run_script	0587
+		_script_cmd_line	066A
+		_script_cmd_set_emotion	069E
+		_ScriptLastFnComplete	06C5
+		_StackPush	0783
+		_StackPop	07A2
+		_FadeInit	07C1
+		_FadeIn	07DD
+		_FadeOut	07F2
+		_FadeUpdate	0807
+		_FadeSetSpeed	088D
+		_IsFading	089E
+		_PongInit	08A3
+		_PongUpdate	08B5
+		_PushBank	08C7
+		_PopBank	08DD
+		_TitleInit	0905
+		_TitleCleanup	0917
+		_TitleUpdate	0929
+		_TitleLCDHandle	093B
+		_LoadMap	0A25
+		_MapUpdate	0A37
+		_MapSetEmotion	0A49
+		_IsEmoting	0A66
+		_UIInit	0A7D
+		_UIUpdate	0A8F
+		_UIDrawFrame	0AA1
+		_UIDrawText	0AC6
+		_UIDrawTextBkg	0B27
+		_set_text_line	0B88
+		_UISetTextBuffer	0BDE
+		_draw_text	0C0F
+		_UIDrawTextBuffer	0D7F
+		_UIDrawTextBufferChar	0D93
+		_LogoInit	0F03
+		_LogoUpdate	0F15
+		_sprite_len	0F27
+		_game_start_map_index	0F36
+		_game_start_x	0F37
+		_game_start_y	0F38
+		_game_start_dir	0F39
+		_map_banks	0F3A
+		_tile_banks	0F6C
+		_map_widths	0F9E
+		_map_heights	0FD0
+		_map_sprites_len	1002
+		_map_actors_len	1034
+		_map_triggers_len	1066
+		_SpritesReset	1098
+		_rand	10C3
+		_randw	10C3
+		__divschar_rrx_s	10EE
+		__divschar_rrx_hds	10F5
+		__modschar_rrx_s	10FC
+		__modschar_rrx_hds	1103
+		__divsint_rrx_s	1108
+		__divsint_rrx_hds	1114
+		__modsint_rrx_s	111C
+		__modsint_rrx_hds	1128
+		__divuchar_rrx_s	112E
+		__divuchar_rrx_hds	1135
+		__moduchar_rrx_s	113C
+		__moduchar_rrx_hds	1143
+		__divuint_rrx_s	1148
+		__divuint_rrx_hds	1154
+		__moduint_rrx_s	115C
+		__moduint_rrx_hds	1168
+		.mod8	116E
+		.div8	116E
+		.mod16	1176
+		.div16	1176
+		.modu8	11B0
+		.divu8	11B0
+		.modu16	11B3
+		.divu16	11B3
+		__mulschar_rrx_s	11F0
+		__mulschar_rrx_hds	11F7
+		__muluchar_rrx_s	1203
+		__mulsint_rrx_s	1210
+		__muluint_rrx_s	1210
+		__mulsint_rrx_hds	121C
+		__muluint_rrx_hds	121C
+		__muluchar_rrx_hds	121C
+AREA _HEADER
+	RADIX HEX
+	BASE 0000
+	SIZE 01E1
+	ATTRIB ABS OVR
+	GLOBALS
+		_exit	01D2
+AREA _HOME
+	RADIX HEX
+	BASE 1238
+	SIZE 0312
+	ATTRIB REL CON
+	GLOBALS
+		.set_mode	1238
+		.remove_VBL	1248
+		.remove_LCD	124E
+		.remove_TIM	1254
+		.remove_SIO	125A
+		.remove_JOY	1260
+		.add_VBL	1266
+		.add_LCD	126C
+		.add_TIM	1272
+		.add_SIO	1278
+		.add_JOY	127E
+		.remove_int	1284
+		.add_int	12A4
+		.wait_vbl_done	12C0
+		_wait_vbl_done	12C0
+		_display_off	12D7
+		.display_off	12D7
+		.serial_IO	12F8
+		_mode	1327
+		_get_mode	1330
+		_enable_interrupts	1335
+		_disable_interrupts	1337
+		_reset	1339
+		.reset	1339
+		_set_interrupts	133F
+		_remove_VBL	134A
+		_remove_LCD	1355
+		_remove_TIM	1360
+		_remove_SIO	136B
+		_remove_JOY	1376
+		_add_VBL	1381
+		_add_LCD	138C
+		_add_TIM	1397
+		_add_SIO	13A2
+		_add_JOY	13AD
+		_clock	13B8
+		__printTStates	13C1
+		banked_call	13C2
+		banked_ret	13DB
+		__initrleblock	13E4
+		_strcpy	140B
+		_memcpy	143E
+		_strcmp	1483
+		_strcat	14DB
+		_strlen	1524
+AREA _BASE
+	RADIX HEX
+	BASE 154A
+	SIZE 01DA
+	ATTRIB REL CON
+	GLOBALS
+		.set_sprite_prop	154A
+		_set_sprite_prop	1557
+		_initrand	1562
+		.initrand	1564
+		.mv_sprite	156D
+		_move_sprite	157C
+		_set_win_tiles	1589
+		_set_win_data	159D
+		_set_bkg_data	159D
+		_set_sprite_data	15EA
+		.padup	1619
+		_waitpadup	1619
+		.jpad	1629
+		.wait_pad	1656
+		_joypad	165D
+		_waitpad	1662
+		.set_sprite_tile	166C
+		_set_sprite_tile	1679
+		.copy_vram	1684
+		_get_data	1693
+		_set_data	1693
+		_set_bkg_tiles	16A6
+		.set_xy_wtt	16BA
+		.set_xy_btt	16CB
+		.set_xy_tt	16DA
+		_set_tiles	170B
+AREA _LIT
+	RADIX HEX
+	BASE 1724
+	SIZE 0000
+	ATTRIB REL CON
+AREA _GSINIT
+	RADIX HEX
+	BASE 1724
+	SIZE 10B8
+	ATTRIB REL CON
+	GLOBALS
+		gsinit	1724
+AREA _GSINITTAIL
+	RADIX HEX
+	BASE 27DC
+	SIZE 0001
+	ATTRIB REL CON
+AREA _GSFINAL
+	RADIX HEX
+	BASE 27DD
+	SIZE 0000
+	ATTRIB REL CON
+AREA _DATA
+	RADIX HEX
+	BASE C0A0
+	SIZE 0418
+	ATTRIB REL CON
+	GLOBALS
+		_running	C0A0
+		_joy	C0A1
+		_prev_joy	C0A2
+		_time	C0A3
+		_frame_offset	C0A4
+		_actors	C0A5
+		_triggers	C111
+		_map_index	C141
+		_map_actor_num	C142
+		_map_trigger_num	C143
+		_camera_dest	C144
+		_camera_settings	C146
+		_wait_time	C147
+		_shake_time	C148
+		_actor_move_settings	C149
+		_actor_move_dest	C14A
+		_update_actor_dir	C14C
+		_first_frame_on_tile	C14E
+		_stage_type	C14F
+		_stage_next_type	C150
+		_UpdateFn	C151
+		_script_ptr	C153
+		_last_fn	C155
+		_script_continue	C157
+		_script_arg1	C158
+		_script_arg2	C159
+		_script_arg3	C15A
+		_script_arg4	C15B
+		_script_arg5	C15C
+		_script_action_complete	C15D
+		_script_actor	C15E
+		_script_fns	C15F
+		_bit_mask	C191
+		_map_bank	C199
+		_map	C19A
+		_map_col	C19C
+		_map_width	C19E
+		_map_height	C19F
+		_emotion_type	C1A0
+		_emotion_timer	C1A1
+		_emotion_actor	C1A2
+		_title_bank	C1AA
+		_bank_stack	C1AD
+		_ui_bank	C1B8
+		_title_bg_timer	C1B9
+		_title_inter_i	C1BA
+		_map_next_index	C1BB
+		_map_next_pos	C1BC
+		_map_next_dir	C1BE
+		_menu_y	C1C0
+		_menu_dest_y	C1C1
+		_text_x	C1C2
+		_text_y	C1C3
+		_text_drawn	C1C4
+		_text_count	C1C5
+		_text_wait	C1C6
+		_text_lines	C1C7
+		_logo_bank	C217
+		_pong_bank	C21E
+		_sprite_ptrs	C22F
+		_map_ptrs	C24D
+		_map_tiles_ptrs	C2B1
+		_map_col_ptrs	C315
+		_map_sprites	C379
+		_map_actors	C3DD
+		_map_triggers	C441
+		_script_flags	C4A5
+AREA _BSS
+	RADIX HEX
+	BASE C4B8
+	SIZE 005E
+	ATTRIB REL CON
+	GLOBALS
+		__cpu	C4B8
+		.mode	C4B9
+		__io_out	C4BA
+		__io_in	C4BB
+		__io_status	C4BC
+		.vbl_done	C4BD
+		__current_bank	C4BE
+		_sys_time	C4BF
+		.sys_time	C4BF
+		.int_0x40	C4C1
+		.int_0x48	C4D1
+		.int_0x50	C4E1
+		.int_0x58	C4F1
+		.int_0x60	C501
+		.randhi	C511
+		.randlo	C512
+AREA _HEAP
+	RADIX HEX
+	BASE C516
+	SIZE 0000
+	ATTRIB REL CON
+	GLOBALS
+		_malloc_heap_start	C516
+AREA _OVERLAY
+	RADIX HEX
+	BASE C516
+	SIZE 0000
+	ATTRIB REL CON
+AREA _ISEG
+	RADIX HEX
+	BASE C516
+	SIZE 0000
+	ATTRIB REL CON
+AREA _BSEG
+	RADIX HEX
+	BASE C516
+	SIZE 0000
+	ATTRIB REL CON
+AREA _XSEG
+	RADIX HEX
+	BASE C516
+	SIZE 0000
+	ATTRIB REL CON
+AREA _CODE_10
+	RADIX HEX
+	BASE 4000
+	SIZE 374F
+	ATTRIB REL CON
+	GLOBALS
+		_LoadMap_b	4000
+		_emotion_offsets	48F6
+		_MapRepositionCamera_b	492E
+		_MapUpdate_b	4B10
+		_MapUpdateActorMovement_b	4BB1
+		_MapNpcAt_b	4E36
+		_MapTriggerAt_b	4EE7
+		_MapHandleInput_b	4F90
+		_MapUpdateActors_b	5222
+		_MapUpdateEmotionBubble_b	58F6
+		_MapHandleTrigger_b	59D3
+		_MapSetEmotion_b	5A7F
+		_IsEmoting_b	5ACA
+		_TitleInit_b	5AD6
+		_title_tileset	67B4
+		_title_tiles	6B84
+		_TitleCleanup_b	6DC4
+		_TitleUpdate_b	6DC5
+		_TitleRender	7056
+		_PongInit_b	7057
+		_pong_bg	71A2
+		_pong_tiles	730A
+		_pong_score	737A
+		_pong_score_ptr	741A
+		_pong_paddle	7424
+		_pong_ball	7444
+		_PongUpdate_b	7464
+AREA _CODE_3
+	RADIX HEX
+	BASE 4000
+	SIZE 10E0
+	ATTRIB REL CON
+	GLOBALS
+		_village_sprites	4000
+		_btl_monster	4800
+		_btl_cursor	4C00
+		_btl_menu_cursor	4C20
+		_btl_player1	4C40
+		_btl_player2	4C80
+		_btl_tiles	4CC0
+		_btl_bg	4E30
+		_btl_stage	4E40
+		_btl_black	4E68
+		_emotion_sprites	4EE0
+AREA _CODE_11
+	RADIX HEX
+	BASE 4000
+	SIZE 0A6B
+	ATTRIB REL CON
+	GLOBALS
+		_script_cmd_end	4000
+		_script_cmd_goto	4009
+		_script_cmd_if_flag	4031
+		_script_cmd_unless_flag	4078
+		_script_cmd_set_flag	40BF
+		_script_cmd_clear_flag	40DF
+		_script_cmd_actor_dir	40FF
+		_script_cmd_active_actor	41B9
+		_script_cmd_camera_move	41D2
+		_script_cmd_camera_lock	421A
+		_script_cmd_wait	4235
+		_script_fade_out	424E
+		_script_fade_in	426D
+		_script_load_map	428C
+		_script_cmd_actor_pos	4359
+		_script_actor_move_to	43C2
+		_script_cmd_show_sprites	440F
+		_script_cmd_hide_sprites	4437
+		_script_load_battle	445F
+		_script_cmd_show_player	4481
+		_script_cmd_hide_player	4494
+		_script_cmd_camera_shake	44A7
+		_script_cmd_return_title	44C0
+		_UIInit_b	44DF
+		_ui_frame_tl_tiles	44ED
+		_ui_frame_bl_tiles	44EE
+		_ui_frame_tr_tiles	44EF
+		_ui_frame_br_tiles	44F0
+		_ui_frame_t_tiles	44F1
+		_ui_frame_b_tiles	44F2
+		_ui_frame_l_tiles	44F3
+		_ui_frame_r_tiles	44F4
+		_ui_frame_bg_tiles	44F5
+		_global_tileset	44F6
+		_UIUpdate_b	48F6
+		_UIDrawFrame_b	4938
+AREA _CODE_2
+	RADIX HEX
+	BASE 4000
+	SIZE 2FA1
+	ATTRIB REL CON
+	GLOBALS
+		_LogoInit_b	4000
+		_LogoUpdate_b	4B21
+		_LogoRender	4CC0
+		_strings	4CC1
+AREA _CODE_9
+	RADIX HEX
+	BASE 4000
+	SIZE 1AF1
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_garden_tiles	4000
+		_mabe_garden_col	4168
+		_mabe_garden_actors	42D0
+		_mabe_garden_sprites	42D8
+		_mabe_garden_triggers	42D9
+		_mabe_edge_tiles	42EE
+		_mabe_edge_col	4456
+		_mabe_edge_actors	45BE
+		_mabe_edge_sprites	45C6
+		_mabe_edge_triggers	45C7
+		_dungeon_prize_tiles	45CE
+		_dungeon_prize_col	484E
+		_dungeon_prize_actors	4ACE
+		_dungeon_prize_sprites	4ACF
+		_dungeon_prize_triggers	4AD0
+		_home_livingroom_night_tiles	4ADE
+		_home_livingroom_night_col	4C6A
+		_home_livingroom_night_actors	4DF6
+		_home_livingroom_night_sprites	4DF7
+		_home_livingroom_night_triggers	4DF8
+		_intro_2_tiles	4E06
+		_intro_2_col	5086
+		_intro_2_actors	5306
+		_intro_2_sprites	5307
+		_intro_2_triggers	5308
+		_ending_2_tiles	530F
+		_ending_2_col	558F
+		_ending_2_actors	580F
+		_ending_2_sprites	5810
+		_ending_2_triggers	5811
+		_credits_cm_tiles	5818
+		_credits_cm_col	5980
+		_credits_cm_actors	5AE8
+		_credits_cm_sprites	5AE9
+		_credits_cm_triggers	5AEA
+AREA _CODE_14
+	RADIX HEX
+	BASE 4000
+	SIZE 1F20
+	ATTRIB REL CON
+	GLOBALS
+		_tileset_38	4000
+		_tileset_43	4B10
+		_tileset_46	5680
+AREA _CODE_7
+	RADIX HEX
+	BASE 4000
+	SIZE 29F3
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_statue_tiles	4000
+		_mabe_statue_col	4168
+		_mabe_statue_actors	42D0
+		_mabe_statue_sprites	4308
+		_mabe_statue_triggers	430C
+		_mabe_music_house_tiles	4328
+		_mabe_music_house_col	4490
+		_mabe_music_house_actors	45F8
+		_mabe_music_house_sprites	4600
+		_mabe_music_house_triggers	4601
+		_dungeon_maze_2_tiles	461D
+		_dungeon_maze_2_col	4A1D
+		_dungeon_maze_2_actors	4E1D
+		_dungeon_maze_2_sprites	4E1E
+		_dungeon_maze_2_triggers	4E1F
+		_home_bathroom_night_tiles	4E2D
+		_home_bathroom_night_col	4F95
+		_home_bathroom_night_actors	50FD
+		_home_bathroom_night_sprites	510D
+		_home_bathroom_night_triggers	510E
+		_forest_clearing_tiles	5115
+		_forest_clearing_col	5395
+		_forest_clearing_actors	5615
+		_forest_clearing_sprites	561D
+		_forest_clearing_triggers	561E
+		_intro_7_tiles	562C
+		_intro_7_col	58AC
+		_intro_7_actors	5B2C
+		_intro_7_sprites	5B34
+		_intro_7_triggers	5B35
+		_test_map_tiles	5B3C
+		_test_map_col	5CFE
+		_test_map_actors	5EC0
+		_test_map_sprites	5EC1
+		_test_map_triggers	5EC2
+		_blank_sprite	5EF3
+		_boulder_sprite	5F33
+		_boy_sprite	5FF3
+		_cat_sprite	60B3
+		_cube_sprite	60F3
+		_dog_sprite	61B3
+		_gem_sprite	61F3
+		_lady_sprite	62B3
+		_link_shadow_sprite	6373
+		_npc_001_sprite	64F3
+		_npc_002_sprite	65B3
+		_player_young_sprite	6673
+		_player_sprite	67F3
+		_statue_lower_sprite	6973
+		_statue_upper_sprite	69B3
+AREA _CODE_13
+	RADIX HEX
+	BASE 4000
+	SIZE 1D60
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_shop_inside_tiles	4000
+		_mabe_shop_inside_col	4168
+		_mabe_shop_inside_actors	42D0
+		_mabe_shop_inside_sprites	42F0
+		_mabe_shop_inside_triggers	42F2
+		_mabe_upper_inside_tiles	42F9
+		_mabe_upper_inside_col	4539
+		_mabe_upper_inside_actors	4779
+		_mabe_upper_inside_sprites	4789
+		_mabe_upper_inside_triggers	478B
+		_dungeon_exit_2_tiles	4799
+		_dungeon_exit_2_col	4A19
+		_dungeon_exit_2_actors	4C99
+		_dungeon_exit_2_sprites	4C9A
+		_dungeon_exit_2_triggers	4C9B
+		_village_square_night_tiles	4CB0
+		_village_square_night_col	50B0
+		_village_square_night_actors	54B0
+		_village_square_night_sprites	54B8
+		_village_square_night_triggers	54B9
+		_intro_4_tiles	54D5
+		_intro_4_col	563D
+		_intro_4_actors	57A5
+		_intro_4_sprites	57A6
+		_intro_4_triggers	57A7
+		_ending_4_tiles	57AE
+		_ending_4_col	5916
+		_ending_4_actors	5A7E
+		_ending_4_sprites	5A7F
+		_ending_4_triggers	5A80
+		_game_title_tiles	5A87
+		_game_title_col	5BEF
+		_game_title_actors	5D57
+		_game_title_sprites	5D58
+		_game_title_triggers	5D59
+AREA _CODE_4
+	RADIX HEX
+	BASE 4000
+	SIZE 098D
+	ATTRIB REL CON
+	GLOBALS
+		_script	4000
+AREA _CODE_12
+	RADIX HEX
+	BASE 4000
+	SIZE 200E
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_shop_tiles	4000
+		_mabe_shop_col	4168
+		_mabe_shop_actors	42D0
+		_mabe_shop_sprites	42D1
+		_mabe_shop_triggers	42D2
+		_mabe_house_inside_tiles	42E7
+		_mabe_house_inside_col	444F
+		_mabe_house_inside_actors	45B7
+		_mabe_house_inside_sprites	45C7
+		_mabe_house_inside_triggers	45C9
+		_dungeon_exit_1_tiles	45D7
+		_dungeon_exit_1_col	4857
+		_dungeon_exit_1_actors	4AD7
+		_dungeon_exit_1_sprites	4ADF
+		_dungeon_exit_1_triggers	4AE0
+		_village_street_night_tiles	4AF5
+		_village_street_night_col	4EF5
+		_village_street_night_actors	52F5
+		_village_street_night_sprites	5305
+		_village_street_night_triggers	5307
+		_intro_3_tiles	5323
+		_intro_3_col	55A3
+		_intro_3_actors	5823
+		_intro_3_sprites	5824
+		_intro_3_triggers	5825
+		_ending_3_tiles	582C
+		_ending_3_col	5AAC
+		_ending_3_actors	5D2C
+		_ending_3_sprites	5D2D
+		_ending_3_triggers	5D2E
+		_credits_by_tiles	5D35
+		_credits_by_col	5E9D
+		_credits_by_actors	6005
+		_credits_by_sprites	6006
+		_credits_by_triggers	6007
+AREA _CODE_5
+	RADIX HEX
+	BASE 4000
+	SIZE 2080
+	ATTRIB REL CON
+	GLOBALS
+		_tileset_44	4000
+		_tileset_31	48A0
+		_tileset_35	54A0
+AREA _CODE_8
+	RADIX HEX
+	BASE 4000
+	SIZE 1B79
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_upper_tiles	4000
+		_mabe_upper_col	4168
+		_mabe_upper_actors	42D0
+		_mabe_upper_sprites	42D1
+		_mabe_upper_triggers	42D2
+		_mabe_lower_tiles	42FC
+		_mabe_lower_col	4464
+		_mabe_lower_actors	45CC
+		_mabe_lower_sprites	45CD
+		_mabe_lower_triggers	45CE
+		_dungeon_boss_tiles	45E3
+		_dungeon_boss_col	4863
+		_dungeon_boss_actors	4AE3
+		_dungeon_boss_sprites	4AEB
+		_dungeon_boss_triggers	4AEC
+		_home_kitchen_night_tiles	4AFA
+		_home_kitchen_night_col	4CBC
+		_home_kitchen_night_actors	4E7E
+		_home_kitchen_night_sprites	4E7F
+		_home_kitchen_night_triggers	4E80
+		_intro_1_tiles	4E8E
+		_intro_1_col	510E
+		_intro_1_actors	538E
+		_intro_1_sprites	538F
+		_intro_1_triggers	5390
+		_ending_1_tiles	5397
+		_ending_1_col	5617
+		_ending_1_actors	5897
+		_ending_1_sprites	5898
+		_ending_1_triggers	5899
+		_intro_8_tiles	58A0
+		_intro_8_col	5A08
+		_intro_8_actors	5B70
+		_intro_8_sprites	5B71
+		_intro_8_triggers	5B72
+AREA _CODE_15
+	RADIX HEX
+	BASE 4000
+	SIZE 1A27
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_trendy_tiles	4000
+		_mabe_trendy_col	4168
+		_mabe_trendy_actors	42D0
+		_mabe_trendy_sprites	42D1
+		_mabe_trendy_triggers	42D2
+		_mabe_lower_inside_tiles	42E7
+		_mabe_lower_inside_col	444F
+		_mabe_lower_inside_actors	45B7
+		_mabe_lower_inside_sprites	45BF
+		_mabe_lower_inside_triggers	45C0
+		_home_bedroom_night_tiles	45C7
+		_home_bedroom_night_col	472F
+		_home_bedroom_night_actors	4897
+		_home_bedroom_night_sprites	4898
+		_home_bedroom_night_triggers	4899
+		_forest_entrance_night_tiles	48A0
+		_forest_entrance_night_col	4CA0
+		_forest_entrance_night_actors	50A0
+		_forest_entrance_night_sprites	50A8
+		_forest_entrance_night_triggers	50A9
+		_intro_5_tiles	50CC
+		_intro_5_col	534C
+		_intro_5_actors	55CC
+		_intro_5_sprites	55D4
+		_intro_5_triggers	55D5
+		_boss_tiles	55DC
+		_boss_col	5744
+		_boss_actors	58AC
+		_boss_sprites	58AD
+		_boss_triggers	58AE
+		_prize_collect_tiles	58B5
+		_prize_collect_col	5A1D
+		_prize_collect_actors	5A1E
+		_prize_collect_sprites	5A1F
+		_prize_collect_triggers	5A20
+AREA _CODE_6
+	RADIX HEX
+	BASE 4000
+	SIZE 254A
+	ATTRIB REL CON
+	GLOBALS
+		_mabe_house_tiles	4000
+		_mabe_house_col	4168
+		_mabe_house_actors	42D0
+		_mabe_house_sprites	42D1
+		_mabe_house_triggers	42D2
+		_mabe_trendy_inside_tiles	42FC
+		_mabe_trendy_inside_col	4464
+		_mabe_trendy_inside_actors	45CC
+		_mabe_trendy_inside_sprites	45D4
+		_mabe_trendy_inside_triggers	45D5
+		_dungeon_maze_1_tiles	45E3
+		_dungeon_maze_1_col	49E3
+		_dungeon_maze_1_actors	4DE3
+		_dungeon_maze_1_sprites	4DE4
+		_dungeon_maze_1_triggers	4DE5
+		_home_hall_night_tiles	4DF3
+		_home_hall_night_col	4F91
+		_home_hall_night_actors	512F
+		_home_hall_night_sprites	5130
+		_home_hall_night_triggers	5131
+		_forest_maze_tiles	514D
+		_forest_maze_col	554D
+		_forest_maze_actors	594D
+		_forest_maze_sprites	5955
+		_forest_maze_triggers	5956
+		_intro_6_tiles	5979
+		_intro_6_col	5BF9
+		_intro_6_actors	5E79
+		_intro_6_sprites	5E81
+		_intro_6_triggers	5E82
+		_boss_escape_tiles	5E89
+		_boss_escape_col	6109
+		_boss_escape_actors	6389
+		_boss_escape_sprites	63C9
+		_boss_escape_triggers	63D1
+		_golden_realm_tiles	63D8
+		_golden_realm_col	6540
+		_golden_realm_actors	6541
+		_golden_realm_sprites	6542
+		_golden_realm_triggers	6543
+MODULES
+	FILE /opt/gbdk/lib/small/asxxxx/gb/crt0.o
+		NAME Runtime
+	FILE obj/BankData.o
+		NAME lcc126350
+	FILE obj/game.o
+		NAME lcc126430
+	FILE obj/Map_b.o
+		NAME lcc126510
+	FILE obj/bank3.o
+		NAME lcc126590
+	FILE obj/Stack.o
+		NAME lcc126670
+	FILE obj/FadeManager.o
+		NAME lcc126750
+	FILE obj/script_cmds.o
+		NAME lcc126830
+	FILE obj/Pong.o
+		NAME lcc126910
+	FILE obj/Title_b.o
+		NAME lcc126990
+	FILE obj/BankManager.o
+		NAME lcc127070
+	FILE obj/UI_b.o
+		NAME lcc127150
+	FILE obj/Title.o
+		NAME lcc127230
+	FILE obj/Map.o
+		NAME lcc127310
+	FILE obj/UI.o
+		NAME lcc127390
+	FILE obj/Logo_b.o
+		NAME lcc127470
+	FILE obj/Logo.o
+		NAME lcc127550
+	FILE obj/Pong_b.o
+		NAME lcc127630
+	FILE obj/data/bank9.o
+		NAME lcc127710
+	FILE obj/data/bank14.o
+		NAME lcc127790
+	FILE obj/data/bank7.o
+		NAME lcc127870
+	FILE obj/data/map_data.o
+		NAME lcc127950
+	FILE obj/data/strings_data.o
+		NAME lcc128030
+	FILE obj/data/sprite_data.o
+		NAME lcc128110
+	FILE obj/data/bank13.o
+		NAME lcc128190
+	FILE obj/data/script_data.o
+		NAME lcc128270
+	FILE obj/data/bank12.o
+		NAME lcc128350
+	FILE obj/data/bank5.o
+		NAME lcc128430
+	FILE obj/data/bank8.o
+		NAME lcc128510
+	FILE obj/data/bank15.o
+		NAME lcc128590
+	FILE obj/data/bank6.o
+		NAME lcc128670
+	FILE obj/SpriteHelpers.o
+		NAME lcc128750
+LIBRARIES
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE crt0_rle.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_prop.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE rand.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE string.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE mv_spr.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_wi_t.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_data.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE div.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE pad.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE mul.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_spr.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE strcat.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gbz80/gbz80.lib
+		MODULE strlen.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE cpy_data.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_bk_t.o
+	LIBRARY /opt/gbdk/lib/small/asxxxx/gb/gb.lib
+		MODULE set_xy_t.o
+USERBASEDEF
+	_CODE=0x0200
+	_DATA=0xC0A0
+	_CODE_1=0x4000
+	_CODE_2=0x4000
+	_CODE_3=0x4000
+	_CODE_4=0x4000
+	_CODE_5=0x4000
+	_CODE_6=0x4000
+	_CODE_7=0x4000
+	_CODE_8=0x4000
+	_CODE_9=0x4000
+	_CODE_10=0x4000
+	_CODE_11=0x4000
+	_CODE_12=0x4000
+	_CODE_13=0x4000
+	_CODE_14=0x4000
+	_CODE_15=0x4000
+	_CODE_16=0x4000
+	_CODE_17=0x4000
+	_CODE_18=0x4000
+	_CODE_19=0x4000
+	_CODE_20=0x4000
+	_CODE_21=0x4000
+	_CODE_22=0x4000
+	_CODE_23=0x4000
+	_CODE_24=0x4000
+	_CODE_25=0x4000
+	_CODE_26=0x4000
+	_CODE_27=0x4000
+	_CODE_28=0x4000
+	_CODE_29=0x4000
+	_CODE_30=0x4000
+	_CODE_31=0x4000
+	_DATA_0=0xA000
+	_DATA_1=0xA000
+	_DATA_2=0xA000
+	_DATA_3=0xA000
+USERGLOBALDEF
+	.OAM=0xC000
+	.STACK=0xE000
+	.refresh_OAM=0xFF80
+	.init=0x0000

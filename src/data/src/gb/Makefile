@@ -1,0 +1,75 @@
+NODE_MODULES = ../../../../node_modules
+SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell.html
+EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
+CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Igenerated -I${NODE_MODULES}/gbdkjs/include
+MOD2GBT = ../mod2gbt/mod2gbt
+
+ROM_BUILD_DIR = build/gb
+WEB_BUILD_DIR = build/web
+
+OBJ_DIR = obj
+SOURCE_DIR = src
+
+CFLAGS = -DUSE_SFR_FOR_REG -Wl-yo32 -Wl-ya4
+CIGNORE = 3>&1 1>&2 2>&3 3>&- | sed 's/.*pragma.*/IGNORE/g' | sed "s/^'/IGNORE/g" | grep -v IGNORE || true
+
+
+SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')
+OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.o)
+EM_OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.bc)
+
+MUSIC = tetris \
+	mymod3 \
+	effects \
+	instrcm
+
+all:	game.html
+
+publish:	$(ROM_BUILD_DIR)/game.gb
+	cd ../ems/; \
+	./ems-flasher --write --rom --bank 1 --verbose ../gbdkjs-example-jrpg2/build/gb/game.gb; \
+	./ems-flasher --write --rom --bank 2 --verbose ../gbdkjs-example-jrpg2/build/gb/game.gb;
+
+%.music.c:	%.mod
+	$(MOD2GBT) $< 'song_'$(basename $(basename $@)) -c 28
+	mv music.c $@
+
+$(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.c
+	$(CC) -c -o $@ $< ${CIGNORE}
+
+$(OBJ_DIR)/%.o:	%.s
+	$(CC) -c -o $@ $<
+
+$(OBJ_DIR)/%.bc:	$(SOURCE_DIR)/%.c
+	$(EMCC) -o $@ $<
+
+$(ROM_BUILD_DIR)/%.gb:  $(OBJS) # $(addsuffix .music.o,$(MUSIC))
+	mkdir -p $(ROM_BUILD_DIR)
+	$(CC) $(CFLAGS) -o $@ $^	
+
+$(WEB_BUILD_DIR)/%.html:	$(EM_OBJS)
+	mkdir -p $(WEB_BUILD_DIR)
+	cp -r ${NODE_MODULES}/gbdkjs/index.js $(WEB_BUILD_DIR)/gbdk.js
+	cp -r ${NODE_MODULES}/gbdkjs/style.css $(WEB_BUILD_DIR)
+	cp -r ${NODE_MODULES}/gbdkjs/controls.js $(WEB_BUILD_DIR)
+	# cp -r node_modules/gbdkjs/shell/build/static $(WEB_BUILD_DIR)
+	$(EMCC) --shell-file $(SHELL_FILE) -s ASSERTIONS=1 -s SAFE_HEAP=1 --profiling-funcs -g -o $@ $^
+
+clean:
+	rm -rf build
+	rm -rf obj/*.o
+	rm -rf obj/data/*.o	
+	rm -rf obj/*.lst
+	rm -rf obj/data/*.lst
+
+rom: $(ROM_BUILD_DIR)/game.gb
+
+pretty:
+	gindent -kr -ci2 -cli2 -i2 -l80 -nut $(SOURCES)
+
+tidy:
+	rm -f src/*~
+	rm -f src/data/*~
+
+web: $(WEB_BUILD_DIR)/game.html
+	mv $(WEB_BUILD_DIR)/game.html $(WEB_BUILD_DIR)/index.html

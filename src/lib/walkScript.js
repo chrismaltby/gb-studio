@@ -1,4 +1,4 @@
-function walkScript(script, callback) {
+function walkScript(script = [], callback) {
   for (let i = 0; i < script.length; i++) {
     callback(script[i]);
     if (script[i].true) {

@@ -12,7 +12,8 @@ import {
   DownloadIcon,
   PlusIcon,
   MinusIcon,
-  FolderIcon
+  FolderIcon,
+  LoadingIcon
 } from "../components/Icons";
 import { shell } from "electron";
 import { connect } from "react-redux";
@@ -52,7 +53,7 @@ class AppToolbar extends Component {
   };
 
   onRun = e => {
-    this.props.runBuild();
+    this.props.runBuild("web");
   };
 
   openProjectFolder = e => {
@@ -60,7 +61,7 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, modified, section = "overview", zoom } = this.props;
+    const { name, modified, section = "overview", zoom, running } = this.props;
     return (
       <Toolbar>
         <ToolbarDropdownButton
@@ -94,7 +95,7 @@ class AppToolbar extends Component {
         </ToolbarButton>
         <ToolbarFixedSpacer />
         <ToolbarButton onClick={this.onRun}>
-          <PlayIcon />
+          {running ? <LoadingIcon /> : <PlayIcon />}
         </ToolbarButton>
       </Toolbar>
     );
@@ -107,7 +108,9 @@ function mapStateToProps(state) {
     modified: state.modified,
     name: state.project && state.project.name,
     section: state.navigation.section,
-    zoom: state.project && state.project.settings && state.project.settings.zoom
+    zoom:
+      state.project && state.project.settings && state.project.settings.zoom,
+    running: state.console.status === "running"
   };
 }
 

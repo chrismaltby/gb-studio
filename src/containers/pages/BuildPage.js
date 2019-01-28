@@ -6,6 +6,8 @@ import Button, {
   ButtonToolbarSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
+import { remote } from "electron";
+const { BrowserWindow } = remote;
 
 class BuildPage extends Component {
   constructor(props) {
@@ -25,16 +27,35 @@ class BuildPage extends Component {
     this.props.consoleClear();
   };
 
-  onRun = () => {
-    alert("RUN BUILD");
-    this.props.runBuild();
+  onRun = async e => {
+    try {
+      await this.props.runBuild("web");
+      alert("READY");
+    } catch (e) {
+      alert("FAIL");
+
+      let previewWindow = new BrowserWindow({
+        width: 480,
+        height: 454,
+        resizable: false,
+        maximizable: false,
+        fullscreenable: false
+      });
+
+      // and load the index.html of the app.
+      previewWindow.loadURL(
+        `file://${__dirname}/../../data/build/web/index.html`
+      );
+    }
+  };
+
+  onBuild = buildType => e => {
+    this.props.runBuild(buildType);
   };
 
   scrollToBottom = () => {
     const scrollEl = this.scrollRef.current;
     scrollEl.scrollTop = scrollEl.scrollHeight;
-    // debugger;
-    // this.scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   render() {
@@ -70,8 +91,8 @@ class BuildPage extends Component {
         <PageContent style={{ padding: 20 }}>
           <ButtonToolbar>
             <Button onClick={this.onRun}>Run</Button>
-            <Button>Export ROM</Button>
-            <Button>Export Web</Button>
+            <Button onClick={this.onBuild("rom")}>Export ROM</Button>
+            <Button onClick={this.onBuild("web")}>Export Web</Button>
             <ButtonToolbarSpacer />
             <Button onClick={this.onClear}>Clear</Button>
           </ButtonToolbar>

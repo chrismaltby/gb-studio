@@ -55,3 +55,16 @@ body {
   display: flex;
   flex-direction: row;
 }
+
+.Rotating {
+  animation: Rotating 2s linear infinite;
+}
+
+@keyframes Rotating {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
