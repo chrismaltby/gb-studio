@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   Toolbar,
   ToolbarSpacer,
+  ToolbarFixedSpacer,
   ToolbarButton,
   ToolbarDropdownButton
 } from "../components/Toolbar/Toolbar";
@@ -10,8 +11,10 @@ import {
   PlayIcon,
   DownloadIcon,
   PlusIcon,
-  MinusIcon
+  MinusIcon,
+  FolderIcon
 } from "../components/Icons";
+import { shell } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -21,7 +24,8 @@ const sectionNames = {
   sprites: "Sprites",
   backgrounds: "Backgrounds",
   tiles: "Tiles",
-  script: "Script"
+  script: "Script Review",
+  build: "Build & Run"
 };
 
 class AppToolbar extends Component {
@@ -45,6 +49,10 @@ class AppToolbar extends Component {
     e.preventDefault();
     e.stopPropagation();
     this.props.zoomReset();
+  };
+
+  openProjectFolder = e => {
+    shell.openItem(this.props.projectPath);
   };
 
   render() {
@@ -74,11 +82,15 @@ class AppToolbar extends Component {
         {name || "Untitled"}
         <ToolbarSpacer />
         <ToolbarSpacer />
-        <ToolbarButton>
-          <PlayIcon />
+        <ToolbarButton onClick={this.openProjectFolder}>
+          <FolderIcon />
         </ToolbarButton>
         <ToolbarButton>
           <DownloadIcon />
+        </ToolbarButton>
+        <ToolbarFixedSpacer />
+        <ToolbarButton>
+          <PlayIcon />
         </ToolbarButton>
       </Toolbar>
     );
@@ -87,6 +99,7 @@ class AppToolbar extends Component {
 
 function mapStateToProps(state) {
   return {
+    projectPath: state.document && state.document.path,
     modified: state.modified,
     name: state.project && state.project.name,
     section: state.navigation.section,

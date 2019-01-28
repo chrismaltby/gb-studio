@@ -51,6 +51,7 @@
     "deepmerge": "^3.1.0",
     "electron-compile": "^6.4.4",
     "electron-devtools-installer": "^2.1.0",
+    "electron-is": "^3.0.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^7.0.1",

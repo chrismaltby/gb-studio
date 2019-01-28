@@ -6,6 +6,7 @@ import modified from "./modifiedReducer";
 import editor from "./editorReducer";
 import navigation from "./navigationReducer";
 import document from "./documentReducer";
+import console from "./consoleReducer";
 
 const rootReducer = combineReducers({
   tools,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
   // world,
   project,
   document,
-  navigation
+  navigation,
+  console
 });
 
 export default rootReducer;

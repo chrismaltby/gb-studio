@@ -28,6 +28,11 @@
   flex: 1;
 }
 
+.Toolbar__FixedSpacer {
+  width: 20px;
+  flex-shrink: 0;
+}
+
 .Toolbar__Button {
   display: flex;
   justify-content: center;

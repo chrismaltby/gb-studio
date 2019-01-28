@@ -1,75 +1,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { Textarea } from "../../components/library/Forms";
 import PageHeader from "../../components/library/PageHeader";
-
-const trim2lines = string => {
-  return string
-    .replace(/^([^\n]*\n[^\n]*)[\w\W]*/g, "$1")
-    .split("\n")
-    .map(line => line.substring(0, 18))
-    .join("\n");
-};
-
-const patchData = (data, id, patch) => {
-  var r = data.reduce((memo, o) => {
-    if (o.true) {
-      o.true = patchData(o.true, id, patch);
-    }
-    if (o.false) {
-      o.false = patchData(o.false, id, patch);
-    }
-    if (o.id === id) {
-      memo.push({
-        ...o,
-        args: {
-          ...o.args,
-          ...patch
-        }
-      });
-    } else {
-      memo.push(o);
-    }
-    return memo;
-  }, []);
-  return r;
-};
+import PageContent from "../../components/library/PageContent";
+import ScriptReviewLine from "../../components/script/ScriptReviewLine";
+import patchScriptData from "../../lib/patchScriptData";
+import trim2lines from "../../lib/trim2lines";
+import walkScript from "../../lib/walkScript";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {
     const value = trim2lines(e.currentTarget.value);
-    console.log("CHANGE", {
-      map,
-      actorIndex,
-      currentScript,
-      id,
-      value
-    });
-
-    const newData = patchData(currentScript, id, {
+    const newData = patchScriptData(currentScript, id, {
       text: value
     });
-
     this.props.editActor(map, actorIndex, {
       script: newData
     });
-
-    // console.log("NEWDATA", newData);
-    // onEdit(id, {
-    //   text: trim2lines(e.currentTarget.value)
-    // });
-  };
-
-  onEdit = (id, patch) => {
-    console.log("ONEDIT", id, patch);
-    const root = this.props.value;
-    const input = patchData(root, id, patch);
-
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
   };
 
   render() {
@@ -77,52 +24,27 @@ class ScriptsPage extends Component {
     return (
       <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>
-          <h1>Script Checker</h1>
+          <h1>Script Review</h1>
           <p>
             {scriptLines.length} {scriptLines.length === 1 ? "Line" : "Lines"}
           </p>
         </PageHeader>
-        <div style={{ margin: 40 }}>
+        <PageContent>
           {scriptLines.map(scriptLine => (
-            <div key={scriptLine.line.id}>
-              <p style={{ color: "#999" }}>
-                {scriptLine.actor.name} — {scriptLine.scene.name} (
-                {scriptLine.line.args.text
-                  .split("\n")
-                  .map((line, index) => line.length + "/18")
-                  .join(", ")}
-                )
-              </p>
-              <Textarea
-                fixedSize
-                large
-                borderless
-                rows={2}
-                value={scriptLine.line.args.text}
-                onChange={this.onChange(
-                  scriptLine.scene.id,
-                  scriptLine.actorIndex,
-                  scriptLine.actor.script,
-                  scriptLine.line.id
-                )}
-              />
-            </div>
+            <ScriptReviewLine
+              key={scriptLine.line.id}
+              scriptLine={scriptLine}
+              onChange={this.onChange(
+                scriptLine.scene.id,
+                scriptLine.actorIndex,
+                scriptLine.actor.script,
+                scriptLine.line.id
+              )}
+            />
           ))}
-        </div>
+        </PageContent>
       </div>
     );
-  }
-}
-
-function walkScript(script, callback) {
-  for (let i = 0; i < script.length; i++) {
-    callback(script[i]);
-    if (script[i].true) {
-      walkScript(script[i].true, callback);
-    }
-    if (script[i].false) {
-      walkScript(script[i].false, callback);
-    }
   }
 }
 

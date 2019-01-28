@@ -8,6 +8,9 @@ export const ToolbarButton = props => (
 export const ToolbarSpacer = props => (
   <div className="Toolbar__Spacer" {...props} />
 );
+export const ToolbarFixedSpacer = props => (
+  <div className="Toolbar__FixedSpacer" {...props} />
+);
 
 export class ToolbarDropdownButton extends Component {
   constructor() {

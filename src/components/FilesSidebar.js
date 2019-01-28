@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 import { PlusIcon } from "./Icons";
-import Button from "./Button";
+import Button from "./library/Button";
 import * as actions from "../actions";
 
 class FilesSidebar extends Component {

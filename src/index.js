@@ -119,7 +119,7 @@ const createWindow = async projectPath => {
 app.on("ready", () => {
   // createSplash()
   createWindow(
-    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
   );
 });
 

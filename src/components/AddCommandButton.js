@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
-import Button from "./Button";
+import Button from "./library/Button";
 
 const actions = [
   "TEXT",

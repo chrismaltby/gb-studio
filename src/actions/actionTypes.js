@@ -50,3 +50,9 @@ export const EDIT_PROJECT = "EDIT_PROJECT";
 export const ZOOM_IN = "ZOOM_IN";
 export const ZOOM_OUT = "ZOOM_OUT";
 export const ZOOM_RESET = "ZOOM_RESET";
+
+export const CMD_CLEAR = "CMD_CLEAR";
+export const CMD_START = "CMD_START";
+export const CMD_STD_OUT = "CMD_STD_OUT";
+export const CMD_STD_ERR = "CMD_STD_ERR";
+export const CMD_COMPLETE = "CMD_COMPLETE";

@@ -20,7 +20,24 @@ export default {
     index: 0
   },
   navigation: {
-    section: "script",
+    section: "build",
     status: {}
+  },
+  console: {
+    status: "running",
+    output: [
+      {
+        type: "out",
+        text: "Building xyz"
+      },
+      {
+        type: "out",
+        text: "..."
+      },
+      {
+        type: "err",
+        text: "Failed"
+      }
+    ]
   }
 };

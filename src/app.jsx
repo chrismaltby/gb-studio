@@ -11,6 +11,7 @@ import ImagesSection from "./components/ImagesSection";
 import SpritesSection from "./components/SpritesSection";
 import OverviewPage from "./containers/pages/OverviewPage";
 import ScriptPage from "./containers/pages/ScriptPage";
+import BuildPage from "./containers/pages/BuildPage";
 
 class App extends Component {
   constructor() {
@@ -53,6 +54,7 @@ class App extends Component {
           {section === "backgrounds" && <ImagesSection />}
           {section === "sprites" && <SpritesSection />}
           {section === "script" && <ScriptPage />}
+          {section === "build" && <BuildPage />}
         </div>
       </div>
     );

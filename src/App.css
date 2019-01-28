@@ -2,7 +2,6 @@
 @import url("./Splash.css");
 @import url("./components/Actor.css");
 @import url("./components/AddCommandButton.css");
-@import url("./components/Button.css");
 @import url("./components/Connections.css");
 @import url("./components/DirectionPicker.css");
 @import url("./components/EditorSidebar.css");
@@ -19,6 +18,8 @@
 @import url("./components/Toolbar/Toolbar.css");
 @import url("./components/library/Forms.css");
 @import url("./components/library/PageHeader.css");
+@import url("./components/library/PageContent.css");
+@import url("./components/library/Button.css");
 
 html,
 body {
