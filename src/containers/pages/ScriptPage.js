@@ -38,7 +38,7 @@ const patchData = (data, id, patch) => {
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {
-    const value = e.currentTarget.value;
+    const value = trim2lines(e.currentTarget.value);
     console.log("CHANGE", {
       map,
       actorIndex,
@@ -75,7 +75,7 @@ class ScriptsPage extends Component {
   render() {
     const { scriptLines } = this.props;
     return (
-      <div style={{ width: "100%", flexDirection: "column" }}>
+      <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>
           <h1>Script Checker</h1>
           <p>
@@ -86,7 +86,12 @@ class ScriptsPage extends Component {
           {scriptLines.map(scriptLine => (
             <div key={scriptLine.line.id}>
               <p style={{ color: "#999" }}>
-                {scriptLine.actor.name} — {scriptLine.scene.name}
+                {scriptLine.actor.name} — {scriptLine.scene.name} (
+                {scriptLine.line.args.text
+                  .split("\n")
+                  .map((line, index) => line.length + "/18")
+                  .join(", ")}
+                )
               </p>
               <Textarea
                 fixedSize
