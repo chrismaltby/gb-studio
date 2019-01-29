@@ -13,10 +13,16 @@ const walkEvents = (events = [], callback) => {
 const patchEvents = (data, id, patch) => {
   var r = data.reduce((memo, o) => {
     if (o.true) {
-      o.true = patchEvents(o.true, id, patch);
+      o = {
+        ...o,
+        true: patchEvents(o.true, id, patch)
+      };
     }
     if (o.false) {
-      o.false = patchEvents(o.false, id, patch);
+      o = {
+        ...o,
+        false: patchEvents(o.false, id, patch)
+      };
     }
     if (o.id === id) {
       memo.push({

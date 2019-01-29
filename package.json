@@ -10,7 +10,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --cache --color --ext .jsx,.js src",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage --runInBand || true"
   },
   "keywords": [],
   "author": "cmaltby",
