@@ -717,7 +717,7 @@ const compile = async (projectPath, buildPath) => {
 
   // Compile strings
   addFile("strings_data", { bank: 2 });
-  addData("strings_data", typedef("strings[][72]"), compileStrings(world));
+  addData("strings_data", typedef("strings[][38]"), compileStrings(world));
 
   // Output data
 
