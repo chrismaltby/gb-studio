@@ -1,4 +1,4 @@
-import { decBin, decHex } from "../src/lib/helpers/8bit";
+import { decBin, decHex, hi, lo } from "../src/lib/helpers/8bit";
 
 test("Should convert decimal to 8 bit binary", () => {
   expect(decBin(1)).toBe("00000001");
@@ -33,4 +33,26 @@ test("Should wrap underflow values", () => {
   expect(decHex(-2)).toBe("0xFE");
   expect(decHex(-256)).toBe("0x00");
   expect(decHex(-257)).toBe("0xFF");
+});
+
+test("Should return lower bits of 16 bit num", () => {
+  expect(lo(256)).toBe(0);
+  expect(lo(257)).toBe(1);
+  expect(lo(511)).toBe(255);
+  expect(lo(1324)).toBe(44);
+});
+
+test("Should return higher bits of 16 bit num", () => {
+  expect(hi(256)).toBe(1);
+  expect(hi(257)).toBe(1);
+  expect(hi(511)).toBe(1);
+  expect(hi(1324)).toBe(5);
+});
+
+test("Should wrap when returning lower bits of 16 bit num", () => {
+  expect(lo(-1)).toBe(255);
+});
+
+test("Should wrap when returning higher bits of 16 bit num", () => {
+  expect(hi(-1)).toBe(255);
 });

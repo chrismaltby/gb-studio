@@ -1,4 +1,5 @@
 const wrap8Bit = val => (256 + (val % 256)) % 256;
+const wrap16Bit = val => (65536 + (val % 65536)) % 65536;
 
 export const decBin = dec =>
   wrap8Bit(dec)
@@ -11,3 +12,7 @@ export const decHex = dec =>
     .toString(16)
     .padStart(2, "0")
     .toUpperCase();
+
+export const hi = longNum => wrap16Bit(longNum) >> 8;
+
+export const lo = longNum => wrap16Bit(longNum) % 256;
