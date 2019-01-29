@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --cache --color --ext .jsx,.js src"
+    "lint": "eslint --cache --color --ext .jsx,.js src",
+    "test": "jest"
   },
   "keywords": [],
   "author": "cmaltby",
@@ -70,6 +71,9 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-jest": "^24.0.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-classes": "^6.24.1",
@@ -83,6 +87,7 @@
     "eslint-plugin-import": "^2",
     "eslint-plugin-jsx-a11y": "^5",
     "eslint-plugin-react": "^7",
+    "jest": "^24.0.0",
     "redux-devtools-extension": "^2.13.7"
   }
 }

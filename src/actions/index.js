@@ -194,8 +194,17 @@ export const runBuild = buildType => async (dispatch, getState) => {
 
   await compileProject(projectPath, "/private/tmp/build");
 
-  await fs.unlink(gbSrcPath + "/include/banks.h");
-  await fs.unlink(gbSrcPath + "/src/data");
+  try {
+    await fs.unlink(gbSrcPath + "/include/banks.h");
+  } catch (err) {
+    dispatch({ type: types.CMD_STD_ERR, text: err.text });
+  }
+  try {
+    await fs.unlink(gbSrcPath + "/src/data");
+  } catch (err) {
+    dispatch({ type: types.CMD_STD_ERR, text: err.text });
+  }
+
   await fs.ensureSymlink(
     buildPath + "/banks.h",
     gbSrcPath + "/include/banks.h"

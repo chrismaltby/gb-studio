@@ -208,8 +208,6 @@ class Map extends Component {
 
     const mapSelected = editor.type === "maps" && editor.map === id;
 
-    console.log("EDITOR", editor, id, map);
-
     return (
       <div
         className={cx("Map", { "Map--Selected": mapSelected })}
@@ -257,7 +255,8 @@ class Map extends Component {
               }}
             />
           ))}
-          {showCollisions &&
+          {false &&
+            showCollisions &&
             collisions.map((collision, index) =>
               collision ? (
                 <div
