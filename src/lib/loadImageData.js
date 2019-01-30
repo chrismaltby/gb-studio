@@ -10,8 +10,8 @@ const TILE_SIZE = 8;
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
-const loadImageData = async projectPath => {
-  const imagePaths = await globAsync(projectPath + "/assets/backgrounds/*.png");
+const loadImageData = async projectRoot => {
+  const imagePaths = await globAsync(projectRoot + "/assets/backgrounds/*.png");
 
   const imageData = await Promise.all(
     imagePaths.map(async file => {

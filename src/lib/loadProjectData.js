@@ -1,10 +1,11 @@
 import fs from "fs-extra";
+import path from "path";
 import loadImageData from "./loadImageData";
 
-const loadProject = async path => {
-  const json = await fs.readJson(path + "/project.json");
-
-  const backgrounds = await loadImageData(path);
+const loadProject = async projectPath => {
+  const json = await fs.readJson(projectPath);
+  const projectRoot = path.dirname(projectPath);
+  const backgrounds = await loadImageData(projectRoot);
 
   const oldFilenamesToIds = json.images.reduce((memo, oldData) => {
     memo[oldData.filename] = oldData.id;

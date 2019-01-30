@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 class ImageViewer extends Component {
   render() {
-    const { projectPath, image, folder, zoomRatio } = this.props;
+    const { projectRoot, image, folder, zoomRatio } = this.props;
     return (
       <div className="ImageViewer">
         <div className="ImageViewer__Content">
@@ -12,7 +12,7 @@ class ImageViewer extends Component {
               className="ImageViewer__Image"
               style={{ transform: `scale(${zoomRatio})` }}
             >
-              <img alt="" src={`${projectPath}/assets/${folder}/${image}`} />
+              <img alt="" src={`${projectRoot}/assets/${folder}/${image}`} />
             </div>
           )}
         </div>
@@ -30,7 +30,7 @@ function mapStateToProps(state) {
   const folder = section === "backgrounds" ? "backgrounds" : "sprites";
   const image = files.find(file => file.id === id) || files[0];
   return {
-    projectPath: state.document && state.document.path,
+    projectRoot: state.document && state.document.root,
     projectId: state.project.id,
     image: image && image.filename,
     folder,

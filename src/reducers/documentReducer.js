@@ -1,3 +1,4 @@
+import path from "path";
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
@@ -29,6 +30,7 @@ export default function modified(state = initialState.document, action) {
       return {
         ...state,
         path: action.path,
+        root: path.dirname(action.path),
         modified: false
       };
     case PROJECT_SAVE_SUCCESS:

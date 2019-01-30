@@ -60,10 +60,8 @@ class Splash extends Component {
     }
   };
 
-  onOpenFolder = e => {
-    if (e.target.files && e.target.files[0]) {
-      ipcRenderer.send("open-project", { projectPath: e.target.files[0].path });
-    }
+  onOpen = e => {
+    ipcRenderer.send("open-project-picker");
   };
 
   onSubmit = async e => {
@@ -106,15 +104,8 @@ class Splash extends Component {
           </div>
           <div className="Splash__FlexSpacer" />
 
-          <div className="Splash__Tab">
+          <div className="Splash__Tab" onClick={this.onOpen}>
             Open
-            <input
-              type="file"
-              directory=""
-              webkitdirectory=""
-              className="Splash__TabOpen"
-              onChange={this.onOpenFolder}
-            />
           </div>
         </div>
 

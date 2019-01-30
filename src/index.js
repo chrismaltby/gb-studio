@@ -76,7 +76,7 @@ const createWindow = async projectPath => {
     `file://${__dirname}/index.html?path=${encodeURIComponent(projectPath)}`
   );
 
-  mainWindow.setRepresentedFilename(projectPath + "/project.json");
+  mainWindow.setRepresentedFilename(projectPath);
   mainWindow.setDocumentEdited(true);
 
   // Open the DevTools.
@@ -120,7 +120,7 @@ const createWindow = async projectPath => {
 app.on("ready", () => {
   // createSplash()
   createWindow(
-    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test/project.json"
   );
 });
 
@@ -177,7 +177,7 @@ menu.on("open", async () => {
 });
 
 const newProject = async () => {
-  console.log("New Project");
+  // console.log("New Project");
   if (splashWindow) {
     splashWindow.close();
   }
@@ -198,7 +198,7 @@ const openProjectPicker = async () => {
     ]
   });
   if (files && files[0]) {
-    openProject(path.dirname(files[0]));
+    openProject(files[0]);
   }
 };
 

@@ -57,7 +57,7 @@ class AppToolbar extends Component {
   };
 
   openProjectFolder = e => {
-    shell.openItem(this.props.projectPath);
+    shell.openItem(this.props.projectRoot);
   };
 
   render() {
@@ -104,7 +104,7 @@ class AppToolbar extends Component {
 
 function mapStateToProps(state) {
   return {
-    projectPath: state.document && state.document.path,
+    projectRoot: state.document && state.document.root,
     modified: state.modified,
     name: state.project && state.project.name,
     section: state.navigation.section,

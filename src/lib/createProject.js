@@ -22,7 +22,7 @@ const createProject = async options => {
   dataFile = dataFile.replace(/___PROJECT_NAME___/g, projectFolderName);
   await fs.writeFile(projectDataPath, dataFile);
 
-  return projectPath;
+  return projectDataPath;
 };
 
 export default createProject;

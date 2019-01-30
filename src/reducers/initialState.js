@@ -4,6 +4,7 @@ export default {
   },
   document: {
     path: "",
+    root: "",
     modified: false
   },
   project: {

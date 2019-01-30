@@ -188,11 +188,11 @@ export const runBuild = buildType => async (dispatch, getState) => {
   dispatch({ type: types.SET_SECTION, section: "build" });
 
   const state = getState();
-  const projectPath = state.document && state.document.path;
+  const projectRoot = state.document && state.document.root;
   const buildPath = "/private/tmp/build";
   const gbSrcPath = `${__dirname}/../data/src/gb/`;
 
-  await compileProject(projectPath, "/private/tmp/build");
+  await compileProject(projectRoot, "/private/tmp/build");
 
   try {
     await fs.unlink(gbSrcPath + "/include/banks.h");
@@ -214,7 +214,7 @@ export const runBuild = buildType => async (dispatch, getState) => {
   let env = Object.create(process.env);
   env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
 
-  if (projectPath) {
+  if (projectRoot) {
     return new Promise((resolve, reject) =>
       runCmd(
         "/usr/bin/make",
