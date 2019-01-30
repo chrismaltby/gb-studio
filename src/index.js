@@ -1,11 +1,12 @@
-import electron, { app, BrowserWindow, ipcMain } from "electron";
+import electron, { app, BrowserWindow, ipcMain, dialog } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
 } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
-import "./menu";
+import path from "path";
+import menu from "./menu";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -119,7 +120,7 @@ const createWindow = async projectPath => {
 app.on("ready", () => {
   // createSplash()
   createWindow(
-    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
+    "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test"
   );
 });
 
@@ -145,12 +146,13 @@ ipcMain.on("open-project", async (event, arg) => {
 
   // Validate folder
   const { projectPath } = arg;
+  openProject(projectPath);
 
-  splashWindow.close();
+  // splashWindow.close();
 
-  console.log({ arg, projectPath });
+  // console.log({ arg, projectPath });
 
-  await createWindow(projectPath);
+  // await createWindow(projectPath);
 });
 
 ipcMain.on("check-full-screen", async (event, arg) => {
@@ -160,6 +162,56 @@ ipcMain.on("check-full-screen", async (event, arg) => {
     mainWindow.webContents.send("leave-full-screen");
   }
 });
+
+ipcMain.on("open-project-picker", async (event, arg) => {
+  openProjectPicker();
+});
+
+menu.on("new", async () => {
+  newProject();
+});
+
+menu.on("open", async () => {
+  console.log("MENU ON OPEN");
+  openProjectPicker();
+});
+
+const newProject = async () => {
+  console.log("New Project");
+  if (splashWindow) {
+    splashWindow.close();
+  }
+  if (mainWindow) {
+    mainWindow.close();
+  }
+  await createSplash();
+};
+
+const openProjectPicker = async () => {
+  const files = dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [
+      {
+        name: "Projects",
+        extensions: "json"
+      }
+    ]
+  });
+  if (files && files[0]) {
+    openProject(path.dirname(files[0]));
+  }
+};
+
+const openProject = async projectPath => {
+  console.log("openProject:" + projectPath);
+  if (splashWindow) {
+    splashWindow.close();
+  }
+  if (mainWindow) {
+    mainWindow.close();
+  }
+  await createWindow(projectPath);
+};
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

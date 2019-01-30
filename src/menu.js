@@ -7,17 +7,26 @@ const template = [
       {
         label: "New Project",
         accelerator: "CommandOrControl+N",
-        click: () => console.log("NEW PROJECT")
+        click: () => {
+          console.log("NEW PROJECT");
+          notifyListeners("new");
+        }
       },
       {
         label: "Open...",
         accelerator: "CommandOrControl+O",
-        click: () => console.log("OPEN PROJECT")
+        click: () => {
+          console.log("OPEN PROJECT");
+          notifyListeners("open");
+        }
       },
       {
         label: "Save",
         accelerator: "CommandOrControl+S",
-        click: () => console.log("SAVE")
+        click: () => {
+          console.log("SAVE");
+          notifyListeners("save");
+        }
       },
       { type: "separator" },
       { role: "close" }
@@ -119,3 +128,31 @@ if (process.platform === "darwin") {
 
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
+
+let listeners = {
+  new: [],
+  open: [],
+  save: []
+};
+
+const notifyListeners = (event, data) => {
+  console.log("MENU NOTIFY", event, data);
+  for (let fn of listeners[event]) {
+    console.log("FOUND LISTENER TO NOTIFY", fn);
+    fn(data);
+  }
+};
+
+const on = (event, fn) => {
+  console.log("MENU LISTEN ON", event, fn);
+  listeners[event].push(fn);
+};
+
+const off = (event, fn) => {
+  listeners[event] = listeners[event].filter(f => f !== fn);
+};
+
+export default {
+  on,
+  off
+};
