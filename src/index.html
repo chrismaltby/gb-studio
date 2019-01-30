@@ -19,6 +19,7 @@
     import { Provider } from "react-redux";
     import * as actions from "./actions";
     import configureStore from "./store/configureStore";
+    import { ipcRenderer } from "electron";
     import "./lib/handleFullScreen";
 
     const store = configureStore();
@@ -30,6 +31,25 @@
     const projectPath = urlParams.get('path');
 
     store.dispatch(actions.loadProject(projectPath));
+
+    ipcRenderer.on("save-project", () => {
+      store.dispatch(actions.saveProject());
+    });
+
+    let modified = false;
+    store.subscribe(() => {
+      const state = store.getState();
+      console.log("CHECK MODIFIED");
+      if(!modified && state.document.modified) {
+        console.log("WAS MODIFIED");
+        ipcRenderer.send("document-modified", {});
+      } else if (modified && !state.document.modified) {
+        console.log("WAS UNMODIFIED");
+        ipcRenderer.send("document-unmodified", {});
+      }
+      console.log("UPDATE MODIFIED TO ", modified, state.document.modified);
+      modified = state.document.modified;
+    });
 
     const render = () => {
       const App = require('./app').default;

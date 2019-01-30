@@ -1,61 +1,57 @@
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/loadProjectData";
+import saveProjectData from "../lib/saveProjectData";
 import runCmd from "../lib/runCmd";
 import compileProject from "../lib/compile/compile";
 import fs from "fs-extra";
 
-export const loadProject = path => async dispatch => {
-  console.log("LOAD PROJECT REQUEST", path);
-  dispatch({ type: types.PROJECT_LOAD_REQUEST });
+const asyncAction = async (
+  dispatch,
+  requestType,
+  successType,
+  failureType,
+  fn
+) => {
+  dispatch({ type: requestType });
   try {
-    const data = await loadProjectData(path);
-    dispatch({ type: types.PROJECT_LOAD_SUCCESS, data, path });
+    const res = await fn();
+    dispatch({ ...res, type: successType });
   } catch (e) {
     console.log(e);
-    dispatch({ type: types.PROJECT_LOAD_FAILURE });
+    dispatch({ type: failureType });
   }
 };
 
-export const loadWorld = id => async dispatch => {
-  dispatch({ type: types.WORLD_LOAD_REQUEST });
-  try {
-    const res = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/worlds/${id}`
-    );
-    const world = await res.json();
-    dispatch({ type: types.WORLD_LOAD_SUCCESS, data: world });
-  } catch (e) {
-    dispatch({ type: types.WORLD_LOAD_FAILURE });
-  }
+export const loadProject = path => async dispatch => {
+  return asyncAction(
+    dispatch,
+    types.PROJECT_LOAD_REQUEST,
+    types.PROJECT_LOAD_SUCCESS,
+    types.PROJECT_LOAD_FAILURE,
+    async () => {
+      const data = await loadProjectData(path);
+      return {
+        data,
+        path
+      };
+    }
+  );
 };
 
-export const saveWorld = () => async (dispatch, getState) => {
-  const state = getState();
-  if (!state.world.id) {
-    alert("NO ID");
-  }
-
-  dispatch({ type: types.WORLD_SAVE_REQUEST });
-  try {
-    const res = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/worlds/${state.world.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(state.world)
-      }
-    );
-    const world = await res.json();
-    dispatch({ type: types.WORLD_SAVE_SUCCESS, data: world });
-  } catch (e) {
-    dispatch({ type: types.WORLD_SAVE_FAILURE });
-  }
+export const saveProject = () => async (dispatch, getState) => {
+  return asyncAction(
+    dispatch,
+    types.PROJECT_SAVE_REQUEST,
+    types.PROJECT_SAVE_SUCCESS,
+    types.PROJECT_SAVE_FAILURE,
+    async () => {
+      const state = getState();
+      await saveProjectData(state.document.path, state.project);
+    }
+  );
 };
 
 export const setTool = tool => {
-  console.log("ACTION", { type: types.SET_TOOL, tool });
   return { type: types.SET_TOOL, tool };
 };
 

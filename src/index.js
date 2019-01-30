@@ -77,7 +77,6 @@ const createWindow = async projectPath => {
   );
 
   mainWindow.setRepresentedFilename(projectPath);
-  mainWindow.setDocumentEdited(true);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -167,6 +166,16 @@ ipcMain.on("open-project-picker", async (event, arg) => {
   openProjectPicker();
 });
 
+ipcMain.on("document-modified", () => {
+  console.log("WAS EDITIED");
+  mainWindow.setDocumentEdited(true);
+});
+
+ipcMain.on("document-unmodified", () => {
+  console.log("WAS NOT EDITIED");
+  mainWindow.setDocumentEdited(false);
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -174,6 +183,11 @@ menu.on("new", async () => {
 menu.on("open", async () => {
   console.log("MENU ON OPEN");
   openProjectPicker();
+});
+
+menu.on("save", async () => {
+  console.log("MENU ON SAVE");
+  mainWindow.webContents.send("save-project");
 });
 
 const newProject = async () => {
