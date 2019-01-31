@@ -1,4 +1,4 @@
-import { walkEvents, patchEvents } from "../src/lib/helpers/eventSystem";
+import { walkEvents, patchEvents } from "../../src/lib/helpers/eventSystem";
 
 test("shouldn't walk empty events", () => {
   const events = [];
