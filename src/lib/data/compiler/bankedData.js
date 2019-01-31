@@ -1,8 +1,14 @@
+import {
+  cIntArray,
+  cIntArrayExternDeclaration
+} from "../../helpers/cGeneration";
+
 const BANKED_DATA_NOT_ARRAY = "BANKED_DATA_NOT_ARRAY";
 const BANKED_DATA_TOO_LARGE = "BANKED_DATA_TOO_LARGE";
+const GB_MAX_BANK_SIZE = 16394; // Calculated by adding bytes until address overflow
 
 class BankedData {
-  constructor(bankSize) {
+  constructor(bankSize = GB_MAX_BANK_SIZE) {
     this.bankSize = bankSize;
     this.data = [];
     this.currentBank = 0;
@@ -47,11 +53,28 @@ class BankedData {
       return ptr;
     }
   }
-  export() {
+  exportRaw() {
     return this.data;
+  }
+  exportCData(bankOffset = 0) {
+    return this.data.map((data, index) => {
+      const bank = index + bankOffset;
+      return `#pragma bank=${bank}\n\n${cIntArray(
+        `bank_${bank}_data`,
+        data
+      )}\n`;
+    });
+  }
+  exportCHeader(bankOffset = 0) {
+    return `#ifndef BANKS_H\n#define BANKS_H\n\n${this.data
+      .map((data, index) => {
+        const bank = index + bankOffset;
+        return cIntArrayExternDeclaration(`bank_${bank}_data`);
+      })
+      .join("\n")}\n#endif\n`;
   }
 }
 
 export default BankedData;
 
-export { BANKED_DATA_NOT_ARRAY, BANKED_DATA_TOO_LARGE };
+export { BANKED_DATA_NOT_ARRAY, BANKED_DATA_TOO_LARGE, GB_MAX_BANK_SIZE };
