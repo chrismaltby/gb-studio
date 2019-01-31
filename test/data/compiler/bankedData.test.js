@@ -1,7 +1,9 @@
 import BankedData, {
   BANKED_DATA_NOT_ARRAY,
   BANKED_DATA_TOO_LARGE,
-  GB_MAX_BANK_SIZE
+  BANKED_COUNT_OVERFLOW,
+  GB_MAX_BANK_SIZE,
+  MIN_DATA_BANK
 } from "../../../src/lib/data/compiler/bankedData";
 import {
   cIntArray,
@@ -103,8 +105,14 @@ test("Should construct C data from input", async () => {
   banked.push([0]);
   banked.push([1, 2]);
   expect(banked.exportCData()).toEqual([
-    `#pragma bank=0\n\n${cIntArray("bank_0_data", [0])}\n`,
-    `#pragma bank=1\n\n${cIntArray("bank_1_data", [1, 2])}\n`
+    `#pragma bank=${MIN_DATA_BANK}\n\n${cIntArray(
+      `bank_${MIN_DATA_BANK}_data`,
+      [0]
+    )}\n`,
+    `#pragma bank=${MIN_DATA_BANK + 1}\n\n${cIntArray(
+      `bank_${MIN_DATA_BANK + 1}_data`,
+      [1, 2]
+    )}\n`
   ]);
 });
 
@@ -124,7 +132,29 @@ test("Should construct C header from input", async () => {
   banked.push([1, 2]);
   expect(banked.exportCHeader()).toEqual(
     `#ifndef BANKS_H\n#define BANKS_H\n\n${cIntArrayExternDeclaration(
-      "bank_0_data"
-    )}\n${cIntArrayExternDeclaration("bank_1_data")}\n#endif\n`
+      `bank_${MIN_DATA_BANK}_data`
+    )}\n${cIntArrayExternDeclaration(
+      `bank_${MIN_DATA_BANK + 1}_data`
+    )}\n#endif\n`
   );
+});
+
+test("should calculate rom banks needed to store banked data", () => {
+  const banked = new BankedData(2);
+  banked.push([0]);
+  banked.push([1, 2]);
+  expect(banked.romBanksNeeded()).toBe(32);
+});
+
+test("should calculate rom banks needed to store banked data when offset", () => {
+  const banked = new BankedData(2);
+  banked.push([0]);
+  banked.push([1, 2]);
+  expect(banked.romBanksNeeded(64)).toBe(128);
+});
+
+test("should throw if unsupported number of rom banks are required", () => {
+  const banked = new BankedData(2);
+  banked.push([0]);
+  expect(() => banked.romBanksNeeded(1024)).toThrow(BANKED_COUNT_OVERFLOW);
 });
