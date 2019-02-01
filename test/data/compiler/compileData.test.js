@@ -217,7 +217,4 @@ test("should precompile image data", async () => {
   expect(usedImages).toHaveLength(1);
   expect(imageLookup["2"]).toBe(images[0]);
   expect(imageLookup["3"]).toBeUndefined();
-
-  //   console.log(compiled);
-  //   expect(compiled).toBeInstanceOf(Object);
 });

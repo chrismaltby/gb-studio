@@ -43,7 +43,7 @@ const precompile = async (projectData, projectRoot) => {
     projectData.scenes,
     projectRoot
   );
-  //   await precompileMaps(world);
+  const sceneData = precompileScenes(projectData.scenes, imageData, spriteData);
   //   await precompileScript(world);
 
   return {
@@ -51,7 +51,8 @@ const precompile = async (projectData, projectRoot) => {
     strings,
     usedImages,
     imageLookup,
-    imageData
+    imageData,
+    sceneData
   };
 };
 
@@ -93,7 +94,7 @@ export const precompileImages = async (images, scenes, projectRoot) => {
   };
 };
 
-const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
+export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
   const usedSprites = spriteSheets.filter(spriteSheet =>
     scenes.find(scene =>
       scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
@@ -117,6 +118,25 @@ const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
     spriteLookup,
     spriteData
   };
+};
+
+export const precompileScenes = (scenes, imageData, spriteData) => {
+  const scenesData = scenes.map(scene => {
+    return {
+      ...scene,
+      tilemap: imageData.tilemaps[scene.imageId],
+      tileset: imageData.tilemapsTileset[scene.imageId],
+      sprites: scene.actors.reduce((memo, actor) => {
+        const spriteIndex = spriteData.findIndex(
+          sprite => sprite.id === actor.spriteSheetId
+        );
+        if (memo.indexOf(spriteIndex) === -1) {
+          memo.push(spriteIndex);
+        }
+        return memo;
+      }, [])
+    };
+  });
 };
 
 //#endregion
