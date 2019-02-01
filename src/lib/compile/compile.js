@@ -13,21 +13,6 @@ const writeFile = promisify(fs.writeFile);
 
 const SCRIPT_MAX = 65535;
 
-const DIR_LOOKUP = {
-  down: 1,
-  left: 2,
-  right: 4,
-  up: 8
-};
-
-const MOVEMENT_LOOKUP = {
-  static: 1,
-  playerInput: 2,
-  randomFace: 3,
-  faceInteraction: 4,
-  randomWalk: 5
-};
-
 const mapBanks = [6, 7, 8, 9, 12, 13, 15];
 const tileBanks = [5, 14];
 
@@ -709,7 +694,7 @@ const compile = async (projectPath, buildPath) => {
   addFile("script_data", { bank: 4 });
   addData(
     "script_data",
-    `unsigned char script_flags[${world._data.flags.length || 1}]`,
+    `unsigned char n[${world._data.flags.length || 1}]`,
     "0"
   );
 

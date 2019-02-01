@@ -1,6 +1,7 @@
 import compile, {
   precompileFlags,
-  precompileStrings
+  precompileStrings,
+  precompileImages
 } from "../../../src/lib/data/compiler/compileData";
 
 test("should compile simple project into files object", async () => {
@@ -26,10 +27,13 @@ test("should compile simple project into files object", async () => {
         height: 18,
         filename: "test_img.png"
       }
-    ]
+    ],
+    spriteSheets: []
   };
 
-  const compiled = await compile(project);
+  const compiled = await compile(project, {
+    projectRoot: `${__dirname}/_files`
+  });
   expect(compiled).toBeInstanceOf(Object);
 });
 
@@ -175,4 +179,45 @@ test("should walk all scene events to build list of strings", () => {
   ];
   const precompiledStrings = precompileStrings(scenes);
   expect(precompiledStrings).toEqual(["LINE 2", "LINE 1", "LINE 3"]);
+});
+
+test("should precompile image data", async () => {
+  const images = [
+    {
+      id: "2",
+      name: "test_img",
+      width: 20,
+      height: 18,
+      filename: "test_img.png"
+    },
+    {
+      id: "3",
+      name: "test_img2",
+      width: 20,
+      height: 18,
+      filename: "test_img2.png"
+    }
+  ];
+  const scenes = [
+    {
+      id: "1",
+      name: "first_scene",
+      imageId: "2",
+      actors: [],
+      triggers: []
+    }
+  ];
+
+  const { usedImages, imageLookup, imageData } = await precompileImages(
+    images,
+    scenes,
+    `${__dirname}/_files`
+  );
+
+  expect(usedImages).toHaveLength(1);
+  expect(imageLookup["2"]).toBe(images[0]);
+  expect(imageLookup["3"]).toBeUndefined();
+
+  //   console.log(compiled);
+  //   expect(compiled).toBeInstanceOf(Object);
 });
