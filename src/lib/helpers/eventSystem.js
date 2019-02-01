@@ -10,6 +10,17 @@ const walkEvents = (events = [], callback) => {
   }
 };
 
+const walkScenesEvents = (scenes, callback) => {
+  scenes.forEach(scene => {
+    scene.actors.forEach(actor => {
+      walkEvents(actor.events, callback);
+    });
+    scene.triggers.forEach(trigger => {
+      walkEvents(trigger.events, callback);
+    });
+  });
+};
+
 const patchEvents = (data, id, patch) => {
   var r = data.reduce((memo, o) => {
     if (o.true) {
@@ -40,4 +51,4 @@ const patchEvents = (data, id, patch) => {
   return r;
 };
 
-export { walkEvents, patchEvents };
+export { walkEvents, walkScenesEvents, patchEvents };

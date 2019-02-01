@@ -1,7 +1,7 @@
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
-import { walkEvents } from "../../helpers/eventSystem";
+import { walkEvents, walkScenesEvents } from "../../helpers/eventSystem";
 
-const compile = (
+const compile = async (
   projectData,
   options = {
     projectRoot: "/tmp",
@@ -12,7 +12,7 @@ const compile = (
   const output = {};
   const banked = new BankedData(options.bankSize);
 
-  const precompiled = precompile(projectData);
+  const precompiled = await precompile(projectData);
 
   return output;
 };
@@ -20,7 +20,8 @@ const compile = (
 //#region precompile
 
 const precompile = async projectData => {
-  const flags = await precompileFlags(projectData.scenes);
+  const flags = precompileFlags(projectData.scenes);
+  const strings = precompileStrings(projectData.scenes);
   //   await precompileStrings(world);
   //   await precompileImages(world);
   //   await precompileSprites(world);
@@ -28,33 +29,34 @@ const precompile = async projectData => {
   //   await precompileScript(world);
 
   return {
-    flags
+    flags,
+    strings
   };
 };
 
 export const precompileFlags = scenes => {
   let flags = [];
-  scenes.forEach(scene => {
-    (scene.actors || []).forEach(actor => {
-      walkEvents(actor.events || [], cmd => {
-        if (cmd.args && cmd.args.flag) {
-          if (flags.indexOf(cmd.args.flag) === -1) {
-            flags.push(cmd.args.flag);
-          }
-        }
-      });
-    });
-    (scene.triggers || []).forEach(trigger => {
-      walkEvents(trigger.events || [], cmd => {
-        if (cmd.args && cmd.args.flag) {
-          if (flags.indexOf(cmd.args.flag) === -1) {
-            flags.push(cmd.args.flag);
-          }
-        }
-      });
-    });
+  walkScenesEvents(scenes, cmd => {
+    if (cmd.args && cmd.args.flag) {
+      if (flags.indexOf(cmd.args.flag) === -1) {
+        flags.push(cmd.args.flag);
+      }
+    }
   });
   return flags;
+};
+
+export const precompileStrings = scenes => {
+  let strings = [];
+  walkScenesEvents(scenes, cmd => {
+    if (cmd.args && cmd.args.text) {
+      // If never seen this string before add it to the list
+      if (strings.indexOf(cmd.args.text) === -1) {
+        strings.push(cmd.args.text);
+      }
+    }
+  });
+  return strings;
 };
 
 //#endregion

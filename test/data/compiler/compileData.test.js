@@ -1,8 +1,9 @@
 import compile, {
-  precompileFlags
+  precompileFlags,
+  precompileStrings
 } from "../../../src/lib/data/compiler/compileData";
 
-test("should compile simple project into files object", () => {
+test("should compile simple project into files object", async () => {
   const project = {
     startSceneId: "1",
     startX: 5,
@@ -12,7 +13,9 @@ test("should compile simple project into files object", () => {
       {
         id: "1",
         name: "first_scene",
-        imageId: "2"
+        imageId: "2",
+        actors: [],
+        triggers: []
       }
     ],
     images: [
@@ -26,7 +29,7 @@ test("should compile simple project into files object", () => {
     ]
   };
 
-  const compiled = compile(project);
+  const compiled = await compile(project);
   expect(compiled).toBeInstanceOf(Object);
 });
 
@@ -102,4 +105,74 @@ test("should walk all scene events to build list of used flags", () => {
   ];
   const precompiledFlags = precompileFlags(scenes);
   expect(precompiledFlags).toEqual(["9", "10"]);
+});
+
+test("should walk all scene events to build list of strings", () => {
+  const scenes = [
+    {
+      id: "1",
+      actors: [
+        {
+          id: "2",
+          events: [
+            {
+              id: "3",
+              command: "IF_FLAG",
+              args: { flag: "9" },
+              true: [
+                {
+                  id: "4",
+                  command: "TEXT",
+                  args: { text: "LINE 2" }
+                },
+                {
+                  id: "5",
+                  command: "END"
+                }
+              ],
+              false: [
+                {
+                  id: "6",
+                  command: "SET_FLAG",
+                  args: { flag: "9" }
+                },
+                {
+                  id: "7",
+                  command: "TEXT",
+                  args: { text: "LINE 1" }
+                },
+                {
+                  id: "8",
+                  command: "END"
+                }
+              ]
+            },
+            {
+              id: "9",
+              command: "END"
+            }
+          ]
+        }
+      ],
+      triggers: [
+        {
+          id: "10",
+          events: [
+            {
+              id: "11",
+              command: "TEXT",
+              args: { text: "LINE 2" }
+            },
+            {
+              id: "12",
+              command: "TEXT",
+              args: { text: "LINE 3" }
+            }
+          ]
+        }
+      ]
+    }
+  ];
+  const precompiledStrings = precompileStrings(scenes);
+  expect(precompiledStrings).toEqual(["LINE 2", "LINE 1", "LINE 3"]);
 });
