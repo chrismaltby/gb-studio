@@ -17,6 +17,14 @@ const compile = async (
 
   const precompiled = await precompile(projectData, projectRoot);
 
+  const bankHeader = banked.exportCHeader(bankOffset);
+  const bankData = banked.exportCData(bankOffset);
+
+  output[`banks.h`] = bankHeader;
+  bankData.forEach((bankDataBank, index) => {
+    output[`bank_${bankOffset + index}`] = bankDataBank;
+  });
+
   return output;
 };
 
@@ -35,8 +43,6 @@ const precompile = async (projectData, projectRoot) => {
     projectData.scenes,
     projectRoot
   );
-
-  //   await precompileSprites(world);
   //   await precompileMaps(world);
   //   await precompileScript(world);
 
