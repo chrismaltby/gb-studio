@@ -4,18 +4,37 @@ import compileImages from "./compileImages";
 import { indexArray } from "../../helpers/array";
 import ggbgfx from "./ggbgfx";
 
+export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
+export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
+export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
+
+export const EVENT_MSG_PRE_FLAGS = "Preparing flags...";
+export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
+export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
+export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
+export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
+export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
+export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
+
+const noopEmitter = {
+  emit: () => {}
+};
+
 const compile = async (
   projectData,
   {
     projectRoot = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
-    bankOffset = MIN_DATA_BANK
+    bankOffset = MIN_DATA_BANK,
+    eventEmitter = noopEmitter
   } = {}
 ) => {
+  eventEmitter.emit(EVENT_START_DATA_COMPILE);
+
   const output = {};
   const banked = new BankedData(bankSize);
 
-  const precompiled = await precompile(projectData, projectRoot);
+  const precompiled = await precompile(projectData, projectRoot, eventEmitter);
 
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
@@ -25,26 +44,39 @@ const compile = async (
     output[`bank_${bankOffset + index}`] = bankDataBank;
   });
 
+  eventEmitter.emit(EVENT_END_DATA_COMPILE);
+
   return output;
 };
 
 //#region precompile
 
-const precompile = async (projectData, projectRoot) => {
+const precompile = async (projectData, projectRoot, eventEmitter) => {
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_FLAGS);
   const flags = precompileFlags(projectData.scenes);
+
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
+
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_IMAGES);
   const { usedImages, imageLookup, imageData } = await precompileImages(
     projectData.images,
     projectData.scenes,
     projectRoot
   );
+
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_SPRITES);
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectRoot
   );
+
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(projectData.scenes, imageData, spriteData);
   //   await precompileScript(world);
+
+  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_COMPLETE);
 
   return {
     flags,
@@ -137,6 +169,7 @@ export const precompileScenes = (scenes, imageData, spriteData) => {
       }, [])
     };
   });
+  return scenesData;
 };
 
 //#endregion

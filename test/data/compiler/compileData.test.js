@@ -1,7 +1,9 @@
 import compile, {
   precompileFlags,
   precompileStrings,
-  precompileImages
+  precompileImages,
+  precompileSprites,
+  precompileScenes
 } from "../../../src/lib/data/compiler/compileData";
 
 test("should compile simple project into files object", async () => {
@@ -207,14 +209,63 @@ test("should precompile image data", async () => {
       triggers: []
     }
   ];
-
   const { usedImages, imageLookup, imageData } = await precompileImages(
     images,
     scenes,
     `${__dirname}/_files`
   );
-
   expect(usedImages).toHaveLength(1);
   expect(imageLookup["2"]).toBe(images[0]);
   expect(imageLookup["3"]).toBeUndefined();
+});
+
+test.todo("should precompile sprites");
+
+test("should precompile scenes", async () => {
+  const scenes = [
+    {
+      id: "1",
+      imageId: "3",
+      actors: [
+        {
+          spriteSheetId: "5"
+        }
+      ]
+    },
+    {
+      id: "2",
+      imageId: "4",
+      actors: [
+        {
+          spriteSheetId: "5"
+        },
+        {
+          spriteSheetId: "6"
+        }
+      ]
+    }
+  ];
+  const imageData = {
+    tilemaps: {
+      "3": { id: "3" }
+    },
+    tilemapsTileset: {
+      "3": { id: "3" }
+    }
+  };
+  const spriteData = [
+    {
+      id: "5"
+    },
+    {
+      id: "6"
+    }
+  ];
+  const sceneData = precompileScenes(scenes, imageData, spriteData);
+
+  expect(sceneData).toHaveLength(scenes.length);
+  expect(sceneData[0].tilemap).toBe(imageData.tilemaps["3"]);
+  expect(sceneData[0].tileset).toBe(imageData.tilemapsTileset["3"]);
+  expect(sceneData[0].sprites).toHaveLength(1);
+  expect(sceneData[1].sprites).toHaveLength(2);
 });
