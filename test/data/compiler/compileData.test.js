@@ -32,9 +32,11 @@ test("should compile simple project into files object", async () => {
     ],
     spriteSheets: []
   };
-
   const compiled = await compile(project, {
-    projectRoot: `${__dirname}/_files`
+    projectRoot: `${__dirname}/_files`,
+    eventEmitter: {
+      emit: (a, b) => console.log(a, ":", b)
+    }
   });
   expect(compiled).toBeInstanceOf(Object);
 });
@@ -269,3 +271,5 @@ test("should precompile scenes", async () => {
   expect(sceneData[0].sprites).toHaveLength(1);
   expect(sceneData[1].sprites).toHaveLength(2);
 });
+
+test("should precompile script", async () => {});
