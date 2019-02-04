@@ -60,6 +60,15 @@ class BankedData {
       return ptr;
     }
   }
+  dataWillFitCurrentBank(newData) {
+    return (
+      (this.data[this.currentBank] || []).length + newData.length <=
+      this.bankSize
+    );
+  }
+  currentBankSize() {
+    return (this.data[this.currentBank] || []).length;
+  }
   nextBank() {
     if (this.data[this.currentBank] && this.data[this.currentBank].length > 0) {
       this.currentBank++;

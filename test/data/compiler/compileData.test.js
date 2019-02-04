@@ -5,6 +5,11 @@ import compile, {
   precompileSprites,
   precompileScenes
 } from "../../../src/lib/data/compiler/compileData";
+import {
+  EVENT_TEXT,
+  EVENT_IF_FLAG,
+  EVENT_SET_FLAG
+} from "../../../src/lib/data/compiler/eventTypes";
 
 test("should compile simple project into files object", async () => {
   const project = {
@@ -27,7 +32,25 @@ test("should compile simple project into files object", async () => {
           0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0
         ],
-        actors: [],
+        actors: [
+          {
+            id: "9",
+            events: [
+              {
+                command: EVENT_TEXT,
+                args: {
+                  text: 'HELLO "WORLD'
+                }
+              },
+              {
+                command: EVENT_TEXT,
+                args: {
+                  text: "LOREM IPSUM"
+                }
+              }
+            ]
+          }
+        ],
         triggers: []
       },
       {
@@ -44,7 +67,41 @@ test("should compile simple project into files object", async () => {
           0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0
         ],
-        actors: [],
+        actors: [
+          {
+            id: "10",
+            events: [
+              {
+                command: EVENT_IF_FLAG,
+                args: {
+                  flag: "1"
+                },
+                true: [
+                  {
+                    command: EVENT_TEXT,
+                    args: {
+                      text: "LOREM IPSUM"
+                    }
+                  }
+                ],
+                false: [
+                  {
+                    command: EVENT_TEXT,
+                    args: {
+                      text: "NOT YET"
+                    }
+                  },
+                  {
+                    command: EVENT_SET_FLAG,
+                    args: {
+                      flag: "1"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         triggers: []
       },
       {
@@ -61,7 +118,12 @@ test("should compile simple project into files object", async () => {
           0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0
         ],
-        actors: [],
+        actors: [
+          {
+            id: "99",
+            events: []
+          }
+        ],
         triggers: []
       },
       {
@@ -134,10 +196,10 @@ test("should compile simple project into files object", async () => {
     spriteSheets: []
   };
   const compiled = await compile(project, {
-    projectRoot: `${__dirname}/_files`,
-    eventEmitter: {
-      emit: (a, b) => console.log(a, ":", b)
-    }
+    projectRoot: `${__dirname}/_files`
+    // eventEmitter: {
+    //   emit: (a, b) => console.log(a, ":", b)
+    // }
   });
   expect(compiled).toBeInstanceOf(Object);
 });
@@ -348,14 +410,11 @@ test("should precompile scenes", async () => {
       ]
     }
   ];
-  const imageData = {
-    tilemaps: {
-      "3": { id: "3" }
-    },
-    tilemapsTileset: {
-      "3": { id: "3" }
+  const usedImages = [
+    {
+      id: "3"
     }
-  };
+  ];
   const spriteData = [
     {
       id: "5"
@@ -364,11 +423,12 @@ test("should precompile scenes", async () => {
       id: "6"
     }
   ];
-  const sceneData = precompileScenes(scenes, imageData, spriteData);
+  const sceneData = precompileScenes(scenes, usedImages, spriteData);
 
   expect(sceneData).toHaveLength(scenes.length);
-  expect(sceneData[0].tilemap).toBe(imageData.tilemaps["3"]);
-  expect(sceneData[0].tileset).toBe(imageData.tilemapsTileset["3"]);
+
+  // expect(sceneData[0].tilemap).toBe(imageData.tilemaps["3"]);
+  // expect(sceneData[0].tileset).toBe(imageData.tilemapsTileset["3"]);
   expect(sceneData[0].sprites).toHaveLength(1);
   expect(sceneData[1].sprites).toHaveLength(2);
 });

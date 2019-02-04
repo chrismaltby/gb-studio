@@ -3,6 +3,10 @@ import { walkScenesEvents } from "../../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexArray } from "../../helpers/array";
 import ggbgfx from "./ggbgfx";
+import { hi, lo } from "../../helpers/8bit";
+import compileEntityScript from "./precompileEntityEvents";
+
+const STRINGS_PER_BANK = 430;
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
@@ -20,29 +24,64 @@ const noopEmitter = {
   emit: () => {}
 };
 
+const quoteString = s => `"${s.replace(/"/g, '\\"')}"`;
+
 const compile = async (
   projectData,
   {
     projectRoot = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
+    stringsPerBank = STRINGS_PER_BANK,
     eventEmitter = noopEmitter
   } = {}
 ) => {
   eventEmitter.emit(EVENT_START_DATA_COMPILE);
 
   const output = {};
-  const banked = new BankedData(bankSize);
 
   const precompiled = await precompile(projectData, projectRoot, eventEmitter);
 
-  const a = banked.push([1, 2, 3]);
-  console.log({
-    a,
-    usedImages: precompiled.usedImages,
-    imageData: precompiled.imageData,
-    usedTilesets: precompiled.usedTilesets,
-    usedTilesetLookup: precompiled.usedTilesetLookup
+  // Strings
+  const stringsLength = precompiled.strings.length;
+  const stringNumBanks = Math.ceil(stringsLength / stringsPerBank);
+  const stringBanks = [];
+  for (let i = 0; i < stringNumBanks; i++) {
+    stringBanks.push(
+      precompiled.strings.slice(
+        i * stringsPerBank,
+        i * stringsPerBank + stringsPerBank
+      )
+    );
+  }
+
+  const banked = new BankedData({
+    bankSize,
+    bankOffset: bankOffset + stringBanks.length
+  });
+
+  // Add script data
+  let scriptPtrs = projectData.scenes.map(scene => {
+    return {
+      actors: scene.actors.map(actor => {
+        const output = compileEntityScript(actor.events, {
+          scene,
+          strings: precompiled.strings,
+          flags: precompiled.flags,
+          ptrOffset: banked.currentBankSize()
+        });
+        if (banked.dataWillFitCurrentBank(output)) {
+          return banked.push(output);
+        } else {
+          const outputNewBank = compileEntityScript(actor.events, {
+            scene,
+            strings: precompiled.strings,
+            flags: precompiled.flags
+          });
+          return banked.push(output);
+        }
+      })
+    };
   });
 
   // Add tileset data
@@ -53,6 +92,21 @@ const compile = async (
   let imagePtrs = precompiled.usedImages.map(image => {
     return banked.push(
       [].concat(image.tilesetIndex, image.width, image.height, image.data)
+    );
+  });
+
+  let scenePtrs = precompiled.sceneData.map(scene => {
+    return banked.push(
+      [].concat(
+        hi(scene.imageIndex),
+        lo(scene.imageIndex),
+        scene.sprites.length,
+        scene.actors.length,
+        scene.triggers.length,
+        scene.collisions,
+        scene.actorsData,
+        scene.triggersData
+      )
     );
   });
 
@@ -72,7 +126,9 @@ const compile = async (
   //   scenePtrs.push(banked.push(sceneData));
   // });
 
-  console.log({ tileSetPtrs, imagePtrs });
+  console.log(
+    JSON.stringify({ scriptPtrs, tileSetPtrs, imagePtrs, scenePtrs }, null, 4)
+  );
 
   // console.log(tileMapPtrs);
   // console.log(scenePtrs);
@@ -89,11 +145,19 @@ const compile = async (
   const bankData = banked.exportCData(bankOffset);
 
   output[`banks.h`] = bankHeader;
-  bankData.forEach((bankDataBank, index) => {
-    output[`bank_${bankOffset + index}`] = bankDataBank;
+
+  stringBanks.forEach((bankStrings, index) => {
+    output[`strings_${bankOffset + index}.c`] = `#pragma bank=${bankOffset +
+      index}\n\nconst unsigned char strings[][38] = {\n${bankStrings
+      .map(quoteString)
+      .join(",\n")}\n};\n`;
   });
 
-  console.log(output);
+  bankData.forEach((bankDataBank, index) => {
+    output[`bank_${bankOffset + stringBanks.length + index}.c`] = bankDataBank;
+  });
+
+  // console.log(output);
 
   eventEmitter.emit(EVENT_END_DATA_COMPILE);
 
@@ -130,8 +194,11 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
   );
 
   eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_SCENES);
-  const sceneData = precompileScenes(projectData.scenes, imageData, spriteData);
-  //   await precompileScript(world);
+  const sceneData = precompileScenes(
+    projectData.scenes,
+    usedImages,
+    spriteData
+  );
 
   eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_COMPLETE);
 
@@ -193,9 +260,9 @@ export const precompileImages = async (images, scenes, projectRoot) => {
   });
   return {
     usedImages: usedImagesWithData,
-    usedTilesets
+    usedTilesets,
     // usedTilesetLookup,
-    // imageLookup,
+    imageLookup
     // imageData
   };
 };
@@ -226,10 +293,11 @@ export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
   };
 };
 
-export const precompileScenes = (scenes, imageData, spriteData) => {
+export const precompileScenes = (scenes, usedImages, spriteData) => {
   const scenesData = scenes.map(scene => {
     return {
       ...scene,
+      imageIndex: usedImages.findIndex(image => image.id === scene.imageId),
       // tilemap: imageData.tilemaps[scene.imageId],
       // tileset: imageData.tilemapsTileset[scene.imageId],
       sprites: scene.actors.reduce((memo, actor) => {
@@ -240,52 +308,13 @@ export const precompileScenes = (scenes, imageData, spriteData) => {
           memo.push(spriteIndex);
         }
         return memo;
-      }, [])
+      }, []),
+      actorsData: [],
+      triggersData: []
     };
   });
   return scenesData;
 };
-
-/*
-const precompileScript = world => {
-  world._data.scriptLookup = {};
-  world._data.script = [CMD_LOOKUP["END"]];
-  world.scenes.forEach(map => {
-    world._data.scriptLookup[map.id] = { actors: {}, triggers: {} };
-    map.actors.forEach((actor, i) => {
-      if (actor.script && actor.script.length > 1) {
-        // Had a script
-        world._data.scriptLookup[map.id].actors[i] = world._data.script.length;
-        world._data.script = precompileEntityScript(
-          actor.script,
-          world._data.script,
-          world._data,
-          map.id
-        );
-      } else {
-        // No script
-        world._data.scriptLookup[map.id].actors[i] = SCRIPT_MAX;
-      }
-    });
-    map.triggers.forEach((trigger, i) => {
-      if (trigger.script && trigger.script.length > 1) {
-        // Had a script
-        world._data.scriptLookup[map.id].triggers[i] =
-          world._data.script.length;
-        world._data.script = precompileEntityScript(
-          trigger.script,
-          world._data.script,
-          world._data,
-          map.id
-        );
-      } else {
-        // No script
-        world._data.scriptLookup[map.id].triggers[i] = SCRIPT_MAX;
-      }
-    });
-  });
-};
-*/
 
 //#endregion
 
