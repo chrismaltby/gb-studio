@@ -4,7 +4,7 @@ import compileImages from "./compileImages";
 import { indexArray } from "../../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo } from "../../helpers/8bit";
-import compileEntityScript from "./precompileEntityEvents";
+import compileEntityEvents from "./precompileEntityEvents";
 
 const STRINGS_PER_BANK = 430;
 
@@ -60,27 +60,29 @@ const compile = async (
     bankOffset: bankOffset + stringBanks.length
   });
 
-  // Add script data
-  let scriptPtrs = projectData.scenes.map(scene => {
-    return {
-      actors: scene.actors.map(actor => {
-        const output = compileEntityScript(actor.events, {
+  // Add event data
+  let eventPtrs = projectData.scenes.map(scene => {
+    const bankEntityEvents = entity => {
+      const output = compileEntityEvents(entity.events, {
+        scene,
+        strings: precompiled.strings,
+        flags: precompiled.flags,
+        ptrOffset: banked.currentBankSize()
+      });
+      if (banked.dataWillFitCurrentBank(output)) {
+        return banked.push(output);
+      } else {
+        const outputNewBank = compileEntityEvents(entity.events, {
           scene,
           strings: precompiled.strings,
-          flags: precompiled.flags,
-          ptrOffset: banked.currentBankSize()
+          flags: precompiled.flags
         });
-        if (banked.dataWillFitCurrentBank(output)) {
-          return banked.push(output);
-        } else {
-          const outputNewBank = compileEntityScript(actor.events, {
-            scene,
-            strings: precompiled.strings,
-            flags: precompiled.flags
-          });
-          return banked.push(output);
-        }
-      })
+        return banked.push(output);
+      }
+    };
+    return {
+      actors: scene.actors.map(bankEntityEvents),
+      triggers: scene.triggers.map(bankEntityEvents)
     };
   });
 
@@ -127,7 +129,7 @@ const compile = async (
   // });
 
   console.log(
-    JSON.stringify({ scriptPtrs, tileSetPtrs, imagePtrs, scenePtrs }, null, 4)
+    JSON.stringify({ eventPtrs, tileSetPtrs, imagePtrs, scenePtrs }, null, 4)
   );
 
   // console.log(tileMapPtrs);
