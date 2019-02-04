@@ -11,8 +11,12 @@ const MIN_DATA_BANK = 16; // First 16 banks are reserved by game engine
 const MAX_BANKS = 512; // GBDK supports max of 512 banks
 
 class BankedData {
-  constructor(bankSize = GB_MAX_BANK_SIZE) {
+  constructor({
+    bankSize = GB_MAX_BANK_SIZE,
+    bankOffset = MIN_DATA_BANK
+  } = {}) {
     this.bankSize = bankSize;
+    this.bankOffset = bankOffset;
     this.data = [];
     this.currentBank = 0;
   }
@@ -26,7 +30,7 @@ class BankedData {
     if (!this.data[this.currentBank]) {
       // First bank
       const ptr = {
-        bank: this.currentBank,
+        bank: this.currentBank + this.bankOffset,
         offset: 0
       };
       this.data[this.currentBank] = newData;
@@ -38,14 +42,14 @@ class BankedData {
       // Current bank is over size, make a new one
       this.currentBank++;
       const ptr = {
-        bank: this.currentBank,
+        bank: this.currentBank + this.bankOffset,
         offset: 0
       };
       this.data[this.currentBank] = newData;
       return ptr;
     } else {
       const ptr = {
-        bank: this.currentBank,
+        bank: this.currentBank + this.bankOffset,
         offset: this.data[this.currentBank].length
       };
       // Bank has room, append contents
@@ -61,8 +65,8 @@ class BankedData {
       this.currentBank++;
     }
   }
-  romBanksNeeded(bankOffset = MIN_DATA_BANK) {
-    const maxBank = this.data.length + bankOffset;
+  romBanksNeeded() {
+    const maxBank = this.data.length + this.bankOffset;
     const nearestPow2 = Math.pow(2, Math.ceil(Math.log(maxBank) / Math.log(2)));
     if (nearestPow2 > MAX_BANKS) {
       throw BANKED_COUNT_OVERFLOW;
@@ -72,19 +76,19 @@ class BankedData {
   exportRaw() {
     return this.data;
   }
-  exportCData(bankOffset = MIN_DATA_BANK) {
+  exportCData() {
     return this.data.map((data, index) => {
-      const bank = index + bankOffset;
+      const bank = index + this.bankOffset;
       return `#pragma bank=${bank}\n\n${cIntArray(
         `bank_${bank}_data`,
         data
       )}\n`;
     });
   }
-  exportCHeader(bankOffset = MIN_DATA_BANK) {
+  exportCHeader() {
     return `#ifndef BANKS_H\n#define BANKS_H\n\n${this.data
       .map((data, index) => {
-        const bank = index + bankOffset;
+        const bank = index + this.bankOffset;
         return cIntArrayExternDeclaration(`bank_${bank}_data`);
       })
       .join("\n")}\n#endif\n`;
