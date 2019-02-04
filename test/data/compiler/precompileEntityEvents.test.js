@@ -3,6 +3,12 @@ import precompileEntityEvents, {
   STRING_NOT_FOUND,
   FLAG_NOT_FOUND
 } from "../../../src/lib/data/compiler/precompileEntityEvents";
+import {
+  EVENT_END,
+  EVENT_TEXT,
+  EVENT_IF_FLAG,
+  EVENT_SET_FLAG
+} from "../../../src/lib/data/compiler/eventTypes";
 
 test("should precompile empty events", () => {
   const input = [];
@@ -20,7 +26,7 @@ test("should allow passing in output object", () => {
 test("should NOT collapse multiple end events", () => {
   const input = [
     {
-      command: "END"
+      command: EVENT_END
     }
   ];
   const output = precompileEntityEvents(input);
@@ -30,7 +36,7 @@ test("should NOT collapse multiple end events", () => {
 test("should output text command", () => {
   const input = [
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "HELLO WORLD"
       }
@@ -44,13 +50,13 @@ test("should output text command", () => {
 test("should output text command string pointers", () => {
   const input = [
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "TEST_10"
       }
     },
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "TEST_260"
       }
@@ -76,13 +82,13 @@ test("should output text command string pointers", () => {
 test("should allow conditional statements", () => {
   const input = [
     {
-      command: "IF_FLAG",
+      command: EVENT_IF_FLAG,
       args: {
         flag: "4"
       },
       true: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "TRUE PATH"
           }
@@ -90,7 +96,7 @@ test("should allow conditional statements", () => {
       ],
       false: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "FALSE PATH"
           }
@@ -127,13 +133,13 @@ test.todo("should allow commands before conditional");
 test("should allow commands after conditional", () => {
   const input = [
     {
-      command: "IF_FLAG",
+      command: EVENT_IF_FLAG,
       args: {
         flag: "4"
       },
       true: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "TRUE PATH"
           }
@@ -141,7 +147,7 @@ test("should allow commands after conditional", () => {
       ],
       false: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "FALSE PATH"
           }
@@ -149,7 +155,7 @@ test("should allow commands after conditional", () => {
       ]
     },
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "AFTER"
       }
@@ -187,24 +193,24 @@ test.todo("should allow nested conditionals");
 test("should allow ending early", () => {
   const input = [
     {
-      command: "IF_FLAG",
+      command: EVENT_IF_FLAG,
       args: {
         flag: "4"
       },
       true: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "TRUE PATH"
           }
         },
         {
-          command: "END"
+          command: EVENT_END
         }
       ],
       false: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "FALSE PATH"
           }
@@ -212,7 +218,7 @@ test("should allow ending early", () => {
       ]
     },
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "AFTER"
       }
@@ -249,7 +255,7 @@ test("should allow ending early", () => {
 test("should error if any string lookups return negative values", () => {
   const input = [
     {
-      command: "TEXT",
+      command: EVENT_TEXT,
       args: {
         text: "HELLO WORLD"
       }
@@ -264,7 +270,7 @@ test("should error if any string lookups return negative values", () => {
 test("should error if any flag lookups return negative values", () => {
   const input = [
     {
-      command: "SET_FLAG",
+      command: EVENT_SET_FLAG,
       args: {
         text: "1"
       }
@@ -279,13 +285,13 @@ test("should error if any flag lookups return negative values", () => {
 test("should allow ptr values to be offset", () => {
   const input = [
     {
-      command: "IF_FLAG",
+      command: EVENT_IF_FLAG,
       args: {
         flag: "1"
       },
       true: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "TRUE PATH"
           }
@@ -293,7 +299,7 @@ test("should allow ptr values to be offset", () => {
       ],
       false: [
         {
-          command: "TEXT",
+          command: EVENT_TEXT,
           args: {
             text: "FALSE PATH"
           }

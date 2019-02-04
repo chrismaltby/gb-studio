@@ -1,6 +1,10 @@
 export const EVENT_END = "EVENT_END";
-export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_WAIT = "EVENT_WAIT";
+
+// Scenes
+export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
+export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
+export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
 
 // Conditional
 export const EVENT_IF_FLAG = "EVENT_IF_FLAG";
