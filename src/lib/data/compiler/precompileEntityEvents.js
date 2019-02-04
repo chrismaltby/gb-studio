@@ -61,7 +61,15 @@ const getFlagIndex = (flag, flags) => {
 
 const precompileEntityScript = (
   input,
-  { output = [], data, mapId, strings, flags, branch = false } = {}
+  {
+    output = [],
+    data,
+    mapId,
+    strings,
+    flags,
+    branch = false,
+    ptrOffset = 0
+  } = {}
 ) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -104,6 +112,7 @@ const precompileEntityScript = (
         mapId,
         strings,
         flags,
+        ptrOffset,
         branch: true
       });
 
@@ -112,7 +121,7 @@ const precompileEntityScript = (
       output.push("PTR_PLACEHOLDER1");
       output.push("PTR_PLACEHOLDER2");
 
-      const truePointer = output.length;
+      const truePointer = output.length + ptrOffset;
       output[truePtrIndex] = truePointer >> 8;
       output[truePtrIndex + 1] = truePointer & 0xff;
 
@@ -122,10 +131,11 @@ const precompileEntityScript = (
         mapId,
         strings,
         flags,
+        ptrOffset,
         branch: true
       });
 
-      const endIfPointer = output.length;
+      const endIfPointer = output.length + ptrOffset;
       output[endPtrIndex] = endIfPointer >> 8;
       output[endPtrIndex + 1] = endIfPointer & 0xff;
     } else if (command === "SET_FLAG") {

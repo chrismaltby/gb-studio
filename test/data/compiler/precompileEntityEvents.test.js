@@ -275,3 +275,53 @@ test("should error if any flag lookups return negative values", () => {
     FLAG_NOT_FOUND
   );
 });
+
+test("should allow ptr values to be offset", () => {
+  const input = [
+    {
+      command: "IF_FLAG",
+      args: {
+        flag: "1"
+      },
+      true: [
+        {
+          command: "TEXT",
+          args: {
+            text: "TRUE PATH"
+          }
+        }
+      ],
+      false: [
+        {
+          command: "TEXT",
+          args: {
+            text: "FALSE PATH"
+          }
+        }
+      ]
+    }
+  ];
+  const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH"];
+  const flags = ["1"];
+  const ptrOffset = 257;
+  const output = precompileEntityEvents(input, { strings, flags, ptrOffset });
+  expect(output).toEqual([
+    CMD_LOOKUP.IF_FLAG, // 0
+    0, // 1 Flag ptr hi
+    0, // 2 Flag ptr lo
+    1, // 3 Jump ptr hi
+    12, // 4 Jump ptr lo
+    // False path
+    CMD_LOOKUP.TEXT, // 5
+    0, // 6
+    2, // 7
+    CMD_LOOKUP.JUMP, // 8
+    1, // 9 Jump to end
+    15, // 10
+    // True path
+    CMD_LOOKUP.TEXT, // 11
+    0, // 12
+    1, // 13
+    CMD_LOOKUP.END // 14
+  ]);
+});
