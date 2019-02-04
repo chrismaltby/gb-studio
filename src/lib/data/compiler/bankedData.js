@@ -56,6 +56,11 @@ class BankedData {
       return ptr;
     }
   }
+  nextBank() {
+    if (this.data[this.currentBank] && this.data[this.currentBank].length > 0) {
+      this.currentBank++;
+    }
+  }
   romBanksNeeded(bankOffset = MIN_DATA_BANK) {
     const maxBank = this.data.length + bankOffset;
     const nearestPow2 = Math.pow(2, Math.ceil(Math.log(maxBank) / Math.log(2)));

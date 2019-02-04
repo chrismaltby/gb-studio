@@ -172,6 +172,12 @@ function tilesLookupToTilesString(lookup) {
     .slice(0, -1);
 }
 
+function tilesLookupToTilesIntArray(lookup) {
+  return tilesLookupToTilesString(lookup)
+    .split(",")
+    .map(a => parseInt(a, 16));
+}
+
 function imageToTilesString(filename) {
   return getPixels(filename)
     .then(pixelsToTilesLookup)
@@ -191,6 +197,13 @@ function imageAndTilesetToTilemap(filename, tilesetFilename, offset) {
     .then(function(tilemap) {
       return tilemap.map(decHex).join(",");
     });
+}
+
+function imageAndTilesetToTilemapIntArray(filename, tilesetFilename, offset) {
+  var tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
+  return Promise.all([getPixels(filename), tilesetLookup]).then(function(res) {
+    return pixelsAndLookupToTilemap(res[0], res[1], offset);
+  });
 }
 
 function imageToTilesetLookup(filename) {
@@ -279,8 +292,10 @@ module.exports = {
   imageToSpriteString,
   imagesToTilesetImage,
   imageAndTilesetToTilemap,
+  imageAndTilesetToTilemapIntArray,
   imagesToTilesetLookups,
   tileLookupToImage,
   imageToTilesetLookup,
-  tilesLookupToTilesString
+  tilesLookupToTilesString,
+  tilesLookupToTilesIntArray
 };

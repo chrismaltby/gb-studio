@@ -17,6 +17,84 @@ test("should compile simple project into files object", async () => {
         id: "1",
         name: "first_scene",
         imageId: "2",
+        width: 20,
+        height: 18,
+        // prettier-ignore
+        collisions: [
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0
+        ],
+        actors: [],
+        triggers: []
+      },
+      {
+        id: "5",
+        name: "second_scene",
+        imageId: "3",
+        width: 32,
+        height: 32,
+        // prettier-ignore
+        collisions: [
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0
+        ],
+        actors: [],
+        triggers: []
+      },
+      {
+        id: "6",
+        name: "third_scene",
+        imageId: "4",
+        width: 20,
+        height: 18,
+        // prettier-ignore
+        collisions: [
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0
+        ],
+        actors: [],
+        triggers: []
+      },
+      {
+        id: "9",
+        name: "fourth_scene",
+        imageId: "7",
+        width: 20,
+        height: 18,
+        // prettier-ignore
+        collisions: [
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0
+        ],
+        actors: [],
+        triggers: []
+      },
+      {
+        id: "10",
+        name: "fifth_scene",
+        imageId: "8",
+        width: 20,
+        height: 18,
+        // prettier-ignore
+        collisions: [
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0
+        ],
         actors: [],
         triggers: []
       }
@@ -24,10 +102,33 @@ test("should compile simple project into files object", async () => {
     images: [
       {
         id: "2",
-        name: "test_img",
+        width: 20,
+        height: 32,
+        filename: "forest_clearing.png"
+      },
+      {
+        id: "3",
         width: 20,
         height: 18,
-        filename: "test_img.png"
+        filename: "mabe_house.png"
+      },
+      {
+        id: "4",
+        width: 32,
+        height: 32,
+        filename: "village_street_night.png"
+      },
+      {
+        id: "7",
+        width: 20,
+        height: 18,
+        filename: "home_bedroom_night.png"
+      },
+      {
+        id: "8",
+        width: 20,
+        height: 18,
+        filename: "boss.png"
       }
     ],
     spriteSheets: []

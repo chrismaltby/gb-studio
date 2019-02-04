@@ -86,19 +86,20 @@ const compileImages = async (imgs, projectPath) => {
         projectPath + "/test/tileset_" + i + ".png"
       );
 
-      output.tilesets[i] = ggbgfx.tilesLookupToTilesString(tilesetLookups[i]);
+      // output.tilesets[i] = ggbgfx.tilesLookupToTilesString(tilesetLookups[i]);
+      output.tilesets[i] = ggbgfx.tilesLookupToTilesIntArray(tilesetLookups[i]);
     }
   }
 
   for (let i = 0; i < imgs.length; i++) {
-    const tilemap = await ggbgfx.imageAndTilesetToTilemap(
+    const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
       projectPath + "/assets/backgrounds/" + imgs[i].filename,
       projectPath + "/test/tileset_" + tilesetIndexes[i] + ".png"
     );
-
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];
   }
+
   return output;
 };
 

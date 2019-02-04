@@ -36,6 +36,55 @@ const compile = async (
 
   const precompiled = await precompile(projectData, projectRoot, eventEmitter);
 
+  const a = banked.push([1, 2, 3]);
+  console.log({
+    a,
+    usedImages: precompiled.usedImages,
+    imageData: precompiled.imageData,
+    usedTilesets: precompiled.usedTilesets,
+    usedTilesetLookup: precompiled.usedTilesetLookup
+  });
+
+  // Add tileset data
+  let tileSetPtrs = precompiled.usedTilesets.map((tileset, tilesetIndex) => {
+    return banked.push(tileset);
+  });
+
+  let imagePtrs = precompiled.usedImages.map(image => {
+    return banked.push(
+      [].concat(image.tilesetIndex, image.width, image.height, image.data)
+    );
+  });
+
+  // let tileMapPtrs = {};
+  // Object.keys(precompiled.imageData.tilemaps).map(tileMapKey => {
+  //   tileMapPtrs[tileMapKey] = banked.push(
+  //     precompiled.imageData.tilemaps[tileMapKey]
+  //   );
+  // });
+
+  // banked.nextBank();
+
+  // let scenePtrs = [];
+  // precompiled.sceneData.map(scene => {
+  //   console.log(scene);
+  //   const sceneData = [].concat([scene.width, scene.height]);
+  //   scenePtrs.push(banked.push(sceneData));
+  // });
+
+  console.log({ tileSetPtrs, imagePtrs });
+
+  // console.log(tileMapPtrs);
+  // console.log(scenePtrs);
+
+  // precompiled.usedImages.forEach((image, imageIndex) => {
+  //   const bankPtr = image.
+  // })
+
+  // projectData.scenes.forEach((scene, sceneIndex) => {
+  //   const bankPtr =
+  // })
+
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
 
@@ -43,6 +92,8 @@ const compile = async (
   bankData.forEach((bankDataBank, index) => {
     output[`bank_${bankOffset + index}`] = bankDataBank;
   });
+
+  console.log(output);
 
   eventEmitter.emit(EVENT_END_DATA_COMPILE);
 
@@ -59,7 +110,13 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
   const strings = precompileStrings(projectData.scenes);
 
   eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_IMAGES);
-  const { usedImages, imageLookup, imageData } = await precompileImages(
+  const {
+    usedImages,
+    imageLookup,
+    imageData,
+    usedTilesets,
+    usedTilesetLookup
+  } = await precompileImages(
     projectData.images,
     projectData.scenes,
     projectRoot
@@ -83,6 +140,8 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
     strings,
     usedImages,
     imageLookup,
+    usedTilesets,
+    usedTilesetLookup,
     imageData,
     sceneData
   };
@@ -119,10 +178,25 @@ export const precompileImages = async (images, scenes, projectRoot) => {
   );
   const imageLookup = indexArray(usedImages, "id");
   const imageData = await compileImages(usedImages, projectRoot);
+  let usedTilesets = [];
+  let usedTilesetLookup = {};
+  Object.keys(imageData.tilesets).forEach(tileKey => {
+    usedTilesetLookup[tileKey] = usedTilesets.length;
+    usedTilesets.push(imageData.tilesets[tileKey]);
+  });
+  const usedImagesWithData = usedImages.map(image => {
+    return {
+      ...image,
+      tilesetIndex: usedTilesetLookup[imageData.tilemapsTileset[image.id]],
+      data: imageData.tilemaps[image.id]
+    };
+  });
   return {
-    usedImages,
-    imageLookup,
-    imageData
+    usedImages: usedImagesWithData,
+    usedTilesets
+    // usedTilesetLookup,
+    // imageLookup,
+    // imageData
   };
 };
 
@@ -156,8 +230,8 @@ export const precompileScenes = (scenes, imageData, spriteData) => {
   const scenesData = scenes.map(scene => {
     return {
       ...scene,
-      tilemap: imageData.tilemaps[scene.imageId],
-      tileset: imageData.tilemapsTileset[scene.imageId],
+      // tilemap: imageData.tilemaps[scene.imageId],
+      // tileset: imageData.tilemapsTileset[scene.imageId],
       sprites: scene.actors.reduce((memo, actor) => {
         const spriteIndex = spriteData.findIndex(
           sprite => sprite.id === actor.spriteSheetId
@@ -171,6 +245,47 @@ export const precompileScenes = (scenes, imageData, spriteData) => {
   });
   return scenesData;
 };
+
+/*
+const precompileScript = world => {
+  world._data.scriptLookup = {};
+  world._data.script = [CMD_LOOKUP["END"]];
+  world.scenes.forEach(map => {
+    world._data.scriptLookup[map.id] = { actors: {}, triggers: {} };
+    map.actors.forEach((actor, i) => {
+      if (actor.script && actor.script.length > 1) {
+        // Had a script
+        world._data.scriptLookup[map.id].actors[i] = world._data.script.length;
+        world._data.script = precompileEntityScript(
+          actor.script,
+          world._data.script,
+          world._data,
+          map.id
+        );
+      } else {
+        // No script
+        world._data.scriptLookup[map.id].actors[i] = SCRIPT_MAX;
+      }
+    });
+    map.triggers.forEach((trigger, i) => {
+      if (trigger.script && trigger.script.length > 1) {
+        // Had a script
+        world._data.scriptLookup[map.id].triggers[i] =
+          world._data.script.length;
+        world._data.script = precompileEntityScript(
+          trigger.script,
+          world._data.script,
+          world._data,
+          map.id
+        );
+      } else {
+        // No script
+        world._data.scriptLookup[map.id].triggers[i] = SCRIPT_MAX;
+      }
+    });
+  });
+};
+*/
 
 //#endregion
 
