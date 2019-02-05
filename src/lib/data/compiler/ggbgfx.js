@@ -8,19 +8,29 @@ const TILE_SIZE = 8;
 const MAX_TILEMAP_TILE_WIDTH = 16;
 const MAX_TILEMAP_WIDTH = TILE_SIZE * MAX_TILEMAP_TILE_WIDTH;
 
-function indexColour(value) {
-  if (value < 40) {
-    return 3;
-  } else if (value < 120) {
-    return 2;
-  } else if (value < 220) {
-    return 1;
-  } else {
-    return 0;
-  }
+function memoize(fn) {
+  var cache = {};
+  return function(x) {
+    if (cache[x]) {
+      return cache[x];
+    }
+    return (cache[x] = fn(x));
+  };
 }
 
-function spriteIndexColour(value) {
+const indexColour = memoize(value => {
+  if (value < 40) {
+    return 3;
+  } else if (value < 120) {
+    return 2;
+  } else if (value < 220) {
+    return 1;
+  } else {
+    return 0;
+  }
+});
+
+const spriteIndexColour = memoize(value => {
   if (value < 40) {
     return 3;
   } else if (value < 120) {
@@ -30,7 +40,11 @@ function spriteIndexColour(value) {
   } else {
     return 1;
   }
-}
+});
+
+const bin2 = memoize(value => {
+  return pad(value.toString(2), 2);
+});
 
 function colorFromIndex(index) {
   if (index === 0) {
@@ -50,9 +64,9 @@ function pad(n, width, z) {
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
-function binHex(binary) {
+const binHex = memoize(binary => {
   return "0x" + pad(parseInt(binary, 2).toString(16), 2).toUpperCase();
-}
+});
 
 function decHex(dec) {
   return "0x" + pad(((256 + dec) % 256).toString(16), 2).toUpperCase();
@@ -72,7 +86,7 @@ function tilePixelsToHexString(pixels, indexFn) {
     var row2 = "";
     for (var x = 0; x < 8; x++) {
       var col = indexFn(pixels.get(x, y));
-      var binary = pad(col.toString(2), 2);
+      var binary = bin2(col);
       row1 += binary[1];
       row2 += binary[0];
     }
