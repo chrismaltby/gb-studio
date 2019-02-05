@@ -14,7 +14,12 @@ const outputRoot = "/Users/cmaltby/Desktop/out/";
 const build = async () => {
   const data = await fs.readJson(projectPath);
   const compiledData = await compile(data, {
-    projectRoot
+    projectRoot,
+    eventEmitter: {
+      emit: (key, msg) => {
+        console.log(new Date() + ": " + key + " - " + msg);
+      }
+    }
   });
   for (let filename in compiledData) {
     await fs.writeFile(`${outputRoot}${filename}`, compiledData[filename]);

@@ -143,13 +143,13 @@ const compile = async (
   const startX = projectData.startX;
   const startY = projectData.startY;
 
-  console.log(
-    JSON.stringify(
-      { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
-      null,
-      4
-    )
-  );
+  // console.log(
+  //   JSON.stringify(
+  //     { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
+  //     null,
+  //     4
+  //   )
+  // );
 
   const dataPtrs = {
     tileset_bank_ptrs: tileSetPtrs,
@@ -370,7 +370,7 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
 };
 
 export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
-  console.log("ACTOR", actor, eventsPtr);
+  // console.log("ACTOR", actor, eventsPtr);
   return [
     0, // Sprite sheet id // Should be an offset index from map sprites not overall sprites
     1, // Animated
@@ -385,7 +385,7 @@ export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
 };
 
 export const compileTrigger = (trigger, { eventsPtr }) => {
-  console.log("TRIGGER", trigger, eventsPtr);
+  // console.log("TRIGGER", trigger, eventsPtr);
   return [
     trigger.x,
     trigger.y,
