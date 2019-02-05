@@ -1,8 +1,9 @@
 #pragma bank=11
 
 #include "script_cmds.h"
-#include "Map.h"
+#include "Scene.h"
 #include "FadeManager.h"
+#include "data_ptrs.h"
 
 void script_cmd_end()
 {

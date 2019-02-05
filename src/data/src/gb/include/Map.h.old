@@ -7,7 +7,7 @@
 extern UINT8 map_bank;
 
 // Map Loading
-extern UBYTE map_next_index;
+extern UWORD map_next_index;
 extern POS map_next_pos;
 extern VEC2D map_next_dir;
 

@@ -7,7 +7,7 @@ void MapUpdate_b();
 void MapSetEmotion_b(UBYTE actor, UBYTE type);
 UBYTE IsEmoting_b();
 
-UBYTE map_next_index;
+UWORD map_next_index;
 POS map_next_pos;
 VEC2D map_next_dir;
 

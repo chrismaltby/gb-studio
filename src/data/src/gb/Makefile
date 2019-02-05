@@ -1,7 +1,7 @@
 NODE_MODULES = ../../../../node_modules
 SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell.html
-EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
-CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Igenerated -I${NODE_MODULES}/gbdkjs/include
+EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude -Isrc/data --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
+CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Isrc/data -Igenerated -I${NODE_MODULES}/gbdkjs/include
 MOD2GBT = ../mod2gbt/mod2gbt
 
 ROM_BUILD_DIR = build/gb
@@ -11,7 +11,8 @@ OBJ_DIR = obj
 SOURCE_DIR = src
 
 CFLAGS = -DUSE_SFR_FOR_REG -Wl-yo32 -Wl-ya4
-CIGNORE = 3>&1 1>&2 2>&3 3>&- | sed 's/.*pragma.*/IGNORE/g' | sed "s/^'/IGNORE/g" | grep -v IGNORE || true
+# CIGNORE = 3>&1 1>&2 2>&3 3>&- | sed 's/.*pragma.*/IGNORE/g' | sed "s/^'/IGNORE/g" | grep -v IGNORE || test "${PIPESTATUS[0]}" -eq 0
+CIGNORE = 3>&1 1>&2 2>&3 3>&- 
 
 
 SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')

@@ -4,8 +4,9 @@
 #include "Logo.h"
 #include "Title.h"
 #include "Pong.h"
-#include "Map.h"
+#include "Scene.h"
 #include "FadeManager.h"
+#include "data_ptrs.h"
 
 extern const unsigned char *song_mymod3_Data[];
 extern const unsigned char *song_tetris_Data[];
@@ -21,7 +22,7 @@ UBYTE frame_offset = 1;
 ACTOR actors[MAX_ACTORS];
 TRIGGER triggers[MAX_TRIGGERS];
 
-UBYTE map_index = 0;
+UWORD map_index = 0;
 UBYTE map_actor_num = 5;
 UBYTE map_trigger_num = 0;
 
@@ -107,23 +108,22 @@ int main()
 
   actors[0].sprite = 0;
   actors[0].redraw = TRUE;
-  map_next_pos.x = actors[0].pos.x = (game_start_x << 3) + 8;
-  map_next_pos.y = actors[0].pos.y = (game_start_y << 3) + 8;
+  map_next_pos.x = actors[0].pos.x = (START_SCENE_X << 3) + 8;
+  map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3) + 8;
   map_next_dir.x = actors[0].dir.x =
-    game_start_dir == 2 ? -1 : game_start_dir == 4 ? 1 : 0;
+    START_SCENE_DIR == 2 ? -1 : START_SCENE_DIR == 4 ? 1 : 0;
   map_next_dir.y = actors[0].dir.y =
-    game_start_dir == 8 ? -1 : game_start_dir == 1 ? 1 : 0;
+    START_SCENE_DIR == 8 ? -1 : START_SCENE_DIR == 1 ? 1 : 0;
   actors[0].animated = TRUE;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 
-  map_index = game_start_map_index;
-  map_next_index = game_start_map_index;
+  map_index = START_SCENE_INDEX;
+  map_next_index = START_SCENE_INDEX;
 
   UIInit();
 
-  // LoadMap();
-  UpdateFn = MapUpdate;
+  UpdateFn = SceneUpdate;
   // UpdateFn = BattleUpdate;
 
   // set_text_line(0);
@@ -201,8 +201,8 @@ void game_loop()
     map_next_dir.y = actors[0].dir.y;
 
     if (stage_type == MAP) {
-      LoadMap();
-      UpdateFn = MapUpdate;
+      SceneInit();
+      UpdateFn = SceneUpdate;
     } else if (stage_type == BATTLE) {
       PongInit();
       UpdateFn = PongUpdate;
@@ -234,6 +234,11 @@ void run_script()
     return;
   }
 
+  cmd = 5;
+
+  return;
+
+  /*
   script_continue = FALSE;
   script_action_complete = TRUE;
 
@@ -244,7 +249,7 @@ void run_script()
   script_arg3 = script[script_ptr + 3];
   script_arg4 = script[script_ptr + 4];
   script_arg5 = script[script_ptr + 5];
-
+ 
   SWITCH_ROM_MBC1(11);
   last_fn = script_fns[cmd];
   last_fn();
@@ -252,6 +257,7 @@ void run_script()
   if (script_continue) {
     run_script();
   }
+  */
 }
 
 void script_cmd_line()
@@ -264,7 +270,7 @@ void script_cmd_line()
 void script_cmd_set_emotion()
 {
   script_ptr += 3;
-  MapSetEmotion(script_arg1, script_arg2);
+  // MapSetEmotion(script_arg1, script_arg2);
   script_action_complete = FALSE;
   script_continue = FALSE;
 }
@@ -292,9 +298,10 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
-  if(last_fn == script_cmd_set_emotion && !IsEmoting()) {
-    return TRUE;
-  }
+  // Disabled until implemented in scene
+  // if(last_fn == script_cmd_set_emotion && !IsEmoting()) {
+  //   return TRUE;
+  // }
 
   return FALSE;
 }

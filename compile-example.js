@@ -6,10 +6,10 @@ babel-node --presets env --plugins transform-object-rest-spread compile-example.
 */
 
 const projectPath =
-  "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test/project2.json";
+  "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test/project2.json";
 const projectRoot =
-  "/Users/cmaltby/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test";
-const outputRoot = "/Users/cmaltby/Desktop/out/";
+  "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test";
+const outputRoot = "/Users/chris/Desktop/out/";
 
 const build = async () => {
   const data = await fs.readJson(projectPath);

@@ -173,17 +173,25 @@ const compile = async (
     `} BANK_PTR;\n\n` +
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX)}\n` +
-    `#define START_SCENE_Y ${decHex(startY)}\n\n` +
+    `#define START_SCENE_Y ${decHex(startY)}\n` +
+    `#define START_SCENE_DIR ${decHex(1)}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
       })
       .join(`\n`) +
-    `\nextern unsigned char script_flags[${precompiled.flags.length + 1}]` +
+    `\nextern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
+    stringBanks
+      .map((bankStrings, index) => {
+        return `extern const unsigned char strings_${bankOffset +
+          index}[][38];`;
+      })
+      .join(`\n`) +
     `\n\n#endif\n`;
 
   output[`data_ptrs.c`] =
-    `#pragma bank=16\n\n` +
+    `#pragma bank=16\n` +
+    `#include "data_ptrs.h"\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return (

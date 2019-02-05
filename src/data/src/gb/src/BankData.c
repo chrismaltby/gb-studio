@@ -50,3 +50,21 @@ void StrCpyBanked(UBYTE bank, unsigned char *to, unsigned char *from)
   POP_BANK;
   strcpy(to, buffer);
 }
+
+void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from)
+{
+  BANK_PTR bank_ptr;
+  // BANK_PTR *bank_ptr_ptr;
+  PUSH_BANK(bank);
+  // mem_copy
+
+  memcpy(&bank_ptr, from, sizeof(BANK_PTR));
+
+  // bank_ptr_ptr = (BANK_PTR*)ptr;
+  // to->bank = bank_ptr_ptr->bank;
+  // to->offset = bank_ptr_ptr->offset;
+  POP_BANK;
+
+  memcpy(to, &bank_ptr, sizeof(BANK_PTR));
+
+}

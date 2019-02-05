@@ -1,6 +1,7 @@
 #include "UI.h"
 #include "BankManager.h"
 #include "game.h"
+#include "data_ptrs.h"
 
 void UIInit_b();
 void UIUpdate_b();
@@ -65,7 +66,7 @@ void set_text_line(UWORD line)
   UIDrawFrame(0, 0, 20, 4);
   SWITCH_ROM_MBC1(2);
   strcpy(text_lines, "");
-  strcat(text_lines, strings[line]);
+  strcat(text_lines, strings_16[line]);
   text_x = 0;
   text_y = 0;
   text_count = 0;

@@ -160,7 +160,6 @@ extern UBYTE wait_time;
 extern UBYTE shake_time;
 extern UBYTE fade_settings;
 extern UBYTE fade_timer;
-extern UBYTE map_index;
 extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
 extern SCRIPT_CMD_FN last_fn;
@@ -197,8 +196,7 @@ extern const unsigned char btl_black[];
 
 extern UBYTE map_width;
 extern UBYTE map_height;
-extern UBYTE map_index;
-extern UBYTE map_next_index;
+extern UWORD map_index;
 extern UBYTE map_actor_num;
 extern UBYTE map_trigger_num;
 extern const unsigned char *map;

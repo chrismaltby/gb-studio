@@ -5,6 +5,7 @@
 #include "UI.h"
 #include "SpriteHelpers.h"
 #include "FadeManager.h"
+#include "data_ptrs.h"
 
 UINT8 map_bank = 10;
 
