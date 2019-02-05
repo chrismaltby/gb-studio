@@ -13,19 +13,12 @@ const outputRoot = "/Users/cmaltby/Desktop/out/";
 
 const build = async () => {
   const data = await fs.readJson(projectPath);
-  // console.log(data);
   const compiledData = await compile(data, {
     projectRoot
   });
-  console.log(compiledData);
-
   for (let filename in compiledData) {
-    // console.log(filename);
     await fs.writeFile(`${outputRoot}${filename}`, compiledData[filename]);
   }
-  //   Object.keys(compiledData).forEach((filename) => {
-  //       fs.writeFile
-  //   })
 };
 
 build();

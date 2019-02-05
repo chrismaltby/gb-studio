@@ -137,6 +137,12 @@ const compile = async (
     );
   });
 
+  const startSceneIndex = precompiled.sceneData.findIndex(
+    m => m.id === projectData.startSceneId
+  );
+  const startX = projectData.startX;
+  const startY = projectData.startY;
+
   console.log(
     JSON.stringify(
       { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
@@ -161,11 +167,15 @@ const compile = async (
     `  unsigned char bank;\n` +
     `  unsigned int offset;\n` +
     `} BANK_PTR;\n\n` +
+    `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
+    `#define START_SCENE_X ${decHex(startX)}\n` +
+    `#define START_SCENE_Y ${decHex(startY)}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
       })
       .join(`\n`) +
+    `\nextern unsigned char script_flags[${precompiled.flags.length + 1}]` +
     `\n\n#endif\n`;
 
   output[`data_ptrs.c`] =
@@ -182,7 +192,8 @@ const compile = async (
           `\n};\n`
         );
       })
-      .join(`\n`);
+      .join(`\n`) +
+    `\nunsigned char script_flags[${precompiled.flags.length + 1}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 
