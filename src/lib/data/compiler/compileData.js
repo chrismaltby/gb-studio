@@ -24,7 +24,11 @@ const noopEmitter = {
   emit: () => {}
 };
 
-const quoteString = s => `"${s.replace(/"/g, '\\"')}"`;
+const prepareString = s =>
+  `"${s
+    .toUpperCase()
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")}"`;
 
 const compile = async (
   projectData,
@@ -200,7 +204,7 @@ const compile = async (
   stringBanks.forEach((bankStrings, index) => {
     output[`strings_${bankOffset + index}.c`] = `#pragma bank=${bankOffset +
       index}\n\nconst unsigned char strings_${bankOffset +
-      index}[][38] = {\n${bankStrings.map(quoteString).join(",\n")}\n};\n`;
+      index}[][38] = {\n${bankStrings.map(prepareString).join(",\n")}\n};\n`;
   });
 
   bankData.forEach((bankDataBank, index) => {
