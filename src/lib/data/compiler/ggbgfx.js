@@ -188,6 +188,12 @@ function imageToSpriteString(filename) {
   return getPixels(filename).then(pixelsToSpriteData);
 }
 
+function imageToSpriteIntArray(filename) {
+  return imageToSpriteString(filename).then(s => {
+    return s.split(",").map(a => parseInt(a, 16));
+  });
+}
+
 function imageAndTilesetToTilemap(filename, tilesetFilename, offset) {
   var tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
   return Promise.all([getPixels(filename), tilesetLookup])
@@ -290,6 +296,7 @@ module.exports = {
   mergeTileLookups,
   imageToTilesString,
   imageToSpriteString,
+  imageToSpriteIntArray,
   imagesToTilesetImage,
   imageAndTilesetToTilemap,
   imageAndTilesetToTilemapIntArray,

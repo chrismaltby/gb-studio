@@ -13,6 +13,13 @@ export const decHex = dec =>
     .padStart(2, "0")
     .toUpperCase();
 
+export const decHex16 = dec =>
+  "0x" +
+  wrap16Bit(dec)
+    .toString(16)
+    .padStart(4, "0")
+    .toUpperCase();
+
 export const hi = longNum => wrap16Bit(longNum) >> 8;
 
 export const lo = longNum => wrap16Bit(longNum) % 256;

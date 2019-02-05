@@ -35,6 +35,7 @@ test("should compile simple project into files object", async () => {
         actors: [
           {
             id: "9",
+            spriteSheetId: "SPRITE_1",
             events: [
               {
                 command: EVENT_TEXT,
@@ -49,9 +50,38 @@ test("should compile simple project into files object", async () => {
                 }
               }
             ]
+          },
+          {
+            id: "12",
+            spriteSheetId: "SPRITE_2",
+            events: [
+              {
+                command: EVENT_TEXT,
+                args: {
+                  text: 'HELLO "WORLD'
+                }
+              }
+            ]
           }
         ],
-        triggers: []
+        triggers: [
+          {
+            id: "92",
+            x: 1,
+            y: 2,
+            width: 5,
+            height: 1,
+            trigger: "walk",
+            events: [
+              {
+                command: EVENT_TEXT,
+                args: {
+                  text: "TRIGGER TEST"
+                }
+              }
+            ]
+          }
+        ]
       },
       {
         id: "5",
@@ -121,6 +151,7 @@ test("should compile simple project into files object", async () => {
         actors: [
           {
             id: "99",
+            spriteSheetId: "SPRITE_1",
             events: []
           }
         ],
@@ -158,7 +189,24 @@ test("should compile simple project into files object", async () => {
           0,0,0,0,0
         ],
         actors: [],
-        triggers: []
+        triggers: [
+          {
+            id: "91",
+            x: 1,
+            y: 2,
+            width: 5,
+            height: 1,
+            trigger: "walk",
+            events: [
+              {
+                command: EVENT_TEXT,
+                args: {
+                  text: "TRIGGER TEST"
+                }
+              }
+            ]
+          }
+        ]
       }
     ],
     images: [
@@ -193,7 +241,20 @@ test("should compile simple project into files object", async () => {
         filename: "boss.png"
       }
     ],
-    spriteSheets: []
+    spriteSheets: [
+      {
+        id: "SPRITE_1",
+        filename: "sprite_1.png"
+      },
+      {
+        id: "SPRITE_2",
+        filename: "sprite_2.png"
+      },
+      {
+        id: "SPRITE_3",
+        filename: "sprite_3.png"
+      }
+    ]
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`

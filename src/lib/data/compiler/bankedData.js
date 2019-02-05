@@ -100,7 +100,7 @@ class BankedData {
         const bank = index + this.bankOffset;
         return cIntArrayExternDeclaration(`bank_${bank}_data`);
       })
-      .join("\n")}\n#endif\n`;
+      .join("\n")}\n\n#endif\n`;
   }
 }
 

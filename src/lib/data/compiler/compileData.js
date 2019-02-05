@@ -3,7 +3,7 @@ import { walkScenesEvents } from "../../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexArray } from "../../helpers/array";
 import ggbgfx from "./ggbgfx";
-import { hi, lo } from "../../helpers/8bit";
+import { hi, lo, decHex16, decHex } from "../../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
 
 const STRINGS_PER_BANK = 430;
@@ -61,7 +61,7 @@ const compile = async (
   });
 
   // Add event data
-  let eventPtrs = projectData.scenes.map(scene => {
+  const eventPtrs = projectData.scenes.map(scene => {
     const bankEntityEvents = entity => {
       const output = compileEntityEvents(entity.events, {
         scene,
@@ -87,17 +87,24 @@ const compile = async (
   });
 
   // Add tileset data
-  let tileSetPtrs = precompiled.usedTilesets.map((tileset, tilesetIndex) => {
+  const tileSetPtrs = precompiled.usedTilesets.map((tileset, tilesetIndex) => {
     return banked.push(tileset);
   });
 
-  let imagePtrs = precompiled.usedImages.map(image => {
+  // Add image map data
+  const imagePtrs = precompiled.usedImages.map(image => {
     return banked.push(
       [].concat(image.tilesetIndex, image.width, image.height, image.data)
     );
   });
 
-  let scenePtrs = precompiled.sceneData.map(scene => {
+  // Add sprite data
+  const spritePtrs = precompiled.usedSprites.map(sprite => {
+    return banked.push([].concat(sprite.frames, sprite.data));
+  });
+
+  // Add scene data
+  const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     return banked.push(
       [].concat(
         hi(scene.imageIndex),
@@ -106,53 +113,83 @@ const compile = async (
         scene.actors.length,
         scene.triggers.length,
         scene.collisions,
-        scene.actorsData,
-        scene.triggersData
+        scene.actors.reduce(
+          (memo, actor, actorIndex) =>
+            [].concat(
+              memo,
+              compileActor(actor, {
+                eventsPtr: eventPtrs[sceneIndex].actors[actorIndex]
+              })
+            ),
+          []
+        ),
+        scene.triggers.reduce(
+          (memo, trigger, triggerIndex) =>
+            [].concat(
+              memo,
+              compileTrigger(trigger, {
+                eventsPtr: eventPtrs[sceneIndex].triggers[triggerIndex]
+              })
+            ),
+          []
+        )
       )
     );
   });
 
-  // let tileMapPtrs = {};
-  // Object.keys(precompiled.imageData.tilemaps).map(tileMapKey => {
-  //   tileMapPtrs[tileMapKey] = banked.push(
-  //     precompiled.imageData.tilemaps[tileMapKey]
-  //   );
-  // });
-
-  // banked.nextBank();
-
-  // let scenePtrs = [];
-  // precompiled.sceneData.map(scene => {
-  //   console.log(scene);
-  //   const sceneData = [].concat([scene.width, scene.height]);
-  //   scenePtrs.push(banked.push(sceneData));
-  // });
-
   console.log(
-    JSON.stringify({ eventPtrs, tileSetPtrs, imagePtrs, scenePtrs }, null, 4)
+    JSON.stringify(
+      { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
+      null,
+      4
+    )
   );
 
-  // console.log(tileMapPtrs);
-  // console.log(scenePtrs);
-
-  // precompiled.usedImages.forEach((image, imageIndex) => {
-  //   const bankPtr = image.
-  // })
-
-  // projectData.scenes.forEach((scene, sceneIndex) => {
-  //   const bankPtr =
-  // })
+  const dataPtrs = {
+    tileset_bank_ptrs: tileSetPtrs,
+    image_bank_ptrs: imagePtrs,
+    sprite_bank_ptrs: spritePtrs,
+    scene_bank_ptrs: scenePtrs
+  };
 
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
+
+  output[`data_ptrs.h`] =
+    `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
+    `typedef struct _BANK_PTR {\n` +
+    `  unsigned char bank;\n` +
+    `  unsigned int offset;\n` +
+    `} BANK_PTR;\n\n` +
+    Object.keys(dataPtrs)
+      .map(name => {
+        return `extern const BANK_PTR ${name}[];`;
+      })
+      .join(`\n`) +
+    `\n\n#endif\n`;
+
+  output[`data_ptrs.c`] =
+    `#pragma bank=16\n\n` +
+    Object.keys(dataPtrs)
+      .map(name => {
+        return (
+          `const BANK_PTR ${name}[] = {\n` +
+          dataPtrs[name]
+            .map(dataPtr => {
+              return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
+            })
+            .join(",") +
+          `\n};\n`
+        );
+      })
+      .join(`\n`);
 
   output[`banks.h`] = bankHeader;
 
   stringBanks.forEach((bankStrings, index) => {
     output[`strings_${bankOffset + index}.c`] = `#pragma bank=${bankOffset +
-      index}\n\nconst unsigned char strings[][38] = {\n${bankStrings
-      .map(quoteString)
-      .join(",\n")}\n};\n`;
+      index}\n\nconst unsigned char strings_${bankOffset +
+      index}[][38] = {\n${bankStrings.map(quoteString).join(",\n")}\n};\n`;
   });
 
   bankData.forEach((bankDataBank, index) => {
@@ -199,7 +236,7 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
   const sceneData = precompileScenes(
     projectData.scenes,
     usedImages,
-    spriteData
+    usedSprites
   );
 
   eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_COMPLETE);
@@ -212,6 +249,7 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
     usedTilesets,
     usedTilesetLookup,
     imageData,
+    usedSprites,
     sceneData
   };
 };
@@ -278,24 +316,26 @@ export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
   const spriteLookup = indexArray(usedSprites, "id");
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
-      const data = await ggbgfx.imageToSpriteString(
+      const data = await ggbgfx.imageToSpriteIntArray(
         `${projectRoot}/assets/sprites/${spriteSheet.filename}`
       );
+      const size = data.length;
+      const frames = size / 64;
       return {
         ...spriteSheet,
         data,
-        size: data.split(",").length
+        size,
+        frames
       };
     })
   );
   return {
-    usedSprites,
-    spriteLookup,
-    spriteData
+    usedSprites: spriteData,
+    spriteLookup
   };
 };
 
-export const precompileScenes = (scenes, usedImages, spriteData) => {
+export const precompileScenes = (scenes, usedImages, usedSprites) => {
   const scenesData = scenes.map(scene => {
     return {
       ...scene,
@@ -303,7 +343,7 @@ export const precompileScenes = (scenes, usedImages, spriteData) => {
       // tilemap: imageData.tilemaps[scene.imageId],
       // tileset: imageData.tilemapsTileset[scene.imageId],
       sprites: scene.actors.reduce((memo, actor) => {
-        const spriteIndex = spriteData.findIndex(
+        const spriteIndex = usedSprites.findIndex(
           sprite => sprite.id === actor.spriteSheetId
         );
         if (memo.indexOf(spriteIndex) === -1) {
@@ -318,6 +358,54 @@ export const precompileScenes = (scenes, usedImages, spriteData) => {
   return scenesData;
 };
 
+export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
+  console.log("ACTOR", actor, eventsPtr);
+  return [
+    0, // Sprite sheet id // Should be an offset index from map sprites not overall sprites
+    1, // Animated
+    actor.x, // X Pos
+    actor.y, // Y Pos
+    dirDec(actor.direction), // Direction
+    moveDec(actor.movementType), // Movement Type
+    eventsPtr.bank, // Event bank ptr
+    hi(eventsPtr.offset), // Event offset ptr
+    lo(eventsPtr.offset)
+  ];
+};
+
+export const compileTrigger = (trigger, { eventsPtr }) => {
+  console.log("TRIGGER", trigger, eventsPtr);
+  return [
+    trigger.x,
+    trigger.y,
+    trigger.width,
+    trigger.height,
+    trigger.trigger === "action" ? 1 : 0,
+    eventsPtr.bank, // Event bank ptr
+    hi(eventsPtr.offset), // Event offset ptr
+    lo(eventsPtr.offset)
+  ];
+};
+
 //#endregion
+
+const DIR_LOOKUP = {
+  down: 1,
+  left: 2,
+  right: 4,
+  up: 8
+};
+
+const MOVEMENT_LOOKUP = {
+  static: 1,
+  playerInput: 2,
+  randomFace: 3,
+  faceInteraction: 4,
+  randomWalk: 5
+};
+
+const dirDec = dir => DIR_LOOKUP[dir] || 1;
+
+const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
 export default compile;

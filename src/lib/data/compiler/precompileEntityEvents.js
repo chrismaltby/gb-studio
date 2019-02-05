@@ -84,7 +84,7 @@ const getFlagIndex = (flag, flags) => {
 };
 
 const precompileEntityScript = (
-  input,
+  input = [],
   {
     output = [],
     data,
@@ -186,25 +186,31 @@ const precompileEntityScript = (
         output.push(encounterIndex);
       }
     } else if (command === EVENT_ACTOR_SET_POSITION) {
+      /*
       const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+      */
     } else if (command === EVENT_ACTOR_SET_DIRECTION) {
+      /*
       const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
+      */
     } else if (command === EVENT_ACTOR_MOVE_TO) {
+      /*
       const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+      */
     } else if (command === EVENT_WAIT) {
       let seconds = input[i].args.time || 0;
       while (seconds > 0) {
@@ -222,11 +228,14 @@ const precompileEntityScript = (
         seconds -= time;
       }
     } else if (command === EVENT_ACTOR_EMOTION) {
+      /*
       const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
       output.push(CMD_LOOKUP.ACTOR_EMOTION);
       output.push(actorIndex);
       output.push(input[i].args.emotionType || 0);
+      */
     } else if (command === EVENT_SWITCH_SCENE) {
+      /*
       let mapIndex = data.scenes.findIndex(m => m.id === input[i].args.map);
       if (mapIndex > -1) {
         output.push(CMD_LOOKUP.SWITCH_SCENE);
@@ -236,6 +245,7 @@ const precompileEntityScript = (
         output.push(dirDec(input[i].args.direction));
         output.push(input[i].args.fadeInSpeed || 2);
       }
+      */
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {
