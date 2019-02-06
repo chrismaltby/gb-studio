@@ -38,7 +38,7 @@ void SceneRender();
 
 void SceneInit_b()
 {
-  UBYTE imageIndex;
+  UWORD sceneIndex, imageIndex;
   BANK_PTR bank_ptr;
   UWORD ptr;
   UBYTE tilesetIndex, width, height;
@@ -50,7 +50,11 @@ void SceneInit_b()
   WX_REG = MAXWNDPOSX;
   WY_REG = MAXWNDPOSY;
 
-  imageIndex = 10;
+  sceneIndex = 16;
+  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[sceneIndex]);
+  ptr = ((UWORD)&bank_20_data) + bank_ptr.offset;
+
+  imageIndex = ReadBankedUWORD(bank_ptr.bank, ptr);
 
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
   ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[imageIndex]);
