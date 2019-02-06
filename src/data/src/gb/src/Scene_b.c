@@ -47,18 +47,21 @@ void SceneInit_b()
 
   SpritesReset();
 
+  SCX_REG = 0;
+  SCY_REG = 0;
   WX_REG = MAXWNDPOSX;
   WY_REG = MAXWNDPOSY;
 
-  sceneIndex = 16;
-  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[sceneIndex]);
-  ptr = ((UWORD)&bank_20_data) + bank_ptr.offset;
+  sceneIndex = 20;
 
+  // Load scene
+  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[sceneIndex]);
+  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   imageIndex = ReadBankedUWORD(bank_ptr.bank, ptr);
 
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
   ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[imageIndex]);
-  ptr = ((UWORD)&bank_18_data) + bank_ptr.offset;
+  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   tilesetIndex = ReadBankedUBYTE(bank_ptr.bank, ptr);
   width = ReadBankedUBYTE(bank_ptr.bank, ptr+1u);
   height = ReadBankedUBYTE(bank_ptr.bank, ptr+2u);
@@ -66,8 +69,8 @@ void SceneInit_b()
 
   // Load Image Tileset
   ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tilesetIndex]);
-  ptr = ((UWORD)&bank_17_data) + bank_ptr.offset;
-  SetBankedBkgData(bank_ptr.bank, 0, 128, ptr);
+  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
+  SetBankedBkgData(bank_ptr.bank, 0, 190, ptr);
 
   FadeIn();
 
