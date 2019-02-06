@@ -109,6 +109,11 @@ const compile = async (
 
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
+    console.log("SCENE: " + sceneIndex, {
+      imageIndex: scene.imageIndex,
+      hi: hi(scene.imageIndex),
+      lo: lo(scene.imageIndex)
+    });
     return banked.push(
       [].concat(
         hi(scene.imageIndex),
@@ -155,6 +160,18 @@ const compile = async (
   //   )
   // );
 
+  const bankNums = [
+    ...Array(bankOffset + stringBanks.length + banked.data.length).keys()
+  ];
+
+  const bankDataPtrs = bankNums.map(bankNum => {
+    return bankNum >= bankOffset + stringBanks.length
+      ? `&bank_${bankNum}_data`
+      : 0;
+  });
+
+  console.log({ bankNums, bankDataPtrs });
+
   const dataPtrs = {
     tileset_bank_ptrs: tileSetPtrs,
     image_bank_ptrs: imagePtrs,
@@ -180,7 +197,9 @@ const compile = async (
         return `extern const BANK_PTR ${name}[];`;
       })
       .join(`\n`) +
-    `\nextern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
+    `\n` +
+    `extern const unsigned char *bank_data_ptrs[];\n` +
+    `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
     stringBanks
       .map((bankStrings, index) => {
         return `extern const unsigned char strings_${bankOffset +
@@ -191,7 +210,11 @@ const compile = async (
 
   output[`data_ptrs.c`] =
     `#pragma bank=16\n` +
-    `#include "data_ptrs.h"\n\n` +
+    `#include "data_ptrs.h"\n` +
+    `#include "banks.h"\n\n` +
+    `const unsigned char *bank_data_ptrs[] = {\n` +
+    bankDataPtrs.join(",") +
+    "\n};\n\n" +
     Object.keys(dataPtrs)
       .map(name => {
         return (
