@@ -1,11 +1,14 @@
 NODE_MODULES = ../../../../node_modules
 SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell.html
+DEBUG_SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_debug/build/index.html
+
 EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude -Isrc/data --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
 CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Isrc/data -Igenerated -I${NODE_MODULES}/gbdkjs/include
 MOD2GBT = ../mod2gbt/mod2gbt
 
 ROM_BUILD_DIR = build/gb
 WEB_BUILD_DIR = build/web
+WEB_DEBUG_BUILD_DIR = build/debug
 
 OBJ_DIR = obj
 SOURCE_DIR = src
@@ -56,6 +59,11 @@ $(WEB_BUILD_DIR)/%.html:	$(EM_OBJS)
 	# cp -r node_modules/gbdkjs/shell/build/static $(WEB_BUILD_DIR)
 	$(EMCC) --shell-file $(SHELL_FILE) -s ASSERTIONS=1 -s SAFE_HEAP=1 --profiling-funcs -g -o $@ $^
 
+$(WEB_DEBUG_BUILD_DIR)/%.html: $(EM_OBJS)
+	mkdir -p $(WEB_DEBUG_BUILD_DIR)
+	cp -r ${NODE_MODULES}/gbdkjs/shell_debug/build/static $(WEB_DEBUG_BUILD_DIR)
+	$(EMCC) --shell-file $(DEBUG_SHELL_FILE) -s ASSERTIONS=1 -o $@ $^
+
 clean:
 	rm -rf build
 	rm -rf obj/*.o
@@ -74,3 +82,6 @@ tidy:
 
 web: $(WEB_BUILD_DIR)/game.html
 	mv $(WEB_BUILD_DIR)/game.html $(WEB_BUILD_DIR)/index.html
+
+debug: $(WEB_DEBUG_BUILD_DIR)/game.html
+	mv $(WEB_DEBUG_BUILD_DIR)/game.html $(WEB_DEBUG_BUILD_DIR)/index.html
