@@ -9,6 +9,7 @@ void SetBankedBkgTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned 
 void SetBankedWinTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned char *ptr);
 void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
 UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr);
+UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr);
 void StrCpyBanked(UBYTE bank, unsigned char *to, unsigned char *from);
 void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from);
 

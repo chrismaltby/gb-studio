@@ -42,6 +42,15 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr)
   return value;
 }
 
+UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr)
+{
+  UWORD value;
+  PUSH_BANK(bank);
+  value = *(UWORD *) ptr;
+  POP_BANK;
+  return value;
+}
+
 void StrCpyBanked(UBYTE bank, unsigned char *to, unsigned char *from)
 {
   char buffer[18];
