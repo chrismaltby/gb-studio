@@ -30,6 +30,8 @@ const prepareString = s =>
     .replace(/"/g, '\\"')
     .replace(/\n/g, "\\n")}"`;
 
+const flatten = arr => [].concat(...arr);
+
 const compile = async (
   projectData,
   {
@@ -92,7 +94,7 @@ const compile = async (
 
   // Add tileset data
   const tileSetPtrs = precompiled.usedTilesets.map((tileset, tilesetIndex) => {
-    return banked.push(tileset);
+    return banked.push([].concat(Math.ceil(tileset.length / 16), tileset));
   });
 
   // Add image map data
@@ -109,39 +111,55 @@ const compile = async (
 
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    console.log("SCENE: " + sceneIndex, {
-      imageIndex: scene.imageIndex,
-      hi: hi(scene.imageIndex),
-      lo: lo(scene.imageIndex)
-    });
+    // console.log("SCENE: " + sceneIndex, {
+    //   imageIndex: scene.imageIndex,
+    //   hi: hi(scene.imageIndex),
+    //   lo: lo(scene.imageIndex),
+    //   spriteLen: scene.sprites.length,
+    //   sprties: scene.sprites,
+    //   actors: compileActors(scene.actors, {
+    //     eventPtrs: eventPtrs[sceneIndex].actors,
+    //     sprites: precompiled.usedSprites
+    //   })
+    // });
     return banked.push(
       [].concat(
         hi(scene.imageIndex),
         lo(scene.imageIndex),
         scene.sprites.length,
+        scene.sprites,
         scene.actors.length,
+        compileActors(scene.actors, {
+          eventPtrs: eventPtrs[sceneIndex].actors,
+          sprites: precompiled.usedSprites
+        }),
         scene.triggers.length,
-        scene.collisions,
-        scene.actors.reduce(
-          (memo, actor, actorIndex) =>
-            [].concat(
-              memo,
-              compileActor(actor, {
-                eventsPtr: eventPtrs[sceneIndex].actors[actorIndex]
-              })
-            ),
-          []
-        ),
-        scene.triggers.reduce(
-          (memo, trigger, triggerIndex) =>
-            [].concat(
-              memo,
-              compileTrigger(trigger, {
-                eventsPtr: eventPtrs[sceneIndex].triggers[triggerIndex]
-              })
-            ),
-          []
-        )
+        // flatten(
+        //   scene.actors.map(
+        //     compileActor({ eventPtrs: eventPtrs[sceneIndex].actors })
+        //   )
+        // ),
+        scene.collisions
+        // scene.actors.reduce(
+        //   (memo, actor, actorIndex) =>
+        //     [].concat(
+        //       memo,
+        //       compileActor(actor, {
+        //         eventsPtr: eventPtrs[sceneIndex].actors[actorIndex]
+        //       })
+        //     ),
+        //   []
+        // ),
+        // scene.triggers.reduce(
+        //   (memo, trigger, triggerIndex) =>
+        //     [].concat(
+        //       memo,
+        //       compileTrigger(trigger, {
+        //         eventsPtr: eventPtrs[sceneIndex].triggers[triggerIndex]
+        //       })
+        //     ),
+        //   []
+        // )
       )
     );
   });
@@ -170,7 +188,7 @@ const compile = async (
       : 0;
   });
 
-  console.log({ bankNums, bankDataPtrs });
+  // console.log({ bankNums, bankDataPtrs });
 
   const dataPtrs = {
     tileset_bank_ptrs: tileSetPtrs,
@@ -404,6 +422,7 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
   return scenesData;
 };
 
+/*
 export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
   // console.log("ACTOR", actor, eventsPtr);
   return [
@@ -417,6 +436,44 @@ export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
     hi(eventsPtr.offset), // Event offset ptr
     lo(eventsPtr.offset)
   ];
+};
+*/
+
+export const compileActors = (actors, { eventPtrs, sprites }) => {
+  // console.log("ACTOR", actor, eventsPtr);
+  let mapSpritesLookup = {};
+  let mapSpritesIndex = 6;
+
+  // console.log({ sprites, eventPtrs });
+
+  const getSpriteOffset = id => {
+    if (mapSpritesLookup[id]) {
+      return mapSpritesLookup[id];
+    }
+    const lookup = mapSpritesIndex;
+    mapSpritesLookup[id] = lookup;
+    const sprite = sprites.find(s => s.id === id);
+    mapSpritesIndex += sprite.size / 64;
+    return lookup;
+  };
+
+  return flatten(
+    actors.map((actor, actorIndex) => {
+      return [
+        getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
+        sprites.find(s => s.id === actor.spriteSheetId).size / 64 === 6 // Animated
+          ? 1
+          : 0,
+        actor.x, // X Pos
+        actor.y, // Y Pos
+        dirDec(actor.direction), // Direction
+        moveDec(actor.movementType), // Movement Type
+        eventPtrs[actorIndex].bank, // Event bank ptr
+        hi(eventPtrs[actorIndex].offset), // Event offset ptr
+        lo(eventPtrs[actorIndex].offset)
+      ];
+    })
+  );
 };
 
 export const compileTrigger = (trigger, { eventsPtr }) => {

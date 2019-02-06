@@ -9,6 +9,7 @@
 #include "BankManager.h"
 #include "banks.h"
 #include "script_cmds.h"
+#include "data_ptrs.h"
 
 #define MAX_ACTORS 9
 #define MAX_TRIGGERS 8
@@ -90,7 +91,9 @@ typedef struct _ACTORSPRITE {
   UBYTE moving;
   UBYTE animated;
   UWORD script_ptr;
+  BANK_PTR events_ptr;
   MOVEMENT_TYPE movement_type;
+
 } ACTOR;
 
 typedef struct _TRIGGER {
