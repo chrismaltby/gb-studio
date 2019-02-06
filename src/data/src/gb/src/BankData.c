@@ -45,8 +45,11 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr)
 UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr)
 {
   UWORD value;
+  UBYTE hi, lo;
   PUSH_BANK(bank);
-  value = *(UWORD *) ptr;
+  hi = *(UBYTE *) ptr;
+  lo = *(UBYTE *) (ptr+1);
+  value = (hi*0xFFu) + lo;
   POP_BANK;
   return value;
 }
