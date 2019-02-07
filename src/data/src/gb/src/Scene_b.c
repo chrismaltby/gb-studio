@@ -40,9 +40,10 @@ void SceneRender();
 UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
-void MapRepositionCamera_b();
+void SceneUpdateCamera_b();
 void SceneHandleTriggers_b();
-void MapUpdateEmotionBubble_b();
+void SceneRenderActors_b();
+void SceneRenderEmotionBubble_b();
 void MapUpdateActorMovement_b(UBYTE i);
 UBYTE ClampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 
@@ -177,7 +178,7 @@ void SceneInit_b()
   first_frame_on_tile = FALSE;
   camera_settings = CAMERA_LOCK_FLAG;
 
-  MapRepositionCamera_b();
+  SceneUpdateCamera_b();
   SceneHandleTriggers_b();
 
   FadeIn();
@@ -195,6 +196,9 @@ void SceneInit_b()
 void SceneUpdate_b()
 {
   SceneHandleInput();
+  SceneUpdateActors_b();
+  SceneHandleTriggers_b();
+  SceneUpdateCamera_b();
   SceneRender();
 
   // Handle map switch
@@ -205,7 +209,7 @@ void SceneUpdate_b()
   }
 }
 
-void MapRepositionCamera_b()
+void SceneUpdateCamera_b()
 {
   UBYTE cam_x, cam_y;
 
@@ -381,7 +385,9 @@ void SceneRender()
     }
   }
 
-  SceneUpdateActors_b();
+  SceneRenderActors_b();
+  SceneRenderEmotionBubble_b();
+  
   UIUpdate();
 
   // Handle Shake
@@ -611,6 +617,28 @@ void SceneUpdateActors_b()
 
   for (i = 0; i != map_actor_num; i++)
   {
+    // If running script only update script actor - Unless needs redraw
+    if (script_ptr && i != script_actor && !actors[i].redraw)
+    {
+      continue;
+    }
+
+    // Move actors
+    if (actors[i].moving)
+    {
+      actors[i].pos.x += actors[i].dir.x;
+      actors[i].pos.y += actors[i].dir.y;
+    }    
+  }
+}
+
+void SceneRenderActors_b()
+{
+  UBYTE i, flip, frame, sprite_index, x, y;
+  BYTE r;
+
+  for (i = 0; i != map_actor_num; i++)
+  {
 
     // If running script only update script actor - Unless needs redraw
     if (script_ptr && i != script_actor && !actors[i].redraw)
@@ -667,18 +695,8 @@ void SceneUpdateActors_b()
 
       actors[i].redraw = FALSE;
     }
-    // Move actors
-    if (actors[i].moving)
-    {
-      actors[i].pos.x += actors[i].dir.x;
-      actors[i].pos.y += actors[i].dir.y;
-    }
+
   }
-
-  SceneHandleTriggers_b();
-
-  // Position Camera
-  MapRepositionCamera_b();
 
   // Position Sprites
   for (i = 0; i != map_actor_num; i++)
@@ -700,7 +718,7 @@ void SceneUpdateActors_b()
     }
   }
 
-  MapUpdateEmotionBubble_b();
+  SceneRenderEmotionBubble_b();
 }
 
 void SceneHandleTriggers_b()
@@ -736,7 +754,7 @@ void SceneHandleTriggers_b()
   }
 }
 
-void MapUpdateEmotionBubble_b()
+void SceneRenderEmotionBubble_b()
 {
   UBYTE x, y;
 
