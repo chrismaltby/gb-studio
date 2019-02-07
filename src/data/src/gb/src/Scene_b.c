@@ -14,32 +14,19 @@
 
 UINT8 scene_bank = 10;
 
-UBYTE scene_width;
-UBYTE scene_height;
-UBYTE scene_num_actors;
-UBYTE scene_num_triggers;
-
-UBYTE emotion_type = 1;
-UBYTE emotion_timer = 0;
-UBYTE emotion_actor = 1;
-const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-static void SceneHandleInput();
-void SceneRender();
-UBYTE MapNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
-UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
-void MapUpdateActors_b();
-void MapHandleInput_b();
-void MapRepositionCamera_b();
-void MapHandleTrigger_b();
-void MapUpdateEmotionBubble_b();
-void MapUpdateActorMovement_b(UBYTE i);
-UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max);
-
 ////////////////////////////////////////////////////////////////////////////////
 // Private vars
 ////////////////////////////////////////////////////////////////////////////////
 #pragma region private vars
+
+UBYTE scene_width;
+UBYTE scene_height;
+UBYTE scene_num_actors;
+UBYTE scene_num_triggers;
+UBYTE emotion_type = 1;
+UBYTE emotion_timer = 0;
+UBYTE emotion_actor = 1;
+const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #pragma endregion
 
@@ -47,6 +34,17 @@ UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 // Private functions
 ////////////////////////////////////////////////////////////////////////////////
 #pragma region private functions
+
+static void SceneHandleInput();
+void SceneRender();
+UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
+UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
+void SceneUpdateActors_b();
+void MapRepositionCamera_b();
+void SceneHandleTriggers_b();
+void MapUpdateEmotionBubble_b();
+void MapUpdateActorMovement_b(UBYTE i);
+UBYTE ClampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 
 #pragma endregion
 
@@ -57,10 +55,10 @@ UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 
 void SceneInit_b()
 {
-  UWORD sceneIndex, imageIndex;
+  UWORD scene_index, image_index;
   BANK_PTR bank_ptr, sprite_bank_ptr;
   UWORD ptr, sprite_ptr;
-  UBYTE i, tilesetIndex, tilesetSize, numSprites, spriteIndex;
+  UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
   UBYTE k, j, sprite_len;
 
   DISPLAY_OFF;
@@ -72,34 +70,24 @@ void SceneInit_b()
   WX_REG = MAXWNDPOSX;
   WY_REG = MAXWNDPOSY;
 
-  // sceneIndex = 42;
-  sceneIndex = 12;
+  // scene_index = 42;
+  scene_index = 12;
 
   // Load scene
-  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[sceneIndex]);
+  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  imageIndex = ReadBankedUWORD(bank_ptr.bank, ptr);
-  numSprites = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
-  // x = ReadBankedUBYTE(bank_ptr.bank, ptr+3);
-  // y = ReadBankedUBYTE(bank_ptr.bank, ptr+4);
-  // z = ReadBankedUBYTE(bank_ptr.bank, ptr+5);
-  // p = ReadBankedUBYTE(bank_ptr.bank, ptr+6);
-
-  // LOG("NUMSPRITES=%u\n",numSprites);
-  // LOG("X=%u\n",x);
-  // LOG("Y=%u\n",y);
-  // LOG("Z=%u\n",z);
-  // LOG("P=%u\n",p);
+  image_index = ReadBankedUWORD(bank_ptr.bank, ptr);
+  num_sprites = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
 
   // Load sprites
   k = 24;
   ptr = ptr + 3;
-  for (i = 0; i != numSprites; i++)
+  for (i = 0; i != num_sprites; i++)
   {
     LOG("LOAD SPRITE=%u k=%u\n", i, k);
-    spriteIndex = ReadBankedUBYTE(bank_ptr.bank, ptr + i);
-    LOG("SPRITE INDEX=%u\n", spriteIndex);
-    ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[spriteIndex]);
+    sprite_index = ReadBankedUBYTE(bank_ptr.bank, ptr + i);
+    LOG("SPRITE INDEX=%u\n", sprite_index);
+    ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
     sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
     sprite_len = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr) << 2;
     LOG("SPRITE LEN=%u\n", sprite_len);
@@ -108,7 +96,7 @@ void SceneInit_b()
   }
 
   // Load actors
-  ptr = ptr + numSprites;
+  ptr = ptr + num_sprites;
   scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr);
   ptr = ptr + 1;
   LOG("NUM ACTORS=%u\n", scene_num_actors);
@@ -157,18 +145,18 @@ void SceneInit_b()
   SetBankedSpriteData(3, 0, 24, village_sprites);
 
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
-  ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[imageIndex]);
+  ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[image_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  tilesetIndex = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  tileset_index = ReadBankedUBYTE(bank_ptr.bank, ptr);
   scene_width = ReadBankedUBYTE(bank_ptr.bank, ptr + 1u);
   scene_height = ReadBankedUBYTE(bank_ptr.bank, ptr + 2u);
   SetBankedBkgTiles(bank_ptr.bank, 0, 0, scene_width, scene_height, ptr + 3u);
 
   // Load Image Tileset
-  ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tilesetIndex]);
+  ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tileset_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  tilesetSize = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  SetBankedBkgData(bank_ptr.bank, 0, tilesetSize, ptr + 1u);
+  tileset_size = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  SetBankedBkgData(bank_ptr.bank, 0, tileset_size, ptr + 1u);
 
   // Init player
   actors[0].redraw = TRUE;
@@ -190,7 +178,7 @@ void SceneInit_b()
   camera_settings = CAMERA_LOCK_FLAG;
 
   MapRepositionCamera_b();
-  MapHandleTrigger_b();
+  SceneHandleTriggers_b();
 
   FadeIn();
 
@@ -219,66 +207,19 @@ void SceneUpdate_b()
 
 void MapRepositionCamera_b()
 {
-  // UBYTE snap_left, snap_right, snap_top, snap_bottom, cam_x, cam_y;
   UBYTE cam_x, cam_y;
 
   // If camera is locked to player
   if ((camera_settings & CAMERA_LOCK_FLAG) == CAMERA_LOCK_FLAG)
   {
-    cam_x = clampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, (scene_width << 3) - SCREEN_WIDTH_HALF);
+    // Reposition based on player position
+    cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, (scene_width << 3) - SCREEN_WIDTH_HALF);
     camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
-
-    cam_y = clampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, (scene_height << 3) - SCREEN_HEIGHT_HALF);
+    cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, (scene_height << 3) - SCREEN_HEIGHT_HALF);
     camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
-
-    // cam_x = actors[0].pos.x - SCREEN_WIDTH_HALF;
-    // cam_y = actors[0].pos.y - SCREEN_HEIGHT_HALF;
-    // snap_left = (scene_width << 3) - SCREEN_WIDTH_HALF;
-    // snap_right = snap_left - SCREEN_WIDTH_HALF;
-    // snap_top = (scene_height << 3) - SCREEN_HEIGHT_HALF;
-    // snap_bottom = snap_top - SCREEN_HEIGHT_HALF;
-    // camera_dest.x = cam_x > snap_left ? 0 : cam_x > snap_right ? snap_right : cam_x;
-    // camera_dest.y = cam_y > snap_top ? 0 : cam_y > snap_bottom ? snap_bottom : cam_y;
-
-    // cam_p = actors[0].pos.x - SCREEN_WIDTH_HALF;
-    // snap_a = (scene_width << 3) - SCREEN_WIDTH_HALF;
-    // snap_b = snap_a - SCREEN_WIDTH_HALF;
-    // camera_dest.x = cam_p > snap_a ? 0 : cam_p > snap_b ? snap_b : cam_p;
-
-    // cam_p = actors[0].pos.y - SCREEN_HEIGHT_HALF;
-    // snap_a = (scene_height << 3) - SCREEN_HEIGHT_HALF;
-    // snap_b = snap_a - SCREEN_HEIGHT_HALF;
-    // camera_dest.y = cam_p > snap_a ? 0 : cam_p > snap_b ? snap_b : cam_p;
-
-    /*
-    // Quickest version
-    if (actors[0].pos.x < SCREEN_WIDTH_HALF)
-    {
-      camera_dest.x = 0;
-    }
-    else if (actors[0].pos.x > (scene_width << 3) - SCREEN_WIDTH_HALF)
-    {
-      camera_dest.x = (scene_width << 3) - SCREEN_WIDTH;
-    }
-    else
-    {
-      camera_dest.x = actors[0].pos.x - SCREEN_WIDTH_HALF;
-    }
-    if (actors[0].pos.y < SCREEN_HEIGHT_HALF)
-    {
-      camera_dest.y = 0;
-    }
-    else if (actors[0].pos.y > (scene_height << 3) - SCREEN_HEIGHT_HALF)
-    {
-      camera_dest.y = (scene_height << 3) - SCREEN_HEIGHT;
-    }
-    else
-    {
-      camera_dest.y = actors[0].pos.y - SCREEN_HEIGHT_HALF;
-    }
-    */
   }
 
+  // If camera is animating move towards location
   if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG)
   {
     if ((time & (camera_settings & CAMERA_SPEED_MASK)) == 0)
@@ -301,6 +242,7 @@ void MapRepositionCamera_b()
       }
     }
   }
+  // Otherwise jump imediately to camera destination
   else
   {
     SCX_REG = camera_dest.x;
@@ -321,9 +263,6 @@ void MapRepositionCamera_b()
 
 static void SceneHandleInput()
 {
-  UWORD tile, tile_offset;
-  UBYTE tile_index_data;
-  // UBYTE tile;
   UBYTE next_tx, next_ty;
   UBYTE npc;
 
@@ -372,7 +311,7 @@ static void SceneHandleInput()
     actors[0].moving = FALSE;
     next_tx = (actors[0].pos.x >> 3) + actors[0].dir.x;
     next_ty = (actors[0].pos.y >> 3) + actors[0].dir.y;
-    npc = MapNpcAt_b(0, next_tx, next_ty);
+    npc = SceneNpcAt_b(0, next_tx, next_ty);
     if (npc != map_actor_num)
     {
       actors[0].moving = FALSE;
@@ -442,7 +381,7 @@ void SceneRender()
     }
   }
 
-  MapUpdateActors_b();
+  SceneUpdateActors_b();
   UIUpdate();
 
   // Handle Shake
@@ -466,13 +405,8 @@ void SceneRender()
 
 void MapUpdateActorMovement_b(UBYTE i)
 {
-  UWORD tile;
-  UWORD tile_offset;
-  UBYTE tile_index_data;
-  UBYTE tile_bit_mask;
   UBYTE next_tx, next_ty;
   UBYTE npc;
-  UBYTE letter;
 
   if (update_actor_dir.x == 0 && update_actor_dir.y == 0)
   {
@@ -494,7 +428,7 @@ void MapUpdateActorMovement_b(UBYTE i)
     next_tx = (actors[i].pos.x >> 3) + actors[i].dir.x;
     next_ty = (actors[i].pos.y >> 3) + actors[i].dir.y;
 
-    npc = MapNpcAt_b(i, next_tx, next_ty);
+    npc = SceneNpcAt_b(i, next_tx, next_ty);
     if (npc != map_actor_num)
     {
       actors[i].moving = FALSE;
@@ -526,7 +460,7 @@ void MapUpdateActorMovement_b(UBYTE i)
   }
 }
 
-UBYTE MapNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
+UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
   for (i = 0; i != map_actor_num; i++)
@@ -548,7 +482,7 @@ UBYTE MapNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
   return map_actor_num;
 }
 
-UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
+UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b, tx_c, ty_c;
 
@@ -565,7 +499,7 @@ UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
     if (tx_a >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c)
     {
-      LOG("MapTriggerAt_b hit!\n");
+      LOG("SceneTriggerAt_b hit!\n");
       return i;
     }
   }
@@ -573,9 +507,9 @@ UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
   return scene_num_triggers;
 }
 
-void MapUpdateActors_b()
+void SceneUpdateActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, x, y, trigger, trigger_tile_offset;
+  UBYTE i, flip, frame, sprite_index, x, y;
   BYTE r;
 
   // Handle script move
@@ -601,7 +535,6 @@ void MapUpdateActors_b()
       else if (actors[script_actor].pos.x < actor_move_dest.x)
       {
         LOG("RIGHT\n");
-
         update_actor_dir.x = 1;
         update_actor_dir.y = 0;
       }
@@ -742,7 +675,7 @@ void MapUpdateActors_b()
     }
   }
 
-  MapHandleTrigger_b();
+  SceneHandleTriggers_b();
 
   // Position Camera
   MapRepositionCamera_b();
@@ -770,7 +703,7 @@ void MapUpdateActors_b()
   MapUpdateEmotionBubble_b();
 }
 
-void MapHandleTrigger_b()
+void SceneHandleTriggers_b()
 {
   UBYTE trigger, trigger_tile_offset;
 
@@ -787,7 +720,7 @@ void MapHandleTrigger_b()
       first_frame_on_tile = TRUE;
 
       trigger =
-          MapTriggerAt_b(actors[0].pos.x >> 3,
+          SceneTriggerAt_b(actors[0].pos.x >> 3,
                          trigger_tile_offset + (actors[0].pos.y >> 3));
       if (trigger != scene_num_triggers)
       {
@@ -833,7 +766,7 @@ void MapUpdateEmotionBubble_b()
   }
 }
 
-UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max)
+UBYTE ClampUBYTE(UBYTE v, UBYTE min, UBYTE max)
 {
   UBYTE t;
   t = v < min ? min : v;
