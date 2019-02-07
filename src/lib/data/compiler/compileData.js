@@ -111,17 +111,6 @@ const compile = async (
 
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    // console.log("SCENE: " + sceneIndex, {
-    //   imageIndex: scene.imageIndex,
-    //   hi: hi(scene.imageIndex),
-    //   lo: lo(scene.imageIndex),
-    //   spriteLen: scene.sprites.length,
-    //   sprties: scene.sprites,
-    //   actors: compileActors(scene.actors, {
-    //     eventPtrs: eventPtrs[sceneIndex].actors,
-    //     sprites: precompiled.usedSprites
-    //   })
-    // });
     return banked.push(
       [].concat(
         hi(scene.imageIndex),
@@ -134,32 +123,10 @@ const compile = async (
           sprites: precompiled.usedSprites
         }),
         scene.triggers.length,
-        // flatten(
-        //   scene.actors.map(
-        //     compileActor({ eventPtrs: eventPtrs[sceneIndex].actors })
-        //   )
-        // ),
-        scene.collisions
-        // scene.actors.reduce(
-        //   (memo, actor, actorIndex) =>
-        //     [].concat(
-        //       memo,
-        //       compileActor(actor, {
-        //         eventsPtr: eventPtrs[sceneIndex].actors[actorIndex]
-        //       })
-        //     ),
-        //   []
-        // ),
-        // scene.triggers.reduce(
-        //   (memo, trigger, triggerIndex) =>
-        //     [].concat(
-        //       memo,
-        //       compileTrigger(trigger, {
-        //         eventsPtr: eventPtrs[sceneIndex].triggers[triggerIndex]
-        //       })
-        //     ),
-        //   []
-        // )
+        compileTriggers(scene.triggers, {
+          eventPtrs: eventPtrs[sceneIndex].triggers
+        }),
+        scene.collisions.slice(0, (32 * 32) / 8)
       )
     );
   });
@@ -476,6 +443,7 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
   );
 };
 
+/*
 export const compileTrigger = (trigger, { eventsPtr }) => {
   // console.log("TRIGGER", trigger, eventsPtr);
   return [
@@ -488,6 +456,24 @@ export const compileTrigger = (trigger, { eventsPtr }) => {
     hi(eventsPtr.offset), // Event offset ptr
     lo(eventsPtr.offset)
   ];
+};
+*/
+
+export const compileTriggers = (triggers, { eventPtrs }) => {
+  return flatten(
+    triggers.map((trigger, triggerIndex) => {
+      return [
+        trigger.x,
+        trigger.y,
+        trigger.width,
+        trigger.height,
+        trigger.trigger === "action" ? 1 : 0,
+        eventPtrs[triggerIndex].bank, // Event bank ptr
+        hi(eventPtrs[triggerIndex].offset), // Event offset ptr
+        lo(eventPtrs[triggerIndex].offset)
+      ];
+    })
+  );
 };
 
 //#endregion
