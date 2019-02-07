@@ -31,6 +31,7 @@ void MapRepositionCamera_b();
 void MapHandleTrigger_b();
 void MapUpdateEmotionBubble_b();
 void MapUpdateActorMovement_b(UBYTE i);
+UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private vars
@@ -197,8 +198,39 @@ void SceneUpdate_b()
 
 void MapRepositionCamera_b()
 {
+  // UBYTE snap_left, snap_right, snap_top, snap_bottom, cam_x, cam_y;
+  UBYTE cam_x, cam_y;
+
+  // If camera is locked to player
   if ((camera_settings & CAMERA_LOCK_FLAG) == CAMERA_LOCK_FLAG)
   {
+    cam_x = clampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, (scene_width << 3) - SCREEN_WIDTH_HALF);
+    camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
+
+    cam_y = clampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, (scene_height << 3) - SCREEN_HEIGHT_HALF);
+    camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
+
+    // cam_x = actors[0].pos.x - SCREEN_WIDTH_HALF;
+    // cam_y = actors[0].pos.y - SCREEN_HEIGHT_HALF;
+    // snap_left = (scene_width << 3) - SCREEN_WIDTH_HALF;
+    // snap_right = snap_left - SCREEN_WIDTH_HALF;
+    // snap_top = (scene_height << 3) - SCREEN_HEIGHT_HALF;
+    // snap_bottom = snap_top - SCREEN_HEIGHT_HALF;
+    // camera_dest.x = cam_x > snap_left ? 0 : cam_x > snap_right ? snap_right : cam_x;
+    // camera_dest.y = cam_y > snap_top ? 0 : cam_y > snap_bottom ? snap_bottom : cam_y;
+
+    // cam_p = actors[0].pos.x - SCREEN_WIDTH_HALF;
+    // snap_a = (scene_width << 3) - SCREEN_WIDTH_HALF;
+    // snap_b = snap_a - SCREEN_WIDTH_HALF;
+    // camera_dest.x = cam_p > snap_a ? 0 : cam_p > snap_b ? snap_b : cam_p;
+
+    // cam_p = actors[0].pos.y - SCREEN_HEIGHT_HALF;
+    // snap_a = (scene_height << 3) - SCREEN_HEIGHT_HALF;
+    // snap_b = snap_a - SCREEN_HEIGHT_HALF;
+    // camera_dest.y = cam_p > snap_a ? 0 : cam_p > snap_b ? snap_b : cam_p;
+
+    /*
+    // Quickest version
     if (actors[0].pos.x < SCREEN_WIDTH_HALF)
     {
       camera_dest.x = 0;
@@ -223,6 +255,7 @@ void MapRepositionCamera_b()
     {
       camera_dest.y = actors[0].pos.y - SCREEN_HEIGHT_HALF;
     }
+    */
   }
 
   if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG)
@@ -782,6 +815,13 @@ void MapUpdateEmotionBubble_b()
     move_sprite(38, 0, 0);
     move_sprite(39, 0, 0);
   }
+}
+
+UBYTE clampUBYTE(UBYTE v, UBYTE min, UBYTE max)
+{
+  UBYTE t;
+  t = v < min ? min : v;
+  return t > max ? max : t;
 }
 
 #pragma endregion
