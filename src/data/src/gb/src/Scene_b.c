@@ -14,8 +14,11 @@
 
 UINT8 scene_bank = 10;
 
-UBYTE scene_width = 32;
-UBYTE scene_height = 32;
+UBYTE scene_width;
+UBYTE scene_height;
+UBYTE scene_num_actors;
+UBYTE scene_num_triggers;
+
 UBYTE emotion_type = 1;
 UBYTE emotion_timer = 0;
 UBYTE emotion_actor = 1;
@@ -58,7 +61,7 @@ void SceneInit_b()
   BANK_PTR bank_ptr, sprite_bank_ptr;
   UWORD ptr, sprite_ptr;
   UBYTE i, tilesetIndex, tilesetSize, numSprites, spriteIndex;
-  UBYTE k, j, sprite_len, numActors;
+  UBYTE k, j, sprite_len;
 
   DISPLAY_OFF;
 
@@ -106,10 +109,10 @@ void SceneInit_b()
 
   // Load actors
   ptr = ptr + numSprites;
-  numActors = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr);
   ptr = ptr + 1;
-  LOG("NUM ACTORS=%u\n", numActors);
-  for (i = 1; i != numActors + 1; i++)
+  LOG("NUM ACTORS=%u\n", scene_num_actors);
+  for (i = 1; i != scene_num_actors + 1; i++)
   {
     LOG("LOAD ACTOR %u\n", i);
     actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, ptr);
@@ -130,6 +133,24 @@ void SceneInit_b()
     actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 7) * 0xFFu) + ReadBankedUBYTE(bank_ptr.bank, ptr + 8);
     LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
     ptr = ptr + 9u;
+  }
+
+  // Load triggers
+  scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  ptr = ptr + 1;  
+  LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
+  for (i = 0; i != scene_num_triggers + 1; i++)
+  {
+    triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, ptr);
+    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, ptr+1);
+    triggers[i].w = 0;    
+    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, ptr+2);
+    triggers[i].h = 0;    
+    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, ptr+3);
+    // @todo 5th byte is type of trigger
+    triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
+    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 0xFFu) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
+    ptr = ptr + 8u;
   }
 
   // Load Player Sprite
@@ -158,7 +179,7 @@ void SceneInit_b()
   actors[0].moving = FALSE;
 
   // Hide unused Sprites
-  for (i = numActors; i != MAX_ACTORS; i++)
+  for (i = scene_num_actors; i != MAX_ACTORS; i++)
   {
     move_sprite((i << 1), 0, 0);
     move_sprite((i << 1) + 1, 0, 0);
@@ -531,7 +552,7 @@ UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b, tx_c, ty_c;
 
-  for (i = 0; i != map_trigger_num; i++)
+  for (i = 0; i != scene_num_triggers; i++)
   {
     // tx_b = 0;
     tx_b = triggers[i].pos.x;
@@ -542,19 +563,14 @@ UBYTE MapTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
     // ty_c = 0;
     ty_c = ty_b + triggers[i].h - 1;
 
-    // LOG("tx_a=%d tx_b=%d tx_c=%d\n", tx_a, tx_b, tx_c);
-    // LOG("ty_a=%d ty_b=%d ty_c=%d\n", ty_a, ty_b, ty_c);
     if (tx_a >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c)
     {
-      // if ((ty_a >= ty_b && ty_a <= ty_c) &&
-      //     (tx_a >= tx_b && tx_a <= tx_c)
-      //   ) {
-      LOG("hit!\n");
+      LOG("MapTriggerAt_b hit!\n");
       return i;
     }
   }
 
-  return map_trigger_num;
+  return scene_num_triggers;
 }
 
 void MapUpdateActors_b()
@@ -773,7 +789,7 @@ void MapHandleTrigger_b()
       trigger =
           MapTriggerAt_b(actors[0].pos.x >> 3,
                          trigger_tile_offset + (actors[0].pos.y >> 3));
-      if (trigger != map_trigger_num)
+      if (trigger != scene_num_triggers)
       {
         actors[0].moving = FALSE;
         script_actor = 0;

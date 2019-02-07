@@ -101,6 +101,7 @@ typedef struct _TRIGGER {
   UBYTE w;
   UBYTE h;
   UWORD script_ptr;
+  BANK_PTR events_ptr;
 } TRIGGER;
 
 void game_loop();
