@@ -172,7 +172,6 @@ extern VEC2D update_actor_dir;
 extern UBYTE first_frame_on_tile;
 extern UBYTE menu_y;
 extern UBYTE menu_dest_y;
-extern UBYTE frame_offset;
 extern UBYTE joy;
 extern UBYTE prev_joy;
 extern UBYTE text_drawn;

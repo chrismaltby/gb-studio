@@ -11,6 +11,7 @@
 #include "Macros.h"
 #include "data_ptrs.h"
 #include "banks.h"
+#include "Math.h"
 
 UINT8 scene_bank = 10;
 
@@ -45,7 +46,6 @@ void SceneHandleTriggers_b();
 void SceneRenderActors_b();
 void SceneRenderEmotionBubble_b();
 void MapUpdateActorMovement_b(UBYTE i);
-UBYTE ClampUBYTE(UBYTE v, UBYTE min, UBYTE max);
 
 #pragma endregion
 
@@ -198,8 +198,16 @@ void SceneUpdate_b()
   SceneHandleInput();
   SceneUpdateActors_b();
   SceneHandleTriggers_b();
-  SceneUpdateCamera_b();
-  SceneRender();
+
+  // Handle Wait
+  if (wait_time != 0)
+  {
+    wait_time--;
+    if (wait_time == 0)
+    {
+      script_action_complete = TRUE;
+    }
+  }
 
   // Handle map switch
   if (map_index != map_next_index && !IsFading())
@@ -207,6 +215,9 @@ void SceneUpdate_b()
     map_index = map_next_index;
     SceneInit();
   }
+
+  SceneUpdateCamera_b();
+  SceneRender(); 
 }
 
 void SceneUpdateCamera_b()
@@ -253,6 +264,7 @@ void SceneUpdateCamera_b()
     SCY_REG = camera_dest.y;
   }
 
+  // @todo - shluld event finish checks be included here, or seperate file?
   if (((last_fn == script_cmd_camera_move) || (last_fn == script_cmd_camera_lock)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
   {
     script_action_complete = TRUE;
@@ -260,258 +272,6 @@ void SceneUpdateCamera_b()
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Input
-////////////////////////////////////////////////////////////////////////////////
-#pragma region input
-
-static void SceneHandleInput()
-{
-  UBYTE next_tx, next_ty;
-  UBYTE npc;
-
-  // If menu open - check if A pressed to close
-  if (menu_y == MENU_OPEN_Y && (joy & J_A) && !(prev_joy & J_A))
-  {
-    if (!text_drawn)
-    {
-      draw_text(TRUE);
-    }
-    else
-    {
-      menu_dest_y = MENU_CLOSED_Y;
-      if (last_fn == script_cmd_line)
-      {
-        script_action_complete = TRUE;
-      }
-    }
-  }
-  // If player between tiles can't handle input
-  if (!ACTOR_ON_TILE(0))
-  {
-    return;
-  }
-  // Can't move while menu open
-  if (menu_y != MENU_CLOSED_Y)
-  {
-    return;
-  }
-
-  // Can't move if emoting
-  if (emotion_timer != 0)
-  {
-    return;
-  }
-
-  // Can't move while script is running
-  if (script_ptr || IsFading())
-  {
-    actors[0].moving = FALSE;
-    return;
-  }
-
-  if ((joy & J_A) && !(prev_joy & J_A))
-  {
-    actors[0].moving = FALSE;
-    next_tx = (actors[0].pos.x >> 3) + actors[0].dir.x;
-    next_ty = (actors[0].pos.y >> 3) + actors[0].dir.y;
-    npc = SceneNpcAt_b(0, next_tx, next_ty);
-    if (npc != map_actor_num)
-    {
-      actors[0].moving = FALSE;
-      if (actors[npc].movement_type != NONE)
-      {
-        actors[npc].dir.x = -actors[0].dir.x;
-        actors[npc].dir.y = -actors[0].dir.y;
-      }
-      actors[npc].moving = FALSE;
-      actors[npc].redraw = TRUE;
-      script_actor = npc;
-      script_ptr = actors[npc].script_ptr;
-    }
-  }
-  else if (actors[0].movement_type == PLAYER_INPUT)
-  {
-    if (joy & J_LEFT)
-    {
-      update_actor_dir.x = -1;
-      update_actor_dir.y = 0;
-    }
-    else if (joy & J_RIGHT)
-    {
-      update_actor_dir.x = 1;
-      update_actor_dir.y = 0;
-    }
-    else
-    {
-      update_actor_dir.x = 0;
-      if (joy & J_UP)
-      {
-        update_actor_dir.y = -1;
-      }
-      else if (joy & J_DOWN)
-      {
-        update_actor_dir.y = 1;
-      }
-      else
-      {
-        update_actor_dir.y = 0;
-      }
-    }
-    MapUpdateActorMovement_b(0);
-  }
-}
-
-#pragma endregion
-
-////////////////////////////////////////////////////////////////////////////////
-// Render
-////////////////////////////////////////////////////////////////////////////////
-#pragma region render
-
-void SceneRender()
-{
-  if (IS_FRAME_16)
-  {
-    frame_offset = !frame_offset;
-  }
-  // Handle Wait
-  if (wait_time != 0)
-  {
-    wait_time--;
-    if (wait_time == 0)
-    {
-      script_action_complete = TRUE;
-    }
-  }
-
-  SceneRenderActors_b();
-  SceneRenderEmotionBubble_b();
-  
-  UIUpdate();
-
-  // Handle Shake
-  if (shake_time != 0)
-  {
-    shake_time--;
-    SCX_REG += shake_time & 0x5;
-    if (shake_time == 0)
-    {
-      script_action_complete = TRUE;
-    }
-  }
-}
-
-#pragma endregion
-
-////////////////////////////////////////////////////////////////////////////////
-// Helpers
-////////////////////////////////////////////////////////////////////////////////
-#pragma region helpers
-
-void MapUpdateActorMovement_b(UBYTE i)
-{
-  UBYTE next_tx, next_ty;
-  UBYTE npc;
-
-  if (update_actor_dir.x == 0 && update_actor_dir.y == 0)
-  {
-    actors[i].moving = FALSE;
-  }
-  else
-  {
-    if (actors[i].dir.x != update_actor_dir.x || actors[i].dir.y != update_actor_dir.y)
-    {
-      actors[i].dir.x = update_actor_dir.x;
-      actors[i].dir.y = update_actor_dir.y;
-      actors[i].redraw = TRUE;
-    }
-    actors[i].moving = TRUE;
-  }
-
-  if (actors[i].moving && !script_ptr)
-  {
-    next_tx = (actors[i].pos.x >> 3) + actors[i].dir.x;
-    next_ty = (actors[i].pos.y >> 3) + actors[i].dir.y;
-
-    npc = SceneNpcAt_b(i, next_tx, next_ty);
-    if (npc != map_actor_num)
-    {
-      actors[i].moving = FALSE;
-    }
-
-    /*
-    // Collision detection
-    if (map_col)
-    {
-      // Left tile
-      tile = ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width);
-      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      if (tile_index_data)
-      {
-        actors[i].moving = FALSE;
-      }
-      // Right tile
-      tile =
-          ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width + 1);
-      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      if (tile_index_data)
-      {
-        actors[i].moving = FALSE;
-      }
-    }
-    */
-  }
-}
-
-UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
-{
-  UBYTE i, tx_b, ty_b;
-  for (i = 0; i != map_actor_num; i++)
-  {
-    if (i == actor_i)
-    {
-      continue;
-    }
-    // LOG("NPC i=%d @ [%d,%d]\n", i, actors[i].pos.x >> 3, actors[i].pos.y >> 3);
-    tx_b = actors[i].pos.x >> 3;
-    ty_b = actors[i].pos.y >> 3;
-    if ((ty_a == ty_b || ty_a == ty_b - 1) &&
-        (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
-    {
-      return i;
-    }
-  }
-
-  return map_actor_num;
-}
-
-UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
-{
-  UBYTE i, tx_b, ty_b, tx_c, ty_c;
-
-  for (i = 0; i != scene_num_triggers; i++)
-  {
-    // tx_b = 0;
-    tx_b = triggers[i].pos.x;
-    // ty_b = 0;
-    ty_b = triggers[i].pos.y + 1;
-    // tx_c = 0;
-    tx_c = tx_b + triggers[i].w;
-    // ty_c = 0;
-    ty_c = ty_b + triggers[i].h - 1;
-
-    if (tx_a >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c)
-    {
-      LOG("SceneTriggerAt_b hit!\n");
-      return i;
-    }
-  }
-
-  return scene_num_triggers;
-}
 
 void SceneUpdateActors_b()
 {
@@ -632,6 +392,225 @@ void SceneUpdateActors_b()
   }
 }
 
+void MapUpdateActorMovement_b(UBYTE i)
+{
+  UBYTE next_tx, next_ty;
+  UBYTE npc;
+
+  if (update_actor_dir.x == 0 && update_actor_dir.y == 0)
+  {
+    actors[i].moving = FALSE;
+  }
+  else
+  {
+    if (actors[i].dir.x != update_actor_dir.x || actors[i].dir.y != update_actor_dir.y)
+    {
+      actors[i].dir.x = update_actor_dir.x;
+      actors[i].dir.y = update_actor_dir.y;
+      actors[i].redraw = TRUE;
+    }
+    actors[i].moving = TRUE;
+  }
+
+  if (actors[i].moving && !script_ptr)
+  {
+    next_tx = (actors[i].pos.x >> 3) + actors[i].dir.x;
+    next_ty = (actors[i].pos.y >> 3) + actors[i].dir.y;
+
+    npc = SceneNpcAt_b(i, next_tx, next_ty);
+    if (npc != map_actor_num)
+    {
+      actors[i].moving = FALSE;
+    }
+
+    /*
+    // Collision detection
+    if (map_col)
+    {
+      // Left tile
+      tile = ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width);
+      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
+
+      if (tile_index_data)
+      {
+        actors[i].moving = FALSE;
+      }
+      // Right tile
+      tile =
+          ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width + 1);
+      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
+
+      if (tile_index_data)
+      {
+        actors[i].moving = FALSE;
+      }
+    }
+    */
+  }
+}
+
+void SceneHandleTriggers_b()
+{
+  UBYTE trigger, trigger_tile_offset;
+
+  if (((actors[0].pos.x & 7) == 0) && (((actors[0].pos.y & 7) == 0) || actors[0].pos.y == 254))
+  {
+
+    if (!first_frame_on_tile)
+    {
+
+      // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
+      trigger_tile_offset = actors[0].pos.y == 254;
+
+      LOG("ON TILE %d %d\n", actors[0].pos.x >> 3, actors[0].pos.y >> 3);
+      first_frame_on_tile = TRUE;
+
+      trigger =
+          SceneTriggerAt_b(actors[0].pos.x >> 3,
+                         trigger_tile_offset + (actors[0].pos.y >> 3));
+      if (trigger != scene_num_triggers)
+      {
+        actors[0].moving = FALSE;
+        script_actor = 0;
+        script_ptr = triggers[trigger].script_ptr;
+      }
+    }
+  }
+  else
+  {
+    first_frame_on_tile = FALSE;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Input
+////////////////////////////////////////////////////////////////////////////////
+#pragma region input
+
+static void SceneHandleInput()
+{
+  UBYTE next_tx, next_ty;
+  UBYTE npc;
+
+  // If menu open - check if A pressed to close
+  if (JOY_PRESSED(J_A))
+  {
+    // If still drawing text, finish drawing
+    if (!text_drawn)
+    {
+      draw_text(TRUE);
+    }
+    else
+    {
+      menu_dest_y = MENU_CLOSED_Y;
+      // @todo - this shouldn't be here
+      if (last_fn == script_cmd_line)
+      {
+        script_action_complete = TRUE;
+      }
+    }
+  }
+  // If player between tiles can't handle input
+  if (!ACTOR_ON_TILE(0))
+  {
+    return;
+  }
+  // Can't move while menu open
+  if (menu_y != MENU_CLOSED_Y)
+  {
+    return;
+  }
+
+  // Can't move if emoting
+  if (emotion_timer != 0)
+  {
+    return;
+  }
+
+  // Can't move while script is running
+  if (script_ptr || IsFading())
+  {
+    actors[0].moving = FALSE;
+    return;
+  }
+
+  if (JOY_PRESSED(J_A))
+  {
+    actors[0].moving = FALSE;
+    next_tx = (actors[0].pos.x >> 3) + actors[0].dir.x;
+    next_ty = (actors[0].pos.y >> 3) + actors[0].dir.y;
+    npc = SceneNpcAt_b(0, next_tx, next_ty);
+    if (npc != map_actor_num)
+    {
+      actors[0].moving = FALSE;
+      if (actors[npc].movement_type != NONE)
+      {
+        actors[npc].dir.x = -actors[0].dir.x;
+        actors[npc].dir.y = -actors[0].dir.y;
+      }
+      actors[npc].moving = FALSE;
+      actors[npc].redraw = TRUE;
+      script_actor = npc;
+      script_ptr = actors[npc].script_ptr;
+    }
+  }
+  else if (actors[0].movement_type == PLAYER_INPUT)
+  {
+    if (JOY(J_LEFT))
+    {
+      update_actor_dir.x = -1;
+      update_actor_dir.y = 0;
+    }
+    else if (JOY(J_RIGHT))
+    {
+      update_actor_dir.x = 1;
+      update_actor_dir.y = 0;
+    }
+    else
+    {
+      update_actor_dir.x = 0;
+      if (JOY(J_UP))
+      {
+        update_actor_dir.y = -1;
+      }
+      else if (JOY(J_DOWN))
+      {
+        update_actor_dir.y = 1;
+      }
+      else
+      {
+        update_actor_dir.y = 0;
+      }
+    }
+    MapUpdateActorMovement_b(0);
+  }
+}
+
+#pragma endregion
+
+////////////////////////////////////////////////////////////////////////////////
+// Render
+////////////////////////////////////////////////////////////////////////////////
+#pragma region render
+
+void SceneRender()
+{
+  SceneRenderActors_b();
+  SceneRenderEmotionBubble_b();
+  UIUpdate();
+
+  // Handle Shake
+  if (shake_time != 0)
+  {
+    shake_time--;
+    SCX_REG += shake_time & 0x5;
+    if (shake_time == 0)
+    {
+      script_action_complete = TRUE;
+    }
+  }
+}
+
 void SceneRenderActors_b()
 {
   UBYTE i, flip, frame, sprite_index, x, y;
@@ -721,74 +700,100 @@ void SceneRenderActors_b()
   SceneRenderEmotionBubble_b();
 }
 
-void SceneHandleTriggers_b()
-{
-  UBYTE trigger, trigger_tile_offset;
-
-  if (((actors[0].pos.x & 7) == 0) && (((actors[0].pos.y & 7) == 0) || actors[0].pos.y == 254))
-  {
-
-    if (!first_frame_on_tile)
-    {
-
-      // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
-      trigger_tile_offset = actors[0].pos.y == 254;
-
-      LOG("ON TILE %d %d\n", actors[0].pos.x >> 3, actors[0].pos.y >> 3);
-      first_frame_on_tile = TRUE;
-
-      trigger =
-          SceneTriggerAt_b(actors[0].pos.x >> 3,
-                         trigger_tile_offset + (actors[0].pos.y >> 3));
-      if (trigger != scene_num_triggers)
-      {
-        actors[0].moving = FALSE;
-        script_actor = 0;
-        script_ptr = triggers[trigger].script_ptr;
-      }
-    }
-  }
-  else
-  {
-    first_frame_on_tile = FALSE;
-  }
-}
-
 void SceneRenderEmotionBubble_b()
 {
   UBYTE x, y;
 
+  // If should be showing emotion bubble
   if (emotion_timer > 0)
   {
-    x = actors[emotion_actor].pos.x - SCX_REG;
-    y = actors[emotion_actor].pos.y - 16 - SCY_REG;
-
-    if (emotion_timer < 15)
-    {
-      y += emotion_offsets[emotion_timer];
-    }
-
-    move_sprite(38, x, y);
-    move_sprite(39, x + 8, y);
-
-    emotion_timer++;
+    // If reached end of timer
     if (emotion_timer > 60)
     {
+      // Reset the timer
       emotion_timer = 0;
+      // Hide the bubble sprites
+      move_sprite(38, 0, 0);
+      move_sprite(39, 0, 0);
+
+    } else {
+
+      // Set x and y above actor displaying emotion
+      x = actors[emotion_actor].pos.x - SCX_REG;
+      y = actors[emotion_actor].pos.y - 16 - SCY_REG;
+
+      // At start of animation bounce bubble in using stored offsets
+      if (emotion_timer < 15)
+      {
+        y += emotion_offsets[emotion_timer];
+      }
+
+      // Reposition sprites (left and right)
+      move_sprite(38, x, y);
+      move_sprite(39, x + 8, y);
+
+      // Inc timer
+      emotion_timer++;
     }
-  }
-  else
-  {
-    move_sprite(38, 0, 0);
-    move_sprite(39, 0, 0);
   }
 }
 
-UBYTE ClampUBYTE(UBYTE v, UBYTE min, UBYTE max)
+#pragma endregion
+
+////////////////////////////////////////////////////////////////////////////////
+// Helpers
+////////////////////////////////////////////////////////////////////////////////
+#pragma region helpers
+
+
+UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 {
-  UBYTE t;
-  t = v < min ? min : v;
-  return t > max ? max : t;
+  UBYTE i, tx_b, ty_b;
+  for (i = 0; i != map_actor_num; i++)
+  {
+    if (i == actor_i)
+    {
+      continue;
+    }
+    // LOG("NPC i=%d @ [%d,%d]\n", i, actors[i].pos.x >> 3, actors[i].pos.y >> 3);
+    tx_b = actors[i].pos.x >> 3;
+    ty_b = actors[i].pos.y >> 3;
+    if ((ty_a == ty_b || ty_a == ty_b - 1) &&
+        (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
+    {
+      return i;
+    }
+  }
+
+  return map_actor_num;
 }
+
+
+
+UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
+{
+  UBYTE i, tx_b, ty_b, tx_c, ty_c;
+
+  for (i = 0; i != scene_num_triggers; i++)
+  {
+    // tx_b = 0;
+    tx_b = triggers[i].pos.x;
+    // ty_b = 0;
+    ty_b = triggers[i].pos.y + 1;
+    // tx_c = 0;
+    tx_c = tx_b + triggers[i].w;
+    // ty_c = 0;
+    ty_c = ty_b + triggers[i].h - 1;
+
+    if (tx_a >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c)
+    {
+      LOG("SceneTriggerAt_b hit!\n");
+      return i;
+    }
+  }
+
+  return scene_num_triggers;
+}
+
 
 #pragma endregion

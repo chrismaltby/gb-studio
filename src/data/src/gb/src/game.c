@@ -18,7 +18,6 @@ UBYTE running = TRUE;
 UBYTE joy;
 UBYTE prev_joy;
 UBYTE time;
-UBYTE frame_offset = 1;
 ACTOR actors[MAX_ACTORS];
 TRIGGER triggers[MAX_TRIGGERS];
 
