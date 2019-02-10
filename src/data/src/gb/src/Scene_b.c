@@ -332,7 +332,7 @@ void SceneUpdateActors_b()
   if (!script_ptr)
   {
     // LOG("RANDOM BEHAVIOUR--------------\n");
-    for (i = 1; i != map_actor_num; i++)
+    for (i = 1; i != scene_num_actors; i++)
     {
       if (ACTOR_ON_TILE(i))
       {
@@ -376,7 +376,7 @@ void SceneUpdateActors_b()
     }
   }
 
-  for (i = 0; i != map_actor_num; i++)
+  for (i = 0; i != scene_num_actors; i++)
   {
     // If running script only update script actor - Unless needs redraw
     if (script_ptr && i != script_actor && !actors[i].redraw)
@@ -419,7 +419,7 @@ void MapUpdateActorMovement_b(UBYTE i)
     next_ty = (actors[i].pos.y >> 3) + actors[i].dir.y;
 
     npc = SceneNpcAt_b(i, next_tx, next_ty);
-    if (npc != map_actor_num)
+    if (npc != scene_num_actors)
     {
       actors[i].moving = FALSE;
     }
@@ -543,7 +543,7 @@ static void SceneHandleInput()
     next_tx = (actors[0].pos.x >> 3) + actors[0].dir.x;
     next_ty = (actors[0].pos.y >> 3) + actors[0].dir.y;
     npc = SceneNpcAt_b(0, next_tx, next_ty);
-    if (npc != map_actor_num)
+    if (npc != scene_num_actors)
     {
       actors[0].moving = FALSE;
       if (actors[npc].movement_type != NONE)
@@ -623,7 +623,7 @@ void SceneRenderActors_b()
   UBYTE i, flip, frame, sprite_index, x, y;
   BYTE r;
 
-  for (i = 0; i != map_actor_num; i++)
+  for (i = 0; i != scene_num_actors; i++)
   {
 
     // If running script only update script actor - Unless needs redraw
@@ -685,7 +685,7 @@ void SceneRenderActors_b()
   }
 
   // Position Sprites
-  for (i = 0; i != map_actor_num; i++)
+  for (i = 0; i != scene_num_actors; i++)
   {
     // Position actors
     x = actors[i].pos.x - SCX_REG;
@@ -756,7 +756,7 @@ void SceneRenderEmotionBubble_b()
 UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
-  for (i = 0; i != map_actor_num; i++)
+  for (i = 0; i != scene_num_actors; i++)
   {
     if (i == actor_i)
     {
@@ -772,7 +772,7 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
     }
   }
 
-  return map_actor_num;
+  return scene_num_actors;
 }
 
 
