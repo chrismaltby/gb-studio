@@ -45,6 +45,7 @@ void SceneUpdateCamera_b();
 void SceneHandleTriggers_b();
 void SceneRenderActors_b();
 void SceneRenderEmotionBubble_b();
+void SceneRenderCameraShake_b();
 void MapUpdateActorMovement_b(UBYTE i);
 
 #pragma endregion
@@ -600,7 +601,11 @@ void SceneRender()
   SceneRenderActors_b();
   SceneRenderEmotionBubble_b();
   UIUpdate();
+  SceneRenderCameraShake_b();
+}
 
+void SceneRenderCameraShake_b()
+{
   // Handle Shake
   if (shake_time != 0)
   {
