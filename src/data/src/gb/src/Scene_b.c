@@ -171,8 +171,8 @@ void SceneInit_b()
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
   {
-    move_sprite((i << 1), 0, 0);
-    move_sprite((i << 1) + 1, 0, 0);
+    hide_sprite(MUL_2(i));
+    hide_sprite(MUL_2(i) + 1);
   }
 
   // Reset vars
@@ -265,7 +265,7 @@ void SceneUpdateCamera_b()
     SCY_REG = camera_dest.y;
   }
 
-  // @todo - shluld event finish checks be included here, or seperate file?
+  // @todo - should event finish checks be included here, or seperate file?
   if (((last_fn == script_cmd_camera_move) || (last_fn == script_cmd_camera_lock)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
   {
     script_action_complete = TRUE;
@@ -620,27 +620,23 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, x, y;
-  BYTE r;
+  UBYTE i, flip, frame, sprite_index, screen_x, screen_y;
 
   for (i = 0; i != scene_num_actors; i++)
   {
+    sprite_index = MUL_2(i);
 
-    // If running script only update script actor - Unless needs redraw
-    if (script_ptr && i != script_actor && !actors[i].redraw)
-    {
-      continue;
-    }
+    // // If running script only update script actor - Unless needs redraw
+    // if (script_ptr && i != script_actor && !actors[i].redraw)
+    // {
+    //   continue;
+    // }
 
     // If just landed on new tile or needs a redraw
     if ((actors[i].moving && ACTOR_ON_TILE(i)) || actors[i].redraw)
     {
-
-      LOG("REDRAW %d x=%d y=%d\n", i, actors[i].dir.x, actors[i].dir.y);
       flip = FALSE;
       frame = actors[i].sprite;
-
-      sprite_index = i << 1;
 
       if (actors[i].animated)
       {
@@ -653,58 +649,53 @@ void SceneRenderActors_b()
       {
         frame += 1 + actors[i].animated;
       }
-      else if (actors[i].dir.x < 0)
+      else if (actors[i].dir.x != 0)
       {
-        flip = TRUE;
-        frame += 2 + (actors[i].animated<<1);
+        frame += 2 + MUL_2(actors[i].animated);
+
+        // Facing left so flip sprite
+        if (actors[i].dir.x < 0) {
+          flip = TRUE;
+        }
       }
-      else if (actors[i].dir.x > 0)
-      {
-        LOG("REDRAW d \n");
-        frame += 2 + (actors[i].animated<<1);
-      }
+
       // Handle facing left
       if (flip)
       {
         set_sprite_prop(sprite_index, S_FLIPX);
         set_sprite_prop(sprite_index + 1, S_FLIPX);
-        set_sprite_tile(sprite_index, (frame << 2) + 2);
-        set_sprite_tile(sprite_index + 1, frame << 2);
+        set_sprite_tile(sprite_index, MUL_4(frame) + 2);
+        set_sprite_tile(sprite_index + 1, MUL_4(frame));
       }
       else
       {
         set_sprite_prop(sprite_index, 0x0);
         set_sprite_prop(sprite_index + 1, 0x0);
-        set_sprite_tile(sprite_index, frame << 2);
-        set_sprite_tile(sprite_index + 1, (frame << 2) + 2);
+        set_sprite_tile(sprite_index, MUL_4(frame));
+        set_sprite_tile(sprite_index + 1, MUL_4(frame) + 2);
       }
 
       actors[i].redraw = FALSE;
     }
 
-  }
-
-  // Position Sprites
-  for (i = 0; i != scene_num_actors; i++)
-  {
     // Position actors
-    x = actors[i].pos.x - SCX_REG;
-    y = actors[i].pos.y - SCY_REG;
+    screen_x = actors[i].pos.x - SCX_REG;
+    screen_y = actors[i].pos.y - SCY_REG;
 
     // If sprite not under menu position it, otherwise hide
-    if (actors[i].enabled && (y < menu_y + 16 || menu_y == MENU_CLOSED_Y))
+    // @todo This function probably shouldn't know about the menu, maybe 
+    // keep a max_sprite_screen_y value and check against that?
+    if (actors[i].enabled && (screen_y < menu_y + 16 || menu_y == MENU_CLOSED_Y))
     {
-      move_sprite((i << 1), x, y);
-      move_sprite((i << 1) + 1, x + 8, y);
+      move_sprite(sprite_index, screen_x, screen_y);
+      move_sprite(sprite_index + 1, screen_x + ACTOR_HALF_WIDTH, screen_y);
     }
     else
     {
-      move_sprite((i << 1), 0, 0);
-      move_sprite((i << 1) + 1, 0, 0);
+      hide_sprite(sprite_index);
+      hide_sprite(sprite_index+1);
     }
   }
-
-  SceneRenderEmotionBubble_b();
 }
 
 void SceneRenderEmotionBubble_b()
@@ -719,9 +710,10 @@ void SceneRenderEmotionBubble_b()
     {
       // Reset the timer
       emotion_timer = 0;
+
       // Hide the bubble sprites
-      move_sprite(BUBBLE_SPRITE_LEFT, 0, 0);
-      move_sprite(BUBBLE_SPRITE_RIGHT, 0, 0);
+      hide_sprite(BUBBLE_SPRITE_LEFT);
+      hide_sprite(BUBBLE_SPRITE_RIGHT);
 
     } else {
 

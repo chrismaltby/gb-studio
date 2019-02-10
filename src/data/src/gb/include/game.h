@@ -41,11 +41,7 @@
 #define IS_FRAME_4 ((time & 0x3)==0)
 #define IS_FRAME_2 ((time & 0x1)==0)
 
-#define MOD_2(a)    ((a)&1)
-#define MOD_4(a)    ((a)&3)
-#define MOD_8(a)    ((a)&7)
-#define MOD_32(a)   ((a)&31)
-#define MUL_8(a)    ((a)<<3)
+
 
 typedef enum {
   TITLE = 1,
