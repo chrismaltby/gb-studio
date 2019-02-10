@@ -15,9 +15,15 @@
 #define MOD_8(a)    ((a)&7)
 #define MOD_32(a)   ((a)&31)
 
+#define MUL_16(a)   ((a)<<4)
 #define MUL_8(a)    ((a)<<3)
 #define MUL_4(a)    ((a)<<2)
 #define MUL_2(a)    ((a)<<1)
+
+#define DIV_16(a)   ((a)>>4)
+#define DIV_8(a)    ((a)>>3)
+#define DIV_4(a)    ((a)>>2)
+#define DIV_2(a)    ((a)>>1)
 
 #define hide_sprite(a)    (move_sprite((a), 0, 0))
 

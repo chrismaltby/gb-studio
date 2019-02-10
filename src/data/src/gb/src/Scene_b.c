@@ -91,7 +91,7 @@ void SceneInit_b()
     LOG("SPRITE INDEX=%u\n", sprite_index);
     ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
     sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-    sprite_len = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr) << 2;
+    sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr));
     LOG("SPRITE LEN=%u\n", sprite_len);
     SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
@@ -111,8 +111,8 @@ void SceneInit_b()
     actors[i].enabled = TRUE;
     actors[i].animated = FALSE; // WTF needed
     actors[i].animated = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
-    actors[i].pos.x = (ReadBankedUBYTE(bank_ptr.bank, ptr + 2) << 3) + 8;
-    actors[i].pos.y = (ReadBankedUBYTE(bank_ptr.bank, ptr + 3) << 3) + 8;
+    actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 2)) + 8;
+    actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 3)) + 8;
     j = ReadBankedUBYTE(bank_ptr.bank, ptr + 4);
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
     actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
@@ -229,9 +229,9 @@ void SceneUpdateCamera_b()
   if ((camera_settings & CAMERA_LOCK_FLAG) == CAMERA_LOCK_FLAG)
   {
     // Reposition based on player position
-    cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, (scene_width << 3) - SCREEN_WIDTH_HALF);
+    cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, MUL_8(scene_width) - SCREEN_WIDTH_HALF);
     camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
-    cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, (scene_height << 3) - SCREEN_HEIGHT_HALF);
+    cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, MUL_8(scene_height) - SCREEN_HEIGHT_HALF);
     camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
   }
 
@@ -415,8 +415,8 @@ void MapUpdateActorMovement_b(UBYTE i)
 
   if (actors[i].moving && !script_ptr)
   {
-    next_tx = (actors[i].pos.x >> 3) + actors[i].dir.x;
-    next_ty = (actors[i].pos.y >> 3) + actors[i].dir.y;
+    next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
+    next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
     npc = SceneNpcAt_b(i, next_tx, next_ty);
     if (npc != scene_num_actors)
@@ -462,13 +462,11 @@ void SceneHandleTriggers_b()
 
       // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
       trigger_tile_offset = actors[0].pos.y == 254;
-
-      LOG("ON TILE %d %d\n", actors[0].pos.x >> 3, actors[0].pos.y >> 3);
       first_frame_on_tile = TRUE;
 
       trigger =
-          SceneTriggerAt_b(actors[0].pos.x >> 3,
-                         trigger_tile_offset + (actors[0].pos.y >> 3));
+          SceneTriggerAt_b(DIV_8(actors[0].pos.x),
+                         trigger_tile_offset + DIV_8(actors[0].pos.y));
       if (trigger != scene_num_triggers)
       {
         actors[0].moving = FALSE;
@@ -540,8 +538,8 @@ static void SceneHandleInput()
   if (JOY_PRESSED(J_A))
   {
     actors[0].moving = FALSE;
-    next_tx = (actors[0].pos.x >> 3) + actors[0].dir.x;
-    next_ty = (actors[0].pos.y >> 3) + actors[0].dir.y;
+    next_tx = DIV_8(actors[0].pos.x) + actors[0].dir.x;
+    next_ty = DIV_8(actors[0].pos.y) + actors[0].dir.y;
     npc = SceneNpcAt_b(0, next_tx, next_ty);
     if (npc != scene_num_actors)
     {
@@ -641,7 +639,7 @@ void SceneRenderActors_b()
       if (actors[i].animated)
       {
         // Set frame offset based on position, every 16px switch frame
-        frame += ((actors[i].pos.x >> 4) & 1) == ((actors[i].pos.y >> 4) & 1);
+        frame += (DIV_16(actors[i].pos.x) & 1) == (DIV_16(actors[i].pos.y) & 1);
       }
 
       // Increase frame based on facing direction
@@ -754,9 +752,8 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
     {
       continue;
     }
-    // LOG("NPC i=%d @ [%d,%d]\n", i, actors[i].pos.x >> 3, actors[i].pos.y >> 3);
-    tx_b = actors[i].pos.x >> 3;
-    ty_b = actors[i].pos.y >> 3;
+    tx_b = DIV_8(actors[i].pos.x);
+    ty_b = DIV_8(actors[i].pos.y);
     if ((ty_a == ty_b || ty_a == ty_b - 1) &&
         (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
     {
