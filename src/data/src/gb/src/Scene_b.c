@@ -632,7 +632,8 @@ void SceneRenderActors_b()
       continue;
     }
 
-    if ((actors[i].moving && ((actors[i].pos.x & 7) == 0) && ((actors[i].pos.y & 7) == 0)) || actors[i].redraw)
+    // If just landed on new tile or needs a redraw
+    if ((actors[i].moving && ACTOR_ON_TILE(i)) || actors[i].redraw)
     {
 
       LOG("REDRAW %d x=%d y=%d\n", i, actors[i].dir.x, actors[i].dir.y);
@@ -641,27 +642,26 @@ void SceneRenderActors_b()
 
       sprite_index = i << 1;
 
-      if (actors[i].moving && actors[i].animated)
+      if (actors[i].animated)
       {
-        LOG("REDRAW a \n");
+        // Set frame offset based on position, every 16px switch frame
         frame += ((actors[i].pos.x >> 4) & 1) == ((actors[i].pos.y >> 4) & 1);
       }
+
       // Increase frame based on facing direction
       if (actors[i].dir.y < 0)
       {
-        LOG("REDRAW b \n");
         frame += 1 + actors[i].animated;
       }
       else if (actors[i].dir.x < 0)
       {
-        LOG("REDRAW c\n");
         flip = TRUE;
-        frame += 2 + actors[i].animated + actors[i].animated;
+        frame += 2 + (actors[i].animated<<1);
       }
       else if (actors[i].dir.x > 0)
       {
         LOG("REDRAW d \n");
-        frame += 2 + actors[i].animated + actors[i].animated;
+        frame += 2 + (actors[i].animated<<1);
       }
       // Handle facing left
       if (flip)
