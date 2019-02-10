@@ -10,6 +10,14 @@ extern UWORD map_next_index;
 extern POS map_next_pos;
 extern VEC2D map_next_dir;
 
+#define ACTOR_HEIGHT 16
+#define ACTOR_WIDTH 16
+#define ACTOR_HALF_WIDTH 8
+#define BUBBLE_SPRITE_LEFT 38
+#define BUBBLE_SPRITE_RIGHT 39
+#define BUBBLE_ANIMATION_FRAMES 15
+#define BUBBLE_TOTAL_FRAMES 60
+
 void SceneInit();
 void SceneUpdate();
 

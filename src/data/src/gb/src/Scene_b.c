@@ -709,35 +709,35 @@ void SceneRenderActors_b()
 
 void SceneRenderEmotionBubble_b()
 {
-  UBYTE x, y;
+  UBYTE screen_x, screen_y;
 
   // If should be showing emotion bubble
   if (emotion_timer > 0)
   {
     // If reached end of timer
-    if (emotion_timer > 60)
+    if (emotion_timer > BUBBLE_TOTAL_FRAMES)
     {
       // Reset the timer
       emotion_timer = 0;
       // Hide the bubble sprites
-      move_sprite(38, 0, 0);
-      move_sprite(39, 0, 0);
+      move_sprite(BUBBLE_SPRITE_LEFT, 0, 0);
+      move_sprite(BUBBLE_SPRITE_RIGHT, 0, 0);
 
     } else {
 
       // Set x and y above actor displaying emotion
-      x = actors[emotion_actor].pos.x - SCX_REG;
-      y = actors[emotion_actor].pos.y - 16 - SCY_REG;
+      screen_x = actors[emotion_actor].pos.x - SCX_REG;
+      screen_y = actors[emotion_actor].pos.y - ACTOR_HEIGHT - SCY_REG;
 
       // At start of animation bounce bubble in using stored offsets
-      if (emotion_timer < 15)
+      if (emotion_timer < BUBBLE_ANIMATION_FRAMES)
       {
-        y += emotion_offsets[emotion_timer];
+        screen_y += emotion_offsets[emotion_timer];
       }
 
       // Reposition sprites (left and right)
-      move_sprite(38, x, y);
-      move_sprite(39, x + 8, y);
+      move_sprite(BUBBLE_SPRITE_LEFT, screen_x, screen_y);
+      move_sprite(BUBBLE_SPRITE_RIGHT, screen_x + ACTOR_HALF_WIDTH, screen_y);
 
       // Inc timer
       emotion_timer++;
