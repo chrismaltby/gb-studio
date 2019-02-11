@@ -64,14 +64,42 @@ export default function project(state = initialState.project, action) {
     case EDIT_MAP:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.mapId) {
+            return scene;
           }
-          return {
-            ...map,
-            ...action.values
-          };
+
+          // If switched image use collisions from another
+          // scene using the image already if available
+          // otherwise make empty collisions array of
+          // the correct size
+          let newCollisions;
+          if (action.values.imageId) {
+            const otherScene = state.scenes.find(otherScene => {
+              return otherScene.imageId === action.values.imageId;
+            });
+            if (otherScene) {
+              newCollisions = otherScene.collisions;
+            } else {
+              const image = state.images.find(
+                image => image.id === action.values.imageId
+              );
+              let collisionsSize = Math.ceil((image.width * image.height) / 8);
+              newCollisions = [];
+              for (let i = 0; i < collisionsSize; i++) {
+                newCollisions[i] = 0;
+              }
+            }
+          }
+
+          return Object.assign(
+            {},
+            scene,
+            action.values,
+            action.values.imageId && {
+              collisions: newCollisions || []
+            }
+          );
         })
       };
     case REMOVE_MAP:
