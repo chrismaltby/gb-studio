@@ -448,34 +448,20 @@ void MapUpdateActorMovement_b(UBYTE i)
     }
 
 
-/*
+    // Left tile
     collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1);
-      // const wasCollision =
-            // scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7));
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+    }
 
+    // Right tile
+    collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+    }
 
-
-      // Left tile
-      // tile = ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width);
-      // tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-      {
-        actors[i].moving = FALSE;
-      }
-      // Right tile
-      collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-      // tile =
-          // ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width + 1);
-      // tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      // if (tile_index_data)
-      if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-      {
-        actors[i].moving = FALSE;
-      }
-
-*/
     /*
     // Collision detection
     if (map_col)
