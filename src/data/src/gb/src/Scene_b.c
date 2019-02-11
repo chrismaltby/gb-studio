@@ -127,16 +127,16 @@ void SceneInit_b()
 
   // Load triggers
   scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  ptr = ptr + 1;  
+  ptr = ptr + 1;
   LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
   for (i = 0; i != scene_num_triggers + 1; i++)
   {
     triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, ptr);
-    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, ptr+1);
-    triggers[i].w = 0;    
-    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, ptr+2);
-    triggers[i].h = 0;    
-    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, ptr+3);
+    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
+    triggers[i].w = 0;
+    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
+    triggers[i].h = 0;
+    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, ptr + 3);
     // @todo 5th byte is type of trigger
     triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
     triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 0xFFu) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
@@ -218,7 +218,7 @@ void SceneUpdate_b()
   }
 
   SceneUpdateCamera_b();
-  SceneRender(); 
+  SceneRender();
 }
 
 void SceneUpdateCamera_b()
@@ -272,7 +272,6 @@ void SceneUpdateCamera_b()
     camera_settings &= ~CAMERA_TRANSITION_FLAG; // Remove transition flag
   }
 }
-
 
 void SceneUpdateActors_b()
 {
@@ -389,7 +388,7 @@ void SceneUpdateActors_b()
     {
       actors[i].pos.x += actors[i].dir.x;
       actors[i].pos.y += actors[i].dir.y;
-    }    
+    }
   }
 }
 
@@ -466,7 +465,7 @@ void SceneHandleTriggers_b()
 
       trigger =
           SceneTriggerAt_b(DIV_8(actors[0].pos.x),
-                         trigger_tile_offset + DIV_8(actors[0].pos.y));
+                           trigger_tile_offset + DIV_8(actors[0].pos.y));
       if (trigger != scene_num_triggers)
       {
         actors[0].moving = FALSE;
@@ -652,7 +651,8 @@ void SceneRenderActors_b()
         frame += 2 + MUL_2(actors[i].animated);
 
         // Facing left so flip sprite
-        if (actors[i].dir.x < 0) {
+        if (actors[i].dir.x < 0)
+        {
           flip = TRUE;
         }
       }
@@ -681,7 +681,7 @@ void SceneRenderActors_b()
     screen_y = actors[i].pos.y - SCY_REG;
 
     // If sprite not under menu position it, otherwise hide
-    // @todo This function probably shouldn't know about the menu, maybe 
+    // @todo This function probably shouldn't know about the menu, maybe
     // keep a max_sprite_screen_y value and check against that?
     if (actors[i].enabled && (screen_y < menu_y + 16 || menu_y == MENU_CLOSED_Y))
     {
@@ -691,7 +691,7 @@ void SceneRenderActors_b()
     else
     {
       hide_sprite(sprite_index);
-      hide_sprite(sprite_index+1);
+      hide_sprite(sprite_index + 1);
     }
   }
 }
@@ -712,8 +712,9 @@ void SceneRenderEmotionBubble_b()
       // Hide the bubble sprites
       hide_sprite(BUBBLE_SPRITE_LEFT);
       hide_sprite(BUBBLE_SPRITE_RIGHT);
-
-    } else {
+    }
+    else
+    {
 
       // Set x and y above actor displaying emotion
       screen_x = actors[emotion_actor].pos.x - SCX_REG;
@@ -742,7 +743,6 @@ void SceneRenderEmotionBubble_b()
 ////////////////////////////////////////////////////////////////////////////////
 #pragma region helpers
 
-
 UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
@@ -763,8 +763,6 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 
   return scene_num_actors;
 }
-
-
 
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 {
@@ -790,6 +788,5 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
   return scene_num_triggers;
 }
-
 
 #pragma endregion
