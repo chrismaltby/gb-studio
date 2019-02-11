@@ -199,12 +199,20 @@ export default function project(state = initialState.project, action) {
             return map;
           }
 
-          let collisions = [];
-          const length = image.width * image.height;
-          for (let i = 0; i < length; i++) {
-            collisions[i] =
-              map.collisions[i] || i === action.x + action.y * image.width;
+          let collisionsSize = Math.ceil((image.width * image.height) / 8);
+          const collisions = map.collisions.slice(0, collisionsSize);
+
+          if (collisions.length < collisionsSize) {
+            for (let i = collisions.length; i < collisionsSize; i++) {
+              collisions[i] = 0;
+            }
           }
+
+          const collisionIndex = image.width * action.y + action.x;
+          const collisionByteIndex = collisionIndex >> 3;
+          const collisionByteOffset = collisionIndex & 7;
+          const collisionByteMask = 1 << collisionByteOffset;
+          collisions[collisionByteIndex] |= collisionByteMask;
 
           return {
             ...map,
@@ -227,12 +235,20 @@ export default function project(state = initialState.project, action) {
             return map;
           }
 
-          let collisions = [];
-          const length = image.width * image.height;
-          for (let i = 0; i < length; i++) {
-            collisions[i] =
-              i !== action.x + action.y * image.width && map.collisions[i];
+          let collisionsSize = Math.ceil((image.width * image.height) / 8);
+          const collisions = map.collisions.slice(0, collisionsSize);
+
+          if (collisions.length < collisionsSize) {
+            for (let i = collisions.length; i < collisionsSize; i++) {
+              collisions[i] = 0;
+            }
           }
+
+          const collisionIndex = image.width * action.y + action.x;
+          const collisionByteIndex = collisionIndex >> 3;
+          const collisionByteOffset = collisionIndex & 7;
+          const collisionByteMask = 1 << collisionByteOffset;
+          collisions[collisionByteIndex] &= ~collisionByteMask;
 
           return {
             ...map,

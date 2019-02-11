@@ -4,6 +4,7 @@ import cx from "classnames";
 import * as actions from "../actions";
 import getCoords from "../lib/getCoords";
 import Actor from "./Actor";
+import MapCollisions from "./MapCollisions";
 
 class Map extends Component {
   constructor() {
@@ -99,7 +100,12 @@ class Map extends Component {
     } else if (tool === "actor") {
       this.props.addActor(id, hoverX, hoverY);
     } else if (tool === "collisions") {
-      if (map.collisions[hoverX + hoverY * width]) {
+      const collisionIndex = width * hoverY + hoverX;
+      const collisionByteIndex = collisionIndex >> 3;
+      const collisionByteOffset = collisionIndex & 7;
+      const collisionByteMask = 1 << collisionByteOffset;
+
+      if (map.collisions[collisionByteIndex] & collisionByteMask) {
         this.props.removeCollisionTile(id, hoverX, hoverY);
         this.remove = true;
       } else {
@@ -255,6 +261,13 @@ class Map extends Component {
               }}
             />
           ))}
+          {showCollisions && (
+            <MapCollisions
+              width={width}
+              height={height}
+              collisions={collisions}
+            />
+          )}
           {false &&
             showCollisions &&
             collisions.map((collision, index) =>

@@ -21,7 +21,7 @@ export default {
     index: 0
   },
   navigation: {
-    section: "build",
+    section: "world",
     status: {}
   },
   console: {
