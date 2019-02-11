@@ -26,5 +26,17 @@
 #define DIV_2(a)    ((a)>>1)
 
 #define hide_sprite(a)    (move_sprite((a), 0, 0))
+#define hide_sprite_pair(a) ({\
+  move_sprite((a), 0, 0);\
+  move_sprite((a)+1, 0, 0);\
+}) 
+#define set_sprite_tile_pair(a, t1, t2) ({\
+  set_sprite_tile((a), (t1));\
+  set_sprite_tile((a) + 1, (t2));\
+})
+#define set_sprite_prop_pair(a, prop) ({\
+  set_sprite_prop((a), (prop));\
+  set_sprite_prop((a) + 1, (prop));\
+})
 
 #endif

@@ -511,8 +511,7 @@ void SceneUpdateEmotionBubble_b()
       emotion_timer = 0;
 
       // Hide the bubble sprites
-      hide_sprite(BUBBLE_SPRITE_LEFT);
-      hide_sprite(BUBBLE_SPRITE_RIGHT);
+      hide_sprite_pair(BUBBLE_SPRITE_LEFT);
     }
     else
     {
@@ -697,17 +696,13 @@ void SceneRenderActors_b()
       // Handle facing left
       if (flip)
       {
-        set_sprite_prop(sprite_index, S_FLIPX);
-        set_sprite_prop(sprite_index + 1, S_FLIPX);
-        set_sprite_tile(sprite_index, MUL_4(frame) + 2);
-        set_sprite_tile(sprite_index + 1, MUL_4(frame));
+        set_sprite_prop_pair(sprite_index, S_FLIPX);
+        set_sprite_tile_pair(sprite_index, MUL_4(frame) + 2, MUL_4(frame));
       }
       else
       {
-        set_sprite_prop(sprite_index, 0x0);
-        set_sprite_prop(sprite_index + 1, 0x0);
-        set_sprite_tile(sprite_index, MUL_4(frame));
-        set_sprite_tile(sprite_index + 1, MUL_4(frame) + 2);
+        set_sprite_prop_pair(sprite_index, 0x0);
+        set_sprite_tile_pair(sprite_index, MUL_4(frame), MUL_4(frame) + 2);
       }
 
       actors[i].redraw = FALSE;
@@ -816,11 +811,9 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
 void SceneSetEmotion_b(UBYTE actor, UBYTE type)
 {
-  hide_sprite(BUBBLE_SPRITE_LEFT);
-  hide_sprite(BUBBLE_SPRITE_RIGHT);
+  hide_sprite_pair(BUBBLE_SPRITE_LEFT);
   SetBankedSpriteData(3, 124, 4, emotion_sprites + (type * 64));
-  set_sprite_tile(BUBBLE_SPRITE_LEFT, 124);
-  set_sprite_tile(BUBBLE_SPRITE_RIGHT, 126);
+  set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
   emotion_timer = 1;
   emotion_actor = actor;
 }
