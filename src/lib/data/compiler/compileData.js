@@ -126,7 +126,7 @@ const compile = async (
         compileTriggers(scene.triggers, {
           eventPtrs: eventPtrs[sceneIndex].triggers
         }),
-        scene.collisions.slice(0, (32 * 32) / 8)
+        scene.collisions.slice(0, Math.ceil((scene.width * scene.height) / 8))
       )
     );
   });
