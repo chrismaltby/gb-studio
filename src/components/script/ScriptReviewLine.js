@@ -4,7 +4,10 @@ import { Textarea } from "../library/Forms";
 const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
   <div>
     <p style={{ color: "#999" }}>
-      {scriptLine.actor.name} — {scriptLine.scene.name}{" "}
+      {scriptLine.actor.name
+        ? scriptLine.actor.name
+        : "Actor " + (scriptLine.actorIndex + 1)}{" "}
+      — {scriptLine.scene.name}{" "}
       {scriptLine.line.args.text
         .split("\n")
         .map((line, index) => line.length + "/18")
