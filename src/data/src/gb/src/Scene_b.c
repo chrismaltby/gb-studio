@@ -42,11 +42,14 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
 void SceneUpdateCamera_b();
+void SceneUpdateCameraShake_b();
+void SceneUpdateEmotionBubble_b();
 void SceneHandleTriggers_b();
 void SceneRenderActors_b();
 void SceneRenderEmotionBubble_b();
 void SceneRenderCameraShake_b();
 void MapUpdateActorMovement_b(UBYTE i);
+void SceneSetEmotion_b(UBYTE actor, UBYTE type);
 
 #pragma endregion
 
@@ -199,6 +202,8 @@ void SceneUpdate_b()
   SceneHandleInput();
   SceneUpdateActors_b();
   SceneHandleTriggers_b();
+  SceneUpdateEmotionBubble_b();
+  SceneUpdateCameraShake_b();
 
   // Handle Wait
   if (wait_time != 0)
@@ -218,6 +223,7 @@ void SceneUpdate_b()
   }
 
   SceneUpdateCamera_b();
+
   SceneRender();
 }
 
@@ -480,6 +486,42 @@ void SceneHandleTriggers_b()
   }
 }
 
+void SceneUpdateCameraShake_b()
+{
+  // Handle Shake
+  if (shake_time != 0)
+  {
+    shake_time--;
+    if (shake_time == 0)
+    {
+      script_action_complete = TRUE;
+    }
+  }
+}
+
+void SceneUpdateEmotionBubble_b()
+{
+  // If should be showing emotion bubble
+  if (emotion_timer != 0)
+  {
+    // If reached end of timer
+    if (emotion_timer == BUBBLE_TOTAL_FRAMES)
+    {
+      // Reset the timer
+      emotion_timer = 0;
+
+      // Hide the bubble sprites
+      hide_sprite(BUBBLE_SPRITE_LEFT);
+      hide_sprite(BUBBLE_SPRITE_RIGHT);
+    }
+    else
+    {
+      // Inc timer
+      emotion_timer++;
+    }
+  }
+}
+
 #pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -606,12 +648,7 @@ void SceneRenderCameraShake_b()
   // Handle Shake
   if (shake_time != 0)
   {
-    shake_time--;
     SCX_REG += shake_time & 0x5;
-    if (shake_time == 0)
-    {
-      script_action_complete = TRUE;
-    }
   }
 }
 
@@ -701,19 +738,10 @@ void SceneRenderEmotionBubble_b()
   UBYTE screen_x, screen_y;
 
   // If should be showing emotion bubble
-  if (emotion_timer > 0)
+  if (emotion_timer != 0)
   {
     // If reached end of timer
-    if (emotion_timer > BUBBLE_TOTAL_FRAMES)
-    {
-      // Reset the timer
-      emotion_timer = 0;
-
-      // Hide the bubble sprites
-      hide_sprite(BUBBLE_SPRITE_LEFT);
-      hide_sprite(BUBBLE_SPRITE_RIGHT);
-    }
-    else
+    if (emotion_timer != BUBBLE_TOTAL_FRAMES)
     {
 
       // Set x and y above actor displaying emotion
@@ -729,9 +757,6 @@ void SceneRenderEmotionBubble_b()
       // Reposition sprites (left and right)
       move_sprite(BUBBLE_SPRITE_LEFT, screen_x, screen_y);
       move_sprite(BUBBLE_SPRITE_RIGHT, screen_x + ACTOR_HALF_WIDTH, screen_y);
-
-      // Inc timer
-      emotion_timer++;
     }
   }
 }
@@ -787,6 +812,17 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
   }
 
   return scene_num_triggers;
+}
+
+void SceneSetEmotion_b(UBYTE actor, UBYTE type)
+{
+  hide_sprite(BUBBLE_SPRITE_LEFT);
+  hide_sprite(BUBBLE_SPRITE_RIGHT);
+  SetBankedSpriteData(3, 124, 4, emotion_sprites + (type * 64));
+  set_sprite_tile(BUBBLE_SPRITE_LEFT, 124);
+  set_sprite_tile(BUBBLE_SPRITE_RIGHT, 126);
+  emotion_timer = 1;
+  emotion_actor = actor;
 }
 
 #pragma endregion
