@@ -18,12 +18,8 @@ UBYTE running = TRUE;
 UBYTE joy;
 UBYTE prev_joy;
 UBYTE time;
-ACTOR actors[MAX_ACTORS];
-TRIGGER triggers[MAX_TRIGGERS];
 
 UWORD map_index = 0;
-UBYTE map_actor_num = 5;
-UBYTE map_trigger_num = 0;
 
 POS camera_dest;
 UBYTE camera_settings = CAMERA_LOCK_FLAG;

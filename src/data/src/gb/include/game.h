@@ -41,8 +41,6 @@
 #define IS_FRAME_4 ((time & 0x3)==0)
 #define IS_FRAME_2 ((time & 0x1)==0)
 
-
-
 typedef enum {
   TITLE = 1,
   LOGO,
@@ -139,8 +137,7 @@ UBYTE ScriptLastFnComplete();
 typedef void (*SCRIPT_CMD_FN) ();
 
 // Globals
-extern ACTOR actors[MAX_ACTORS];
-extern TRIGGER triggers[MAX_TRIGGERS];
+
 extern UWORD script_ptr;
 extern UWORD script_last_ptr;
 extern UBYTE script_arg1;
@@ -190,11 +187,7 @@ extern const unsigned char btl_black[];
 
 // ----
 
-extern UBYTE map_width;
-extern UBYTE map_height;
 extern UWORD map_index;
-extern UBYTE map_actor_num;
-extern UBYTE map_trigger_num;
 extern const unsigned char *map;
 extern const unsigned char *map_col;
 
