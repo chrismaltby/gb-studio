@@ -175,15 +175,6 @@ void game_loop()
     return;
   }
 
-  UpdateFn();
-
-
-  // Move to map update?
-  run_script();
-
-  // Handle Fade
-  FadeUpdate();
-
   // Handle stage switch
   if (stage_type != stage_next_type && !IsFading()) {
 
@@ -217,6 +208,13 @@ void game_loop()
     }
   }
 
+  UpdateFn();
+
+  // Move to map update?
+  run_script();
+
+  // Handle Fade
+  FadeUpdate();
 
   prev_joy = joy;
   time++;
