@@ -58,7 +58,7 @@ class OverviewPage extends Component {
             }}
             onClick={this.setSection("world")}
           >
-            Build your world
+            Create Your World
           </div>
           <div
             style={{
@@ -81,7 +81,30 @@ class OverviewPage extends Component {
             }}
             onClick={this.setSection("sprites")}
           >
-            Manage sprites
+            Manage Sprites
+          </div>
+          <div
+            style={{
+              float: "left",
+              background: "#ccc",
+              width: 200,
+              height: 150,
+              marginRight: 20,
+              marginBottom: 20,
+              borderRadius: 4,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: " center",
+              fontSize: 13,
+              background:
+                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
+              border: "1px solid #dfdede",
+              boxShadow: "0px 1px #c5c5c5",
+              padding: "0px 8px"
+            }}
+            onClick={this.setSection("backgrounds")}
+          >
+            Manage Backgrounds
           </div>
           <div
             style={{
@@ -105,7 +128,31 @@ class OverviewPage extends Component {
             }}
             onClick={this.setSection("script")}
           >
-            Script review
+            Script Review
+          </div>
+          <div
+            style={{
+              float: "left",
+              background: "#ccc",
+              width: 200,
+              height: 150,
+              marginRight: 20,
+              marginBottom: 20,
+              borderRadius: 4,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: " center",
+
+              fontSize: 13,
+              background:
+                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
+              border: "1px solid #dfdede",
+              boxShadow: "0px 1px #c5c5c5",
+              padding: "0px 8px"
+            }}
+            onClick={this.setSection("build")}
+          >
+            Build &amp; Run
           </div>
         </div>
       </div>
@@ -120,7 +167,9 @@ function mapStateToProps(state) {
     numScenes:
       state.project && state.project.scenes && state.project.scenes.length,
     numSprites:
-      state.project && state.project.sprites && state.project.sprites.length
+      state.project &&
+      state.project.spriteSheets &&
+      state.project.spriteSheets.length
   };
 }
 

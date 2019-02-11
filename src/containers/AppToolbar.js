@@ -24,7 +24,7 @@ const sectionNames = {
   world: "Game World",
   sprites: "Sprites",
   backgrounds: "Backgrounds",
-  tiles: "Tiles",
+  // tiles: "Tiles",
   script: "Script Review",
   build: "Build & Run"
 };
