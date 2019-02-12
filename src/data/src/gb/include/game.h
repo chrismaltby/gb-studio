@@ -159,7 +159,6 @@ extern POS actor_move_dest;
 extern SCRIPT_CMD_FN last_fn;
 extern UBYTE time;
 extern VEC2D update_actor_dir;
-extern UBYTE first_frame_on_tile;
 extern UBYTE menu_y;
 extern UBYTE menu_dest_y;
 extern UBYTE joy;

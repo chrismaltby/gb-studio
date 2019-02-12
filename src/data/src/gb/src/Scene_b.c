@@ -193,7 +193,6 @@ void SceneInit_b()
   }
 
   // Reset vars
-  first_frame_on_tile = FALSE;
   camera_settings = CAMERA_LOCK_FLAG;
 
   SceneUpdateCamera_b();
@@ -465,30 +464,26 @@ void SceneHandleTriggers_b()
 {
   UBYTE trigger, trigger_tile_offset;
 
-  if (((actors[0].pos.x & 7) == 0) && (((actors[0].pos.y & 7) == 0) || actors[0].pos.y == 254))
+  if (ACTOR_ON_TILE(0) || actors[0].pos.y == 254)
+  // if (((actors[0].pos.x & 7) == 0) && (((actors[0].pos.y & 7) == 0) || actors[0].pos.y == 254))
   {
-
-    if (!first_frame_on_tile)
+    if (actors[0].moving)
     {
-
       // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
       trigger_tile_offset = actors[0].pos.y == 254;
-      first_frame_on_tile = TRUE;
 
       trigger =
           SceneTriggerAt_b(DIV_8(actors[0].pos.x),
                            trigger_tile_offset + DIV_8(actors[0].pos.y));
+
       if (trigger != scene_num_triggers)
       {
+        LOG("ON TRIGGER\n");
         actors[0].moving = FALSE;
         script_actor = 0;
         script_ptr = triggers[trigger].script_ptr;
       }
     }
-  }
-  else
-  {
-    first_frame_on_tile = FALSE;
   }
 }
 

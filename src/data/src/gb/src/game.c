@@ -28,7 +28,6 @@ UBYTE shake_time = 0;
 UBYTE actor_move_settings;
 POS actor_move_dest;
 VEC2D update_actor_dir;
-UBYTE first_frame_on_tile = FALSE;
 STAGE_TYPE stage_type;
 STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN) ();
