@@ -11,7 +11,6 @@ extern POS map_next_pos;
 extern VEC2D map_next_dir;
 extern ACTOR actors[MAX_ACTORS];
 extern TRIGGER triggers[MAX_TRIGGERS];
-extern UBYTE scene_col_tiles[128];
 
 #define ACTOR_HEIGHT 16
 #define ACTOR_WIDTH 16

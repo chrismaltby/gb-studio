@@ -28,6 +28,7 @@ UBYTE emotion_type = 1;
 UBYTE emotion_timer = 0;
 UBYTE emotion_actor = 1;
 const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+UBYTE scene_col_tiles[128] = {0};
 
 #pragma endregion
 
@@ -151,17 +152,17 @@ void SceneInit_b()
   col_bank_ptr.offset = bank_ptr.offset;
 
   // ReadBankedUBYTEArray(bank_ptr.bank, &scene_col_tiles, ptr, 70);
-  for (i = 0; i != 72; i++)
-  {
-    j = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-    *(scene_col_tiles + i) = j;
-    // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
-    // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
-    // LOG("FOUND BYTE %u\n", j);
-    // scene_col_tiles[i] = 0;
-    // scene_col_tiles[i] = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-    col_ptr++;
-  }
+  // for (i = 0; i != 72; i++)
+  // {
+  //   j = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
+  //   *(scene_col_tiles + i) = j;
+  //   // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
+  //   // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
+  //   // LOG("FOUND BYTE %u\n", j);
+  //   // scene_col_tiles[i] = 0;
+  //   // scene_col_tiles[i] = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
+  //   col_ptr++;
+  // }
 
   // Load Player Sprite
   SetBankedSpriteData(3, 0, 24, village_sprites);
@@ -184,6 +185,19 @@ void SceneInit_b()
   collision_tiles_len = (scene_width * scene_height + (8 - 1)) >> 3;
   // collision_tiles_len = (scene_width * scene_height)>>3;
   // collision_tiles_len = (scene_width)>>3;
+
+  for (i = 0; i != collision_tiles_len; i++)
+  {
+    // j = ReadBankedUBYTE(col_bank_ptr.bank, col_ptr);
+    // *(scene_col_tiles + i) = j;
+
+    // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
+    // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
+    // LOG("FOUND BYTE %u\n", j);
+    // scene_col_tiles[i] = 0;
+    scene_col_tiles[i] = ReadBankedUBYTE(col_bank_ptr.bank, col_ptr);
+    col_ptr++;
+  }
 
   // Load collisions
   // for (i = 0; i != 128; i++)
