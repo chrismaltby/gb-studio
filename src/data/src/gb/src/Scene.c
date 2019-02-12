@@ -10,6 +10,7 @@ VEC2D map_next_dir;
 
 ACTOR actors[MAX_ACTORS];
 TRIGGER triggers[MAX_TRIGGERS];
+UBYTE scene_col_tiles[128] = {0};
 
 void SceneInit()
 {

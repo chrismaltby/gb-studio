@@ -37,9 +37,18 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr)
 {
   UBYTE value;
   PUSH_BANK(bank);
-  value = *(UBYTE *) ptr;
+  value = *(UBYTE *)ptr;
   POP_BANK;
   return value;
+}
+
+void ReadBankedUBYTEArray(UBYTE bank, unsigned char *out, unsigned char *ptr, UBYTE size)
+{
+  PUSH_BANK(bank);
+
+  memcpy(&out, ptr, size);
+
+  POP_BANK;
 }
 
 UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr)
@@ -47,9 +56,9 @@ UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr)
   UWORD value;
   UBYTE hi, lo;
   PUSH_BANK(bank);
-  hi = *(UBYTE *) ptr;
-  lo = *(UBYTE *) (ptr+1);
-  value = (hi*0xFFu) + lo;
+  hi = *(UBYTE *)ptr;
+  lo = *(UBYTE *)(ptr + 1);
+  value = (hi * 0xFFu) + lo;
   POP_BANK;
   return value;
 }
@@ -78,5 +87,4 @@ void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from)
   POP_BANK;
 
   memcpy(to, &bank_ptr, sizeof(BANK_PTR));
-
 }
