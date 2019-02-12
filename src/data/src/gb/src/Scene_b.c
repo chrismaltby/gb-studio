@@ -189,8 +189,7 @@ void SceneInit_b()
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
   {
-    hide_sprite(MUL_2(i));
-    hide_sprite(MUL_2(i) + 1);
+    hide_sprite_pair(MUL_2(i));
   }
 
   // Reset vars
@@ -724,13 +723,11 @@ void SceneRenderActors_b()
     // keep a max_sprite_screen_y value and check against that?
     if (actors[i].enabled && (screen_y < menu_y + 16 || menu_y == MENU_CLOSED_Y))
     {
-      move_sprite(sprite_index, screen_x, screen_y);
-      move_sprite(sprite_index + 1, screen_x + ACTOR_HALF_WIDTH, screen_y);
+      move_sprite_pair(sprite_index, screen_x, screen_y);
     }
     else
     {
-      hide_sprite(sprite_index);
-      hide_sprite(sprite_index + 1);
+      hide_sprite_pair(sprite_index);
     }
   }
 }
@@ -757,8 +754,7 @@ void SceneRenderEmotionBubble_b()
       }
 
       // Reposition sprites (left and right)
-      move_sprite(BUBBLE_SPRITE_LEFT, screen_x, screen_y);
-      move_sprite(BUBBLE_SPRITE_RIGHT, screen_x + ACTOR_HALF_WIDTH, screen_y);
+      move_sprite_pair(BUBBLE_SPRITE_LEFT, screen_x, screen_y);
     }
   }
 }
