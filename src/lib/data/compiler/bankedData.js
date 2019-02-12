@@ -6,7 +6,7 @@ import {
 const BANKED_DATA_NOT_ARRAY = "BANKED_DATA_NOT_ARRAY";
 const BANKED_DATA_TOO_LARGE = "BANKED_DATA_TOO_LARGE";
 const BANKED_COUNT_OVERFLOW = "BANKED_COUNT_OVERFLOW";
-const GB_MAX_BANK_SIZE = 16394; // Calculated by adding bytes until address overflow
+const GB_MAX_BANK_SIZE = 16384; // Calculated by adding bytes until address overflow
 const MIN_DATA_BANK = 16; // First 16 banks are reserved by game engine
 const MAX_BANKS = 512; // GBDK supports max of 512 banks
 
