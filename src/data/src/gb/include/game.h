@@ -36,12 +36,13 @@
 #define FADE_IN_FLAG 0x40
 #define FADE_ENABLED_FLAG 0x80
 
-#define IS_FRAME_16 ((time & 0xF)==0)
-#define IS_FRAME_8 ((time & 0x7)==0)
-#define IS_FRAME_4 ((time & 0x3)==0)
-#define IS_FRAME_2 ((time & 0x1)==0)
+#define IS_FRAME_16 ((time & 0xF) == 0)
+#define IS_FRAME_8 ((time & 0x7) == 0)
+#define IS_FRAME_4 ((time & 0x3) == 0)
+#define IS_FRAME_2 ((time & 0x1) == 0)
 
-typedef enum {
+typedef enum
+{
   TITLE = 1,
   LOGO,
   MAP,
@@ -50,7 +51,8 @@ typedef enum {
   PONG
 } STAGE_TYPE;
 
-typedef enum {
+typedef enum
+{
   NONE = 1,
   PLAYER_INPUT,
   AI_RANDOM_FACE,
@@ -58,22 +60,26 @@ typedef enum {
   AI_RANDOM_WALK,
 } MOVEMENT_TYPE;
 
-typedef struct _POS {
+typedef struct _POS
+{
   UBYTE x;
   UBYTE y;
 } POS;
 
-typedef struct _SIZE {
+typedef struct _SIZE
+{
   UBYTE w;
   UBYTE h;
 } SIZE;
 
-typedef struct _VEC2D {
+typedef struct _VEC2D
+{
   BYTE x;
   BYTE y;
 } VEC2D;
 
-typedef struct _ACTORSPRITE {
+typedef struct _ACTORSPRITE
+{
   UBYTE sprite;
   POS pos;
   VEC2D dir;
@@ -87,7 +93,8 @@ typedef struct _ACTORSPRITE {
 
 } ACTOR;
 
-typedef struct _TRIGGER {
+typedef struct _TRIGGER
+{
   POS pos;
   UBYTE w;
   UBYTE h;
@@ -134,7 +141,7 @@ void update_actor_movement(UBYTE i);
 void load_map();
 UBYTE ScriptLastFnComplete();
 
-typedef void (*SCRIPT_CMD_FN) ();
+typedef void (*SCRIPT_CMD_FN)();
 
 // Globals
 
