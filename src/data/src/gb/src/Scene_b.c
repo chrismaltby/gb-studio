@@ -62,10 +62,10 @@ void SceneSetEmotion_b(UBYTE actor, UBYTE type);
 void SceneInit_b()
 {
   UWORD scene_index, image_index;
-  BANK_PTR bank_ptr, sprite_bank_ptr, col_bank_ptr;
+  BANK_PTR bank_ptr, sprite_bank_ptr;
   UWORD ptr, sprite_ptr, col_ptr;
   UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
-  UBYTE k, j, sprite_len, collision_tiles_len;
+  UBYTE k, j, sprite_len, collision_tiles_len, col_bank;
 
   DISPLAY_OFF;
 
@@ -147,22 +147,9 @@ void SceneInit_b()
     ptr = ptr + 8u;
   }
 
+  // Store pointer to collisions for later
   col_ptr = ptr - 8u;
-  col_bank_ptr.bank = bank_ptr.bank;
-  col_bank_ptr.offset = bank_ptr.offset;
-
-  // ReadBankedUBYTEArray(bank_ptr.bank, &scene_col_tiles, ptr, 70);
-  // for (i = 0; i != 72; i++)
-  // {
-  //   j = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-  //   *(scene_col_tiles + i) = j;
-  //   // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
-  //   // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
-  //   // LOG("FOUND BYTE %u\n", j);
-  //   // scene_col_tiles[i] = 0;
-  //   // scene_col_tiles[i] = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-  //   col_ptr++;
-  // }
+  col_bank = bank_ptr.bank;
 
   // Load Player Sprite
   SetBankedSpriteData(3, 0, 24, village_sprites);
@@ -183,45 +170,11 @@ void SceneInit_b()
 
   // Load collisions ( bitwise ceil by adding the divisor minus one to the dividend )
   collision_tiles_len = (scene_width * scene_height + (8 - 1)) >> 3;
-  // collision_tiles_len = (scene_width * scene_height)>>3;
-  // collision_tiles_len = (scene_width)>>3;
-
   for (i = 0; i != collision_tiles_len; i++)
   {
-    // j = ReadBankedUBYTE(col_bank_ptr.bank, col_ptr);
-    // *(scene_col_tiles + i) = j;
-
-    // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
-    // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
-    // LOG("FOUND BYTE %u\n", j);
-    // scene_col_tiles[i] = 0;
-    scene_col_tiles[i] = ReadBankedUBYTE(col_bank_ptr.bank, col_ptr);
+    scene_col_tiles[i] = ReadBankedUBYTE(col_bank, col_ptr);
     col_ptr++;
   }
-
-  // Load collisions
-  // for (i = 0; i != 128; i++)
-  // for (i = 0; i != 33; i++)
-  // {
-  //   scene_col_tiles[i] = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-  //   col_ptr++;
-  //   // LOG("LOAD COLS %u = %u\n", i, scene_col_tiles[i]);
-  // }
-
-  // ReadBankedUBYTEArray(col_bank_ptr.bank, &scene_col_tiles, col_ptr, collision_tiles_len);
-  // for (i = 0; i != collision_tiles_len; i++)
-  // {
-  //   j = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-  //   *(scene_col_tiles + i) = j;
-  //   // LOG("scene_col_tiles[%u] = %u\n", i, scene_col_tiles[i]);
-  //   // j = ReadBankedUBYTE(bank_ptr.bank, col_ptr + i);
-  //   // LOG("FOUND BYTE %u\n", j);
-  //   // scene_col_tiles[i] = 0;
-  //   // scene_col_tiles[i] = ReadBankedUBYTE(bank_ptr.bank, col_ptr);
-  //   col_ptr++;
-  // }
-
-  // scene_col_tiles[0] = 51;
 
   LOG("COL TILES LEN = %u\n", collision_tiles_len);
 
@@ -493,62 +446,19 @@ void MapUpdateActorMovement_b(UBYTE i)
       actors[i].moving = FALSE;
     }
 
+    // Check collisions on left tile
     collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1);
-    // col_tile = collision_index & 0xFF;
-
-    // LOG("CHECK TILE %u %u == %u -- %u|| %u\n", collision_index, col_tile, (col_tile & 7), (1 << (col_tile & 7)), scene_col_tiles[collision_index >> 3]);
-    // const wasCollision =
-    // scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7));
-
-    // Left tile
-    // tile = ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width);
-    // tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-    // col_tile = ((scene_width * (next_ty - 1)) + (next_tx - 1)) / 8;
-
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-    // if (scene_col_tiles[col_tile])
     {
       actors[i].moving = FALSE;
     }
 
-    // Right tile
+    // Check collisions on right tile
     collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-    // col_tile = (scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-
-    // tile =
-    // ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width + 1);
-    // tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-    // if (tile_index_data)
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
     }
-
-    /*
-    // Collision detection
-    if (map_col)
-    {
-      // Left tile
-      tile = ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width);
-      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      if (tile_index_data)
-      {
-        actors[i].moving = FALSE;
-      }
-      // Right tile
-      tile =
-          ((UWORD)map_col) + ((next_tx - 1) + (next_ty - 1) * scene_width + 1);
-      tile_index_data = ReadBankedUBYTE(map_banks[map_index], tile);
-
-      if (tile_index_data)
-      {
-        actors[i].moving = FALSE;
-      }
-    }
-    */
   }
 }
 
