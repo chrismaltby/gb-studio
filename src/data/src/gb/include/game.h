@@ -11,30 +11,10 @@
 #include "script_cmds.h"
 #include "data_ptrs.h"
 
-#define MAX_ACTORS 9
-#define MAX_TRIGGERS 8
-
 #define SCREEN_WIDTH 160
 #define SCREEN_HEIGHT 144
 #define SCREEN_WIDTH_HALF 80
 #define SCREEN_HEIGHT_HALF 72
-#define MENU_OPEN_Y 112
-#define MENU_CLOSED_Y (MAXWNDPOSY + 1)
-
-#define CAMERA_SPEED_MASK 0xF
-#define CAMERA_SPEED_1 0x0F
-#define CAMERA_SPEED_2 0x07
-#define CAMERA_SPEED_3 0x03
-#define CAMERA_SPEED_4 0x01
-#define CAMERA_SPEED_5 0x00
-#define CAMERA_LOCK_FLAG 0x10
-#define CAMERA_TRANSITION_FLAG 0x20
-
-#define ACTOR_MOVE_ENABLED 0x80
-
-#define FADE_SPEED_MASK 0x3F
-#define FADE_IN_FLAG 0x40
-#define FADE_ENABLED_FLAG 0x80
 
 typedef enum
 {
@@ -82,7 +62,6 @@ typedef struct _ACTORSPRITE
   UWORD script_ptr;
   BANK_PTR events_ptr;
   MOVEMENT_TYPE movement_type;
-
 } ACTOR;
 
 typedef struct _TRIGGER
@@ -96,34 +75,7 @@ typedef struct _TRIGGER
 
 void game_loop();
 void game_over();
-void init_sprites();
 
-void shoot();
-
-void update_sprites();
-void update_bullets();
-void update_enemies();
-void spawn_enemy();
-
-void hide_sprite(UBYTE i);
-
-UBYTE is_collision(POS *a, POS *b, UBYTE size);
-
-void position_player();
-void position_enemies();
-void position_bullets();
-
-void handle_input();
-void update_actors();
-void move_actors();
-
-void position_camera();
-void position_actors();
-
-void handle_wait();
-void reposition_camera();
-UBYTE npc_at(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
-UBYTE trigger_at(UBYTE tx_a, UBYTE ty_a);
 void draw_ui_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void update_window();
 void set_text_line(UWORD line);
@@ -171,16 +123,6 @@ extern const unsigned char global_tileset[];
 extern const unsigned char village_sprites[];
 extern const unsigned char *map_sprites[];
 extern const unsigned char map_sprites_len[];
-
-extern const unsigned char btl_monster[];
-extern const unsigned char btl_cursor[];
-extern const unsigned char btl_menu_cursor[];
-extern const unsigned char btl_player1[];
-extern const unsigned char btl_player2[];
-extern const unsigned char btl_tiles[];
-extern const unsigned char btl_bg[];
-extern const unsigned char btl_stage[];
-extern const unsigned char btl_black[];
 
 // ----
 
