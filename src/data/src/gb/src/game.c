@@ -1,25 +1,14 @@
 #include "game.h"
-// #include "gbt_player.h"
 #include "UI.h"
 #include "Logo.h"
 #include "Title.h"
-#include "Pong.h"
 #include "Scene.h"
 #include "FadeManager.h"
 #include "data_ptrs.h"
 
-extern const unsigned char *song_mymod3_Data[];
-extern const unsigned char *song_tetris_Data[];
-extern const unsigned char *song_effects_Data[];
-// extern const unsigned char * song_instr_Data[];
-extern const unsigned char *song_instrcm_Data[];
-
-UBYTE running = TRUE;
 UBYTE joy;
 UBYTE prev_joy;
 UBYTE time;
-
-UWORD map_index = 0;
 
 POS camera_dest;
 UBYTE camera_settings = CAMERA_LOCK_FLAG;
@@ -27,7 +16,6 @@ UBYTE wait_time = 0;
 UBYTE shake_time = 0;
 UBYTE actor_move_settings;
 POS actor_move_dest;
-VEC2D update_actor_dir;
 STAGE_TYPE stage_type;
 STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN)();
@@ -72,14 +60,8 @@ SCRIPT_CMD_FN script_fns[] = {
     script_cmd_return_title, // 0x18
 };
 
-UBYTE bit_mask[] = {128, 64, 32, 16, 8, 4, 2, 1};
-
-// const unsigned char *map;
-// const unsigned char *map_col;
-
 int main()
 {
-  // UBYTE ptr_l, ptr_h;
   // Init LCD
   LCDC_REG = 0x67;
   set_interrupts(VBL_IFLAG | LCD_IFLAG);
@@ -90,14 +72,8 @@ int main()
   OBP0_REG = 0xD2U;
 
   // Position Window Layer
-  WX_REG = 7;
-  // WY_REG = MAXWNDPOSY - 7;
-  // WY_REG = MAXWNDPOSY + 1;
-
-  WY_REG = 96;
-
-  SWITCH_ROM_MBC1(3);
-  // set_sprite_data(0, 128, village_sprites);
+  WY_REG = MAXWNDPOSY - 7;
+  WY_REG = MAXWNDPOSY + 1;
 
   actors[0].sprite = 0;
   actors[0].redraw = TRUE;
@@ -111,8 +87,8 @@ int main()
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 
-  map_index = START_SCENE_INDEX;
-  map_next_index = START_SCENE_INDEX;
+  // scene_index = START_SCENE_INDEX;
+  // scene_next_index = START_SCENE_INDEX;
 
   scene_index = 12;
   scene_next_index = 12;
@@ -120,30 +96,11 @@ int main()
   UIInit();
 
   UpdateFn = SceneUpdate;
-  // UpdateFn = BattleUpdate;
-
-  // set_text_line(0);
 
   DISPLAY_ON;
   SHOW_SPRITES;
 
   FadeInit();
-
-  /*
-     if (map_index != 0) {
-     gbt_play(song_tetris_Data, 28, 7);
-     // gbt_play(song_effects_Data, 28, 7);   // Bank 28  
-     gbt_loop(1); 
-     } else {
-     // gbt_play(song_mymod3_Data, 2, 7);
-     // gbt_play(song_tetris_Data, 2, 7);
-     // gbt_play(song_effects_Data, 2, 7);
-     gbt_play(song_instrcm_Data, 28, 7);    // Bank 28
-     gbt_loop(1); 
-     }
-   */
-
-  running = TRUE;
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(game_loop, 60, 1);
@@ -169,11 +126,6 @@ void game_loop()
 
   joy = joypad();
 
-  if (!running)
-  {
-    return;
-  }
-
   // Handle stage switch
   if (stage_type != stage_next_type && !IsFading())
   {
@@ -184,7 +136,7 @@ void game_loop()
     }
 
     stage_type = stage_next_type;
-    map_index = map_next_index;
+    scene_index = scene_next_index;
 
     map_next_pos.x = actors[0].pos.x;
     map_next_pos.y = actors[0].pos.y;
@@ -196,11 +148,6 @@ void game_loop()
       SceneInit();
       UpdateFn = SceneUpdate;
     }
-    else if (stage_type == BATTLE)
-    {
-      PongInit();
-      UpdateFn = PongUpdate;
-    }
     else if (stage_type == LOGO)
     {
       LogoInit();
@@ -210,11 +157,6 @@ void game_loop()
     {
       TitleInit();
       UpdateFn = TitleUpdate;
-    }
-    else if (stage_type == PONG)
-    {
-      PongInit();
-      UpdateFn = PongUpdate;
     }
   }
 
@@ -228,8 +170,6 @@ void game_loop()
 
   prev_joy = joy;
   time++;
-
-  // gbt_update();
 }
 
 void run_script()
@@ -300,11 +240,6 @@ UBYTE ScriptLastFnComplete()
   }
 
   if (last_fn == script_load_map && !IsFading())
-  {
-    return TRUE;
-  }
-
-  if (last_fn == script_load_battle && stage_type != BATTLE && !IsFading())
   {
     return TRUE;
   }

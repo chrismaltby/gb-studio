@@ -45,4 +45,5 @@
 #define move_sprite_pair(a, x, y) \
   move_sprite((a), (x), (y));     \
   move_sprite((a) + 1, (x) + 8, (y))
+
 #endif

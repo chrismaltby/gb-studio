@@ -40,10 +40,7 @@ typedef enum
 {
   TITLE = 1,
   LOGO,
-  MAP,
-  BATTLE,
-  CUTSCENE,
-  PONG
+  MAP
 } STAGE_TYPE;
 
 typedef enum
@@ -160,7 +157,6 @@ extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
 extern SCRIPT_CMD_FN last_fn;
 extern UBYTE time;
-extern VEC2D update_actor_dir;
 extern UBYTE menu_y;
 extern UBYTE menu_dest_y;
 extern UBYTE joy;
@@ -187,10 +183,6 @@ extern const unsigned char btl_stage[];
 extern const unsigned char btl_black[];
 
 // ----
-
-extern UWORD map_index;
-extern const unsigned char *map;
-extern const unsigned char *map_col;
 
 extern const unsigned char emotion_sprites[];
 
