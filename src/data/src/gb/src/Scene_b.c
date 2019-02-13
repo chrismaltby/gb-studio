@@ -419,8 +419,7 @@ void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
     next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
     next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
-    LOG("NEXT tx=%u\n", next_tx);
-
+    // Check for npc collisions
     npc = SceneNpcAt_b(i, next_tx, next_ty);
     if (npc != scene_num_actors)
     {
@@ -429,8 +428,6 @@ void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
 
     // Check collisions on left tile
     collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1);
-    LOG("LEFT ci=%u\n", collision_index >> 3);
-
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
