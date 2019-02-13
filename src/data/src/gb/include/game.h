@@ -36,11 +36,6 @@
 #define FADE_IN_FLAG 0x40
 #define FADE_ENABLED_FLAG 0x80
 
-#define IS_FRAME_16 ((time & 0xF) == 0)
-#define IS_FRAME_8 ((time & 0x7) == 0)
-#define IS_FRAME_4 ((time & 0x3) == 0)
-#define IS_FRAME_2 ((time & 0x1) == 0)
-
 typedef enum
 {
   TITLE = 1,

@@ -30,6 +30,14 @@ UBYTE emotion_actor = 1;
 const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 UBYTE scene_col_tiles[128] = {0};
 
+const VEC2D dir_up = {0, -1};
+const VEC2D dir_down = {0, 1};
+const VEC2D dir_left = {-1, 0};
+const VEC2D dir_right = {1, 0};
+const VEC2D dir_none = {0, 0};
+VEC2D *update_dir;
+VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
+
 #pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -322,80 +330,46 @@ void SceneUpdateActors_b()
       LOG("NOT THERE YET\n");
       if (actors[script_actor].pos.x > actor_move_dest.x)
       {
-        LOG("LEFT\n");
-        update_actor_dir.x = -1;
-        update_actor_dir.y = 0;
+        update_dir = &dir_left;
       }
       else if (actors[script_actor].pos.x < actor_move_dest.x)
       {
-        LOG("RIGHT\n");
-        update_actor_dir.x = 1;
-        update_actor_dir.y = 0;
+        update_dir = &dir_right;
+      }
+      else if (actors[script_actor].pos.y > actor_move_dest.y)
+      {
+        update_dir = &dir_up;
+      }
+      else if (actors[script_actor].pos.y < actor_move_dest.y)
+      {
+        update_dir = &dir_down;
       }
       else
       {
-        update_actor_dir.x = 0;
-        if (actors[script_actor].pos.y > actor_move_dest.y)
-        {
-          LOG("UP\n");
-
-          update_actor_dir.y = -1;
-        }
-        else if (actors[script_actor].pos.y < actor_move_dest.y)
-        {
-          LOG("DOWN\n");
-
-          update_actor_dir.y = 1;
-        }
-        else
-        {
-          update_actor_dir.y = 0;
-        }
+        update_dir = &dir_none;
       }
+
       MapUpdateActorMovement_b(script_actor);
     }
   }
+
   // Handle random npc movement
   if (!script_ptr)
   {
-    // LOG("RANDOM BEHAVIOUR--------------\n");
     for (i = 1; i != scene_num_actors; i++)
     {
       if (ACTOR_ON_TILE(i))
       {
-        // if ((time & 0x3F) == 0) {
-        if ((actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE) && (time & 0x3F) == 0)
+        update_dir = &dir_none;
+
+        if (IS_FRAME_64 && (actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE))
         {
           r = rand();
-          // LOG("CHECK RAND MOVEMENT r=%d \n", r);
-
-          if (r > 64)
-          {
-            if (actors[i].movement_type == AI_RANDOM_WALK)
-            {
-              LOG("UPDATE MOVEMENT x=%d y=%d\n", actors[i].dir.x,
-                  actors[i].dir.y);
-              update_actor_dir.x = actors[i].dir.x;
-              update_actor_dir.y = actors[i].dir.y;
-              MapUpdateActorMovement_b(i);
-            }
-          }
-          else if (r > 0)
-          {
-            r = rand();
-            actors[i].dir.x = (r > 0) - (r < 0);
-            actors[i].dir.y = 0;
-            actors[i].redraw = TRUE;
-          }
-          else if (r > -64)
-          {
-            r = rand();
-            actors[i].dir.x = 0;
-            actors[i].dir.y = (r > 0) - (r < 0);
-            actors[i].redraw = TRUE;
-          }
+          update_dir = directions[r & 3];
         }
-        else
+
+        MapUpdateActorMovement_b(i);
+        if (actors[i].movement_type == AI_RANDOM_FACE)
         {
           actors[i].moving = FALSE;
         }
@@ -427,18 +401,15 @@ void MapUpdateActorMovement_b(UBYTE i)
   UBYTE col_tile;
   UWORD collision_index;
 
-  if (update_actor_dir.x == 0 && update_actor_dir.y == 0)
+  if (update_dir == &dir_none)
   {
     actors[i].moving = FALSE;
   }
   else
   {
-    if (actors[i].dir.x != update_actor_dir.x || actors[i].dir.y != update_actor_dir.y)
-    {
-      actors[i].dir.x = update_actor_dir.x;
-      actors[i].dir.y = update_actor_dir.y;
-      actors[i].redraw = TRUE;
-    }
+    actors[i].dir.x = update_dir->x;
+    actors[i].dir.y = update_dir->y;
+    actors[i].redraw = TRUE;
     actors[i].moving = TRUE;
   }
 
@@ -446,6 +417,8 @@ void MapUpdateActorMovement_b(UBYTE i)
   {
     next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
     next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
+
+    LOG("NEXT tx=%u\n", next_tx);
 
     npc = SceneNpcAt_b(i, next_tx, next_ty);
     if (npc != scene_num_actors)
@@ -455,6 +428,8 @@ void MapUpdateActorMovement_b(UBYTE i)
 
     // Check collisions on left tile
     collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1);
+    LOG("LEFT ci=%u\n", collision_index >> 3);
+
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
@@ -609,30 +584,25 @@ static void SceneHandleInput()
   {
     if (JOY(J_LEFT))
     {
-      update_actor_dir.x = -1;
-      update_actor_dir.y = 0;
+      update_dir = &dir_left;
     }
     else if (JOY(J_RIGHT))
     {
-      update_actor_dir.x = 1;
-      update_actor_dir.y = 0;
+      update_dir = &dir_right;
+    }
+    else if (JOY(J_UP))
+    {
+      update_dir = &dir_up;
+    }
+    else if (JOY(J_DOWN))
+    {
+      update_dir = &dir_down;
     }
     else
     {
-      update_actor_dir.x = 0;
-      if (JOY(J_UP))
-      {
-        update_actor_dir.y = -1;
-      }
-      else if (JOY(J_DOWN))
-      {
-        update_actor_dir.y = 1;
-      }
-      else
-      {
-        update_actor_dir.y = 0;
-      }
+      update_dir = &dir_none;
     }
+
     MapUpdateActorMovement_b(0);
   }
 }
