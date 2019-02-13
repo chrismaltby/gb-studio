@@ -85,8 +85,6 @@ void SceneInit_b()
   WX_REG = MAXWNDPOSX;
   WY_REG = MAXWNDPOSY;
 
-  // scene_index = 42;
-
   // Load scene
   ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
