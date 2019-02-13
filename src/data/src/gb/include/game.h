@@ -16,6 +16,8 @@
 #define SCREEN_WIDTH_HALF 80
 #define SCREEN_HEIGHT_HALF 72
 
+// Start of Types - @todo move these to Types.h
+
 typedef enum
 {
   TITLE = 1,
@@ -73,59 +75,40 @@ typedef struct _TRIGGER
   BANK_PTR events_ptr;
 } TRIGGER;
 
-void game_loop();
-void game_over();
-
-void draw_ui_frame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
-void update_window();
-void set_text_line(UWORD line);
-void draw_text(UBYTE force);
-void run_script();
-void update_actor_movement(UBYTE i);
-void load_map();
-UBYTE ScriptLastFnComplete();
-
 typedef void (*SCRIPT_CMD_FN)();
 
-// Globals
+// End of Types
 
+// Functions
+void set_text_line(UWORD line);
+void draw_text(UBYTE force);
+
+// Extern - @todo move most of these out of game.h
+extern SCRIPT_CMD_FN last_fn;
 extern UWORD script_ptr;
-extern UWORD script_last_ptr;
+extern UBYTE script_action_complete;
+extern UBYTE script_continue;
 extern UBYTE script_arg1;
 extern UBYTE script_arg2;
 extern UBYTE script_arg3;
 extern UBYTE script_arg4;
 extern UBYTE script_arg5;
-extern UBYTE script_continue;
-extern UBYTE script_action_complete;
 extern UBYTE script_actor;
-extern POS camera_dest;
-extern UBYTE camera_settings;
 extern UBYTE wait_time;
 extern UBYTE shake_time;
-extern UBYTE fade_settings;
-extern UBYTE fade_timer;
+extern POS camera_dest;
+extern UBYTE camera_settings;
+extern STAGE_TYPE stage_type;
+extern STAGE_TYPE stage_next_type;
 extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
-extern SCRIPT_CMD_FN last_fn;
+extern UBYTE joy;
+extern UBYTE prev_joy;
 extern UBYTE time;
 extern UBYTE menu_y;
 extern UBYTE menu_dest_y;
-extern UBYTE joy;
-extern UBYTE prev_joy;
 extern UBYTE text_drawn;
-extern STAGE_TYPE stage_type;
-extern STAGE_TYPE stage_next_type;
-
-// ----
-
-extern const unsigned char global_tileset[];
 extern const unsigned char village_sprites[];
-extern const unsigned char *map_sprites[];
-extern const unsigned char map_sprites_len[];
-
-// ----
-
 extern const unsigned char emotion_sprites[];
 
 #endif
