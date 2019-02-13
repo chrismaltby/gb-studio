@@ -35,7 +35,6 @@ const VEC2D dir_down = {0, 1};
 const VEC2D dir_left = {-1, 0};
 const VEC2D dir_right = {1, 0};
 const VEC2D dir_none = {0, 0};
-VEC2D *update_dir;
 VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
 
 #pragma endregion
@@ -57,7 +56,7 @@ void SceneHandleTriggers_b();
 void SceneRenderActors_b();
 void SceneRenderEmotionBubble_b();
 void SceneRenderCameraShake_b();
-void MapUpdateActorMovement_b(UBYTE i);
+void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir);
 void SceneSetEmotion_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
@@ -311,6 +310,7 @@ void SceneUpdateCamera_b()
 
 void SceneUpdateActors_b()
 {
+  VEC2D *update_dir;
   UBYTE i, flip, frame, sprite_index, x, y;
   BYTE r;
 
@@ -349,7 +349,7 @@ void SceneUpdateActors_b()
         update_dir = &dir_none;
       }
 
-      MapUpdateActorMovement_b(script_actor);
+      SceneUpdateActorMovement_b(script_actor, update_dir);
     }
   }
 
@@ -368,7 +368,8 @@ void SceneUpdateActors_b()
           update_dir = directions[r & 3];
         }
 
-        MapUpdateActorMovement_b(i);
+        SceneUpdateActorMovement_b(i, update_dir);
+
         if (actors[i].movement_type == AI_RANDOM_FACE)
         {
           actors[i].moving = FALSE;
@@ -394,7 +395,7 @@ void SceneUpdateActors_b()
   }
 }
 
-void MapUpdateActorMovement_b(UBYTE i)
+void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
 {
   UBYTE next_tx, next_ty;
   UBYTE npc;
@@ -515,6 +516,7 @@ void SceneUpdateEmotionBubble_b()
 
 static void SceneHandleInput()
 {
+  VEC2D *update_dir;
   UBYTE next_tx, next_ty;
   UBYTE npc;
 
@@ -603,7 +605,7 @@ static void SceneHandleInput()
       update_dir = &dir_none;
     }
 
-    MapUpdateActorMovement_b(0);
+    SceneUpdateActorMovement_b(0, update_dir);
   }
 }
 
