@@ -51,6 +51,8 @@ void SceneRenderEmotionBubble_b();
 void SceneRenderCameraShake_b();
 void MapUpdateActorMovement_b(UBYTE i);
 void SceneSetEmotion_b(UBYTE actor, UBYTE type);
+void SceneHandleWait();
+void SceneHandleTransition();
 
 #pragma endregion
 
@@ -217,8 +219,16 @@ void SceneUpdate_b()
   SceneHandleTriggers_b();
   SceneUpdateEmotionBubble_b();
   SceneUpdateCameraShake_b();
+  SceneHandleWait();
+  SceneHandleTransition();
+  SceneUpdateCamera_b();
+  UIUpdate();
+  SceneRender();
+}
 
-  // Handle Wait
+void SceneHandleWait()
+{
+  // Handle Wait - @todo handle this outside scene?
   if (wait_time != 0)
   {
     wait_time--;
@@ -227,17 +237,16 @@ void SceneUpdate_b()
       script_action_complete = TRUE;
     }
   }
+}
 
-  // Handle map switch
+void SceneHandleTransition()
+{
+  // If scene has switched and FadeOut is complete
   if (map_index != map_next_index && !IsFading())
   {
     map_index = map_next_index;
     SceneInit();
   }
-
-  SceneUpdateCamera_b();
-
-  SceneRender();
 }
 
 void SceneUpdateCamera_b()
@@ -639,7 +648,6 @@ void SceneRender()
 {
   SceneRenderActors_b();
   SceneRenderEmotionBubble_b();
-  UIUpdate();
   SceneRenderCameraShake_b();
 }
 
