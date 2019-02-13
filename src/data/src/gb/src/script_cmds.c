@@ -1,4 +1,6 @@
-#pragma bank = 11
+// clang-format off
+#pragma bank=11
+// clang-format on
 
 #include "script_cmds.h"
 #include "Scene.h"

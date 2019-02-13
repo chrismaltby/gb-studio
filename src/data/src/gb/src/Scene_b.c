@@ -1,4 +1,6 @@
-#pragma bank = 10
+// clang-format off
+#pragma bank=3
+// clang-format on
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +15,7 @@
 #include "banks.h"
 #include "Math.h"
 
-UINT8 scene_bank = 10;
+UINT8 scene_bank = 3;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private vars
