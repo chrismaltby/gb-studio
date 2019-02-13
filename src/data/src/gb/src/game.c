@@ -114,6 +114,9 @@ int main()
   map_index = START_SCENE_INDEX;
   map_next_index = START_SCENE_INDEX;
 
+  scene_index = 12;
+  scene_next_index = 12;
+
   UIInit();
 
   UpdateFn = SceneUpdate;

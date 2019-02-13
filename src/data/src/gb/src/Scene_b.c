@@ -70,7 +70,7 @@ void SceneHandleTransition();
 
 void SceneInit_b()
 {
-  UWORD scene_index, image_index;
+  UWORD image_index;
   BANK_PTR bank_ptr, sprite_bank_ptr;
   UWORD ptr, sprite_ptr, col_ptr;
   UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
@@ -86,7 +86,6 @@ void SceneInit_b()
   WY_REG = MAXWNDPOSY;
 
   // scene_index = 42;
-  scene_index = 12;
 
   // Load scene
   ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
@@ -249,9 +248,9 @@ void SceneHandleWait()
 void SceneHandleTransition()
 {
   // If scene has switched and FadeOut is complete
-  if (map_index != map_next_index && !IsFading())
+  if (scene_index != scene_next_index && !IsFading())
   {
-    map_index = map_next_index;
+    scene_index = scene_next_index;
     SceneInit();
   }
 }
@@ -765,18 +764,13 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
   for (i = 0; i != scene_num_triggers; i++)
   {
-    // tx_b = 0;
     tx_b = triggers[i].pos.x;
-    // ty_b = 0;
     ty_b = triggers[i].pos.y + 1;
-    // tx_c = 0;
     tx_c = tx_b + triggers[i].w;
-    // ty_c = 0;
     ty_c = ty_b + triggers[i].h - 1;
 
     if (tx_a >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c)
     {
-      LOG("SceneTriggerAt_b hit!\n");
       return i;
     }
   }
