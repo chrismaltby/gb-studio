@@ -24,41 +24,8 @@ STAGE_UPDATE_FN UpdateFn;
 
 SCRIPT_CMD_FN last_fn;
 UBYTE script_continue;
-UBYTE script_arg1;
-UBYTE script_arg2;
-UBYTE script_arg3;
-UBYTE script_arg4;
-UBYTE script_arg5;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
-
-SCRIPT_CMD_FN script_fns[] = {
-    script_cmd_end,          // 0x00
-    script_cmd_line,         // 0x01
-    script_cmd_goto,         // 0x02
-    script_cmd_if_flag,      // 0x03
-    script_cmd_unless_flag,  // 0x04
-    script_cmd_set_flag,     // 0x05
-    script_cmd_clear_flag,   // 0x06
-    script_cmd_actor_dir,    // 0x07
-    script_cmd_active_actor, // 0x08
-    script_cmd_camera_move,  // 0x09
-    script_cmd_camera_lock,  // 0x0A
-    script_cmd_wait,         // 0x0B
-    script_fade_out,         // 0x0C
-    script_fade_in,          // 0x0D
-    script_load_map,         // 0x0E
-    script_cmd_actor_pos,    // 0x0F
-    script_actor_move_to,    // 0x10
-    script_cmd_show_sprites, // 0x11
-    script_cmd_hide_sprites, // 0x12
-    script_load_battle,      // 0x13
-    script_cmd_show_player,  // 0x14
-    script_cmd_hide_player,  // 0x15
-    script_cmd_set_emotion,  // 0x16
-    script_cmd_camera_shake, // 0x17
-    script_cmd_return_title, // 0x18
-};
 
 int main()
 {
@@ -162,9 +129,6 @@ void game_loop()
 
   UpdateFn();
 
-  // Move to map update?
-  // run_script();
-
   // Handle Fade
   FadeUpdate();
 
@@ -224,12 +188,12 @@ void script_cmd_set_emotion()
 
 UBYTE ScriptLastFnComplete()
 {
-
   if (script_action_complete)
   {
     return TRUE;
   }
 
+  /*
   if (last_fn == script_fade_in && !IsFading())
   {
     return TRUE;
@@ -249,6 +213,6 @@ UBYTE ScriptLastFnComplete()
   // if(last_fn == script_cmd_set_emotion && !IsEmoting()) {
   //   return TRUE;
   // }
-
+  */
   return FALSE;
 }

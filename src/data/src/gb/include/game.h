@@ -8,7 +8,6 @@
 #include <string.h>
 #include "BankManager.h"
 #include "banks.h"
-#include "script_cmds.h"
 #include "data_ptrs.h"
 
 #define SCREEN_WIDTH 160
@@ -95,11 +94,6 @@ extern SCRIPT_CMD_FN last_fn;
 extern UWORD script_ptr;
 extern UBYTE script_action_complete;
 extern UBYTE script_continue;
-extern UBYTE script_arg1;
-extern UBYTE script_arg2;
-extern UBYTE script_arg3;
-extern UBYTE script_arg4;
-extern UBYTE script_arg5;
 extern UBYTE script_actor;
 extern UBYTE wait_time;
 extern UBYTE shake_time;

@@ -6,6 +6,7 @@
 
 extern UINT8 scriptrunner_bank;
 extern UBYTE script_ptr_bank;
+extern UWORD script_start_ptr;
 extern UBYTE script_cmd_args[6];
 extern UBYTE script_cmd_args_len;
 
@@ -20,7 +21,7 @@ void Script_Goto_b();
 void Script_IfFlag_b();
 void Script_SetFlag_b();
 void Script_ClearFlag_b();
-void Script_ActorDir_b();
+void Script_ActorSetDir_b();
 void Script_ActorActivate_b();
 void Script_CameraMoveTo_b();
 void Script_CameraLock_b();

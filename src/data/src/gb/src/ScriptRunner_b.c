@@ -74,7 +74,8 @@ void Script_IfFlag_b()
   {
     // Trup path, jump to position specified by ptr
     LOG("TRUE PATH\n");
-    script_ptr = (script_cmd_args[2] * 256) + script_cmd_args[3];
+    // @ todo THIS SHOULD BE RELATIVE TO START OF SCRIPT
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
   else
   {
