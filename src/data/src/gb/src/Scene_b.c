@@ -132,7 +132,7 @@ void SceneInit_b()
     actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
     LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
     actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 6);
-    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 7) * 0xFFu) + ReadBankedUBYTE(bank_ptr.bank, ptr + 8);
+    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 8);
     LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
     ptr = ptr + 9u;
   }
@@ -141,7 +141,7 @@ void SceneInit_b()
   scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
   ptr = ptr + 1;
   LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
-  for (i = 0; i != scene_num_triggers + 1; i++)
+  for (i = 0; i != scene_num_triggers; i++)
   {
     triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, ptr);
     triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
@@ -151,7 +151,7 @@ void SceneInit_b()
     triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, ptr + 3);
     // @todo 5th byte is type of trigger
     triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
-    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 0xFFu) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
+    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
     ptr = ptr + 8u;
   }
 
