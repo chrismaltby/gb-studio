@@ -157,7 +157,7 @@ void SceneInit_b()
   }
 
   // Store pointer to collisions for later
-  col_ptr = ptr - 8u;
+  col_ptr = ptr;
   col_bank = bank_ptr.bank;
 
   // Load Player Sprite
