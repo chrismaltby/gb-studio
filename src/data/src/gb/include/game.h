@@ -75,6 +75,7 @@ typedef struct _TRIGGER
   BANK_PTR events_ptr;
 } TRIGGER;
 
+void game_loop();
 typedef void (*SCRIPT_CMD_FN)();
 
 // End of Types
