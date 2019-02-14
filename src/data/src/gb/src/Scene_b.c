@@ -14,6 +14,7 @@
 #include "data_ptrs.h"
 #include "banks.h"
 #include "Math.h"
+#include "ScriptRunner.h"
 
 UINT8 scene_bank = 3;
 
@@ -221,6 +222,7 @@ void SceneInit_b()
 void SceneUpdate_b()
 {
   SceneHandleInput();
+  Script_Run();
   SceneUpdateActors_b();
   SceneHandleTriggers_b();
   SceneUpdateEmotionBubble_b();
@@ -462,7 +464,7 @@ void SceneHandleTriggers_b()
         LOG("ON TRIGGER\n");
         actors[0].moving = FALSE;
         script_actor = 0;
-        script_ptr = triggers[trigger].script_ptr;
+        Script_Start(&triggers[trigger].events_ptr);
       }
     }
   }
@@ -575,7 +577,7 @@ static void SceneHandleInput()
       actors[npc].moving = FALSE;
       actors[npc].redraw = TRUE;
       script_actor = npc;
-      script_ptr = actors[npc].script_ptr;
+      Script_Start(&actors[npc].events_ptr);
     }
   }
   else if (actors[0].movement_type == PLAYER_INPUT)

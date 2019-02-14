@@ -21,7 +21,6 @@ STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN)();
 STAGE_UPDATE_FN UpdateFn;
 
-UWORD script_ptr = 0;
 SCRIPT_CMD_FN last_fn;
 UBYTE script_continue;
 UBYTE script_arg1;
@@ -163,7 +162,7 @@ void game_loop()
   UpdateFn();
 
   // Move to map update?
-  run_script();
+  // run_script();
 
   // Handle Fade
   FadeUpdate();
@@ -174,15 +173,15 @@ void game_loop()
 
 void run_script()
 {
-  UBYTE cmd;
-  if (!script_ptr || !ScriptLastFnComplete())
-  {
-    return;
-  }
+  // UBYTE cmd;
+  // if (!script_ptr || !ScriptLastFnComplete())
+  // {
+  //   return;
+  // }
 
-  cmd = 5;
+  // cmd = 5;
 
-  return;
+  // return;
 
   /*
   script_continue = FALSE;
