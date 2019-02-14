@@ -6,6 +6,12 @@
 #include "Scene.h"
 #include "FadeManager.h"
 #include "data_ptrs.h"
+#include "ScriptRunner.h"
+
+void script_noop()
+{
+  script_continue = TRUE;
+}
 
 void script_cmd_end()
 {
@@ -20,13 +26,16 @@ void script_cmd_goto()
 
 void script_cmd_if_flag()
 {
+  LOG("IF FLAG ((%u * 256) +  %u) = %u\n", script_cmd_args[0], script_cmd_args[1], (script_cmd_args[0] * 256) + script_cmd_args[1]);
   if (script_flags[script_arg1])
   {
+    LOG("TRUE PATH\n");
     script_ptr = (script_arg2 * 256) + script_arg3;
   }
   else
   {
-    script_ptr += 4;
+    LOG("FALSE PATH\n");
+    script_ptr += 5;
   }
   script_continue = TRUE;
 }

@@ -78,6 +78,12 @@ typedef struct _TRIGGER
 void game_loop();
 typedef void (*SCRIPT_CMD_FN)();
 
+typedef struct _SCRIPT_CMD
+{
+  SCRIPT_CMD_FN fn;
+  UBYTE args_len;
+} SCRIPT_CMD;
+
 // End of Types
 
 // Functions

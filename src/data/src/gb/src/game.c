@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "FadeManager.h"
 #include "data_ptrs.h"
+#include "ScriptRunner.h"
 
 UBYTE joy;
 UBYTE prev_joy;
@@ -207,9 +208,10 @@ void run_script()
 
 void script_cmd_line()
 {
+  LOG("- SCRIPT: EVENT_LINE %u\n", (script_cmd_args[0] * 256) + script_cmd_args[1]);
   script_action_complete = FALSE;
   script_ptr += 3;
-  set_text_line((script_arg1 * 256) + script_arg2);
+  set_text_line((script_cmd_args[0] * 256) + script_cmd_args[1]);
 }
 
 void script_cmd_set_emotion()

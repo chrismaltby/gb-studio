@@ -222,7 +222,7 @@ void SceneInit_b()
 void SceneUpdate_b()
 {
   SceneHandleInput();
-  Script_Run();
+  ScriptRunnerUpdate();
   SceneUpdateActors_b();
   SceneHandleTriggers_b();
   SceneUpdateEmotionBubble_b();
@@ -464,7 +464,7 @@ void SceneHandleTriggers_b()
         LOG("ON TRIGGER\n");
         actors[0].moving = FALSE;
         script_actor = 0;
-        Script_Start(&triggers[trigger].events_ptr);
+        ScriptStart(&triggers[trigger].events_ptr);
       }
     }
   }
@@ -577,7 +577,7 @@ static void SceneHandleInput()
       actors[npc].moving = FALSE;
       actors[npc].redraw = TRUE;
       script_actor = npc;
-      Script_Start(&actors[npc].events_ptr);
+      ScriptStart(&actors[npc].events_ptr);
     }
   }
   else if (actors[0].movement_type == PLAYER_INPUT)

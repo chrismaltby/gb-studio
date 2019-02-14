@@ -3,6 +3,7 @@
 
 #include "game.h"
 
+void script_noop();
 void script_cmd_line();
 void script_cmd_end();
 void script_cmd_goto();
