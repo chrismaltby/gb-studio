@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import cx from "classnames";
-import Button from "./library/Button";
-import { EventFields } from "../lib/data/compiler/eventTypes";
+import Button from "../library/Button";
+import { EventFields } from "../../lib/data/compiler/eventTypes";
 
 const actions = Object.keys(EventFields);
 const recentActions = ["TEXT", "TRANSITION_MAP", "IF_FLAG", "SET_FLAG"];

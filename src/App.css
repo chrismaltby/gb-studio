@@ -1,7 +1,6 @@
 @import url("./variables.css");
 @import url("./Splash.css");
 @import url("./components/Actor.css");
-@import url("./components/AddCommandButton.css");
 @import url("./components/Connections.css");
 @import url("./components/DirectionPicker.css");
 @import url("./components/EditorSidebar.css");
@@ -21,6 +20,7 @@
 @import url("./components/library/PageContent.css");
 @import url("./components/library/Button.css");
 @import url("./components/script/ScriptEventBlock.css");
+@import url("./components/script/AddCommandButton.css");
 
 html,
 body {

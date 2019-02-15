@@ -1,18 +1,16 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import cx from "classnames";
 import { DragSource, DropTarget, DragDropContext } from "react-dnd";
 import { CloseIcon } from "./Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import ItemTypes from "../ItemTypes";
-import AddCommandButton from "./AddCommandButton";
+import AddCommandButton from "./script/AddCommandButton";
 import FlagSelect from "../containers/forms/FlagSelect";
 import MapSelect from "../containers/forms/MapSelect";
 import ActorSelect from "./ActorSelect";
 import DirectionPicker from "./DirectionPicker";
 import FadeSpeedSelect from "./FadeSpeedSelect";
 import CameraSpeedSelect from "./CameraSpeedSelect";
-import * as actions from "../actions";
 import ScriptEventBlock from "./script/ScriptEventBlock";
 import { EVENT_IF_FLAG, EVENT_END } from "../lib/data/compiler/eventTypes";
 
@@ -159,8 +157,7 @@ class ActionMini extends Component {
       moveActions,
       onAdd,
       onEdit,
-      onRemove,
-      onRenameFlag
+      onRemove
     } = this.props;
     const { command } = action;
 
@@ -242,12 +239,6 @@ class ActionMini extends Component {
                       }}
                     />
                   </span>
-                  <div
-                    className="ActionMini__Link"
-                    onClick={() => onRenameFlag(action.args.flag || "0")}
-                  >
-                    Rename
-                  </div>
                 </span>
               </div>
             ) : command === "CLEAR_FLAG" ? (
@@ -263,12 +254,6 @@ class ActionMini extends Component {
                       }}
                     />
                   </span>
-                  <div
-                    className="ActionMini__Link"
-                    onClick={() => onRenameFlag(action.args.flag || "0")}
-                  >
-                    Rename
-                  </div>
                 </span>
               </div>
             ) : command === "IF_FLAG" ? (
@@ -284,12 +269,6 @@ class ActionMini extends Component {
                       }}
                     />
                   </span>
-                  <div
-                    className="ActionMini__Link"
-                    onClick={() => onRenameFlag(action.args.flag || "0")}
-                  >
-                    Rename
-                  </div>
                 </span>
               </div>
             ) : command === "ACTOR_SET_DIRECTION" ? (
@@ -635,7 +614,6 @@ class ActionMini extends Component {
                       onAdd={onAdd}
                       onRemove={onRemove}
                       onEdit={onEdit}
-                      onRenameFlag={onRenameFlag}
                     />
                   ))}
                 </div>
@@ -653,7 +631,6 @@ class ActionMini extends Component {
                     onAdd={onAdd}
                     onRemove={onRemove}
                     onEdit={onEdit}
-                    onRenameFlag={onRenameFlag}
                   />
                 ))}
               </div>
@@ -748,18 +725,6 @@ class ScriptEditor extends Component {
     this.props.onChange(input);
   };
 
-  onRenameFlag = index => {
-    const name = window.prompt("Rename flag to");
-    if (name === null) {
-      return;
-    }
-    if (name.length === 0) {
-      this.props.renameFlag(index, null);
-    } else {
-      this.props.renameFlag(index, name);
-    }
-  };
-
   render() {
     // const { input } = this.state;
     const { value } = this.props;
@@ -776,7 +741,6 @@ class ScriptEditor extends Component {
             onAdd={this.onAdd}
             onRemove={this.onRemove}
             onEdit={this.onEdit}
-            onRenameFlag={this.onRenameFlag}
           />
         ))}
         {false && JSON.stringify(value, null, 4)}
@@ -802,17 +766,4 @@ ScriptEditor.defaultProps = {
   ]
 };
 
-function mapStateToProps(state) {
-  return {
-    flags: state.project.flags
-  };
-}
-
-const mapDispatchToProps = {
-  renameFlag: actions.renameFlag
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DragDropContext(HTML5Backend)(ScriptEditor));
+export default DragDropContext(HTML5Backend)(ScriptEditor);
