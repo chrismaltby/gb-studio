@@ -24,7 +24,10 @@ const createSplash = async () => {
     height: 432,
     resizable: false,
     maximizable: false,
-    fullscreenable: false
+    fullscreenable: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   // and load the index.html of the app.
@@ -66,7 +69,10 @@ const createWindow = async projectPath => {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    titleBarStyle: "hiddenInset"
+    titleBarStyle: "hiddenInset",
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   mainWindowState.manage(mainWindow);

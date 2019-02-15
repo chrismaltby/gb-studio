@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-import { CloseIcon } from "./Icons";
-import ScriptEditor from "./ScriptEditor";
+import * as actions from "../../actions";
+import { CloseIcon } from "../../components/Icons";
+import ScriptEditor from "../../components/script/ScriptEditor";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-import MapSelect from "../containers/forms/MapSelect";
-import DirectionPicker from "./DirectionPicker";
+import * as actions from "../../actions";
+import MapSelect from "../forms/MapSelect";
+import DirectionPicker from "../../components/DirectionPicker";
 
 class WorldEditor extends Component {
   onEdit = key => e => {
@@ -54,7 +54,7 @@ class WorldEditor extends Component {
         <label>
           <div className="Select">
             <MapSelect
-              value={project.startMapId}
+              value={project.startMapId || ""}
               onChange={this.onEdit("startMapId")}
             />
           </div>
@@ -63,7 +63,7 @@ class WorldEditor extends Component {
           X
           <input
             type="number"
-            value={project.startX}
+            value={project.startX || 0}
             min={1}
             onChange={this.onEdit("startX")}
           />
@@ -73,7 +73,7 @@ class WorldEditor extends Component {
           Y
           <input
             type="number"
-            value={project.startY}
+            value={project.startY || 0}
             min={1}
             onChange={this.onEdit("startY")}
           />
@@ -81,7 +81,7 @@ class WorldEditor extends Component {
 
         <label>
           <DirectionPicker
-            value={project.startDirection}
+            value={project.startDirection || 0}
             onChange={this.onEdit("startDirection")}
           />
         </label>

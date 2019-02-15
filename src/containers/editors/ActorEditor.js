@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-import { CloseIcon } from "./Icons";
-import MovementTypeSelect from "./MovementTypeSelect";
-import SpriteSheetSelect from "./SpriteSheetSelect";
-import ScriptEditor from "./ScriptEditor";
-import DirectionPicker from "./DirectionPicker";
+import * as actions from "../../actions";
+import { CloseIcon } from "../../components/Icons";
+import MovementTypeSelect from "../../components/MovementTypeSelect";
+import SpriteSheetSelect from "../../components/SpriteSheetSelect";
+import ScriptEditor from "../../components/script/ScriptEditor";
+import DirectionPicker from "../../components/DirectionPicker";
 
 class ActorEditor extends Component {
   onEdit = key => e => {

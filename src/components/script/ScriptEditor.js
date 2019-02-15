@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import { DragSource, DropTarget, DragDropContext } from "react-dnd";
-import { CloseIcon } from "./Icons";
+import { CloseIcon } from "../Icons";
 import HTML5Backend from "react-dnd-html5-backend";
-import ItemTypes from "../ItemTypes";
-import AddCommandButton from "./script/AddCommandButton";
-import FlagSelect from "../containers/forms/FlagSelect";
-import MapSelect from "../containers/forms/MapSelect";
-import ActorSelect from "./ActorSelect";
-import DirectionPicker from "./DirectionPicker";
-import FadeSpeedSelect from "./FadeSpeedSelect";
-import CameraSpeedSelect from "./CameraSpeedSelect";
-import ScriptEventBlock from "./script/ScriptEventBlock";
-import { EVENT_IF_FLAG, EVENT_END } from "../lib/data/compiler/eventTypes";
+import ItemTypes from "../../ItemTypes";
+import AddCommandButton from "./AddCommandButton";
+import FlagSelect from "../../containers/forms/FlagSelect";
+import MapSelect from "../../containers/forms/MapSelect";
+import ActorSelect from "../ActorSelect";
+import DirectionPicker from "../DirectionPicker";
+import FadeSpeedSelect from "../FadeSpeedSelect";
+import CameraSpeedSelect from "../CameraSpeedSelect";
+import ScriptEventBlock from "./ScriptEventBlock";
+import { EVENT_IF_FLAG, EVENT_END } from "../../lib/data/compiler/eventTypes";
 
 const uuid = a => {
   return a

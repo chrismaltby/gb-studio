@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import World from "../../components/World";
 import ToolsSidebar from "../../components/ToolsSidebar";
-import EditorSidebar from "../../components/EditorSidebar";
+import EditorSidebar from "../editors/EditorSidebar";
 import StatusBar from "../../components/StatusBar";
 
 class WorldPage extends Component {

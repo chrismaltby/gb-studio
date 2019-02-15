@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-import { CloseIcon } from "./Icons";
-import ImageSelect from "./ImageSelect";
+import * as actions from "../../actions";
+import { CloseIcon } from "../../components/Icons";
+import ImageSelect from "../../components/ImageSelect";
 
 class MapEditor extends Component {
   onEdit = key => e => {
