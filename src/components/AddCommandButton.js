@@ -1,29 +1,9 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import Button from "./library/Button";
+import { EventFields } from "../lib/data/compiler/eventTypes";
 
-const actions = [
-  "TEXT",
-  "IF_FLAG",
-  "SET_FLAG",
-  "CLEAR_FLAG",
-  "FADE_IN",
-  "FADE_OUT",
-  "WAIT",
-  "LOAD_MAP",
-  "LOAD_BATTLE",
-  "TRANSITION_MAP",
-  "ACTOR_SET_DIRECTION",
-  "ACTOR_SET_POSITION",
-  "ACTOR_MOVE_TO",
-  "CAMERA_MOVE_TO",
-  "CAMERA_LOCK",
-  "SHOW_SPRITES",
-  "HIDE_SPRITES",
-  "SHOW_PLAYER",
-  "HIDE_PLAYER",
-  "SET_EMOTION"
-];
+const actions = Object.keys(EventFields);
 const recentActions = ["TEXT", "TRANSITION_MAP", "IF_FLAG", "SET_FLAG"];
 
 const DIRECTION_UP = "UP";

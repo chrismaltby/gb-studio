@@ -6,13 +6,15 @@ import { CloseIcon } from "./Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import ItemTypes from "../ItemTypes";
 import AddCommandButton from "./AddCommandButton";
-import FlagSelect from "./FlagSelect";
-import MapSelect from "./MapSelect";
+import FlagSelect from "../containers/forms/FlagSelect";
+import MapSelect from "../containers/forms/MapSelect";
 import ActorSelect from "./ActorSelect";
 import DirectionPicker from "./DirectionPicker";
 import FadeSpeedSelect from "./FadeSpeedSelect";
 import CameraSpeedSelect from "./CameraSpeedSelect";
 import * as actions from "../actions";
+import ScriptEventBlock from "./script/ScriptEventBlock";
+import { EVENT_IF_FLAG, EVENT_END } from "../lib/data/compiler/eventTypes";
 
 const uuid = a => {
   return a
@@ -26,40 +28,6 @@ const trim2lines = string => {
     .split("\n")
     .map(line => line.substring(0, 18))
     .join("\n");
-};
-
-const compile = (input, output) => {
-  for (let i = 0; i < input.length; i++) {
-    const command = input[i].command;
-
-    if (command === "MOVE_TO") {
-      output.push(input[i].command);
-      output.push(input[i].args.x);
-      output.push(input[i].args.y);
-      output.push(input[i].args.speed);
-    } else if (command === "TEXT") {
-      output.push(input[i].command);
-      output.push(input[i].args.text);
-    } else if (command === "IF_SET") {
-      output.push("UNLESS_SET");
-      output.push(input[i].args.flag);
-      let ptrIndex = output.length;
-      output.push("PTR_PLACEHOLDER1");
-      output.push("PTR_PLACEHOLDER2");
-      compile(input[i].true, output);
-      const falsePointer = output.length;
-      console.log("A", output, output.length);
-      output[ptrIndex] = falsePointer >> 8;
-      output[ptrIndex + 1] = falsePointer & 0xff;
-      compile(input[i].false, output);
-    } else if (command === "END") {
-      // output.push(input[i].command);
-    }
-  }
-  // if (output[output.length - 1] !== "END") {
-  output.push("END");
-  // }
-  return output;
 };
 
 const findData = (data, id) => {
@@ -196,7 +164,7 @@ class ActionMini extends Component {
     } = this.props;
     const { command } = action;
 
-    if (command === "END") {
+    if (command === EVENT_END) {
       return (
         <div className="ActionMini">
           <AddCommandButton onAdd={onAdd(id)} />
@@ -210,7 +178,7 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": command === "IF_FLAG"
+            "ActionMini--Conditional": command === EVENT_IF_FLAG
           })}
         >
           <div className="ActionMini__Content">
@@ -221,6 +189,14 @@ class ActionMini extends Component {
             <div className="ActionMini__Remove" onClick={onRemove(id)}>
               <CloseIcon />
             </div>
+
+            <ScriptEventBlock
+              command={command}
+              value={action.args}
+              onChange={newValue => {
+                onEdit(id, newValue);
+              }}
+            />
 
             {command === "TEXT" ? (
               <div className="ActionMini__Form">

@@ -1,8 +1,9 @@
 import React from "react";
+import { EVENT_SWITCH_SCENE } from "../lib/data/compiler/eventTypes";
 
 const scriptMapTransition = script => {
   return script.filter(action => {
-    return action.command === "TRANSITION_MAP";
+    return action.command === EVENT_SWITCH_SCENE;
   });
 };
 

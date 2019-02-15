@@ -24,9 +24,6 @@
 
     const store = configureStore();
 
-    console.log(store)
-    console.log(window.href)
-
     const urlParams = new URLSearchParams(window.location.search);
     const projectPath = urlParams.get('path');
 
@@ -39,15 +36,11 @@
     let modified = false;
     store.subscribe(() => {
       const state = store.getState();
-      console.log("CHECK MODIFIED");
       if(!modified && state.document.modified) {
-        console.log("WAS MODIFIED");
         ipcRenderer.send("document-modified", {});
       } else if (modified && !state.document.modified) {
-        console.log("WAS UNMODIFIED");
         ipcRenderer.send("document-unmodified", {});
       }
-      console.log("UPDATE MODIFIED TO ", modified, state.document.modified);
       modified = state.document.modified;
     });
 

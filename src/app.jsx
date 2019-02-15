@@ -1,17 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import World from "./components/World";
-// import Navbar from "./components/Navbar";
 import AppToolbar from "./containers/AppToolbar";
-import ToolsSidebar from "./components/ToolsSidebar";
-import StatusBar from "./components/StatusBar";
-import EditorSidebar from "./components/EditorSidebar";
 import ImagesSection from "./components/ImagesSection";
 import SpritesSection from "./components/SpritesSection";
 import OverviewPage from "./containers/pages/OverviewPage";
 import ScriptPage from "./containers/pages/ScriptPage";
 import BuildPage from "./containers/pages/BuildPage";
+import WorldPage from "./containers/pages/WorldPage";
 
 class App extends Component {
   constructor() {
@@ -43,14 +39,7 @@ class App extends Component {
         <AppToolbar />
         <div className="App__Content">
           {section === "overview" && <OverviewPage />}
-          {section === "world" && (
-            <div className="WorldEditor">
-              <World />
-              <ToolsSidebar />
-              <EditorSidebar />
-              <StatusBar />
-            </div>
-          )}
+          {section === "world" && <WorldPage />}
           {section === "backgrounds" && <ImagesSection />}
           {section === "sprites" && <SpritesSection />}
           {section === "script" && <ScriptPage />}

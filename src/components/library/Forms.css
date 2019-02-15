@@ -27,3 +27,15 @@
 .Textarea--FixedSize {
   resize: none;
 }
+
+.SelectRenamable {
+  display: flex;
+}
+
+.SelectRenamable__EditBtn {
+  display: flex;
+  text-decoration: underline;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10px;
+}

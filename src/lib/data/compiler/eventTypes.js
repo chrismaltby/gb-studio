@@ -31,10 +31,40 @@ export const EVENT_HIDE_PLAYER = "EVENT_HIDE_PLAYER";
 
 export const EventFields = {
   [EVENT_END]: [],
-  [EVENT_SWITCH_SCENE]: [],
+  [EVENT_SWITCH_SCENE]: [
+    {
+      key: "sceneId",
+      type: "scene"
+    },
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    },
+    {
+      key: "direction",
+      type: "direction"
+    },
+    {
+      key: "fadeSpeed",
+      label: "Fade Speed",
+      type: "fadeSpeed"
+    }
+  ],
   [EVENT_WAIT]: [
     {
-      key: "seconds",
+      key: "time",
       type: "number",
       label: "Seconds",
       min: 0,
@@ -65,6 +95,24 @@ export const EventFields = {
       type: "textarea",
       rows: 2,
       maxPerLine: 18
+    }
+  ],
+  [EVENT_CAMERA_MOVE_TO]: [
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
     }
   ]
 };

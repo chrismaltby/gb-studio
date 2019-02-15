@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import MapSelect from "./MapSelect";
+import MapSelect from "../containers/forms/MapSelect";
 import DirectionPicker from "./DirectionPicker";
 
 class WorldEditor extends Component {
