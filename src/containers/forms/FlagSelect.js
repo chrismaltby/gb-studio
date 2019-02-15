@@ -9,7 +9,6 @@ const flags = Array.from(Array(512).keys()).map(n =>
 
 class FlagSelect extends Component {
   onRename = name => {
-    console.log("RENAME", this.props.value, name);
     this.props.renameFlag(this.props.value, name);
   };
 
@@ -21,7 +20,7 @@ class FlagSelect extends Component {
   };
 
   render() {
-    const { dispatch, ...rest } = this.props;
+    const { dispatch, renameFlag, flagNames, ...rest } = this.props;
     return (
       <SelectRenamable
         editPlaceholder="Flag Name"

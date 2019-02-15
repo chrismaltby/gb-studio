@@ -45,7 +45,7 @@ export class SelectRenamable extends Component {
   };
 
   render() {
-    const { editPlaceholder, editDefaultValue } = this.props;
+    const { editPlaceholder, editDefaultValue, onRename, ...rest } = this.props;
     const { edit, editValue } = this.state;
 
     return (
@@ -60,7 +60,7 @@ export class SelectRenamable extends Component {
             autoFocus
           />
         ) : (
-          <select {...this.props} />
+          <select {...rest} />
         )}
         {edit ? (
           <div className="SelectRenamable__EditBtn" onClick={this.onSave}>
