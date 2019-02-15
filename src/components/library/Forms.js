@@ -48,8 +48,6 @@ export class SelectRenamable extends Component {
     const { editPlaceholder, editDefaultValue } = this.props;
     const { edit, editValue } = this.state;
 
-    console.log({ editDefaultValue, editPlaceholder });
-
     return (
       <div className="SelectRenamable">
         {edit ? (
