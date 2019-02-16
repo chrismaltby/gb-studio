@@ -7,9 +7,13 @@ import FadeSpeedSelect from "../FadeSpeedSelect";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
-  const onChangeField = key => e => {
+  const onChangeField = (key, type = "text") => e => {
+    let value = e.currentTarget.value;
+    if (type === "number") {
+      value = parseInt(value, 10);
+    }
     return onChange({
-      [key]: e.currentTarget.value
+      [key]: value
     });
   };
   return (
@@ -46,7 +50,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                onChange={onChangeField(field.key)}
+                onChange={onChangeField(field.key, field.type)}
               />
             ) : field.type === "scene" ? (
               <MapSelect
