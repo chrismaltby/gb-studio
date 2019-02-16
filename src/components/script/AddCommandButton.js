@@ -4,7 +4,6 @@ import Button from "../library/Button";
 import { EventFields } from "../../lib/data/compiler/eventTypes";
 
 const actions = Object.keys(EventFields);
-const recentActions = ["TEXT", "TRANSITION_MAP", "IF_FLAG", "SET_FLAG"];
 
 const DIRECTION_UP = "UP";
 const DIRECTION_DOWN = "DOWN";
@@ -74,16 +73,6 @@ class AddCommandButton extends Component {
               />
             </div>
             <div className="AddCommandButton__List">
-              {!query &&
-                recentActions.map(action => (
-                  <div
-                    key={action}
-                    className="AddCommandButton__ListItem"
-                    onClick={this.onAdd(action)}
-                  >
-                    {action}
-                  </div>
-                ))}
               <div className="AddCommandButton__ListDivider" />
               {actionsList.map(action => (
                 <div

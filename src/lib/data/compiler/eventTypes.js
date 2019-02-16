@@ -29,8 +29,15 @@ export const EVENT_HIDE_SPRITES = "EVENT_HIDE_SPRITES";
 export const EVENT_SHOW_PLAYER = "EVENT_SHOW_PLAYER";
 export const EVENT_HIDE_PLAYER = "EVENT_HIDE_PLAYER";
 
+const trim2lines = string => {
+  return string
+    .replace(/^([^\n]*\n[^\n]*)[\w\W]*/g, "$1")
+    .split("\n")
+    .map(line => line.substring(0, 18))
+    .join("\n");
+};
+
 export const EventFields = {
-  [EVENT_END]: [],
   [EVENT_SWITCH_SCENE]: [
     {
       key: "sceneId",
@@ -54,15 +61,27 @@ export const EventFields = {
     },
     {
       key: "direction",
-      type: "direction"
+      label: "Direction",
+      type: "direction",
+      width: "50%"
     },
     {
       key: "fadeSpeed",
       label: "Fade Speed",
-      type: "fadeSpeed"
+      type: "fadeSpeed",
+      width: "50%"
     }
   ],
   [EVENT_WAIT]: [
+    {
+      key: "time",
+      type: "number",
+      label: "Seconds",
+      min: 0,
+      max: 4
+    }
+  ],
+  [EVENT_CAMERA_SHAKE]: [
     {
       key: "time",
       type: "number",
@@ -94,7 +113,8 @@ export const EventFields = {
       key: "text",
       type: "textarea",
       rows: 2,
-      maxPerLine: 18
+      maxPerLine: 18,
+      updateFn: trim2lines
     }
   ],
   [EVENT_CAMERA_MOVE_TO]: [
@@ -113,6 +133,97 @@ export const EventFields = {
       min: 0,
       max: 32,
       width: "50%"
+    },
+    {
+      key: "speed",
+      type: "cameraSpeed"
     }
-  ]
+  ],
+  [EVENT_CAMERA_LOCK]: [
+    {
+      key: "speed",
+      type: "cameraSpeed"
+    }
+  ],
+  [EVENT_FADE_IN]: [
+    {
+      key: "speed",
+      type: "fadeSpeed"
+    }
+  ],
+  [EVENT_FADE_OUT]: [
+    {
+      key: "speed",
+      type: "fadeSpeed"
+    }
+  ],
+  [EVENT_ACTOR_SET_DIRECTION]: [
+    {
+      key: "actorId",
+      type: "actor"
+    },
+    {
+      key: "direction",
+      type: "direction"
+    }
+  ],
+  [EVENT_ACTOR_SET_POSITION]: [
+    {
+      key: "actorId",
+      type: "actor"
+    },
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    }
+  ],
+  [EVENT_ACTOR_MOVE_TO]: [
+    {
+      key: "actorId",
+      type: "actor"
+    },
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%"
+    }
+  ],
+  [EVENT_ACTOR_EMOTION]: [
+    {
+      key: "actorId",
+      type: "actor"
+    },
+    {
+      key: "emotionId",
+      type: "emotion"
+    }
+  ],
+  [EVENT_RETURN_TO_TITLE]: [],
+  [EVENT_SHOW_PLAYER]: [],
+  [EVENT_HIDE_PLAYER]: [],
+  [EVENT_SHOW_SPRITES]: [],
+  [EVENT_HIDE_SPRITES]: []
 };

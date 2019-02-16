@@ -23,8 +23,6 @@ class MapEditor extends Component {
   render() {
     const { map } = this.props;
 
-    console.log("MAP", map);
-
     if (!map) {
       return <div />;
     }
@@ -58,11 +56,6 @@ class MapEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
-  console.log({
-    mapId: props.id,
-    maps: state.project.maps,
-    project: state.project
-  });
   return {
     modified: state.modified,
     editor: state.editor,

@@ -228,12 +228,11 @@ const precompileEntityScript = (
         seconds -= time;
       }
     } else if (command === EVENT_ACTOR_EMOTION) {
-      /*
-      const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
+      // const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
+      const actorIndex = 0;
       output.push(CMD_LOOKUP.ACTOR_EMOTION);
       output.push(actorIndex);
-      output.push(input[i].args.emotionType || 0);
-      */
+      output.push(input[i].args.emotionId || 0);
     } else if (command === EVENT_SWITCH_SCENE) {
       /*
       let mapIndex = data.scenes.findIndex(m => m.id === input[i].args.map);

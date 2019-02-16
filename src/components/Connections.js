@@ -26,7 +26,7 @@ export default ({ maps, zoomRatio }) => {
         [].concat(map.triggers || [], map.actors || []).map((object, index) => {
           const transitions = scriptMapTransition(object.script || []);
           return transitions.map((transition, tIndex) => {
-            const destMap = maps.find(m => m.id === transition.args.map);
+            const destMap = maps.find(m => m.id === transition.args.sceneId);
             if (!destMap) {
               return null;
             }
