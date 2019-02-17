@@ -30,29 +30,31 @@ class WorldEditor extends Component {
       <div className="WorldEditor">
         <h2>Settings</h2>
 
-        <FormField>
-          <label>
-            <input
-              type="checkbox"
-              className="Checkbox"
-              checked={settings.showCollisions}
-              onChange={this.onEdit("showCollisions")}
-            />
-            Show Collisions
-          </label>
-        </FormField>
+        <div>
+          <FormField>
+            <label>
+              <input
+                type="checkbox"
+                className="Checkbox"
+                checked={settings.showCollisions}
+                onChange={this.onEdit("showCollisions")}
+              />
+              Show Collisions
+            </label>
+          </FormField>
 
-        <FormField>
-          <label>
-            <input
-              type="checkbox"
-              className="Checkbox"
-              checked={settings.showConnections}
-              onChange={this.onEdit("showConnections")}
-            />
-            Show Connections
-          </label>
-        </FormField>
+          <FormField>
+            <label>
+              <input
+                type="checkbox"
+                className="Checkbox"
+                checked={settings.showConnections}
+                onChange={this.onEdit("showConnections")}
+              />
+              Show Connections
+            </label>
+          </FormField>
+        </div>
 
         <h2>Start Map</h2>
 
@@ -67,33 +69,32 @@ class WorldEditor extends Component {
           </label>
         </FormField>
 
-        <FormField>
-          <label className="HalfWidth">
-            X
-            <input
-              type="number"
-              value={project.startX || 0}
-              min={1}
-              onChange={this.onEdit("startX")}
-            />
-          </label>
+        <FormField halfWidth>
+          <label htmlFor="startX">X</label>
+          <input
+            id="startX"
+            type="number"
+            value={project.startX || 0}
+            min={1}
+            onChange={this.onEdit("startX")}
+          />
+        </FormField>
+
+        <FormField halfWidth>
+          <label htmlFor="startY">Y</label>
+          <input
+            id="startY"
+            type="number"
+            value={project.startY || 0}
+            min={1}
+            onChange={this.onEdit("startY")}
+          />
         </FormField>
 
         <FormField>
-          <label className="HalfWidth">
-            Y
-            <input
-              type="number"
-              value={project.startY || 0}
-              min={1}
-              onChange={this.onEdit("startY")}
-            />
-          </label>
-        </FormField>
-
-        <FormField>
-          <label>Direction</label>
+          <label htmlFor="startDirection">Direction</label>
           <DirectionPicker
+            id="startDirection"
             value={project.startDirection || 0}
             onChange={this.onEdit("startDirection")}
           />
