@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import { DragSource, DropTarget, DragDropContext } from "react-dnd";
-import { CloseIcon } from "../Icons";
+import { CloseIcon } from "../library/Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import ItemTypes from "../../ItemTypes";
 import AddCommandButton from "./AddCommandButton";

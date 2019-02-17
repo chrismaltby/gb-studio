@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import MapSelect from "../forms/MapSelect";
 import DirectionPicker from "../../components/DirectionPicker";
+import { FormField } from "../../components/library/Forms";
 
 class WorldEditor extends Component {
   onEdit = key => e => {
@@ -29,62 +30,74 @@ class WorldEditor extends Component {
       <div className="WorldEditor">
         <h2>Settings</h2>
 
-        <label>
-          <input
-            type="checkbox"
-            className="Checkbox"
-            checked={settings.showCollisions}
-            onChange={this.onEdit("showCollisions")}
-          />
-          Show Collisions
-        </label>
+        <FormField>
+          <label>
+            <input
+              type="checkbox"
+              className="Checkbox"
+              checked={settings.showCollisions}
+              onChange={this.onEdit("showCollisions")}
+            />
+            Show Collisions
+          </label>
+        </FormField>
 
-        <label>
-          <input
-            type="checkbox"
-            className="Checkbox"
-            checked={settings.showConnections}
-            onChange={this.onEdit("showConnections")}
-          />
-          Show Connections
-        </label>
+        <FormField>
+          <label>
+            <input
+              type="checkbox"
+              className="Checkbox"
+              checked={settings.showConnections}
+              onChange={this.onEdit("showConnections")}
+            />
+            Show Connections
+          </label>
+        </FormField>
 
         <h2>Start Map</h2>
 
-        <label>
-          <div className="Select">
-            <MapSelect
-              value={project.startMapId || ""}
-              onChange={this.onEdit("startMapId")}
+        <FormField>
+          <label>
+            <div className="Select">
+              <MapSelect
+                value={project.startMapId || ""}
+                onChange={this.onEdit("startMapId")}
+              />
+            </div>
+          </label>
+        </FormField>
+
+        <FormField>
+          <label className="HalfWidth">
+            X
+            <input
+              type="number"
+              value={project.startX || 0}
+              min={1}
+              onChange={this.onEdit("startX")}
             />
-          </div>
-        </label>
-        <label className="HalfWidth">
-          X
-          <input
-            type="number"
-            value={project.startX || 0}
-            min={1}
-            onChange={this.onEdit("startX")}
-          />
-        </label>
+          </label>
+        </FormField>
 
-        <label className="HalfWidth">
-          Y
-          <input
-            type="number"
-            value={project.startY || 0}
-            min={1}
-            onChange={this.onEdit("startY")}
-          />
-        </label>
+        <FormField>
+          <label className="HalfWidth">
+            Y
+            <input
+              type="number"
+              value={project.startY || 0}
+              min={1}
+              onChange={this.onEdit("startY")}
+            />
+          </label>
+        </FormField>
 
-        <label>
+        <FormField>
+          <label>Direction</label>
           <DirectionPicker
             value={project.startDirection || 0}
             onChange={this.onEdit("startDirection")}
           />
-        </label>
+        </FormField>
       </div>
     );
   }

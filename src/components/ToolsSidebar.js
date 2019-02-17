@@ -1,29 +1,9 @@
-// import React, { Component } from "react";
-// import { connect } from "react-redux";
-// import * as actions from "../actions";
-// import cx from "classnames";
-// import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "./Icons";
-// import { Menu, MenuItem } from "./Menu";
-
-// class ToolsSidebar extends Component {
-//   render() {
-//     return (
-//       <div>HEllo</div>
-//       )
-//   }
-// }
-
-// export default ToolsSidebar;
-
-
-
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import cx from "classnames";
-import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "./Icons";
+import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "./library/Icons";
 import { Menu, MenuItem } from "./Menu";
-// import "./ToolsSidebar.css";
 
 class ToolsSidebar extends Component {
   constructor(props) {

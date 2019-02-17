@@ -14,7 +14,7 @@ import {
   MinusIcon,
   FolderIcon,
   LoadingIcon
-} from "../components/Icons";
+} from "../components/library/Icons";
 import { shell } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../actions";
