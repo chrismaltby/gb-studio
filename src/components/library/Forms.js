@@ -13,6 +13,16 @@ export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
   />
 );
 
+export const FormField = ({ halfWidth, children }) => (
+  <div
+    className={cx("FormField", {
+      "FormField--HalfWidth": halfWidth
+    })}
+  >
+    {children}
+  </div>
+);
+
 export class SelectRenamable extends Component {
   constructor() {
     super();

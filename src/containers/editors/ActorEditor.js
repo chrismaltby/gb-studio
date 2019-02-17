@@ -6,6 +6,7 @@ import MovementTypeSelect from "../../components/MovementTypeSelect";
 import SpriteSheetSelect from "../../components/SpriteSheetSelect";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import DirectionPicker from "../../components/DirectionPicker";
+import { FormField } from "../../components/library/Forms";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -39,65 +40,69 @@ class ActorEditor extends Component {
           </div>
         </h2>
 
-        <label>
-          Actor name
-          <input
-            placeholder={"Actor " + (id + 1)}
-            value={actor.name}
-            onChange={this.onEdit("name")}
-          />
-        </label>
+        <div>
+          <FormField>
+            <label htmlFor="actorName">Actor name</label>
+            <input
+              id="actorName"
+              placeholder={"Actor " + (id + 1)}
+              value={actor.name}
+              onChange={this.onEdit("name")}
+            />
+          </FormField>
 
-        <label className="HalfWidth">
-          X
-          <input
-            type="number"
-            value={actor.x}
-            min={1}
-            onChange={this.onEdit("x")}
-          />
-        </label>
+          <FormField halfWidth>
+            <label htmlFor="actorX">X</label>
+            <input
+              id="actorX"
+              type="number"
+              value={actor.x}
+              min={1}
+              onChange={this.onEdit("x")}
+            />
+          </FormField>
 
-        <label className="HalfWidth">
-          Y
-          <input
-            type="number"
-            value={actor.y}
-            min={1}
-            onChange={this.onEdit("y")}
-          />
-        </label>
+          <FormField halfWidth>
+            <label htmlFor="actorY">Y</label>
+            <input
+              id="actorY"
+              type="number"
+              value={actor.y}
+              min={1}
+              onChange={this.onEdit("y")}
+            />
+          </FormField>
 
-        <label>
-          Sprite sheet
-          <span className="Select">
+          <FormField>
+            <label htmlFor="actorSprite">Sprite sheet</label>
             <SpriteSheetSelect
+              id="actorSprite"
               value={actor.spriteSheetId}
               onChange={this.onEdit("spriteSheetId")}
             />
-          </span>
-        </label>
+          </FormField>
 
-        {spriteSheet && spriteSheet.type !== "static" && (
-          <div>
-            <label className="HalfWidth">
-              Movement Type
-              <span className="Select">
+          {spriteSheet && spriteSheet.type !== "static" && (
+            <div>
+              <FormField halfWidth>
+                <label htmlFor="actorMovement">Movement Type</label>
                 <MovementTypeSelect
+                  id="actorMovement"
                   value={actor.movementType}
                   onChange={this.onEdit("movementType")}
                 />
-              </span>
-            </label>
-            <label className="HalfWidth">
-              Direction
-              <DirectionPicker
-                value={actor.direction}
-                onChange={this.onEdit("direction")}
-              />
-            </label>
-          </div>
-        )}
+              </FormField>
+              <FormField halfWidth>
+                <label htmlFor="actorDirection">Direction</label>
+                <DirectionPicker
+                  id="actorDirection"
+                  value={actor.direction}
+                  onChange={this.onEdit("direction")}
+                />
+              </FormField>
+            </div>
+          )}
+        </div>
 
         <h2>Actor Script</h2>
 
@@ -117,7 +122,6 @@ function mapStateToProps(state, props) {
     project.spriteSheets.find(
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
-  console.log({ actor, spriteSheet });
   return {
     modified,
     editor,

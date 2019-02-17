@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon } from "../../components/Icons";
 import ImageSelect from "../../components/ImageSelect";
+import { FormField } from "../../components/library/Forms";
 
 class MapEditor extends Component {
   onEdit = key => e => {
@@ -28,7 +29,7 @@ class MapEditor extends Component {
     }
 
     return (
-      <div className="MapEditor">
+      <div>
         <h2>
           Map{" "}
           <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
@@ -36,20 +37,19 @@ class MapEditor extends Component {
           </div>
         </h2>
 
-        <label>
-          Map name
-          <input value={map.name} onChange={this.onEdit("name")} />
-        </label>
+        <FormField>
+          <label htmlFor="mapName">Map name</label>
+          <input id="mapName" value={map.name} onChange={this.onEdit("name")} />
+        </FormField>
 
-        <label>
-          Image
-          <span className="Select">
-            <ImageSelect
-              value={map.imageId}
-              onChange={this.onEdit("imageId")}
-            />
-          </span>
-        </label>
+        <FormField>
+          <label htmlFor="mapImage">Image</label>
+          <ImageSelect
+            id="mapImage"
+            value={map.imageId}
+            onChange={this.onEdit("imageId")}
+          />
+        </FormField>
       </div>
     );
   }

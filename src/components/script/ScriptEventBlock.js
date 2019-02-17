@@ -7,6 +7,7 @@ import FadeSpeedSelect from "../FadeSpeedSelect";
 import CameraSpeedSelect from "../CameraSpeedSelect";
 import ActorSelect from "../ActorSelect";
 import EmotionSelect from "../EmotionSelect";
+import { FormField } from "../library/Forms";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
@@ -26,16 +27,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
     <div className="ScriptEventBlock">
       {fields.map(field => {
         return (
-          <div
-            className="ScriptEventBlock__Field"
-            key={field.key}
-            style={Object.assign(
-              {},
-              field.width && {
-                width: field.width
-              }
-            )}
-          >
+          <FormField key={field.key} halfWidth={field.width === "50%"}>
             {field.label && <label>{field.label}</label>}
             {field.type === "textarea" ? (
               <textarea
@@ -98,7 +90,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : (
               <div />
             )}
-          </div>
+          </FormField>
         );
       })}
     </div>

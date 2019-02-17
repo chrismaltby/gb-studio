@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon } from "../../components/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
+import { FormField } from "../../components/library/Forms";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
@@ -28,7 +29,7 @@ class TriggerEditor extends Component {
     }
 
     return (
-      <div className="TriggerEditor">
+      <div>
         <h2>
           Trigger{" "}
           <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
@@ -36,58 +37,51 @@ class TriggerEditor extends Component {
           </div>
         </h2>
 
-        <label className="HalfWidth">
-          X
-          <input
-            type="number"
-            value={trigger.x}
-            min={1}
-            onChange={this.onEdit("x")}
-          />
-        </label>
+        <div>
+          <FormField halfWidth>
+            <label htmlFor="triggerX">X</label>
+            <input
+              id="triggerX"
+              type="number"
+              value={trigger.x}
+              min={1}
+              onChange={this.onEdit("x")}
+            />
+          </FormField>
 
-        <label className="HalfWidth">
-          Y
-          <input
-            type="number"
-            value={trigger.y}
-            min={1}
-            onChange={this.onEdit("y")}
-          />
-        </label>
+          <FormField halfWidth>
+            <label htmlFor="triggerY">Y</label>
+            <input
+              id="triggerY"
+              type="number"
+              value={trigger.y}
+              min={1}
+              onChange={this.onEdit("y")}
+            />
+          </FormField>
 
-        <label className="HalfWidth">
-          Width
-          <input
-            type="number"
-            value={trigger.width}
-            min={1}
-            onChange={this.onEdit("width")}
-          />
-        </label>
+          <FormField halfWidth>
+            <label htmlFor="triggerWidth">Width</label>
+            <input
+              id="triggerWidth"
+              type="number"
+              value={trigger.width}
+              min={1}
+              onChange={this.onEdit("width")}
+            />
+          </FormField>
 
-        <label className="HalfWidth">
-          Height
-          <input
-            type="number"
-            value={trigger.height}
-            min={1}
-            onChange={this.onEdit("height")}
-          />
-        </label>
-
-        <label>
-          Activate on
-          <span className="Select">
-            <select
-              value={trigger.trigger || "walk"}
-              onChange={this.onEdit("trigger")}
-            >
-              <option value="walk">Walk over</option>
-              <option value="action">Action button</option>
-            </select>
-          </span>
-        </label>
+          <FormField halfWidth>
+            <label htmlFor="triggerHeight">Height</label>
+            <input
+              id="triggerHeight"
+              type="number"
+              value={trigger.height}
+              min={1}
+              onChange={this.onEdit("height")}
+            />
+          </FormField>
+        </div>
 
         <h2>Trigger Script</h2>
 
