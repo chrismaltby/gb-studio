@@ -135,6 +135,10 @@
   background: var(--conditional-level4);
 }
 
+.ActionMini__Children > .ActionMini--Add:first-child {
+  margin-top: -5px;
+}
+
 .ActionMini__Remove {
   position: absolute;
   top: 0px;

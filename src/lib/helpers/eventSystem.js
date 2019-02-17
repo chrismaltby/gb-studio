@@ -22,7 +22,7 @@ const walkScenesEvents = (scenes, callback) => {
 };
 
 const patchEvents = (data, id, patch) => {
-  var r = data.reduce((memo, o) => {
+  return data.reduce((memo, o) => {
     if (o.true) {
       o = {
         ...o,
@@ -48,7 +48,67 @@ const patchEvents = (data, id, patch) => {
     }
     return memo;
   }, []);
+};
+
+const prependEvent = (data, id, newData) => {
+  return data.reduce((memo, o) => {
+    if (o.true) {
+      o = {
+        ...o,
+        true: prependEvent(o.true, id, newData)
+      };
+    }
+    if (o.false) {
+      o = {
+        ...o,
+        false: prependEvent(o.false, id, newData)
+      };
+    }
+    if (o.id === id) {
+      memo.push(newData);
+    }
+    memo.push(o);
+    return memo;
+  }, []);
+};
+
+const filterEvents = (data, id) => {
+  return data.reduce((memo, o) => {
+    if (o.id !== id) {
+      memo.push({
+        ...o,
+        true: o.true && filterEvents(o.true, id),
+        false: o.false && filterEvents(o.false, id)
+      });
+    }
+    return memo;
+  }, []);
+};
+
+const findEvent = (data, id) => {
+  let r = null;
+  for (let i = 0; i < data.length; i++) {
+    let o = data[i];
+    if (o.id === id) {
+      return o;
+    }
+    if (o.true) {
+      r = findEvent(o.true, id);
+      if (r) return r;
+    }
+    if (o.false) {
+      r = findEvent(o.false, id);
+      if (r) return r;
+    }
+  }
   return r;
 };
 
-export { walkEvents, walkScenesEvents, patchEvents };
+export {
+  walkEvents,
+  walkScenesEvents,
+  patchEvents,
+  prependEvent,
+  filterEvents,
+  findEvent
+};

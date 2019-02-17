@@ -5,83 +5,19 @@ import { CloseIcon } from "../Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import ItemTypes from "../../ItemTypes";
 import AddCommandButton from "./AddCommandButton";
-import ActorSelect from "../ActorSelect";
 import ScriptEventBlock from "./ScriptEventBlock";
 import { EVENT_IF_FLAG, EVENT_END } from "../../lib/data/compiler/eventTypes";
+import {
+  patchEvents,
+  prependEvent,
+  filterEvents,
+  findEvent
+} from "../../lib/helpers/eventSystem";
 
 const uuid = a => {
   return a
     ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
     : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
-};
-
-const findData = (data, id) => {
-  var r = null;
-  for (let i = 0; i < data.length; i++) {
-    var o = data[i];
-    if (o.id === id) {
-      return o;
-    }
-    if (o.true) {
-      r = findData(o.true, id);
-      if (r) return r;
-    }
-    if (o.false) {
-      r = findData(o.false, id);
-      if (r) return r;
-    }
-  }
-  return r;
-};
-
-const filterData = (data, id) => {
-  return data.reduce((memo, o) => {
-    if (o.id !== id) {
-      memo.push({
-        ...o,
-        true: o.true && filterData(o.true, id),
-        false: o.false && filterData(o.false, id)
-      });
-    }
-    return memo;
-  }, []);
-};
-
-const prependData = (data, id, newData) => {
-  var r = data.reduce((memo, o) => {
-    if (o.true) o.true = prependData(o.true, id, newData);
-    if (o.false) o.false = prependData(o.false, id, newData);
-    if (o.id === id) {
-      memo.push(newData);
-    }
-    memo.push(o);
-    return memo;
-  }, []);
-  return r;
-};
-
-const patchData = (data, id, patch) => {
-  var r = data.reduce((memo, o) => {
-    if (o.true) {
-      o.true = patchData(o.true, id, patch);
-    }
-    if (o.false) {
-      o.false = patchData(o.false, id, patch);
-    }
-    if (o.id === id) {
-      memo.push({
-        ...o,
-        args: {
-          ...o.args,
-          ...patch
-        }
-      });
-    } else {
-      memo.push(o);
-    }
-    return memo;
-  }, []);
-  return r;
 };
 
 const cardSource = {
@@ -136,8 +72,13 @@ class ActionMini extends Component {
     const { command } = action;
 
     if (command === EVENT_END) {
-      return (
-        <div className="ActionMini">
+      return connectDropTarget(
+        <div
+          className={cx("ActionMini", "ActionMini--Add", {
+            "ActionMini--Dragging": isDragging,
+            "ActionMini--Over": isOverCurrent
+          })}
+        >
           <AddCommandButton onAdd={onAdd(id)} />
         </div>
       );
@@ -227,12 +168,12 @@ const ActionMiniDnD = DropTarget(
 );
 
 class ScriptEditor extends Component {
-  moveActions = (a, b, tree) => {
+  moveActions = (a, b) => {
     const root = this.props.value;
     if (a === b) {
       return;
     }
-    const input = prependData(filterData(root, a), b, findData(root, a));
+    const input = prependEvent(filterEvents(root, a), b, findEvent(root, a));
     this.setState({
       input
     });
@@ -241,7 +182,7 @@ class ScriptEditor extends Component {
 
   onAdd = id => command => {
     const root = this.props.value;
-    const input = prependData(
+    const input = prependEvent(
       root,
       id,
       Object.assign(
@@ -274,7 +215,7 @@ class ScriptEditor extends Component {
 
   onRemove = id => () => {
     const root = this.props.value;
-    const input = filterData(root, id);
+    const input = filterEvents(root, id);
     this.setState({
       input
     });
@@ -284,7 +225,7 @@ class ScriptEditor extends Component {
   onEdit = (id, patch) => {
     console.log("ONEDIT", id, patch);
     const root = this.props.value;
-    const input = patchData(root, id, patch);
+    const input = patchEvents(root, id, patch);
 
     this.setState({
       input
@@ -293,10 +234,7 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    // const { input } = this.state;
     const { value } = this.props;
-    // const output = [];
-    // compile(value, output);
     return (
       <div className="ScriptEditor">
         {value.map((action, index) => (
@@ -311,14 +249,6 @@ class ScriptEditor extends Component {
           />
         ))}
         {false && JSON.stringify(value, null, 4)}
-
-        {/* <div className="Output">
-          {output.map((line, num) =>
-            <div>
-              {String(num).padStart(2, " ")} : {line}
-            </div>
-          )}
-        </div>*/}
       </div>
     );
   }
