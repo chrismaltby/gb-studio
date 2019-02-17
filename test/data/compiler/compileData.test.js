@@ -100,6 +100,7 @@ test("should compile simple project into files object", async () => {
         actors: [
           {
             id: "10",
+            spriteSheetId: "SPRITE_1",
             events: [
               {
                 command: EVENT_IF_FLAG,

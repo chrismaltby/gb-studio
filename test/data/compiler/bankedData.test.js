@@ -135,7 +135,7 @@ test("Should construct C header from input", async () => {
       `bank_${MIN_DATA_BANK}_data`
     )}\n${cIntArrayExternDeclaration(
       `bank_${MIN_DATA_BANK + 1}_data`
-    )}\n#endif\n`
+    )}\n\n#endif\n`
   );
 });
 
