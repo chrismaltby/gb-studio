@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import TriggerEditor from "./TriggerEditor";
 import ActorEditor from "./ActorEditor";
-import MapEditor from "./MapEditor";
+import SceneEditor from "./SceneEditor";
 import WorldEditor from "./WorldEditor";
 
 class EditorSidebar extends Component {
@@ -15,7 +15,7 @@ class EditorSidebar extends Component {
       ) : editor.type === "actors" ? (
         <ActorEditor key={editor.index} id={editor.index} map={editor.map} />
       ) : editor.type === "maps" ? (
-        <MapEditor key={editor.map} id={editor.map} />
+        <SceneEditor key={editor.map} id={editor.map} />
       ) : editor.type === "world" ? (
         <WorldEditor />
       ) : null;

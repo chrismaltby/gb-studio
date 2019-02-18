@@ -65,23 +65,23 @@ export const setNavigationId = id => {
 };
 
 export const addMap = (x, y) => {
-  return { type: types.ADD_MAP, id: uuid(), x, y };
+  return { type: types.ADD_SCENE, id: uuid(), x, y };
 };
 
 export const selectMap = mapId => {
-  return { type: types.SELECT_MAP, mapId };
+  return { type: types.SELECT_SCENE, mapId };
 };
 
 export const moveMap = (mapId, moveX, moveY) => {
-  return { type: types.MOVE_MAP, mapId, moveX, moveY };
+  return { type: types.MOVE_SCENE, mapId, moveX, moveY };
 };
 
 export const editMap = (mapId, values) => {
-  return { type: types.EDIT_MAP, mapId, values };
+  return { type: types.EDIT_SCENE, mapId, values };
 };
 
 export const removeMap = mapId => {
-  return { type: types.REMOVE_MAP, mapId };
+  return { type: types.REMOVE_SCENE, mapId };
 };
 
 export const addActor = (mapId, x, y) => {

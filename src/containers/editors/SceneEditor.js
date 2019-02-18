@@ -31,14 +31,14 @@ class MapEditor extends Component {
     return (
       <div>
         <h2>
-          Map{" "}
+          Scene{" "}
           <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
             <CloseIcon />
           </div>
         </h2>
 
         <FormField>
-          <label htmlFor="mapName">Map name</label>
+          <label htmlFor="mapName">Scene name</label>
           <input id="mapName" value={map.name} onChange={this.onEdit("name")} />
         </FormField>
 
@@ -57,8 +57,6 @@ class MapEditor extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    modified: state.modified,
-    editor: state.editor,
     map:
       state.project &&
       state.project.scenes &&

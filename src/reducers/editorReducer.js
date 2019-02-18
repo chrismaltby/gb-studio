@@ -1,32 +1,32 @@
 import initialState from "./initialState";
 import {
-  SELECT_MAP,
+  SELECT_SCENE,
   ADD_TRIGGER,
   SELECT_TRIGGER,
   ADD_ACTOR,
   SELECT_ACTOR,
-  ADD_MAP,
-  MOVE_MAP,
+  ADD_SCENE,
+  MOVE_SCENE,
   SELECT_WORLD
 } from "../actions/actionTypes";
 
 export default function editor(state = initialState.editor, action) {
   switch (action.type) {
-    case MOVE_MAP: {
+    case MOVE_SCENE: {
       return {
         ...state,
         type: "maps",
         map: action.mapId
       };
     }
-    case SELECT_MAP: {
+    case SELECT_SCENE: {
       return {
         ...state,
         type: "maps",
         map: action.mapId
       };
     }
-    case ADD_MAP: {
+    case ADD_SCENE: {
       return {
         ...state,
         type: "maps",

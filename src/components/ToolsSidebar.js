@@ -84,7 +84,7 @@ class ToolsSidebar extends Component {
             >
               <MenuItem onClick={this.setTool("actor")}>Actor</MenuItem>
               <MenuItem onClick={this.setTool("triggers")}>Trigger</MenuItem>
-              <MenuItem onClick={this.setTool("map")}>Map</MenuItem>
+              <MenuItem onClick={this.setTool("map")}>Scene</MenuItem>
             </Menu>
           )}
         </div>

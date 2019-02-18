@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-class MapSelect extends Component {
+class SceneSelect extends Component {
   render() {
     const { maps, dispatch, ...rest } = this.props;
     return (
@@ -23,4 +23,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(MapSelect);
+export default connect(mapStateToProps)(SceneSelect);

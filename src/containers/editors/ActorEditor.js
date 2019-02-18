@@ -113,7 +113,7 @@ class ActorEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { modified, editor, project } = state;
+  const { project } = state;
   const actor =
     project.scenes &&
     project.scenes.find(map => map.id === props.map).actors[props.id];
@@ -123,8 +123,6 @@ function mapStateToProps(state, props) {
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
   return {
-    modified,
-    editor,
     actor,
     spriteSheet
   };

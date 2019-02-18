@@ -61,7 +61,7 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, modified, section = "overview", zoom, running } = this.props;
+    const { name, section = "overview", zoom, running } = this.props;
     return (
       <Toolbar>
         <ToolbarDropdownButton
@@ -105,7 +105,6 @@ class AppToolbar extends Component {
 function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
-    modified: state.modified,
     name: state.project && state.project.name,
     section: state.navigation.section,
     zoom:

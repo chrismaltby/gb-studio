@@ -18,11 +18,11 @@ export const WORLD_SAVE_REQUEST = "WORLD_SAVE_REQUEST";
 export const WORLD_SAVE_SUCCESS = "WORLD_SAVE_SUCCESS";
 export const WORLD_SAVE_FAILURE = "WORLD_SAVE_FAILURE";
 
-export const ADD_MAP = "ADD_MAP";
-export const MOVE_MAP = "MOVE_MAP";
-export const EDIT_MAP = "EDIT_MAP";
-export const REMOVE_MAP = "REMOVE_MAP";
-export const SELECT_MAP = "SELECT_MAP";
+export const ADD_SCENE = "ADD_SCENE";
+export const MOVE_SCENE = "MOVE_SCENE";
+export const EDIT_SCENE = "EDIT_SCENE";
+export const REMOVE_SCENE = "REMOVE_SCENE";
+export const SELECT_SCENE = "SELECT_SCENE";
 
 export const ADD_ACTOR = "ADD_ACTOR";
 export const MOVE_ACTOR = "MOVE_ACTOR";

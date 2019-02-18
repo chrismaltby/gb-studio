@@ -3,10 +3,10 @@ import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_SUCCESS,
-  ADD_MAP,
-  MOVE_MAP,
-  EDIT_MAP,
-  REMOVE_MAP,
+  ADD_SCENE,
+  MOVE_SCENE,
+  EDIT_SCENE,
+  REMOVE_SCENE,
   ADD_ACTOR,
   MOVE_ACTOR,
   EDIT_ACTOR,
@@ -40,11 +40,11 @@ export default function modified(state = initialState.document, action) {
         ...state,
         modified: false
       };
-    case MOVE_MAP:
-    case EDIT_MAP:
-    case REMOVE_MAP:
+    case MOVE_SCENE:
+    case EDIT_SCENE:
+    case REMOVE_SCENE:
     case ADD_ACTOR:
-    case ADD_MAP:
+    case ADD_SCENE:
     case MOVE_ACTOR:
     case EDIT_ACTOR:
     case REMOVE_ACTOR:

@@ -93,8 +93,6 @@ class TriggerEditor extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    modified: state.modified,
-    editor: state.editor,
     trigger:
       state.project &&
       state.project.scenes &&

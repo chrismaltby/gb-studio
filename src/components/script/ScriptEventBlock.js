@@ -1,6 +1,6 @@
 import React from "react";
 import { EventFields } from "../../lib/data/compiler/eventTypes";
-import MapSelect from "../../containers/forms/MapSelect";
+import SceneSelect from "../../containers/forms/SceneSelect";
 import FlagSelect from "../../containers/forms/FlagSelect";
 import DirectionPicker from "../DirectionPicker";
 import FadeSpeedSelect from "../FadeSpeedSelect";
@@ -51,7 +51,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 onChange={onChangeField(field.key, field.type)}
               />
             ) : field.type === "scene" ? (
-              <MapSelect
+              <SceneSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />

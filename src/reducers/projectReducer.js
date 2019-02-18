@@ -1,10 +1,10 @@
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
-  ADD_MAP,
-  MOVE_MAP,
-  EDIT_MAP,
-  REMOVE_MAP,
+  ADD_SCENE,
+  MOVE_SCENE,
+  EDIT_SCENE,
+  REMOVE_SCENE,
   ADD_ACTOR,
   MOVE_ACTOR,
   EDIT_ACTOR,
@@ -25,19 +25,18 @@ import {
   ZOOM_OUT,
   ZOOM_RESET
 } from "../actions/actionTypes";
-import uuid from "../lib/uuid";
 import deepmerge from "deepmerge";
 
 export default function project(state = initialState.project, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS:
       return deepmerge(state, action.data);
-    case ADD_MAP:
+    case ADD_SCENE:
       return {
         ...state,
         scenes: [].concat(state.scenes, {
           id: action.id,
-          name: "New Map",
+          name: "New Scene " + state.scenes.length,
           image: null,
           x: Math.max(50, action.x),
           y: Math.max(10, action.y),
@@ -48,7 +47,7 @@ export default function project(state = initialState.project, action) {
           collisions: []
         })
       };
-    case MOVE_MAP:
+    case MOVE_SCENE:
       return {
         ...state,
         scenes: state.scenes.map(map => {
@@ -62,7 +61,7 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case EDIT_MAP:
+    case EDIT_SCENE:
       return {
         ...state,
         scenes: state.scenes.map(scene => {
@@ -103,7 +102,7 @@ export default function project(state = initialState.project, action) {
           );
         })
       };
-    case REMOVE_MAP:
+    case REMOVE_SCENE:
       return {
         ...state,
         scenes: state.scenes.filter(map => {

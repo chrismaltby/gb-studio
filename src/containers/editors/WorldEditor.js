@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import MapSelect from "../forms/MapSelect";
+import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../../components/DirectionPicker";
 import { FormField } from "../../components/library/Forms";
 
@@ -56,12 +56,12 @@ class WorldEditor extends Component {
           </FormField>
         </div>
 
-        <h2>Start Map</h2>
+        <h2>Starting Scene</h2>
 
         <FormField>
           <label>
             <div className="Select">
-              <MapSelect
+              <SceneSelect
                 value={settings.startSceneId || ""}
                 onChange={this.onEdit("startSceneId")}
               />
