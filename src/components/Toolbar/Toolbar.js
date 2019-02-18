@@ -12,6 +12,10 @@ export const ToolbarFixedSpacer = props => (
   <div className="Toolbar__FixedSpacer" {...props} />
 );
 
+export const ToolbarTitle = props => (
+  <div className="Toolbar__Title" {...props} />
+);
+
 export class ToolbarDropdownButton extends Component {
   constructor() {
     super();

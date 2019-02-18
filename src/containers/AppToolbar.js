@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   Toolbar,
+  ToolbarTitle,
   ToolbarSpacer,
   ToolbarFixedSpacer,
   ToolbarButton,
@@ -84,7 +85,7 @@ class AppToolbar extends Component {
           </ToolbarButton>
         </ToolbarButton>
         <ToolbarSpacer />
-        {name || "Untitled"}
+        <ToolbarTitle>{name || "Untitled"}</ToolbarTitle>
         <ToolbarSpacer />
         <ToolbarSpacer />
         <ToolbarButton onClick={this.openProjectFolder}>

@@ -46,6 +46,7 @@
   box-shadow: 0px 1px #c5c5c5;
   white-space: nowrap;
   padding: 0px 8px;
+  overflow: hidden;
 }
 
 .App--Blur .Toolbar__Button {
@@ -101,4 +102,11 @@
 .Toolbar__Button .Toolbar__Button svg {
   width: 8px;
   height: 8px;
+}
+
+.Toolbar__Title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0px 10px;
 }
