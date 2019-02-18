@@ -7,6 +7,7 @@ import ScriptReviewLine from "../../components/script/ScriptReviewLine";
 import patchScriptData from "../../lib/patchScriptData";
 import trim2lines from "../../lib/trim2lines";
 import { walkEvents } from "../../lib/helpers/eventSystem";
+import { EVENT_TEXT } from "../../lib/data/compiler/eventTypes";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {
@@ -53,7 +54,7 @@ function mapStateToProps(state) {
   const scriptLines = scenes.reduce((memo, scene) => {
     scene.actors.forEach((actor, actorIndex) => {
       walkEvents(actor.script, cmd => {
-        if (cmd.command === "TEXT") {
+        if (cmd.command === EVENT_TEXT) {
           memo.push({
             scene,
             actor,

@@ -4,6 +4,7 @@ import saveProjectData from "../lib/saveProjectData";
 import runCmd from "../lib/runCmd";
 import compileProject from "../lib/compile/compile";
 import fs from "fs-extra";
+import uuid from "../lib/uuid";
 
 const asyncAction = async (
   dispatch,
@@ -64,7 +65,7 @@ export const setNavigationId = id => {
 };
 
 export const addMap = (x, y) => {
-  return { type: types.ADD_MAP, x, y };
+  return { type: types.ADD_MAP, id: uuid(), x, y };
 };
 
 export const selectMap = mapId => {
@@ -84,7 +85,7 @@ export const removeMap = mapId => {
 };
 
 export const addActor = (mapId, x, y) => {
-  return { type: types.ADD_ACTOR, mapId, x, y };
+  return { type: types.ADD_ACTOR, id: uuid(), mapId, x, y };
 };
 
 export const moveActor = (mapId, index, moveX, moveY) => {
@@ -161,6 +162,10 @@ export const editWorld = values => {
 
 export const editProject = values => {
   return { type: types.EDIT_PROJECT, values };
+};
+
+export const editProjectSettings = values => {
+  return { type: types.EDIT_PROJECT_SETTINGS, values };
 };
 
 export const zoomIn = () => {

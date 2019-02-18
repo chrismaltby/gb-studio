@@ -21,7 +21,9 @@ import {
   REMOVE_TRIGGER_AT,
   EDIT_TRIGGER,
   RENAME_FLAG,
-  EDIT_WORLD
+  EDIT_WORLD,
+  EDIT_PROJECT,
+  EDIT_PROJECT_SETTINGS
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -57,6 +59,8 @@ export default function modified(state = initialState.document, action) {
     case EDIT_TRIGGER:
     case RENAME_FLAG:
     case EDIT_WORLD:
+    case EDIT_PROJECT:
+    case EDIT_PROJECT_SETTINGS:
       return {
         ...state,
         modified: true

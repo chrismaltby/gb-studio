@@ -20,6 +20,7 @@ import {
   MOVE_TRIGGER,
   RENAME_FLAG,
   EDIT_PROJECT,
+  EDIT_PROJECT_SETTINGS,
   ZOOM_IN,
   ZOOM_OUT,
   ZOOM_RESET
@@ -35,7 +36,7 @@ export default function project(state = initialState.project, action) {
       return {
         ...state,
         scenes: [].concat(state.scenes, {
-          id: uuid(),
+          id: action.id,
           name: "New Map",
           image: null,
           x: Math.max(50, action.x),
@@ -120,7 +121,7 @@ export default function project(state = initialState.project, action) {
             ...map,
             actors: [].concat(
               {
-                id: uuid(),
+                id: action.id,
                 spriteSheetId:
                   state.spriteSheets[0] && state.spriteSheets[0].id,
                 x: action.x,
@@ -419,9 +420,9 @@ export default function project(state = initialState.project, action) {
           }),
           action.name
             ? {
-                id: action.flagId,
-                name: action.name
-              }
+              id: action.flagId,
+              name: action.name
+            }
             : []
         )
       };
@@ -430,6 +431,14 @@ export default function project(state = initialState.project, action) {
       return {
         ...state,
         ...action.values
+      };
+    case EDIT_PROJECT_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          ...action.values
+        }
       };
     case ZOOM_IN:
       return {

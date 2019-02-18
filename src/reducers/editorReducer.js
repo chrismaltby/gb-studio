@@ -5,6 +5,7 @@ import {
   SELECT_TRIGGER,
   ADD_ACTOR,
   SELECT_ACTOR,
+  ADD_MAP,
   MOVE_MAP,
   SELECT_WORLD
 } from "../actions/actionTypes";
@@ -23,6 +24,13 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "maps",
         map: action.mapId
+      };
+    }
+    case ADD_MAP: {
+      return {
+        ...state,
+        type: "maps",
+        map: action.id
       };
     }
     case ADD_TRIGGER: {

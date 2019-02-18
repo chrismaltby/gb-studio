@@ -11,10 +11,10 @@ class WorldEditor extends Component {
       ? e.currentTarget.type === "number"
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.type === "checkbox"
-        ? e.currentTarget.checked
-        : e.currentTarget.value
+          ? e.currentTarget.checked
+          : e.currentTarget.value
       : e;
-    this.props.editProject({
+    this.props.editProjectSettings({
       [key]: value
     });
   };
@@ -62,8 +62,8 @@ class WorldEditor extends Component {
           <label>
             <div className="Select">
               <MapSelect
-                value={project.startMapId || ""}
-                onChange={this.onEdit("startMapId")}
+                value={settings.startSceneId || ""}
+                onChange={this.onEdit("startSceneId")}
               />
             </div>
           </label>
@@ -74,7 +74,7 @@ class WorldEditor extends Component {
           <input
             id="startX"
             type="number"
-            value={project.startX || 0}
+            value={settings.startX || 0}
             min={1}
             onChange={this.onEdit("startX")}
           />
@@ -85,7 +85,7 @@ class WorldEditor extends Component {
           <input
             id="startY"
             type="number"
-            value={project.startY || 0}
+            value={settings.startY || 0}
             min={1}
             onChange={this.onEdit("startY")}
           />
@@ -95,7 +95,7 @@ class WorldEditor extends Component {
           <label htmlFor="startDirection">Direction</label>
           <DirectionPicker
             id="startDirection"
-            value={project.startDirection || 0}
+            value={settings.startDirection || 0}
             onChange={this.onEdit("startDirection")}
           />
         </FormField>
@@ -112,7 +112,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editProject: actions.editProject
+  editProjectSettings: actions.editProjectSettings
 };
 
 export default connect(
