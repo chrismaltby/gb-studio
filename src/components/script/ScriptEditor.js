@@ -191,17 +191,17 @@ class ScriptEditor extends Component {
           command,
           args: {}
         },
-        command === "IF_FLAG" && {
+        command === EVENT_IF_FLAG && {
           true: [
             {
               id: uuid(),
-              command: "END"
+              command: EVENT_END
             }
           ],
           false: [
             {
               id: uuid(),
-              command: "END"
+              command: EVENT_END
             }
           ]
         }
