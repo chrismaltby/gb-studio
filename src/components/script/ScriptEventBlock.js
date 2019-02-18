@@ -12,15 +12,18 @@ import { FormField } from "../library/Forms";
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
   const onChangeField = (key, type = "text", updateFn) => e => {
-    let value = e.currentTarget ? e.currentTarget.value : e;
+    let newValue = e.currentTarget ? e.currentTarget.value : e;
     if (type === "number") {
-      value = parseInt(value, 10);
+      newValue = parseInt(newValue, 10);
+    }
+    if (type === "direction" && newValue === value[key]) {
+      newValue = "";
     }
     if (updateFn) {
-      value = updateFn(value);
+      newValue = updateFn(newValue);
     }
     return onChange({
-      [key]: value
+      [key]: newValue
     });
   };
   return (
@@ -65,7 +68,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "direction" ? (
               <DirectionPicker
                 value={value[field.key]}
-                onChange={onChangeField(field.key)}
+                onChange={onChangeField(field.key, "direction")}
               />
             ) : field.type === "fadeSpeed" ? (
               <FadeSpeedSelect
