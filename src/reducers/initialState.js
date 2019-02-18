@@ -17,7 +17,7 @@ export default {
   world: {},
   editor: {
     type: "world",
-    map: "",
+    scene: "",
     index: 0
   },
   navigation: {

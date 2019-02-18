@@ -4,9 +4,9 @@ import cx from "classnames";
 import * as actions from "../actions";
 import getCoords from "../lib/getCoords";
 import Actor from "./Actor";
-import MapCollisions from "./MapCollisions";
+import SceneCollisions from "./SceneCollisions";
 
-class Map extends Component {
+class Scene extends Component {
   constructor() {
     super();
     this.state = {
@@ -27,7 +27,7 @@ class Map extends Component {
   }
 
   onMouseMove = e => {
-    const { id, tool, editor, map, showCollisions, zoomRatio } = this.props;
+    const { id, tool, editor, scene, showCollisions, zoomRatio } = this.props;
     const { creating, downX, downY } = this.state;
 
     const pos = getCoords(e.currentTarget);
@@ -71,10 +71,10 @@ class Map extends Component {
     let actor = this.actorAt(tX, tY);
 
     this.props.setStatus({
-      mapName: map.name,
+      sceneName: scene.name,
       x: tX,
       y: tY,
-      actor: actor && (actor.name || "Actor " + (map.actors.indexOf(actor) + 1))
+      actor: actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
     });
 
     this.setState({
@@ -85,17 +85,17 @@ class Map extends Component {
   };
 
   onMouseDown = e => {
-    const { id, tool, map, width, showCollisions } = this.props;
+    const { id, tool, scene, width, showCollisions } = this.props;
     const { hoverX, hoverY } = this.state;
     if (tool === "select") {
       let trigger = this.triggerAt(hoverX, hoverY);
       let actor = this.actorAt(hoverX, hoverY);
       if (trigger) {
-        this.props.selectTrigger(id, map.triggers.indexOf(trigger));
+        this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
       } else if (actor) {
-        this.props.selectActor(id, map.actors.indexOf(actor));
+        this.props.selectActor(id, scene.actors.indexOf(actor));
       } else {
-        this.props.selectMap(id);
+        this.props.selectScene(id);
       }
     } else if (tool === "actor") {
       this.props.addActor(id, hoverX, hoverY);
@@ -105,7 +105,7 @@ class Map extends Component {
       const collisionByteOffset = collisionIndex & 7;
       const collisionByteMask = 1 << collisionByteOffset;
 
-      if (map.collisions[collisionByteIndex] & collisionByteMask) {
+      if (scene.collisions[collisionByteIndex] & collisionByteMask) {
         this.props.removeCollisionTile(id, hoverX, hoverY);
         this.remove = true;
       } else {
@@ -115,7 +115,7 @@ class Map extends Component {
     } else if (tool === "triggers") {
       let trigger = this.triggerAt(hoverX, hoverY);
       if (trigger) {
-        this.props.selectTrigger(id, map.triggers.indexOf(trigger));
+        this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
       } else {
         this.props.addTrigger(id, hoverX, hoverY);
       }
@@ -147,7 +147,7 @@ class Map extends Component {
     this.setState({
       dragging: true
     });
-    this.props.selectMap(id);
+    this.props.selectScene(id);
   };
 
   onMoveDrag = e => {
@@ -160,7 +160,7 @@ class Map extends Component {
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      this.props.moveMap(id, dragX / zoomRatio, dragY / zoomRatio);
+      this.props.moveScene(id, dragX / zoomRatio, dragY / zoomRatio);
     }
   };
 
@@ -176,8 +176,8 @@ class Map extends Component {
   };
 
   triggerAt = (x, y) => {
-    const { map } = this.props;
-    const { triggers = [] } = map;
+    const { scene } = this.props;
+    const { triggers = [] } = scene;
     return triggers.find(
       trigger =>
         x >= trigger.x &&
@@ -188,8 +188,8 @@ class Map extends Component {
   };
 
   actorAt = (x, y) => {
-    const { map } = this.props;
-    const { actors = [] } = map;
+    const { scene } = this.props;
+    const { actors = [] } = scene;
     return actors.find(
       actor => x >= actor.x && x < actor.x + 2 && y === actor.y
     );
@@ -198,7 +198,7 @@ class Map extends Component {
   render() {
     const {
       id,
-      map,
+      scene,
       tool,
       editor,
       image,
@@ -208,36 +208,35 @@ class Map extends Component {
       projectRoot,
       showCollisions
     } = this.props;
-    const { x, y, triggers = [], collisions = [], actors = [] } = map;
+    const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
     const { hover, hoverX, hoverY } = this.state;
 
-    const mapSelected = editor.type === "maps" && editor.map === id;
+    const sceneSelected = editor.type === "scenes" && editor.scene === id;
 
     return (
       <div
-        className={cx("Map", { "Map--Selected": mapSelected })}
+        className={cx("Scene", { "Scene--Selected": sceneSelected })}
         style={{
           top: y,
           left: x
         }}
       >
         <div
-          className="Map__Name"
+          className="Scene__Name"
           onMouseDown={this.onStartDrag}
           onMouseMove={this.onMoveDrag}
           onMouseUp={this.onEndDrag}
         >
-          {map.name}
+          {scene.name}
         </div>
         <div
-          className="Map__Image"
+          className="Scene__Image"
           style={{
             width: width * 8,
             height: height * 8,
             backgroundImage:
               image &&
-              // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
               `url("${projectRoot}/assets/backgrounds/${image}")`
           }}
           onMouseMove={this.onMouseMove}
@@ -247,10 +246,10 @@ class Map extends Component {
           {triggers.map((trigger, index) => (
             <div
               key={index}
-              className={cx("Map__Trigger", {
-                "Map__Trigger--Selected":
+              className={cx("Scene__Trigger", {
+                "Scene__Trigger--Selected":
                   editor.type === "triggers" &&
-                  editor.map === id &&
+                  editor.scene === id &&
                   editor.index === index
               })}
               style={{
@@ -262,7 +261,7 @@ class Map extends Component {
             />
           ))}
           {showCollisions && (
-            <MapCollisions
+            <SceneCollisions
               width={width}
               height={height}
               collisions={collisions}
@@ -274,7 +273,7 @@ class Map extends Component {
               collision ? (
                 <div
                   key={index}
-                  className="Map__Collision"
+                  className="Scene__Collision"
                   style={{
                     top: Math.floor(index / width) * 8,
                     left: (index % width) * 8,
@@ -283,20 +282,20 @@ class Map extends Component {
                   }}
                 />
               ) : (
-                undefined
-              )
+                  undefined
+                )
             )}
           {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
           ))}
           {tool === "actor" && hover && (
-            <div className="Map__Ghost">
+            <div className="Scene__Ghost">
               <Actor x={hoverX} y={hoverY} />
             </div>
           )}
           {hover && (
             <div
-              className="Map__Hover"
+              className="Scene__Hover"
               style={{
                 top: hoverY * 8,
                 left: hoverX * 8
@@ -311,7 +310,7 @@ class Map extends Component {
 
 function mapStateToProps(state, props) {
   const image = state.project.images.find(
-    image => image.id === props.map.imageId
+    image => image.id === props.scene.imageId
   );
   return {
     projectRoot: state.document && state.document.root,
@@ -333,7 +332,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  moveMap: actions.moveMap,
+  moveScene: actions.moveScene,
   addActor: actions.addActor,
   selectActor: actions.selectActor,
   moveActor: actions.moveActor,
@@ -345,7 +344,7 @@ const mapDispatchToProps = {
   resizeTrigger: actions.resizeTrigger,
   moveTrigger: actions.moveTrigger,
   selectTrigger: actions.selectTrigger,
-  selectMap: actions.selectMap,
+  selectScene: actions.selectScene,
   setTool: actions.setTool,
   setStatus: actions.setStatus
 };
@@ -353,4 +352,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Map);
+)(Scene);

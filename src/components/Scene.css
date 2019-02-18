@@ -1,4 +1,4 @@
-.Map {
+.Scene {
   position: absolute;
   padding-top: 20px;
   /* border-radius: 16px; */
@@ -6,11 +6,11 @@
   text-align: center;
 }
 
-/* .Map:hover {
+/* .Scene:hover {
   background-color: #011020;
 } */
 
-.Map__Name {
+.Scene__Name {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -22,7 +22,7 @@
   letter-spacing: 1.4px;
 }
 
-.Map__Image {
+.Scene__Image {
   position: relative;
   background-color: #fff;
   background-repeat: no-repeat;
@@ -32,22 +32,22 @@
   image-rendering: pixelated;
 }
 
-.Map--Selected .Map__Image {
+.Scene--Selected .Scene__Image {
   outline: 2px solid #03a9f4;
 }
 
-.Map--Selected .Map__Name {
+.Scene--Selected .Scene__Name {
   color: var(--main-text-color);
 }
 
-.Map__Hover {
+.Scene__Hover {
   position: absolute;
   width: 8px;
   height: 8px;
   outline: 1px solid red;
 }
 
-.Map__Trigger {
+.Scene__Trigger {
   position: absolute;
   width: 8px;
   height: 8px;
@@ -55,7 +55,7 @@
   outline: 1px solid rgba(255, 120, 0, 1);
 }
 
-.Map__Trigger--Selected {
+.Scene__Trigger--Selected {
   position: absolute;
   width: 8px;
   height: 8px;
@@ -63,13 +63,13 @@
   outline: 1px solid rgba(255, 120, 0, 1);
 }
 
-.Map__Collision {
+.Scene__Collision {
   position: absolute;
   width: 8px;
   height: 8px;
   background-color: rgba(255, 20, 0, 0.5);
 }
 
-.Map__Ghost {
+.Scene__Ghost {
   opacity: 0.5;
 }

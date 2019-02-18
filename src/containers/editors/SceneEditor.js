@@ -5,26 +5,26 @@ import { CloseIcon } from "../../components/library/Icons";
 import ImageSelect from "../../components/ImageSelect";
 import { FormField } from "../../components/library/Forms";
 
-class MapEditor extends Component {
+class SceneEditor extends Component {
   onEdit = key => e => {
     const value = e.currentTarget
       ? e.currentTarget.type === "number"
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.value
       : e;
-    this.props.editMap(this.props.id, {
+    this.props.editScene(this.props.id, {
       [key]: value
     });
   };
 
   onRemove = e => {
-    this.props.removeMap(this.props.id);
+    this.props.removeScene(this.props.id);
   };
 
   render() {
-    const { map } = this.props;
+    const { scene } = this.props;
 
-    if (!map) {
+    if (!scene) {
       return <div />;
     }
 
@@ -38,15 +38,15 @@ class MapEditor extends Component {
         </h2>
 
         <FormField>
-          <label htmlFor="mapName">Scene name</label>
-          <input id="mapName" value={map.name} onChange={this.onEdit("name")} />
+          <label htmlFor="sceneName">Scene name</label>
+          <input id="sceneName" value={scene.name} onChange={this.onEdit("name")} />
         </FormField>
 
         <FormField>
-          <label htmlFor="mapImage">Image</label>
+          <label htmlFor="sceneImage">Image</label>
           <ImageSelect
-            id="mapImage"
-            value={map.imageId}
+            id="sceneImage"
+            value={scene.imageId}
             onChange={this.onEdit("imageId")}
           />
         </FormField>
@@ -57,19 +57,19 @@ class MapEditor extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    map:
+    scene:
       state.project &&
       state.project.scenes &&
-      state.project.scenes.find(map => map.id === props.id)
+      state.project.scenes.find(scene => scene.id === props.id)
   };
 }
 
 const mapDispatchToProps = {
-  editMap: actions.editMap,
-  removeMap: actions.removeMap
+  editScene: actions.editScene,
+  removeScene: actions.removeScene
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MapEditor);
+)(SceneEditor);

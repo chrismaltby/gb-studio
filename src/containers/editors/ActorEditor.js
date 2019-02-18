@@ -15,13 +15,13 @@ class ActorEditor extends Component {
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.value
       : e;
-    this.props.editActor(this.props.map, this.props.id, {
+    this.props.editActor(this.props.scene, this.props.id, {
       [key]: value
     });
   };
 
   onRemove = e => {
-    this.props.removeActor(this.props.map, this.props.id);
+    this.props.removeActor(this.props.scene, this.props.id);
   };
 
   render() {
@@ -116,7 +116,7 @@ function mapStateToProps(state, props) {
   const { project } = state;
   const actor =
     project.scenes &&
-    project.scenes.find(map => map.id === props.map).actors[props.id];
+    project.scenes.find(scene => scene.id === props.scene).actors[props.id];
   const spriteSheet =
     actor &&
     project.spriteSheets.find(

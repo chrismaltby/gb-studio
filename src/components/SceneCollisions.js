@@ -2,7 +2,7 @@ import React, { Component } from "React";
 
 const TILE_SIZE = 8;
 
-class MapCollisions extends Component {
+class SceneCollisions extends Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
@@ -41,7 +41,7 @@ class MapCollisions extends Component {
   render() {
     const { width, height } = this.props;
     return (
-      <div className="MapCollisions">
+      <div className="SceneCollisions">
         <canvas
           ref={this.canvas}
           width={width * TILE_SIZE}
@@ -52,4 +52,4 @@ class MapCollisions extends Component {
   }
 }
 
-export default MapCollisions;
+export default SceneCollisions;

@@ -21,7 +21,7 @@
   transition: 0.3s transform ease-in-out;
 }
 
-.World__NewMap {
+.World__NewScene {
   position: absolute;
   cursor: pointer;
   background-color: rgba(3, 54, 99, 0.5);

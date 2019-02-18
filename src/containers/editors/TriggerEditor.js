@@ -12,13 +12,13 @@ class TriggerEditor extends Component {
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.value
       : e;
-    this.props.editTrigger(this.props.map, this.props.id, {
+    this.props.editTrigger(this.props.scene, this.props.id, {
       [key]: value
     });
   };
 
   onRemove = e => {
-    this.props.removeTrigger(this.props.map, this.props.id);
+    this.props.removeTrigger(this.props.scene, this.props.id);
   };
 
   render() {
@@ -96,7 +96,7 @@ function mapStateToProps(state, props) {
     trigger:
       state.project &&
       state.project.scenes &&
-      state.project.scenes.find(map => map.id === props.map).triggers[props.id]
+      state.project.scenes.find(scene => scene.id === props.scene).triggers[props.id]
   };
 }
 

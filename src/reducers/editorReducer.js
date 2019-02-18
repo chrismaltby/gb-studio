@@ -15,29 +15,29 @@ export default function editor(state = initialState.editor, action) {
     case MOVE_SCENE: {
       return {
         ...state,
-        type: "maps",
-        map: action.mapId
+        type: "scenes",
+        scene: action.sceneId
       };
     }
     case SELECT_SCENE: {
       return {
         ...state,
-        type: "maps",
-        map: action.mapId
+        type: "scenes",
+        scene: action.sceneId
       };
     }
     case ADD_SCENE: {
       return {
         ...state,
-        type: "maps",
-        map: action.id
+        type: "scenes",
+        scene: action.id
       };
     }
     case ADD_TRIGGER: {
       return {
         ...state,
         type: "triggers",
-        map: action.mapId,
+        scene: action.sceneId,
         index: 0
       };
     }
@@ -45,7 +45,7 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         type: "triggers",
-        map: action.mapId,
+        scene: action.sceneId,
         index: action.index
       };
     }
@@ -53,7 +53,7 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         type: "actors",
-        map: action.mapId,
+        scene: action.sceneId,
         index: 0
       };
     }
@@ -61,7 +61,7 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         type: "actors",
-        map: action.mapId,
+        scene: action.sceneId,
         index: action.index
       };
     }

@@ -7,11 +7,11 @@ const scriptMapTransition = script => {
   });
 };
 
-export default ({ maps, zoomRatio }) => {
+export default ({ scenes, zoomRatio }) => {
   const width =
-    Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
+    Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
   const height =
-    Math.max.apply(null, maps.map(map => 20 + map.y + map.height * 8)) + 100;
+    Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) + 100;
 
   return (
     <svg
@@ -22,22 +22,22 @@ export default ({ maps, zoomRatio }) => {
         strokeWidth: 2 / zoomRatio
       }}
     >
-      {maps.map(map =>
-        [].concat(map.triggers || [], map.actors || []).map((object, index) => {
+      {scenes.map(scene =>
+        [].concat(scene.triggers || [], scene.actors || []).map((object, index) => {
           const transitions = scriptMapTransition(object.script || []);
           return transitions.map((transition, tIndex) => {
-            const destMap = maps.find(m => m.id === transition.args.sceneId);
+            const destMap = scenes.find(m => m.id === transition.args.sceneId);
             if (!destMap) {
               return null;
             }
-            const x1 = map.x + (object.x + (object.width || 2) / 2) * 8;
+            const x1 = scene.x + (object.x + (object.width || 2) / 2) * 8;
             const x2 = destMap.x + transition.args.x * 8 + 5;
-            const y1 = 20 + map.y + (object.y + (object.height || 1) / 2) * 8;
+            const y1 = 20 + scene.y + (object.y + (object.height || 1) / 2) * 8;
             const y2 = 20 + destMap.y + transition.args.y * 8 + 5;
             const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
             const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
             return (
-              <g key={map.id + "_" + index}>
+              <g key={scene.id + "_" + index}>
                 <path
                   d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
                   e="M10 80 Q 95 10 180 80"

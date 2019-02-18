@@ -50,14 +50,14 @@ export default function project(state = initialState.project, action) {
     case MOVE_SCENE:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            x: Math.max(50, map.x + action.moveX),
-            y: Math.max(10, map.y + action.moveY)
+            ...scene,
+            x: Math.max(50, scene.x + action.moveX),
+            y: Math.max(10, scene.y + action.moveY)
           };
         })
       };
@@ -65,7 +65,7 @@ export default function project(state = initialState.project, action) {
       return {
         ...state,
         scenes: state.scenes.map(scene => {
-          if (scene.id !== action.mapId) {
+          if (scene.id !== action.sceneId) {
             return scene;
           }
 
@@ -105,19 +105,19 @@ export default function project(state = initialState.project, action) {
     case REMOVE_SCENE:
       return {
         ...state,
-        scenes: state.scenes.filter(map => {
-          return map.id !== action.mapId;
+        scenes: state.scenes.filter(scene => {
+          return scene.id !== action.sceneId;
         })
       };
     case ADD_ACTOR:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
+            ...scene,
             actors: [].concat(
               {
                 id: action.id,
@@ -128,7 +128,7 @@ export default function project(state = initialState.project, action) {
                 movementType: "static",
                 direction: "down"
               },
-              map.actors
+              scene.actors
             )
           };
         })
@@ -136,13 +136,13 @@ export default function project(state = initialState.project, action) {
     case MOVE_ACTOR:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            actors: map.actors.map((actor, index) => {
+            ...scene,
+            actors: scene.actors.map((actor, index) => {
               if (index !== action.index) {
                 return actor;
               }
@@ -158,13 +158,13 @@ export default function project(state = initialState.project, action) {
     case EDIT_ACTOR:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            actors: map.actors.map((actor, index) => {
+            ...scene,
+            actors: scene.actors.map((actor, index) => {
               if (index !== action.index) {
                 return actor;
               }
@@ -179,13 +179,13 @@ export default function project(state = initialState.project, action) {
     case REMOVE_ACTOR:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            actors: map.actors.filter((actor, index) => {
+            ...scene,
+            actors: scene.actors.filter((actor, index) => {
               return action.index !== index;
             })
           };
@@ -194,13 +194,13 @@ export default function project(state = initialState.project, action) {
     case REMOVE_ACTOR_AT:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            actors: map.actors.filter(actor => {
+            ...scene,
+            actors: scene.actors.filter(actor => {
               return !(
                 (actor.x === action.x || actor.x === action.x - 1) &&
                 (actor.y === action.y || actor.y === action.y + 1)
@@ -216,19 +216,19 @@ export default function project(state = initialState.project, action) {
 
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
 
           const image =
-            map.imageId && state.images.find(image => image.id === map.imageId);
+            scene.imageId && state.images.find(image => image.id === scene.imageId);
           if (!image) {
-            return map;
+            return scene;
           }
 
           let collisionsSize = Math.ceil((image.width * image.height) / 8);
-          const collisions = map.collisions.slice(0, collisionsSize);
+          const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
             for (let i = collisions.length; i < collisionsSize; i++) {
@@ -252,19 +252,19 @@ export default function project(state = initialState.project, action) {
     case REMOVE_COLLISION_TILE: {
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
 
           const image =
-            map.imageId && state.images.find(image => image.id === map.imageId);
+            scene.imageId && state.images.find(image => image.id === scene.imageId);
           if (!image) {
-            return map;
+            return scene;
           }
 
           let collisionsSize = Math.ceil((image.width * image.height) / 8);
-          const collisions = map.collisions.slice(0, collisionsSize);
+          const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
             for (let i = collisions.length; i < collisionsSize; i++) {
@@ -279,7 +279,7 @@ export default function project(state = initialState.project, action) {
           collisions[collisionByteIndex] &= ~collisionByteMask;
 
           return {
-            ...map,
+            ...scene,
             collisions
           };
         })
@@ -288,12 +288,12 @@ export default function project(state = initialState.project, action) {
     case ADD_TRIGGER:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
+            ...scene,
             triggers: [].concat(
               {
                 x: action.x,
@@ -302,7 +302,7 @@ export default function project(state = initialState.project, action) {
                 height: 1,
                 trigger: "walk"
               },
-              map.triggers
+              scene.triggers
             )
           };
         })
@@ -310,13 +310,13 @@ export default function project(state = initialState.project, action) {
     case REMOVE_TRIGGER:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            triggers: map.triggers.filter((trigger, index) => {
+            ...scene,
+            triggers: scene.triggers.filter((trigger, index) => {
               return action.index !== index;
             })
           };
@@ -325,13 +325,13 @@ export default function project(state = initialState.project, action) {
     case REMOVE_TRIGGER_AT: {
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            triggers: map.triggers.filter(trigger => {
+            ...scene,
+            triggers: scene.triggers.filter(trigger => {
               return (
                 action.x < trigger.x ||
                 action.x >= trigger.x + trigger.width ||
@@ -346,13 +346,13 @@ export default function project(state = initialState.project, action) {
     case RESIZE_TRIGGER:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            triggers: map.triggers.map((trigger, index) => {
+            ...scene,
+            triggers: scene.triggers.map((trigger, index) => {
               if (index !== action.index) {
                 return trigger;
               }
@@ -370,13 +370,13 @@ export default function project(state = initialState.project, action) {
     case EDIT_TRIGGER:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            triggers: map.triggers.map((trigger, index) => {
+            ...scene,
+            triggers: scene.triggers.map((trigger, index) => {
               if (index !== action.index) {
                 return trigger;
               }
@@ -391,13 +391,13 @@ export default function project(state = initialState.project, action) {
     case MOVE_TRIGGER:
       return {
         ...state,
-        scenes: state.scenes.map(map => {
-          if (map.id !== action.mapId) {
-            return map;
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
           }
           return {
-            ...map,
-            triggers: map.triggers.map((trigger, index) => {
+            ...scene,
+            triggers: scene.triggers.map((trigger, index) => {
               if (index !== action.index) {
                 return trigger;
               }

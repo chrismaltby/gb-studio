@@ -64,84 +64,84 @@ export const setNavigationId = id => {
   return { type: types.SET_NAVIGATION_ID, id };
 };
 
-export const addMap = (x, y) => {
+export const addScene = (x, y) => {
   return { type: types.ADD_SCENE, id: uuid(), x, y };
 };
 
-export const selectMap = mapId => {
-  return { type: types.SELECT_SCENE, mapId };
+export const selectScene = sceneId => {
+  return { type: types.SELECT_SCENE, sceneId };
 };
 
-export const moveMap = (mapId, moveX, moveY) => {
-  return { type: types.MOVE_SCENE, mapId, moveX, moveY };
+export const moveScene = (sceneId, moveX, moveY) => {
+  return { type: types.MOVE_SCENE, sceneId, moveX, moveY };
 };
 
-export const editMap = (mapId, values) => {
-  return { type: types.EDIT_SCENE, mapId, values };
+export const editScene = (sceneId, values) => {
+  return { type: types.EDIT_SCENE, sceneId, values };
 };
 
-export const removeMap = mapId => {
-  return { type: types.REMOVE_SCENE, mapId };
+export const removeScene = sceneId => {
+  return { type: types.REMOVE_SCENE, sceneId };
 };
 
-export const addActor = (mapId, x, y) => {
-  return { type: types.ADD_ACTOR, id: uuid(), mapId, x, y };
+export const addActor = (sceneId, x, y) => {
+  return { type: types.ADD_ACTOR, id: uuid(), sceneId, x, y };
 };
 
-export const moveActor = (mapId, index, moveX, moveY) => {
-  return { type: types.MOVE_ACTOR, mapId, index, moveX, moveY };
+export const moveActor = (sceneId, index, moveX, moveY) => {
+  return { type: types.MOVE_ACTOR, sceneId, index, moveX, moveY };
 };
 
-export const selectActor = (mapId, index) => {
-  return { type: types.SELECT_ACTOR, mapId, index };
+export const selectActor = (sceneId, index) => {
+  return { type: types.SELECT_ACTOR, sceneId, index };
 };
 
-export const removeActor = (mapId, index) => {
-  return { type: types.REMOVE_ACTOR, mapId, index };
+export const removeActor = (sceneId, index) => {
+  return { type: types.REMOVE_ACTOR, sceneId, index };
 };
 
-export const removeActorAt = (mapId, x, y) => {
-  return { type: types.REMOVE_ACTOR_AT, mapId, x, y };
+export const removeActorAt = (sceneId, x, y) => {
+  return { type: types.REMOVE_ACTOR_AT, sceneId, x, y };
 };
 
-export const editActor = (mapId, index, values) => {
-  return { type: types.EDIT_ACTOR, mapId, index, values };
+export const editActor = (sceneId, index, values) => {
+  return { type: types.EDIT_ACTOR, sceneId, index, values };
 };
 
-export const addCollisionTile = (mapId, x, y) => {
-  return { type: types.ADD_COLLISION_TILE, mapId, x, y };
+export const addCollisionTile = (sceneId, x, y) => {
+  return { type: types.ADD_COLLISION_TILE, sceneId, x, y };
 };
 
-export const removeCollisionTile = (mapId, x, y) => {
-  return { type: types.REMOVE_COLLISION_TILE, mapId, x, y };
+export const removeCollisionTile = (sceneId, x, y) => {
+  return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
-export const addTrigger = (mapId, x, y) => {
-  return { type: types.ADD_TRIGGER, mapId, x, y };
+export const addTrigger = (sceneId, x, y) => {
+  return { type: types.ADD_TRIGGER, sceneId, x, y };
 };
 
-export const removeTrigger = (mapId, index) => {
-  return { type: types.REMOVE_TRIGGER, mapId, index };
+export const removeTrigger = (sceneId, index) => {
+  return { type: types.REMOVE_TRIGGER, sceneId, index };
 };
 
-export const removeTriggerAt = (mapId, x, y) => {
-  return { type: types.REMOVE_TRIGGER_AT, mapId, x, y };
+export const removeTriggerAt = (sceneId, x, y) => {
+  return { type: types.REMOVE_TRIGGER_AT, sceneId, x, y };
 };
 
-export const resizeTrigger = (mapId, index, startX, startY, x, y) => {
-  return { type: types.RESIZE_TRIGGER, mapId, index, startX, startY, x, y };
+export const resizeTrigger = (sceneId, index, startX, startY, x, y) => {
+  return { type: types.RESIZE_TRIGGER, sceneId, index, startX, startY, x, y };
 };
 
-export const moveTrigger = (mapId, index, moveX, moveY) => {
-  return { type: types.MOVE_TRIGGER, mapId, index, moveX, moveY };
+export const moveTrigger = (sceneId, index, moveX, moveY) => {
+  return { type: types.MOVE_TRIGGER, sceneId, index, moveX, moveY };
 };
 
-export const editTrigger = (mapId, index, values) => {
-  return { type: types.EDIT_TRIGGER, mapId, index, values };
+export const editTrigger = (sceneId, index, values) => {
+  return { type: types.EDIT_TRIGGER, sceneId, index, values };
 };
 
-export const selectTrigger = (mapId, index) => {
-  return { type: types.SELECT_TRIGGER, mapId, index };
+export const selectTrigger = (sceneId, index) => {
+  return { type: types.SELECT_TRIGGER, sceneId, index };
 };
 
 export const renameFlag = (flagId, name) => {

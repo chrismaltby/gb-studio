@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Map from "./Map";
+import Scene from "./Scene";
 import Connections from "./Connections";
 import * as actions from "../actions";
 
@@ -33,9 +33,9 @@ class World extends Component {
     });
   };
 
-  onAddMap = e => {
+  onAddScene = e => {
     const { hoverX, hoverY } = this.state;
-    this.props.addMap(hoverX, hoverY);
+    this.props.addScene(hoverX, hoverY);
     this.props.setTool("select");
   };
 
@@ -61,25 +61,20 @@ class World extends Component {
   // };
 
   render() {
-    const { maps, tool, showConnections, zoomRatio } = this.props;
+    const { scenes, tool, showConnections, zoomRatio } = this.props;
     const { hover, hoverX, hoverY } = this.state;
 
-    if (!maps) {
+    if (!scenes) {
       return <div />;
     }
 
-    // const mapsWidth =
-    //   zoomRatio * Math.max.apply(null, maps.map(map => map.x + map.width * 8));
-    // const mapsHeight =
-    //   Math.max.apply(null, maps.map(map => 40 + map.y + map.height * 8)) + 100;
+    const scenesWidth =
+      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
+    const scenesHeight =
+      Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) + 100;
 
-    const mapsWidth =
-      Math.max.apply(null, maps.map(map => map.x + map.width * 8)) + 100;
-    const mapsHeight =
-      Math.max.apply(null, maps.map(map => 20 + map.y + map.height * 8)) + 100;
-
-    const width = Math.max((window.innerWidth - 300) / zoomRatio, mapsWidth);
-    const height = Math.max((window.innerHeight - 35) / zoomRatio, mapsHeight);
+    const width = Math.max((window.innerWidth - 300) / zoomRatio, scenesWidth);
+    const height = Math.max((window.innerHeight - 35) / zoomRatio, scenesHeight);
 
     return (
       <div
@@ -96,16 +91,16 @@ class World extends Component {
             style={{ width, height }}
             onClick={this.props.selectWorld}
           />
-          {maps.map(map => (
-            <div key={map.id}>
-              <Map id={map.id} map={map} />
+          {scenes.map(scene => (
+            <div key={scene.id}>
+              <Scene id={scene.id} scene={scene} />
             </div>
           ))}
-          {showConnections && <Connections maps={maps} zoomRatio={zoomRatio} />}
-          {tool === "map" && hover && (
+          {showConnections && <Connections scenes={scenes} zoomRatio={zoomRatio} />}
+          {tool === "scene" && hover && (
             <div
-              className="World__NewMap"
-              onClick={this.onAddMap}
+              className="World__NewScene"
+              onClick={this.onAddScene}
               style={{
                 left: hoverX,
                 top: hoverY
@@ -121,7 +116,7 @@ class World extends Component {
 function mapStateToProps(state) {
   return {
     tool: state.tools.selected,
-    maps: state.project && state.project.scenes,
+    scenes: state.project && state.project.scenes,
     zoomRatio:
       ((state.project &&
         state.project.settings &&
@@ -133,7 +128,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  addMap: actions.addMap,
+  addScene: actions.addScene,
   setTool: actions.setTool,
   selectWorld: actions.selectWorld
 };
