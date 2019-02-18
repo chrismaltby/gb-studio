@@ -136,7 +136,7 @@
 }
 
 .ActionMini__Children > .ActionMini--Add:first-child {
-  margin-top: -5px;
+  border-top: 1px solid #dadada;
 }
 
 .ActionMini__Remove {
