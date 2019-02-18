@@ -33,12 +33,14 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               <textarea
                 value={value[field.key]}
                 rows={field.rows}
+                placeholder={field.placeholder}
                 onChange={onChangeField(field.key, "text", field.updateFn)}
               />
             ) : field.type === "text" ? (
               <input
                 type="text"
                 value={value[field.key]}
+                placeholder={field.placeholder}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "number" ? (

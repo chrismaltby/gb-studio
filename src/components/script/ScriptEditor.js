@@ -6,6 +6,7 @@ import HTML5Backend from "react-dnd-html5-backend";
 import ItemTypes from "../../ItemTypes";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
+import { EventNames } from "../../lib/data/compiler/eventTypes";
 import { EVENT_IF_FLAG, EVENT_END } from "../../lib/data/compiler/eventTypes";
 import {
   patchEvents,
@@ -95,7 +96,7 @@ class ActionMini extends Component {
         >
           <div className="ActionMini__Content">
             {connectDragSource(
-              <div className="ActionMini__Command">{command}</div>
+              <div className="ActionMini__Command">{EventNames[command] || command}</div>
             )}
 
             <div className="ActionMini__Remove" onClick={onRemove(id)}>
@@ -127,7 +128,7 @@ class ActionMini extends Component {
                   ))}
                 </div>
               )}
-            {action.false && <div className="ActionMini__Else">ELSE</div>}
+            {action.false && <div className="ActionMini__Else">Else</div>}
             {action.false && (
               <div className="ActionMini__Children">
                 {action.false.map((action, index) => (

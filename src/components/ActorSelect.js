@@ -6,7 +6,7 @@ class ActorSelect extends Component {
     const { actors, dispatch, ...rest } = this.props;
     return (
       <select {...rest}>
-        <option>None</option>
+        <option>Player</option>
         {actors.map((actor, index) => (
           <option key={actor.id} value={actor.id}>
             {actor.name || "Actor " + (index + 1)}

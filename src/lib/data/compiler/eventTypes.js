@@ -37,6 +37,29 @@ const trim2lines = string => {
     .join("\n");
 };
 
+export const EventNames = {
+  [EVENT_SWITCH_SCENE]: "Switch Scene",
+  [EVENT_WAIT]: "Wait",
+  [EVENT_CAMERA_SHAKE]: "Camera Shake",
+  [EVENT_IF_FLAG]: "If Flag",
+  [EVENT_SET_FLAG]: "Set Flag",
+  [EVENT_CLEAR_FLAG]: "Clear Flag",
+  [EVENT_TEXT]: "Display Text",
+  [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
+  [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
+  [EVENT_FADE_IN]: "Fade In",
+  [EVENT_FADE_OUT]: "Fade Out",
+  [EVENT_ACTOR_SET_DIRECTION]: "Actor Set Direction",
+  [EVENT_ACTOR_SET_POSITION]: "Actor Set Position",
+  [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
+  [EVENT_ACTOR_EMOTION]: "Emotion Bubble",
+  [EVENT_RETURN_TO_TITLE]: "Return To Title",
+  [EVENT_SHOW_PLAYER]: "Show Player",
+  [EVENT_HIDE_PLAYER]: "Hide Player",
+  [EVENT_SHOW_SPRITES]: "Show Sprites",
+  [EVENT_HIDE_SPRITES]: "Hide Sprites"
+}
+
 export const EventFields = {
   [EVENT_SWITCH_SCENE]: [
     {
@@ -114,6 +137,7 @@ export const EventFields = {
       type: "textarea",
       rows: 2,
       maxPerLine: 18,
+      placeholder: "Text...",
       updateFn: trim2lines
     }
   ],
