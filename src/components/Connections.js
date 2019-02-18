@@ -7,7 +7,7 @@ const scriptMapTransition = script => {
   });
 };
 
-export default ({ scenes, zoomRatio }) => {
+export default ({ scenes, settings, zoomRatio }) => {
   const width =
     Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
   const height =
@@ -35,6 +35,11 @@ export default ({ scenes, zoomRatio }) => {
     return memo;
   }, []);
 
+  const startScene = scenes.find((scene) => scene.id === settings.startSceneId)
+  const startX2 = startScene && startScene.x + settings.startX * 8 + 5;
+  const startY2 = startScene && 20 + startScene.y + settings.startY * 8 + 5;
+  const startDirection = startScene && settings.startDirection;
+
   return (
     <svg
       className="Connections"
@@ -52,6 +57,11 @@ export default ({ scenes, zoomRatio }) => {
             stroke="#00bcd4"
             fill="transparent"
           />
+
+        </g>
+      ))}
+      {connections.map(({ x2, y2, direction }, index) => (
+        <g key={index}>
           <rect
             x={x2 - 4}
             y={y2 - 4}
@@ -63,10 +73,6 @@ export default ({ scenes, zoomRatio }) => {
               fill: "#00bcd4"
             }}
           />
-        </g>
-      ))}
-      {connections.map(({ x2, y2, direction }, index) => (
-        <g key={index}>
           {direction === "up" ? (
             <polygon points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 + 2}`} style={{
               fill: "#006064"
@@ -86,6 +92,38 @@ export default ({ scenes, zoomRatio }) => {
           ) : null}
         </g>
       ))}
+      {startScene && (
+        <g title="Game Starting Position">
+          <rect
+            x={startX2 - 4}
+            y={startY2 - 4}
+            rx={4}
+            ry={4}
+            width={16}
+            height={8}
+            style={{
+              fill: "#ff5722"
+            }}
+          />
+          {startDirection === "up" ? (
+            <polygon points={`${startX2},${startY2 + 2} ${startX2 + 4},${startY2 - 3} ${startX2 + 8},${startY2 + 2}`} style={{
+              fill: "#fbe9e7"
+            }} />
+          ) : startDirection === "down" ? (
+            <polygon points={`${startX2},${startY2 - 2} ${startX2 + 4},${startY2 + 3} ${startX2 + 8},${startY2 - 2}`} style={{
+              fill: "#fbe9e7"
+            }} />
+          ) : startDirection === "left" ? (
+            <polygon points={`${startX2},${startY2} ${startX2 + 6},${startY2 - 3} ${startX2 + 6},${startY2 + 3}`} style={{
+              fill: "#fbe9e7"
+            }} />
+          ) : startDirection === "right" ? (
+            <polygon points={`${startX2 + 8},${startY2} ${startX2 + 2},${startY2 - 3} ${startX2 + 2},${startY2 + 3}`} style={{
+              fill: "#fbe9e7"
+            }} />
+          ) : null}
+        </g>
+      )}
     </svg>
   )
 };

@@ -43,6 +43,13 @@ class SceneEditor extends Component {
         </FormField>
 
         <FormField>
+          <label htmlFor="sceneType">Scene type</label>
+          <select id="sceneType">
+            <option>Top Down 2D</option>
+          </select>
+        </FormField>
+
+        <FormField>
           <label htmlFor="sceneImage">Image</label>
           <ImageSelect
             id="sceneImage"

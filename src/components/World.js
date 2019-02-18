@@ -15,12 +15,6 @@ class World extends Component {
     this.scrollRef = React.createRef();
   }
 
-  // componentDidUpdate(prevProps) {
-  //   if (this.props.zoom !== prevProps.zoom) {
-  //     this.onZoomChange(prevProps.zoom, this.props.zoom);
-  //   }
-  // }
-
   onMouseMove = e => {
     const { zoomRatio } = this.props;
     const boundingRect = e.currentTarget.getBoundingClientRect();
@@ -39,29 +33,8 @@ class World extends Component {
     this.props.setTool("select");
   };
 
-  // onZoomChange = (prevZoom, newZoom) => {
-
-  //   const prevRatio = prevZoom / 100;
-  //   const newRatio = newZoom / 100;
-  //   const scrollEl = this.scrollRef.current;
-  //   const scrollWidth = newZoom * (scrollEl.clientWidth / prevRatio);
-  //   const scrollHeight = newZoom * (scrollEl.clientHeight / prevRatio);
-  //   const scrollLeft = scrollEl.scrollLeft;
-  //   const scrollTop = scrollEl.scrollTop;
-  //   const centerX = scrollEl.scrollWidth;
-  //   const centerY = scrollEl.scrollHeight;
-  //   const oldScreenWidthRatio = scrollEl.clientWidth / scrollEl.scrollWidth;
-  //   const oldScreenHeightRatio = scrollEl.clientHeight / scrollEl.scrollHeight;
-  //   scrollEl.scrollTo({
-  //     top: 0,
-  //     left: 0
-  //     behavior: "smooth"
-  //   });
-
-  // };
-
   render() {
-    const { scenes, tool, showConnections, zoomRatio } = this.props;
+    const { scenes, settings, tool, showConnections, zoomRatio } = this.props;
     const { hover, hoverX, hoverY } = this.state;
 
     if (!scenes) {
@@ -96,7 +69,7 @@ class World extends Component {
               <Scene id={scene.id} scene={scene} />
             </div>
           ))}
-          {showConnections && <Connections scenes={scenes} zoomRatio={zoomRatio} />}
+          {showConnections && <Connections scenes={scenes} settings={settings} zoomRatio={zoomRatio} />}
           {tool === "scene" && hover && (
             <div
               className="World__NewScene"
@@ -117,6 +90,7 @@ function mapStateToProps(state) {
   return {
     tool: state.tools.selected,
     scenes: state.project && state.project.scenes,
+    settings: state.project.settings,
     zoomRatio:
       ((state.project &&
         state.project.settings &&

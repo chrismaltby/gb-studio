@@ -4,14 +4,14 @@ import { connect } from "react-redux";
 class StatusBar extends Component {
   render() {
     const { status } = this.props;
-    if (!status.mapName) {
+    if (!status.sceneName) {
       return <div />;
     }
     return (
       <div className="StatusBar">
-        {status.mapName !== undefined &&
+        {status.sceneName !== undefined &&
           <span>
-            {status.mapName}
+            {status.sceneName}
             {": "}
           </span>}
         {status.x !== undefined &&
