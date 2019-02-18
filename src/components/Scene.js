@@ -212,7 +212,7 @@ class Scene extends Component {
 
     const { hover, hoverX, hoverY } = this.state;
 
-    const sceneSelected = editor.type === "scenes" && editor.scene === id;
+    const sceneSelected = editor.scene === id;
 
     return (
       <div

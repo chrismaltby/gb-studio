@@ -68,6 +68,7 @@ export default function editor(state = initialState.editor, action) {
     case SELECT_WORLD: {
       return {
         ...state,
+        scene: "",
         type: "world"
       };
     }
