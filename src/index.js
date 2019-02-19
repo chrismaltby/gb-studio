@@ -3,9 +3,8 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
 } from "electron-devtools-installer";
-import { enableLiveReload } from "electron-compile";
+import { enableLiveReload, addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
-import path from "path";
 import menu from "./menu";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -16,6 +15,12 @@ let splashWindow = null;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode) enableLiveReload({ strategy: "react-hmr" });
+
+// Allow images and json outside of application package to be loaded in production build
+addBypassChecker((filePath) => {
+  return filePath.indexOf(app.getAppPath()) === -1 &&
+    (/.jpg/.test(filePath) || /.json/.test(filePath) || /.png/.test(filePath));
+});
 
 const createSplash = async () => {
   // Create the browser window.
@@ -71,7 +76,8 @@ const createWindow = async projectPath => {
     height: mainWindowState.height,
     titleBarStyle: "hiddenInset",
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     }
   });
 
