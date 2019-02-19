@@ -9,9 +9,9 @@ const scriptMapTransition = script => {
 
 export default ({ scenes, settings, zoomRatio }) => {
   const width =
-    Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
+    Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) | 0 + 100;
   const height =
-    Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) + 100;
+    Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) | 0 + 100;
 
   const connections = scenes.reduce((memo, scene) => {
     const sceneEntities = [].concat(scene.triggers || [], scene.actors || []);

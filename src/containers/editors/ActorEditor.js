@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon } from "../../components/library/Icons";
 import MovementTypeSelect from "../../components/MovementTypeSelect";
-import SpriteSheetSelect from "../../components/SpriteSheetSelect";
+import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import DirectionPicker from "../../components/DirectionPicker";
 import { FormField } from "../../components/library/Forms";

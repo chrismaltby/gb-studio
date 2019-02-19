@@ -101,7 +101,7 @@ const createWindow = async projectPath => {
     // mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.webContents.on("did-finish-load", function() {
+  mainWindow.webContents.on("did-finish-load", function () {
     mainWindow.webContents.send("ping", "whoooooooh!");
     mainWindow.webContents.send("open-project", projectPath);
   });
@@ -200,6 +200,16 @@ menu.on("open", async () => {
 menu.on("save", async () => {
   console.log("MENU ON SAVE");
   mainWindow.webContents.send("save-project");
+});
+
+menu.on("undo", async () => {
+  console.log("MENU ON UNDO");
+  mainWindow.webContents.send("undo");
+});
+
+menu.on("redo", async () => {
+  console.log("MENU ON REDO");
+  mainWindow.webContents.send("redo");
 });
 
 const newProject = async () => {

@@ -61,17 +61,17 @@ class Actor extends Component {
         direction === "up"
           ? 1
           : direction === "left" || direction === "right"
-          ? 2
-          : 0;
+            ? 2
+            : 0;
 
       const spriteOffset =
         spriteSheet.type === "static"
           ? 0
           : spriteSheet.type === "actor"
-          ? directionOffset
-          : spriteSheet.type === "actor_animated"
-          ? directionOffset * 2
-          : 0;
+            ? directionOffset
+            : spriteSheet.type === "actor_animated"
+              ? directionOffset * 2
+              : 0;
 
       tmpCanvas.width = tmpCanvas.height = 16;
       if (direction === "left" && spriteSheet.type !== "static") {
@@ -115,13 +115,12 @@ class Actor extends Component {
 function mapStateToProps(state, props) {
   const spriteSheet =
     props.actor &&
-    state.project.spriteSheets.find(
+    state.project.present.spriteSheets.find(
       spriteSheet => spriteSheet.id === props.actor.spriteSheetId
     );
   return {
     projectRoot: state.document && state.document.root,
-    spriteSheet,
-    projectId: state.project.id
+    spriteSheet
   };
 }
 

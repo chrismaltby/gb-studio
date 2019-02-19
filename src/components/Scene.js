@@ -309,7 +309,7 @@ class Scene extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const image = state.project.images.find(
+  const image = state.project.present.images.find(
     image => image.id === props.scene.imageId
   );
   return {
@@ -319,14 +319,14 @@ function mapStateToProps(state, props) {
     image: image && image.filename,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
-    worldId: state.project.id,
+    worldId: state.project.present.id,
     showCollisions:
-      (state.project.settings && state.project.settings.showCollisions) ||
+      (state.project.present.settings && state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
     zoomRatio:
-      ((state.project &&
-        state.project.settings &&
-        state.project.settings.zoom) ||
+      ((state.project.present &&
+        state.project.present.settings &&
+        state.project.present.settings.zoom) ||
         100) / 100
   };
 }

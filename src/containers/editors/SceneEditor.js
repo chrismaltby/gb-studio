@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon } from "../../components/library/Icons";
-import ImageSelect from "../../components/ImageSelect";
+import ImageSelect from "../forms/ImageSelect";
 import { FormField } from "../../components/library/Forms";
 
 class SceneEditor extends Component {
@@ -65,9 +65,9 @@ class SceneEditor extends Component {
 function mapStateToProps(state, props) {
   return {
     scene:
-      state.project &&
-      state.project.scenes &&
-      state.project.scenes.find(scene => scene.id === props.id)
+      state.project.present &&
+      state.project.present.scenes &&
+      state.project.present.scenes.find(scene => scene.id === props.id)
   };
 }
 

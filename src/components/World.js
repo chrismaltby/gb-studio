@@ -34,12 +34,8 @@ class World extends Component {
   };
 
   render() {
-    const { scenes, settings, tool, showConnections, zoomRatio } = this.props;
+    const { scenes = [], settings, tool, showConnections, zoomRatio } = this.props;
     const { hover, hoverX, hoverY } = this.state;
-
-    if (!scenes) {
-      return <div />;
-    }
 
     const scenesWidth =
       Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
@@ -89,15 +85,15 @@ class World extends Component {
 function mapStateToProps(state) {
   return {
     tool: state.tools.selected,
-    scenes: state.project && state.project.scenes,
-    settings: state.project.settings,
+    scenes: state.project.present && state.project.present.scenes,
+    settings: state.project.present.settings,
     zoomRatio:
-      ((state.project &&
-        state.project.settings &&
-        state.project.settings.zoom) ||
+      ((state.project.present &&
+        state.project.present.settings &&
+        state.project.present.settings.zoom) ||
         100) / 100,
     showConnections:
-      state.project.settings && state.project.settings.showConnections
+      state.project.present.settings && state.project.present.settings.showConnections
   };
 }
 

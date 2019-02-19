@@ -19,7 +19,7 @@ class SpriteSheetSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    spriteSheets: (state.project && state.project.spriteSheets) || []
+    spriteSheets: (state.project.present && state.project.present.spriteSheets) || []
   };
 }
 

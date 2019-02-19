@@ -19,7 +19,7 @@ class SceneSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    maps: (state.project && state.project.scenes) || []
+    maps: (state.project.present && state.project.present.scenes) || []
   };
 }
 

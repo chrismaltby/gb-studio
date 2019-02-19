@@ -35,8 +35,21 @@ const template = [
   {
     label: "Edit",
     submenu: [
-      { role: "undo" },
-      { role: "redo" },
+      {
+        label: 'Undo',
+        accelerator: 'CommandOrControl+Z',
+        click: () => {
+          console.log("UNDO1");
+          notifyListeners("undo");
+        }
+      },
+      {
+        label: 'Redo',
+        accelerator: 'CommandOrControl+Shift+Z', click: () => {
+          console.log("REDO1");
+          notifyListeners("redo");
+        }
+      },
       { type: "separator" },
       { role: "cut" },
       { role: "copy" },
@@ -132,7 +145,9 @@ Menu.setApplicationMenu(menu);
 let listeners = {
   new: [],
   open: [],
-  save: []
+  save: [],
+  undo: [],
+  redo: []
 };
 
 const notifyListeners = (event, data) => {

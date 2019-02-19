@@ -161,15 +161,14 @@ class OverviewPage extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log(state.project);
   return {
-    name: state.project && state.project.name,
+    name: state.project.present && state.project.present.name,
     numScenes:
-      state.project && state.project.scenes && state.project.scenes.length,
+      state.project.present && state.project.present.scenes && state.project.present.scenes.length,
     numSprites:
-      state.project &&
-      state.project.spriteSheets &&
-      state.project.spriteSheets.length
+      state.project.present &&
+      state.project.present.spriteSheets &&
+      state.project.present.spriteSheets.length
   };
 }
 

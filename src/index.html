@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
-    <link rel="stylesheet" type="text/css" href="./App.css" />
-  </head>
-  <body>
-    <div id="App"></div>
-  </body>
 
-  <script type="text/jsx">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="stylesheet" type="text/css" href="./App.css" />
+</head>
+
+<body>
+  <div id="App"></div>
+</body>
+
+<script type="text/jsx">
 
     import React from 'react';
     import ReactDOM from 'react-dom';
@@ -21,6 +20,7 @@
     import configureStore from "./store/configureStore";
     import { ipcRenderer } from "electron";
     import "./lib/handleFullScreen";
+    import { ActionCreators } from 'redux-undo';
 
     const store = configureStore();
 
@@ -29,8 +29,23 @@
 
     store.dispatch(actions.loadProject(projectPath));
 
+    window.ActionCreators = ActionCreators;
+    window.store = store;
+    window.undo = function() {
+      console.log("undo");
+      store.dispatch(ActionCreators.undo())
+    }
+
     ipcRenderer.on("save-project", () => {
       store.dispatch(actions.saveProject());
+    });
+
+    ipcRenderer.on("undo", () => {
+      store.dispatch(ActionCreators.undo())
+    });
+
+    ipcRenderer.on("redo", () => {
+      store.dispatch(ActionCreators.redo())
     });
 
     let modified = false;
@@ -54,4 +69,5 @@
       module.hot.accept(render);
     }
   </script>
+
 </html>

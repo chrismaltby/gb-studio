@@ -18,8 +18,8 @@ class SpritesSection extends Component {
 function mapStateToProps(state) {
   return {
     spriteSheets:
-      state.project && state.project.spriteSheets
-        ? state.project.spriteSheets
+      state.project.present && state.project.present.spriteSheets
+        ? state.project.present.spriteSheets
         : []
   };
 }

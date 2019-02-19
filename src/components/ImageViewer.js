@@ -25,19 +25,19 @@ function mapStateToProps(state) {
   const { id, section } = state.navigation;
   const files =
     section === "backgrounds"
-      ? state.project.images
-      : state.project.spriteSheets;
+      ? state.project.present.images
+      : state.project.present.spriteSheets;
   const folder = section === "backgrounds" ? "backgrounds" : "sprites";
   const image = files.find(file => file.id === id) || files[0];
   return {
     projectRoot: state.document && state.document.root,
-    projectId: state.project.id,
+    projectId: state.project.present.id,
     image: image && image.filename,
     folder,
     zoomRatio:
-      ((state.project &&
-        state.project.settings &&
-        state.project.settings.zoom) ||
+      ((state.project.present &&
+        state.project.present.settings &&
+        state.project.present.settings.zoom) ||
         100) / 100
   };
 }

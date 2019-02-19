@@ -40,13 +40,13 @@ class FlagSelect extends Component {
 
 function mapStateToProps(state) {
   return {
-    flagNames: state.project.flags
-      ? state.project.flags.reduce((memo, flag) => {
-          return {
-            ...memo,
-            [flag.id]: flag.name
-          };
-        }, {})
+    flagNames: state.project.present.flags
+      ? state.project.present.flags.reduce((memo, flag) => {
+        return {
+          ...memo,
+          [flag.id]: flag.name
+        };
+      }, {})
       : {}
   };
 }

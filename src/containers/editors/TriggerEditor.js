@@ -94,9 +94,9 @@ class TriggerEditor extends Component {
 function mapStateToProps(state, props) {
   return {
     trigger:
-      state.project &&
-      state.project.scenes &&
-      state.project.scenes.find(scene => scene.id === props.scene).triggers[props.id]
+      state.project.present &&
+      state.project.present.scenes &&
+      state.project.present.scenes.find(scene => scene.id === props.scene).triggers[props.id]
   };
 }
 

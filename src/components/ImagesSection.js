@@ -17,7 +17,7 @@ class ImagesSection extends Component {
 
 function mapStateToProps(state) {
   return {
-    images: state.project && state.project.images ? state.project.images : []
+    images: state.project.present && state.project.present.images ? state.project.present.images : []
   };
 }
 

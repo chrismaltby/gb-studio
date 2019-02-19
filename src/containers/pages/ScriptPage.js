@@ -50,7 +50,7 @@ class ScriptsPage extends Component {
 }
 
 function mapStateToProps(state) {
-  const scenes = (state.project && state.project.scenes) || [];
+  const scenes = (state.project.present && state.project.present.scenes) || [];
   const scriptLines = scenes.reduce((memo, scene) => {
     scene.actors.forEach((actor, actorIndex) => {
       walkEvents(actor.script, cmd => {
@@ -66,7 +66,6 @@ function mapStateToProps(state) {
     });
     return memo;
   }, []);
-
   return {
     scriptLines
   };

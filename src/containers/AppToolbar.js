@@ -106,10 +106,10 @@ class AppToolbar extends Component {
 function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
-    name: state.project && state.project.name,
+    name: state.project.present && state.project.present.name,
     section: state.navigation.section,
     zoom:
-      state.project && state.project.settings && state.project.settings.zoom,
+      state.project.present && state.project.present.settings && state.project.present.settings.zoom,
     running: state.console.status === "running"
   };
 }

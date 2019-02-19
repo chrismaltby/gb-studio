@@ -211,7 +211,8 @@ export default function project(state = initialState.project, action) {
       };
     case ADD_COLLISION_TILE: {
       console.log("ADD_COLLISION_TILE", {
-        a: state
+        a: state,
+        b: state.scenes
       });
 
       return {
@@ -243,7 +244,7 @@ export default function project(state = initialState.project, action) {
           collisions[collisionByteIndex] |= collisionByteMask;
 
           return {
-            ...map,
+            ...scene,
             collisions
           };
         })

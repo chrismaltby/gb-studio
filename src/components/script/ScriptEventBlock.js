@@ -5,7 +5,7 @@ import FlagSelect from "../../containers/forms/FlagSelect";
 import DirectionPicker from "../DirectionPicker";
 import FadeSpeedSelect from "../FadeSpeedSelect";
 import CameraSpeedSelect from "../CameraSpeedSelect";
-import ActorSelect from "../ActorSelect";
+import ActorSelect from "../../containers/forms/ActorSelect";
 import EmotionSelect from "../EmotionSelect";
 import { FormField } from "../library/Forms";
 

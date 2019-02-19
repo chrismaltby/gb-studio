@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import undoable, { distinctState } from 'redux-undo';
 import tools from "./toolsReducer";
 import project from "./projectReducer";
 import editor from "./editorReducer";
@@ -9,7 +10,7 @@ import console from "./consoleReducer";
 const rootReducer = combineReducers({
   tools,
   editor,
-  project,
+  project: undoable(project, { limit: 5, filter: distinctState() }),
   document,
   navigation,
   console
