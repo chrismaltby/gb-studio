@@ -31,7 +31,8 @@
         ]
       },
       "electronPackagerConfig": {
-        "packageManager": "yarn"
+        "packageManager": "yarn",
+        "icon": "src/images/icon/icon_mac.icns"
       },
       "electronWinstallerConfig": {
         "name": "gb_rpg_builder"
