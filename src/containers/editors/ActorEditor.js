@@ -115,11 +115,11 @@ class ActorEditor extends Component {
 function mapStateToProps(state, props) {
   const { project } = state;
   const actor =
-    project.scenes &&
-    project.scenes.find(scene => scene.id === props.scene).actors[props.id];
+    project.present.scenes &&
+    project.present.scenes.find(scene => scene.id === props.scene).actors[props.id];
   const spriteSheet =
     actor &&
-    project.spriteSheets.find(
+    project.present.spriteSheets.find(
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
   return {
