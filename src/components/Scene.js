@@ -39,53 +39,62 @@ class Scene extends Component {
     const tX = Math.floor(x / (8 * zoomRatio));
     const tY = Math.floor(y / (8 * zoomRatio));
 
-    if (creating) {
-      if (tool === "collisions") {
-        if (this.remove) {
-          this.props.removeCollisionTile(id, tX, tY);
-        } else {
-          this.props.addCollisionTile(id, tX, tY);
-        }
-      } else if (tool === "triggers") {
-        this.props.resizeTrigger(id, 0, downX, downY, tX, tY);
-      } else if (tool === "eraser") {
-        if (showCollisions) {
-          this.props.removeCollisionTile(id, tX, tY);
-        }
-      } else if (tool === "select") {
-        if (editor.type === "triggers") {
-          this.props.moveTrigger(
-            id,
-            editor.index,
-            tX - this.state.hoverX,
-            tY - this.state.hoverY
-          );
-        } else if (editor.type === "actors") {
-          this.props.moveActor(
-            id,
-            editor.index,
-            tX - this.state.hoverX,
-            tY - this.state.hoverY
-          );
+    if (tX !== this.lastTX || tY !== this.lastTY) {
+      if (creating) {
+        if (tool === "collisions") {
+          if (this.remove) {
+            this.props.removeCollisionTile(id, tX, tY);
+          } else {
+            this.props.addCollisionTile(id, tX, tY);
+          }
+        } else if (tool === "triggers") {
+          this.props.resizeTrigger(id, 0, downX, downY, tX, tY);
+        } else if (tool === "eraser") {
+          if (showCollisions) {
+            this.props.removeCollisionTile(id, tX, tY);
+          }
+        } else if (tool === "select") {
+          if (editor.type === "triggers") {
+            this.props.moveTrigger(
+              id,
+              editor.index,
+              tX - this.state.hoverX,
+              tY - this.state.hoverY
+            );
+          } else if (editor.type === "actors") {
+            this.props.moveActor(
+              id,
+              editor.index,
+              tX - this.state.hoverX,
+              tY - this.state.hoverY
+            );
+          }
         }
       }
+
+      let actor = this.actorAt(tX, tY);
+
+      this.setStatus({
+        sceneName: scene.name,
+        x: tX,
+        y: tY,
+        actor: actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
+      });
+
+      this.setState({
+        hover: true,
+        hoverX: tX,
+        hoverY: tY
+      });
+
+      this.lastTX = tX;
+      this.lastTY = tY;
     }
-
-    let actor = this.actorAt(tX, tY);
-
-    this.props.setStatus({
-      sceneName: scene.name,
-      x: tX,
-      y: tY,
-      actor: actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
-    });
-
-    this.setState({
-      hover: true,
-      hoverX: tX,
-      hoverY: tY
-    });
   };
+
+  setStatus = throttle((options) => {
+    this.props.setStatus(options);
+  }, 200)
 
   onMouseDown = e => {
     const { id, tool, scene, width, showCollisions } = this.props;
