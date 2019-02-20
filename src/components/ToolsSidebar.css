@@ -5,7 +5,7 @@
   top: 41px;
   /*background-color: #011526;*/
   background-color: var(--sidebar-bg-color);
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--sidebar-edge-color);
   border-radius: 4px;
   padding: 4px 0;
   /*box-shadow: 0px 1px 10px rgba(0, 0, 0, 1);*/
@@ -26,10 +26,10 @@
 }
 
 .ToolsSidebar__Item:hover {
-  background-color: #e8e7e8;
+  background-color: var(--sidebar-hover-color);
 }
 
 .ToolsSidebar__Item--Selected,
 .ToolsSidebar__Item--Selected:hover {
-  background-color: #cdcdcd;
+  background-color: var(--sidebar-selected-color);
 }

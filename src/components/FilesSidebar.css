@@ -5,7 +5,7 @@
   top: 36px;
   bottom: 0px;
   background-color: var(--sidebar-bg-color);
-  border-left: 1px solid #d0d0d0;
+  border-left: 1px solid var(--sidebar-edge-color);
   overflow: auto;
   box-sizing: border-box;
 }

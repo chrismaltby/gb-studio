@@ -1,0 +1,33 @@
+:root {
+  --toolbar-top-color: #3e4142;
+  --toolbar-bottom-color: #282a2a;
+  --toolbar-border-color: #000000;
+  --toolbar-inactive-color: #3e4142;
+  --toolbar-inactive-border-color: #000000;
+  --toolbar-text-color: #b7babb;
+
+  --toolbar-button-top-color: #6a6d6e;
+  --toolbar-button-bottom-color: #616364;
+  --toolbar-button-active-top-color: #838587;
+  --toolbar-button-active-bottom-color: #7a7c7e;
+  --toolbar-button-border-color: transparent;
+  --toolbar-button-border-top-color: #9f9e9e;
+  --toolbar-button-shadow-color: transparent;
+  --toolbar-button-text-color: #fbfeff;
+  --toolbar-button-nested-color: #444444;
+
+  --main-text-color: #b7babb;
+  --main-bg-color: #1d2021;
+  --nav-bg-color: purple;
+  --sidebar-bg-color: #292e2f;
+  --sidebar-border-color: #1d2021;
+  --sidebar-edge-color: #000000;
+
+  --sidebar-hover-color: #282a2b;
+  --sidebar-selected-color: #383d3e;
+
+  --conditional-level1: #b3e5fc;
+  --conditional-level2: #ffccbc;
+  --conditional-level3: #c8e6c9;
+  --conditional-level4: #d1c4e9;
+}

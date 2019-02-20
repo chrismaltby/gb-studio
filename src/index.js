@@ -17,9 +17,11 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 if (isDevMode) enableLiveReload({ strategy: "react-hmr" });
 
 // Allow images and json outside of application package to be loaded in production build
-addBypassChecker((filePath) => {
-  return filePath.indexOf(app.getAppPath()) === -1 &&
-    (/.jpg/.test(filePath) || /.json/.test(filePath) || /.png/.test(filePath));
+addBypassChecker(filePath => {
+  return (
+    filePath.indexOf(app.getAppPath()) === -1 &&
+    (/.jpg/.test(filePath) || /.json/.test(filePath) || /.png/.test(filePath))
+  );
 });
 
 const createSplash = async () => {
@@ -42,9 +44,6 @@ const createSplash = async () => {
   if (isDevMode) {
     console.log("IS DEV MODE");
     await installExtension(REACT_DEVELOPER_TOOLS);
-    // installExtension(REDUX_DEVTOOLS)
-    //   .then((name) => console.log(`Added Extension:  ${name}`))
-    //   .catch((err) => console.log('An error occurred: ', err));
     await installExtension(REDUX_DEVTOOLS);
     // splashWindow.webContents.openDevTools();
   }
@@ -94,14 +93,11 @@ const createWindow = async projectPath => {
   if (isDevMode) {
     console.log("IS DEV MODE");
     await installExtension(REACT_DEVELOPER_TOOLS);
-    // installExtension(REDUX_DEVTOOLS)
-    //   .then((name) => console.log(`Added Extension:  ${name}`))
-    //   .catch((err) => console.log('An error occurred: ', err));
     await installExtension(REDUX_DEVTOOLS);
     // mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.webContents.on("did-finish-load", function () {
+  mainWindow.webContents.on("did-finish-load", function() {
     mainWindow.webContents.send("ping", "whoooooooh!");
     mainWindow.webContents.send("open-project", projectPath);
   });
