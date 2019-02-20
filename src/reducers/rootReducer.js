@@ -8,11 +8,21 @@ import document from "./documentReducer";
 import console from "./consoleReducer";
 import { PROJECT_LOAD_SUCCESS, PROJECT_SAVE_SUCCESS } from "../actions/actionTypes";
 
+let lastUndoStateTime = 0;
+const UNDO_THROTTLE = 2000;
+
 const rootReducer = combineReducers({
   tools,
   editor,
   project: undoable(project, {
-    limit: 50, filter: distinctState(),
+    limit: 50,
+    filter: (action, currentState, previousState) => {
+      const shouldStoreUndo = currentState !== previousState && (Date.now() > lastUndoStateTime + UNDO_THROTTLE);
+      if (shouldStoreUndo) {
+        lastUndoStateTime = Date.now();
+      }
+      return shouldStoreUndo;
+    },
     initTypes: [
       '@@redux/INIT',
       '@@INIT',
