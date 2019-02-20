@@ -7,7 +7,7 @@ const scriptMapTransition = script => {
   });
 };
 
-export default ({ scenes, settings, zoomRatio }) => {
+export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
   const width =
     Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) | 0 + 100;
   const height =
@@ -20,10 +20,15 @@ export default ({ scenes, settings, zoomRatio }) => {
       transitions.forEach((transition) => {
         const destScene = scenes.find(m => m.id === transition.args.sceneId);
         if (destScene) {
-          const x1 = scene.x + (entity.x + (entity.width || 2) / 2) * 8;
-          const x2 = destScene.x + transition.args.x * 8 + 5;
-          const y1 = 20 + scene.y + (entity.y + (entity.height || 1) / 2) * 8;
-          const y2 = 20 + destScene.y + transition.args.y * 8 + 5;
+          const startX = scene.x + (dragScene === scene.id ? dragX : 0);
+          const startY = scene.y + (dragScene === scene.id ? dragY : 0);
+          const destX = destScene.x + (dragScene === destScene.id ? dragX : 0);
+          const destY = destScene.y + (dragScene === destScene.id ? dragY : 0);
+
+          const x1 = startX + (entity.x + (entity.width || 2) / 2) * 8;
+          const x2 = destX + transition.args.x * 8 + 5;
+          const y1 = 20 + startY + (entity.y + (entity.height || 1) / 2) * 8;
+          const y2 = 20 + destY + transition.args.y * 8 + 5;
           const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
           const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
           memo.push({

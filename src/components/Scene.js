@@ -5,6 +5,7 @@ import * as actions from "../actions";
 import getCoords from "../lib/getCoords";
 import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
+import { throttle } from "lodash";
 
 class Scene extends Component {
   constructor() {
@@ -12,7 +13,9 @@ class Scene extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0
+      hoverY: 0,
+      dragX: 0,
+      dragY: 0
     };
   }
 
@@ -145,33 +148,49 @@ class Scene extends Component {
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
     this.setState({
-      dragging: true
+      dragging: true,
+      dragX: 0,
+      dragY: 0
     });
     this.props.selectScene(id);
+    this.props.dragSceneStart();
   };
 
   onMoveDrag = e => {
-    const { id, zoomRatio } = this.props;
-    const { dragging } = this.state;
+    const { zoomRatio } = this.props;
+    const { dragging, dragX, dragY } = this.state;
     if (dragging) {
-      const dragX = e.pageX - this.lastPageX;
-      const dragY = e.pageY - this.lastPageY;
+      const dragDeltaX = ((e.pageX - this.lastPageX) / zoomRatio);
+      const dragDeltaY = ((e.pageY - this.lastPageY) / zoomRatio);
 
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      this.props.moveScene(id, dragX / zoomRatio, dragY / zoomRatio);
+      this.dragScene(dragX, dragY);
+
+      this.setState({
+        dragX: dragX + dragDeltaX,
+        dragY: dragY + dragDeltaY
+      })
     }
   };
 
+  dragScene = throttle((dragX, dragY) => this.props.dragScene(dragX, dragY), 50);
+
   onEndDrag = e => {
-    const { tool } = this.props;
-    if (this.state.creating && (tool === "actor" || tool === "triggers")) {
+    const { id, tool } = this.props;
+    const { dragging, creating, dragX, dragY } = this.state;
+    if (dragging) {
+      this.props.moveScene(id, dragX, dragY);
+      this.props.dragSceneStop();
+    } else if (creating && (tool === "actor" || tool === "triggers")) {
       this.props.setTool("select");
     }
     this.setState({
       dragging: false,
-      creating: false
+      creating: false,
+      dragX: 0,
+      dragY: 0
     });
   };
 
@@ -210,7 +229,7 @@ class Scene extends Component {
     } = this.props;
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
-    const { hover, hoverX, hoverY } = this.state;
+    const { hover, hoverX, hoverY, dragX, dragY } = this.state;
 
     const sceneSelected = editor.scene === id;
 
@@ -218,8 +237,8 @@ class Scene extends Component {
       <div
         className={cx("Scene", { "Scene--Selected": sceneSelected })}
         style={{
-          top: y,
-          left: x
+          top: y + dragY,
+          left: x + dragX
         }}
       >
         <div
@@ -346,7 +365,10 @@ const mapDispatchToProps = {
   selectTrigger: actions.selectTrigger,
   selectScene: actions.selectScene,
   setTool: actions.setTool,
-  setStatus: actions.setStatus
+  setStatus: actions.setStatus,
+  dragScene: actions.dragScene,
+  dragSceneStart: actions.dragSceneStart,
+  dragSceneStop: actions.dragSceneStop
 };
 
 export default connect(

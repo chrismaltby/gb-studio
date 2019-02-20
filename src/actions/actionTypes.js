@@ -23,6 +23,9 @@ export const MOVE_SCENE = "MOVE_SCENE";
 export const EDIT_SCENE = "EDIT_SCENE";
 export const REMOVE_SCENE = "REMOVE_SCENE";
 export const SELECT_SCENE = "SELECT_SCENE";
+export const DRAG_SCENE = "DRAG_SCENE";
+export const DRAG_SCENE_START = "DRAG_SCENE_START";
+export const DRAG_SCENE_STOP = "DRAG_SCENE_STOP";
 
 export const ADD_ACTOR = "ADD_ACTOR";
 export const MOVE_ACTOR = "MOVE_ACTOR";

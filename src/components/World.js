@@ -34,8 +34,9 @@ class World extends Component {
   };
 
   render() {
-    const { scenes = [], settings, tool, showConnections, zoomRatio } = this.props;
+    const { scenes = [], settings, tool, showConnections, zoomRatio, editor } = this.props;
     const { hover, hoverX, hoverY } = this.state;
+    const { sceneDragging, scene: dragScene, sceneDragX: dragX, sceneDragY: dragY } = editor;
 
     const scenesWidth =
       Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
@@ -65,7 +66,7 @@ class World extends Component {
               <Scene id={scene.id} scene={scene} />
             </div>
           ))}
-          {showConnections && <Connections scenes={scenes} settings={settings} zoomRatio={zoomRatio} />}
+          {showConnections && <Connections scenes={scenes} settings={settings} zoomRatio={zoomRatio} dragScene={sceneDragging ? dragScene : ""} dragX={dragX} dragY={dragY} />}
           {tool === "scene" && hover && (
             <div
               className="World__NewScene"
@@ -87,6 +88,7 @@ function mapStateToProps(state) {
     tool: state.tools.selected,
     scenes: state.project.present && state.project.present.scenes,
     settings: state.project.present.settings,
+    editor: state.editor,
     zoomRatio:
       ((state.project.present &&
         state.project.present.settings &&

@@ -76,6 +76,18 @@ export const moveScene = (sceneId, moveX, moveY) => {
   return { type: types.MOVE_SCENE, sceneId, moveX, moveY };
 };
 
+export const dragScene = (moveX, moveY) => {
+  return { type: types.DRAG_SCENE, moveX, moveY };
+};
+
+export const dragSceneStart = () => {
+  return { type: types.DRAG_SCENE_START };
+};
+
+export const dragSceneStop = () => {
+  return { type: types.DRAG_SCENE_STOP };
+};
+
 export const editScene = (sceneId, values) => {
   return { type: types.EDIT_SCENE, sceneId, values };
 };

@@ -7,6 +7,9 @@ import {
   SELECT_ACTOR,
   ADD_SCENE,
   MOVE_SCENE,
+  DRAG_SCENE,
+  DRAG_SCENE_START,
+  DRAG_SCENE_STOP,
   SELECT_WORLD
 } from "../actions/actionTypes";
 
@@ -64,6 +67,29 @@ export default function editor(state = initialState.editor, action) {
         scene: action.sceneId,
         index: action.index
       };
+    }
+    case DRAG_SCENE_START: {
+      return {
+        ...state,
+        sceneDragging: true,
+        sceneDragX: 0,
+        sceneDragY: 0
+      }
+    }
+    case DRAG_SCENE_STOP: {
+      return {
+        ...state,
+        sceneDragging: false,
+        sceneDragX: 0,
+        sceneDragY: 0
+      }
+    }
+    case DRAG_SCENE: {
+      return {
+        ...state,
+        sceneDragX: action.moveX,
+        sceneDragY: action.moveY
+      }
     }
     case SELECT_WORLD: {
       return {

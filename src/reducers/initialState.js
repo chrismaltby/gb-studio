@@ -18,7 +18,10 @@ export default {
   editor: {
     type: "world",
     scene: "",
-    index: 0
+    index: 0,
+    sceneDragging: false,
+    sceneDragX: 0,
+    sceneDragY: 0
   },
   navigation: {
     section: "world",
