@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { DotsIcon } from "./components/Icons";
+import { DotsIcon } from "./components/library/Icons";
 import stripInvalidFilenameCharacters from "./lib/stripInvalidFilenameCharacters";
 import createProject, { ERR_PROJECT_EXISTS } from "./lib/createProject";
 import { ipcRenderer } from "electron";
@@ -148,10 +148,10 @@ class Splash extends Component {
             </div>
           </div>
         ) : (
-          tab === "recent" && (
-            <div className="Splash__Content">Not implemented</div>
-          )
-        )}
+            tab === "recent" && (
+              <div className="Splash__Content">Not implemented</div>
+            )
+          )}
       </div>
     );
   }
