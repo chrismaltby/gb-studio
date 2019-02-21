@@ -6,8 +6,8 @@ import {
   ToolbarFixedSpacer,
   ToolbarButton,
   ToolbarDropdownButton
-} from "../components/Toolbar/Toolbar";
-import { Menu, MenuItem } from "../components/library/Menu";
+} from "../components/library/Toolbar";
+import { MenuItem } from "../components/library/Menu";
 import {
   PlayIcon,
   DownloadIcon,

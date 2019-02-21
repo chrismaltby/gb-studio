@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import * as actions from "../actions";
 import cx from "classnames";
-import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "./library/Icons";
-import { Menu, MenuItem, MenuOverlay } from "./library/Menu";
+import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "../library/Icons";
+import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
+import { connect } from "react-redux";
+import * as actions from "../../actions";
 
-class ToolsSidebar extends Component {
+class ToolPicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,7 +46,7 @@ class ToolsSidebar extends Component {
     });
   };
 
-  closeAdd = (e) => {
+  closeAdd = e => {
     e.stopPropagation();
     this.setState({
       add: false
@@ -65,19 +65,19 @@ class ToolsSidebar extends Component {
     const { add } = this.state;
     const { selected } = this.props;
     return (
-      <div className="ToolsSidebar">
+      <div className="ToolPicker">
         <div
           onClick={this.setTool("select")}
-          className={cx("ToolsSidebar__Item", {
-            "ToolsSidebar__Item--Selected": "select" === selected
+          className={cx("ToolPicker__Item", {
+            "ToolPicker__Item--Selected": "select" === selected
           })}
         >
           <SelectIcon />
         </div>
         <div
           onClick={this.openAdd}
-          className={cx("ToolsSidebar__Item", {
-            "ToolsSidebar__Item--Selected":
+          className={cx("ToolPicker__Item", {
+            "ToolPicker__Item--Selected":
               ["actor", "triggers", "map"].indexOf(selected) > -1
           })}
         >
@@ -98,16 +98,16 @@ class ToolsSidebar extends Component {
         </div>
         <div
           onClick={this.setTool("eraser")}
-          className={cx("ToolsSidebar__Item", {
-            "ToolsSidebar__Item--Selected": "eraser" === selected
+          className={cx("ToolPicker__Item", {
+            "ToolPicker__Item--Selected": "eraser" === selected
           })}
         >
           <EraserIcon />
         </div>
         <div
           onClick={this.setTool("collisions")}
-          className={cx("ToolsSidebar__Item", {
-            "ToolsSidebar__Item--Selected": "collisions" === selected
+          className={cx("ToolPicker__Item", {
+            "ToolPicker__Item--Selected": "collisions" === selected
           })}
         >
           <BrickIcon />
@@ -130,4 +130,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ToolsSidebar);
+)(ToolPicker);

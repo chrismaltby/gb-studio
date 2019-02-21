@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
-import DirectionPicker from "../../components/DirectionPicker";
+import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { FormField } from "../../components/library/Forms";
+import { FormField } from "../library/Forms";
 
 class WorldEditor extends Component {
   onEdit = key => e => {

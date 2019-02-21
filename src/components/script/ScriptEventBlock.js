@@ -1,12 +1,12 @@
 import React from "react";
 import { EventFields } from "../../lib/data/compiler/eventTypes";
-import SceneSelect from "../../containers/forms/SceneSelect";
-import FlagSelect from "../../containers/forms/FlagSelect";
-import DirectionPicker from "../DirectionPicker";
-import FadeSpeedSelect from "../FadeSpeedSelect";
-import CameraSpeedSelect from "../CameraSpeedSelect";
-import ActorSelect from "../../containers/forms/ActorSelect";
-import EmotionSelect from "../EmotionSelect";
+import SceneSelect from "../forms/SceneSelect";
+import FlagSelect from "../forms/FlagSelect";
+import DirectionPicker from "../forms/DirectionPicker";
+import FadeSpeedSelect from "../forms/FadeSpeedSelect";
+import CameraSpeedSelect from "../forms/CameraSpeedSelect";
+import ActorSelect from "../forms/ActorSelect";
+import EmotionSelect from "../forms/EmotionSelect";
 import { FormField } from "../library/Forms";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
@@ -93,8 +93,8 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 onChange={onChangeField(field.key)}
               />
             ) : (
-              <div />
-            )}
+                                  <div />
+                                )}
           </FormField>
         );
       })}

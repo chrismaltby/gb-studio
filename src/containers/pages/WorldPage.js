@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import World from "../../components/World";
-import ToolsSidebar from "../../components/ToolsSidebar";
-import EditorSidebar from "../editors/EditorSidebar";
-import StatusBar from "../../components/StatusBar";
+import World from "../../components/world/World";
+import ToolPicker from "../../components/world/ToolPicker";
+import EditorSidebar from "../../components/editors/EditorSidebar";
+import StatusBar from "../../components/world/StatusBar";
 
 class WorldPage extends Component {
   render() {
     return (
       <div>
         <World />
-        <ToolsSidebar />
+        <ToolPicker />
         <EditorSidebar />
         <StatusBar />
       </div>

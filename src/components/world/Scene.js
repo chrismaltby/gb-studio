@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import * as actions from "../actions";
-import getCoords from "../lib/getCoords";
+import * as actions from "../../actions";
+import getCoords from "../../lib/getCoords";
 import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { throttle } from "lodash";

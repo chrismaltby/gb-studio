@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Scene from "./Scene";
 import Connections from "./Connections";
-import * as actions from "../actions";
+import * as actions from "../../actions";
 
 class World extends Component {
   constructor(props) {
@@ -34,17 +34,36 @@ class World extends Component {
   };
 
   render() {
-    const { scenes = [], settings, tool, showConnections, zoomRatio, editor } = this.props;
+    const {
+      scenes = [],
+      settings,
+      tool,
+      showConnections,
+      zoomRatio,
+      editor
+    } = this.props;
     const { hover, hoverX, hoverY } = this.state;
-    const { sceneDragging, scene: dragScene, sceneDragX: dragX, sceneDragY: dragY } = editor;
+    const {
+      sceneDragging,
+      scene: dragScene,
+      sceneDragX: dragX,
+      sceneDragY: dragY
+    } = editor;
 
     const scenesWidth =
-      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 100;
+      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
+      100;
     const scenesHeight =
-      Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) + 100;
+      Math.max.apply(
+        null,
+        scenes.map(scene => 20 + scene.y + scene.height * 8)
+      ) + 100;
 
     const width = Math.max((window.innerWidth - 300) / zoomRatio, scenesWidth);
-    const height = Math.max((window.innerHeight - 35) / zoomRatio, scenesHeight);
+    const height = Math.max(
+      (window.innerHeight - 35) / zoomRatio,
+      scenesHeight
+    );
 
     return (
       <div
@@ -66,7 +85,16 @@ class World extends Component {
               <Scene id={scene.id} scene={scene} />
             </div>
           ))}
-          {showConnections && <Connections scenes={scenes} settings={settings} zoomRatio={zoomRatio} dragScene={sceneDragging ? dragScene : ""} dragX={dragX} dragY={dragY} />}
+          {showConnections && (
+            <Connections
+              scenes={scenes}
+              settings={settings}
+              zoomRatio={zoomRatio}
+              dragScene={sceneDragging ? dragScene : ""}
+              dragX={dragX}
+              dragY={dragY}
+            />
+          )}
           {tool === "scene" && hover && (
             <div
               className="World__NewScene"
@@ -91,7 +119,8 @@ function mapStateToProps(state) {
     editor: state.editor,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections:
-      state.project.present.settings && state.project.present.settings.showConnections
+      state.project.present.settings &&
+      state.project.present.settings.showConnections
   };
 }
 

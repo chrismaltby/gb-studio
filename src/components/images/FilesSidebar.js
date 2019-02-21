@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { PlusIcon } from "./library/Icons";
-import Button from "./library/Button";
-import * as actions from "../actions";
+import { PlusIcon } from "../library/Icons";
+import Button from "../library/Button";
+import * as actions from "../../actions";
 
 class FilesSidebar extends Component {
   constructor(props) {
@@ -24,8 +24,8 @@ class FilesSidebar extends Component {
     const { query } = this.state;
     const filesList = query
       ? files.filter(file => {
-          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
-        })
+        return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
+      })
       : files;
 
     return (

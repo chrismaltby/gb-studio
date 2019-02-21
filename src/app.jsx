@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 import AppToolbar from "./containers/AppToolbar";
-import ImagesSection from "./components/ImagesSection";
-import SpritesSection from "./components/SpritesSection";
+import BackgroundsPage from "./containers/pages/BackgroundsPage";
+import SpritesPage from "./containers/pages/SpritesPage";
 import OverviewPage from "./containers/pages/OverviewPage";
 import ScriptPage from "./containers/pages/ScriptPage";
 import BuildPage from "./containers/pages/BuildPage";
@@ -23,7 +23,6 @@ class App extends Component {
   }
 
   onBlur = () => {
-    console.log("ON BLUR");
     this.setState({ blur: true });
   };
 
@@ -40,29 +39,13 @@ class App extends Component {
         <div className="App__Content">
           {section === "overview" && <OverviewPage />}
           {section === "world" && <WorldPage />}
-          {section === "backgrounds" && <ImagesSection />}
-          {section === "sprites" && <SpritesSection />}
+          {section === "backgrounds" && <BackgroundsPage />}
+          {section === "sprites" && <SpritesPage />}
           {section === "script" && <ScriptPage />}
           {section === "build" && <BuildPage />}
         </div>
       </div>
     );
-
-    // return (
-    //   <div className="App">
-    //     {section === "editor" && (
-    //       <div>
-    //         <World />
-    //         <ToolsSidebar />
-    //         <EditorSidebar />
-    //         <StatusBar />
-    //       </div>
-    //     )}
-    //     {section === "images" && <ImagesSection />}
-    //     {section === "spriteSheets" && <SpritesSection />}
-    //     <Navbar />
-    //   </div>
-    // );
   }
 }
 
@@ -73,15 +56,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(App);
-
-// import React from 'react';
-// import ToolsSidebar from "./components/ToolsSidebar"
-
-// export default class App extends React.Component {
-//   render() {
-//     return (<div>
-//       <h2>Welcome to React!</h2>
-//       <ToolsSidebar />
-//     </div>);
-//   }
-// }

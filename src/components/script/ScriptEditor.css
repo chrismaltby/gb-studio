@@ -3,6 +3,7 @@
   width: 100%;
   box-sizing: border-box;
   text-align: left;
+  background: var(--script-editor-bg-color);
 }
 
 .ActionMini {
@@ -40,7 +41,7 @@
 
 .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level1);
-  border-bottom: 2px solid var(--conditional-level1);
+  border-bottom: 3px solid var(--conditional-level1);
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
@@ -55,7 +56,7 @@
 
 .ActionMini--Conditional .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level2);
-  border-bottom: 2px solid var(--conditional-level2);
+  border-bottom: 3px solid var(--conditional-level2);
 }
 
 .ActionMini--Conditional
@@ -76,7 +77,7 @@
 
 .ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level3);
-  border-bottom: 2px solid var(--conditional-level3);
+  border-bottom: 3px solid var(--conditional-level3);
 }
 
 .ActionMini--Conditional
@@ -102,7 +103,7 @@
   .ActionMini--Conditional
   .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level4);
-  border-bottom: 2px solid var(--conditional-level4);
+  border-bottom: 3px solid var(--conditional-level4);
 }
 
 .ActionMini--Conditional

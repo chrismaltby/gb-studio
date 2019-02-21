@@ -1,0 +1,68 @@
+@import url("./Splash.css");
+@import url("./../components/forms/DirectionPicker.css");
+@import url("./../components/editors/EditorSidebar.css");
+@import url("./../components/images/FilesSidebar.css");
+@import url("./../components/images/ImageViewer.css");
+@import url("./../components/world/Actor.css");
+@import url("./../components/world/Connections.css");
+@import url("./../components/world/Scene.css");
+@import url("./../components/world/StatusBar.css");
+@import url("./../components/world/ToolPicker.css");
+@import url("./../components/world/World.css");
+@import url("./../components/library/Toolbar.css");
+@import url("./../components/library/Menu.css");
+@import url("./../components/library/Forms.css");
+@import url("./../components/library/PageHeader.css");
+@import url("./../components/library/PageContent.css");
+@import url("./../components/library/Button.css");
+@import url("./../components/script/ScriptEventBlock.css");
+@import url("./../components/script/AddCommandButton.css");
+@import url("./../components/script/ScriptEditor.css");
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: var(--main-bg-color);
+  color: var(--main-text-color);
+  margin: 0px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 13px;
+  user-select: none;
+}
+
+#App {
+  width: 100%;
+  height: 100%;
+}
+
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.App__Content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.Rotating {
+  animation: Rotating 2s linear infinite;
+}
+
+@keyframes Rotating {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}

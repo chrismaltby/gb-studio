@@ -1,3 +1,4 @@
 .ScriptEventBlock {
   background: var(--sidebar-bg-color);
+  background: var(--script-editor-bg-color);
 }

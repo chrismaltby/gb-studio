@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import FilesSidebar from "./FilesSidebar";
-import ImageViewer from "./ImageViewer";
+import FilesSidebar from "../../components/images/FilesSidebar";
+import ImageViewer from "../../components/images/ImageViewer";
 
 class SpritesSection extends Component {
   render() {

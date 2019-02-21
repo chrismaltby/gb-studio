@@ -6,12 +6,11 @@ import { EventFields, EventNames } from "../../lib/data/compiler/eventTypes";
 const actions = Object.keys(EventFields).sort((a, b) => {
   var textA = (EventNames[a] || a).toUpperCase();
   var textB = (EventNames[b] || b).toUpperCase();
-  return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+  return textA < textB ? -1 : textA > textB ? 1 : 0;
 });
 
 const DIRECTION_UP = "UP";
 const DIRECTION_DOWN = "DOWN";
-
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -50,8 +49,8 @@ class AddCommandButton extends Component {
   onHover = actionIndex => () => {
     this.setState({
       selectedIndex: actionIndex
-    })
-  }
+    });
+  };
 
   onSearch = e => {
     this.setState({
@@ -67,23 +66,34 @@ class AddCommandButton extends Component {
         this.onAdd(actionsList[selectedIndex])();
       }
     } else if (e.key === "ArrowDown") {
-      this.setState({ selectedIndex: Math.min(actionsList.length - 1, selectedIndex + 1) })
+      this.setState({
+        selectedIndex: Math.min(actionsList.length - 1, selectedIndex + 1)
+      });
     } else if (e.key === "ArrowUp") {
-      this.setState({ selectedIndex: Math.max(0, selectedIndex - 1) })
+      this.setState({ selectedIndex: Math.max(0, selectedIndex - 1) });
     } else {
-      this.setState({ selectedIndex: Math.max(0, Math.min(actionsList.length - 1, selectedIndex)) })
+      this.setState({
+        selectedIndex: Math.max(
+          0,
+          Math.min(actionsList.length - 1, selectedIndex)
+        )
+      });
     }
-  }
+  };
 
   filteredList = () => {
     const { query } = this.state;
     return query
       ? actions.filter(action => {
-        return (EventNames[action] && EventNames[action].toUpperCase().indexOf(query.toUpperCase()) > -1)
-          || action.toUpperCase().indexOf(query.toUpperCase()) > -1;
-      })
+          return (
+            (EventNames[action] &&
+              EventNames[action].toUpperCase().indexOf(query.toUpperCase()) >
+                -1) ||
+            action.toUpperCase().indexOf(query.toUpperCase()) > -1
+          );
+        })
       : actions;
-  }
+  };
 
   render() {
     const { query, open, direction, selectedIndex } = this.state;
@@ -113,7 +123,8 @@ class AddCommandButton extends Component {
                 <div
                   key={action}
                   className={cx("AddCommandButton__ListItem", {
-                    "AddCommandButton__ListItem--Selected": selectedIndex === actionIndex
+                    "AddCommandButton__ListItem--Selected":
+                      selectedIndex === actionIndex
                   })}
                   onClick={this.onAdd(action)}
                   onMouseEnter={this.onHover(actionIndex)}
