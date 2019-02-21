@@ -1,3 +1,4 @@
 .PageContent {
   padding: 40px;
+  background: var(--sidebar-bg-color);
 }

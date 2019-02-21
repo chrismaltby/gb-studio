@@ -1,14 +1,9 @@
 .Scene {
   position: absolute;
   padding-top: 20px;
-  /* border-radius: 16px; */
   user-select: none;
   text-align: center;
 }
-
-/* .Scene:hover {
-  background-color: #011020;
-} */
 
 .Scene__Name {
   position: absolute;
@@ -27,8 +22,7 @@
   background-color: #fff;
   background-repeat: no-repeat;
   overflow: hidden;
-  /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
-  border: 1px solid #fff;
+  border: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
 }
 

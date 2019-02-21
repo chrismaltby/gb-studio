@@ -5,8 +5,8 @@
   /* background-color: #011526; */
   /* color: #fff; */
   background-color: var(--sidebar-bg-color);
-  border-top: 1px solid #d0d0d0;
-  border-right: 1px solid #d0d0d0;
+  border-top: 1px solid var(--sidebar-edge-color);
+  border-right: 1px solid var(--sidebar-edge-color);
   border-top-right-radius: 4px;
   padding: 4px 10px;
 }

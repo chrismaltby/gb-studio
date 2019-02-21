@@ -1,12 +1,11 @@
 .Toolbar {
-  /* position: relative; */
-  /* z-index: 900; */
   height: 36px;
-  /*background-color: #011526;*/
-  /*background-color: var(--nav-bg-color);*/
-  background: linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%);
-  border-bottom: 1px solid #abaaab;
-  /*box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);*/
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-top-color) 0%,
+    var(--toolbar-bottom-color) 100%
+  );
+  border-bottom: 1px solid var(--toolbar-border-color);
   display: flex;
   align-items: center;
   padding-left: 80px;
@@ -20,8 +19,8 @@
 }
 
 .App--Blur .Toolbar {
-  background: #f6f6f6;
-  border-bottom: 1px solid #d1d1d1;
+  background: var(--toolbar-inactive-color);
+  border-bottom: 1px solid var(--toolbar-inactive-border-color);
 }
 
 .Toolbar__Spacer {
@@ -41,12 +40,22 @@
   border-radius: 4px;
   height: 24px;
   min-width: 24px;
-  background: linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%);
-  border: 1px solid #9f9e9e;
-  box-shadow: 0px 1px #c5c5c5;
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-button-top-color) 0%,
+    var(--toolbar-button-bottom-color) 100%
+  );
+  border: 1px solid var(--toolbar-button-border-color);
+  border-top: 1px solid var(--toolbar-button-border-top-color);
+  box-shadow: 0px 1px var(--toolbar-button-shadow-color);
+  color: var(--toolbar-button-text-color);
   white-space: nowrap;
   padding: 0px 8px;
   overflow: hidden;
+}
+
+.Toolbar__Button path {
+  fill: var(--toolbar-button-text-color);
 }
 
 .App--Blur .Toolbar__Button {
@@ -72,7 +81,11 @@
 }
 
 .Toolbar__Button:active {
-  background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-button-active-top-color) 0%,
+    var(--toolbar-button-active-bottom-color) 100%
+  );
 }
 
 .Toolbar__Button svg {
@@ -81,7 +94,7 @@
 }
 
 .Toolbar__Button .Toolbar__Button {
-  background: #ccc;
+  background: var(--toolbar-button-nested-color);
   border-radius: 20px;
   height: 16px;
   min-width: 16px;

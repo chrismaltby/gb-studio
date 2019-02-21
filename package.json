@@ -34,7 +34,9 @@
         "name": "GB Studio",
         "executableName": "GB Studio",
         "packageManager": "yarn",
-        "icon": "src/images/icon/icon_mac.icns"
+        "icon": "src/images/icon/icon_mac.icns",
+        "darwinDarkModeSupport": true,
+        "extraResource": []
       },
       "electronWinstallerConfig": {
         "name": "gb_rpg_builder"
