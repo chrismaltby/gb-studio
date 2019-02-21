@@ -2,8 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Button from "../../components/library/Button";
+import PageHeader from "../../components/library/PageHeader";
+import PageContent from "../../components/library/PageContent";
 
 class OverviewPage extends Component {
+
+
   setSection = section => e => {
     this.props.setSection(section);
   };
@@ -20,23 +24,16 @@ class OverviewPage extends Component {
           overflowX: "hidden"
         }}
       >
-        <div style={{ padding: 40 }}>
-          <h1 style={{ margin: 0 }}>{name}</h1>
+        <PageHeader>
+          <h1>{name}</h1>
           <p>
             {numScenes} {numScenes === 1 ? "Scene" : "Scenes"}
           </p>
-          <p style={{ marginBottom: 0 }}>
+          <p>
             {numSprites} {numSprites === 1 ? "Sprite" : "Sprites"}
           </p>
-        </div>
-        <div
-          style={{
-            width: "100%",
-            flexGrow: 1,
-            background: "var(--sidebar-bg-color)",
-            padding: 40
-          }}
-        >
+        </PageHeader>
+        <PageContent>
           <Button
             style={{
               float: "left",
@@ -97,8 +94,8 @@ class OverviewPage extends Component {
           >
             Build &amp; Run
           </Button>
-        </div>
-      </div>
+        </PageContent>
+      </div >
     );
   }
 }

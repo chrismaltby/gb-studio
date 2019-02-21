@@ -1,4 +1,11 @@
 .PageHeader {
   padding: 40px;
-  /* background-color: #fff; */
+}
+
+.PageHeader h1 {
+  margin-top: 0px;
+}
+
+.PageHeader p:last-child {
+  margin-bottom: 0;
 }

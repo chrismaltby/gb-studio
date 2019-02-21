@@ -92,7 +92,7 @@ class BuildPage extends Component {
             </div>
           ))}
         </div>
-        <PageContent style={{ padding: 20 }}>
+        <PageContent style={{ padding: 20, flexGrow: 0 }}>
           <ButtonToolbar>
             <Button onClick={this.onRun}>Run</Button>
             <Button onClick={this.onBuild("rom")}>Export ROM</Button>
