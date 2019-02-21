@@ -16,6 +16,12 @@
   --toolbar-button-text-color: #fbfeff;
   --toolbar-button-nested-color: #444444;
 
+  --button-top-color: #6a6d6e;
+  --button-bottom-color: #616364;
+  --button-border-color: transparent;
+  --button-border-top-color: #9f9e9e;
+  --button-text-color: #fbfeff;
+
   --menu-bg-color: #000000;
   --menu-hover-color: #282a2a;
 
@@ -33,6 +39,7 @@
 
   --script-command-text-color: #ffffff;
   --script-command-bg-color: #1f1f1f;
+  --script-review-text-color: #ffffff;
 
   --sidebar-hover-color: #282a2b;
   --sidebar-selected-color: #383d3e;

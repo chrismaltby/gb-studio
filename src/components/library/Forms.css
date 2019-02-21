@@ -2,6 +2,7 @@
   background: var(--input-bg-color);
   border-radius: 4px;
   border: 1px solid var(--input-border-color);
+  color: var(--input-text-color);
   padding: 5px;
   box-sizing: border-box;
   width: 100%;

@@ -16,6 +16,12 @@
   --toolbar-button-text-color: #3b3a3b;
   --toolbar-button-nested-color: #cccccc;
 
+  --button-top-color: #fefdfe;
+  --button-bottom-color: #f1f1f1;
+  --button-border-color: #c5c5c5;
+  --button-border-top-color: #c5c5c5;
+  --button-text-color: #3b3a3b;
+
   --menu-bg-color: #ffffff;
   --menu-hover-color: #e8e7e8;
 
@@ -23,8 +29,6 @@
   --input-border-color: #d4d4d4;
   --input-text-color: #3b3a3b;
   --input-active-color: #e8e7e8;
-
-
 
   --main-text-color: #3b3a3b;
   --main-bg-color: #f9f9f9;
@@ -35,6 +39,7 @@
 
   --script-command-text-color: #3b3a3b;
   --script-command-bg-color: #efefef;
+  --script-review-text-color: #999999;
   
   --sidebar-hover-color: #e8e7e8;
   --sidebar-selected-color: #cdcdcd;
