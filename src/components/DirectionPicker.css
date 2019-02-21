@@ -8,16 +8,16 @@
   margin-top: 5px;
   width: 23px;
   height: 23px;
-  background: #fff;
+  background: var(--input-bg-color);
   font-size: 10px;
   line-height: 23px;
   text-align: center;
-  border: 1px solid #d4d4d4;
+  border: 1px solid var(--input-border-color);
   border-right: 0;
 }
 
 .DirectionPicker__Button:last-child {
-  border-right: 1px solid #d4d4d4;
+  border-right: 1px solid var(--input-border-color);
 }
 
 .DirectionPicker__Button--Up {
@@ -35,11 +35,11 @@
 }
 
 .DirectionPicker__Button:hover {
-  background-color: #f1f1f1;
+  /* background-color: #f1f1f1; */
 }
 
 .DirectionPicker__Button--Active,
 .DirectionPicker__Button--Active:hover {
   /*background: #033663;*/
-  background-color: #e8e7e8;
+  background-color:var(--input-active-color) ;
 }

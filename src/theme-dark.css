@@ -19,6 +19,11 @@
   --menu-bg-color: #000000;
   --menu-hover-color: #282a2a;
 
+  --input-bg-color: #000000;
+  --input-border-color: #111111;
+  --input-text-color: #b7babb;
+  --input-active-color: #383d3e;
+
   --main-text-color: #b7babb;
   --main-bg-color: #1d2021;
   --nav-bg-color: purple;
@@ -26,11 +31,14 @@
   --sidebar-border-color: #1d2021;
   --sidebar-edge-color: #000000;
 
+  --script-command-text-color: #ffffff;
+  --script-command-bg-color: #1f1f1f;
+
   --sidebar-hover-color: #282a2b;
   --sidebar-selected-color: #383d3e;
 
-  --conditional-level1: #b3e5fc;
-  --conditional-level2: #ffccbc;
-  --conditional-level3: #c8e6c9;
-  --conditional-level4: #d1c4e9;
+  --conditional-level1: #01579b;
+  --conditional-level2: #bf360c;
+  --conditional-level3: #1b5e20;
+  --conditional-level4: #311b92;
 }

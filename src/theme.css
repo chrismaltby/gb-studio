@@ -19,6 +19,13 @@
   --menu-bg-color: #ffffff;
   --menu-hover-color: #e8e7e8;
 
+  --input-bg-color: #ffffff;
+  --input-border-color: #d4d4d4;
+  --input-text-color: #3b3a3b;
+  --input-active-color: #e8e7e8;
+
+
+
   --main-text-color: #3b3a3b;
   --main-bg-color: #f9f9f9;
   --nav-bg-color: purple;
@@ -26,6 +33,9 @@
   --sidebar-border-color: #dadada;
   --sidebar-edge-color: #d0d0d0;
 
+  --script-command-text-color: #3b3a3b;
+  --script-command-bg-color: #efefef;
+  
   --sidebar-hover-color: #e8e7e8;
   --sidebar-selected-color: #cdcdcd;
 

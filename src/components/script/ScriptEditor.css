@@ -1,54 +1,38 @@
 .ScriptEditor {
   clear: both;
-  /* padding: 10px; */
-  background-color: #fff;
   width: 100%;
-  /*border: 1px solid #ccc;*/
   box-sizing: border-box;
   text-align: left;
-  /*background-color: blue;*/
 }
 
 .ActionMini {
   position: relative;
   user-select: none;
-  /*border-bottom: 1px solid #ccc;*/
-  /*padding: 10px;*/
-  /* padding-bottom: 10px; */
 }
 
 .ActionMini__Content {
-  /*overflow: hidden;*/
   font-size: 12px;
-  /* background-color: #0a1f38; */
-  /* color: #fff; */
-  border-bottom: 1px solid #dadada;
-  /* border-radius: 4px; */
-  /* box-shadow: -1px 1px 2px 1px rgba(0, 0, 0, 0.2); */
+  border-bottom: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Children .ActionMini {
-  border-left: 1px solid #dadada;
+  border-left: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Children .ActionMini:first-child > .ActionMini__Content {
-  border-top: 1px solid #dadada;
+  border-top: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Command {
-  /*  background: red;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;*/
   min-height: 28px;
   line-height: 28px;
-  /*display: inline-block;*/
   font-weight: bold;
   padding: 0 10px;
-  background: #efefef;
+  background: var(--script-command-bg-color);
+  color: var(--script-command-text-color);
 }
 
 .ActionMini__Command:hover {
-  /*background-color: rgba(0, 0, 0, 0.2);*/
   cursor: move;
 }
 
@@ -136,7 +120,7 @@
 }
 
 .ActionMini__Children > .ActionMini--Add:first-child {
-  border-top: 1px solid #dadada;
+  border-top: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Remove {
@@ -160,8 +144,12 @@
 }
 
 .ActionMini__Else {
-  padding: 5px;
+  min-height: 28px;
+  line-height: 28px;
   font-weight: bold;
+  padding: 0 10px;
+  background: #efefef;
+  color: var(--script-command-text-color);
 }
 
 .ActionMini--Dragging {
@@ -187,30 +175,16 @@
 }
 
 .ActionMini__Children {
-  /* padding-left: 5px; */
   padding-top: 5px;
-  /* margin-left: 10px; */
-  /* padding: 5px; */
-  /* border-left: 2px solid red; */
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Children {
   margin-left: 5px;
   margin-bottom: 5px;
-  border-bottom: 1px solid #dadada;
+  border-bottom: 1px solid var(--sidebar-border-color);
 }
-
-/* .ActionMini__Children .ActionMini__Children {
-  border-left: 2px solid green;
-}
-
-.ActionMini__Children .ActionMini__Children .ActionMini__Children {
-  border-left: 2px solid blue;
-} */
 
 .ActionMini__Args {
-  /*padding: 5px;*/
-  /*display: flex;*/
   display: inline-block;
 }
 
@@ -223,7 +197,6 @@
 }
 
 .ActionMini__Arg strong {
-  /*margin-right: 5px;*/
 }
 
 .ActionMini__Form {
@@ -259,16 +232,4 @@
 .EditorSidebar .ActionMini__Form .Select,
 .EditorSidebar .ActionMini__Form .DirectionPicker__Button {
   margin-top: 0;
-}
-
-.Output {
-  /*position: fixed;*/
-  /* right: 0;
-  top: 0;*/
-  /*bottom: 0;*/
-  width: 300px;
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  overflow: auto;
 }
