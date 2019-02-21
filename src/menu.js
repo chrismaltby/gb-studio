@@ -88,7 +88,7 @@ const template = [
         }
       },
       {
-        label: "Build & Run", accelerator: "CommandOrControl+6", click: () => {
+        label: "Build && Run", accelerator: "CommandOrControl+6", click: () => {
           notifyListeners("section", "build");
         }
       },
