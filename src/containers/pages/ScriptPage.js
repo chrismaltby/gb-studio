@@ -22,12 +22,24 @@ class ScriptsPage extends Component {
 
   render() {
     const { scriptLines } = this.props;
+    const scriptWords = scriptLines.reduce((memo, scriptLine) => {
+      if (scriptLine && scriptLine.line && scriptLine.line.args && scriptLine.line.args.text && scriptLine.line.args.text.split) {
+        const words = scriptLine.line.args.text.trim().split(/[, \n]+/);
+        if (words) {
+          return memo + words.length;
+        }
+      }
+      return memo;
+    }, 0)
     return (
       <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>
           <h1>Script Review</h1>
           <p>
             {scriptLines.length} {scriptLines.length === 1 ? "Line" : "Lines"}
+          </p>
+          <p>
+            {scriptWords} {scriptWords === 1 ? "Word" : "Words"}
           </p>
         </PageHeader>
         <PageContent>
