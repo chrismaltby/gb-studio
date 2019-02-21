@@ -5,7 +5,6 @@
 
 .DirectionPicker__Button {
   flex: 1;
-  margin-top: 5px;
   width: 23px;
   height: 23px;
   background: var(--input-bg-color);
@@ -34,12 +33,7 @@
   border-bottom-right-radius: 4px;
 }
 
-.DirectionPicker__Button:hover {
-  /* background-color: #f1f1f1; */
-}
-
 .DirectionPicker__Button--Active,
 .DirectionPicker__Button--Active:hover {
-  /*background: #033663;*/
   background-color:var(--input-active-color) ;
 }
