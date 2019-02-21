@@ -1,5 +1,5 @@
 .Button {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   font-size: 13px;
@@ -19,8 +19,27 @@
   box-sizing: border-box;
 }
 
+.Button--Transparent {
+  background: transparent;
+  border-color: transparent
+}
+
+.Button--Small {
+  height: 30px;
+  font-size: 12px;
+  padding: 10px;
+}
+
+.Button--Small svg {
+  width: 16px;
+}
+
+.Button--Transparent svg {
+  fill: var(--button-light-icon-color);
+}
+
 .Button:hover {
-  background-color: #000;
+  background-color: var(--toolbar-button-active-bottom-color);
   cursor: pointer;
 }
 

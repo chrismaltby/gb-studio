@@ -1,6 +1,7 @@
 import React from "react";
+import cx from "classnames";
 
-export default props => <div className="Button" {...props} />;
+export default ({ transparent, small, ...props }) => <div className={cx("Button", { "Button--Transparent": transparent, "Button--Small": small })} {...props} />;
 
 export const ButtonToolbar = props => (
   <div className="ButtonToolbar" {...props} />
