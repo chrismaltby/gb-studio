@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../../components/DirectionPicker";
+import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import { FormField } from "../../components/library/Forms";
 
 class WorldEditor extends Component {
@@ -97,6 +98,15 @@ class WorldEditor extends Component {
             id="startDirection"
             value={settings.startDirection || 0}
             onChange={this.onEdit("startDirection")}
+          />
+        </FormField>
+
+        <FormField>
+          <label htmlFor="playerSprite">Player Sprite</label>
+          <SpriteSheetSelect
+            id="playerSprite"
+            value={settings.playerSpriteSheetId}
+            onChange={this.onEdit("playerSpriteSheetId")}
           />
         </FormField>
       </div>
