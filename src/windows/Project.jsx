@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import AppToolbar from "./containers/AppToolbar";
-import BackgroundsPage from "./containers/pages/BackgroundsPage";
-import SpritesPage from "./containers/pages/SpritesPage";
-import OverviewPage from "./containers/pages/OverviewPage";
-import ScriptPage from "./containers/pages/ScriptPage";
-import BuildPage from "./containers/pages/BuildPage";
-import WorldPage from "./containers/pages/WorldPage";
+import AppToolbar from "../containers/AppToolbar";
+import BackgroundsPage from "../containers/pages/BackgroundsPage";
+import SpritesPage from "../containers/pages/SpritesPage";
+import OverviewPage from "../containers/pages/OverviewPage";
+import ScriptPage from "../containers/pages/ScriptPage";
+import BuildPage from "../containers/pages/BuildPage";
+import WorldPage from "../containers/pages/WorldPage";
 
 class App extends Component {
   constructor() {

@@ -39,7 +39,7 @@ const createSplash = async () => {
   });
 
   // and load the index.html of the app.
-  splashWindow.loadURL(`file://${__dirname}/splash.html`);
+  splashWindow.loadURL(`file://${__dirname}/windows/splash.html`);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -78,7 +78,7 @@ const createWindow = async projectPath => {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
-      devTools: isDevMode,
+      devTools: isDevMode
     }
   });
 
@@ -86,7 +86,9 @@ const createWindow = async projectPath => {
 
   // and load the index.html of the app.
   mainWindow.loadURL(
-    `file://${__dirname}/index.html?path=${encodeURIComponent(projectPath)}`
+    `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
+      projectPath
+    )}`
   );
 
   mainWindow.setRepresentedFilename(projectPath);
@@ -210,7 +212,7 @@ menu.on("redo", async () => {
   mainWindow.webContents.send("redo");
 });
 
-menu.on("section", async (section) => {
+menu.on("section", async section => {
   mainWindow.webContents.send("section", section);
 });
 

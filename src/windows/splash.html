@@ -9,9 +9,9 @@
       id="theme"
       rel="stylesheet"
       type="text/css"
-      href="./styles/theme.css"
+      href="../styles/theme.css"
     />
-    <link rel="stylesheet" type="text/css" href="./styles/App.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/App.css" />
   </head>
   <body>
     <div id="App"></div>
@@ -23,8 +23,8 @@
     import ReactDOM from 'react-dom';
     import {AppContainer} from 'react-hot-loader';
     import { Provider } from "react-redux";
-    import * as actions from "./actions";
-    import configureStore from "./store/configureStore";
+    import * as actions from "../actions";
+    import configureStore from "../store/configureStore";
 
     const store = configureStore();
 

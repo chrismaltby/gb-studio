@@ -9,9 +9,9 @@
       id="theme"
       rel="stylesheet"
       type="text/css"
-      href="./styles/theme.css"
+      href="../styles/theme.css"
     />
-    <link rel="stylesheet" type="text/css" href="./styles/App.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/App.css" />
   </head>
 
   <body>
@@ -24,10 +24,10 @@
     import ReactDOM from 'react-dom';
     import {AppContainer} from 'react-hot-loader';
     import { Provider } from "react-redux";
-    import * as actions from "./actions";
-    import configureStore from "./store/configureStore";
+    import * as actions from "../actions";
+    import configureStore from "../store/configureStore";
     import { ipcRenderer } from "electron";
-    import "./lib/handleFullScreen";
+    import "../lib/handleFullScreen";
     import { ActionCreators } from 'redux-undo';
     const { systemPreferences } = require('electron').remote;
 
@@ -75,7 +75,7 @@
     });
 
     const render = () => {
-      const App = require('./app').default;
+      const App = require('./Project').default;
       ReactDOM.render(<Provider store={store}><AppContainer><App /></AppContainer></Provider>, document.getElementById('App'));
     }
 
@@ -89,7 +89,7 @@
     function updateMyAppTheme(darkMode) {
       console.log("updateMyAppTheme", darkMode);
       const themeStyle = document.getElementById("theme");
-      themeStyle.href = "./styles/" + (darkMode ? "theme-dark.css" : "theme.css");
+      themeStyle.href = "../styles/" + (darkMode ? "theme-dark.css" : "theme.css");
     }
 
     updateMyAppTheme(systemPreferences.isDarkMode())

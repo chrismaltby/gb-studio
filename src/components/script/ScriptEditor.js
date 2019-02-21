@@ -3,7 +3,6 @@ import cx from "classnames";
 import { DragSource, DropTarget, DragDropContext } from "react-dnd";
 import { CloseIcon } from "../library/Icons";
 import HTML5Backend from "react-dnd-html5-backend";
-import ItemTypes from "../../ItemTypes";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
 import { EventNames } from "../../lib/data/compiler/eventTypes";
@@ -19,6 +18,10 @@ const uuid = a => {
   return a
     ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
     : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
+};
+
+const ItemTypes = {
+  CARD: "card"
 };
 
 const cardSource = {

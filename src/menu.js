@@ -10,7 +10,6 @@ const template = [
         label: "New Project",
         accelerator: "CommandOrControl+N",
         click: () => {
-          console.log("NEW PROJECT");
           notifyListeners("new");
         }
       },
@@ -18,7 +17,6 @@ const template = [
         label: "Open...",
         accelerator: "CommandOrControl+O",
         click: () => {
-          console.log("OPEN PROJECT");
           notifyListeners("open");
         }
       },
@@ -26,7 +24,6 @@ const template = [
         label: "Save",
         accelerator: "CommandOrControl+S",
         click: () => {
-          console.log("SAVE");
           notifyListeners("save");
         }
       },
@@ -41,14 +38,12 @@ const template = [
         label: 'Undo',
         accelerator: 'CommandOrControl+Z',
         click: () => {
-          console.log("UNDO1");
           notifyListeners("undo");
         }
       },
       {
         label: 'Redo',
         accelerator: 'CommandOrControl+Shift+Z', click: () => {
-          console.log("REDO1");
           notifyListeners("redo");
         }
       },
