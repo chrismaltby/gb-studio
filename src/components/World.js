@@ -89,11 +89,7 @@ function mapStateToProps(state) {
     scenes: state.project.present && state.project.present.scenes,
     settings: state.project.present.settings,
     editor: state.editor,
-    zoomRatio:
-      ((state.project.present &&
-        state.project.present.settings &&
-        state.project.present.settings.zoom) ||
-        100) / 100,
+    zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections:
       state.project.present.settings && state.project.present.settings.showConnections
   };

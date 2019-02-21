@@ -34,11 +34,7 @@ function mapStateToProps(state) {
     projectId: state.project.present.id,
     image: image && image.filename,
     folder,
-    zoomRatio:
-      ((state.project.present &&
-        state.project.present.settings &&
-        state.project.present.settings.zoom) ||
-        100) / 100
+    zoomRatio: (state.editor.zoom || 100) / 100
   };
 }
 

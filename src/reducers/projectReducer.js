@@ -20,10 +20,7 @@ import {
   MOVE_TRIGGER,
   RENAME_FLAG,
   EDIT_PROJECT,
-  EDIT_PROJECT_SETTINGS,
-  ZOOM_IN,
-  ZOOM_OUT,
-  ZOOM_RESET
+  EDIT_PROJECT_SETTINGS
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
 
@@ -438,30 +435,6 @@ export default function project(state = initialState.project, action) {
         settings: {
           ...state.settings,
           ...action.values
-        }
-      };
-    case ZOOM_IN:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          zoom: Math.min(800, state.settings.zoom * 2)
-        }
-      };
-    case ZOOM_OUT:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          zoom: Math.max(25, state.settings.zoom / 2)
-        }
-      };
-    case ZOOM_RESET:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          zoom: 100
         }
       };
     default:

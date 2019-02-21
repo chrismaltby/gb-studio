@@ -9,7 +9,6 @@ export default {
   },
   project: {
     settings: {
-      zoom: 100,
       showCollisions: true,
       showConnections: true
     }
@@ -19,6 +18,7 @@ export default {
     type: "world",
     scene: "",
     index: 0,
+    zoom: 100,
     sceneDragging: false,
     sceneDragX: 0,
     sceneDragY: 0

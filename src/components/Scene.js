@@ -351,11 +351,7 @@ function mapStateToProps(state, props) {
     showCollisions:
       (state.project.present.settings && state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
-    zoomRatio:
-      ((state.project.present &&
-        state.project.present.settings &&
-        state.project.present.settings.zoom) ||
-        100) / 100
+    zoomRatio: (state.editor.zoom || 100) / 100,
   };
 }
 

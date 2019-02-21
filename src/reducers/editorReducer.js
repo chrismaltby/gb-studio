@@ -1,5 +1,6 @@
 import initialState from "./initialState";
 import {
+  PROJECT_LOAD_SUCCESS,
   SELECT_SCENE,
   ADD_TRIGGER,
   SELECT_TRIGGER,
@@ -10,11 +11,19 @@ import {
   DRAG_SCENE,
   DRAG_SCENE_START,
   DRAG_SCENE_STOP,
-  SELECT_WORLD
+  SELECT_WORLD,
+  ZOOM_IN,
+  ZOOM_OUT,
+  ZOOM_RESET
 } from "../actions/actionTypes";
 
 export default function editor(state = initialState.editor, action) {
   switch (action.type) {
+    case PROJECT_LOAD_SUCCESS: {
+      return Object.assign({}, state, action.data.settings && action.data.settings.zoom && {
+        zoom: action.data.settings.zoom
+      });
+    }
     case MOVE_SCENE: {
       return {
         ...state,
@@ -98,6 +107,22 @@ export default function editor(state = initialState.editor, action) {
         type: "world"
       };
     }
+    case ZOOM_IN:
+      return {
+        ...state,
+        zoom: Math.min(800, state.zoom * 2)
+      };
+    case ZOOM_OUT:
+      return {
+        ...state,
+        zoom: Math.max(25, state.zoom / 2)
+      };
+    case ZOOM_RESET:
+      return {
+        ...state,
+        ...state.settings,
+        zoom: 100
+      };
     default:
       return state;
   }

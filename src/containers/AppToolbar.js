@@ -108,8 +108,7 @@ function mapStateToProps(state) {
     projectRoot: state.document && state.document.root,
     name: state.project.present && state.project.present.name,
     section: state.navigation.section,
-    zoom:
-      state.project.present && state.project.present.settings && state.project.present.settings.zoom,
+    zoom: state.editor.zoom,
     running: state.console.status === "running"
   };
 }

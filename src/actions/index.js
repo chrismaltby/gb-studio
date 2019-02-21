@@ -47,7 +47,13 @@ export const saveProject = () => async (dispatch, getState) => {
     types.PROJECT_SAVE_FAILURE,
     async () => {
       const state = getState();
-      await saveProjectData(state.document.path, state.project.present);
+      await saveProjectData(state.document.path, {
+        ...state.project.present,
+        settings: {
+          ...state.project.present.settings,
+          zoom: state.editor.zoom
+        }
+      });
     }
   );
 };
