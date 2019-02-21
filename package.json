@@ -36,7 +36,11 @@
         "packageManager": "yarn",
         "icon": "src/images/icon/icon_mac.icns",
         "darwinDarkModeSupport": true,
-        "extraResource": []
+        "extraResource": [],
+        "ignore": [
+          "/coverage($|/)",
+          "/test($|/)"
+        ]
       },
       "electronWinstallerConfig": {
         "name": "gb_rpg_builder"
