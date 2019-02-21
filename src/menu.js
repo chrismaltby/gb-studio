@@ -62,12 +62,36 @@ const template = [
   {
     label: "View",
     submenu: [
-      { label: "Overview", accelerator: "CommandOrControl+1" },
-      { label: "Game World", accelerator: "CommandOrControl+2" },
-      { label: "Sprites", accelerator: "CommandOrControl+3" },
-      { label: "Backgrounds", accelerator: "CommandOrControl+4" },
-      { label: "Tiles", accelerator: "CommandOrControl+5" },
-      { label: "Script", accelerator: "CommandOrControl+6" },
+      {
+        label: "Overview", accelerator: "CommandOrControl+1", click: () => {
+          notifyListeners("section", "overview");
+        }
+      },
+      {
+        label: "Game World", accelerator: "CommandOrControl+2", click: () => {
+          notifyListeners("section", "world");
+        }
+      },
+      {
+        label: "Sprites", accelerator: "CommandOrControl+3", click: () => {
+          notifyListeners("section", "sprites");
+        }
+      },
+      {
+        label: "Backgrounds", accelerator: "CommandOrControl+4", click: () => {
+          notifyListeners("section", "backgrounds");
+        }
+      },
+      {
+        label: "Script Review", accelerator: "CommandOrControl+5", click: () => {
+          notifyListeners("section", "script");
+        }
+      },
+      {
+        label: "Build & Run", accelerator: "CommandOrControl+6", click: () => {
+          notifyListeners("section", "build");
+        }
+      },
 
       { type: "separator" },
       {
@@ -147,7 +171,8 @@ let listeners = {
   open: [],
   save: [],
   undo: [],
-  redo: []
+  redo: [],
+  section: []
 };
 
 const notifyListeners = (event, data) => {

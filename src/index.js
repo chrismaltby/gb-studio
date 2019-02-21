@@ -208,6 +208,10 @@ menu.on("redo", async () => {
   mainWindow.webContents.send("redo");
 });
 
+menu.on("section", async (section) => {
+  mainWindow.webContents.send("section", section);
+});
+
 const newProject = async () => {
   // console.log("New Project");
   if (splashWindow) {

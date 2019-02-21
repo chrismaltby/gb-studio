@@ -52,6 +52,10 @@
       store.dispatch(ActionCreators.redo())
     });
 
+    ipcRenderer.on("section", (event,section) => {
+      store.dispatch(actions.setSection(section))
+    });
+
     let modified = false;
     store.subscribe(() => {
       const state = store.getState();
