@@ -25,6 +25,9 @@ class ToolPicker extends Component {
     if (e.target.nodeName !== "BODY") {
       return;
     }
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      return;
+    }
     if (e.key === "t") {
       this.setTool("triggers")(e);
     } else if (e.key === "a") {
