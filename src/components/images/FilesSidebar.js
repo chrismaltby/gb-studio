@@ -20,12 +20,12 @@ class FilesSidebar extends Component {
   };
 
   render() {
-    const { files, id, setNavigationId } = this.props;
+    const { files, id, setNavigationId, onAdd } = this.props;
     const { query } = this.state;
     const filesList = query
       ? files.filter(file => {
-        return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
-      })
+          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
+        })
       : files;
 
     return (
@@ -37,7 +37,7 @@ class FilesSidebar extends Component {
             onChange={this.onSearch}
             value={query}
           />
-          <Button>
+          <Button onClick={onAdd}>
             <PlusIcon />
           </Button>
         </div>

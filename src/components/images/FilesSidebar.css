@@ -29,12 +29,12 @@
 
 .FilesSidebar__Search .Button {
   margin-left: 5px;
-  padding: 5px 15px;
+  padding: 5px 14px;
 }
 
 .FilesSidebar__Search svg {
-  width: 10px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
   fill: var(--main-text-color);
 }
 

@@ -11,6 +11,7 @@
   padding-left: 80px;
   padding-right: 10px;
   user-select: none;
+  z-index: 1;
   -webkit-app-region: drag;
 }
 
