@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 import cx from "classnames";
 import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "./library/Icons";
-import { Menu, MenuItem } from "./Menu";
+import { Menu, MenuItem, MenuOverlay } from "./library/Menu";
 
 class ToolsSidebar extends Component {
   constructor(props) {

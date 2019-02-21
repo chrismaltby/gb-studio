@@ -1,6 +1,6 @@
 .Menu {
   position: absolute;
-  background-color: #ffffff;
+  background-color: var(--menu-bg-color);
   border-radius: 4px;
   padding: 4px 0;
   overflow: auto;
@@ -16,7 +16,7 @@
 }
 
 .MenuItem:hover {
-  background-color: #e8e7e8;
+  background-color: var(--menu-hover-color);
   cursor: pointer;
 }
 

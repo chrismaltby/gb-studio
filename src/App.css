@@ -6,11 +6,11 @@
 @import url("./components/FilesSidebar.css");
 @import url("./components/ImageViewer.css");
 @import url("./components/Scene.css");
-@import url("./components/Menu.css");
 @import url("./components/StatusBar.css");
 @import url("./components/ToolsSidebar.css");
 @import url("./components/World.css");
 @import url("./components/Toolbar/Toolbar.css");
+@import url("./components/library/Menu.css");
 @import url("./components/library/Forms.css");
 @import url("./components/library/PageHeader.css");
 @import url("./components/library/PageContent.css");

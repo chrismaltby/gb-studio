@@ -7,7 +7,7 @@ import {
   ToolbarButton,
   ToolbarDropdownButton
 } from "../components/Toolbar/Toolbar";
-import { Menu, MenuItem } from "../components/Menu";
+import { Menu, MenuItem } from "../components/library/Menu";
 import {
   PlayIcon,
   DownloadIcon,

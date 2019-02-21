@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Menu, MenuOverlay } from "../Menu";
+import { Menu, MenuOverlay } from "../library/Menu";
 
 export const Toolbar = props => <div className="Toolbar" {...props} />;
 export const ToolbarButton = props => (
