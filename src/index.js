@@ -75,6 +75,7 @@ const createWindow = async projectPath => {
     width: mainWindowState.width,
     height: mainWindowState.height,
     titleBarStyle: "hiddenInset",
+    fullscreenable: false,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
