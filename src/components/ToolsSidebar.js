@@ -46,6 +46,13 @@ class ToolsSidebar extends Component {
     });
   };
 
+  closeAdd = (e) => {
+    e.stopPropagation();
+    this.setState({
+      add: false
+    });
+  };
+
   setTool = id => e => {
     e.stopPropagation();
     this.props.setTool(id);
@@ -75,6 +82,7 @@ class ToolsSidebar extends Component {
           })}
         >
           <PlusIcon />
+          {add && <MenuOverlay onClick={this.closeAdd} />}
           {add && (
             <Menu
               style={{
