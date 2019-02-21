@@ -107,7 +107,7 @@ class WorldEditor extends Component {
 function mapStateToProps(state, props) {
   return {
     project: state.project.present,
-    settings: (state.project.present && state.project.settings) || {}
+    settings: (state.project.present && state.project.present.settings) || {}
   };
 }
 
