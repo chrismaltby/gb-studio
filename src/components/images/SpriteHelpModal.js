@@ -27,7 +27,7 @@ export default ({ onClose }) => (
     </p>
     <p>
       <img
-        src="./images/help/cat.png"
+        src="../images/help/cat.png"
         style={{ height: 32, imageRendering: "pixelated" }}
       />
     </p>
@@ -41,7 +41,7 @@ export default ({ onClose }) => (
     </p>
     <p>
       <img
-        src="./images/help/npc001.png"
+        src="../images/help/npc001.png"
         style={{ height: 32, imageRendering: "pixelated" }}
       />
     </p>
@@ -59,7 +59,7 @@ export default ({ onClose }) => (
     </p>
     <p>
       <img
-        src="./images/help/player.png"
+        src="../images/help/player.png"
         style={{ height: 32, imageRendering: "pixelated" }}
       />
     </p>
