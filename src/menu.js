@@ -1,5 +1,7 @@
 const { app, Menu } = require("electron");
 
+const isDevMode = process.execPath.match(/[\\/]electron/);
+
 const template = [
   {
     label: "File",
@@ -94,15 +96,6 @@ const template = [
       },
 
       { type: "separator" },
-      {
-        label: "Debug",
-        submenu: [
-          { role: "reload" },
-          { role: "forcereload" },
-          { role: "toggledevtools" }
-        ]
-      },
-      { type: "separator" },
 
       { role: "togglefullscreen" }
     ]
@@ -128,6 +121,18 @@ const template = [
     ]
   }
 ];
+
+if (isDevMode) {
+  template[2].submenu.push({ type: "separator" });
+  template[2].submenu.push({
+    label: "Debug",
+    submenu: [
+      { role: "reload" },
+      { role: "forcereload" },
+      { role: "toggledevtools" }
+    ]
+  });
+}
 
 if (process.platform === "darwin") {
   template.unshift({

@@ -33,7 +33,8 @@ const createSplash = async () => {
     maximizable: false,
     fullscreenable: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      devTools: isDevMode
     }
   });
 
@@ -76,7 +77,8 @@ const createWindow = async projectPath => {
     titleBarStyle: "hiddenInset",
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: false
+      webSecurity: false,
+      devTools: isDevMode,
     }
   });
 
