@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
+import Button from "../../components/library/Button";
 
 class OverviewPage extends Component {
   setSection = section => e => {
@@ -14,7 +15,6 @@ class OverviewPage extends Component {
         style={{
           width: "100%",
           height: "100%",
-          //   background: "purple",
           display: "flex",
           flexDirection: "column",
           overflowX: "hidden"
@@ -37,123 +37,66 @@ class OverviewPage extends Component {
             padding: 40
           }}
         >
-          <div
+          <Button
             style={{
               float: "left",
-              background: "#ccc",
               width: 200,
               height: 150,
               marginRight: 20,
               marginBottom: 20,
-              borderRadius: 4,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: " center",
-              fontSize: 13,
-              background:
-                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
-              border: "1px solid #dfdede",
-              boxShadow: "0px 1px #c5c5c5",
-              padding: "0px 8px"
             }}
             onClick={this.setSection("world")}
           >
             Create Your World
-          </div>
-          <div
+          </Button>
+          <Button
             style={{
               float: "left",
-              background: "#ccc",
               width: 200,
               height: 150,
               marginRight: 20,
               marginBottom: 20,
-              borderRadius: 4,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: " center",
-              fontSize: 13,
-              background:
-                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
-              border: "1px solid #dfdede",
-              boxShadow: "0px 1px #c5c5c5",
-              padding: "0px 8px"
             }}
             onClick={this.setSection("sprites")}
           >
             Manage Sprites
-          </div>
-          <div
+          </Button>
+          <Button
             style={{
               float: "left",
-              background: "#ccc",
               width: 200,
               height: 150,
               marginRight: 20,
               marginBottom: 20,
-              borderRadius: 4,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: " center",
-              fontSize: 13,
-              background:
-                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
-              border: "1px solid #dfdede",
-              boxShadow: "0px 1px #c5c5c5",
-              padding: "0px 8px"
             }}
             onClick={this.setSection("backgrounds")}
           >
             Manage Backgrounds
-          </div>
-          <div
+          </Button>
+          <Button
             style={{
               float: "left",
-              background: "#ccc",
               width: 200,
               height: 150,
               marginRight: 20,
               marginBottom: 20,
-              borderRadius: 4,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: " center",
-
-              fontSize: 13,
-              background:
-                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
-              border: "1px solid #dfdede",
-              boxShadow: "0px 1px #c5c5c5",
-              padding: "0px 8px"
             }}
             onClick={this.setSection("script")}
           >
             Script Review
-          </div>
-          <div
+          </Button>
+          <Button
             style={{
               float: "left",
-              background: "#ccc",
               width: 200,
               height: 150,
               marginRight: 20,
               marginBottom: 20,
-              borderRadius: 4,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: " center",
-
-              fontSize: 13,
-              background:
-                "linear-gradient(to bottom, #fefdfe 0%, #f1f1f1 100%)",
-              border: "1px solid #dfdede",
-              boxShadow: "0px 1px #c5c5c5",
-              padding: "0px 8px"
             }}
             onClick={this.setSection("build")}
           >
             Build &amp; Run
-          </div>
+          </Button>
         </div>
       </div>
     );

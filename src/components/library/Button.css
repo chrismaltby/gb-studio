@@ -6,8 +6,15 @@
   border-radius: 4px;
   height: 34px;
   min-width: 24px;
-  background: linear-gradient(to bottom, #ffffff 0%, #fefdfe 100%);
-  border: 1px solid #c5c5c5;
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-button-top-color) 0%,
+    var(--toolbar-button-bottom-color) 100%
+  );
+  border: 1px solid var(--toolbar-button-border-color);
+  border-top: 1px solid var(--toolbar-button-border-top-color);
+  box-shadow: 0px 1px var(--toolbar-button-shadow-color);
+  color: var(--toolbar-button-text-color);
   white-space: nowrap;
   padding: 0px 15px;
   box-sizing: border-box;
@@ -28,7 +35,11 @@
 }
 
 .Button:active {
-  background: linear-gradient(to bottom, #e4e5e5 0%, #dcdddc 100%);
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-button-active-top-color) 0%,
+    var(--toolbar-button-active-bottom-color) 100%
+  );
 }
 
 .ButtonToolbar__Spacer {

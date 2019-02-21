@@ -40,6 +40,7 @@
 
 .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level1);
+  border-bottom: 2px solid var(--conditional-level1);
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
@@ -54,6 +55,7 @@
 
 .ActionMini--Conditional .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level2);
+  border-bottom: 2px solid var(--conditional-level2);
 }
 
 .ActionMini--Conditional
@@ -74,6 +76,7 @@
 
 .ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level3);
+  border-bottom: 2px solid var(--conditional-level3);
 }
 
 .ActionMini--Conditional
@@ -99,6 +102,7 @@
   .ActionMini--Conditional
   .ActionMini--Conditional {
   border-left: 2px solid var(--conditional-level4);
+  border-bottom: 2px solid var(--conditional-level4);
 }
 
 .ActionMini--Conditional
@@ -135,7 +139,7 @@
 .ActionMini__Remove svg {
   width: 9px;
   height: 9px;
-  fill: #000;
+  fill: var(--script-command-text-color);
 }
 
 .ActionMini:hover > .ActionMini__Content > .ActionMini__Remove {
