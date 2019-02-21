@@ -31,11 +31,11 @@ class ToolPicker extends Component {
       this.setTool("actors")(e);
     } else if (e.key === "c") {
       this.setTool("collisions")(e);
-    } else if (e.key === "m") {
-      this.setTool("map")(e);
+    } else if (e.key === "s") {
+      this.setTool("scene")(e);
     } else if (e.key === "e") {
       this.setTool("eraser")(e);
-    } else if (e.key === "s") {
+    } else if (e.key === "v") {
       this.setTool("select")(e);
     }
   };
@@ -71,6 +71,7 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": "select" === selected
           })}
+          title="Select (v)"
         >
           <SelectIcon />
         </div>
@@ -78,7 +79,7 @@ class ToolPicker extends Component {
           onClick={this.openAdd}
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected":
-              ["actor", "triggers", "map"].indexOf(selected) > -1
+              ["actors", "triggers", "map"].indexOf(selected) > -1
           })}
         >
           <PlusIcon />
@@ -90,9 +91,18 @@ class ToolPicker extends Component {
                 top: 5
               }}
             >
-              <MenuItem onClick={this.setTool("actor")}>Actor</MenuItem>
-              <MenuItem onClick={this.setTool("triggers")}>Trigger</MenuItem>
-              <MenuItem onClick={this.setTool("scene")}>Scene</MenuItem>
+              <MenuItem onClick={this.setTool("actors")} title="Add Actor (a)">
+                Actor
+              </MenuItem>
+              <MenuItem
+                onClick={this.setTool("triggers")}
+                title="Add Trigger (t)"
+              >
+                Trigger
+              </MenuItem>
+              <MenuItem onClick={this.setTool("scene")} title="Add Scene (s)">
+                Scene
+              </MenuItem>
             </Menu>
           )}
         </div>
@@ -101,6 +111,7 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": "eraser" === selected
           })}
+          title="Eraser (e)"
         >
           <EraserIcon />
         </div>
@@ -109,6 +120,7 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": "collisions" === selected
           })}
+          title="Collisions (c)"
         >
           <BrickIcon />
         </div>

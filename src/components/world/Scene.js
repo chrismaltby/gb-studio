@@ -78,7 +78,8 @@ class Scene extends Component {
         sceneName: scene.name,
         x: tX,
         y: tY,
-        actor: actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
+        actor:
+          actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
       });
 
       this.setState({
@@ -92,9 +93,9 @@ class Scene extends Component {
     }
   };
 
-  setStatus = throttle((options) => {
+  setStatus = throttle(options => {
     this.props.setStatus(options);
-  }, 200)
+  }, 200);
 
   onMouseDown = e => {
     const { id, tool, scene, width, showCollisions } = this.props;
@@ -109,7 +110,7 @@ class Scene extends Component {
       } else {
         this.props.selectScene(id);
       }
-    } else if (tool === "actor") {
+    } else if (tool === "actors") {
       this.props.addActor(id, hoverX, hoverY);
     } else if (tool === "collisions") {
       const collisionIndex = width * hoverY + hoverX;
@@ -169,8 +170,8 @@ class Scene extends Component {
     const { zoomRatio } = this.props;
     const { dragging, dragX, dragY } = this.state;
     if (dragging) {
-      const dragDeltaX = ((e.pageX - this.lastPageX) / zoomRatio);
-      const dragDeltaY = ((e.pageY - this.lastPageY) / zoomRatio);
+      const dragDeltaX = (e.pageX - this.lastPageX) / zoomRatio;
+      const dragDeltaY = (e.pageY - this.lastPageY) / zoomRatio;
 
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
@@ -180,11 +181,14 @@ class Scene extends Component {
       this.setState({
         dragX: dragX + dragDeltaX,
         dragY: dragY + dragDeltaY
-      })
+      });
     }
   };
 
-  dragScene = throttle((dragX, dragY) => this.props.dragScene(dragX, dragY), 50);
+  dragScene = throttle(
+    (dragX, dragY) => this.props.dragScene(dragX, dragY),
+    50
+  );
 
   onEndDrag = e => {
     const { id, tool } = this.props;
@@ -192,7 +196,7 @@ class Scene extends Component {
     if (dragging) {
       this.props.moveScene(id, dragX, dragY);
       this.props.dragSceneStop();
-    } else if (creating && (tool === "actor" || tool === "triggers")) {
+    } else if (creating && (tool === "actors" || tool === "triggers")) {
       this.props.setTool("select");
     }
     this.setState({
@@ -264,8 +268,7 @@ class Scene extends Component {
             width: width * 8,
             height: height * 8,
             backgroundImage:
-              image &&
-              `url("${projectRoot}/assets/backgrounds/${image}")`
+              image && `url("${projectRoot}/assets/backgrounds/${image}")`
           }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
@@ -310,13 +313,13 @@ class Scene extends Component {
                   }}
                 />
               ) : (
-                  undefined
-                )
+                undefined
+              )
             )}
           {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
           ))}
-          {tool === "actor" && hover && (
+          {tool === "actors" && hover && (
             <div className="Scene__Ghost">
               <Actor x={hoverX} y={hoverY} />
             </div>
@@ -349,9 +352,10 @@ function mapStateToProps(state, props) {
     height: image ? image.height : 32,
     worldId: state.project.present.id,
     showCollisions:
-      (state.project.present.settings && state.project.present.settings.showCollisions) ||
+      (state.project.present.settings &&
+        state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
-    zoomRatio: (state.editor.zoom || 100) / 100,
+    zoomRatio: (state.editor.zoom || 100) / 100
   };
 }
 
