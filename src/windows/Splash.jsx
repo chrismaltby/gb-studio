@@ -4,7 +4,20 @@ import cx from "classnames";
 import { DotsIcon } from "../components/library/Icons";
 import stripInvalidFilenameCharacters from "../lib/stripInvalidFilenameCharacters";
 import createProject, { ERR_PROJECT_EXISTS } from "../lib/createProject";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
+
+const getLastUsedPath = () => {
+  const storedPath = localStorage.getItem("__lastUsedPath");
+  if (storedPath) {
+    return storedPath;
+  } else {
+    return remote.app.getPath("documents");
+  }
+};
+
+const setLastUsedPath = path => {
+  localStorage.setItem("__lastUsedPath", path);
+};
 
 class Splash extends Component {
   constructor() {
@@ -14,7 +27,7 @@ class Splash extends Component {
       tab: "new",
       name: "Untitled",
       target: "gbhtml",
-      path: "/Users/cmaltby/Projects/",
+      path: getLastUsedPath(),
       nameError: null
     };
   }
@@ -54,8 +67,10 @@ class Splash extends Component {
 
   onSelectFolder = e => {
     if (e.target.files && e.target.files[0]) {
+      const newPath = e.target.files[0].path + "/";
+      setLastUsedPath(newPath);
       this.setState({
-        path: e.target.files[0].path + "/"
+        path: newPath
       });
     }
   };
@@ -94,16 +109,6 @@ class Splash extends Component {
           >
             New
           </div>
-          <div
-            className={cx("Splash__Tab", {
-              "Splash__Tab--Active": tab === "recent"
-            })}
-            onClick={this.onSetTab("recent")}
-          >
-            Recent
-          </div>
-          <div className="Splash__FlexSpacer" />
-
           <div className="Splash__Tab" onClick={this.onOpen}>
             Open
           </div>
@@ -121,7 +126,7 @@ class Splash extends Component {
             <div className="Splash__FormGroup">
               <label>Target system</label>
               <select value={target} onChange={this.onChange("target")}>
-                <option value="gbhtml">HTML</option>
+                <option value="gbhtml">GB + HTML</option>
               </select>
             </div>
 
