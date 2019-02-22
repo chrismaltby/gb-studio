@@ -10,10 +10,47 @@ class World extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0
+      hoverY: 0,
+      focused: false
     };
-    this.scrollRef = React.createRef();
+    this.worldRef = React.createRef();
   }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.onKeyDown);
+    window.addEventListener("click", this.onClick);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.onKeyDown);
+    window.removeEventListener("click", this.onClick);
+  }
+
+  onKeyDown = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      return;
+    }
+    if (e.key === "Backspace" && this.state.focused) {
+      const editor = this.props.editor;
+      if (editor.type === "scenes") {
+        this.props.removeScene(editor.scene);
+      } else if (editor.type === "triggers") {
+        this.props.removeTrigger(editor.scene, editor.index);
+      } else if (editor.type === "actors") {
+        this.props.removeActor(editor.scene, editor.index);
+      }
+    }
+  };
+
+  onClick = e => {
+    // If clicked on child of world then it is focused
+    this.setState({
+      focused: this.worldRef.current.contains(e.target)
+    });
+  };
 
   onMouseMove = e => {
     const { zoomRatio } = this.props;
@@ -66,11 +103,7 @@ class World extends Component {
     );
 
     return (
-      <div
-        ref={this.scrollRef}
-        className="World"
-        onMouseMove={this.onMouseMove}
-      >
+      <div ref={this.worldRef} className="World" onMouseMove={this.onMouseMove}>
         <div
           className="World__Content"
           style={{ transform: `scale(${zoomRatio})` }}
@@ -127,7 +160,10 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addScene: actions.addScene,
   setTool: actions.setTool,
-  selectWorld: actions.selectWorld
+  selectWorld: actions.selectWorld,
+  removeScene: actions.removeScene,
+  removeTrigger: actions.removeTrigger,
+  removeActor: actions.removeActor
 };
 
 export default connect(
