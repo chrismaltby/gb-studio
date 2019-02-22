@@ -35,15 +35,16 @@ const template = [
     label: "Edit",
     submenu: [
       {
-        label: 'Undo',
-        accelerator: 'CommandOrControl+Z',
+        label: "Undo",
+        accelerator: "CommandOrControl+Z",
         click: () => {
           notifyListeners("undo");
         }
       },
       {
-        label: 'Redo',
-        accelerator: 'CommandOrControl+Shift+Z', click: () => {
+        label: "Redo",
+        accelerator: "CommandOrControl+Shift+Z",
+        click: () => {
           notifyListeners("redo");
         }
       },
@@ -60,32 +61,44 @@ const template = [
     label: "View",
     submenu: [
       {
-        label: "Overview", accelerator: "CommandOrControl+1", click: () => {
+        label: "Overview",
+        accelerator: "CommandOrControl+1",
+        click: () => {
           notifyListeners("section", "overview");
         }
       },
       {
-        label: "Game World", accelerator: "CommandOrControl+2", click: () => {
+        label: "Game World",
+        accelerator: "CommandOrControl+2",
+        click: () => {
           notifyListeners("section", "world");
         }
       },
       {
-        label: "Sprites", accelerator: "CommandOrControl+3", click: () => {
+        label: "Sprites",
+        accelerator: "CommandOrControl+3",
+        click: () => {
           notifyListeners("section", "sprites");
         }
       },
       {
-        label: "Backgrounds", accelerator: "CommandOrControl+4", click: () => {
+        label: "Backgrounds",
+        accelerator: "CommandOrControl+4",
+        click: () => {
           notifyListeners("section", "backgrounds");
         }
       },
       {
-        label: "Script Review", accelerator: "CommandOrControl+5", click: () => {
+        label: "Script Review",
+        accelerator: "CommandOrControl+5",
+        click: () => {
           notifyListeners("section", "script");
         }
       },
       {
-        label: "Build && Run", accelerator: "CommandOrControl+6", click: () => {
+        label: "Build && Run",
+        accelerator: "CommandOrControl+6",
+        click: () => {
           notifyListeners("section", "build");
         }
       },
@@ -110,7 +123,7 @@ const template = [
       {
         label: "Learn More",
         click() {
-          require("electron").shell.openExternal("https://electronjs.org");
+          require("electron").shell.openExternal("https://gbstudio.dev");
         }
       }
     ]
