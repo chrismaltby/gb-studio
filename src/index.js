@@ -11,6 +11,7 @@ import menu from "./menu";
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
 let splashWindow = null;
+let helpWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -126,6 +127,44 @@ const createWindow = async projectPath => {
   });
 };
 
+const createHelp = async helpPage => {
+  if (!helpWindow) {
+    // Create the browser window.
+    helpWindow = new BrowserWindow({
+      width: 430,
+      height: 550,
+      resizable: true,
+      maximizable: true,
+      fullscreenable: false,
+      webPreferences: {
+        nodeIntegration: false,
+        devTools: isDevMode
+      }
+    });
+  } else {
+    helpWindow.show();
+  }
+
+  // and load the index.html of the app.
+  helpWindow.loadURL(`file://${__dirname}/windows/help/${helpPage}.html`);
+
+  // Open the DevTools.
+  if (isDevMode) {
+    console.log("IS DEV MODE");
+    await installExtension(REACT_DEVELOPER_TOOLS);
+    await installExtension(REDUX_DEVTOOLS);
+    // helpWindow.webContents.openDevTools();
+  }
+
+  // Emitted when the window is closed.
+  helpWindow.on("closed", () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    helpWindow = null;
+  });
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -177,6 +216,10 @@ ipcMain.on("check-full-screen", async (event, arg) => {
 
 ipcMain.on("open-project-picker", async (event, arg) => {
   openProjectPicker();
+});
+
+ipcMain.on("open-help", async (event, helpPage) => {
+  createHelp(helpPage);
 });
 
 ipcMain.on("document-modified", () => {

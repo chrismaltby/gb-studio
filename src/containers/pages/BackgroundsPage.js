@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/images/FilesSidebar";
 import ImageViewer from "../../components/images/ImageViewer";
+import { ipcRenderer } from "electron";
 
 class ImagesSection extends Component {
   render() {
@@ -9,7 +10,12 @@ class ImagesSection extends Component {
     return (
       <div>
         <ImageViewer />
-        <FilesSidebar files={images} />
+        <FilesSidebar
+          files={images}
+          onAdd={() => {
+            ipcRenderer.send("open-help", "backgrounds");
+          }}
+        />
       </div>
     );
   }
@@ -17,7 +23,10 @@ class ImagesSection extends Component {
 
 function mapStateToProps(state) {
   return {
-    images: state.project.present && state.project.present.images ? state.project.present.images : []
+    images:
+      state.project.present && state.project.present.images
+        ? state.project.present.images
+        : []
   };
 }
 

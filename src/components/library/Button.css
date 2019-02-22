@@ -21,13 +21,13 @@
 
 .Button--Transparent {
   background: transparent;
-  border-color: transparent
+  border-color: transparent;
 }
 
 .Button--Small {
-  height: 30px;
+  height: 26px;
   font-size: 12px;
-  padding: 10px;
+  padding: 6px;
 }
 
 .Button--Small svg {
