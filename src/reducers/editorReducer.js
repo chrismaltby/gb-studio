@@ -14,15 +14,25 @@ import {
   SELECT_WORLD,
   ZOOM_IN,
   ZOOM_OUT,
-  ZOOM_RESET
+  ZOOM_RESET,
+  REMOVE_SCENE,
+  REMOVE_ACTOR,
+  REMOVE_ACTOR_AT,
+  REMOVE_TRIGGER,
+  REMOVE_TRIGGER_AT
 } from "../actions/actionTypes";
 
 export default function editor(state = initialState.editor, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS: {
-      return Object.assign({}, state, action.data.settings && action.data.settings.zoom && {
-        zoom: action.data.settings.zoom
-      });
+      return Object.assign(
+        {},
+        state,
+        action.data.settings &&
+          action.data.settings.zoom && {
+            zoom: action.data.settings.zoom
+          }
+      );
     }
     case MOVE_SCENE: {
       return {
@@ -83,7 +93,7 @@ export default function editor(state = initialState.editor, action) {
         sceneDragging: true,
         sceneDragX: 0,
         sceneDragY: 0
-      }
+      };
     }
     case DRAG_SCENE_STOP: {
       return {
@@ -91,15 +101,20 @@ export default function editor(state = initialState.editor, action) {
         sceneDragging: false,
         sceneDragX: 0,
         sceneDragY: 0
-      }
+      };
     }
     case DRAG_SCENE: {
       return {
         ...state,
         sceneDragX: action.moveX,
         sceneDragY: action.moveY
-      }
+      };
     }
+    case REMOVE_SCENE:
+    case REMOVE_ACTOR:
+    case REMOVE_TRIGGER:
+    case REMOVE_ACTOR_AT:
+    case REMOVE_TRIGGER_AT:
     case SELECT_WORLD: {
       return {
         ...state,
