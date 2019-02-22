@@ -74,9 +74,11 @@
   height: 28px;
   font-size: 18px;
   padding: 5px 10px;
-  border-radius: 0px;
-  background: #fff;
-  border: 1px solid #d4d4d4;
+  padding-right: 42px;
+  border-radius: 4px;
+  background-color: var(--input-bg-color);
+  border: 1px solid var(--input-border-color);
+  color: var(--input-text-color);
 }
 
 .Splash__FormGroup select {
@@ -109,6 +111,10 @@ input.Splash__InputButton {
 
 .Splash__InputButton:active {
   background-color: #cdcdcd;
+}
+
+.Splash__InputButton svg {
+  fill: var(--main-text-color);
 }
 
 .Splash__Button {
