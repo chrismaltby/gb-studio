@@ -1,7 +1,4 @@
-import {
-  cIntArray,
-  cIntArrayExternDeclaration
-} from "../../helpers/cGeneration";
+import { cIntArray, cIntArrayExternDeclaration } from "../helpers/cGeneration";
 
 const BANKED_DATA_NOT_ARRAY = "BANKED_DATA_NOT_ARRAY";
 const BANKED_DATA_TOO_LARGE = "BANKED_DATA_TOO_LARGE";

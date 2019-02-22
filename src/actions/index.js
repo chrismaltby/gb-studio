@@ -2,9 +2,10 @@ import * as types from "./actionTypes";
 import loadProjectData from "../lib/loadProjectData";
 import saveProjectData from "../lib/saveProjectData";
 import runCmd from "../lib/runCmd";
-import compileProject from "../lib/compile/compile";
+import compileProject from "../lib/compiler/compileData";
 import fs from "fs-extra";
 import uuid from "../lib/uuid";
+import { remote } from "electron";
 
 const asyncAction = async (
   dispatch,
@@ -210,8 +211,25 @@ export const runBuild = buildType => async (dispatch, getState) => {
   const projectRoot = state.document && state.document.root;
   const buildPath = "/private/tmp/build";
   const gbSrcPath = `${__dirname}/../data/src/gb/`;
+  const project = state.project.present;
 
-  await compileProject(projectRoot, "/private/tmp/build");
+  console.log("TEMP", remote.app.getPath("temp"));
+
+  // await compileProject(projectRoot, "/private/tmp/build",);
+  const compiledData = await compileProject(project, {
+    projectRoot,
+    eventEmitter: {
+      emit: (key, msg) => {
+        dispatch({ type: types.CMD_STD_OUT, text: key + " - " + msg });
+
+        // console.log(new Date() + ": " + key + " - " + msg);
+      }
+    }
+  });
+
+  console.log(compiledData);
+
+  return;
 
   try {
     await fs.unlink(gbSrcPath + "/include/banks.h");

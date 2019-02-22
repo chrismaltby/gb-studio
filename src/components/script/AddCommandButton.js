@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import Button from "../library/Button";
-import { EventFields, EventNames } from "../../lib/data/compiler/eventTypes";
+import { EventFields, EventNames } from "../../lib/compiler/eventTypes";
 
 const actions = Object.keys(EventFields).sort((a, b) => {
   var textA = (EventNames[a] || a).toUpperCase();

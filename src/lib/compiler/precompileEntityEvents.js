@@ -22,7 +22,7 @@ import {
   EVENT_HIDE_PLAYER,
   EVENT_RETURN_TO_TITLE
 } from "./eventTypes";
-import { hi, lo } from "../../helpers/8bit";
+import { hi, lo } from "../helpers/8bit";
 import { dirDec } from "./helpers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";

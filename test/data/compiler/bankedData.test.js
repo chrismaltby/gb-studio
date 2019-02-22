@@ -4,7 +4,7 @@ import BankedData, {
   BANKED_COUNT_OVERFLOW,
   GB_MAX_BANK_SIZE,
   MIN_DATA_BANK
-} from "../../../src/lib/data/compiler/bankedData";
+} from "../../../src/lib/compiler/bankedData";
 import {
   cIntArray,
   cIntArrayExternDeclaration

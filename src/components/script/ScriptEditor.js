@@ -5,8 +5,7 @@ import { CloseIcon } from "../library/Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
-import { EventNames } from "../../lib/data/compiler/eventTypes";
-import { EVENT_IF_FLAG, EVENT_END } from "../../lib/data/compiler/eventTypes";
+import { EventNames, EVENT_IF_FLAG, EVENT_END } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,

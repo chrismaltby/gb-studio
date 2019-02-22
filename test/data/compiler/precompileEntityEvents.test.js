@@ -2,13 +2,13 @@ import precompileEntityEvents, {
   CMD_LOOKUP,
   STRING_NOT_FOUND,
   FLAG_NOT_FOUND
-} from "../../../src/lib/data/compiler/precompileEntityEvents";
+} from "../../../src/lib/compiler/precompileEntityEvents";
 import {
   EVENT_END,
   EVENT_TEXT,
   EVENT_IF_FLAG,
   EVENT_SET_FLAG
-} from "../../../src/lib/data/compiler/eventTypes";
+} from "../../../src/lib/compiler/eventTypes";
 
 test("should precompile empty events", () => {
   const input = [];

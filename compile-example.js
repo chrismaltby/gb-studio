@@ -1,4 +1,4 @@
-import compile from "./src/lib/data/compiler/compileData";
+import compile from "./src/lib/compiler/compileData";
 import fs from "fs-extra";
 
 /*

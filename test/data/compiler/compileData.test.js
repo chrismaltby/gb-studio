@@ -4,12 +4,12 @@ import compile, {
   precompileImages,
   precompileSprites,
   precompileScenes
-} from "../../../src/lib/data/compiler/compileData";
+} from "../../../src/lib/compiler/compileData";
 import {
   EVENT_TEXT,
   EVENT_IF_FLAG,
   EVENT_SET_FLAG
-} from "../../../src/lib/data/compiler/eventTypes";
+} from "../../../src/lib/compiler/eventTypes";
 
 test("should compile simple project into files object", async () => {
   const project = {

@@ -1,5 +1,5 @@
 import React from "react";
-import { EventFields } from "../../lib/data/compiler/eventTypes";
+import { EventFields } from "../../lib/compiler/eventTypes";
 import SceneSelect from "../forms/SceneSelect";
 import FlagSelect from "../forms/FlagSelect";
 import DirectionPicker from "../forms/DirectionPicker";

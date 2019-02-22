@@ -7,7 +7,7 @@ import ScriptReviewLine from "../../components/script/ScriptReviewLine";
 import patchScriptData from "../../lib/patchScriptData";
 import trim2lines from "../../lib/trim2lines";
 import { walkEvents } from "../../lib/helpers/eventSystem";
-import { EVENT_TEXT } from "../../lib/data/compiler/eventTypes";
+import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {

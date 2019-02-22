@@ -1,9 +1,9 @@
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
-import { walkScenesEvents } from "../../helpers/eventSystem";
+import { walkScenesEvents } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
-import { indexArray } from "../../helpers/array";
+import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
-import { hi, lo, decHex16, decHex } from "../../helpers/8bit";
+import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
 
 const STRINGS_PER_BANK = 430;
