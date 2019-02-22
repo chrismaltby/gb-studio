@@ -65,16 +65,14 @@ const createWindow = async projectPath => {
     defaultHeight: 800
   });
 
-  const electronScreen = electron.screen;
-  const mainScreen = electronScreen.getPrimaryDisplay();
-  const dimensions = mainScreen.size;
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
     y: mainWindowState.y,
-    width: mainWindowState.width,
-    height: mainWindowState.height,
+    width: Math.max(800, mainWindowState.width),
+    height: Math.max(600, mainWindowState.height),
+    minWidth: 800,
+    minHeight: 600,
     titleBarStyle: "hiddenInset",
     fullscreenable: false,
     webPreferences: {
