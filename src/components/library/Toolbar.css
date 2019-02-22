@@ -53,6 +53,7 @@
   white-space: nowrap;
   padding: 0px 8px;
   overflow: hidden;
+  -webkit-app-region: no-drag;
 }
 
 .Toolbar__Button path {
