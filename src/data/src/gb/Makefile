@@ -1,12 +1,12 @@
-NODE_MODULES = ../../../../node_modules
-SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell.html
+NODE_MODULES = /Users/chris/Projects/gb-rpg-builder/node_modules
+SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_deploy/index.html
 DEBUG_SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_debug/build/index.html
 
 EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude -Isrc/data --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
 CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Isrc/data -Igenerated -I${NODE_MODULES}/gbdkjs/include
 MOD2GBT = ../mod2gbt/mod2gbt
 
-ROM_BUILD_DIR = build/gb
+ROM_BUILD_DIR = build/rom
 WEB_BUILD_DIR = build/web
 WEB_DEBUG_BUILD_DIR = build/debug
 
@@ -53,10 +53,7 @@ $(ROM_BUILD_DIR)/%.gb:  $(OBJS) # $(addsuffix .music.o,$(MUSIC))
 
 $(WEB_BUILD_DIR)/%.html:	$(EM_OBJS)
 	mkdir -p $(WEB_BUILD_DIR)
-	cp -r ${NODE_MODULES}/gbdkjs/index.js $(WEB_BUILD_DIR)/gbdk.js
-	cp -r ${NODE_MODULES}/gbdkjs/style.css $(WEB_BUILD_DIR)
-	cp -r ${NODE_MODULES}/gbdkjs/controls.js $(WEB_BUILD_DIR)
-	# cp -r node_modules/gbdkjs/shell/build/static $(WEB_BUILD_DIR)
+	cp -r ${NODE_MODULES}/gbdkjs/shell_deploy/static $(WEB_BUILD_DIR)
 	$(EMCC) --shell-file $(SHELL_FILE) -s ASSERTIONS=1 -s SAFE_HEAP=1 --profiling-funcs -g -o $@ $^
 
 $(WEB_DEBUG_BUILD_DIR)/%.html: $(EM_OBJS)

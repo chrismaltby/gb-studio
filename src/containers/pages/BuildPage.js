@@ -6,7 +6,7 @@ import Button, {
   ButtonToolbarSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
-import { remote } from "electron";
+import { remote, shell } from "electron";
 const { BrowserWindow } = remote;
 
 class BuildPage extends Component {
@@ -29,10 +29,10 @@ class BuildPage extends Component {
 
   onRun = async e => {
     try {
-      console.log(
-        "PATH",
-        `file://${__dirname}/../../data/src/gb/build/web/index.html`
-      );
+      // console.log(
+      //   "PATH",
+      //   `file://${__dirname}/../../data/src/gb/build/web/index.html`
+      // );
       await this.props.runBuild("web");
       let previewWindow = new BrowserWindow({
         width: 480,
@@ -44,8 +44,8 @@ class BuildPage extends Component {
 
       // and load the index.html of the app.
       previewWindow.loadURL(
-        `file://${__dirname}/../../data/src/gb/build/web/index.html`
-        // `file://${__dirname}/../../data/build/web/index.html`
+        // `file:///Users/chris/Desktop/out3/build/web/index.html`
+        `file://${__dirname}/../../data/output/build/web/index.html`
       );
     } catch (e) {
       console.error("FAIL");
@@ -53,8 +53,11 @@ class BuildPage extends Component {
     }
   };
 
-  onBuild = buildType => e => {
-    this.props.runBuild(buildType);
+  onBuild = buildType => async e => {
+    await this.props.runBuild({ buildType, exportBuild: true });
+    console.log("OPEN BUILD??");
+    console.log(`${this.props.projectRoot}/build/${buildType}`);
+    shell.openItem(`${this.props.projectRoot}/build/${buildType}`);
   };
 
   scrollToBottom = () => {
@@ -63,7 +66,8 @@ class BuildPage extends Component {
   };
 
   render() {
-    const { status, output } = this.props;
+    const { status, output, projectRoot } = this.props;
+    console.warn(projectRoot);
     return (
       <div
         style={{
@@ -108,6 +112,7 @@ class BuildPage extends Component {
 
 function mapStateToProps(state) {
   return {
+    projectRoot: state.document && state.document.root,
     status: state.console.status,
     output: state.console.output
   };

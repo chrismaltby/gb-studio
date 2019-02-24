@@ -13,10 +13,10 @@ const walkEvents = (events = [], callback) => {
 const walkScenesEvents = (scenes, callback) => {
   scenes.forEach(scene => {
     scene.actors.forEach(actor => {
-      walkEvents(actor.events, callback);
+      walkEvents(actor.script, callback);
     });
     scene.triggers.forEach(trigger => {
-      walkEvents(trigger.events, callback);
+      walkEvents(trigger.script, callback);
     });
   });
 };

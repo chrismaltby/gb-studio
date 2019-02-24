@@ -54,7 +54,7 @@ class AppToolbar extends Component {
   };
 
   onRun = e => {
-    this.props.runBuild("web");
+    this.props.runBuild({ buildType: "web" });
   };
 
   openProjectFolder = e => {

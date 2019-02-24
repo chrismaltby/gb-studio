@@ -6,6 +6,8 @@ import compileProject from "../lib/compiler/compileData";
 import fs from "fs-extra";
 import uuid from "../lib/uuid";
 import { remote } from "electron";
+import ejectBuild from "../lib/compiler/ejectBuild";
+import makeBuild from "../lib/compiler/makeBuild";
 
 const asyncAction = async (
   dispatch,
@@ -203,17 +205,20 @@ export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
 
-export const runBuild = buildType => async (dispatch, getState) => {
+export const runBuild = ({
+  buildType = "web",
+  exportBuild = false
+} = {}) => async (dispatch, getState) => {
   dispatch({ type: types.CMD_START });
   dispatch({ type: types.SET_SECTION, section: "build" });
 
   const state = getState();
   const projectRoot = state.document && state.document.root;
-  const buildPath = "/private/tmp/build";
-  const gbSrcPath = `${__dirname}/../data/src/gb/`;
   const project = state.project.present;
 
   console.log("TEMP", remote.app.getPath("temp"));
+
+  const outputRoot = `${__dirname}/../data/output/`;
 
   // await compileProject(projectRoot, "/private/tmp/build",);
   const compiledData = await compileProject(project, {
@@ -221,64 +226,31 @@ export const runBuild = buildType => async (dispatch, getState) => {
     eventEmitter: {
       emit: (key, msg) => {
         dispatch({ type: types.CMD_STD_OUT, text: key + " - " + msg });
-
-        // console.log(new Date() + ": " + key + " - " + msg);
       }
     }
   });
 
-  console.log(compiledData);
+  await ejectBuild({
+    outputRoot,
+    compiledData
+  });
 
-  return;
+  await makeBuild({
+    buildRoot: outputRoot,
+    buildType,
+    progress: out => {
+      if (out.type === "out") {
+        dispatch({ type: types.CMD_STD_OUT, text: out.text });
+      } else if (out.type === "err") {
+        dispatch({ type: types.CMD_STD_ERR, text: out.text });
+      }
+    }
+  });
 
-  try {
-    await fs.unlink(gbSrcPath + "/include/banks.h");
-  } catch (err) {
-    dispatch({ type: types.CMD_STD_ERR, text: err.text });
-  }
-  try {
-    await fs.unlink(gbSrcPath + "/src/data");
-  } catch (err) {
-    dispatch({ type: types.CMD_STD_ERR, text: err.text });
-  }
-
-  await fs.ensureSymlink(
-    buildPath + "/banks.h",
-    gbSrcPath + "/include/banks.h"
-  );
-  await fs.ensureSymlink(buildPath, gbSrcPath + "/src/data");
-
-  let env = Object.create(process.env);
-  env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
-
-  if (projectRoot) {
-    return new Promise((resolve, reject) =>
-      runCmd(
-        "/usr/bin/make",
-        [buildType],
-        {
-          cwd: gbSrcPath,
-          env
-        },
-        out => {
-          if (out.type === "out") {
-            dispatch({ type: types.CMD_STD_OUT, text: out.text });
-          } else if (out.type === "err") {
-            dispatch({ type: types.CMD_STD_ERR, text: out.text });
-          } else if (out.type === "complete") {
-            if (out.text) {
-              dispatch({ type: types.CMD_STD_ERR, text: out.text });
-              dispatch({ type: types.CMD_COMPLETE });
-              reject(out.text);
-            } else {
-              dispatch({ type: types.CMD_COMPLETE });
-              resolve();
-            }
-          } else {
-            dispatch({ type: types.CMD_STD_OUT, text: out.text });
-          }
-        }
-      )
+  if (exportBuild) {
+    await fs.copy(
+      `${outputRoot}/build/${buildType}`,
+      `${projectRoot}/build/${buildType}`
     );
   }
 };

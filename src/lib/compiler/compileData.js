@@ -50,6 +50,7 @@ const compile = async (
 
   // Strings
   const stringsLength = precompiled.strings.length;
+  console.log({ stringsLength });
   const stringNumBanks = Math.ceil(stringsLength / stringsPerBank);
   const stringBanks = [];
   for (let i = 0; i < stringNumBanks; i++) {
@@ -69,7 +70,7 @@ const compile = async (
   // Add event data
   const eventPtrs = projectData.scenes.map(scene => {
     const bankEntityEvents = entity => {
-      const output = compileEntityEvents(entity.events, {
+      const output = compileEntityEvents(entity.script, {
         scene,
         strings: precompiled.strings,
         flags: precompiled.flags,
@@ -78,7 +79,7 @@ const compile = async (
       if (banked.dataWillFitCurrentBank(output)) {
         return banked.push(output);
       } else {
-        const outputNewBank = compileEntityEvents(entity.events, {
+        const outputNewBank = compileEntityEvents(entity.script, {
           scene,
           strings: precompiled.strings,
           flags: precompiled.flags
@@ -166,6 +167,13 @@ const compile = async (
 
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
+
+  console.log(stringBanks.length);
+  console.log(
+    stringBanks.map((bankStrings, index) => {
+      return `extern const unsigned char strings_${bankOffset + index}[][38];`;
+    })
+  );
 
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
