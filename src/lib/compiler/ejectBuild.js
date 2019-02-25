@@ -4,31 +4,33 @@ import { promisify } from "util";
 
 const rmdir = promisify(rimraf);
 
-const noopEmitter = {
-  emit: () => {}
-};
-
 const coreRoot = __dirname + "/../../data/src";
 
 const ejectBuild = async ({
   projectType = "gb",
   outputRoot = "/tmp",
-  eventEmitter = noopEmitter,
-  compiledData
+  compiledData,
+  progress = () => {},
+  warnings = () => {}
 } = {}) => {
-  console.log("EJECT to " + outputRoot);
+  // console.log("EJECT to " + outputRoot);
   const corePath = `${coreRoot}/${projectType}`;
+  progress("Unlink " + outputRoot);
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
+  progress("Copy core");
   await fs.copy(corePath, outputRoot);
   await fs.ensureDir(`${outputRoot}/src/data`);
   for (let filename in compiledData) {
     if (filename.endsWith(".h")) {
+      progress("Copy header " + filename);
+
       await fs.writeFile(
         `${outputRoot}/include/${filename}`,
         compiledData[filename]
       );
     } else {
+      progress("Copy code " + filename);
       await fs.writeFile(
         `${outputRoot}/src/data/${filename}`,
         compiledData[filename]

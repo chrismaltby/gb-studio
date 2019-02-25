@@ -11,6 +11,7 @@ import menu from "./menu";
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
 let splashWindow = null;
+let playWindow = null;
 let helpWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -163,6 +164,33 @@ const createHelp = async helpPage => {
   });
 };
 
+const createPlay = async url => {
+  if (!playWindow) {
+    // Create the browser window.
+    playWindow = new BrowserWindow({
+      width: 480,
+      height: 454,
+      resizable: false,
+      maximizable: false,
+      fullscreenable: false,
+      webPreferences: {
+        nodeIntegration: false,
+        webSecurity: false
+      }
+    });
+  } else {
+    playWindow.show();
+  }
+
+  // and load the index.html of the app.
+  playWindow.loadURL(url);
+
+  // Emitted when the window is closed.
+  playWindow.on("closed", () => {
+    playWindow = null;
+  });
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -218,6 +246,10 @@ ipcMain.on("open-project-picker", async (event, arg) => {
 
 ipcMain.on("open-help", async (event, helpPage) => {
   createHelp(helpPage);
+});
+
+ipcMain.on("open-play", async (event, url) => {
+  createPlay(url);
 });
 
 ipcMain.on("document-modified", () => {

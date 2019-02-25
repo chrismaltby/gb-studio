@@ -16,7 +16,7 @@ import {
   FolderIcon,
   LoadingIcon
 } from "../components/library/Icons";
-import { shell } from "electron";
+import { shell, ipcRenderer } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -53,8 +53,12 @@ class AppToolbar extends Component {
     this.props.zoomReset();
   };
 
-  onRun = e => {
-    this.props.runBuild({ buildType: "web" });
+  onRun = async e => {
+    await this.props.runBuild({ buildType: "web" });
+    ipcRenderer.send(
+      "open-play",
+      `file://${__dirname}/../data/output/build/web/index.html`
+    );
   };
 
   openProjectFolder = e => {

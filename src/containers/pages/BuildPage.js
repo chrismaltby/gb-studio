@@ -6,7 +6,7 @@ import Button, {
   ButtonToolbarSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
-import { remote, shell } from "electron";
+import { remote, shell, ipcRenderer } from "electron";
 const { BrowserWindow } = remote;
 
 class BuildPage extends Component {
@@ -29,22 +29,9 @@ class BuildPage extends Component {
 
   onRun = async e => {
     try {
-      // console.log(
-      //   "PATH",
-      //   `file://${__dirname}/../../data/src/gb/build/web/index.html`
-      // );
       await this.props.runBuild("web");
-      let previewWindow = new BrowserWindow({
-        width: 480,
-        height: 454,
-        resizable: false,
-        maximizable: false,
-        fullscreenable: false
-      });
-
-      // and load the index.html of the app.
-      previewWindow.loadURL(
-        // `file:///Users/chris/Desktop/out3/build/web/index.html`
+      ipcRenderer.send(
+        "open-play",
         `file://${__dirname}/../../data/output/build/web/index.html`
       );
     } catch (e) {

@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import path from "path";
 import EventEmitter from "events";
 import makeBuild from "./src/lib/compiler/makeBuild";
+import buildProject from "./src/lib/compiler/buildProject";
 
 const myEmitter = new EventEmitter();
 
@@ -24,17 +25,16 @@ const outputRoot = "/Users/chris/Desktop/out2";
 
 const build = async () => {
   const data = await fs.readJson(projectPath);
-  const compiledData = await compile(data, {
+  await buildProject(data, {
     projectRoot,
-    eventEmitter: myEmitter
-  });
-  await ejectBuild({
+    buildType: "web",
     outputRoot,
-    compiledData
-  });
-  await makeBuild({
-    buildRoot: outputRoot,
-    buildType: "web"
+    progress: message => {
+      // console.log(message);
+    },
+    warnings: message => {
+      // console.warn("WARNING: " + message);
+    }
   });
 };
 

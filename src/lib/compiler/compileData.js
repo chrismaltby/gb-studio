@@ -20,10 +20,6 @@ export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 
-const noopEmitter = {
-  emit: () => {}
-};
-
 const prepareString = s =>
   `"${s
     .toUpperCase()
@@ -39,18 +35,17 @@ const compile = async (
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
     stringsPerBank = STRINGS_PER_BANK,
-    eventEmitter = noopEmitter
+    progress = () => {},
+    warnings = () => {}
   } = {}
 ) => {
-  eventEmitter.emit(EVENT_START_DATA_COMPILE);
-
   const output = {};
 
-  const precompiled = await precompile(projectData, projectRoot, eventEmitter);
+  const precompiled = await precompile(projectData, projectRoot, progress);
 
   // Strings
   const stringsLength = precompiled.strings.length;
-  console.log({ stringsLength });
+  // console.log({ stringsLength });
   const stringNumBanks = Math.ceil(stringsLength / stringsPerBank);
   const stringBanks = [];
   for (let i = 0; i < stringNumBanks; i++) {
@@ -168,12 +163,12 @@ const compile = async (
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
 
-  console.log(stringBanks.length);
-  console.log(
-    stringBanks.map((bankStrings, index) => {
-      return `extern const unsigned char strings_${bankOffset + index}[][38];`;
-    })
-  );
+  // console.log(stringBanks.length);
+  // console.log(
+  //   stringBanks.map((bankStrings, index) => {
+  //     return `extern const unsigned char strings_${bankOffset + index}[][38];`;
+  //   })
+  // );
 
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
@@ -237,21 +232,19 @@ const compile = async (
 
   // console.log(output);
 
-  eventEmitter.emit(EVENT_END_DATA_COMPILE);
-
   return output;
 };
 
 //#region precompile
 
-const precompile = async (projectData, projectRoot, eventEmitter) => {
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_FLAGS);
+const precompile = async (projectData, projectRoot, progress) => {
+  progress(EVENT_MSG_PRE_FLAGS);
   const flags = precompileFlags(projectData.scenes);
 
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_STRINGS);
+  progress(EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
 
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_IMAGES);
+  progress(EVENT_MSG_PRE_IMAGES);
   const {
     usedImages,
     imageLookup,
@@ -264,21 +257,21 @@ const precompile = async (projectData, projectRoot, eventEmitter) => {
     projectRoot
   );
 
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_SPRITES);
+  progress(EVENT_MSG_PRE_SPRITES);
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectRoot
   );
 
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_SCENES);
+  progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
     usedImages,
     usedSprites
   );
 
-  eventEmitter.emit(EVENT_DATA_COMPILE_PROGRESS, EVENT_MSG_PRE_COMPLETE);
+  progress(EVENT_MSG_PRE_COMPLETE);
 
   return {
     flags,

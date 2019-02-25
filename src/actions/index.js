@@ -8,6 +8,7 @@ import uuid from "../lib/uuid";
 import { remote } from "electron";
 import ejectBuild from "../lib/compiler/ejectBuild";
 import makeBuild from "../lib/compiler/makeBuild";
+import buildProject from "../lib/compiler/buildProject";
 
 const asyncAction = async (
   dispatch,
@@ -215,35 +216,19 @@ export const runBuild = ({
   const state = getState();
   const projectRoot = state.document && state.document.root;
   const project = state.project.present;
+  const outputRoot = `${__dirname}/../data/output/`;
 
   console.log("TEMP", remote.app.getPath("temp"));
 
-  const outputRoot = `${__dirname}/../data/output/`;
-
-  // await compileProject(projectRoot, "/private/tmp/build",);
-  const compiledData = await compileProject(project, {
+  await buildProject(project, {
     projectRoot,
-    eventEmitter: {
-      emit: (key, msg) => {
-        dispatch({ type: types.CMD_STD_OUT, text: key + " - " + msg });
-      }
-    }
-  });
-
-  await ejectBuild({
-    outputRoot,
-    compiledData
-  });
-
-  await makeBuild({
-    buildRoot: outputRoot,
     buildType,
-    progress: out => {
-      if (out.type === "out") {
-        dispatch({ type: types.CMD_STD_OUT, text: out.text });
-      } else if (out.type === "err") {
-        dispatch({ type: types.CMD_STD_ERR, text: out.text });
-      }
+    outputRoot,
+    progress: message => {
+      dispatch({ type: types.CMD_STD_OUT, text: message });
+    },
+    warnings: message => {
+      dispatch({ type: types.CMD_STD_ERR, text: message });
     }
   });
 
@@ -253,4 +238,6 @@ export const runBuild = ({
       `${projectRoot}/build/${buildType}`
     );
   }
+
+  dispatch({ type: types.CMD_COMPLETE });
 };
