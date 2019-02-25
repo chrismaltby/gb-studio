@@ -314,7 +314,7 @@ void SceneUpdateCamera_b()
 void SceneUpdateActors_b()
 {
   VEC2D *update_dir;
-  UBYTE i, flip, frame, sprite_index, x, y;
+  UBYTE i;
   BYTE r;
 
   // Handle script move
@@ -402,7 +402,6 @@ void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
 {
   UBYTE next_tx, next_ty;
   UBYTE npc;
-  UBYTE col_tile;
   UWORD collision_index;
 
   if (update_dir == &dir_none)
