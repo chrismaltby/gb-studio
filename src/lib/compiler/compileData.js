@@ -128,11 +128,10 @@ const compile = async (
   });
 
   const startSceneIndex = precompiled.sceneData.findIndex(
-    m => m.id === projectData.startSceneId
+    m => m.id === projectData.settings.startSceneId
   );
-  const startX = projectData.startX;
-  const startY = projectData.startY;
 
+  const { startX, startY, startDirection } = projectData.settings;
   // console.log(
   //   JSON.stringify(
   //     { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
@@ -179,7 +178,7 @@ const compile = async (
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX)}\n` +
     `#define START_SCENE_Y ${decHex(startY)}\n` +
-    `#define START_SCENE_DIR ${decHex(1)}\n\n` +
+    `#define START_SCENE_DIR ${dirDec(startDirection)}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;

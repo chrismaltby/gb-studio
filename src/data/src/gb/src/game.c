@@ -54,11 +54,9 @@ int main()
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 
-  // scene_index = START_SCENE_INDEX;
-  // scene_next_index = START_SCENE_INDEX;
+  scene_index = START_SCENE_INDEX;
+  scene_next_index = START_SCENE_INDEX;
 
-  scene_index = 12;
-  scene_next_index = 12;
 
   UIInit();
 

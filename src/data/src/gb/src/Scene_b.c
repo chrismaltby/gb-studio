@@ -189,10 +189,6 @@ void SceneInit_b()
 
   // Init player
   actors[0].redraw = TRUE;
-  actors[0].pos.x = 96;
-  actors[0].pos.y = 96;
-  actors[0].dir.x = 1;
-  actors[0].dir.y = 0;
   actors[0].moving = FALSE;
 
   // Hide unused Sprites
