@@ -14,16 +14,15 @@ const makeBuild = ({
 
     let env = Object.create(process.env);
 
-    const emscriptenPath = path.resolve(
+    const buildToolsPath = path.resolve(
       __dirname,
-      "../../../buildTools/mac/emscripten"
-    );
-    const gbdkPath = path.resolve(
-      __dirname,
-      "../../../buildTools/mac/gbdk/bin"
+      `../../../buildTools/${process.platform}-${process.arch}`
     );
 
-    env.PATH = emscriptenPath + ":" + gbdkPath + ":" + env.PATH;
+    const emscriptenPath = `${buildToolsPath}/emscripten`;
+    const gbdkPath = `${buildToolsPath}/gbdk/bin`;
+
+    env.PATH = emscriptenPath + ":" + gbdkPath + ":/usr/bin:/bin:" + env.PATH;
 
     const options = {
       cwd: buildRoot,
