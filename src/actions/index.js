@@ -223,10 +223,15 @@ export const runBuild = ({
     buildType,
     outputRoot,
     progress: message => {
-      dispatch({ type: types.CMD_STD_OUT, text: message });
+      if (
+        message !== "'" &&
+        message.indexOf("unknown or unsupported #pragma") === -1
+      ) {
+        dispatch({ type: types.CMD_STD_OUT, text: message });
+      }
     },
     warnings: message => {
-      dispatch({ type: types.CMD_STD_ERR, text: message });
+      // dispatch({ type: types.CMD_STD_ERR, text: message });
     }
   });
 
