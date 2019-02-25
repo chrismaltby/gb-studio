@@ -1,0 +1,14 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  0 __rlslong_rrx_s                    003A GR
+  0 __rlulong_rrx_s                    003A GR
+  0 __rrslong_rrx_s                    001D GR
+  0 __rrulong_rrx_s                    0000 GR
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size   57   flags 0

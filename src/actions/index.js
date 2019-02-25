@@ -216,7 +216,7 @@ export const runBuild = ({
   const state = getState();
   const projectRoot = state.document && state.document.root;
   const project = state.project.present;
-  const outputRoot = `${__dirname}/../data/output/`;
+  const outputRoot = remote.app.getPath("temp") + uuid();
 
   await buildProject(project, {
     projectRoot,
@@ -231,7 +231,7 @@ export const runBuild = ({
       }
     },
     warnings: message => {
-      // dispatch({ type: types.CMD_STD_ERR, text: message });
+      dispatch({ type: types.CMD_STD_ERR, text: message });
     }
   });
 

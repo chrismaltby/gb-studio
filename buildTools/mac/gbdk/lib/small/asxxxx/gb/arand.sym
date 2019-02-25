@@ -1,0 +1,132 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+    .A                              =  0010 
+    .B                              =  0020 
+    .BANKOV                         =  0002 
+    .BCPD                           =  0069 
+    .BCPS                           =  0068 
+    .BGP                            =  0047 
+    .DIV                            =  0004 
+    .DMA                            =  0046 
+    .DOWN                           =  0008 
+    .DT_IDLE                        =  0066 
+    .DT_RECEIVING                   =  0055 
+    .G_MODE                         =  0001 
+    .HDMA1                          =  0051 
+    .HDMA2                          =  0052 
+    .HDMA3                          =  0053 
+    .HDMA4                          =  0054 
+    .HDMA5                          =  0055 
+    .IE                             =  00FF 
+    .IF                             =  000F 
+    .IO_ERROR                       =  0004 
+    .IO_IDLE                        =  0000 
+    .IO_RECEIVING                   =  0002 
+    .IO_SENDING                     =  0001 
+    .JOY_IFLAG                      =  0010 
+    .KEY1                           =  004D 
+    .LCDC                           =  0040 
+    .LCD_IFLAG                      =  0002 
+    .LEFT                           =  0002 
+    .LY                             =  0044 
+    .LYC                            =  0045 
+    .MAXCURSPOSX                    =  0013 
+    .MAXCURSPOSY                    =  0011 
+    .MAXWNDPOSX                     =  00A6 
+    .MAXWNDPOSY                     =  008F 
+    .MBC1_ROM_PAGE                  =  2000 
+    .MINWNDPOSX                     =  0007 
+    .MINWNDPOSY                     =  0000 
+    .MODE_TABLE                     =  01E0 
+    .M_NO_INTERP                    =  0008 
+    .M_NO_SCROLL                    =  0004 
+    .NEAR_CALLS                     =  0001 
+    .NR10                           =  0010 
+    .NR11                           =  0011 
+    .NR12                           =  0012 
+    .NR13                           =  0013 
+    .NR14                           =  0014 
+    .NR21                           =  0016 
+    .NR22                           =  0017 
+    .NR23                           =  0018 
+    .NR24                           =  0019 
+    .NR30                           =  001A 
+    .NR31                           =  001B 
+    .NR32                           =  001C 
+    .NR33                           =  001D 
+    .NR34                           =  001E 
+    .NR41                           =  0020 
+    .NR42                           =  0021 
+    .NR43                           =  0022 
+    .NR44                           =  0023 
+    .NR50                           =  0024 
+    .NR51                           =  0025 
+    .NR52                           =  0026 
+    .OAM                               **** GX
+    .OBP0                           =  0048 
+    .OBP1                           =  0049 
+    .OCPD                           =  006B 
+    .OCPS                           =  006A 
+    .P1                             =  0000 
+    .RIGHT                          =  0001 
+    .RP                             =  0056 
+    .SB                             =  0001 
+    .SC                             =  0002 
+    .SCREENHEIGHT                   =  0090 
+    .SCREENWIDTH                    =  00A0 
+    .SCX                            =  0043 
+    .SCY                            =  0042 
+    .SELECT                         =  0040 
+    .SIO_IFLAG                      =  0008 
+    .STACK                             **** GX
+    .START                          =  0080 
+    .STAT                           =  0041 
+    .SVBK                           =  0070 
+    .TAC                            =  0007 
+    .TIMA                           =  0005 
+    .TIM_IFLAG                      =  0004 
+    .TMA                            =  0006 
+    .T_MODE                         =  0002 
+    .T_MODE_INOUT                   =  0003 
+    .T_MODE_OUT                     =  0002 
+    .UP                             =  0004 
+    .VBK                            =  004F 
+    .VBL_IFLAG                      =  0001 
+    .WX                             =  004B 
+    .WY                             =  004A 
+    .add_JOY                           **** GX
+    .add_LCD                           **** GX
+    .add_SIO                           **** GX
+    .add_TIM                           **** GX
+    .add_VBL                           **** GX
+    .display_off                       **** GX
+    .init                              **** GX
+    .initrand                          **** GX
+    .mode                              **** GX
+  1 .randarr                           0000 R
+  1 .raxj                              0037 R
+  1 .raxk                              0038 R
+    .refresh_OAM                       **** GX
+    .reset                             **** GX
+    .set_mode                          **** GX
+    .wait_vbl_done                     **** GX
+    __RGBDS__                       =  0000 
+    __cpu                              **** GX
+    __io_in                            **** GX
+    __io_out                           **** GX
+    __io_status                        **** GX
+  0 _arand                             0000 GR
+  0 _initarand                         002C GR
+    _main                              **** GX
+    _rand                              **** GX
+    banked_call                        **** GX
+    banked_ret                         **** GX
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size   59   flags 0
+   1 _BSS                               size   39   flags 0

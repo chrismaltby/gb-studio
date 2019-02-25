@@ -1,5 +1,6 @@
 import childProcess from "child_process";
 import is from "electron-is";
+import path from "path";
 
 const makeBuild = ({
   buildType = "rom",
@@ -10,8 +11,20 @@ const makeBuild = ({
   return new Promise((resolve, reject) => {
     const command = "make";
     const args = [buildType];
+
     let env = Object.create(process.env);
-    env.PATH = "/opt/emsdk/emscripten/1.38.6/:" + env.PATH;
+
+    const emscriptenPath = path.resolve(
+      __dirname,
+      "../../../buildTools/mac/emscripten"
+    );
+    const gbdkPath = path.resolve(
+      __dirname,
+      "../../../buildTools/mac/gbdk/bin"
+    );
+
+    env.PATH = emscriptenPath + ":" + gbdkPath + ":" + env.PATH;
+
     const options = {
       cwd: buildRoot,
       env
