@@ -54,11 +54,8 @@ class AppToolbar extends Component {
   };
 
   onRun = async e => {
-    await this.props.runBuild({ buildType: "web" });
-    ipcRenderer.send(
-      "open-play",
-      `file://${__dirname}/../data/output/build/web/index.html`
-    );
+    const { outputRoot } = await this.props.runBuild({ buildType: "web" });
+    ipcRenderer.send("open-play", `file://${outputRoot}/build/web/index.html`);
   };
 
   openProjectFolder = e => {

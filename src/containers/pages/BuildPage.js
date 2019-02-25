@@ -29,10 +29,10 @@ class BuildPage extends Component {
 
   onRun = async e => {
     try {
-      await this.props.runBuild("web");
+      const { outputRoot } = await this.props.runBuild("web");
       ipcRenderer.send(
         "open-play",
-        `file://${__dirname}/../../data/output/build/web/index.html`
+        `file://${outputRoot}/build/web/index.html`
       );
     } catch (e) {
       console.error("FAIL");

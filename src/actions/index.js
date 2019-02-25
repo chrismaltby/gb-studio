@@ -216,9 +216,7 @@ export const runBuild = ({
   const state = getState();
   const projectRoot = state.document && state.document.root;
   const project = state.project.present;
-  const outputRoot = `${__dirname}/../data/output/`;
-
-  console.log("TEMP", remote.app.getPath("temp"));
+  const outputRoot = remote.app.getPath("temp") + uuid();
 
   await buildProject(project, {
     projectRoot,
@@ -240,4 +238,8 @@ export const runBuild = ({
   }
 
   dispatch({ type: types.CMD_COMPLETE });
+
+  return {
+    outputRoot
+  };
 };
