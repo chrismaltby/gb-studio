@@ -216,7 +216,7 @@ export const runBuild = ({
   const state = getState();
   const projectRoot = state.document && state.document.root;
   const project = state.project.present;
-  const outputRoot = remote.app.getPath("temp") + uuid();
+  const outputRoot = `${__dirname}/../data/output/`;
 
   await buildProject(project, {
     projectRoot,
