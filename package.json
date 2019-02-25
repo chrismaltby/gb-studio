@@ -69,7 +69,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^7.0.1",
-    "gbdkjs": "^2.1.2",
+    "gbdkjs": "^2.1.4",
     "ggbgfx": "^1.0.0",
     "glob": "^7.1.3",
     "image-size": "^0.7.1",
