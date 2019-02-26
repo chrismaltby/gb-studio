@@ -189,15 +189,12 @@ let listeners = {
 };
 
 const notifyListeners = (event, data) => {
-  console.log("MENU NOTIFY", event, data);
   for (let fn of listeners[event]) {
-    console.log("FOUND LISTENER TO NOTIFY", fn);
     fn(data);
   }
 };
 
 const on = (event, fn) => {
-  console.log("MENU LISTEN ON", event, fn);
   listeners[event].push(fn);
 };
 
