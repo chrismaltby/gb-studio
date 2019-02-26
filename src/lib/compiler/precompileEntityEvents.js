@@ -85,15 +85,7 @@ const getFlagIndex = (flag, flags) => {
 
 const precompileEntityScript = (
   input = [],
-  {
-    output = [],
-    data,
-    mapId,
-    strings,
-    flags,
-    branch = false,
-    ptrOffset = 0
-  } = {}
+  { output = [], data, mapId, strings, flags, branch = false } = {}
 ) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -121,7 +113,6 @@ const precompileEntityScript = (
         mapId,
         strings,
         flags,
-        ptrOffset,
         branch: true
       });
 
@@ -130,7 +121,7 @@ const precompileEntityScript = (
       output.push("PTR_PLACEHOLDER1");
       output.push("PTR_PLACEHOLDER2");
 
-      const truePointer = output.length + ptrOffset;
+      const truePointer = output.length;
       output[truePtrIndex] = truePointer >> 8;
       output[truePtrIndex + 1] = truePointer & 0xff;
 
@@ -140,11 +131,10 @@ const precompileEntityScript = (
         mapId,
         strings,
         flags,
-        ptrOffset,
         branch: true
       });
 
-      const endIfPointer = output.length + ptrOffset;
+      const endIfPointer = output.length;
       output[endPtrIndex] = endIfPointer >> 8;
       output[endPtrIndex + 1] = endIfPointer & 0xff;
     } else if (command === EVENT_SET_FLAG) {
@@ -256,7 +246,7 @@ const precompileEntityScript = (
     } else if (command === EVENT_RETURN_TO_TITLE) {
       output.push(CMD_LOOKUP.RETURN_TO_TITLE);
     } else if (command === EVENT_END) {
-      output.push(CMD_LOOKUP.END);
+      // output.push(CMD_LOOKUP.END);
     }
 
     for (var oi = 0; oi < output.length; oi++) {

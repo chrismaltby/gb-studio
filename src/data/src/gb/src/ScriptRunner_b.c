@@ -57,7 +57,7 @@ void Script_Text_b()
  */
 void Script_Goto_b()
 {
-  script_ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_continue = TRUE;
 }
 
