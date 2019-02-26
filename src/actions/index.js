@@ -208,7 +208,8 @@ export const consoleClear = () => {
 
 export const runBuild = ({
   buildType = "web",
-  exportBuild = false
+  exportBuild = false,
+  ejectBuild = false
 } = {}) => async (dispatch, getState) => {
   dispatch({ type: types.CMD_START });
   dispatch({ type: types.SET_SECTION, section: "build" });
@@ -240,6 +241,10 @@ export const runBuild = ({
       `${outputRoot}/build/${buildType}`,
       `${projectRoot}/build/${buildType}`
     );
+  }
+
+  if (ejectBuild) {
+    await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
   }
 
   dispatch({ type: types.CMD_COMPLETE });
