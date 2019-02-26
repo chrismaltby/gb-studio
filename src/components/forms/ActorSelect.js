@@ -18,10 +18,10 @@ class ActorSelect extends Component {
 }
 
 function mapStateToProps(state) {
-  const map = state.project.present.scenes.find(
-    map => map.id === state.navigation.mapId
+  const scene = state.project.present.scenes.find(
+    scene => scene.id === state.editor.scene
   );
-  const actors = map ? map.actors : [];
+  const actors = scene ? scene.actors : [];
   return {
     actors
   };

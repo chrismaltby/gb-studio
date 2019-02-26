@@ -67,15 +67,16 @@ const compile = async (
     const bankEntityEvents = entity => {
       const output = compileEntityEvents(entity.script, {
         scene,
+        scenes: precompiled.scenes,
         strings: precompiled.strings,
-        flags: precompiled.flags,
-        ptrOffset: banked.currentBankSize()
+        flags: precompiled.flags
       });
       if (banked.dataWillFitCurrentBank(output)) {
         return banked.push(output);
       } else {
         const outputNewBank = compileEntityEvents(entity.script, {
           scene,
+          scenes: precompiled.scenes,
           strings: precompiled.strings,
           flags: precompiled.flags
         });

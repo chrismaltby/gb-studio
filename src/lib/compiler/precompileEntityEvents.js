@@ -70,9 +70,8 @@ const CMD_LOOKUP = {
   RETURN_TO_TITLE: 0x18
 };
 
-const getActorIndex = (actorId, mapId, data) => {
-  const map = data.scenes.find(m => m.id === mapId);
-  return map.actors.findIndex(a => a.id === actorId) + 1;
+const getActorIndex = (actorId, scene) => {
+  return scene.actors.findIndex(a => a.id === actorId) + 1;
 };
 
 const getFlagIndex = (flag, flags) => {
@@ -85,7 +84,7 @@ const getFlagIndex = (flag, flags) => {
 
 const precompileEntityScript = (
   input = [],
-  { output = [], data, mapId, strings, flags, branch = false } = {}
+  { output = [], strings, scene, scenes, flags, branch = false } = {}
 ) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -109,9 +108,9 @@ const precompileEntityScript = (
       output.push("PTR_PLACEHOLDER2");
       precompileEntityScript(input[i].false, {
         output,
-        data,
-        mapId,
         strings,
+        scene,
+        scenes,
         flags,
         branch: true
       });
@@ -127,9 +126,9 @@ const precompileEntityScript = (
 
       precompileEntityScript(input[i].true, {
         output,
-        data,
-        mapId,
         strings,
+        scene,
+        scenes,
         flags,
         branch: true
       });
@@ -193,14 +192,12 @@ const precompileEntityScript = (
       output.push(dirDec(input[i].args.direction));
       */
     } else if (command === EVENT_ACTOR_MOVE_TO) {
-      /*
-      const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-      */
     } else if (command === EVENT_WAIT) {
       let seconds = input[i].args.time || 0;
       while (seconds > 0) {
