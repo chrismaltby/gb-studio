@@ -2,6 +2,7 @@
 #include "BankData.h"
 #include "UI.h"
 #include "FadeManager.h"
+#include "Scene.h"
 #include "game.h"
 
 UBYTE script_ptr_bank = 0;
@@ -33,7 +34,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_Noop_b, 1},          // 0x13
     {Script_ShowPlayer_b, 0},    // 0x14
     {Script_HidePlayer_b, 0},    // 0x15
-    {Script_ActorSetEmote_b, 1}, // 0x16
+    {Script_ActorSetEmote_b, 2}, // 0x16
     {Script_CameraShake_b, 1},   // 0x17
     {Script_ReturnToTitle_b, 0}  // 0x18
 };
@@ -115,9 +116,10 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
-  // if(last_fn == Script_ActorSetEmote_b && !IsEmoting()) {
-  //   return TRUE;
-  // }
+  if (last_fn == Script_ActorSetEmote_b && !SceneIsEmoting())
+  {
+    return TRUE;
+  }
 
   if (last_fn == Script_Text_b && UIIsClosed())
   {

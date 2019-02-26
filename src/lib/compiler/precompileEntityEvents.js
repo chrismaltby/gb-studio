@@ -211,23 +211,21 @@ const precompileEntityScript = (
         seconds -= time;
       }
     } else if (command === EVENT_ACTOR_EMOTION) {
-      // const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
-      const actorIndex = 0;
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_EMOTION);
       output.push(actorIndex);
       output.push(input[i].args.emotionId || 0);
     } else if (command === EVENT_SWITCH_SCENE) {
-      /*
-      let mapIndex = data.scenes.findIndex(m => m.id === input[i].args.map);
-      if (mapIndex > -1) {
+      let sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
+      if (sceneIndex > -1) {
         output.push(CMD_LOOKUP.SWITCH_SCENE);
-        output.push(mapIndex);
+        output.push(hi(sceneIndex));
+        output.push(lo(sceneIndex));
         output.push(input[i].args.x || 0);
         output.push(input[i].args.y || 0);
         output.push(dirDec(input[i].args.direction));
         output.push(input[i].args.fadeInSpeed || 2);
       }
-      */
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {

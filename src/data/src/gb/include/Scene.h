@@ -36,5 +36,7 @@ extern UWORD scene_next_index;
 
 void SceneInit();
 void SceneUpdate();
+void SceneSetEmotion(UBYTE actor, UBYTE type);
+UBYTE SceneIsEmoting();
 
 #endif

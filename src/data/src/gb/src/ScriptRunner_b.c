@@ -352,6 +352,7 @@ void Script_HidePlayer_b()
 void Script_ActorSetEmote_b()
 {
   script_ptr += 1 + script_cmd_args_len;
+  SceneSetEmotion(script_cmd_args[0], script_cmd_args[1]);
   script_action_complete = FALSE;
 }
 

@@ -67,7 +67,7 @@ const compile = async (
     const bankEntityEvents = entity => {
       const output = compileEntityEvents(entity.script, {
         scene,
-        scenes: precompiled.scenes,
+        scenes: precompiled.sceneData,
         strings: precompiled.strings,
         flags: precompiled.flags
       });
@@ -76,7 +76,7 @@ const compile = async (
       } else {
         const outputNewBank = compileEntityEvents(entity.script, {
           scene,
-          scenes: precompiled.scenes,
+          scenes: precompiled.sceneData,
           strings: precompiled.strings,
           flags: precompiled.flags
         });

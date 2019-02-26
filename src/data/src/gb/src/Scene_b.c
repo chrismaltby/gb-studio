@@ -190,6 +190,10 @@ void SceneInit_b()
   // Init player
   actors[0].redraw = TRUE;
   actors[0].moving = FALSE;
+  actors[0].pos.x = map_next_pos.x;
+  actors[0].pos.y = map_next_pos.y;
+  actors[0].dir.x = map_next_dir.x;
+  actors[0].dir.y = map_next_dir.y;
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
@@ -777,6 +781,11 @@ void SceneSetEmotion_b(UBYTE actor, UBYTE type)
   set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
   emotion_timer = 1;
   emotion_actor = actor;
+}
+
+UBYTE SceneIsEmoting_b()
+{
+  return emotion_timer > 0;
 }
 
 #pragma endregion
