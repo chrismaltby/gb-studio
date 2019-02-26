@@ -120,6 +120,21 @@ const createWindow = async projectPath => {
     mainWindow.webContents.send("leave-full-screen");
   });
 
+  mainWindow.on("close", e => {
+    if (mainWindow.isDocumentEdited()) {
+      const choice = require("electron").dialog.showMessageBox(mainWindow, {
+        type: "question",
+        buttons: ["Quit", "Cancel"],
+        title: "Confirm",
+        message:
+          "You have unsaved changes, are you sure you want to close this project?"
+      });
+      if (choice == 1) {
+        return e.preventDefault();
+      }
+    }
+  });
+
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
     // Dereference the window object, usually you would store windows
