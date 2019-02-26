@@ -298,13 +298,11 @@ void SceneUpdateCamera_b()
   }
 
   // @todo - should event finish checks be included here, or seperate file?
-  /*
-  if (((last_fn == script_cmd_camera_move) || (last_fn == script_cmd_camera_lock)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
+  if (((last_fn == Script_CameraMoveTo_b) || (last_fn == Script_CameraLock_b)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
   {
     script_action_complete = TRUE;
     camera_settings &= ~CAMERA_TRANSITION_FLAG; // Remove transition flag
   }
-  */
 }
 
 void SceneUpdateActors_b()
@@ -526,13 +524,6 @@ static void SceneHandleInput()
     else
     {
       menu_dest_y = MENU_CLOSED_Y;
-      // @todo - this shouldn't be here
-      /*
-      if (last_fn == script_cmd_line)
-      {
-        script_action_complete = TRUE;
-      }
-      */
     }
   }
   // If player between tiles can't handle input
