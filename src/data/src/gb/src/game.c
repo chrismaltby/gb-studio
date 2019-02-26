@@ -57,7 +57,6 @@ int main()
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;
 
-
   UIInit();
 
   UpdateFn = SceneUpdate;
@@ -134,40 +133,6 @@ void game_loop()
   time++;
 }
 
-void run_script()
-{
-  // UBYTE cmd;
-  // if (!script_ptr || !ScriptLastFnComplete())
-  // {
-  //   return;
-  // }
-
-  // cmd = 5;
-
-  // return;
-
-  /*
-  script_continue = FALSE;
-  script_action_complete = TRUE;
-
-  SWITCH_ROM_MBC1(4);
-  cmd = script[script_ptr];
-  script_arg1 = script[script_ptr + 1];
-  script_arg2 = script[script_ptr + 2];
-  script_arg3 = script[script_ptr + 3];
-  script_arg4 = script[script_ptr + 4];
-  script_arg5 = script[script_ptr + 5];
- 
-  SWITCH_ROM_MBC1(11);
-  last_fn = script_fns[cmd];
-  last_fn();
-
-  if (script_continue) {
-    run_script();
-  }
-  */
-}
-
 void script_cmd_line()
 {
   LOG("- SCRIPT: EVENT_LINE %u\n", (script_cmd_args[0] * 256) + script_cmd_args[1]);
@@ -182,35 +147,4 @@ void script_cmd_set_emotion()
   // MapSetEmotion(script_arg1, script_arg2);
   script_action_complete = FALSE;
   script_continue = FALSE;
-}
-
-UBYTE ScriptLastFnComplete()
-{
-  if (script_action_complete)
-  {
-    return TRUE;
-  }
-
-  /*
-  if (last_fn == script_fade_in && !IsFading())
-  {
-    return TRUE;
-  }
-
-  if (last_fn == script_fade_out && !IsFading())
-  {
-    return TRUE;
-  }
-
-  if (last_fn == script_load_map && !IsFading())
-  {
-    return TRUE;
-  }
-
-  // Disabled until implemented in scene
-  // if(last_fn == script_cmd_set_emotion && !IsEmoting()) {
-  //   return TRUE;
-  // }
-  */
-  return FALSE;
 }

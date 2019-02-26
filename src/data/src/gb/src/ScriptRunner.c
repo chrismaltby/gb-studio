@@ -1,5 +1,6 @@
 #include "ScriptRunner.h"
 #include "BankData.h"
+#include "UI.h"
 #include "game.h"
 
 UBYTE script_ptr_bank = 0;
@@ -36,6 +37,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ReturnToTitle_b, 0}  // 0x18
 };
 
+UBYTE ScriptLastFnComplete();
+
 void ScriptStart(BANK_PTR *events_ptr)
 {
   script_ptr_bank = events_ptr->bank;
@@ -48,7 +51,12 @@ void ScriptRunnerUpdate()
   UBYTE i, script_cmd_index;
   SCRIPT_CMD_FN script_cmd_fn;
 
-  if (!script_ptr_bank)
+  if (!script_action_complete)
+  {
+    script_action_complete = ScriptLastFnComplete();
+  }
+
+  if (!script_ptr_bank || !script_action_complete)
   {
     return;
   }
@@ -87,4 +95,32 @@ void ScriptRunnerUpdate()
     LOG("CONTINUE!\n");
     ScriptRunnerUpdate();
   }
+}
+
+UBYTE ScriptLastFnComplete()
+{
+  /*
+  if (last_fn == Script_FadeIn_b && !IsFading()) {
+    return TRUE;
+  }
+
+  if (last_fn == Script_FadeOut_b && !IsFading()) {
+    return TRUE;
+  }
+
+  if (last_fn == Script_LoadScene_b && !IsFading()) {
+    return TRUE;
+  }
+
+  if(last_fn == Script_ActorSetEmote_b && !IsEmoting()) {
+    return TRUE;
+  }
+  */
+
+  if (last_fn == Script_Text_b && UIIsClosed())
+  {
+    return TRUE;
+  }
+
+  return FALSE;
 }

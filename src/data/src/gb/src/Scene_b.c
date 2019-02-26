@@ -112,10 +112,10 @@ void SceneInit_b()
 
   // Load actors
   ptr = ptr + num_sprites;
-  scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr) + 1;
   ptr = ptr + 1;
   LOG("NUM ACTORS=%u\n", scene_num_actors);
-  for (i = 1; i != scene_num_actors + 1; i++)
+  for (i = 1; i != scene_num_actors; i++)
   {
     LOG("LOAD ACTOR %u\n", i);
     actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, ptr);

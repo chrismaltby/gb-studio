@@ -86,6 +86,7 @@ void UIUpdate_b()
   {
     menu_y += 2;
   }
+  WX_REG = 7;
   WY_REG = menu_y;
 }
 

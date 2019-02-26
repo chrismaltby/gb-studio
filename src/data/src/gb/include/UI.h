@@ -16,7 +16,9 @@ void UIUpdate();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawText(char *str, UBYTE x, UBYTE y);
 void UIDrawTextBkg(char *str, UBYTE x, UBYTE y);
+void UIShowText(UWORD line);
 void UISetTextBuffer(unsigned char *text);
 void UIDrawTextBuffer();
+UBYTE UIIsClosed();
 
 #endif

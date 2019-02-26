@@ -5,6 +5,7 @@
 #include "ScriptRunner.h"
 #include "Scene.h"
 #include "FadeManager.h"
+#include "UI.h"
 
 UINT8 scriptrunner_bank = 4;
 
@@ -41,6 +42,9 @@ void Script_End_b()
 void Script_Text_b()
 {
   script_ptr += 1 + script_cmd_args_len;
+  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+
+  script_action_complete = FALSE;
 }
 
 /*
