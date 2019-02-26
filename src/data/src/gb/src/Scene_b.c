@@ -189,7 +189,6 @@ void SceneInit_b()
 
   // Init player
   actors[0].redraw = TRUE;
-  actors[0].moving = FALSE;
   actors[0].pos.x = map_next_pos.x;
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
@@ -205,7 +204,9 @@ void SceneInit_b()
   camera_settings = CAMERA_LOCK_FLAG;
 
   SceneUpdateCamera_b();
+  actors[0].moving = TRUE;
   SceneHandleTriggers_b();
+  actors[0].moving = FALSE;
 
   FadeIn();
 
