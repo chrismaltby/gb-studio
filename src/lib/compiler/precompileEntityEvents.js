@@ -175,22 +175,18 @@ const precompileEntityScript = (
         output.push(encounterIndex);
       }
     } else if (command === EVENT_ACTOR_SET_POSITION) {
-      /*
-      const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-      */
     } else if (command === EVENT_ACTOR_SET_DIRECTION) {
-      /*
-      const actorIndex = getActorIndex(input[i].args.actorId, mapId, data);
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
-      */
     } else if (command === EVENT_ACTOR_MOVE_TO) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
