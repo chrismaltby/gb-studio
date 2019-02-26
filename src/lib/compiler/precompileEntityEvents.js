@@ -204,17 +204,17 @@ const precompileEntityScript = (
     } else if (command === EVENT_WAIT) {
       let seconds = input[i].args.time || 0;
       while (seconds > 0) {
-        let time = Math.min(seconds, 1000);
+        let time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.WAIT);
-        output.push(Math.ceil(60 * (time / 1000)));
+        output.push(Math.ceil(60 * time));
         seconds -= time;
       }
     } else if (command === EVENT_CAMERA_SHAKE) {
       let seconds = input[i].args.time || 0;
       while (seconds > 0) {
-        let time = Math.min(seconds, 1000);
+        let time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.CAMERA_SHAKE);
-        output.push(Math.ceil(60 * (time / 1000)));
+        output.push(Math.ceil(60 * time));
         seconds -= time;
       }
     } else if (command === EVENT_ACTOR_EMOTION) {

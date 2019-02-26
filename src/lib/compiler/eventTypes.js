@@ -58,7 +58,7 @@ export const EventNames = {
   [EVENT_HIDE_PLAYER]: "Hide Player",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
   [EVENT_HIDE_SPRITES]: "Hide Sprites"
-}
+};
 
 export const EventFields = {
   [EVENT_SWITCH_SCENE]: [
@@ -101,7 +101,8 @@ export const EventFields = {
       type: "number",
       label: "Seconds",
       min: 0,
-      max: 4
+      max: 4,
+      step: 0.1
     }
   ],
   [EVENT_CAMERA_SHAKE]: [

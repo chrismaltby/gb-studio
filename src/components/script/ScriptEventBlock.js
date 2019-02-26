@@ -14,7 +14,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const onChangeField = (key, type = "text", updateFn) => e => {
     let newValue = e.currentTarget ? e.currentTarget.value : e;
     if (type === "number") {
-      newValue = parseInt(newValue, 10);
+      newValue = parseFloat(newValue);
     }
     if (type === "direction" && newValue === value[key]) {
       newValue = "";
@@ -53,7 +53,12 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                onChange={onChangeField(field.key, field.type)}
+                onChange={onChangeField(field.key, field.type, val => {
+                  if (!field.step || field.step === 1) {
+                    val = Math.round(val);
+                  }
+                  return val;
+                })}
               />
             ) : field.type === "scene" ? (
               <SceneSelect
@@ -93,8 +98,8 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 onChange={onChangeField(field.key)}
               />
             ) : (
-                                  <div />
-                                )}
+              <div />
+            )}
           </FormField>
         );
       })}

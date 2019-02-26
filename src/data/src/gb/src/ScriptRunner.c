@@ -1,6 +1,7 @@
 #include "ScriptRunner.h"
 #include "BankData.h"
 #include "UI.h"
+#include "FadeManager.h"
 #include "game.h"
 
 UBYTE script_ptr_bank = 0;
@@ -99,23 +100,24 @@ void ScriptRunnerUpdate()
 
 UBYTE ScriptLastFnComplete()
 {
-  /*
-  if (last_fn == Script_FadeIn_b && !IsFading()) {
+  if (last_fn == Script_FadeIn_b && !IsFading())
+  {
     return TRUE;
   }
 
-  if (last_fn == Script_FadeOut_b && !IsFading()) {
+  if (last_fn == Script_FadeOut_b && !IsFading())
+  {
     return TRUE;
   }
 
-  if (last_fn == Script_LoadScene_b && !IsFading()) {
+  if (last_fn == Script_LoadScene_b && !IsFading())
+  {
     return TRUE;
   }
 
-  if(last_fn == Script_ActorSetEmote_b && !IsEmoting()) {
-    return TRUE;
-  }
-  */
+  // if(last_fn == Script_ActorSetEmote_b && !IsEmoting()) {
+  //   return TRUE;
+  // }
 
   if (last_fn == Script_Text_b && UIIsClosed())
   {
