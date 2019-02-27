@@ -54,7 +54,6 @@ class BuildPage extends Component {
 
   render() {
     const { status, output, projectRoot } = this.props;
-    console.warn(projectRoot);
     return (
       <div
         style={{
