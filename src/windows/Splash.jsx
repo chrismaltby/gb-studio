@@ -28,7 +28,8 @@ class Splash extends Component {
       name: "Untitled",
       target: "gbhtml",
       path: getLastUsedPath(),
-      nameError: null
+      nameError: null,
+      pathError: null
     };
   }
 
@@ -81,6 +82,15 @@ class Splash extends Component {
 
   onSubmit = async e => {
     const { name, target, path } = this.state;
+
+    if (!name) {
+      return this.setState({ nameError: "Please enter a project name" });
+    }
+
+    if (!path) {
+      return this.setState({ pathError: "Please enter a project path" });
+    }
+
     try {
       const projectPath = await createProject({
         name,
@@ -97,7 +107,7 @@ class Splash extends Component {
 
   render() {
     const { section } = this.props;
-    const { blur, tab, name, target, path, nameError } = this.state;
+    const { blur, tab, name, target, path, nameError, pathError } = this.state;
     return (
       <div className={cx("Splash", { "Splash--Blur": blur })}>
         <div className="Splash__Tabs">
@@ -131,7 +141,9 @@ class Splash extends Component {
             </div>
 
             <div className="Splash__FormGroup">
-              <label>Path</label>
+              <label className={pathError ? "Splash__Label--Error" : ""}>
+                {pathError ? pathError : "Path"}
+              </label>
               <input value={path} onChange={this.onChange("path")} />
               <div className="Splash__InputButton">
                 <DotsIcon />
