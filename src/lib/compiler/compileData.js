@@ -313,9 +313,10 @@ const precompile = async (projectData, projectRoot, tmpPath, progress) => {
 export const precompileFlags = scenes => {
   let flags = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.flag) {
-      if (flags.indexOf(cmd.args.flag) === -1) {
-        flags.push(cmd.args.flag);
+    if (cmd.args && cmd.args.hasOwnProperty("flag")) {
+      const flag = cmd.args.flag || "0";
+      if (flags.indexOf(flag) === -1) {
+        flags.push(flag);
       }
     }
   });

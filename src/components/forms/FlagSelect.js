@@ -9,7 +9,7 @@ const flags = Array.from(Array(512).keys()).map(n =>
 
 class FlagSelect extends Component {
   onRename = name => {
-    this.props.renameFlag(this.props.value, name);
+    this.props.renameFlag(this.props.value || "0", name);
   };
 
   flagName = index => {
@@ -24,7 +24,7 @@ class FlagSelect extends Component {
     return (
       <SelectRenamable
         editPlaceholder="Flag Name"
-        editDefaultValue={this.flagName(this.props.value)}
+        editDefaultValue={this.flagName(this.props.value || "0")}
         onRename={this.onRename}
         {...rest}
       >
@@ -42,11 +42,11 @@ function mapStateToProps(state) {
   return {
     flagNames: state.project.present.flags
       ? state.project.present.flags.reduce((memo, flag) => {
-        return {
-          ...memo,
-          [flag.id]: flag.name
-        };
-      }, {})
+          return {
+            ...memo,
+            [flag.id]: flag.name
+          };
+        }, {})
       : {}
   };
 }
