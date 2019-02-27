@@ -9,6 +9,8 @@
     "startDirection": "down"
   },
   "flags": [],
+  "images": [],
+  "spriteSheets": [],
   "scenes": [
     {
       "id": "a821ee69-6347-41b5-b463-6130303a01c7",

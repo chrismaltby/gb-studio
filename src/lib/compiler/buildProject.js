@@ -7,6 +7,7 @@ const buildProject = async (
   {
     buildType = "rom",
     projectRoot = "/tmp",
+    tmpPath = "/tmp",
     outputRoot = "/tmp/testing",
     progress = () => {},
     warnings = () => {}
@@ -14,6 +15,7 @@ const buildProject = async (
 ) => {
   const compiledData = await compile(data, {
     projectRoot,
+    tmpPath,
     progress,
     warnings
   });

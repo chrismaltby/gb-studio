@@ -32,6 +32,7 @@ const compile = async (
   projectData,
   {
     projectRoot = "/tmp",
+    tmpPath = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
     stringsPerBank = STRINGS_PER_BANK,
@@ -41,7 +42,12 @@ const compile = async (
 ) => {
   const output = {};
 
-  const precompiled = await precompile(projectData, projectRoot, progress);
+  const precompiled = await precompile(
+    projectData,
+    projectRoot,
+    tmpPath,
+    progress
+  );
 
   // Strings
   const stringsLength = precompiled.strings.length;
@@ -153,11 +159,18 @@ const compile = async (
 
   // console.log({ bankNums, bankDataPtrs });
 
+  const fixEmptyDataPtrs = ptrs => {
+    if (ptrs.length === 0) {
+      return [{ bank: 0, offset: 0 }];
+    }
+    return ptrs;
+  };
+
   const dataPtrs = {
-    tileset_bank_ptrs: tileSetPtrs,
-    image_bank_ptrs: imagePtrs,
-    sprite_bank_ptrs: spritePtrs,
-    scene_bank_ptrs: scenePtrs
+    tileset_bank_ptrs: fixEmptyDataPtrs(tileSetPtrs),
+    image_bank_ptrs: fixEmptyDataPtrs(imagePtrs),
+    sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
+    scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs)
   };
 
   const bankHeader = banked.exportCHeader(bankOffset);
@@ -237,7 +250,7 @@ const compile = async (
 
 //#region precompile
 
-const precompile = async (projectData, projectRoot, progress) => {
+const precompile = async (projectData, projectRoot, tmpPath, progress) => {
   progress(EVENT_MSG_PRE_FLAGS);
   const flags = precompileFlags(projectData.scenes);
 
@@ -254,7 +267,8 @@ const precompile = async (projectData, projectRoot, progress) => {
   } = await precompileImages(
     projectData.images,
     projectData.scenes,
-    projectRoot
+    projectRoot,
+    tmpPath
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
@@ -308,15 +322,23 @@ export const precompileStrings = scenes => {
       }
     }
   });
+  if (strings.length == 0) {
+    return ["NOSTRINGS"];
+  }
   return strings;
 };
 
-export const precompileImages = async (images, scenes, projectRoot) => {
+export const precompileImages = async (
+  images,
+  scenes,
+  projectRoot,
+  tmpPath
+) => {
   const usedImages = images.filter(image =>
     scenes.find(scene => scene.imageId === image.id)
   );
   const imageLookup = indexArray(usedImages, "id");
-  const imageData = await compileImages(usedImages, projectRoot);
+  const imageData = await compileImages(usedImages, projectRoot, tmpPath);
   let usedTilesets = [];
   let usedTilesetLookup = {};
   Object.keys(imageData.tilesets).forEach(tileKey => {

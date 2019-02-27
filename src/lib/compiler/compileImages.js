@@ -3,7 +3,7 @@ const ggbgfx = require("./ggbgfx");
 const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
 
-const compileImages = async (imgs, projectPath) => {
+const compileImages = async (imgs, projectPath, tmpPath) => {
   let tilesetLookups = [];
   let tilesetStrings = [];
   let tilesetIndexes = [];
@@ -83,7 +83,7 @@ const compileImages = async (imgs, projectPath) => {
     if (tilesetLookups[i]) {
       await ggbgfx.tileLookupToImage(
         tilesetLookups[i],
-        projectPath + "/test/tileset_" + i + ".png"
+        tmpPath + "/tileset_" + i + ".png"
       );
 
       // output.tilesets[i] = ggbgfx.tilesLookupToTilesString(tilesetLookups[i]);
@@ -94,7 +94,7 @@ const compileImages = async (imgs, projectPath) => {
   for (let i = 0; i < imgs.length; i++) {
     const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
       projectPath + "/assets/backgrounds/" + imgs[i].filename,
-      projectPath + "/test/tileset_" + tilesetIndexes[i] + ".png"
+      tmpPath + "/tileset_" + tilesetIndexes[i] + ".png"
     );
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];

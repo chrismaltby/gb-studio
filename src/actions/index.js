@@ -223,6 +223,7 @@ export const runBuild = ({
     projectRoot,
     buildType,
     outputRoot,
+    tmpPath: remote.app.getPath("temp"),
     progress: message => {
       if (
         message !== "'" &&
