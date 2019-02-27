@@ -22,7 +22,7 @@ int main() {
   TEST2(pow);
 
   EM_ASM({
-    out('ok.');
+    Module.print('ok.');
   });
 }
 

@@ -555,7 +555,7 @@ Functions
 
 	Load file from url in *synchronously*. For the asynchronous version, see the :c:func:`emscripten_async_wget`.
 
-	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we synchronously do the work to make the browser decode the image or audio etc.).  See :ref:`preloading-plugins` for more information on preloading files.
+	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we synchronously do the work to make the browser decode the image or audio etc.).
  
 	This function is blocking; it won't return until all operations are finished. You can then open and read the file if it succeeded.
 
@@ -569,8 +569,7 @@ Functions
 		 
 	Loads a file from a URL asynchronously. 
 
-	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).  See :ref:`preloading-plugins` for more information on preloading files.
-
+	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).
 
 	When the file is ready the ``onload`` callback will be called. If any error occurs ``onerror`` will be called. The callbacks are called with the file as their argument.
 	
@@ -616,8 +615,7 @@ Functions
 	
 	This is an **experimental** "more feature-complete" version of :c:func:`emscripten_async_wget`. 
 	
-	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we asynchronously do the work to make the browser decode the image, audio, etc.). See :ref:`preloading-plugins` for more information on preloading files.
-
+	In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in ``IMG_Load`` and so forth (we asynchronously do the work to make the browser decode the image, audio, etc.).
 
 	When the file is ready the ``onload`` callback will be called with the object pointers given in ``arg`` and ``file``. During the download the ``onprogress`` callback is called.
 	
@@ -697,8 +695,7 @@ Functions
 
 .. c:function:: void emscripten_run_preload_plugins_data(char* data, int size, const char *suffix, void *arg, em_run_preload_plugins_data_onload_func onload, em_arg_callback_func onerror)
 		 
-	Runs preload plugins on a buffer of data asynchronously. This is a "data" version of :c:func:`emscripten_run_preload_plugins`, which receives raw data as input instead of a filename (this can prevent the need to write data to a file first). See :ref:`preloading-plugins` for more information on preload plugins.
-
+	Runs preload plugins on a buffer of data asynchronously. This is a "data" version of :c:func:`emscripten_run_preload_plugins`, which receives raw data as input instead of a filename (this can prevent the need to write data to a file first). 
 	
 	When file is loaded then the ``onload`` callback will be called. If any error occurs ``onerror`` will be called.
 	
@@ -800,8 +797,7 @@ Emscripten Asynchronous IndexedDB API
 
 .. c:function:: int emscripten_run_preload_plugins(const char* file, em_str_callback_func onload, em_str_callback_func onerror)
 		 
-	Runs preload plugins on a file asynchronously. It works on file data already present and performs any required asynchronous operations available as preload plugins, such as decoding images for use in ``IMG_Load``, or decoding audio for use in ``Mix_LoadWAV``. See :ref:`preloading-plugins` for more information on preloading plugins.
-
+	Runs preload plugins on a file asynchronously. It works on file data already present and performs any required asynchronous operations available as preload plugins, such as decoding images for use in ``IMG_Load``, or decoding audio for use in ``Mix_LoadWAV``. 
 	
 	Once the operations are complete, the ``onload`` callback will be called. If any error occurs ``onerror`` will be called. The callbacks are called with the file as their argument.
 
@@ -1304,3 +1300,5 @@ Functions
 .. c:function:: void emscripten_yield(void)
 
     This function should only be called in a coroutine created by `emscripten_coroutine_create`, when it called, the coroutine is paused and the caller will continue.
+    
+

@@ -48,7 +48,6 @@ function ___cxa_find_matching_catch_after() {
  if (!___cxa_find_matching_catch_after.buffer) ___cxa_find_matching_catch_after.buffer = {};
 }
 ___cxa_find_matching_catch_after();
-var dotOther = Side.effect;
 
 
 

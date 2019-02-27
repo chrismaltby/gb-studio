@@ -37,9 +37,9 @@ int main() {
   EM_ASM({
     (function() {
       // exiting main should not cause any weirdness with printing
-      var realPrint = out;
+      var realPrint = Module['print'];
       Module['extraSecretBuffer'] = '';
-      out = function(x) {
+      Module['print'] = function(x) {
         Module['extraSecretBuffer'] += x;
         realPrint(x);
       };
@@ -50,17 +50,17 @@ int main() {
   fclose(f);
   printf("Looping...\n");
   EM_ASM({
-    out('js');
+    Module['print']('js');
     var counter = 0;
     function looper() {
-      out('js looping');
+      Module['print']('js looping');
       Module['_looper']();
       counter++;
       if (counter < 5) {
-        out('js queueing');
+        Module['print']('js queueing');
         setTimeout(looper, 1);
       } else {
-        out('js finishing');
+        Module['print']('js finishing');
         setTimeout(Module['_finish'], 1);
       }
     }

@@ -3,11 +3,11 @@
 int main() {
 #ifdef DIRECT
   EM_ASM({
-    out('|' + ALLOC_DYNAMIC + '|');
+    Module['print']('|' + ALLOC_DYNAMIC + '|');
   });
 #else
   EM_ASM({
-    out('|' + Module['ALLOC_DYNAMIC'] + '|');
+    Module['print']('|' + Module['ALLOC_DYNAMIC'] + '|');
   });
 #endif
 }

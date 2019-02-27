@@ -1,5 +1,6 @@
-"""Enables colored logger just by importing this module
-"""
+'''
+Enables colored logger just by importing this module
+'''
 
 import sys
 import logging
@@ -121,9 +122,8 @@ def add_coloring_to_emit_ansi(fn):
     return fn(*args)
   return new
 
-def enable():
-  if sys.stderr.isatty():
-    if sys.platform.startswith('win'):
-      logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
-    else:
-      logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
+if sys.stderr.isatty():
+  if sys.platform.startswith('win'):
+    logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
+  else:
+    logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)

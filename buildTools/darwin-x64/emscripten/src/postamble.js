@@ -40,7 +40,11 @@ if (memoryInitializer && !ENVIRONMENT_IS_PTHREAD) {
 if (memoryInitializer) {
 #endif
   if (!isDataURI(memoryInitializer)) {
-    memoryInitializer = locateFile(memoryInitializer);
+    if (typeof Module['locateFile'] === 'function') {
+      memoryInitializer = Module['locateFile'](memoryInitializer);
+    } else if (Module['memoryInitializerPrefixURL']) {
+      memoryInitializer = Module['memoryInitializerPrefixURL'] + memoryInitializer;
+    }
   }
   if (ENVIRONMENT_IS_NODE || ENVIRONMENT_IS_SHELL) {
     var data = Module['readBinary'](memoryInitializer);
@@ -84,8 +88,8 @@ if (memoryInitializer) {
             response = data.buffer;
           } else {
 #endif
-            // If you see this warning, the issue may be that you are using locateFile and defining it in JS. That
-            // means that the HTML file doesn't know about it, and when it tries to create the mem init request early, does it to the wrong place.
+            // If you see this warning, the issue may be that you are using locateFile or memoryInitializerPrefixURL, and defining them in JS. That
+            // means that the HTML file doesn't know about them, and when it tries to create the mem init request early, does it to the wrong place.
             // Look in your browser's devtools network console to see what's going on.
             console.warn('a problem seems to have happened with Module.memoryInitializerRequest, status: ' + request.status + ', retrying ' + memoryInitializer);
             doBrowserLoad();
@@ -232,7 +236,7 @@ Module['callMain'] = function callMain(args) {
       if (e && typeof e === 'object' && e.stack) {
         toLog = [e, e.stack];
       }
-      err('exception thrown: ' + toLog);
+      Module.printErr('exception thrown: ' + toLog);
       Module['quit'](1, e);
     }
   } finally {
@@ -249,7 +253,7 @@ function run(args) {
 
   if (runDependencies > 0) {
 #if RUNTIME_LOGGING
-    err('run() called, but dependencies remain, so not running');
+    Module.printErr('run() called, but dependencies remain, so not running');
 #endif
     return;
   }
@@ -317,10 +321,10 @@ function checkUnflushedContent() {
   // How we flush the streams depends on whether we are in NO_FILESYSTEM
   // mode (which has its own special function for this; otherwise, all
   // the code is inside libc)
-  var print = out;
-  var printErr = err;
+  var print = Module['print'];
+  var printErr = Module['printErr'];
   var has = false;
-  out = err = function(x) {
+  Module['print'] = Module['printErr'] = function(x) {
     has = true;
   }
   try { // it doesn't matter if it fails
@@ -347,8 +351,8 @@ function checkUnflushedContent() {
     }
 #endif
   } catch(e) {}
-  out = print;
-  err = printErr;
+  Module['print'] = print;
+  Module['printErr'] = printErr;
   if (has) {
     warnOnce('stdio streams had content in them that was not flushed. you should set NO_EXIT_RUNTIME to 0 (see the FAQ), or make sure to emit a newline when you printf etc.');
   }
@@ -376,9 +380,9 @@ function exit(status, implicit) {
     // if exit() was called, we may warn the user if the runtime isn't actually being shut down
     if (!implicit) {
 #if NO_EXIT_RUNTIME
-      err('exit(' + status + ') called, but NO_EXIT_RUNTIME is set, so halting execution but not exiting the runtime or preventing further async execution (build with NO_EXIT_RUNTIME=0, if you want a true shutdown)');
+      Module.printErr('exit(' + status + ') called, but NO_EXIT_RUNTIME is set, so halting execution but not exiting the runtime or preventing further async execution (build with NO_EXIT_RUNTIME=0, if you want a true shutdown)');
 #else
-      err('exit(' + status + ') called, but noExitRuntime is set due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)');
+      Module.printErr('exit(' + status + ') called, but noExitRuntime is set due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)');
 #endif // NO_EXIT_RUNTIME
     }
 #endif // ASSERTIONS
@@ -396,8 +400,12 @@ function exit(status, implicit) {
     if (Module['onExit']) Module['onExit'](status);
   }
 
+  if (ENVIRONMENT_IS_NODE) {
+    process['exit'](status);
+  }
   Module['quit'](status, new ExitStatus(status));
 }
+Module['exit'] = exit;
 
 var abortDecorators = [];
 
@@ -410,8 +418,8 @@ function abort(what) {
   if (ENVIRONMENT_IS_PTHREAD) console.error('Pthread aborting at ' + new Error().stack);
 #endif
   if (what !== undefined) {
-    out(what);
-    err(what);
+    Module.print(what);
+    Module.printErr(what);
     what = JSON.stringify(what)
   } else {
     what = '';

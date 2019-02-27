@@ -31,7 +31,6 @@ int main()
     glfwSetErrorCallback(errorcb);
     assert(glfwInit() == GL_TRUE);
     assert(!strcmp(glfwGetVersionString(), "3.2.1 JS WebGL Emscripten"));
-    assert(glfwGetCurrentContext() == NULL);
 
     {
         int major, minor, rev;

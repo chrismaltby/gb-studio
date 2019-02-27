@@ -1,13 +1,8 @@
 from __future__ import print_function
-import os
-import platform
-import shutil
-import stat
-import subprocess
-import time
-
+import os, shutil, stat, subprocess
 from runner import RunnerCore, path_from_root
 from tools.shared import *
+import time
 
 SANITY_FILE = CONFIG_FILE + '_sanity'
 commands = [[PYTHON, EMCC], [PYTHON, path_from_root('tests', 'runner.py'), 'blahblah']]
@@ -27,12 +22,6 @@ def restore_and_set_up():
 def wipe():
   try_delete(CONFIG_FILE)
   try_delete(SANITY_FILE)
-
-
-def add_to_config(content):
-  with open(CONFIG_FILE, 'a') as f:
-    f.write(content + '\n')
-
 
 def mtime(filename):
   return os.stat(filename).st_mtime
@@ -239,17 +228,6 @@ class sanity(RunnerCore):
             assert LLVM_WARNING not in output, output
     finally:
       del os.environ['EM_IGNORE_SANITY']
-
-  def test_emscripten_root(self):
-    # The correct path
-    restore_and_set_up()
-    add_to_config("EMSCRIPTEN_ROOT = '%s'" % path_from_root())
-    self.check_working(EMCC)
-
-    # The correct path with extra stuff
-    restore_and_set_up()
-    add_to_config("EMSCRIPTEN_ROOT = '%s'" % (path_from_root() + os.path.sep))
-    self.check_working(EMCC)
 
   def test_llvm_fastcomp(self):
     WARNING = 'fastcomp in use, but LLVM has not been built with the JavaScript backend as a target'

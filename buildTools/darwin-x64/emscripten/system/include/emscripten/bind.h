@@ -222,7 +222,7 @@ namespace emscripten {
             void _embind_register_constant(
                 const char* name,
                 TYPEID constantType,
-                double value);
+                uintptr_t value);
         }
     }
 }
@@ -1578,8 +1578,8 @@ namespace emscripten {
 
     namespace internal {
         template<typename T>
-        double asGenericValue(T t) {
-            return static_cast<double>(t);
+        uintptr_t asGenericValue(T t) {
+            return static_cast<uintptr_t>(t);
         }
 
         template<typename T>
@@ -1595,7 +1595,7 @@ namespace emscripten {
         _embind_register_constant(
             name,
             TypeID<const ConstantType&>::get(),
-            static_cast<double>(asGenericValue(BT::toWireType(v))));
+            asGenericValue(BT::toWireType(v)));
     }
 }
 

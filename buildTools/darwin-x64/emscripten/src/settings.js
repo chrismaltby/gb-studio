@@ -723,7 +723,6 @@ var SAFE_SPLIT_MEMORY = 0; // Similar to SAFE_HEAP, but for SPLIT_MEMORY.
 
 var RUNNING_JS_OPTS = 0; // whether js opts will be run, after the main compiler
 var BOOTSTRAPPING_STRUCT_INFO = 0; // whether we are in the generate struct_info bootstrap phase
-var STRUCT_INFO = ''; // struct_info that is either generated or cached
 
 var EMSCRIPTEN_TRACING = 0; // Add some calls to emscripten tracing APIs
 
@@ -738,8 +737,17 @@ var WASM = 1; // Whether to use compile code to WebAssembly. Set this to 0 to co
               // of the port, which can useful for local dev work on binaryen itself).
 
 var WASM_BACKEND = 0; // Whether to use the WebAssembly backend that is in development in LLVM.
+                      // This requires that BINARYEN be set, as we use Binaryen's s2wasm to
+                      // translate the backend output.
                       // You should not set this yourself, instead set EMCC_WASM_BACKEND=1 in the
                       // environment.
+var EXPERIMENTAL_USE_LLD = 0; // Whether to use lld as a linker for the
+                              // WebAssembly backend, instead of s2wasm.
+                              // Currently an experiment, the plan is to make
+                              // this the default behavior long-term, and remove
+                              // the flag.
+                              // You should not set this yourself, instead set
+                              // EMCC_EXPERIMENTAL_USE_LLD=1 in the environment.
 
 var BINARYEN_METHOD = "native-wasm"; // How we should run WebAssembly code. By default, we run it natively.
                                      // See binaryen's src/js/wasm.js-post.js for more details and options.
@@ -842,9 +850,6 @@ var PTHREADS_PROFILING = 0; // True when building with --threadprofiler
 var PTHREADS_DEBUG = 0; // If true, add in debug traces for diagnosing pthreads related issues.
 
 var MAX_GLOBAL_ALIGN = -1; // received from the backend
-var IMPLEMENTED_FUNCTIONS = []; // received from the backend
-var JSCALL_START_INDEX = 0; // received from the backend
-var JSCALL_SIG_ORDER = {}; // received from the backend
 
 // Duplicate function elimination. This coalesces function bodies that are
 // identical, which can happen e.g. if two methods have different C/C++
@@ -901,8 +906,6 @@ var BUNDLED_CD_DEBUG_FILE = ""; // Path to the CyberDWARF debug file passed to t
 
 var TEXTDECODER = 1; // Is enabled, use the JavaScript TextDecoder API for string marshalling.
                      // Enabled by default, set this to 0 to disable.
-var EMBIND_STD_STRING_IS_UTF8 = 1; // Embind specific: If enabled, assume UTF-8 encoded data in std::string binding.
-                                   // Disable this to support binary data transfer.
 
 var OFFSCREENCANVAS_SUPPORT = 0; // If set to 1, enables support for transferring canvases to pthreads and creating WebGL contexts in them,
                                  // as well as explicit swap control for GL contexts. This needs browser support for the OffscreenCanvas

@@ -254,7 +254,7 @@ following JavaScript:
 
 .. note:: The function ``alert`` is present in browsers, but not in *node*
    or other JavaScript shells. A more generic alternative is to call
-   `console.log`.
+   :js:func:`Module.print`.
 
 
 A faster way to call JavaScript from C is to write "inline JavaScript",
@@ -307,7 +307,7 @@ You can also send values from C into JavaScript inside :c:macro:`EM_ASM_`
 .. code-block:: cpp
 
       EM_ASM_({
-        console.log('I received: ' + $0);
+        Module.print('I received: ' + $0);
       }, 100);
 
 This will show ``I received: 100``. 
@@ -318,7 +318,7 @@ and then ``101``.
 .. code-block:: cpp
 
       int x = EM_ASM_INT({
-        console.log('I received: ' + $0);
+        Module.print('I received: ' + $0);
         return $0 + 1;
       }, 100);
       printf("%d\n", x);
@@ -623,16 +623,15 @@ space for 20 functions to be added::
    character within a signature string represents a type. The first character
    represents the return type of a function, and remaining characters are for
    parameter types.
-
-   - ``'v'``: void type
-   - ``'i'``: 32-bit integer type
-   - ``'j'``: 64-bit integer type (currently does not exist in JavaScript)
-   - ``'f'``: 32-bit float type
-   - ``'d'``: 64-bit float type
-
+   - 'v': void type
+   - 'i': 32-bit integer type
+   - 'j': 64-bit integer type (currently does not exist in JavaScript)
+   - 'f': 32-bit float type
+   - 'd': 64-bit float type
    For example, if you add a function that takes an integer and does not return
-   anything, you can do ``addFunction(your_function, 'vi');``. See
-   `tests/interop/test_add_function_post.js <https://github.com/kripken/emscripten/blob/incoming/tests/interop/test_add_function_post.js>`_ for an example.
+   anything, you can do
+   ``addFunction(your_function, 'vi');``
+   See tests/interop/test_add_function_post.js for an example.
 
 
 .. _interacting-with-code-access-memory:

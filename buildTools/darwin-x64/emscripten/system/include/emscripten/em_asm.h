@@ -85,12 +85,6 @@ private:
   static char sig_char(unsigned) {
     return 'i';
   }
-  static char sig_char(long) {
-    return 'i';
-  }
-  static char sig_char(unsigned long) {
-    return 'i';
-  }
   template <typename T>
   static char sig_char(T *arg) {
     return 'i';

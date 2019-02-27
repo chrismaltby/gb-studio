@@ -32,9 +32,9 @@ def validate_asmjs_jsfile(filename, muteOutput):
   stdout = process.stdout
   stderr = process.stderr
   if not muteOutput:
-    if len(stdout.strip()):
+    if len(stdout.strip()) > 0:
       print(stdout.strip())
-    if len(stderr.strip()):
+    if len(stderr.strip()) > 0:
       # Pretty-print the output not to contain a spurious warning.
       warning_re = re.compile(re.escape('warning: successfully compiled asm.js'), re.IGNORECASE)
       stderr = warning_re.sub(' successfully compiled asm.js', stderr)

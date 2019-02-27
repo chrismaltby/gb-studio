@@ -1,4 +1,4 @@
-node_modules
+/node_modules
 out
 .eslintcache
 src/data/src/gb/build

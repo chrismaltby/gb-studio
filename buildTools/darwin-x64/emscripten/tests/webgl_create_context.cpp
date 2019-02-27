@@ -76,18 +76,9 @@ int main()
 {
   bool first = true;
   EmscriptenWebGLContextAttributes attrs;
-  int depth = 0;
-  int stencil = 0;
-  int antialias = 0;
-#ifndef NO_DEPTH
-  for(depth = 0; depth <= 1; ++depth)
-#endif
-#ifndef NO_STENCIL
-  for(stencil = 0; stencil <= 1; ++stencil)
-#endif
-#ifndef NO_ANTIALIAS
-  for(antialias = 0; antialias <= 1; ++antialias)
-#endif
+  for(int depth = 0; depth <= 1; ++depth)
+  for(int stencil = 0; stencil <= 1; ++stencil)
+  for(int antialias = 0; antialias <= 1; ++antialias)
   {
     emscripten_webgl_init_context_attributes(&attrs);
     attrs.depth = depth;

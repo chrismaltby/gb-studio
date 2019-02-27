@@ -56,8 +56,8 @@ def shell_with_script(shell_file, output_file, replacement):
     with open(output_file, 'w') as output:
       output.write(input.read().replace('{{{ SCRIPT }}}', replacement))
 
-requires_graphics_hardware = unittest.skipIf(os.environ.get('EM_LACKS_GRAPHICS_HARDWARE'), "This test requires graphics hardware")
-requires_sound_hardware = unittest.skipIf(os.environ.get('EM_LACKS_SOUND_HARDWARE'), "This test requires sound hardware")
+def requires_hardware(func):
+  return lambda self: self.skip("This test requires hardware access including graphics and sound devices") if os.environ.get("EM_LACKS_HARDWARE_ACCESS") else func(self)
 
 class browser(BrowserCore):
   @classmethod
@@ -69,7 +69,7 @@ class browser(BrowserCore):
     print()
 
   def test_sdl1_in_emscripten_nonstrict_mode(self):
-    if 'EMCC_STRICT' in os.environ and int(os.environ['EMCC_STRICT']): self.skipTest('This test requires being run in non-strict mode (EMCC_STRICT env. variable unset)')
+    if 'EMCC_STRICT' in os.environ and int(os.environ['EMCC_STRICT']): return self.skip('This test requires being run in non-strict mode (EMCC_STRICT env. variable unset)')
     # TODO: This test is verifying behavior that will be deprecated at some point in the future, remove this test once
     # system JS libraries are no longer automatically linked to anymore.
     self.btest('hello_world_sdl.cpp', reference='htmltest.png')
@@ -82,7 +82,7 @@ class browser(BrowserCore):
   # as this test may take the focus away from the main test window
   # by opening a new window and possibly not closing it.
   def test_zzz_html_source_map(self):
-    if not has_browser(): self.skipTest('need a browser')
+    if not has_browser(): return self.skip('need a browser')
     cpp_file = os.path.join(self.get_dir(), 'src.cpp')
     html_file = os.path.join(self.get_dir(), 'src.html')
     # browsers will try to 'guess' the corresponding original line if a
@@ -500,7 +500,7 @@ If manually bisecting:
     open(os.path.join(self.get_dir(), 'subdirr', 'data1.txt'), 'w').write('''1214141516171819''')
     # change the file package base dir to look in a "cdn". note that normally you would add this in your own custom html file etc., and not by
     # modifying the existing shell in this manner
-    open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { locateFile: function (path, prefix) {if (path.endsWith(".wasm")) {return prefix + path;} else {return "cdn/" + path;}}, '))
+    open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { filePackagePrefixURL: "cdn/", '))
     open(os.path.join(self.get_dir(), 'main.cpp'), 'w').write(self.with_report_result(r'''
       #include <stdio.h>
       #include <string.h>
@@ -555,7 +555,7 @@ If manually bisecting:
               setTimeout(function() { window.close() }, 1000);
             }
             var Module = {
-              locateFile: function (path, prefix) {if (path.endsWith(".wasm")) {return prefix + path;} else {return "''' + assetLocalization + r'''" + path;}},
+              filePackagePrefixURL: "''' + assetLocalization + r'''",
               print: (function() {
                 var element = document.getElementById('output');
                 return function(text) { element.innerHTML += text.replace('\n', '<br>', 'g') + '<br>';};
@@ -588,8 +588,8 @@ If manually bisecting:
     test()
 
 
-    # TODO: CORS, test using a full url for locateFile
-    #open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { locateFile: function (path) {return "http:/localhost:8888/cdn/" + path;}, '))
+    # TODO: CORS, test using a full url for filePackagePrefixURL
+    #open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { filePackagePrefixURL: "http:/localhost:8888/cdn/", '))
     #test()
 
   def test_sdl_swsurface(self):
@@ -707,7 +707,7 @@ window.close = function() {
     open('data.txt', 'w').write('datum')
     self.btest('sdl_canvas_proxy.c', reference='sdl_canvas_proxy.png', args=['--proxy-to-worker', '--preload-file', 'data.txt', '-lSDL', '-lGL'], manual_reference=True, post_build=self.post_manual_reftest)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears_proxy(self):
     # we modify the asm.js, this is a non-wasm test
     self.btest('hello_world_gles_proxy.c', reference='gears.png', args=['--proxy-to-worker', '-s', 'GL_TESTING=1', '-DSTATIC_GEARS=1', '-lGL', '-lglut', '-s', 'WASM=0'], manual_reference=True, post_build=self.post_manual_reftest)
@@ -740,7 +740,7 @@ window.close = function() {
     copy('three', lambda original: re.sub(r'function _main\(\$(.+),\$(.+)\) {', r'function _main($\1,$\2) { if (ENVIRONMENT_IS_WORKER) { var xhr = new XMLHttpRequest(); xhr.open("GET", "http://localhost:%s/report_result?999");xhr.send(); return; }' % self.test_port, original))
     self.run_browser('three.html?noProxy', None, ['/report_result?0']) # this is still cool
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears_proxy_jstarget(self):
     # test .js target with --proxy-worker; emits 2 js files, client and worker
     Popen([PYTHON, EMCC, path_from_root('tests', 'hello_world_gles_proxy.c'), '-o', 'test.js', '--proxy-to-worker', '-s', 'GL_TESTING=1', '-lGL', '-lglut']).communicate()
@@ -773,7 +773,7 @@ window.close = function() {
           open(os.path.join(self.get_dir(), 'pre.js'), 'w').write('''
             function keydown(c) {
              %s
-              //out('push keydown');
+              //Module.print('push keydown');
               var event = document.createEvent("KeyboardEvent");
               event.initKeyEvent("keydown", true, true, window,
                                  0, 0, 0, 0,
@@ -784,7 +784,7 @@ window.close = function() {
 
             function keyup(c) {
              %s
-              //out('push keyup');
+              //Module.print('push keyup');
               var event = document.createEvent("KeyboardEvent");
               event.initKeyEvent("keyup", true, true, window,
                                  0, 0, 0, 0,
@@ -1115,7 +1115,7 @@ keydown(100);keyup(100); // trigger the end
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'sdl_joystick.c'), '-O2', '--minify', '0', '-o', 'page.html', '--pre-js', 'pre.js', '-lSDL', '-lGL']).communicate()
     self.run_browser('page.html', '', '/report_result?2')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glfw_joystick(self):
     # Generates events corresponding to the Editor's Draft of the HTML5 Gamepad API.
     # https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#idl-def-Gamepad
@@ -1162,7 +1162,7 @@ keydown(100);keyup(100); // trigger the end
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'test_glfw_joystick.c'), '-O2', '--minify', '0', '-o', 'page.html', '--pre-js', 'pre.js', '-lGL', '-lglfw3', '-s', 'USE_GLFW=3']).communicate()
     self.run_browser('page.html', '', '/report_result?2')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_webgl_context_attributes(self):
     # Javascript code to check the attributes support we want to test in the WebGL implementation
     # (request the attribute, create a context and check its value afterwards in the context attributes).
@@ -1212,15 +1212,15 @@ keydown(100);keyup(100); // trigger the end
     self.btest('test_webgl_context_attributes_glfw.c', '1', args=['--js-library', 'check_webgl_attributes_support.js', '-lGL', '-lglfw', '-lGLEW'])
 
   # Test that -s GL_PREINITIALIZED_CONTEXT=1 works and allows user to set Module['preinitializedWebGLContext'] to a preinitialized WebGL context.
-  @requires_graphics_hardware
+  @requires_hardware
   def test_preinitialized_webgl_context(self):
     self.btest('preinitialized_webgl_context.cpp', '5', args=['-s', 'GL_PREINITIALIZED_CONTEXT=1', '--shell-file', path_from_root('tests/preinitialized_webgl_context.html')])
 
   def test_emscripten_get_now(self):
     self.btest('emscripten_get_now.cpp', '1')
 
-  @unittest.skip('Skipping due to https://github.com/kripken/emscripten/issues/2770')
   def test_fflush(self):
+    return self.skip('Skipping due to https://github.com/kripken/emscripten/issues/2770')
     self.btest('test_fflush.cpp', '0', args=['--shell-file', path_from_root('tests', 'test_fflush.html')])
 
   def test_file_db(self):
@@ -1340,14 +1340,6 @@ keydown(100);keyup(100); // trigger the end
     open('files.js', 'wb').write(out)
     self.btest(os.path.join('fs', 'test_lz4fs.cpp'), '2', args=['--pre-js', 'files.js'], timeout=60)'''
 
-  def test_separate_metadata_later(self):
-    # see issue #6654 - we need to handle separate-metadata both when we run before
-    # the main program, and when we are run later
-
-    open('data.dat', 'w').write(' ')
-    run_process([PYTHON, FILE_PACKAGER, 'more.data', '--preload', 'data.dat', '--separate-metadata', '--js-output=more.js'])
-    self.btest(os.path.join('browser', 'separate_metadata_later.cpp'), '1', args=['-s', 'FORCE_FILESYSTEM=1'])
-
   def test_idbstore(self):
     secret = str(time.time())
     for stage in [0, 1, 2, 3, 0, 1, 2, 0, 0, 1, 4, 2, 5]:
@@ -1384,33 +1376,33 @@ keydown(100);keyup(100); // trigger the end
     self.btest('sdl_canvas_size.c', expected='1',
       args=['-O2', '--minify', '0', '--shell-file', path_from_root('tests', 'sdl_canvas_size.html'), '-lSDL', '-lGL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_gl_read(self):
     # SDL, OpenGL, readPixels
     open(os.path.join(self.get_dir(), 'sdl_gl_read.c'), 'w').write(self.with_report_result(open(path_from_root('tests', 'sdl_gl_read.c')).read()))
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'sdl_gl_read.c'), '-o', 'something.html', '-lSDL', '-lGL']).communicate()
     self.run_browser('something.html', '.', '/report_result?1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_gl_mapbuffers(self):
     self.btest('sdl_gl_mapbuffers.c', expected='1', args=['-s', 'FULL_ES3=1', '-lSDL', '-lGL'],
                message='You should see a blue triangle.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_ogl(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_ogl.c', reference='screenshot-gray-purple.png', reference_slack=1,
       args=['-O2', '--minify', '0', '--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with gray at the top.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_ogl_defaultmatrixmode(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_ogl_defaultMatrixMode.c', reference='screenshot-gray-purple.png', reference_slack=1,
       args=['--minify', '0', '--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with gray at the top.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_ogl_p(self):
     # Immediate mode with pointers
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
@@ -1418,48 +1410,48 @@ keydown(100);keyup(100); // trigger the end
       args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with gray at the top.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_ogl_proc_alias(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_ogl_proc_alias.c', reference='screenshot-gray-purple.png', reference_slack=1,
                args=['-O2', '-g2', '-s', 'INLINING_LIMIT=1', '--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_fog_simple(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_fog_simple.c', reference='screenshot-fog-simple.png',
       args=['-O2', '--minify', '0', '--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_fog_negative(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_fog_negative.c', reference='screenshot-fog-negative.png',
       args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_fog_density(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_fog_density.c', reference='screenshot-fog-density.png',
       args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_fog_exp2(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_fog_exp2.c', reference='screenshot-fog-exp2.png',
       args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl_fog_linear(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl_fog_linear.c', reference='screenshot-fog-linear.png', reference_slack=1,
       args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins', '-lSDL', '-lGL'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glfw(self):
     self.btest('glfw.c', '1', args=['-s', 'LEGACY_GL_EMULATION=1', '-lglfw', '-lGL'])
     self.btest('glfw.c', '1', args=['-s', 'LEGACY_GL_EMULATION=1', '-s', 'USE_GLFW=2', '-lglfw', '-lGL'])
@@ -1471,7 +1463,7 @@ keydown(100);keyup(100); // trigger the end
   def test_glfw_time(self):
     self.btest('test_glfw_time.c', '1', args=['-s', 'USE_GLFW=3', '-lglfw', '-lGL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_egl(self):
     open(os.path.join(self.get_dir(), 'test_egl.c'), 'w').write(self.with_report_result(open(path_from_root('tests', 'test_egl.c')).read()))
 
@@ -1570,8 +1562,8 @@ keydown(100);keyup(100); // trigger the end
           FS.createLazyFile('/', "bigfile", "http://localhost:11111/bogus_file_path", true, false);
       };
       var doTrace = true;
-      Module["print"] = function(s) { self.postMessage({channel: "stdout", line: s}); };
-      Module["printErr"] = function(s) { self.postMessage({channel: "stderr", char: s, trace: ((doTrace && s === 10) ? new Error().stack : null)}); doTrace = false; };
+      Module["print"] =    function(s) { self.postMessage({channel: "stdout", line: s}); };
+      Module["stderr"] =   function(s) { self.postMessage({channel: "stderr", char: s, trace: ((doTrace && s === 10) ? new Error().stack : null)}); doTrace = false; };
     """)
     prejs_file.close()
     # vs. os.path.join(self.get_dir(), filename)
@@ -1591,19 +1583,19 @@ keydown(100);keyup(100); // trigger the end
     if WINDOWS:
       time.sleep(2)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears(self):
     self.btest('hello_world_gles.c', reference='gears.png', reference_slack=3,
         args=['-DHAVE_BUILTIN_SINCOS', '-lGL', '-lglut'], outfile='something.html',
         message='You should see animating gears.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears_long(self):
     for proxy in [0, 1]:
       print('proxy', proxy)
       self.btest('hello_world_gles.c', expected=list(map(str, range(30, 500))), args=['-DHAVE_BUILTIN_SINCOS', '-DLONGTEST', '-lGL', '-lglut'] + (['--proxy-to-worker'] if proxy else []), timeout=30)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears_animation(self):
     es2_suffix = ['', '_full', '_full_944']
     for full_es2 in [0, 1, 2]:
@@ -1615,11 +1607,11 @@ keydown(100);keyup(100); // trigger the end
             ).communicate()
       self.run_browser('something.html', 'You should see animating gears.', '/report_gl_result?true')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_fulles2_sdlproc(self):
     self.btest('full_es2_sdlproc.c', '1', args=['-s', 'GL_TESTING=1', '-DHAVE_BUILTIN_SINCOS', '-s', 'FULL_ES2=1', '-lGL', '-lSDL', '-lglut'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgears_deriv(self):
     self.btest('hello_world_gles_deriv.c', reference='gears.png', reference_slack=2,
         args=['-DHAVE_BUILTIN_SINCOS', '-lGL', '-lglut'], outfile='something.html',
@@ -1627,7 +1619,7 @@ keydown(100);keyup(100); // trigger the end
     with open('something.html') as f:
       assert 'gl-matrix' not in f.read(), 'Should not include glMatrix when not needed'
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glbook(self):
     programs = self.get_library('glbook', [
       os.path.join('Chapter_2', 'Hello_Triangle', 'CH02_HelloTriangle.bc'),
@@ -1655,7 +1647,7 @@ keydown(100);keyup(100); // trigger the end
       self.btest(program,
           reference=book_path(basename.replace('.bc', '.png')), args=args, timeout=30)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gles2_emulation(self):
     shutil.copyfile(path_from_root('tests', 'glbook', 'Chapter_10', 'MultiTexture', 'basemap.tga'), self.in_dir('basemap.tga'))
     shutil.copyfile(path_from_root('tests', 'glbook', 'Chapter_10', 'MultiTexture', 'lightmap.tga'), self.in_dir('lightmap.tga'))
@@ -1745,99 +1737,99 @@ keydown(100);keyup(100); // trigger the end
   def test_glshaderinfo(self):
     self.btest('glshaderinfo.cpp', '1', args=['-lGL', '-lglut'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgetattachedshaders(self):
     self.btest('glgetattachedshaders.c', '1', args=['-lGL', '-lEGL'])
 
   # Covered by dEQP text suite (we can remove it later if we add coverage for that).
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glframebufferattachmentinfo(self):
     self.btest('glframebufferattachmentinfo.c', '1', args=['-lGLESv2', '-lEGL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdlglshader(self):
     self.btest('sdlglshader.c', reference='sdlglshader.png', args=['-O2', '--closure', '1', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdlglshader2(self):
     self.btest('sdlglshader2.c', expected='1', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_glteximage(self):
     self.btest('gl_teximage.c', '1', args=['-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_textures(self):
     self.btest('gl_textures.cpp', '0', args=['-lGL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_ps(self):
     # pointers and a shader
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('gl_ps.c', reference='gl_ps.png', args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '--use-preload-plugins'], reference_slack=1)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_ps_packed(self):
     # packed data that needs to be strided
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('gl_ps_packed.c', reference='gl_ps.png', args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '--use-preload-plugins'], reference_slack=1)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_ps_strides(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('gl_ps_strides.c', reference='gl_ps_strides.png', args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '--use-preload-plugins'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_ps_worker(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('gl_ps_worker.c', reference='gl_ps.png', args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '--use-preload-plugins'], reference_slack=1, also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_renderers(self):
     self.btest('gl_renderers.c', reference='gl_renderers.png', args=['-s', 'GL_UNSAFE_OPTS=0', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_stride(self):
     self.btest('gl_stride.c', reference='gl_stride.png', args=['-s', 'GL_UNSAFE_OPTS=0', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_vertex_buffer_pre(self):
     self.btest('gl_vertex_buffer_pre.c', reference='gl_vertex_buffer_pre.png', args=['-s', 'GL_UNSAFE_OPTS=0', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gl_vertex_buffer(self):
     self.btest('gl_vertex_buffer.c', reference='gl_vertex_buffer.png', args=['-s', 'GL_UNSAFE_OPTS=0', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], reference_slack=1)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gles2_uniform_arrays(self):
     self.btest('gles2_uniform_arrays.cpp', args=['-s', 'GL_ASSERTIONS=1', '-lGL', '-lSDL'], expected=['1'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_gles2_conformance(self):
     self.btest('gles2_conformance.cpp', args=['-s', 'GL_ASSERTIONS=1', '-lGL', '-lSDL'], expected=['1'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_matrix_identity(self):
     self.btest('gl_matrix_identity.c', expected=['-1882984448', '460451840', '1588195328'], args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre(self):
     self.btest('cubegeom_pre.c', reference='cubegeom_pre.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
     self.btest('cubegeom_pre.c', reference='cubegeom_pre.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '-s', 'RELOCATABLE=1'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre2(self):
     self.btest('cubegeom_pre2.c', reference='cubegeom_pre2.png', args=['-s', 'GL_DEBUG=1', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL']) # some coverage for GL_DEBUG not breaking the build
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre3(self):
     self.btest('cubegeom_pre3.c', reference='cubegeom_pre2.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom(self):
     self.btest('cubegeom.c', reference='cubegeom.png', args=['-O2', '-g', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_proc(self):
     open('side.c', 'w').write(r'''
 
@@ -1854,80 +1846,80 @@ void *getBindBuffer() {
     for opts in [[], ['-O1'], ['-Os', '-s', 'WASM=1']]:
       self.btest('cubegeom_proc.c', reference='cubegeom.png', args=opts + ['side.c', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_glew(self):
     self.btest('cubegeom_glew.c', reference='cubegeom.png', args=['-O2', '--closure', '1', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lGLEW', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_color(self):
     self.btest('cubegeom_color.c', reference='cubegeom_color.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal(self):
     self.btest('cubegeom_normal.c', reference='cubegeom_normal.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal_dap(self): # draw is given a direct pointer to clientside memory, no element array buffer
     self.btest('cubegeom_normal_dap.c', reference='cubegeom_normal.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal_dap_far(self): # indices do nto start from 0
     self.btest('cubegeom_normal_dap_far.c', reference='cubegeom_normal.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal_dap_far_range(self): # glDrawRangeElements
     self.btest('cubegeom_normal_dap_far_range.c', reference='cubegeom_normal.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal_dap_far_glda(self): # use glDrawArrays
     self.btest('cubegeom_normal_dap_far_glda.c', reference='cubegeom_normal_dap_far_glda.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_normal_dap_far_glda_quad(self): # with quad
     self.btest('cubegeom_normal_dap_far_glda_quad.c', reference='cubegeom_normal_dap_far_glda_quad.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_mt(self):
     self.btest('cubegeom_mt.c', reference='cubegeom_mt.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL']) # multitexture
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_color2(self):
     self.btest('cubegeom_color2.c', reference='cubegeom_color2.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_texturematrix(self):
     self.btest('cubegeom_texturematrix.c', reference='cubegeom_texturematrix.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_fog(self):
     self.btest('cubegeom_fog.c', reference='cubegeom_fog.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre_vao(self):
     self.btest('cubegeom_pre_vao.c', reference='cubegeom_pre_vao.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre2_vao(self):
     self.btest('cubegeom_pre2_vao.c', reference='cubegeom_pre_vao.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre2_vao2(self):
     self.btest('cubegeom_pre2_vao2.c', reference='cubegeom_pre2_vao2.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_pre_vao_es(self):
     self.btest('cubegeom_pre_vao_es.c', reference='cubegeom_pre_vao.png', args=['-s', 'FULL_ES2=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cubegeom_u4fv_2(self):
     self.btest('cubegeom_u4fv_2.c', reference='cubegeom_u4fv_2.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
     self.btest('cubegeom_u4fv_2.c', reference='cubegeom_u4fv_2.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '-s', 'SPLIT_MEMORY=16777216', '-s', 'WASM=0']) # check for uniform4fv slice being valid in split memory
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cube_explosion(self):
     self.btest('cube_explosion.c', reference='cube_explosion.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], also_proxied=True)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glgettexenv(self):
     self.btest('glgettexenv.c', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'], expected=['1'])
 
@@ -1991,50 +1983,85 @@ void *getBindBuffer() {
   def test_sdl_free_screen(self):
     self.btest('sdl_free_screen.cpp', args=['-lSDL', '-lGL'], reference='htmltest.png')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glbegin_points(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('glbegin_points.c', reference='glbegin_points.png', args=['--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '--use-preload-plugins'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_s3tc(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.dds'), os.path.join(self.get_dir(), 'screenshot.dds'))
     self.btest('s3tc.c', reference='s3tc.png', args=['--preload-file', 'screenshot.dds', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_s3tc_ffp_only(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.dds'), os.path.join(self.get_dir(), 'screenshot.dds'))
     self.btest('s3tc.c', reference='s3tc.png', args=['--preload-file', 'screenshot.dds', '-s', 'LEGACY_GL_EMULATION=1', '-s', 'GL_FFP_ONLY=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  def test_s3tc_crunch(self):
+    try:
+      print('Crunch is located at ' + CRUNCH)
+    except:
+      return self.skip('Skipped: Crunch is not present on the current system. Please install it (manually or via emsdk) and make sure it is activated in the Emscripten configuration file.')
+    def test(args):
+      print(args)
+      shutil.copyfile(path_from_root('tests', 'ship.dds'), 'ship.dds')
+      shutil.copyfile(path_from_root('tests', 'bloom.dds'), 'bloom.dds')
+      shutil.copyfile(path_from_root('tests', 'water.dds'), 'water.dds')
+      open('text.txt', 'w').write('123')
+      Popen([PYTHON, FILE_PACKAGER, 'test.data', '--crunch', '--preload', 'ship.dds', 'bloom.dds', 'water.dds'] + args, stdout=open('pre.js', 'w')).communicate()
+      assert os.stat('test.data').st_size < 0.5*(os.stat('ship.dds').st_size+os.stat('bloom.dds').st_size+os.stat('water.dds').st_size), 'Compressed should be smaller than dds'
+      shutil.move('ship.dds', 'ship.donotfindme.dds') # make sure we load from the compressed
+      shutil.move('bloom.dds', 'bloom.donotfindme.dds') # make sure we load from the compressed
+      shutil.move('water.dds', 'water.donotfindme.dds') # make sure we load from the compressed
+      self.btest('s3tc_crunch.c', reference='s3tc_crunch.png', reference_slack=11, args=['--pre-js', 'pre.js', '-s', 'LEGACY_GL_EMULATION=1', '-lGL'])
+    test([])
+    test(['text.txt']) # also package a non-crunch file
+
+  def test_s3tc_crunch_split(self): # load several datafiles/outputs of file packager
+    try:
+      print('Crunch is located at ' + CRUNCH)
+    except:
+      return self.skip('Skipped: Crunch is not present on the current system. Please install it (manually or via emsdk) and make sure it is activated in the Emscripten configuration file.')
+    shutil.copyfile(path_from_root('tests', 'ship.dds'), 'ship.dds')
+    shutil.copyfile(path_from_root('tests', 'bloom.dds'), 'bloom.dds')
+    shutil.copyfile(path_from_root('tests', 'water.dds'), 'water.dds')
+    Popen([PYTHON, FILE_PACKAGER, 'asset_a.data', '--crunch', '--preload', 'ship.dds', 'bloom.dds'], stdout=open('asset_a.js', 'w')).communicate()
+    Popen([PYTHON, FILE_PACKAGER, 'asset_b.data', '--crunch', '--preload', 'water.dds'], stdout=open('asset_b.js', 'w')).communicate()
+    shutil.move('ship.dds', 'ship.donotfindme.dds') # make sure we load from the compressed
+    shutil.move('bloom.dds', 'bloom.donotfindme.dds') # make sure we load from the compressed
+    shutil.move('water.dds', 'water.donotfindme.dds') # make sure we load from the compressed
+    self.btest('s3tc_crunch.c', reference='s3tc_crunch.png', reference_slack=11, args=['--pre-js', 'asset_a.js', '--pre-js', 'asset_b.js', '-s', 'LEGACY_GL_EMULATION=1', '-lGL'])
+
+  @requires_hardware
   def test_aniso(self):
     if SPIDERMONKEY_ENGINE in JS_ENGINES:
       # asm.js-ification check
       Popen([PYTHON, EMCC, path_from_root('tests', 'aniso.c'), '-O2', '-g2', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '-Wno-incompatible-pointer-types']).communicate()
-      self.set_setting('ASM_JS', 1)
+      Settings.ASM_JS = 1
       self.run_generated_code(SPIDERMONKEY_ENGINE, 'a.out.js', assert_returncode=None)
       print('passed asm test')
 
     shutil.copyfile(path_from_root('tests', 'water.dds'), 'water.dds')
     self.btest('aniso.c', reference='aniso.png', reference_slack=2, args=['--preload-file', 'water.dds', '-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL', '-Wno-incompatible-pointer-types'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_tex_nonbyte(self):
     self.btest('tex_nonbyte.c', reference='tex_nonbyte.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_float_tex(self):
     self.btest('float_tex.cpp', reference='float_tex.png', args=['-lGL', '-lglut'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_subdata(self):
     self.btest('gl_subdata.cpp', reference='float_tex.png', args=['-lGL', '-lglut'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_perspective(self):
     self.btest('perspective.c', reference='perspective.png', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL', '-lSDL'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glerror(self):
     self.btest('gl_error.c', expected='1', args=['-s', 'LEGACY_GL_EMULATION=1', '-lGL'])
 
@@ -2059,7 +2086,7 @@ void *getBindBuffer() {
     open(os.path.join(self.get_dir(), 'pre.js'), 'w').write('''
       Module.preRun = function() {
         addRunDependency();
-        out('preRun called, added a dependency...');
+        Module.print('preRun called, added a dependency...');
         setTimeout(function() {
           Module.okk = 10;
           removeRunDependency()
@@ -2137,7 +2164,7 @@ void *getBindBuffer() {
       var wrapped = cwrap('note', 'string', ['number']); // returns a string to suppress cwrap optimization
       function doCwrapCall(n) {
         var str = wrapped(n);
-        out('got ' + str);
+        Module.print('got ' + str);
         assert(str === 'silly-string');
       }
       function doDirectCall(n) {
@@ -2150,7 +2177,7 @@ void *getBindBuffer() {
         doCcall(1);
         ok = true; // should fail and not reach here, runtime is not ready yet so ccall will abort
       } catch(e) {
-        out('expected fail 1');
+        Module.print('expected fail 1');
         assert(e.toString().indexOf('assert') >= 0); // assertion, not something else
         ABORT = false; // hackish
       }
@@ -2161,7 +2188,7 @@ void *getBindBuffer() {
         doCwrapCall(2);
         ok = true; // should fail and not reach here, runtime is not ready yet so cwrap call will abort
       } catch(e) {
-        out('expected fail 2');
+        Module.print('expected fail 2');
         assert(e.toString().indexOf('assert') >= 0); // assertion, not something else
         ABORT = false; // hackish
       }
@@ -2172,7 +2199,7 @@ void *getBindBuffer() {
         doDirectCall(3);
         ok = true; // should fail and not reach here, runtime is not ready yet so any code execution
       } catch(e) {
-        out('expected fail 3');
+        Module.print('expected fail 3');
         assert(e.toString().indexOf('assert') >= 0); // assertion, not something else
         ABORT = false; // hackish
       }
@@ -2241,52 +2268,10 @@ void *getBindBuffer() {
     self.btest('http.cpp', expected='0', args=['-I' + path_from_root('tests')])
 
   # TODO: test only worked in non-fastcomp
-  @unittest.skip('non-fastcomp is deprecated and fails in 3.5')
   def test_module(self):
+    return self.skip('non-fastcomp is deprecated and fails in 3.5')
     Popen([PYTHON, EMCC, path_from_root('tests', 'browser_module.cpp'), '-o', 'module.js', '-O2', '-s', 'SIDE_MODULE=1', '-s', 'DLOPEN_SUPPORT=1', '-s', 'EXPORTED_FUNCTIONS=["_one", "_two"]']).communicate()
     self.btest('browser_main.cpp', args=['-O2', '-s', 'MAIN_MODULE=1', '-s', 'DLOPEN_SUPPORT=1'], expected='8')
-
-  def test_preload_module(self):
-    expected = 'hello from main\nhello from library'
-    open('library.c', 'w').write(r'''
-      #include <stdio.h>
-      int library_func() {
-        return 42;
-      }
-    ''')
-    run_process([PYTHON, EMCC, 'library.c', '-s', 'SIDE_MODULE=1', '-O2', '-o', 'library.wasm', '-s', 'WASM=1'])
-    os.rename('library.wasm', 'library.so')
-    main = r'''
-      #include <dlfcn.h>
-      #include <stdio.h>
-      #include <emscripten.h>
-      int main() {
-        int found = EM_ASM_INT(
-          return Module['preloadedWasm']['/library.so'] !== undefined;
-        );
-        if (!found) {
-          REPORT_RESULT(1);
-          return 1;
-        }
-        void *lib_handle = dlopen("/library.so", 0);
-        if (!lib_handle) {
-          REPORT_RESULT(2);
-          return 2;
-        }
-        typedef int (*voidfunc)();
-        voidfunc x = (voidfunc)dlsym(lib_handle, "library_func");
-        if (!x || x() != 42) {
-          REPORT_RESULT(3);
-          return 3;
-        }
-        REPORT_RESULT(0);
-        return 0;
-      }
-    '''
-    self.btest(
-      main,
-      args=['-s', 'MAIN_MODULE=1', '--preload-file', '.@/', '-O2', '-s', 'WASM=1', '--use-preload-plugins'],
-      expected='0')
 
   def test_mmap_file(self):
     open(self.in_dir('data.dat'), 'w').write('data from the file ' + ('.' * 9000))
@@ -2294,7 +2279,7 @@ void *getBindBuffer() {
       self.btest(path_from_root('tests', 'mmap_file.c'), expected='1', args=['--preload-file', 'data.dat'] + extra_args)
 
   def test_emrun_info(self):
-    if not has_browser(): self.skipTest('need a browser')
+    if not has_browser(): return self.skip('need a browser')
     result = run_process([PYTHON, path_from_root('emrun'), '--system_info', '--browser_info'], stdout=PIPE).stdout
     assert 'CPU' in result
     assert 'Browser' in result
@@ -2307,7 +2292,7 @@ void *getBindBuffer() {
   # as this test may take the focus away from the main test window
   # by opening a new window and possibly not closing it.
   def test_zzz_emrun(self):
-    if not has_browser(): self.skipTest('need a browser')
+    if not has_browser(): return self.skip('need a browser')
     Popen([PYTHON, EMCC, path_from_root('tests', 'test_emrun.c'), '--emrun', '-o', 'hello_world.html']).communicate()
     outdir = os.getcwd()
     # We cannot run emrun from the temp directory the suite will clean up afterwards, since the browser that is launched will have that directory as startup directory,
@@ -2346,7 +2331,7 @@ void *getBindBuffer() {
 
   # This does not actually verify anything except that --cpuprofiler and --memoryprofiler compiles.
   # Run interactive.test_cpuprofiler_memoryprofiler for interactive testing.
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cpuprofiler_memoryprofiler(self):
     self.btest('hello_world_gles.c', expected='0', args=['-DLONGTEST=1', '-DTEST_MEMORYPROFILER_ALLOCATIONS_MAP=1', '-O2', '--cpuprofiler', '--memoryprofiler', '-lGL', '-lglut'], timeout=30)
 
@@ -2375,7 +2360,7 @@ void *getBindBuffer() {
     # Now run test in browser
     self.btest(path_from_root('tests', 'uuid', 'test.c'), '1', args=['-luuid'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glew(self):
     self.btest(path_from_root('tests', 'glew.c'), args=['-lGL', '-lSDL', '-lGLEW'], expected='1')
     self.btest(path_from_root('tests', 'glew.c'), args=['-lGL', '-lSDL', '-lGLEW', '-s', 'LEGACY_GL_EMULATION=1'], expected='1')
@@ -2398,33 +2383,26 @@ Module["preRun"].push(function () {
       print(opts)
       self.btest(path_from_root('tests', 'test_html5.c'), args=opts, expected='0', timeout=20)
 
-  @requires_graphics_hardware
-  def test_html5_webgl_create_context_no_antialias(self):
-    for opts in [[], ['-O2', '-g1', '--closure', '1'], ['-s', 'FULL_ES2=1']]:
-      print(opts)
-      self.btest(path_from_root('tests', 'webgl_create_context.cpp'), args=opts + ['-DNO_ANTIALIAS', '-lGL'], expected='0', timeout=20)
-
-  # This test supersedes the one above, but it's skipped in the CI because anti-aliasing is not well supported by the Mesa software renderer.
-  @requires_graphics_hardware
+  @requires_hardware
   def test_html5_webgl_create_context(self):
     for opts in [[], ['-O2', '-g1', '--closure', '1'], ['-s', 'FULL_ES2=1']]:
       print(opts)
       self.btest(path_from_root('tests', 'webgl_create_context.cpp'), args=opts + ['-lGL'], expected='0', timeout=20)
 
-  @requires_graphics_hardware
+  @requires_hardware
   # Verify bug https://github.com/kripken/emscripten/issues/4556: creating a WebGL context to Module.canvas without an ID explicitly assigned to it.
   def test_html5_webgl_create_context2(self):
     self.btest(path_from_root('tests', 'webgl_create_context2.cpp'), args=['--shell-file', path_from_root('tests', 'webgl_create_context2_shell.html'), '-lGL'], expected='0', timeout=20)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_html5_webgl_destroy_context(self):
     for opts in [[], ['-O2', '-g1'], ['-s', 'FULL_ES2=1']]:
       print(opts)
       self.btest(path_from_root('tests', 'webgl_destroy_context.cpp'), args=opts + ['--shell-file', path_from_root('tests/webgl_destroy_context_shell.html'), '-lGL'], expected='0', timeout=20)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_webgl_context_params(self):
-    if WINDOWS: self.skipTest('SKIPPED due to bug https://bugzilla.mozilla.org/show_bug.cgi?id=1310005 - WebGL implementation advertises implementation defined GL_IMPLEMENTATION_COLOR_READ_TYPE/FORMAT pair that it cannot read with')
+    if WINDOWS: return self.skip('SKIPPED due to bug https://bugzilla.mozilla.org/show_bug.cgi?id=1310005 - WebGL implementation advertises implementation defined GL_IMPLEMENTATION_COLOR_READ_TYPE/FORMAT pair that it cannot read with')
     self.btest(path_from_root('tests', 'webgl_color_buffer_readpixels.cpp'), args=['-lGL'], expected='0', timeout=20)
 
   # Test for PR#5373 (https://github.com/kripken/emscripten/pull/5373)
@@ -2444,16 +2422,16 @@ Module["preRun"].push(function () {
   def test_webgl2_ubos(self):
     self.btest(path_from_root('tests', 'webgl2_ubos.cpp'), args=['-s', 'USE_WEBGL2=1', '-lGL'], expected='0')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_webgl2_garbage_free_entrypoints(self):
     self.btest(path_from_root('tests', 'webgl2_garbage_free_entrypoints.cpp'), args=['-s', 'USE_WEBGL2=1', '-DTEST_WEBGL2=1'], expected='1')
     self.btest(path_from_root('tests', 'webgl2_garbage_free_entrypoints.cpp'), expected='1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_webgl2_backwards_compatibility_emulation(self):
     self.btest(path_from_root('tests', 'webgl2_backwards_compatibility_emulation.cpp'), args=['-s', 'USE_WEBGL2=1', '-s', 'WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1'], expected='0')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_webgl_with_closure(self):
     self.btest(path_from_root('tests', 'webgl_with_closure.cpp'), args=['-O2', '-s', 'USE_WEBGL2=1', '--closure', '1', '-lGL'], expected='0')
 
@@ -2575,13 +2553,13 @@ Module["preRun"].push(function () {
 
         in_html('200')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glfw3(self):
     for opts in [[], ['-Os', '--closure', '1']]:
       print(opts)
       self.btest(path_from_root('tests', 'glfw3.c'), args=['-s', 'LEGACY_GL_EMULATION=1', '-s', 'USE_GLFW=3', '-lglfw', '-lGL'] + opts, expected='1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_glfw_events(self):
     self.btest(path_from_root('tests', 'glfw_events.c'), args=['-s', 'USE_GLFW=2', "-DUSE_GLFW=2", '-lglfw', '-lGL'], expected='1')
     self.btest(path_from_root('tests', 'glfw_events.c'), args=['-s', 'USE_GLFW=3', "-DUSE_GLFW=3", '-lglfw', '-lGL'], expected='1')
@@ -2830,7 +2808,7 @@ Module['onRuntimeInitialized'] = function() {
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'sdl2_mouse.c'), '-DTEST_SDL_MOUSE_OFFSETS=1', '-O2', '--minify', '0', '-o', 'sdl2_mouse.js', '--pre-js', 'pre.js', '-s', 'USE_SDL=2']).communicate()
     self.run_browser('page.html', '', '/report_result?1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2glshader(self):
     self.btest('sdl2glshader.c', reference='sdlglshader.png', args=['-s', 'USE_SDL=2', '-O2', '--closure', '1', '-s', 'LEGACY_GL_EMULATION=1'])
     self.btest('sdl2glshader.c', reference='sdlglshader.png', args=['-s', 'USE_SDL=2', '-O2', '-s', 'LEGACY_GL_EMULATION=1'], also_proxied=True) # XXX closure fails on proxy
@@ -2877,7 +2855,7 @@ Module['onRuntimeInitialized'] = function() {
     shutil.copyfile(path_from_root('tests', 'screenshot.jpg'), os.path.join(self.get_dir(), 'screenshot.not'))
     self.btest('sdl2_image_prepare_data.c', reference='screenshot.jpg', args=['--preload-file', 'screenshot.not', '-s', 'USE_SDL=2', '-s', 'USE_SDL_IMAGE=2'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_canvas_proxy(self):
     def post():
       html = open('test.html').read()
@@ -2922,42 +2900,42 @@ window.close = function() {
   def test_sdl2_canvas_size(self):
     self.btest('sdl2_canvas_size.c', expected='1', args=['-s', 'USE_SDL=2'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_gl_read(self):
     # SDL, OpenGL, readPixels
     open(os.path.join(self.get_dir(), 'sdl2_gl_read.c'), 'w').write(self.with_report_result(open(path_from_root('tests', 'sdl2_gl_read.c')).read()))
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'sdl2_gl_read.c'), '-o', 'something.html', '-s', 'USE_SDL=2']).communicate()
     self.run_browser('something.html', '.', '/report_result?1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_fog_simple(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl2_fog_simple.c', reference='screenshot-fog-simple.png',
       args=['-s', 'USE_SDL=2', '-s', 'USE_SDL_IMAGE=2','-O2', '--minify', '0', '--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_fog_negative(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl2_fog_negative.c', reference='screenshot-fog-negative.png',
       args=['-s', 'USE_SDL=2', '-s', 'USE_SDL_IMAGE=2','--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_fog_density(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl2_fog_density.c', reference='screenshot-fog-density.png',
       args=['-s', 'USE_SDL=2', '-s', 'USE_SDL_IMAGE=2','--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_fog_exp2(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl2_fog_exp2.c', reference='screenshot-fog-exp2.png',
       args=['-s', 'USE_SDL=2', '-s', 'USE_SDL_IMAGE=2','--preload-file', 'screenshot.png', '-s', 'LEGACY_GL_EMULATION=1', '--use-preload-plugins'],
       message='You should see an image with fog.')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_fog_linear(self):
     shutil.copyfile(path_from_root('tests', 'screenshot.png'), os.path.join(self.get_dir(), 'screenshot.png'))
     self.btest('sdl2_fog_linear.c', reference='screenshot-fog-linear.png', reference_slack=1,
@@ -2970,7 +2948,7 @@ window.close = function() {
   def test_sdl2_canvas_write(self):
     self.btest('sdl2_canvas_write.cpp', expected='0', args=['-s', 'USE_SDL=2'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_gl_frames_swap(self):
     def post_build(*args):
       self.post_manual_reftest(*args)
@@ -2980,7 +2958,7 @@ window.close = function() {
       open('test.html', 'w').write(html2)
     self.btest('sdl2_gl_frames_swap.c', reference='sdl2_gl_frames_swap.png', args=['--proxy-to-worker', '-s', 'GL_TESTING=1', '-s', 'USE_SDL=2'], manual_reference=True, post_build=post_build)
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_sdl2_ttf(self):
     shutil.copy2(path_from_root('tests', 'freetype', 'LiberationSansBold.ttf'), self.get_dir())
     self.btest('sdl2_ttf.c', reference='sdl2_ttf.png',
@@ -3001,7 +2979,7 @@ window.close = function() {
     Popen([PYTHON, EMCC, 'test.o', '-s', 'USE_SDL=2', '-o', 'test.html']).communicate()
     self.run_browser('test.html', '...', '/report_result?1')
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_cocos2d_hello(self):
     from tools import system_libs
     cocos2d_root = os.path.join(system_libs.Ports.get_build_dir(), 'Cocos2d')
@@ -3034,15 +3012,6 @@ window.close = function() {
       print(opts)
       self.btest('emterpreter_async_bad.cpp', '1', args=['-s', 'EMTERPRETIFY=1', '-s', 'EMTERPRETIFY_ASYNC=1', '-O' + str(opts), '-s', 'EMTERPRETIFY_BLACKLIST=["_middle"]', '-s', 'ASSERTIONS=1'])
 
-  def test_emterpreter_async_bad_2(self):
-    for opts in [0, 1, 2, 3]:
-      for assertions in [0, 1]:
-        # without assertions, we end up continuing to run more non-emterpreted code in this testcase, returning 1
-        # with assertions, we hit the emterpreter-async assertion on that, and report a  clear error
-        expected = '2' if assertions else '1'
-        print(opts, assertions, expected)
-        self.btest('emterpreter_async_bad_2.cpp', expected, args=['-s', 'EMTERPRETIFY=1', '-s', 'EMTERPRETIFY_ASYNC=1', '-O' + str(opts), '-s', 'EMTERPRETIFY_BLACKLIST=["_middle"]', '-s', 'ASSERTIONS=%s' % assertions])
-
   def test_emterpreter_async_mainloop(self):
     for opts in [0, 1, 2, 3]:
       print(opts)
@@ -3060,7 +3029,7 @@ window.close = function() {
     # check that safe-heap machinery does not cause errors in async operations
     self.btest('emterpreter_async_sleep2_safeheap.cpp', '17', args=['-s', 'EMTERPRETIFY=1', '-s', 'EMTERPRETIFY_ASYNC=1', '-Oz', '-profiling', '-s', 'SAFE_HEAP=1', '-s', 'ASSERTIONS=1', '-s', 'EMTERPRETIFY_WHITELIST=["_main","_callback","_fix"]', '-s', 'NO_EXIT_RUNTIME=0'])
 
-  @requires_sound_hardware
+  @requires_hardware
   def test_sdl_audio_beep_sleep(self):
     self.btest('sdl_audio_beep_sleep.cpp', '1', args=['-s', 'EMTERPRETIFY=1', '-s', 'EMTERPRETIFY_ASYNC=1', '-Os', '-s', 'ASSERTIONS=1', '-s', 'DISABLE_EXCEPTION_CATCHING=0', '-profiling', '-s', 'SAFE_HEAP=1', '-lSDL'], timeout=90)
 
@@ -3185,8 +3154,8 @@ window.close = function() {
         strcpy(ret, temp);
         temp[1] = 'x';
         EM_ASM({
-          Module.realPrint = out;
-          out = function(x) {
+          Module.realPrint = Module.print;
+          Module.print = function(x) {
             if (!Module.printed) Module.printed = x;
             Module.realPrint(x);
           };
@@ -3226,7 +3195,7 @@ window.close = function() {
     # same wasm side module works
     self.btest(self.in_dir('main.cpp'), '2', args=['-s', 'MAIN_MODULE=1', '-O2', '--pre-js', 'pre.js', '-s', 'WASM=1'])
 
-  @requires_graphics_hardware
+  @requires_hardware
   def test_dynamic_link_glemu(self):
     open('pre.js', 'w').write('''
       Module.dynamicLibraries = ['side.wasm'];
@@ -3352,7 +3321,7 @@ window.close = function() {
   def test_pthread_kill(self):
     if get_browser() and 'chrom' in get_browser().lower():
       # This test hangs the chrome render process, and keep subsequent tests from passing too
-      self.skipTest("pthread_kill hangs chrome renderer")
+      return self.skip("pthread_kill hangs chrome renderer")
     self.btest(path_from_root('tests', 'pthread', 'test_pthread_kill.cpp'), expected='0', args=['-O3', '-s', 'USE_PTHREADS=2', '--separate-asm', '-s', 'PTHREAD_POOL_SIZE=8'], timeout=30)
 
   # Test that pthread cleanup stack (pthread_cleanup_push/_pop) works.
@@ -3459,8 +3428,8 @@ window.close = function() {
       }
     '''))
 
-    # Test that it is possible to define "Module.locateFile" string to locate where pthread-main.js will be loaded from.
-    open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { locateFile: function (path, prefix) {if (path.endsWith(".wasm")) {return prefix + path;} else {return "cdn/" + path;}}, '))
+    # Test that it is possible to define "Module.pthreadMainPrefixURL" string to locate where pthread-main.js will be loaded from.
+    open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('var Module = {', 'var Module = { pthreadMainPrefixURL: "cdn/", '))
     Popen([PYTHON, EMCC, os.path.join(self.get_dir(), 'main.cpp'), '--shell-file', 'shell.html', '-s', 'WASM=0', '-s', 'IN_TEST_HARNESS=1', '-s', 'USE_PTHREADS=1', '-s', 'PTHREAD_POOL_SIZE=1', '-o', 'test.html']).communicate()
     shutil.move('pthread-main.js', os.path.join('cdn', 'pthread-main.js'))
     self.run_browser('test.html', '', '/report_result?1')
@@ -3565,15 +3534,13 @@ window.close = function() {
     for opts in [['-O0'], ['-O1'], ['-O2'], ['-O2', '--closure', '1']]:
       print(opts)
       open('src.cpp', 'w').write(self.with_report_result(open(path_from_root('tests', 'browser_test_hello_world.c')).read()))
-      run_process([PYTHON, EMCC, 'src.cpp', '-o', 'test.html', '-s', 'WASM=0'] + opts)
+      Popen([PYTHON, EMCC, 'src.cpp', '-o', 'test.html', '-s', 'WASM=0'] + opts).communicate()
       self.run_browser('test.html', None, '/report_result?0')
 
-      print('run one');
       open('one.html', 'w').write('<script src="test.js"></script>')
       self.run_browser('one.html', None, '/report_result?0')
 
-      print('run two');
-      run_process([PYTHON, path_from_root('tools', 'separate_asm.py'), 'test.js', 'asm.js', 'rest.js'])
+      Popen([PYTHON, path_from_root('tools', 'separate_asm.py'), 'test.js', 'asm.js', 'rest.js']).communicate()
       open('two.html', 'w').write('''
         <script>
           var Module = {};
@@ -3583,14 +3550,11 @@ window.close = function() {
       ''')
       self.run_browser('two.html', None, '/report_result?0')
 
-      print('run hello world');
       self.clear()
       assert not os.path.exists('tests.asm.js')
       self.btest('browser_test_hello_world.c', expected='0', args=opts + ['-s', 'WASM=0', '--separate-asm'])
       assert os.path.exists('test.asm.js')
       os.unlink('test.asm.js')
-
-      print('see a fail');
       self.run_browser('test.html', None, '[no http server activity]', timeout=5) # fail without the asm
 
   def test_emterpretify_file(self):
@@ -3671,8 +3635,8 @@ window.close = function() {
         };
       }
       // show stderr for the viewer's fun
-      err = function(x) {
-        out('<<< ' + x + ' >>>');
+      Module.printErr = function(x) {
+        Module.print('<<< ' + x + ' >>>');
         console.log(x);
       };
     </script>
@@ -3750,11 +3714,6 @@ window.close = function() {
   def test_fetch_cached_xhr(self):
     shutil.copyfile(path_from_root('tests', 'gears.png'), os.path.join(self.get_dir(), 'gears.png'))
     self.btest('fetch/cached_xhr.cpp', expected='1', args=['--std=c++11', '-s', 'FETCH_DEBUG=1', '-s', 'FETCH=1', '-s', 'WASM=0'])
-
-  # Tests that response headers get set on emscripten_fetch_t values.
-  def test_fetch_response_headers(self):
-    shutil.copyfile(path_from_root('tests', 'gears.png'), os.path.join(self.get_dir(), 'gears.png'))
-    self.btest('fetch/response_headers.cpp', expected='1', args=['--std=c++11', '-s', 'FETCH_DEBUG=1', '-s', 'FETCH=1', '-s', 'USE_PTHREADS=1', '-s', 'PROXY_TO_PTHREAD=1', '-s', 'WASM=0'])
 
   # Test emscripten_fetch() usage to stream a XHR in to memory without storing the full file in memory
   def test_fetch_stream_file(self):
@@ -3936,77 +3895,3 @@ window.close = function() {
     open(self.in_dir('shell.html'), 'w').write(open(path_from_root('src', 'shell.html')).read().replace('Emscripten-Generated Code', 'Emscripten-Generated Emoji 😅'))
     subprocess.check_output([PYTHON, EMCC, os.path.join(self.get_dir(), 'main.cpp'), '--shell-file', 'shell.html', '-o', 'test.html'])
     self.run_browser('test.html', None, '/report_result?0')
-
-  # Tests that Emscripten-compiled applications can be run from a relative path in browser that is different than the address of the current page
-  def test_browser_run_from_different_directory(self):
-    src = open(path_from_root('tests', 'browser_test_hello_world.c')).read()
-    open('test.c', 'w').write(self.with_report_result(src))
-    Popen([PYTHON, EMCC, 'test.c', '-o', 'test.html', '-O3']).communicate()
-
-    if not os.path.exists('subdir'):
-      os.mkdir('subdir')
-    shutil.move('test.js', os.path.join('subdir', 'test.js'))
-    shutil.move('test.wasm', os.path.join('subdir', 'test.wasm'))
-    src = open('test.html').read()
-    # Make sure JS is loaded from subdirectory
-    open('test-subdir.html', 'w').write(src.replace('test.js', 'subdir/test.js'))
-    self.run_browser('test-subdir.html', None, '/report_result?0')
-
-  # Similar to `test_browser_run_from_different_directory`, but asynchronous because of `-s MODULARIZE=1`
-  def test_browser_run_from_different_directory_async(self):
-    src = open(path_from_root('tests', 'browser_test_hello_world.c')).read()
-    open('test.c', 'w').write(self.with_report_result(src))
-    for args, creations in [
-      (['-s', 'MODULARIZE=1'], [
-        'Module();',    # documented way for using modularize
-        'new Module();' # not documented as working, but we support it
-       ]),
-      (['-s', 'MODULARIZE_INSTANCE=1'], ['']) # instance: no need to create anything
-    ]:
-      print(args)
-      # compile the code with the modularize feature and the preload-file option enabled
-      Popen([PYTHON, EMCC, 'test.c', '-o', 'test.js', '-O3'] + args).communicate()
-      if not os.path.exists('subdir'):
-        os.mkdir('subdir')
-      shutil.move('test.js', os.path.join('subdir', 'test.js'))
-      shutil.move('test.wasm', os.path.join('subdir', 'test.wasm'))
-      for creation in creations:
-        print(creation)
-        # Make sure JS is loaded from subdirectory
-        open('test-subdir.html', 'w').write('''
-          <script src="subdir/test.js"></script>
-          <script>
-            %s
-          </script>
-        ''' % creation)
-        self.run_browser('test-subdir.html', None, '/report_result?0')
-
-  # Similar to `test_browser_run_from_different_directory`, but
-  # also also we eval the initial code, so currentScript is not present. That prevents us
-  # from finding the file in a subdir, but here we at least check we do not regress compared to the
-  # normal case of finding in the current dir.
-  def test_browser_modularize_no_current_script(self):
-    src = open(path_from_root('tests', 'browser_test_hello_world.c')).read()
-    open('test.c', 'w').write(self.with_report_result(src))
-    # test both modularize (and creating an instance) and modularize-instance
-    # (which creates by itself)
-    for args, creation in [
-      (['-s', 'MODULARIZE=1'], 'Module();'),
-      (['-s', 'MODULARIZE_INSTANCE=1'], '')
-    ]:
-      print(args, creation)
-      # compile the code with the modularize feature and the preload-file option enabled
-      Popen([PYTHON, EMCC, 'test.c', '-o', 'test.js'] + args).communicate()
-      open('test.html', 'w').write('''
-        <script>
-          setTimeout(function() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'test.js', false);
-            xhr.send(null);
-            eval(xhr.responseText);
-            %s
-          }, 1);
-        </script>
-      ''' % creation)
-      self.run_browser('test.html', None, '/report_result?0')
-

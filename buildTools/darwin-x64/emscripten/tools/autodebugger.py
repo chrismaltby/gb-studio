@@ -255,7 +255,7 @@ for i in range(len(lines)):
           continue
 
   finally:
-    if len(pre):
+    if len(pre) > 0:
       lines[i] = pre + '\n' + lines[i]
       lines_added += 1
 

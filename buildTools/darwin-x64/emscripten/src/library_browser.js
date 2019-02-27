@@ -3,7 +3,7 @@
 // Utilities for browser environments
 var LibraryBrowser = {
   $Browser__deps: ['emscripten_set_main_loop', 'emscripten_set_main_loop_timing'],
-  $Browser__postset: 'Module["requestFullScreen"] = function Module_requestFullScreen(lockPointer, resizeCanvas, vrDevice) { err("Module.requestFullScreen is deprecated. Please call Module.requestFullscreen instead."); Module["requestFullScreen"] = Module["requestFullscreen"]; Browser.requestFullScreen(lockPointer, resizeCanvas, vrDevice) };\n' + // exports
+  $Browser__postset: 'Module["requestFullScreen"] = function Module_requestFullScreen(lockPointer, resizeCanvas, vrDevice) { Module.printErr("Module.requestFullScreen is deprecated. Please call Module.requestFullscreen instead."); Module["requestFullScreen"] = Module["requestFullscreen"]; Browser.requestFullScreen(lockPointer, resizeCanvas, vrDevice) };\n' + // exports
                      'Module["requestFullscreen"] = function Module_requestFullscreen(lockPointer, resizeCanvas, vrDevice) { Browser.requestFullscreen(lockPointer, resizeCanvas, vrDevice) };\n' + // exports
                      'Module["requestAnimationFrame"] = function Module_requestAnimationFrame(func) { Browser.requestAnimationFrame(func) };\n' +
                      'Module["setCanvasSize"] = function Module_setCanvasSize(width, height, noUpdates) { Browser.setCanvasSize(width, height, noUpdates) };\n' +
@@ -68,7 +68,7 @@ var LibraryBrowser = {
           if (e instanceof ExitStatus) {
             return;
           } else {
-            if (e && typeof e === 'object' && e.stack) err('exception thrown: ' + [e, e.stack]);
+            if (e && typeof e === 'object' && e.stack) Module.printErr('exception thrown: ' + [e, e.stack]);
             throw e;
           }
         }
@@ -225,35 +225,6 @@ var LibraryBrowser = {
       };
       Module['preloadPlugins'].push(audioPlugin);
 
-#if WASM
-#if MAIN_MODULE
-      var wasmPlugin = {};
-      wasmPlugin['asyncWasmLoadPromise'] = new Promise(
-        function(resolve, reject) { return resolve(); });
-      wasmPlugin['canHandle'] = function(name) {
-        return !Module.noWasmDecoding && name.endsWith('.so');
-      };
-      wasmPlugin['handle'] = function(byteArray, name, onload, onerror) {
-        // loadWebAssemblyModule can not load modules out-of-order, so rather
-        // than just running the promises in parallel, this makes a chain of
-        // promises to run in series.
-        this['asyncWasmLoadPromise'] = this['asyncWasmLoadPromise'].then(
-          function() {
-            return loadWebAssemblyModule(byteArray, true);
-          }).then(
-            function(module) {
-              Module['preloadedWasm'][name] = module;
-              onload();
-            },
-            function(err) {
-              console.warn("Couldn't instantiate wasm: " + name + " '" + err + "'");
-              onerror();
-            });
-      };
-      Module['preloadPlugins'].push(wasmPlugin);
-#endif // MAIN_MODULE
-#endif // WASM
-
       // Canvas event setup
 
       function pointerLockChange() {
@@ -266,7 +237,7 @@ var LibraryBrowser = {
       if (canvas) {
         // forced aspect ratio can be enabled by defining 'forcedAspectRatio' on Module
         // Module['forcedAspectRatio'] = 4 / 3;
-
+        
         canvas.requestPointerLock = canvas['requestPointerLock'] ||
                                     canvas['mozRequestPointerLock'] ||
                                     canvas['webkitRequestPointerLock'] ||
@@ -412,7 +383,7 @@ var LibraryBrowser = {
     },
 
     requestFullScreen: function(lockPointer, resizeCanvas, vrDevice) {
-        err('Browser.requestFullScreen() is deprecated. Please call Browser.requestFullscreen instead.');
+        Module.printErr('Browser.requestFullScreen() is deprecated. Please call Browser.requestFullscreen instead.');
         Browser.requestFullScreen = function(lockPointer, resizeCanvas, vrDevice) {
           return Browser.requestFullscreen(lockPointer, resizeCanvas, vrDevice);
         }
@@ -519,7 +490,7 @@ var LibraryBrowser = {
         'mp3': 'audio/mpeg'
       }[name.substr(name.lastIndexOf('.')+1)];
     },
-
+    
     getUserMedia: function(func) {
       if(!window.getUserMedia) {
         window.getUserMedia = navigator['getUserMedia'] ||
@@ -553,13 +524,13 @@ var LibraryBrowser = {
     getMouseWheelDelta: function(event) {
       var delta = 0;
       switch (event.type) {
-        case 'DOMMouseScroll':
+        case 'DOMMouseScroll': 
           delta = event.detail;
           break;
-        case 'mousewheel':
+        case 'mousewheel': 
           delta = event.wheelDelta;
           break;
-        case 'wheel':
+        case 'wheel': 
           delta = event['deltaY'];
           break;
         default:
@@ -587,7 +558,7 @@ var LibraryBrowser = {
           Browser.mouseMovementX = Browser.getMovementX(event);
           Browser.mouseMovementY = Browser.getMovementY(event);
         }
-
+        
         // check if SDL is available
         if (typeof SDL != "undefined") {
           Browser.mouseX = SDL.mouseX + Browser.mouseMovementX;
@@ -597,7 +568,7 @@ var LibraryBrowser = {
           // FIXME: ideally this should be clamped against the canvas size and zero
           Browser.mouseX += Browser.mouseMovementX;
           Browser.mouseY += Browser.mouseMovementY;
-        }
+        }        
       } else {
         // Otherwise, calculate the movement based on the changes
         // in the coordinates.
@@ -629,7 +600,7 @@ var LibraryBrowser = {
           adjustedY = adjustedY * (ch / rect.height);
 
           var coords = { x: adjustedX, y: adjustedY };
-
+          
           if (event.type === 'touchstart') {
             Browser.lastTouches[touch.identifier] = coords;
             Browser.touches[touch.identifier] = coords;
@@ -638,7 +609,7 @@ var LibraryBrowser = {
             if (!last) last = coords;
             Browser.lastTouches[touch.identifier] = last;
             Browser.touches[touch.identifier] = coords;
-          }
+          } 
           return;
         }
 
@@ -1156,10 +1127,10 @@ var LibraryBrowser = {
         }
         console.log('main loop blocker "' + blocker.name + '" took ' + (Date.now() - start) + ' ms'); //, left: ' + Browser.mainLoop.remainingBlockers);
         Browser.mainLoop.updateStatus();
-
+        
         // catches pause/resume main loop from blocker execution
         if (thisMainLoopId < Browser.mainLoop.currentlyRunningMainloop) return;
-
+        
         setTimeout(Browser.mainLoop.runner, 0);
         return;
       }
@@ -1192,7 +1163,7 @@ var LibraryBrowser = {
 #endif
 
       if (Browser.mainLoop.method === 'timeout' && Module.ctx) {
-        err('Looks like you are rendering without using requestAnimationFrame for the main loop. You should use 0 for the frame rate in emscripten_set_main_loop in order to use requestAnimationFrame, as that can greatly improve your frame rates!');
+        Module.printErr('Looks like you are rendering without using requestAnimationFrame for the main loop. You should use 0 for the frame rate in emscripten_set_main_loop in order to use requestAnimationFrame, as that can greatly improve your frame rates!');
         Browser.mainLoop.method = ''; // just warn once per call to set main loop
       }
 
@@ -1301,7 +1272,7 @@ var LibraryBrowser = {
 #endif
 #endif
     Module['noExitRuntime'] = false;
-    exit(status);
+    Module['exit'](status);
   },
 
   emscripten_get_device_pixel_ratio__proxy: 'sync',
@@ -1329,7 +1300,7 @@ var LibraryBrowser = {
   emscripten_set_canvas_size: function(width, height) {
     Browser.setCanvasSize(width, height);
   },
-
+  
   emscripten_get_canvas_size__proxy: 'sync',
   emscripten_get_canvas_size__sig: 'viii',
   emscripten_get_canvas_size: function(width, height, isFullscreen) {
@@ -1511,9 +1482,10 @@ function slowLog(label, text) {
   if (!slowLog.labels[label]) slowLog.labels[label] = 0;
   var now = Date.now();
   if (now - slowLog.labels[label] > 1000) {
-    out(label + ': ' + text);
+    Module.print(label + ': ' + text);
     slowLog.labels[label] = now;
   }
 }
 
 */
+

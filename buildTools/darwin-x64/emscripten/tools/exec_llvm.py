@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
-"""Small utility to execute some llvm bitcode.
+'''
+Small utility to execute some llvm bitcode.
 
 The use case is a Makefile that builds some executable
 and runs it as part of the build process. With emmaken,
@@ -27,22 +28,23 @@ it runs
 An alternative solution to this problem is to compile
 the .ll into native code, see nativize_llvm.py. That is
 useful when this fails.
-"""
+'''
 
-import os
-import sys
-from subprocess import Popen
+import os, sys
+from subprocess import Popen, PIPE, STDOUT
 
 __rootpath__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(__rootpath__)
+def path_from_root(*pathelems):
+  return os.path.join(__rootpath__, *pathelems)
+sys.path += [path_from_root('')]
+from tools.shared import *
 
-from tools.shared import LLVM_OPT, LLVM_INTERPRETER  # noqa
-
-Popen([LLVM_OPT, sys.argv[1], '-strip-debug', '-o', sys.argv[1] + '.clean.bc']).communicate()[0]
+Popen([LLVM_OPT, sys.argv[1], '-strip-debug', '-o', sys.argv[1]+'.clean.bc']).communicate()[0]
 
 # Execute with empty environment - just like the JS script will have
-Popen([LLVM_INTERPRETER, sys.argv[1] + '.clean.bc'] + sys.argv[2:], env={'HOME': '.'}).communicate()[0]
+Popen([LLVM_INTERPRETER, sys.argv[1]+'.clean.bc'] + sys.argv[2:], env={'HOME': '.'}).communicate()[0]
 
-# Popen([LLVM_COMPILER, '-march=c', sys.argv[1], '-o', sys.argv[1] + '.cbe.c']).communicate()[0]
-# Popen(['gcc', sys.argv[1]+'.cbe.c', '-lstdc++']).communicate()[0]
-# Popen(['./a.out'] + sys.argv[2:]).communicate()[0]
+#Popen([LLVM_COMPILER, '-march=c', sys.argv[1], '-o', sys.argv[1]+'.cbe.c']).communicate()[0]
+#Popen(['gcc', sys.argv[1]+'.cbe.c', '-lstdc++']).communicate()[0]
+#Popen(['./a.out'] + sys.argv[2:]).communicate()[0]
+

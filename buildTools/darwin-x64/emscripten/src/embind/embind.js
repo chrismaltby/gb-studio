@@ -50,9 +50,6 @@ var LibraryEmbind = {
     // names. This lets the test suite know that.
     Module['NO_DYNAMIC_EXECUTION'] = true;
 #endif
-#if EMBIND_STD_STRING_IS_UTF8
-    Module['EMBIND_STD_STRING_IS_UTF8'] = true;
-#endif
 #endif
   },
 
@@ -611,103 +608,53 @@ var LibraryEmbind = {
     '$simpleReadValueFromPointer', '$throwBindingError'],
   _embind_register_std_string: function(rawType, name) {
     name = readLatin1String(name);
-    var stdStringIsUTF8
-#if EMBIND_STD_STRING_IS_UTF8
-    //process only std::string bindings with UTF8 support, in contrast to e.g. std::basic_string<unsigned char>
-    = (name === "std::string");
-#else
-    = false;
-#endif
-
     registerType(rawType, {
         name: name,
         'fromWireType': function(value) {
             var length = HEAPU32[value >> 2];
-
-            var str;
-            if(stdStringIsUTF8) {
-                //ensure null termination at one-past-end byte if not present yet
-                var endChar = HEAPU8[value + 4 + length];
-                var endCharSwap = 0;
-                if(endChar != 0)
-                {
-                  endCharSwap = endChar;
-                  HEAPU8[value + 4 + length] = 0;
-                }
-
-                var decodeStartPtr = value + 4;
-                //looping here to support possible embedded '0' bytes
-                for (var i = 0; i <= length; ++i) {
-                  var currentBytePtr = value + 4 + i;
-                  if(HEAPU8[currentBytePtr] == 0)
-                  {
-                    var stringSegment = UTF8ToString(decodeStartPtr);
-                    if(str === undefined)
-                      str = stringSegment;
-                    else
-                    {
-                      str += String.fromCharCode(0);
-                      str += stringSegment;
-                    }
-                    decodeStartPtr = currentBytePtr + 1;
-                  }
-                }
-
-                if(endCharSwap != 0)
-                  HEAPU8[value + 4 + length] = endCharSwap;
-            } else {
-                var a = new Array(length);
-                for (var i = 0; i < length; ++i) {
-                    a[i] = String.fromCharCode(HEAPU8[value + 4 + i]);
-                }
-                str = a.join('');
+            var a = new Array(length);
+            for (var i = 0; i < length; ++i) {
+                a[i] = String.fromCharCode(HEAPU8[value + 4 + i]);
             }
-
             _free(value);
-            
-            return str;
+            return a.join('');
         },
         'toWireType': function(destructors, value) {
             if (value instanceof ArrayBuffer) {
                 value = new Uint8Array(value);
             }
-            
-            var getLength;
-            var valueIsOfTypeString = (typeof value === 'string');
 
-            if (!(valueIsOfTypeString || value instanceof Uint8Array || value instanceof Uint8ClampedArray || value instanceof Int8Array)) {
+            function getTAElement(ta, index) {
+                return ta[index];
+            }
+            function getStringElement(string, index) {
+                return string.charCodeAt(index);
+            }
+            var getElement;
+            if (value instanceof Uint8Array) {
+                getElement = getTAElement;
+            } else if (value instanceof Uint8ClampedArray) {
+                getElement = getTAElement;
+            } else if (value instanceof Int8Array) {
+                getElement = getTAElement;
+            } else if (typeof value === 'string') {
+                getElement = getStringElement;
+            } else {
                 throwBindingError('Cannot pass non-string to std::string');
             }
-            if (stdStringIsUTF8 && valueIsOfTypeString) {
-                getLength = function() {return lengthBytesUTF8(value);};
-            } else {
-                getLength = function() {return value.length;};
-            }
-            
+
             // assumes 4-byte alignment
-            var length = getLength();
-            var ptr = _malloc(4 + length + 1);
+            var length = value.length;
+            var ptr = _malloc(4 + length);
             HEAPU32[ptr >> 2] = length;
-
-            if (stdStringIsUTF8 && valueIsOfTypeString) {
-                stringToUTF8(value, ptr + 4, length + 1);
-            } else {
-                if(valueIsOfTypeString) {
-                    for (var i = 0; i < length; ++i) {
-                        var charCode = value.charCodeAt(i);
-                        if (charCode > 255) {
-                            _free(ptr);
-                            throwBindingError('String has UTF-16 code units that do not fit in 8 bits');
-                        }
-                        HEAPU8[ptr + 4 + i] = charCode;
-                    }
-                } else {
-                    for (var i = 0; i < length; ++i) {
-                        HEAPU8[ptr + 4 + i] = value[i];
-                    }
+            for (var i = 0; i < length; ++i) {
+                var charCode = getElement(value, i);
+                if (charCode > 255) {
+                    _free(ptr);
+                    throwBindingError('String has UTF-16 code units that do not fit in 8 bits');
                 }
+                HEAPU8[ptr + 4 + i] = charCode;
             }
-
             if (destructors !== null) {
                 destructors.push(_free, ptr);
             }
@@ -2208,7 +2155,6 @@ var LibraryEmbind = {
             var invokerArgsArray = [argTypes[0] /* return value */, null /* no class 'this'*/].concat(argTypes.slice(1) /* actual params */);
             var func = craftInvokerFunction(humanName, invokerArgsArray, null /* no class 'this'*/, rawInvoker, fn);
             if (undefined === proto[methodName].overloadTable) {
-                func.argCount = argCount-1;
                 proto[methodName] = func;
             } else {
                 proto[methodName].overloadTable[argCount-1] = func;

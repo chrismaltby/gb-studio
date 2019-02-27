@@ -2,7 +2,7 @@
 
 void waka(int x, int y, int z) {
   EM_ASM({
-    out('received ' + [$0, $1, $2] + '.');
+    Module['print']('received ' + [$0, $1, $2] + '.');
   }, x, y, z);
 }
 

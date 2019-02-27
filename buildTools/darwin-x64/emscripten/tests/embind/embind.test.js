@@ -378,38 +378,20 @@ module({
     });
 
     BaseFixture.extend("string", function() {
-        var stdStringIsUTF8 = (Module['EMBIND_STD_STRING_IS_UTF8'] == true);
-
         test("non-ascii strings", function() {
-
-            if(stdStringIsUTF8) {
-                //ASCII
-                var expected = 'aei';
-                //Latin-1 Supplement
-                expected += '\u00E1\u00E9\u00ED';
-                //Greek
-                expected += '\u03B1\u03B5\u03B9';
-                //Cyrillic
-                expected += '\u0416\u041B\u0424';
-                //CJK
-                expected += '\u5F9E\u7345\u5B50';
-                //Euro sign
-                expected += '\u20AC';
-            } else {
-                var expected = '';
-                for (var i = 0; i < 128; ++i) {
-                    expected += String.fromCharCode(128 + i);
-                }
+            var expected = '';
+            for (var i = 0; i < 128; ++i) {
+                expected += String.fromCharCode(128 + i);
             }
-            assert.equal(expected, cm.get_non_ascii_string(stdStringIsUTF8));
+            assert.equal(expected, cm.get_non_ascii_string());
         });
-        if(!stdStringIsUTF8) {
-            test("passing non-8-bit strings from JS to std::string throws", function() {
-                assert.throws(cm.BindingError, function() {
-                    cm.emval_test_take_and_return_std_string("\u1234");
-                });
+
+        test("passing non-8-bit strings from JS to std::string throws", function() {
+            assert.throws(cm.BindingError, function() {
+                cm.emval_test_take_and_return_std_string("\u1234");
             });
-        }
+        });
+
         test("can't pass integers as strings", function() {
             var e = assert.throws(cm.BindingError, function() {
                 cm.emval_test_take_and_return_std_string(10);
@@ -455,13 +437,6 @@ module({
         test("can pass ArrayBuffer to std::basic_string<unsigned char>", function() {
             var e = cm.emval_test_take_and_return_std_basic_string_unsigned_char((new Int8Array([65, 66, 67, 68])).buffer);
             assert.equal('ABCD', e);
-        });
-
-        test("can pass string to std::string", function() {
-            var string = stdStringIsUTF8?"aeiáéíαειЖЛФ從獅子€":"ABCD";
-
-            var e = cm.emval_test_take_and_return_std_string(string);
-            assert.equal(string, e);
         });
 
         test("non-ascii wstrings", function() {
@@ -922,24 +897,12 @@ module({
                 assert.false(dummy_overloads.overloadTable.hasOwnProperty('undefined'));
             }
 
-            var dummy_static_overloads = cm.MultipleOverloadsDependingOnDummy.staticDummy;
-            // check if the overloadTable is correctly named
-            // it can be minimized if using closure compiler
-            if (dummy_static_overloads.hasOwnProperty('overloadTable')) {
-                assert.false(dummy_static_overloads.overloadTable.hasOwnProperty('undefined'));
-            }
-
             // this part should fail anyway if there is no overloadTable
             var dependOnDummy = new cm.MultipleOverloadsDependingOnDummy();
             var dummy = dependOnDummy.dummy();
             dependOnDummy.dummy(dummy);
             dummy.delete();
             dependOnDummy.delete();
-
-            // this part should fail anyway if there is no overloadTable
-            var dummy = cm.MultipleOverloadsDependingOnDummy.staticDummy();
-            cm.MultipleOverloadsDependingOnDummy.staticDummy(dummy);
-            dummy.delete();
         });
 
         test("no undefined entry in overload table for free functions", function() {

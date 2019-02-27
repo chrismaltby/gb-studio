@@ -81,12 +81,14 @@ var Fetch = {
 #endif
       Fetch.dbInstance = db;
 
-      if (isMainThread) {
 #if USE_PTHREADS
+      if (isMainThread) {
         if (typeof SharedArrayBuffer !== 'undefined') Fetch.initFetchWorker();
-#endif
         removeRunDependency('library_fetch_init');
       }
+#else
+      if (typeof ENVIRONMENT_IS_FETCH_WORKER === 'undefined' || !ENVIRONMENT_IS_FETCH_WORKER) removeRunDependency('library_fetch_init');
+#endif
     };
     var onerror = function() {
 #if FETCH_DEBUG
@@ -94,12 +96,12 @@ var Fetch = {
 #endif
       Fetch.dbInstance = false;
 
-      if (isMainThread) {
 #if USE_PTHREADS
+      if (isMainThread) {
         if (typeof SharedArrayBuffer !== 'undefined') Fetch.initFetchWorker();
-#endif
         removeRunDependency('library_fetch_init');
       }
+#endif
     };
     Fetch.openDatabase('emscripten_filesystem', 1, onsuccess, onerror);
 
@@ -109,15 +111,16 @@ var Fetch = {
 
       var fetchJs = 'fetch-worker.js';
       // Allow HTML module to configure the location where the 'pthread-main.js' file will be loaded from,
-      // via Module.locateFile() function. If not specified, then the default URL 'pthread-main.js' relative
-      // to the main html file is loaded.
-      fetchJs = locateFile(fetchJs);
+      // either via Module.locateFile() function, or via Module.pthreadMainPrefixURL string. If neither
+      // of these are passed, then the default URL 'pthread-main.js' relative to the main html file is loaded.
+      if (typeof Module['locateFile'] === 'function') fetchJs = Module['locateFile'](fetchJs);
+      else if (Module['pthreadMainPrefixURL']) fetchJs = Module['pthreadMainPrefixURL'] + fetchJs;
       Fetch.worker = new Worker(fetchJs);
       Fetch.worker.onmessage = function(e) {
-        out('fetch-worker sent a message: ' + e.filename + ':' + e.lineno + ': ' + e.message);
+        Module['print']('fetch-worker sent a message: ' + e.filename + ':' + e.lineno + ': ' + e.message);
       };
       Fetch.worker.onerror = function(e) {
-        err('fetch-worker sent an error! ' + e.filename + ':' + e.lineno + ': ' + e.message);
+        Module['printErr']('fetch-worker sent an error! ' + e.filename + ':' + e.lineno + ': ' + e.message);
       };
     }
 #else
@@ -554,15 +557,15 @@ function emscripten_start_fetch(fetch, successcb, errorcb, progresscb) {
     } else if (fetchAttrNoDownload) {
       __emscripten_fetch_load_cached_data(Fetch.dbInstance, fetch, reportSuccess, reportError);
     } else if (fetchAttrPersistFile) {
-      __emscripten_fetch_load_cached_data(Fetch.dbInstance, fetch, reportSuccess, performCachedXhr);
+      __emscripten_fetch_load_cached_data(Fetch.dbInstance, fetch, reportSuccess, performCachedXhr);        
     } else {
-      __emscripten_fetch_load_cached_data(Fetch.dbInstance, fetch, reportSuccess, performUncachedXhr);
+      __emscripten_fetch_load_cached_data(Fetch.dbInstance, fetch, reportSuccess, performUncachedXhr);        
     }
   } else if (!fetchAttrNoDownload) {
     if (fetchAttrPersistFile) {
       __emscripten_fetch_xhr(fetch, cacheResultAndReportSuccess, reportError, reportProgress);
     } else {
-      __emscripten_fetch_xhr(fetch, reportSuccess, reportError, reportProgress);
+      __emscripten_fetch_xhr(fetch, reportSuccess, reportError, reportProgress);        
     }
   } else {
 #if FETCH_DEBUG

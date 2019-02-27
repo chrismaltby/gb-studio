@@ -12,7 +12,7 @@ int main() {
 
   EM_ASM(
     FS.saveFilesToDB(['waka.txt', 'moar.txt'], function() {
-      out('save ok');
+      Module.print('save ok');
       var xhr = new XMLHttpRequest();
       xhr.open('GET', 'http://localhost:8888/report_result?1');
       xhr.send();
@@ -29,7 +29,7 @@ int main() {
       }
       assert(stringy(FS.analyzePath('waka.txt').object.contents) == 'az');
       var secret = stringy(FS.analyzePath('moar.txt').object.contents);
-      out('load: ' + secret);
+      Module.print('load: ' + secret);
       var xhr = new XMLHttpRequest();
       xhr.open('GET', 'http://localhost:8888/report_result?' + secret);
       xhr.send();

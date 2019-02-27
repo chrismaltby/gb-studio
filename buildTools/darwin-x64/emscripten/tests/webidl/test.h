@@ -82,15 +82,10 @@ struct VoidPointerUser {
 
 namespace Space {
   struct Inner {
-    int value;
-    Inner() : value(1) {}
+    Inner() {}
     int get() { return 198; }
     Inner& operator*=(float x) { return *this; }
     int operator[](int x) { return x*2; }
-    void operator+=(const Inner& other) {
-      value += other.value;
-      printf("Inner::+= => %d\n", value);
-    }
   };
 }
 

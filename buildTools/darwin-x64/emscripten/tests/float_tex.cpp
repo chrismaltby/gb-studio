@@ -91,18 +91,19 @@ static void glut_draw_callback(void) {
     glDrawArrays(GL_POINTS, 0, nbNodes);
     glutSwapBuffers();
 }
+char *trimmed(char *str)
+{
+	while(*str && *str <= 0x20) ++str;
+	return str;
+}
 GLuint createShader(const char source[], int type) {
-    GLint status;
     char msg[512];
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, (const GLchar**)(&source), NULL);
     glCompileShader(shader);
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE) {
-        glGetShaderInfoLog(shader, sizeof msg, NULL, msg);
-        std::cout << "Shader info: \"" << msg << "\"" << std::endl;
-    }
-    assert(status == GL_TRUE);
+    glGetShaderInfoLog(shader, sizeof msg, NULL, msg);
+    std::cout << "Shader info: \"" << msg << "\"" << std::endl;
+    assert(trimmed(msg)[0] == '\0');
     return shader;
 }
 static void gl_init(void) {
@@ -110,14 +111,10 @@ static void gl_init(void) {
     glAttachShader(program, createShader(vertex_shader  , GL_VERTEX_SHADER));
     glAttachShader(program, createShader(fragment_shader, GL_FRAGMENT_SHADER));
     glLinkProgram(program);
-    GLint status;
     char msg[512];
-    glGetProgramiv(program, GL_LINK_STATUS, &status);
-    if (status == GL_FALSE) {
-        glGetProgramInfoLog(program, sizeof msg, NULL, msg);
-        std::cout << "info: \"" <<  msg << "\"" << std::endl;
-    }
-    assert(status == GL_TRUE);
+    glGetProgramInfoLog(program, sizeof msg, NULL, msg);
+    std::cout << "info: \"" <<  msg << "\"" << std::endl;
+    assert(trimmed(msg)[0] == '\0');
     glUseProgram(program);
     std::vector<float> elements(nbNodes);
     int count = 0;

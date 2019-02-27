@@ -2,7 +2,7 @@
 
 int main() {
   EM_ASM({
-    out(Module['on_module']);
+    Module['print'](Module['on_module']);
   });
 }
 

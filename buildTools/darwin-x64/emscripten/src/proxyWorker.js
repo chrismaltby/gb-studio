@@ -129,7 +129,7 @@ window.close = function window_close() {
 };
 
 window.alert = function(text) {
-  err('alert forever: ' + text);
+  Module.printErr('alert forever: ' + text);
   while (1){};
 };
 
@@ -346,11 +346,11 @@ Module.canvas = document.createElement('canvas');
 
 Module.setStatus = function(){};
 
-out = function Module_print(x) {
+Module.print = function Module_print(x) {
   //dump('OUT: ' + x + '\n');
   postMessage({ target: 'stdout', content: x });
 };
-err = function Module_printErr(x) {
+Module.printErr = function Module_printErr(x) {
   //dump('ERR: ' + x + '\n');
   postMessage({ target: 'stderr', content: x });
 };

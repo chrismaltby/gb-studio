@@ -3,6 +3,9 @@
   var Module = {};
   var args = [];
   Module.arguments = [];
+  Module.print = parentModule.print;
+  Module.printErr = parentModule.printErr;
+
   Module.cleanups = [];
 
   var gb = 0;

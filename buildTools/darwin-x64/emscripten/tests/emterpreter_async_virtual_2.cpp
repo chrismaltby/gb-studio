@@ -24,11 +24,11 @@ bool device_CON::Read(unsigned char * data,unsigned short * size) {
     printf("device_CON::Read (this = %i) Sleep--> \n", (int)this);
     EM_ASM({
       Module.the_this = $0;
-      out('first this ' + Module.the_this);
+      Module.print('first this ' + Module.the_this);
     }, this);
     emscripten_sleep(1000);
     EM_ASM({
-      out('second this ' + $0);
+      Module.print('second this ' + $0);
       assert(Module.the_this === $0, 'this must be unchanged');
     }, this);
     printf("<--Sleep (this = %i)\n", (int)this);

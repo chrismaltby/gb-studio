@@ -11,9 +11,9 @@ void fix() {
 
 void EMSCRIPTEN_KEEPALIVE callback() {
   EM_ASM({
-    out('callback...');
+    Module.print('callback...');
     Module['dynCall_v']($0);
-    out('callback fixed.');
+    Module.print('callback fixed.');
   }, (int)&fix);
 }
 

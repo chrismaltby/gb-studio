@@ -28,7 +28,7 @@ void check_where_we_would_malloc(size_t size, void* expected) {
 
 void stage(const char* name) {
   EM_ASM({
-    out('\n>> ' + Pointer_stringify($0) + '\n');
+    Module.print('\n>> ' + Pointer_stringify($0) + '\n');
   }, name);
 }
 

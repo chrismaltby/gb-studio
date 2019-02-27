@@ -32,7 +32,10 @@ class Cache(object):
       if not shared.Settings.WASM_BACKEND:
         dirname = os.path.join(dirname, 'asmjs')
       else:
-        dirname = os.path.join(dirname, 'wasm')
+        if shared.Settings.EXPERIMENTAL_USE_LLD:
+          dirname = os.path.join(dirname, 'wasm-lld')
+        else:
+          dirname = os.path.join(dirname, 'wasm')
     self.dirname = dirname
     self.debug = debug
     self.acquired_count = 0
@@ -86,7 +89,7 @@ class Cache(object):
   # the given creator function
   def get(self, shortname, creator, extension='.bc', what=None, force=False):
     if not shortname.endswith(extension): shortname += extension
-    cachename = os.path.abspath(os.path.join(self.dirname, shortname))
+    cachename = os.path.join(self.dirname, shortname)
 
     self.acquire_cache_lock()
     try:
