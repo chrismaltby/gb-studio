@@ -6,7 +6,7 @@ class ImageSelect extends Component {
     const { images, dispatch, ...rest } = this.props;
     return (
       <select {...rest}>
-        <option>None</option>
+        {/* <option>None</option> */}
         {images.map(image => (
           <option key={image.id} value={image.id}>
             {image.name}

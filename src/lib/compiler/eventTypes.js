@@ -47,7 +47,7 @@ export const EventNames = {
   [EVENT_ACTOR_SET_POSITION]: "Actor Set Position",
   [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
   [EVENT_ACTOR_EMOTION]: "Emotion Bubble",
-  [EVENT_RETURN_TO_TITLE]: "Return To Title",
+  // [EVENT_RETURN_TO_TITLE]: "Return To Title",
   [EVENT_SHOW_PLAYER]: "Show Player",
   [EVENT_HIDE_PLAYER]: "Hide Player",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
@@ -240,7 +240,7 @@ export const EventFields = {
       type: "emotion"
     }
   ],
-  [EVENT_RETURN_TO_TITLE]: [],
+  // [EVENT_RETURN_TO_TITLE]: [],
   [EVENT_SHOW_PLAYER]: [],
   [EVENT_HIDE_PLAYER]: [],
   [EVENT_SHOW_SPRITES]: [],

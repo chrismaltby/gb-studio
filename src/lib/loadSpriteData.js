@@ -16,7 +16,8 @@ const loadSpriteData = async projectRoot => {
   const spriteData = await Promise.all(
     spritePaths.map(async file => {
       const size = await sizeOfAsync(file);
-      const numFrames = Math.floor(size.width / FRAME_SIZE);
+      const numFrames = size.width / FRAME_SIZE;
+
       return {
         id: uuidv4(),
         name: path.basename(file, ".png").replace(/_/g, " "),
@@ -26,7 +27,9 @@ const loadSpriteData = async projectRoot => {
             ? "actor_animated"
             : numFrames === 3
             ? "actor"
-            : "static",
+            : numFrames === 1
+            ? "static"
+            : "invalid",
         filename: path.basename(file)
       };
     })

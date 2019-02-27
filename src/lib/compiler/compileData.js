@@ -42,6 +42,10 @@ const compile = async (
 ) => {
   const output = {};
 
+  if (projectData.scenes.length === 0) {
+    throw "No scenes are included in your project. Add some scenes in the Game World editor and try again.";
+  }
+
   const precompiled = await precompile(
     projectData,
     projectRoot,
@@ -123,7 +127,8 @@ const compile = async (
         scene.actors.length,
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
-          sprites: precompiled.usedSprites
+          sprites: precompiled.usedSprites,
+          scene
         }),
         scene.triggers.length,
         compileTriggers(scene.triggers, {
@@ -395,13 +400,28 @@ export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
 };
 
 export const precompileScenes = (scenes, usedImages, usedSprites) => {
-  const scenesData = scenes.map(scene => {
+  const scenesData = scenes.map((scene, sceneIndex) => {
+    const imageIndex = usedImages.findIndex(
+      image => image.id === scene.imageId
+    );
+    if (imageIndex < 0) {
+      throw "Scene #" +
+        sceneIndex +
+        " '" +
+        scene.name +
+        "' has missing or no image assigned.";
+    }
+    const actors = scene.actors.filter(actor => {
+      return usedSprites.find(s => s.id === actor.spriteSheetId);
+    });
+
     return {
       ...scene,
-      imageIndex: usedImages.findIndex(image => image.id === scene.imageId),
+      imageIndex,
       // tilemap: imageData.tilemaps[scene.imageId],
       // tileset: imageData.tilemapsTileset[scene.imageId],
-      sprites: scene.actors.reduce((memo, actor) => {
+      actors,
+      sprites: actors.reduce((memo, actor) => {
         const spriteIndex = usedSprites.findIndex(
           sprite => sprite.id === actor.spriteSheetId
         );
@@ -448,15 +468,23 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
     const lookup = mapSpritesIndex;
     mapSpritesLookup[id] = lookup;
     const sprite = sprites.find(s => s.id === id);
+
+    if (!sprite) {
+      return 0;
+    }
+
+    // console.log(sprites);
     mapSpritesIndex += sprite.size / 64;
     return lookup;
   };
 
   return flatten(
     actors.map((actor, actorIndex) => {
+      const sprite = sprites.find(s => s.id === actor.spriteSheetId);
+      if (!sprite) return [];
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        sprites.find(s => s.id === actor.spriteSheetId).size / 64 === 6 // Animated
+        sprite.size / 64 === 6 // Animated
           ? 1
           : 0,
         actor.x, // X Pos

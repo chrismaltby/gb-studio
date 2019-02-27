@@ -1,4 +1,4 @@
-NODE_MODULES = /Users/chris/Projects/gb-rpg-builder/node_modules
+NODE_MODULES = ./node_modules
 SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_deploy/index.html
 DEBUG_SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_debug/build/index.html
 

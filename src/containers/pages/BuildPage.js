@@ -3,7 +3,8 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Button, {
   ButtonToolbar,
-  ButtonToolbarSpacer
+  ButtonToolbarSpacer,
+  ButtonToolbarFixedSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
 import { remote, shell, ipcRenderer } from "electron";
@@ -85,6 +86,7 @@ class BuildPage extends Component {
         <PageContent style={{ padding: 20, flexGrow: 0 }}>
           <ButtonToolbar>
             <Button onClick={this.onRun}>Run</Button>
+            <ButtonToolbarFixedSpacer style={{ width: 10 }} />
             <Button onClick={this.onBuild("rom")}>Export ROM</Button>
             <Button onClick={this.onBuild("web")}>Export Web</Button>
             <ButtonToolbarSpacer />

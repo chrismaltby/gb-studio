@@ -34,7 +34,7 @@ export default function project(state = initialState.project, action) {
         scenes: [].concat(state.scenes, {
           id: action.id,
           name: "New Scene " + state.scenes.length,
-          image: null,
+          imageId: state.images && state.images[0] && state.images[0].id,
           x: Math.max(50, action.x),
           y: Math.max(10, action.y),
           width: 32,
@@ -220,7 +220,8 @@ export default function project(state = initialState.project, action) {
           }
 
           const image =
-            scene.imageId && state.images.find(image => image.id === scene.imageId);
+            scene.imageId &&
+            state.images.find(image => image.id === scene.imageId);
           if (!image) {
             return scene;
           }
@@ -256,7 +257,8 @@ export default function project(state = initialState.project, action) {
           }
 
           const image =
-            scene.imageId && state.images.find(image => image.id === scene.imageId);
+            scene.imageId &&
+            state.images.find(image => image.id === scene.imageId);
           if (!image) {
             return scene;
           }
@@ -417,9 +419,9 @@ export default function project(state = initialState.project, action) {
           }),
           action.name
             ? {
-              id: action.flagId,
-              name: action.name
-            }
+                id: action.flagId,
+                name: action.name
+              }
             : []
         )
       };

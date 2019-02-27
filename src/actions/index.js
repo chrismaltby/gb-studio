@@ -213,44 +213,53 @@ export const runBuild = ({
 } = {}) => async (dispatch, getState) => {
   dispatch({ type: types.CMD_START });
   dispatch({ type: types.SET_SECTION, section: "build" });
+  try {
+    const state = getState();
+    const projectRoot = state.document && state.document.root;
+    const project = state.project.present;
+    const outputRoot = remote.app.getPath("temp") + uuid();
 
-  const state = getState();
-  const projectRoot = state.document && state.document.root;
-  const project = state.project.present;
-  const outputRoot = remote.app.getPath("temp") + uuid();
-
-  await buildProject(project, {
-    projectRoot,
-    buildType,
-    outputRoot,
-    tmpPath: remote.app.getPath("temp"),
-    progress: message => {
-      if (
-        message !== "'" &&
-        message.indexOf("unknown or unsupported #pragma") === -1
-      ) {
-        dispatch({ type: types.CMD_STD_OUT, text: message });
+    await buildProject(project, {
+      projectRoot,
+      buildType,
+      outputRoot,
+      tmpPath: remote.app.getPath("temp"),
+      progress: message => {
+        if (
+          message !== "'" &&
+          message.indexOf("unknown or unsupported #pragma") === -1
+        ) {
+          dispatch({ type: types.CMD_STD_OUT, text: message });
+        }
+      },
+      warnings: message => {
+        dispatch({ type: types.CMD_STD_ERR, text: message });
       }
-    },
-    warnings: message => {
-      dispatch({ type: types.CMD_STD_ERR, text: message });
+    });
+
+    if (exportBuild) {
+      await fs.copy(
+        `${outputRoot}/build/${buildType}`,
+        `${projectRoot}/build/${buildType}`
+      );
     }
-  });
 
-  if (exportBuild) {
-    await fs.copy(
-      `${outputRoot}/build/${buildType}`,
-      `${projectRoot}/build/${buildType}`
-    );
+    if (ejectBuild) {
+      await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
+    }
+
+    dispatch({ type: types.CMD_COMPLETE });
+
+    return {
+      outputRoot
+    };
+  } catch (e) {
+    if (typeof e === "string") {
+      dispatch({ type: types.CMD_STD_ERR, text: e });
+    } else {
+      dispatch({ type: types.CMD_STD_ERR, text: e.toString() });
+    }
+    dispatch({ type: types.CMD_COMPLETE });
+    throw e;
   }
-
-  if (ejectBuild) {
-    await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
-  }
-
-  dispatch({ type: types.CMD_COMPLETE });
-
-  return {
-    outputRoot
-  };
 };
