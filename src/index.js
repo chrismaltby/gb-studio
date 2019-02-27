@@ -16,13 +16,6 @@ let helpWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-// Enable DevTools.
-if (isDevMode) {
-  enableLiveReload({ strategy: "react-hmr" });
-  await installExtension(REACT_DEVELOPER_TOOLS);
-  await installExtension(REDUX_DEVTOOLS);
-}
-
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
   return (
@@ -175,7 +168,14 @@ const createPlay = async url => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+app.on("ready", async () => {
+  // Enable DevTools.
+  if (isDevMode) {
+    enableLiveReload({ strategy: "react-hmr" });
+    await installExtension(REACT_DEVELOPER_TOOLS);
+    await installExtension(REDUX_DEVTOOLS);
+  }
+
   createSplash();
 });
 
