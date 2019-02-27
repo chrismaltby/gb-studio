@@ -1,3 +1,5 @@
+import trim2lines from "../trim2lines";
+
 export const EVENT_END = "EVENT_END";
 export const EVENT_WAIT = "EVENT_WAIT";
 
@@ -28,14 +30,6 @@ export const EVENT_SHOW_SPRITES = "EVENT_SHOW_SPRITES";
 export const EVENT_HIDE_SPRITES = "EVENT_HIDE_SPRITES";
 export const EVENT_SHOW_PLAYER = "EVENT_SHOW_PLAYER";
 export const EVENT_HIDE_PLAYER = "EVENT_HIDE_PLAYER";
-
-const trim2lines = string => {
-  return string
-    .replace(/^([^\n]*\n[^\n]*)[\w\W]*/g, "$1")
-    .split("\n")
-    .map(line => line.substring(0, 18))
-    .join("\n");
-};
 
 export const EventNames = {
   [EVENT_SWITCH_SCENE]: "Switch Scene",

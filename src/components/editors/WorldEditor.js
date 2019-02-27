@@ -12,8 +12,8 @@ class WorldEditor extends Component {
       ? e.currentTarget.type === "number"
         ? parseInt(e.currentTarget.value, 10)
         : e.currentTarget.type === "checkbox"
-          ? e.currentTarget.checked
-          : e.currentTarget.value
+        ? e.currentTarget.checked
+        : e.currentTarget.value
       : e;
     this.props.editProjectSettings({
       [key]: value
@@ -75,7 +75,7 @@ class WorldEditor extends Component {
           <input
             id="startX"
             type="number"
-            value={settings.startX || 0}
+            value={settings.startX}
             min={0}
             onChange={this.onEdit("startX")}
           />
@@ -86,7 +86,7 @@ class WorldEditor extends Component {
           <input
             id="startY"
             type="number"
-            value={settings.startY || 0}
+            value={settings.startY}
             min={0}
             onChange={this.onEdit("startY")}
           />

@@ -134,9 +134,14 @@ const compile = async (
     );
   });
 
-  const startSceneIndex = precompiled.sceneData.findIndex(
+  let startSceneIndex = precompiled.sceneData.findIndex(
     m => m.id === projectData.settings.startSceneId
   );
+
+  // If starting scene is not found just use first scene
+  if (startSceneIndex < 0) {
+    startSceneIndex = 0;
+  }
 
   const { startX, startY, startDirection } = projectData.settings;
   // console.log(
@@ -190,9 +195,9 @@ const compile = async (
     `  unsigned int offset;\n` +
     `} BANK_PTR;\n\n` +
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
-    `#define START_SCENE_X ${decHex(startX)}\n` +
-    `#define START_SCENE_Y ${decHex(startY)}\n` +
-    `#define START_SCENE_DIR ${dirDec(startDirection)}\n\n` +
+    `#define START_SCENE_X ${decHex(startX || 0)}\n` +
+    `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
+    `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;

@@ -23,14 +23,20 @@ class ScriptsPage extends Component {
   render() {
     const { scriptLines } = this.props;
     const scriptWords = scriptLines.reduce((memo, scriptLine) => {
-      if (scriptLine && scriptLine.line && scriptLine.line.args && scriptLine.line.args.text && scriptLine.line.args.text.split) {
+      if (
+        scriptLine &&
+        scriptLine.line &&
+        scriptLine.line.args &&
+        scriptLine.line.args.text &&
+        scriptLine.line.args.text.split
+      ) {
         const words = scriptLine.line.args.text.trim().split(/[, \n]+/);
         if (words) {
           return memo + words.length;
         }
       }
       return memo;
-    }, 0)
+    }, 0);
     return (
       <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>

@@ -9,15 +9,17 @@ const scriptMapTransition = script => {
 
 export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
   const width =
-    Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) | 0 + 100;
+    Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) |
+    (0 + 100);
   const height =
-    Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) | 0 + 100;
+    Math.max.apply(null, scenes.map(scene => 20 + scene.y + scene.height * 8)) |
+    (0 + 100);
 
   const connections = scenes.reduce((memo, scene) => {
     const sceneEntities = [].concat(scene.triggers || [], scene.actors || []);
-    sceneEntities.forEach((entity) => {
+    sceneEntities.forEach(entity => {
       const transitions = scriptMapTransition(entity.script || []);
-      transitions.forEach((transition) => {
+      transitions.forEach(transition => {
         const destScene = scenes.find(m => m.id === transition.args.sceneId);
         if (destScene) {
           const startX = scene.x + (dragScene === scene.id ? dragX : 0);
@@ -32,17 +34,34 @@ export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
           const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
           const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
           memo.push({
-            x1, y1, x2, y2, qx, qy, direction: transition.args.direction
-          })
+            x1,
+            y1,
+            x2,
+            y2,
+            qx,
+            qy,
+            direction: transition.args.direction
+          });
         }
-      })
-    })
+      });
+    });
     return memo;
   }, []);
 
-  const startScene = scenes.find((scene) => scene.id === settings.startSceneId)
-  const startX2 = startScene && startScene.x + settings.startX * 8 + 5;
-  const startY2 = startScene && 20 + startScene.y + settings.startY * 8 + 5;
+  const startScene = scenes.find(scene => scene.id === settings.startSceneId);
+  const startX2 =
+    startScene &&
+    startScene.x +
+      (settings.startX || 0) * 8 +
+      5 +
+      (dragScene === startScene.id ? dragX : 0);
+  const startY2 =
+    startScene &&
+    20 +
+      startScene.y +
+      (settings.startY || 0) * 8 +
+      5 +
+      (dragScene === startScene.id ? dragY : 0);
   const startDirection = startScene && settings.startDirection;
 
   return (
@@ -62,7 +81,6 @@ export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
             stroke="#00bcd4"
             fill="transparent"
           />
-
         </g>
       ))}
       {connections.map(({ x2, y2, direction }, index) => (
@@ -79,21 +97,33 @@ export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
             }}
           />
           {direction === "up" ? (
-            <polygon points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 + 2}`} style={{
-              fill: "#006064"
-            }} />
+            <polygon
+              points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 + 2}`}
+              style={{
+                fill: "#006064"
+              }}
+            />
           ) : direction === "down" ? (
-            <polygon points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 - 2}`} style={{
-              fill: "#006064"
-            }} />
+            <polygon
+              points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 - 2}`}
+              style={{
+                fill: "#006064"
+              }}
+            />
           ) : direction === "left" ? (
-            <polygon points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`} style={{
-              fill: "#006064"
-            }} />
+            <polygon
+              points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`}
+              style={{
+                fill: "#006064"
+              }}
+            />
           ) : direction === "right" ? (
-            <polygon points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 + 3}`} style={{
-              fill: "#006064"
-            }} />
+            <polygon
+              points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 + 3}`}
+              style={{
+                fill: "#006064"
+              }}
+            />
           ) : null}
         </g>
       ))}
@@ -111,24 +141,40 @@ export default ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
             }}
           />
           {startDirection === "up" ? (
-            <polygon points={`${startX2},${startY2 + 2} ${startX2 + 4},${startY2 - 3} ${startX2 + 8},${startY2 + 2}`} style={{
-              fill: "#fbe9e7"
-            }} />
+            <polygon
+              points={`${startX2},${startY2 + 2} ${startX2 + 4},${startY2 -
+                3} ${startX2 + 8},${startY2 + 2}`}
+              style={{
+                fill: "#fbe9e7"
+              }}
+            />
           ) : startDirection === "down" ? (
-            <polygon points={`${startX2},${startY2 - 2} ${startX2 + 4},${startY2 + 3} ${startX2 + 8},${startY2 - 2}`} style={{
-              fill: "#fbe9e7"
-            }} />
+            <polygon
+              points={`${startX2},${startY2 - 2} ${startX2 + 4},${startY2 +
+                3} ${startX2 + 8},${startY2 - 2}`}
+              style={{
+                fill: "#fbe9e7"
+              }}
+            />
           ) : startDirection === "left" ? (
-            <polygon points={`${startX2},${startY2} ${startX2 + 6},${startY2 - 3} ${startX2 + 6},${startY2 + 3}`} style={{
-              fill: "#fbe9e7"
-            }} />
+            <polygon
+              points={`${startX2},${startY2} ${startX2 + 6},${startY2 -
+                3} ${startX2 + 6},${startY2 + 3}`}
+              style={{
+                fill: "#fbe9e7"
+              }}
+            />
           ) : startDirection === "right" ? (
-            <polygon points={`${startX2 + 8},${startY2} ${startX2 + 2},${startY2 - 3} ${startX2 + 2},${startY2 + 3}`} style={{
-              fill: "#fbe9e7"
-            }} />
+            <polygon
+              points={`${startX2 + 8},${startY2} ${startX2 + 2},${startY2 -
+                3} ${startX2 + 2},${startY2 + 3}`}
+              style={{
+                fill: "#fbe9e7"
+              }}
+            />
           ) : null}
         </g>
       )}
     </svg>
-  )
+  );
 };
