@@ -63,7 +63,7 @@
       store.dispatch(actions.setSection(section))
     });
 
-    let modified = false;
+    let modified = true;
     store.subscribe(() => {
       const state = store.getState();
       if(!modified && state.document.modified) {
