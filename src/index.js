@@ -16,7 +16,12 @@ let helpWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-if (isDevMode) enableLiveReload({ strategy: "react-hmr" });
+// Enable DevTools.
+if (isDevMode) {
+  enableLiveReload({ strategy: "react-hmr" });
+  await installExtension(REACT_DEVELOPER_TOOLS);
+  await installExtension(REDUX_DEVTOOLS);
+}
 
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
@@ -43,22 +48,9 @@ const createSplash = async () => {
     }
   });
 
-  // and load the index.html of the app.
   splashWindow.loadURL(`file://${__dirname}/windows/splash.html`);
 
-  // Open the DevTools.
-  if (isDevMode) {
-    console.log("IS DEV MODE");
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(REDUX_DEVTOOLS);
-    // splashWindow.webContents.openDevTools();
-  }
-
-  // Emitted when the window is closed.
   splashWindow.on("closed", () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     splashWindow = null;
   });
 };
@@ -88,7 +80,6 @@ const createWindow = async projectPath => {
 
   mainWindowState.manage(mainWindow);
 
-  // and load the index.html of the app.
   mainWindow.loadURL(
     `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
       projectPath
@@ -97,26 +88,16 @@ const createWindow = async projectPath => {
 
   mainWindow.setRepresentedFilename(projectPath);
 
-  // Open the DevTools.
-  if (isDevMode) {
-    console.log("IS DEV MODE");
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(REDUX_DEVTOOLS);
-    // mainWindow.webContents.openDevTools();
-  }
-
   mainWindow.webContents.on("did-finish-load", function() {
     mainWindow.webContents.send("ping", "whoooooooh!");
     mainWindow.webContents.send("open-project", projectPath);
   });
 
   mainWindow.on("enter-full-screen", () => {
-    console.log("FULL SCREEN");
     mainWindow.webContents.send("enter-full-screen");
   });
 
   mainWindow.on("leave-full-screen", () => {
-    console.log("EXIT FULL SCREEN");
     mainWindow.webContents.send("leave-full-screen");
   });
 
@@ -135,11 +116,7 @@ const createWindow = async projectPath => {
     }
   });
 
-  // Emitted when the window is closed.
   mainWindow.on("closed", () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null;
   });
 };
@@ -162,22 +139,10 @@ const createHelp = async helpPage => {
     helpWindow.show();
   }
 
-  // and load the index.html of the app.
   helpWindow.loadURL(`file://${__dirname}/windows/help/${helpPage}.html`);
-
-  // Open the DevTools.
-  if (isDevMode) {
-    console.log("IS DEV MODE");
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(REDUX_DEVTOOLS);
-    // helpWindow.webContents.openDevTools();
-  }
 
   // Emitted when the window is closed.
   helpWindow.on("closed", () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     helpWindow = null;
   });
 };
@@ -200,10 +165,8 @@ const createPlay = async url => {
     playWindow.show();
   }
 
-  // and load the index.html of the app.
   playWindow.loadURL(url);
 
-  // Emitted when the window is closed.
   playWindow.on("closed", () => {
     playWindow = null;
   });
@@ -213,10 +176,7 @@ const createPlay = async url => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  // createSplash()
-  createWindow(
-    "/Users/chris/Library/Mobile Documents/com~apple~CloudDocs/GBJam/Untitled GB Game Test/project.json"
-  );
+  createSplash();
 });
 
 // Quit when all windows are closed.
@@ -237,17 +197,8 @@ app.on("activate", () => {
 });
 
 ipcMain.on("open-project", async (event, arg) => {
-  console.log(arg);
-
-  // Validate folder
   const { projectPath } = arg;
   openProject(projectPath);
-
-  // splashWindow.close();
-
-  // console.log({ arg, projectPath });
-
-  // await createWindow(projectPath);
 });
 
 ipcMain.on("check-full-screen", async (event, arg) => {
@@ -271,12 +222,10 @@ ipcMain.on("open-play", async (event, url) => {
 });
 
 ipcMain.on("document-modified", () => {
-  console.log("WAS EDITIED");
   mainWindow.setDocumentEdited(true);
 });
 
 ipcMain.on("document-unmodified", () => {
-  console.log("WAS NOT EDITIED");
   mainWindow.setDocumentEdited(false);
 });
 
@@ -285,22 +234,18 @@ menu.on("new", async () => {
 });
 
 menu.on("open", async () => {
-  console.log("MENU ON OPEN");
   openProjectPicker();
 });
 
 menu.on("save", async () => {
-  console.log("MENU ON SAVE");
   mainWindow.webContents.send("save-project");
 });
 
 menu.on("undo", async () => {
-  console.log("MENU ON UNDO");
   mainWindow.webContents.send("undo");
 });
 
 menu.on("redo", async () => {
-  console.log("MENU ON REDO");
   mainWindow.webContents.send("redo");
 });
 
@@ -309,7 +254,6 @@ menu.on("section", async section => {
 });
 
 const newProject = async () => {
-  // console.log("New Project");
   if (splashWindow) {
     splashWindow.close();
   }
@@ -335,7 +279,6 @@ const openProjectPicker = async () => {
 };
 
 const openProject = async projectPath => {
-  console.log("openProject:" + projectPath);
   if (splashWindow) {
     splashWindow.close();
   }
@@ -344,6 +287,3 @@ const openProject = async projectPath => {
   }
   await createWindow(projectPath);
 };
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
