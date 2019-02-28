@@ -71,13 +71,14 @@ class BuildPage extends Component {
             color: "#fff",
             padding: 20,
             fontFamily: "monospace",
-            overflow: "auto"
+            overflow: "auto",
+            userSelect: "text"
           }}
         >
           {output.map((out, index) => (
             <div
               key={index}
-              style={{ color: out.type === "err" ? "red" : "white" }}
+              style={{ color: out.type === "err" ? "orange" : "white" }}
             >
               {out.text}
             </div>
