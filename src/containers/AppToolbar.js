@@ -92,9 +92,9 @@ class AppToolbar extends Component {
         <ToolbarButton onClick={this.openProjectFolder}>
           <FolderIcon />
         </ToolbarButton>
-        <ToolbarButton>
+        {/* <ToolbarButton>
           <DownloadIcon />
-        </ToolbarButton>
+        </ToolbarButton> */}
         <ToolbarFixedSpacer />
         <ToolbarButton onClick={this.onRun}>
           {running ? <LoadingIcon /> : <PlayIcon />}
