@@ -505,11 +505,14 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
     actors.map((actor, actorIndex) => {
       const sprite = sprites.find(s => s.id === actor.spriteSheetId);
       if (!sprite) return [];
+      const spriteFrames = sprite.size / 64;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        sprite.size / 64 === 6 // Animated
-          ? 1
-          : 0,
+        spriteFrames === 6
+          ? 2 // Actor Animated
+          : spriteFrames === 3
+          ? 1 // Actor
+          : 0, // Static
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction

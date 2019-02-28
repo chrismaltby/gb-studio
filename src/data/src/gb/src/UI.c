@@ -2,6 +2,7 @@
 #include "BankManager.h"
 #include "game.h"
 #include "data_ptrs.h"
+#include "Macros.h"
 
 void UIInit_b();
 void UIUpdate_b();
@@ -104,6 +105,8 @@ void draw_text(UBYTE force)
   UBYTE letter;
   UBYTE i, text_remaining, word_len;
   UBYTE text_size = strlen(text_lines);
+
+  UNUSED(force);
 
   if (text_wait > 0)
   {
