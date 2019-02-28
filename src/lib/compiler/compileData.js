@@ -209,7 +209,7 @@ const compile = async (
       })
       .join(`\n`) +
     `\n` +
-    `extern const unsigned char *bank_data_ptrs[];\n` +
+    `extern const unsigned char (*bank_data_ptrs[])[];\n` +
     `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
     stringBanks
       .map((bankStrings, index) => {
@@ -223,7 +223,7 @@ const compile = async (
     `#pragma bank=16\n` +
     `#include "data_ptrs.h"\n` +
     `#include "banks.h"\n\n` +
-    `const unsigned char *bank_data_ptrs[] = {\n` +
+    `const unsigned char (*bank_data_ptrs[])[] = {\n` +
     bankDataPtrs.join(",") +
     "\n};\n\n" +
     Object.keys(dataPtrs)
