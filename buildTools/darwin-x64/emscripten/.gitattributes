@@ -1,3 +1,0 @@
-# This file has a 76,000 charactar line which we don't to show up in the
-# output of `git grep`
-tools/crunch-worker.js -diff

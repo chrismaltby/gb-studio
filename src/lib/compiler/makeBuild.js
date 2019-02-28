@@ -19,10 +19,19 @@ const makeBuild = ({
       `../../../buildTools/${process.platform}-${process.arch}`
     );
 
-    const emscriptenPath = `${buildToolsPath}/emscripten`;
-    const gbdkPath = `${buildToolsPath}/gbdk/bin`;
+    env.PATH = [
+      `${buildToolsPath}/emsdk`,
+      `${buildToolsPath}/emsdk/clang/e1.38.28_64bit`,
+      `${buildToolsPath}/emsdk/node/8.9.1_64bit/bin`,
+      `${buildToolsPath}/emsdk/emscripten/1.38.28`,
+      `${buildToolsPath}/gbdk/bin`,
+      env.PATH
+    ].join(":");
 
-    env.PATH = emscriptenPath + ":" + gbdkPath + ":/usr/bin:/bin:" + env.PATH;
+    env.EMSDK = `${buildToolsPath}/emsdk`;
+    env.GBDKDIR = `${buildToolsPath}/gbdk/`;
+    env.BINARYEN_ROOT = `${buildToolsPath}/emsdk/clang/e1.38.28_64bit/binaryen`;
+    env.EMSCRIPTEN = `${buildToolsPath}/emsdk/emscripten/1.38.28`;
 
     const options = {
       cwd: buildRoot,
