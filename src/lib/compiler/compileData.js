@@ -193,6 +193,18 @@ const compile = async (
   //   })
   // );
 
+  let playerSpriteIndex = precompiled.usedSprites.findIndex(
+    s => s.id === projectData.settings.playerSpriteSheetId
+  );
+  if (playerSpriteIndex < 0) {
+    playerSpriteIndex = precompiled.usedSprites.findIndex(
+      s => s.type === "actor_animated"
+    );
+  }
+  if (playerSpriteIndex < 0) {
+    throw "Player sprite hasn't been set, add it from the Game World.";
+  }
+
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `typedef struct _BANK_PTR {\n` +
@@ -203,6 +215,7 @@ const compile = async (
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
     `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n\n` +
+    `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
@@ -285,6 +298,7 @@ const precompile = async (projectData, projectRoot, tmpPath, progress) => {
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
+    projectData.settings.playerSpriteSheetId,
     projectRoot
   );
 
@@ -372,12 +386,20 @@ export const precompileImages = async (
   };
 };
 
-export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
-  const usedSprites = spriteSheets.filter(spriteSheet =>
-    scenes.find(scene =>
-      scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
-    )
+export const precompileSprites = async (
+  spriteSheets,
+  scenes,
+  playerSpriteSheetId,
+  projectRoot
+) => {
+  const usedSprites = spriteSheets.filter(
+    spriteSheet =>
+      spriteSheet.id === playerSpriteSheetId ||
+      scenes.find(scene =>
+        scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
+      )
   );
+
   const spriteLookup = indexArray(usedSprites, "id");
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
