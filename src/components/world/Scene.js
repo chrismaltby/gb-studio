@@ -234,6 +234,7 @@ class Scene extends Component {
       tool,
       editor,
       image,
+      version,
       worldId,
       width,
       height,
@@ -268,7 +269,8 @@ class Scene extends Component {
             width: width * 8,
             height: height * 8,
             backgroundImage:
-              image && `url("${projectRoot}/assets/backgrounds/${image}")`
+              image &&
+              `url("${projectRoot}/assets/backgrounds/${image}?v=${version}")`
           }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
@@ -348,6 +350,7 @@ function mapStateToProps(state, props) {
     tool: state.tools.selected,
     editor: state.editor,
     image: image && image.filename,
+    version: (image && image._v) || 0,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
     worldId: state.project.present.id,

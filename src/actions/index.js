@@ -6,6 +6,7 @@ import uuid from "uuid/v4";
 import { remote } from "electron";
 import buildProject from "../lib/compiler/buildProject";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
+import { loadImageData } from "../lib/project/loadImageData";
 
 const asyncAction = async (
   dispatch,
@@ -66,14 +67,21 @@ export const removeSprite = filename => {
   };
 };
 
-export const loadBackground = filename => async dispatch => {
+export const loadBackground = filename => async (dispatch, getState) => {
   return asyncAction(
     dispatch,
     types.BACKGROUND_LOAD_REQUEST,
     types.BACKGROUND_LOAD_SUCCESS,
     types.BACKGROUND_LOAD_FAILURE,
     async () => {
-      console.log("LOAD BACKGROUND: " + filename);
+      const state = getState();
+      const projectRoot = state.document && state.document.root;
+      const data = await loadImageData(
+        `${projectRoot}/assets/backgrounds/${filename}`
+      );
+      return {
+        data
+      };
     }
   );
 };

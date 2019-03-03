@@ -49,7 +49,6 @@ export default function project(state = initialState.project, action) {
       const currentSprite = state.spriteSheets.find(
         sprite => sprite.filename === action.data.filename
       );
-      console.log({ currentSprite });
       return {
         ...state,
         spriteSheets: []
@@ -72,14 +71,22 @@ export default function project(state = initialState.project, action) {
         })
       };
     case BACKGROUND_LOAD_SUCCESS:
+      const currentBackground = state.images.find(
+        image => image.filename === action.data.filename
+      );
       return {
         ...state,
-        images: [].concat(
-          state.images.filter(image => {
-            return image.filename !== action.data.filename;
-          }),
-          action.background
-        )
+        images: []
+          .concat(
+            state.images.filter(image => {
+              return image.filename !== action.data.filename;
+            }),
+            {
+              ...action.data,
+              id: currentBackground ? currentBackground.id : action.data.id
+            }
+          )
+          .sort(sortFilename)
       };
     case ADD_SCENE:
       return {
