@@ -31,6 +31,12 @@ export const EVENT_HIDE_SPRITES = "EVENT_HIDE_SPRITES";
 export const EVENT_SHOW_PLAYER = "EVENT_SHOW_PLAYER";
 export const EVENT_HIDE_PLAYER = "EVENT_HIDE_PLAYER";
 
+// Overlay
+export const EVENT_OVERLAY_SHOW = "EVENT_OVERLAY_SHOW";
+export const EVENT_OVERLAY_HIDE = "EVENT_OVERLAY_HIDE";
+export const EVENT_OVERLAY_SET_POSITION = "EVENT_OVERLAY_SET_POSITION";
+export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
+
 export const EventNames = {
   [EVENT_SWITCH_SCENE]: "Switch Scene",
   [EVENT_WAIT]: "Wait",
@@ -51,7 +57,11 @@ export const EventNames = {
   [EVENT_SHOW_PLAYER]: "Show Player",
   [EVENT_HIDE_PLAYER]: "Hide Player",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
-  [EVENT_HIDE_SPRITES]: "Hide Sprites"
+  [EVENT_HIDE_SPRITES]: "Hide Sprites",
+  [EVENT_OVERLAY_SHOW]: "Show Overlay",
+  [EVENT_OVERLAY_HIDE]: "Hide Overlay",
+  [EVENT_OVERLAY_SET_POSITION]: "Overlay Set Position",
+  [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To"
 };
 
 export const EventFields = {
@@ -244,5 +254,76 @@ export const EventFields = {
   [EVENT_SHOW_PLAYER]: [],
   [EVENT_HIDE_PLAYER]: [],
   [EVENT_SHOW_SPRITES]: [],
-  [EVENT_HIDE_SPRITES]: []
+  [EVENT_HIDE_SPRITES]: [],
+
+  [EVENT_OVERLAY_SHOW]: [
+    {
+      key: "imageId",
+      type: "image"
+    },
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 20,
+      defaultValue: 0,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 18,
+      defaultValue: 0,
+      width: "50%"
+    }
+  ],
+  [EVENT_OVERLAY_HIDE]: [],
+  [EVENT_OVERLAY_SET_POSITION]: [
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 20,
+      defaultValue: 0,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 18,
+      defaultValue: 0,
+      width: "50%"
+    }
+  ],
+  [EVENT_OVERLAY_MOVE_TO]: [
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 20,
+      defaultValue: 0,
+      width: "50%"
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 18,
+      defaultValue: 0,
+      width: "50%"
+    },
+    {
+      key: "speed",
+      type: "cameraSpeed",
+      defaultValue: 2
+    }
+  ]
 };

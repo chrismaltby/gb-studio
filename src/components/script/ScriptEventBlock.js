@@ -1,6 +1,7 @@
 import React from "react";
 import { EventFields } from "../../lib/compiler/eventTypes";
 import SceneSelect from "../forms/SceneSelect";
+import ImageSelect from "../forms/ImageSelect";
 import FlagSelect from "../forms/FlagSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
@@ -35,6 +36,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             {field.type === "textarea" ? (
               <textarea
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 rows={field.rows}
                 placeholder={field.placeholder}
                 onChange={onChangeField(field.key, "text", field.updateFn)}
@@ -43,6 +45,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               <input
                 type="text"
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 placeholder={field.placeholder}
                 onChange={onChangeField(field.key)}
               />
@@ -53,6 +56,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 min={field.min}
                 max={field.max}
                 step={field.step}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key, field.type, val => {
                   if (!field.step || field.step === 1) {
                     val = Math.round(val);
@@ -63,38 +67,50 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "scene" ? (
               <SceneSelect
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "image" ? (
+              <ImageSelect
+                value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "flag" ? (
               <FlagSelect
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "direction" ? (
               <DirectionPicker
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key, "direction")}
               />
             ) : field.type === "fadeSpeed" ? (
               <FadeSpeedSelect
-                defaultValue="2"
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "cameraSpeed" ? (
               <CameraSpeedSelect
                 allowNone
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "actor" ? (
               <ActorSelect
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "emotion" ? (
               <EmotionSelect
                 value={value[field.key]}
+                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : (
