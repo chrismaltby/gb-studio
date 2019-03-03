@@ -58,6 +58,37 @@ const template = [
     ]
   },
   {
+    label: "Game",
+    submenu: [
+      {
+        label: "Run",
+        accelerator: "CommandOrControl+B",
+        click: () => {
+          notifyListeners("run");
+        }
+      },
+      {
+        label: "Build As",
+        submenu: [
+          {
+            label: "Rom",
+            accelerator: "CommandOrControl+Shift+B",
+            click() {
+              notifyListeners("build", "rom");
+            }
+          },
+          {
+            label: "Web",
+            accelerator: "CommandOrControl+Shift+N",
+            click() {
+              notifyListeners("build", "web");
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     label: "View",
     submenu: [
       {
@@ -101,11 +132,10 @@ const template = [
         click: () => {
           notifyListeners("section", "build");
         }
-      },
+      }
 
-      { type: "separator" },
-
-      { role: "togglefullscreen" }
+      // { type: "separator" },
+      // { role: "togglefullscreen" }
     ]
   },
   {
@@ -131,8 +161,8 @@ const template = [
 ];
 
 if (isDevMode) {
-  template[2].submenu.push({ type: "separator" });
-  template[2].submenu.push({
+  template[3].submenu.push({ type: "separator" });
+  template[3].submenu.push({
     label: "Debug",
     submenu: [
       { role: "reload" },
@@ -159,7 +189,7 @@ if (process.platform === "darwin") {
   });
 
   // Edit menu
-  template[2].submenu.push(
+  template[3].submenu.push(
     { type: "separator" },
     {
       label: "Speech",
@@ -168,7 +198,7 @@ if (process.platform === "darwin") {
   );
 
   // Window menu
-  template[4].submenu = [
+  template[5].submenu = [
     { role: "minimize" },
     { role: "zoom" },
     { type: "separator" },
@@ -185,7 +215,9 @@ let listeners = {
   save: [],
   undo: [],
   redo: [],
-  section: []
+  section: [],
+  run: [],
+  build: []
 };
 
 const notifyListeners = (event, data) => {

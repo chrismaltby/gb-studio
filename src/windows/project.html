@@ -26,7 +26,7 @@
     import { Provider } from "react-redux";
     import * as actions from "../actions";
     import configureStore from "../store/configureStore";
-    import { ipcRenderer } from "electron";
+    import { ipcRenderer, shell } from "electron";
     import watchProject from "../lib/project/watchProject";
     import "../lib/electron/handleFullScreen";
     import { ActionCreators } from 'redux-undo';
@@ -68,8 +68,24 @@
       store.dispatch(ActionCreators.redo())
     });
 
-    ipcRenderer.on("section", (event,section) => {
+    ipcRenderer.on("section", (event, section) => {
       store.dispatch(actions.setSection(section))
+    });
+
+    ipcRenderer.on("run", async (event) => {
+      const { outputRoot } = await store.dispatch(actions.runBuild());
+      ipcRenderer.send(
+        "open-play",
+        `file://${outputRoot}/build/web/index.html`
+      );
+    });
+
+    ipcRenderer.on("build", async (event, buildType) => {
+      await store.dispatch(actions.runBuild({
+        buildType,
+        exportBuild: true
+      }));
+      shell.openItem(`${store.getState().document.root}/build/${buildType}`);
     });
 
     let modified = true;

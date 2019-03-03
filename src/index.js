@@ -253,6 +253,14 @@ menu.on("section", async section => {
   mainWindow.webContents.send("section", section);
 });
 
+menu.on("run", () => {
+  mainWindow.webContents.send("run");
+});
+
+menu.on("build", buildType => {
+  mainWindow.webContents.send("build", buildType);
+});
+
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.close();
