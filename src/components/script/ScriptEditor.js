@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import uuid from "uuid/v4";
 import { DragSource, DropTarget, DragDropContext } from "react-dnd";
 import { CloseIcon } from "../library/Icons";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -12,12 +13,6 @@ import {
   filterEvents,
   findEvent
 } from "../../lib/helpers/eventSystem";
-
-const uuid = a => {
-  return a
-    ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
-    : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
-};
 
 const ItemTypes = {
   CARD: "card"

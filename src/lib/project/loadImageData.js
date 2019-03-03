@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import glob from "glob";
 import { promisify } from "util";
-import uuidv4 from "uuid/v4";
+import uuid from "uuid/v4";
 import sizeOf from "image-size";
 
 const TILE_SIZE = 8;
@@ -17,7 +17,7 @@ const loadImageData = async projectRoot => {
     imagePaths.map(async file => {
       const size = await sizeOfAsync(file);
       return {
-        id: uuidv4(),
+        id: uuid(),
         name: path.basename(file, ".png").replace(/_/g, " "),
         width: size.width / TILE_SIZE,
         height: size.height / TILE_SIZE,

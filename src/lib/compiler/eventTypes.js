@@ -1,4 +1,4 @@
-import trim2lines from "../trim2lines";
+import trim2lines from "../helpers/trim2lines";
 
 export const EVENT_END = "EVENT_END";
 export const EVENT_WAIT = "EVENT_WAIT";

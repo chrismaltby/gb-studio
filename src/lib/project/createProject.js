@@ -1,13 +1,13 @@
 import fs from "fs-extra";
 import path from "path";
-import stripInvalidFilenameCharacters from "./stripInvalidFilenameCharacters";
+import stripInvalidFilenameCharacters from "../helpers/stripInvalidFilenameCharacters";
 
 const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
 const createProject = async options => {
   const projectFolderName = stripInvalidFilenameCharacters(options.name);
   const projectPath = path.join(options.path, projectFolderName);
-  const templatePath = `${__dirname}/../data/templates/${options.target}`;
+  const templatePath = `${__dirname}/../../data/templates/${options.target}`;
   const projectDataPath = `${projectPath}/project.json`;
 
   if (fs.existsSync(projectPath)) {

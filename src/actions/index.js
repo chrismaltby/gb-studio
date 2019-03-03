@@ -1,8 +1,8 @@
 import * as types from "./actionTypes";
-import loadProjectData from "../lib/loadProjectData";
-import saveProjectData from "../lib/saveProjectData";
+import loadProjectData from "../lib/project/loadProjectData";
+import saveProjectData from "../lib/project/saveProjectData";
 import fs from "fs-extra";
-import uuid from "../lib/uuid";
+import uuid from "uuid/v4";
 import { remote } from "electron";
 import buildProject from "../lib/compiler/buildProject";
 
