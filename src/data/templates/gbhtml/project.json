@@ -505,7 +505,7 @@
             {
               "id": "353bee92-fd23-468b-bf09-99a098d1629d",
               "command": "EVENT_TEXT",
-              "args": { "text": "It's dangerous to\ngo with docs." }
+              "args": { "text": "It's dangerous to\ngo without docs." }
             },
             {
               "id": "3f4b8292-f024-47fb-955d-f7f99a08415e",
