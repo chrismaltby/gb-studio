@@ -5,6 +5,7 @@ import fs from "fs-extra";
 import uuid from "uuid/v4";
 import { remote } from "electron";
 import buildProject from "../lib/compiler/buildProject";
+import { loadSpriteData } from "../lib/project/loadSpriteData";
 
 const asyncAction = async (
   dispatch,
@@ -39,22 +40,29 @@ export const loadProject = path => async dispatch => {
   );
 };
 
-export const loadSprite = filename => async dispatch => {
+export const loadSprite = filename => async (dispatch, getState) => {
   return asyncAction(
     dispatch,
     types.SPRITE_LOAD_REQUEST,
     types.SPRITE_LOAD_SUCCESS,
     types.SPRITE_LOAD_FAILURE,
     async () => {
-      console.log("LOAD SPRITE: " + filename);
+      const state = getState();
+      const projectRoot = state.document && state.document.root;
+      const data = await loadSpriteData(
+        `${projectRoot}/assets/sprites/${filename}`
+      );
+      return {
+        data
+      };
     }
   );
 };
 
 export const removeSprite = filename => {
-  console.log("REMOVE SPRITE");
   return {
-    type: types.SPRITE_REMOVE
+    type: types.SPRITE_REMOVE,
+    filename
   };
 };
 
@@ -71,9 +79,9 @@ export const loadBackground = filename => async dispatch => {
 };
 
 export const removeBackground = filename => {
-  console.log("REMOVE BACKGROUND");
   return {
-    type: types.BACKGROUND_REMOVE
+    type: types.BACKGROUND_REMOVE,
+    filename
   };
 };
 

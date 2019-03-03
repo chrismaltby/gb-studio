@@ -13,26 +13,36 @@ const watchProject = async (
   }
 ) => {
   const projectRoot = path.dirname(projectPath);
+  const spritesRoot = `${projectRoot}/assets/sprites`;
+  const backgroundsRoot = `${projectRoot}/assets/backgrounds`;
+
+  const relativeSpritePath = fn => filename => {
+    fn(path.relative(spritesRoot, filename));
+  };
+
+  const relativeBackgroundPath = fn => filename => {
+    fn(path.relative(backgroundsRoot, filename));
+  };
 
   const spriteWatcher = chokidar
-    .watch([`${projectRoot}/assets/sprites`], {
+    .watch(spritesRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", onAddSprite)
-    .on("change", onChangedSprite)
-    .on("unlink", onRemoveSprite);
+    .on("add", relativeSpritePath(onAddSprite))
+    .on("change", relativeSpritePath(onChangedSprite))
+    .on("unlink", relativeSpritePath(onRemoveSprite));
 
   const backgroundWatcher = chokidar
-    .watch([`${projectRoot}/assets/backgrounds`], {
+    .watch(backgroundsRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", onAddBackground)
-    .on("change", onChangedBackground)
-    .on("unlink", onRemoveBackground);
+    .on("add", relativeBackgroundPath(onAddBackground))
+    .on("change", relativeBackgroundPath(onChangedBackground))
+    .on("unlink", relativeBackgroundPath(onRemoveBackground));
 
   const stopWatching = () => {
     spriteWatcher.close();

@@ -10,32 +10,32 @@ const FRAME_SIZE = 16;
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
-const loadSpriteData = async projectRoot => {
+const loadSpriteData = async filename => {
+  const size = await sizeOfAsync(filename);
+  const numFrames = size.width / FRAME_SIZE;
+  const relativePath = filename.replace(/.*assets\/sprites\//, "");
+  return {
+    id: uuidv4(),
+    name: relativePath.replace(".png", ""),
+    numFrames,
+    type:
+      numFrames === 6
+        ? "actor_animated"
+        : numFrames === 3
+        ? "actor"
+        : numFrames === 1
+        ? "static"
+        : "invalid",
+    filename: relativePath,
+    _v: Math.random()
+  };
+};
+
+const loadAllSpriteData = async projectRoot => {
   const spritePaths = await globAsync(projectRoot + "/assets/sprites/*.png");
-
-  const spriteData = await Promise.all(
-    spritePaths.map(async file => {
-      const size = await sizeOfAsync(file);
-      const numFrames = size.width / FRAME_SIZE;
-
-      return {
-        id: uuidv4(),
-        name: path.basename(file, ".png").replace(/_/g, " "),
-        numFrames,
-        type:
-          numFrames === 6
-            ? "actor_animated"
-            : numFrames === 3
-            ? "actor"
-            : numFrames === 1
-            ? "static"
-            : "invalid",
-        filename: path.basename(file)
-      };
-    })
-  );
-
+  const spriteData = await Promise.all(spritePaths.map(loadSpriteData));
   return spriteData;
 };
 
-export default loadSpriteData;
+export default loadAllSpriteData;
+export { loadSpriteData };

@@ -31,7 +31,7 @@ class Actor extends Component {
 
   imageSrc = props => {
     return `${props.projectRoot}/assets/sprites/${props.spriteSheet &&
-      props.spriteSheet.filename}`;
+      props.spriteSheet.filename + "?v=" + (props.spriteSheet._v || 0)}`;
   };
 
   // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
@@ -61,17 +61,17 @@ class Actor extends Component {
         direction === "up"
           ? 1
           : direction === "left" || direction === "right"
-            ? 2
-            : 0;
+          ? 2
+          : 0;
 
       const spriteOffset =
         spriteSheet.type === "static"
           ? 0
           : spriteSheet.type === "actor"
-            ? directionOffset
-            : spriteSheet.type === "actor_animated"
-              ? directionOffset * 2
-              : 0;
+          ? directionOffset
+          : spriteSheet.type === "actor_animated"
+          ? directionOffset * 2
+          : 0;
 
       tmpCanvas.width = tmpCanvas.height = 16;
       if (direction === "left" && spriteSheet.type !== "static") {

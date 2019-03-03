@@ -1,6 +1,10 @@
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
+  SPRITE_LOAD_SUCCESS,
+  SPRITE_REMOVE,
+  BACKGROUND_LOAD_SUCCESS,
+  BACKGROUND_REMOVE,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -24,10 +28,59 @@ import {
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
 
+const sortFilename = (a, b) => {
+  if (a.filename < b.filename) return -1;
+  if (a.filename > b.filename) return 1;
+  return 0;
+};
+
 export default function project(state = initialState.project, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS:
       return deepmerge(state, action.data);
+    case SPRITE_REMOVE:
+      return {
+        ...state,
+        spriteSheets: state.spriteSheets.filter(spriteSheet => {
+          return spriteSheet.filename !== action.filename;
+        })
+      };
+    case SPRITE_LOAD_SUCCESS:
+      const currentSprite = state.spriteSheets.find(
+        sprite => sprite.filename === action.data.filename
+      );
+      console.log({ currentSprite });
+      return {
+        ...state,
+        spriteSheets: []
+          .concat(
+            state.spriteSheets.filter(spriteSheet => {
+              return spriteSheet.filename !== action.data.filename;
+            }),
+            {
+              ...action.data,
+              id: currentSprite ? currentSprite.id : action.data.id
+            }
+          )
+          .sort(sortFilename)
+      };
+    case BACKGROUND_REMOVE:
+      return {
+        ...state,
+        images: state.images.filter(image => {
+          return image.filename !== action.filename;
+        })
+      };
+    case BACKGROUND_LOAD_SUCCESS:
+      return {
+        ...state,
+        images: [].concat(
+          state.images.filter(image => {
+            return image.filename !== action.data.filename;
+          }),
+          action.background
+        )
+      };
     case ADD_SCENE:
       return {
         ...state,
