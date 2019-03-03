@@ -61,6 +61,7 @@
     }
   },
   "dependencies": {
+    "chokidar": "^2.1.2",
     "classnames": "^2.2.5",
     "deepmerge": "^3.1.0",
     "electron-compile": "^6.4.4",

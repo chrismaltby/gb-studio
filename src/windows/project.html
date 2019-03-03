@@ -27,6 +27,7 @@
     import * as actions from "../actions";
     import configureStore from "../store/configureStore";
     import { ipcRenderer } from "electron";
+    import watchProject from "../lib/project/watchProject";
     import "../lib/handleFullScreen";
     import { ActionCreators } from 'redux-undo';
     const { systemPreferences } = require('electron').remote;
@@ -39,6 +40,14 @@
     const projectPath = urlParams.get('path');
 
     store.dispatch(actions.loadProject(projectPath));
+    watchProject(projectPath,{
+      onAddSprite: (f) => store.dispatch(actions.loadSprite(f)),
+      onAddBackground: (f) => store.dispatch(actions.loadBackground(f)),
+      onChangedSprite: (f) => store.dispatch(actions.loadSprite(f)),
+      onChangedBackground: (f) => store.dispatch(actions.loadBackground(f)),
+      onRemoveSprite: (f) => store.dispatch(actions.removeSprite(f)),
+      onRemoveBackground: (f) => store.dispatch(actions.removeBackground(f))
+    });
 
     window.ActionCreators = ActionCreators;
     window.store = store;

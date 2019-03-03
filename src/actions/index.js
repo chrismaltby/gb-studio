@@ -1,13 +1,9 @@
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/loadProjectData";
 import saveProjectData from "../lib/saveProjectData";
-import runCmd from "../lib/runCmd";
-import compileProject from "../lib/compiler/compileData";
 import fs from "fs-extra";
 import uuid from "../lib/uuid";
 import { remote } from "electron";
-import ejectBuild from "../lib/compiler/ejectBuild";
-import makeBuild from "../lib/compiler/makeBuild";
 import buildProject from "../lib/compiler/buildProject";
 
 const asyncAction = async (
@@ -34,13 +30,51 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
-      const data = await loadProjectData(path);
+      const data = await loadProjectData(path, { loadSprite, loadBackground });
       return {
         data,
         path
       };
     }
   );
+};
+
+export const loadSprite = filename => async dispatch => {
+  return asyncAction(
+    dispatch,
+    types.SPRITE_LOAD_REQUEST,
+    types.SPRITE_LOAD_SUCCESS,
+    types.SPRITE_LOAD_FAILURE,
+    async () => {
+      console.log("LOAD SPRITE: " + filename);
+    }
+  );
+};
+
+export const removeSprite = filename => {
+  console.log("REMOVE SPRITE");
+  return {
+    type: types.SPRITE_REMOVE
+  };
+};
+
+export const loadBackground = filename => async dispatch => {
+  return asyncAction(
+    dispatch,
+    types.BACKGROUND_LOAD_REQUEST,
+    types.BACKGROUND_LOAD_SUCCESS,
+    types.BACKGROUND_LOAD_FAILURE,
+    async () => {
+      console.log("LOAD BACKGROUND: " + filename);
+    }
+  );
+};
+
+export const removeBackground = filename => {
+  console.log("REMOVE BACKGROUND");
+  return {
+    type: types.BACKGROUND_REMOVE
+  };
 };
 
 export const saveProject = () => async (dispatch, getState) => {
