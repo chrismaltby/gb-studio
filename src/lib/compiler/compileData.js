@@ -193,6 +193,18 @@ const compile = async (
   //   })
   // );
 
+  let playerSpriteIndex = precompiled.usedSprites.findIndex(
+    s => s.id === projectData.settings.playerSpriteSheetId
+  );
+  if (playerSpriteIndex < 0) {
+    playerSpriteIndex = precompiled.usedSprites.findIndex(
+      s => s.type === "actor_animated"
+    );
+  }
+  if (playerSpriteIndex < 0) {
+    throw "Player sprite hasn't been set, add it from the Game World.";
+  }
+
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `typedef struct _BANK_PTR {\n` +
@@ -203,13 +215,14 @@ const compile = async (
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
     `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n\n` +
+    `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
       })
       .join(`\n`) +
     `\n` +
-    `extern const unsigned char *bank_data_ptrs[];\n` +
+    `extern const unsigned char (*bank_data_ptrs[])[];\n` +
     `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
     stringBanks
       .map((bankStrings, index) => {
@@ -223,7 +236,7 @@ const compile = async (
     `#pragma bank=16\n` +
     `#include "data_ptrs.h"\n` +
     `#include "banks.h"\n\n` +
-    `const unsigned char *bank_data_ptrs[] = {\n` +
+    `const unsigned char (*bank_data_ptrs[])[] = {\n` +
     bankDataPtrs.join(",") +
     "\n};\n\n" +
     Object.keys(dataPtrs)
@@ -285,6 +298,7 @@ const precompile = async (projectData, projectRoot, tmpPath, progress) => {
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
+    projectData.settings.playerSpriteSheetId,
     projectRoot
   );
 
@@ -372,12 +386,20 @@ export const precompileImages = async (
   };
 };
 
-export const precompileSprites = async (spriteSheets, scenes, projectRoot) => {
-  const usedSprites = spriteSheets.filter(spriteSheet =>
-    scenes.find(scene =>
-      scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
-    )
+export const precompileSprites = async (
+  spriteSheets,
+  scenes,
+  playerSpriteSheetId,
+  projectRoot
+) => {
+  const usedSprites = spriteSheets.filter(
+    spriteSheet =>
+      spriteSheet.id === playerSpriteSheetId ||
+      scenes.find(scene =>
+        scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
+      )
   );
+
   const spriteLookup = indexArray(usedSprites, "id");
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
@@ -483,11 +505,14 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
     actors.map((actor, actorIndex) => {
       const sprite = sprites.find(s => s.id === actor.spriteSheetId);
       if (!sprite) return [];
+      const spriteFrames = sprite.size / 64;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        sprite.size / 64 === 6 // Animated
-          ? 1
-          : 0,
+        spriteFrames === 6
+          ? 2 // Actor Animated
+          : spriteFrames === 3
+          ? 1 // Actor
+          : 0, // Static
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction

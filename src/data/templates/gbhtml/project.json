@@ -7,7 +7,8 @@
     "startY": 26,
     "startDirection": "left",
     "zoom": 100,
-    "startSceneId": "94c18861-b352-4f49-a64d-52f2e3415077"
+    "startSceneId": "94c18861-b352-4f49-a64d-52f2e3415077",
+    "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
   },
   "name": "___PROJECT_NAME___",
   "flags": [

@@ -50,7 +50,6 @@ int main()
       START_SCENE_DIR == 2 ? -1 : START_SCENE_DIR == 4 ? 1 : 0;
   map_next_dir.y = actors[0].dir.y =
       START_SCENE_DIR == 8 ? -1 : START_SCENE_DIR == 1 ? 1 : 0;
-  actors[0].animated = TRUE;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 

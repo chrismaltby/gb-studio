@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <rand.h>
 #include "BankManager.h"
 #include "banks.h"
 #include "data_ptrs.h"
@@ -33,6 +34,13 @@ typedef enum
   AI_RANDOM_WALK,
 } MOVEMENT_TYPE;
 
+typedef enum
+{
+  SPRITE_STATIC = 0,
+  SPRITE_ACTOR,
+  SPRITE_ACTOR_ANIMATED
+} SPRITE_TYPE;
+
 typedef struct _POS
 {
   UBYTE x;
@@ -59,7 +67,7 @@ typedef struct _ACTORSPRITE
   UBYTE redraw;
   UBYTE enabled;
   UBYTE moving;
-  UBYTE animated;
+  SPRITE_TYPE sprite_type;
   UWORD script_ptr;
   BANK_PTR events_ptr;
   MOVEMENT_TYPE movement_type;

@@ -1,8 +1,0 @@
-*.diff
-*.pyc
-*~
-*.bc
-*.md
-
-# Ignore generated files
-build/

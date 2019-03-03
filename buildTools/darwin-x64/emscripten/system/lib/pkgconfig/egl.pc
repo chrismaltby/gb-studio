@@ -1,3 +1,0 @@
-Name: egl
-Description: EGL library
-Version: 10.2.2

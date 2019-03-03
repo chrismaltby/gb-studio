@@ -23,7 +23,7 @@ export default function console(state = initialState.console, action) {
     case CMD_STD_OUT:
       return {
         ...state,
-        output: [].concat(state.output.slice(-100), {
+        output: [].concat(state.output.slice(-500), {
           type: "out",
           text: action.text
         })
@@ -31,7 +31,7 @@ export default function console(state = initialState.console, action) {
     case CMD_STD_ERR:
       return {
         ...state,
-        output: [].concat(state.output.slice(-100), {
+        output: [].concat(state.output.slice(-500), {
           type: "err",
           text: action.text
         })

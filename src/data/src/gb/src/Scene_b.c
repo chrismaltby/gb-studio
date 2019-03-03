@@ -77,7 +77,7 @@ void SceneInit_b()
   BANK_PTR bank_ptr, sprite_bank_ptr;
   UWORD ptr, sprite_ptr, col_ptr;
   UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
-  UBYTE k, j, sprite_len, collision_tiles_len, col_bank;
+  UBYTE k, j, sprite_frames, sprite_len, collision_tiles_len, col_bank;
 
   DISPLAY_OFF;
 
@@ -109,6 +109,7 @@ void SceneInit_b()
     SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
   }
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
 
   // Load actors
   ptr = ptr + num_sprites;
@@ -122,8 +123,8 @@ void SceneInit_b()
     LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
     actors[i].redraw = TRUE;
     actors[i].enabled = TRUE;
-    actors[i].animated = FALSE; // WTF needed
-    actors[i].animated = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
+    actors[i].sprite_type = FALSE; // WTF needed
+    actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
     actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 2)) + 8;
     actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 3)) + 8;
     j = ReadBankedUBYTE(bank_ptr.bank, ptr + 4);
@@ -161,7 +162,14 @@ void SceneInit_b()
   col_bank = bank_ptr.bank;
 
   // Load Player Sprite
-  SetBankedSpriteData(3, 0, 24, village_sprites);
+  sprite_index = START_PLAYER_SPRITE;
+  ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
+  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+  sprite_len = MUL_4(sprite_frames);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+  actors[0].sprite = 0;
+  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
 
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
   ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[image_index]);
@@ -522,11 +530,7 @@ static void SceneHandleInput()
   if (JOY_PRESSED(J_A))
   {
     // If still drawing text, finish drawing
-    if (!text_drawn)
-    {
-      draw_text(TRUE);
-    }
-    else
+    if (text_drawn)
     {
       menu_dest_y = MENU_CLOSED_Y;
     }
@@ -645,25 +649,28 @@ void SceneRenderActors_b()
       flip = FALSE;
       frame = actors[i].sprite;
 
-      if (actors[i].animated)
+      if (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED)
       {
         // Set frame offset based on position, every 16px switch frame
         frame += (DIV_16(actors[i].pos.x) & 1) == (DIV_16(actors[i].pos.y) & 1);
       }
 
-      // Increase frame based on facing direction
-      if (actors[i].dir.y < 0)
+      if (actors[i].sprite_type != SPRITE_STATIC)
       {
-        frame += 1 + actors[i].animated;
-      }
-      else if (actors[i].dir.x != 0)
-      {
-        frame += 2 + MUL_2(actors[i].animated);
-
-        // Facing left so flip sprite
-        if (actors[i].dir.x < 0)
+        // Increase frame based on facing direction
+        if (actors[i].dir.y < 0)
         {
-          flip = TRUE;
+          frame += 1 + (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
+        }
+        else if (actors[i].dir.x != 0)
+        {
+          frame += 2 + MUL_2(actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
+
+          // Facing left so flip sprite
+          if (actors[i].dir.x < 0)
+          {
+            flip = TRUE;
+          }
         }
       }
 
