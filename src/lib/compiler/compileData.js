@@ -359,8 +359,16 @@ export const precompileImages = async (
   projectRoot,
   tmpPath
 ) => {
-  const usedImages = images.filter(image =>
-    scenes.find(scene => scene.imageId === image.id)
+  let eventImageIds = [];
+  walkScenesEvents(scenes, cmd => {
+    if (cmd.args && cmd.args.hasOwnProperty("imageId")) {
+      eventImageIds.push(cmd.args.imageId);
+    }
+  });
+  const usedImages = images.filter(
+    image =>
+      eventImageIds.indexOf(image.id) > -1 ||
+      scenes.find(scene => scene.imageId === image.id)
   );
   const imageLookup = indexArray(usedImages, "id");
   const imageData = await compileImages(usedImages, projectRoot, tmpPath);
