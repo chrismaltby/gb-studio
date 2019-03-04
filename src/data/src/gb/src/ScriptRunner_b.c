@@ -383,3 +383,46 @@ void Script_ReturnToTitle_b()
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
+
+/*
+ * Command: ShowOverlay
+ * ----------------------------
+ * Load image into window buffer and position.
+ */
+void Script_ShowOverlay_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: HideOverlay
+ * ----------------------------
+ * Hide window buffer
+ */
+void Script_HideOverlay_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: OverlaySetPos
+ * ----------------------------
+ * Window buffer set position to X/Y
+ */
+void Script_OverlaySetPos_b()
+{
+  WX_REG = script_cmd_args[0] << 3;
+  menu_y = menu_dest_y = script_cmd_args[1] << 3;
+  WY_REG = script_cmd_args[1] << 3;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: OverlaySetPos
+ * ----------------------------
+ * Window buffer move position to X/Y with speed
+ */
+void Script_OverlayMoveTo_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+}

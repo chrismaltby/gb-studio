@@ -20,7 +20,11 @@ import {
   EVENT_HIDE_SPRITES,
   EVENT_SHOW_PLAYER,
   EVENT_HIDE_PLAYER,
-  EVENT_RETURN_TO_TITLE
+  EVENT_RETURN_TO_TITLE,
+  EVENT_OVERLAY_SHOW,
+  EVENT_OVERLAY_HIDE,
+  EVENT_OVERLAY_SET_POSITION,
+  EVENT_OVERLAY_MOVE_TO
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec } from "./helpers";
@@ -67,7 +71,11 @@ const CMD_LOOKUP = {
   HIDE_PLAYER: 0x15,
   ACTOR_EMOTION: 0x16,
   CAMERA_SHAKE: 0x17,
-  RETURN_TO_TITLE: 0x18
+  RETURN_TO_TITLE: 0x18,
+  OVERLAY_SHOW: 0x19,
+  OVERLAY_HIDE: 0x1a,
+  OVERLAY_SET_POSITION: 0x1b,
+  OVERLAY_MOVE_TO: 0x1c
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -85,7 +93,7 @@ const getFlagIndex = (flag, flags) => {
 
 const precompileEntityScript = (
   input = [],
-  { output = [], strings, scene, scenes, flags, branch = false } = {}
+  { output = [], strings, scene, scenes, images, flags, branch = false } = {}
 ) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -112,6 +120,7 @@ const precompileEntityScript = (
         strings,
         scene,
         scenes,
+        images,
         flags,
         branch: true
       });
@@ -130,6 +139,7 @@ const precompileEntityScript = (
         strings,
         scene,
         scenes,
+        images,
         flags,
         branch: true
       });
@@ -239,6 +249,28 @@ const precompileEntityScript = (
       output.push(CMD_LOOKUP.RETURN_TO_TITLE);
     } else if (command === EVENT_END) {
       // output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_OVERLAY_SHOW) {
+      output.push(CMD_LOOKUP.OVERLAY_SHOW);
+      let imageIndex = images.findIndex(i => i.id === input[i].args.imageId);
+      if (imageIndex > -1) {
+        output.push(hi(imageIndex));
+        output.push(lo(imageIndex));
+        output.push(input[i].args.x || 0);
+        output.push(input[i].args.y || 0);
+      }
+    } else if (command === EVENT_OVERLAY_HIDE) {
+      output.push(CMD_LOOKUP.OVERLAY_HIDE);
+    } else if (command === EVENT_OVERLAY_SET_POSITION) {
+      output.push(CMD_LOOKUP.OVERLAY_SET_POSITION);
+      output.push(input[i].args.x || 0);
+      output.push(input[i].args.y || 0);
+    } else if (command === EVENT_OVERLAY_MOVE_TO) {
+      output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
+      output.push(input[i].args.x || 0);
+      output.push(input[i].args.y || 0);
+      let speed = input[i].args.speed || 0;
+      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      output.push(speedFlag);
     }
 
     for (var oi = 0; oi < output.length; oi++) {

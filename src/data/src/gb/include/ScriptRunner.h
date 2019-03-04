@@ -38,5 +38,9 @@ void Script_HidePlayer_b();
 void Script_ActorSetEmote_b();
 void Script_CameraShake_b();
 void Script_ReturnToTitle_b();
+void Script_ShowOverlay_b();
+void Script_HideOverlay_b();
+void Script_OverlaySetPos_b();
+void Script_OverlayMoveTo_b();
 
 #endif

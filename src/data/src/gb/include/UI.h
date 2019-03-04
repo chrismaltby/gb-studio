@@ -11,6 +11,9 @@
 extern UINT8 ui_bank;
 extern unsigned char text_lines[80];
 
+extern UBYTE menu_y;
+extern UBYTE menu_dest_y;
+
 void UIInit();
 void UIUpdate();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);

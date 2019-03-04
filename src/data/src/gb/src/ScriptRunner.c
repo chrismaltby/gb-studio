@@ -36,7 +36,11 @@ SCRIPT_CMD script_cmds[] = {
     {Script_HidePlayer_b, 0},    // 0x15
     {Script_ActorSetEmote_b, 2}, // 0x16
     {Script_CameraShake_b, 1},   // 0x17
-    {Script_ReturnToTitle_b, 0}  // 0x18
+    {Script_ReturnToTitle_b, 0}, // 0x18
+    {Script_ShowOverlay_b, 4},   // 0x19
+    {Script_HideOverlay_b, 0},   // 0x1A
+    {Script_OverlaySetPos_b, 2}, // 0x1B
+    {Script_OverlayMoveTo_b, 3}, // 0x1C
 };
 
 UBYTE ScriptLastFnComplete();
