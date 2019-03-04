@@ -20,7 +20,7 @@ const loadImageData = async filename => {
     width: size.width / TILE_SIZE,
     height: size.height / TILE_SIZE,
     filename: relativePath,
-    _v: Math.random()
+    _v: Date.now()
   };
 };
 

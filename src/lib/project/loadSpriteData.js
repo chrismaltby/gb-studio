@@ -27,7 +27,7 @@ const loadSpriteData = async filename => {
         ? "static"
         : "invalid",
     filename: relativePath,
-    _v: Math.random()
+    _v: Date.now()
   };
 };
 

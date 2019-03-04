@@ -29,8 +29,14 @@ import {
 import deepmerge from "deepmerge";
 
 const sortFilename = (a, b) => {
-  if (a.filename < b.filename) return -1;
-  if (a.filename > b.filename) return 1;
+  if (a.filename > b.filename) return -1;
+  if (a.filename < b.filename) return 1;
+  return 0;
+};
+
+const sortRecent = (a, b) => {
+  if (a._v > b._v) return -1;
+  if (a._v < b._v) return 1;
   return 0;
 };
 
@@ -94,7 +100,10 @@ export default function project(state = initialState.project, action) {
         scenes: [].concat(state.scenes, {
           id: action.id,
           name: "New Scene " + state.scenes.length,
-          imageId: state.images && state.images[0] && state.images[0].id,
+          imageId:
+            state.images &&
+            state.images[0] &&
+            state.images.slice().sort(sortRecent)[0].id,
           x: Math.max(50, action.x),
           y: Math.max(10, action.y),
           width: 32,
