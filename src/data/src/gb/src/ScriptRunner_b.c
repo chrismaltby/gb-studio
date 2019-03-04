@@ -239,6 +239,7 @@ void Script_FadeIn_b()
 void Script_LoadScene_b()
 {
   scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  scene_index = scene_next_index + 1;
 
   map_next_pos.x = 0; // @wtf-but-needed
   map_next_pos.x = (script_cmd_args[2] << 3) + 8;
