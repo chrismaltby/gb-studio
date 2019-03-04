@@ -251,7 +251,9 @@ const precompileEntityScript = (
       // output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_OVERLAY_SHOW) {
       output.push(CMD_LOOKUP.OVERLAY_SHOW);
-      let imageIndex = images.findIndex(i => i.id === input[i].args.imageId);
+      let imageIndex = images.findIndex(
+        image => image.id === input[i].args.imageId
+      );
       if (imageIndex > -1) {
         output.push(hi(imageIndex));
         output.push(lo(imageIndex));
