@@ -93,10 +93,6 @@ typedef struct _SCRIPT_CMD
 
 // End of Types
 
-// Functions
-void set_text_line(UWORD line);
-void draw_text(UBYTE force);
-
 // Extern - @todo move most of these out of game.h
 extern SCRIPT_CMD_FN last_fn;
 extern UWORD script_ptr;

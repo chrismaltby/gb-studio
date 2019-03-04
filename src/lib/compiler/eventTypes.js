@@ -258,8 +258,8 @@ export const EventFields = {
 
   [EVENT_OVERLAY_SHOW]: [
     {
-      key: "imageId",
-      type: "image"
+      key: "color",
+      type: "overlayColor"
     },
     {
       key: "x",
@@ -319,11 +319,6 @@ export const EventFields = {
       max: 18,
       defaultValue: 0,
       width: "50%"
-    },
-    {
-      key: "speed",
-      type: "cameraSpeed",
-      defaultValue: 2
     }
   ]
 };

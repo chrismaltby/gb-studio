@@ -251,15 +251,9 @@ const precompileEntityScript = (
       // output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_OVERLAY_SHOW) {
       output.push(CMD_LOOKUP.OVERLAY_SHOW);
-      let imageIndex = images.findIndex(
-        image => image.id === input[i].args.imageId
-      );
-      if (imageIndex > -1) {
-        output.push(hi(imageIndex));
-        output.push(lo(imageIndex));
-        output.push(input[i].args.x || 0);
-        output.push(input[i].args.y || 0);
-      }
+      output.push(input[i].args.color === "white" ? 1 : 0);
+      output.push(input[i].args.x || 0);
+      output.push(input[i].args.y || 0);
     } else if (command === EVENT_OVERLAY_HIDE) {
       output.push(CMD_LOOKUP.OVERLAY_HIDE);
     } else if (command === EVENT_OVERLAY_SET_POSITION) {
@@ -270,9 +264,6 @@ const precompileEntityScript = (
       output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-      let speed = input[i].args.speed || 0;
-      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedFlag);
     }
 
     for (var oi = 0; oi < output.length; oi++) {

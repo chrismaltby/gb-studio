@@ -9,6 +9,7 @@ import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import ActorSelect from "../forms/ActorSelect";
 import EmotionSelect from "../forms/EmotionSelect";
 import { FormField } from "../library/Forms";
+import OverlayColorSelect from "../forms/OverlayColorSelect";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
@@ -97,6 +98,12 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "cameraSpeed" ? (
               <CameraSpeedSelect
                 allowNone
+                value={value[field.key]}
+                defaultValue={field.defaultValue}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "overlayColor" ? (
+              <OverlayColorSelect
                 value={value[field.key]}
                 defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}

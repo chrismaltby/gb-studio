@@ -43,7 +43,6 @@ void Script_Text_b()
 {
   script_ptr += 1 + script_cmd_args_len;
   UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
-
   script_action_complete = FALSE;
 }
 
@@ -391,6 +390,8 @@ void Script_ReturnToTitle_b()
  */
 void Script_ShowOverlay_b()
 {
+  UISetColor(script_cmd_args[0]);
+  UISetPos(script_cmd_args[1] << 3, script_cmd_args[2] << 3);
   script_ptr += 1 + script_cmd_args_len;
 }
 
@@ -401,6 +402,7 @@ void Script_ShowOverlay_b()
  */
 void Script_HideOverlay_b()
 {
+  UISetPos(0, MENU_CLOSED_Y);
   script_ptr += 1 + script_cmd_args_len;
 }
 
@@ -411,9 +413,7 @@ void Script_HideOverlay_b()
  */
 void Script_OverlaySetPos_b()
 {
-  WX_REG = script_cmd_args[0] << 3;
-  menu_y = menu_dest_y = script_cmd_args[1] << 3;
-  WY_REG = script_cmd_args[1] << 3;
+  UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
   script_ptr += 1 + script_cmd_args_len;
 }
 
@@ -424,5 +424,7 @@ void Script_OverlaySetPos_b()
  */
 void Script_OverlayMoveTo_b()
 {
+  UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
   script_ptr += 1 + script_cmd_args_len;
+  script_action_complete = FALSE;
 }

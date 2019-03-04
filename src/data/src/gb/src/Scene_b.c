@@ -529,31 +529,17 @@ static void SceneHandleInput()
   // If menu open - check if A pressed to close
   if (JOY_PRESSED(J_A))
   {
-    // If still drawing text, finish drawing
-    if (text_drawn)
-    {
-      menu_dest_y = MENU_CLOSED_Y;
-    }
+    UIOnInteract();
   }
+
   // If player between tiles can't handle input
   if (!ACTOR_ON_TILE(0))
   {
     return;
   }
-  // Can't move while menu open
-  if (menu_y != MENU_CLOSED_Y)
-  {
-    return;
-  }
-
-  // Can't move if emoting
-  if (emotion_timer != 0)
-  {
-    return;
-  }
 
   // Can't move while script is running
-  if (script_ptr || IsFading())
+  if (script_ptr || emotion_timer != 0 || IsFading())
   {
     actors[0].moving = FALSE;
     return;
@@ -696,7 +682,7 @@ void SceneRenderActors_b()
     // If sprite not under menu position it, otherwise hide
     // @todo This function probably shouldn't know about the menu, maybe
     // keep a max_sprite_screen_y value and check against that?
-    if (actors[i].enabled && (screen_y < menu_y + 16 || menu_y == MENU_CLOSED_Y))
+    if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
     {
       move_sprite_pair(sprite_index, screen_x, screen_y);
     }

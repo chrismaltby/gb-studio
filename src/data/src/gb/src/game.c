@@ -131,19 +131,3 @@ void game_loop()
   prev_joy = joy;
   time++;
 }
-
-void script_cmd_line()
-{
-  LOG("- SCRIPT: EVENT_LINE %u\n", (script_cmd_args[0] * 256) + script_cmd_args[1]);
-  script_action_complete = FALSE;
-  script_ptr += 3;
-  set_text_line((script_cmd_args[0] * 256) + script_cmd_args[1]);
-}
-
-void script_cmd_set_emotion()
-{
-  script_ptr += 3;
-  // MapSetEmotion(script_arg1, script_arg2);
-  script_action_complete = FALSE;
-  script_continue = FALSE;
-}
