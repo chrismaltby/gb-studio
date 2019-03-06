@@ -86,6 +86,7 @@ export default React.memo(
               e="M10 80 Q 95 10 180 80"
               stroke="#00bcd4"
               fill="transparent"
+              strokeDasharray="3"
             />
           </g>
         ))}
