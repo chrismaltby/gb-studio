@@ -4,8 +4,8 @@
 #include <gb/gb.h>
 #include "game.h"
 
-#define MAX_ACTORS 16
-#define MAX_TRIGGERS 16
+#define MAX_ACTORS 11
+#define MAX_TRIGGERS 10
 #define ACTOR_HEIGHT 16
 #define ACTOR_WIDTH 16
 #define ACTOR_HALF_WIDTH 8
