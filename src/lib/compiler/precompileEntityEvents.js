@@ -238,7 +238,7 @@ const precompileEntityScript = (
         output.push(input[i].args.x || 0);
         output.push(input[i].args.y || 0);
         output.push(dirDec(input[i].args.direction));
-        output.push(input[i].args.fadeInSpeed || 2);
+        output.push(input[i].args.fadeSpeed || 2);
       }
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
