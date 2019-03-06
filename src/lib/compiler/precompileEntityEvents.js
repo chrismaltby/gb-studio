@@ -18,8 +18,8 @@ import {
   EVENT_ACTOR_EMOTION,
   EVENT_SHOW_SPRITES,
   EVENT_HIDE_SPRITES,
-  EVENT_SHOW_PLAYER,
-  EVENT_HIDE_PLAYER,
+  EVENT_ACTOR_SHOW,
+  EVENT_ACTOR_HIDE,
   EVENT_RETURN_TO_TITLE,
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_HIDE,
@@ -67,8 +67,8 @@ const CMD_LOOKUP = {
   SHOW_SPRITES: 0x11,
   HIDE_SPRITES: 0x12,
   START_BATTLE: 0x13,
-  SHOW_PLAYER: 0x14,
-  HIDE_PLAYER: 0x15,
+  ACTOR_SHOW: 0x14,
+  ACTOR_HIDE: 0x15,
   ACTOR_EMOTION: 0x16,
   CAMERA_SHAKE: 0x17,
   RETURN_TO_TITLE: 0x18,
@@ -241,10 +241,14 @@ const precompileEntityScript = (
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {
       output.push(CMD_LOOKUP.HIDE_SPRITES);
-    } else if (command === EVENT_SHOW_PLAYER) {
-      output.push(CMD_LOOKUP.SHOW_PLAYER);
-    } else if (command === EVENT_HIDE_PLAYER) {
-      output.push(CMD_LOOKUP.HIDE_PLAYER);
+    } else if (command === EVENT_ACTOR_SHOW) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SHOW);
+      output.push(actorIndex);
+    } else if (command === EVENT_ACTOR_HIDE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_HIDE);
+      output.push(actorIndex);
     } else if (command === EVENT_RETURN_TO_TITLE) {
       output.push(CMD_LOOKUP.RETURN_TO_TITLE);
     } else if (command === EVENT_END) {

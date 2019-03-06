@@ -31,8 +31,8 @@ export const EVENT_FADE_OUT = "EVENT_FADE_OUT";
 export const EVENT_FADE_IN = "EVENT_FADE_IN";
 export const EVENT_SHOW_SPRITES = "EVENT_SHOW_SPRITES";
 export const EVENT_HIDE_SPRITES = "EVENT_HIDE_SPRITES";
-export const EVENT_SHOW_PLAYER = "EVENT_SHOW_PLAYER";
-export const EVENT_HIDE_PLAYER = "EVENT_HIDE_PLAYER";
+export const EVENT_ACTOR_SHOW = "EVENT_ACTOR_SHOW";
+export const EVENT_ACTOR_HIDE = "EVENT_ACTOR_HIDE";
 
 // Overlay
 export const EVENT_OVERLAY_SHOW = "EVENT_OVERLAY_SHOW";
@@ -57,8 +57,8 @@ export const EventNames = {
   [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
   [EVENT_ACTOR_EMOTION]: "Emotion Bubble",
   // [EVENT_RETURN_TO_TITLE]: "Return To Title",
-  [EVENT_SHOW_PLAYER]: "Show Player",
-  [EVENT_HIDE_PLAYER]: "Hide Player",
+  [EVENT_ACTOR_SHOW]: "Show Actor",
+  [EVENT_ACTOR_HIDE]: "Hide Actor",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
   [EVENT_HIDE_SPRITES]: "Hide Sprites",
   [EVENT_OVERLAY_SHOW]: "Show Overlay",
@@ -255,8 +255,18 @@ export const EventFields = {
     }
   ],
   // [EVENT_RETURN_TO_TITLE]: [],
-  [EVENT_SHOW_PLAYER]: [],
-  [EVENT_HIDE_PLAYER]: [],
+  [EVENT_ACTOR_SHOW]: [
+    {
+      key: "actorId",
+      type: "actor"
+    }
+  ],
+  [EVENT_ACTOR_HIDE]: [
+    {
+      key: "actorId",
+      type: "actor"
+    }
+  ],
   [EVENT_SHOW_SPRITES]: [],
   [EVENT_HIDE_SPRITES]: [],
 
