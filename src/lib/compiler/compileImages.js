@@ -3,7 +3,7 @@ const ggbgfx = require("./ggbgfx");
 const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
 
-const compileImages = async (imgs, projectPath, tmpPath) => {
+const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   let tilesetLookups = [];
   let tilesetStrings = [];
   let tilesetIndexes = [];
@@ -22,8 +22,12 @@ const compileImages = async (imgs, projectPath, tmpPath) => {
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
     if (tilesetLength > MAX_TILESET_TILES) {
-      console.error("ERROR:", img.filenname, " too many tiles for tileset");
-      process.exit();
+      warnings(
+        `Background '${
+          img.filename
+        }' contains too many unique 8x8px tiles (${tilesetLength} where limit is ${MAX_TILESET_TILES}) meaning it may not display correctly. ` +
+          `Consider reducing the amount of detail in this image.`
+      );
     }
     tilesetLookups.push(tilesetLookup);
   }

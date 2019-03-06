@@ -46,12 +46,10 @@ const compile = async (
     throw "No scenes are included in your project. Add some scenes in the Game World editor and try again.";
   }
 
-  const precompiled = await precompile(
-    projectData,
-    projectRoot,
-    tmpPath,
-    progress
-  );
+  const precompiled = await precompile(projectData, projectRoot, tmpPath, {
+    progress,
+    warnings
+  });
 
   // Strings
   const stringsLength = precompiled.strings.length;
@@ -278,7 +276,12 @@ const compile = async (
 
 //#region precompile
 
-const precompile = async (projectData, projectRoot, tmpPath, progress) => {
+const precompile = async (
+  projectData,
+  projectRoot,
+  tmpPath,
+  { progress, warnings }
+) => {
   progress(EVENT_MSG_PRE_FLAGS);
   const flags = precompileFlags(projectData.scenes);
 
@@ -296,7 +299,8 @@ const precompile = async (projectData, projectRoot, tmpPath, progress) => {
     projectData.images,
     projectData.scenes,
     projectRoot,
-    tmpPath
+    tmpPath,
+    { warnings }
   );
 
   progress(EVENT_MSG_PRE_SPRITES);
@@ -363,7 +367,8 @@ export const precompileImages = async (
   images,
   scenes,
   projectRoot,
-  tmpPath
+  tmpPath,
+  { warnings }
 ) => {
   let eventImageIds = [];
   walkScenesEvents(scenes, cmd => {
@@ -377,7 +382,9 @@ export const precompileImages = async (
       scenes.find(scene => scene.imageId === image.id)
   );
   const imageLookup = indexArray(usedImages, "id");
-  const imageData = await compileImages(usedImages, projectRoot, tmpPath);
+  const imageData = await compileImages(usedImages, projectRoot, tmpPath, {
+    warnings
+  });
   let usedTilesets = [];
   let usedTilesetLookup = {};
   Object.keys(imageData.tilesets).forEach(tileKey => {
