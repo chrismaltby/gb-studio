@@ -95,6 +95,7 @@ const compile = async (
       }
     };
     return {
+      start: bankEntityEvents(scene),
       actors: scene.actors.map(bankEntityEvents),
       triggers: scene.triggers.map(bankEntityEvents)
     };
@@ -135,7 +136,10 @@ const compile = async (
         compileTriggers(scene.triggers, {
           eventPtrs: eventPtrs[sceneIndex].triggers
         }),
-        scene.collisions.slice(0, Math.ceil((scene.width * scene.height) / 8))
+        scene.collisions.slice(0, Math.ceil((scene.width * scene.height) / 8)),
+        eventPtrs[sceneIndex].start.bank, // Event bank ptr
+        hi(eventPtrs[sceneIndex].start.offset), // Event offset ptr
+        lo(eventPtrs[sceneIndex].start.offset)
       )
     );
   });
@@ -450,8 +454,6 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
     return {
       ...scene,
       imageIndex,
-      // tilemap: imageData.tilemaps[scene.imageId],
-      // tileset: imageData.tilemapsTileset[scene.imageId],
       actors,
       sprites: actors.reduce((memo, actor) => {
         const spriteIndex = usedSprites.findIndex(
@@ -468,23 +470,6 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
   });
   return scenesData;
 };
-
-/*
-export const compileActor = (actor, { eventsPtr, spriteSheetLookup }) => {
-  // console.log("ACTOR", actor, eventsPtr);
-  return [
-    0, // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-    1, // Animated
-    actor.x, // X Pos
-    actor.y, // Y Pos
-    dirDec(actor.direction), // Direction
-    moveDec(actor.movementType), // Movement Type
-    eventsPtr.bank, // Event bank ptr
-    hi(eventsPtr.offset), // Event offset ptr
-    lo(eventsPtr.offset)
-  ];
-};
-*/
 
 export const compileActors = (actors, { eventPtrs, sprites }) => {
   // console.log("ACTOR", actor, eventsPtr);
@@ -533,22 +518,6 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
     })
   );
 };
-
-/*
-export const compileTrigger = (trigger, { eventsPtr }) => {
-  // console.log("TRIGGER", trigger, eventsPtr);
-  return [
-    trigger.x,
-    trigger.y,
-    trigger.width,
-    trigger.height,
-    trigger.trigger === "action" ? 1 : 0,
-    eventsPtr.bank, // Event bank ptr
-    hi(eventsPtr.offset), // Event offset ptr
-    lo(eventsPtr.offset)
-  ];
-};
-*/
 
 export const compileTriggers = (triggers, { eventPtrs }) => {
   return flatten(

@@ -12,6 +12,7 @@ const walkEvents = (events = [], callback) => {
 
 const walkScenesEvents = (scenes, callback) => {
   scenes.forEach(scene => {
+    walkEvents(scene.script, callback);
     scene.actors.forEach(actor => {
       walkEvents(actor.script, callback);
     });

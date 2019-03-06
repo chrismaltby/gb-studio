@@ -74,7 +74,7 @@ void SceneHandleTransition();
 void SceneInit_b()
 {
   UWORD image_index;
-  BANK_PTR bank_ptr, sprite_bank_ptr;
+  BANK_PTR bank_ptr, sprite_bank_ptr, events_ptr;
   UWORD ptr, sprite_ptr, col_ptr;
   UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
   UBYTE k, j, sprite_frames, sprite_len, collision_tiles_len, col_bank;
@@ -197,10 +197,19 @@ void SceneInit_b()
 
   // Init player
   actors[0].redraw = TRUE;
+  actors[0].enabled = TRUE;
   actors[0].pos.x = map_next_pos.x;
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
   actors[0].dir.y = map_next_dir.y;
+
+  SHOW_SPRITES;
+
+  // Load starting script
+  ptr = col_ptr;
+  events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
+  ScriptStart(&events_ptr);
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)

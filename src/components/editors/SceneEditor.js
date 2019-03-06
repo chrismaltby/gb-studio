@@ -4,6 +4,7 @@ import * as actions from "../../actions";
 import { CloseIcon } from "../../components/library/Icons";
 import ImageSelect from "../forms/ImageSelect";
 import { FormField } from "../../components/library/Forms";
+import ScriptEditor from "../script/ScriptEditor";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -37,26 +38,35 @@ class SceneEditor extends Component {
           </div>
         </h2>
 
-        <FormField>
-          <label htmlFor="sceneName">Scene name</label>
-          <input id="sceneName" value={scene.name} onChange={this.onEdit("name")} />
-        </FormField>
+        <div>
+          <FormField>
+            <label htmlFor="sceneName">Scene name</label>
+            <input
+              id="sceneName"
+              value={scene.name}
+              onChange={this.onEdit("name")}
+            />
+          </FormField>
 
-        <FormField>
-          <label htmlFor="sceneType">Scene type</label>
-          <select id="sceneType">
-            <option>Top Down 2D</option>
-          </select>
-        </FormField>
+          <FormField>
+            <label htmlFor="sceneType">Scene type</label>
+            <select id="sceneType">
+              <option>Top Down 2D</option>
+            </select>
+          </FormField>
 
-        <FormField>
-          <label htmlFor="sceneImage">Image</label>
-          <ImageSelect
-            id="sceneImage"
-            value={scene.imageId}
-            onChange={this.onEdit("imageId")}
-          />
-        </FormField>
+          <FormField>
+            <label htmlFor="sceneImage">Image</label>
+            <ImageSelect
+              id="sceneImage"
+              value={scene.imageId}
+              onChange={this.onEdit("imageId")}
+            />
+          </FormField>
+        </div>
+
+        <h2>Scene Start Script</h2>
+        <ScriptEditor value={scene.script} onChange={this.onEdit("script")} />
       </div>
     );
   }

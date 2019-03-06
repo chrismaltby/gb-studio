@@ -394,6 +394,7 @@ void Script_ShowOverlay_b()
   UISetColor(script_cmd_args[0]);
   UISetPos(script_cmd_args[1] << 3, script_cmd_args[2] << 3);
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }
 
 /*
@@ -405,6 +406,7 @@ void Script_HideOverlay_b()
 {
   UISetPos(0, MENU_CLOSED_Y);
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }
 
 /*
@@ -416,6 +418,7 @@ void Script_OverlaySetPos_b()
 {
   UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }
 
 /*
