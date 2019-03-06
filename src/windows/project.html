@@ -23,6 +23,7 @@
     import React from 'react';
     import ReactDOM from 'react-dom';
     import {AppContainer} from 'react-hot-loader';
+    import AppContainerDnD from "../components/app/AppContainerDnD";
     import { Provider } from "react-redux";
     import * as actions from "../actions";
     import configureStore from "../store/configureStore";
@@ -101,7 +102,7 @@
 
     const render = () => {
       const App = require('./Project').default;
-      ReactDOM.render(<Provider store={store}><AppContainer><App /></AppContainer></Provider>, document.getElementById('App'));
+      ReactDOM.render(<Provider store={store}><AppContainerDnD><App /></AppContainerDnD></Provider>, document.getElementById('App'));
     }
 
     systemPreferences.subscribeNotification(

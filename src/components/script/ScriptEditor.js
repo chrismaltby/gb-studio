@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import uuid from "uuid/v4";
-import { DragSource, DropTarget, DragDropContext } from "react-dnd";
+import { DragSource, DropTarget } from "react-dnd";
 import { CloseIcon } from "../library/Icons";
-import HTML5Backend from "react-dnd-html5-backend";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
@@ -277,4 +276,4 @@ ScriptEditor.defaultProps = {
   ]
 };
 
-export default DragDropContext(HTML5Backend)(ScriptEditor);
+export default ScriptEditor;
