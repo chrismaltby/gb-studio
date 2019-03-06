@@ -7,18 +7,12 @@ import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
 import { FormField } from "../library/Forms";
+import castEventValue from "../../lib/helpers/castEventValue";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
-    let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
-      newValue = parseFloat(newValue);
-    }
-    if (e.currentTarget && e.currentTarget.type === "checkbox") {
-      newValue = e.currentTarget.checked;
-    }
     this.props.editActor(this.props.scene, this.props.id, {
-      [key]: newValue
+      [key]: castEventValue(e)
     });
   };
 
@@ -48,7 +42,7 @@ class ActorEditor extends Component {
             <input
               id="actorName"
               placeholder={"Actor " + (id + 1)}
-              value={actor.name}
+              value={actor.name || ""}
               onChange={this.onEdit("name")}
             />
           </FormField>
@@ -59,7 +53,9 @@ class ActorEditor extends Component {
               id="actorX"
               type="number"
               value={actor.x}
-              min={1}
+              placeholder={0}
+              min={0}
+              max={31}
               onChange={this.onEdit("x")}
             />
           </FormField>
@@ -70,7 +66,9 @@ class ActorEditor extends Component {
               id="actorY"
               type="number"
               value={actor.y}
-              min={1}
+              placeholder={0}
+              min={0}
+              max={31}
               onChange={this.onEdit("y")}
             />
           </FormField>

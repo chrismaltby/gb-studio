@@ -5,18 +5,12 @@ import { CloseIcon } from "../../components/library/Icons";
 import ImageSelect from "../forms/ImageSelect";
 import { FormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
+import castEventValue from "../../lib/helpers/castEventValue";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
-    let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
-      newValue = parseFloat(newValue);
-    }
-    if (e.currentTarget && e.currentTarget.type === "checkbox") {
-      newValue = e.currentTarget.checked;
-    }
     this.props.editScene(this.props.id, {
-      [key]: newValue
+      [key]: castEventValue(e)
     });
   };
 

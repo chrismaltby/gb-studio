@@ -4,18 +4,12 @@ import * as actions from "../../actions";
 import { CloseIcon } from "../../components/library/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import { FormField } from "../../components/library/Forms";
+import castEventValue from "../../lib/helpers/castEventValue";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
-    let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
-      newValue = parseFloat(newValue);
-    }
-    if (e.currentTarget && e.currentTarget.type === "checkbox") {
-      newValue = e.currentTarget.checked;
-    }
     this.props.editTrigger(this.props.scene, this.props.id, {
-      [key]: newValue
+      [key]: castEventValue(e)
     });
   };
 
@@ -46,7 +40,8 @@ class TriggerEditor extends Component {
               id="triggerX"
               type="number"
               value={trigger.x}
-              min={1}
+              min={0}
+              max={31}
               onChange={this.onEdit("x")}
             />
           </FormField>
@@ -57,7 +52,8 @@ class TriggerEditor extends Component {
               id="triggerY"
               type="number"
               value={trigger.y}
-              min={1}
+              min={0}
+              max={31}
               onChange={this.onEdit("y")}
             />
           </FormField>
@@ -69,6 +65,7 @@ class TriggerEditor extends Component {
               type="number"
               value={trigger.width}
               min={1}
+              max={32}
               onChange={this.onEdit("width")}
             />
           </FormField>
@@ -80,6 +77,7 @@ class TriggerEditor extends Component {
               type="number"
               value={trigger.height}
               min={1}
+              max={32}
               onChange={this.onEdit("height")}
             />
           </FormField>

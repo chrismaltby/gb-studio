@@ -5,18 +5,12 @@ import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import { FormField } from "../library/Forms";
+import castEventValue from "../../lib/helpers/castEventValue";
 
 class WorldEditor extends Component {
   onEdit = key => e => {
-    let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
-      newValue = parseFloat(newValue);
-    }
-    if (e.currentTarget && e.currentTarget.type === "checkbox") {
-      newValue = e.currentTarget.checked;
-    }
     this.props.editProjectSettings({
-      [key]: newValue
+      [key]: castEventValue(e)
     });
   };
 
@@ -77,6 +71,7 @@ class WorldEditor extends Component {
             type="number"
             value={settings.startX}
             min={0}
+            max={31}
             placeholder={0}
             onChange={this.onEdit("startX")}
           />
@@ -89,6 +84,7 @@ class WorldEditor extends Component {
             type="number"
             value={settings.startY}
             min={0}
+            max={31}
             placeholder={0}
             onChange={this.onEdit("startY")}
           />
