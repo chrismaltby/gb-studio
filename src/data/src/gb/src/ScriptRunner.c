@@ -41,6 +41,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_HideOverlay_b, 0},   // 0x1A
     {Script_OverlaySetPos_b, 2}, // 0x1B
     {Script_OverlayMoveTo_b, 2}, // 0x1C
+    {Script_AwaitInput_b, 1},    // 0x1D
 };
 
 UBYTE ScriptLastFnComplete();
@@ -131,6 +132,11 @@ UBYTE ScriptLastFnComplete()
   }
 
   if (last_fn == Script_OverlayMoveTo_b && UIAtDest())
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_AwaitInput_b && ((joy & await_input) != 0))
   {
     return TRUE;
   }

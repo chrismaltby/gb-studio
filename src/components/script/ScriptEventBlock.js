@@ -16,7 +16,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
   const onChangeField = (key, type = "text", updateFn) => e => {
     let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (type === "number") {
+    if (newValue && type === "number") {
       newValue = parseFloat(newValue);
     }
     if (type === "direction" && newValue === value[key]) {
@@ -39,7 +39,6 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             {field.type === "textarea" ? (
               <textarea
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 rows={field.rows}
                 placeholder={field.placeholder}
                 onChange={onChangeField(field.key, "text", field.updateFn)}
@@ -48,7 +47,6 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               <input
                 type="text"
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 placeholder={field.placeholder || field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
@@ -59,11 +57,24 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 min={field.min}
                 max={field.max}
                 step={field.step}
-                defaultValue={field.defaultValue}
                 placeholder={field.placeholder || field.defaultValue}
                 onChange={onChangeField(field.key, field.type, val => {
-                  if (!field.step || field.step === 1) {
+                  if (val && (!field.step || field.step === 1)) {
                     val = Math.round(val);
+                  }
+                  if (
+                    val &&
+                    typeof field.min !== undefined &&
+                    val < field.min
+                  ) {
+                    val = field.min;
+                  }
+                  if (
+                    val &&
+                    typeof field.max !== undefined &&
+                    val > field.max
+                  ) {
+                    val = field.max;
                   }
                   return val;
                 })}
@@ -71,62 +82,52 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "scene" ? (
               <SceneSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "image" ? (
               <ImageSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "flag" ? (
               <FlagSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "direction" ? (
               <DirectionPicker
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key, "direction")}
               />
             ) : field.type === "input" ? (
               <InputPicker
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key, "input")}
               />
             ) : field.type === "fadeSpeed" ? (
               <FadeSpeedSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "cameraSpeed" ? (
               <CameraSpeedSelect
                 allowNone
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "overlayColor" ? (
               <OverlayColorSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "actor" ? (
               <ActorSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "emotion" ? (
               <EmotionSelect
                 value={value[field.key]}
-                defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : (

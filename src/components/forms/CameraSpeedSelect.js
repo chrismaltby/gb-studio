@@ -11,7 +11,8 @@ class CameraSpeedSelect extends Component {
         {allowNone && <option value={0}>Instant</option>}
         {speeds.map((speed, index) => (
           <option key={speed} value={speed}>
-            Speed {speed}
+            Speed {speed}{" "}
+            {speed === 1 ? "(Faster)" : speed === 5 ? "(Slower)" : ""}
           </option>
         ))}
       </select>

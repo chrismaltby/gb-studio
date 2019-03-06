@@ -28,7 +28,7 @@ const unsigned char global_tileset[] = {
 
 void UIInit_b()
 {
-  UISetPos(MAXWNDPOSX, MAXWNDPOSY);
+  UISetPos(160, 144);
   set_bkg_data(192, 64, global_tileset);
 }
 

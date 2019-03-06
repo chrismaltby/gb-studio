@@ -33,6 +33,7 @@ extern ACTOR actors[MAX_ACTORS];
 extern TRIGGER triggers[MAX_TRIGGERS];
 extern UWORD scene_index;
 extern UWORD scene_next_index;
+extern UBYTE await_input;
 
 void SceneInit();
 void SceneUpdate();

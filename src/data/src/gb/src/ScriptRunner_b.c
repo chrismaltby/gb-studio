@@ -432,3 +432,15 @@ void Script_OverlayMoveTo_b()
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
+
+/*
+ * Command: AwaitInput
+ * ----------------------------
+ * Pause script until joy overlaps bits with provided input
+ */
+void Script_AwaitInput_b()
+{
+  await_input = script_cmd_args[0];
+  script_ptr += 1 + script_cmd_args_len;
+  script_action_complete = FALSE;
+}

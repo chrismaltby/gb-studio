@@ -13,7 +13,6 @@ const sizeOfAsync = promisify(sizeOf);
 const loadImageData = async filename => {
   const size = await sizeOfAsync(filename);
   const relativePath = filename.replace(/.*assets\/backgrounds\//, "");
-  console.log({ relativePath });
   return {
     id: uuid(),
     name: relativePath.replace(".png", ""),
@@ -28,7 +27,6 @@ const loadAllImageData = async projectRoot => {
   const imagePaths = await globAsync(
     projectRoot + "/assets/backgrounds/**/*.png"
   );
-  console.log(imagePaths);
   const imageData = await Promise.all(imagePaths.map(loadImageData));
   return imageData;
 };
