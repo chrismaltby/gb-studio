@@ -88,13 +88,12 @@ class World extends Component {
     } = editor;
 
     const scenesWidth =
-      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
-      100;
+      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 20;
     const scenesHeight =
       Math.max.apply(
         null,
         scenes.map(scene => 20 + scene.y + scene.height * 8)
-      ) + 100;
+      ) + 20;
 
     const width = Math.max((window.innerWidth - 300) / zoomRatio, scenesWidth);
     const height = Math.max(

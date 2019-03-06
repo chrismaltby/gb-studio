@@ -3,6 +3,12 @@
   padding-top: 20px;
   user-select: none;
   text-align: center;
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+.Scene:hover {
+  background: var(--menu-hover-color);
 }
 
 .Scene__Name {
@@ -10,18 +16,23 @@
   top: 0px;
   left: 0px;
   right: 0px;
+  color: #888;
   line-height: 20px;
-  color: #ccc;
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
+}
+
+.Scene__Info {
+  line-height: 20px;
+  color: #888;
+  opacity: 0;
+  font-size: 11px;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .Scene__Image {
   position: relative;
   background-color: #fff;
   background-repeat: no-repeat;
-  overflow: hidden;
   border: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
 }
@@ -32,6 +43,11 @@
 
 .Scene--Selected .Scene__Name {
   color: var(--main-text-color);
+}
+
+.Scene--Selected .Scene__Info,
+.Scene:hover .Scene__Info {
+  opacity: 1;
 }
 
 .Scene__Hover {

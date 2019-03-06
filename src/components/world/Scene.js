@@ -7,6 +7,9 @@ import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { throttle } from "lodash";
 
+const MAX_ACTORS = 10;
+const MAX_TRIGGERS = 10;
+
 class Scene extends Component {
   constructor() {
     super();
@@ -335,6 +338,15 @@ class Scene extends Component {
               }}
             />
           )}
+        </div>
+        <div
+          className="Scene__Info"
+          onMouseDown={this.onStartDrag}
+          onMouseMove={this.onMoveDrag}
+          onMouseUp={this.onEndDrag}
+        >
+          Actors: {scene.actors.length}/{MAX_ACTORS}
+          {"\u00A0 \u00A0"}Triggers: {scene.triggers.length}/{MAX_TRIGGERS}
         </div>
       </div>
     );
