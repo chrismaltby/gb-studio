@@ -13,6 +13,9 @@ export const EVENT_IF_FLAG = "EVENT_IF_FLAG";
 export const EVENT_SET_FLAG = "EVENT_SET_FLAG";
 export const EVENT_CLEAR_FLAG = "EVENT_CLEAR_FLAG";
 
+// Input
+export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
+
 // Actor
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
@@ -61,7 +64,8 @@ export const EventNames = {
   [EVENT_OVERLAY_SHOW]: "Show Overlay",
   [EVENT_OVERLAY_HIDE]: "Hide Overlay",
   [EVENT_OVERLAY_SET_POSITION]: "Overlay Set Position",
-  [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To"
+  [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
+  [EVENT_AWAIT_INPUT]: "Await Input"
 };
 
 export const EventFields = {
@@ -319,6 +323,14 @@ export const EventFields = {
       max: 18,
       defaultValue: 0,
       width: "50%"
+    }
+  ],
+  [EVENT_AWAIT_INPUT]: [
+    {
+      key: "input",
+      label: "Any of",
+      type: "input",
+      defaultValue: ["a", "b"]
     }
   ]
 };

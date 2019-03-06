@@ -6,7 +6,12 @@ import { CloseIcon } from "../library/Icons";
 import HTML5Backend from "react-dnd-html5-backend";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
-import { EventNames, EVENT_IF_FLAG, EVENT_END } from "../../lib/compiler/eventTypes";
+import {
+  EventNames,
+  EventFields,
+  EVENT_IF_FLAG,
+  EVENT_END
+} from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
@@ -93,7 +98,9 @@ class ActionMini extends Component {
         >
           <div className="ActionMini__Content">
             {connectDragSource(
-              <div className="ActionMini__Command">{EventNames[command] || command}</div>
+              <div className="ActionMini__Command">
+                {EventNames[command] || command}
+              </div>
             )}
 
             <div className="ActionMini__Remove" onClick={onRemove(id)}>
@@ -180,6 +187,15 @@ class ScriptEditor extends Component {
 
   onAdd = id => command => {
     const root = this.props.value;
+    const eventFields = EventFields[command];
+    const defaultArgs = eventFields
+      ? eventFields.reduce((memo, field) => {
+          if (field.defaultValue) {
+            memo[field.key] = field.defaultValue;
+          }
+          return memo;
+        }, {})
+      : {};
     const input = prependEvent(
       root,
       id,
@@ -187,7 +203,7 @@ class ScriptEditor extends Component {
         {
           id: uuid(),
           command,
-          args: {}
+          args: defaultArgs
         },
         command === EVENT_IF_FLAG && {
           true: [

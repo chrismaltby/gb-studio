@@ -4,6 +4,7 @@ import SceneSelect from "../forms/SceneSelect";
 import ImageSelect from "../forms/ImageSelect";
 import FlagSelect from "../forms/FlagSelect";
 import DirectionPicker from "../forms/DirectionPicker";
+import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import ActorSelect from "../forms/ActorSelect";
@@ -90,6 +91,12 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 value={value[field.key]}
                 defaultValue={field.defaultValue}
                 onChange={onChangeField(field.key, "direction")}
+              />
+            ) : field.type === "input" ? (
+              <InputPicker
+                value={value[field.key]}
+                defaultValue={field.defaultValue}
+                onChange={onChangeField(field.key, "input")}
               />
             ) : field.type === "fadeSpeed" ? (
               <FadeSpeedSelect
