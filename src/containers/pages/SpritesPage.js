@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/images/FilesSidebar";
 import ImageViewer from "../../components/images/ImageViewer";
-import { ipcRenderer } from "electron";
+import * as actions from "../../actions";
 
 class SpritesSection extends Component {
   render() {
@@ -13,7 +13,7 @@ class SpritesSection extends Component {
         <FilesSidebar
           files={spriteSheets}
           onAdd={() => {
-            ipcRenderer.send("open-help", "sprites");
+            this.props.openHelp("sprites");
           }}
         />
         <ImageViewer />
@@ -31,4 +31,11 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(SpritesSection);
+const mapDispatchToProps = {
+  openHelp: actions.openHelp
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SpritesSection);

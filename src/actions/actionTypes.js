@@ -74,3 +74,5 @@ export const CMD_START = "CMD_START";
 export const CMD_STD_OUT = "CMD_STD_OUT";
 export const CMD_STD_ERR = "CMD_STD_ERR";
 export const CMD_COMPLETE = "CMD_COMPLETE";
+
+export const OPEN_HELP = "OPEN_HELP";

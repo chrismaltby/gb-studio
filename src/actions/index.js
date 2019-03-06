@@ -252,6 +252,10 @@ export const zoomReset = () => {
   return { type: types.ZOOM_RESET };
 };
 
+export const openHelp = page => {
+  return { type: types.OPEN_HELP, page };
+};
+
 export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
