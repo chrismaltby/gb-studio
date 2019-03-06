@@ -19,6 +19,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
       newValue = parseFloat(newValue);
     }
     if (type === "direction" && newValue === value[key]) {
+      // Toggle direction
       newValue = "";
     }
     if (updateFn) {
@@ -47,7 +48,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 type="text"
                 value={value[field.key]}
                 defaultValue={field.defaultValue}
-                placeholder={field.placeholder}
+                placeholder={field.placeholder || field.defaultValue}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "number" ? (
@@ -58,6 +59,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 max={field.max}
                 step={field.step}
                 defaultValue={field.defaultValue}
+                placeholder={field.placeholder || field.defaultValue}
                 onChange={onChangeField(field.key, field.type, val => {
                   if (!field.step || field.step === 1) {
                     val = Math.round(val);

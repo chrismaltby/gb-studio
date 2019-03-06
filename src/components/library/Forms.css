@@ -45,7 +45,7 @@
   display: block;
   text-align: left;
   box-sizing: border-box;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .FormField label ~ * {

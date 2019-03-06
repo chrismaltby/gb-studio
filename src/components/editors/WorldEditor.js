@@ -77,6 +77,7 @@ class WorldEditor extends Component {
             type="number"
             value={settings.startX}
             min={0}
+            placeholder={0}
             onChange={this.onEdit("startX")}
           />
         </FormField>
@@ -88,6 +89,7 @@ class WorldEditor extends Component {
             type="number"
             value={settings.startY}
             min={0}
+            placeholder={0}
             onChange={this.onEdit("startY")}
           />
         </FormField>
