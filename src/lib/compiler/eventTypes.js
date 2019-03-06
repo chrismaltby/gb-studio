@@ -72,7 +72,8 @@ export const EventFields = {
   [EVENT_SWITCH_SCENE]: [
     {
       key: "sceneId",
-      type: "scene"
+      type: "scene",
+      defaultValue: "LAST_SCENE"
     },
     {
       key: "x",
@@ -80,6 +81,7 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
+      defaultValue: 0,
       width: "50%"
     },
     {
@@ -88,18 +90,21 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
+      defaultValue: 0,
       width: "50%"
     },
     {
       key: "direction",
       label: "Direction",
       type: "direction",
-      width: "50%"
+      width: "50%",
+      defaultValue: "up"
     },
     {
       key: "fadeSpeed",
       label: "Fade Speed",
       type: "fadeSpeed",
+      defaultValue: "2",
       width: "50%"
     }
   ],
@@ -109,8 +114,9 @@ export const EventFields = {
       type: "number",
       label: "Seconds",
       min: 0,
-      max: 4,
-      step: 0.1
+      max: 10,
+      step: 0.1,
+      defaultValue: 0.5
     }
   ],
   [EVENT_CAMERA_SHAKE]: [
@@ -119,25 +125,29 @@ export const EventFields = {
       type: "number",
       label: "Seconds",
       min: 0,
-      max: 4
+      max: 10,
+      defaultValue: 0.5
     }
   ],
   [EVENT_IF_FLAG]: [
     {
       key: "flag",
-      type: "flag"
+      type: "flag",
+      defaultValue: "LAST_FLAG"
     }
   ],
   [EVENT_SET_FLAG]: [
     {
       key: "flag",
-      type: "flag"
+      type: "flag",
+      defaultValue: "LAST_FLAG"
     }
   ],
   [EVENT_CLEAR_FLAG]: [
     {
       key: "flag",
-      type: "flag"
+      type: "flag",
+      defaultValue: "LAST_FLAG"
     }
   ],
   [EVENT_TEXT]: [
@@ -157,7 +167,8 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     },
     {
       key: "y",
@@ -165,45 +176,53 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     },
     {
       key: "speed",
-      type: "cameraSpeed"
+      type: "cameraSpeed",
+      defaultValue: "0"
     }
   ],
   [EVENT_CAMERA_LOCK]: [
     {
       key: "speed",
-      type: "cameraSpeed"
+      type: "cameraSpeed",
+      defaultValue: "0"
     }
   ],
   [EVENT_FADE_IN]: [
     {
       key: "speed",
-      type: "fadeSpeed"
+      type: "fadeSpeed",
+      defaultValue: "2"
     }
   ],
   [EVENT_FADE_OUT]: [
     {
       key: "speed",
-      type: "fadeSpeed"
+      type: "fadeSpeed",
+      defaultValue: "2"
     }
   ],
   [EVENT_ACTOR_SET_DIRECTION]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     },
     {
       key: "direction",
-      type: "direction"
+      type: "direction",
+      defaultValue: "up"
     }
   ],
   [EVENT_ACTOR_SET_POSITION]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     },
     {
       key: "x",
@@ -211,7 +230,8 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     },
     {
       key: "y",
@@ -219,13 +239,15 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     }
   ],
   [EVENT_ACTOR_MOVE_TO]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     },
     {
       key: "x",
@@ -233,7 +255,8 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     },
     {
       key: "y",
@@ -241,17 +264,20 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 32,
-      width: "50%"
+      width: "50%",
+      defaultValue: 0
     }
   ],
   [EVENT_ACTOR_EMOTION]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     },
     {
       key: "emotionId",
-      type: "emotion"
+      type: "emotion",
+      defaultValue: 0
     }
   ],
   // [EVENT_RETURN_TO_TITLE]: [],
@@ -263,7 +289,8 @@ export const EventFields = {
   [EVENT_OVERLAY_SHOW]: [
     {
       key: "color",
-      type: "overlayColor"
+      type: "overlayColor",
+      defaultValue: "black"
     },
     {
       key: "x",

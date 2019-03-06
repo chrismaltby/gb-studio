@@ -99,7 +99,8 @@ const precompileEntityScript = (
     const command = input[i].command;
 
     if (command === EVENT_TEXT) {
-      const stringIndex = strings.indexOf(input[i].args.text);
+      const text = input[i].args.text || " "; // Replace empty strings with single space
+      const stringIndex = strings.indexOf(text);
       if (stringIndex === -1) {
         throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
       }
@@ -206,7 +207,8 @@ const precompileEntityScript = (
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
     } else if (command === EVENT_WAIT) {
-      let seconds = input[i].args.time || 0;
+      let seconds =
+        typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
       while (seconds > 0) {
         let time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.WAIT);
@@ -214,7 +216,8 @@ const precompileEntityScript = (
         seconds -= time;
       }
     } else if (command === EVENT_CAMERA_SHAKE) {
-      let seconds = input[i].args.time || 0;
+      let seconds =
+        typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
       while (seconds > 0) {
         let time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.CAMERA_SHAKE);

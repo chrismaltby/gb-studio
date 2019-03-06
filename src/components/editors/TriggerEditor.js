@@ -7,13 +7,15 @@ import { FormField } from "../../components/library/Forms";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
-    const value = e.currentTarget
-      ? e.currentTarget.type === "number"
-        ? parseInt(e.currentTarget.value, 10)
-        : e.currentTarget.value
-      : e;
+    let newValue = e.currentTarget ? e.currentTarget.value : e;
+    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
+      newValue = parseFloat(newValue);
+    }
+    if (e.currentTarget && e.currentTarget.type === "checkbox") {
+      newValue = e.currentTarget.checked;
+    }
     this.props.editTrigger(this.props.scene, this.props.id, {
-      [key]: value
+      [key]: newValue
     });
   };
 
@@ -96,7 +98,8 @@ function mapStateToProps(state, props) {
     trigger:
       state.project.present &&
       state.project.present.scenes &&
-      state.project.present.scenes.find(scene => scene.id === props.scene).triggers[props.id]
+      state.project.present.scenes.find(scene => scene.id === props.scene)
+        .triggers[props.id]
   };
 }
 

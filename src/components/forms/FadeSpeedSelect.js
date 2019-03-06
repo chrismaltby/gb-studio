@@ -9,11 +9,12 @@ class FadeSpeedSelect extends Component {
     return (
       <select {...rest}>
         {allowNone && <option value={0}>Instant</option>}
-        {speeds.map((speed, index) =>
+        {speeds.map((speed, index) => (
           <option key={speed} value={speed}>
-            Speed {speed}
+            Speed {speed}{" "}
+            {speed === 1 ? "(Faster)" : speed === 6 ? "(Slower)" : ""}
           </option>
-        )}
+        ))}
       </select>
     );
   }

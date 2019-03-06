@@ -8,22 +8,22 @@ import { FormField } from "../library/Forms";
 
 class WorldEditor extends Component {
   onEdit = key => e => {
-    const value = e.currentTarget
-      ? e.currentTarget.type === "number"
-        ? parseInt(e.currentTarget.value, 10)
-        : e.currentTarget.type === "checkbox"
-        ? e.currentTarget.checked
-        : e.currentTarget.value
-      : e;
+    let newValue = e.currentTarget ? e.currentTarget.value : e;
+    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
+      newValue = parseFloat(newValue);
+    }
+    if (e.currentTarget && e.currentTarget.type === "checkbox") {
+      newValue = e.currentTarget.checked;
+    }
     this.props.editProjectSettings({
-      [key]: value
+      [key]: newValue
     });
   };
 
   render() {
     const { project, settings } = this.props;
 
-    if (!project) {
+    if (!project || !project.scenes) {
       return <div />;
     }
 

@@ -345,10 +345,11 @@ export const precompileFlags = scenes => {
 export const precompileStrings = scenes => {
   let strings = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.text) {
+    if (cmd.args && cmd.args.text !== undefined) {
+      const text = cmd.args.text || " "; // Replace empty strings with single space
       // If never seen this string before add it to the list
-      if (strings.indexOf(cmd.args.text) === -1) {
-        strings.push(cmd.args.text);
+      if (strings.indexOf(text) === -1) {
+        strings.push(text);
       }
     }
   });

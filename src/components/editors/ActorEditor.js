@@ -10,13 +10,15 @@ import { FormField } from "../library/Forms";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
-    const value = e.currentTarget
-      ? e.currentTarget.type === "number"
-        ? parseInt(e.currentTarget.value, 10)
-        : e.currentTarget.value
-      : e;
+    let newValue = e.currentTarget ? e.currentTarget.value : e;
+    if (newValue && e.currentTarget && e.currentTarget.type === "number") {
+      newValue = parseFloat(newValue);
+    }
+    if (e.currentTarget && e.currentTarget.type === "checkbox") {
+      newValue = e.currentTarget.checked;
+    }
     this.props.editActor(this.props.scene, this.props.id, {
-      [key]: value
+      [key]: newValue
     });
   };
 
@@ -116,7 +118,9 @@ function mapStateToProps(state, props) {
   const { project } = state;
   const actor =
     project.present.scenes &&
-    project.present.scenes.find(scene => scene.id === props.scene).actors[props.id];
+    project.present.scenes.find(scene => scene.id === props.scene).actors[
+      props.id
+    ];
   const spriteSheet =
     actor &&
     project.present.spriteSheets.find(

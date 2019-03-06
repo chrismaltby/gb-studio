@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
@@ -189,7 +190,13 @@ class ScriptEditor extends Component {
     const eventFields = EventFields[command];
     const defaultArgs = eventFields
       ? eventFields.reduce((memo, field) => {
-          if (field.defaultValue) {
+          if (field.defaultValue === "LAST_SCENE") {
+            memo[field.key] = this.props.scenes[
+              this.props.scenes.length - 1
+            ].id;
+          } else if (field.defaultValue === "LAST_FLAG") {
+            memo[field.key] = this.props.flags[this.props.flags.length - 1].id;
+          } else if (field.defaultValue !== undefined) {
             memo[field.key] = field.defaultValue;
           }
           return memo;
@@ -252,7 +259,7 @@ class ScriptEditor extends Component {
       <div className="ScriptEditor">
         {value.map((action, index) => (
           <ActionMiniDnD
-            key={index}
+            key={action.id}
             id={action.id}
             action={action}
             moveActions={this.moveActions}
@@ -276,4 +283,16 @@ ScriptEditor.defaultProps = {
   ]
 };
 
-export default ScriptEditor;
+function mapStateToProps(state) {
+  return {
+    flags: state.project.present && state.project.present.flags,
+    scenes: state.project.present && state.project.present.scenes
+  };
+}
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ScriptEditor);
