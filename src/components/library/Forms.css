@@ -97,6 +97,10 @@
   display: flex;
 }
 
+.SelectRenamable input {
+  padding-left: 8px;
+}
+
 .SelectRenamable__EditBtn {
   display: flex;
   text-decoration: underline;

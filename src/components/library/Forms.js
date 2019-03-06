@@ -54,6 +54,10 @@ export class SelectRenamable extends Component {
     this.setState({ edit: false, editValue: "" });
   };
 
+  onFocus = e => {
+    e.target.select();
+  };
+
   render() {
     const { editPlaceholder, editDefaultValue, onRename, ...rest } = this.props;
     const { edit, editValue } = this.state;
@@ -68,6 +72,7 @@ export class SelectRenamable extends Component {
             onKeyDown={this.onKeyDown}
             onChange={this.onChangeName}
             autoFocus
+            onFocus={this.onFocus}
           />
         ) : (
           <select {...rest} />
