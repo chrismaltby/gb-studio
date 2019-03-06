@@ -24,10 +24,11 @@ import {
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_HIDE,
   EVENT_OVERLAY_SET_POSITION,
-  EVENT_OVERLAY_MOVE_TO
+  EVENT_OVERLAY_MOVE_TO,
+  EVENT_AWAIT_INPUT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
-import { dirDec } from "./helpers";
+import { dirDec, inputDec } from "./helpers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const FLAG_NOT_FOUND = "FLAG_NOT_FOUND";
@@ -75,7 +76,8 @@ const CMD_LOOKUP = {
   OVERLAY_SHOW: 0x19,
   OVERLAY_HIDE: 0x1a,
   OVERLAY_SET_POSITION: 0x1b,
-  OVERLAY_MOVE_TO: 0x1c
+  OVERLAY_MOVE_TO: 0x1c,
+  AWAIT_INPUT: 0x1d
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -267,6 +269,9 @@ const precompileEntityScript = (
       output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+    } else if (command === EVENT_AWAIT_INPUT) {
+      output.push(CMD_LOOKUP.AWAIT_INPUT);
+      output.push(inputDec(input[i].args.input));
     }
 
     for (var oi = 0; oi < output.length; oi++) {

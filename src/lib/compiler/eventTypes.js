@@ -98,7 +98,7 @@ export const EventFields = {
       label: "Direction",
       type: "direction",
       width: "50%",
-      defaultValue: "up"
+      defaultValue: ""
     },
     {
       key: "fadeSpeed",
