@@ -27,6 +27,10 @@ import {
   EDIT_PROJECT_SETTINGS
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
+import clamp from "../lib/helpers/clamp";
+
+const MAX_ACTORS = 10;
+const MAX_TRIGGERS = 10;
 
 const sortFilename = (a, b) => {
   if (a.filename > b.filename) return -1;
@@ -184,18 +188,20 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            actors: [].concat(
-              {
-                id: action.id,
-                spriteSheetId:
-                  state.spriteSheets[0] && state.spriteSheets[0].id,
-                x: action.x,
-                y: action.y,
-                movementType: "static",
-                direction: "down"
-              },
-              scene.actors
-            )
+            actors: []
+              .concat(
+                {
+                  id: action.id,
+                  spriteSheetId:
+                    state.spriteSheets[0] && state.spriteSheets[0].id,
+                  x: action.x,
+                  y: action.y,
+                  movementType: "static",
+                  direction: "down"
+                },
+                scene.actors
+              )
+              .slice(-MAX_ACTORS)
           };
         })
       };
@@ -206,6 +212,9 @@ export default function project(state = initialState.project, action) {
           if (scene.id !== action.sceneId) {
             return scene;
           }
+          const sceneImage = state.images.find(
+            image => image.id === scene.imageId
+          );
           return {
             ...scene,
             actors: scene.actors.map((actor, index) => {
@@ -214,8 +223,8 @@ export default function project(state = initialState.project, action) {
               }
               return {
                 ...actor,
-                x: actor.x + action.moveX,
-                y: actor.y + action.moveY
+                x: clamp(actor.x + action.moveX, 0, sceneImage.width - 2),
+                y: clamp(actor.y + action.moveY, 0, sceneImage.height - 1)
               };
             })
           };
@@ -363,16 +372,18 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: [].concat(
-              {
-                x: action.x,
-                y: action.y,
-                width: 1,
-                height: 1,
-                trigger: "walk"
-              },
-              scene.triggers
-            )
+            triggers: []
+              .concat(
+                {
+                  x: action.x,
+                  y: action.y,
+                  width: 1,
+                  height: 1,
+                  trigger: "walk"
+                },
+                scene.triggers
+              )
+              .slice(-MAX_TRIGGERS)
           };
         })
       };
@@ -464,6 +475,9 @@ export default function project(state = initialState.project, action) {
           if (scene.id !== action.sceneId) {
             return scene;
           }
+          const sceneImage = state.images.find(
+            image => image.id === scene.imageId
+          );
           return {
             ...scene,
             triggers: scene.triggers.map((trigger, index) => {
@@ -472,8 +486,16 @@ export default function project(state = initialState.project, action) {
               }
               return {
                 ...trigger,
-                x: trigger.x + action.moveX,
-                y: trigger.y + action.moveY
+                x: clamp(
+                  trigger.x + action.moveX,
+                  0,
+                  sceneImage.width - trigger.width
+                ),
+                y: clamp(
+                  trigger.y + action.moveY,
+                  0,
+                  sceneImage.height - trigger.height
+                )
               };
             })
           };
