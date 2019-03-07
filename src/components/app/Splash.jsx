@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { DotsIcon } from "../components/library/Icons";
-import stripInvalidFilenameCharacters from "../lib/helpers/stripInvalidFilenameCharacters";
-import createProject, { ERR_PROJECT_EXISTS } from "../lib/project/createProject";
+import { DotsIcon } from "../library/Icons";
+import stripInvalidFilenameCharacters from "../../lib/helpers/stripInvalidFilenameCharacters";
+import createProject, {
+  ERR_PROJECT_EXISTS
+} from "../../lib/project/createProject";
 import { ipcRenderer, remote } from "electron";
 
 const getLastUsedPath = () => {
