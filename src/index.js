@@ -19,7 +19,7 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
   return (
-    filePath.indexOf(app.getAppPath()) === -1 ||
+    // filePath.indexOf(app.getAppPath()) === -1 ||
     /.jpg/.test(filePath) ||
     /.json/.test(filePath) ||
     /.png/.test(filePath) ||
