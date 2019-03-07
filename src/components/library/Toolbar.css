@@ -8,11 +8,15 @@
   border-bottom: 1px solid var(--toolbar-border-color);
   display: flex;
   align-items: center;
-  padding-left: 80px;
+  padding-left: 10px;
   padding-right: 10px;
   user-select: none;
   z-index: 1;
   -webkit-app-region: drag;
+}
+
+.Platform__darwin .Toolbar {
+  padding-left: 80px;
 }
 
 .full-screen .Toolbar {
