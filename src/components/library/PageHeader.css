@@ -3,7 +3,12 @@
 }
 
 .PageHeader h1 {
+  display: block;
   margin-top: 0px;
+  height: 30px;
+  line-height: 30px;
+  padding: 5px 0;
+  margin-bottom: 20px;
 }
 
 .PageHeader p:last-child {

@@ -61,7 +61,7 @@
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
-  height: 25px;
+  height: 30px;
 }
 
 .FormField textarea {
@@ -75,6 +75,7 @@
   width: 100%;
   height: auto;
   resize: none;
+  line-height: 16px;
 }
 
 .FormField select {
@@ -83,7 +84,7 @@
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
-  height: 25px;
+  height: 30px;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg-color);
   color: var(--input-text-color);

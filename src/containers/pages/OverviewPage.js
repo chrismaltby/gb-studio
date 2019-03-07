@@ -72,6 +72,7 @@ class OverviewPage extends Component {
               onBlur={this.onFinishedEdit}
               autoFocus
               style={{
+                display: "block",
                 width: "100%",
                 backgroundColor: "var(--input-bg-color)",
                 border: "1px solid var(--input-border-color)",
@@ -80,8 +81,10 @@ class OverviewPage extends Component {
                 fontWeight: "bold",
                 padding: 5,
                 marginLeft: -6,
-                marginTop: -6,
-                marginBottom: -1
+                height: 30,
+                lineHeight: "30px",
+                marginTop: -1,
+                marginBottom: 19
               }}
             />
           ) : (

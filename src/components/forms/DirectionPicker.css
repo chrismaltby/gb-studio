@@ -5,11 +5,11 @@
 
 .DirectionPicker__Button {
   flex: 1;
-  width: 23px;
-  height: 23px;
+  width: 28px;
+  height: 28px;
   background: var(--input-bg-color);
   font-size: 10px;
-  line-height: 23px;
+  line-height: 28px;
   text-align: center;
   border: 1px solid var(--input-border-color);
   border-right: 0;
@@ -20,7 +20,7 @@
 }
 
 .DirectionPicker__Button--Up {
-  line-height: 22px;
+  line-height: 27px;
 }
 
 .DirectionPicker__Button:first-child {
@@ -35,5 +35,5 @@
 
 .DirectionPicker__Button--Active,
 .DirectionPicker__Button--Active:hover {
-  background-color:var(--input-active-color) ;
+  background-color: var(--input-active-color);
 }
