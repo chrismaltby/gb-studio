@@ -268,17 +268,15 @@ class Scene extends Component {
         </div>
         <div
           className="Scene__Image"
-          style={{
-            width: width * 8,
-            height: height * 8,
-            backgroundImage:
-              image &&
-              `url("${projectRoot}/assets/backgrounds/${image}?v=${version}")`
-          }}
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
           onMouseLeave={this.onMouseLeave}
         >
+          <img
+            className="Scene__Background"
+            alt=""
+            src={`${projectRoot}/assets/backgrounds/${image}?v=${version}`}
+          />
           {triggers.map((trigger, index) => (
             <div
               key={index}
@@ -297,30 +295,14 @@ class Scene extends Component {
             />
           ))}
           {showCollisions && (
-            <SceneCollisions
-              width={width}
-              height={height}
-              collisions={collisions}
-            />
+            <div className="Scene__Collisions">
+              <SceneCollisions
+                width={width}
+                height={height}
+                collisions={collisions}
+              />
+            </div>
           )}
-          {false &&
-            showCollisions &&
-            collisions.map((collision, index) =>
-              collision ? (
-                <div
-                  key={index}
-                  className="Scene__Collision"
-                  style={{
-                    top: Math.floor(index / width) * 8,
-                    left: (index % width) * 8,
-                    width: 8,
-                    height: 8
-                  }}
-                />
-              ) : (
-                undefined
-              )
-            )}
           {actors.map((actor, index) => (
             <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
           ))}
