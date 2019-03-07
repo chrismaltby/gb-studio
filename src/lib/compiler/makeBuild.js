@@ -28,25 +28,8 @@ const makeBuild = ({
     } catch (e) {}
     await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
 
-    env.PATH = [
-      `${tmpBuildToolsPath}/emsdk`,
-      `${tmpBuildToolsPath}/emsdk/clang/e1.38.28_64bit`,
-      `${tmpBuildToolsPath}/emsdk/node/8.9.1_64bit/bin`,
-      `${tmpBuildToolsPath}/emsdk/emscripten/1.38.28`,
-      `${tmpBuildToolsPath}/gbdk/bin`,
-      `${tmpBuildToolsPath}/fakejava`,
-      env.PATH
-    ].join(":");
-
+    env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
-    env.EMSDK = `${tmpBuildToolsPath}/emsdk`;
-    env.BINARYEN_ROOT = `${tmpBuildToolsPath}/emsdk/clang/e1.38.28_64bit/binaryen`;
-    env.EMSCRIPTEN = `${tmpBuildToolsPath}/emsdk/emscripten/1.38.28`;
-    env.LLVM_ROOT = `${tmpBuildToolsPath}/emsdk/clang/e1.38.28_64bit`;
-    env.EMSCRIPTEN_NATIVE_OPTIMIZER = `${tmpBuildToolsPath}/emsdk/clang/e1.38.28_64bit/optimizer`;
-    env.BINARYEN_ROOT = `${tmpBuildToolsPath}/emsdk/clang/e1.38.28_64bit/binaryen`;
-    env.NODE_JS = `${tmpBuildToolsPath}/emsdk/node/8.9.1_64bit/bin/node`;
-    env.EMSCRIPTEN_ROOT = `${tmpBuildToolsPath}/emsdk/emscripten/1.38.28`;
 
     const command = "make";
     const args = ["rom"];
