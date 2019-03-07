@@ -113,7 +113,6 @@ extern UBYTE time;
 extern UBYTE menu_y;
 extern UBYTE menu_dest_y;
 extern UBYTE text_drawn;
-extern const unsigned char village_sprites[];
 extern const unsigned char emotion_sprites[];
 
 #endif

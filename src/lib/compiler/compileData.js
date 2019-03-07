@@ -15,6 +15,7 @@ export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 export const EVENT_MSG_PRE_FLAGS = "Preparing flags...";
 export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
+export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
@@ -110,6 +111,9 @@ const compile = async (
       [].concat(image.tilesetIndex, image.width, image.height, image.data)
     );
   });
+
+  // Add UI data
+  const uiImagePtr = banked.push(precompiled.uiTiles);
 
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map(sprite => {
@@ -217,8 +221,11 @@ const compile = async (
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
-    `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n\n` +
-    `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n\n` +
+    `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n` +
+    `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
+    `#define UI_BANK ${uiImagePtr.bank}\n` +
+    `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
+    `\n` +
     Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
@@ -303,6 +310,11 @@ const precompile = async (
     { warnings }
   );
 
+  progress(EVENT_MSG_PRE_UI_IMAGES);
+  const { uiTiles } = await precompileUIImages(projectRoot, tmpPath, {
+    warnings
+  });
+
   progress(EVENT_MSG_PRE_SPRITES);
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
     projectData.spriteSheets,
@@ -329,7 +341,8 @@ const precompile = async (
     usedTilesetLookup,
     imageData,
     usedSprites,
-    sceneData
+    sceneData,
+    uiTiles
   };
 };
 
@@ -405,6 +418,16 @@ export const precompileImages = async (
     imageLookup
     // imageData
   };
+};
+
+export const precompileUIImages = async (
+  projectRoot,
+  tmpPath,
+  { warnings }
+) => {
+  const uiPath = `${projectRoot}/assets/ui/ui.png`;
+  const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
+  return { uiTiles };
 };
 
 export const precompileSprites = async (

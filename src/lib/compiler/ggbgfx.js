@@ -198,6 +198,12 @@ function imageToTilesString(filename) {
     .then(tilesLookupToTilesString);
 }
 
+function imageToTilesIntArray(filename) {
+  return imageToTilesString(filename).then(s => {
+    return s.split(",").map(a => parseInt(a, 16));
+  });
+}
+
 function imageToSpriteString(filename) {
   return getPixels(filename).then(pixelsToSpriteData);
 }
@@ -309,6 +315,7 @@ module.exports = {
   decHex,
   mergeTileLookups,
   imageToTilesString,
+  imageToTilesIntArray,
   imageToSpriteString,
   imageToSpriteIntArray,
   imagesToTilesetImage,
