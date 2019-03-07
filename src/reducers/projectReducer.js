@@ -27,6 +27,7 @@ import {
   EDIT_PROJECT_SETTINGS
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
+import uuid from "uuid/v4";
 import clamp from "../lib/helpers/clamp";
 
 const MAX_ACTORS = 10;
@@ -102,7 +103,7 @@ export default function project(state = initialState.project, action) {
       return {
         ...state,
         scenes: [].concat(state.scenes, {
-          id: action.id,
+          id: uuid(),
           name: "New Scene " + state.scenes.length,
           imageId:
             state.images &&
@@ -191,7 +192,7 @@ export default function project(state = initialState.project, action) {
             actors: []
               .concat(
                 {
-                  id: action.id,
+                  id: uuid(),
                   spriteSheetId:
                     state.spriteSheets[0] && state.spriteSheets[0].id,
                   x: action.x,
@@ -375,6 +376,7 @@ export default function project(state = initialState.project, action) {
             triggers: []
               .concat(
                 {
+                  id: uuid(),
                   x: action.x,
                   y: action.y,
                   width: 1,

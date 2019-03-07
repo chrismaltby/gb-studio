@@ -16,7 +16,6 @@ import {
   FolderIcon,
   LoadingIcon
 } from "../components/library/Icons";
-import { shell, ipcRenderer } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -54,12 +53,11 @@ class AppToolbar extends Component {
   };
 
   onRun = async e => {
-    const { outputRoot } = await this.props.runBuild({ buildType: "web" });
-    ipcRenderer.send("open-play", `file://${outputRoot}/build/web/index.html`);
+    this.props.buildGame({ buildType: "web" });
   };
 
   openProjectFolder = e => {
-    shell.openItem(this.props.projectRoot);
+    this.props.openFolder(this.props.projectRoot);
   };
 
   render() {
@@ -120,7 +118,8 @@ const mapDispatchToProps = {
   zoomIn: actions.zoomIn,
   zoomOut: actions.zoomOut,
   zoomReset: actions.zoomReset,
-  runBuild: actions.runBuild
+  buildGame: actions.buildGame,
+  openFolder: actions.openFolder
 };
 
 export default connect(

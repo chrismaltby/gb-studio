@@ -48,11 +48,8 @@ const makeBuild = ({
     env.NODE_JS = `${tmpBuildToolsPath}/emsdk/node/8.9.1_64bit/bin/node`;
     env.EMSCRIPTEN_ROOT = `${tmpBuildToolsPath}/emsdk/emscripten/1.38.28`;
 
-    const command =
-      buildType === "web"
-        ? `${tmpBuildToolsPath}/emsdk/emsdk activate latest && make`
-        : "make";
-    const args = [buildType];
+    const command = "make";
+    const args = ["rom"];
 
     const options = {
       cwd: buildRoot,

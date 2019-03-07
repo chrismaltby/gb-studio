@@ -33,8 +33,6 @@
     import { ActionCreators } from 'redux-undo';
     const { systemPreferences } = require('electron').remote;
 
-    console.log({systemPreferences})
-
     const store = configureStore();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -73,20 +71,15 @@
       store.dispatch(actions.setSection(section))
     });
 
-    ipcRenderer.on("run", async (event) => {
-      const { outputRoot } = await store.dispatch(actions.runBuild());
-      ipcRenderer.send(
-        "open-play",
-        `file://${outputRoot}/build/web/index.html`
-      );
+    ipcRenderer.on("run", (event) => {
+      store.dispatch(actions.buildGame());
     });
 
     ipcRenderer.on("build", async (event, buildType) => {
-      await store.dispatch(actions.runBuild({
+      store.dispatch(actions.buildGame({
         buildType,
         exportBuild: true
       }));
-      shell.openItem(`${store.getState().document.root}/build/${buildType}`);
     });
 
     let modified = true;

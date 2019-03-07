@@ -76,3 +76,5 @@ export const CMD_STD_ERR = "CMD_STD_ERR";
 export const CMD_COMPLETE = "CMD_COMPLETE";
 
 export const OPEN_HELP = "OPEN_HELP";
+export const OPEN_FOLDER = "OPEN_FOLDER";
+export const BUILD_GAME = "BUILD_GAME";

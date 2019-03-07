@@ -1,10 +1,6 @@
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
-import fs from "fs-extra";
-import uuid from "uuid/v4";
-import { remote } from "electron";
-import buildProject from "../lib/compiler/buildProject";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadImageData } from "../lib/project/loadImageData";
 
@@ -125,7 +121,7 @@ export const setNavigationId = id => {
 };
 
 export const addScene = (x, y) => {
-  return { type: types.ADD_SCENE, id: uuid(), x, y };
+  return { type: types.ADD_SCENE, x, y };
 };
 
 export const selectScene = sceneId => {
@@ -157,7 +153,7 @@ export const removeScene = sceneId => {
 };
 
 export const addActor = (sceneId, x, y) => {
-  return { type: types.ADD_ACTOR, id: uuid(), sceneId, x, y };
+  return { type: types.ADD_ACTOR, sceneId, x, y };
 };
 
 export const moveActor = (sceneId, index, moveX, moveY) => {
@@ -256,64 +252,23 @@ export const openHelp = page => {
   return { type: types.OPEN_HELP, page };
 };
 
+export const openFolder = path => {
+  return { type: types.OPEN_FOLDER, path };
+};
+
 export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
 
-export const runBuild = ({
+export const buildGame = ({
   buildType = "web",
   exportBuild = false,
   ejectBuild = false
-} = {}) => async (dispatch, getState) => {
-  dispatch({ type: types.CMD_START });
-  dispatch({ type: types.SET_SECTION, section: "build" });
-  try {
-    const state = getState();
-    const projectRoot = state.document && state.document.root;
-    const project = state.project.present;
-    const outputRoot = remote.app.getPath("temp") + uuid();
-
-    await buildProject(project, {
-      projectRoot,
-      buildType,
-      outputRoot,
-      tmpPath: remote.app.getPath("temp"),
-      progress: message => {
-        if (
-          message !== "'" &&
-          message.indexOf("unknown or unsupported #pragma") === -1
-        ) {
-          dispatch({ type: types.CMD_STD_OUT, text: message });
-        }
-      },
-      warnings: message => {
-        dispatch({ type: types.CMD_STD_ERR, text: message });
-      }
-    });
-
-    if (exportBuild) {
-      await fs.copy(
-        `${outputRoot}/build/${buildType}`,
-        `${projectRoot}/build/${buildType}`
-      );
-    }
-
-    if (ejectBuild) {
-      await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
-    }
-
-    dispatch({ type: types.CMD_COMPLETE });
-
-    return {
-      outputRoot
-    };
-  } catch (e) {
-    if (typeof e === "string") {
-      dispatch({ type: types.CMD_STD_ERR, text: e });
-    } else {
-      dispatch({ type: types.CMD_STD_ERR, text: e.toString() });
-    }
-    dispatch({ type: types.CMD_COMPLETE });
-    throw e;
-  }
+} = {}) => {
+  return {
+    type: types.BUILD_GAME,
+    buildType,
+    exportBuild,
+    ejectBuild
+  };
 };

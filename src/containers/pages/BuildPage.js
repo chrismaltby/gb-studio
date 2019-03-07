@@ -7,8 +7,6 @@ import Button, {
   ButtonToolbarFixedSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
-import { remote, shell, ipcRenderer } from "electron";
-const { BrowserWindow } = remote;
 
 class BuildPage extends Component {
   constructor(props) {
@@ -28,24 +26,12 @@ class BuildPage extends Component {
     this.props.consoleClear();
   };
 
-  onRun = async e => {
-    try {
-      const { outputRoot } = await this.props.runBuild("web");
-      ipcRenderer.send(
-        "open-play",
-        `file://${outputRoot}/build/web/index.html`
-      );
-    } catch (e) {
-      console.error("FAIL");
-      console.error(e);
-    }
+  onRun = e => {
+    this.props.buildGame();
   };
 
-  onBuild = buildType => async e => {
-    await this.props.runBuild({ buildType, exportBuild: true });
-    console.log("OPEN BUILD??");
-    console.log(`${this.props.projectRoot}/build/${buildType}`);
-    shell.openItem(`${this.props.projectRoot}/build/${buildType}`);
+  onBuild = buildType => e => {
+    this.props.buildGame({ buildType, exportBuild: true });
   };
 
   scrollToBottom = () => {
@@ -54,7 +40,7 @@ class BuildPage extends Component {
   };
 
   render() {
-    const { status, output, projectRoot } = this.props;
+    const { output } = this.props;
     return (
       <div
         style={{
@@ -109,7 +95,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   consoleClear: actions.consoleClear,
-  runBuild: actions.runBuild
+  buildGame: actions.buildGame
 };
 
 export default connect(
