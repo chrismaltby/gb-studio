@@ -41,6 +41,7 @@ const createSplash = async () => {
     }
   });
 
+  splashWindow.setMenu(null);
   splashWindow.loadURL(`file://${__dirname}/windows/splash.html`);
 
   splashWindow.on("closed", () => {
@@ -128,6 +129,7 @@ const createHelp = async helpPage => {
         devTools: isDevMode
       }
     });
+    helpWindow.setMenu(null);
   } else {
     helpWindow.show();
   }
