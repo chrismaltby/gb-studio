@@ -8,7 +8,8 @@ import compile, {
 import {
   EVENT_TEXT,
   EVENT_IF_FLAG,
-  EVENT_SET_FLAG
+  EVENT_SET_FLAG,
+  EVENT_END
 } from "../../../src/lib/compiler/eventTypes";
 
 test("should compile simple project into files object", async () => {
@@ -17,6 +18,9 @@ test("should compile simple project into files object", async () => {
     startX: 5,
     startY: 6,
     startDirection: "down",
+    settings: {
+      playerSpriteSheetId: "SPRITE_1"
+    },
     scenes: [
       {
         id: "1",
@@ -36,7 +40,7 @@ test("should compile simple project into files object", async () => {
           {
             id: "9",
             spriteSheetId: "SPRITE_1",
-            events: [
+            script: [
               {
                 command: EVENT_TEXT,
                 args: {
@@ -54,7 +58,7 @@ test("should compile simple project into files object", async () => {
           {
             id: "12",
             spriteSheetId: "SPRITE_2",
-            events: [
+            script: [
               {
                 command: EVENT_TEXT,
                 args: {
@@ -72,7 +76,7 @@ test("should compile simple project into files object", async () => {
             width: 5,
             height: 1,
             trigger: "walk",
-            events: [
+            script: [
               {
                 command: EVENT_TEXT,
                 args: {
@@ -101,7 +105,7 @@ test("should compile simple project into files object", async () => {
           {
             id: "10",
             spriteSheetId: "SPRITE_1",
-            events: [
+            script: [
               {
                 command: EVENT_IF_FLAG,
                 args: {
@@ -153,7 +157,7 @@ test("should compile simple project into files object", async () => {
           {
             id: "99",
             spriteSheetId: "SPRITE_1",
-            events: []
+            script: []
           }
         ],
         triggers: []
@@ -198,7 +202,7 @@ test("should compile simple project into files object", async () => {
             width: 5,
             height: 1,
             trigger: "walk",
-            events: [
+            script: [
               {
                 command: EVENT_TEXT,
                 args: {
@@ -273,42 +277,42 @@ test("should walk all scene events to build list of used flags", () => {
       actors: [
         {
           id: "2",
-          events: [
+          script: [
             {
               id: "3",
-              command: "IF_FLAG",
+              command: EVENT_IF_FLAG,
               args: { flag: "9" },
               true: [
                 {
                   id: "4",
-                  command: "TEXT",
+                  command: EVENT_TEXT,
                   args: { text: "LINE 2" }
                 },
                 {
                   id: "5",
-                  command: "END"
+                  command: EVENT_END
                 }
               ],
               false: [
                 {
                   id: "6",
-                  command: "SET_FLAG",
+                  command: EVENT_SET_FLAG,
                   args: { flag: "9" }
                 },
                 {
                   id: "7",
-                  command: "TEXT",
+                  command: EVENT_TEXT,
                   args: { text: "LINE 1" }
                 },
                 {
                   id: "8",
-                  command: "END"
+                  command: EVENT_END
                 }
               ]
             },
             {
               id: "9",
-              command: "END"
+              command: EVENT_END
             }
           ]
         }
@@ -316,20 +320,20 @@ test("should walk all scene events to build list of used flags", () => {
       triggers: [
         {
           id: "10",
-          events: [
+          script: [
             {
               id: "11",
-              command: "SET_FLAG",
+              command: EVENT_SET_FLAG,
               args: { flag: "10" }
             },
             {
               id: "12",
-              command: "SET_FLAG",
+              command: EVENT_SET_FLAG,
               args: { flag: "9" }
             },
             {
               id: "13",
-              command: "END"
+              command: EVENT_END
             }
           ]
         }
@@ -347,42 +351,42 @@ test("should walk all scene events to build list of strings", () => {
       actors: [
         {
           id: "2",
-          events: [
+          script: [
             {
               id: "3",
-              command: "IF_FLAG",
+              command: EVENT_IF_FLAG,
               args: { flag: "9" },
               true: [
                 {
                   id: "4",
-                  command: "TEXT",
+                  command: EVENT_TEXT,
                   args: { text: "LINE 2" }
                 },
                 {
                   id: "5",
-                  command: "END"
+                  command: EVENT_END
                 }
               ],
               false: [
                 {
                   id: "6",
-                  command: "SET_FLAG",
+                  command: EVENT_SET_FLAG,
                   args: { flag: "9" }
                 },
                 {
                   id: "7",
-                  command: "TEXT",
+                  command: EVENT_TEXT,
                   args: { text: "LINE 1" }
                 },
                 {
                   id: "8",
-                  command: "END"
+                  command: EVENT_END
                 }
               ]
             },
             {
               id: "9",
-              command: "END"
+              command: EVENT_END
             }
           ]
         }
@@ -390,15 +394,15 @@ test("should walk all scene events to build list of strings", () => {
       triggers: [
         {
           id: "10",
-          events: [
+          script: [
             {
               id: "11",
-              command: "TEXT",
+              command: EVENT_TEXT,
               args: { text: "LINE 2" }
             },
             {
               id: "12",
-              command: "TEXT",
+              command: EVENT_TEXT,
               args: { text: "LINE 3" }
             }
           ]
@@ -439,7 +443,8 @@ test("should precompile image data", async () => {
   const { usedImages, imageLookup, imageData } = await precompileImages(
     images,
     scenes,
-    `${__dirname}/_files`
+    `${__dirname}/_files`,
+    `${__dirname}/_tmp`
   );
   expect(usedImages).toHaveLength(1);
   expect(imageLookup["2"]).toBe(images[0]);
@@ -475,6 +480,9 @@ test("should precompile scenes", async () => {
   const usedImages = [
     {
       id: "3"
+    },
+    {
+      id: "4"
     }
   ];
   const spriteData = [

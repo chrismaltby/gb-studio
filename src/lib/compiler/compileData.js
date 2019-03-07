@@ -381,7 +381,7 @@ export const precompileImages = async (
   scenes,
   projectRoot,
   tmpPath,
-  { warnings }
+  { warnings } = {}
 ) => {
   let eventImageIds = [];
   walkScenesEvents(scenes, cmd => {

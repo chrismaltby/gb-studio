@@ -106,5 +106,11 @@
     "eslint-plugin-react": "^7",
     "jest": "^24.0.0",
     "redux-devtools-extension": "^2.13.7"
+  },
+  "jest": {
+    "roots": [
+      "test/"
+    ],
+    "verbose": true
   }
 }

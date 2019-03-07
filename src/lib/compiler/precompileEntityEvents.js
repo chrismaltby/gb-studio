@@ -87,7 +87,7 @@ const getActorIndex = (actorId, scene) => {
 const getFlagIndex = (flag, flags) => {
   const flagIndex = flags.indexOf(flag);
   if (flagIndex === -1) {
-    // throw new CompileEventsError(FLAG_NOT_FOUND, { flag });
+    throw new CompileEventsError(FLAG_NOT_FOUND, { flag });
     return 0;
   }
   return flagIndex;
