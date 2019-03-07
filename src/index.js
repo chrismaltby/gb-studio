@@ -265,12 +265,13 @@ menu.on("build", buildType => {
 
 const newProject = async () => {
   if (splashWindow) {
-    splashWindow.close();
+    splashWindow.reload();
+  } else {
+    await createSplash();
+    if (mainWindow) {
+      mainWindow.close();
+    }
   }
-  if (mainWindow) {
-    mainWindow.close();
-  }
-  await createSplash();
 };
 
 const openProjectPicker = async () => {
