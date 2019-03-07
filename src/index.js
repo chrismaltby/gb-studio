@@ -290,11 +290,14 @@ const openProjectPicker = async () => {
 };
 
 const openProject = async projectPath => {
+  let oldMainWindow = mainWindow;
+  await createWindow(projectPath);
+  let newMainWindow = mainWindow;
   if (splashWindow) {
     splashWindow.close();
   }
-  if (mainWindow) {
-    mainWindow.close();
+  if (oldMainWindow) {
+    oldMainWindow.close();
+    mainWindow = newMainWindow;
   }
-  await createWindow(projectPath);
 };
