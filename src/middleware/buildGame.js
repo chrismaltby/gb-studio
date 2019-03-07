@@ -15,8 +15,6 @@ export default store => next => async action => {
   if (action.type === BUILD_GAME) {
     const { buildType, exportBuild, ejectBuild } = action;
     const dispatch = store.dispatch.bind(store);
-    console.log("BUILD GAME");
-    console.log(action);
 
     dispatch({ type: CMD_START });
     dispatch({ type: SET_SECTION, section: "build" });
@@ -49,12 +47,18 @@ export default store => next => async action => {
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        shell.openItem(`${projectRoot}/build/${buildType}`);
-      }
-
-      if (ejectBuild) {
+        if (buildType === "rom") {
+          shell.showItemInFolder(`${projectRoot}/build/${buildType}/game.gb`);
+        } else if (buildType === "web") {
+          shell.showItemInFolder(
+            `${projectRoot}/build/${buildType}/index.html`
+          );
+        } else {
+          shell.showItemInFolder(`${projectRoot}/build/${buildType}`);
+        }
+      } else if (ejectBuild) {
         await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
-        shell.openItem(`${projectRoot}/eject`);
+        shell.showItemInFolder(`${projectRoot}/eject`);
       }
 
       dispatch({ type: CMD_COMPLETE });

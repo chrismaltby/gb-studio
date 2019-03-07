@@ -24,7 +24,6 @@ const sectionNames = {
   world: "Game World",
   sprites: "Sprites",
   backgrounds: "Backgrounds",
-  // tiles: "Tiles",
   script: "Script Review",
   build: "Build & Run"
 };
@@ -57,7 +56,7 @@ class AppToolbar extends Component {
   };
 
   openProjectFolder = e => {
-    this.props.openFolder(this.props.projectRoot);
+    this.props.openFolder(`${this.props.projectRoot}/project.json`);
   };
 
   render() {
