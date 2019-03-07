@@ -123,21 +123,50 @@ export default function editor(state = initialState.editor, action) {
       };
     }
     case ZOOM_IN:
-      return {
-        ...state,
-        zoom: Math.min(800, state.zoom * 2)
-      };
+      return Object.assign(
+        {
+          ...state
+        },
+        action.section === "world" && {
+          zoom: Math.min(800, state.zoom * 2)
+        },
+        action.section === "sprites" && {
+          zoomSprite: Math.min(800, state.zoomSprite * 2)
+        },
+        action.section === "backgrounds" && {
+          zoomImage: Math.min(800, state.zoomImage * 2)
+        }
+      );
     case ZOOM_OUT:
-      return {
-        ...state,
-        zoom: Math.max(25, state.zoom / 2)
-      };
+      return Object.assign(
+        {
+          ...state
+        },
+        action.section === "world" && {
+          zoom: Math.max(25, state.zoom / 2)
+        },
+        action.section === "sprites" && {
+          zoomSprite: Math.max(25, state.zoomSprite / 2)
+        },
+        action.section === "backgrounds" && {
+          zoomImage: Math.max(25, state.zoomImage / 2)
+        }
+      );
     case ZOOM_RESET:
-      return {
-        ...state,
-        ...state.settings,
-        zoom: 100
-      };
+      return Object.assign(
+        {
+          ...state
+        },
+        action.section === "world" && {
+          zoom: 100
+        },
+        action.section === "sprites" && {
+          zoomSprite: 100
+        },
+        action.section === "backgrounds" && {
+          zoomImage: 100
+        }
+      );
     default:
       return state;
   }

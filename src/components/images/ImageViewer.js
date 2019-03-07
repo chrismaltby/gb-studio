@@ -32,13 +32,17 @@ function mapStateToProps(state) {
       : state.project.present.spriteSheets) || [];
   const folder = section === "backgrounds" ? "backgrounds" : "sprites";
   const image = files.find(file => file.id === id) || files[0];
+  const zoom =
+    section === "backgrounds"
+      ? state.editor.zoomImage
+      : state.editor.zoomSprite;
   return {
     projectRoot: state.document && state.document.root,
     projectId: state.project.present.id,
     image: image && image.filename,
     version: (image && image._v) || 0,
     folder,
-    zoomRatio: (state.editor.zoom || 100) / 100
+    zoomRatio: (zoom || 100) / 100
   };
 }
 

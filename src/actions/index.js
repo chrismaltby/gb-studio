@@ -236,16 +236,16 @@ export const editProjectSettings = values => {
   return { type: types.EDIT_PROJECT_SETTINGS, values };
 };
 
-export const zoomIn = () => {
-  return { type: types.ZOOM_IN };
+export const zoomIn = section => {
+  return { type: types.ZOOM_IN, section };
 };
 
-export const zoomOut = () => {
-  return { type: types.ZOOM_OUT };
+export const zoomOut = section => {
+  return { type: types.ZOOM_OUT, section };
 };
 
-export const zoomReset = () => {
-  return { type: types.ZOOM_RESET };
+export const zoomReset = section => {
+  return { type: types.ZOOM_RESET, section };
 };
 
 export const openHelp = page => {

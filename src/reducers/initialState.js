@@ -19,6 +19,8 @@ export default {
     scene: "",
     index: 0,
     zoom: 100,
+    zoomSprite: 400,
+    zoomImage: 200,
     sceneDragging: false,
     sceneDragX: 0,
     sceneDragY: 0

@@ -37,19 +37,19 @@ class AppToolbar extends Component {
   onZoomIn = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomIn();
+    this.props.zoomIn(this.props.section);
   };
 
   onZoomOut = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomOut();
+    this.props.zoomOut(this.props.section);
   };
 
   onZoomReset = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomReset();
+    this.props.zoomReset(this.props.section);
   };
 
   onRun = async e => {
@@ -61,7 +61,8 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, section = "overview", zoom, running } = this.props;
+    const { name, section = "overview", zoom, showZoom, running } = this.props;
+
     return (
       <Toolbar>
         <ToolbarDropdownButton
@@ -74,7 +75,7 @@ class AppToolbar extends Component {
             </MenuItem>
           ))}
         </ToolbarDropdownButton>
-        <ToolbarButton style={{ width: 90 }}>
+        <ToolbarButton style={{ width: 90, visibility: !showZoom && "hidden" }}>
           <ToolbarButton onClick={this.onZoomOut}>
             <MinusIcon />
           </ToolbarButton>
@@ -103,11 +104,21 @@ class AppToolbar extends Component {
 }
 
 function mapStateToProps(state) {
+  const section = state.navigation.section;
+  const zoom =
+    section === "world"
+      ? state.editor.zoom
+      : section === "sprites"
+      ? state.editor.zoomSprite
+      : section === "backgrounds"
+      ? state.editor.zoomImage
+      : 100;
   return {
     projectRoot: state.document && state.document.root,
     name: state.project.present && state.project.present.name,
-    section: state.navigation.section,
-    zoom: state.editor.zoom,
+    section,
+    zoom,
+    showZoom: ["world", "sprites", "backgrounds"].indexOf(section) > -1,
     running: state.console.status === "running"
   };
 }
