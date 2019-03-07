@@ -36,6 +36,10 @@
   image-rendering: pixelated;
 }
 
+.Scene__Image img {
+  -webkit-user-drag: none;
+}
+
 .Scene--Selected .Scene__Image {
   outline: 2px solid #03a9f4;
 }

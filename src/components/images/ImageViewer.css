@@ -23,4 +23,5 @@
 .ImageViewer__Image img {
   display: block;
   image-rendering: pixelated;
+  -webkit-user-drag: none;
 }
