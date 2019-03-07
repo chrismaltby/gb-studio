@@ -5,20 +5,20 @@
 
 .InputPicker__Button {
   flex: 1;
-  width: 23px;
-  height: 23px;
+  width: 28px;
+  height: 28px;
   background: var(--input-bg-color);
   font-size: 10px;
-  line-height: 23px;
+  line-height: 28px;
   text-align: center;
   border: 1px solid var(--input-border-color);
   border-right: 0;
-
   display: inline-flex;
   width: 25%;
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
+  font-weight: bold;
 }
 
 .InputPicker__Button:last-child {
@@ -52,4 +52,21 @@
 .InputPicker__Button--Active,
 .InputPicker__Button--Active:hover {
   background-color: var(--input-active-color);
+}
+
+.InputPicker__Button svg {
+  width: 8px;
+  height: 8px;
+}
+
+.InputPicker__Button--Left svg {
+  transform: rotate(-90deg);
+}
+
+.InputPicker__Button--Right svg {
+  transform: rotate(90deg);
+}
+
+.InputPicker__Button--Down svg {
+  transform: rotate(180deg);
 }

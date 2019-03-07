@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import { TriangleIcon } from "../library/Icons";
 
 class InputPicker extends Component {
   render() {
@@ -8,22 +9,22 @@ class InputPicker extends Component {
       {
         key: "left",
         name: "Left",
-        label: "◀"
+        label: <TriangleIcon />
       },
       {
         key: "up",
         name: "Up",
-        label: "▲"
+        label: <TriangleIcon />
       },
       {
         key: "down",
         name: "Down",
-        label: "▼"
+        label: <TriangleIcon />
       },
       {
         key: "right",
         name: "Right",
-        label: "▶"
+        label: <TriangleIcon />
       },
       {
         key: "a",

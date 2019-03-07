@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import { TriangleIcon } from "../library/Icons";
 
 class DirectionPicker extends Component {
   render() {
@@ -7,29 +8,25 @@ class DirectionPicker extends Component {
     const directions = [
       {
         key: "left",
-        name: "Left",
-        label: "◀"
+        name: "Left"
       },
       {
         key: "up",
-        name: "Up",
-        label: "▲"
+        name: "Up"
       },
       {
         key: "down",
-        name: "Down",
-        label: "▼"
+        name: "Down"
       },
       {
         key: "right",
-        name: "Right",
-        label: "▶"
+        name: "Right"
       }
     ];
 
     return (
       <div className="DirectionPicker">
-        {directions.map(direction =>
+        {directions.map(direction => (
           <div
             key={direction.key}
             onClick={() => onChange(direction.key)}
@@ -41,9 +38,9 @@ class DirectionPicker extends Component {
               }
             )}
           >
-            {direction.label}
+            <TriangleIcon />
           </div>
-        )}
+        ))}
       </div>
     );
   }
