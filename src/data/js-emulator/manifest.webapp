@@ -1,0 +1,10 @@
+{
+  "name": "GAMEBOY",
+  "description": "GameBoy Online GAMEBOY Emulator",
+  "launch_path": "/index.html",
+  "fullscreen": true,
+  "icons": {
+    "128": "/images/128.png"
+  },
+  "orientation": ["portrait-primary"]
+}

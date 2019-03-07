@@ -1,3 +1,4 @@
+import fs from "fs-extra";
 import compile, { EVENT_DATA_COMPILE_PROGRESS } from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
@@ -31,6 +32,16 @@ const buildProject = async (
     progress,
     warnings
   });
+  if (buildType === "web") {
+    await fs.copy(
+      `${__dirname}/../../data/js-emulator`,
+      `${outputRoot}/build/web`
+    );
+    await fs.copy(
+      `${outputRoot}/build/rom/game.gb`,
+      `${outputRoot}/build/web/rom/game.gb`
+    );
+  }
 };
 
 export default buildProject;
