@@ -10,6 +10,7 @@ import {
   CMD_STD_OUT,
   CMD_STD_ERR
 } from "../actions/actionTypes";
+import path from "path";
 
 export default store => next => async action => {
   if (action.type === BUILD_GAME) {
@@ -22,7 +23,9 @@ export default store => next => async action => {
       const state = store.getState();
       const projectRoot = state.document && state.document.root;
       const project = state.project.present;
-      const outputRoot = remote.app.getPath("temp") + uuid();
+      const outputRoot = path.normalize(
+        remote.app.getPath("temp") + "/" + uuid()
+      );
 
       await buildProject(project, {
         projectRoot,
