@@ -79,18 +79,25 @@ class OverviewPage extends Component {
                 color: "var(--input-text-color)",
                 fontSize: "2em",
                 fontWeight: "bold",
-                padding: 5,
+                padding: "0 5px",
                 marginLeft: -6,
-                height: 30,
-                lineHeight: "30px",
+                height: 40,
+                lineHeight: "40px",
                 marginTop: -1,
                 marginBottom: 19
               }}
             />
           ) : (
             <h1>
-              {name}{" "}
-              <Button small transparent onClick={this.onStartEdit}>
+              <span style={{
+                display: "inline-block",
+                maxWidth: "90%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                paddingBottom: 5
+              }}>{name}</span>{" "}
+              <Button small transparent onClick={this.onStartEdit} style={{position:"relative", top:-6}}>
                 <PencilIcon />
               </Button>
             </h1>

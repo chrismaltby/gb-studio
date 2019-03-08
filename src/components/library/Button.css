@@ -19,6 +19,18 @@
   box-sizing: border-box;
 }
 
+.Platform__win32 .Button {
+  box-shadow: none;
+  border-radius: 2px;
+  background: #fff;
+  border-color: #ddd;
+}
+
+.Platform__win32 .Button--Transparent {
+  background: transparent;
+  border-color: transparent;
+}
+
 .Button--Transparent {
   background: transparent;
   border-color: transparent;
