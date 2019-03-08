@@ -78,7 +78,12 @@ class AppToolbar extends Component {
           <ToolbarButton onClick={this.onZoomOut}>
             <MinusIcon />
           </ToolbarButton>
-          <div onClick={this.onZoomReset}>{Math.round(zoom)}%</div>
+          <div
+            onClick={this.onZoomReset}
+            style={{ width: 44, flexShrink: 0, textAlign: "center" }}
+          >
+            {Math.round(zoom)}%
+          </div>
           <ToolbarButton onClick={this.onZoomIn}>
             <PlusIcon />
           </ToolbarButton>
@@ -86,7 +91,7 @@ class AppToolbar extends Component {
         <ToolbarSpacer />
         <ToolbarTitle>{name || "Untitled"}</ToolbarTitle>
         <ToolbarSpacer />
-        <ToolbarFixedSpacer style={{width:186}}/>
+        <ToolbarFixedSpacer style={{ width: 186 }} />
         <ToolbarButton onClick={this.openProjectFolder}>
           <FolderIcon />
         </ToolbarButton>

@@ -1,5 +1,6 @@
 .Toolbar {
-  height: 40px;
+  height: 37px;
+  flex-shrink: 0;
   background: linear-gradient(
     to bottom,
     var(--toolbar-top-color) 0%,
