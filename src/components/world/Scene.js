@@ -151,6 +151,7 @@ class Scene extends Component {
   };
 
   onMouseLeave = e => {
+    this.setStatus({});
     this.setState({
       hover: false
     });
