@@ -39,6 +39,7 @@
         "afterCopy": [
           "./after-copy"
         ],
+        "asar": true,
         "ignore": [
           "/coverage($|/)",
           "/test($|/)",
