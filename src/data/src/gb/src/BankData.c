@@ -1,6 +1,5 @@
 #include "BankData.h"
 #include "BankManager.h"
-#include <gbdkjs.h>
 #include <string.h>
 
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr)

@@ -2,7 +2,7 @@
 #define UI_H
 
 #include <gb/gb.h>
-#include "game.h";
+#include "game.h"
 
 #define HP_SYMBOL "\""
 #define AP_SYMBOL "#"

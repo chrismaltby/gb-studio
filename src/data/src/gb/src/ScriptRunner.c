@@ -4,6 +4,7 @@
 #include "FadeManager.h"
 #include "Scene.h"
 #include "game.h"
+#include "Macros.h"
 
 UBYTE script_ptr_bank = 0;
 UWORD script_ptr = 0;

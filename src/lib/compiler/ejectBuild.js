@@ -22,10 +22,10 @@ const ejectBuild = async ({
   await fs.copy(corePath, outputRoot);
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/node_modules`);
-  await fs.ensureSymlink(
+  /*await fs.ensureSymlink(
     `${__dirname}/../../../node_modules/gbdkjs`,
     `${outputRoot}/node_modules/gbdkjs`
-  );
+  );*/
   for (let filename in compiledData) {
     if (filename.endsWith(".h")) {
       progress("Copy header " + filename);

@@ -8,16 +8,16 @@
 
 UINT8 ui_bank = 4;
 
-const unsigned char ui_frame_tl_tiles[] = {0xC0};
-const unsigned char ui_frame_bl_tiles[] = {0xE1};
-const unsigned char ui_frame_tr_tiles[] = {0xC2};
-const unsigned char ui_frame_br_tiles[] = {0xE3};
-const unsigned char ui_frame_t_tiles[] = {0xC1};
-const unsigned char ui_frame_b_tiles[] = {0xE2};
-const unsigned char ui_frame_l_tiles[] = {0xC3};
-const unsigned char ui_frame_r_tiles[] = {0xC4};
-const unsigned char ui_frame_bg_tiles[] = {0xC5};
-const unsigned char ui_colors[][1] = {{0xE5}, {0xC5}};
+const unsigned char ui_frame_tl_tiles[1] = {0xC0};
+const unsigned char ui_frame_bl_tiles[1] = {0xE1};
+const unsigned char ui_frame_tr_tiles[1] = {0xC2};
+const unsigned char ui_frame_br_tiles[1] = {0xE3};
+const unsigned char ui_frame_t_tiles[1] = {0xC1};
+const unsigned char ui_frame_b_tiles[1] = {0xE2};
+const unsigned char ui_frame_l_tiles[1] = {0xC3};
+const unsigned char ui_frame_r_tiles[1] = {0xC4};
+const unsigned char ui_frame_bg_tiles[1] = {0xC5};
+const unsigned char ui_colors[2][1] = {{0xE5}, {0xC5}};
 
 void UIInit_b()
 {

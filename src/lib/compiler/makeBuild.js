@@ -19,19 +19,21 @@ const makeBuild = ({
     );
 
     const tmpPath = remote.app.getPath("temp");
-    const tmpBuildToolsPath = `${tmpPath}_gbstudio_build_tools_`;
+    const tmpBuildToolsPath = `${tmpPath}/_gbstudio_build_tools_`;
 
     // Symlink build tools so that path doesn't contain any spaces
     // GBDKDIR doesn't work if path has spaces :-(
     try {
       await fs.unlink(tmpBuildToolsPath);
-    } catch (e) {}
-    await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
+      await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
+    } catch (e) {
+      await fs.copy(buildToolsPath, tmpBuildToolsPath);
+    }
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
 
-    const command = "make";
+    const command = process.platform === "win32" ? "make.bat" : "make";
     const args = ["rom"];
 
     const options = {

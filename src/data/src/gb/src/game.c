@@ -42,14 +42,13 @@ int main()
   WY_REG = MAXWNDPOSY - 7;
   WY_REG = MAXWNDPOSY + 1;
 
+
   actors[0].sprite = 0;
   actors[0].redraw = TRUE;
   map_next_pos.x = actors[0].pos.x = (START_SCENE_X << 3) + 8;
   map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3) + 8;
-  map_next_dir.x = actors[0].dir.x =
-      START_SCENE_DIR == 2 ? -1 : START_SCENE_DIR == 4 ? 1 : 0;
-  map_next_dir.y = actors[0].dir.y =
-      START_SCENE_DIR == 8 ? -1 : START_SCENE_DIR == 1 ? 1 : 0;
+  map_next_dir.x = actors[0].dir.x = 1;
+  map_next_dir.y = actors[0].dir.y = 0;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 
@@ -65,25 +64,13 @@ int main()
 
   FadeInit();
 
-#ifdef __EMSCRIPTEN__
-  emscripten_set_main_loop(game_loop, 60, 1);
-#else
-  while (1)
-  {
-    game_loop();
-  }
-#endif
+
+  game_loop();
+  
 }
 
 void game_loop()
 {
-
-#ifdef __EMSCRIPTEN__
-  emscripten_update_registers(SCX_REG, SCY_REG,
-                              WX_REG, WY_REG,
-                              LYC_REG, LCDC_REG, BGP_REG, OBP0_REG, OBP1_REG);
-#endif
-
   wait_vbl_done();
   LYC_REG = 0x0;
 

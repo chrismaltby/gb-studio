@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "FadeManager.h"
 #include "UI.h"
+#include "Macros.h"
 
 UINT8 scriptrunner_bank = 4;
 

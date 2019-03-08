@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -31,7 +30,7 @@ typedef enum
   PLAYER_INPUT,
   AI_RANDOM_FACE,
   AI_INTERACT_FACE,
-  AI_RANDOM_WALK,
+  AI_RANDOM_WALK
 } MOVEMENT_TYPE;
 
 typedef enum
