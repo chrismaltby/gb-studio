@@ -1,10 +1,20 @@
 .StatusBar {
   position: fixed;
-  bottom: 0px;
-  left: 0px;
-  background-color: var(--sidebar-bg-color);
-  border-top: 1px solid var(--sidebar-edge-color);
-  border-right: 1px solid var(--sidebar-edge-color);
-  border-top-right-radius: 4px;
+  top: 46px;
+  left: 53px;
+  background-color: var(--main-bg-color);
+  color: #888;
+  font-size: 11px;
+  border-radius: 4px;
   padding: 4px 10px;
+  animation: StatusBarFadeIn 0.2s;
+}
+
+@keyframes StatusBarFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

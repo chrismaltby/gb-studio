@@ -32,6 +32,8 @@ import clamp from "../lib/helpers/clamp";
 
 const MAX_ACTORS = 10;
 const MAX_TRIGGERS = 10;
+const MIN_SCENE_X = 60;
+const MIN_SCENE_Y = 30;
 
 const sortFilename = (a, b) => {
   if (a.filename > b.filename) return -1;
@@ -109,8 +111,8 @@ export default function project(state = initialState.project, action) {
             state.images &&
             state.images[0] &&
             state.images.slice().sort(sortRecent)[0].id,
-          x: Math.max(50, action.x),
-          y: Math.max(10, action.y),
+          x: Math.max(MIN_SCENE_X, action.x),
+          y: Math.max(MIN_SCENE_Y, action.y),
           width: 32,
           height: 32,
           actors: [],
@@ -127,8 +129,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            x: Math.max(50, scene.x + action.moveX),
-            y: Math.max(10, scene.y + action.moveY)
+            x: Math.max(MIN_SCENE_X, scene.x + action.moveX),
+            y: Math.max(MIN_SCENE_Y, scene.y + action.moveY)
           };
         })
       };
