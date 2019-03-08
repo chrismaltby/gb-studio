@@ -22,7 +22,7 @@
 }
 
 .Splash__Tab--Active {
-  border-bottom: 4px solid #03a9f4;
+  border-bottom: 4px solid #c92c61;
 }
 
 .Splash--Blur .Splash__Tab--Active {
@@ -121,7 +121,7 @@ input.Splash__InputButton {
   float: left;
   text-align: center;
   padding: 10px 20px;
-  background-color: #03a9f4;
+  background-color: #c92c61;
   color: #fff;
   border-radius: 4px;
   user-select: none;
