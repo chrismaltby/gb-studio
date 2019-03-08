@@ -28,6 +28,11 @@
   border-bottom: 1px solid var(--toolbar-inactive-border-color);
 }
 
+.Platform__win32 .Toolbar,
+.Platform__win32 .App--Blur .Toolbar {
+  background: #f0f0f0;
+}
+
 .Toolbar__Spacer {
   flex: 1;
 }
@@ -66,6 +71,13 @@
 
 .App--Blur .Toolbar__Button {
   opacity: 0.5;
+}
+
+.Platform__win32 .Toolbar__Button {
+  box-shadow: none;
+  border-radius: 2px;
+  background: #fff;
+  border-color: #ddd;
 }
 
 .Toolbar__Button div {
