@@ -1,7 +1,5 @@
 #include "game.h"
 #include "UI.h"
-#include "Logo.h"
-#include "Title.h"
 #include "Scene.h"
 #include "FadeManager.h"
 #include "data_ptrs.h"
@@ -21,8 +19,6 @@ STAGE_TYPE stage_type;
 STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN)();
 STAGE_UPDATE_FN UpdateFn;
-
-SCRIPT_CMD_FN last_fn;
 UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
@@ -79,12 +75,6 @@ void game_loop()
   // Handle stage switch
   if (stage_type != stage_next_type && !IsFading())
   {
-
-    if (stage_type == TITLE)
-    {
-      TitleCleanup();
-    }
-
     stage_type = stage_next_type;
     scene_index = scene_next_index;
 
@@ -97,16 +87,6 @@ void game_loop()
     {
       SceneInit();
       UpdateFn = SceneUpdate;
-    }
-    else if (stage_type == LOGO)
-    {
-      LogoInit();
-      UpdateFn = LogoUpdate;
-    }
-    else if (stage_type == TITLE)
-    {
-      TitleInit();
-      UpdateFn = TitleUpdate;
     }
   }
 

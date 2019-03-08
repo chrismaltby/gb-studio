@@ -284,21 +284,22 @@ void SceneUpdateCamera_b()
   {
     if ((time & (camera_settings & CAMERA_SPEED_MASK)) == 0)
     {
-      if (camera_dest.x < SCX_REG)
+
+      if (SCX_REG > camera_dest.x)
       {
         SCX_REG--;
       }
-      else if (camera_dest.x > SCX_REG)
+      else if (SCX_REG < camera_dest.x)
       {
-        SCX_REG++;
+         SCX_REG++;
       }
-      if (camera_dest.y < SCY_REG)
+      if (SCY_REG > camera_dest.y)
       {
-        SCY_REG--;
+         SCY_REG--;
       }
-      else if (camera_dest.y > SCY_REG)
+      else if (SCY_REG < camera_dest.y)
       {
-        SCY_REG++;
+         SCY_REG++;
       }
     }
   }

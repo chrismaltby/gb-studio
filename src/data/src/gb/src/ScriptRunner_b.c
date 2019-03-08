@@ -100,7 +100,8 @@ void Script_IfFlag_b()
  */
 void Script_SetFlag_b()
 {
-  script_flags[(script_cmd_args[0] * 256) + script_cmd_args[1]] = TRUE;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_flags[ptr] = TRUE;
   script_ptr += 1 + script_cmd_args_len;
 }
 
@@ -114,7 +115,8 @@ void Script_SetFlag_b()
  */
 void Script_ClearFlag_b()
 {
-  script_flags[(script_cmd_args[0] * 256) + script_cmd_args[1]] = FALSE;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_flags[ptr] = FALSE;
   script_ptr += 1 + script_cmd_args_len;
 }
 

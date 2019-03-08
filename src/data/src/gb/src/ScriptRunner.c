@@ -93,7 +93,9 @@ void ScriptRunnerUpdate()
   }
 
   PUSH_BANK(scriptrunner_bank);
-  script_cmd_fn();
+  if(script_cmd_fn) {
+    script_cmd_fn();
+  }
   POP_BANK;
 
   last_fn = script_cmd_fn;
