@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Interrupt Service Routines</TITLE>
+ <LINK HREF="SDCCUdoc-12.html" REL=next>
+ <LINK HREF="SDCCUdoc-10.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc11" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-12.html">Next</A>
+<A HREF="SDCCUdoc-10.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc11">Contents</A>
+<HR>
+<H2><A NAME="Interrupt Service Rouines"></A> <A NAME="s11">11. Interrupt Service Routines</A> </H2>
+
+<P>SDCC allows interrupt service routines to be coded in C, with some extended
+keywords.
+<P>
+<PRE>
+void timer_isr (void) interrupt 2 using 1 
+{ 
+.. 
+}
+ 
+</PRE>
+<P>The number following the 'interrupt' keyword is the interrupt number this
+routine will service. The compiler will insert a call to this routine in the
+interrupt vector table for the interrupt number specified. The 'using' keyword
+is used to tell the compiler to use the specified register bank (8051 specific)
+when generating code for this function. Note that when some function is called
+from an interrupt service routine it should be preceded by a #pragma NOOVERLAY
+(if it is not reentrant) . A special note here, int (16 bit) and long (32 bit)
+integer division, multiplication &amp; modulus operations are implemented using
+external support routines developed in ANSI-C, if an interrupt service routine
+needs to do any of these operations then the support routines (as mentioned
+in a following section) will have to recompiled using the --stack-auto option
+and the source file will need to be compiled using the --int-long-rent compiler
+option.
+<P>If you have multiple source files in your project, interrupt service routines
+can be present in any of them, but a prototype of the isr MUST be present in
+the file that contains the function 'main'.
+<P>Interrupt Numbers and the corresponding address &amp; descriptions for
+the Standard 8051 are listed below. SDCC will automatically adjust the interrupt
+vector table to the maximum interrupt number specified.
+<P>
+<PRE>
+Interrupt #         Description           Vector Address 
+   0                External
+ 0            0x0003 
+   1                Timer 0               0x000B 
+   2
+                External 1            0x0013 
+   3                Timer 1               0x001B
+ 
+   4                Serial                0x0023
+ 
+</PRE>
+<P>If the interrupt service routine is defined without a register bank or
+with register bank 0 (using 0), the compiler will save the registers used by
+itself on the stack (upon entry and restore them at exit), however if such
+an interrupt service routine calls another function then the entire register
+bank will be saved on the stack. This scheme may be advantageous for small
+interrupt service routines which have low register usage.
+<P>If the interrupt service routine is defined to be using a specific register
+bank then only "a","b" &amp; "dptr" are save and restored, if such an interrupt service
+routine calls another function (using another register bank) then the entire
+register bank of the called function will be saved on the stack. This scheme
+is recommended for larger interrupt service routines.
+<P>Calling other functions from an interrupt service routine is not recommended
+avoid it if possible.
+<HR>
+<A HREF="SDCCUdoc-12.html">Next</A>
+<A HREF="SDCCUdoc-10.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc11">Contents</A>
+</BODY>
+</HTML>

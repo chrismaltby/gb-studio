@@ -1,0 +1,120 @@
+\section{string.h File Reference}
+\label{string.h}\index{string.h@{string.h}}
+Generic string functions. 
+
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+char$\ast$ {\bf strcpy} (char $\ast$dest, const char $\ast$src) NONBANKED
+\begin{CompactList}\small\item\em Copies the string pointed to be src (including the terminating `$\backslash$0' character) to the array pointed to by dest.\item\end{CompactList}
+
+\item 
+int {\bf strcmp} (const char $\ast$s1, const char $\ast$s2) NONBANKED
+\begin{CompactList}\small\item\em Compares the two strings s1 and s2.\item\end{CompactList}
+
+\item 
+void$\ast$ {\bf memcpy} (void $\ast$dest, const void $\ast$src, size\_\-t len) NONBANKED
+\begin{CompactList}\small\item\em Copies n bytes from memory area src to memory area dest.\item\end{CompactList}
+
+\item 
+char$\ast$ {\bf reverse} (char $\ast$s)
+\begin{CompactList}\small\item\em Reverses the characters in the string.\item\end{CompactList}
+
+\item 
+\label{string.h_a4}
+\index{strcat@{strcat}!string.h@{string.h}}\index{string.h@{string.h}!strcat@{strcat}}
+char$\ast$ {\bf strcat} (char $\ast$s1, const char $\ast$s2) NONBANKED
+\item 
+\label{string.h_a5}
+\index{strlen@{strlen}!string.h@{string.h}}\index{string.h@{string.h}!strlen@{strlen}}
+int {\bf strlen} (const char $\ast$s) NONBANKED
+\begin{CompactList}\small\item\em Calculates the length of the string, not including the terminating `$\backslash$0' character.\item\end{CompactList}
+
+\item 
+char$\ast$ {\bf strncat} (char $\ast$s1, const char $\ast$s2, int n) NONBANKED
+\begin{CompactList}\small\item\em Concatenate s2 on the end of s1.\item\end{CompactList}
+
+\item 
+\label{string.h_a7}
+\index{strncmp@{strncmp}!string.h@{string.h}}\index{string.h@{string.h}!strncmp@{strncmp}}
+int {\bf strncmp} (const char $\ast$s1, const char $\ast$s2, int n) NONBANKED
+\begin{CompactList}\small\item\em Compare strings (at most n bytes): s1$>$s2: $>$0 s1==s2: 0 s1$<$s2: $<$0.\item\end{CompactList}
+
+\item 
+char$\ast$ {\bf strncpy} (char $\ast$s1, const char $\ast$s2, int n) NONBANKED
+\begin{CompactList}\small\item\em Copy s2 to s1, truncating or null-padding to always copy n bytes.\item\end{CompactList}
+
+\end{CompactItemize}
+\vspace{0.4cm}\hrule\vspace{0.2cm}
+\subsection*{Detailed Description}
+Generic string functions.\vspace{0.4cm}\hrule\vspace{0.2cm}
+\subsection*{Function Documentation}
+\label{string.h_a0}
+\index{string.h@{string.h}!strcpy@{strcpy}}
+\index{strcpy@{strcpy}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ strcpy (char $\ast$ {\em dest}, const char $\ast$ {\em src})}
+
+Copies the string pointed to be src (including the terminating `$\backslash$0' character) to the array pointed to by dest.
+
+The strings may not overlap, and the destination string dest must be large enough to receive the copy.
+
+\begin{Desc}
+\item[{\bf Parameters: }]\par
+\begin{description}
+\item[
+{\em dest}] Array to copy into. \item[
+{\em src}] Array to copy from. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[{\bf Returns: }]\par
+A pointer to dest. \end{Desc}
+\label{string.h_a1}
+\index{string.h@{string.h}!strcmp@{strcmp}}
+\index{strcmp@{strcmp}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}int strcmp (const char $\ast$ {\em s1}, const char $\ast$ {\em s2})}
+
+Compares the two strings s1 and s2.
+
+It returns an integer less than, equal to, or greater than zero if s1 is found, respectively, to be less than, to match, or be greater than s2. \label{string.h_a2}
+\index{string.h@{string.h}!memcpy@{memcpy}}
+\index{memcpy@{memcpy}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ memcpy (void $\ast$ {\em dest}, const void $\ast$ {\em src}, size\_\-t {\em len})}
+
+Copies n bytes from memory area src to memory area dest.
+
+The memory areas may not overlap.
+
+\begin{Desc}
+\item[{\bf Parameters: }]\par
+\begin{description}
+\item[
+{\em dest}] Array to copy into. \item[
+{\em src}] Array to copy from. \item[
+{\em len}] The length in bytes of src. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[{\bf Returns: }]\par
+A pointer to dest. \end{Desc}
+\label{string.h_a3}
+\index{string.h@{string.h}!reverse@{reverse}}
+\index{reverse@{reverse}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ reverse (char $\ast$ {\em s})}
+
+Reverses the characters in the string.
+
+For example 'abcdefg' will become 'gfedcba'. Banked as the string must be modifiable. \label{string.h_a6}
+\index{string.h@{string.h}!strncat@{strncat}}
+\index{strncat@{strncat}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ strncat (char $\ast$ {\em s1}, const char $\ast$ {\em s2}, int {\em n})}
+
+Concatenate s2 on the end of s1.
+
+s1 must be large enough. At most n characters are moved. \label{string.h_a8}
+\index{string.h@{string.h}!strncpy@{strncpy}}
+\index{strncpy@{strncpy}!string.h@{string.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ strncpy (char $\ast$ {\em s1}, const char $\ast$ {\em s2}, int {\em n})}
+
+Copy s2 to s1, truncating or null-padding to always copy n bytes.
+
+If there is no $\backslash$0 in the first n bytes of s2 then s1 will not be null terminated. 

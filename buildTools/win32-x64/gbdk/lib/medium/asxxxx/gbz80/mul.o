@@ -1,0 +1,18 @@
+XL
+H 2 areas 6 global symbols
+A _CODE size 0 flags 0
+A _BASE size 36 flags 0
+S __mulsint Def000C
+S __muluint Def000C
+S .mulu16 Def0020
+S __mulschar Def0000
+S __muluchar Def0000
+S .mul16 Def0020
+T 00 00 C5 F8 04 4E 23 5E CD 1D 00 5D C1 C9 C5 F8
+R 00 00 01 00 00 09 01 00
+T 0E 00 04 4E 23 46 23 5E 23 56 CD 20 00 5D 54 C1
+R 00 00 01 00 00 0B 01 00
+T 1C 00 C9 06 00 50 21 00 00 3E 0F CB 23 CB 12 30
+R 00 00 01 00
+T 2A 00 01 09 29 3D 20 F5 CB 7A 28 01 09 C9
+R 00 00 01 00

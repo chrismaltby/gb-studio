@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: critical Functions.</TITLE>
+ <LINK HREF="SDCCUdoc-10.html" REL=next>
+ <LINK HREF="SDCCUdoc-8.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc9" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-10.html">Next</A>
+<A HREF="SDCCUdoc-8.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc9">Contents</A>
+<HR>
+<H2><A NAME="Critical"></A> <A NAME="s9">9. critical Functions.</A> </H2>
+
+<P>A special keyword may be associated with a function declaring it as 'critical'.
+SDCC will generate code to disable all interrupts upon entry to a critical
+function and enable them back before returning . Note that nesting critical
+functions may cause unpredictable results.
+<P>eg
+<P>
+<PRE>
+int foo () critical 
+{ 
+... 
+... 
+}
+ 
+</PRE>
+<P>The critical attribute maybe used with other attributes like reentrant.
+<HR>
+<A HREF="SDCCUdoc-10.html">Next</A>
+<A HREF="SDCCUdoc-8.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc9">Contents</A>
+</BODY>
+</HTML>

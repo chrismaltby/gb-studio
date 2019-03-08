@@ -1,0 +1,21 @@
+XL
+H 9 areas 3 global symbols
+M time
+S __divuint Ref0000
+S _clock Ref0000
+A _CODE size 26 flags 0
+S _time Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+T 00 00 C5 CD 00 00 42 4B 21 64 00 E5 C5 CD 00 00
+R 00 00 00 00 02 04 01 00 02 0E 00 00
+T 0E 00 42 4B E8 04 F8 04 2A B6 CA 22 00 2B 5E 23
+R 00 00 00 00 00 0B 00 00
+T 1C 00 56 79 12 13 78 12 59 50 C1 C9
+R 00 00 00 00

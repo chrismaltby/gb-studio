@@ -1,0 +1,11 @@
+# Shared Makefile for all the ports.
+# Provides a way of building the lib with little brains.
+
+LIB_APPEND = 1
+
+all: port
+
+include $(TOPDIR)/libc/Makefile.rules
+
+port: $(LIB)
+

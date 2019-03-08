@@ -1,0 +1,702 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : FreeWare ANSI-C Compiler
+                              3 ; Version 2.3.1 Sun Nov  4 12:04:07 2001
+                              4 
+                              5 ;--------------------------------------------------------
+                              6 	.module gprintf
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _gprintf
+                             12 ;--------------------------------------------------------
+                             13 ; special function registers
+                             14 ;--------------------------------------------------------
+                             15 ;--------------------------------------------------------
+                             16 ; special function bits 
+                             17 ;--------------------------------------------------------
+                             18 ;--------------------------------------------------------
+                             19 ; internal ram data
+                             20 ;--------------------------------------------------------
+                             21 	.area _DATA
+                             22 ;--------------------------------------------------------
+                             23 ; overlayable items in internal ram 
+                             24 ;--------------------------------------------------------
+                             25 	.area _OVERLAY
+                             26 ;--------------------------------------------------------
+                             27 ; indirectly addressable internal ram data
+                             28 ;--------------------------------------------------------
+                             29 	.area _ISEG
+                             30 ;--------------------------------------------------------
+                             31 ; bit data
+                             32 ;--------------------------------------------------------
+                             33 	.area _BSEG
+                             34 ;--------------------------------------------------------
+                             35 ; external ram data
+                             36 ;--------------------------------------------------------
+                             37 	.area _XSEG
+                             38 ;--------------------------------------------------------
+                             39 ; global & static initialisations
+                             40 ;--------------------------------------------------------
+                             41 	.area _GSINIT
+                             42 	.area _GSFINAL
+                             43 	.area _GSINIT
+                             44 ;--------------------------------------------------------
+                             45 ; Home
+                             46 ;--------------------------------------------------------
+                             47 	.area _HOME
+                             48 ;	gprintf.c 4
+                             49 ;	genLabel
+                             50 ;	genFunction
+                             51 ;	---------------------------------
+                             52 ; Function gprintf
+                             53 ; ---------------------------------
+   0000                      54 ___gprintf_start:
+   0000                      55 _gprintf:
+   0000 E8 F6                56 	lda	sp,-10(sp)
+                             57 ;	gprintf.c 7
+                             58 ;	genAssign
+                             59 ;	AOP_STK for _gprintf_nb_1_1
+   0002 F8 07                60 	lda	hl,7(sp)
+   0004 36 00                61 	ld	(hl),#0x00
+                             62 ;	gprintf.c 9
+                             63 ;	genAddrOf
+   0006 F8 0C                64 	lda	hl,12(sp)
+   0008 45                   65 	ld	b,l
+   0009 4C                   66 	ld	c,h
+                             67 ;	genPlus
+                             68 ;	AOP_STK for _gprintf_ap_1_1
+                             69 ;	genPlusIncr
+                             70 ;	Can't optimise plus by inc, falling back to the normal way
+   000A 58                   71 	ld	e,b
+   000B 51                   72 	ld	d,c
+   000C 21 02 00             73 	ld	hl,#0x0002
+   000F 19                   74 	add	hl,de
+   0010 7D                   75 	ld	a,l
+   0011 54                   76 	ld	d,h
+   0012 F8 08                77 	lda	hl,8(sp)
+   0014 22                   78 	ld	(hl+),a
+   0015 72                   79 	ld	(hl),d
+                             80 ;	genAssign
+                             81 ;	AOP_STK for _gprintf_nb_1_1
+   0016 2B                   82 	dec	hl
+   0017 2B                   83 	dec	hl
+   0018 36 00                84 	ld	(hl),#0x00
+                             85 ;	genLabel
+   001A                      86 00113$:
+                             87 ;	gprintf.c 10
+                             88 ;	genAssign
+                             89 ;	AOP_STK for 
+   001A F8 0C                90 	lda	hl,12(sp)
+   001C 4E                   91 	ld	c,(hl)
+   001D 23                   92 	inc	hl
+   001E 46                   93 	ld	b,(hl)
+                             94 ;	genPointerGet
+                             95 ;	AOP_STK for _gprintf_sloc0_1_0
+   001F 0A                   96 	ld	a,(bc)
+   0020 F8 04                97 	lda	hl,4(sp)
+   0022 77                   98 	ld	(hl),a
+                             99 ;	genIfx
+                            100 ;	AOP_STK for _gprintf_sloc0_1_0
+   0023 AF                  101 	xor	a,a
+   0024 B6                  102 	or	a,(hl)
+   0025 CAr14s02            103 	jp	z,00116$
+                            104 ;	gprintf.c 11
+                            105 ;	genCmpEq
+                            106 ;	AOP_STK for _gprintf_sloc0_1_0
+                            107 ; genCmpEq: left 1, right 1, result 0
+   0028 7E                  108 	ld	a,(hl)
+   0029 FE 25               109 	cp	a,#0x25
+   002B C2rF8s01            110 	jp	nz,00111$
+   002E 18 03               111 	jr	00130$
+   0030                     112 00129$:
+   0030 C3rF8s01            113 	jp	00111$
+   0033                     114 00130$:
+                            115 ;	gprintf.c 12
+                            116 ;	genPlus
+                            117 ;	genPlusIncr
+   0033 03                  118 	inc	bc
+                            119 ;	genAssign
+                            120 ;	AOP_STK for 
+   0034 F8 0C               121 	lda	hl,12(sp)
+   0036 71                  122 	ld	(hl),c
+   0037 23                  123 	inc	hl
+   0038 70                  124 	ld	(hl),b
+                            125 ;	genPointerGet
+   0039 0A                  126 	ld	a,(bc)
+                            127 ;	genCmpEq
+                            128 ; genCmpEq: left 1, right 1, result 0
+   003A 4F                  129 	ld	c,a
+   003B FE 25               130 	cp	a,#0x25
+   003D CArE2s01            131 	jp	z,00107$
+   0040                     132 00131$:
+                            133 ;	genCmpEq
+                            134 ; genCmpEq: left 1, right 1, result 0
+   0040 79                  135 	ld	a,c
+   0041 FE 63               136 	cp	a,#0x63
+   0043 CAr67s00            137 	jp	z,00101$
+   0046                     138 00132$:
+                            139 ;	genCmpEq
+                            140 ; genCmpEq: left 1, right 1, result 0
+   0046 79                  141 	ld	a,c
+   0047 FE 64               142 	cp	a,#0x64
+   0049 CArA1s00            143 	jp	z,00102$
+   004C                     144 00133$:
+                            145 ;	genCmpEq
+                            146 ; genCmpEq: left 1, right 1, result 0
+   004C 79                  147 	ld	a,c
+   004D FE 6F               148 	cp	a,#0x6F
+   004F CAr24s01            149 	jp	z,00104$
+   0052                     150 00134$:
+                            151 ;	genCmpEq
+                            152 ; genCmpEq: left 1, right 1, result 0
+   0052 79                  153 	ld	a,c
+   0053 FE 73               154 	cp	a,#0x73
+   0055 CArA0s01            155 	jp	z,00106$
+   0058                     156 00135$:
+                            157 ;	genCmpEq
+                            158 ; genCmpEq: left 1, right 1, result 0
+   0058 79                  159 	ld	a,c
+   0059 FE 75               160 	cp	a,#0x75
+   005B CArDFs00            161 	jp	z,00103$
+   005E                     162 00136$:
+                            163 ;	genCmpEq
+                            164 ; genCmpEq: left 1, right 1, result 0
+   005E 79                  165 	ld	a,c
+   005F FE 78               166 	cp	a,#0x78
+   0061 CAr62s01            167 	jp	z,00105$
+   0064                     168 00137$:
+                            169 ;	genGoto
+   0064 C3rEDs01            170 	jp	00108$
+                            171 ;	gprintf.c 18
+                            172 ;	genLabel
+   0067                     173 00101$:
+                            174 ;	gprintf.c 15
+                            175 ;	genPlus
+                            176 ;	AOP_STK for _gprintf_ap_1_1
+                            177 ;	AOP_STK for _gprintf_sloc1_1_0
+                            178 ;	genPlusIncr
+                            179 ;	Can't optimise plus by inc, falling back to the normal way
+   0067 F8 08               180 	lda	hl,8(sp)
+   0069 5E                  181 	ld	e,(hl)
+   006A 23                  182 	inc	hl
+   006B 56                  183 	ld	d,(hl)
+   006C 21 01 00            184 	ld	hl,#0x0001
+   006F 19                  185 	add	hl,de
+   0070 7D                  186 	ld	a,l
+   0071 54                  187 	ld	d,h
+   0072 F8 02               188 	lda	hl,2(sp)
+   0074 22                  189 	ld	(hl+),a
+   0075 72                  190 	ld	(hl),d
+                            191 ;	genAssign
+                            192 ;	AOP_STK for _gprintf_sloc1_1_0
+                            193 ;	AOP_STK for _gprintf_ap_1_1
+   0076 2B                  194 	dec	hl
+   0077 2A                  195 	ld	a,(hl+)
+   0078 5E                  196 	ld	e,(hl)
+   0079 F8 08               197 	lda	hl,8(sp)
+   007B 22                  198 	ld	(hl+),a
+   007C 73                  199 	ld	(hl),e
+                            200 ;	genMinus
+                            201 ;	AOP_STK for _gprintf_sloc1_1_0
+                            202 ;	AOP_STK for _gprintf_sloc2_1_0
+   007D F8 02               203 	lda	hl,2(sp)
+   007F 5E                  204 	ld	e,(hl)
+   0080 23                  205 	inc	hl
+   0081 56                  206 	ld	d,(hl)
+   0082 21 01 00            207 	ld	hl,#0x0001
+   0085 7B                  208 	ld	a,e
+   0086 95                  209 	sub	a,l
+   0087 5F                  210 	ld	e,a
+   0088 7A                  211 	ld	a,d
+   0089 9C                  212 	sbc	a,h
+   008A F8 01               213 	lda	hl,1(sp)
+   008C 32                  214 	ld      (hl-),a
+   008D 73                  215 	ld	(hl),e
+                            216 ;	genPointerGet
+                            217 ;	AOP_STK for _gprintf_sloc2_1_0
+   008E 5E                  218 	ld	e,(hl)
+   008F 23                  219 	inc	hl
+   0090 56                  220 	ld	d,(hl)
+   0091 1A                  221 	ld	a,(de)
+   0092 47                  222 	ld	b,a
+                            223 ;	genAssign
+                            224 ;	(registers are the same)
+                            225 ;	gprintf.c 16
+                            226 ;	genIpush
+                            227 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   0093 C5                  228 	push	bc
+   0094 78                  229 	ld	a,b
+   0095 F5                  230 	push	af
+   0096 33                  231 	inc	sp
+                            232 ;	genCall
+   0097 CDr00s00            233 	call	_wrtchr
+   009A E8 01               234 	lda	sp,1(sp)
+   009C E1                  235 	pop	hl
+   009D 4D                  236 	ld	c,l
+                            237 ;	gprintf.c 17
+                            238 ;	genGoto
+   009E C3rF2s01            239 	jp	00109$
+                            240 ;	gprintf.c 24
+                            241 ;	genLabel
+   00A1                     242 00102$:
+                            243 ;	gprintf.c 21
+                            244 ;	genPlus
+                            245 ;	AOP_STK for _gprintf_ap_1_1
+                            246 ;	AOP_STK for _gprintf_sloc2_1_0
+                            247 ;	genPlusIncr
+                            248 ;	Can't optimise plus by inc, falling back to the normal way
+   00A1 F8 08               249 	lda	hl,8(sp)
+   00A3 5E                  250 	ld	e,(hl)
+   00A4 23                  251 	inc	hl
+   00A5 56                  252 	ld	d,(hl)
+   00A6 21 01 00            253 	ld	hl,#0x0001
+   00A9 19                  254 	add	hl,de
+   00AA 7D                  255 	ld	a,l
+   00AB 54                  256 	ld	d,h
+   00AC F8 00               257 	lda	hl,0(sp)
+   00AE 22                  258 	ld	(hl+),a
+   00AF 72                  259 	ld	(hl),d
+                            260 ;	genAssign
+                            261 ;	AOP_STK for _gprintf_sloc2_1_0
+                            262 ;	AOP_STK for _gprintf_ap_1_1
+   00B0 2B                  263 	dec	hl
+   00B1 2A                  264 	ld	a,(hl+)
+   00B2 5E                  265 	ld	e,(hl)
+   00B3 F8 08               266 	lda	hl,8(sp)
+   00B5 22                  267 	ld	(hl+),a
+   00B6 73                  268 	ld	(hl),e
+                            269 ;	genMinus
+                            270 ;	AOP_STK for _gprintf_sloc2_1_0
+                            271 ;	AOP_STK for _gprintf_sloc1_1_0
+   00B7 F8 00               272 	lda	hl,0(sp)
+   00B9 5E                  273 	ld	e,(hl)
+   00BA 23                  274 	inc	hl
+   00BB 56                  275 	ld	d,(hl)
+   00BC 21 01 00            276 	ld	hl,#0x0001
+   00BF 7B                  277 	ld	a,e
+   00C0 95                  278 	sub	a,l
+   00C1 5F                  279 	ld	e,a
+   00C2 7A                  280 	ld	a,d
+   00C3 9C                  281 	sbc	a,h
+   00C4 F8 03               282 	lda	hl,3(sp)
+   00C6 32                  283 	ld      (hl-),a
+   00C7 73                  284 	ld	(hl),e
+                            285 ;	genPointerGet
+                            286 ;	AOP_STK for _gprintf_sloc1_1_0
+   00C8 5E                  287 	ld	e,(hl)
+   00C9 23                  288 	inc	hl
+   00CA 56                  289 	ld	d,(hl)
+   00CB 1A                  290 	ld	a,(de)
+   00CC 47                  291 	ld	b,a
+                            292 ;	genAssign
+                            293 ;	(registers are the same)
+                            294 ;	gprintf.c 22
+                            295 ;	genIpush
+                            296 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   00CD C5                  297 	push	bc
+   00CE 21 0A 01            298 	ld	hl,#0x010A
+   00D1 E5                  299 	push	hl
+                            300 ;	genIpush
+   00D2 78                  301 	ld	a,b
+   00D3 F5                  302 	push	af
+   00D4 33                  303 	inc	sp
+                            304 ;	genCall
+   00D5 CDr00s00            305 	call	_gprintn
+   00D8 E8 03               306 	lda	sp,3(sp)
+   00DA E1                  307 	pop	hl
+   00DB 4D                  308 	ld	c,l
+                            309 ;	gprintf.c 23
+                            310 ;	genGoto
+   00DC C3rF2s01            311 	jp	00109$
+                            312 ;	gprintf.c 30
+                            313 ;	genLabel
+   00DF                     314 00103$:
+                            315 ;	gprintf.c 27
+                            316 ;	genPlus
+                            317 ;	AOP_STK for _gprintf_ap_1_1
+                            318 ;	AOP_STK for _gprintf_sloc2_1_0
+                            319 ;	genPlusIncr
+                            320 ;	Can't optimise plus by inc, falling back to the normal way
+   00DF F8 08               321 	lda	hl,8(sp)
+   00E1 5E                  322 	ld	e,(hl)
+   00E2 23                  323 	inc	hl
+   00E3 56                  324 	ld	d,(hl)
+   00E4 21 02 00            325 	ld	hl,#0x0002
+   00E7 19                  326 	add	hl,de
+   00E8 7D                  327 	ld	a,l
+   00E9 54                  328 	ld	d,h
+   00EA F8 00               329 	lda	hl,0(sp)
+   00EC 22                  330 	ld	(hl+),a
+   00ED 72                  331 	ld	(hl),d
+                            332 ;	genAssign
+                            333 ;	AOP_STK for _gprintf_sloc2_1_0
+                            334 ;	AOP_STK for _gprintf_ap_1_1
+   00EE 2B                  335 	dec	hl
+   00EF 2A                  336 	ld	a,(hl+)
+   00F0 5E                  337 	ld	e,(hl)
+   00F1 F8 08               338 	lda	hl,8(sp)
+   00F3 22                  339 	ld	(hl+),a
+   00F4 73                  340 	ld	(hl),e
+                            341 ;	genMinus
+                            342 ;	AOP_STK for _gprintf_sloc2_1_0
+                            343 ;	AOP_STK for _gprintf_sloc1_1_0
+   00F5 F8 00               344 	lda	hl,0(sp)
+   00F7 5E                  345 	ld	e,(hl)
+   00F8 23                  346 	inc	hl
+   00F9 56                  347 	ld	d,(hl)
+   00FA 21 02 00            348 	ld	hl,#0x0002
+   00FD 7B                  349 	ld	a,e
+   00FE 95                  350 	sub	a,l
+   00FF 5F                  351 	ld	e,a
+   0100 7A                  352 	ld	a,d
+   0101 9C                  353 	sbc	a,h
+   0102 F8 03               354 	lda	hl,3(sp)
+   0104 32                  355 	ld      (hl-),a
+   0105 73                  356 	ld	(hl),e
+                            357 ;	genPointerGet
+                            358 ;	AOP_STK for _gprintf_sloc1_1_0
+                            359 ;	AOP_STK for _gprintf_sloc2_1_0
+   0106 5E                  360 	ld	e,(hl)
+   0107 23                  361 	inc	hl
+   0108 56                  362 	ld	d,(hl)
+   0109 1A                  363 	ld	a,(de)
+   010A F8 00               364 	lda	hl,0(sp)
+   010C 77                  365 	ld	(hl),a
+   010D 13                  366 	inc	de
+   010E 1A                  367 	ld	a,(de)
+   010F 23                  368 	inc	hl
+                            369 ;	genCast
+                            370 ;	AOP_STK for _gprintf_sloc2_1_0
+   0110 32                  371 	ld      (hl-),a
+   0111 46                  372 	ld	b,(hl)
+                            373 ;	gprintf.c 28
+                            374 ;	genIpush
+                            375 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   0112 C5                  376 	push	bc
+   0113 21 0A 00            377 	ld	hl,#0x000A
+   0116 E5                  378 	push	hl
+                            379 ;	genIpush
+   0117 78                  380 	ld	a,b
+   0118 F5                  381 	push	af
+   0119 33                  382 	inc	sp
+                            383 ;	genCall
+   011A CDr00s00            384 	call	_gprintn
+   011D E8 03               385 	lda	sp,3(sp)
+   011F E1                  386 	pop	hl
+   0120 4D                  387 	ld	c,l
+                            388 ;	gprintf.c 29
+                            389 ;	genGoto
+   0121 C3rF2s01            390 	jp	00109$
+                            391 ;	gprintf.c 36
+                            392 ;	genLabel
+   0124                     393 00104$:
+                            394 ;	gprintf.c 33
+                            395 ;	genPlus
+                            396 ;	AOP_STK for _gprintf_ap_1_1
+                            397 ;	AOP_STK for _gprintf_sloc2_1_0
+                            398 ;	genPlusIncr
+                            399 ;	Can't optimise plus by inc, falling back to the normal way
+   0124 F8 08               400 	lda	hl,8(sp)
+   0126 5E                  401 	ld	e,(hl)
+   0127 23                  402 	inc	hl
+   0128 56                  403 	ld	d,(hl)
+   0129 21 01 00            404 	ld	hl,#0x0001
+   012C 19                  405 	add	hl,de
+   012D 7D                  406 	ld	a,l
+   012E 54                  407 	ld	d,h
+   012F F8 00               408 	lda	hl,0(sp)
+   0131 22                  409 	ld	(hl+),a
+   0132 72                  410 	ld	(hl),d
+                            411 ;	genAssign
+                            412 ;	AOP_STK for _gprintf_sloc2_1_0
+                            413 ;	AOP_STK for _gprintf_ap_1_1
+   0133 2B                  414 	dec	hl
+   0134 2A                  415 	ld	a,(hl+)
+   0135 5E                  416 	ld	e,(hl)
+   0136 F8 08               417 	lda	hl,8(sp)
+   0138 22                  418 	ld	(hl+),a
+   0139 73                  419 	ld	(hl),e
+                            420 ;	genMinus
+                            421 ;	AOP_STK for _gprintf_sloc2_1_0
+                            422 ;	AOP_STK for _gprintf_sloc1_1_0
+   013A F8 00               423 	lda	hl,0(sp)
+   013C 5E                  424 	ld	e,(hl)
+   013D 23                  425 	inc	hl
+   013E 56                  426 	ld	d,(hl)
+   013F 21 01 00            427 	ld	hl,#0x0001
+   0142 7B                  428 	ld	a,e
+   0143 95                  429 	sub	a,l
+   0144 5F                  430 	ld	e,a
+   0145 7A                  431 	ld	a,d
+   0146 9C                  432 	sbc	a,h
+   0147 F8 03               433 	lda	hl,3(sp)
+   0149 32                  434 	ld      (hl-),a
+   014A 73                  435 	ld	(hl),e
+                            436 ;	genPointerGet
+                            437 ;	AOP_STK for _gprintf_sloc1_1_0
+   014B 5E                  438 	ld	e,(hl)
+   014C 23                  439 	inc	hl
+   014D 56                  440 	ld	d,(hl)
+   014E 1A                  441 	ld	a,(de)
+   014F 47                  442 	ld	b,a
+                            443 ;	genAssign
+                            444 ;	(registers are the same)
+                            445 ;	gprintf.c 34
+                            446 ;	genIpush
+                            447 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   0150 C5                  448 	push	bc
+   0151 21 08 00            449 	ld	hl,#0x0008
+   0154 E5                  450 	push	hl
+                            451 ;	genIpush
+   0155 78                  452 	ld	a,b
+   0156 F5                  453 	push	af
+   0157 33                  454 	inc	sp
+                            455 ;	genCall
+   0158 CDr00s00            456 	call	_gprintn
+   015B E8 03               457 	lda	sp,3(sp)
+   015D E1                  458 	pop	hl
+   015E 4D                  459 	ld	c,l
+                            460 ;	gprintf.c 35
+                            461 ;	genGoto
+   015F C3rF2s01            462 	jp	00109$
+                            463 ;	gprintf.c 42
+                            464 ;	genLabel
+   0162                     465 00105$:
+                            466 ;	gprintf.c 39
+                            467 ;	genPlus
+                            468 ;	AOP_STK for _gprintf_ap_1_1
+                            469 ;	AOP_STK for _gprintf_sloc2_1_0
+                            470 ;	genPlusIncr
+                            471 ;	Can't optimise plus by inc, falling back to the normal way
+   0162 F8 08               472 	lda	hl,8(sp)
+   0164 5E                  473 	ld	e,(hl)
+   0165 23                  474 	inc	hl
+   0166 56                  475 	ld	d,(hl)
+   0167 21 01 00            476 	ld	hl,#0x0001
+   016A 19                  477 	add	hl,de
+   016B 7D                  478 	ld	a,l
+   016C 54                  479 	ld	d,h
+   016D F8 00               480 	lda	hl,0(sp)
+   016F 22                  481 	ld	(hl+),a
+   0170 72                  482 	ld	(hl),d
+                            483 ;	genAssign
+                            484 ;	AOP_STK for _gprintf_sloc2_1_0
+                            485 ;	AOP_STK for _gprintf_ap_1_1
+   0171 2B                  486 	dec	hl
+   0172 2A                  487 	ld	a,(hl+)
+   0173 5E                  488 	ld	e,(hl)
+   0174 F8 08               489 	lda	hl,8(sp)
+   0176 22                  490 	ld	(hl+),a
+   0177 73                  491 	ld	(hl),e
+                            492 ;	genMinus
+                            493 ;	AOP_STK for _gprintf_sloc2_1_0
+                            494 ;	AOP_STK for _gprintf_sloc1_1_0
+   0178 F8 00               495 	lda	hl,0(sp)
+   017A 5E                  496 	ld	e,(hl)
+   017B 23                  497 	inc	hl
+   017C 56                  498 	ld	d,(hl)
+   017D 21 01 00            499 	ld	hl,#0x0001
+   0180 7B                  500 	ld	a,e
+   0181 95                  501 	sub	a,l
+   0182 5F                  502 	ld	e,a
+   0183 7A                  503 	ld	a,d
+   0184 9C                  504 	sbc	a,h
+   0185 F8 03               505 	lda	hl,3(sp)
+   0187 32                  506 	ld      (hl-),a
+   0188 73                  507 	ld	(hl),e
+                            508 ;	genPointerGet
+                            509 ;	AOP_STK for _gprintf_sloc1_1_0
+   0189 5E                  510 	ld	e,(hl)
+   018A 23                  511 	inc	hl
+   018B 56                  512 	ld	d,(hl)
+   018C 1A                  513 	ld	a,(de)
+   018D 47                  514 	ld	b,a
+                            515 ;	genAssign
+                            516 ;	(registers are the same)
+                            517 ;	gprintf.c 40
+                            518 ;	genIpush
+                            519 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   018E C5                  520 	push	bc
+   018F 21 10 00            521 	ld	hl,#0x0010
+   0192 E5                  522 	push	hl
+                            523 ;	genIpush
+   0193 78                  524 	ld	a,b
+   0194 F5                  525 	push	af
+   0195 33                  526 	inc	sp
+                            527 ;	genCall
+   0196 CDr00s00            528 	call	_gprintn
+   0199 E8 03               529 	lda	sp,3(sp)
+   019B E1                  530 	pop	hl
+   019C 4D                  531 	ld	c,l
+                            532 ;	gprintf.c 41
+                            533 ;	genGoto
+   019D C3rF2s01            534 	jp	00109$
+                            535 ;	gprintf.c 48
+                            536 ;	genLabel
+   01A0                     537 00106$:
+                            538 ;	gprintf.c 45
+                            539 ;	genPlus
+                            540 ;	AOP_STK for _gprintf_ap_1_1
+                            541 ;	AOP_STK for _gprintf_sloc2_1_0
+                            542 ;	genPlusIncr
+                            543 ;	Can't optimise plus by inc, falling back to the normal way
+   01A0 F8 08               544 	lda	hl,8(sp)
+   01A2 5E                  545 	ld	e,(hl)
+   01A3 23                  546 	inc	hl
+   01A4 56                  547 	ld	d,(hl)
+   01A5 21 02 00            548 	ld	hl,#0x0002
+   01A8 19                  549 	add	hl,de
+   01A9 7D                  550 	ld	a,l
+   01AA 54                  551 	ld	d,h
+   01AB F8 00               552 	lda	hl,0(sp)
+   01AD 22                  553 	ld	(hl+),a
+   01AE 72                  554 	ld	(hl),d
+                            555 ;	genAssign
+                            556 ;	AOP_STK for _gprintf_sloc2_1_0
+                            557 ;	AOP_STK for _gprintf_ap_1_1
+   01AF 2B                  558 	dec	hl
+   01B0 2A                  559 	ld	a,(hl+)
+   01B1 5E                  560 	ld	e,(hl)
+   01B2 F8 08               561 	lda	hl,8(sp)
+   01B4 22                  562 	ld	(hl+),a
+   01B5 73                  563 	ld	(hl),e
+                            564 ;	genMinus
+                            565 ;	AOP_STK for _gprintf_sloc2_1_0
+                            566 ;	AOP_STK for _gprintf_sloc1_1_0
+   01B6 F8 00               567 	lda	hl,0(sp)
+   01B8 5E                  568 	ld	e,(hl)
+   01B9 23                  569 	inc	hl
+   01BA 56                  570 	ld	d,(hl)
+   01BB 21 02 00            571 	ld	hl,#0x0002
+   01BE 7B                  572 	ld	a,e
+   01BF 95                  573 	sub	a,l
+   01C0 5F                  574 	ld	e,a
+   01C1 7A                  575 	ld	a,d
+   01C2 9C                  576 	sbc	a,h
+   01C3 F8 03               577 	lda	hl,3(sp)
+   01C5 32                  578 	ld      (hl-),a
+   01C6 73                  579 	ld	(hl),e
+                            580 ;	genPointerGet
+                            581 ;	AOP_STK for _gprintf_sloc1_1_0
+                            582 ;	AOP_STK for _gprintf_s_4_9
+   01C7 5E                  583 	ld	e,(hl)
+   01C8 23                  584 	inc	hl
+   01C9 56                  585 	ld	d,(hl)
+   01CA 1A                  586 	ld	a,(de)
+   01CB 23                  587 	inc	hl
+   01CC 23                  588 	inc	hl
+   01CD 77                  589 	ld	(hl),a
+   01CE 13                  590 	inc	de
+   01CF 1A                  591 	ld	a,(de)
+   01D0 23                  592 	inc	hl
+   01D1 77                  593 	ld	(hl),a
+                            594 ;	genAssign
+                            595 ;	AOP_STK for _gprintf_s_4_9
+                            596 ;	(registers are the same)
+                            597 ;	gprintf.c 46
+                            598 ;	genIpush
+                            599 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 1 deSending: 0
+   01D2 C5                  600 	push	bc
+                            601 ;	AOP_STK for _gprintf_s_4_9
+   01D3 2B                  602 	dec	hl
+   01D4 2A                  603 	ld	a,(hl+)
+   01D5 66                  604 	ld	h,(hl)
+   01D6 6F                  605 	ld	l,a
+   01D7 E5                  606 	push	hl
+                            607 ;	genCall
+   01D8 CDr00s00            608 	call	_gprint
+   01DB E8 02               609 	lda	sp,2(sp)
+   01DD E1                  610 	pop	hl
+   01DE 4D                  611 	ld	c,l
+                            612 ;	gprintf.c 47
+                            613 ;	genGoto
+   01DF C3rF2s01            614 	jp	00109$
+                            615 ;	gprintf.c 74
+                            616 ;	genLabel
+   01E2                     617 00107$:
+                            618 ;	genIpush
+                            619 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   01E2 79                  620 	ld	a,c
+   01E3 F5                  621 	push	af
+   01E4 33                  622 	inc	sp
+                            623 ;	genCall
+   01E5 CDr00s00            624 	call	_wrtchr
+   01E8 E8 01               625 	lda	sp,1(sp)
+                            626 ;	gprintf.c 75
+                            627 ;	genGoto
+   01EA C3rF2s01            628 	jp	00109$
+                            629 ;	gprintf.c 77
+                            630 ;	genLabel
+   01ED                     631 00108$:
+                            632 ;	genRet
+   01ED 1E FF               633 	ld	e,#0xFF
+   01EF C3r17s02            634 	jp	00117$
+                            635 ;	gprintf.c 78
+                            636 ;	genLabel
+   01F2                     637 00109$:
+                            638 ;	gprintf.c 79
+                            639 ;	genPlus
+                            640 ;	AOP_STK for _gprintf_nb_1_1
+                            641 ;	genPlusIncr
+   01F2 F8 07               642 	lda	hl,7(sp)
+   01F4 34                  643 	inc	(hl)
+                            644 ;	genAssign
+                            645 ;	AOP_STK for _gprintf_nb_1_1
+                            646 ;	(registers are the same)
+                            647 ;	genGoto
+   01F5 C3r02s02            648 	jp	00115$
+                            649 ;	genLabel
+   01F8                     650 00111$:
+                            651 ;	gprintf.c 81
+                            652 ;	genIpush
+                            653 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+                            654 ;	AOP_STK for _gprintf_sloc0_1_0
+   01F8 F8 04               655 	lda	hl,4(sp)
+   01FA 7E                  656 	ld	a,(hl)
+   01FB F5                  657 	push	af
+   01FC 33                  658 	inc	sp
+                            659 ;	genCall
+   01FD CDr00s00            660 	call	_wrtchr
+   0200 E8 01               661 	lda	sp,1(sp)
+                            662 ;	genLabel
+   0202                     663 00115$:
+                            664 ;	gprintf.c 10
+                            665 ;	genAssign
+                            666 ;	AOP_STK for 
+   0202 F8 0C               667 	lda	hl,12(sp)
+   0204 4E                  668 	ld	c,(hl)
+   0205 23                  669 	inc	hl
+   0206 46                  670 	ld	b,(hl)
+                            671 ;	genPlus
+                            672 ;	AOP_STK for 
+                            673 ;	genPlusIncr
+                            674 ;	Can't optimise plus by inc, falling back to the normal way
+   0207 21 01 00            675 	ld	hl,#0x0001
+   020A 09                  676 	add	hl,bc
+   020B 7D                  677 	ld	a,l
+   020C 54                  678 	ld	d,h
+   020D F8 0C               679 	lda	hl,12(sp)
+   020F 22                  680 	ld	(hl+),a
+   0210 72                  681 	ld	(hl),d
+                            682 ;	genGoto
+   0211 C3r1As00            683 	jp	00113$
+                            684 ;	genLabel
+   0214                     685 00116$:
+                            686 ;	gprintf.c 84
+                            687 ;	genRet
+                            688 ;	AOP_STK for _gprintf_nb_1_1
+   0214 F8 07               689 	lda	hl,7(sp)
+   0216 5E                  690 	ld	e,(hl)
+                            691 ;	genLabel
+   0217                     692 00117$:
+                            693 ;	genEndFunction
+   0217 E8 0A               694 	lda	sp,10(sp)
+   0219 C9                  695 	ret
+   021A                     696 ___gprintf_end:
+                            697 	.area _CODE
+                            698 ;--------------------------------------------------------
+                            699 ; code
+                            700 ;--------------------------------------------------------
+                            701 	.area _CODE
+                            702 	.area _CODE

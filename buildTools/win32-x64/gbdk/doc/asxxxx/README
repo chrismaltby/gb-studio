@@ -1,0 +1,460 @@
+(README 2-Apr-1998 by John Hartman.  jhartman@compuserve.com)
+
+I have made several modifications to the CUG292 assemblers and
+linker, beginning with version 1.7 (the most recent I know of).
+
+The original assembler was written by
+ * Alan R. Baldwin
+ * 721 Berkeley St.
+ * Kent, Ohio  44240
+
+To conserve space on my web site, this ZIP file does not include all
+of the files in the original CUG292 release.  In particular, the
+assembler test files and ASSIST monitors have been removed.  All source
+files and documents are included.  The original is widely available
+on the net.
+
+Your comments and bug reports are solicited.
+
+The changes are of three types
+1) bug fixes and small changes
+2) an 8051 version of the assembler
+3) generation of line and symbol information for NoICE
+
+========================================================================
+MISCELLANEOUS CHANGES
+
+* There is a bug in LKMAIN: it tests S_DEF flag in "s_flag".  
+  No one else uses s_flag in the linker - S_DEF is defined in s_type
+  instead.  Presumably LKMAIN should use s_type as well?  Changed.
+
+* There is a portability problem in aslex: the test
+    while (ctype[c=get()] & ~(SPACE | ILL))
+  causes an infinite loop with my (old Zortech) compiler:
+  ILL = 0x80, SPACE=0.  When I read a null at the end of a line,
+  ctype[] returns "ILL".  My compiler sign extends this 0x80 to int 0xFF80.
+  Sign extend on ~ILL makes 0x7F into 0xFF7F.  The result of the AND is
+  true and we spin.  I changed this to
+    while (ctype[c=get()] & (0xFF - (SPACE|ILL)))
+
+* I made changes to mlookup() so that mnemonics and pseudo-ops are always
+  case insensitive, regardless of the CASE_SENSITIVE flag.  This simplifies
+  using the assembler on existing code.
+
+* The scheme described below for debug information can make for very long 
+  symbol names.  Thus, I have modified the assembler and linker to allow 
+  names up to 80 characters, moving the name strings out of the sym struct.  
+  This will save significant heap space over simply increasing NCPS to 80.
+
+* I have added one module, ASNOICE.C, to each assembler; and one module,
+  LKNOICE.C, to the linker.  My make files are named XSnnnn.MAK for the
+  asseblers, and XSLINK.MAK for the linker.  I have not modified any
+  of the original make or project files, since I have no means to test
+  them.
+
+========================================================================
+8051 ASSEMBLER
+
+I was somewhat surprised that there was no AS8051 - so I wrote one.
+It is comprised of the modules:
+    i8051.h
+    i51pst.c
+    i51mch.c
+    i51adr.c
+    i51ext.c
+    appexdk.txt "Appendix K" about the 8051 for the documentation
+
+I added four attributes to the .area directive to support
+the 8051's multiple address spaces:
+   CODE for codespace
+   DATA for internal data
+   BIT  for internal bit-addressable
+   XDATA for external data.
+
+These will typically be used as follows (names are examples):
+	.area	IDATA (DATA)
+	.area	IBIT (BIT)
+	.area	MYXDATA (REL,CON,XDATA)
+        .area	MYCODE (REL,CON,CODE)
+
+The default segment, _CODE, should not be used for the 8051.  For
+compatibility reasons, _CODE is allocated in "DATA" space.  You
+should always define an area in the CODE space.
+
+DETAILS:
+
+i51mch.c is not especially pretty - it includes some brute-force switch
+statements which could, I suspect, be trimmed down by application of
+a few appropriate functions.
+
+The 8051 includes two instructions, AJMP and ACALL, which have eleven
+bit destination addresses.  The upper three address bits are encoded
+into the top three bits of the op-code.  In order to achieve this, I
+was forced to make changes to several ASxxx and LKxxx modules:
+    asm.h	line 179 equate for R_J11, 583 outr11 prototype
+    asout.c	lines 1087-1132 function outr11: output 11 bit dest
+    aslink.h	line 131 equate for R_J11
+    lkrloc.c	lines 354-377 link/locate 11 bit destination
+
+The definition of R_J11 is as (R_WORD | R_BYT2)
+A comment in lkrloc says
+    * R_WORD with the R_BYT2 mode is flagged
+    * as an 'r' error by the assembler,
+    * but it is processed here anyway.
+This is no longer true, so the code in question is #defined out
+in the linker only.  I suspect that thie would cause problems
+if a module with R_WORD | R_BYT1 by other cause were to be processed.
+
+I am not entirely happy with outr11 in the case where the destination
+is an absolute value.  The ideal would be to pass the value thru to the
+linker, and resolve at link time whether or not the address is within
+2K of the instruction location.  Unfortunately, I couldn't figure out
+how to pass an absolute value to the linker, as it has no area.  Thus, 
+I interpreted absolute values as being relative to the beginning of the 
+current area, as is done in the other assemblers for relative branch
+instructions.  I am less happy with this solution here, as a 2K range
+is far larger than the +-128 for a branch instruction.  I can envision
+code such as
+	reset = 123
+        ...
+        ajmp  reset
+
+If the ajmp is in a relocatable area, the effect will be not at all what
+is desired.  If you can offer any other solution, I would appreciate it.
+
+========================================================================
+SOURCE-LEVEL DEBUG OF ASSEMBLY CODE WITH NoICE
+
+1) The switch "-j" has been added to the assembler.  This causes
+   assembly lines to generate line number information in the object
+   file.  You may also wish to use the "-a" switch to make all symbols
+   global.  Non-global symbols are not passed to the object file.
+
+2) The assemblers will pass any line beginning with the characters 
+   ";!" (semi-colon, exclamation point) intact to the object file.
+   You can use such comments in your assembly modules to embed NoICE
+   commands in your source code.
+
+3) The switch "-j" has been added to the linker.  This causes a
+   NoICE debug file, with extension ".NOI" to be created.  All symbol
+   and line number information in the object files, as well as any
+   ";!" comments will be included.  Specifying the -j switch will force
+   a map file to be produced as well.
+
+4) The linker will process any line beginning with the characters 
+   ";!" (semi-colon, exclamation point) by removing the ";!" and
+   passing the remainder of the line to the .NOI file (if any).
+   This allows NoICE commands to be placed as ";!" comments in
+   the assembly file, and passed through the assember and linker
+   to the .NOI file.
+
+5) If the linker is requested to produce a hex output file (-i or -s
+   switches), a LOAD command for the hex file will be placed in the
+   .NOI file (if any).
+
+6) The linker will output the ";!" lines after all symbols have been 
+   output.  Thus, such lines can contain NoICE commands which refer to 
+   symbols by name.
+
+========================================================================
+SOURCE-LEVEL DEBUG OF C CODE FOR NoICE
+
+This section is primarily of interest to compiler writers.
+
+Compilers which produce assembly code can pass debug information
+through the assembler and linker to the NoICE command file.  In
+addition, the linker will provide special processing of symbols
+with certain formats described below.
+
+1) The switch "-j" should NOT be used on assembly files which
+   represent compiler output.  Instead, the compiler should generate
+   line number symbols for each code-producing source line as
+   described below.  if your project contains a mixture of C and assembly
+   source files, you may wish to use "-j" on the assembly modules.
+
+2) The assemblers will pass any line beginning with the characters 
+   ";!" (semi-colon, exclamation point) intact to the .REL file.
+   The compiler can make use of this fact to pass datatype information
+   and stack offsets for automatic symbols through the assembler and
+   linker to NoICE.  This is described in detail below.
+
+3) The switch "-j" has been added to the linker.  This causes a
+   NoICE debug file, with extension ".NOI" to be created.  Contents
+   will be as described below.  Specifying the -j switch will force
+   a map file to be produced as well.
+
+4) The linker will process any line beginning with the characters 
+   ";!" (semi-colon, exclamation point) by removing the ";!" and
+   passing the remainder of the line to the .NOI file (if any).
+
+5) If the linker is requested to produce a hex output file (-i or -s
+   switches), a LOAD command for the hex file will be placed in the
+   .NOI file (if any).
+
+6) The linker will process symbols with names of the form
+	text
+
+   into NoICE DEFINE (global symbol) commands in the .NOI output file
+	DEF name symbolvalue
+
+7) The linker will process symbols with names of the form
+	text.integer
+
+   into NoICE FILE and LINE (line number) commands in the .NOI output file.
+   It will assume that "text" is the file name without path or extension, 
+   that "integer" is the decimal line number within the file, and that
+   the value of the symbol is equal to the address of the first instruction 
+   produced by the line.
+
+8) The linker will process symbols with names of the form
+	text.name
+
+   into NoICE FILE and DEFINESCOPED commands in the .NOI file 
+   (if any), to define file-scope variables:
+	FILE text
+	DEFS name symbolvalue
+
+9) The linker will process symbols with names of the form
+	text.name.name2
+
+   into NoICE FILE, FUNCTION, and DEFINESCOPED commands in the 
+   .NOI file (if any), to define function-scope variables:
+	FILE text
+	FUNC name
+	DEFS name2 symbolvalue
+
+10) The linker will process symbols with names of the form
+	text.name.name2.integer
+
+   into NoICE FILE, FUNCTION, and DEFINESCOPED commands in the 
+   .NOI file (if any), to define function-scope variables, to allow
+   multiple scopes within a single C function.  "Integer" is a scope
+   number, and should be zero for the first scope, and increment
+   for each new scope within the function.  Since NoICE cannot currently
+   cope with scope finer than function, it will produce symbols of
+   the form:
+	FILE text
+	FUNC name
+	DEFS name2_integer symbolvalue
+
+   The trailing "_integer" will be omitted for integer == 0 (function).
+
+11) The linker will process symbols with names of the form
+	text.name..FN
+
+   into NoICE FILE, DEFINE, and FUNCTION commands in the .NOI 
+   file (if any), to define the start of a global function:
+	FILE text
+	DEF  name symbolvalue %code
+	FUNC name symbolvalue
+
+12) The linker will process symbols with names of the form
+	text.name..SFN
+
+   into NoICE FILE, DEFINESCOPED, and SFUNCTION commands in the .NOI 
+   file (if any), to define the start of a file-scope (static)
+   function:
+	FILE text
+	DEFS name symbolvalue %code
+	SFUNC name symbolvalue
+
+13) The linker will process symbols with names of the form
+	text.name..EFN
+
+   into NoICE ENDFUNCTION commands in the .NOI file (if any) to
+   define the end of a global or file-scope function:
+	ENDF name symbolvalue
+
+14) The linker will output the symbols in each "area" or memory
+   section in order of increasing address.
+
+15) The linker will output the ";!" lines after all symbols
+   have been output.
+
+The features listed above may be used to add full source-level
+debug information to assembly files produced by a compiler.  The
+example file ctest1.c, and the hypothetical ctest1.s produced by
+compiling it illustrate this.  The comments in the file describe
+the information, but would not be present in an actual implementation.
+
+1) Begin each file with a ";!FILE" specifying the file name and its 
+   original extension (usually ".c"), and with the path if the file is 
+   not in the current directory.
+	;!FILE ctest1.c
+
+2) Define any basic data types: char defaults to S08.  Redefine as U08 or 
+   ASCII if you desire.  "int" defaults to S16.  Redefine if necessary.
+	;!DEFT 0 char %ASCII
+
+3) Define any data structures, typedefs, enums, etc. (C generally 
+   does this per source file.  Types will remain in scope unless 
+   redefined).  For example, the C structure
+
+	typedef struct {
+	   char  c;
+	   int   i;
+	   int   ai[ 10 ];
+	   int   *pi;
+	} STR;
+
+   would generate the commands:
+	;!STRUCT 0. STR
+	;!DEFT 0. c %char
+	;!DEFT 1. i %int
+	;!DEFT 3. ai %int[10.]
+	;!DEFT 23. pi %*int
+	;!ENDS 25.
+
+   Since the user can change input radix at will, it is generally 
+   recommended to specify radix explicitly in the ;! commands: by
+   a trailing "." for decimal, or leading "0x" for hex.
+
+4) Use ;!FUNC, (or ;!SFUNC), ;!DEFS, and ;!ENDF to define any 
+   function arguments and local variables.  The function
+	void main( void )
+	{
+	   /* declare some local variables */
+	   char lc, *plc;
+	   int *pli;
+	   int *lnpi;
+	   int *lfpi;
+	   ...
+
+   would generate stack-based symbol definitions with their datatypes.
+   (Note that the stack offsets are not passed to the assembler by
+   name, as they need not be relocated.  Thus, it is the compiler's
+   duty to generate these.  Note that the 68HC11 TSX instruction
+   increments the value of SP by one.  Thus, "SP+nn" should use
+   "nn" values one greater than for use as offsets from X.
+	;!FUNC main
+	;!DEFS lfpi SP+6. %*int
+	;!DEFS lnpi SP+8. %*int
+	;!DEFS pli SP+10. %*int
+	;!DEFS plc SP+12. %*char
+	;!DEFS lc SP+14. %char
+
+   When all local variables and parameters have been defined, the
+   function scope must be closed:
+	;!ENDF
+
+5) In general, it is desirable to generate two symbols for each
+   function:  one with an underbar, at the first byte of the
+   function, so that the disassembler will show it as the destination 
+   of the JSR; and a second without an underbar at the address of
+   the first source line after stack frame is set up.  The latter
+   will be a common breakpoint location.
+
+   CUG292 can generate global symbols by using a "::"
+	_main::		
+		tsx
+		xgdx
+		subd #44
+		xgdx
+		txs
+
+6) Once the stack frame is set up, declare the beginning of the
+   function body.  The value of this symbol is the lowest address
+   which NoICE will consider to be within the function for scoping
+   purposes.
+	ctest1.main..FN::
+
+7) Each C source line which produces code should emit a symbol
+   consisting of the file name without path or extension, followed
+   by the line number (in decimal) in the C source file.
+	ctest1.56::
+		ldd #6
+		std  _gestr
+
+8) Declare the end of the function body.  The value of this symbol 
+   is the highest address which NoICE will consider to be within the 
+   function for scoping purposes.  The address must be on or before 
+   the RTS, so that it does not overlap the following function.
+   Normally, the address will be the last C source line in the 
+   function before stack frame is destroyed.
+	ctest1.main..EFN::      
+		xgdx
+		addd #44
+		xgdx
+		txs
+		rts
+
+9) Global variables defined in the file, and their datatypes, may be
+   defined at any time.  Debugging is most convenient if the 
+   traditional C leading underbar is omitted.  The global declarations
+	int gi;
+	STR *pgstr;
+
+   would generate:
+	;!DEF gi %*int
+	gi::
+		.blkb 2
+
+	;!DEF pgstr %*STR
+	pgstr::
+		.blkb 2
+
+   Here, the ";!" command defines the datatype, which is unknown to
+   the assembler, while the "::" defintion defines the value, which
+   is unknown until link time.
+
+10) File-scope static variables, and their datatypes, must be defined 
+   between the ;!FILE and the ;!ENDFILE in order to set proper scope.
+   Debugging is most convenient if the traditional C leading underbar 
+   is omitted.  The static declarations
+	static int si;
+	static STR sstr;
+
+   would generate:
+	;!DEFS si %*int
+	ctest1.si::
+		.blkb 2
+
+	;!DEFS sstr %STR
+	ctest1.sstr::
+		.blkb 25
+
+   We note that while the ;!DEFS must be between ;!FILE and ;!ENDFILE,
+   the "::" definitions may be elsewhere in the file if it is
+   convenient, as the symbol name carries the scoping information.
+
+11) Function-scope static variables, and their datatypes, must be 
+   defined between the ;!FUNC (or ;!SFUNC) and the corresponding
+   ;!ENDF in order to set proper scope.  Debugging is most convenient 
+   if the traditional C leading underbar is omitted.  The static 
+   declarations
+	void main( void )
+	{
+		static int si;
+		static STR sstr;
+
+   would generate:
+	;!FUNC main
+
+   at some point, and then
+	;!DEFS si %*int
+	ctest1.main.si::
+		.blkb 2
+
+	;!DEFS sstr %STR
+	ctest1.main.sstr::
+		.blkb 25
+
+   We note that while the ;!DEFS must be between ;!FUNC and ;!ENDF,
+   the "::" definitions may be elsewhere in the file if it is
+   convenient, as the symbol name carries the scoping information.
+
+12) After all code, data, and ;! defintions, declare end of file.
+   This is necessary to prevent mangled scope when several modules
+   are linked together.
+	;!ENDFILE
+
+        CTEST1.C - sample C source code
+        CTEST1.S - output from ImageCraft compiler, hand-doctored 
+                   to add additional debug information
+	CTEST2.C - second C module
+        CTEST2.S - output from ImageCraft compiler, undoctored
+        CTEST.BAT - assemble and link CTEST1+CTEST2
+
+Run CTEST.BAT to produce CTEST1.NOI, a NoICE command file.
+
+end README

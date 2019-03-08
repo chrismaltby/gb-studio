@@ -1,0 +1,21 @@
+\section{sample.h File Reference}
+\label{sample.h}\index{sample.h@{sample.h}}
+Playback raw sound sample with length len from start at 8192Hz rate. 
+
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\label{sample.h_a0}
+\index{play_sample@{play\_\-sample}!sample.h@{sample.h}}\index{sample.h@{sample.h}!play_sample@{play\_\-sample}}
+void {\bf play\_\-sample} ({\bf UINT8} $\ast$start, {\bf UINT16} len) NONBANKED
+\begin{CompactList}\small\item\em Play the given, appropriatly formatted sample.\item\end{CompactList}
+
+\end{CompactItemize}
+\vspace{0.4cm}\hrule\vspace{0.2cm}
+\subsection*{Detailed Description}
+Playback raw sound sample with length len from start at 8192Hz rate.
+
+len defines the length of the sample in samples/32 or bytes/16. The format of the data is unsigned 4-bit samples, 2 samples per byte, upper 4-bits played before lower 4 bits.
+
+Adaption for GBDK by Lars Malmborg. Original code by Jeff Frohwein. 

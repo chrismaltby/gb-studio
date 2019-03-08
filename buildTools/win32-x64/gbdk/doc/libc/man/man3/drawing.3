@@ -1,0 +1,198 @@
+.TH drawing.h 3 "19 Aug 2000" "gbdk-lib" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+drawing.h \- All Points Addressable (APA) mode drawing library. 
+.SH SYNOPSIS
+.br
+.PP
+.SS Defines
+
+.in +1c
+.ti -1c
+.RI "
+#define \fBGRAPHICS_WIDTH\fR"
+.br
+.RI "\fISize of the screen in pixels.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+#define \fBSOLID\fR"
+.br
+.RI "\fIPossible drawing modes.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+#define \fBWHITE\fR"
+.br
+.RI "\fIPossible drawing colours.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+#define \fBM_NOFILL\fR"
+.br
+.RI "\fIPossible fill styles for \fBbox\fR() and \fBcircle\fR().\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+#define \fBSIGNED\fR"
+.br
+.RI "\fIPossible values for signed_value in \fBgprintln\fR() and \fBgprintn\fR().\fR"
+.PP
+
+.in -1c
+.SS Functions
+
+.in +1c
+.ti -1c
+.RI "
+void \fBgprint\fR (char *str) NONBANKED"
+.br
+.RI "\fIPrint the string 'str' with no interpretation.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void \fBgprintln\fR (\fBINT16\fR number, \fBINT8\fR radix, \fBINT8\fR signed_value)"
+.br
+.RI "\fIPrint the long number 'number' in radix 'radix'.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBgprintn\fR (\fBINT8\fR number, \fBINT8\fR radix, \fBINT8\fR signed_value)"
+.br
+.RI "\fIPrint the number 'number' as in 'gprintln'.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+\fBINT8\fR \fBgprintf\fR (char *fmt,...) NONBANKED"
+.br
+.RI "\fIPrint the formatted string 'fmt' with arguments '...'.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBplot\fR (\fBUINT8\fR x, \fBUINT8\fR y, \fBUINT8\fR colour, \fBUINT8\fR mode)"
+.br
+.RI "\fIOld style plot - try \fBplot_point\fR().\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBplot_point\fR (\fBUINT8\fR x, \fBUINT8\fR y)"
+.br
+.RI "\fIPlot a point in the current drawing mode and colour at (x,y).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBswitch_data\fR (\fBUINT8\fR x, \fBUINT8\fR y, unsigned char *src, unsigned char *dst) NONBANKED"
+.br
+.RI "\fII (MLH) have no idea what switch_data does...\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBdraw_image\fR (unsigned char *data) NONBANKED"
+.br
+.RI "\fIDitto.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBline\fR (\fBUINT8\fR x1, \fBUINT8\fR y1, \fBUINT8\fR x2, \fBUINT8\fR y2)"
+.br
+.RI "\fIDraw a line in the current drawing mode and colour from (x1,y1) to (x2,y2).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBbox\fR (\fBUINT8\fR x1, \fBUINT8\fR y1, \fBUINT8\fR x2, \fBUINT8\fR y2, \fBUINT8\fR style)"
+.br
+.RI "\fIDraw a box (rectangle) with corners (x1,y1) and (x2,y2) using fill mode 'style' (one of NOFILL or FILL.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void \fBcircle\fR (\fBUINT8\fR x, \fBUINT8\fR y, \fBUINT8\fR radius, \fBUINT8\fR style)"
+.br
+.RI "\fIDraw a circle with centre at (x,y) and radius 'radius'.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+\fBUINT8\fR \fBgetpix\fR (\fBUINT8\fR x, \fBUINT8\fR y)"
+.br
+.RI "\fIReturns the current colour of the pixel at (x,y).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBwrtchr\fR (char chr)"
+.br
+.RI "\fIPrints the character 'chr' in the default font at the current position.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void \fBgotogxy\fR (\fBUINT8\fR x, \fBUINT8\fR y)"
+.br
+.RI "\fISets the current text position to (x,y).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBcolor\fR (\fBUINT8\fR forecolor, \fBUINT8\fR backcolor, \fBUINT8\fR mode)"
+.br
+.RI "\fISet the current foreground colour (for pixels), background colour, and draw mode.\fR"
+.PP
+
+.in -1c
+.SH DETAILED DESCRIPTION
+.PP 
+All Points Addressable (APA) mode drawing library.
+.PP
+Drawing routines originally by Pascal Felber Legendary overhall by Jon Fuge <jonny@q-continuum.demon.co.uk> Commenting by Michael Hope
+.PP
+Note that the standard text \fBprintf\fR() and \fBputchar\fR() cannot be used in APA mode - use \fBgprintf\fR() and \fBwrtchr\fR() instead. 
+.SH FUNCTION DOCUMENTATION
+.PP 
+.SS void gprintln (\fBINT16\fR number, \fBINT8\fR radix, \fBINT8\fR signed_value)
+.PP
+Print the long number 'number' in radix 'radix'.
+.PP
+signed_value should be set to SIGNED or UNSIGNED depending on whether the number is signed or not 
+.SS void circle (\fBUINT8\fR x, \fBUINT8\fR y, \fBUINT8\fR radius, \fBUINT8\fR style)
+.PP
+Draw a circle with centre at (x,y) and radius 'radius'.
+.PP
+'style' sets the fill mode 
+.SS void gotogxy (\fBUINT8\fR x, \fBUINT8\fR y)
+.PP
+Sets the current text position to (x,y).
+.PP
+Note that x and y have units of cells (8 pixels) 
+.SH AUTHOR
+.PP 
+Generated automatically by Doxygen for gbdk-lib from the source code.

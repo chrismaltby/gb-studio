@@ -1,0 +1,1554 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (X11; I; Linux 2.2.12-20 i686) [Netscape]">
+</head>
+<body>
+<b><font size=+2>Enhancements and Bug fixes.</font></b>
+<br>&nbsp;
+<blockquote>
+<hr WIDTH="100%">
+<br><b>Release 2.1.9G</b>
+<ul>
+<li>
+<font color="#CC0000">Applied several patches provided by&nbsp; "Anton
+Voloshin" &lt;vav@isv.ru> mainly to SDCCglue.c, SDCCmain.c &amp; sdcdb/cmd.c</font></li>
+
+<li>
+<font color="#CC0000">First parameter of struct member function pointer
+not passed in register.</font></li>
+
+<li>
+<font color="#CC0000">Parameter passing problem if first parameter of a
+routine passed as second parm of another routine, vice versa. This bug
+would caused some of the library routines to fail.</font></li>
+
+<li>
+<font color="#CC0000">Address of structure member passed as parameter caused
+problems.</font></li>
+
+<li>
+<font color="#CC0000">#pragma callee-saves did not always work.</font></li>
+
+<li>
+<font color="#CC0000">Furthur bug fix for live range computation within
+loops.</font></li>
+
+<li>
+<font color="#CC0000">Register 'b' could be clobbered when there was '*',
+'/' or '%' operation for generic pointers.</font></li>
+
+<li>
+<font color="#CC0000">initialisation for pointers to structure elements
+in code space generated errors.</font></li>
+
+<li>
+<font color="#CC0000">Debugger info lost when multiple files were linked
+.</font></li>
+
+<li>
+<font color="#CC0000">Fixed buf in printf_large.c(vsprintf called with wrong parms)
+.</font></li>
+
+<li>
+<font color="#CC0000">"extern" variables when spilt did not allocate spill locations
+. i.e. "sloc" undefined error.
+.</font></li>
+
+<li>
+<font color="#CC0000">Added optimization for PUSH. "xdata" variables do not need to be
+assigned to temps to be pushed.
+.</font></li>
+
+<li>
+<font color="#CC0000">Fixed aliasing problem where some pointer sub expressions
+were carried across basic blocks .</font></li>
+
+<li>
+<font color="#CC0000">Upgraded to version 0.2.36 of ucsim .</font></li>
+
+<li>
+<font color="#CC0000">Added new optimization within basic blocks pointer
+set values will replace get pointer values within a basic block. (across
+basic blocks is a little bit complex will have to think about it some more).</font></li>
+
+<br><font color="#CC0000">which in plain english means.</font>
+<br><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a->b
+= 10;</font>
+<br><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; putchar(a->b);</font>
+<br><font color="#CC0000">will come..</font>
+<br><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a->b
+= 10;</font>
+<br><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+putchar(10);</font></ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b>Release 2.1.9F</b>
+<ul>
+<li>
+<font color="#CC0000">pointers passed to functions as parameters are removed
+from cse list.</font></li>
+
+<li>
+<font color="#CC0000">live range computation for variables inside loops
+improved.</font></li>
+
+<li>
+<font color="#CC0000">upgraded ucsim to latest release 0.2.31</font></li>
+
+<li>
+<font color="#CC0000">loop invariant bug fix for (global variables assigned
+constant values inside a loop)</font></li>
+
+<li>
+<font color="#CC0000">Applied patch provided by&nbsp; "Anton Voloshin"
+&lt;vav@isv.ru> rel files put into separate lines in the .lnk file.</font></li>
+
+<li>
+<font color="#CC0000">union of structures caused compiler to generate incorrect
+code for member access.</font></li>
+
+<li>
+<font color="#CC0000">added patch to vprintf.c to null terminate output
+string. BESSIERE_Jerome@stna.dgac.fr (BESSIERE Jerome)</font></li>
+
+<li>
+<font color="#CC0000">Debugger had problem with structures/unions on stack</font></li>
+
+<li>
+<font color="#CC0000">Debugger will now stop when simulator stops even
+when break point not hit.</font></li>
+
+<li>
+<font color="#CC0000">Debugger will display simulators "startup message",
+this makes it a clearer to the user that the debugger is actually piggy
+backing on top of the simulator.</font></li>
+
+<li>
+<font color="#CC0000">Applied patch to assembler/linker some names were
+getting truncated @ 8 characters . patch by&nbsp; "Anton Voloshin" &lt;vav@isv.ru></font></li>
+
+<li>
+<font color="#CC0000">_gptrput.c was leaving a byte on stack if unknown
+storage class.</font></li>
+
+<li>
+<font color="#CC0000">parameter passing was incorrect for reentrant functions
+when prototype declared without parameter name.</font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.9E</font></b>
+<ul>
+<li>
+<font color="#CC0000">"remat " was not being cleared for global variables.</font></li>
+
+<li>
+<font color="#CC0000">stack offset of a variable computed incorrectly in
+some situations.</font></li>
+
+<li>
+<font color="#CC0000">Applied patch for floating point routine provided
+by<font size=+1> </font>Wojciech Zabolotny &lt;wzab@ise.pw.edu.pl></font></li>
+
+<li>
+<font color="#CC0000">Force allocation of local variable if address taken
+(even if not initialised)</font></li>
+
+<li>
+<font color="#CC0000">Fixed loop reversal bug .</font></li>
+
+<li>
+<font color="#CC0000">Fixed another bug in register allocator , long variables
+can be printfed now.</font></li>
+
+<li>
+<font color="#CC0000">DEBUGGER can now print values on stack and aggregates.</font></li>
+
+<li>
+<font color="#CC0000">Upgraded to 0.2.26 of ucsim.</font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.9D</font></b>
+<ul>
+<li>
+<font color="#CC0000">Fixed loop optimization bug was treating variables
+defined twice as loop induction.</font></li>
+
+<li>
+<font color="#CC0000">Fixed loop optimization constrained induction variable
+detection.</font></li>
+
+<li>
+<font color="#CC0000">Fixed bug in some floating point routines (fix provided
+by Wojciech Zabolotny &lt;wzab@ise.pw.edu.pl>)</font></li>
+
+<li>
+<font color="#CC0000">Fixed code generation bug for return literal floating
+point.</font></li>
+
+<li>
+<font color="#CC0000">Fixed register packing was not moving return value
+under certain conditions.</font></li>
+
+<li>
+<font color="#CC0000">Improved error recovery for undefined symbols.</font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+2>Release 2.1.9C</font></b>
+<ul>
+<li>
+<font color="#CC0000">Fixed bug with register allocation, effected mostly
+large routines compiled using the --model-large option.</font></li>
+
+<li>
+<font color="#CC0000">Fixed bug in array of structures dereferncing.</font></li>
+
+<li>
+<font color="#CC0000">Simplified the intermediate code generattion , removed
+some tree nodes. The parser will not generate nodes with structure derefs,
+and the operators +=,-= ..etc will be changed at parse time, this creates
+a simplififed parse tree.</font></li>
+
+<li>
+<font color="#CC0000">Upgraded to latest version of "gc", compile problems
+on Redhat 6.0 should be fixed.</font></li>
+
+<li>
+<font color="#CC0000">Fixed passing simulator parameters from the debugger
+command line.</font></li>
+
+<li>
+<font color="#CC0000">Fixed problem with the floating point routines.</font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.9B</font></b>
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Fixed pointer access and array reference
+bug introduced in the previous version.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>integrated ucsim.0.2.25</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug for code not generated for
+global pointers assigned to address of array element.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed one more bug in live range computation.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in register allocator , it
+was overwriting computed liverange values.</font></font></li>
+</ul>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.9A</font></b>
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in common subexpression elimination,
+problem was found when a local variable was assigned values more than once
+in a basic block.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added warning when a "void" object
+is cast to a non-void object.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added warning when a non-pointer type
+is cast to a _generic pointer.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added a&nbsp; peephole optimization
+rule to remove some moves.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem in register packing ,
+registers assigned to parameters were not being saved on the stack.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Bug in loop inductions, the induction
+variable detection was not correctly replacing all references.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Merged bug fixes provided by <i>Wojciech
+Stryjewski &lt;wstryj1@tiger.lsu.edu to></i> SDCCgen51.c</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Local variable treated as invariant
+even when address is taken.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed Parameter problem for functions
+with empty bodies.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem with array dereferncing
+when array of pointers.</font></font></li>
+
+<br>
+<hr WIDTH="100%"></ul>
+</blockquote>
+
+<blockquote><b><font size=+1>Release 2.1.9</font></b>
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Integrated new simulator from Daniel
+"ucsim-0.20.xx"</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>.cdb file will be created always, and
+will contain global variables &amp; function entry/extis information always.
+This will facilitate debuggers especially NoICE.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug when using typedefed types
+in a structure.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed aliasing bug in the loop optimizer,
+when a global array is used in a loop it should not be treated as an invariant
+if there are function calls in the loop.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem with register allocation,
+this was causing some of the "long" routines to fail.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem of clobbering value of
+_bp.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem of clobbering acc when
+a long variable is the first argument to a reentrant function.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed a peephole optimizer problem,
+when it was changing the ljmp to a sjmp in a jump-table.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Enhanced the initialization routines
+to support initialization with '&amp;' operations.</font></font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.8</font></b>
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Void function returning value check
+was not working properly.(fixed)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Assigning 'void' values to variables
+will generate warning.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved register allocation to use
+"acc" , this will improve code generation , but for this register color
+is severely restricted, will gradually work on improving this. This reduces
+the redundant register moved drastically (once totally implemented)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added some peephole rules eliminate
+jump to jumps.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Bug in SDCCgen51.c when using a bit
+variable (locally defined) in an if statement.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Literal values being cast to pointers
+was not working.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>'volatile' arrtibute for structure/union
+elements were bieng ignored. Now we can selectively declare structure elements
+to be volatile.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Did some profiling to improve performance,
+changed peephole optimizer a little with profiler feedback.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was generating incorrect "cjne" code
+under some situations.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved data flow computation.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in geniCodeCast for floating
+point conversions.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in modulong routine found
+by B&eacute;la T&ouml;r&ouml;k &lt;aseht@ms1.kssg.ch></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug for long shift left found
+by B&eacute;la T&ouml;r&ouml;k &lt;aseht@ms1.kssg.ch></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug with register allocator ,
+was marking variables as rematerializable too aggresively.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added --version option.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem of compiling source files
+not in current directory.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed a bug in a bitvector routine
+(bitVectResize)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added error message when "continue/break"
+are out of context.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in error checking for uninitialised
+local variables.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in code generation for not
+(!) operation.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in live range computation
+when intervenening unreachable block is present.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed register saving scheme, bank
+will be saved only when called from a interrupt service routine.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug with >> and &lt;&lt; with
+unknown shift count.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>The fix to the bit vector exposed some
+problem with the register allocation, fixed now.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added an extra heuristic for register
+spilling, now the spilling will a lot lower than before.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added some more optimizations for register
+packing.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added a bunch of preprocessor options
+see command line options in the documentation for details.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Some cosmetics like timestamp in .asm
+in addition to Version Number.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>fixed another bug with live range computation.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Automatic static variables will not
+be assigned to registers.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>The parameter name mangling a little
+so that it gives the warnings/errors with the correct name, also required
+for debugger.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Jean Louis fixed some bugs with shifting
+"long" variables.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug of access of local bit variables
+when compiling with --model-large</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed two bugs in Register allocator.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added fix to peephole optimizer rule
+matching , fixed provided by Frieder.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>"Mark O'Farrell" &lt;ofarrell@haq.com.au>
+added segment type to the segment definition.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>"Mark O'Farrell" &lt;ofarrell@haq.com.au>
+added option to start stack after the data segment --stack-after-data (see
+documentation)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed the computation for default
+stack location, now if all four banks are used the stack will be placed
+after the data segment (--stack-after-data), so as not to clobber the bit
+segment (this should make Daniel Drotos happy:).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Compiler will no longer crash when
+an uninitialised local variable is detected.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug for bad code generation for
+anl,xor &amp; or when operand is on stack .</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug for side effecting parameters
+when calling a reentrant function.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved optimization for ++ &amp;
+-- operation when operand is on stack.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was STILL saving entire register bank
+when calling function with different register bank from non ISR function.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed register saveing for ISR functions
+not using register bank (see documentation [Interrupt Service Routines])</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Josef Wolf &lt;jw@raven.inka.de> provided
+a set of serial routines which do not use the external ram (ser_ir.c),
+included these as libraries.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>PSW was not being saved for ISRs with
+no register bank specification.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Integrated Daniel's simulator with
+the compiler source distribution.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added reduced "printf" routine it works
+but is very resource intensive.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Certain complex pointer declarations
+were not being handled correctly.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>switch statements with empty bodies
+were causing the compiler to crash.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>sizeof union object computed incorrectly.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>union element when passed as parameter
+to a function generated incorrect code.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Martijn van Balen &lt;balen@natlab.research.philips.com>
+provided a complete set of printf routines including sprintf.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug when union member is a pointer
+and is used on the right side of an assignment.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved register allocation&nbsp;
+for arrays, structure &amp; union members in data space will no longer
+be spilt.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Some optimizations for pointer access
+had got clobbered put them back.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug for right shifting signed
+quantity by zero.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Constant propagation had problem when
+long variables were used in division.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in register allocator on
+rare situations it saved wrong live ranges.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed Bug with Backend (gen51.c) incorrect
+code was generated when far space variable assigned o variable in far space.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem with loop invariant processing,
+was not taking into consideration when address or pointer was passed as
+parameter to a function.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added --help &amp; -h option.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added the peephole optimization rules
+provided by Frieder&nbsp;&nbsp; &lt;fe@lake.iup.uni-heidelberg.de></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Function prototypes without parameter
+names were occasionally causing problems.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem with _spx inc/dec when
+using xternal stack.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Register allocation bug</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Addition of constant to generic pointer
+was causing problems sometimes.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved register allocation some more.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in live range analysis (for
+some complex contro flow situations.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug of 'b' getting clobbered
+in some left &amp; right shift operations.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added --callee-saves (documentation
+updated)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in hTabDeleteItem() in SDCChasht.c
+(exposed during debugger development)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in grammar .. to allow absolute
+address for local "bit" variables.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added #pragma CALLEE-SAVES (same effect
+as --calle-saves)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added #pragma EXCLUDE (see docs)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem xrl generating incorrect
+code.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Yet another problem in register allocator
+fixed.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed a bug with dataflow computation,
+was computing pointer kills incorrectly.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added loop reversal.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in structure declaration</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed floating point routines</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed parsing problem for LONG hex
+constants</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug to allow local variables
+to be declared in 'code' space.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in code generation for floating
+point .</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Parameters access was incorrect when
+callee-saves &amp;&amp; reentrant.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in hashTable routine.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug when string initialisers
+are used for char arrays with bounds.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was generating incorrect code when
+options --model-large &amp;&amp; --stack-auto were used together</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Replaced 32bit multiplication routine
+with JeanLouis VERN's much better routine.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem with loop-reversing</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Introduced parameter passing using
+registers.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Applied improvements/cleanups supplied
+by Larry Dolittle.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Moved the variable substitution by
+register equivalent to earlier phase , this generates much more optimized
+code.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Compiler crashed when first parameter
+was declared "const"</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Assembler generated bad opcode for
+"djnz" when the "." operator was used.</font></font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.7</font></b>
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Fixed a bug in the DEF-USE chaining
+algorithm , was keeping some dead DEFs alive in the DEF bit vector of a
+symbol.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug with "(null)" operand generated
+in rare situations.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>&nbsp;Trefor &lt;Trefor@magera.freeserve.co.uk>
+did some more clean up.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug that was introduced with
+'&amp;' with a literal.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added alternate serial package provided
+by "Wolfgang Esslinger "&lt;wolfgang@WiredMinds.com> in ./sdcc51lib/_ser.c
+(documentation updated)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added Header file&nbsp; sab80515.h
+provided by B&eacute;la T&ouml;r&ouml;k &lt;aseht@ms1.kssg.ch></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Had made flow computation for global
+variables too restrictive, now constant propagation will be allowed with
+global variables.</font></font></li>
+</ul>
+</blockquote>
+
+<blockquote>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.6</font></b>
+<br>&nbsp;
+<blockquote>
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in the routines <b>_*2fs.c
+</b>the
+variable 'sign' should be declared as 'long'.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Included _char2fs in libfloat.lib</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed register allocator&nbsp; bug
+for allocating pointers (found by "Dr. Ed Croson" &lt;soarebc@internetcds.com>).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Furthur loop induction variable detection
+improvement.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed loop induction detection so
+that it does not treat global variables as induction any more, this saves
+some code, since assignments to global variables cannot be easily eliminated.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem of __sdcc_program_startup
+being out of range when large amount of initialization code is present.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug with function returning pointers.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed register allocation to aggressively
+allocate local variables to registers, users will see a vast improvement
+in the generated code, not only in terms&nbsp; of speed but also in terms
+of data space utilization. Previously if there were multiple definitions
+for a local variable flowing into a basic block the compiler would allocate
+space for the variable, now it will allocate space only if it runs out
+of registers.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Jean-Louis VERN (jlvern@&lt;writeme.com>)
+has done some more enhancements to the code generator ..... his comments.</font></font></li>
+
+<blockquote>
+<li>
+<font color="#CC0000"><font size=+1>I did some light improvement s:</font></font></li>
+
+<br><font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- increment 16&amp;32bits</font></font>
+<br><font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- decrement 16&amp;32bits</font></font>
+<br><font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- assignment with literal</font></font>
+<br><font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- return with literal</font></font>
+<br><font color="#CC0000"><font size=+1>and some cosmetics before optimizing
+mult and div...*</font></font></blockquote>
+
+<li>
+<font color="#CC0000"><font size=+1>&nbsp;"BESSIERE Jerome" &lt;BESSIERE_Jerome@stna.dgac.fr>
+made a lot of improvements to the support routines, these include reducing
+some memory leaks.. here are his comments.</font></font></li>
+
+<blockquote>
+<li>
+<font color="#CC0000"><font size=+1>//* Incorrect call of werror(E_OUT_OF_MEM,...);</font></font></li>
+
+<br><font color="#CC0000"><font size=+1>//* 1-a In file SDCCBBlock.c /
+function iCodeBreakDown (...)</font></font>
+<br><font color="#CC0000"><font size=+1>//* 1-b In file SDCChasht.c / function
+newHashTable(...)</font></font>
+<br><font color="#CC0000"><font size=+1>//* 1-c In file SDCCmain.c / function
+parseCmdLine(...)</font></font>
+<li>
+<font color="#CC0000"><font size=+1>//* Sometime the compiler crash due
+to compilation error</font></font></li>
+
+<br><font color="#CC0000"><font size=+1>//* In file SDCCast.c / function
+createFunction(...)</font></font>
+<li>
+<font color="#CC0000"><font size=+1>//* Sometime SDCC access not allocated
+memory</font></font></li>
+
+<br><font color="#CC0000"><font size=+1>//* In file SDCChasht.c / function
+hTabSearch(...)</font></font>
+<li>
+<font color="#CC0000"><font size=+1>/* Many and many memory leak when not
+using CYGWIN32</font></font></li>
+
+<br><font color="#CC0000"><font size=+1>//* and&nbsp; garblage collector
+(I'm using MS VC++ 6.0 and WIN32)</font></font>
+<br><font color="#CC0000"><font size=+1>//* specially in peepHole function
+consuming Mo and Mo</font></font>
+<br><font color="#CC0000"><font size=+1>//* even on compiling small function</font></font>
+<br><font color="#CC0000"><font size=+1>//* I created a new function in
+file SDCChasht.c for deleting an hTab</font></font>
+<br><font color="#CC0000"><font size=+1>//* It Reduces memory leaks</font></font></blockquote>
+
+<li>
+<font color="#CC0000"><font size=+1>"Salvador Eduardo Tropea \(SET\)" &lt;salvador@inti.gov.ar>
+provided patches required to compile the system using DJGPP, the executables
+produced can run on plain DOS. He has also created a <b>readme.dj</b> file
+for those who want to compile using DJGPP.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added code to issue warnings if something
+is compared to / assigned a literal value which is greater than what the
+variable can hold.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed the data/space extended message
+to <b>info </b>, since this not really a warning message.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added routine auto baud, for automatic
+baud rate detection , adapted from Paul Stoffregen's&nbsp; &lt;paul@ece.orst.edu>
+autobaud.asm</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was not doing check for constants in
+case for ++/--, i.e. a variable declared as const could be incremented
+or decremented</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug when setting &amp; fetching
+data from far space .</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added bunch of peephole optimization
+rules.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Trefor@magera.freeserve.co.uk. Updated
+the build script to give a choice to compile the libraries as large model
+or small model.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Trefor also got rid of those annoying
+warnings when compiling with egcs ( braces about ambiguous 'else')</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added some heuristics in constant folding
+routine , to prevent pointer live ranges from becoming too long, this was
+causing some avoidable spill code to be generated.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added support for ANSI routines <b>setjmp</b>
+and <b>longjmp. </b>Documentation updated.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was generating code for unreachable
+basic blocks ... now will not generate code for unreachable code... will
+issue a warning.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Was generating incorrect code when
+adding values to generic pointers (some times).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved bitwise '&amp;' operation
+a little bit to improve code generation.</font></font></li>
+</blockquote>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.5</font></b>
+<p><font size=+1>Mostly a bug fix release</font>
+<br>&nbsp;
+<blockquote>
+<li>
+<font color="#CC0000"><font size=+1>Fixed post &amp; pre increment / Decrement
+problem and inefficiency</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Structures/Unions. Three things were
+done this structure declarations.</font></font></li>
+
+<blockquote>
+<li>
+<font color="#CC0000"><font size=+1>The long standing union problem has
+been fixed, a very rudimentary solution right now , will some up with a
+better solution shortly.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Structures declared inside function
+scopes were not being properly cleaned up, came across this problem while
+generating debug information fixed now.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>pointers declared inside structures
+were broken after the pointer fix in Version 2.1.3, now fixed.</font></font></li>
+</blockquote>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed some library routines , for --model-large
+.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added whole lot of stuff for debug
+information generation (DO NOT use --debug option might cause unpredictable
+results).</font></font></li>
+</blockquote>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.4</font></b>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Problem with parameter overlay : when
+two functions with overlaid parameters were nested, the parameters of the
+outer function was clobbered. This has been fixed, now the inner function
+call will be lifted out and evaluated before parameters for the outer call
+are assigned values.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>New optimization added (suggested by
+Jean Louis VERN &lt;jlvern@writeme.com> to prevent global variables in
+near space from being assigned to registers.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved loop optimization, now will
+keep induction variables alive after loops even if loops have more that
+one exit. This makes me happy, it takes care of almost all the common loop
+constructs. So unless the user is doing something really weird the induction
+variables&nbsp; will be carried outside the loop. This also lays down the
+ground work for value based optimizations, i.e. when the loop count is
+known, then value of the induction variables will also be known at certain
+exit points.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in genPlus, genAnd,genXor,genOr
+routines , was generating incorrect code for Far Space variable with Literal.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bugs in SDCCglue.c, was generating
+-ve size for variables of size 32768 or greater.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed register allocator to try &amp;
+keep all local variables in 'registers' regardless of they are declared
+with the register storage class or not, this will reduce the amount of
+data space required by the compiler generated code.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in SDCCmain.c , was unlinking
+file preOutName before reading it (okay with POSIX , not okay with DOS).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>David Bonnel &lt;dbonnell@ozemail.com.au>.
+fixed the following bugs</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>In SDCCicode.c at line# 1314 should
+be calling valMod not valDiv.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>In line# 2728 missing a break statement
+after the division case .</font></font></li>
+</ul>
+
+<li>
+<font color="#CC0000"><font size=+1>David Bonnell &lt;dbonnell@ozemail.com.au>.
+also added a new option <b>--iram-size &lt;value> .&nbsp;&nbsp;&nbsp;</b>
+His description of it .....&nbsp; (Dave speaking)</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>I added the command '-a [iram-size]'
+to the linker. iram-size defaults to&nbsp;&nbsp; 128 (0x80) if it is omitted
+(which is the amount of internal RAM I have on&nbsp; my DS5000T chip :-)</font></font></li>
+</ul>
+<font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Anyway, if this command is given, the (new) function iramcheck() is called
+after linking to check that the OSEG, ISEG, and DSEG's do not extend&nbsp;
+past the end of internal RAM.&nbsp; (Internal RAM is from&nbsp; 0..iram_size-1).&nbsp;
+It spits out a warning such as:</font></font>
+<p><font color="#CC0000"><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+WARNING! Segment DSEG extends past the end of internal RAM.&nbsp; Check
+map file.</font></font>
+<p><font color="#CC0000"><font size=+1>&nbsp;&nbsp; when such a problem
+is detected.</font></font>
+<p><font color="#CC0000"><font size=+1>&nbsp;&nbsp; Then I added a new
+command-line option to SDCC, '--iram-size iram-size'. When this command
+is given the linker command shown above is added to the linker command
+file so that it will do the checking for internal RAM overflow.</font></font>
+<br>&nbsp;
+<li>
+<font color="#CC0000"><font size=+1>&nbsp;BESSIERE Jerome &lt;BESSIERE_Jerome@stna.dgac.fr>
+fixed the following bugs.</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>File sdccicod.c / function operandOperation(...)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>File sdccval.c / function valDiv(...)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>File sdccbitv.c / function bitVectBitValue(...)</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>File sdccbitv.c / function bitVectUnSetBit(...)</font></font></li>
+</ul>
+</ul>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.3</font></b>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in assembler&nbsp; <b>i51mch.c</b>&nbsp;
+; <b>dot</b> operator when used in branch instructions was generating incorrect
+opcode.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Enhanced Dead Code elimination, (it
+was missing some ).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added new rules to SDCCpeeph.def&nbsp;
+provided by Frieder &lt;fe@lake.iup.uni-heidelberg.de></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed pointer return bug found by David
+Bonnel &lt;dbonnell@ozemail.com.au>.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed the POINTER fiasco, I had misinterpreted
+the grammar.</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>data char *p;&nbsp; was interpreted
+as [generic pointer to char, with p in data space]. now interpreted as
+pointer to character in data space with the pointer residing in unknown
+space.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Updated the documentation for this.</font></font></li>
+</ul>
+
+<li>
+<font color="#CC0000"><font size=+1>Updated documentation to include comments
+about Parameter Overlaying.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Improved type checking to generate
+error message when a void type is casted to some other type</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Jean-Louis VERN (instead of sleeping
+at night) has made some GREAT!! improvements to the back end for frequently
+used expressions like</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>if ( x &amp; literal) ...</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>if ( x ^ literal) ...</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>if ( x |&nbsp; literal) ...</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>if ( bit &amp; x) ...</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>if ( bit | x ) ...</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>if (bit ^ x) ....</font></font></li>
+</ul>
+
+<li>
+<font color="#CC0000"><font size=+1>Jean-Louis VERN rewrote the _decdptr.c
+routine to improve it.</font></font></li>
+</ul>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.2</font></b>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Bug in genAnd (SDCCgen51.c) caused
+the compiler to issue error message for some bit wise and operations.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>File _spx.c missing from source bundle.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Invalid code generated when interrupt
+service routine used with external stack option.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added --no-peep option to disable peep
+hole optimization.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added --peep-asm option to optionally
+pass inline assembler code through the peephole optimizer.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed bug in _strcpy.c David Bonnell
+&lt;dbonnell@ozemail.com.au>.</font></font></li>
+</ul>
+
+<ul>
+<li>
+</li>
+</ul>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.1.1</font></b>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#CC0000"><font size=+1><b>bit </b>variables could not be declared
+<b>extern</b>
+, bug was introduces while improving type checking for bit fields in structures.</font></font></li>
+</ul>
+
+<hr WIDTH="100%">
+<p><b><font size=+1>Release 2.1.0</font></b>
+<p><font size=+1>A full source code release. Lots of stuff done in this
+release.</font>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Floating point support completed (although
+cannot be used in small model).</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Data flow computation enhanced to stop
+flow computation of global variables when there is a call to another function.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>JeanLouis VERN added a whole lot of
+optimizations to the back end.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Function return value assigned to a
+bit variable was crashing the compiler.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed the way peep hole optimizer
+rules were being included. Now it is much easier to add default rules.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added two new pointer types "* pdata"
+and "* idata" these will facilitate the following</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>Optimized access to near data</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Implementation of external stack (External
+stack is required if the compiler is going to be used to implement an RTOS)</font></font></li>
+</ul>
+
+<li>
+<font color="#CC0000"><font size=+1>Fixed problem of Compiler giving warning
+when it did not find any reaching definition for a local static variable.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added code to backed for more optimized
+access to arrays, structures &amp; unions placed in near space, now the
+compiler will not use indirect addressing to fetch the data if the offset
+is can be determined at compile time.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Changed the way the startup code works.
+Documentation updated see section Startup for more details.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Completed implementation of external
+stack. Documentation updated see section External stack.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Jean-Louis VERN added a LOT of optimizations
+to the back end code generator, following is only a small list.</font></font></li>
+
+<ul>
+<li>
+<font color="#CC0000"><font size=+1>gencjne improved</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>gencmp improved</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>genand improved</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>genor improved.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>_divuint improved</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>_divuint improved.</font></font></li>
+</ul>
+
+<li>
+<font color="#CC0000"><font size=+1>Variables with absolute addresses now
+considered as VOLATILE.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Dead Code elimination routine updated
+: will not eliminate global assignments to global variables when function
+call present.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Added file <b>at89S8252.h </b>to distribution
+file supplied by "Michael Schmitt" &lt;mschmitt@mainz-online.de></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Martijn van Balen &lt;balen@natlab.research.philips.com>.
+Fixed problems in assembler and linker. Files affected are<b> asout.c</b>
+and <b>lklist.c</b></font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Initialized character array variables
+with no size were being generated one byte less in length.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>Access to bit fields within structures
+mucho mucho improved.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>The compiler was allocating space on
+the stack for local variables (for reentrant functions) even when not needed,
+this has been fixed, the compiler will not allocate space on the stack
+for local variables if they are assigned to registers.</font></font></li>
+</ul>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.0.21</font></b>
+<br>&nbsp;
+<blockquote>
+<li>
+<font size=+1><font color="#CC0000">Enhancement made to unsigned long &amp;
+integer division by </font><font color="#FF0000">Martijn van Balen &lt;balen@natlab.research.philips.com></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>&nbsp;_gptrget.c &amp; _gptrput.c made
+register bank independent&nbsp; by Martijn van Balen &lt;balen@natlab.research.philips.com>.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>sdccbuil.sh script fixed by Subject:
+Markus Mathes &lt;mathes@prp.physik.tu-darmstadt.de></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Martijn van Balen &lt;balen@natlab.research.philips.com>
+found some problems with post &amp; pre increment of pointer variables
+, these are fixed.</font></font></li>
+</blockquote>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.0.20</font></b>
+<p><font size=+1>Mostly enhancements in this release. Some bug fixes by
+Jean Louis.</font>
+<blockquote>
+<li>
+<font color="#FF0000"><font size=+1>Enhanced loop optimization (induction
+variables), will generate more compact code for simple loops</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Enhanced some aspects of basic block
+processing.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added a couple more MCU header files.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Jean Louis made some enhancements in
+SDCCgen51.c for better code generation.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Jean Louis also fixed some bugs in
+the back end .</font></font></li>
+</blockquote>
+
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.0.19</font></b>
+<br>&nbsp;
+<blockquote>
+<li>
+<font color="#FF0000"><font size=+1>Assignment of array variable to a pointer
+sometimes did not generate code.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>File containing intialised variables
+ONLY with NO functions caused the compiler to crash</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Initialising global volatile variables
+caused the compiler to fail.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Generated incorrect code when bit variables
+were modified and subsequently used in a conditional statement.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added 3 more header files for Atmel
+MCUs , provided by Bernd&nbsp; Bartmann (Bernd.Bartmann@picard.isdn.cs.tu-berlin.de)</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added a lot of peephole optimization
+rules, some suggested by Daniel Drotos &lt;drdani@mazsola.iit.uni-miskolc.hu></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added check to make sure functions
+do not return 'bit'.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Jean Louis-VERN (jlvern@writeme.com)
+fixed bug for divide with literal in his code.</font></font></li>
+</blockquote>
+</blockquote>
+
+<ul>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.0.18</font></b>
+<br>&nbsp;
+<ul>
+<li>
+<font color="#FF0000"><font size=+1>Function prototype problem when parameter
+name in the prototype was the same as a local variables.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added header files for Atmel AT89x51
+&amp; AT89X52 provided by : Bernd&nbsp; Bartmann (Bernd.Bartmann@picard.isdn.cs.tu-berlin.de)</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Jean Louis-VERN (jlvern@writeme.com)
+has made </font><font size=+2>substantial improvements</font><font size=+1>
+to the Back-end code generation for </font><font size=+2>shift operations
+</font><font size=+1>and
+</font><font size=+2>multiplication.</font></font></li>
+</ul>
+</ul>
+
+<dl>
+<dl>
+<hr WIDTH="100%">
+<br><b><font size=+1>Release 2.0.17</font></b></dl>
+</dl>
+
+<dl>
+<ul>
+<ul>
+<li>
+<font color="#FF0000"><font size=+1>Empty if body with non-emtpy else body
+cause compiler to give error message. Patch provided by Martijn van Balen
+&lt;balen@natlab.research.philips.com></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Loop optimizer missed induction variables
+;</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Added option <b>--main-return</b> ,
+will generate a '<b>ret</b>' instead of '<b>ljmp .</b>' when this option
+is used.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Add support for user defined startup
+code.</font></font></li>
+</ul>
+</ul>
+
+<dl>
+<hr WIDTH="100%">
+<ul>
+<li>
+<font color="#FF0000"><font size=+1>generating incorrect assembler code
+(new line missing), for '<i>long</i>' variables initialization when defined
+in '<i>code'</i> space.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1><i>aslink</i> occasionally core dumped,
+after it finished processing. (patch provided by&nbsp; Eric Norum &lt;eric@skatter.USask.Ca>
+)</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>comparing <i>pointers with literals
+</i>,
+e.g. ptr == NULL gave error message, (NULL had to be explicitly cast to
+the pointer type)</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>assigning <b>signed char</b> values
+to <b>sfr</b>s generated duplicate code.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>definitions for CHAR_MIN, INT_MAX &amp;
+LONG_MAX incorrect in limits.h</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>some more patches from Eric Norum &lt;eric@skatter.USask.Ca>
+his description of the patches.</font></font></li>
+
+<ul>
+<li>
+<font color="#FF0000"><font size=+1>1) asxxxx/lkmain.c:181</font></font></li>
+
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; startp->f_type is
+an integer variable and so should not be</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; compared with NULL.</font></font>
+<p><font color="#FF0000"><font size=+1>2) asxxxx/lkmain.c:195</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; *ip is a character
+variable and so should not be</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; compared with NULL.</font></font>
+<p><font color="#FF0000"><font size=+1>3) asxxxx/lkmain.c:717</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; ctype[c] is a character
+variable so the expression (ctype[c] != ILL)</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; is always true on
+machines where char variables are signed.</font></font>
+<p><font color="#FF0000"><font size=+1>4) SDCCmain.c:780</font></font>
+<br><font color="#FF0000"><font size=+1>&nbsp;&nbsp; The preprocessor output
+file was left in the temporary directory.</font></font>
+<br>&nbsp;</ul>
+
+<li>
+<font color="#FF0000"><font size=+1>&nbsp;volatile variables when used
+as loop induction variables caused the compiler to crash.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>compiler generated '<b>char * idata
+icp</b>'&nbsp; as a generic pointer instead of 1 byte pointer.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>link file problem, when linking multiple
+files together the compiler sometimes generated a bad file name.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>library function _<b>atol.c </b>had
+the function <b>main</b> in it.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Incorrect code generated left shift
+of <b>one byte</b> variables <b>'rl'</b> should be <b>'rlc' </b>. Patch
+provided by : Jean-Louis VERN &lt;jlvern@writeme.com></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Bug in <b>./cpp/cpplib.c </b>. Patch
+provided by :Martijn van Balen &lt;balen@natlab.research.philips.com></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Consecutive <b>'if'</b> statements
+sometimes caused the compiler to crash. This bug was a fairly serious.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Incorrect code generated right shift
+of <b>long variables</b> variables <b>'rlc'</b> should be <b>'rrc' </b>.
+Patch provided by : Jean-Louis VERN &lt;jlvern@writeme.com></font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Xor, And and Or operation with bit
+variable &amp; non-bit variable generated incomplete code.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Expression folding was too aggresive,
+was corrupting parameters in certain situations.</font></font></li>
+
+<li>
+<font color="#FF0000"><font size=+1>Function prototypes declared with parameter
+names , occasionally caused problems.</font></font></li>
+</ul>
+</dl>
+
+<dl>
+<ul>
+<li>
+</li>
+</ul>
+</dl>
+</dl>
+
+</body>
+</html>

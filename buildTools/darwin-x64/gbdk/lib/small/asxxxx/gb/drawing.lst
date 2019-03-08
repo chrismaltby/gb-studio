@@ -1,0 +1,2011 @@
+                              1 ;; Optimised Drawing library 
+                              2 ;; By Jon Fuge (jonny@q-continuum.demon.co.uk) based on original file
+                              3 ;; Updates
+                              4 ;;   990223 Michael	Removed mod_col, splitting it up into 
+                              5 ;;			fg_colour, bg_colour, and draw_mode
+                              6 ;; Note: some optimisations are available with unneded PUSH DE/POP DE's
+                              7 
+                              8 	;; BANKED: checked
+                              9 	.include        "global.s"
+                    0001      1 	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
+                              2         
+                              3 	;; Changed by astorgb.pl to 1
+                    0000      4 	__RGBDS__	= 0
+                              5 
+                              6 	
+                              7 	;;  Screen dimensions 
+                    0013      8 	.MAXCURSPOSX	= 0x13	; In tiles
+                    0011      9 	.MAXCURSPOSY	= 0x11
+                             10 
+                    0080     11 	.START		= 0x80
+                    0040     12 	.SELECT		= 0x40
+                    0020     13 	.B		= 0x20
+                    0010     14 	.A		= 0x10
+                    0008     15 	.DOWN		= 0x08
+                    0004     16 	.UP		= 0x04
+                    0002     17 	.LEFT		= 0x02
+                    0001     18 	.RIGHT		= 0x01
+                             19 
+                    00A0     20 	.SCREENWIDTH	= 0xA0
+                    0090     21 	.SCREENHEIGHT	= 0x90
+                    0007     22 	.MINWNDPOSX	= 0x07
+                    0000     23 	.MINWNDPOSY	= 0x00
+                    00A6     24 	.MAXWNDPOSX	= 0xA6
+                    008F     25 	.MAXWNDPOSY	= 0x8F
+                             26 
+                    0001     27 	.VBL_IFLAG	= 0x01
+                    0002     28 	.LCD_IFLAG	= 0x02
+                    0004     29 	.TIM_IFLAG	= 0x04
+                    0008     30 	.SIO_IFLAG	= 0x08
+                    0010     31 	.JOY_IFLAG	= 0x10
+                             32  
+                    0000     33 	.P1		= 0x00	; Joystick: 1.1.P15.P14.P13.P12.P11.P10
+                    0001     34 	.SB		= 0x01	; Serial IO data buffer
+                    0002     35 	.SC		= 0x02	; Serial IO control register
+                    0004     36 	.DIV		= 0x04	; Divider register
+                    0005     37 	.TIMA		= 0x05	; Timer counter
+                    0006     38 	.TMA		= 0x06	; Timer modulo
+                    0007     39 	.TAC		= 0x07	; Timer control
+                    000F     40 	.IF		= 0x0F	; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
+                    0010     41 	.NR10		= 0x10	; Sound register
+                    0011     42 	.NR11		= 0x11	; Sound register
+                    0012     43 	.NR12		= 0x12	; Sound register
+                    0013     44 	.NR13		= 0x13	; Sound register
+                    0014     45 	.NR14		= 0x14	; Sound register
+                    0016     46 	.NR21		= 0x16	; Sound register
+                    0017     47 	.NR22		= 0x17	; Sound register
+                    0018     48 	.NR23		= 0x18	; Sound register
+                    0019     49 	.NR24		= 0x19	; Sound register
+                    001A     50 	.NR30		= 0x1A	; Sound register
+                    001B     51 	.NR31		= 0x1B	; Sound register
+                    001C     52 	.NR32		= 0x1C	; Sound register
+                    001D     53 	.NR33		= 0x1D	; Sound register
+                    001E     54 	.NR34		= 0x1E	; Sound register
+                    0020     55 	.NR41		= 0x20	; Sound register
+                    0021     56 	.NR42		= 0x21	; Sound register
+                    0022     57 	.NR43		= 0x22	; Sound register
+                    0023     58 	.NR44		= 0x23	; Sound register
+                    0024     59 	.NR50		= 0x24	; Sound register
+                    0025     60 	.NR51		= 0x25	; Sound register
+                    0026     61 	.NR52		= 0x26	; Sound register
+                    0040     62 	.LCDC		= 0x40	; LCD control
+                    0041     63 	.STAT		= 0x41	; LCD status
+                    0042     64 	.SCY		= 0x42	; Scroll Y
+                    0043     65 	.SCX		= 0x43	; Scroll X
+                    0044     66 	.LY		= 0x44	; LCDC Y-coordinate
+                    0045     67 	.LYC		= 0x45	; LY compare
+                    0046     68 	.DMA		= 0x46	; DMA transfer
+                    0047     69 	.BGP		= 0x47	; BG palette data
+                    0048     70 	.OBP0		= 0x48	; OBJ palette 0 data
+                    0049     71 	.OBP1		= 0x49	; OBJ palette 1 data
+                    004A     72 	.WY		= 0x4A	; Window Y coordinate
+                    004B     73 	.WX		= 0x4B	; Window X coordinate
+                    004D     74 	.KEY1		= 0x4D	; CPU speed
+                    004F     75 	.VBK		= 0x4F	; VRAM bank
+                    0051     76 	.HDMA1		= 0x51	; DMA control 1
+                    0052     77 	.HDMA2		= 0x52	; DMA control 2
+                    0053     78 	.HDMA3		= 0x53	; DMA control 3
+                    0054     79 	.HDMA4		= 0x54	; DMA control 4
+                    0055     80 	.HDMA5		= 0x55	; DMA control 5
+                    0056     81 	.RP		= 0x56	; IR port
+                    0068     82 	.BCPS		= 0x68	; BG color palette specification
+                    0069     83 	.BCPD		= 0x69	; BG color palette data
+                    006A     84 	.OCPS		= 0x6A	; OBJ color palette specification
+                    006B     85 	.OCPD		= 0x6B	; OBJ color palette data
+                    0070     86 	.SVBK		= 0x70	; WRAM bank
+                    00FF     87 	.IE		= 0xFF	; Interrupt enable
+                             88 
+                    0001     89 	.G_MODE		= 0x01	; Graphic mode
+                    0002     90 	.T_MODE		= 0x02	; Text mode (bit 2)
+                    0002     91 	.T_MODE_OUT	= 0x02	; Text mode output only
+                    0003     92 	.T_MODE_INOUT	= 0x03	; Text mode with input
+                    0004     93 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
+                    0008     94 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
+                             95 
+                    2000     96 	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
+                             97 	
+                             98 	;; Status codes for IO
+                    0000     99 	.IO_IDLE	= 0x00
+                    0001    100 	.IO_SENDING	= 0x01
+                    0002    101 	.IO_RECEIVING	= 0x02
+                    0004    102 	.IO_ERROR	= 0x04
+                            103 
+                            104 	;; Type of IO data
+                    0066    105 	.DT_IDLE	= 0x66
+                    0055    106 	.DT_RECEIVING	= 0x55
+                            107 
+                            108 	;; Table of routines for modes
+                    01E0    109 	.MODE_TABLE	= 0x01E0
+                            110 
+                            111 	;; C related
+                            112 	;; Overheap of a banked call.  Used for parameters
+                            113 	;;  = ret + real ret + bank
+                            114 
+                    0001    115 	.if .NEAR_CALLS
+                    0002    116 	.BANKOV		= 2
+                            117 
+                            118 	.else
+                            119 	.BANKOV		= 6
+                            120 
+                            121 	.endif
+                            122 	
+                            123 	.globl	banked_call
+                            124 	.globl	banked_ret
+                            125 	
+                            126 	;; Global variables
+                            127 	.globl	.mode
+                            128 
+                            129 	.globl	__cpu
+                            130 
+                            131 	.globl	__io_out
+                            132 	.globl	__io_in
+                            133 	.globl	__io_status
+                            134 
+                            135 	;; Global routines
+                            136 	.globl	.set_mode
+                            137 
+                            138 	.globl	.reset
+                            139 
+                            140 	.globl	.display_off
+                            141 
+                            142 	.globl	.wait_vbl_done
+                            143 
+                            144 	;; Interrupt routines 
+                            145 	.globl	.add_VBL
+                            146 	.globl	.add_LCD
+                            147 	.globl	.add_TIM
+                            148 	.globl	.add_SIO
+                            149 	.globl	.add_JOY
+                            150 
+                            151 	;; Symbols defined at link time
+                            152 	.globl	.STACK
+                            153 	.globl	.OAM
+                            154 	.globl	.refresh_OAM
+                            155 
+                            156 	;; Initialization routine   
+                            157 	.globl	.init
+                            158 
+                            159 	;; Main user routine	
+                            160 	.globl	_main
+                             10 
+                             11 	.globl  .init_vram
+                             12 	.globl  .copy_vram
+                             13 
+                    0000     14 	.M_SOLID	=	0x00
+                    0001     15 	.M_OR	=	0x01
+                    0002     16 	.M_XOR	=	0x02
+                    0003     17 	.M_AND	=	0x03
+                             18 
+                    0000     19 	.if	0
+                             20 	.M_SOLID	=	0x10
+                             21 	.M_OR	=	0x20
+                             22 	.M_XOR	=	0x40
+                             23 	.M_AND	=	0x80
+                             24 	.endif
+                             25 
+                             26 	;;  Format of mod_col
+                             27 	;; 7 6 5 4 3 2 1 0
+                             28 	;;   mode  fg  bg
+                             29 
+                             30 	.area   _HEADER (ABS)
+                             31 
+   01E4                      32 	.org    .MODE_TABLE+4*.G_MODE
+   01E4 C3r00s00             33 	JP      .gmode
+                             34 
+                             35 	.module Drawing1
+                             36 
+                             37 	;; Data
+                             38 	.area	_BSS
+                             39 	;; Foreground drawing colour
+   0000                      40 .fg_colour::	
+   0000                      41 	.ds	1
+                             42 	;; Background drawing colour
+   0001                      43 .bg_colour::	
+   0001                      44 	.ds	1
+                             45 	;; Drawing mode (.SOILD etc)
+   0002                      46 .draw_mode:
+   0002                      47 	.ds	1
+                             48 	;; Fill style
+   0003                      49 .style:	
+   0003                      50 	.ds	0x01
+                             51 	;; Various varibles
+   0004                      52 .x_s:	
+   0004                      53 	.ds	2
+   0006                      54 .y_s:	
+   0006                      55 	.ds	2
+   0008                      56 .delta_x:	
+   0008                      57 	.ds	1
+   0009                      58 .delta_y:	
+   0009                      59 	.ds	1
+   000A                      60 .l_inc:	
+   000A                      61 	.ds	1
+   000B                      62 .l_d:	
+   000B                      63 	.ds	2
+   000D                      64 .dinc1:	
+   000D                      65 	.ds	2
+   000F                      66 .dinc2:	
+   000F                      67 	.ds	2
+   0011                      68 .tx:	
+   0011                      69 	.ds	1
+   0012                      70 .ty:	
+   0012                      71 	.ds	1
+                             72 	
+                             73 	.area   _BASE
+                             74 	;; Enter graphic mode
+   0000                      75 .gmode::
+   0000 F3                   76 	DI			; Disable interrupts
+                             77 
+                             78 	;; Turn the screen off
+   0001 F0 40                79 	LDH	A,(.LCDC)
+   0003 CB 7F                80 	BIT	7,A
+   0005 28 03                81 	JR	Z,1$
+                             82 
+                             83 	;; Turn the screen off
+   0007 CDr00s00             84 	CALL	.display_off
+   000A                      85 1$:
+   000A 21 00 81             86 	LD	HL,#0x8000+0x10*0x10
+   000D 11 80 16             87 	LD	DE,#0x1800-0x18*0x10
+   0010 06 00                88 	LD	B,#0x00
+   0012 CDr00s00             89 	CALL	.init_vram	; Init the charset at 0x8000
+                             90 
+                             91 	;; Install interrupt routines
+   0015 01r62s00             92 	LD	BC,#.vbl
+   0018 CDr00s00             93 	CALL	.add_VBL
+   001B 01r6Ds00             94 	LD	BC,#.lcd
+   001E CDr00s00             95 	CALL	.add_LCD
+                             96 
+   0021 3E 48                97 	LD	A,#72		; Set line at which LCD interrupt occurs
+   0023 E0 45                98 	LDH	(.LYC),A
+                             99 
+   0025 3E 44               100 	LD	A,#0b01000100	; Set LCD interrupt to occur when LY = LCY
+   0027 E0 41               101 	LDH	(.STAT),A
+                            102 
+   0029 F0 FF               103 	LDH	A,(.IE)
+   002B F6 02               104 	OR	#0b00000010	; Enable LCD interrupt
+   002D E0 FF               105 	LDH	(.IE),A
+                            106 
+                            107 	;; (9*20) = 180 tiles are used in the upper part of the screen
+                            108 	;; (9*20) = 180 tiles are used in the lower part of the screen
+                            109 	;; => We have 24 tiles free
+                            110 	;; We keep 16 at 0x8000->0x80FF, and 8 at 0x9780->97FF
+                            111 
+   002F 21 00 98            112 	LD	HL,#0x9800
+   0032 3E 10               113 	LD	A,#0x10		; Keep 16 tiles free
+   0034 01 0C 00            114 	LD	BC,#12		; 12 unused columns
+   0037 1E 12               115 	LD	E,#18		; 18 lines
+   0039                     116 2$:
+   0039 16 14               117 	LD	D,#20		; 20 used columns
+   003B                     118 3$:
+   003B 22                  119 	LD	(HL+),A
+   003C 3C                  120 	INC	A
+   003D 15                  121 	DEC	D
+   003E 20 FB               122 	JR	NZ,3$
+   0040 09                  123 	ADD	HL,BC
+   0041 1D                  124 	DEC	E
+   0042 20 F5               125 	JR	NZ,2$
+                            126 
+                            127 	;; Turn the screen on
+   0044 F0 40               128 	LDH	A,(.LCDC)
+   0046 F6 91               129 	OR	#0b10010001	; LCD		= On
+                            130 				; BG Chr	= 0x8000
+                            131 				; BG		= On
+   0048 E6 F7               132 	AND	#0b11110111	; BG Bank	= 0x9800
+   004A E0 40               133 	LDH	(.LCDC),A
+                            134 
+   004C 3E 01               135 	LD	A,#.G_MODE
+   004E EAr00s00            136 	LD	(.mode),A
+                            137 
+                            138 	;; Setup the default colours and draw modes
+   0051 3E 00               139 	LD	A,#.M_SOLID
+   0053 EAr02s00            140 	LD	(.draw_mode),A
+   0056 3E 03               141 	LD	A,#0x03		; Black
+   0058 EAr00s00            142 	LD	(.fg_colour),A
+   005B 3E 00               143 	LD	A,#0x00		; White
+   005D EAr01s00            144 	LD	(.bg_colour),A
+                            145 	
+   0060 FB                  146 	EI			; Enable interrupts
+                            147 
+   0061 C9                  148 	RET
+                            149 
+   0062                     150 .vbl::
+   0062 F0 40               151 	LDH	A,(.LCDC)
+   0064 F6 10               152 	OR	#0b00010000	; Set BG Chr to 0x8000
+   0066 E0 40               153 	LDH	(.LCDC),A
+                            154 
+   0068 3E 48               155 	LD	A,#72		; Set line at which LCD interrupt occurs
+   006A E0 45               156 	LDH	(.LYC),A
+                            157 
+   006C C9                  158 	RET
+                            159 
+                            160 	;; Is the STAT check required, as we are already in the HBL?
+   006D                     161 .lcd::
+   006D                     162 1$:
+   006D F0 41               163 	LDH	A,(.STAT)
+   006F CB 4F               164 	BIT	1,A
+   0071 20 FA               165 	JR	NZ,1$
+                            166 
+   0073 F0 40               167 	LDH	A,(.LCDC)
+   0075 E6 EF               168 	AND	#0b11101111	; Set BG Chr to 0x8800
+   0077 E0 40               169 	LDH	(.LCDC),A
+                            170 
+   0079 C9                  171 	RET
+                            172 
+                            173 	;; Draw a full-screen image at (BC)
+   007A                     174 .draw_image::
+   007A 21 00 81            175 	LD      HL,#0x8000+0x10*0x10
+   007D 11 80 16            176 	LD      DE,#0x1680
+   0080 CDr00s00            177 	CALL    .copy_vram      ; Move the charset
+   0083 C9                  178 	RET
+                            179 
+                            180 	;; Replace tile data at (B,C) with data at DE and store old value at HL
+   0084                     181 .switch_data::
+   0084 D5                  182 	PUSH    DE              ; Save src
+   0085 E5                  183 	PUSH    HL              ; Save dst
+   0086 68                  184 	LD      L,B
+   0087 CB 25               185 	SLA     L
+   0089 CB 25               186 	SLA     L
+   008B CB 25               187 	SLA     L
+   008D 26 00               188 	LD      H,#0x00
+   008F 29                  189 	ADD     HL,HL
+   0090 54                  190 	LD      D,H
+   0091 5D                  191 	LD      E,L
+                            192 
+   0092 21rE9s00            193 	LD      HL,#.y_table
+   0095 CB 21               194 	SLA     C
+   0097 CB 21               195 	SLA     C
+   0099 CB 21               196 	SLA     C
+   009B 06 00               197 	LD      B,#0x00
+   009D 09                  198 	ADD     HL,BC
+   009E 09                  199 	ADD     HL,BC
+   009F 46                  200 	LD      B,(HL)
+   00A0 23                  201 	INC     HL
+   00A1 66                  202 	LD      H,(HL)
+   00A2 68                  203 	LD      L,B
+   00A3 19                  204 	ADD     HL,DE
+                            205 
+   00A4 44                  206 	LD      B,H             ; BC = src
+   00A5 4D                  207 	LD      C,L
+   00A6 E1                  208 	POP     HL              ; HL = dst
+   00A7 C5                  209 	PUSH    BC              ; Save dst
+   00A8 7C                  210 	LD      A,H
+   00A9 B5                  211 	OR      L
+   00AA 28 06               212 	JR      Z,1$
+   00AC 11 10 00            213 	LD      DE,#0x10
+   00AF CDr00s00            214 	CALL    .copy_vram
+   00B2                     215 1$:
+   00B2 E1                  216 	POP     HL              ; HL = dst
+   00B3 C1                  217 	POP     BC              ; BC = src
+   00B4 11 10 00            218 	LD      DE,#0x10
+   00B7 CDr00s00            219 	CALL    .copy_vram
+                            220 
+   00BA C9                  221 	RET
+                            222 
+                            223 	.area	_CODE
+                            224 	;; Advance the cursor
+   0000                     225 .adv_gcurs::
+   0000 E5                  226 	PUSH	HL
+   0001 21r11s00            227 	LD	HL,#.tx	; X coordinate
+   0004 3E 13               228 	LD	A,#.MAXCURSPOSX
+   0006 BE                  229 	CP	(HL)
+   0007 28 03               230 	JR	Z,1$
+   0009 34                  231 	INC	(HL)
+   000A 18 0F               232 	JR	99$
+   000C                     233 1$:
+   000C 36 00               234 	LD	(HL),#0x00
+   000E 21r12s00            235 	LD	HL,#.ty	; Y coordinate
+   0011 3E 11               236 	LD	A,#.MAXCURSPOSY
+   0013 BE                  237 	CP	(HL)
+   0014 28 03               238 	JR	Z,2$
+   0016 34                  239 	INC	(HL)
+   0017 18 02               240 	JR	99$
+   0019                     241 2$:
+   0019 36 00               242 	LD	(HL),#0x00
+   001B                     243 99$:
+   001B E1                  244 	POP	HL
+   001C C9                  245 	RET
+                            246 
+                            247 	;; Draw a circle from (B,C) with radius D
+   001D                     248 .circle::
+   001D 78                  249 	LD	A,B	;Store center values
+   001E EAr04s00            250 	LD	(.x_s),A
+   0021 79                  251 	LD	A,C
+   0022 EAr06s00            252 	LD	(.y_s),A
+                            253 
+   0025 AF                  254 	XOR	A
+   0026 EAr05s00            255 	LD	(.x_s+1),A 
+   0029 7A                  256 	LD	A,D
+   002A EAr07s00            257 	LD	(.y_s+1),A 
+   002D 2F                  258 	CPL
+   002E 6F                  259 	LD	L,A
+   002F 26 FF               260 	LD	H,#0xFF
+   0031 23                  261 	INC	HL
+   0032 01 00 00            262 	LD	BC,#0
+   0035 09                  263 	ADD	HL,BC
+   0036 7D                  264 	LD	A,L
+   0037 EAr0Cs00            265 	LD	(.l_d+1),A
+   003A 7C                  266 	LD	A,H
+   003B EAr0Bs00            267 	LD	(.l_d),A
+                            268 
+   003E                     269 cloop$:
+   003E FAr05s00            270 	LD	A,(.x_s+1)
+   0041 47                  271 	LD	B,A
+   0042 FAr07s00            272 	LD	A,(.y_s+1)
+   0045 90                  273 	SUB	B
+   0046 D8                  274 	RET	C
+                            275 
+   0047 FAr03s00            276 	LD	A,(.style)
+   004A B7                  277 	OR	A
+   004B CCr54s01            278 	CALL	Z,.circplot
+                            279 
+   004E FAr0Bs00            280 	LD	A,(.l_d)
+   0051 CB 7F               281 	BIT	7,A
+   0053 28 2D               282 	JR	Z,ycirc$
+                            283 
+   0055 FAr03s00            284 	LD	A,(.style)
+   0058 B7                  285 	OR	A
+   0059 C4rC0s00            286 	CALL	NZ,.horlin
+   005C FAr05s00            287 	LD	A,(.x_s+1)
+   005F 3C                  288 	INC	A
+   0060 EAr05s00            289 	LD	(.x_s+1),A
+   0063 FAr0Bs00            290 	LD	A,(.l_d)
+   0066 47                  291 	LD	B,A
+   0067 FAr0Cs00            292 	LD	A,(.l_d+1)
+   006A 4F                  293 	LD	C,A
+   006B 26 00               294 	LD	H,#0
+   006D FAr05s00            295 	LD	A,(.x_s+1)
+   0070 6F                  296 	LD	L,A
+   0071 29                  297 	ADD	HL,HL
+   0072 29                  298 	ADD	HL,HL
+   0073 09                  299 	ADD	HL,BC
+   0074 01 06 00            300 	LD	BC,#6
+   0077 09                  301 	ADD	HL,BC
+   0078 7C                  302 	LD	A,H
+   0079 EAr0Bs00            303 	LD	(.l_d),A
+   007C 7D                  304 	LD	A,L
+   007D EAr0Cs00            305 	LD	(.l_d+1),A
+   0080 18 BC               306 	JR	cloop$
+   0082                     307 ycirc$:	
+   0082 FAr03s00            308 	LD	A,(.style)
+   0085 B7                  309 	OR	A
+   0086 C4rF8s00            310 	CALL	NZ,.verlin
+   0089 FAr05s00            311 	LD	A,(.x_s+1)
+   008C 3C                  312 	INC	A
+   008D EAr05s00            313 	LD	(.x_s+1),A
+   0090 06 00               314 	LD	B,#0
+   0092 FAr05s00            315 	LD	A,(.x_s+1)
+   0095 4F                  316 	LD	C,A
+   0096 26 FF               317 	LD	H,#0xFF
+   0098 FAr07s00            318 	LD	A,(.y_s+1)
+   009B 2F                  319 	CPL
+   009C 6F                  320 	LD	L,A
+   009D 23                  321 	INC	HL
+   009E 09                  322 	ADD	HL,BC
+   009F FAr0Bs00            323 	LD	A,(.l_d)
+   00A2 47                  324 	LD	B,A
+   00A3 FAr0Cs00            325 	LD	A,(.l_d+1)
+   00A6 4F                  326 	LD	C,A
+   00A7 29                  327 	ADD	HL,HL
+   00A8 29                  328 	ADD	HL,HL
+   00A9 09                  329 	ADD	HL,BC
+   00AA 01 0A 00            330 	LD	BC,#10
+   00AD 09                  331 	ADD	HL,BC
+   00AE 7C                  332 	LD	A,H
+   00AF EAr0Bs00            333 	LD	(.l_d),A
+   00B2 7D                  334 	LD	A,L
+   00B3 EAr0Cs00            335 	LD	(.l_d+1),A
+   00B6 FAr07s00            336 	LD	A,(.y_s+1)
+   00B9 3D                  337 	DEC	A
+   00BA EAr07s00            338 	LD	(.y_s+1),A
+   00BD C3r3Es00            339 	JP	cloop$
+                            340 
+   00C0                     341 .horlin::
+   00C0 FAr04s00            342 	LD	A,(.x_s)
+   00C3 47                  343 	LD	B,A
+   00C4 FAr06s00            344 	LD	A,(.y_s)
+   00C7 4F                  345 	LD	C,A
+   00C8 FAr05s00            346 	LD	A,(.x_s+1)
+   00CB 57                  347 	LD	D,A
+   00CC FAr07s00            348 	LD	A,(.y_s+1)
+   00CF 5F                  349 	LD	E,A
+   00D0 C5                  350 	PUSH	BC
+   00D1 D5                  351 	PUSH	DE
+   00D2 78                  352 	LD	A,B
+   00D3 93                  353 	SUB	E
+   00D4 67                  354 	LD	H,A
+   00D5 78                  355 	LD	A,B
+   00D6 83                  356 	ADD	E
+   00D7 47                  357 	LD	B,A
+   00D8 79                  358 	LD	A,C
+   00D9 82                  359 	ADD	D
+   00DA 4F                  360 	LD	C,A
+   00DB 54                  361 	LD	D,H
+   00DC 59                  362 	LD	E,C
+   00DD CDrA8s02            363 	CALL	.line
+   00E0 D1                  364 	POP	DE
+   00E1 C1                  365 	POP	BC
+   00E2 7A                  366 	LD	A,D
+   00E3 B7                  367 	OR	A
+   00E4 C8                  368 	RET	Z
+   00E5 C5                  369 	PUSH	BC
+   00E6 D5                  370 	PUSH	DE
+   00E7 78                  371 	LD	A,B
+   00E8 93                  372 	SUB	E
+   00E9 67                  373 	LD	H,A
+   00EA 78                  374 	LD	A,B
+   00EB 83                  375 	ADD	E
+   00EC 47                  376 	LD	B,A
+   00ED 79                  377 	LD	A,C
+   00EE 92                  378 	SUB	D
+   00EF 4F                  379 	LD	C,A
+   00F0 54                  380 	LD	D,H
+   00F1 59                  381 	LD	E,C
+   00F2 CDrA8s02            382 	CALL	.line
+   00F5 D1                  383 	POP	DE
+   00F6 C1                  384 	POP	BC
+   00F7 C9                  385 	RET
+                            386 
+   00F8                     387 .verlin::
+   00F8 FAr04s00            388 	LD	A,(.x_s)
+   00FB 47                  389 	LD	B,A
+   00FC FAr06s00            390 	LD	A,(.y_s)
+   00FF 4F                  391 	LD	C,A
+   0100 FAr05s00            392 	LD	A,(.x_s+1)
+   0103 57                  393 	LD	D,A
+   0104 FAr07s00            394 	LD	A,(.y_s+1)
+   0107 5F                  395 	LD	E,A
+   0108 C5                  396 	PUSH	BC
+   0109 D5                  397 	PUSH	DE
+   010A 78                  398 	LD	A,B
+   010B 93                  399 	SUB	E
+   010C 67                  400 	LD	H,A
+   010D 78                  401 	LD	A,B
+   010E 83                  402 	ADD	E
+   010F 47                  403 	LD	B,A
+   0110 79                  404 	LD	A,C
+   0111 82                  405 	ADD	D
+   0112 4F                  406 	LD	C,A
+   0113 54                  407 	LD	D,H
+   0114 59                  408 	LD	E,C
+   0115 CDrA8s02            409 	CALL	.line
+   0118 D1                  410 	POP	DE
+   0119 C1                  411 	POP	BC
+   011A C5                  412 	PUSH	BC
+   011B D5                  413 	PUSH	DE
+   011C 78                  414 	LD	A,B
+   011D 93                  415 	SUB	E
+   011E 67                  416 	LD	H,A
+   011F 78                  417 	LD	A,B
+   0120 83                  418 	ADD	E
+   0121 47                  419 	LD	B,A
+   0122 79                  420 	LD	A,C
+   0123 92                  421 	SUB	D
+   0124 4F                  422 	LD	C,A
+   0125 54                  423 	LD	D,H
+   0126 59                  424 	LD	E,C
+   0127 CDrA8s02            425 	CALL	.line
+   012A D1                  426 	POP	DE
+   012B C1                  427 	POP	BC
+   012C 7A                  428 	LD	A,D
+   012D 93                  429 	SUB	E
+   012E C8                  430 	RET	Z
+   012F C5                  431 	PUSH	BC
+   0130 D5                  432 	PUSH	DE
+   0131 78                  433 	LD	A,B
+   0132 92                  434 	SUB	D
+   0133 67                  435 	LD	H,A
+   0134 78                  436 	LD	A,B
+   0135 82                  437 	ADD	D
+   0136 47                  438 	LD	B,A
+   0137 79                  439 	LD	A,C
+   0138 93                  440 	SUB	E
+   0139 4F                  441 	LD	C,A
+   013A 54                  442 	LD	D,H
+   013B 59                  443 	LD	E,C
+   013C CDrA8s02            444 	CALL	.line
+   013F D1                  445 	POP	DE
+   0140 C1                  446 	POP	BC
+   0141 C5                  447 	PUSH	BC
+   0142 D5                  448 	PUSH	DE
+   0143 78                  449 	LD	A,B
+   0144 92                  450 	SUB	D
+   0145 67                  451 	LD	H,A
+   0146 78                  452 	LD	A,B
+   0147 82                  453 	ADD	D
+   0148 47                  454 	LD	B,A
+   0149 79                  455 	LD	A,C
+   014A 83                  456 	ADD	E
+   014B 4F                  457 	LD	C,A
+   014C 54                  458 	LD	D,H
+   014D 59                  459 	LD	E,C
+   014E CDrA8s02            460 	CALL	.line
+   0151 D1                  461 	POP	DE
+   0152 C1                  462 	POP	BC
+   0153 C9                  463 	RET
+                            464 
+   0154                     465 .circplot::
+   0154 FAr04s00            466 	LD	A,(.x_s)
+   0157 47                  467 	LD	B,A
+   0158 FAr06s00            468 	LD	A,(.y_s)
+   015B 4F                  469 	LD	C,A
+   015C FAr05s00            470 	LD	A,(.x_s+1)
+   015F 57                  471 	LD	D,A
+   0160 FAr07s00            472 	LD	A,(.y_s+1)
+   0163 5F                  473 	LD	E,A
+   0164 C5                  474 	PUSH	BC
+   0165 D5                  475 	PUSH	DE
+   0166 78                  476 	LD	A,B
+   0167 82                  477 	ADD	D
+   0168 47                  478 	LD	B,A
+   0169 79                  479 	LD	A,C
+   016A 93                  480 	SUB	E
+   016B 4F                  481 	LD	C,A
+   016C CDr39s05            482 	CALL	.plot
+   016F D1                  483 	POP	DE
+   0170 C1                  484 	POP	BC
+   0171 C5                  485 	PUSH	BC
+   0172 D5                  486 	PUSH	DE
+   0173 78                  487 	LD	A,B
+   0174 93                  488 	SUB	E
+   0175 47                  489 	LD	B,A
+   0176 79                  490 	LD	A,C
+   0177 92                  491 	SUB	D
+   0178 4F                  492 	LD	C,A
+   0179 CDr39s05            493 	CALL	.plot
+   017C D1                  494 	POP	DE
+   017D C1                  495 	POP	BC
+   017E C5                  496 	PUSH	BC
+   017F D5                  497 	PUSH	DE
+   0180 78                  498 	LD	A,B
+   0181 92                  499 	SUB	D
+   0182 47                  500 	LD	B,A
+   0183 79                  501 	LD	A,C
+   0184 83                  502 	ADD	E
+   0185 4F                  503 	LD	C,A
+   0186 CDr39s05            504 	CALL	.plot
+   0189 D1                  505 	POP	DE
+   018A C1                  506 	POP	BC
+   018B C5                  507 	PUSH	BC
+   018C D5                  508 	PUSH	DE
+   018D 78                  509 	LD	A,B
+   018E 83                  510 	ADD	E
+   018F 47                  511 	LD	B,A
+   0190 79                  512 	LD	A,C
+   0191 82                  513 	ADD	D
+   0192 4F                  514 	LD	C,A
+   0193 CDr39s05            515 	CALL	.plot
+   0196 D1                  516 	POP	DE
+   0197 C1                  517 	POP	BC
+                            518 	
+   0198 7A                  519 	LD	A,D
+   0199 B7                  520 	OR	A
+   019A C8                  521 	RET	Z
+   019B 93                  522 	SUB	E
+   019C C8                  523 	RET	Z
+                            524 
+   019D C5                  525 	PUSH	BC
+   019E D5                  526 	PUSH	DE
+   019F 78                  527 	LD	A,B
+   01A0 92                  528 	SUB	D
+   01A1 47                  529 	LD	B,A
+   01A2 79                  530 	LD	A,C
+   01A3 93                  531 	SUB	E
+   01A4 4F                  532 	LD	C,A
+   01A5 CDr39s05            533 	CALL	.plot
+   01A8 D1                  534 	POP	DE
+   01A9 C1                  535 	POP	BC
+   01AA C5                  536 	PUSH	BC
+   01AB D5                  537 	PUSH	DE
+   01AC 78                  538 	LD	A,B
+   01AD 93                  539 	SUB	E
+   01AE 47                  540 	LD	B,A
+   01AF 79                  541 	LD	A,C
+   01B0 82                  542 	ADD	D
+   01B1 4F                  543 	LD	C,A
+   01B2 CDr39s05            544 	CALL	.plot
+   01B5 D1                  545 	POP	DE
+   01B6 C1                  546 	POP	BC
+   01B7 C5                  547 	PUSH	BC
+   01B8 D5                  548 	PUSH	DE
+   01B9 78                  549 	LD	A,B
+   01BA 82                  550 	ADD	D
+   01BB 47                  551 	LD	B,A
+   01BC 79                  552 	LD	A,C
+   01BD 83                  553 	ADD	E
+   01BE 4F                  554 	LD	C,A
+   01BF CDr39s05            555 	CALL	.plot
+   01C2 D1                  556 	POP	DE
+   01C3 C1                  557 	POP	BC
+   01C4 C5                  558 	PUSH	BC
+   01C5 D5                  559 	PUSH	DE
+   01C6 78                  560 	LD	A,B
+   01C7 83                  561 	ADD	E
+   01C8 47                  562 	LD	B,A
+   01C9 79                  563 	LD	A,C
+   01CA 92                  564 	SUB	D
+   01CB 4F                  565 	LD	C,A
+   01CC CDr39s05            566 	CALL	.plot
+   01CF D1                  567 	POP	DE
+   01D0 C1                  568 	POP	BC
+   01D1 C9                  569 	RET
+                            570 
+                            571 	;; Draw a box between (B,C) and (D,E)
+   01D2                     572 .box::
+   01D2 FAr04s00            573 	LD	A,(.x_s)
+   01D5 47                  574 	LD	B,A
+   01D6 FAr05s00            575 	LD	A,(.x_s+1)
+   01D9 4F                  576 	LD	C,A
+   01DA 90                  577 	SUB	B
+   01DB 30 08               578 	JR	NC,ychk$
+   01DD 79                  579 	LD	A,C
+   01DE EAr04s00            580 	LD	(.x_s),A
+   01E1 78                  581 	LD	A,B
+   01E2 EAr05s00            582 	LD	(.x_s+1),A
+   01E5                     583 ychk$:
+   01E5 FAr06s00            584 	LD	A,(.y_s)
+   01E8 47                  585 	LD	B,A
+   01E9 FAr07s00            586 	LD	A,(.y_s+1)
+   01EC 4F                  587 	LD	C,A
+   01ED 90                  588 	SUB	B
+   01EE 30 08               589 	JR	NC,dbox$
+   01F0 79                  590 	LD	A,C
+   01F1 EAr06s00            591 	LD	(.y_s),A
+   01F4 78                  592 	LD	A,B
+   01F5 EAr07s00            593 	LD	(.y_s+1),A
+   01F8                     594 dbox$:
+   01F8 FAr04s00            595 	LD	A,(.x_s)
+   01FB 47                  596 	LD	B,A
+   01FC 57                  597 	LD	D,A
+   01FD FAr06s00            598 	LD	A,(.y_s)
+   0200 4F                  599 	LD	C,A
+   0201 FAr07s00            600 	LD	A,(.y_s+1)
+   0204 5F                  601 	LD	E,A
+   0205 CDrA8s02            602 	CALL	.line
+   0208 FAr05s00            603 	LD	A,(.x_s+1)
+   020B 47                  604 	LD	B,A
+   020C 57                  605 	LD	D,A
+   020D FAr06s00            606 	LD	A,(.y_s)
+   0210 4F                  607 	LD	C,A
+   0211 FAr07s00            608 	LD	A,(.y_s+1)
+   0214 5F                  609 	LD	E,A
+   0215 CDrA8s02            610 	CALL	.line
+   0218 FAr04s00            611 	LD	A,(.x_s)
+   021B 3C                  612 	INC	A
+   021C EAr04s00            613 	LD	(.x_s),A
+   021F FAr05s00            614 	LD	A,(.x_s+1)
+   0222 3D                  615 	DEC	A
+   0223 EAr05s00            616 	LD	(.x_s+1),A
+   0226 FAr04s00            617 	LD	A,(.x_s)
+   0229 47                  618 	LD	B,A
+   022A FAr05s00            619 	LD	A,(.x_s+1)
+   022D 57                  620 	LD	D,A
+   022E FAr06s00            621 	LD	A,(.y_s)
+   0231 4F                  622 	LD	C,A
+   0232 5F                  623 	LD	E,A
+   0233 CDrA8s02            624 	CALL	.line
+   0236 FAr04s00            625 	LD	A,(.x_s)
+   0239 47                  626 	LD	B,A
+   023A FAr05s00            627 	LD	A,(.x_s+1)
+   023D 57                  628 	LD	D,A
+   023E FAr07s00            629 	LD	A,(.y_s+1)
+   0241 4F                  630 	LD	C,A
+   0242 5F                  631 	LD	E,A
+   0243 CDrA8s02            632 	CALL	.line
+   0246 FAr03s00            633 	LD	A,(.style)
+   0249 B7                  634 	OR	A
+   024A C8                  635 	RET	Z
+   024B FAr04s00            636 	LD	A,(.x_s)
+   024E 47                  637 	LD	B,A
+   024F FAr05s00            638 	LD	A,(.x_s+1)
+   0252 90                  639 	SUB	B
+   0253 D8                  640 	RET	C
+   0254 FAr06s00            641 	LD	A,(.y_s)
+   0257 3C                  642 	INC	A
+   0258 EAr06s00            643 	LD	(.y_s),A
+   025B FAr07s00            644 	LD	A,(.y_s+1)
+   025E 3D                  645 	DEC	A
+   025F EAr07s00            646 	LD	(.y_s+1),A
+   0262 FAr06s00            647 	LD	A,(.y_s)
+   0265 47                  648 	LD	B,A
+   0266 FAr07s00            649 	LD	A,(.y_s+1)
+   0269 90                  650 	SUB	B
+   026A D8                  651 	RET	C
+                            652 
+                    0000    653 	.if	0
+                            654 	LD	A,(.mod_col)	;Swap fore + back colours.
+                            655 	LD	D,A
+                            656 	AND	#0xF0
+                            657 	LD	C,A		;Preserve Style
+                            658 	LD	A,D
+                            659 	AND	#0x0C
+                            660 	RRCA
+                            661 	RRCA
+                            662 	OR	C		;Foreground->background + style
+                            663 	LD	C,A
+                            664 	LD	A,D
+                            665 	AND	#0x03
+                            666 	RLCA
+                            667 	RLCA
+                            668 	OR	C
+                            669 	LD	(.mod_col),A
+                            670 	.else
+   026B FAr00s00            671 	LD	A,(.fg_colour)
+   026E 4F                  672 	LD	C,A
+   026F FAr01s00            673 	LD	A,(.bg_colour)
+   0272 EAr00s00            674 	LD	(.fg_colour),A
+   0275 79                  675 	LD	A,C
+   0276 EAr01s00            676 	LD	(.bg_colour),A
+                            677 	.endif 
+   0279                     678 filllp$:
+   0279 FAr04s00            679 	LD	A,(.x_s)
+   027C 47                  680 	LD	B,A
+   027D FAr05s00            681 	LD	A,(.x_s+1)
+   0280 57                  682 	LD	D,A
+   0281 FAr06s00            683 	LD	A,(.y_s)
+   0284 4F                  684 	LD	C,A
+   0285 5F                  685 	LD	E,A
+   0286 CDrA8s02            686 	CALL	.line
+   0289 FAr07s00            687 	LD	A,(.y_s+1)
+   028C 47                  688 	LD	B,A
+   028D FAr06s00            689 	LD	A,(.y_s)
+   0290 B8                  690 	CP	B
+   0291 28 06               691 	JR	Z,swap$
+   0293 3C                  692 	INC	A
+   0294 EAr06s00            693 	LD	(.y_s),A
+   0297 18 E0               694 	JR	filllp$
+   0299                     695 swap$:	
+                    0000    696 	.if	0
+                            697 	LD	A,(.mod_col)	;Swap fore + back colours.
+                            698 	LD	D,A
+                            699 	AND	#0xF0
+                            700 	LD	C,A		;Preserve Style
+                            701 	LD	A,D
+                            702 	AND	#0x0C
+                            703 	RRCA
+                            704 	RRCA
+                            705 	OR	C		;Foreground->background + style
+                            706 	LD	C,A
+                            707 	LD	A,D
+                            708 	AND	#0x03
+                            709 	RLCA
+                            710 	RLCA
+                            711 	OR	C
+                            712 	LD	(.mod_col),A
+                            713 	.else
+   0299 FAr00s00            714 	LD	A,(.fg_colour)
+   029C 4F                  715 	LD	C,A
+   029D FAr01s00            716 	LD	A,(.bg_colour)
+   02A0 EAr00s00            717 	LD	(.fg_colour),A
+   02A3 79                  718 	LD	A,C
+   02A4 EAr01s00            719 	LD	(.bg_colour),A
+                            720 	.endif
+   02A7 C9                  721 	RET
+                            722 
+                            723 	;; Draw a line between (B,C) and (D,E)
+   02A8                     724 .line::
+   02A8 79                  725 	LD	A,C	;Calculate Delta Y
+   02A9 93                  726 	SUB	E
+   02AA 30 02               727 	JR	NC,s1$
+   02AC 2F                  728 	CPL
+   02AD 3C                  729 	INC	A
+   02AE EAr09s00            730 s1$:	LD	(.delta_y),A
+   02B1 67                  731 	LD	H,A
+                            732 
+   02B2 78                  733 	LD	A,B	;Calculate Delta X
+   02B3 92                  734 	SUB	D
+   02B4 30 02               735 	JR	NC,s2$
+   02B6 2F                  736 	CPL
+   02B7 3C                  737 	INC	A
+   02B8 EAr08s00            738 s2$:	LD	(.delta_x),A
+                            739 
+   02BB 94                  740 	SUB	H
+   02BC DAr25s04            741 	JP	C,y1
+                            742 
+                            743 	;; Use Delta X
+                            744 
+   02BF 78                  745 	LD	A,B
+   02C0 92                  746 	SUB	D
+   02C1 D2rD0s02            747 	JP	NC,x2$
+                            748 
+   02C4 79                  749 	LD	A,C
+   02C5 93                  750 	SUB	E
+   02C6 28 14               751 	JR	Z,x3$
+   02C8 3E 00               752 	LD	A,#0x00
+   02CA 30 10               753 	JR	NC,x3$
+   02CC 3E FF               754 	LD	A,#0xFF
+   02CE 18 0C               755 	JR	x3$
+                            756 
+   02D0                     757 x2$:
+   02D0 7B                  758 	LD	A,E
+   02D1 91                  759 	SUB	C
+   02D2 28 06               760 	JR	Z,x2a$
+   02D4 3E 00               761 	LD	A,#0x00
+   02D6 30 02               762 	JR	NC,x2a$
+   02D8 3E FF               763 	LD	A,#0xFF
+                            764 
+   02DA                     765 x2a$:
+   02DA 42                  766 	LD	B,D
+   02DB 4B                  767 	LD	C,E	;BC holds start X,Y
+   02DC                     768 x3$:
+   02DC EAr0As00            769 	LD	(.l_inc),A	;Store Y increment
+   02DF 21rE9s00            770 	LD	HL,#.y_table
+   02E2 16 00               771 	LD	D,#0x00
+   02E4 59                  772 	LD	E,C
+   02E5 19                  773 	ADD	HL,DE
+   02E6 19                  774 	ADD	HL,DE
+   02E7 2A                  775 	LD	A,(HL+)
+   02E8 66                  776 	LD	H,(HL)
+   02E9 6F                  777 	LD	L,A
+                            778 
+   02EA 78                  779 	LD	A,B
+   02EB E6 F8               780 	AND	#0xf8
+   02ED 5F                  781 	LD	E,A
+   02EE 19                  782 	ADD	HL,DE
+   02EF 19                  783 	ADD	HL,DE
+                            784 
+   02F0 FAr09s00            785 	LD	A,(.delta_y)
+   02F3 B7                  786 	OR	A
+   02F4 CArC9s03            787 	JP	Z,.xonly
+                            788 
+                            789 	;;	Got to do it the hard way.
+                            790 
+                            791 	;	Calculate (2*deltay) -> dinc1
+                            792 
+   02F7 E5                  793 	PUSH	HL
+   02F8 26 00               794 	LD	H,#0x00
+   02FA 6F                  795 	LD	L,A
+   02FB 29                  796 	ADD	HL,HL
+   02FC 7C                  797 	LD	A,H
+   02FD EAr0Ds00            798 	LD	(.dinc1),A
+   0300 7D                  799 	LD	A,L
+   0301 EAr0Es00            800 	LD	(.dinc1+1),A
+                            801 
+                            802 	;	Calculate (2*deltay)-deltax -> d
+                            803 
+                            804 
+   0304 54                  805 	LD	D,H
+   0305 5D                  806 	LD	E,L
+   0306 FAr08s00            807 	LD	A,(.delta_x)
+   0309 2F                  808 	CPL
+   030A 6F                  809 	LD	L,A
+   030B 26 FF               810 	LD	H,#0xFF
+   030D 23                  811 	INC	HL
+   030E                     812 dx1$:
+   030E 19                  813 	ADD	HL,DE
+   030F 7C                  814 	LD	A,H
+   0310 EAr0Bs00            815 	LD	(.l_d),A
+   0313 7D                  816 	LD	A,L
+   0314 EAr0Cs00            817 	LD	(.l_d+1),A
+                            818 
+                            819 	;	Calculate (deltay-deltax)*2 -> dinc2
+                            820 
+   0317 FAr08s00            821 	LD	A,(.delta_x)
+   031A 2F                  822 	CPL
+   031B 6F                  823 	LD	L,A
+   031C 26 FF               824 	LD	H,#0xFF
+   031E 23                  825 	INC	HL
+   031F FAr09s00            826 	LD	A,(.delta_y)
+   0322 16 00               827 	LD	D,#0x00
+   0324 5F                  828 	LD	E,A
+   0325 19                  829 	ADD	HL,DE
+   0326 29                  830 	ADD	HL,HL
+                            831 
+   0327 7C                  832 	LD	A,H
+   0328 EAr0Fs00            833 	LD	(.dinc2),A
+   032B 7D                  834 	LD	A,L
+   032C EAr10s00            835 	LD	(.dinc2+1),A
+                            836 
+   032F E1                  837 	POP	HL
+                            838 
+                    0000    839 	.if	0
+                            840 	LD	A,(.mod_col)
+                            841 	LD	D,A
+                            842 	.endif
+                            843 	
+   0330 FAr08s00            844 	LD	A,(.delta_x)
+   0333 5F                  845 	LD	E,A
+                            846 
+   0334 78                  847 	LD	A,B
+   0335 E6 07               848 	AND	#7
+   0337 C6 10               849 	ADD	#0x10	; Table of bits is located at 0x0010
+   0339 4F                  850 	LD	C,A
+   033A 06 00               851 	LD	B,#0x00
+   033C 0A                  852 	LD	A,(BC)	; Get start bit
+   033D 47                  853 	LD	B,A
+   033E 4F                  854 	LD	C,A
+                            855 
+   033F                     856 xloop$:
+   033F CB 09               857 	RRC	C
+   0341 FAr0Bs00            858 	LD	A,(.l_d)
+   0344 CB 7F               859 	BIT	7,A
+   0346 28 28               860 	JR	Z,ychg$
+   0348 D5                  861 	PUSH	DE
+   0349 CB 79               862 	BIT	7,C
+   034B 28 0A               863 	JR	Z,nbit$
+   034D 78                  864 	LD	A,B
+   034E 2F                  865 	CPL
+   034F 4F                  866 	LD	C,A
+   0350 CDr56s05            867 	CALL	.wrbyte
+   0353 2B                  868 	DEC	HL
+   0354 0E 80               869 	LD	C,#0x80
+   0356 41                  870 	LD	B,C
+   0357                     871 nbit$:
+   0357 FAr0Cs00            872 	LD	A,(.l_d+1)
+   035A 57                  873 	LD	D,A
+   035B FAr0Es00            874 	LD	A,(.dinc1+1)
+   035E 82                  875 	ADD	D
+   035F EAr0Cs00            876 	LD	(.l_d+1),A
+   0362 FAr0Bs00            877 	LD	A,(.l_d)
+   0365 57                  878 	LD	D,A
+   0366 FAr0Ds00            879 	LD	A,(.dinc1)
+   0369 8A                  880 	ADC	D
+   036A EAr0Bs00            881 	LD	(.l_d),A
+   036D D1                  882 	POP	DE
+   036E 18 41               883 	JR	nchg$
+   0370                     884 ychg$:
+   0370 D5                  885 	PUSH	DE
+   0371 C5                  886 	PUSH	BC
+   0372 78                  887 	LD	A,B
+   0373 2F                  888 	CPL
+   0374 4F                  889 	LD	C,A
+   0375 CDr56s05            890 	CALL	.wrbyte
+   0378 FAr0As00            891 	LD	A,(.l_inc)
+   037B B7                  892 	OR	A
+   037C 28 0C               893 	JR	Z,ydown$
+   037E 23                  894 	INC	HL
+   037F 7D                  895 	LD	A,L
+   0380 E6 0F               896 	AND	#0x0F
+   0382 20 14               897 	JR	NZ,bound$
+   0384 11 30 01            898 	LD	DE,#0x0130
+   0387 19                  899 	ADD	HL,DE	;Correct screen address
+   0388 18 0E               900 	JR	bound$
+   038A                     901 ydown$:
+   038A 2B                  902 	DEC	HL
+   038B 2B                  903 	DEC	HL
+   038C 2B                  904 	DEC	HL
+   038D 7D                  905 	LD	A,L
+   038E E6 0F               906 	AND	#0x0F
+   0390 EE 0E               907 	XOR	#0x0E
+   0392 20 04               908 	JR	NZ,bound$
+   0394 11 D0 FE            909 	LD	DE,#0xFED0
+   0397 19                  910 	ADD	HL,DE	;Correct screen address
+   0398                     911 bound$:
+   0398 FAr0Cs00            912 	LD	A,(.l_d+1)
+   039B 57                  913 	LD	D,A
+   039C FAr10s00            914 	LD	A,(.dinc2+1)
+   039F 82                  915 	ADD	D
+   03A0 EAr0Cs00            916 	LD	(.l_d+1),A
+   03A3 FAr0Bs00            917 	LD	A,(.l_d)
+   03A6 57                  918 	LD	D,A
+   03A7 FAr0Fs00            919 	LD	A,(.dinc2)
+   03AA 8A                  920 	ADC	D
+   03AB EAr0Bs00            921 	LD	(.l_d),A
+   03AE C1                  922 	POP	BC
+   03AF 41                  923 	LD	B,C
+   03B0 D1                  924 	POP	DE
+   03B1                     925 nchg$:
+   03B1 CB 79               926 	BIT	7,C
+   03B3 28 07               927 	JR	Z,nadj$
+   03B5 D5                  928 	PUSH	DE
+   03B6 11 10 00            929 	LD	DE,#0x0010
+   03B9 19                  930 	ADD	HL,DE	;Correct screen address
+   03BA D1                  931 	POP	DE
+   03BB 41                  932 	LD	B,C
+   03BC                     933 nadj$:
+   03BC 78                  934 	LD	A,B
+   03BD B1                  935 	OR	C
+   03BE 47                  936 	LD	B,A
+   03BF 1D                  937 	DEC	E
+   03C0 C2r3Fs03            938 	JP	NZ,xloop$
+   03C3 78                  939 	LD	A,B
+   03C4 2F                  940 	CPL
+   03C5 4F                  941 	LD	C,A
+   03C6 C3r56s05            942 	JP	.wrbyte
+                            943 
+   03C9                     944 .xonly::
+                            945 	;; Draw accelerated horizontal line
+                    0000    946 	.if	0
+                            947 	;; xxx needed?
+                            948 	LD	A,(.mod_col)	
+                            949 	LD	D,A
+                            950 	.endif
+                            951 
+   03C9 FAr08s00            952 	LD	A,(.delta_x)
+   03CC 5F                  953 	LD	E,A
+   03CD 1C                  954 	INC	E
+                            955 
+   03CE 78                  956 	LD	A,B	;check X
+   03CF E6 07               957 	AND	#7	;just look at bottom 3 bits
+   03D1 28 14               958 	JR	Z,2$
+   03D3 E5                  959 	PUSH	HL
+   03D4 C6 10               960 	ADD	#0x10	;Table of bits is located at 0x0010
+   03D6 6F                  961 	LD	L,A
+   03D7 26 00               962 	LD	H,#0x00
+   03D9 4E                  963 	LD	C,(HL)
+   03DA E1                  964 	POP	HL
+   03DB AF                  965 	XOR	A	;Clear A
+   03DC 0F                  966 1$:	RRCA		;Shift data right 1
+   03DD B1                  967 	OR	C
+   03DE 1D                  968 	DEC	E
+   03DF 28 0E               969 	JR	Z,3$
+   03E1 CB 47               970 	BIT	0,A
+   03E3 28 F7               971 	JR	Z,1$
+   03E5 18 08               972 	JR	3$
+   03E7                     973 2$:
+   03E7 7B                  974 	LD	A,E
+   03E8 3D                  975 	DEC	A
+   03E9 E6 F8               976 	AND	#0xF8
+   03EB 28 29               977 	JR	Z,4$
+   03ED 18 0C               978 	JR	8$
+   03EF                     979 3$:
+   03EF 47                  980 	LD	B,A
+   03F0 2F                  981 	CPL
+   03F1 4F                  982 	LD	C,A
+   03F2 D5                  983 	PUSH	DE
+   03F3 CDr56s05            984 	CALL	.wrbyte
+   03F6 11 0F 00            985 	LD	DE,#0x0F
+   03F9 19                  986 	ADD	HL,DE	;Correct screen address
+   03FA D1                  987 	POP	DE
+                            988 
+   03FB 7B                  989 8$:	LD	A,E
+   03FC B7                  990 	OR	A
+   03FD C8                  991 	RET	Z
+   03FE E6 F8               992 	AND	#0xF8
+   0400 28 14               993 	JR	Z,4$
+                            994 
+   0402 AF                  995 	XOR	A
+   0403 4F                  996 	LD	C,A
+   0404 2F                  997 	CPL
+   0405 47                  998 	LD	B,A
+                            999 
+   0406 D5                 1000 	PUSH	DE
+   0407 CDr56s05           1001 	CALL	.wrbyte
+   040A 11 0F 00           1002 	LD	DE,#0x0F
+   040D 19                 1003 	ADD	HL,DE	;Correct screen address
+   040E D1                 1004 	POP	DE
+   040F 7B                 1005 	LD	A,E
+   0410 D6 08              1006 	SUB	#8
+   0412 C8                 1007 	RET	Z
+   0413 5F                 1008 	LD	E,A
+   0414 18 E5              1009 	JR	8$
+                           1010 
+   0416 3E 80              1011 4$:	LD	A,#0x80
+   0418 1D                 1012 5$:	DEC	E
+   0419 28 04              1013 	JR	Z,6$
+   041B CB 2F              1014 	SRA	A
+   041D 18 F9              1015 	JR	5$
+   041F 47                 1016 6$:	LD	B,A
+   0420 2F                 1017 	CPL
+   0421 4F                 1018 	LD	C,A
+   0422 C3r56s05           1019 	JP	.wrbyte
+                           1020 
+                           1021 	;; Use Delta Y
+   0425                    1022 y1:
+   0425 79                 1023 	LD	A,C
+   0426 93                 1024 	SUB	E
+   0427 D2r36s04           1025 	JP	NC,y2$
+                           1026 
+   042A 78                 1027 	LD	A,B
+   042B 92                 1028 	SUB	D
+   042C 28 14              1029 	JR	Z,y3$
+   042E 3E 00              1030 	LD	A,#0x00
+   0430 30 10              1031 	JR	NC,y3$
+   0432 3E FF              1032 	LD	A,#0xFF
+   0434 18 0C              1033 	JR	y3$
+                           1034 
+   0436                    1035 y2$:
+   0436 79                 1036 	LD	A,C
+   0437 93                 1037 	SUB	E
+   0438 28 06              1038 	JR	Z,y2a$
+   043A 3E 00              1039 	LD	A,#0x00
+   043C 30 02              1040 	JR	NC,y2a$
+   043E 3E FF              1041 	LD	A,#0xFF
+                           1042 
+   0440                    1043 y2a$:
+   0440 42                 1044 	LD	B,D
+   0441 4B                 1045 	LD	C,E	;BC holds start X,Y
+                           1046 
+   0442                    1047 y3$:
+   0442 EAr0As00           1048 	LD	(.l_inc),A	;Store X increment
+   0445 21rE9s00           1049 	LD	HL,#.y_table
+   0448 16 00              1050 	LD	D,#0x00
+   044A 59                 1051 	LD	E,C
+   044B 19                 1052 	ADD	HL,DE
+   044C 19                 1053 	ADD	HL,DE
+   044D 2A                 1054 	LD	A,(HL+)
+   044E 66                 1055 	LD	H,(HL)
+   044F 6F                 1056 	LD	L,A
+                           1057 
+   0450 78                 1058 	LD	A,B
+   0451 E6 F8              1059 	AND	#0xf8
+   0453 5F                 1060 	LD	E,A
+   0454 19                 1061 	ADD	HL,DE
+   0455 19                 1062 	ADD	HL,DE
+                           1063 
+                    0000   1064 	.if	0
+                           1065 	;; Trashed by later instructions
+                           1066 	LD	A,(.mod_col)
+                           1067 	LD	D,A
+                           1068 	.endif
+                           1069 	
+   0456 FAr09s00           1070 	LD	A,(.delta_y)
+   0459 5F                 1071 	LD	E,A
+   045A 1C                 1072 	INC	E
+                           1073 
+   045B FAr08s00           1074 	LD	A,(.delta_x)
+   045E B7                 1075 	OR	A
+   045F CAr18s05           1076 	JP	Z,.yonly
+                           1077 
+                           1078 	;;	Got to do it the hard way.
+                           1079 
+                           1080 	;	Calculate (2*deltax) -> dinc1
+                           1081 
+   0462 E5                 1082 	PUSH	HL
+   0463 26 00              1083 	LD	H,#0x00
+   0465 6F                 1084 	LD	L,A
+   0466 29                 1085 	ADD	HL,HL
+   0467 7C                 1086 	LD	A,H
+   0468 EAr0Ds00           1087 	LD	(.dinc1),A
+   046B 7D                 1088 	LD	A,L
+   046C EAr0Es00           1089 	LD	(.dinc1+1),A
+                           1090 
+                           1091 	;	Calculate (2*deltax)-deltay -> d
+                           1092 
+                           1093 
+   046F 54                 1094 	LD	D,H
+   0470 5D                 1095 	LD	E,L
+   0471 FAr09s00           1096 	LD	A,(.delta_y)
+   0474 2F                 1097 	CPL
+   0475 6F                 1098 	LD	L,A
+   0476 26 FF              1099 	LD	H,#0xFF
+   0478 23                 1100 	INC	HL
+   0479                    1101 dy1$:
+   0479 19                 1102 	ADD	HL,DE
+   047A 7C                 1103 	LD	A,H
+   047B EAr0Bs00           1104 	LD	(.l_d),A
+   047E 7D                 1105 	LD	A,L
+   047F EAr0Cs00           1106 	LD	(.l_d+1),A
+                           1107 
+                           1108 	;	Calculate (deltax-deltay)*2 -> dinc2
+                           1109 
+   0482 FAr09s00           1110 	LD	A,(.delta_y)
+   0485 2F                 1111 	CPL
+   0486 6F                 1112 	LD	L,A
+   0487 26 FF              1113 	LD	H,#0xFF
+   0489 23                 1114 	INC	HL
+   048A FAr08s00           1115 	LD	A,(.delta_x)
+   048D 16 00              1116 	LD	D,#0x00
+   048F 5F                 1117 	LD	E,A
+   0490 19                 1118 	ADD	HL,DE
+   0491 29                 1119 	ADD	HL,HL
+                           1120 
+   0492 7C                 1121 	LD	A,H
+   0493 EAr0Fs00           1122 	LD	(.dinc2),A
+   0496 7D                 1123 	LD	A,L
+   0497 EAr10s00           1124 	LD	(.dinc2+1),A
+                           1125 
+   049A E1                 1126 	POP	HL
+                           1127 
+                    0000   1128 	.if	0
+                           1129 	;; xxx Not used?
+                           1130 	LD	A,(.mod_col)
+                           1131 	LD	D,A
+                           1132 	.endif
+                           1133 
+   049B FAr09s00           1134 	LD	A,(.delta_y)
+   049E 5F                 1135 	LD	E,A
+                           1136 
+   049F 78                 1137 	LD	A,B
+   04A0 E6 07              1138 	AND	#7
+   04A2 C6 10              1139 	ADD	#0x10	; Table of bits is located at 0x0010
+   04A4 4F                 1140 	LD	C,A
+   04A5 06 00              1141 	LD	B,#0x00
+   04A7 0A                 1142 	LD	A,(BC)	; Get start bit
+   04A8 47                 1143 	LD	B,A
+   04A9 4F                 1144 	LD	C,A
+                           1145 
+   04AA                    1146 yloop$:
+   04AA D5                 1147 	PUSH	DE
+   04AB C5                 1148 	PUSH	BC
+   04AC 78                 1149 	LD	A,B
+   04AD 2F                 1150 	CPL
+   04AE 4F                 1151 	LD	C,A
+   04AF CDr56s05           1152 	CALL	.wrbyte
+   04B2 23                 1153 	INC	HL
+   04B3 7D                 1154 	LD	A,L
+   04B4 E6 0F              1155 	AND	#0x0F
+   04B6 20 04              1156 	JR	NZ,nybound$
+   04B8 11 30 01           1157 	LD	DE,#0x0130
+   04BB 19                 1158 	ADD	HL,DE	;Correct screen address
+   04BC                    1159 nybound$:
+   04BC C1                 1160 	POP	BC
+   04BD FAr0Bs00           1161 	LD	A,(.l_d)
+   04C0 CB 7F              1162 	BIT	7,A
+   04C2 28 18              1163 	JR	Z,xchg$
+   04C4 FAr0Cs00           1164 	LD	A,(.l_d+1)
+   04C7 57                 1165 	LD	D,A
+   04C8 FAr0Es00           1166 	LD	A,(.dinc1+1)
+   04CB 82                 1167 	ADD	D
+   04CC EAr0Cs00           1168 	LD	(.l_d+1),A
+   04CF FAr0Bs00           1169 	LD	A,(.l_d)
+   04D2 57                 1170 	LD	D,A
+   04D3 FAr0Ds00           1171 	LD	A,(.dinc1)
+   04D6 8A                 1172 	ADC	D
+   04D7 EAr0Bs00           1173 	LD	(.l_d),A
+   04DA 18 32              1174 	JR	nchgy$
+   04DC                    1175 xchg$:
+   04DC FAr0As00           1176 	LD	A,(.l_inc)
+   04DF B7                 1177 	OR	A
+   04E0 20 0C              1178 	JR	NZ,yright$
+   04E2 CB 00              1179 	RLC	B
+   04E4 CB 40              1180 	BIT	0,B
+   04E6 28 10              1181 	JR	Z,boundy$
+   04E8 11 F0 FF           1182 	LD	DE,#0xFFF0
+   04EB 19                 1183 	ADD	HL,DE	;Correct screen address
+   04EC 18 0A              1184 	JR	boundy$
+   04EE                    1185 yright$:
+   04EE CB 08              1186 	RRC	B
+   04F0 CB 78              1187 	BIT	7,B
+   04F2 28 04              1188 	JR	Z,boundy$
+   04F4 11 10 00           1189 	LD	DE,#0x0010
+   04F7 19                 1190 	ADD	HL,DE	;Correct screen address
+   04F8                    1191 boundy$:
+   04F8 FAr0Cs00           1192 	LD	A,(.l_d+1)
+   04FB 57                 1193 	LD	D,A
+   04FC FAr10s00           1194 	LD	A,(.dinc2+1)
+   04FF 82                 1195 	ADD	D
+   0500 EAr0Cs00           1196 	LD	(.l_d+1),A
+   0503 FAr0Bs00           1197 	LD	A,(.l_d)
+   0506 57                 1198 	LD	D,A
+   0507 FAr0Fs00           1199 	LD	A,(.dinc2)
+   050A 8A                 1200 	ADC	D
+   050B EAr0Bs00           1201 	LD	(.l_d),A
+   050E                    1202 nchgy$:
+   050E D1                 1203 	POP	DE
+   050F 1D                 1204 	DEC	E
+   0510 20 98              1205 	JR	NZ,yloop$
+   0512 78                 1206 	LD	A,B
+   0513 2F                 1207 	CPL
+   0514 4F                 1208 	LD	C,A
+   0515 C3r56s05           1209 	JP	.wrbyte
+                           1210 
+   0518                    1211 .yonly::
+                           1212 	;; Draw accelerated vertical line
+   0518 78                 1213 	LD	A,B	;check X
+   0519 E6 07              1214 	AND	#7	;just look at bottom 3 bits
+   051B E5                 1215 	PUSH	HL
+   051C C6 10              1216 	ADD	#0x10	;Table of bits is located at 0x0010
+   051E 6F                 1217 	LD	L,A
+   051F 26 00              1218 	LD	H,#0x00
+   0521 7E                 1219 	LD	A,(HL)	;Get mask bit
+   0522 E1                 1220 	POP	HL
+   0523 47                 1221 	LD	B,A
+   0524 2F                 1222 	CPL
+   0525 4F                 1223 	LD	C,A
+                           1224 
+   0526 D5                 1225 1$:	PUSH	DE
+   0527 CDr56s05           1226 	CALL	.wrbyte
+   052A 23                 1227 	INC	HL	;Correct screen address
+   052B 7D                 1228 	LD	A,L
+   052C E6 0F              1229 	AND	#0x0F
+   052E 20 04              1230 	JR	NZ,2$
+   0530 11 30 01           1231 	LD	DE,#0x0130
+   0533 19                 1232 	ADD	HL,DE
+   0534 D1                 1233 2$:	POP	DE
+   0535 1D                 1234 	DEC	E
+   0536 C8                 1235 	RET	Z
+   0537 18 ED              1236 	JR	1$
+                           1237 
+                           1238 	;; Draw a point at (B,C) with mode and color D
+   0539                    1239 .plot::
+                           1240 
+   0539 21rE9s00           1241 	LD	HL,#.y_table
+   053C 16 00              1242 	LD	D,#0x00
+   053E 59                 1243 	LD	E,C
+   053F 19                 1244 	ADD	HL,DE
+   0540 19                 1245 	ADD	HL,DE
+   0541 2A                 1246 	LD	A,(HL+)
+   0542 66                 1247 	LD	H,(HL)
+   0543 6F                 1248 	LD	L,A
+                           1249 
+   0544 78                 1250 	LD	A,B
+   0545 E6 F8              1251 	AND	#0xf8
+   0547 5F                 1252 	LD	E,A
+   0548 19                 1253 	ADD	HL,DE
+   0549 19                 1254 	ADD	HL,DE
+                           1255 
+   054A 78                 1256 	LD	A,B
+                           1257 
+   054B E6 07              1258 	AND     #7
+   054D C6 10              1259 	ADD     #0x10		; Table of bits is located at 0x0010
+   054F 4F                 1260 	LD      C,A
+   0550 06 00              1261 	LD      B,#0x00
+   0552 0A                 1262 	LD      A,(BC)
+   0553 47                 1263 	LD      B,A
+   0554 2F                 1264 	CPL
+   0555 4F                 1265 	LD      C,A
+                           1266 
+   0556                    1267 .wrbyte::
+                    0000   1268 	.if	0
+                           1269 	LD	A,(.mod_col)	; Restore color and mode
+                           1270 	LD	D,A
+                           1271 
+                           1272 	BIT	5,D
+                           1273 	JR	NZ,10$
+                           1274 	BIT	6,D
+                           1275 	JR	NZ,20$
+                           1276 	BIT	7,D
+                           1277 	JR	NZ,30$
+                           1278 	.else
+   0556 FAr00s00           1279 	LD	A,(.fg_colour)
+   0559 57                 1280 	LD	D,A
+   055A FAr02s00           1281 	LD	A,(.draw_mode)
+   055D FE 01              1282 	CP	#.M_OR
+   055F 28 29              1283 	JR	Z,10$
+   0561 FE 02              1284 	CP	#.M_XOR
+   0563 28 3F              1285 	JR	Z,20$
+   0565 FE 03              1286 	CP	#.M_AND
+   0567 28 55              1287 	JR	Z,30$		
+                           1288 	.endif
+                           1289 
+                           1290 	; Fall through to SOLID by default
+   0569                    1291 1$:
+                           1292 	;; Solid
+   0569 58                 1293 	LD	E,B
+                    0000   1294 	.if	0
+                           1295 	BIT	2,D
+                           1296 	.else
+   056A CB 42              1297 	BIT	0,D
+                           1298 	.endif
+   056C 20 03              1299 	JR	NZ,2$
+   056E C5                 1300 	PUSH	BC
+   056F 06 00              1301 	LD	B,#0x00
+   0571                    1302 2$:
+                    0000   1303 	.if	0
+                           1304 	BIT	3,D
+                           1305 	.else
+   0571 CB 4A              1306 	BIT	1,D
+                           1307 	.endif
+   0573 20 02              1308 	JR	NZ,3$
+   0575 1E 00              1309 	LD	E,#0x00
+   0577                    1310 3$:
+   0577 F0 41              1311 	LDH	A,(.STAT)
+   0579 CB 4F              1312 	BIT	1,A
+   057B 20 FA              1313 	JR	NZ,3$
+                           1314 
+   057D 7E                 1315 	LD	A,(HL)
+   057E A1                 1316 	AND	C
+   057F B0                 1317 	OR	B
+   0580 22                 1318 	LD	(HL+),A
+                           1319 
+   0581 7E                 1320 	LD	A,(HL)
+   0582 A1                 1321 	AND	C
+   0583 B3                 1322 	OR	E
+   0584 77                 1323 	LD	(HL),A
+   0585 78                 1324 	LD	A,B
+   0586 B7                 1325 	OR	A
+   0587 C0                 1326 	RET	NZ
+   0588 C1                 1327 	POP	BC
+   0589 C9                 1328 	RET
+                           1329 
+   058A                    1330 10$:
+                           1331 	;; Or
+   058A 48                 1332 	LD      C,B
+                    0000   1333 	.if	0
+                           1334 	BIT     2,D
+                           1335 	.else
+   058B CB 42              1336 	BIT	0,D
+                           1337 	.endif
+   058D 20 02              1338 	JR      NZ,11$
+   058F 06 00              1339 	LD      B,#0x00
+   0591                    1340 11$:
+                    0000   1341 	.if	0
+                           1342 	BIT     3,D
+                           1343 	.else
+   0591 CB 4A              1344 	BIT	1,D
+                           1345 	.endif
+   0593 20 02              1346 	JR      NZ,12$
+   0595 0E 00              1347 	LD      C,#0x00
+   0597                    1348 12$:
+   0597 F0 41              1349 	LDH     A,(.STAT)
+   0599 CB 4F              1350 	BIT     1,A
+   059B 20 FA              1351 	JR      NZ,12$
+                           1352 
+   059D 7E                 1353 	LD      A,(HL)
+   059E B0                 1354 	OR      B
+   059F 22                 1355 	LD      (HL+),A
+                           1356 
+   05A0 7E                 1357 	LD      A,(HL)
+   05A1 B1                 1358 	OR      C
+   05A2 77                 1359 	LD      (HL),A
+   05A3 C9                 1360 	RET
+                           1361 
+   05A4                    1362 20$:
+                           1363 	;; Xor
+   05A4 48                 1364 	LD      C,B
+                    0000   1365 	.if	0
+                           1366 	BIT     2,D
+                           1367 	.else
+   05A5 CB 42              1368 	BIT	0,D
+                           1369 	.endif
+   05A7 20 02              1370 	JR      NZ,21$
+   05A9 06 00              1371 	LD      B,#0x00
+   05AB                    1372 21$:
+                    0000   1373 	.if	0
+                           1374 	BIT     3,D
+                           1375 	.else
+   05AB CB 4A              1376 	BIT	1,D
+                           1377 	.endif
+   05AD 20 02              1378 	JR      NZ,22$
+   05AF 0E 00              1379 	LD      C,#0x00
+   05B1                    1380 22$:
+   05B1 F0 41              1381 	LDH     A,(.STAT)
+   05B3 CB 4F              1382 	BIT     1,A
+   05B5 20 FA              1383 	JR      NZ,22$
+                           1384 
+   05B7 7E                 1385 	LD      A,(HL)
+   05B8 A8                 1386 	XOR     B
+   05B9 22                 1387 	LD      (HL+),A
+                           1388 
+   05BA 7E                 1389 	LD      A,(HL)
+   05BB A9                 1390 	XOR     C
+   05BC 77                 1391 	LD      (HL),A
+   05BD C9                 1392 	RET
+                           1393 
+   05BE                    1394 30$:
+                           1395 	;; And
+   05BE 41                 1396 	LD      B,C
+                    0000   1397 	.if	0
+                           1398 	BIT     2,D
+                           1399 	.else
+   05BF CB 42              1400 	BIT	0,D
+                           1401 	.endif
+   05C1 28 02              1402 	JR      Z,31$
+   05C3 06 FF              1403 	LD      B,#0xFF
+   05C5                    1404 31$:
+                    0000   1405 	.if	0
+                           1406 	BIT     3,D
+                           1407 	.else
+   05C5 CB 4A              1408 	BIT	1,D
+                           1409 	.endif
+   05C7 28 02              1410 	JR      Z,32$
+   05C9 0E FF              1411 	LD      C,#0xFF
+   05CB                    1412 32$:
+   05CB F0 41              1413 	LDH     A,(.STAT)
+   05CD CB 4F              1414 	BIT     1,A
+   05CF 20 FA              1415 	JR      NZ,32$
+                           1416 
+   05D1 7E                 1417 	LD      A,(HL)
+   05D2 A0                 1418 	AND     B
+   05D3 22                 1419 	LD      (HL+),A
+                           1420 
+   05D4 7E                 1421 	LD      A,(HL)
+   05D5 A1                 1422 	AND     C
+   05D6 77                 1423 	LD      (HL),A
+   05D7 C9                 1424 	RET
+                           1425 
+                           1426 	;; Get color of pixel at point (B,C) returns in A
+   05D8                    1427 .getpix::
+   05D8 21rE9s00           1428 	LD	HL,#.y_table
+   05DB 16 00              1429 	LD	D,#0x00
+   05DD 59                 1430 	LD	E,C
+   05DE 19                 1431 	ADD	HL,DE
+   05DF 19                 1432 	ADD	HL,DE
+   05E0 2A                 1433 	LD	A,(HL+)
+   05E1 66                 1434 	LD	H,(HL)
+   05E2 6F                 1435 	LD	L,A
+                           1436 
+   05E3 78                 1437 	LD	A,B
+   05E4 E6 F8              1438 	AND	#0xf8
+   05E6 5F                 1439 	LD	E,A
+   05E7 19                 1440 	ADD	HL,DE
+   05E8 19                 1441 	ADD	HL,DE
+                           1442 
+   05E9 78                 1443 	LD	A,B
+                           1444 
+   05EA E6 07              1445 	AND     #7
+   05EC C6 10              1446 	ADD     #0x10		; Table of bits is located at 0x0010
+   05EE 4F                 1447 	LD      C,A
+   05EF 06 00              1448 	LD      B,#0x00
+   05F1 0A                 1449 	LD      A,(BC)
+   05F2 4F                 1450 	LD      C,A
+                           1451 
+   05F3                    1452 gp$:
+   05F3 F0 41              1453 	LDH	A,(.STAT)
+   05F5 CB 4F              1454 	BIT	1,A
+   05F7 20 FA              1455 	JR	NZ,gp$
+                           1456 
+   05F9 2A                 1457 	LD	A,(HL+)
+   05FA 57                 1458 	LD	D,A
+   05FB 2A                 1459 	LD	A,(HL+)
+   05FC 5F                 1460 	LD	E,A
+   05FD 06 00              1461 	LD	B,#0
+   05FF 7A                 1462 	LD	A,D
+   0600 A1                 1463 	AND	C
+   0601 28 02              1464 	JR	Z,npix$
+   0603 CB C0              1465 	SET	0,B
+   0605 7B                 1466 npix$:	LD	A,E
+   0606 A1                 1467 	AND	C
+   0607 28 02              1468 	JR	Z,end$
+   0609 CB C8              1469 	SET	1,B
+   060B 58                 1470 end$:	LD	E,B
+   060C C9                 1471 	RET
+                           1472 
+                           1473 	;; Write character C
+   060D                    1474 .wrtchr::
+   060D 21rE9s00           1475 	LD	HL,#.y_table
+   0610 16 00              1476 	LD	D,#0x00
+   0612 FAr12s00           1477 	LD	A,(.ty)
+   0615 07                 1478 	RLCA
+   0616 07                 1479 	RLCA
+   0617 07                 1480 	RLCA
+   0618 5F                 1481 	LD	E,A
+   0619 19                 1482 	ADD	HL,DE
+   061A 19                 1483 	ADD	HL,DE
+   061B 46                 1484 	LD	B,(HL)
+   061C 23                 1485 	INC	HL
+   061D 66                 1486 	LD	H,(HL)
+   061E 68                 1487 	LD	L,B
+                           1488 
+   061F FAr11s00           1489 	LD	A,(.tx)
+   0622 07                 1490 	RLCA
+   0623 07                 1491 	RLCA
+   0624 07                 1492 	RLCA
+   0625 5F                 1493 	LD	E,A
+   0626 19                 1494 	ADD	HL,DE
+   0627 19                 1495 	ADD	HL,DE
+                           1496 
+   0628 79                 1497 	LD	A,C
+   0629 44                 1498 	LD	B,H
+   062A 4D                 1499 	LD	C,L
+                           1500 
+   062B 62                 1501 	LD	H,D
+   062C 6F                 1502 	LD	L,A
+   062D 29                 1503 	ADD	HL,HL
+   062E 29                 1504 	ADD	HL,HL
+   062F 29                 1505 	ADD	HL,HL
+                           1506 
+                    0000   1507 	.if	0
+                           1508 	LD	DE,#.tp1
+                           1509 	.else
+                           1510 	.globl	_font_ibm_fixed_tiles
+                           1511 
+   0630 11r00s00           1512 	LD	DE,#_font_ibm_fixed_tiles
+                           1513 	.endif
+                           1514 	
+   0633 19                 1515 	ADD	HL,DE
+                           1516 
+   0634 54                 1517 	LD	D,H
+   0635 5D                 1518 	LD	E,L
+   0636 60                 1519 	LD	H,B
+   0637 69                 1520 	LD	L,C
+                           1521 
+                    0000   1522 	.if	0
+                           1523 	LD	A,(.mod_col)
+                           1524 	LD	C,A
+                           1525 	.else
+   0638 FAr00s00           1526 	LD	A,(.fg_colour)
+   063B 4F                 1527 	LD	C,A
+                           1528 	.endif
+   063C                    1529 chrloop$:
+   063C 1A                 1530 	LD	A,(DE)
+   063D 13                 1531 	INC	DE
+   063E D5                 1532 	PUSH	DE
+                           1533 
+                    0001   1534 	.if	1
+   063F E5                 1535 	PUSH	HL
+   0640 21r01s00           1536 	LD	HL,#.bg_colour
+   0643 6E                 1537 	LD	L,(HL)
+                           1538 	.endif
+                           1539 
+   0644 47                 1540 	LD	B,A
+   0645 AF                 1541 	XOR	A
+                    0000   1542 	.if	0
+                           1543 	BIT	0,C
+                           1544 	.else
+   0646 CB 45              1545 	BIT	0,L
+                           1546 	.endif
+   0648 28 01              1547 	JR	Z,a0$
+   064A 2F                 1548 	CPL
+   064B B0                 1549 a0$:	OR	B
+                    0000   1550 	.if	0
+                           1551 	BIT	2,C
+                           1552 	.else
+   064C CB 41              1553 	BIT	0,C
+                           1554 	.endif
+   064E 20 01              1555 	JR	NZ,a1$
+   0650 A8                 1556 	XOR	B
+   0651 57                 1557 a1$:	LD	D,A
+   0652 AF                 1558 	XOR	A
+                    0000   1559 	.if	0
+                           1560 	BIT	1,C
+                           1561 	.else
+   0653 CB 4D              1562 	BIT	1,L
+                           1563 	.endif
+   0655 28 01              1564 	JR	Z,b0$
+   0657 2F                 1565 	CPL
+   0658 B0                 1566 b0$:	OR	B
+                    0000   1567 	.if	0
+                           1568 	BIT	3,C
+                           1569 	.else
+   0659 CB 49              1570 	BIT	1,C
+                           1571 	.endif
+   065B 20 01              1572 	JR	NZ,b1$
+   065D A8                 1573 	XOR	B
+   065E                    1574 b1$:	
+   065E 5F                 1575 	LD	E,A
+                    0001   1576 	.if	1
+   065F E1                 1577 	POP	HL
+                           1578 	.endif
+   0660                    1579 chrwait$:
+   0660 F0 41              1580 	LDH	A,(.STAT)
+   0662 CB 4F              1581 	BIT	1,A
+   0664 20 FA              1582 	JR	NZ,chrwait$
+                           1583 
+   0666 7A                 1584 	LD	A,D
+   0667 22                 1585 	LD	(HL+),A
+   0668 7B                 1586 	LD	A,E
+   0669 22                 1587 	LD	(HL+),A
+   066A D1                 1588 	POP	DE
+   066B 7D                 1589 	LD	A,L
+   066C E6 0F              1590 	AND	#0x0F
+   066E 20 CC              1591 	JR	NZ,chrloop$
+   0670 C9                 1592 	RET
+                           1593 
+                           1594 	.area	_CODE
+   0671                    1595 _gotogxy::			; Banked
+   0671 F8 02              1596 	LDA	HL,.BANKOV(SP)	; Skip return address
+   0673 2A                 1597 	LD	A,(HL+)		; A = x
+   0674 EAr11s00           1598 	LD	(.tx),A
+   0677 2A                 1599 	LD	A,(HL+)		; A = y
+   0678 EAr12s00           1600 	LD	(.ty),A
+                           1601 
+   067B C9                 1602 	RET
+                           1603 
+   067C                    1604 _wrtchr::			; Banked
+   067C C5                 1605 	PUSH    BC
+                           1606 
+   067D FAr00s00           1607 	LD	A,(.mode)
+   0680 FE 01              1608 	CP	#.G_MODE
+   0682 C4r00s00           1609 	CALL	NZ,.gmode
+                           1610 
+   0685 F8 04              1611 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   0687 7E                 1612 	LD	A,(HL)
+   0688 4F                 1613 	LD	C,A	; C = Char to print
+                           1614 
+   0689 CDr0Ds06           1615 	CALL	.wrtchr
+   068C CDr00s00           1616 	CALL	.adv_gcurs
+                           1617 
+   068F C1                 1618 	POP	BC
+   0690 C9                 1619 	RET
+                           1620 
+   0691                    1621 _getpix::			; Banked
+   0691 C5                 1622 	PUSH    BC
+                           1623 
+   0692 F8 04              1624 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   0694 2A                 1625 	LD	A,(HL+)	; B = x
+   0695 47                 1626 	LD	B,A
+   0696 2A                 1627 	LD	A,(HL+)	; C = y
+   0697 4F                 1628 	LD	C,A
+                           1629 
+   0698 CDrD8s05           1630 	CALL	.getpix
+                           1631 
+   069B C1                 1632 	POP	BC
+   069C C9                 1633 	RET
+                           1634 
+   069D                    1635 _color::			; Banked
+   069D F8 02              1636 	LDA	HL,.BANKOV(SP)	; Skip return address and registers
+   069F 2A                 1637 	LD	A,(HL+)	; A = Foreground
+   06A0 EAr00s00           1638 	LD	(.fg_colour),a
+   06A3 2A                 1639 	LD	A,(HL+)
+   06A4 EAr01s00           1640 	LD	(.bg_colour),a
+   06A7 7E                 1641 	LD	A,(HL)
+   06A8 EAr02s00           1642 	LD	(.draw_mode),a
+   06AB C9                 1643 	RET
+                           1644 
+   06AC                    1645 _circle::			; Banked
+   06AC C5                 1646 	PUSH    BC
+                           1647 
+   06AD FAr00s00           1648 	LD	A,(.mode)
+   06B0 FE 01              1649 	CP	#.G_MODE
+   06B2 C4r00s00           1650 	CALL	NZ,.gmode
+                           1651 
+   06B5 F8 04              1652 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   06B7 2A                 1653 	LD	A,(HL+)	; B = x
+   06B8 47                 1654 	LD	B,A
+   06B9 2A                 1655 	LD	A,(HL+)	; C = y
+   06BA 4F                 1656 	LD	C,A
+   06BB 2A                 1657 	LD	A,(HL+)	; D = Radius
+   06BC 57                 1658 	LD	D,A
+   06BD 7E                 1659 	LD	A,(HL)
+   06BE EAr03s00           1660 	LD	(.style),A
+                           1661 
+   06C1 CDr1Ds00           1662 	CALL	.circle
+                           1663 
+   06C4 C1                 1664 	POP	BC
+   06C5 C9                 1665 	RET
+                           1666 
+   06C6                    1667 _box::				; Banked
+   06C6 C5                 1668 	PUSH    BC
+                           1669 
+   06C7 FAr00s00           1670 	LD      A,(.mode)
+   06CA FE 01              1671 	CP      #.G_MODE
+   06CC C4r00s00           1672 	CALL	NZ,.gmode
+                           1673 
+   06CF F8 04              1674 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   06D1 2A                 1675 	LD	A,(HL+)	; B = x1
+   06D2 EAr04s00           1676 	LD	(.x_s),A
+   06D5 2A                 1677 	LD	A,(HL+)	; C = y1
+   06D6 EAr06s00           1678 	LD	(.y_s),A
+   06D9 2A                 1679 	LD	A,(HL+)	; D = x2
+   06DA EAr05s00           1680 	LD	(.x_s+1),A
+   06DD 2A                 1681 	LD	A,(HL+)	; E = y2
+   06DE EAr07s00           1682 	LD	(.y_s+1),A
+   06E1 7E                 1683 	LD	A,(HL)
+   06E2 EAr03s00           1684 	LD	(.style),A
+   06E5 CDrD2s01           1685 	CALL	.box
+   06E8 C1                 1686 	POP	BC
+   06E9 C9                 1687 	RET
+                           1688 
+   06EA                    1689 _line::				; Banked
+   06EA C5                 1690 	PUSH    BC
+                           1691 
+   06EB FAr00s00           1692 	LD      A,(.mode)
+   06EE FE 01              1693 	CP      #.G_MODE
+   06F0 C4r00s00           1694 	CALL	NZ,.gmode
+                           1695 
+   06F3 F8 04              1696 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   06F5 2A                 1697 	LD	A,(HL+)	; B = x1
+   06F6 47                 1698 	LD	B,A
+   06F7 2A                 1699 	LD	A,(HL+)	; C = y1
+   06F8 4F                 1700 	LD	C,A
+   06F9 2A                 1701 	LD	A,(HL+)	; D = x2
+   06FA 57                 1702 	LD	D,A
+   06FB 2A                 1703 	LD	A,(HL+)	; E = y2
+   06FC 5F                 1704 	LD	E,A
+                           1705 
+   06FD CDrA8s02           1706 	CALL	.line
+                           1707 
+   0700 C1                 1708 	POP     BC
+   0701 C9                 1709 	RET
+                           1710 
+   0702                    1711 _plot_point::			; Banked
+   0702 C5                 1712 	PUSH    BC
+                           1713 
+   0703 FAr00s00           1714 	LD	A,(.mode)
+   0706 FE 01              1715 	CP	#.G_MODE
+   0708 C4r00s00           1716 	CALL	NZ,.gmode
+                           1717 
+   070B F8 04              1718 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   070D 2A                 1719 	LD	A,(HL+)	; B = x
+   070E 47                 1720 	LD	B,A
+   070F 2A                 1721 	LD	A,(HL+)	; C = y
+   0710 4F                 1722 	LD	C,A
+                           1723 
+   0711 CDr39s05           1724 	CALL	.plot
+                           1725 
+   0714 C1                 1726 	POP	BC
+   0715 C9                 1727 	RET
+                           1728 
+                           1729 	;; Old, compatible version of plot()
+   0716                    1730 _plot::				; Banked
+   0716 C5                 1731 	PUSH    BC
+                           1732 
+   0717 FAr00s00           1733 	LD	A,(.mode)
+   071A FE 01              1734 	CP	#.G_MODE
+   071C C4r00s00           1735 	CALL	NZ,.gmode
+                           1736 
+   071F F8 04              1737 	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
+   0721 2A                 1738 	LD	A,(HL+)		; B = x
+   0722 47                 1739 	LD	B,A
+   0723 2A                 1740 	LD	A,(HL+)		; C = y
+   0724 4F                 1741 	LD	C,A
+   0725 2A                 1742 	LD	A,(HL+)		; colour
+   0726 EAr00s00           1743 	LD	(.fg_colour),A
+   0729 2A                 1744 	LD	A,(HL+)		; mode
+   072A EAr02s00           1745 	LD	(.draw_mode),A
+                           1746 	
+   072D CDr39s05           1747 	CALL	.plot
+                           1748 
+   0730 C1                 1749 	POP	BC
+   0731 C9                 1750 	RET
+                           1751 
+                           1752 	.area	_BASE
+   00BB                    1753 _switch_data::			; Non Banked as pointer
+   00BB C5                 1754 	PUSH    BC
+                           1755 
+   00BC FAr00s00           1756 	LD	A,(.mode)
+   00BF FE 01              1757 	CP	#.G_MODE
+   00C1 C4r00s00           1758 	CALL	NZ,.gmode
+                           1759 
+   00C4 F8 04              1760 	LDA	HL,4(SP)	; Skip return address and registers
+   00C6 2A                 1761 	LD	A,(HL+)	; B = x
+   00C7 47                 1762 	LD	B,A
+   00C8 2A                 1763 	LD	A,(HL+)	; C = y
+   00C9 4F                 1764 	LD	C,A
+   00CA 2A                 1765 	LD	A,(HL+)	; DE = src
+   00CB 5F                 1766 	LD	E,A
+   00CC 2A                 1767 	LD	A,(HL+)
+   00CD 57                 1768 	LD	D,A
+   00CE 2A                 1769 	LD	A,(HL+)	; HL = dst
+   00CF 66                 1770 	LD	H,(HL)
+   00D0 6F                 1771 	LD	L,A
+                           1772 
+   00D1 CDr84s00           1773 	CALL    .switch_data
+                           1774 
+   00D4 C1                 1775 	POP     BC
+   00D5 C9                 1776 	RET
+                           1777 
+                           1778 
+   00D6                    1779 _draw_image::			; Non banked as pointer
+   00D6 C5                 1780 	PUSH    BC
+                           1781 
+   00D7 FAr00s00           1782 	LD	A,(.mode)
+   00DA FE 01              1783 	CP	#.G_MODE
+   00DC C4r00s00           1784 	CALL	NZ,.gmode
+                           1785 
+   00DF F8 04              1786 	LDA	HL,4(SP)	; Skip return address and registers
+   00E1 2A                 1787 	LD	A,(HL+)	; HL = data
+   00E2 4F                 1788 	LD	C,A
+   00E3 46                 1789 	LD	B,(HL)
+                           1790 
+   00E4 CDr7As00           1791 	CALL	.draw_image
+                           1792 
+   00E7 C1                 1793 	POP	BC
+   00E8 C9                 1794 	RET
+                           1795 
+                           1796 	.area	_BASE
+   00E9                    1797 .y_table::
+   00E9 00 81 02 81 04 81  1798 	.word   0x8100,0x8102,0x8104,0x8106,0x8108,0x810A,0x810C,0x810E
+        06 81 08 81 0A 81
+        0C 81 0E 81
+   00F9 40 82 42 82 44 82  1799 	.word   0x8240,0x8242,0x8244,0x8246,0x8248,0x824A,0x824C,0x824E
+        46 82 48 82 4A 82
+        4C 82 4E 82
+   0109 80 83 82 83 84 83  1800 	.word   0x8380,0x8382,0x8384,0x8386,0x8388,0x838A,0x838C,0x838E
+        86 83 88 83 8A 83
+        8C 83 8E 83
+   0119 C0 84 C2 84 C4 84  1801 	.word   0x84C0,0x84C2,0x84C4,0x84C6,0x84C8,0x84CA,0x84CC,0x84CE
+        C6 84 C8 84 CA 84
+        CC 84 CE 84
+   0129 00 86 02 86 04 86  1802 	.word   0x8600,0x8602,0x8604,0x8606,0x8608,0x860A,0x860C,0x860E
+        06 86 08 86 0A 86
+        0C 86 0E 86
+   0139 40 87 42 87 44 87  1803 	.word   0x8740,0x8742,0x8744,0x8746,0x8748,0x874A,0x874C,0x874E
+        46 87 48 87 4A 87
+        4C 87 4E 87
+   0149 80 88 82 88 84 88  1804 	.word   0x8880,0x8882,0x8884,0x8886,0x8888,0x888A,0x888C,0x888E
+        86 88 88 88 8A 88
+        8C 88 8E 88
+   0159 C0 89 C2 89 C4 89  1805 	.word   0x89C0,0x89C2,0x89C4,0x89C6,0x89C8,0x89CA,0x89CC,0x89CE
+        C6 89 C8 89 CA 89
+        CC 89 CE 89
+   0169 00 8B 02 8B 04 8B  1806 	.word   0x8B00,0x8B02,0x8B04,0x8B06,0x8B08,0x8B0A,0x8B0C,0x8B0E
+        06 8B 08 8B 0A 8B
+        0C 8B 0E 8B
+   0179 40 8C 42 8C 44 8C  1807 	.word   0x8C40,0x8C42,0x8C44,0x8C46,0x8C48,0x8C4A,0x8C4C,0x8C4E
+        46 8C 48 8C 4A 8C
+        4C 8C 4E 8C
+   0189 80 8D 82 8D 84 8D  1808 	.word   0x8D80,0x8D82,0x8D84,0x8D86,0x8D88,0x8D8A,0x8D8C,0x8D8E
+        86 8D 88 8D 8A 8D
+        8C 8D 8E 8D
+   0199 C0 8E C2 8E C4 8E  1809 	.word   0x8EC0,0x8EC2,0x8EC4,0x8EC6,0x8EC8,0x8ECA,0x8ECC,0x8ECE
+        C6 8E C8 8E CA 8E
+        CC 8E CE 8E
+   01A9 00 90 02 90 04 90  1810 	.word   0x9000,0x9002,0x9004,0x9006,0x9008,0x900A,0x900C,0x900E
+        06 90 08 90 0A 90
+        0C 90 0E 90
+   01B9 40 91 42 91 44 91  1811 	.word   0x9140,0x9142,0x9144,0x9146,0x9148,0x914A,0x914C,0x914E
+        46 91 48 91 4A 91
+        4C 91 4E 91
+   01C9 80 92 82 92 84 92  1812 	.word   0x9280,0x9282,0x9284,0x9286,0x9288,0x928A,0x928C,0x928E
+        86 92 88 92 8A 92
+        8C 92 8E 92
+   01D9 C0 93 C2 93 C4 93  1813 	.word   0x93C0,0x93C2,0x93C4,0x93C6,0x93C8,0x93CA,0x93CC,0x93CE
+        C6 93 C8 93 CA 93
+        CC 93 CE 93
+   01E9 00 95 02 95 04 95  1814 	.word   0x9500,0x9502,0x9504,0x9506,0x9508,0x950A,0x950C,0x950E
+        06 95 08 95 0A 95
+        0C 95 0E 95
+   01F9 40 96 42 96 44 96  1815 	.word   0x9640,0x9642,0x9644,0x9646,0x9648,0x964A,0x964C,0x964E
+        46 96 48 96 4A 96
+        4C 96 4E 96

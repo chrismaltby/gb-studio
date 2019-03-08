@@ -1,0 +1,307 @@
+                              1 	.include        "global.s"
+                    0001      1 	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
+                              2         
+                              3 	;; Changed by astorgb.pl to 1
+                    0000      4 	__RGBDS__	= 0
+                              5 
+                              6 	
+                              7 	;;  Screen dimensions 
+                    0013      8 	.MAXCURSPOSX	= 0x13	; In tiles
+                    0011      9 	.MAXCURSPOSY	= 0x11
+                             10 
+                    0080     11 	.START		= 0x80
+                    0040     12 	.SELECT		= 0x40
+                    0020     13 	.B		= 0x20
+                    0010     14 	.A		= 0x10
+                    0008     15 	.DOWN		= 0x08
+                    0004     16 	.UP		= 0x04
+                    0002     17 	.LEFT		= 0x02
+                    0001     18 	.RIGHT		= 0x01
+                             19 
+                    00A0     20 	.SCREENWIDTH	= 0xA0
+                    0090     21 	.SCREENHEIGHT	= 0x90
+                    0007     22 	.MINWNDPOSX	= 0x07
+                    0000     23 	.MINWNDPOSY	= 0x00
+                    00A6     24 	.MAXWNDPOSX	= 0xA6
+                    008F     25 	.MAXWNDPOSY	= 0x8F
+                             26 
+                    0001     27 	.VBL_IFLAG	= 0x01
+                    0002     28 	.LCD_IFLAG	= 0x02
+                    0004     29 	.TIM_IFLAG	= 0x04
+                    0008     30 	.SIO_IFLAG	= 0x08
+                    0010     31 	.JOY_IFLAG	= 0x10
+                             32  
+                    0000     33 	.P1		= 0x00	; Joystick: 1.1.P15.P14.P13.P12.P11.P10
+                    0001     34 	.SB		= 0x01	; Serial IO data buffer
+                    0002     35 	.SC		= 0x02	; Serial IO control register
+                    0004     36 	.DIV		= 0x04	; Divider register
+                    0005     37 	.TIMA		= 0x05	; Timer counter
+                    0006     38 	.TMA		= 0x06	; Timer modulo
+                    0007     39 	.TAC		= 0x07	; Timer control
+                    000F     40 	.IF		= 0x0F	; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
+                    0010     41 	.NR10		= 0x10	; Sound register
+                    0011     42 	.NR11		= 0x11	; Sound register
+                    0012     43 	.NR12		= 0x12	; Sound register
+                    0013     44 	.NR13		= 0x13	; Sound register
+                    0014     45 	.NR14		= 0x14	; Sound register
+                    0016     46 	.NR21		= 0x16	; Sound register
+                    0017     47 	.NR22		= 0x17	; Sound register
+                    0018     48 	.NR23		= 0x18	; Sound register
+                    0019     49 	.NR24		= 0x19	; Sound register
+                    001A     50 	.NR30		= 0x1A	; Sound register
+                    001B     51 	.NR31		= 0x1B	; Sound register
+                    001C     52 	.NR32		= 0x1C	; Sound register
+                    001D     53 	.NR33		= 0x1D	; Sound register
+                    001E     54 	.NR34		= 0x1E	; Sound register
+                    0020     55 	.NR41		= 0x20	; Sound register
+                    0021     56 	.NR42		= 0x21	; Sound register
+                    0022     57 	.NR43		= 0x22	; Sound register
+                    0023     58 	.NR44		= 0x23	; Sound register
+                    0024     59 	.NR50		= 0x24	; Sound register
+                    0025     60 	.NR51		= 0x25	; Sound register
+                    0026     61 	.NR52		= 0x26	; Sound register
+                    0040     62 	.LCDC		= 0x40	; LCD control
+                    0041     63 	.STAT		= 0x41	; LCD status
+                    0042     64 	.SCY		= 0x42	; Scroll Y
+                    0043     65 	.SCX		= 0x43	; Scroll X
+                    0044     66 	.LY		= 0x44	; LCDC Y-coordinate
+                    0045     67 	.LYC		= 0x45	; LY compare
+                    0046     68 	.DMA		= 0x46	; DMA transfer
+                    0047     69 	.BGP		= 0x47	; BG palette data
+                    0048     70 	.OBP0		= 0x48	; OBJ palette 0 data
+                    0049     71 	.OBP1		= 0x49	; OBJ palette 1 data
+                    004A     72 	.WY		= 0x4A	; Window Y coordinate
+                    004B     73 	.WX		= 0x4B	; Window X coordinate
+                    004D     74 	.KEY1		= 0x4D	; CPU speed
+                    004F     75 	.VBK		= 0x4F	; VRAM bank
+                    0051     76 	.HDMA1		= 0x51	; DMA control 1
+                    0052     77 	.HDMA2		= 0x52	; DMA control 2
+                    0053     78 	.HDMA3		= 0x53	; DMA control 3
+                    0054     79 	.HDMA4		= 0x54	; DMA control 4
+                    0055     80 	.HDMA5		= 0x55	; DMA control 5
+                    0056     81 	.RP		= 0x56	; IR port
+                    0068     82 	.BCPS		= 0x68	; BG color palette specification
+                    0069     83 	.BCPD		= 0x69	; BG color palette data
+                    006A     84 	.OCPS		= 0x6A	; OBJ color palette specification
+                    006B     85 	.OCPD		= 0x6B	; OBJ color palette data
+                    0070     86 	.SVBK		= 0x70	; WRAM bank
+                    00FF     87 	.IE		= 0xFF	; Interrupt enable
+                             88 
+                    0001     89 	.G_MODE		= 0x01	; Graphic mode
+                    0002     90 	.T_MODE		= 0x02	; Text mode (bit 2)
+                    0002     91 	.T_MODE_OUT	= 0x02	; Text mode output only
+                    0003     92 	.T_MODE_INOUT	= 0x03	; Text mode with input
+                    0004     93 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
+                    0008     94 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
+                             95 
+                    2000     96 	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
+                             97 	
+                             98 	;; Status codes for IO
+                    0000     99 	.IO_IDLE	= 0x00
+                    0001    100 	.IO_SENDING	= 0x01
+                    0002    101 	.IO_RECEIVING	= 0x02
+                    0004    102 	.IO_ERROR	= 0x04
+                            103 
+                            104 	;; Type of IO data
+                    0066    105 	.DT_IDLE	= 0x66
+                    0055    106 	.DT_RECEIVING	= 0x55
+                            107 
+                            108 	;; Table of routines for modes
+                    01E0    109 	.MODE_TABLE	= 0x01E0
+                            110 
+                            111 	;; C related
+                            112 	;; Overheap of a banked call.  Used for parameters
+                            113 	;;  = ret + real ret + bank
+                            114 
+                    0001    115 	.if .NEAR_CALLS
+                    0002    116 	.BANKOV		= 2
+                            117 
+                            118 	.else
+                            119 	.BANKOV		= 6
+                            120 
+                            121 	.endif
+                            122 	
+                            123 	.globl	banked_call
+                            124 	.globl	banked_ret
+                            125 	
+                            126 	;; Global variables
+                            127 	.globl	.mode
+                            128 
+                            129 	.globl	__cpu
+                            130 
+                            131 	.globl	__io_out
+                            132 	.globl	__io_in
+                            133 	.globl	__io_status
+                            134 
+                            135 	;; Global routines
+                            136 	.globl	.set_mode
+                            137 
+                            138 	.globl	.reset
+                            139 
+                            140 	.globl	.display_off
+                            141 
+                            142 	.globl	.wait_vbl_done
+                            143 
+                            144 	;; Interrupt routines 
+                            145 	.globl	.add_VBL
+                            146 	.globl	.add_LCD
+                            147 	.globl	.add_TIM
+                            148 	.globl	.add_SIO
+                            149 	.globl	.add_JOY
+                            150 
+                            151 	;; Symbols defined at link time
+                            152 	.globl	.STACK
+                            153 	.globl	.OAM
+                            154 	.globl	.refresh_OAM
+                            155 
+                            156 	;; Initialization routine   
+                            157 	.globl	.init
+                            158 
+                            159 	;; Main user routine	
+                            160 	.globl	_main
+                              2 
+                    0000      3 	.PAL_01		= 0x00
+                    0001      4 	.PAL_23		= 0x01
+                    0002      5 	.PAL_03		= 0x02
+                    0003      6 	.PAL_12		= 0x03
+                    0004      7 	.ATTR_BLK	= 0x04
+                    0005      8 	.ATTR_LIN	= 0x05
+                    0006      9 	.ATTR_DIV	= 0x06
+                    0007     10 	.ATTR_CHR	= 0x07
+                    0008     11 	.SOUND		= 0x08
+                    0009     12 	.SOU_TRN	= 0x09
+                    000A     13 	.PAL_SET	= 0x0A
+                    000B     14 	.PAL_TRN	= 0x0B
+                    000C     15 	.ATRC_EN	= 0x0C
+                    000D     16 	.TEST_EN	= 0x0D
+                    000E     17 	.ICON_EN	= 0x0E
+                    000F     18 	.DATA_SND	= 0x0F
+                    0010     19 	.DATA_TRN	= 0x10
+                    0011     20 	.MLT_REQ	= 0x11
+                    0012     21 	.JUMP		= 0x12
+                    0013     22 	.CHR_TRN	= 0x13
+                    0014     23 	.PCT_TRN	= 0x14
+                    0015     24 	.ATTR_TRN	= 0x15
+                    0016     25 	.ATTR_SET	= 0x16
+                    0017     26 	.MASK_EN	= 0x17
+                    0018     27 	.OBJ_TRN	= 0x18
+                             28 
+                             29 	.area   _CODE
+                             30 
+                             31 	;; Check if running on SGB
+                             32 	;;   Set A to 0xFF when running on SGB
+                             33 	;;   Clear A when running on DMG
+   0000                      34 .sgb_check::
+   0000                      35 _sgb_check::			; Banked
+   0000 21r9Es00             36 	LD	HL,#.MLT_REQ_2
+   0003 CDr4Ds00             37 	CALL	.sgb_transfer
+   0006 CDr82s00             38 	CALL	.wait4
+   0009 F0 00                39 	LDH	A,(.P1)
+   000B E6 03                40 	AND	#0x03
+   000D FE 03                41 	CP	#0x03
+   000F 20 30                42 	JR	NZ,.sgb_mode
+                             43 
+   0011 3E 20                44 	LD	A,#0x20		; Controller read (dummy)
+   0013 E0 00                45 	LDH	(.P1),A
+   0015 F0 00                46 	LDH	A,(.P1)
+   0017 F0 00                47 	LDH	A,(.P1)
+   0019 2F                   48 	CPL
+   001A E6 0F                49 	AND	#0x0F
+   001C CB 37                50 	SWAP	A
+   001E 47                   51 	LD	B,A
+   001F 3E 30                52 	LD	A,#0x30
+   0021 E0 00                53 	LDH	(.P1),A
+   0023 3E 10                54 	LD	A,#0x10
+   0025 E0 00                55 	LDH	(.P1),A
+   0027 F0 00                56 	LDH	A,(.P1)
+   0029 F0 00                57 	LDH	A,(.P1)
+   002B F0 00                58 	LDH	A,(.P1)
+   002D F0 00                59 	LDH	A,(.P1)
+   002F F0 00                60 	LDH	A,(.P1)
+   0031 F0 00                61 	LDH	A,(.P1)
+   0033 3E 30                62 	LD	A,#0x30
+   0035 E0 00                63 	LDH	(.P1),A
+   0037 F0 00                64 	LDH	 A,(.P1)
+   0039 E6 03                65 	AND	#0x03
+   003B FE 03                66 	CP	#0x03
+   003D 20 02                67 	JR	NZ,.sgb_mode
+                             68 
+   003F                      69 .dmg_mode:
+                             70 ;	LD	HL,#.MLT_REQ_1
+                             71 ;	CALL	.sgb_transfer
+                             72 ;	CALL	.wait4
+   003F AF                   73 	XOR	A
+   0040 C9                   74 	RET
+                             75 
+   0041                      76 .sgb_mode:
+   0041 21r8Es00             77 	LD	HL,#.MLT_REQ_1
+   0044 CDr4Ds00             78 	CALL	.sgb_transfer
+   0047 CDr82s00             79 	CALL	.wait4
+   004A 3E FF                80 	LD	A,#0xFF
+   004C C9                   81 	RET
+                             82 
+   004D                      83 .sgb_transfer::
+   004D 7E                   84 	LD	A,(HL)		; Top of command data
+   004E E6 03                85 	AND	#0x03
+   0050 C8                   86 	RET	Z
+   0051 47                   87 	LD	B,A		; Number of translated packet
+   0052 0E 00                88 	LD	C,#0x00		; Lower part of #FF00
+   0054                      89 1$:
+   0054 C5                   90 	PUSH	BC
+   0055 AF                   91 	XOR	A		; Start to write
+   0056 E2                   92 	LDH	(C),A
+   0057 3E 30                93 	LD	A,#0x30
+   0059 E2                   94 	LDH	(C),A
+   005A 06 10                95 	LD	B,#0x10		; Set counter to transfer 16 byte
+   005C 1E 08                96 2$:	LD	E,#0x08		; Set counter to transfer 8 bit
+   005E 2A                   97 	LD	A,(HL+)
+   005F 57                   98 	LD	D,A
+                             99 
+   0060                     100 3$:
+   0060 CB 42               101 	BIT	0,D
+   0062 3E 10               102 	LD	A,#0x10		; P14 = high, P15 = low  (output "1")
+   0064 20 02               103 	JR	NZ,4$
+   0066 3E 20               104 	LD	A,#0x20		; P14 = low,  P15 = high (output "0")
+   0068                     105 4$:
+   0068 E2                  106 	LDH	(C),A
+   0069 3E 30               107 	LD	A,#0x30		; P14 = high, P15 = high
+   006B E2                  108 	LDH	(C),A
+   006C CB 1A               109 	RR	D		; Shift 1 bit to right
+   006E 1D                  110 	DEC	E
+   006F 20 EF               111 	JR	NZ,3$
+                            112 
+   0071 05                  113 	DEC	B
+   0072 20 E8               114 	JR	NZ,2$
+   0074 3E 20               115 	LD	A,#0x20		; 129th bit "0" output
+   0076 E2                  116 	LDH	(C),A
+   0077 3E 30               117 	LD	A,#0x30
+   0079 E2                  118 	LDH	(C),A
+                            119 
+   007A C1                  120 	POP	BC
+   007B 05                  121 	DEC	B
+   007C C8                  122 	RET	Z
+   007D CDr82s00            123 	CALL	.wait4		; Software wait for about 4 frames
+   0080 18 D2               124 	JR	1$
+                            125 
+   0082                     126 .wait4:
+   0082 11 58 1B            127 	LD	DE,#7000
+   0085                     128 1$:
+   0085 00                  129 	NOP			; 1 +
+   0086 00                  130 	NOP			; 1 +
+   0087 00                  131 	NOP			; 1 +
+   0088 1B                  132 	DEC	DE		; 2 +
+   0089 7A                  133 	LD	A,D		; 1 +
+   008A B3                  134 	OR	E		; 1 +
+   008B 20 F8               135 	JR	NZ,1$		; 3 = 10 cycles
+   008D C9                  136 	RET
+                            137 
+   008E                     138 .MLT_REQ_1:
+   008E 89 00 00 00 00 00   139 	.byte	.MLT_REQ*8|1,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+        00 00
+   0096 00 00 00 00 00 00   140 	.byte	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+        00 00
+   009E                     141 .MLT_REQ_2:
+   009E 89 01 00 00 00 00   142 	.byte	.MLT_REQ*8|1,0x01,0x00,0x00,0x00,0x00,0x00,0x00
+        00 00
+   00A6 00 00 00 00 00 00   143 	.byte	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+        00 00

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Pragmas</TITLE>
+ <LINK HREF="SDCCUdoc-20.html" REL=next>
+ <LINK HREF="SDCCUdoc-18.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc19" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-20.html">Next</A>
+<A HREF="SDCCUdoc-18.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc19">Contents</A>
+<HR>
+<H2><A NAME="Pragmaa"></A> <A NAME="s19">19. Pragmas</A> </H2>
+
+<P>SDCC supports the following #pragma directives. This directives are
+applicable only at a function level.
+<P>
+<UL>
+<LI><B>SAVE</B>
+<A NAME="pragma save"></A>  - this will save all the current options .</LI>
+<LI><B>RESTORE </B>
+<A NAME="pragma restore"></A> - will restore the saved options from the last save. Note that
+SAVES &amp; RESTOREs cannot be nested. SDCC uses the same buffer to save the
+options each time a SAVE is called.</LI>
+<LI><B>NOGCSE</B>
+<A NAME="pragma nogcse"></A>  - will stop global subexpression elimination.</LI>
+<LI><B>NOINDUCTION</B> 
+<A NAME="pragma noinduction"></A> - will stop loop induction optimizations .</LI>
+<LI><B>NOJTBOUND</B> 
+<A NAME="pragma nojtbound"></A> - will not generate code for boundary value checking , when switch
+statements are turned into jump-tables.</LI>
+<LI><B>NOOVERLAY </B>
+<A NAME="pragma nooverlay"></A> - the compiler will not overlay the parameters and local variables
+of a function.</LI>
+<LI><B>NOLOOPREVERSE</B> 
+<A NAME="pragma noloopreverse"></A> - Will not do loop reversal optimization</LI>
+<LI><B>EXCLUDE NONE | {acc[,b[,dpl[,dph]]]</B>
+<A NAME="pragma exclude"></A> 
+- The exclude pragma disables generation of pair of push/pop instruction in
+ISR function (using interrupt keyword). The directive should be placed immediately
+before the ISR function definition and it affects ALL ISR functions following
+it. To enable the normal register saving for ISR functions use "#pragma
+EXCLUDE none"</LI>
+<LI><B>CALLEE-SAVES function1[,function2[,function3...]]</B>
+<A NAME="pragma callee-saves"></A>  -
+The compiler by default uses a caller saves convention for register saving
+across function calls, however this can cause unneccessary register pushing
+&amp; popping when calling small functions from larger functions. This option
+can be used to switch the register saving convention for the function names
+specified. The compiler will not save registers when calling these functions,
+extra code will be generated at the entry &amp; exit for these functions to
+save &amp; restore the registers used by these functions, this can SUBSTANTIALLY
+reduce code &amp; improve run time performance of the generated code. In future
+the compiler (with interprocedural analysis) will be able to determine the
+appropriate scheme to use for each function call. If --callee-saves
+<A HREF="SDCCUdoc-4.html#--callee-saves"></A> command
+line option is used, the function names specified in #pragma CALLEE-SAVES
+is appended to the list of functions specified inthe command line.</LI>
+</UL>
+<P>The pragma's are intended to be used to turn-off certain optimizations
+which might cause the compiler to generate extra stack / data space to store
+compiler generated temporary variables. This usually happens in large functions.
+Pragma directives should be used as shown in the following example, they are
+used to control options &amp; optimizations for a given function; pragmas should
+be placed before and/or after a function, placing pragma's inside a function
+body could have unpredictable results.
+<P>
+<PRE>
+eg#pragma SAVE   /* save the current settings */ 
+#pragma NOGCSE
+ /* turnoff global subexpression elimination */ 
+#pragma NOINDUCTION /*
+ turn off induction optimizations */ 
+int foo () 
+{ 
+    ... 
+    /* large
+ code */ 
+    ... 
+} 
+#pragma RESTORE /* turn the optimizations back
+ on */
+ 
+</PRE>
+<P>The compiler will generate a warning message when extra space is allocated.
+It is strongly recommended that the SAVE and RESTORE pragma's be used when
+changing options for a function.
+<HR>
+<A HREF="SDCCUdoc-20.html">Next</A>
+<A HREF="SDCCUdoc-18.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc19">Contents</A>
+</BODY>
+</HTML>

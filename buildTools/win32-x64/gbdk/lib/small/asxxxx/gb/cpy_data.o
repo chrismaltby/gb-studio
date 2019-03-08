@@ -1,0 +1,34 @@
+XL
+H 2 areas 18 global symbols
+S .add_TIM Ref0000
+S .add_SIO Ref0000
+S _main Ref0000
+S .STACK Ref0000
+S __cpu Ref0000
+S .add_JOY Ref0000
+S .wait_vbl_done Ref0000
+S __io_in Ref0000
+S __io_out Ref0000
+S banked_ret Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S __io_status Ref0000
+S banked_call Ref0000
+S .init Ref0000
+S .add_LCD Ref0000
+S .OAM Ref0000
+S .refresh_OAM Ref0000
+S .add_VBL Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 0 flags 0
+A _BASE size 22 flags 0
+S _get_data Def000F
+S _set_data Def000F
+S .copy_vram Def0000
+T 00 00 F0 41 E6 02 20 FA 0A 22 03 1B 7A B3 20 F2
+R 00 00 01 00
+T 0E 00 C9 C5 F8 09 56 2B 5E 2B 46 2B 4E 2B 3A 6E
+R 00 00 01 00
+T 1C 00 67 CD 00 00 C1 C9
+R 00 00 01 00 00 04 01 00

@@ -1,0 +1,724 @@
+                              1 
+                              2 	.include	"global.s"
+                    0001      1 	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
+                              2         
+                              3 	;; Changed by astorgb.pl to 1
+                    0000      4 	__RGBDS__	= 0
+                              5 
+                              6 	
+                              7 	;;  Screen dimensions 
+                    0013      8 	.MAXCURSPOSX	= 0x13	; In tiles
+                    0011      9 	.MAXCURSPOSY	= 0x11
+                             10 
+                    0080     11 	.START		= 0x80
+                    0040     12 	.SELECT		= 0x40
+                    0020     13 	.B		= 0x20
+                    0010     14 	.A		= 0x10
+                    0008     15 	.DOWN		= 0x08
+                    0004     16 	.UP		= 0x04
+                    0002     17 	.LEFT		= 0x02
+                    0001     18 	.RIGHT		= 0x01
+                             19 
+                    00A0     20 	.SCREENWIDTH	= 0xA0
+                    0090     21 	.SCREENHEIGHT	= 0x90
+                    0007     22 	.MINWNDPOSX	= 0x07
+                    0000     23 	.MINWNDPOSY	= 0x00
+                    00A6     24 	.MAXWNDPOSX	= 0xA6
+                    008F     25 	.MAXWNDPOSY	= 0x8F
+                             26 
+                    0001     27 	.VBL_IFLAG	= 0x01
+                    0002     28 	.LCD_IFLAG	= 0x02
+                    0004     29 	.TIM_IFLAG	= 0x04
+                    0008     30 	.SIO_IFLAG	= 0x08
+                    0010     31 	.JOY_IFLAG	= 0x10
+                             32  
+                    0000     33 	.P1		= 0x00	; Joystick: 1.1.P15.P14.P13.P12.P11.P10
+                    0001     34 	.SB		= 0x01	; Serial IO data buffer
+                    0002     35 	.SC		= 0x02	; Serial IO control register
+                    0004     36 	.DIV		= 0x04	; Divider register
+                    0005     37 	.TIMA		= 0x05	; Timer counter
+                    0006     38 	.TMA		= 0x06	; Timer modulo
+                    0007     39 	.TAC		= 0x07	; Timer control
+                    000F     40 	.IF		= 0x0F	; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
+                    0010     41 	.NR10		= 0x10	; Sound register
+                    0011     42 	.NR11		= 0x11	; Sound register
+                    0012     43 	.NR12		= 0x12	; Sound register
+                    0013     44 	.NR13		= 0x13	; Sound register
+                    0014     45 	.NR14		= 0x14	; Sound register
+                    0016     46 	.NR21		= 0x16	; Sound register
+                    0017     47 	.NR22		= 0x17	; Sound register
+                    0018     48 	.NR23		= 0x18	; Sound register
+                    0019     49 	.NR24		= 0x19	; Sound register
+                    001A     50 	.NR30		= 0x1A	; Sound register
+                    001B     51 	.NR31		= 0x1B	; Sound register
+                    001C     52 	.NR32		= 0x1C	; Sound register
+                    001D     53 	.NR33		= 0x1D	; Sound register
+                    001E     54 	.NR34		= 0x1E	; Sound register
+                    0020     55 	.NR41		= 0x20	; Sound register
+                    0021     56 	.NR42		= 0x21	; Sound register
+                    0022     57 	.NR43		= 0x22	; Sound register
+                    0023     58 	.NR44		= 0x23	; Sound register
+                    0024     59 	.NR50		= 0x24	; Sound register
+                    0025     60 	.NR51		= 0x25	; Sound register
+                    0026     61 	.NR52		= 0x26	; Sound register
+                    0040     62 	.LCDC		= 0x40	; LCD control
+                    0041     63 	.STAT		= 0x41	; LCD status
+                    0042     64 	.SCY		= 0x42	; Scroll Y
+                    0043     65 	.SCX		= 0x43	; Scroll X
+                    0044     66 	.LY		= 0x44	; LCDC Y-coordinate
+                    0045     67 	.LYC		= 0x45	; LY compare
+                    0046     68 	.DMA		= 0x46	; DMA transfer
+                    0047     69 	.BGP		= 0x47	; BG palette data
+                    0048     70 	.OBP0		= 0x48	; OBJ palette 0 data
+                    0049     71 	.OBP1		= 0x49	; OBJ palette 1 data
+                    004A     72 	.WY		= 0x4A	; Window Y coordinate
+                    004B     73 	.WX		= 0x4B	; Window X coordinate
+                    004D     74 	.KEY1		= 0x4D	; CPU speed
+                    004F     75 	.VBK		= 0x4F	; VRAM bank
+                    0051     76 	.HDMA1		= 0x51	; DMA control 1
+                    0052     77 	.HDMA2		= 0x52	; DMA control 2
+                    0053     78 	.HDMA3		= 0x53	; DMA control 3
+                    0054     79 	.HDMA4		= 0x54	; DMA control 4
+                    0055     80 	.HDMA5		= 0x55	; DMA control 5
+                    0056     81 	.RP		= 0x56	; IR port
+                    0068     82 	.BCPS		= 0x68	; BG color palette specification
+                    0069     83 	.BCPD		= 0x69	; BG color palette data
+                    006A     84 	.OCPS		= 0x6A	; OBJ color palette specification
+                    006B     85 	.OCPD		= 0x6B	; OBJ color palette data
+                    0070     86 	.SVBK		= 0x70	; WRAM bank
+                    00FF     87 	.IE		= 0xFF	; Interrupt enable
+                             88 
+                    0001     89 	.G_MODE		= 0x01	; Graphic mode
+                    0002     90 	.T_MODE		= 0x02	; Text mode (bit 2)
+                    0002     91 	.T_MODE_OUT	= 0x02	; Text mode output only
+                    0003     92 	.T_MODE_INOUT	= 0x03	; Text mode with input
+                    0004     93 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
+                    0008     94 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
+                             95 
+                    2000     96 	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
+                             97 	
+                             98 	;; Status codes for IO
+                    0000     99 	.IO_IDLE	= 0x00
+                    0001    100 	.IO_SENDING	= 0x01
+                    0002    101 	.IO_RECEIVING	= 0x02
+                    0004    102 	.IO_ERROR	= 0x04
+                            103 
+                            104 	;; Type of IO data
+                    0066    105 	.DT_IDLE	= 0x66
+                    0055    106 	.DT_RECEIVING	= 0x55
+                            107 
+                            108 	;; Table of routines for modes
+                    01E0    109 	.MODE_TABLE	= 0x01E0
+                            110 
+                            111 	;; C related
+                            112 	;; Overheap of a banked call.  Used for parameters
+                            113 	;;  = ret + real ret + bank
+                            114 
+                    0001    115 	.if .NEAR_CALLS
+                    0002    116 	.BANKOV		= 2
+                            117 
+                            118 	.else
+                            119 	.BANKOV		= 6
+                            120 
+                            121 	.endif
+                            122 	
+                            123 	.globl	banked_call
+                            124 	.globl	banked_ret
+                            125 	
+                            126 	;; Global variables
+                            127 	.globl	.mode
+                            128 
+                            129 	.globl	__cpu
+                            130 
+                            131 	.globl	__io_out
+                            132 	.globl	__io_in
+                            133 	.globl	__io_status
+                            134 
+                            135 	;; Global routines
+                            136 	.globl	.set_mode
+                            137 
+                            138 	.globl	.reset
+                            139 
+                            140 	.globl	.display_off
+                            141 
+                            142 	.globl	.wait_vbl_done
+                            143 
+                            144 	;; Interrupt routines 
+                            145 	.globl	.add_VBL
+                            146 	.globl	.add_LCD
+                            147 	.globl	.add_TIM
+                            148 	.globl	.add_SIO
+                            149 	.globl	.add_JOY
+                            150 
+                            151 	;; Symbols defined at link time
+                            152 	.globl	.STACK
+                            153 	.globl	.OAM
+                            154 	.globl	.refresh_OAM
+                            155 
+                            156 	;; Initialization routine   
+                            157 	.globl	.init
+                            158 
+                            159 	;; Main user routine	
+                            160 	.globl	_main
+                              3 	; INCLUDE	"wait_hbl.mh"
+                              4 	.globl	.cr_curs
+                              5 	.globl	.adv_curs
+                              6 	.globl	.cury,.curx
+                              7 	.globl	.display_off
+                    0003      8 	sfont_handle_sizeof	=	3
+                    0001      9 	sfont_handle_font	=	1
+                    0000     10 	sfont_handle_first_tile	=	0
+                    0000     11 	FONT_256ENCODING	=	0
+                    0001     12 	FONT_128ENCODING	=	1
+                    0002     13 	FONT_NOENCODING	=	2
+                    0002     14 	FONT_BCOMPRESSED	=	2
+                    000A     15 	.CR	=  0x0A
+                    0000     16 	.SPACE	=	0x00
+                    0006     17 	.MAX_FONTS	=  6
+                             18 	.area	_HEADER(ABS)
+   01E8                      19 	.org	.MODE_TABLE+4*.T_MODE
+   01E8 C3r85s02             20 	JP	.tmode
+                             21 	.module	font.ms
+                             22 	.globl	.fg_colour
+                             23 	.globl	.bg_colour
+                             24 	.area	_BSS
+   0000                      25 font_current::
+   0000                      26 	.ds	sfont_handle_sizeof
+   0003                      27 font_first_free_tile::
+   0003                      28 	.ds	1
+   0004                      29 font_table::
+   0004                      30 	.ds	sfont_handle_sizeof*.MAX_FONTS
+                             31 	.area	_BASE
+   0000                      32 font_copy_uncompressed::
+   0000 7A                   33 	ld	a,d
+   0001 B3                   34 	or	e
+   0002 C8                   35 	ret	z
+   0003 7C                   36 	ld	a,h
+   0004 FE 98                37 	cp	#0x98
+   0006 38 03                38 	jr	c,4$
+   0008 D6 10                39 	sub	#0x98-0x88
+   000A 67                   40 	ld	h,a
+   000B                      41 4$:
+   000B AF                   42 	xor	a
+   000C BB                   43 	cp	e
+   000D 20 01                44 	jr	nz,1$
+   000F 15                   45 	dec	d
+   0010                      46 1$:
+   0010 F0 41                47 	ldh	a,(.STAT)
+   0012 CB 4F                48 	bit	1,a
+   0014 20 FA                49 	jr	nz,#.-4
+   0016 0A                   50 	ld	a,(bc)
+   0017 22                   51 	ld	(hl+),a
+   0018 03                   52 	inc	bc
+   0019 F0 41                53 	ldh	a,(.STAT)
+   001B CB 4F                54 	bit	1,a
+   001D 20 FA                55 	jr	nz,#.-4
+   001F 0A                   56 	ld	a,(bc)
+   0020 77                   57 	ld	(hl),a
+   0021 03                   58 	inc	bc
+   0022 2C                   59 	inc	l
+   0023 20 08                60 	jr	nz,2$
+   0025 24                   61 	inc	h
+   0026 7C                   62 	ld	a,h
+   0027 FE 98                63 	cp	#0x98
+   0029 20 02                64 	jr	nz,2$
+   002B 26 88                65 	ld	h,#0x88
+   002D                      66 2$:
+   002D 1D                   67 	dec	e
+   002E 20 E0                68 	jr	nz,1$
+   0030 15                   69 	dec	d
+   0031 CB 7A                70 	bit	7,d
+   0033 28 DB                71 	jr	z,1$
+   0035 C9                   72 	ret	
+   0036                      73 font_copy_compressed::
+   0036 7A                   74 	ld	a,d
+   0037 B3                   75 	or	e
+   0038 C8                   76 	ret	z
+   0039 7C                   77 	ld	a,h
+   003A FE 98                78 	cp	#0x98
+   003C 38 03                79 	jr	c,font_copy_compressed_loop
+   003E D6 10                80 	sub	#0x98-0x88
+   0040 67                   81 	ld	h,a
+   0041                      82 font_copy_compressed_loop:
+   0041 D5                   83 	push	de
+   0042 0A                   84 	ld	a,(bc)
+   0043 5F                   85 	ld	e,a
+   0044 03                   86 	inc	bc
+   0045 C5                   87 	push	bc
+   0046 01 00 00             88 	ld	bc,#0
+   0049 FAr00s00             89 	ld	a,(.bg_colour)
+   004C CB 47                90 	bit	0,a
+   004E 28 02                91 	jr	z,font_copy_compressed_bg_grey1
+   0050 06 FF                92 	ld	b,#0xFF
+   0052                      93 font_copy_compressed_bg_grey1:
+   0052 CB 4F                94 	bit	1,a
+   0054 28 02                95 	jr	z,font_copy_compressed_bg_grey2
+   0056 0E FF                96 	ld	c,#0xFF
+   0058                      97 font_copy_compressed_bg_grey2:
+   0058 57                   98 	ld	d,a
+   0059 FAr00s00             99 	ld	a,(.fg_colour)
+   005C AA                  100 	xor	d
+   005D 57                  101 	ld	d,a
+   005E CB 42               102 	bit	0,d
+   0060 28 03               103 	jr	z,font_copy_compressed_grey1
+   0062 7B                  104 	ld	a,e
+   0063 A8                  105 	xor	b
+   0064 47                  106 	ld	b,a
+   0065                     107 font_copy_compressed_grey1:
+   0065 CB 4A               108 	bit	1,d
+   0067 28 03               109 	jr	z,font_copy_compressed_grey2
+   0069 7B                  110 	ld	a,e
+   006A A9                  111 	xor	c
+   006B 4F                  112 	ld	c,a
+   006C                     113 font_copy_compressed_grey2:
+   006C F0 41               114 	ldh	a,(.STAT)
+   006E CB 4F               115 	bit	1,a
+   0070 20 FA               116 	jr	nz,#.-4
+   0072 70                  117 	ld	(hl),b
+   0073 23                  118 	inc	hl
+   0074 F0 41               119 	ldh	a,(.STAT)
+   0076 CB 4F               120 	bit	1,a
+   0078 20 FA               121 	jr	nz,#.-4
+   007A 71                  122 	ld	(hl),c
+   007B 23                  123 	inc	hl
+   007C 7C                  124 	ld	a,h
+   007D FE 98               125 	cp	#0x98
+   007F 20 02               126 	jr	nz,1$
+   0081 26 88               127 	ld	h,#0x88
+   0083                     128 1$:
+   0083 C1                  129 	pop	bc
+   0084 D1                  130 	pop	de
+   0085 1B                  131 	dec	de
+   0086 7A                  132 	ld	a,d
+   0087 B3                  133 	or	e
+   0088 20 B7               134 	jr	nz,font_copy_compressed_loop
+   008A C9                  135 	ret	
+   008B                     136 font_load::
+   008B CDr00s00            137 	call	.display_off
+   008E E5                  138 	push	hl
+   008F 21r05s00            139 	ld	hl,#font_table+sfont_handle_font
+   0092 06 06               140 	ld	b,#.MAX_FONTS
+   0094                     141 font_load_find_slot:
+   0094 7E                  142 	ld	a,(hl)	
+   0095 23                  143 	inc	hl
+   0096 B6                  144 	or	(hl)
+   0097 FE 00               145 	cp	#0
+   0099 28 0B               146 	jr	z,font_load_found
+   009B 23                  147 	inc	hl
+   009C 23                  148 	inc	hl
+   009D 05                  149 	dec	b
+   009E 20 F4               150 	jr	nz,font_load_find_slot
+   00A0 E1                  151 	pop	hl
+   00A1 21 00 00            152 	ld	hl,#0
+   00A4 18 24               153 	jr	font_load_exit
+   00A6                     154 font_load_found:
+   00A6 D1                  155 	pop	de
+   00A7 72                  156 	ld	(hl),d
+   00A8 2B                  157 	dec	hl
+   00A9 73                  158 	ld	(hl),e
+   00AA FAr03s00            159 	ld	a,(font_first_free_tile)
+   00AD 2B                  160 	dec	hl
+   00AE 77                  161 	ld	(hl),a
+   00AF E5                  162 	push	hl
+   00B0 CDr1Bs01            163 	call	font_set
+   00B3 FAr00s00            164 	ld	a,(.mode)
+   00B6 E6 02               165 	and	#.T_MODE
+   00B8 C4rD3s00            166 	call	nz,font_copy_current
+   00BB 21r01s00            167 	ld	hl,#font_current+sfont_handle_font
+   00BE 2A                  168 	ld	a,(hl+)
+   00BF 66                  169 	ld	h,(hl)
+   00C0 6F                  170 	ld	l,a
+   00C1 23                  171 	inc	hl
+   00C2 FAr03s00            172 	ld	a,(font_first_free_tile)
+   00C5 86                  173 	add	a,(hl)
+   00C6 EAr03s00            174 	ld	(font_first_free_tile),a
+   00C9 E1                  175 	pop	hl
+   00CA                     176 font_load_exit:
+   00CA F0 40               177 	LDH	A,(.LCDC)
+   00CC F6 81               178 	OR	#0b10000001
+   00CE E6 E7               179 	AND	#0b11100111
+   00D0 E0 40               180 	LDH	(.LCDC),A
+   00D2 C9                  181 	RET	
+   00D3                     182 font_copy_current::
+   00D3 21r01s00            183 	ld	hl,#font_current+sfont_handle_font
+   00D6 2A                  184 	ld	a,(hl+)
+   00D7 66                  185 	ld	h,(hl)
+   00D8 6F                  186 	ld	l,a
+   00D9 23                  187 	inc	hl
+   00DA 5E                  188 	ld	e,(hl)
+   00DB 16 00               189 	ld	d,#0
+   00DD CB 13               190 	rl	e
+   00DF CB 12               191 	rl	d
+   00E1 CB 13               192 	rl	e
+   00E3 CB 12               193 	rl	d
+   00E5 CB 13               194 	rl	e
+   00E7 CB 12               195 	rl	d
+   00E9 2B                  196 	dec	hl
+   00EA 7E                  197 	ld	a,(hl)	
+   00EB F5                  198 	push	af
+   00EC E6 03               199 	and	#3
+   00EE 01 80 00            200 	ld	bc,#128
+   00F1 FE 01               201 	cp	#FONT_128ENCODING
+   00F3 28 0A               202 	jr	z,font_copy_current_copy
+   00F5 01 00 00            203 	ld	bc,#0
+   00F8 FE 02               204 	cp	#FONT_NOENCODING
+   00FA 28 03               205 	jr	z,font_copy_current_copy
+   00FC 01 00 01            206 	ld	bc,#256
+   00FF                     207 font_copy_current_copy:
+   00FF 23                  208 	inc	hl
+   0100 23                  209 	inc	hl
+   0101 09                  210 	add	hl,bc
+   0102 4D                  211 	ld	c,l
+   0103 44                  212 	ld	b,h
+   0104 FAr00s00            213 	ld	a,(font_current+sfont_handle_first_tile)	
+   0107 6F                  214 	ld	l,a
+   0108 26 00               215 	ld	h,#0
+   010A 29                  216 	add	hl,hl
+   010B 29                  217 	add	hl,hl
+   010C 29                  218 	add	hl,hl
+   010D 29                  219 	add	hl,hl
+   010E 3E 90               220 	ld	a,#0x90
+   0110 84                  221 	add	a,h
+   0111 67                  222 	ld	h,a
+   0112 F1                  223 	pop	af
+   0113 CB 57               224 	bit	FONT_BCOMPRESSED,a
+   0115 CAr00s00            225 	jp	z,font_copy_uncompressed
+   0118 C3r36s00            226 	jp	font_copy_compressed
+   011B                     227 font_set::
+   011B 2A                  228 	ld	a,(hl+)
+   011C EAr00s00            229 	ld	(font_current),a
+   011F 2A                  230 	ld	a,(hl+)
+   0120 EAr01s00            231 	ld	(font_current+1),a
+   0123 2A                  232 	ld	a,(hl+)
+   0124 EAr02s00            233 	ld	(font_current+2),a
+   0127 C9                  234 	ret	
+   0128                     235 .put_char::
+   0128 FE 0A               236 	cp	#.CR
+   012A 20 0E               237 	jr	nz,1$
+   012C F5                  238 	push	af
+   012D FAr00s00            239 	ld	a,(.mode)
+   0130 E6 08               240 	and	#.M_NO_INTERP
+   0132 20 05               241 	jr	nz,2$
+   0134 CDr14s02            242 	call	.cr_curs
+   0137 F1                  243 	pop	af
+   0138 C9                  244 	ret	
+   0139                     245 2$:
+   0139 F1                  246 	pop	af
+   013A                     247 1$:
+   013A CDr51s01            248 	CALL	.set_char
+   013D CDr29s02            249 	CALL	.adv_curs
+   0140 C9                  250 	RET	
+   0141                     251 .out_char::
+   0141 CDr51s01            252 	CALL	.set_char
+   0144 CDr29s02            253 	CALL	.adv_curs
+   0147 C9                  254 	RET	
+   0148                     255 .del_char::
+   0148 CDrFDs01            256 	CALL	.rew_curs
+   014B 3E 00               257 	LD	A,#.SPACE
+   014D CDr51s01            258 	CALL	.set_char
+   0150 C9                  259 	RET	
+   0151                     260 .set_char:
+   0151 F5                  261 	push	af
+   0152 FAr02s00            262 	ld	a,(font_current+2)
+   0155 B7                  263 	or	a
+   0156 20 0E               264 	jr	nz,3$
+   0158 CDrC0s01            265 	call	_font_init
+   015B AF                  266 	xor	a
+   015C EAr03s00            267 	ld	(font_first_free_tile),a
+                            268 	.globl	_font_load_ibm_fixed
+   015F CDr00s00            269 	call	banked_call
+   0162r00s00               270 	.dw	_font_load_ibm_fixed
+                    0000    271 	.if	__RGBDS__
+                            272 	.dw	BANK(_font_load_ibm_fixed)
+                            273 	.else	
+   0164 00 00               274 	.dw	0
+                            275 	.endif	
+   0166                     276 3$:
+   0166 F1                  277 	pop	af
+   0167 C5                  278 	push	bc
+   0168 D5                  279 	push	de
+   0169 E5                  280 	push	hl
+   016A 5F                  281 	ld	e,a
+   016B 21r01s00            282 	ld	hl,#font_current+sfont_handle_font
+   016E 2A                  283 	ld	a,(hl+)
+   016F 66                  284 	ld	h,(hl)
+   0170 6F                  285 	ld	l,a
+   0171 2A                  286 	ld	a,(hl+)
+   0172 E6 03               287 	and	#3
+   0174 FE 02               288 	cp	#FONT_NOENCODING
+   0176 28 05               289 	jr	z,set_char_no_encoding
+   0178 23                  290 	inc	hl
+   0179 16 00               291 	ld	d,#0
+   017B 19                  292 	add	hl,de
+   017C 5E                  293 	ld	e,(hl)	
+   017D                     294 set_char_no_encoding:
+   017D FAr00s00            295 	ld	a,(font_current+0)
+   0180 83                  296 	add	a,e
+   0181 5F                  297 	ld	e,a
+   0182 FAr17s00            298 	LD	A,(.cury) 
+   0185 6F                  299 	LD	L,A
+   0186 26 00               300 	LD	H,#0x00
+   0188 29                  301 	ADD	HL,HL
+   0189 29                  302 	ADD	HL,HL
+   018A 29                  303 	ADD	HL,HL
+   018B 29                  304 	ADD	HL,HL
+   018C 29                  305 	ADD	HL,HL
+   018D FAr16s00            306 	LD	A,(.curx) 
+   0190 4F                  307 	LD	C,A
+   0191 06 00               308 	LD	B,#0x00
+   0193 09                  309 	ADD	HL,BC
+   0194 01 00 98            310 	LD	BC,#0x9800
+   0197 09                  311 	ADD	HL,BC
+   0198 F0 41               312 	ldh	a,(.STAT)
+   019A CB 4F               313 	bit	1,a
+   019C 20 FA               314 	jr	nz,#.-4
+   019E 73                  315 	LD	(HL),E
+   019F E1                  316 	POP	HL
+   01A0 D1                  317 	POP	DE
+   01A1 C1                  318 	POP	BC
+   01A2 C9                  319 	RET	
+                            320 	.area	_CODE
+   0000                     321 _putchar::
+   0000 C5                  322 	PUSH	BC
+   0001 F8 04               323 	LDA	HL,.BANKOV+2(SP)
+   0003 7E                  324 	LD	A,(HL) 
+   0004 CDr28s01            325 	CALL	.put_char
+   0007 C1                  326 	POP	BC
+   0008 C9                  327 	RET	
+   0009                     328 _setchar::
+   0009 C5                  329 	PUSH	BC
+   000A F8 04               330 	LDA	HL,.BANKOV+2(SP)
+   000C 7E                  331 	LD	A,(HL) 
+   000D CDr51s01            332 	CALL	.set_char
+   0010 C1                  333 	POP	BC
+   0011 C9                  334 	RET	
+                            335 	.area	_BASE
+   01A3                     336 _font_load::
+   01A3 C5                  337 	push	bc
+   01A4 F8 04               338 	LDA	HL,4(SP) 
+   01A6 7E                  339 	LD	A,(HL) 
+   01A7 23                  340 	inc	hl
+   01A8 66                  341 	ld	h,(hl)
+   01A9 6F                  342 	ld	l,a
+   01AA CDr8Bs00            343 	call	font_load
+   01AD E5                  344 	push	hl
+   01AE D1                  345 	pop	de
+   01AF C1                  346 	pop	bc
+   01B0 C9                  347 	RET	
+   01B1                     348 _font_set::
+   01B1 C5                  349 	push	bc
+   01B2 F8 04               350 	LDA	HL,4(SP) 
+   01B4 7E                  351 	LD	A,(HL) 
+   01B5 23                  352 	inc	hl
+   01B6 66                  353 	ld	h,(hl)
+   01B7 6F                  354 	ld	l,a
+   01B8 CDr1Bs01            355 	call	font_set
+   01BB C1                  356 	pop	bc
+   01BC 11 00 00            357 	ld	de,#0
+   01BF C9                  358 	RET	
+   01C0                     359 _font_init::
+   01C0 C5                  360 	push	bc
+                            361 	.globl	.tmode
+   01C1 CDr85s02            362 	call	.tmode
+   01C4 3E 01               363 	ld	a,#1
+   01C6 EAr03s00            364 	ld	(font_first_free_tile),a
+   01C9 AF                  365 	xor	a
+   01CA 21r04s00            366 	ld	hl,#font_table
+   01CD 06 12               367 	ld	b,#sfont_handle_sizeof*.MAX_FONTS
+   01CF                     368 1$:
+   01CF 22                  369 	ld	(hl+),a
+   01D0 05                  370 	dec	b
+   01D1 20 FC               371 	jr	nz,1$
+   01D3 3E 03               372 	ld	a,#3
+   01D5 EAr00s00            373 	ld	(.fg_colour),a
+   01D8 3E 00               374 	ld	a,#0
+   01DA EAr00s00            375 	ld	(.bg_colour),a
+   01DD CDrE2s01            376 	call	.cls
+   01E0 C1                  377 	pop	bc
+   01E1 C9                  378 	ret	
+   01E2                     379 _cls::
+   01E2                     380 .cls::
+   01E2 D5                  381 	PUSH	DE
+   01E3 E5                  382 	PUSH	HL
+   01E4 21 00 98            383 	LD	HL,#0x9800
+   01E7 1E 20               384 	LD	E,#0x20
+   01E9                     385 1$:
+   01E9 16 20               386 	LD	D,#0x20
+   01EB                     387 2$:
+   01EB F0 41               388 	ldh	a,(.STAT)
+   01ED CB 4F               389 	bit	1,a
+   01EF 20 FA               390 	jr	nz,#.-4
+   01F1 36 00               391 	LD	(HL),#.SPACE
+   01F3 23                  392 	INC	HL
+   01F4 15                  393 	DEC	D
+   01F5 20 F4               394 	JR	NZ,2$
+   01F7 1D                  395 	DEC	E
+   01F8 20 EF               396 	JR	NZ,1$
+   01FA E1                  397 	POP	HL
+   01FB D1                  398 	POP	DE
+   01FC C9                  399 	RET	
+                            400 	.area	_CODE
+   0012                     401 _gotoxy::
+   0012 F8 02               402 	lda	hl,.BANKOV(sp)
+   0014 2A                  403 	ld	a,(hl+)
+   0015 EAr16s00            404 	ld	(.curx),a
+   0018 7E                  405 	ld	a,(hl)
+   0019 EAr17s00            406 	ld	(.cury),a
+   001C C9                  407 	ret	
+   001D                     408 _posx::
+   001D FAr00s00            409 	LD	A,(.mode)	
+   0020 E6 02               410 	AND	#.T_MODE
+   0022 20 05               411 	JR	NZ,1$
+   0024 C5                  412 	PUSH	BC
+   0025 CDr85s02            413 	CALL	.tmode
+   0028 C1                  414 	POP	BC
+   0029                     415 1$:
+   0029 FAr16s00            416 	LD	A,(.curx)
+   002C 5F                  417 	LD	E,A
+   002D C9                  418 	RET	
+   002E                     419 _posy::
+   002E FAr00s00            420 	LD	A,(.mode)
+   0031 E6 02               421 	AND	#.T_MODE
+   0033 20 05               422 	JR	NZ,1$
+   0035 C5                  423 	PUSH	BC
+   0036 CDr85s02            424 	CALL	.tmode
+   0039 C1                  425 	POP	BC
+   003A                     426 1$:
+   003A FAr17s00            427 	LD	A,(.cury)
+   003D 5F                  428 	LD	E,A
+   003E C9                  429 	RET	
+                            430 	.area	_BASE
+   01FD                     431 .rew_curs:
+   01FD E5                  432 	PUSH	HL
+   01FE 21r16s00            433 	LD	HL,#.curx
+   0201 AF                  434 	XOR	A
+   0202 BE                  435 	CP	(HL)
+   0203 28 03               436 	JR	Z,1$
+   0205 35                  437 	DEC	(HL)
+   0206 18 0A               438 	JR	99$
+   0208                     439 1$:
+   0208 36 13               440 	LD	(HL),#.MAXCURSPOSX
+   020A 21r17s00            441 	LD	HL,#.cury
+   020D AF                  442 	XOR	A
+   020E BE                  443 	CP	(HL)
+   020F 28 01               444 	JR	Z,99$
+   0211 35                  445 	DEC	(HL)
+   0212                     446 99$:
+   0212 E1                  447 	POP	HL
+   0213 C9                  448 	RET	
+   0214                     449 .cr_curs::
+   0214 E5                  450 	PUSH	HL
+   0215 AF                  451 	XOR	A
+   0216 EAr16s00            452 	LD	(.curx),A
+   0219 21r17s00            453 	LD	HL,#.cury
+   021C 3E 11               454 	LD	A,#.MAXCURSPOSY
+   021E BE                  455 	CP	(HL)
+   021F 28 03               456 	JR	Z,2$
+   0221 34                  457 	INC	(HL)
+   0222 18 03               458 	JR	99$
+   0224                     459 2$:
+   0224 CDr57s02            460 	CALL	.scroll
+   0227                     461 99$:
+   0227 E1                  462 	POP	HL
+   0228 C9                  463 	RET	
+   0229                     464 .adv_curs::
+   0229 E5                  465 	PUSH	HL
+   022A 21r16s00            466 	LD	HL,#.curx
+   022D 3E 13               467 	LD	A,#.MAXCURSPOSX
+   022F BE                  468 	CP	(HL)
+   0230 28 03               469 	JR	Z,1$
+   0232 34                  470 	INC	(HL)
+   0233 18 20               471 	JR	99$
+   0235                     472 1$:
+   0235 36 00               473 	LD	(HL),#0x00
+   0237 21r17s00            474 	LD	HL,#.cury
+   023A 3E 11               475 	LD	A,#.MAXCURSPOSY
+   023C BE                  476 	CP	(HL)
+   023D 28 03               477 	JR	Z,2$
+   023F 34                  478 	INC	(HL)
+   0240 18 13               479 	JR	99$
+   0242                     480 2$:
+   0242 FAr00s00            481 	LD	A,(.mode)
+   0245 E6 04               482 	AND	#.M_NO_SCROLL
+   0247 28 09               483 	JR	Z,3$
+   0249 AF                  484 	XOR	A
+   024A EAr17s00            485 	LD	(.cury),A
+   024D EAr16s00            486 	LD	(.curx),A
+   0250 18 03               487 	JR	99$
+   0252                     488 3$:
+   0252 CDr57s02            489 	CALL	.scroll
+   0255                     490 99$:
+   0255 E1                  491 	POP	HL
+   0256 C9                  492 	RET	
+   0257                     493 .scroll:
+   0257 C5                  494 	PUSH	BC
+   0258 D5                  495 	PUSH	DE
+   0259 E5                  496 	PUSH	HL
+   025A 21 00 98            497 	LD	HL,#0x9800
+   025D 01 20 98            498 	LD	BC,#0x9800+0x20
+   0260 1E 1F               499 	LD	E,#0x20-0x01
+   0262                     500 1$:
+   0262 16 20               501 	LD	D,#0x20
+   0264                     502 2$:
+   0264 F0 41               503 	LDH	A,(.STAT)
+   0266 E6 02               504 	AND	#0x02
+   0268 20 FA               505 	JR	NZ,2$
+   026A 0A                  506 	LD	A,(BC)
+   026B 22                  507 	LD	(HL+),A
+   026C 03                  508 	INC	BC
+   026D 15                  509 	DEC	D
+   026E 20 F4               510 	JR	NZ,2$
+   0270 1D                  511 	DEC	E
+   0271 20 EF               512 	JR	NZ,1$
+   0273 16 20               513 	LD	D,#0x20
+   0275                     514 3$:
+   0275 F0 41               515 	LDH	A,(.STAT)
+   0277 E6 02               516 	AND	#0x02
+   0279 20 FA               517 	JR	NZ,3$
+   027B 3E 00               518 	LD	A,#.SPACE
+   027D 22                  519 	LD	(HL+),A
+   027E 15                  520 	DEC	D
+   027F 20 F4               521 	JR	NZ,3$
+   0281 E1                  522 	POP	HL
+   0282 D1                  523 	POP	DE
+   0283 C1                  524 	POP	BC
+   0284 C9                  525 	RET	
+                            526 	.area	_BSS
+   0016                     527 .curx::
+   0016                     528 	.ds	0x01
+   0017                     529 .cury::
+   0017                     530 	.ds	0x01
+                            531 	.area	_BASE
+                            532 	.globl	.vbl
+                            533 	.globl	.lcd
+                            534 	.globl	.int_0x40
+                            535 	.globl	.int_0x48
+                            536 	.globl	.remove_int
+   0285                     537 .tmode::
+   0285 F3                  538 	DI	
+   0286 F0 40               539 	LDH	A,(.LCDC)
+   0288 CB 7F               540 	BIT	7,A
+   028A 28 15               541 	JR	Z,1$
+   028C CDr00s00            542 	CALL	.display_off
+   028F 01r00s00            543 	LD	BC,#.vbl
+   0292 21r00s00            544 	LD	HL,#.int_0x40
+   0295 CDr00s00            545 	CALL	.remove_int
+   0298 01r00s00            546 	LD	BC,#.lcd
+   029B 21r00s00            547 	LD	HL,#.int_0x48
+   029E CDr00s00            548 	CALL	.remove_int
+   02A1                     549 1$:
+   02A1 CDrAEs02            550 	CALL	.tmode_out
+   02A4 F0 40               551 	LDH	A,(.LCDC)
+   02A6 F6 81               552 	OR	#0b10000001
+   02A8 E6 E7               553 	AND	#0b11100111
+   02AA E0 40               554 	LDH	(.LCDC),A
+   02AC FB                  555 	EI	
+   02AD C9                  556 	RET	
+   02AE                     557 .tmode_out::
+   02AE AF                  558 	XOR	A
+   02AF EAr16s00            559 	LD	(.curx),A
+   02B2 EAr17s00            560 	LD	(.cury),A
+   02B5 CDrE2s01            561 	CALL	.cls
+   02B8 3E 02               562 	LD	A,#.T_MODE
+   02BA EAr00s00            563 	LD	(.mode),A
+   02BD C9                  564 	RET	

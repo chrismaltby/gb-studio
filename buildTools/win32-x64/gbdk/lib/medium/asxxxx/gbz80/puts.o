@@ -1,0 +1,25 @@
+XL
+H 9 areas 3 global symbols
+M puts
+S _putchar Ref0000
+S banked_call Ref0000
+A _CODE size 0 flags 0
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 3D flags 0
+S _puts Def0000
+T 00 00 C5 E8 FF F8 05 4E 23 46 0A F8 00 77 AF B6
+R 00 00 08 00
+T 0E 00 CA 2C 00 21 01 00 09 7D 54 F8 05 22 72 F8
+R 00 00 08 00 00 03 08 00
+T 1C 00 00 7E F5 33 CD 00 00 00 00 00 00 E8 01 C3
+R 00 00 08 00 02 07 01 00 02 09 00 00
+T 2A 00 03 00 3E 0A F5 33 CD 00 00 00 00 00 00 E8
+R 00 00 08 00 00 02 08 00 02 09 01 00 02 0B 00 00
+T 38 00 01 E8 01 C1 C9
+R 00 00 08 00
