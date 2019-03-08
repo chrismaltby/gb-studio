@@ -189,7 +189,7 @@ if (process.platform === "darwin") {
   });
 
   // Edit menu
-  template[3].submenu.push(
+  template[2].submenu.push(
     { type: "separator" },
     {
       label: "Speech",
