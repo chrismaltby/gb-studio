@@ -114,3 +114,9 @@ input, select, textarea {
   align-items: center;
   padding-left: 10px;
 }
+
+.Platform__win32 .FormField input,
+.Platform__win32 .FormField textarea,
+.Platform__win32 .FormField select {
+  border-radius: 2px;
+}

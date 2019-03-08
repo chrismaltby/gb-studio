@@ -41,6 +41,10 @@
   height: 30px;
 }
 
+.Platform__win32 .EditorSidebar .AddCommandButton__Search input {
+  border-radius: 2px;
+}
+
 .EditorSidebar .AddCommandButton__List {
   max-height: 215px;
   overflow: auto;

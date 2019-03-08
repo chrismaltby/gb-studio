@@ -27,6 +27,10 @@
   resize: none;
 }
 
+.Platform__win32 .FilesSidebar input {
+  border-radius: 2px;
+}
+
 .FilesSidebar__Search .Button {
   margin-left: 5px;
   padding: 5px 13px 5px 14px;
