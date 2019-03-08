@@ -133,18 +133,12 @@ const template = [
           notifyListeners("section", "build");
         }
       }
-
-      // { type: "separator" },
-      // { role: "togglefullscreen" }
     ]
   },
   {
     role: "window",
     submenu: [
-      { role: "minimize" },
-      { role: "resetzoom" },
-      { role: "zoomin" },
-      { role: "zoomout" }
+      { role: "minimize" }
     ]
   },
   {
