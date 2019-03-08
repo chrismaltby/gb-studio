@@ -2,7 +2,7 @@
   position: fixed;
   width: 300px;
   right: -300px;
-  top: 36px;
+  top: 39px;
   bottom: 0px;
   background-color: var(--sidebar-bg-color);
   border-left: 1px solid var(--sidebar-edge-color);

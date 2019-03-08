@@ -38,6 +38,7 @@
 
 .Scene__Image img {
   -webkit-user-drag: none;
+  display: block;
 }
 
 .Scene--Selected .Scene__Image {

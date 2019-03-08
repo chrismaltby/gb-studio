@@ -13,6 +13,7 @@
   text-align: center;
   border: 1px solid var(--input-border-color);
   border-right: 0;
+  color: var(--button-text-color);
 }
 
 .DirectionPicker__Button:last-child {
@@ -35,6 +36,7 @@
 }
 
 .DirectionPicker__Button svg {
+  fill: var(--button-text-color);
   width: 8px;
   height: 8px;
 }

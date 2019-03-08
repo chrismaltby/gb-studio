@@ -19,6 +19,7 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  color: var(--button-text-color);
 }
 
 .InputPicker__Button:last-child {
@@ -55,6 +56,7 @@
 }
 
 .InputPicker__Button svg {
+  fill: var(--button-text-color);
   width: 8px;
   height: 8px;
 }
