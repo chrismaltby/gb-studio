@@ -1,0 +1,66 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  1 _BCPD_REG                          FF69 GR
+  1 _BCPS_REG                          FF68 GR
+  1 _BGP_REG                           FF47 GR
+  1 _DIV_REG                           FF04 GR
+  1 _DMA_REG                           FF46 GR
+  1 _HDMA1_REG                         FF51 GR
+  1 _HDMA2_REG                         FF52 GR
+  1 _HDMA3_REG                         FF53 GR
+  1 _HDMA4_REG                         FF54 GR
+  1 _HDMA5_REG                         FF55 GR
+  1 _IE_REG                            FFFF GR
+  1 _IF_REG                            FF0F GR
+  1 _KEY1_REG                          FF4D GR
+  1 _LCDC_REG                          FF40 GR
+  1 _LYC_REG                           FF45 GR
+  1 _LY_REG                            FF44 GR
+  1 _NR10_REG                          FF10 GR
+  1 _NR11_REG                          FF11 GR
+  1 _NR12_REG                          FF12 GR
+  1 _NR13_REG                          FF13 GR
+  1 _NR14_REG                          FF14 GR
+  1 _NR21_REG                          FF16 GR
+  1 _NR22_REG                          FF17 GR
+  1 _NR23_REG                          FF18 GR
+  1 _NR24_REG                          FF19 GR
+  1 _NR30_REG                          FF1A GR
+  1 _NR31_REG                          FF1B GR
+  1 _NR32_REG                          FF1C GR
+  1 _NR33_REG                          FF1D GR
+  1 _NR34_REG                          FF1E GR
+  1 _NR41_REG                          FF20 GR
+  1 _NR42_REG                          FF21 GR
+  1 _NR43_REG                          FF22 GR
+  1 _NR44_REG                          FF23 GR
+  1 _NR50_REG                          FF24 GR
+  1 _NR51_REG                          FF25 GR
+  1 _NR52_REG                          FF26 GR
+  1 _OBP0_REG                          FF48 GR
+  1 _OBP1_REG                          FF49 GR
+  1 _OCPD_REG                          FF6B GR
+  1 _OCPS_REG                          FF6A GR
+  1 _P1_REG                            FF00 GR
+  1 _RP_REG                            FF56 GR
+  1 _SB_REG                            FF01 GR
+  1 _SCX_REG                           FF43 GR
+  1 _SCY_REG                           FF42 GR
+  1 _SC_REG                            FF02 GR
+  1 _STAT_REG                          FF41 GR
+  1 _SVBK_REG                          FF70 GR
+  1 _TAC_REG                           FF07 GR
+  1 _TIMA_REG                          FF05 GR
+  1 _TMA_REG                           FF06 GR
+  1 _VBK_REG                           FF4F GR
+  1 _WX_REG                            FF4B GR
+  1 _WY_REG                            FF4A GR
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size    0   flags 0
+   1 _SFR                               size 10000   flags C

@@ -1,0 +1,198 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : FreeWare ANSI-C Compiler
+                              3 ; Version 2.3.1 Sun Nov  4 12:04:07 2001
+                              4 
+                              5 ;--------------------------------------------------------
+                              6 	.module gprintn
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _gprintn
+                             12 ;--------------------------------------------------------
+                             13 ; special function registers
+                             14 ;--------------------------------------------------------
+                             15 ;--------------------------------------------------------
+                             16 ; special function bits 
+                             17 ;--------------------------------------------------------
+                             18 ;--------------------------------------------------------
+                             19 ; internal ram data
+                             20 ;--------------------------------------------------------
+                             21 	.area _DATA
+                             22 ;--------------------------------------------------------
+                             23 ; overlayable items in internal ram 
+                             24 ;--------------------------------------------------------
+                             25 	.area _OVERLAY
+                             26 ;--------------------------------------------------------
+                             27 ; indirectly addressable internal ram data
+                             28 ;--------------------------------------------------------
+                             29 	.area _ISEG
+                             30 ;--------------------------------------------------------
+                             31 ; bit data
+                             32 ;--------------------------------------------------------
+                             33 	.area _BSEG
+                             34 ;--------------------------------------------------------
+                             35 ; external ram data
+                             36 ;--------------------------------------------------------
+                             37 	.area _XSEG
+                             38 ;--------------------------------------------------------
+                             39 ; global & static initialisations
+                             40 ;--------------------------------------------------------
+                             41 	.area _GSINIT
+                             42 	.area _GSFINAL
+                             43 	.area _GSINIT
+                             44 ;--------------------------------------------------------
+                             45 ; Home
+                             46 ;--------------------------------------------------------
+                             47 	.area _HOME
+                             48 	.area _CODE
+                             49 ;--------------------------------------------------------
+                             50 ; code
+                             51 ;--------------------------------------------------------
+                             52 	.area _CODE
+                             53 ;	gprintn.c 7
+                             54 ;	genLabel
+                             55 ;	genFunction
+                             56 ;	---------------------------------
+                             57 ; Function gprintn
+                             58 ; ---------------------------------
+   0000                      59 ___gprintn_start:
+   0000                      60 _gprintn:
+                             61 	
+                             62 ;	gprintn.c 11
+                             63 ;	genCmpLt
+                             64 ;	AOP_STK for 
+   0000 F8 02                65 	lda	hl,2(sp)
+   0002 7E                   66 	ld	a,(hl)
+   0003 EE 80                67 	xor	a,#0x80
+   0005 FE 80                68 	cp	#0x00^0x80
+   0007 D2r21s00             69 	jp	nc,00102$
+                             70 ;	genIfx
+                             71 ;	AOP_STK for 
+   000A AF                   72 	xor	a,a
+   000B 23                   73 	inc	hl
+   000C 23                   74 	inc	hl
+   000D B6                   75 	or	a,(hl)
+   000E CAr21s00             76 	jp	z,00102$
+                             77 ;	gprintn.c 12
+                             78 ;	genIpush
+                             79 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   0011 3E 2D                80 	ld	a,#0x2D
+   0013 F5                   81 	push	af
+   0014 33                   82 	inc	sp
+                             83 ;	genCall
+   0015 CDr00s00             84 	call	_wrtchr
+   0018 E8 01                85 	lda	sp,1(sp)
+                             86 ;	gprintn.c 13
+                             87 ;	genUminus
+                             88 ;	AOP_STK for 
+   001A AF                   89 	xor	a,a
+   001B F8 02                90 	lda	hl,2(sp)
+   001D 3E 00                91 	ld	a,#0x00
+   001F 9E                   92 	sbc	a,(hl)
+   0020 77                   93 	ld	(hl),a
+                             94 ;	genLabel
+   0021                      95 00102$:
+                             96 ;	gprintn.c 15
+                             97 ;	genAssign
+                             98 ;	AOP_STK for 
+   0021 F8 02                99 	lda	hl,2(sp)
+   0023 4E                  100 	ld	c,(hl)
+                            101 ;	genAssign
+                            102 ;	AOP_STK for 
+   0024 23                  103 	inc	hl
+   0025 46                  104 	ld	b,(hl)
+                            105 ;	genIpush
+                            106 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   0026 78                  107 	ld	a,b
+   0027 F5                  108 	push	af
+   0028 33                  109 	inc	sp
+                            110 ;	genIpush
+   0029 79                  111 	ld	a,c
+   002A F5                  112 	push	af
+   002B 33                  113 	inc	sp
+                            114 ;	genCall
+   002C CDr00s00            115 	call	__divuchar_rrx_s
+   002F 4B                  116 	ld	c,e
+   0030 E8 02               117 	lda	sp,2(sp)
+                            118 ;	genAssign
+   0032 41                  119 	ld	b,c
+                            120 ;	genCmpEq
+                            121 ; genCmpEq: left 1, right 1, result 0
+   0033 79                  122 	ld	a,c
+   0034 B7                  123 	or	a,a
+   0035 CAr49s00            124 	jp	z,00105$
+   0038                     125 00111$:
+                            126 ;	gprintn.c 16
+                            127 ;	genAssign
+                            128 ;	(registers are the same)
+                            129 ;	genIpush
+                            130 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   0038 3E 00               131 	ld	a,#0x00
+   003A F5                  132 	push	af
+   003B 33                  133 	inc	sp
+                            134 ;	genIpush
+                            135 ;	AOP_STK for 
+   003C F8 04               136 	lda	hl,4(sp)
+   003E 7E                  137 	ld	a,(hl)
+   003F F5                  138 	push	af
+   0040 33                  139 	inc	sp
+                            140 ;	genIpush
+   0041 78                  141 	ld	a,b
+   0042 F5                  142 	push	af
+   0043 33                  143 	inc	sp
+                            144 ;	genCall
+   0044 CDr00s00            145 	call	_gprintn
+   0047 E8 03               146 	lda	sp,3(sp)
+                            147 ;	genLabel
+   0049                     148 00105$:
+                            149 ;	gprintn.c 17
+                            150 ;	genAssign
+                            151 ;	AOP_STK for 
+   0049 F8 02               152 	lda	hl,2(sp)
+   004B 4E                  153 	ld	c,(hl)
+                            154 ;	genAssign
+                            155 ;	AOP_STK for 
+   004C 23                  156 	inc	hl
+   004D 46                  157 	ld	b,(hl)
+                            158 ;	genIpush
+                            159 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   004E 78                  160 	ld	a,b
+   004F F5                  161 	push	af
+   0050 33                  162 	inc	sp
+                            163 ;	genIpush
+   0051 79                  164 	ld	a,c
+   0052 F5                  165 	push	af
+   0053 33                  166 	inc	sp
+                            167 ;	genCall
+   0054 CDr00s00            168 	call	__moduchar_rrx_s
+   0057 4B                  169 	ld	c,e
+   0058 E8 02               170 	lda	sp,2(sp)
+                            171 ;	genPlus
+                            172 ;	AOP_HL for _digits
+                            173 ;	Can't optimise plus by inc, falling back to the normal way
+   005A 21r00s00            174 	ld	hl,#_digits
+   005D 7E                  175 	ld	a,(hl)
+   005E 81                  176 	add	a,c
+   005F 4F                  177 	ld	c,a
+   0060 23                  178 	inc	hl
+   0061 7E                  179 	ld	a,(hl)
+   0062 CE 00               180 	adc	a,#0x00
+   0064 47                  181 	ld	b,a
+                            182 ;	genPointerGet
+   0065 0A                  183 	ld	a,(bc)
+                            184 ;	genIpush
+                            185 ; _saveRegsForCall: sendSetSize: 0 deInUse: 0 bcInUse: 0 deSending: 0
+   0066 4F                  186 	ld	c,a
+   0067 F5                  187 	push	af
+   0068 33                  188 	inc	sp
+                            189 ;	genCall
+   0069 CDr00s00            190 	call	_wrtchr
+   006C E8 01               191 	lda	sp,1(sp)
+                            192 ;	genLabel
+   006E                     193 00106$:
+                            194 ;	genEndFunction
+                            195 	
+   006E C9                  196 	ret
+   006F                     197 ___gprintn_end:
+                            198 	.area _CODE

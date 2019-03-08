@@ -1,0 +1,11 @@
+	GLOBAL 	STACK
+	GLOBAL 	OAM
+	GLOBAL	refresh_OAM
+
+	SECTION "stubs_1", BSS[$C000]
+OAM:
+	DS	$A0
+	SECTION "stubs_2", HRAM[$FF80]
+refresh_OAM:
+	SECTION "stubs_4", BSS[$E000]
+STACK:

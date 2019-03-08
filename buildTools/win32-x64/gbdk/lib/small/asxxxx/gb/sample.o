@@ -1,0 +1,42 @@
+XL
+H 2 areas 17 global symbols
+M Sample
+S .add_TIM Ref0000
+S .add_SIO Ref0000
+S _main Ref0000
+S .STACK Ref0000
+S __cpu Ref0000
+S .add_JOY Ref0000
+S .wait_vbl_done Ref0000
+S __io_in Ref0000
+S __io_out Ref0000
+S banked_ret Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S __io_status Ref0000
+S banked_call Ref0000
+S .init Ref0000
+S .add_LCD Ref0000
+S .OAM Ref0000
+S .refresh_OAM Ref0000
+S .add_VBL Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 0 flags 0
+A _BASE size 60 flags 0
+S .play_sample Def0012
+S _play_sample Def0000
+T 00 00 C5 F8 04 2A 56 5F F8 06 2A 46 4F 62 6B CD
+R 00 00 01 00
+T 0E 00 12 00 C1 C9 3E 84 E0 26 3E 00 E0 1A E0 25
+R 00 00 01 00 00 02 01 00
+T 1C 00 3E 77 E0 24 3E FF E0 25 3E 80 E0 1B 3E 20
+R 00 00 01 00
+T 2A 00 E0 1C 3E 00 E0 1D 11 30 FF C5 06 10 AF E0
+R 00 00 01 00
+T 38 00 1A 2A 12 13 05 20 FA 3E 80 E0 1A 3E 87 E0
+R 00 00 01 00
+T 46 00 1E 01 2E 02 0B 78 B1 20 FB 3E 00 3E 00 3E
+R 00 00 01 00
+T 54 00 00 C1 0B 78 B1 20 D5 3E BB E0 25 C9
+R 00 00 01 00

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Flat 24 bit addressing model.</TITLE>
+ <LINK HREF="SDCCUdoc-18.html" REL=next>
+ <LINK HREF="SDCCUdoc-16.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc17" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-18.html">Next</A>
+<A HREF="SDCCUdoc-16.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc17">Contents</A>
+<HR>
+<H2><A NAME="--model-flat24"></A> <A NAME="s17">17. Flat 24 bit addressing model.</A> </H2>
+
+<P>This option generates code for the 24 bit contiguous addressing mode of
+the Dallas DS80C390 part. In this mode, up to four meg of external RAM or code
+space can be directly addressed. See the data sheets at www.dalsemi.com for
+further information on this part.
+<P>Note that the compiler does not generate any code to place the processor
+into this mode (it defaults to 8051 compatible mode). Boot loader or similar
+code must ensure that the processor is in 24 bit contiguous addressing mode
+before calling the SDCC startup code.
+<P>Like the --model-large option, variables will by default be placed into
+the XDATA segment. However, a current limitation is that the compiler will
+spill variables into the DATA segment when it runs out of registers. This means
+that compiling complex code can rapidly fill up the DATA segment. This limitation
+is being worked on, and should be addressed in the next release of sdcc.
+<P>Segments may be placed anywhere in the 4 meg address space using the usual
+--*-loc options. Note that if any segments are located above 64K, the -r flag
+must be passed to the linker to generate the proper segment relocations, and
+the Intel HEX output format must be used. The -r flag can be passed to the
+linker by using the option -Wl-r on the sdcc command line.
+<P>--stack-10bit:
+<P>This option generates code for the 10 bit stack mode of the Dallas DS80C390
+part. In this mode, the stack is located in the lower 1K of the internal RAM,
+which is mapped to 0x400000.
+<P>With this option, sdcc will generate the proper addressing for stack variables.
+<P>Note that the support is incomplete, since it still uses a single byte
+as the stack pointer. This means that only the lower 256 bytes of the potential
+1K stack space can actually be used. However, this does allow you to reclaim
+the precious 256 bytes of low RAM for use for the DATA and IDATA segments.
+<P>The compiler will not generate any code to put the processor into 10 bit
+stack mode. It is important to ensure that the processor is in this mode before
+calling any re-entrant functions compiled with this option.
+<P>In principle, this should work with the --stack-auto option, but that has
+not been tested. It is incompatible with the --xstack option. It also only
+makes sense if the processor is in 24 bit contiguous addressing mode (see the
+--model-flat24 option).
+<HR>
+<A HREF="SDCCUdoc-18.html">Next</A>
+<A HREF="SDCCUdoc-16.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc17">Contents</A>
+</BODY>
+</HTML>

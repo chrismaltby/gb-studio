@@ -1,0 +1,135 @@
+.TH string.h 3 "19 Aug 2000" "gbdk-lib" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+string.h \- Generic string functions. 
+.SH SYNOPSIS
+.br
+.PP
+.SS Functions
+
+.in +1c
+.ti -1c
+.RI "char* \fBstrcpy\fR (char *dest, const char *src) NONBANKED"
+.br
+.RI "\fICopies the string pointed to be src (including the terminating `\\0' character) to the array pointed to by dest.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "int \fBstrcmp\fR (const char *s1, const char *s2) NONBANKED"
+.br
+.RI "\fICompares the two strings s1 and s2.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void* \fBmemcpy\fR (void *dest, const void *src, size_t len) NONBANKED"
+.br
+.RI "\fICopies n bytes from memory area src to memory area dest.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "char* \fBreverse\fR (char *s)"
+.br
+.RI "\fIReverses the characters in the string.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+char* \fBstrcat\fR (char *s1, const char *s2) NONBANKED"
+.br
+.ti -1c
+.RI "
+int \fBstrlen\fR (const char *s) NONBANKED"
+.br
+.RI "\fICalculates the length of the string, not including the terminating `\\0' character.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "char* \fBstrncat\fR (char *s1, const char *s2, int n) NONBANKED"
+.br
+.RI "\fIConcatenate s2 on the end of s1.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+int \fBstrncmp\fR (const char *s1, const char *s2, int n) NONBANKED"
+.br
+.RI "\fICompare strings (at most n bytes): s1>s2: >0 s1==s2: 0 s1<s2: <0.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "char* \fBstrncpy\fR (char *s1, const char *s2, int n) NONBANKED"
+.br
+.RI "\fICopy s2 to s1, truncating or null-padding to always copy n bytes.\fR"
+.PP
+
+.in -1c
+.SH DETAILED DESCRIPTION
+.PP 
+Generic string functions.
+.SH FUNCTION DOCUMENTATION
+.PP 
+.SS char * strcpy (char * dest, const char * src)
+.PP
+Copies the string pointed to be src (including the terminating `\\0' character) to the array pointed to by dest.
+.PP
+The strings may not overlap, and the destination string dest must be large enough to receive the copy.
+.PP
+\fBParameters: \fR
+.in +1c
+.TP
+\fB\fIdest\fR\fR Array to copy into. 
+.TP
+\fB\fIsrc\fR\fR Array to copy from. 
+.PP
+\fBReturns: \fR
+.in +1c
+A pointer to dest. 
+.SS int strcmp (const char * s1, const char * s2)
+.PP
+Compares the two strings s1 and s2.
+.PP
+It returns an integer less than, equal to, or greater than zero if s1 is found, respectively, to be less than, to match, or be greater than s2. 
+.SS void * memcpy (void * dest, const void * src, size_t len)
+.PP
+Copies n bytes from memory area src to memory area dest.
+.PP
+The memory areas may not overlap.
+.PP
+\fBParameters: \fR
+.in +1c
+.TP
+\fB\fIdest\fR\fR Array to copy into. 
+.TP
+\fB\fIsrc\fR\fR Array to copy from. 
+.TP
+\fB\fIlen\fR\fR The length in bytes of src. 
+.PP
+\fBReturns: \fR
+.in +1c
+A pointer to dest. 
+.SS char * reverse (char * s)
+.PP
+Reverses the characters in the string.
+.PP
+For example 'abcdefg' will become 'gfedcba'. Banked as the string must be modifiable. 
+.SS char * strncat (char * s1, const char * s2, int n)
+.PP
+Concatenate s2 on the end of s1.
+.PP
+s1 must be large enough. At most n characters are moved. 
+.SS char * strncpy (char * s1, const char * s2, int n)
+.PP
+Copy s2 to s1, truncating or null-padding to always copy n bytes.
+.PP
+If there is no \\0 in the first n bytes of s2 then s1 will not be null terminated. 
+.SH AUTHOR
+.PP 
+Generated automatically by Doxygen for gbdk-lib from the source code.

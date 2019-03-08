@@ -1,0 +1,5 @@
+WAIT_HBL MACRO
+	ldh	a,(.STAT)
+	bit	1,a
+	jr	nz,#.-4
+	ENDM

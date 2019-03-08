@@ -1,0 +1,19 @@
+XL
+H 9 areas 1 global symbols
+M isspace
+A _CODE size 25 flags 0
+S _isspace Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+T 00 00 F8 02 7E FE 20 CA 1D 00 F8 02 7E FE 09 CA
+R 00 00 00 00 00 08 00 00
+T 0E 00 1D 00 F8 02 7E FE 0A C2 1A 00 18 03 C3
+R 00 00 00 00 00 02 00 00 00 0A 00 00
+T 1B 00 22 00 1E 01 C3 24 00 1E 00 C9
+R 00 00 00 00 00 02 00 00 00 07 00 00

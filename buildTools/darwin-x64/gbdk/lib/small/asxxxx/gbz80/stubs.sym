@@ -1,0 +1,60 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  0 __divschar_rrf_s                   0030 GR
+    __divschar_rrx_s                   **** GX
+  0 __divsint_rrf_s                    0018 GR
+    __divsint_rrx_s                    **** GX
+    __divslong                         **** GX
+  0 __divslong_rrf_s                   000C GR
+  0 __divslong_rrx_s                   000C GR
+  0 __divuchar_rrf_s                   003C GR
+    __divuchar_rrx_s                   **** GX
+  0 __divuint_rrf_s                    0024 GR
+    __divuint_rrx_s                    **** GX
+    __divulong                         **** GX
+  0 __divulong_rrf_s                   000F GR
+  0 __divulong_rrx_s                   000F GR
+  0 __modschar_rrf_s                   0042 GR
+    __modschar_rrx_s                   **** GX
+  0 __modsint_rrf_s                    004E GR
+    __modsint_rrx_s                    **** GX
+    __modslong                         **** GX
+  0 __modslong_rrf_s                   0006 GR
+  0 __modslong_rrx_s                   0006 GR
+  0 __moduchar_rrf_s                   0048 GR
+    __moduchar_rrx_s                   **** GX
+  0 __moduint_rrf_s                    0054 GR
+    __moduint_rrx_s                    **** GX
+    __modulong                         **** GX
+  0 __modulong_rrf_s                   0009 GR
+  0 __modulong_rrx_s                   0009 GR
+  0 __mulschar_rrf_s                   002A GR
+    __mulschar_rrx_s                   **** GX
+  0 __mulsint_rrf_s                    0012 GR
+    __mulsint_rrx_s                    **** GX
+    __mulslong                         **** GX
+  0 __mulslong_rrf_s                   0000 GR
+  0 __mulslong_rrx_s                   0000 GR
+  0 __muluchar_rrf_s                   0036 GR
+    __muluchar_rrx_s                   **** GX
+  0 __muluint_rrf_s                    001E GR
+    __muluint_rrx_s                    **** GX
+    __mululong                         **** GX
+  0 __mululong_rrf_s                   0003 GR
+  0 __mululong_rrx_s                   0003 GR
+  0 __rlslong_rrf_s                    006C GR
+    __rlslong_rrx_s                    **** GX
+  0 __rlulong_rrf_s                    0066 GR
+    __rlulong_rrx_s                    **** GX
+  0 __rrslong_rrf_s                    0060 GR
+    __rrslong_rrx_s                    **** GX
+  0 __rrulong_rrf_s                    005A GR
+    __rrulong_rrx_s                    **** GX
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size   72   flags 0

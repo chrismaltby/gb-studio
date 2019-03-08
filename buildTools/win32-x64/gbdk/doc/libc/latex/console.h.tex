@@ -1,0 +1,44 @@
+\section{console.h File Reference}
+\label{console.h}\index{console.h@{console.h}}
+Console functions that work like Turbo C's. 
+
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\label{console.h_a0}
+\index{gotoxy@{gotoxy}!console.h@{console.h}}\index{console.h@{console.h}!gotoxy@{gotoxy}}
+void {\bf gotoxy} ({\bf UINT8} x, {\bf UINT8} y)
+\begin{CompactList}\small\item\em Move the cursor to an absolute position.\item\end{CompactList}
+
+\item 
+\label{console.h_a1}
+\index{posx@{posx}!console.h@{console.h}}\index{console.h@{console.h}!posx@{posx}}
+{\bf UINT8} {\bf posx} (void)
+\begin{CompactList}\small\item\em Get the current X position of the cursor.\item\end{CompactList}
+
+\item 
+\label{console.h_a2}
+\index{posy@{posy}!console.h@{console.h}}\index{console.h@{console.h}!posy@{posy}}
+{\bf UINT8} {\bf posy} (void)
+\begin{CompactList}\small\item\em Get the current Y position of the cursor.\item\end{CompactList}
+
+\item 
+void {\bf setchar} (char c)
+\begin{CompactList}\small\item\em Writes out a single character at the current cursor position.\item\end{CompactList}
+
+\end{CompactItemize}
+\vspace{0.4cm}\hrule\vspace{0.2cm}
+\subsection*{Detailed Description}
+Console functions that work like Turbo C's.
+
+Note that the font is 8x8, making the screen 20x18 characters. \vspace{0.4cm}\hrule\vspace{0.2cm}
+\subsection*{Function Documentation}
+\label{console.h_a3}
+\index{console.h@{console.h}!setchar@{setchar}}
+\index{setchar@{setchar}!console.h@{console.h}}
+\subsection{\setlength{\rightskip}{0pt plus 5cm}void setchar (char {\em c})}
+
+Writes out a single character at the current cursor position.
+
+Does not update the cursor or interpret the character. 

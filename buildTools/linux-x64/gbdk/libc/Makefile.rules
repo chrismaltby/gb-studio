@@ -1,0 +1,23 @@
+# Maccer rule
+%.s: %.ms
+	maccer -o $@ $<
+
+ifeq ($(MODEL),small)
+NEAR_CALLS = 1
+else
+NEAR_CALLS = 0
+endif
+
+include $(TOPDIR)/libc/rules-$(ASM).mk
+
+clean:
+	rm -f $(OBJ) $(CLEANSPEC)
+
+set-model:
+	if [ -e global.s ]; then \
+		sed -e "s/.NEAR_CALLS\W=\W[0-9]\+/.NEAR_CALLS = $(NEAR_CALLS)/" global.s > tmp1.txt ;\
+		mv tmp1.txt global.s; \
+	fi
+
+build-dir:
+	mkdir -p $(BUILD)

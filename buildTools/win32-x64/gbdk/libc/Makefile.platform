@@ -1,0 +1,8 @@
+# Shared Makefile for all the platforms.
+# Provides a way of building the lib with little brains.
+
+all: platform
+
+platform: $(LIB)
+
+include $(TOPDIR)/libc/Makefile.rules

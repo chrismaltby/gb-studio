@@ -1,5 +1,4 @@
 /node_modules
-/buildTools
 out
 .eslintcache
 src/data/src/gb/build

@@ -1,0 +1,15 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  1 _font_ibm_fixed                    0007 GR
+  1 _font_ibm_fixed_tiles              0109 GR
+  1 _font_load_ibm_fixed               0000 GR
+    font_load                          **** GX
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size    0   flags 0
+   1 _BASE                              size  909   flags 0
