@@ -1,7 +1,6 @@
 	;; Originally from GBDK by Pascal Felber.
 	
-	;; BANKED: checked
-	.area	_BASE
+	.area	_CODE
 __mulschar::	
 __muluchar::
 	push	bc

@@ -1,4 +1,3 @@
-REM Automatically generated from Makefile
 ..\..\bin\lcc -Wa-l -Wl-m -Wl-j -DUSE_SFR_FOR_REG -c -o galaxy.o galaxy.c
 ..\..\bin\lcc -Wa-l -Wl-m -Wl-j -DUSE_SFR_FOR_REG -o galaxy.gb galaxy.o
 ..\..\bin\lcc -Wa-l -Wl-m -Wl-j -DUSE_SFR_FOR_REG -c -o space.o space.s

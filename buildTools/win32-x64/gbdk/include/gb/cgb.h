@@ -34,19 +34,20 @@
 #define RGB_ORANGE     RGB(30, 20,  0)
 #define RGB_TEAL       RGB(15, 15,  0)
 
+
 /** Set bkg palette(s).
  */
 void
 set_bkg_palette(UINT8 first_palette,
                 UINT8 nb_palettes,
-                UINT16 *rgb_data) NONBANKED;
+                UINT16 *rgb_data);
 
 /** Set sprite palette(s).
  */
 void
 set_sprite_palette(UINT8 first_palette,
                    UINT8 nb_palettes,
-                   UINT16 *rgb_data) NONBANKED;
+                   UINT16 *rgb_data);
 
 /** Set a bkg palette entry.
  */
@@ -75,6 +76,7 @@ void cpu_slow(void);
     @see cpu_slow
 */
 void cpu_fast(void);
+
 
 /** Set defaults compatible with normal GameBoy.
  */

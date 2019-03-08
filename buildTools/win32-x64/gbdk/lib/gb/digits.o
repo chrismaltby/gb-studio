@@ -1,0 +1,18 @@
+XL
+H 8 areas 1 global symbols
+M lcc-2830430
+A _CODE size 11 flags 0
+A _DATA size 2 flags 0
+S _digits Def0000
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size B flags 0
+A _GSFINAL size 0 flags 0
+T 00 00 11 00 00 21 00 00 73 21 01 00 72
+R 00 00 06 00 00 03 00 00 00 06 01 00 00 0A 01 00
+T 00 00 30 31 32 33 34 35 36 37 38 39 41 42 43 44
+R 00 00 00 00
+T 0E 00 45 46 00
+R 00 00 00 00

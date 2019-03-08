@@ -1,9 +1,5 @@
 	.include	"global.s"
 
-	;; Note that while gets uses a pointer, the pointer had better
-	;; be in non-banked RAM else bad things will happen.
-	;; BANKED:	checked, imperfect
-	
 	.globl	.copy_vram
 	.globl	.set_xy_wtt
 	.globl	.mv_sprite
@@ -58,7 +54,7 @@
 .string_len:			; Used length of input buffer
 	.ds	0x01
 
-	.area	_BASE
+	.area	_CODE
 
 	;; Enter text mode with input
 .tmode_inout::
@@ -130,7 +126,6 @@
 
 	RET
 
-	.area	_CODE
 	;; Prompt the user for a char and return it in A
 .get_char:
 	PUSH	BC
@@ -521,7 +516,7 @@
 	POP	BC
 	RET
 
-_getchar::			; Banked
+_getchar::
 	LD	A,(.mode)
 	CP	#.T_MODE_INOUT
 	JR	Z,1$
@@ -533,7 +528,7 @@ _getchar::			; Banked
 	LD	E,A
 	RET
 
-_gets::				; Banked
+_gets::
 	LD	A,(.mode)
 	CP	#.T_MODE_INOUT
 	JR	Z,1$
@@ -541,7 +536,7 @@ _gets::				; Banked
 	CALL	.tmode_inout
 	POP	BC
 1$:
-	LDA	HL,.BANKOV(SP)	; Skip return address
+	LDA	HL,2(SP)	; Skip return address
 	LD	A,(HL+)
 	LD	H,(HL)		; HL = s
 	LD	L,A
@@ -550,8 +545,7 @@ _gets::				; Banked
 	POP	DE
 	RET
 
-	;; PENDING: this is unfortunate.  Refed from .tmode_inout
-	.area	_BASE
+	.area	_LIT
 .tp1:
 
 .pointers:
@@ -574,16 +568,9 @@ _gets::				; Banked
 	.byte	0x1E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x1F
 
 .kbdtable:
-	;; This is unfortunate.  astorgb and rgbasm cant interpert:
-	;;	.ascii	" !\"#$%&'()*+,-./"
-	;; so we have to use the hex form here.
-	.db	0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27
-	.db	0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x2E,0x2F
-	.ascii	"0123456789:"
-	;; astorgb recognises the embedded ; as a comment :)
-	.db	0x3B		
-	.ascii	"<=>?"
+	.ascii	| !"#$%&'()*+,-./|
+	.ascii	"0123456789:;<=>?"
 	.ascii	"@ABCDEFGHIJKLMNO"
 	.ascii	"PQRSTUVWXYZ[\\]^_"
 	.ascii	"`abcdefghijklmno"
-	.ascii	"pqrstuvwxyz\{\|\}~ "
+	.ascii	"pqrstuvwxyz{|}~ "

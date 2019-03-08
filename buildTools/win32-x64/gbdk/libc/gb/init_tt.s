@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED: checked
-	.area	_BASE
+	.area	_CODE
 
 	;; Initialize part (size = DE) of the VRAM at (HL) with B
 .init_vram::

@@ -2,16 +2,41 @@
 	
 	.area	_CODE
 	
-__mulschar::	
-__muluchar::
+	pop	bc
+	pop	de
+	ret
+
 __mulsint::
 __muluint::
-	;; Parameters:
-	;;	HL, DE (left, right irrelivent)
-	;; Must preserve BC
+	push	de
 	push	bc
-	ld	b,h
-	ld	c,l
+	ld	hl,#6
+	add	hl,sp
+
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	jp	.mulu16
+	
+__mulschar::	
+__muluchar::
+	push	de
+	push	bc
+	ld	hl,#6
+	add	hl,sp
+
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
+.mul8:
+.mulu8:
+	LD	B,#0x00		; Sign extend is not necessary with mul
+	LD	D,B
+	; Fall through
 	
 	;; 16-bit multiplication
 	;; 
@@ -46,5 +71,6 @@ __muluint::
 .mend:
 				; HL = result
 	pop	bc
+	pop	de
 	ret
 

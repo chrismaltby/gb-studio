@@ -12,14 +12,6 @@
 #error Unrecognised port
 #endif
 
-#ifndef NONBANKED
-#define NONBANKED
-#endif
-
-#ifndef BANKED
-#define BANKED
-#endif
-
 /** TRUE or FALSE.
  */
 typedef INT8		BOOLEAN;

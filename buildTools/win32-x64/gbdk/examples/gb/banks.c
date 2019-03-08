@@ -1,6 +1,3 @@
-/** Note that this example is a bit old.  Try BANKED and NONBANKED
-    as in banked/
- */
 #include <gb/gb.h>
 #include <stdio.h>
 
@@ -10,11 +7,11 @@ extern int var_1;  /* In external RAM bank 1 */
 extern int var_2;  /* In external RAM bank 2 */
 extern int var_3;  /* In external RAM bank 3 */
 
-void bank_1() NONBANKED;
-void bank_2() NONBANKED;
-void bank_3() NONBANKED;
+void bank_1();
+void bank_2();
+void bank_3();
 
-void bank_fixed(void) NONBANKED
+void bank_fixed()
 {
   puts("I'm in fixed ROM");
 }
@@ -25,7 +22,7 @@ void print_var(UBYTE bank)
   printf("Var_%u is %u\n");
 }
 
-void main(void)
+void main()
 {
   puts("Program Start...");
 

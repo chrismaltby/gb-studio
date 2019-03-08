@@ -26,7 +26,7 @@ void print_counter()
   cnt = tim_cnt;
   enable_interrupts();
 
-  printf(" TIM %u", (unsigned int)cnt);
+  printf(" TIM %u", cnt);
   gotoxy(9, posy());
 
   /* Ensure mutual exclusion (not really necessary in this example)... */
@@ -34,7 +34,7 @@ void print_counter()
   cnt = vbl_cnt;
   enable_interrupts();
 
-  printf("- VBL %u\n", (unsigned int)cnt);
+  printf("- VBL %u\n", cnt);
 }
 
 void main()

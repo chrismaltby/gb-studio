@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Startup Code</TITLE>
+ <LINK HREF="SDCCUdoc-13.html" REL=next>
+ <LINK HREF="SDCCUdoc-11.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc12" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-13.html">Next</A>
+<A HREF="SDCCUdoc-11.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc12">Contents</A>
+<HR>
+<H2><A NAME="Startup"></A> <A NAME="s12">12. Startup Code</A> </H2>
+
+<P>The compiler inserts a jump to the C routine <B>_sdcc__external__startup()</B>at the start of the CODE area. This routine can be found in the file <B>SDCCDIR/sdcc51lib/_startup.c</B>
+, by default this routine returns 0, if this routine returns a non-zero value
+, the static &amp; global variable initialization will be skipped and the function
+main will be invoked, other wise static &amp; global variables will be initialized
+before the function main is invoked.
+<HR>
+<A HREF="SDCCUdoc-13.html">Next</A>
+<A HREF="SDCCUdoc-11.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc12">Contents</A>
+</BODY>
+</HTML>

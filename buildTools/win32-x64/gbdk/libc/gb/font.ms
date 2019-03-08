@@ -54,7 +54,8 @@ font_first_free_tile::
 font_table::
 	.ds	sfont_handle_sizeof*.MAX_FONTS
 	
-	.area   _BASE
+	.area   _CODE
+
 	; Copy uncompressed 16 byte tiles from (BC) to (HL), length = DE*2
 	; Note: HL must be aligned on a UWORD boundry
 font_copy_uncompressed::
@@ -353,14 +354,9 @@ font_set::
 	xor	a
 	ld	(font_first_free_tile),a
 
-	.globl	_font_load_ibm_fixed
-	call	banked_call
-	.dw	_font_load_ibm_fixed
-	.if __RGBDS__
-	.dw	BANK(_font_load_ibm_fixed);
-	.else
-	.dw	0
-	.endif
+	.globl	_font_ibm_fixed
+	ld	hl,#_font_ibm_fixed
+	call	font_load
 3$:
 	pop	af
 	push	bc
@@ -409,24 +405,20 @@ set_char_no_encoding:
 	POP     BC
 	RET
 
-	.area	_CODE
-_putchar::			; Banked
-	PUSH	BC
-	LDA     HL,.BANKOV+2(SP); Skip return address
+_putchar::
+	LDA     HL,2(SP)        ; Skip return address
 	LD      A,(HL)          ; A = c
 	CALL    .put_char
-	POP	BC
 	RET
 
-_setchar::			; Banked
-	PUSH	BC
-	LDA     HL,.BANKOV+2(SP); Skip return address
+_setchar::
+	push	bc
+	LDA     HL,4(SP)        ; Skip return address
 	LD      A,(HL)          ; A = c
 	CALL    .set_char
-	POP	BC
+	pop	bc
 	RET
 
-	.area	_BASE
 _font_load::
 	push	bc
 	LDA     HL,4(SP)        ; Skip return address and bc
@@ -478,6 +470,35 @@ _font_init::
 	pop	bc
 	ret
 	
+_print_repeat::
+	push	bc
+	lda	hl,4(sp)
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	xor	a
+	cp	d
+	jr	nz,_print_repeat_go
+	pop	bc
+	ret
+_print_repeat_go:
+	ld	a,e
+	push	de
+	call	.put_char
+	pop	de
+	dec	d
+	jr	nz,_print_repeat_go
+	pop	bc
+	ret
+
+_gotoxy::
+	lda	hl,2(sp)
+	ld	a,(hl+)
+	ld	(.curx),a
+	ld	a,(hl)
+	ld	(.cury),a
+	ret
+
 _cls::
 .cls::	
 	PUSH	DE
@@ -499,18 +520,9 @@ _cls::
 	POP	DE
 	RET
 
-	.area	_CODE
 	; Support routines
-_gotoxy::			; Banked
-	lda	hl,.BANKOV(sp)
-	ld	a,(hl+)
-	ld	(.curx),a
-	ld	a,(hl)
-	ld	(.cury),a
-	ret
-
 _posx::
-	LD	A,(.mode)	; Banked
+	LD	A,(.mode)
 	AND	#.T_MODE
 	JR	NZ,1$
 	PUSH	BC
@@ -521,7 +533,7 @@ _posx::
 	LD	E,A
 	RET
 
-_posy::				; Banked
+_posy::
 	LD	A,(.mode)
 	AND	#.T_MODE
 	JR	NZ,1$
@@ -533,7 +545,6 @@ _posy::				; Banked
 	LD	E,A
 	RET
 
-	.area	_BASE
 	;; Rewind the cursor
 .rew_curs:
 	PUSH	HL
@@ -645,8 +656,7 @@ _posy::				; Banked
 	.ds	0x01
 .cury::
 	.ds	0x01
-
-	.area	_BASE
+	.area	_CODE
 
 	.globl	.vbl
 	.globl	.lcd

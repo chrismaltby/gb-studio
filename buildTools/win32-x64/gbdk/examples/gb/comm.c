@@ -1,12 +1,12 @@
 #include <gb/gb.h>
 #include <stdio.h>
 
-const char * str = "Hello World!";
+char *str = "Hello World!";
 char buffer[32];
 
-void main(void)
+void main()
 {
-  UBYTE i, n = 0;
+  UBYTE i, j, n = 0;
   char *s;
 
   puts("Byte");

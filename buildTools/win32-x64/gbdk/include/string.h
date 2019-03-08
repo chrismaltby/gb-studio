@@ -15,14 +15,14 @@
     @param src			Array to copy from.
     @return 			A pointer to dest.
 */
-char *strcpy(char *dest, const char *src) NONBANKED;
+char *strcpy(char *dest, const char *src);
 
 /** Compares the two strings s1 and s2.  
     It returns an integer less than, equal to, or greater than zero if
     s1 is found, respectively, to be less than, to match, or be
     greater than s2.
 */
-int strcmp(const char *s1, const char *s2) NONBANKED;
+int strcmp(const char *s1, const char *s2);
 
 /** Copies n bytes from memory area src to memory area dest.  
     The memory areas may not overlap.
@@ -32,37 +32,18 @@ int strcmp(const char *s1, const char *s2) NONBANKED;
     @param len			The length in bytes of src.
     @return 			A pointer to dest.
 */    
-void *memcpy(void *dest, const void *src, size_t len) NONBANKED;
+void *memcpy(void *dest, const void *src, size_t len);
 
-/** Reverses the characters in the string.  
-    For example 'abcdefg' will become 'gfedcba'.  Banked as the string
-    must be modifiable.
-*/
 char *reverse(char *s);
 
-char *strcat(char *s1, const char *s2) NONBANKED;
+char *strcat(char *s1, const char *s2);
 
-/** Calculates the length of the string, not including the terminating
-    `\0' character.
-*/
-int strlen(const char *s) NONBANKED;
+int strlen(const char *s);
 
-/**Concatenate s2 on the end of s1. 
-   s1 must be large enough.  At most n characters are moved.
-*/
-char *strncat(char *s1, const char *s2, int n) NONBANKED;
+char *strncat(char *s1, const char *s2, int n);
 
-/** Compare strings (at most n bytes):
-    s1>s2: >0
-    s1==s2: 0
-    s1<s2: <0
-*/
-int strncmp(const char *s1, const char *s2, int n) NONBANKED;
+int strncmp(const char *s1, const char *s2, int n);
 
-/** Copy s2 to s1, truncating or null-padding to always copy n bytes.
-    If there is no \0 in the first n bytes of s2 then s1 will not be
-    null terminated.
-*/
-char *strncpy(char *s1, const char *s2, int n) NONBANKED;
+char *strncpy(char *s1, const char *s2, int n);
 
 #endif

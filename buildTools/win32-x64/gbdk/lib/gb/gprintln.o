@@ -1,0 +1,51 @@
+XL
+H 8 areas 12 global symbols
+M lcc-2830430
+S __divuint Ref0000
+S _line Ref0000
+S _circle Ref0000
+S _gprintf Ref0000
+S _plot Ref0000
+S _gprintn Ref0000
+S _digits Ref0000
+S _plot_point Ref0000
+S _box Ref0000
+S _switch_data Ref0000
+S _draw_image Ref0000
+S _getpix Ref0000
+S _gotogxy Ref0000
+S _gprint Ref0000
+S _wrtchr Ref0000
+S __moduint Ref0000
+S _color Ref0000
+A _CODE size 8E flags 0
+S _gprintln Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+T 00 00 C5 E8 FC F8 09 7E CB 7F CA 28 00 AF 23 23
+R 00 00 00 00 00 0B 00 00
+T 0E 00 B6 B7 CA 28 00 3E 2D F5 33 CD 00 00 E8 01
+R 00 00 00 00 00 05 00 00 02 0C 0E 00
+T 1C 00 AF F8 08 3E 00 9E 77 23 3E 00 9E 77 F8 0A
+R 00 00 00 00
+T 2A 00 7E F8 00 77 23 36 00 2B 2A 66 6F E5 F8 0A
+R 00 00 00 00
+T 38 00 2A 66 6F E5 CD 00 00 42 4B E8 04 F8 02 71
+R 00 00 00 00 02 07 00 00
+T 46 00 23 70 79 B0 CA 61 00 F8 02 4E 23 46 3E 00
+R 00 00 00 00 00 07 00 00
+T 54 00 F5 33 F8 0B 7E F5 33 C5 CD 00 00 E8 04 F8
+R 00 00 00 00 00 0B 00 00
+T 62 00 08 4E 23 46 F8 00 2A 66 6F E5 C5 CD 00 00
+R 00 00 00 00 02 0E 0F 00
+T 70 00 42 4B E8 04 21 00 00 7E 81 5F 21 01 00 7E
+R 00 00 00 00 02 07 06 00 02 0D 06 00
+T 7E 00 88 57 1A 4F 79 F5 33 CD 00 00 E8 01 E8 04
+R 00 00 00 00 02 0A 0E 00
+T 8C 00 C1 C9
+R 00 00 00 00

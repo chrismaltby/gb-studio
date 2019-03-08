@@ -1,0 +1,23 @@
+XL
+H 8 areas 2 global symbols
+M labs
+S _exit Ref0000
+A _CODE size 45 flags 0
+S _labs Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+T 00 00 C5 E8 FC F8 0B 7E CB 7F CA 38 00 AF F8 08
+R 00 00 00 00 00 0B 00 00
+T 0E 00 3E 00 9E F8 00 77 F8 09 3E 00 9E F8 01 77
+R 00 00 00 00
+T 1C 00 F8 0A 3E 00 9E F8 02 77 F8 0B 3E 00 9E F8
+R 00 00 00 00
+T 2A 00 03 77 F8 00 5E 23 56 23 2A 66 6F C3 41 00
+R 00 00 00 00 00 0E 00 00
+T 38 00 F8 08 5E 23 56 23 2A 66 6F E8 04 C1 C9
+R 00 00 00 00

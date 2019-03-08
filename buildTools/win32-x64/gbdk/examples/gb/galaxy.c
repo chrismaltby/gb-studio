@@ -322,7 +322,7 @@ const unsigned char door4_tiles[] = {
 };
 
 /* Should really be const, but sdcc doesnt yet support it. */
-const unsigned char * const film[] = {
+const unsigned char *film[] = {
   &door1_tiles[0x0C*0],
   &door2_tiles[0x0C*0],
   &door3_tiles[0x0C*0],
@@ -366,10 +366,10 @@ const unsigned char * const film[] = {
 #define OPENED  0x02
 #define CLOSING 0x03
 
-static UBYTE time;  /* Global "time" value (counter) */
+UBYTE time;         /* Global "time" value (counter) */
 UBYTE doorstate;    /* State of the door (OPENED, CLOSED...) */
 UBYTE doorpos;      /* Current position in the door animation */
-static UBYTE color; /* Current color for fading effect */
+UBYTE color;        /* Current color for fading effect */
 UBYTE sframe;       /* Current frame of the sprite */
 fixed bposx, bposy; /* Background position (fixed point) */
 fixed bspx, bspy;   /* Background speed (fixed point) */
@@ -536,8 +536,8 @@ void main()
   SCX_REG = 0;
   bposy.w = 0;
   SCY_REG = 0;
-  bspx.w = 0xFF00;
-  bspy.w = 0x0080;
+  bspx.w = 0xFF00UL;
+  bspy.w = 0x0080UL;
 
   /* Initialize the window */
   set_win_data(0x80, 0x21, frame_data);
@@ -561,18 +561,18 @@ void main()
   wposy.b.h = MAXWNDPOSY;
   wposy.b.l = 0;
   WY_REG = MAXWNDPOSY;
-  wspx.w = 0xFF80;
-  wspy.w = 0xFFC0;
+  wspx.w = 0xFF80UL;
+  wspy.w = 0xFFC0UL;
 
   /* Initialize the sprite */
   set_sprite_data(0x00, 0x1C, earth_data);
   set_sprite_prop(0, 0x00);
   set_sprite_prop(1, 0x00);
   sframe = 0;
-  sposx.w  = 0x1000;
-  sposy.w  = 0x1000;
-  sspx.w  = 0x0040;
-  sspy.w  = 0x0040;
+  sposx.w  = 0x1000U;
+  sposy.w  = 0x1000U;
+  sspx.w  = 0x0040UL;
+  sspy.w  = 0x0040UL;
   tile_sprite();
   place_sprite();
 
@@ -591,22 +591,22 @@ void main()
     i = joypad();
     if(i & J_B) {
       if(i & J_UP)
-	bspy.w -= 0x0010;
+	bspy.w -= 0x0010UL;
       if(i & J_DOWN)
-	bspy.w += 0x0010;
+	bspy.w += 0x0010UL;
       if(i & J_LEFT)
-	bspx.w -= 0x0010;
+	bspx.w -= 0x0010UL;
       if(i & J_RIGHT)
-	bspx.w += 0x0010;
+	bspx.w += 0x0010UL;
     } else if(i & J_A) {
       if(i & J_UP)
-	wspy.w -= 0x0010;
+	wspy.w -= 0x0010UL;
       if(i & J_DOWN)
-	wspy.w += 0x0010;
+	wspy.w += 0x0010UL;
       if(i & J_LEFT)
-	wspx.w -= 0x0010;
+	wspx.w -= 0x0010UL;
       if(i & J_RIGHT)
-	wspx.w += 0x0010;
+	wspx.w += 0x0010UL;
     } else {
       if(i & J_SELECT)
 	color = STARTFADE;
@@ -619,13 +619,13 @@ void main()
 	  doorpos = NBDFRAMES;
 	}
       if(i & J_UP)
-	sspy.w -= 0x0010;
+	sspy.w -= 0x0010UL;
       if(i & J_DOWN)
-	sspy.w += 0x0010;
+	sspy.w += 0x0010UL;
       if(i & J_LEFT)
-	sspx.w -= 0x0010;
+	sspx.w -= 0x0010UL;
       if(i & J_RIGHT)
-	sspx.w += 0x0010;
+	sspx.w += 0x0010UL;
     }
   }
 }

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-long atol(const char *s) NONBANKED
+long atol(const char *s)
 {
   UINT8 i, sign = 0;
   long n;

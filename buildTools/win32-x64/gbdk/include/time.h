@@ -21,7 +21,7 @@ typedef UINT16	time_t;
     as a clock_t; to get the number of seconds used, divide by
     CLOCKS_PER_SEC.
 */
-clock_t clock(void) NONBANKED;
+clock_t clock(void);
 
 time_t time(time_t *t);
 

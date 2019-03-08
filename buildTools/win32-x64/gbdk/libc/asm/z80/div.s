@@ -36,16 +36,25 @@ __modschar::
 	ret
 
 __divsint::
+	push	de
 	push	bc
-	ld	b,h
-	ld	c,l
+	ld	hl,#6
+	add	hl,sp
 
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.div16
 
 	ld	l,c
 	ld	h,b
 	
 	pop	bc
+	pop	de
 	ret
 	
 __modsint::
@@ -108,21 +117,40 @@ __moduchar::
 	ret
 
 __divuint::
+	push	de
 	push	bc
-	ld	b,h
-	ld	c,l
+	ld	hl,#6
+	add	hl,sp
+
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.divu16
 
 	ld	l,c
 	ld	h,b
 	
 	pop	bc
+	pop	de
 	ret
 	
 __moduint::
+	push	de
 	push	bc
-	ld	b,h
-	ld	c,l
+	ld	hl,#6
+	add	hl,sp
+
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 
 	call	.divu16
 
@@ -130,6 +158,7 @@ __moduint::
 	ld	h,d
 	
 	pop	bc
+	pop	de
 	ret
 	
 .div8::

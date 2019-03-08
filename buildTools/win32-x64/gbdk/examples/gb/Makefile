@@ -19,8 +19,7 @@ OTHER = sound.gb \
 all:	$(BINS)
 
 make.bat: Makefile
-	echo "REM Automatically generated from Makefile" > make.bat
-	make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+	make -sn | sed y/\\//\\\\/ | grep -v make > make.bat
 
 %.o:	%.c
 	$(CC) -c -o $@ $<

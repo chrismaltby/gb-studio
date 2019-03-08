@@ -10,10 +10,10 @@
 
 /** Initalise the random number generator.
     seed needs to be different each time, else the same sequence will be 
-    generated.  A good source is the DIV register.
+    generated.  A good source is the DVI register.
 */
 void
-initrand(UINT16 seed) NONBANKED; /* Non-banked as called from asm in arand.s */
+initrand(UINT16 seed);
 
 /** Returns a random value.
  */

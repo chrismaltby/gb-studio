@@ -1,11 +1,10 @@
-	.include "global.s"
+  .include "global.s"
 
-	;; BANKED:	checked
-	.title "Sound sample player"
-	.module Sample
+  .title "Sound sample player"
+  .module Sample
 
-	.area	_BASE
-	.AUD3WAVERAM = 0xff30
+
+  .AUD3WAVERAM = 0xff30
 
 _play_sample::
   push bc

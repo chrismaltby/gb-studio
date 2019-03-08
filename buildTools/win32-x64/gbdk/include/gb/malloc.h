@@ -37,8 +37,8 @@ extern UBYTE malloc_heap_start;
 extern pmmalloc_hunk malloc_first;
 
 /** Garbage collect (join free hunks) */
-void malloc_gc(void) NONBANKED;
+void malloc_gc(void);
 /** debug message logger */
-void debug( char *routine, char *msg ) NONBANKED;
+void debug( char *routine, char *msg );
 
 #endif	/* __SYS_MALLOC_H */

@@ -1,0 +1,34 @@
+XL
+H 1 areas 15 global symbols
+S .add_TIM Ref0000
+S .add_SIO Ref0000
+S _main Ref0000
+S .STACK Ref0000
+S __cpu Ref0000
+S .add_JOY Ref0000
+S .wait_vbl_done Ref0000
+S __io_in Ref0000
+S __io_out Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S __io_status Ref0000
+S .init Ref0000
+S .add_LCD Ref0000
+S .OAM Ref0000
+S .refresh_OAM Ref0000
+S .add_VBL Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 43 flags 0
+S _delay Def003A
+S .delay Def0000
+T 00 00 C5 CD 1D 00 06 32 18 00 18 00 18 00 18 00
+R 00 00 00 00 00 04 00 00
+T 0E 00 18 00 05 C2 06 00 00 C1 18 00 18 00 18 00
+R 00 00 00 00 00 06 00 00
+T 1C 00 C9 1B 7B B2 C8 06 33 18 00 18 00 18 00 18
+R 00 00 00 00
+T 2A 00 00 18 00 05 C2 23 00 00 18 00 18 00 18 00
+R 00 00 00 00 00 07 00 00
+T 38 00 18 E3 F8 02 5E 23 56 CD 00 00 C9
+R 00 00 00 00 00 0A 00 00

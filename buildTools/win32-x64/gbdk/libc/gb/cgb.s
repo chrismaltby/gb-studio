@@ -3,10 +3,9 @@
 	.title	"CGB support"
 	.module	CGB
 
-	;; BANKED: checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
-_set_bkg_palette::		; Non-banked
+_set_bkg_palette::
 	PUSH	BC
 	PUSH	DE
 
@@ -50,7 +49,7 @@ _set_bkg_palette::		; Non-banked
 	POP	BC
 	RET
 
-_set_sprite_palette::		; Non-banked
+_set_sprite_palette::
 	PUSH	BC
 	PUSH	DE
 
@@ -94,12 +93,12 @@ _set_sprite_palette::		; Non-banked
 	POP	BC
 	RET
 
-	.area	_CODE
-_set_bkg_palette_entry::	; Banked
+
+_set_bkg_palette_entry::
 	PUSH	BC
 	PUSH	DE
 
-	LDA	HL,.BANKOV+4+3(SP); Skip return address and registers
+	LDA	HL,9(SP)	; Skip return address and registers
 	LD	B,(HL)		; BC = rgb_data
 	DEC	HL
 	LD	C,(HL)
@@ -140,7 +139,7 @@ _set_sprite_palette_entry::
 	PUSH	BC
 	PUSH	DE
 
-	LDA	HL,.BANKOV+4+3(SP); Skip return address and registers
+	LDA	HL,9(SP)	; Skip return address and registers
 	LD	B,(HL)		; BC = rgb_data
 	DEC	HL
 	LD	C,(HL)
@@ -177,8 +176,8 @@ _set_sprite_palette_entry::
 	POP	BC
 	RET
 
-	.area	_CODE
-_cpu_slow::			; Banked
+
+_cpu_slow::
 	LDH	A,(.KEY1)
 	AND	#0x80		; Is GBC in double speed mode?
 	RET	Z		; No, already in single speed
@@ -204,14 +203,14 @@ shift_speed:
 
 	RET
 
-_cpu_fast::			; Banked
+_cpu_fast::
 	LDH	A,(.KEY1)
 	AND	#0x80		; Is GBC in double speed mode?
 	RET	NZ		; Yes, exit
         JR	shift_speed
 
 
-_cgb_compatibility::		; Banked
+_cgb_compatibility::
 
 	LD	A,#0x80
 	LDH	(.BCPS),A	; Set default bkg palette

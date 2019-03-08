@@ -2,4 +2,3 @@ PROJECT_NAME = "gbdk-lib"
 OUTPUT_DIRECTORY = "../doc/libc"
 RECURSIVE = yes
 INPUT = .
-PREDEFINED = "NONBANKED= BANKED="

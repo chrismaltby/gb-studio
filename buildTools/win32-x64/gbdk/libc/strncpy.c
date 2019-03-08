@@ -5,7 +5,7 @@
  * Return s1.
  */
 
-char *strncpy(char *s1, const char *s2, int n) NONBANKED
+char *strncpy(char *s1, const char *s2, int n)
 {
   int i;
   char *os1;

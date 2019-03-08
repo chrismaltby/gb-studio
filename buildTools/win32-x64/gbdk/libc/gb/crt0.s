@@ -2,8 +2,7 @@
 
 	;; ****************************************
 	;; Beginning of module
-	;; BANKED: checked
-	.title	"Runtime"
+	.title	"GB Runtime"
 	.module	Runtime
 	.area	_HEADER (ABS)
 
@@ -239,18 +238,12 @@
 
 	call	gsinit
 
-;	CALL	.init		
+	CALL	.init
 
 	EI			; Enable interrupts
 
 	;; Call the main function
-	CALL	banked_call
-	.dw	_main
-	.if __RGBDS__
-	.dw	BANK(_main)
-	.else
-	.dw	1
-	.endif
+	CALL	_main
 _exit::	
 99$:
 	HALT
@@ -265,8 +258,6 @@ _exit::
 	;; Ordering of segments for the linker
 	;; Code that really needs to be in bank 0
 	.area	_HOME
-	;; Similar to _HOME
-	.area	_BASE
 	;; Code
 	.area	_CODE
 	;; Constant data
@@ -295,8 +286,6 @@ __io_status::
 	.ds	0x01		; Status of serial IO
 .vbl_done::
 	.ds	0x01		; Is VBL interrupt finished?
-__current_bank::
-	.ds	0x01		; Current MBC1 style bank.
 .sys_time::
 _sys_time::
 	.ds	0x02		; System time in VBL units
@@ -317,7 +306,8 @@ gsinit::
 	.area	_GSINITTAIL
 	ret
 	
-	.area	_HOME
+	.area	_CODE
+
 	;; Call the initialization function for the mode specified in HL
 .set_mode::
 	LD	A,L
@@ -430,6 +420,17 @@ gsinit::
 2$:	
 	CALL	.refresh_OAM
 
+	.if	0
+	;; Verify that only one VBlank interrupt occured
+	LD	A,(.vbl_done)
+	OR	A
+	JR	Z,1$
+	LDH	A,(.BGP)
+	CPL
+	LDH	(.BGP),A
+1$:
+	.endif
+
 	LD	A,#0x01
 	LD	(.vbl_done),A
 	RET
@@ -441,10 +442,6 @@ _wait_vbl_done::
 	LDH	A,(.LCDC)
 	ADD	A
 	RET	NC		; Return if screen is off
-	XOR	A
-	DI
-	LD	(.vbl_done),A	; Clear any previous sets of vbl_done
-	EI
 1$:
 	HALT			; Wait for any interrupt
 	NOP			; HALT sometimes skips the next instruction
@@ -674,42 +671,5 @@ _clock::
 __printTStates::
 	ret
 
-	;; Performs a long call.
-	;; Basically:
-	;;   call banked_call
-	;;   .dw low
-	;;   .dw bank
-	;;   remainder of the code
-	;; Total m-cycles:
-	;;	3+4+4 + 2+2+2+2+2+2 + 4+4+ 3+4+1+1+1
-	;;      = 41 for the call
-	;;	3+3+4+4+1
-	;;	= 15 for the ret
-banked_call::
-	pop	hl		; Get the return address
-	ld	a,(__current_bank)
-	push	af		; Push the current bank onto the stack
-	ld	e,(hl)		; Fetch the call address
-	inc	hl
-	ld	d,(hl)
-	inc	hl
-	ld	a,(hl+)		; ...and page
-	inc	hl		; Yes this should be here
-	push	hl		; Push the real return address
-	ld	(__current_bank),a
-	ld	(.MBC1_ROM_PAGE),a	; Perform the switch
-	ld	hl,#banked_ret	; Push the fake return address
-	push	hl
-	ld	l,e
-	ld	h,d
-	jp	(hl)
-
-banked_ret::
-	pop	hl		; Get the return address
-	pop	af		; Pop the old bank
-	ld	(.MBC1_ROM_PAGE),a
-	ld	(__current_bank),a
-	jp	(hl)
-		
 	.area	_HEAP
 _malloc_heap_start::

@@ -4,7 +4,7 @@
 #include <string.h>
 
 #if USE_C_STRCPY
-char *strcpy(char *dest, const char *source) NONBANKED
+char *strcpy(char *dest, const char *source)
 {
     char *d = dest;
     const char *s = source;
@@ -15,7 +15,7 @@ char *strcpy(char *dest, const char *source) NONBANKED
 #endif
 
 #if USE_C_MEMCPY
-void *memcpy(void *dest, const void *source, size_t count) NONBANKED
+void *memcpy(void *dest, const void *source, size_t count)
 {
     char *d = dest;
     const char *s = source;
@@ -29,7 +29,7 @@ void *memcpy(void *dest, const void *source, size_t count) NONBANKED
 #endif
 
 #if USE_C_STRCMP
-int strcmp(const char *s1, const char *s2) NONBANKED
+int strcmp(const char *s1, const char *s2)
 {
     char ret = 0;
 

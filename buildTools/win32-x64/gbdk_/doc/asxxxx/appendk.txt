@@ -1,0 +1,158 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                   APPENDIX K
+
+                                AS8051 ASSEMBLER
+
+
+
+
+
+        K.1  8051 REGISTER SET 
+
+        The following is a list of the 8051 registers used by AS8051:  
+
+                a,b             -       8-bit accumulators
+                r0,r1,r2,r3     -       8-bit registers
+                r4,r5,r6,r7
+                dptr            -       data pointer
+                sp              -       stack pointer
+                pc		-	program counter
+                psw             -       status word
+                c		-	carry (bit in status word)
+
+
+        K.2  8051 INSTRUCTION SET 
+
+
+           The  following tables list all 8051 mnemonics recognized
+        by the AS8051  assembler.   The  following  list  specifies  the
+        format for each addressing mode supported by AS8051:  
+
+                #data           immediate data
+                                byte or word data
+        
+                r,r1,r2         register r0,r1,r2,r3,r4,r5,r6, or r7
+        
+                @r              indirect on register r0 or r1
+                @dptr           indirect on data pointer
+                @a+dptr		indirect on accumulator plus data pointer
+                @a+pc           indirect on accumulator plus program counter
+                
+                addr            direct memory address
+
+                bitaddr         bit address
+        
+                label           call or jump label
+
+        The terms data, addr, bitaddr, and label may all be expressions.  
+
+           Note  that  not all addressing modes are valid with every in-
+        struction.  Refer to  the  8051  technical  data  for  valid
+        modes.  
+
+
+        K.2.1  Inherent Instructions 
+
+                nop
+
+
+        K.2.6  Move Instructions 
+
+                mov     a,#data		mov	a,addr
+                mov	a,r		mov	a,@r
+
+                mov     r,#data		mov	r,addr
+                mov	r,a
+
+                mov     addr,a		mov	addr,#data
+                mov	addr,r		mov	addr,@r
+                mov	addr1,addr2	mov	bitaddr,c
+        
+                mov     @r,#data	mov	@r,addr
+                mov	@r,a
+
+                mov	c,bitaddr
+                mov	dptr,#data
+
+                movc    a,@a+dptr	movc    a,@a+pc
+                movx    a,@dptr		movx	a,@r
+                movx	@dptr,a		movx	@r,a
+
+
+        K.2.8  Single Operand Instructions
+
+		clr	a		clr	c	
+                clr	bitaddr
+		cpl	a		cpl	c	
+                cpl	bitaddr
+                setb	c		setb	bitaddr
+
+                da	a		
+                rr	a		rrc	a
+                rl	a		rlc	a
+                swap	a
+
+		dec	a		dec	r	
+                dec	@r
+		inc	a		inc	r	
+                inc	dptr		inc	@r
+
+		div	ab		mul	ab
+
+                pop	addr		push	addr
+
+
+        K.2.8  Two Operand Instructions
+
+		add	a,#data		add	a,addr	
+		add	a,r		add	a,@r
+		addc	a,#data		addc	a,addr	
+		addc	a,r		addc	a,@r
+		subb	a,#data		subb	a,addr	
+		subb	a,r		subb	a,@r
+		orl	a,#data		orl	a,addr	
+		orl	a,r		orl	a,@r
+		orl	addr,a		orl	addr,#data
+		orl	c,bitaddr	orl	c,/bitaddr
+                anl     a,#data         anl     a,addr
+                anl     a,r             anl     a,@r
+                anl     addr,a          anl     addr,#data
+                anl     c,bitaddr       anl     c,/bitaddr
+                xrl     a,#data         xrl     a,addr
+                xrl     a,r             xrl     a,@r
+                xrl     addr,a          xrl     addr,#data
+                xrl     c,bitaddr       xrl     c,/bitaddr
+		xch	a,addr		xch	a,r	
+		xch	a,@r		xchd	a,@r
+
+
+        K.2.3  Call and Return Instructions 
+
+                acall   label		lcall   label
+                ret             	reti
+
+        K.2.4  Jump Instructions 
+
+                ajmp    label
+                cjne    a,#data,label	cjne    a,addr,label
+                cjne    r,#data,label	cjne    @r,#data,label
+                djnz    r,label		djnz    addr,label
+                jbc     bitadr,label
+                jb      bitadr,label	jnb     bitadr,label
+                jc      label		jnc     label
+                jz      label		jnz     label
+                jmp	@a+dptr
+                ljmp    label		sjmp    label

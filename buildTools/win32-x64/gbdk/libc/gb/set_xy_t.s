@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
 	;; Set window tile table from BC at XY = DE of size WH = HL
 	;; wh >= (1,1)

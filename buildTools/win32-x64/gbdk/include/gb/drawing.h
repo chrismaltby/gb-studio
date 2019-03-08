@@ -46,7 +46,7 @@
 
 /** Print the string 'str' with no interpretation */
 void
-	gprint(char *str) NONBANKED;
+	gprint(char *str);
 
 /** Print the long number 'number' in radix 'radix'.  signed_value should
    be set to SIGNED or UNSIGNED depending on whether the number is signed
@@ -60,7 +60,7 @@ void
 
 /** Print the formatted string 'fmt' with arguments '...' */
 INT8	
-	gprintf(char *fmt,...) NONBANKED;
+	gprintf(char *fmt,...);
 
 /** Old style plot - try plot_point() */
 void
@@ -72,11 +72,11 @@ void
 
 /** I (MLH) have no idea what switch_data does... */
 void
-	switch_data(UINT8 x, UINT8 y, unsigned char *src, unsigned char *dst) NONBANKED;
+	switch_data(UINT8 x, UINT8 y, unsigned char *src, unsigned char *dst);
 
 /** Ditto */
 void	
-	draw_image(unsigned char *data) NONBANKED;
+	draw_image(unsigned char *data);
 
 /** Draw a line in the current drawing mode and colour from (x1,y1) to (x2,y2) */
 void	

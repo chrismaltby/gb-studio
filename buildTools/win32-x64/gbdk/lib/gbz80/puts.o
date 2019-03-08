@@ -1,0 +1,24 @@
+XL
+H 8 areas 5 global symbols
+M puts
+S _gets Ref0000
+S _putchar Ref0000
+S _sprintf Ref0000
+S _printf Ref0000
+A _CODE size 36 flags 0
+S _puts Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+T 00 00 C5 E8 FF F8 05 4E 23 46 0A F8 00 77 AF B6
+R 00 00 00 00
+T 0E 00 CA 29 00 79 C6 01 F8 05 77 78 CE 00 23 77
+R 00 00 00 00 00 03 00 00
+T 1C 00 F8 00 7E F5 33 CD 00 00 E8 01 C3 03 00 3E
+R 00 00 00 00 02 08 01 00 00 0D 00 00
+T 2A 00 0A F5 33 CD 00 00 E8 01 E8 01 C1 C9
+R 00 00 00 00 02 06 01 00

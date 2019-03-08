@@ -1,0 +1,119 @@
+gbdk3-2.95-3
+	* Stopped lcc with sdcc from leaking .cdb files all across
+	  /tmp.
+	* Optimised < and > for 16 bit varibles.
+	* Added a new lexer to sdcc.  Compiling files with large
+	  initalised arrays takes 31% of the time (well, at least
+	  samptest.c does :)
+	
+gbdk3-2.95-2
+	* Added model switching support
+	   --model-medium uses near (16 bit) pointers for data, and
+	   banked calls for anything not declared as 'nonbanked'
+	   --model-small uses near (16 bit) pointers for data and
+	   calls.  Nothing uses banked calls.  'nonbanked' functions
+	   are still placed in HOME.  Libraries are under lib/medium
+	   and lib/small.
+	* Added the gbdk version to 'sdcc --version'
+	* Changed the ways globals are exported, reducing the amount
+	  of extra junk linked in.
+	* Turned on the optimisations in flex.  Large constant arrays
+	  like tile data should compile a bit faster.
+	
+gbdk3-2.95
+	* Fixed 'a >> c' for c = [9..15]
+	* Fixed 'a << c' for c = [9..15]
+	* no$gmb doesn't support labels of > 32 chars.  The linker now
+	trims all labels to 31 chars long.
+	* Fixed wait_vbl for the case where you miss a vbl
+	* Fixed + and - for any type where sizeof == 2 and one of the
+	terms was on the stack.  This includes pointers and ints. Fixes
+	the text output bug in the examples.  Should be faster now as
+	well.  Note that + and - for longs is still broken.
+	* Fixed the missing */ in gb.h
+	* Added basic far function support.  Currently only works for isas
+	and rgbasm.  See examples/gb/far/*
+	* bc is now only pushed if the function uses it.  i.e. something
+	like:
+      	int silly(int i) 
+      	{
+		return i;
+      	}	
+	will not have the push bc; pop bc around it.
+	* Better rgbasm support.  Basically:
+      	   o Use "sdcc -mgbz80 --asm=rgbds file.c" for each file.c
+           o Use "sdcc -mgbz80 --asm=rgbds crt0.o gbz80.lib gb.lib file1.o file2.o..."
+	
+	to link everything together.  The .lib files are generated using
+	astorgb.pl and sdcc to turn the gbdk libraries into something
+	rgbds compatible.
+	The libraries are _not_ fully tested.  Trust nothing.  But give it
+	a go :)
+	* Ran a spell checker across the README and ChangeLog
+
+gbdk3-2.94
+	* Fixed 
+		#define BLAH  7  // Unterminated ' error
+	  in sdcpp
+	* Fixed
+		SCY_REG += 2, SCY_REG -= 5
+	  (add and subtract in indirect space) as they were both quite broken.
+	* externs and static's now work as expected.
+	* You can now specify which bank code should be put into using a
+	  #pragma e.g:
+		#pragma bank=HOME
+	Under rgbds and asxxxx putting code in the HOME bank will force
+	the code into bank 0 - useful for library functions.  The most
+	recent #pragma bank= will be the one used for the whole file.
+	* Fixed an interesting bug in the caching of lit addresses
+	* Added support for accessing high registers directly using the
+	'sfr' directive.  See libc/gb/sfr.s and gb/hardware.h for an
+	example.  It should be possible with a bit of work to make high
+	ram directly usable by the compiler; at the moment it is
+	experimental.  You can test sfr's by enabling USE_SFR_FOR_REG=1
+	* Added remove_VBL etc functions.
+	* Documented the libs - see the gbdk-doc tarball distributed
+	seperatly.
+	* Two dimensional arrays seem to be broken.
+
+gbdk3-2.93
+	* Added multi-bank support into the compiler - The old -Wf-boxx
+	and -Wf-baxx options now work
+	* Has preliminary support for generating rgbds and ISAS compatible
+	assembler.  Try -W--asm=rgbds or -W--asm=isas.  The ISAS code is
+	untested as I dont have access to the real assembler.
+	* RSH is fixed
+	* AND is fixed
+	* The missing parts of 2.1.0's libs are there.  Note: They are
+	untested.
+	* The dscan demo now fully works (with a hack :)
+	* There is a bug with cached computed values which are later used
+	as pointers.  When the value is first used as a BYTE arg, then
+	later as a pointer the pointer fails as the high byte was never
+	computed and is now missing.  A temporary fix is to declare
+	something appropriate as 'volatile' to stop the value being
+	cached.  See dscan.c/bombs() for an example.
+  
+gbdk3-2.92-2:
+	* win32 only.  Takes care of some of the install bugs, including:
+	   - Now auto detects where it is installed.
+		This can be overridden using set GBDKDIR=...
+	   - Problems with the installer (now uses WinZip)
+	   - Problems with the temp directory
+		Now scans TMP, TEMP, TMPDIR and finally c:\tmp
+	   - cygwin1.dll and 'make' are no longer required
+	   	gbdk is now built using mingw32 which is win32 native
+		make.bat is automagically generated from the Makefile
+	   - I've reverted to using WORD for signed 16 bit etc.
+		GBDK_2_COMPAT is no longer required.
+
+gbdk3-2.92:
+	* All the examples now work (with a little bit of patching :)
+	* Fixed problem with registers being cached instead of being
+	marked volatile.
+	* More register packing - should be a bit faster.
+	* You can now install somewhere except c:\gbdk | /usr/lib/gbdk
+	* Arrays initialised with constant addresses a'la galaxy.c now
+	work.
+	* Fixed minor bug with 104$: labels in as.
+	* Up to 167d/s...

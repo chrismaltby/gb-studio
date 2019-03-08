@@ -2,8 +2,7 @@
 
 	.globl	.set_xy_wtt
 
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
 _set_win_tiles::
 	PUSH	BC

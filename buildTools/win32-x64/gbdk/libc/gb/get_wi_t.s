@@ -1,8 +1,8 @@
 	.include	"global.s"
 
 	.globl	.get_xy_wtt
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+
+	.area	_CODE
 
 _get_win_tiles::
 	PUSH	BC

@@ -1,8 +1,4 @@
-	.NEAR_CALLS = 0
-	;; Changed by astorgb.pl to 1
-	__RGBDS__	= 0
 
-	
 	;;  Screen dimensions 
 	.MAXCURSPOSX	= 0x13	; In tiles
 	.MAXCURSPOSY	= 0x11
@@ -92,7 +88,6 @@
 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
 
-	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
 	
 	;; Status codes for IO
 	.IO_IDLE	= 0x00
@@ -107,21 +102,6 @@
 	;; Table of routines for modes
 	.MODE_TABLE	= 0x01E0
 
-	;; C related
-	;; Overheap of a banked call.  Used for parameters
-	;;  = ret + real ret + bank
-
-	.if .NEAR_CALLS
-	.BANKOV		= 2
-
-	.else
-	.BANKOV		= 6
-
-	.endif
-	
-	.globl	banked_call
-	.globl	banked_ret
-	
 	;; Global variables
 	.globl	.mode
 

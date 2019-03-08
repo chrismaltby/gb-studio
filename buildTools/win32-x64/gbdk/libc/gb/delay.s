@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
 	;; Delay DE milliseconds
 	;; 
@@ -13,7 +12,7 @@
 .delay::			; 6 cycles for the CALL
 	PUSH	BC		; 4 cycles
 	CALL	.dly		; 12 cycles to return from .dly (6+1+5)
-	LD	B,#.CPMS/20-2 ; 2 cycles
+	LD	B,#(.CPMS/20)-2 ; 2 cycles
 				; =========
 				; 24 cycles
 .ldlp:
@@ -42,7 +41,7 @@
 	LD	A,E		; 1 cycles
 	OR	D		; 1 cycles
 	RET	Z		; 2 cycles (upon return: 5 cycles)
-	LD	B,#.CPMS/20-1   ; 2 cycles
+	LD	B,#(.CPMS/20)-1 ; 2 cycles
 				; =========
 				; 8 cycles
 .dlp:

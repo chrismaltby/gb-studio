@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED:	checked
-	.area	_BASE
+	.area	_CODE
 
 	;; Copy memory zone to HIRAM
 	;; 

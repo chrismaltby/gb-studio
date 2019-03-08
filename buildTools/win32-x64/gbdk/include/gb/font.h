@@ -30,18 +30,21 @@ extern UINT8 font_ibm_fixed[];
 /** Init the font system.
     Should be called first.
  */
-void	font_init(void) NONBANKED;
+void	font_init(void);
 
 /** Load the font 'font'.
     Sets the current font to the newly loaded font.
  */
-font_t	font_load( void *font ) NONBANKED;
+font_t	font_load( void *font );
 
 /** Set the current font to 'font_handle', which was returned 
     from an earlier font_load().  
     @return		The previously used font handle.
 */
-font_t	font_set( font_t font_handle ) NONBANKED;
+font_t	font_set( font_t font_handle );
+
+/** Print the same character 'show' 'num' times */
+void print_repeat(char show, UINT8 num);
 
 /* Use mode() and color() to set the font modes and colours */
 
@@ -54,5 +57,5 @@ struct sfont_handle {
     UINT8 first_tile;		/* First tile used */
     void *font;			/* Pointer to the base of the font */
 };
-
+	
 #endif /* __FONT_H */

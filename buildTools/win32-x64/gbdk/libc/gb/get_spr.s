@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
 	;; Get tile of sprite number C
 .get_sprite_tile::

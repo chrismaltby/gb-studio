@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void puts(const char *s) NONBANKED
+void puts(const char *s)
 {
     while (*s)
 	putchar(*s++);

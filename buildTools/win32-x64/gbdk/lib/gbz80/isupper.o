@@ -1,0 +1,24 @@
+XL
+H 8 areas 7 global symbols
+M isupper
+S _isalpha Ref0000
+S _isspace Ref0000
+S _isdigit Ref0000
+S _islower Ref0000
+S _tolower Ref0000
+S _toupper Ref0000
+A _CODE size 1F flags 0
+S _isupper Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+T 00 00 C5 F8 04 7E EE 80 FE C1 DA 1B 00 1E DA 7E
+R 00 00 00 00 00 0B 00 00
+T 0E 00 EE 80 57 7B 9A DA 1B 00 1E 01 C3 1D 00 1E
+R 00 00 00 00 00 08 00 00 00 0D 00 00
+T 1C 00 00 C1 C9
+R 00 00 00 00

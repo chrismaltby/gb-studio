@@ -1,7 +1,6 @@
 	.include	"global.s"
 
-	;; BANKED:	checked, imperfect
-	.area	_BASE
+	.area	_CODE
 
 	;; Move sprite number C at XY = DE
 .scroll_sprite::
