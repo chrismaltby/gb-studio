@@ -12,6 +12,8 @@ import {
 } from "../actions/actionTypes";
 import path from "path";
 
+const buildUUID = uuid();
+
 export default store => next => async action => {
   if (action.type === BUILD_GAME) {
     const { buildType, exportBuild, ejectBuild } = action;
@@ -24,7 +26,7 @@ export default store => next => async action => {
       const projectRoot = state.document && state.document.root;
       const project = state.project.present;
       const outputRoot = path.normalize(
-        remote.app.getPath("temp") + "/" + uuid()
+        remote.app.getPath("temp") + "/" + buildUUID
       );
 
       await buildProject(project, {

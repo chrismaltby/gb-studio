@@ -93,7 +93,6 @@ typedef struct _SCRIPT_CMD
 // End of Types
 
 // Extern - @todo move most of these out of game.h
-extern SCRIPT_CMD_FN last_fn;
 extern UWORD script_ptr;
 extern UBYTE script_action_complete;
 extern UBYTE script_continue;

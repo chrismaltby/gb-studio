@@ -58,7 +58,7 @@ void ScriptStart(BANK_PTR *events_ptr)
 void ScriptRunnerUpdate()
 {
   UBYTE i, script_cmd_index;
-  SCRIPT_CMD_FN script_cmd_fn;
+  // SCRIPT_CMD_FN script_cmd_fn;
 
   if (!script_action_complete)
   {
@@ -83,7 +83,7 @@ void ScriptRunnerUpdate()
   }
 
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
-  script_cmd_fn = script_cmds[script_cmd_index].fn;
+  // script_cmd_fn = script_cmds[script_cmd_index].fn;
 
   LOG("SCRIPT cmd [%u - %u] = %u (%u)\n", script_ptr_bank, script_ptr, script_cmd_index, script_cmd_args_len);
 
@@ -94,12 +94,12 @@ void ScriptRunnerUpdate()
   }
 
   PUSH_BANK(scriptrunner_bank);
-  if(script_cmd_fn) {
-    script_cmd_fn();
-  }
+  // if(script_cmd_fn) {
+  script_cmds[script_cmd_index].fn();
+  // }
   POP_BANK;
 
-  last_fn = script_cmd_fn;
+  last_fn = script_cmds[script_cmd_index].fn();
 
   if (script_continue)
   {

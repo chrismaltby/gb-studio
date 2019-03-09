@@ -27,7 +27,9 @@ const makeBuild = ({
       await fs.unlink(tmpBuildToolsPath);
       await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
     } catch (e) {
-      await fs.copy(buildToolsPath, tmpBuildToolsPath);
+      await fs.copy(buildToolsPath, tmpBuildToolsPath, {
+        overwrite: false
+      });
     }
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");

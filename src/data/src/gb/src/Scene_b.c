@@ -311,11 +311,11 @@ void SceneUpdateCamera_b()
   }
 
   // @todo - should event finish checks be included here, or seperate file?
-  if (((last_fn == Script_CameraMoveTo_b) || (last_fn == Script_CameraLock_b)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
-  {
-    script_action_complete = TRUE;
-    camera_settings &= ~CAMERA_TRANSITION_FLAG; // Remove transition flag
-  }
+  // if (((last_fn == Script_CameraMoveTo_b) || (last_fn == Script_CameraLock_b)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
+  // {
+  //   script_action_complete = TRUE;
+  //   camera_settings &= ~CAMERA_TRANSITION_FLAG; // Remove transition flag
+  // }
 }
 
 void SceneUpdateActors_b()
