@@ -10,6 +10,11 @@ extern UWORD script_start_ptr;
 extern UBYTE script_cmd_args[6];
 extern UBYTE script_cmd_args_len;
 
+extern UWORD script_ptr;
+extern UBYTE script_action_complete;
+extern UBYTE script_continue;
+extern UBYTE script_actor;
+
 void ScriptStart(BANK_PTR *events_ptr);
 void ScriptRunnerUpdate();
 

@@ -1,11 +1,28 @@
 #include "game.h"
+#include "UI.h"
+#include "Scene.h"
 #include "FadeManager.h"
+#include "data_ptrs.h"
+#include "ScriptRunner.h"
+#include "Logo.h"
 
 UBYTE joy;
 UBYTE prev_joy;
 UBYTE time;
 
-void game_loop();
+// POS camera_dest;
+// UBYTE camera_settings = CAMERA_LOCK_FLAG;
+// UBYTE wait_time = 0;
+// UBYTE shake_time = 0;
+UBYTE actor_move_settings;
+POS actor_move_dest;
+STAGE_TYPE stage_type;
+STAGE_TYPE stage_next_type = MAP;
+typedef void (*STAGE_UPDATE_FN)();
+STAGE_UPDATE_FN UpdateFn;
+UBYTE script_continue;
+UBYTE script_action_complete = TRUE;
+UBYTE script_actor;
 
 const unsigned char bkg_data[] = {
 
@@ -99,8 +116,10 @@ int main()
   set_bkg_data(0x00, 0x2D, bkg_data);
 
   FadeInit();
-  FadeSetSpeed(6);
+  FadeSetSpeed(3);
   FadeIn();
+
+  SceneInit();
 
   DISPLAY_ON;
 
@@ -115,9 +134,11 @@ void game_loop()
   wait_vbl_done();
   LYC_REG = 0x0;
 
+  SceneUpdate();
+
   // Handle Fade
   FadeUpdate();
-
+  
   prev_joy = joy;
   time++;
 }

@@ -93,14 +93,8 @@ typedef struct _SCRIPT_CMD
 // End of Types
 
 // Extern - @todo move most of these out of game.h
-extern UWORD script_ptr;
-extern UBYTE script_action_complete;
-extern UBYTE script_continue;
-extern UBYTE script_actor;
-extern UBYTE wait_time;
-extern UBYTE shake_time;
-extern POS camera_dest;
-extern UBYTE camera_settings;
+
+
 extern STAGE_TYPE stage_type;
 extern STAGE_TYPE stage_next_type;
 extern UBYTE actor_move_settings;

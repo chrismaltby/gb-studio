@@ -34,6 +34,10 @@ extern TRIGGER triggers[MAX_TRIGGERS];
 extern UWORD scene_index;
 extern UWORD scene_next_index;
 extern UBYTE await_input;
+extern POS camera_dest;
+extern UBYTE camera_settings;
+extern UBYTE wait_time;
+extern UBYTE shake_time;
 
 void SceneInit();
 void SceneUpdate();
