@@ -16,7 +16,7 @@ UBYTE shake_time = 0;
 UBYTE actor_move_settings;
 POS actor_move_dest;
 STAGE_TYPE stage_type;
-STAGE_TYPE stage_next_type = MAP;
+STAGE_TYPE stage_next_type = LOGO;
 typedef void (*STAGE_UPDATE_FN)();
 STAGE_UPDATE_FN UpdateFn;
 UBYTE script_continue;
@@ -53,7 +53,8 @@ int main()
 
   UIInit();
 
-  UpdateFn = SceneUpdate;
+  LogoInit();
+  // UpdateFn = SceneUpdate;
 
   DISPLAY_ON;
   SHOW_SPRITES;
@@ -81,14 +82,14 @@ void game_loop()
     map_next_dir.x = actors[0].dir.x;
     map_next_dir.y = actors[0].dir.y;
 
-    if (stage_type == MAP)
-    {
-      SceneInit();
-      UpdateFn = SceneUpdate;
-    }
+    // if (stage_type == MAP)
+    // {
+    //   LogoInit();
+    //   UpdateFn = LogoUpdate;
+    // }
   }
 
-  UpdateFn();
+  LogoUpdate();
 
   // Handle Fade
   FadeUpdate();
