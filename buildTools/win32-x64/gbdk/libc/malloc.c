@@ -39,7 +39,7 @@ void debug( char *fun, char *msg )
   
   Returns: INT8, -1 on failure, 0 on success
 */
-INT8 malloc_init(void)
+INT8 malloc_init(void) BANKED
 {
 	if (malloc_first->magic!=MALLOC_MAGIC) {
 		/* Init by setting up the first hunk */
@@ -69,7 +69,7 @@ INT8 malloc_init(void)
   Note that malloc_gc is only called when needed to save processor time
   Note:  assumes that hunks ae consecutive
 */
-void malloc_gc(void)
+void malloc_gc(void) NONBANKED
 {
     /* Note: assumes that hunks are consecutive */
 
@@ -117,7 +117,7 @@ void malloc_gc(void)
   Return:  pointer to the base of free memory on success, NULL if no memory
   was available
 */
-void *malloc( UINT16 size )
+void *malloc( UINT16 size ) BANKED
 {
     /* thisHunk: list walker
     */

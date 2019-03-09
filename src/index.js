@@ -20,6 +20,7 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 addBypassChecker(filePath => {
   return (
     // filePath.indexOf(app.getAppPath()) === -1 ||
+    filePath.indexOf("build/web") > -1 ||
     /.jpg/.test(filePath) ||
     /.json/.test(filePath) ||
     /.png/.test(filePath) ||
@@ -160,6 +161,7 @@ const createPlay = async url => {
     playWindow.show();
   }
 
+  playWindow.setMenu(null);
   playWindow.loadURL(url);
 
   playWindow.on("closed", () => {

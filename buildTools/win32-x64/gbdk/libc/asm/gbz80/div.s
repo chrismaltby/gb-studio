@@ -1,6 +1,13 @@
 	;; Originally from GBDK by Pascal Felber.
-	.area	_CODE
 
+	;; BANKED: checked
+	.area	_BASE
+	;; Stubs
+__modslong::
+__divslong::
+__mulslong::
+	ret
+	
 __divschar::
 	push	bc
 	lda	hl,4(sp)

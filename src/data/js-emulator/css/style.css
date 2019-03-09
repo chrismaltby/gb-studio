@@ -10,6 +10,7 @@ body {
   text-align: center;
   -webkit-touch-callout: none;
   user-select: none;
+  overflow: hidden;
 }
 
 #game {

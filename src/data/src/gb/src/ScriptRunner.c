@@ -11,6 +11,7 @@ UWORD script_ptr = 0;
 UWORD script_start_ptr = 0;
 UBYTE script_cmd_args[6] = {0};
 UBYTE script_cmd_args_len;
+SCRIPT_CMD_FN last_fn;
 
 SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},           // 0x00

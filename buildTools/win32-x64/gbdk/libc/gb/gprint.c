@@ -1,7 +1,7 @@
 #include <gb/drawing.h>
 
-void gprint(char *str)
+void gprint(char *str) NONBANKED
 {
-  while(*str)
-    wrtchr(*str++);
+    while(*str)
+	wrtchr(*str++);
 }

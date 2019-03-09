@@ -1,6 +1,7 @@
 	.include	"global.s"
 
-	.area	_CODE
+	;; BANKED:	checked, imperfect
+	.area	_BASE
 
 	;; Set properties of sprite number C to D
 .set_sprite_prop::

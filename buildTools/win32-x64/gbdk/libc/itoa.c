@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <types.h>
+#include <string.h>
 
 char *itoa(int n, char *s)
 {

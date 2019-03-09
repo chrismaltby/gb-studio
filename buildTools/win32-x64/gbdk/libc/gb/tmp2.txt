@@ -1,0 +1,1 @@
+	.NEAR_CALLS = 0

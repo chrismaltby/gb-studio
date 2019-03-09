@@ -1,10 +1,11 @@
 	.include	"global.s"
 
+	;; BANKED:	checked
 	.area	_CODE
 
 	;; Send byte in __io_out to the serial port
 .send_byte:
-_send_byte::
+_send_byte::			; Banked
 	LD	A,#.IO_SENDING
 	LD	(__io_status),A ; Store status
 	LD	A,#0x01
@@ -17,7 +18,7 @@ _send_byte::
 
 	;; Receive byte from the serial port in __io_in
 .receive_byte:
-_receive_byte::
+_receive_byte::			; Banked
 	LD	A,#.IO_RECEIVING
 	LD	(__io_status),A ; Store status
 	XOR	A

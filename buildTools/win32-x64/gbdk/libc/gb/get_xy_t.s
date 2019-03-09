@@ -1,6 +1,7 @@
 	.include        "global.s"
 
-	.area	_CODE
+	;; BANKED:	checked
+	.area	_BASE
 
 	;; Store window tile table into (BC) at xy = DE of size WH = HL
 	;; WH >= (1,1)

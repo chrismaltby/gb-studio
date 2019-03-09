@@ -1,0 +1,266 @@
+; no$gmb format .sym file
+; Generated automagically by ASxxxx linker V01.75 (SDK 3.0.0)
+; Area: .  .ABS.
+00:0000 s__HEADER
+00:0000 .init
+00:0000 s__SFR
+00:0200 s__CODE
+00:0ACA s__HOME
+00:101D s__BASE
+00:1F2E s__GSINITTAIL
+00:1F2E s__LIT
+00:1F2E s__GSINIT
+00:1F2F s__GSFINAL
+01:4000 s__CODE_1
+01:4000 s__CODE_2
+01:4000 s__CODE_3
+00:A000 s__DATA_0
+00:A000 s__DATA_1
+00:A000 s__DATA_2
+00:A000 s__DATA_3
+00:C000 .OAM
+00:C0A0 s__DATA
+00:C0A2 s__BSS
+00:C129 s__HEAP
+00:C129 s__BSEG
+00:C129 s__ISEG
+00:C129 s__XSEG
+00:C129 s__OVERLAY
+00:E000 .STACK
+00:FF80 .refresh_OAM
+; Area: _CODE
+00:0200 _print_var
+00:021F _main
+00:0359 _putchar
+00:0362 _setchar
+00:036B _gotoxy
+00:0376 _posx
+00:0387 _posy
+00:0398 .adv_gcurs
+00:03B5 .circle
+00:0458 .horlin
+00:0490 .verlin
+00:04EC .circplot
+00:056A .box
+00:0640 .line
+00:0761 .xonly
+00:08B0 .yonly
+00:08D1 .plot
+00:08EE .wrbyte
+00:0970 .getpix
+00:09A5 .wrtchr
+00:0A09 _gotogxy
+00:0A14 _wrtchr
+00:0A29 _getpix
+00:0A35 _color
+00:0A44 _circle
+00:0A5E _box
+00:0A82 _line
+00:0A9A _plot_point
+00:0AAE _plot
+; Area: _HEADER
+00:01D2 _exit
+; Area: _HOME
+00:0ACA .set_mode
+00:0ADA .remove_VBL
+00:0AE0 .remove_LCD
+00:0AE6 .remove_TIM
+00:0AEC .remove_SIO
+00:0AF2 .remove_JOY
+00:0AF8 .add_VBL
+00:0AFE .add_LCD
+00:0B04 .add_TIM
+00:0B0A .add_SIO
+00:0B10 .add_JOY
+00:0B16 .remove_int
+00:0B36 .add_int
+00:0B52 .wait_vbl_done
+00:0B52 _wait_vbl_done
+00:0B69 _display_off
+00:0B69 .display_off
+00:0B8A .serial_IO
+00:0BB9 _mode
+00:0BC2 _get_mode
+00:0BC7 _enable_interrupts
+00:0BC9 _disable_interrupts
+00:0BCB _reset
+00:0BCB .reset
+00:0BD1 _set_interrupts
+00:0BDC _remove_VBL
+00:0BE7 _remove_LCD
+00:0BF2 _remove_TIM
+00:0BFD _remove_SIO
+00:0C08 _remove_JOY
+00:0C13 _add_VBL
+00:0C1E _add_LCD
+00:0C29 _add_TIM
+00:0C34 _add_SIO
+00:0C3F _add_JOY
+00:0C4A _clock
+00:0C53 __printTStates
+00:0C54 banked_call
+00:0C6D banked_ret
+00:0C76 _bank_fixed
+00:0C91 _bank_1
+00:0CAD _bank_2
+00:0CC9 _bank_3
+00:0CE5 _puts
+00:0D1A _printf
+00:0D49 _sprintf
+; Area: _BASE
+00:101D __modslong
+00:101D __divslong
+00:101D __mulslong
+00:101E __divschar
+00:102A __modschar
+00:1035 __divsint
+00:1046 __modsint
+00:1055 __divuchar
+00:1061 __moduchar
+00:106C __divuint
+00:107D __moduint
+00:108C .mod8
+00:108C .div8
+00:1094 .mod16
+00:1094 .div16
+00:10CA .modu8
+00:10CA .divu8
+00:10CD .modu16
+00:10CD .divu16
+00:110A font_copy_uncompressed
+00:1140 font_copy_compressed
+00:1195 font_load
+00:11DD font_copy_current
+00:1225 font_set
+00:1232 .put_char
+00:124B .out_char
+00:1252 .del_char
+00:12AD _font_load
+00:12BB _font_set
+00:12CA _font_init
+00:12EC _cls
+00:12EC .cls
+00:131E .cr_curs
+00:1333 .adv_curs
+00:138F .tmode
+00:13B8 .tmode_out
+00:13C8 _font_load_ibm_fixed
+00:13CF _font_ibm_fixed
+00:14D1 _font_ibm_fixed_tiles
+00:1CD1 .gmode
+00:1D33 .vbl
+00:1D3E .lcd
+00:1D4B .draw_image
+00:1D55 .switch_data
+00:1D8C _switch_data
+00:1DA7 _draw_image
+00:1DBA .y_table
+00:1EDA .init_vram
+00:1EE8 .init_wtt
+00:1EF8 .init_btt
+00:1F06 .init_tt
+00:1F0C .copy_vram
+00:1F1B _get_data
+00:1F1B _set_data
+; Area: _LIT
+; Area: _GSINIT
+00:1F2E gsinit
+; Area: _GSINITTAIL
+; Area: _GSFINAL
+; Area: _DATA
+00:C0A0 _var_internal
+; Area: _BSS
+00:C0A2 __cpu
+00:C0A3 .mode
+00:C0A4 __io_out
+00:C0A5 __io_in
+00:C0A6 __io_status
+00:C0A7 .vbl_done
+00:C0A8 __current_bank
+00:C0A9 _sys_time
+00:C0A9 .sys_time
+00:C0AB .int_0x40
+00:C0BB .int_0x48
+00:C0CB .int_0x50
+00:C0DB .int_0x58
+00:C0EB .int_0x60
+00:C0FE font_current
+00:C101 font_first_free_tile
+00:C102 font_table
+00:C114 .curx
+00:C115 .cury
+00:C116 .fg_colour
+00:C117 .bg_colour
+; Area: _HEAP
+00:C129 _malloc_heap_start
+; Area: _OVERLAY
+; Area: _ISEG
+; Area: _BSEG
+; Area: _XSEG
+; Area: _DATA_0
+00:A000 _var_0
+; Area: _DATA_1
+00:A000 _var_1
+; Area: _CODE_1
+; Area: _DATA_2
+00:A000 _var_2
+; Area: _CODE_2
+; Area: _DATA_3
+00:A000 _var_3
+; Area: _CODE_3
+; Area: _SFR
+00:FF00 _P1_REG
+00:FF01 _SB_REG
+00:FF02 _SC_REG
+00:FF04 _DIV_REG
+00:FF05 _TIMA_REG
+00:FF06 _TMA_REG
+00:FF07 _TAC_REG
+00:FF0F _IF_REG
+00:FF10 _NR10_REG
+00:FF11 _NR11_REG
+00:FF12 _NR12_REG
+00:FF13 _NR13_REG
+00:FF14 _NR14_REG
+00:FF16 _NR21_REG
+00:FF17 _NR22_REG
+00:FF18 _NR23_REG
+00:FF19 _NR24_REG
+00:FF1A _NR30_REG
+00:FF1B _NR31_REG
+00:FF1C _NR32_REG
+00:FF1D _NR33_REG
+00:FF1E _NR34_REG
+00:FF20 _NR41_REG
+00:FF21 _NR42_REG
+00:FF22 _NR43_REG
+00:FF23 _NR44_REG
+00:FF24 _NR50_REG
+00:FF25 _NR51_REG
+00:FF26 _NR52_REG
+00:FF40 _LCDC_REG
+00:FF41 _STAT_REG
+00:FF42 _SCY_REG
+00:FF43 _SCX_REG
+00:FF44 _LY_REG
+00:FF45 _LYC_REG
+00:FF46 _DMA_REG
+00:FF47 _BGP_REG
+00:FF48 _OBP0_REG
+00:FF49 _OBP1_REG
+00:FF4A _WY_REG
+00:FF4B _WX_REG
+00:FF4D _KEY1_REG
+00:FF4F _VBK_REG
+00:FF51 _HDMA1_REG
+00:FF52 _HDMA2_REG
+00:FF53 _HDMA3_REG
+00:FF54 _HDMA4_REG
+00:FF55 _HDMA5_REG
+00:FF56 _RP_REG
+00:FF68 _BCPS_REG
+00:FF69 _BCPD_REG
+00:FF6A _OCPS_REG
+00:FF6B _OCPD_REG
+00:FF70 _SVBK_REG
+00:FFFF _IE_REG

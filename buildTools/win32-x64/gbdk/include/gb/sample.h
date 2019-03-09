@@ -13,6 +13,6 @@
 /** Play the given, appropriatly formatted sample.
  */
 void
-play_sample(UINT8 *start, UINT16 len);
+play_sample(UINT8 *start, UINT16 len) NONBANKED;
 
 #endif /* _SAMPLE_H */

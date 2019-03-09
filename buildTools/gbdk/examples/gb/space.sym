@@ -1,0 +1,109 @@
+; no$gmb format .sym file
+; Generated automagically by ASxxxx linker V01.75 (SDK 3.0.0)
+; Area: .  .ABS.
+00:0000 s__HEADER
+00:0000 .init
+00:0200 s__CODE
+00:06E9 s__HOME
+00:0895 s__BASE
+00:09F2 s__LIT
+00:17CE s__GSINITTAIL
+00:17CE s__GSINIT
+00:17CF s__GSFINAL
+00:C000 .OAM
+00:C0A0 s__DATA
+00:C0A0 s__BSS
+00:C116 s__HEAP
+00:E000 .STACK
+00:FF80 .refresh_OAM
+; Area: _CODE
+00:0200 _main
+; Area: _HEADER
+00:01D2 _exit
+; Area: _HOME
+00:06E9 .set_mode
+00:06F9 .remove_VBL
+00:06FF .remove_LCD
+00:0705 .remove_TIM
+00:070B .remove_SIO
+00:0711 .remove_JOY
+00:0717 .add_VBL
+00:071D .add_LCD
+00:0723 .add_TIM
+00:0729 .add_SIO
+00:072F .add_JOY
+00:0735 .remove_int
+00:0755 .add_int
+00:0771 .wait_vbl_done
+00:0771 _wait_vbl_done
+00:0788 _display_off
+00:0788 .display_off
+00:07A9 .serial_IO
+00:07D8 _mode
+00:07E1 _get_mode
+00:07E6 _enable_interrupts
+00:07E8 _disable_interrupts
+00:07EA _reset
+00:07EA .reset
+00:07F0 _set_interrupts
+00:07FB _remove_VBL
+00:0806 _remove_LCD
+00:0811 _remove_TIM
+00:081C _remove_SIO
+00:0827 _remove_JOY
+00:0832 _add_VBL
+00:083D _add_LCD
+00:0848 _add_TIM
+00:0853 _add_SIO
+00:085E _add_JOY
+00:0869 _clock
+00:0872 __printTStates
+00:0873 banked_call
+00:088C banked_ret
+; Area: _BASE
+00:0895 .mv_sprite
+00:08A4 _move_sprite
+00:08B1 .set_xy_wtt
+00:08C2 .set_xy_btt
+00:08D1 .set_xy_tt
+00:0902 _set_tiles
+00:091B .init_vram
+00:0929 .init_wtt
+00:0939 .init_btt
+00:0947 .init_tt
+00:094D .padup
+00:094D _waitpadup
+00:095D .jpad
+00:098A .wait_pad
+00:0991 _joypad
+00:0996 _waitpad
+00:09A0 .set_sprite_prop
+00:09AD _set_sprite_prop
+00:09B8 .set_sprite_tile
+00:09C5 _set_sprite_tile
+00:09D0 .copy_vram
+00:09DF _get_data
+00:09DF _set_data
+; Area: _LIT
+; Area: _GSINIT
+00:17CE gsinit
+; Area: _GSINITTAIL
+; Area: _GSFINAL
+; Area: _DATA
+; Area: _BSS
+00:C0A0 __cpu
+00:C0A1 .mode
+00:C0A2 __io_out
+00:C0A3 __io_in
+00:C0A4 __io_status
+00:C0A5 .vbl_done
+00:C0A6 __current_bank
+00:C0A7 _sys_time
+00:C0A7 .sys_time
+00:C0A9 .int_0x40
+00:C0B9 .int_0x48
+00:C0C9 .int_0x50
+00:C0D9 .int_0x58
+00:C0E9 .int_0x60
+; Area: _HEAP
+00:C116 _malloc_heap_start

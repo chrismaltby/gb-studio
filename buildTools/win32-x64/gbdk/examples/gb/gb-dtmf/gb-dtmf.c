@@ -543,7 +543,7 @@ void main()
 	char str_ms[10];
 
         /* PENDING: sdcc is broken and needs this to be initalised. */
-	key2 = 1;
+	key2 = 0;
 
 	/* default dialling time setting */
 	on_time = DTMF_ON;

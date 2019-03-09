@@ -18,11 +18,11 @@ void main()
 {
   extern UBYTE __inc_end, __inc_start;
   /* Declare extern functions */
-  void inc_ram();
-  void inc_hiram();
+  void inc_ram() NONBANKED;
+  void inc_hiram() NONBANKED;
   /* Declare pointer-to-function variables */
-  void (*inc_ram_var)(void) = 0xD000;
-  void (*inc_hiram_var)(void) = 0xFFA0;
+  void (*inc_ram_var)(void) NONBANKED = 0xD000;
+  void (*inc_hiram_var)(void) NONBANKED = 0xFFA0;
 
   puts("Program Start...");
   counter = 0;

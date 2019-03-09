@@ -1,6 +1,7 @@
 	.include	"global.s"
 
-	.area	_CODE
+	;; BANKED:	checked
+	.area	_BASE
 
 	;; Move sprite number C at XY = DE
 .mv_sprite::

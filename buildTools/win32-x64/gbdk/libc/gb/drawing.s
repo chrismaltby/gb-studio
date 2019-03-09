@@ -1,29 +1,31 @@
-	;; Optimised Drawing library by Jon Fuge (jonny@q-continuum.demon.co.uk) based on original file
-	;; Updates
-	;;	990223	Michael		Removed mod_col, splitting it up into fg_colour, bg_colour, and draw_mode
-	;;				Note:	some optimisations are available with unneded PUSH DE/POP DE's
+;; Optimised Drawing library 
+;; By Jon Fuge (jonny@q-continuum.demon.co.uk) based on original file
+;; Updates
+;;   990223 Michael	Removed mod_col, splitting it up into 
+;;			fg_colour, bg_colour, and draw_mode
+;; Note: some optimisations are available with unneded PUSH DE/POP DE's
+
+	;; BANKED: checked
 	.include        "global.s"
 
 	.globl  .init_vram
 	.globl  .copy_vram
 
-	.SOLID	=	0x00
-	.OR	=	0x01
-	.XOR	=	0x02
-	.AND	=	0x03
+	.M_SOLID	=	0x00
+	.M_OR	=	0x01
+	.M_XOR	=	0x02
+	.M_AND	=	0x03
 
 	.if	0
-	.SOLID	=	0x10
-	.OR	=	0x20
-	.XOR	=	0x40
-	.AND	=	0x80
+	.M_SOLID	=	0x10
+	.M_OR	=	0x20
+	.M_XOR	=	0x40
+	.M_AND	=	0x80
 	.endif
 
 	;;  Format of mod_col
 	;; 7 6 5 4 3 2 1 0
 	;;   mode  fg  bg
-	.MAXCURSPOSX	= 0x13	; In tiles
-	.MAXCURSPOSY	= 0x11
 
 	.area   _HEADER (ABS)
 
@@ -55,9 +57,9 @@
 	.ds	1
 .delta_y:	
 	.ds	1
-.inc:	
+.l_inc:	
 	.ds	1
-.d:	
+.l_d:	
 	.ds	2
 .dinc1:	
 	.ds	2
@@ -68,8 +70,7 @@
 .ty:	
 	.ds	1
 	
-	.area   _CODE
-
+	.area   _BASE
 	;; Enter graphic mode
 .gmode::
 	DI			; Disable interrupts
@@ -135,7 +136,7 @@
 	LD	(.mode),A
 
 	;; Setup the default colours and draw modes
-	LD	A,#.SOLID
+	LD	A,#.M_SOLID
 	LD	(.draw_mode),A
 	LD	A,#0x03		; Black
 	LD	(.fg_colour),A
@@ -219,6 +220,7 @@
 
 	RET
 
+	.area	_CODE
 	;; Advance the cursor
 .adv_gcurs::
 	PUSH	HL
@@ -242,9 +244,6 @@
 	POP	HL
 	RET
 
-
-	.area	_CODE
-
 	;; Draw a circle from (B,C) with radius D
 .circle::
 	LD	A,B	;Store center values
@@ -263,9 +262,9 @@
 	LD	BC,#0
 	ADD	HL,BC
 	LD	A,L
-	LD	(.d+1),A
+	LD	(.l_d+1),A
 	LD	A,H
-	LD	(.d),A
+	LD	(.l_d),A
 
 cloop$:
 	LD	A,(.x_s+1)
@@ -278,7 +277,7 @@ cloop$:
 	OR	A
 	CALL	Z,.circplot
 
-	LD	A,(.d)
+	LD	A,(.l_d)
 	BIT	7,A
 	JR	Z,ycirc$
 
@@ -288,9 +287,9 @@ cloop$:
 	LD	A,(.x_s+1)
 	INC	A
 	LD	(.x_s+1),A
-	LD	A,(.d)
+	LD	A,(.l_d)
 	LD	B,A
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	C,A
 	LD	H,#0
 	LD	A,(.x_s+1)
@@ -301,9 +300,9 @@ cloop$:
 	LD	BC,#6
 	ADD	HL,BC
 	LD	A,H
-	LD	(.d),A
+	LD	(.l_d),A
 	LD	A,L
-	LD	(.d+1),A
+	LD	(.l_d+1),A
 	JR	cloop$
 ycirc$:	
 	LD	A,(.style)
@@ -321,9 +320,9 @@ ycirc$:
 	LD	L,A
 	INC	HL
 	ADD	HL,BC
-	LD	A,(.d)
+	LD	A,(.l_d)
 	LD	B,A
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	C,A
 	ADD	HL,HL
 	ADD	HL,HL
@@ -331,9 +330,9 @@ ycirc$:
 	LD	BC,#10
 	ADD	HL,BC
 	LD	A,H
-	LD	(.d),A
+	LD	(.l_d),A
 	LD	A,L
-	LD	(.d+1),A
+	LD	(.l_d+1),A
 	LD	A,(.y_s+1)
 	DEC	A
 	LD	(.y_s+1),A
@@ -739,7 +738,7 @@ s1$:	LD	(.delta_y),A
 s2$:	LD	(.delta_x),A
 
 	SUB	H
-	JP	C,y1$
+	JP	C,y1
 
 	;; Use Delta X
 
@@ -767,7 +766,7 @@ x2a$:
 	LD	B,D
 	LD	C,E	;BC holds start X,Y
 x3$:
-	LD	(.inc),A	;Store Y increment
+	LD	(.l_inc),A	;Store Y increment
 	LD	HL,#.y_table
 	LD	D,#0x00
 	LD	E,C
@@ -813,9 +812,9 @@ x3$:
 dx1$:
 	ADD	HL,DE
 	LD	A,H
-	LD	(.d),A
+	LD	(.l_d),A
 	LD	A,L
-	LD	(.d+1),A
+	LD	(.l_d+1),A
 
 	;	Calculate (deltay-deltax)*2 -> dinc2
 
@@ -856,7 +855,7 @@ dx1$:
 
 xloop$:
 	RRC	C
-	LD	A,(.d)
+	LD	A,(.l_d)
 	BIT	7,A
 	JR	Z,ychg$
 	PUSH	DE
@@ -870,16 +869,16 @@ xloop$:
 	LD	C,#0x80
 	LD	B,C
 nbit$:
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	D,A
 	LD	A,(.dinc1+1)
 	ADD	D
-	LD	(.d+1),A
-	LD	A,(.d)
+	LD	(.l_d+1),A
+	LD	A,(.l_d)
 	LD	D,A
 	LD	A,(.dinc1)
 	ADC	D
-	LD	(.d),A
+	LD	(.l_d),A
 	POP	DE
 	JR	nchg$
 ychg$:
@@ -889,7 +888,7 @@ ychg$:
 	CPL
 	LD	C,A
 	CALL	.wrbyte
-	LD	A,(.inc)
+	LD	A,(.l_inc)
 	OR	A
 	JR	Z,ydown$
 	INC	HL
@@ -910,16 +909,16 @@ ydown$:
 	LD	DE,#0xFED0
 	ADD	HL,DE	;Correct screen address
 bound$:
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	D,A
 	LD	A,(.dinc2+1)
 	ADD	D
-	LD	(.d+1),A
-	LD	A,(.d)
+	LD	(.l_d+1),A
+	LD	A,(.l_d)
 	LD	D,A
 	LD	A,(.dinc2)
 	ADC	D
-	LD	(.d),A
+	LD	(.l_d),A
 	POP	BC
 	LD	B,C
 	POP	DE
@@ -1020,7 +1019,7 @@ nadj$:
 	JP	.wrbyte
 
 	;; Use Delta Y
-y1$:
+y1:
 	LD	A,C
 	SUB	E
 	JP	NC,y2$
@@ -1046,7 +1045,7 @@ y2a$:
 	LD	C,E	;BC holds start X,Y
 
 y3$:
-	LD	(.inc),A	;Store X increment
+	LD	(.l_inc),A	;Store X increment
 	LD	HL,#.y_table
 	LD	D,#0x00
 	LD	E,C
@@ -1102,9 +1101,9 @@ y3$:
 dy1$:
 	ADD	HL,DE
 	LD	A,H
-	LD	(.d),A
+	LD	(.l_d),A
 	LD	A,L
-	LD	(.d+1),A
+	LD	(.l_d+1),A
 
 	;	Calculate (deltax-deltay)*2 -> dinc2
 
@@ -1159,22 +1158,22 @@ yloop$:
 	ADD	HL,DE	;Correct screen address
 nybound$:
 	POP	BC
-	LD	A,(.d)
+	LD	A,(.l_d)
 	BIT	7,A
 	JR	Z,xchg$
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	D,A
 	LD	A,(.dinc1+1)
 	ADD	D
-	LD	(.d+1),A
-	LD	A,(.d)
+	LD	(.l_d+1),A
+	LD	A,(.l_d)
 	LD	D,A
 	LD	A,(.dinc1)
 	ADC	D
-	LD	(.d),A
+	LD	(.l_d),A
 	JR	nchgy$
 xchg$:
-	LD	A,(.inc)
+	LD	A,(.l_inc)
 	OR	A
 	JR	NZ,yright$
 	RLC	B
@@ -1190,16 +1189,16 @@ yright$:
 	LD	DE,#0x0010
 	ADD	HL,DE	;Correct screen address
 boundy$:
-	LD	A,(.d+1)
+	LD	A,(.l_d+1)
 	LD	D,A
 	LD	A,(.dinc2+1)
 	ADD	D
-	LD	(.d+1),A
-	LD	A,(.d)
+	LD	(.l_d+1),A
+	LD	A,(.l_d)
 	LD	D,A
 	LD	A,(.dinc2)
 	ADC	D
-	LD	(.d),A
+	LD	(.l_d),A
 nchgy$:
 	POP	DE
 	DEC	E
@@ -1280,11 +1279,11 @@ nchgy$:
 	LD	A,(.fg_colour)
 	LD	D,A
 	LD	A,(.draw_mode)
-	CP	#.OR
+	CP	#.M_OR
 	JR	Z,10$
-	CP	#.XOR
+	CP	#.M_XOR
 	JR	Z,20$
-	CP	#.AND
+	CP	#.M_AND
 	JR	Z,30$		
 	.endif
 
@@ -1592,22 +1591,24 @@ chrwait$:
 	JR	NZ,chrloop$
 	RET
 
-_gotogxy::
-	LDA	HL,2(SP)	; Skip return address
+	.area	_CODE
+_gotogxy::			; Banked
+	LDA	HL,.BANKOV(SP)	; Skip return address
 	LD	A,(HL+)		; A = x
 	LD	(.tx),A
 	LD	A,(HL+)		; A = y
 	LD	(.ty),A
+
 	RET
 
-_wrtchr::
+_wrtchr::			; Banked
 	PUSH    BC
 
 	LD	A,(.mode)
 	CP	#.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL)
 	LD	C,A	; C = Char to print
 
@@ -1617,10 +1618,10 @@ _wrtchr::
 	POP	BC
 	RET
 
-_getpix::
+_getpix::			; Banked
 	PUSH    BC
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)	; B = x
 	LD	B,A
 	LD	A,(HL+)	; C = y
@@ -1631,20 +1632,8 @@ _getpix::
 	POP	BC
 	RET
 
-	.if	0
-_color::
-	LDA	HL,2(SP)	; Skip return address and registers
-	LD	A,(HL+)	; A = Foreground
-	RLCA
-	RLCA
-	OR	(HL)	; A = Background
-	INC	HL
-	OR	(HL)	; A = Mode
-	LD	(.mod_col),A
-	RET
-	.else
-_color::
-	LDA	HL,2(SP)	; Skip return address and registers
+_color::			; Banked
+	LDA	HL,.BANKOV(SP)	; Skip return address and registers
 	LD	A,(HL+)	; A = Foreground
 	LD	(.fg_colour),a
 	LD	A,(HL+)
@@ -1652,16 +1641,15 @@ _color::
 	LD	A,(HL)
 	LD	(.draw_mode),a
 	RET
-	.endif	
 
-_circle::
+_circle::			; Banked
 	PUSH    BC
 
 	LD	A,(.mode)
 	CP	#.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)	; B = x
 	LD	B,A
 	LD	A,(HL+)	; C = y
@@ -1676,14 +1664,14 @@ _circle::
 	POP	BC
 	RET
 
-_box::
+_box::				; Banked
 	PUSH    BC
 
 	LD      A,(.mode)
 	CP      #.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)	; B = x1
 	LD	(.x_s),A
 	LD	A,(HL+)	; C = y1
@@ -1698,14 +1686,14 @@ _box::
 	POP	BC
 	RET
 
-_line::
+_line::				; Banked
 	PUSH    BC
 
 	LD      A,(.mode)
 	CP      #.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)	; B = x1
 	LD	B,A
 	LD	A,(HL+)	; C = y1
@@ -1720,14 +1708,14 @@ _line::
 	POP     BC
 	RET
 
-_plot_point::
+_plot_point::			; Banked
 	PUSH    BC
 
 	LD	A,(.mode)
 	CP	#.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)	; B = x
 	LD	B,A
 	LD	A,(HL+)	; C = y
@@ -1739,14 +1727,14 @@ _plot_point::
 	RET
 
 	;; Old, compatible version of plot()
-_plot::
+_plot::				; Banked
 	PUSH    BC
 
 	LD	A,(.mode)
 	CP	#.G_MODE
 	CALL	NZ,.gmode
 
-	LDA	HL,4(SP)	; Skip return address and registers
+	LDA	HL,.BANKOV+2(SP)	; Skip return address and registers
 	LD	A,(HL+)		; B = x
 	LD	B,A
 	LD	A,(HL+)		; C = y
@@ -1760,8 +1748,9 @@ _plot::
 
 	POP	BC
 	RET
-	
-_switch_data::
+
+	.area	_BASE
+_switch_data::			; Non Banked as pointer
 	PUSH    BC
 
 	LD	A,(.mode)
@@ -1787,7 +1776,7 @@ _switch_data::
 	RET
 
 
-_draw_image::
+_draw_image::			; Non banked as pointer
 	PUSH    BC
 
 	LD	A,(.mode)
@@ -1804,8 +1793,7 @@ _draw_image::
 	POP	BC
 	RET
 
-	.area   _LIT
-
+	.area	_BASE
 .y_table::
 	.word   0x8100,0x8102,0x8104,0x8106,0x8108,0x810A,0x810C,0x810E
 	.word   0x8240,0x8242,0x8244,0x8246,0x8248,0x824A,0x824C,0x824E
@@ -1825,9 +1813,3 @@ _draw_image::
 	.word   0x93C0,0x93C2,0x93C4,0x93C6,0x93C8,0x93CA,0x93CC,0x93CE
 	.word   0x9500,0x9502,0x9504,0x9506,0x9508,0x950A,0x950C,0x950E
 	.word   0x9640,0x9642,0x9644,0x9646,0x9648,0x964A,0x964C,0x964E
-
-	.if 0
-.tp1:
-	.include	"ibmpc1.h"
-.endtp1:
-	.endif

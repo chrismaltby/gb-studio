@@ -4,8 +4,9 @@
 #include <gbdk-lib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#pragma bank=BASE
 
-typedef void EMIT(char c, void *pData);
+typedef void EMIT(char c, void *pData) NONBANKED;
 
 static void _printn(unsigned u, unsigned base, char issigned, EMIT *emitter, void *pData)
 {
@@ -70,7 +71,7 @@ static void _char_emitter(char c, void *pData)
     putchar(c);
 }
 
-void printf(const char *format, ...)
+void printf(const char *format, ...) NONBANKED
 {
     va_list va;
     va_start(va, format);
@@ -89,7 +90,7 @@ static void _sprintf_emitter(char c, void *pData)
     ((_SPRINTF_INFO *)pData)->at++;
 }
 
-void sprintf(char *into, const char *format, ...)
+void sprintf(char *into, const char *format, ...) NONBANKED
 {
     _SPRINTF_INFO si;
     va_list va;

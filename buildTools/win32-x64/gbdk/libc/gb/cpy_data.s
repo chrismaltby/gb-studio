@@ -1,7 +1,7 @@
 	.include	"global.s"
 
-	.area	_CODE
-
+	;; BANKED: checked
+	.area	_BASE
 	;; Copy part (size = DE) of the VRAM from (BC) to (HL)
 .copy_vram::
 1$:

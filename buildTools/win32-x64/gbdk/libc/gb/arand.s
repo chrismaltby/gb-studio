@@ -10,6 +10,7 @@
 ; *                                                                         *
 ; **************************************************************************/
 
+	;; BANKED: checked
 	.include	"global.s"
 
 	.globl	.initrand
@@ -40,38 +41,38 @@
 	;; Registers used:
 	;;   all
 	;;
-_arand::
+_arand::			; Banked
 	PUSH	BC
-	LD	D, #0
-	LD	HL, #.randarr-1
-	LD	A, (.raxj)
-	LD	E, A
+	LD	D,#0
+	LD	HL,#.randarr-1
+	LD	A,(.raxj)
+	LD	E,A
 	DEC	A		; Decrease the pointer
-	JR	NZ, 1$
-	LD	A, #55
+	JR	NZ,1$
+	LD	A,#55
 1$:
-	LD	(.raxj), A
-	ADD	HL, DE
-	LD	B, (HL)
+	LD	(.raxj),A
+	ADD	HL,DE
+	LD	B,(HL)
 
-	LD	HL, #.randarr-1	; Ooh...
-	LD	A, (.raxk)
-	LD	E, A
+	LD	HL,#.randarr-1	; Ooh...
+	LD	A,(.raxk)
+	LD	E,A
 	DEC	A		; Decrease the pointer
-	JR	NZ, 2$
-	LD	A, #55
+	JR	NZ,2$
+	LD	A,#55
 2$:
-	LD	(.raxk), A
-	ADD	HL, DE
-	LD	A, (HL)
+	LD	(.raxk),A
+	ADD	HL,DE
+	LD	A,(HL)
 
-	ADD	A, B
-	LD	(HL), A		; Store new value
+	ADD	A,B
+	LD	(HL),A		; Store new value
 
 	POP	BC
 
-	LD	D, #0
-	LD	E, A
+	LD	D,#0
+	LD	E,A
 
 	RET
 
@@ -85,35 +86,35 @@ _arand::
 	;; Registers used:
 	;;   all
 	;;
-_initarand::
-	LDA	HL,2(SP)
+_initarand::			; Banked
+	LDA	HL,.BANKOV(SP)
 	CALL	.initrand
 
 	PUSH	BC
-	LD	A, #55
-	LD	HL, #.randarr
+	LD	A,#55
+	LD	HL,#.randarr
 1$:
 	DEC	A
-	LD	(.raxj), A
-	LD	B, H
-	LD	C, L
+	LD	(.raxj),A
+	LD	B,H
+	LD	C,L
 	CALL	_rand
-	LD	H, B
-	LD	L, C
+	LD	H,B
+	LD	L,C
 
-	LD	(HL), D
+	LD	(HL),D
 	INC	HL
-	LD	(HL), E
+	LD	(HL),E
 	INC	HL
 	
-	LD	A, (.raxj)
+	LD	A,(.raxj)
 	CP	#0
-	JR	NZ, 1$
+	JR	NZ,1$
 
-	LD	A, #24		; Now the array has been filled, set the pointers
-	LD	(.raxj), A
-	LD	A, #55
-	LD	(.raxk), A
+	LD	A,#24		; Now the array has been filled,set the pointers
+	LD	(.raxj),A
+	LD	A,#55
+	LD	(.raxk),A
 
 	POP	BC
 	RET

@@ -1,6 +1,7 @@
 	.include	"global.s"
 
-	.area	_CODE
+	;; BANKED:	checked
+	.area	_BASE
 
 _move_bkg::
 	LDA	HL,2(SP)	; Skip return address

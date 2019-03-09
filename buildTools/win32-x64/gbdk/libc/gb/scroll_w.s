@@ -1,6 +1,7 @@
 	.include	"global.s"
 
-	.area	_CODE
+	;; BANKED:	checked, imperfect
+	.area	_BASE
 
 _scroll_win::
 	LDA	HL,2(SP)	; Skip return address

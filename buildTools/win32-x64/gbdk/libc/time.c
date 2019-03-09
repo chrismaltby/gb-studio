@@ -1,6 +1,5 @@
 /*
   time.c
-
   Simple, not completly conformant implementation of time routines
 */
 

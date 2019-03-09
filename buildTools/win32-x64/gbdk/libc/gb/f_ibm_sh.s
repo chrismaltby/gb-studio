@@ -1,5 +1,6 @@
 ; ibm_fixed.ms - fixed width IBM font
-	.area	_LIT
+	;; BANKED:	checked, imperfect
+	.area	_BASE
 
 	; 898 bytes giving ' '-'0'-'@'-'A'-'Z'-'???'-'a'-'z'-127
 _font_ibm::

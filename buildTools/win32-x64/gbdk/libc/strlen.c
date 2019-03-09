@@ -2,7 +2,7 @@
 
 /* Return length of string */
 
-int strlen(const char *s)
+int strlen(const char *s) NONBANKED
 {
     int i;
 

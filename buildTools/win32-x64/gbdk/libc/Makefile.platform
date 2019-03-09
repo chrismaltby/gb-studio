@@ -1,16 +1,8 @@
 # Shared Makefile for all the platforms.
 # Provides a way of building the lib with little brains.
 
-ifndef PLAT
-PLAT = $(THIS)
-endif
-
 all: platform
 
-platform: $(OBJ)
-	mkdir -p $(TOPDIR)/build/$(PLAT)
-	cp $(OBJ) $(TOPDIR)/build/$(PLAT)
-	cd $(TOPDIR)/build/$(PLAT); ls $(OBJ) > $(PLAT).lib
+platform: $(LIB)
 
-clean:
-	rm -f $(OBJ) $(CLEANSPEC)
+include $(TOPDIR)/libc/Makefile.rules

@@ -1,0 +1,25 @@
+XL
+H 9 areas 1 global symbols
+M tolower
+A _CODE size 47 flags 0
+S _tolower Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+T 00 00 C5 F8 04 7E EE 80 FE C1 3E 00 17 4F AF B1
+R 00 00 00 00
+T 0E 00 D6 01 3E 00 17 4F 1E DA 7E EE 80 57 7B 9A
+R 00 00 00 00
+T 1C 00 3E 00 17 47 AF B0 D6 01 3E 00 17 47 AF B1
+R 00 00 00 00
+T 2A 00 28 02 AF B0 28 02 3E 01 4F AF B1 CA 41 00
+R 00 00 00 00 00 0E 00 00
+T 38 00 F8 04 7E C6 20 4F C3 44 00 F8 04 4E 59 C1
+R 00 00 00 00 00 09 00 00
+T 46 00 C9
+R 00 00 00 00

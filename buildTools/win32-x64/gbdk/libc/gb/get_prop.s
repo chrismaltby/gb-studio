@@ -1,6 +1,6 @@
 	.include	"global.s"
-
-	.area	_CODE
+	;; BANKED:	checked, imperfect
+	.area	_BASE
 
 	;; Get properties of sprite number C
 .get_sprite_prop::

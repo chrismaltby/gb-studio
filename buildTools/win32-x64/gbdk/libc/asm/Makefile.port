@@ -1,18 +1,11 @@
 # Shared Makefile for all the ports.
 # Provides a way of building the lib with little brains.
 
-ifndef PORT
-PORT = $(THIS)
-endif
+LIB_APPEND = 1
 
 all: port
 
-# Note that port.lib is setup by the calling Makefile
-port: $(OBJ)
-	mkdir -p $(TOPDIR)/build/$(PORT)
-	cp $(OBJ) $(TOPDIR)/build/$(PORT)
-	cd $(TOPDIR)/build/$(PORT); ls $(OBJ) >> $(PORT).lib
+include $(TOPDIR)/libc/Makefile.rules
 
-clean:
-	rm -f $(OBJ) $(CLEANSPEC)
-	cd ..; rm -f $(CLEANSPEC)
+port: $(LIB)
+

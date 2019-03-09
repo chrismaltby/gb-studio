@@ -12,6 +12,8 @@
 ; *                                                                         *
 ; **************************************************************************/
 
+	;; BANKED:	checked
+	
 	;; Why use an algorithm for generating random numbers?
 	;;
 	;; - Given a certain seed value, the same sequence of random numbers is generated
@@ -59,13 +61,13 @@
 	;;   A, HL (need not be saved) and DE (return register)
 	;;
 
-_rand::
-_randw::
-	LD	A, (.randlo)
-	LD	L, A
-	LD	E, A		; Save randlo
-	LD	A, (.randhi)
-	LD	D, A		; Save randhi
+_rand::				; Banked
+_randw::			; Banked
+	LD	A,(.randlo)
+	LD	L,A
+	LD	E,A		; Save randlo
+	LD	A,(.randhi)
+	LD	D,A		; Save randhi
 
 	SLA	L		; * 16
 	RLA
@@ -75,26 +77,26 @@ _randw::
 	RLA
 	SLA	L
 	RLA
-	LD	H, A		; Save randhi*16
+	LD	H,A		; Save randhi*16
 
-	LD	A, E		; Old randlo
-	ADD	A, L		; Add randlo*16
-	LD	L, A		; Save randlo*17
+	LD	A,E		; Old randlo
+	ADD	A,L		; Add randlo*16
+	LD	L,A		; Save randlo*17
 
-	LD	A, H		; randhi*16
-	ADC	A, D		; Add old randhi
-	LD	H, A		; Save randhi*17
+	LD	A,H		; randhi*16
+	ADC	A,D		; Add old randhi
+	LD	H,A		; Save randhi*17
 
-	LD	A, L		; randlo*17
-	ADD	A, #0x93
-	LD	(.randlo), A
-	LD	D, A		; Return register
-	LD	A, H		; randhi*17
-	ADC	A, #0x5c
-	LD	(.randhi), A
-	LD	E, A		; Return register
+	LD	A,L		; randlo*17
+	ADD	A,#0x93
+	LD	(.randlo),A
+	LD	D,A		; Return register
+	LD	A,H		; randhi*17
+	ADC	A,#0x5c
+	LD	(.randhi),A
+	LD	E,A		; Return register
 
-	;; Note D is the low byte, E the high byte. This is intentional because
+	;; Note D is the low byte,E the high byte. This is intentional because
 	;; the high byte can be slightly 'more random' than the low byte, and I presume
 	;; most will cast the return value to a UBYTE. As if someone will use this, tha!
 	RET
@@ -107,11 +109,12 @@ _randw::
 	;; Registers used:
 	;;   A, HL (need not be saved) and DE (return register)
 	;;
-_initrand::
+	.area	_BASE
+_initrand::			; Non banked
 	LDA	HL,2(SP)
 .initrand::
-	LD	A, (HL+)
-	LD	(.randlo), A
-	LD	A, (HL)
-	LD	(.randhi), A
+	LD	A,(HL+)
+	LD	(.randlo),A
+	LD	A,(HL)
+	LD	(.randhi),A
 	RET

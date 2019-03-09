@@ -6,7 +6,7 @@
  * Return s1.
  */
 
-char *strncat(char *s1, const char *s2, int n)
+char *strncat(char *s1, const char *s2, int n) NONBANKED
 {
   char *os1;
 

@@ -4,7 +4,7 @@
 #include <gb/gb.h>
 #include <gb/drawing.h>
 
-void main()
+void main(void)
 {
     UBYTE  a,b,c,d,e;
     c=0;

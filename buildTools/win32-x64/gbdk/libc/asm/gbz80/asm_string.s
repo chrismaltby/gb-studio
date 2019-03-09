@@ -2,7 +2,8 @@
 	;; assembler.
 
 	;; Why - because I want a better dhrystone score :)
-
+	.area	_BASE
+	
 ; char *strcpy(char *dest, const char *source)
 _strcpy::
 	lda	hl,2(sp)

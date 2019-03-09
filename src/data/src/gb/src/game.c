@@ -22,7 +22,7 @@ STAGE_UPDATE_FN UpdateFn;
 UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
-SCRIPT_CMD_FN last_fna;
+//SCRIPT_CMD_FN last_fn;
 
 int main()
 {

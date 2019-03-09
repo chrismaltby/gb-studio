@@ -1,11 +1,13 @@
 ; font_min.s
+	
 ;	Text font
 ;	Michael Hope, 1998
 ;	michaelh@earthling.net
 ;	Distrubuted under the Artistic License - see www.opensource.org
 ;
+	;; BANKED:	checked, imperfect
 	.module 	font_min
-	.area	_LIT
+	.area	_BASE
 _font_min::
 	.byte	1+4		; 128 character encoding
 	.byte	37		; Tiles required

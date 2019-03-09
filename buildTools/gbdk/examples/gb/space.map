@@ -1,0 +1,205 @@
+AREA .  .ABS.
+	RADIX HEX
+	BASE 0000
+	SIZE 0000
+	ATTRIB ABS OVR
+	GLOBALS
+		l__DATA	0000
+		l__HEAP	0000
+		l_.  .ABS.	0000
+		l__GSFINAL	0000
+		s_.  .ABS.	0000
+		s__HEADER	0000
+		.init	0000
+		l__GSINIT	0000
+		l__GSINITTAIL	0001
+		l__BSS	0076
+		l__BASE	015D
+		l__HOME	01AC
+		l__HEADER	01E1
+		s__CODE	0200
+		l__CODE	04E9
+		s__HOME	06E9
+		s__BASE	0895
+		s__LIT	09F2
+		l__LIT	0DDC
+		s__GSINITTAIL	17CE
+		s__GSINIT	17CE
+		s__GSFINAL	17CF
+		.OAM	C000
+		s__DATA	C0A0
+		s__BSS	C0A0
+		s__HEAP	C116
+		.STACK	E000
+		.refresh_OAM	FF80
+AREA _CODE
+	RADIX HEX
+	BASE 0200
+	SIZE 04E9
+	ATTRIB REL CON
+	GLOBALS
+		_main	0200
+AREA _HEADER
+	RADIX HEX
+	BASE 0000
+	SIZE 01E1
+	ATTRIB ABS OVR
+	GLOBALS
+		_exit	01D2
+AREA _HOME
+	RADIX HEX
+	BASE 06E9
+	SIZE 01AC
+	ATTRIB REL CON
+	GLOBALS
+		.set_mode	06E9
+		.remove_VBL	06F9
+		.remove_LCD	06FF
+		.remove_TIM	0705
+		.remove_SIO	070B
+		.remove_JOY	0711
+		.add_VBL	0717
+		.add_LCD	071D
+		.add_TIM	0723
+		.add_SIO	0729
+		.add_JOY	072F
+		.remove_int	0735
+		.add_int	0755
+		.wait_vbl_done	0771
+		_wait_vbl_done	0771
+		_display_off	0788
+		.display_off	0788
+		.serial_IO	07A9
+		_mode	07D8
+		_get_mode	07E1
+		_enable_interrupts	07E6
+		_disable_interrupts	07E8
+		_reset	07EA
+		.reset	07EA
+		_set_interrupts	07F0
+		_remove_VBL	07FB
+		_remove_LCD	0806
+		_remove_TIM	0811
+		_remove_SIO	081C
+		_remove_JOY	0827
+		_add_VBL	0832
+		_add_LCD	083D
+		_add_TIM	0848
+		_add_SIO	0853
+		_add_JOY	085E
+		_clock	0869
+		__printTStates	0872
+		banked_call	0873
+		banked_ret	088C
+AREA _BASE
+	RADIX HEX
+	BASE 0895
+	SIZE 015D
+	ATTRIB REL CON
+	GLOBALS
+		.mv_sprite	0895
+		_move_sprite	08A4
+		.set_xy_wtt	08B1
+		.set_xy_btt	08C2
+		.set_xy_tt	08D1
+		_set_tiles	0902
+		.init_vram	091B
+		.init_wtt	0929
+		.init_btt	0939
+		.init_tt	0947
+		.padup	094D
+		_waitpadup	094D
+		.jpad	095D
+		.wait_pad	098A
+		_joypad	0991
+		_waitpad	0996
+		.set_sprite_prop	09A0
+		_set_sprite_prop	09AD
+		.set_sprite_tile	09B8
+		_set_sprite_tile	09C5
+		.copy_vram	09D0
+		_get_data	09DF
+		_set_data	09DF
+AREA _LIT
+	RADIX HEX
+	BASE 09F2
+	SIZE 0DDC
+	ATTRIB REL CON
+AREA _GSINIT
+	RADIX HEX
+	BASE 17CE
+	SIZE 0000
+	ATTRIB REL CON
+	GLOBALS
+		gsinit	17CE
+AREA _GSINITTAIL
+	RADIX HEX
+	BASE 17CE
+	SIZE 0001
+	ATTRIB REL CON
+AREA _GSFINAL
+	RADIX HEX
+	BASE 17CF
+	SIZE 0000
+	ATTRIB REL CON
+AREA _DATA
+	RADIX HEX
+	BASE C0A0
+	SIZE 0000
+	ATTRIB REL CON
+AREA _BSS
+	RADIX HEX
+	BASE C0A0
+	SIZE 0076
+	ATTRIB REL CON
+	GLOBALS
+		__cpu	C0A0
+		.mode	C0A1
+		__io_out	C0A2
+		__io_in	C0A3
+		__io_status	C0A4
+		.vbl_done	C0A5
+		__current_bank	C0A6
+		_sys_time	C0A7
+		.sys_time	C0A7
+		.int_0x40	C0A9
+		.int_0x48	C0B9
+		.int_0x50	C0C9
+		.int_0x58	C0D9
+		.int_0x60	C0E9
+AREA _HEAP
+	RADIX HEX
+	BASE C116
+	SIZE 0000
+	ATTRIB REL CON
+	GLOBALS
+		_malloc_heap_start	C116
+MODULES
+	FILE C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/crt0.o
+		NAME Runtime
+	FILE space.o
+		NAME Space
+LIBRARIES
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE mv_spr.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE set_xy_t.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE init_tt.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE pad.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE set_prop.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE set_spr.o
+	LIBRARY C:\Users\chris\Documents\gb-rpg-builder\abcdef\gbdk\lib/small/asxxxx/gb/gb.lib
+		MODULE cpy_data.o
+USERBASEDEF
+	_CODE=0x0200
+	_DATA=0xC0A0
+	_CODE_1=0x4000
+USERGLOBALDEF
+	.OAM=0xC000
+	.STACK=0xE000
+	.refresh_OAM=0xFF80
+	.init=0x0000

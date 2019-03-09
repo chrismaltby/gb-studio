@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include <gb/drawing.h>
 
-INT8 gprintf(char *fmt, ...)
+INT8 gprintf(char *fmt, ...) NONBANKED
 {
   va_list ap;
   INT8 nb = 0;

@@ -2,7 +2,7 @@
 #include <types.h>
 #include <ctype.h>
 
-int atoi(const char *s)
+int atoi(const char *s) NONBANKED
 {
   UINT8 i, sign = 0;
   INT8 n;

@@ -4,8 +4,9 @@
 ;	michaelh@earthling.net
 ;	Distrubuted under the Artistic License - see www.opensource.org
 ;
+	;; BANKED:	checked, imperfect
 	.module 	font_spect
-	.area	_LIT
+	.area	_BASE
 _font_spect::
 	.byte	1+4		; 128 character encoding
 	.byte	128-32		; Tiles required

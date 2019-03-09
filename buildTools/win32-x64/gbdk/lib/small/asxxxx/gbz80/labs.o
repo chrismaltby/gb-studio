@@ -1,0 +1,23 @@
+XL
+H 9 areas 1 global symbols
+M labs
+A _CODE size 3D flags 0
+S _labs Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+T 00 00 E8 FC F8 09 7E CB 7F CA 34 00 AF F8 06 3E
+R 00 00 00 00 00 0A 00 00
+T 0E 00 00 9E F8 00 77 F8 07 3E 00 9E F8 01 77 F8
+R 00 00 00 00
+T 1C 00 08 3E 00 9E F8 02 77 F8 09 3E 00 9E F8 03
+R 00 00 00 00
+T 2A 00 77 F8 00 5E 23 56 23 C3 3A 00 F8 06 5E 23
+R 00 00 00 00 00 0A 00 00
+T 38 00 56 23 E8 04 C9
+R 00 00 00 00

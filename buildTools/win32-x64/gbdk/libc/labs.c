@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <types.h>
 
 long labs(long num)
 {

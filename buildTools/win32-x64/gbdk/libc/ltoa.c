@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <types.h>
+#include <string.h>
 
 char *ltoa(long n, char *s)
 {
