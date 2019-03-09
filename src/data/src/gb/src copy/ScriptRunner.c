@@ -99,7 +99,7 @@ void ScriptRunnerUpdate()
   // }
   POP_BANK;
 
-  last_fn = script_cmds[script_cmd_index].fn();
+  last_fn = script_cmds[script_cmd_index].fn;
 
   if (script_continue)
   {

@@ -6,9 +6,9 @@ static UBYTE fade_frames_per_step;
 static UBYTE fade_timer;
 static FADE_DIRECTION fade_direction;
 
-static const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
-static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
-static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
+static const UBYTE fade_speeds[] = { 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F };
+static const UBYTE obj_fade_vals[] = { 0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2 };
+static const UBYTE bgp_fade_vals[] = { 0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4 };
 
 void FadeInit()
 {
@@ -33,23 +33,16 @@ void FadeOut()
 
 void FadeUpdate()
 {
-  if (fade_running)
-  {
-    if ((fade_frame & fade_frames_per_step) == 0)
-    {
-      if (fade_direction == FADE_IN)
-      {
+  if (fade_running) {
+    if ((fade_frame & fade_frames_per_step) == 0) {
+      if (fade_direction == FADE_IN) {
         fade_timer++;
-        if (fade_timer == 5)
-        {
+        if (fade_timer == 5) {
           fade_running = FALSE;
         }
-      }
-      else
-      {
+      } else {
         fade_timer--;
-        if (fade_timer == 0)
-        {
+        if (fade_timer == 0) {
           fade_running = FALSE;
         }
       }
