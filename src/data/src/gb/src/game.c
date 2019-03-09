@@ -13,7 +13,7 @@ UBYTE time;
 UBYTE actor_move_settings;
 POS actor_move_dest;
 STAGE_TYPE stage_type;
-STAGE_TYPE stage_next_type = LOGO;
+STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN)();
 STAGE_UPDATE_FN UpdateFn;
 UBYTE script_continue;
