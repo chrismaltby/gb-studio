@@ -19,7 +19,8 @@ CIGNORE = 3>&1 1>&2 2>&3 3>&-
 
 
 SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')
-OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.o)
+SOURCES_ASM := $(shell find -L $(SOURCE_DIR) -name '*.s')
+OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.o) $(SOURCES_ASM:$(SOURCE_DIR)/%.s=$(OBJ_DIR)/%.o)
 EM_OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.bc)
 
 MUSIC = tetris \
@@ -41,7 +42,7 @@ publish:	$(ROM_BUILD_DIR)/game.gb
 $(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.c
 	$(CC) -c -o $@ $< ${CIGNORE}
 
-$(OBJ_DIR)/%.o:	%.s
+$(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.s
 	$(CC) -c -o $@ $<
 
 $(OBJ_DIR)/%.bc:	$(SOURCE_DIR)/%.c
