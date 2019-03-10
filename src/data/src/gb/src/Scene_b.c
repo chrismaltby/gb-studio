@@ -151,7 +151,8 @@ void SceneInit_b()
   }
 
   // Store pointer to collisions for later
-  col_ptr = ptr;
+  collision_tiles_len = ReadBankedUBYTE(bank_ptr.bank, ptr);
+  col_ptr = ptr + 1;
   col_bank = bank_ptr.bank;
 
   // Load Player Sprite
@@ -179,7 +180,6 @@ void SceneInit_b()
   SetBankedBkgData(bank_ptr.bank, 0, tileset_size, ptr + 1u);
 
   // Load collisions ( bitwise ceil by adding the divisor minus one to the dividend )
-  collision_tiles_len = (scene_width * scene_height + (8 - 1)) >> 3;
   for (i = 0; i != collision_tiles_len; i++)
   {
     scene_col_tiles[i] = ReadBankedUBYTE(col_bank, col_ptr);
