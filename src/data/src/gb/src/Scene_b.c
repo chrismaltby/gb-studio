@@ -377,19 +377,23 @@ void SceneUpdateActors_b()
         {
           r = rand();
           update_dir = directions[r & 3];
-        }
 
-        if (actors[i].movement_type == AI_RANDOM_FACE)
-        {
-          actors[i].dir.x = update_dir->x;
-          actors[i].dir.y = update_dir->y;
-          actors[i].redraw = TRUE;
-          actors[i].moving = FALSE;
+          if (actors[i].movement_type == AI_RANDOM_FACE)
+          {
+            actors[i].dir.x = update_dir->x;
+            actors[i].dir.y = update_dir->y;
+            actors[i].redraw = TRUE;
+            actors[i].moving = FALSE;
+          }
+          else
+          {
+            LOG("SceneUpdateActorMovement_b %u\n", i);
+            SceneUpdateActorMovement_b(i, update_dir);
+          }
         }
         else
         {
-          LOG("SceneUpdateActorMovement_b %u\n", i);
-          SceneUpdateActorMovement_b(i, update_dir);
+          actors[i].moving = FALSE;
         }
       }
     }
