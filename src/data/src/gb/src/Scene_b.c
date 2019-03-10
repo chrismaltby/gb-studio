@@ -31,7 +31,7 @@ UBYTE emotion_timer = 0;
 UBYTE emotion_actor = 1;
 const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 UBYTE scene_col_tiles[128] = {0};
-
+UBYTE camera_moved = FALSE;
 const VEC2D dir_up = {0, -1};
 const VEC2D dir_down = {0, 1};
 const VEC2D dir_left = {-1, 0};
@@ -203,7 +203,6 @@ void SceneInit_b()
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
   ScriptStart(&events_ptr);
-  // ScriptStart(&actors[1].events_ptr);
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
@@ -233,14 +232,14 @@ void SceneUpdate_b()
   SceneHandleInput();
   ScriptRunnerUpdate();
   SceneUpdateActors_b();
-  SceneHandleTriggers_b();
   SceneUpdateEmotionBubble_b();
   SceneUpdateCameraShake_b();
   SceneHandleWait();
   SceneHandleTransition();
-  SceneUpdateCamera_b();
   UIUpdate();
+  SceneUpdateCamera_b();
   SceneRender();
+  SceneHandleTriggers_b();
 }
 
 void SceneHandleWait()
@@ -280,35 +279,40 @@ void SceneUpdateCamera_b()
     camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
   }
 
-  // If camera is animating move towards location
-  if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG)
-  {
-    if ((time & (camera_settings & CAMERA_SPEED_MASK)) == 0)
-    {
+  camera_moved = SCX_REG != camera_dest.x || SCY_REG != camera_dest.y;
 
-      if (SCX_REG > camera_dest.x)
+  if (camera_moved)
+  {
+    // If camera is animating move towards location
+    if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG)
+    {
+      if ((time & (camera_settings & CAMERA_SPEED_MASK)) == 0)
       {
-        SCX_REG--;
-      }
-      else if (SCX_REG < camera_dest.x)
-      {
-        SCX_REG++;
-      }
-      if (SCY_REG > camera_dest.y)
-      {
-        SCY_REG--;
-      }
-      else if (SCY_REG < camera_dest.y)
-      {
-        SCY_REG++;
+
+        if (SCX_REG > camera_dest.x)
+        {
+          SCX_REG--;
+        }
+        else if (SCX_REG < camera_dest.x)
+        {
+          SCX_REG++;
+        }
+        if (SCY_REG > camera_dest.y)
+        {
+          SCY_REG--;
+        }
+        else if (SCY_REG < camera_dest.y)
+        {
+          SCY_REG++;
+        }
       }
     }
-  }
-  // Otherwise jump imediately to camera destination
-  else
-  {
-    SCX_REG = camera_dest.x;
-    SCY_REG = camera_dest.y;
+    // Otherwise jump imediately to camera destination
+    else
+    {
+      SCX_REG = camera_dest.x;
+      SCY_REG = camera_dest.y;
+    }
   }
 
   // @todo - should event finish checks be included here, or seperate file?
@@ -399,21 +403,21 @@ void SceneUpdateActors_b()
     }
   }
 
-  for (i = 0; i != scene_num_actors; i++)
-  {
-    // If running script only update script actor - Unless needs redraw
-    if (script_ptr && i != script_actor && !actors[i].redraw)
-    {
-      continue;
-    }
+  // for (i = 0; i != scene_num_actors; i++)
+  // {
+  //   // If running script only update script actor - Unless needs redraw
+  //   if (script_ptr && i != script_actor && !actors[i].redraw)
+  //   {
+  //     continue;
+  //   }
 
-    // Move actors
-    if (actors[i].moving)
-    {
-      actors[i].pos.x += actors[i].dir.x;
-      actors[i].pos.y += actors[i].dir.y;
-    }
-  }
+  //   // Move actors
+  //   if (actors[i].moving)
+  //   {
+  //     actors[i].pos.x += actors[i].dir.x;
+  //     actors[i].pos.y += actors[i].dir.y;
+  //   }
+  // }
 }
 
 void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
@@ -622,17 +626,13 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, screen_x, screen_y;
+  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw;
 
   for (i = 0; i != scene_num_actors; i++)
   {
     sprite_index = MUL_2(i);
 
-    // // If running script only update script actor - Unless needs redraw
-    // if (script_ptr && i != script_actor && !actors[i].redraw)
-    // {
-    //   continue;
-    // }
+    redraw = FALSE;
 
     // If just landed on new tile or needs a redraw
     if ((actors[i].moving && ACTOR_ON_TILE(i)) || actors[i].redraw)
@@ -678,22 +678,49 @@ void SceneRenderActors_b()
       }
 
       actors[i].redraw = FALSE;
+      redraw = TRUE;
     }
 
-    // Position actors
-    screen_x = actors[i].pos.x - SCX_REG;
-    screen_y = actors[i].pos.y - SCY_REG;
+    // if (actors[i].moving)
+    // {
+    //   actors[i].pos.x += actors[i].dir.x;
+    //   actors[i].pos.y += actors[i].dir.y;
 
-    // If sprite not under menu position it, otherwise hide
-    // @todo This function probably shouldn't know about the menu, maybe
-    // keep a max_sprite_screen_y value and check against that?
-    if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
+    //   if (i == 0)
+    //   {
+    //     SceneUpdateCamera_b();
+    //   }
+    // }
+
+    if (actors[i].moving)
     {
-      move_sprite_pair(sprite_index, screen_x, screen_y);
+      actors[i].pos.x += actors[i].dir.x;
+      actors[i].pos.y += actors[i].dir.y;
+
+      if (i == 0)
+      {
+        SceneUpdateCamera_b();
+      }
     }
-    else
+
+    // if (IS_FRAME_2)
+    if (camera_moved || redraw || actors[i].moving)
     {
-      hide_sprite_pair(sprite_index);
+      // Position actors
+      screen_x = actors[i].pos.x - SCX_REG;
+      screen_y = actors[i].pos.y - SCY_REG;
+
+      // If sprite not under menu position it, otherwise hide
+      // @todo This function probably shouldn't know about the menu, maybe
+      // keep a max_sprite_screen_y value and check against that?
+      if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
+      {
+        move_sprite_pair(sprite_index, screen_x, screen_y);
+      }
+      else
+      {
+        hide_sprite_pair(sprite_index);
+      }
     }
   }
 }
