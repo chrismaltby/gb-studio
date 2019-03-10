@@ -92,13 +92,13 @@ void SceneInit_b()
   ptr = ptr + 3;
   for (i = 0; i != num_sprites; i++)
   {
-    LOG("LOAD SPRITE=%u k=%u\n", i, k);
+    // LOG("LOAD SPRITE=%u k=%u\n", i, k);
     sprite_index = ReadBankedUBYTE(bank_ptr.bank, ptr + i);
-    LOG("SPRITE INDEX=%u\n", sprite_index);
+    // LOG("SPRITE INDEX=%u\n", sprite_index);
     ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
     sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
     sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr));
-    LOG("SPRITE LEN=%u\n", sprite_len);
+    // LOG("SPRITE LEN=%u\n", sprite_len);
     SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
   }
@@ -108,12 +108,12 @@ void SceneInit_b()
   ptr = ptr + num_sprites;
   scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr) + 1;
   ptr = ptr + 1;
-  LOG("NUM ACTORS=%u\n", scene_num_actors);
+  // LOG("NUM ACTORS=%u\n", scene_num_actors);
   for (i = 1; i != scene_num_actors; i++)
   {
-    LOG("LOAD ACTOR %u\n", i);
+    // LOG("LOAD ACTOR %u\n", i);
     actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, ptr);
-    LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
+    // LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
     actors[i].redraw = TRUE;
     actors[i].enabled = TRUE;
     actors[i].sprite_type = FALSE; // WTF needed
@@ -125,17 +125,17 @@ void SceneInit_b()
     actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
     actors[i].movement_type = 0; // WTF needed
     actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
-    LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
+    // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
     actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 6);
     actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 8);
-    LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
+    // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
     ptr = ptr + 9u;
   }
 
   // Load triggers
   scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
   ptr = ptr + 1;
-  LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
+  // LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
   for (i = 0; i != scene_num_triggers; i++)
   {
     triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, ptr);
@@ -186,7 +186,7 @@ void SceneInit_b()
     col_ptr++;
   }
 
-  LOG("COL TILES LEN = %u\n", collision_tiles_len);
+  // LOG("COL TILES LEN = %u\n", collision_tiles_len);
 
   // Init player
   actors[0].redraw = TRUE;
@@ -203,6 +203,7 @@ void SceneInit_b()
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
   ScriptStart(&events_ptr);
+  // ScriptStart(&actors[1].events_ptr);
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
@@ -327,8 +328,8 @@ void SceneUpdateActors_b()
   // Handle script move
   if (actor_move_settings & ACTOR_MOVE_ENABLED && ((actors[script_actor].pos.x & 7) == 0) && ((actors[script_actor].pos.y & 7) == 0))
   {
-    LOG("TEST posx=%d posy=%d destx=%d desty=%d\n", actors[script_actor].pos.x,
-        actors[script_actor].pos.y, actor_move_dest.x, actor_move_dest.y);
+    // LOG("TEST posx=%d posy=%d destx=%d desty=%d\n", actors[script_actor].pos.x,
+    // actors[script_actor].pos.y, actor_move_dest.x, actor_move_dest.y);
     if (actors[script_actor].pos.x == actor_move_dest.x && actors[script_actor].pos.y == actor_move_dest.y)
     {
       actor_move_settings &= ~ACTOR_MOVE_ENABLED;
@@ -337,7 +338,7 @@ void SceneUpdateActors_b()
     }
     else
     {
-      LOG("NOT THERE YET\n");
+      // LOG("NOT THERE YET\n");
       if (actors[script_actor].pos.x > actor_move_dest.x)
       {
         update_dir = &dir_left;
@@ -368,21 +369,27 @@ void SceneUpdateActors_b()
   {
     for (i = 1; i != scene_num_actors; i++)
     {
-      if (ACTOR_ON_TILE(i))
+      if ((IS_FRAME_64 || actors[i].moving) && (actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE) && ACTOR_ON_TILE(i))
       {
         update_dir = &dir_none;
 
-        if (IS_FRAME_64 && (actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE))
+        if (IS_FRAME_64)
         {
           r = rand();
           update_dir = directions[r & 3];
         }
 
-        SceneUpdateActorMovement_b(i, update_dir);
-
         if (actors[i].movement_type == AI_RANDOM_FACE)
         {
+          actors[i].dir.x = update_dir->x;
+          actors[i].dir.y = update_dir->y;
+          actors[i].redraw = TRUE;
           actors[i].moving = FALSE;
+        }
+        else
+        {
+          LOG("SceneUpdateActorMovement_b %u\n", i);
+          SceneUpdateActorMovement_b(i, update_dir);
         }
       }
     }
@@ -469,7 +476,7 @@ void SceneHandleTriggers_b()
 
       if (trigger != scene_num_triggers)
       {
-        LOG("ON TRIGGER\n");
+        // LOG("ON TRIGGER\n");
         actors[0].moving = FALSE;
         script_actor = 0;
         ScriptStart(&triggers[trigger].events_ptr);
@@ -536,7 +543,7 @@ static void SceneHandleInput()
   }
 
   // Can't move while script is running
-  if (script_ptr || emotion_timer != 0 || IsFading())
+  if (script_ptr != 0 || emotion_timer != 0 || IsFading())
   {
     actors[0].moving = FALSE;
     return;
