@@ -202,7 +202,7 @@ void SceneInit_b()
   ptr = col_ptr;
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
-  ScriptStart(&events_ptr);
+  // ScriptStart(&events_ptr);
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
@@ -291,15 +291,15 @@ void SceneUpdateCamera_b()
       }
       else if (SCX_REG < camera_dest.x)
       {
-         SCX_REG++;
+        SCX_REG++;
       }
       if (SCY_REG > camera_dest.y)
       {
-         SCY_REG--;
+        SCY_REG--;
       }
       else if (SCY_REG < camera_dest.y)
       {
-         SCY_REG++;
+        SCY_REG++;
       }
     }
   }

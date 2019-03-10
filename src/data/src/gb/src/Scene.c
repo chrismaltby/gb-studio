@@ -29,7 +29,7 @@ void SceneInit()
 void SceneUpdate()
 {
   PUSH_BANK(scene_bank);
-  // SceneUpdate_b();
+  SceneUpdate_b();
   POP_BANK;
 }
 
