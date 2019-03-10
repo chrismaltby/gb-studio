@@ -436,14 +436,14 @@ void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
     }
 
     // Check collisions on left tile
-    collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1);
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
     }
 
     // Check collisions on right tile
-    collision_index = (scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
