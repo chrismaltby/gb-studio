@@ -5,6 +5,7 @@
 #include "data_ptrs.h"
 #include "ScriptRunner.h"
 #include "Logo.h"
+#include "gbt_player.h"
 
 UBYTE joy;
 UBYTE prev_joy;
@@ -19,6 +20,9 @@ STAGE_UPDATE_FN UpdateFn;
 UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
+
+extern const unsigned char song_palette_town0[];
+extern const unsigned char *song_palette_town_Data[];
 
 int main()
 {
@@ -55,6 +59,9 @@ int main()
   DISPLAY_ON;
   SHOW_SPRITES;
 
+  gbt_play(song_palette_town_Data, 28, 7);
+  gbt_loop(TRUE);
+
   while (1)
   {
     game_loop();
@@ -83,7 +90,7 @@ void game_loop()
     {
       SceneInit();
     }
-    else if(stage_type == LOGO)
+    else if (stage_type == LOGO)
     {
       LogoInit();
     }
@@ -93,7 +100,7 @@ void game_loop()
   {
     SceneUpdate();
   }
-  else if(stage_type == LOGO)
+  else if (stage_type == LOGO)
   {
     LogoUpdate();
   }
@@ -101,7 +108,9 @@ void game_loop()
 
   // Handle Fade
   FadeUpdate();
-  
+
   prev_joy = joy;
   time++;
+
+  gbt_update();
 }
