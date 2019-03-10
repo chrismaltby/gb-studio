@@ -122,7 +122,10 @@ const compile = async (
 
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const collisionsLength = Math.ceil((scene.width * scene.height) / 8);
+    const sceneImage = precompiled.usedImages[scene.imageIndex];
+    const collisionsLength = Math.ceil(
+      (sceneImage.width * sceneImage.height) / 8
+    );
     return banked.push(
       [].concat(
         hi(scene.imageIndex),
