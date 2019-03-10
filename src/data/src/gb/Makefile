@@ -3,7 +3,7 @@ SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_deploy/index.html
 DEBUG_SHELL_FILE = ${NODE_MODULES}/gbdkjs/shell_debug/build/index.html
 
 EMCC = emcc -O2 -s WASM=0 -Wno-implicit-function-declaration -I${NODE_MODULES}/gbdkjs/include -I${NODE_MODULES}/gbdkjs/gbdk/include -Iinclude -Isrc/data --js-library ${NODE_MODULES}/gbdkjs/emscripten_bindings.js
-CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude -Isrc/data -Igenerated -I${NODE_MODULES}/gbdkjs/include
+CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude
 MOD2GBT = ../mod2gbt/mod2gbt
 
 ROM_BUILD_DIR = build/rom
@@ -40,7 +40,7 @@ publish:	$(ROM_BUILD_DIR)/game.gb
 	mv music.c $@
 
 $(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.c
-	$(CC) -c -o $@ $< ${CIGNORE}
+	$(CC) -c -o $@ $<
 
 $(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.s
 	$(CC) -c -o $@ $<
