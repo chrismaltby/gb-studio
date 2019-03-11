@@ -392,7 +392,7 @@ void SceneUpdateActors_b()
         {
           update_dir = directions[r & 3];
           r++;
-          SceneUpdateActorMovement_b(i, update_dir);
+          SceneUpdateActorMovement_b(i);
         }
       }
     }
