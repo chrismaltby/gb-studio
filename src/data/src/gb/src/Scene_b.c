@@ -370,10 +370,41 @@ void SceneUpdateActors_b()
     }
   }
 
-  if (IS_FRAME_64)
+  if (script_ptr == 0)
   {
-    r = rand();
+    if (IS_FRAME_64)
+    {
+      r = rand();
+      for (i = 1; i != scene_num_actors; i++)
+      {
+        if ((time == 0 || time == 128) && (i & 0x1))
+        {
+          continue;
+        }
+        if (actors[i].movement_type == AI_RANDOM_FACE)
+        {
+          memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
+          actors[i].redraw = TRUE;
+          actors[i].moving = FALSE;
+          r++;
+        }
+        else if (actors[i].movement_type == AI_RANDOM_WALK)
+        {
+          update_dir = directions[r & 3];
+          r++;
+          SceneUpdateActorMovement_b(i, update_dir);
+        }
+      }
+    }
+    else if ((time == 8) || (time == 72) || (time == 136) || (time == 200))
+    {
+      for (i = 1; i != scene_num_actors; i++)
+      {
+        actors[i].moving = FALSE;
+      }
+    }
   }
+  /*
 
   // Handle random npc movement
   if (script_ptr == 0)
@@ -415,7 +446,7 @@ void SceneUpdateActors_b()
       }
     }
   }
-
+*/
   // for (i = 0; i != scene_num_actors; i++)
   // {
   //   // If running script only update script actor - Unless needs redraw
@@ -449,13 +480,15 @@ void SceneUpdateActorMovement_b(UBYTE i)
     next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
     // Check for npc collisions
-    // npc = SceneNpcAt_b(i, next_tx, next_ty);
-    // if (npc != scene_num_actors)
-    // {
-    //   actors[i].moving = FALSE;
-    //   return;
-    // }
-
+    if (i == 0)
+    {
+      npc = SceneNpcAt_b(i, next_tx, next_ty);
+      if (npc != scene_num_actors)
+      {
+        actors[i].moving = FALSE;
+        return;
+      }
+    }
     // Check collisions on left tile
     collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
@@ -710,7 +743,7 @@ void SceneRenderActors_b()
     }
 
     // if (IS_FRAME_2)
-    if (camera_moved || actors[i].moving)
+    if (camera_moved || actors[i].moving || redraw)
     {
       // Position actors
       screen_x = actors[i].pos.x - SCX_REG;
