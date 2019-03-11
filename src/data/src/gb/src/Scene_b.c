@@ -38,6 +38,7 @@ const VEC2D dir_left = {-1, 0};
 const VEC2D dir_right = {1, 0};
 const VEC2D dir_none = {0, 0};
 VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
+VEC2D *update_dir;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private functions
@@ -55,7 +56,7 @@ void SceneHandleTriggers_b();
 void SceneRenderActors_b();
 void SceneRenderEmotionBubble_b();
 void SceneRenderCameraShake_b();
-void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir);
+void SceneUpdateActorMovement_b(UBYTE i);
 void SceneSetEmotion_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
@@ -204,6 +205,8 @@ void SceneInit_b()
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
   ScriptStart(&events_ptr);
 
+  // scene_num_actors = 1;
+
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
   {
@@ -237,7 +240,7 @@ void SceneUpdate_b()
   SceneHandleWait();
   SceneHandleTransition();
   UIUpdate();
-  SceneUpdateCamera_b();
+  // SceneUpdateCamera_b();
   SceneRender();
   SceneHandleTriggers_b();
 }
@@ -325,7 +328,6 @@ void SceneUpdateCamera_b()
 
 void SceneUpdateActors_b()
 {
-  VEC2D *update_dir;
   UBYTE i;
   BYTE r;
 
@@ -364,36 +366,51 @@ void SceneUpdateActors_b()
         update_dir = &dir_none;
       }
 
-      SceneUpdateActorMovement_b(script_actor, update_dir);
+      SceneUpdateActorMovement_b(script_actor);
     }
   }
 
-  // Handle random npc movement
-  if (!script_ptr)
+  if (IS_FRAME_64)
   {
+    r = rand();
+  }
+
+  // Handle random npc movement
+  if (script_ptr == 0)
+  {
+    // for (i = 1; i != 2; i++)
     for (i = 1; i != scene_num_actors; i++)
     {
       if ((IS_FRAME_64 || actors[i].moving) && (actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE) && ACTOR_ON_TILE(i))
       {
-        update_dir = &dir_none;
-
         if (IS_FRAME_64)
         {
-          r = rand();
           update_dir = directions[r & 3];
+          r++;
+        }
+        else
+        {
+          update_dir = &dir_none;
+          actors[i].moving = FALSE;
+          continue;
         }
 
         if (actors[i].movement_type == AI_RANDOM_FACE)
         {
-          actors[i].dir.x = update_dir->x;
-          actors[i].dir.y = update_dir->y;
+          memcpy(&actors[i].dir, update_dir, sizeof(POS));
           actors[i].redraw = TRUE;
           actors[i].moving = FALSE;
         }
         else
         {
-          LOG("SceneUpdateActorMovement_b %u\n", i);
-          SceneUpdateActorMovement_b(i, update_dir);
+          if (update_dir == &dir_none)
+          {
+            actors[i].moving = FALSE;
+          }
+          else
+          {
+            SceneUpdateActorMovement_b(i, update_dir);
+          }
         }
       }
     }
@@ -402,10 +419,10 @@ void SceneUpdateActors_b()
   // for (i = 0; i != scene_num_actors; i++)
   // {
   //   // If running script only update script actor - Unless needs redraw
-  //   if (script_ptr && i != script_actor && !actors[i].redraw)
-  //   {
-  //     continue;
-  //   }
+  //   // if (script_ptr && i != script_actor && !actors[i].redraw)
+  //   // {
+  //   //   continue;
+  //   // }
 
   //   // Move actors
   //   if (actors[i].moving)
@@ -416,41 +433,35 @@ void SceneUpdateActors_b()
   // }
 }
 
-void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
+void SceneUpdateActorMovement_b(UBYTE i)
 {
   UBYTE next_tx, next_ty;
   UBYTE npc;
   UWORD collision_index;
 
-  if (update_dir == &dir_none)
-  {
-    actors[i].moving = FALSE;
-  }
-  else
-  {
-    actors[i].dir.x = update_dir->x;
-    actors[i].dir.y = update_dir->y;
-    actors[i].redraw = TRUE;
-    actors[i].moving = TRUE;
-  }
+  memcpy(&actors[i].dir, update_dir, sizeof(POS));
 
-  if (actors[i].moving && !script_ptr)
+  actors[i].redraw = TRUE;
+
+  if (script_ptr == 0)
   {
     next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
     next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
     // Check for npc collisions
-    npc = SceneNpcAt_b(i, next_tx, next_ty);
-    if (npc != scene_num_actors)
-    {
-      actors[i].moving = FALSE;
-    }
+    // npc = SceneNpcAt_b(i, next_tx, next_ty);
+    // if (npc != scene_num_actors)
+    // {
+    //   actors[i].moving = FALSE;
+    //   return;
+    // }
 
     // Check collisions on left tile
     collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
+      return;
     }
 
     // Check collisions on right tile
@@ -458,8 +469,11 @@ void SceneUpdateActorMovement_b(UBYTE i, VEC2D *update_dir)
     if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
     {
       actors[i].moving = FALSE;
+      return;
     }
   }
+
+  actors[i].moving = TRUE;
 }
 
 void SceneHandleTriggers_b()
@@ -530,7 +544,6 @@ void SceneUpdateEmotionBubble_b()
 
 static void SceneHandleInput()
 {
-  VEC2D *update_dir;
   UBYTE next_tx, next_ty;
   UBYTE npc;
 
@@ -593,10 +606,11 @@ static void SceneHandleInput()
     }
     else
     {
-      update_dir = &dir_none;
+      actors[0].moving = FALSE;
+      return;
     }
 
-    SceneUpdateActorMovement_b(0, update_dir);
+    SceneUpdateActorMovement_b(0);
   }
 }
 
@@ -624,14 +638,21 @@ void SceneRenderActors_b()
 {
   UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw;
 
+  // for (i = 0; i != 6; i++)
   for (i = 0; i != scene_num_actors; i++)
+  // for (i = 0; i != 2; i++)
   {
     sprite_index = MUL_2(i);
+    if (!actors[i].enabled)
+    {
+      hide_sprite_pair(sprite_index);
+      continue;
+    }
 
     redraw = FALSE;
 
     // If just landed on new tile or needs a redraw
-    if ((actors[i].moving && ACTOR_ON_TILE(i)) || actors[i].redraw)
+    if (ACTOR_ON_TILE(i) && (actors[i].moving || actors[i].redraw))
     {
       flip = FALSE;
       frame = actors[i].sprite;
@@ -677,17 +698,6 @@ void SceneRenderActors_b()
       redraw = TRUE;
     }
 
-    // if (actors[i].moving)
-    // {
-    //   actors[i].pos.x += actors[i].dir.x;
-    //   actors[i].pos.y += actors[i].dir.y;
-
-    //   if (i == 0)
-    //   {
-    //     SceneUpdateCamera_b();
-    //   }
-    // }
-
     if (actors[i].moving)
     {
       actors[i].pos.x += actors[i].dir.x;
@@ -700,7 +710,7 @@ void SceneRenderActors_b()
     }
 
     // if (IS_FRAME_2)
-    if (camera_moved || redraw || actors[i].moving)
+    if (camera_moved || actors[i].moving)
     {
       // Position actors
       screen_x = actors[i].pos.x - SCX_REG;
@@ -709,14 +719,14 @@ void SceneRenderActors_b()
       // If sprite not under menu position it, otherwise hide
       // @todo This function probably shouldn't know about the menu, maybe
       // keep a max_sprite_screen_y value and check against that?
-      if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
-      {
-        move_sprite_pair(sprite_index, screen_x, screen_y);
-      }
-      else
-      {
-        hide_sprite_pair(sprite_index);
-      }
+      // if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
+      // {
+      move_sprite_pair(sprite_index, screen_x, screen_y);
+      // }
+      // else
+      // {
+      // hide_sprite_pair(sprite_index);
+      // }
     }
   }
 }
@@ -752,7 +762,7 @@ void SceneRenderEmotionBubble_b()
 // Helpers
 ////////////////////////////////////////////////////////////////////////////////
 
-UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
+UBYTE ScenePlayerAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
   for (i = 0; i != scene_num_actors; i++)
@@ -761,6 +771,23 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
     {
       continue;
     }
+    tx_b = DIV_8(actors[0].pos.x);
+    ty_b = DIV_8(actors[0].pos.y);
+    if ((ty_a == ty_b || ty_a == ty_b - 1) &&
+        (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
+    {
+      return i;
+    }
+  }
+
+  return scene_num_actors;
+}
+
+UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
+{
+  UBYTE i, tx_b, ty_b;
+  for (i = 1; i != scene_num_actors; i++)
+  {
     tx_b = DIV_8(actors[i].pos.x);
     ty_b = DIV_8(actors[i].pos.y);
     if ((ty_a == ty_b || ty_a == ty_b - 1) &&
@@ -769,7 +796,6 @@ UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
       return i;
     }
   }
-
   return scene_num_actors;
 }
 
