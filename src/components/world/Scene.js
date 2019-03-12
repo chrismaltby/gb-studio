@@ -7,8 +7,8 @@ import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { throttle } from "lodash";
 
-const MAX_ACTORS = 10;
-const MAX_TRIGGERS = 10;
+const MAX_ACTORS = 8;
+const MAX_TRIGGERS = 8;
 
 class Scene extends Component {
   constructor() {
