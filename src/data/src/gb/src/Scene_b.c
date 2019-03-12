@@ -702,7 +702,7 @@ void SceneRenderActors_b()
   scx = 0 - SCX_REG;
   scy = 0 - SCY_REG;
 
-  if (IS_FRAME_64)
+  if (IS_FRAME_64 || script_ptr != 0)
   {
     len = scene_num_actors;
   }
