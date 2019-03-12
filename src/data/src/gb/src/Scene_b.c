@@ -46,7 +46,7 @@ VEC2D *update_dir;
 
 static void SceneHandleInput();
 void SceneRender();
-UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a);
+UBYTE SceneNpcAt_b(UBYTE tx_a, UBYTE ty_a);
 UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a);
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
@@ -375,22 +375,24 @@ void SceneUpdateActors_b()
     }
   }
 
-
   if (script_ptr == 0)
   {
     if (IS_FRAME_64)
     {
       r = rand();
 
-      if(time == 0 || time == 128)
+      if (time == 0 || time == 128)
       {
         // Move odd numbered actors on frames 0 and 128
-        if(scene_num_actors&1) {
+        if (scene_num_actors & 1)
+        {
           len = scene_num_actors;
-        } else {
+        }
+        else
+        {
           len = scene_num_actors + 1;
         }
-        for (i = 1; i != len; i+=2)
+        for (i = 1; i != len; i += 2)
         {
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
@@ -406,14 +408,19 @@ void SceneUpdateActors_b()
             ++r;
           }
         }
-      } else {
+      }
+      else
+      {
         // Move even numbered actors on frames 64 and 192
-        if(scene_num_actors&1) {
+        if (scene_num_actors & 1)
+        {
           len = scene_num_actors + 1;
-        } else {
+        }
+        else
+        {
           len = scene_num_actors;
         }
-        for (i = 2; i != len; i+=2)
+        for (i = 2; i != len; i += 2)
         {
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
@@ -441,16 +448,19 @@ void SceneUpdateActors_b()
   }
 
   // Is frame where npc would move
-  if(((time&7) && !(time&56))||((time & 0x3F) == 0)) {
+  if (((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
+  {
     len = scene_num_actors;
-  } else {
+  }
+  else
+  {
     // Else only move player
     len = 1;
   }
 
   for (i = 0; i != len; ++i)
   {
-    LOG("MOVING actor %u\n",i);
+    LOG("MOVING actor %u\n", i);
     // If running script only update script actor - Unless needs redraw
     // if (script_ptr && i != script_actor && !actors[i].redraw)
     // {
@@ -482,18 +492,20 @@ void SceneUpdateActorMovement_b(UBYTE i)
   // Check for npc collisions
   if (i == 0)
   {
-    npc = SceneNpcAt_b(i, next_tx, next_ty);
+    npc = SceneNpcAt_b(next_tx, next_ty);
     if (npc != scene_num_actors)
     {
       actors[i].moving = FALSE;
       return;
     }
-  } else {
+  }
+  else
+  {
     npc = ScenePlayerAt_b(next_tx, next_ty);
-    if(npc != 0)
+    if (npc != 0)
     {
       actors[i].moving = FALSE;
-      return;   
+      return;
     }
   }
 
@@ -512,7 +524,6 @@ void SceneUpdateActorMovement_b(UBYTE i)
     actors[i].moving = FALSE;
     return;
   }
-
 
   LOG("UPDATE ACTOR MOVEMENT %u\n", i);
   actors[i].moving = TRUE;
@@ -613,7 +624,7 @@ static void SceneHandleInput()
     actors[0].moving = FALSE;
     next_tx = DIV_8(actors[0].pos.x) + actors[0].dir.x;
     next_ty = DIV_8(actors[0].pos.y) + actors[0].dir.y;
-    npc = SceneNpcAt_b(0, next_tx, next_ty);
+    npc = SceneNpcAt_b(next_tx, next_ty);
     if (npc != scene_num_actors)
     {
       actors[0].moving = FALSE;
@@ -683,17 +694,19 @@ void SceneRenderActors_b()
   scx = 0 - SCX_REG;
   scy = 0 - SCY_REG;
 
-  if(IS_FRAME_64) {
+  if (IS_FRAME_64)
+  {
     len = scene_num_actors;
-  } else {
+  }
+  else
+  {
     // Else only update player
     len = 1;
-  }  
+  }
 
   for (i = 0; i != len; ++i)
   {
     LOG("CHECK FOR REDRAW Actor %u\n", i);
-
 
     redraw = actors[i].redraw;
 
@@ -701,7 +714,7 @@ void SceneRenderActors_b()
     if (redraw)
     {
       sprite_index = MUL_2(i);
- 
+
       flip = FALSE;
       frame = actors[i].sprite;
 
@@ -749,41 +762,48 @@ void SceneRenderActors_b()
     }
   }
 
-  if(camera_moved)
+  if (camera_moved)
   {
     for (i = 1; i != scene_num_actors; ++i)
     {
-      sprite_index = MUL_2(i);            
-      LOG("a Reposition Actor %u\n", i);      
+      sprite_index = MUL_2(i);
+      LOG("a Reposition Actor %u\n", i);
       screen_x = actors[i].pos.x + scx;
-      screen_y = actors[i].pos.y + scy; 
+      screen_y = actors[i].pos.y + scy;
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
-      {      
-        move_sprite_pair(sprite_index, screen_x, screen_y);           
-      } else {
+      {
+        move_sprite_pair(sprite_index, screen_x, screen_y);
+      }
+      else
+      {
         hide_sprite_pair(sprite_index);
-      }         
-    }    
+      }
+    }
   }
   else
   {
     // If frame when npc would move
-    if(win_pos_y != MENU_CLOSED_Y || ((time&7) && !(time&56))||((time & 0x3F) == 0)) {
+    if (win_pos_y != MENU_CLOSED_Y || ((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
+    {
       len = scene_num_actors;
-    } else {
+    }
+    else
+    {
       // Else only move player
       len = 1;
-    }  
+    }
     for (i = 0; i != len; ++i)
     {
-      sprite_index = MUL_2(i);      
-      LOG("b Reposition Actor %u\n", i);            
+      sprite_index = MUL_2(i);
+      LOG("b Reposition Actor %u\n", i);
       screen_x = actors[i].pos.x + scx;
-      screen_y = actors[i].pos.y + scy; 
+      screen_y = actors[i].pos.y + scy;
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
-      {      
-        move_sprite_pair(sprite_index, screen_x, screen_y);           
-      } else {
+      {
+        move_sprite_pair(sprite_index, screen_x, screen_y);
+      }
+      else
+      {
         hide_sprite_pair(sprite_index);
       }
     }
@@ -830,12 +850,14 @@ UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a)
       (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
   {
     return 1;
-  } else {
+  }
+  else
+  {
     return 0;
   }
 }
 
-UBYTE SceneNpcAt_b(UBYTE actor_i, UBYTE tx_a, UBYTE ty_a)
+UBYTE SceneNpcAt_b(UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
   for (i = 1; i != scene_num_actors; i++)

@@ -1,5 +1,6 @@
 #include "ScriptRunner.h"
 #include "BankData.h"
+#include "BankManager.h"
 #include "UI.h"
 #include "FadeManager.h"
 #include "Scene.h"

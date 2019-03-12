@@ -2,7 +2,7 @@
 #include "UI.h"
 #include "Scene.h"
 #include "FadeManager.h"
-#include "data_ptrs.h"
+
 #include "ScriptRunner.h"
 #include "Logo.h"
 #include "gbt_player.h"
@@ -16,13 +16,14 @@ POS actor_move_dest;
 STAGE_TYPE stage_type;
 STAGE_TYPE stage_next_type = MAP;
 typedef void (*STAGE_UPDATE_FN)();
-STAGE_UPDATE_FN UpdateFn;
 UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 
 extern const unsigned char song_palette_town0[];
 extern const unsigned char *song_palette_town_Data[];
+
+void game_loop();
 
 int main()
 {
@@ -53,8 +54,6 @@ int main()
 
   UIInit();
   FadeInit();
-
-  UpdateFn = SceneUpdate;
 
   DISPLAY_ON;
   SHOW_SPRITES;
@@ -104,7 +103,6 @@ void game_loop()
   {
     LogoUpdate();
   }
-  // UpdateFn();
 
   // Handle Fade
   FadeUpdate();
