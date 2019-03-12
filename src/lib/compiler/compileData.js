@@ -226,7 +226,7 @@ const compile = async (
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
-    `#define START_SCENE_DIR ${dirDec(startDirection || 1)}\n` +
+    `#define START_SCENE_DIR ${dirDec(startDirection)}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
     `#define UI_BANK ${uiImagePtr.bank}\n` +
     `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
