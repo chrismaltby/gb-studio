@@ -117,6 +117,7 @@ void SceneInit_b()
     // LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
     actors[i].redraw = TRUE;
     actors[i].enabled = TRUE;
+    actors[i].moving = FALSE;
     actors[i].sprite_type = FALSE; // WTF needed
     actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
     actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 2)) + 8;
@@ -192,6 +193,7 @@ void SceneInit_b()
   // Init player
   actors[0].redraw = TRUE;
   actors[0].enabled = TRUE;
+  actors[0].moving = FALSE;
   actors[0].pos.x = map_next_pos.x;
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
@@ -223,6 +225,8 @@ void SceneInit_b()
 
   FadeIn();
 
+  time = 0;
+
   DISPLAY_ON;
 }
 
@@ -240,7 +244,7 @@ void SceneUpdate_b()
   SceneHandleWait();
   SceneHandleTransition();
   UIUpdate();
-  // SceneUpdateCamera_b();
+  SceneUpdateCamera_b();
   SceneRender();
   SceneHandleTriggers_b();
 }
@@ -328,7 +332,7 @@ void SceneUpdateCamera_b()
 
 void SceneUpdateActors_b()
 {
-  UBYTE i;
+  UBYTE i, len;
   BYTE r;
 
   // Handle script move
@@ -447,21 +451,34 @@ void SceneUpdateActors_b()
     }
   }
 */
-  // for (i = 0; i != scene_num_actors; i++)
-  // {
-  //   // If running script only update script actor - Unless needs redraw
-  //   // if (script_ptr && i != script_actor && !actors[i].redraw)
-  //   // {
-  //   //   continue;
-  //   // }
 
-  //   // Move actors
-  //   if (actors[i].moving)
-  //   {
-  //     actors[i].pos.x += actors[i].dir.x;
-  //     actors[i].pos.y += actors[i].dir.y;
-  //   }
-  // }
+  // Is frame where npc would move
+  if(((time&7) && !(time&56))||((time & 0x3F) == 0)) {
+    len = scene_num_actors;
+  } else {
+    // Else only move player
+    len = 1;
+  }
+
+  for (i = 0; i != len; i++)
+  {
+    LOG("MOVING actor %u\n",i);
+    // If running script only update script actor - Unless needs redraw
+    // if (script_ptr && i != script_actor && !actors[i].redraw)
+    // {
+    //   continue;
+    // }
+
+    // Move actors
+    if (actors[i].moving)
+    {
+      actors[i].pos.x += actors[i].dir.x;
+      actors[i].pos.y += actors[i].dir.y;
+    }
+  }
+
+
+
 }
 
 void SceneUpdateActorMovement_b(UBYTE i)
@@ -506,6 +523,7 @@ void SceneUpdateActorMovement_b(UBYTE i)
     }
   }
 
+  LOG("UPDATE ACTOR MOVEMENT %u\n", i);
   actors[i].moving = TRUE;
 }
 
@@ -619,7 +637,7 @@ static void SceneHandleInput()
       ScriptStart(&actors[npc].events_ptr);
     }
   }
-  else if (actors[0].movement_type == PLAYER_INPUT)
+  else if (IS_FRAME_4)
   {
     if (JOY(J_LEFT))
     {
@@ -669,23 +687,42 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw;
+  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw, len;
+
+
+  if(IS_FRAME_64) {
+    len = scene_num_actors;
+  } else {
+    // Else only move player
+    len = 1;
+  }  
+
+  // for (i = 0; i != scene_num_actors; i++)
+  // {
+  //   if (actors[i].moving)    
+  //   {
+  //     actors[i].pos.x += actors[i].dir.x;
+  //     actors[i].pos.y += actors[i].dir.y;
+  //   }
+  // }
 
   // for (i = 0; i != 6; i++)
-  for (i = 0; i != scene_num_actors; i++)
+  for (i = 0; i != len; i++)
   // for (i = 0; i != 2; i++)
   {
-    sprite_index = MUL_2(i);
-    if (!actors[i].enabled)
-    {
-      hide_sprite_pair(sprite_index);
-      continue;
-    }
+    LOG("CHECK FOR REDRAW Actor %u\n", i);
 
-    redraw = FALSE;
+    sprite_index = MUL_2(i);
+    // if (!actors[i].enabled)
+    // {
+    //   hide_sprite_pair(sprite_index);
+    //   continue;
+    // }
+
+    redraw = actors[i].redraw;
 
     // If just landed on new tile or needs a redraw
-    if (ACTOR_ON_TILE(i) && (actors[i].moving || actors[i].redraw))
+    if (redraw)
     {
       flip = FALSE;
       frame = actors[i].sprite;
@@ -715,6 +752,8 @@ void SceneRenderActors_b()
         }
       }
 
+      LOG("REDRAW Actor %u\n", i);
+
       // Handle facing left
       if (flip)
       {
@@ -731,35 +770,67 @@ void SceneRenderActors_b()
       redraw = TRUE;
     }
 
-    if (actors[i].moving)
-    {
-      actors[i].pos.x += actors[i].dir.x;
-      actors[i].pos.y += actors[i].dir.y;
 
-      if (i == 0)
-      {
-        SceneUpdateCamera_b();
-      }
-    }
+    // if (actors[i].moving)    
+    // {
+    //   actors[i].pos.x += actors[i].dir.x;
+    //   actors[i].pos.y += actors[i].dir.y;
+    // }
+
 
     // if (IS_FRAME_2)
-    if (actors[i].moving || redraw || camera_moved)
-    {
+    // if (actors[i].moving || redraw || camera_moved)
+    // {
       // Position actors
-      screen_x = actors[i].pos.x - SCX_REG;
-      screen_y = actors[i].pos.y - SCY_REG;
+      // screen_x = actors[i].pos.x - SCX_REG;
+      // screen_y = actors[i].pos.y - SCY_REG;
 
       // If sprite not under menu position it, otherwise hide
       // @todo This function probably shouldn't know about the menu, maybe
       // keep a max_sprite_screen_y value and check against that?
       // if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
       // {
-      move_sprite_pair(sprite_index, screen_x, screen_y);
+      // move_sprite_pair(sprite_index, screen_x, screen_y);
       // }
       // else
       // {
       // hide_sprite_pair(sprite_index);
       // }
+    // }
+  }
+
+  if(camera_moved)
+  {
+    for (i = 0; i != scene_num_actors; i++)
+    {
+      sprite_index = MUL_2(i);            
+      LOG("a Reposition Actor %u\n", i);      
+      screen_x = actors[i].pos.x - SCX_REG;
+      screen_y = actors[i].pos.y - SCY_REG; 
+      move_sprite_pair(sprite_index, screen_x, screen_y);           
+    }    
+  }
+  else
+  {
+    // If frame when npc would move
+    if(win_pos_y != MENU_CLOSED_Y || ((time&7) && !(time&56))||((time & 0x3F) == 0)) {
+      len = scene_num_actors;
+    } else {
+      // Else only move player
+      len = 1;
+    }    
+    for (i = 0; i != len; i++)
+    {
+      sprite_index = MUL_2(i);      
+      LOG("b Reposition Actor %u\n", i);            
+      screen_x = actors[i].pos.x - SCX_REG;
+      screen_y = actors[i].pos.y - SCY_REG; 
+      if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
+      {      
+        move_sprite_pair(sprite_index, screen_x, screen_y);           
+      } else {
+        hide_sprite_pair(sprite_index);
+      }
     }
   }
 }
