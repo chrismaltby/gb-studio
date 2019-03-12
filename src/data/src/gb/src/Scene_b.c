@@ -456,6 +456,14 @@ void SceneUpdateActors_b()
   {
     // Else only move player
     len = 1;
+
+    // Move script actor
+    if (script_ptr != 0 && script_actor != 0 && actors[script_actor].moving)
+    {
+      // Move actors
+      actors[script_actor].pos.x += actors[script_actor].dir.x;
+      actors[script_actor].pos.y += actors[script_actor].dir.y;
+    }
   }
 
   for (i = 0; i != len; ++i)
@@ -791,6 +799,21 @@ void SceneRenderActors_b()
     {
       // Else only move player
       len = 1;
+      // Unless running script on actor
+      if (script_ptr != 0 && script_actor != 0)
+      {
+        sprite_index = MUL_2(script_actor);
+        screen_x = actors[script_actor].pos.x + scx;
+        screen_y = actors[script_actor].pos.y + scy;
+        if (actors[script_actor].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
+        {
+          move_sprite_pair(sprite_index, screen_x, screen_y);
+        }
+        else
+        {
+          hide_sprite_pair(sprite_index);
+        }
+      }
     }
     for (i = 0; i != len; ++i)
     {
