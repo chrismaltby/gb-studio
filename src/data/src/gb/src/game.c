@@ -4,7 +4,6 @@
 #include "FadeManager.h"
 
 #include "ScriptRunner.h"
-#include "Logo.h"
 #include "gbt_player.h"
 
 UBYTE joy;
@@ -14,7 +13,7 @@ UBYTE time;
 UBYTE actor_move_settings;
 POS actor_move_dest;
 STAGE_TYPE stage_type;
-STAGE_TYPE stage_next_type = MAP;
+STAGE_TYPE stage_next_type = SCENE;
 typedef void (*STAGE_UPDATE_FN)();
 UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
@@ -86,23 +85,15 @@ void game_loop()
     map_next_dir.x = actors[0].dir.x;
     map_next_dir.y = actors[0].dir.y;
 
-    if (stage_type == MAP)
+    if (stage_type == SCENE)
     {
       SceneInit();
     }
-    else if (stage_type == LOGO)
-    {
-      LogoInit();
-    }
   }
 
-  if (stage_type == MAP)
+  if (stage_type == SCENE)
   {
     SceneUpdate();
-  }
-  else if (stage_type == LOGO)
-  {
-    LogoUpdate();
   }
 
   // Handle Fade

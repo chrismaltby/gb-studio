@@ -251,7 +251,7 @@ void Script_LoadScene_b()
   map_next_dir.x = script_cmd_args[4] == 2 ? -1 : script_cmd_args[4] == 4 ? 1 : 0;
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
-  stage_next_type = MAP;
+  stage_next_type = SCENE;
   script_action_complete = FALSE;
 
   FadeSetSpeed(script_cmd_args[5]);
@@ -369,20 +369,6 @@ void Script_ActorSetEmote_b()
 void Script_CameraShake_b()
 {
   shake_time = script_cmd_args[0];
-  script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
-}
-
-/*
- * Command: ReturnToTitle
- * ----------------------------
- * Fade out and return to title screen.
- */
-void Script_ReturnToTitle_b()
-{
-  stage_next_type = TITLE;
-  FadeSetSpeed(3);
-  FadeOut();
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }

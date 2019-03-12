@@ -6,9 +6,7 @@
 
 typedef enum
 {
-    TITLE = 1,
-    LOGO,
-    MAP
+    SCENE = 1,
 } STAGE_TYPE;
 
 typedef enum

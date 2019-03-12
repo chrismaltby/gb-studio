@@ -42,7 +42,6 @@ void Script_ActorShow_b();
 void Script_ActorHide_b();
 void Script_ActorSetEmote_b();
 void Script_CameraShake_b();
-void Script_ReturnToTitle_b();
 void Script_ShowOverlay_b();
 void Script_HideOverlay_b();
 void Script_OverlaySetPos_b();
