@@ -45,8 +45,8 @@ int main()
   actors[0].moving = TRUE;
   map_next_pos.x = actors[0].pos.x = (START_SCENE_X << 3) + 8;
   map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3) + 8;
-  map_next_dir.x = actors[0].dir.x = START_SCENE_DIR == 2 ? -1 : START_SCENE_DIR == 4 ? 1 : 0;
-  map_next_dir.y = actors[0].dir.y = START_SCENE_DIR == 8 ? -1 : START_SCENE_DIR == 1 ? 1 : 0;
+  map_next_dir.x = actors[0].dir.x = START_SCENE_DIR_X;
+  map_next_dir.y = actors[0].dir.y = START_SCENE_DIR_Y;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
 

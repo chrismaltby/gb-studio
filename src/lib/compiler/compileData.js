@@ -217,6 +217,12 @@ const compile = async (
     throw "Player sprite hasn't been set, add it from the Game World.";
   }
 
+  const startDirectionValue = dirDec(startDirection);
+  const startDirectionX =
+    startDirectionValue == 2 ? -1 : startDirectionValue == 4 ? 1 : 0;
+  const startDirectionY =
+    startDirectionValue == 8 ? -1 : startDirectionValue == 1 ? 1 : 0;
+
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `typedef struct _BANK_PTR {\n` +
@@ -226,7 +232,8 @@ const compile = async (
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
-    `#define START_SCENE_DIR ${dirDec(startDirection)}\n` +
+    `#define START_SCENE_DIR_X ${startDirectionX}\n` +
+    `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
     `#define UI_BANK ${uiImagePtr.bank}\n` +
     `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
