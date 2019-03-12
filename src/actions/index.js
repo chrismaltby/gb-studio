@@ -3,6 +3,7 @@ import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadImageData } from "../lib/project/loadImageData";
+import uuid from "uuid/v4";
 
 const asyncAction = async (
   dispatch,
@@ -121,7 +122,7 @@ export const setNavigationId = id => {
 };
 
 export const addScene = (x, y) => {
-  return { type: types.ADD_SCENE, x, y };
+  return { type: types.ADD_SCENE, x, y, id: uuid() };
 };
 
 export const selectScene = sceneId => {

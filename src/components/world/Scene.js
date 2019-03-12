@@ -234,6 +234,7 @@ class Scene extends Component {
   render() {
     const {
       id,
+      index,
       scene,
       tool,
       editor,
@@ -265,7 +266,7 @@ class Scene extends Component {
           onMouseMove={this.onMoveDrag}
           onMouseUp={this.onEndDrag}
         >
-          {scene.name}
+          {scene.name || "Scene " + (index + 1)}
         </div>
         <div
           className="Scene__Image"

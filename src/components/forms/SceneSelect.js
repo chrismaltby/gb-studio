@@ -7,9 +7,9 @@ class SceneSelect extends Component {
     return (
       <select {...rest}>
         {allowNone && <option>None</option>}
-        {maps.map(map => (
+        {maps.map((map, index) => (
           <option key={map.id} value={map.id}>
-            {map.name}
+            {map.name || "Scene " + (index + 1)}
           </option>
         ))}
       </select>

@@ -105,8 +105,8 @@ export default function project(state = initialState.project, action) {
       return {
         ...state,
         scenes: [].concat(state.scenes, {
-          id: uuid(),
-          name: "New Scene " + state.scenes.length,
+          id: action.id,
+          name: "Scene " + (state.scenes.length + 1),
           imageId:
             state.images &&
             state.images[0] &&

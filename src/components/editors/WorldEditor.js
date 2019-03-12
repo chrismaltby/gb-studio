@@ -64,6 +64,15 @@ class WorldEditor extends Component {
           </label>
         </FormField>
 
+        <FormField>
+          <label htmlFor="playerSprite">Player Sprite Sheet</label>
+          <SpriteSheetSelect
+            id="playerSprite"
+            value={settings.playerSpriteSheetId}
+            onChange={this.onEdit("playerSpriteSheetId")}
+          />
+        </FormField>
+
         <FormField halfWidth>
           <label htmlFor="startX">X</label>
           <input
@@ -96,15 +105,6 @@ class WorldEditor extends Component {
             id="startDirection"
             value={settings.startDirection || 0}
             onChange={this.onEdit("startDirection")}
-          />
-        </FormField>
-
-        <FormField>
-          <label htmlFor="playerSprite">Player Sprite</label>
-          <SpriteSheetSelect
-            id="playerSprite"
-            value={settings.playerSpriteSheetId}
-            onChange={this.onEdit("playerSpriteSheetId")}
           />
         </FormField>
       </div>

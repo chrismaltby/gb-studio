@@ -19,7 +19,7 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const { scene } = this.props;
+    const { scene, sceneIndex } = this.props;
 
     if (!scene) {
       return <div />;
@@ -36,23 +36,24 @@ class SceneEditor extends Component {
 
         <div>
           <FormField>
-            <label htmlFor="sceneName">Scene name</label>
+            <label htmlFor="sceneName">Name</label>
             <input
               id="sceneName"
+              placeholder={"Scene " + (sceneIndex + 1)}
               value={scene.name}
               onChange={this.onEdit("name")}
             />
           </FormField>
 
           <FormField>
-            <label htmlFor="sceneType">Scene type</label>
+            <label htmlFor="sceneType">Type</label>
             <select id="sceneType">
               <option>Top Down 2D</option>
             </select>
           </FormField>
 
           <FormField>
-            <label htmlFor="sceneImage">Image</label>
+            <label htmlFor="sceneImage">Background</label>
             <ImageSelect
               id="sceneImage"
               value={scene.imageId}
@@ -69,11 +70,13 @@ class SceneEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
+  const hasScenes = state.project.present && state.project.present.scenes;
+  const sceneIndex = hasScenes
+    ? state.project.present.scenes.findIndex(scene => scene.id === props.id)
+    : -1;
   return {
-    scene:
-      state.project.present &&
-      state.project.present.scenes &&
-      state.project.present.scenes.find(scene => scene.id === props.id)
+    sceneIndex,
+    scene: sceneIndex != -1 && state.project.present.scenes[sceneIndex]
   };
 }
 

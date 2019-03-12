@@ -112,9 +112,9 @@ class World extends Component {
             style={{ width, height }}
             onClick={this.props.selectWorld}
           />
-          {scenes.map(scene => (
+          {scenes.map((scene, index) => (
             <div key={scene.id}>
-              <Scene id={scene.id} scene={scene} />
+              <Scene id={scene.id} index={index} scene={scene} />
             </div>
           ))}
           {showConnections && (

@@ -38,7 +38,7 @@ class ActorEditor extends Component {
 
         <div>
           <FormField>
-            <label htmlFor="actorName">Actor name</label>
+            <label htmlFor="actorName">Name</label>
             <input
               id="actorName"
               placeholder={"Actor " + (id + 1)}
@@ -74,7 +74,7 @@ class ActorEditor extends Component {
           </FormField>
 
           <FormField>
-            <label htmlFor="actorSprite">Sprite sheet</label>
+            <label htmlFor="actorSprite">Sprite Sheet</label>
             <SpriteSheetSelect
               id="actorSprite"
               value={actor.spriteSheetId}
