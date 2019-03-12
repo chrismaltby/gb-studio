@@ -126,6 +126,7 @@ export const EventFields = {
       label: "Seconds",
       min: 0,
       max: 10,
+      step: 0.1,
       defaultValue: 0.5
     }
   ],
