@@ -6,7 +6,7 @@
 
 typedef enum
 {
-    SCENE = 1,
+    SCENE = 1
 } STAGE_TYPE;
 
 typedef enum
