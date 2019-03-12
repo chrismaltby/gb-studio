@@ -700,13 +700,14 @@ void SceneRenderActors_b()
   {
     LOG("CHECK FOR REDRAW Actor %u\n", i);
 
-    sprite_index = MUL_2(i);
 
     redraw = actors[i].redraw;
 
     // If just landed on new tile or needs a redraw
     if (redraw)
     {
+      sprite_index = MUL_2(i);
+ 
       flip = FALSE;
       frame = actors[i].sprite;
 
