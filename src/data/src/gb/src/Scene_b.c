@@ -918,8 +918,12 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
 void SceneSetEmotion_b(UBYTE actor, UBYTE type)
 {
+  UWORD ptr;
+
   hide_sprite_pair(BUBBLE_SPRITE_LEFT);
-  SetBankedSpriteData(3, 124, 4, emotion_sprites + (type * 64));
+  ptr = ((UWORD)bank_data_ptrs[EMOTIONS_SPRITE_BANK]) + EMOTIONS_SPRITE_BANK_OFFSET;
+  SetBankedSpriteData(EMOTIONS_SPRITE_BANK, 124, 4, ptr + (type * 64));
+
   set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
   emotion_timer = 1;
   emotion_actor = actor;

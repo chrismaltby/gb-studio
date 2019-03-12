@@ -15,8 +15,6 @@ UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
 UBYTE win_dest_pos_y;
 
-UBYTE menu_y = MENU_CLOSED_Y;
-UBYTE menu_dest_y = MENU_CLOSED_Y;
 UBYTE text_x;
 UBYTE text_y;
 UBYTE text_drawn;
@@ -75,7 +73,6 @@ void UIShowText(UWORD line)
   strcpy(text_lines, "");
   strcat(text_lines, strings_16[line]);
   POP_BANK;
-  // menu_dest_y = MENU_OPEN_Y;
   UISetPos(0, MENU_CLOSED_Y);
   UIMoveTo(0, MENU_OPEN_Y);
   text_drawn = FALSE;

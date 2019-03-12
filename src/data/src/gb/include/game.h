@@ -20,9 +20,6 @@ extern POS actor_move_dest;
 extern UBYTE joy;
 extern UBYTE prev_joy;
 extern UBYTE time;
-extern UBYTE menu_y;
-extern UBYTE menu_dest_y;
 extern UBYTE text_drawn;
-extern const unsigned char emotion_sprites[];
 
 #endif

@@ -12,9 +12,6 @@
 extern UINT8 ui_bank;
 extern unsigned char text_lines[80];
 
-extern UBYTE menu_y;
-extern UBYTE menu_dest_y;
-
 extern UBYTE win_pos_x;
 extern UBYTE win_pos_y;
 extern UBYTE win_dest_pos_x;

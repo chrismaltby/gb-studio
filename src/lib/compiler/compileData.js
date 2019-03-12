@@ -115,6 +115,8 @@ const compile = async (
   // Add UI data
   const uiImagePtr = banked.push(precompiled.uiTiles);
 
+  const emotionsSpritePtr = banked.push(precompiled.emotionsSprite);
+
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map(sprite => {
     return banked.push([].concat(sprite.frames, sprite.data));
@@ -237,6 +239,8 @@ const compile = async (
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
     `#define UI_BANK ${uiImagePtr.bank}\n` +
     `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
+    `#define EMOTIONS_SPRITE_BANK ${emotionsSpritePtr.bank}\n` +
+    `#define EMOTIONS_SPRITE_BANK_OFFSET ${emotionsSpritePtr.offset}\n` +
     `\n` +
     Object.keys(dataPtrs)
       .map(name => {
@@ -323,9 +327,13 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
-  const { uiTiles } = await precompileUIImages(projectRoot, tmpPath, {
-    warnings
-  });
+  const { uiTiles, emotionsSprite } = await precompileUIImages(
+    projectRoot,
+    tmpPath,
+    {
+      warnings
+    }
+  );
 
   progress(EVENT_MSG_PRE_SPRITES);
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
@@ -354,7 +362,8 @@ const precompile = async (
     imageData,
     usedSprites,
     sceneData,
-    uiTiles
+    uiTiles,
+    emotionsSprite
   };
 };
 
@@ -439,7 +448,11 @@ export const precompileUIImages = async (
 ) => {
   const uiPath = `${projectRoot}/assets/ui/ui.png`;
   const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
-  return { uiTiles };
+
+  const emotionsPath = `${projectRoot}/assets/ui/emotions.png`;
+  const emotionsSprite = await ggbgfx.imageToSpriteIntArray(emotionsPath);
+
+  return { uiTiles, emotionsSprite };
 };
 
 export const precompileSprites = async (
