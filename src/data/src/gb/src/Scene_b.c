@@ -476,9 +476,6 @@ void SceneUpdateActors_b()
       actors[i].pos.y += actors[i].dir.y;
     }
   }
-
-
-
 }
 
 void SceneUpdateActorMovement_b(UBYTE i)
@@ -687,37 +684,23 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw, len;
+  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw, len, scx, scy;
 
+  scx = 0 - SCX_REG;
+  scy = 0 - SCY_REG;
 
   if(IS_FRAME_64) {
     len = scene_num_actors;
   } else {
-    // Else only move player
+    // Else only update player
     len = 1;
   }  
 
-  // for (i = 0; i != scene_num_actors; i++)
-  // {
-  //   if (actors[i].moving)    
-  //   {
-  //     actors[i].pos.x += actors[i].dir.x;
-  //     actors[i].pos.y += actors[i].dir.y;
-  //   }
-  // }
-
-  // for (i = 0; i != 6; i++)
-  for (i = 0; i != len; i++)
-  // for (i = 0; i != 2; i++)
+  for (i = 0; i != len; ++i)
   {
     LOG("CHECK FOR REDRAW Actor %u\n", i);
 
     sprite_index = MUL_2(i);
-    // if (!actors[i].enabled)
-    // {
-    //   hide_sprite_pair(sprite_index);
-    //   continue;
-    // }
 
     redraw = actors[i].redraw;
 
@@ -769,44 +752,16 @@ void SceneRenderActors_b()
       actors[i].redraw = FALSE;
       redraw = TRUE;
     }
-
-
-    // if (actors[i].moving)    
-    // {
-    //   actors[i].pos.x += actors[i].dir.x;
-    //   actors[i].pos.y += actors[i].dir.y;
-    // }
-
-
-    // if (IS_FRAME_2)
-    // if (actors[i].moving || redraw || camera_moved)
-    // {
-      // Position actors
-      // screen_x = actors[i].pos.x - SCX_REG;
-      // screen_y = actors[i].pos.y - SCY_REG;
-
-      // If sprite not under menu position it, otherwise hide
-      // @todo This function probably shouldn't know about the menu, maybe
-      // keep a max_sprite_screen_y value and check against that?
-      // if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
-      // {
-      // move_sprite_pair(sprite_index, screen_x, screen_y);
-      // }
-      // else
-      // {
-      // hide_sprite_pair(sprite_index);
-      // }
-    // }
   }
 
   if(camera_moved)
   {
-    for (i = 0; i != scene_num_actors; i++)
+    for (i = 1; i != scene_num_actors; ++i)
     {
       sprite_index = MUL_2(i);            
       LOG("a Reposition Actor %u\n", i);      
-      screen_x = actors[i].pos.x - SCX_REG;
-      screen_y = actors[i].pos.y - SCY_REG; 
+      screen_x = actors[i].pos.x + scx;
+      screen_y = actors[i].pos.y + scy; 
       move_sprite_pair(sprite_index, screen_x, screen_y);           
     }    
   }
@@ -818,13 +773,13 @@ void SceneRenderActors_b()
     } else {
       // Else only move player
       len = 1;
-    }    
-    for (i = 0; i != len; i++)
+    }  
+    for (i = 0; i != len; ++i)
     {
       sprite_index = MUL_2(i);      
       LOG("b Reposition Actor %u\n", i);            
-      screen_x = actors[i].pos.x - SCX_REG;
-      screen_y = actors[i].pos.y - SCY_REG; 
+      screen_x = actors[i].pos.x + scx;
+      screen_y = actors[i].pos.y + scy; 
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
       {      
         move_sprite_pair(sprite_index, screen_x, screen_y);           
