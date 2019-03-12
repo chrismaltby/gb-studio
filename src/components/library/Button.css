@@ -38,9 +38,9 @@
 }
 
 .Button--Small {
-  height: 26px;
-  font-size: 12px;
+  font-size: 9px;
   padding: 6px;
+  height: 22px;
 }
 
 .Button--Small svg {
