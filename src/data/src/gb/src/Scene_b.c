@@ -825,7 +825,7 @@ void SceneRenderActors_b()
       LOG("b Reposition Actor %u\n", i);            
       screen_x = actors[i].pos.x - SCX_REG;
       screen_y = actors[i].pos.y - SCY_REG; 
-      if (actors[i].enabled && (screen_y < win_pos_y + 16 || win_pos_y == MENU_CLOSED_Y))
+      if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
       {      
         move_sprite_pair(sprite_index, screen_x, screen_y);           
       } else {
