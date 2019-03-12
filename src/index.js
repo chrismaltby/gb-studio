@@ -36,6 +36,7 @@ const createSplash = async () => {
     resizable: false,
     maximizable: false,
     fullscreenable: false,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       devTools: isDevMode
@@ -44,6 +45,12 @@ const createSplash = async () => {
 
   splashWindow.setMenu(null);
   splashWindow.loadURL(`file://${__dirname}/windows/splash.html`);
+
+  splashWindow.webContents.on("did-finish-load", function() {
+    setTimeout(function() {
+      splashWindow.show();
+    }, 40);
+  });
 
   splashWindow.on("closed", () => {
     splashWindow = null;
@@ -66,6 +73,7 @@ const createWindow = async projectPath => {
     minHeight: 600,
     titleBarStyle: "hiddenInset",
     fullscreenable: false,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
@@ -86,6 +94,9 @@ const createWindow = async projectPath => {
   mainWindow.webContents.on("did-finish-load", function() {
     mainWindow.webContents.send("ping", "whoooooooh!");
     mainWindow.webContents.send("open-project", projectPath);
+    setTimeout(function() {
+      mainWindow.show();
+    }, 40);
   });
 
   mainWindow.on("enter-full-screen", () => {
