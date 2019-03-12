@@ -770,7 +770,7 @@ void SceneRenderActors_b()
 
   if (camera_moved)
   {
-    for (i = 1; i != scene_num_actors; ++i)
+    for (i = 0; i != scene_num_actors; ++i)
     {
       sprite_index = MUL_2(i);
       LOG("a Reposition Actor %u\n", i);
