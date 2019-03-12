@@ -8,6 +8,8 @@ import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
 import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
+import Button from "../library/Button";
+import SidebarHeading from "./SidebarHeading";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -29,12 +31,14 @@ class ActorEditor extends Component {
 
     return (
       <div className="ActorEditor">
-        <h2>
-          Actor{" "}
-          <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
-            <CloseIcon />
-          </div>
-        </h2>
+        <SidebarHeading
+          title="Actor"
+          buttons={
+            <Button small onClick={this.onRemove}>
+              Delete
+            </Button>
+          }
+        />
 
         <div>
           <FormField>
@@ -104,7 +108,7 @@ class ActorEditor extends Component {
           )}
         </div>
 
-        <h2>Actor Script</h2>
+        <SidebarHeading title="Actor Script" />
 
         <ScriptEditor value={actor.script} onChange={this.onEdit("script")} />
       </div>

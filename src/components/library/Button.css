@@ -17,6 +17,7 @@
   white-space: nowrap;
   padding: 0px 15px;
   box-sizing: border-box;
+  font-weight: normal;
 }
 
 .Platform__win32 .Button {

@@ -6,6 +6,8 @@ import ImageSelect from "../forms/ImageSelect";
 import { FormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
+import Button from "../library/Button";
+import SidebarHeading from "./SidebarHeading";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -27,13 +29,14 @@ class SceneEditor extends Component {
 
     return (
       <div>
-        <h2>
-          Scene{" "}
-          <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
-            <CloseIcon />
-          </div>
-        </h2>
-
+        <SidebarHeading
+          title="Scene"
+          buttons={
+            <Button small onClick={this.onRemove}>
+              Delete
+            </Button>
+          }
+        />
         <div>
           <FormField>
             <label htmlFor="sceneName">Name</label>
@@ -62,7 +65,7 @@ class SceneEditor extends Component {
           </FormField>
         </div>
 
-        <h2>Scene Start Script</h2>
+        <SidebarHeading title="Scene Start Script" />
         <ScriptEditor value={scene.script} onChange={this.onEdit("script")} />
       </div>
     );

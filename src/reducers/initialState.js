@@ -26,7 +26,7 @@ export default {
     sceneDragY: 0
   },
   navigation: {
-    section: "build",
+    section: "world",
     status: {}
   },
   console: {

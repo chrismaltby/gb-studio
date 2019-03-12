@@ -6,6 +6,7 @@ import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
+import SidebarHeading from "./SidebarHeading";
 
 class WorldEditor extends Component {
   onEdit = key => e => {
@@ -23,7 +24,7 @@ class WorldEditor extends Component {
 
     return (
       <div className="WorldEditor">
-        <h2>Settings</h2>
+        <SidebarHeading title="Settings" />
 
         <div>
           <FormField>
@@ -51,7 +52,7 @@ class WorldEditor extends Component {
           </FormField>
         </div>
 
-        <h2>Starting Scene</h2>
+        <SidebarHeading title="Starting Scene" />
 
         <FormField>
           <label>

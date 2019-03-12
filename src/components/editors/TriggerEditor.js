@@ -5,6 +5,8 @@ import { CloseIcon } from "../../components/library/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import { FormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
+import Button from "../library/Button";
+import SidebarHeading from "./SidebarHeading";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
@@ -26,13 +28,14 @@ class TriggerEditor extends Component {
 
     return (
       <div>
-        <h2>
-          Trigger{" "}
-          <div onClick={this.onRemove} className="EditorSidebar__DeleteButton">
-            <CloseIcon />
-          </div>
-        </h2>
-
+        <SidebarHeading
+          title="Trigger"
+          buttons={
+            <Button small onClick={this.onRemove}>
+              Delete
+            </Button>
+          }
+        />
         <div>
           <FormField halfWidth>
             <label htmlFor="triggerX">X</label>
@@ -83,8 +86,7 @@ class TriggerEditor extends Component {
           </FormField>
         </div>
 
-        <h2>Trigger Script</h2>
-
+        <SidebarHeading title="Trigger Script" />
         <ScriptEditor value={trigger.script} onChange={this.onEdit("script")} />
       </div>
     );
