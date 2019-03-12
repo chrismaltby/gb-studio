@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import cx from "classnames";
 
 class Actor extends Component {
   constructor(props) {
@@ -97,10 +98,10 @@ class Actor extends Component {
   };
 
   render() {
-    const { x, y } = this.props;
+    const { x, y, selected } = this.props;
     return (
       <div
-        className="Actor"
+        className={cx("Actor", { "Actor--Selected": selected })}
         style={{
           top: y * 8,
           left: x * 8

@@ -306,7 +306,17 @@ class Scene extends Component {
             </div>
           )}
           {actors.map((actor, index) => (
-            <Actor key={index} x={actor.x} y={actor.y} actor={actor} />
+            <Actor
+              key={index}
+              x={actor.x}
+              y={actor.y}
+              actor={actor}
+              selected={
+                editor.type === "actors" &&
+                editor.scene === id &&
+                editor.index === index
+              }
+            />
           ))}
           {tool === "actors" && hover && (
             <div className="Scene__Ghost">

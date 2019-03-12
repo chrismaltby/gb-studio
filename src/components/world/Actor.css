@@ -10,3 +10,8 @@
   position: relative;
   top: -8px;
 }
+
+.Actor--Selected {
+  background-color: rgba(255, 0, 255, 0.8);
+  outline: 1px solid rgba(255, 0, 255, 1);
+}
