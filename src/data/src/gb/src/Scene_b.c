@@ -743,7 +743,7 @@ void SceneRenderActors_b()
     }
 
     // if (IS_FRAME_2)
-    if (camera_moved || actors[i].moving || redraw)
+    if (actors[i].moving || redraw || camera_moved)
     {
       // Position actors
       screen_x = actors[i].pos.x - SCX_REG;
