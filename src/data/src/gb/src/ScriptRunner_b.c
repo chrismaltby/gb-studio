@@ -7,6 +7,7 @@
 #include "FadeManager.h"
 #include "UI.h"
 #include "Macros.h"
+#include "Math.h"
 
 UINT8 scriptrunner_bank = 4;
 
@@ -178,7 +179,15 @@ void Script_CameraMoveTo_b()
  */
 void Script_CameraLock_b()
 {
-  camera_settings = script_cmd_args[0] | CAMERA_LOCK_FLAG;
+  UBYTE cam_x, cam_y;
+
+  camera_settings = script_cmd_args[0] & ~CAMERA_LOCK_FLAG;
+
+  cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, MUL_8(scene_width) - SCREEN_WIDTH_HALF);
+  camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
+  cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, MUL_8(scene_height) - SCREEN_HEIGHT_HALF);
+  camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
+
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }

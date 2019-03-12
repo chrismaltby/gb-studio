@@ -146,5 +146,16 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
+  if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_CameraLock_b && SceneCameraAtDest())
+  {
+    camera_settings = CAMERA_LOCK_FLAG;
+    return TRUE;
+  }
+
   return FALSE;
 }

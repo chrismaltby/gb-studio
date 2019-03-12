@@ -38,10 +38,13 @@ extern POS camera_dest;
 extern UBYTE camera_settings;
 extern UBYTE wait_time;
 extern UBYTE shake_time;
+extern UBYTE scene_width;
+extern UBYTE scene_height;
 
 void SceneInit();
 void SceneUpdate();
 void SceneSetEmotion(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting();
+UBYTE SceneCameraAtDest();
 
 #endif

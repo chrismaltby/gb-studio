@@ -5,6 +5,7 @@ void SceneInit_b();
 void SceneUpdate_b();
 void SceneSetEmotion_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
+UBYTE SceneCameraAtDest_b();
 
 UWORD map_next_index;
 POS map_next_pos;
@@ -18,6 +19,8 @@ POS camera_dest;
 UBYTE camera_settings = CAMERA_LOCK_FLAG;
 UBYTE wait_time = 0;
 UBYTE shake_time = 0;
+UBYTE scene_width;
+UBYTE scene_height;
 
 void SceneInit()
 {
@@ -42,9 +45,18 @@ void SceneSetEmotion(UBYTE actor, UBYTE type)
 
 UBYTE SceneIsEmoting()
 {
-  UBYTE isEmoting;
+  UBYTE is_emoting;
   PUSH_BANK(scene_bank);
-  isEmoting = SceneIsEmoting_b();
+  is_emoting = SceneIsEmoting_b();
   POP_BANK;
-  return isEmoting;
+  return is_emoting;
+}
+
+UBYTE SceneCameraAtDest()
+{
+  UBYTE at_dest;
+  PUSH_BANK(scene_bank);
+  at_dest = SceneCameraAtDest_b();
+  POP_BANK;
+  return at_dest;
 }

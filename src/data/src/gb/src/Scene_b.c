@@ -22,8 +22,6 @@ UINT8 scene_bank = 3;
 // Private vars
 ////////////////////////////////////////////////////////////////////////////////
 
-UBYTE scene_width;
-UBYTE scene_height;
 UBYTE scene_num_actors;
 UBYTE scene_num_triggers;
 UBYTE emotion_type = 1;
@@ -932,4 +930,9 @@ void SceneSetEmotion_b(UBYTE actor, UBYTE type)
 UBYTE SceneIsEmoting_b()
 {
   return emotion_timer > 0;
+}
+
+UBYTE SceneCameraAtDest_b()
+{
+  return SCX_REG == camera_dest.x && SCY_REG == camera_dest.y;
 }
