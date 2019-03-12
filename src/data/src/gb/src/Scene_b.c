@@ -762,7 +762,12 @@ void SceneRenderActors_b()
       LOG("a Reposition Actor %u\n", i);      
       screen_x = actors[i].pos.x + scx;
       screen_y = actors[i].pos.y + scy; 
-      move_sprite_pair(sprite_index, screen_x, screen_y);           
+      if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
+      {      
+        move_sprite_pair(sprite_index, screen_x, screen_y);           
+      } else {
+        hide_sprite_pair(sprite_index);
+      }         
     }    
   }
   else
