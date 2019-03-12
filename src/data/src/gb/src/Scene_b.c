@@ -374,29 +374,59 @@ void SceneUpdateActors_b()
     }
   }
 
+
   if (script_ptr == 0)
   {
     if (IS_FRAME_64)
     {
       r = rand();
-      for (i = 1; i != scene_num_actors; i++)
+
+      if(time == 0 || time == 128)
       {
-        if ((time == 0 || time == 128) && (i & 0x1))
-        {
-          continue;
+        // Move odd numbered actors on frames 0 and 128
+        if(scene_num_actors&1) {
+          len = scene_num_actors;
+        } else {
+          len = scene_num_actors + 1;
         }
-        if (actors[i].movement_type == AI_RANDOM_FACE)
+        for (i = 1; i != len; i+=2)
         {
-          memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
-          actors[i].redraw = TRUE;
-          actors[i].moving = FALSE;
-          r++;
+          if (actors[i].movement_type == AI_RANDOM_FACE)
+          {
+            memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
+            actors[i].redraw = TRUE;
+            actors[i].moving = FALSE;
+            ++r;
+          }
+          else if (actors[i].movement_type == AI_RANDOM_WALK)
+          {
+            update_dir = directions[r & 3];
+            SceneUpdateActorMovement_b(i);
+            ++r;
+          }
         }
-        else if (actors[i].movement_type == AI_RANDOM_WALK)
+      } else {
+        // Move even numbered actors on frames 64 and 192
+        if(scene_num_actors&1) {
+          len = scene_num_actors + 1;
+        } else {
+          len = scene_num_actors;
+        }
+        for (i = 2; i != len; i+=2)
         {
-          update_dir = directions[r & 3];
-          r++;
-          SceneUpdateActorMovement_b(i);
+          if (actors[i].movement_type == AI_RANDOM_FACE)
+          {
+            memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
+            actors[i].redraw = TRUE;
+            actors[i].moving = FALSE;
+            ++r;
+          }
+          else if (actors[i].movement_type == AI_RANDOM_WALK)
+          {
+            update_dir = directions[r & 3];
+            SceneUpdateActorMovement_b(i);
+            ++r;
+          }
         }
       }
     }
@@ -408,49 +438,6 @@ void SceneUpdateActors_b()
       }
     }
   }
-  /*
-
-  // Handle random npc movement
-  if (script_ptr == 0)
-  {
-    // for (i = 1; i != 2; i++)
-    for (i = 1; i != scene_num_actors; i++)
-    {
-      if ((IS_FRAME_64 || actors[i].moving) && (actors[i].movement_type == AI_RANDOM_WALK || actors[i].movement_type == AI_RANDOM_FACE) && ACTOR_ON_TILE(i))
-      {
-        if (IS_FRAME_64)
-        {
-          update_dir = directions[r & 3];
-          r++;
-        }
-        else
-        {
-          update_dir = &dir_none;
-          actors[i].moving = FALSE;
-          continue;
-        }
-
-        if (actors[i].movement_type == AI_RANDOM_FACE)
-        {
-          memcpy(&actors[i].dir, update_dir, sizeof(POS));
-          actors[i].redraw = TRUE;
-          actors[i].moving = FALSE;
-        }
-        else
-        {
-          if (update_dir == &dir_none)
-          {
-            actors[i].moving = FALSE;
-          }
-          else
-          {
-            SceneUpdateActorMovement_b(i, update_dir);
-          }
-        }
-      }
-    }
-  }
-*/
 
   // Is frame where npc would move
   if(((time&7) && !(time&56))||((time & 0x3F) == 0)) {
@@ -460,7 +447,7 @@ void SceneUpdateActors_b()
     len = 1;
   }
 
-  for (i = 0; i != len; i++)
+  for (i = 0; i != len; ++i)
   {
     LOG("MOVING actor %u\n",i);
     // If running script only update script actor - Unless needs redraw
