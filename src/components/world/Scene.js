@@ -33,7 +33,16 @@ class Scene extends Component {
   }
 
   onMouseMove = e => {
-    const { id, tool, editor, scene, showCollisions, zoomRatio } = this.props;
+    const {
+      id,
+      tool,
+      editor,
+      scene,
+      showCollisions,
+      zoomRatio,
+      width,
+      height
+    } = this.props;
     const { creating, downX, downY } = this.state;
 
     const pos = getCoords(e.currentTarget);
@@ -77,19 +86,22 @@ class Scene extends Component {
 
       let actor = this.actorAt(tX, tY);
 
-      this.setStatus({
-        sceneName: scene.name,
-        x: tX,
-        y: tY,
-        actor:
-          actor && (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
-      });
+      if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
+        this.setStatus({
+          sceneName: scene.name,
+          x: tX,
+          y: tY,
+          actor:
+            actor &&
+            (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
+        });
 
-      this.setState({
-        hover: true,
-        hoverX: tX,
-        hoverY: tY
-      });
+        this.setState({
+          hover: true,
+          hoverX: tX,
+          hoverY: tY
+        });
+      }
 
       this.lastTX = tX;
       this.lastTY = tY;
