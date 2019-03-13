@@ -73,7 +73,7 @@
 
 .EditorSidebar ul {
   margin: 0;
-  padding: 0px;
+  padding: 5px 0;
   background: var(--script-editor-bg-color);
   list-style-type: none;
 }

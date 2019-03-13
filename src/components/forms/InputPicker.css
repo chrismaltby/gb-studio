@@ -22,6 +22,10 @@
   color: var(--button-text-color);
 }
 
+.InputPicker__Button:hover {
+  background: var(--input-button-hover-color);
+}
+
 .InputPicker__Button:last-child {
   border-right: 1px solid var(--input-border-color);
 }

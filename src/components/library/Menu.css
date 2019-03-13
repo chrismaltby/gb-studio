@@ -17,7 +17,6 @@
 
 .MenuItem:hover {
   background-color: var(--menu-hover-color);
-  cursor: pointer;
 }
 
 .MenuOverlay {

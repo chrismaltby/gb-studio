@@ -53,7 +53,6 @@
 
 .Button:hover {
   background-color: var(--toolbar-button-active-bottom-color);
-  cursor: pointer;
 }
 
 .ButtonToolbar {

@@ -103,7 +103,11 @@ class ActionMini extends Component {
               </div>
             )}
 
-            <div className="ActionMini__Remove" onClick={onRemove(id)}>
+            <div
+              className="ActionMini__Remove"
+              onClick={onRemove(id)}
+              title="Delete"
+            >
               <CloseIcon />
             </div>
 

@@ -40,7 +40,7 @@
 .FilesSidebar__Search svg {
   width: 16px;
   height: 16px;
-  fill: var(--main-text-color);
+  fill: var(--button-text-color);
 }
 
 .FilesSidebar input:focus {
@@ -54,7 +54,6 @@
 }
 
 .FilesSidebar__ListItem:hover {
-  cursor: pointer;
 }
 
 .FilesSidebar__ListItem--Active:hover,

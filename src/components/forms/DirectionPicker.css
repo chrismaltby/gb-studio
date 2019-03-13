@@ -16,6 +16,10 @@
   color: var(--button-text-color);
 }
 
+.DirectionPicker__Button:hover {
+  background: var(--input-button-hover-color);
+}
+
 .DirectionPicker__Button:last-child {
   border-right: 1px solid var(--input-border-color);
 }

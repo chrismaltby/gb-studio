@@ -70,23 +70,20 @@ class SceneEditor extends Component {
           <div>
             <SidebarHeading title="Navigation" />
             <ul>
-              {scene.actors.length > 0 &&
-                scene.actors.map((actor, index) => (
-                  <li
-                    key={index}
-                    onClick={() => this.props.selectActor(scene.id, index)}
-                  >
-                    <div className="EditorSidebar__Icon">
-                      <SpriteSheetCanvas
-                        spriteSheetId={actor.spriteSheetId}
-                        direction={actor.direction}
-                      />
-                    </div>
-                    {actor.name || "Actor " + (index + 1)}
-                  </li>
-                ))}
-            </ul>
-            <ul>
+              {scene.actors.map((actor, index) => (
+                <li
+                  key={index}
+                  onClick={() => this.props.selectActor(scene.id, index)}
+                >
+                  <div className="EditorSidebar__Icon">
+                    <SpriteSheetCanvas
+                      spriteSheetId={actor.spriteSheetId}
+                      direction={actor.direction}
+                    />
+                  </div>
+                  {actor.name || "Actor " + (index + 1)}
+                </li>
+              ))}
               {scene.triggers.map((trigger, index) => (
                 <li
                   key={index}
