@@ -35,6 +35,7 @@ class WorldEditor extends Component {
                 checked={settings.showCollisions}
                 onChange={this.onEdit("showCollisions")}
               />
+              <div class="FormCheckbox" />
               Show Collisions
             </label>
           </FormField>
@@ -47,6 +48,7 @@ class WorldEditor extends Component {
                 checked={settings.showConnections}
                 onChange={this.onEdit("showConnections")}
               />
+              <div class="FormCheckbox" />
               Show Connections
             </label>
           </FormField>

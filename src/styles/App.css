@@ -42,6 +42,7 @@ body {
 
 ::selection {
   background: var(--highlight-color);
+  color: #fff;
 }
 
 #App {
