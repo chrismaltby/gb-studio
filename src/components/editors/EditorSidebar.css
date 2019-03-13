@@ -70,3 +70,26 @@
   width: auto;
   display: inline-block;
 }
+
+.EditorSidebar ul {
+  margin: 0;
+  padding: 0px;
+  background: var(--script-editor-bg-color);
+  list-style-type: none;
+}
+
+.EditorSidebar ul > li {
+  padding: 5px 10px;
+}
+
+.EditorSidebar ul > li:hover {
+  background: var(--sidebar-border-color);
+}
+
+.EditorSidebar__Icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 10px;
+}

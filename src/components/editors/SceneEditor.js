@@ -8,6 +8,7 @@ import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
+import ActorCanvas from "../world/ActorCanvas";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -65,6 +66,32 @@ class SceneEditor extends Component {
           </FormField>
         </div>
 
+        {(scene.actors.length > 0 || scene.triggers.length > 0) && (
+          <div>
+            <SidebarHeading title="Navigation" />
+
+            <ul>
+              {scene.actors.length > 0 &&
+                scene.actors.map((actor, index) => (
+                  <li onClick={() => this.props.selectActor(scene.id, index)}>
+                    <div className="EditorSidebar__Icon">
+                      <ActorCanvas actor={actor} />
+                    </div>
+                    {actor.name || "Actor " + (index + 1)}
+                  </li>
+                ))}
+            </ul>
+
+            <ul>
+              {scene.triggers.map((trigger, index) => (
+                <li onClick={() => this.props.selectTrigger(scene.id, index)}>
+                  {"Trigger " + (index + 1)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <SidebarHeading title="Scene Start Script" />
         <ScriptEditor value={scene.script} onChange={this.onEdit("script")} />
       </div>
@@ -85,7 +112,9 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   editScene: actions.editScene,
-  removeScene: actions.removeScene
+  removeScene: actions.removeScene,
+  selectActor: actions.selectActor,
+  selectTrigger: actions.selectTrigger
 };
 
 export default connect(
