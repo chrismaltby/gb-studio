@@ -72,6 +72,7 @@ class WorldEditor extends Component {
           <SpriteSheetSelect
             id="playerSprite"
             value={settings.playerSpriteSheetId}
+            direction={settings.startDirection}
             onChange={this.onEdit("playerSpriteSheetId")}
           />
         </FormField>
