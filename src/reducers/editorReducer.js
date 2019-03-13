@@ -135,6 +135,9 @@ export default function editor(state = initialState.editor, action) {
         },
         action.section === "backgrounds" && {
           zoomImage: Math.min(800, state.zoomImage * 2)
+        },
+        action.section === "ui" && {
+          zoomUI: Math.min(800, state.zoomUI * 2)
         }
       );
     case ZOOM_OUT:
@@ -150,6 +153,9 @@ export default function editor(state = initialState.editor, action) {
         },
         action.section === "backgrounds" && {
           zoomImage: Math.max(25, state.zoomImage / 2)
+        },
+        action.section === "ui" && {
+          zoomUI: Math.max(25, state.zoomUI / 2)
         }
       );
     case ZOOM_RESET:
@@ -165,6 +171,9 @@ export default function editor(state = initialState.editor, action) {
         },
         action.section === "backgrounds" && {
           zoomImage: 100
+        },
+        action.section === "ui" && {
+          zoomUI: 100
         }
       );
     default:

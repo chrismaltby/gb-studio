@@ -3,18 +3,20 @@ import { connect } from "react-redux";
 
 class ImageViewer extends Component {
   render() {
-    const { projectRoot, image, version, folder, zoomRatio } = this.props;
+    const { projectRoot, file, folder, zoomRatio } = this.props;
     return (
       <div className="ImageViewer">
         <div className="ImageViewer__Content">
-          {image && (
+          {file && (
             <div
               className="ImageViewer__Image"
               style={{ transform: `scale(${zoomRatio})` }}
             >
               <img
                 alt=""
-                src={`${projectRoot}/assets/${folder}/${image}?v=${version}`}
+                src={`${projectRoot}/assets/${folder}/${
+                  file.filename
+                }?v=${file._v || 0}`}
               />
             </div>
           )}
@@ -26,21 +28,20 @@ class ImageViewer extends Component {
 
 function mapStateToProps(state) {
   const { id, section } = state.navigation;
-  const files =
-    (section === "backgrounds"
-      ? state.project.present.images
-      : state.project.present.spriteSheets) || [];
-  const folder = section === "backgrounds" ? "backgrounds" : "sprites";
-  const image = files.find(file => file.id === id) || files[0];
+  const folder =
+    section === "backgrounds"
+      ? "backgrounds"
+      : section === "sprites"
+      ? "sprites"
+      : "ui";
   const zoom =
     section === "backgrounds"
       ? state.editor.zoomImage
-      : state.editor.zoomSprite;
+      : section === "sprites"
+      ? state.editor.zoomSprite
+      : state.editor.zoomUI;
   return {
     projectRoot: state.document && state.document.root,
-    projectId: state.project.present.id,
-    image: image && image.filename,
-    version: (image && image._v) || 0,
     folder,
     zoomRatio: (zoom || 100) / 100
   };

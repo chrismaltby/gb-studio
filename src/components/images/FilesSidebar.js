@@ -37,9 +37,11 @@ class FilesSidebar extends Component {
             onChange={this.onSearch}
             value={query}
           />
-          <Button onClick={onAdd}>
-            <PlusIcon />
-          </Button>
+          {onAdd && (
+            <Button onClick={onAdd}>
+              <PlusIcon />
+            </Button>
+          )}
         </div>
         {filesList.map((file, index) => (
           <div

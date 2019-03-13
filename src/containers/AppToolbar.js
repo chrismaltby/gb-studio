@@ -24,6 +24,7 @@ const sectionNames = {
   world: "Game World",
   sprites: "Sprites",
   backgrounds: "Backgrounds",
+  ui: "UI Elements",
   script: "Script Review",
   build: "Build & Run"
 };
@@ -116,13 +117,15 @@ function mapStateToProps(state) {
       ? state.editor.zoomSprite
       : section === "backgrounds"
       ? state.editor.zoomImage
+      : section === "ui"
+      ? state.editor.zoomUI
       : 100;
   return {
     projectRoot: state.document && state.document.root,
     name: state.project.present && state.project.present.name,
     section,
     zoom,
-    showZoom: ["world", "sprites", "backgrounds"].indexOf(section) > -1,
+    showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,
     running: state.console.status === "running"
   };
 }

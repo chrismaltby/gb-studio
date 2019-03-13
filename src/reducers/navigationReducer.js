@@ -14,7 +14,8 @@ export default function tools(state = initialState.navigation, action) {
     case SET_SECTION:
       return {
         ...state,
-        section: action.section
+        section: action.section,
+        id: ""
       };
     case SET_NAVIGATION_ID:
       return {

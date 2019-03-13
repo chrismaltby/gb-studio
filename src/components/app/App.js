@@ -8,6 +8,7 @@ import OverviewPage from "../../containers/pages/OverviewPage";
 import ScriptPage from "../../containers/pages/ScriptPage";
 import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
+import UIPage from "../../containers/pages/UIPage";
 
 class App extends Component {
   constructor() {
@@ -41,6 +42,7 @@ class App extends Component {
           {section === "world" && <WorldPage />}
           {section === "backgrounds" && <BackgroundsPage />}
           {section === "sprites" && <SpritesPage />}
+          {section === "ui" && <UIPage />}
           {section === "script" && <ScriptPage />}
           {section === "build" && <BuildPage />}
         </div>

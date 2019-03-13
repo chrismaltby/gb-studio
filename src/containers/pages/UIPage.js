@@ -6,16 +6,11 @@ import * as actions from "../../actions";
 
 class ImagesSection extends Component {
   render() {
-    const { files, file } = this.props;
+    const { images, image } = this.props;
     return (
       <div>
-        <ImageViewer file={file} />
-        <FilesSidebar
-          files={files}
-          onAdd={() => {
-            this.props.openHelp("backgrounds");
-          }}
-        />
+        <ImageViewer file={image} />
+        <FilesSidebar files={images} />
       </div>
     );
   }
@@ -23,14 +18,25 @@ class ImagesSection extends Component {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files =
-    state.project.present && state.project.present.images
-      ? state.project.present.images
-      : [];
-  const file = files.find(file => file.id === id) || files[0];
+  const projectRoot = state.document && state.document.root;
+  const images = projectRoot
+    ? [
+        {
+          id: "ui",
+          name: "UI",
+          filename: `ui.png`
+        },
+        {
+          id: "emotes",
+          name: "Emotes",
+          filename: `emotes.png`
+        }
+      ]
+    : [];
+  const image = images.find(image => image.id === id) || images[0];
   return {
-    files,
-    file
+    images,
+    image
   };
 }
 
