@@ -8,7 +8,7 @@ import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
-import ActorCanvas from "../world/ActorCanvas";
+import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -77,7 +77,10 @@ class SceneEditor extends Component {
                     onClick={() => this.props.selectActor(scene.id, index)}
                   >
                     <div className="EditorSidebar__Icon">
-                      <ActorCanvas actor={actor} />
+                      <SpriteSheetCanvas
+                        spriteSheetId={actor.spriteSheetId}
+                        direction={actor.direction}
+                      />
                     </div>
                     {actor.name || "Actor " + (index + 1)}
                   </li>

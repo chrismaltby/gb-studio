@@ -23,20 +23,10 @@ class SpriteSheetCanvas extends Component {
     }
   }
 
-  componentDidUpdate() {
-    // console.log("UPDATE", this.canvas.current);
-    // if (this.imgLoaded) {
-    //   this.draw();
-    // }
-  }
-
   imageSrc = props => {
     return `${props.projectRoot}/assets/sprites/${props.spriteSheet &&
       props.spriteSheet.filename + "?v=" + (props.spriteSheet._v || 0)}`;
   };
-
-  // 'url("/Users/cmaltby/Projects/Untitled%20GB%20Game/assets/maps/mabe_house.png")'
-  // `url("${projectRoot}/assets/maps/${image}")`
 
   loadImage = props => {
     this.src = this.imageSrc(props);
