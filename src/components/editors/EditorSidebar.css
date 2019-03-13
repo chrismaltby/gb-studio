@@ -83,13 +83,23 @@
 }
 
 .EditorSidebar ul > li:hover {
-  background: var(--sidebar-border-color);
+  background: var(--sidebar-bg-color);
 }
 
 .EditorSidebar__Icon {
   width: 16px;
   height: 16px;
-  display: inline-block;
   vertical-align: bottom;
   margin-right: 10px;
+  border-radius: 4px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.EditorSidebar__Icon svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--main-text-color);
+  opacity: 0.7;
 }

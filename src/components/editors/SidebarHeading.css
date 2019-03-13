@@ -12,6 +12,10 @@
   align-items: center;
 }
 
+.EditorSidebar > div > .SidebarHeading:first-child {
+  border-top: 0;
+}
+
 .SidebarHeading__FluidSpacer {
   flex: 1;
 }

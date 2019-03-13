@@ -20,7 +20,7 @@ class TriggerEditor extends Component {
   };
 
   render() {
-    const { trigger } = this.props;
+    const { trigger, id } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -37,6 +37,16 @@ class TriggerEditor extends Component {
           }
         />
         <div>
+          <FormField>
+            <label htmlFor="triggerName">Name</label>
+            <input
+              id="triggerName"
+              placeholder={"Trigger " + (id + 1)}
+              value={trigger.name || ""}
+              onChange={this.onEdit("name")}
+            />
+          </FormField>
+
           <FormField halfWidth>
             <label htmlFor="triggerX">X</label>
             <input

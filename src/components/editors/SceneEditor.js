@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { CloseIcon } from "../../components/library/Icons";
+import { CloseIcon, TriggerIcon } from "../../components/library/Icons";
 import ImageSelect from "../forms/ImageSelect";
 import { FormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
@@ -69,11 +69,13 @@ class SceneEditor extends Component {
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (
           <div>
             <SidebarHeading title="Navigation" />
-
             <ul>
               {scene.actors.length > 0 &&
                 scene.actors.map((actor, index) => (
-                  <li onClick={() => this.props.selectActor(scene.id, index)}>
+                  <li
+                    key={index}
+                    onClick={() => this.props.selectActor(scene.id, index)}
+                  >
                     <div className="EditorSidebar__Icon">
                       <ActorCanvas actor={actor} />
                     </div>
@@ -81,11 +83,16 @@ class SceneEditor extends Component {
                   </li>
                 ))}
             </ul>
-
             <ul>
               {scene.triggers.map((trigger, index) => (
-                <li onClick={() => this.props.selectTrigger(scene.id, index)}>
-                  {"Trigger " + (index + 1)}
+                <li
+                  key={index}
+                  onClick={() => this.props.selectTrigger(scene.id, index)}
+                >
+                  <div className="EditorSidebar__Icon">
+                    <TriggerIcon />
+                  </div>
+                  {trigger.name || "Trigger " + (index + 1)}
                 </li>
               ))}
             </ul>
