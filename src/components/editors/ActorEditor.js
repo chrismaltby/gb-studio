@@ -82,6 +82,7 @@ class ActorEditor extends Component {
             <SpriteSheetSelect
               id="actorSprite"
               value={actor.spriteSheetId}
+              direction={actor.direction}
               onChange={this.onEdit("spriteSheetId")}
             />
           </FormField>

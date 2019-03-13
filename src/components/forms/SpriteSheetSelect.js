@@ -4,7 +4,7 @@ import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 
 class SpriteSheetSelect extends Component {
   render() {
-    const { spriteSheets, dispatch, ...rest } = this.props;
+    const { spriteSheets, dispatch, direction, ...rest } = this.props;
     return (
       <div className="SpriteSheetSelect">
         <select {...rest}>
@@ -15,7 +15,12 @@ class SpriteSheetSelect extends Component {
           ))}
         </select>
         <div className="SpriteSheetSelect__Preview">
-          {rest.value && <SpriteSheetCanvas spriteSheetId={rest.value} />}
+          {rest.value && (
+            <SpriteSheetCanvas
+              spriteSheetId={rest.value}
+              direction={direction}
+            />
+          )}
         </div>
       </div>
     );
