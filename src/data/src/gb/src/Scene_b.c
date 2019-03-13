@@ -24,10 +24,10 @@ UINT8 scene_bank = 3;
 
 UBYTE scene_num_actors;
 UBYTE scene_num_triggers;
-UBYTE emotion_type = 1;
-UBYTE emotion_timer = 0;
-UBYTE emotion_actor = 1;
-const BYTE emotion_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+UBYTE emote_type = 1;
+UBYTE emote_timer = 0;
+UBYTE emote_actor = 1;
+const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 UBYTE scene_col_tiles[128] = {0};
 UBYTE camera_moved = FALSE;
 const VEC2D dir_up = {0, -1};
@@ -50,13 +50,13 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
 void SceneUpdateCamera_b();
 void SceneUpdateCameraShake_b();
-void SceneUpdateEmotionBubble_b();
+void SceneUpdateEmoteBubble_b();
 void SceneHandleTriggers_b();
 void SceneRenderActors_b();
-void SceneRenderEmotionBubble_b();
+void SceneRenderEmoteBubble_b();
 void SceneRenderCameraShake_b();
 void SceneUpdateActorMovement_b(UBYTE i);
-void SceneSetEmotion_b(UBYTE actor, UBYTE type);
+void SceneSetEmote_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
 
@@ -238,7 +238,7 @@ void SceneUpdate_b()
   SceneHandleInput();
   ScriptRunnerUpdate();
   SceneUpdateActors_b();
-  SceneUpdateEmotionBubble_b();
+  SceneUpdateEmoteBubble_b();
   SceneUpdateCameraShake_b();
   SceneHandleWait();
   SceneHandleTransition();
@@ -575,16 +575,16 @@ void SceneUpdateCameraShake_b()
   }
 }
 
-void SceneUpdateEmotionBubble_b()
+void SceneUpdateEmoteBubble_b()
 {
-  // If should be showing emotion bubble
-  if (emotion_timer != 0)
+  // If should be showing emote bubble
+  if (emote_timer != 0)
   {
     // If reached end of timer
-    if (emotion_timer == BUBBLE_TOTAL_FRAMES)
+    if (emote_timer == BUBBLE_TOTAL_FRAMES)
     {
       // Reset the timer
-      emotion_timer = 0;
+      emote_timer = 0;
 
       // Hide the bubble sprites
       hide_sprite_pair(BUBBLE_SPRITE_LEFT);
@@ -592,7 +592,7 @@ void SceneUpdateEmotionBubble_b()
     else
     {
       // Inc timer
-      emotion_timer++;
+      emote_timer++;
     }
   }
 }
@@ -619,7 +619,7 @@ static void SceneHandleInput()
   }
 
   // Can't move while script is running
-  if (script_ptr != 0 || emotion_timer != 0 || IsFading())
+  if (script_ptr != 0 || emote_timer != 0 || IsFading())
   {
     actors[0].moving = FALSE;
     return;
@@ -680,7 +680,7 @@ static void SceneHandleInput()
 void SceneRender()
 {
   SceneRenderActors_b();
-  SceneRenderEmotionBubble_b();
+  SceneRenderEmoteBubble_b();
   SceneRenderCameraShake_b();
 }
 
@@ -831,25 +831,25 @@ void SceneRenderActors_b()
   }
 }
 
-void SceneRenderEmotionBubble_b()
+void SceneRenderEmoteBubble_b()
 {
   UBYTE screen_x, screen_y;
 
-  // If should be showing emotion bubble
-  if (emotion_timer != 0)
+  // If should be showing emote bubble
+  if (emote_timer != 0)
   {
     // If reached end of timer
-    if (emotion_timer != BUBBLE_TOTAL_FRAMES)
+    if (emote_timer != BUBBLE_TOTAL_FRAMES)
     {
 
-      // Set x and y above actor displaying emotion
-      screen_x = actors[emotion_actor].pos.x - SCX_REG;
-      screen_y = actors[emotion_actor].pos.y - ACTOR_HEIGHT - SCY_REG;
+      // Set x and y above actor displaying emote
+      screen_x = actors[emote_actor].pos.x - SCX_REG;
+      screen_y = actors[emote_actor].pos.y - ACTOR_HEIGHT - SCY_REG;
 
       // At start of animation bounce bubble in using stored offsets
-      if (emotion_timer < BUBBLE_ANIMATION_FRAMES)
+      if (emote_timer < BUBBLE_ANIMATION_FRAMES)
       {
-        screen_y += emotion_offsets[emotion_timer];
+        screen_y += emote_offsets[emote_timer];
       }
 
       // Reposition sprites (left and right)
@@ -914,22 +914,22 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
   return scene_num_triggers;
 }
 
-void SceneSetEmotion_b(UBYTE actor, UBYTE type)
+void SceneSetEmote_b(UBYTE actor, UBYTE type)
 {
   UWORD ptr;
 
   hide_sprite_pair(BUBBLE_SPRITE_LEFT);
-  ptr = ((UWORD)bank_data_ptrs[EMOTIONS_SPRITE_BANK]) + EMOTIONS_SPRITE_BANK_OFFSET;
-  SetBankedSpriteData(EMOTIONS_SPRITE_BANK, 124, 4, ptr + (type * 64));
+  ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
+  SetBankedSpriteData(EMOTES_SPRITE_BANK, 124, 4, ptr + (type * 64));
 
   set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
-  emotion_timer = 1;
-  emotion_actor = actor;
+  emote_timer = 1;
+  emote_actor = actor;
 }
 
 UBYTE SceneIsEmoting_b()
 {
-  return emotion_timer > 0;
+  return emote_timer > 0;
 }
 
 UBYTE SceneCameraAtDest_b()

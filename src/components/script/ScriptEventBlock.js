@@ -8,7 +8,7 @@ import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import ActorSelect from "../forms/ActorSelect";
-import EmotionSelect from "../forms/EmotionSelect";
+import EmoteSelect from "../forms/EmoteSelect";
 import { FormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 
@@ -125,8 +125,8 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />
-            ) : field.type === "emotion" ? (
-              <EmotionSelect
+            ) : field.type === "emote" ? (
+              <EmoteSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />

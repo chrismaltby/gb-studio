@@ -359,12 +359,12 @@ void Script_ActorHide_b()
  * ----------------------------
  * Display emote bubble over actor.
  *
- *   arg0: Emotion Id
+ *   arg0: Emote Id
  */
 void Script_ActorSetEmote_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  SceneSetEmotion(script_cmd_args[0], script_cmd_args[1]);
+  SceneSetEmote(script_cmd_args[0], script_cmd_args[1]);
   script_action_complete = FALSE;
 }
 

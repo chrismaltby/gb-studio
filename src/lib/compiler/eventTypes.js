@@ -21,7 +21,7 @@ export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
-export const EVENT_ACTOR_EMOTION = "EVENT_ACTOR_EMOTION";
+export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -55,8 +55,7 @@ export const EventNames = {
   [EVENT_ACTOR_SET_DIRECTION]: "Actor Set Direction",
   [EVENT_ACTOR_SET_POSITION]: "Actor Set Position",
   [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
-  [EVENT_ACTOR_EMOTION]: "Emotion Bubble",
-  // [EVENT_RETURN_TO_TITLE]: "Return To Title",
+  [EVENT_ACTOR_EMOTE]: "Actor Emote Bubble",
   [EVENT_ACTOR_SHOW]: "Show Actor",
   [EVENT_ACTOR_HIDE]: "Hide Actor",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
@@ -269,15 +268,15 @@ export const EventFields = {
       defaultValue: 0
     }
   ],
-  [EVENT_ACTOR_EMOTION]: [
+  [EVENT_ACTOR_EMOTE]: [
     {
       key: "actorId",
       type: "actor",
       defaultValue: "player"
     },
     {
-      key: "emotionId",
-      type: "emotion",
+      key: "emoteId",
+      type: "emote",
       defaultValue: 0
     }
   ],

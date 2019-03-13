@@ -43,7 +43,7 @@ extern UBYTE scene_height;
 
 void SceneInit();
 void SceneUpdate();
-void SceneSetEmotion(UBYTE actor, UBYTE type);
+void SceneSetEmote(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting();
 UBYTE SceneCameraAtDest();
 

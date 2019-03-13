@@ -3,7 +3,7 @@
 
 void SceneInit_b();
 void SceneUpdate_b();
-void SceneSetEmotion_b(UBYTE actor, UBYTE type);
+void SceneSetEmote_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
 UBYTE SceneCameraAtDest_b();
 
@@ -36,10 +36,10 @@ void SceneUpdate()
   POP_BANK;
 }
 
-void SceneSetEmotion(UBYTE actor, UBYTE type)
+void SceneSetEmote(UBYTE actor, UBYTE type)
 {
   PUSH_BANK(scene_bank);
-  SceneSetEmotion_b(actor, type);
+  SceneSetEmote_b(actor, type);
   POP_BANK;
 }
 

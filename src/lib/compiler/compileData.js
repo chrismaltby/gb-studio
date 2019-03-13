@@ -115,7 +115,7 @@ const compile = async (
   // Add UI data
   const uiImagePtr = banked.push(precompiled.uiTiles);
 
-  const emotionsSpritePtr = banked.push(precompiled.emotionsSprite);
+  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map(sprite => {
@@ -239,8 +239,8 @@ const compile = async (
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
     `#define UI_BANK ${uiImagePtr.bank}\n` +
     `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
-    `#define EMOTIONS_SPRITE_BANK ${emotionsSpritePtr.bank}\n` +
-    `#define EMOTIONS_SPRITE_BANK_OFFSET ${emotionsSpritePtr.offset}\n` +
+    `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
+    `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
     `\n` +
     Object.keys(dataPtrs)
       .map(name => {
@@ -327,7 +327,7 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
-  const { uiTiles, emotionsSprite } = await precompileUIImages(
+  const { uiTiles, emotesSprite } = await precompileUIImages(
     projectRoot,
     tmpPath,
     {
@@ -363,7 +363,7 @@ const precompile = async (
     usedSprites,
     sceneData,
     uiTiles,
-    emotionsSprite
+    emotesSprite
   };
 };
 
@@ -449,10 +449,10 @@ export const precompileUIImages = async (
   const uiPath = `${projectRoot}/assets/ui/ui.png`;
   const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
 
-  const emotionsPath = `${projectRoot}/assets/ui/emotions.png`;
-  const emotionsSprite = await ggbgfx.imageToSpriteIntArray(emotionsPath);
+  const emotesPath = `${projectRoot}/assets/ui/emotes.png`;
+  const emotesSprite = await ggbgfx.imageToSpriteIntArray(emotesPath);
 
-  return { uiTiles, emotionsSprite };
+  return { uiTiles, emotesSprite };
 };
 
 export const precompileSprites = async (

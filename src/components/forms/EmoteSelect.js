@@ -1,6 +1,6 @@
 import React from "react";
 
-const emotions = [
+const emotes = [
   "Shock",
   "Question",
   "Love",
@@ -11,9 +11,9 @@ const emotions = [
   "Sleep"
 ];
 
-const EmotionSelect = props => (
+const EmoteSelect = props => (
   <select {...props}>
-    {emotions.map((name, index) => (
+    {emotes.map((name, index) => (
       <option key={index} value={index}>
         {name}
       </option>
@@ -21,4 +21,4 @@ const EmotionSelect = props => (
   </select>
 );
 
-export default EmotionSelect;
+export default EmoteSelect;

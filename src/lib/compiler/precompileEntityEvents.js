@@ -15,7 +15,7 @@ import {
   EVENT_ACTOR_MOVE_TO,
   EVENT_WAIT,
   EVENT_CAMERA_SHAKE,
-  EVENT_ACTOR_EMOTION,
+  EVENT_ACTOR_EMOTE,
   EVENT_SHOW_SPRITES,
   EVENT_HIDE_SPRITES,
   EVENT_ACTOR_SHOW,
@@ -70,7 +70,7 @@ const CMD_LOOKUP = {
   START_BATTLE: 0x13,
   ACTOR_SHOW: 0x14,
   ACTOR_HIDE: 0x15,
-  ACTOR_EMOTION: 0x16,
+  ACTOR_EMOTE: 0x16,
   CAMERA_SHAKE: 0x17,
   RETURN_TO_TITLE: 0x18,
   OVERLAY_SHOW: 0x19,
@@ -226,11 +226,11 @@ const precompileEntityScript = (
         output.push(Math.ceil(60 * time));
         seconds -= time;
       }
-    } else if (command === EVENT_ACTOR_EMOTION) {
+    } else if (command === EVENT_ACTOR_EMOTE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_EMOTION);
+      output.push(CMD_LOOKUP.ACTOR_EMOTE);
       output.push(actorIndex);
-      output.push(input[i].args.emotionId || 0);
+      output.push(input[i].args.emoteId || 0);
     } else if (command === EVENT_SWITCH_SCENE) {
       let sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
       if (sceneIndex > -1) {
