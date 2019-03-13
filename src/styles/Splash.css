@@ -127,6 +127,10 @@ input.Splash__InputButton {
   user-select: none;
 }
 
+.Splash__Button--Disabled {
+  opacity: 0.5;
+}
+
 .Splash--Blur .Splash__Button {
   background-color: #ccc;
 }

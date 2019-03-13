@@ -31,7 +31,8 @@ class Splash extends Component {
       target: "gbhtml",
       path: getLastUsedPath(),
       nameError: null,
-      pathError: null
+      pathError: null,
+      creating: false
     };
   }
 
@@ -101,6 +102,9 @@ class Splash extends Component {
     }
 
     try {
+      this.setState({
+        creating: true
+      });
       const projectPath = await createProject({
         name,
         target,
@@ -109,14 +113,23 @@ class Splash extends Component {
       ipcRenderer.send("open-project", { projectPath });
     } catch (e) {
       if (e === ERR_PROJECT_EXISTS) {
-        this.setState({ nameError: "Project already exists" });
+        this.setState({ nameError: "Project already exists", creating: false });
       }
     }
   };
 
   render() {
     const { section } = this.props;
-    const { blur, tab, name, target, path, nameError, pathError } = this.state;
+    const {
+      blur,
+      tab,
+      name,
+      target,
+      path,
+      nameError,
+      pathError,
+      creating
+    } = this.state;
     return (
       <div className={cx("Splash", { "Splash--Blur": blur })}>
         <div className="Splash__Tabs">
@@ -176,8 +189,13 @@ class Splash extends Component {
             <div className="Splash__FlexSpacer" />
 
             <div>
-              <div className="Splash__Button" onClick={this.onSubmit}>
-                Create
+              <div
+                className={cx("Splash__Button", {
+                  "Splash__Button--Disabled": creating
+                })}
+                onClick={!creating && this.onSubmit}
+              >
+                {creating ? "Creating..." : "Create"}
               </div>
             </div>
           </div>
