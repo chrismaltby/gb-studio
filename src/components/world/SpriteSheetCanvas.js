@@ -17,7 +17,7 @@ class SpriteSheetCanvas extends Component {
     if (
       newSrc !== this.src ||
       newSprite !== this.sprite ||
-      this.props.direction === nextProps.direction
+      this.props.direction !== nextProps.direction
     ) {
       this.loadImage(nextProps);
     }
