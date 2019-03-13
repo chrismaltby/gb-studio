@@ -1,25 +1,31 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 
 class SpriteSheetSelect extends Component {
   render() {
     const { spriteSheets, dispatch, ...rest } = this.props;
     return (
-      <select {...rest}>
-        <option>None</option>
-        {spriteSheets.map(spriteSheet => (
-          <option key={spriteSheet.id} value={spriteSheet.id}>
-            {spriteSheet.name} ({spriteSheet.type})
-          </option>
-        ))}
-      </select>
+      <div className="SpriteSheetSelect">
+        <select {...rest}>
+          {spriteSheets.map(spriteSheet => (
+            <option key={spriteSheet.id} value={spriteSheet.id}>
+              {spriteSheet.name} ({spriteSheet.type})
+            </option>
+          ))}
+        </select>
+        <div className="SpriteSheetSelect__Preview">
+          {rest.value && <SpriteSheetCanvas spriteSheetId={rest.value} />}
+        </div>
+      </div>
     );
   }
 }
 
 function mapStateToProps(state) {
   return {
-    spriteSheets: (state.project.present && state.project.present.spriteSheets) || []
+    spriteSheets:
+      (state.project.present && state.project.present.spriteSheets) || []
   };
 }
 
