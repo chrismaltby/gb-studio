@@ -246,6 +246,30 @@ export default function project(state = initialState.project, action) {
               if (index !== action.index) {
                 return actor;
               }
+              if (action.values.spriteSheetId) {
+                const newSprite = state.spriteSheets.find(
+                  s => s.id === action.values.spriteSheetId
+                );
+                // If new sprite only has one frame reset movement type back to static
+                if (newSprite.numFrames === 1) {
+                  return {
+                    ...actor,
+                    ...action.values,
+                    movementType: "static"
+                  };
+                }
+                const oldSprite = state.spriteSheets.find(
+                  s => s.id === actor.spriteSheetId
+                );
+                // If previous sprite had only one frame reset movement type to face interaction
+                if (oldSprite.numFrames === 1) {
+                  return {
+                    ...actor,
+                    ...action.values,
+                    movementType: "faceInteraction"
+                  };
+                }
+              }
               return {
                 ...actor,
                 ...action.values
