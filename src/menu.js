@@ -120,15 +120,29 @@ const template = [
         }
       },
       {
-        label: "Script Review",
+        label: "UI Elements",
         accelerator: "CommandOrControl+5",
+        click: () => {
+          notifyListeners("section", "ui");
+        }
+      },
+      {
+        label: "Music",
+        accelerator: "CommandOrControl+6",
+        click: () => {
+          notifyListeners("section", "music");
+        }
+      },
+      {
+        label: "Script Review",
+        accelerator: "CommandOrControl+7",
         click: () => {
           notifyListeners("section", "script");
         }
       },
       {
         label: "Build && Run",
-        accelerator: "CommandOrControl+6",
+        accelerator: "CommandOrControl+8",
         click: () => {
           notifyListeners("section", "build");
         }
@@ -137,9 +151,7 @@ const template = [
   },
   {
     role: "window",
-    submenu: [
-      { role: "minimize" }
-    ]
+    submenu: [{ role: "minimize" }]
   },
   {
     role: "help",
