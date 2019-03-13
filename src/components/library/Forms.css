@@ -1,6 +1,8 @@
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 .Textarea {
@@ -119,4 +121,12 @@ input, select, textarea {
 .Platform__win32 .FormField textarea,
 .Platform__win32 .FormField select {
   border-radius: 2px;
+}
+
+.FormField input:focus,
+.FormField textarea:focus,
+.FormField select:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
 }

@@ -41,6 +41,12 @@
   height: 30px;
 }
 
+.EditorSidebar .AddCommandButton__Search input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+}
+
 .Platform__win32 .EditorSidebar .AddCommandButton__Search input {
   border-radius: 2px;
 }

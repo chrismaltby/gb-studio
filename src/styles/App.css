@@ -36,6 +36,11 @@ body {
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 13px;
   user-select: none;
+  caret-color: var(--highlight-color);
+}
+
+::selection {
+  background: var(--highlight-color);
 }
 
 #App {

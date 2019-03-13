@@ -45,6 +45,8 @@
 
 .FilesSidebar input:focus {
   outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
 .FilesSidebar__ListItem {

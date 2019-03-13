@@ -42,7 +42,7 @@
 }
 
 .Scene--Selected .Scene__Image {
-  outline: 2px solid #03a9f4;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
 .Scene--Selected .Scene__Name {
