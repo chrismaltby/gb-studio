@@ -4,7 +4,7 @@ import SpriteSheetCanvas from "./SpriteSheetCanvas";
 
 class Actor extends Component {
   render() {
-    const { x, y, actor, selected } = this.props;
+    const { x, y, actor = {}, selected } = this.props;
     return (
       <div
         className={cx("Actor", { "Actor--Selected": selected })}

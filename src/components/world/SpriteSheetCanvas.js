@@ -92,9 +92,10 @@ class SpriteSheetCanvas extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const spriteSheet = state.project.present.spriteSheets.find(
-    spriteSheet => spriteSheet.id === props.spriteSheetId
-  );
+  const spriteSheet =
+    state.project.present.spriteSheets.find(
+      spriteSheet => spriteSheet.id === props.spriteSheetId
+    ) || state.project.present.spriteSheets[0];
   return {
     spriteSheet,
     projectRoot: state.document && state.document.root
