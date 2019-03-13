@@ -62,10 +62,17 @@ class Splash extends Component {
     if (key === "name") {
       value = stripInvalidFilenameCharacters(value);
     }
+
     this.setState({
       [key]: value,
       nameError: false
     });
+  };
+
+  onKeyDown = e => {
+    if (e.key === "Enter") {
+      this.onSubmit(e);
+    }
   };
 
   onSelectFolder = e => {
@@ -132,7 +139,11 @@ class Splash extends Component {
               <label className={nameError ? "Splash__Label--Error" : ""}>
                 {nameError ? nameError : "Project name"}
               </label>
-              <input value={name} onChange={this.onChange("name")} />
+              <input
+                value={name}
+                onChange={this.onChange("name")}
+                onKeyDown={this.onKeyDown}
+              />
             </div>
 
             <div className="Splash__FormGroup">
@@ -146,7 +157,11 @@ class Splash extends Component {
               <label className={pathError ? "Splash__Label--Error" : ""}>
                 {pathError ? pathError : "Path"}
               </label>
-              <input value={path} onChange={this.onChange("path")} />
+              <input
+                value={path}
+                onChange={this.onChange("path")}
+                onKeyDown={this.onKeyDown}
+              />
               <div className="Splash__InputButton">
                 <DotsIcon />
               </div>
