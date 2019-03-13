@@ -5,6 +5,8 @@ import {
   SPRITE_REMOVE,
   BACKGROUND_LOAD_SUCCESS,
   BACKGROUND_REMOVE,
+  MUSIC_LOAD_SUCCESS,
+  MUSIC_REMOVE,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -36,8 +38,8 @@ const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
 const sortFilename = (a, b) => {
-  if (a.filename > b.filename) return -1;
-  if (a.filename < b.filename) return 1;
+  if (a.filename > b.filename) return 1;
+  if (a.filename < b.filename) return -1;
   return 0;
 };
 
@@ -97,6 +99,31 @@ export default function project(state = initialState.project, action) {
             {
               ...action.data,
               id: currentBackground ? currentBackground.id : action.data.id
+            }
+          )
+          .sort(sortFilename)
+      };
+    case MUSIC_REMOVE:
+      return {
+        ...state,
+        music: state.music.filter(music => {
+          return music.filename !== action.filename;
+        })
+      };
+    case MUSIC_LOAD_SUCCESS:
+      const currentMusic = state.music.find(
+        music => music.filename === action.data.filename
+      );
+      return {
+        ...state,
+        music: []
+          .concat(
+            state.music.filter(music => {
+              return music.filename !== action.data.filename;
+            }),
+            {
+              ...action.data,
+              id: currentMusic ? currentMusic.id : action.data.id
             }
           )
           .sort(sortFilename)

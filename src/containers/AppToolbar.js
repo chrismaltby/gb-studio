@@ -25,6 +25,7 @@ const sectionNames = {
   sprites: "Sprites",
   backgrounds: "Backgrounds",
   ui: "UI Elements",
+  music: "Music",
   script: "Script Review",
   build: "Build & Run"
 };
@@ -57,7 +58,7 @@ class AppToolbar extends Component {
   };
 
   openProjectFolder = e => {
-    this.props.openFolder(`${this.props.projectRoot}/project.json`);
+    this.props.openFolder(`${this.props.projectRoot}`);
   };
 
   render() {

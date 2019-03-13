@@ -19,10 +19,13 @@ store.dispatch(actions.loadProject(projectPath));
 watchProject(projectPath, {
   onAddSprite: f => store.dispatch(actions.loadSprite(f)),
   onAddBackground: f => store.dispatch(actions.loadBackground(f)),
+  onAddMusic: f => store.dispatch(actions.loadMusic(f)),
   onChangedSprite: f => store.dispatch(actions.loadSprite(f)),
   onChangedBackground: f => store.dispatch(actions.loadBackground(f)),
+  onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
   onRemoveSprite: f => store.dispatch(actions.removeSprite(f)),
-  onRemoveBackground: f => store.dispatch(actions.removeBackground(f))
+  onRemoveBackground: f => store.dispatch(actions.removeBackground(f)),
+  onRemoveMusic: f => store.dispatch(actions.removeMusic(f))
 });
 
 window.ActionCreators = ActionCreators;

@@ -3,6 +3,7 @@ import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadImageData } from "../lib/project/loadImageData";
+import { loadMusicData } from "../lib/project/loadMusicData";
 import uuid from "uuid/v4";
 
 const asyncAction = async (
@@ -86,6 +87,32 @@ export const loadBackground = filename => async (dispatch, getState) => {
 export const removeBackground = filename => {
   return {
     type: types.BACKGROUND_REMOVE,
+    filename
+  };
+};
+
+export const loadMusic = filename => async (dispatch, getState) => {
+  return asyncAction(
+    dispatch,
+    types.MUSIC_LOAD_REQUEST,
+    types.MUSIC_LOAD_SUCCESS,
+    types.MUSIC_LOAD_FAILURE,
+    async () => {
+      const state = getState();
+      const projectRoot = state.document && state.document.root;
+      const data = await loadMusicData(
+        `${projectRoot}/assets/music/${filename}`
+      );
+      return {
+        data
+      };
+    }
+  );
+};
+
+export const removeMusic = filename => {
+  return {
+    type: types.MUSIC_REMOVE,
     filename
   };
 };

@@ -1,4 +1,5 @@
 import { ipcRenderer, remote, shell } from "electron";
+import open from "open";
 import uuid from "uuid/v4";
 import fs from "fs-extra";
 import buildProject from "../lib/compiler/buildProject";
@@ -52,18 +53,10 @@ export default store => next => async action => {
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        if (buildType === "rom") {
-          shell.showItemInFolder(`${projectRoot}/build/${buildType}/game.gb`);
-        } else if (buildType === "web") {
-          shell.showItemInFolder(
-            `${projectRoot}/build/${buildType}/index.html`
-          );
-        } else {
-          shell.showItemInFolder(`${projectRoot}/build/${buildType}`);
-        }
+        open(`${projectRoot}/build/${buildType}`);
       } else if (ejectBuild) {
         await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
-        shell.showItemInFolder(`${projectRoot}/eject`);
+        open(`${projectRoot}/eject`);
       }
 
       dispatch({ type: CMD_COMPLETE });

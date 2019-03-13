@@ -137,7 +137,7 @@ const createHelp = async helpPage => {
       maximizable: true,
       fullscreenable: false,
       webPreferences: {
-        nodeIntegration: false,
+        nodeIntegration: true,
         devTools: isDevMode
       }
     });
