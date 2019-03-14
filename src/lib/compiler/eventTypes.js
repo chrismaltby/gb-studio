@@ -299,9 +299,16 @@ export const EventFields = {
       type: "actor"
     }
   ],
-  [EVENT_SHOW_SPRITES]: [],
-  [EVENT_HIDE_SPRITES]: [],
-
+  [EVENT_SHOW_SPRITES]: [
+    {
+      label: "Unhide all active sprites."
+    }
+  ],
+  [EVENT_HIDE_SPRITES]: [
+    {
+      label: "Hide all sprites from screen."
+    }
+  ],
   [EVENT_OVERLAY_SHOW]: [
     {
       key: "color",
@@ -327,7 +334,11 @@ export const EventFields = {
       width: "50%"
     }
   ],
-  [EVENT_OVERLAY_HIDE]: [],
+  [EVENT_OVERLAY_HIDE]: [
+    {
+      label: "Hides overlay window from screen."
+    }
+  ],
   [EVENT_OVERLAY_SET_POSITION]: [
     {
       key: "x",
@@ -383,5 +394,9 @@ export const EventFields = {
       defaultValue: "LAST_MUSIC"
     }
   ],
-  [EVENT_MUSIC_STOP]: []
+  [EVENT_MUSIC_STOP]: [
+    {
+      label: "Stops any music that was previously playing."
+    }
+  ]
 };

@@ -33,9 +33,9 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   };
   return (
     <div className="ScriptEventBlock">
-      {fields.map(field => {
+      {fields.map((field, index) => {
         return (
-          <FormField key={field.key} halfWidth={field.width === "50%"}>
+          <FormField key={field.key || index} halfWidth={field.width === "50%"}>
             {field.label && <label>{field.label}</label>}
             {field.type === "textarea" ? (
               <textarea
