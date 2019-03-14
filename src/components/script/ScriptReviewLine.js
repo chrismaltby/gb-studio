@@ -8,7 +8,7 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
         ? scriptLine.actor.name
         : "Actor " + (scriptLine.actorIndex + 1)}{" "}
       — {scriptLine.scene.name}{" "}
-      {scriptLine.line.args.text
+      {(scriptLine.line.args.text || "")
         .split("\n")
         .map((line, index) => line.length + "/18")
         .join(", ")}
