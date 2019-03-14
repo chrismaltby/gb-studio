@@ -492,6 +492,12 @@ void SceneUpdateActorMovement_b(UBYTE i)
 
   actors[i].redraw = TRUE;
 
+  if (script_ptr != 0)
+  {
+    actors[i].moving = TRUE;
+    return;
+  }
+
   next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
