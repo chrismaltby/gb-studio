@@ -5,9 +5,11 @@ import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
-import { EVENT_TEXT } from "./eventTypes";
+import { EVENT_TEXT, EVENT_MUSIC_PLAY } from "./eventTypes";
+import compileMusic from "./compileMusic";
 
 const STRINGS_PER_BANK = 430;
+const NUM_MUSIC_BANKS = 8;
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
@@ -20,6 +22,7 @@ export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
+export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 
 const prepareString = s =>
@@ -164,13 +167,6 @@ const compile = async (
   }
 
   const { startX, startY, startDirection } = projectData.settings;
-  // console.log(
-  //   JSON.stringify(
-  //     { eventPtrs, tileSetPtrs, imagePtrs, spritePtrs, scenePtrs },
-  //     null,
-  //     4
-  //   )
-  // );
 
   const bankNums = [
     ...Array(bankOffset + stringBanks.length + banked.data.length).keys()
@@ -200,13 +196,18 @@ const compile = async (
 
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
+  const nextAvailableBank = bankData.length + bankOffset + 1;
 
-  // console.log(stringBanks.length);
-  // console.log(
-  //   stringBanks.map((bankStrings, index) => {
-  //     return `extern const unsigned char strings_${bankOffset + index}[][38];`;
-  //   })
-  // );
+  // console.log("NEXT AVAILABLE BANK = " + nextAvailableBank);
+
+  const music = precompiled.usedMusic.map((track, index) => {
+    return {
+      ...track,
+      bank: nextAvailableBank + (index % NUM_MUSIC_BANKS)
+    };
+  });
+
+  console.log({ music });
 
   let playerSpriteIndex = precompiled.usedSprites.findIndex(
     s => s.id === projectData.settings.playerSpriteSheetId
@@ -250,6 +251,8 @@ const compile = async (
       .join(`\n`) +
     `\n` +
     `extern const unsigned char (*bank_data_ptrs[])[];\n` +
+    `extern const unsigned char * music_tracks[];\n` +
+    `extern const unsigned char music_banks[];\n` +
     `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
     stringBanks
       .map((bankStrings, index) => {
@@ -257,8 +260,13 @@ const compile = async (
           index}[][38];`;
       })
       .join(`\n`) +
+    `\n` +
+    music
+      .map((track, index) => {
+        return `extern const unsigned char * ${track.dataName}_Data[];`;
+      })
+      .join(`\n`) +
     `\n\n#endif\n`;
-
   output[`data_ptrs.c`] =
     `#pragma bank=16\n` +
     `#include "data_ptrs.h"\n` +
@@ -279,7 +287,14 @@ const compile = async (
         );
       })
       .join(`\n`) +
-    `\nunsigned char script_flags[${precompiled.flags.length + 1}] = { 0 };\n`;
+    `\n` +
+    `const unsigned char * music_tracks[] = {\n` +
+    music.map(track => track.dataName + "_Data").join(", ") +
+    `\n};\n\n` +
+    `const unsigned char music_banks[] = {\n` +
+    music.map(track => track.bank).join(", ") +
+    `\n};\n\n` +
+    `unsigned char script_flags[${precompiled.flags.length + 1}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 
@@ -293,9 +308,10 @@ const compile = async (
     output[`bank_${bankOffset + stringBanks.length + index}.c`] = bankDataBank;
   });
 
-  // console.log(output);
-
-  return output;
+  return {
+    files: output,
+    music
+  };
 };
 
 //#region precompile
@@ -344,6 +360,12 @@ const precompile = async (
     projectRoot
   );
 
+  progress(EVENT_MSG_PRE_MUSIC);
+  const { usedMusic } = await precompileMusic(
+    projectData.scenes,
+    projectData.music
+  );
+
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
@@ -362,6 +384,7 @@ const precompile = async (
     usedTilesetLookup,
     imageData,
     usedSprites,
+    usedMusic,
     sceneData,
     uiTiles,
     emotesSprite
@@ -493,6 +516,33 @@ export const precompileSprites = async (
     usedSprites: spriteData,
     spriteLookup
   };
+};
+
+export const precompileMusic = (scenes, music) => {
+  let usedMusicIds = [];
+  walkScenesEvents(scenes, cmd => {
+    if (
+      cmd.args &&
+      (cmd.args.musicId !== undefined || cmd.command === EVENT_MUSIC_PLAY)
+    ) {
+      const musicId = cmd.args.musicId || music[0].id;
+      // If never seen this track before add it to the list
+      if (usedMusicIds.indexOf(musicId) === -1) {
+        usedMusicIds.push(musicId);
+      }
+    }
+  });
+  const usedMusic = music
+    .filter(track => {
+      return usedMusicIds.indexOf(track.id) > -1;
+    })
+    .map((track, index) => {
+      return {
+        ...track,
+        dataName: "music_track_" + index
+      };
+    });
+  return { usedMusic };
 };
 
 export const precompileScenes = (scenes, usedImages, usedSprites) => {

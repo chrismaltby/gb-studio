@@ -26,19 +26,19 @@ const ejectBuild = async ({
     `${__dirname}/../../../node_modules/gbdkjs`,
     `${outputRoot}/node_modules/gbdkjs`
   );*/
-  for (let filename in compiledData) {
+  for (let filename in compiledData.files) {
     if (filename.endsWith(".h")) {
       progress("Copy header " + filename);
 
       await fs.writeFile(
         `${outputRoot}/include/${filename}`,
-        compiledData[filename]
+        compiledData.files[filename]
       );
     } else {
       progress("Copy code " + filename);
       await fs.writeFile(
         `${outputRoot}/src/data/${filename}`,
-        compiledData[filename]
+        compiledData.files[filename]
       );
     }
   }

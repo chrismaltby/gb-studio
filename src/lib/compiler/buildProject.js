@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import compile, { EVENT_DATA_COMPILE_PROGRESS } from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
+import compileMusic from "./compileMusic";
 
 const buildProject = async (
   data,
@@ -23,6 +24,13 @@ const buildProject = async (
   await ejectBuild({
     outputRoot,
     compiledData,
+    progress,
+    warnings
+  });
+  await compileMusic({
+    music: compiledData.music,
+    projectRoot,
+    buildRoot: outputRoot,
     progress,
     warnings
   });
