@@ -40,6 +40,10 @@ export const EVENT_OVERLAY_HIDE = "EVENT_OVERLAY_HIDE";
 export const EVENT_OVERLAY_SET_POSITION = "EVENT_OVERLAY_SET_POSITION";
 export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 
+// Music
+export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
+export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
+
 export const EventNames = {
   [EVENT_SWITCH_SCENE]: "Switch Scene",
   [EVENT_WAIT]: "Wait",
@@ -64,7 +68,9 @@ export const EventNames = {
   [EVENT_OVERLAY_HIDE]: "Hide Overlay",
   [EVENT_OVERLAY_SET_POSITION]: "Overlay Set Position",
   [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
-  [EVENT_AWAIT_INPUT]: "Await Input"
+  [EVENT_AWAIT_INPUT]: "Await Input",
+  [EVENT_MUSIC_PLAY]: "Play Music",
+  [EVENT_MUSIC_STOP]: "Stop Music"
 };
 
 export const EventFields = {
@@ -369,5 +375,14 @@ export const EventFields = {
       type: "input",
       defaultValue: ["a", "b"]
     }
-  ]
+  ],
+  [EVENT_MUSIC_PLAY]: [
+    {
+      key: "musicId",
+      label: "Track",
+      type: "music",
+      defaultValue: "LAST_MUSIC"
+    }
+  ],
+  [EVENT_MUSIC_STOP]: []
 };
