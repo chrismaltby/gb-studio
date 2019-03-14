@@ -297,6 +297,10 @@ export const zoomReset = section => {
   return { type: types.ZOOM_RESET, section };
 };
 
+export const editUI = () => {
+  return { type: types.EDIT_UI };
+};
+
 export const openHelp = page => {
   return { type: types.OPEN_HELP, page };
 };

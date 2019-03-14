@@ -88,3 +88,5 @@ export const BUILD_GAME = "BUILD_GAME";
 
 export const PLAY_MUSIC = "PLAY_MUSIC";
 export const PAUSE_MUSIC = "PAUSE_MUSIC";
+
+export const EDIT_UI = "EDIT_UI";

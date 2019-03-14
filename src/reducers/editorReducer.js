@@ -21,7 +21,8 @@ import {
   REMOVE_ACTOR_AT,
   REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
-  EDIT_PLAYER_START_AT
+  EDIT_PLAYER_START_AT,
+  EDIT_UI
 } from "../actions/actionTypes";
 
 export default function editor(state = initialState.editor, action) {
@@ -129,6 +130,12 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         scene: "",
         type: "world"
+      };
+    }
+    case EDIT_UI: {
+      return {
+        ...state,
+        uiVersion: state.uiVersion + 1
       };
     }
     case ZOOM_IN:

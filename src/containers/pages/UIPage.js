@@ -47,17 +47,20 @@ class UIPage extends Component {
 function mapStateToProps(state) {
   const { id } = state.navigation;
   const projectRoot = state.document && state.document.root;
+  const uiVersion = state.editor.uiVersion;
   const files = projectRoot
     ? [
         {
           id: "ui",
           name: "UI",
-          filename: `ui.png`
+          filename: `ui.png`,
+          _v: uiVersion
         },
         {
           id: "emotes",
           name: "Emotes",
-          filename: `emotes.png`
+          filename: `emotes.png`,
+          _v: uiVersion
         }
       ]
     : [];
