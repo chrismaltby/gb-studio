@@ -47,5 +47,7 @@ void Script_HideOverlay_b();
 void Script_OverlaySetPos_b();
 void Script_OverlayMoveTo_b();
 void Script_AwaitInput_b();
+void Script_MusicPlay_b();
+void Script_MusicStop_b();
 
 #endif

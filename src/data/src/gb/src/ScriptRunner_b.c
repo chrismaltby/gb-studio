@@ -4,6 +4,7 @@
 
 #include "ScriptRunner.h"
 #include "Scene.h"
+#include "MusicManager.h"
 #include "FadeManager.h"
 #include "UI.h"
 #include "Macros.h"
@@ -441,4 +442,28 @@ void Script_AwaitInput_b()
   await_input = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
+}
+
+/*
+ * Command: MusicPlay
+ * ----------------------------
+ * Play the music track with given index
+ */
+void Script_MusicPlay_b()
+{
+  MusicPlay(script_cmd_args[0], script_cmd_args[1], scriptrunner_bank);
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MusicStop
+ * ----------------------------
+ * Stop any playing music
+ */
+void Script_MusicStop_b()
+{
+  MusicStop(scriptrunner_bank);
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }

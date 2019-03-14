@@ -58,9 +58,6 @@ int main()
   DISPLAY_ON;
   SHOW_SPRITES;
 
-  gbt_play(song_palette_town_Data, 28, 7);
-  gbt_loop(TRUE);
-
   while (1)
   {
     game_loop();

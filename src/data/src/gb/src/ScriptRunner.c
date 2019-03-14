@@ -45,6 +45,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_OverlaySetPos_b, 2}, // 0x1B
     {Script_OverlayMoveTo_b, 2}, // 0x1C
     {Script_AwaitInput_b, 1},    // 0x1D
+    {Script_MusicPlay_b, 2},     // 0x1E
+    {Script_MusicStop_b, 0}      // 0x1F
 };
 
 UBYTE ScriptLastFnComplete();

@@ -25,7 +25,9 @@ import {
   EVENT_OVERLAY_HIDE,
   EVENT_OVERLAY_SET_POSITION,
   EVENT_OVERLAY_MOVE_TO,
-  EVENT_AWAIT_INPUT
+  EVENT_AWAIT_INPUT,
+  EVENT_MUSIC_PLAY,
+  EVENT_MUSIC_STOP
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec } from "./helpers";
@@ -77,11 +79,21 @@ const CMD_LOOKUP = {
   OVERLAY_HIDE: 0x1a,
   OVERLAY_SET_POSITION: 0x1b,
   OVERLAY_MOVE_TO: 0x1c,
-  AWAIT_INPUT: 0x1d
+  AWAIT_INPUT: 0x1d,
+  MUSIC_PLAY: 0x1e,
+  MUSIC_STOP: 0x1f
 };
 
 const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
+};
+
+const getMusicIndex = (musicId, music) => {
+  const musicIndex = music.findIndex(track => track.id === musicId);
+  if (musicIndex === -1) {
+    return 0;
+  }
+  return musicIndex;
 };
 
 const getFlagIndex = (flag, flags) => {
@@ -95,7 +107,16 @@ const getFlagIndex = (flag, flags) => {
 
 const precompileEntityScript = (
   input = [],
-  { output = [], strings, scene, scenes, images, flags, branch = false } = {}
+  {
+    output = [],
+    strings,
+    scene,
+    scenes,
+    music,
+    images,
+    flags,
+    branch = false
+  } = {}
 ) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -276,6 +297,13 @@ const precompileEntityScript = (
     } else if (command === EVENT_AWAIT_INPUT) {
       output.push(CMD_LOOKUP.AWAIT_INPUT);
       output.push(inputDec(input[i].args.input));
+    } else if (command === EVENT_MUSIC_PLAY) {
+      const musicIndex = getMusicIndex(input[i].args.musicId, music);
+      output.push(CMD_LOOKUP.MUSIC_PLAY);
+      output.push(musicIndex);
+      output.push(1); // Loop track
+    } else if (command === EVENT_MUSIC_STOP) {
+      output.push(CMD_LOOKUP.MUSIC_STOP);
     }
 
     for (var oi = 0; oi < output.length; oi++) {

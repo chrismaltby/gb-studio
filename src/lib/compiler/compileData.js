@@ -81,6 +81,7 @@ const compile = async (
       const output = compileEntityEvents(entity.script, {
         scene,
         scenes: precompiled.sceneData,
+        music: precompiled.usedMusic,
         images: precompiled.usedImages,
         strings: precompiled.strings,
         flags: precompiled.flags
