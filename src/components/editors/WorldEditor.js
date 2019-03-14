@@ -84,7 +84,7 @@ class WorldEditor extends Component {
             type="number"
             value={settings.startX}
             min={0}
-            max={31}
+            max={30}
             placeholder={0}
             onChange={this.onEdit("startX")}
           />

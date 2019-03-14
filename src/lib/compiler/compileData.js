@@ -586,8 +586,8 @@ export const compileTriggers = (triggers, { eventPtrs }) => {
       return [
         trigger.x,
         trigger.y,
-        trigger.width,
-        trigger.height,
+        Math.max(trigger.width, 1),
+        Math.max(trigger.height, 1),
         trigger.trigger === "action" ? 1 : 0,
         eventPtrs[triggerIndex].bank, // Event bank ptr
         hi(eventPtrs[triggerIndex].offset), // Event offset ptr

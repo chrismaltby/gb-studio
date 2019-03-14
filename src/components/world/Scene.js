@@ -303,8 +303,8 @@ class Scene extends Component {
               style={{
                 top: trigger.y * 8,
                 left: trigger.x * 8,
-                width: trigger.width * 8,
-                height: trigger.height * 8
+                width: Math.max(trigger.width, 1) * 8,
+                height: Math.max(trigger.height, 1) * 8
               }}
             />
           ))}

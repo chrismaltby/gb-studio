@@ -53,6 +53,7 @@ class TriggerEditor extends Component {
               id="triggerX"
               type="number"
               value={trigger.x}
+              placeholder={0}
               min={0}
               max={31}
               onChange={this.onEdit("x")}
@@ -65,6 +66,7 @@ class TriggerEditor extends Component {
               id="triggerY"
               type="number"
               value={trigger.y}
+              placeholder={0}
               min={0}
               max={31}
               onChange={this.onEdit("y")}
@@ -77,6 +79,7 @@ class TriggerEditor extends Component {
               id="triggerWidth"
               type="number"
               value={trigger.width}
+              placeholder={1}
               min={1}
               max={32}
               onChange={this.onEdit("width")}
@@ -89,6 +92,7 @@ class TriggerEditor extends Component {
               id="triggerHeight"
               type="number"
               value={trigger.height}
+              placeholder={1}
               min={1}
               max={32}
               onChange={this.onEdit("height")}
