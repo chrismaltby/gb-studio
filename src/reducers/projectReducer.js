@@ -175,22 +175,45 @@ export default function project(state = initialState.project, action) {
           // otherwise make empty collisions array of
           // the correct size
           let newCollisions;
+          let newActors;
+          let newTriggers;
           if (action.values.imageId) {
             const otherScene = state.scenes.find(otherScene => {
               return otherScene.imageId === action.values.imageId;
             });
+            const image = state.images.find(
+              image => image.id === action.values.imageId
+            );
+
             if (otherScene) {
               newCollisions = otherScene.collisions;
             } else {
-              const image = state.images.find(
-                image => image.id === action.values.imageId
-              );
               let collisionsSize = Math.ceil((image.width * image.height) / 8);
               newCollisions = [];
               for (let i = 0; i < collisionsSize; i++) {
                 newCollisions[i] = 0;
               }
             }
+
+            newActors = scene.actors.map(actor => {
+              return {
+                ...actor,
+                x: Math.min(actor.x, image.width - 2),
+                y: Math.min(actor.y, image.height - 1)
+              };
+            });
+
+            newTriggers = scene.triggers.map(trigger => {
+              const x = Math.min(trigger.x, image.width - 1);
+              const y = Math.min(trigger.y, image.height - 1);
+              return {
+                ...trigger,
+                x,
+                y,
+                width: Math.min(trigger.width, image.width - x),
+                height: Math.min(trigger.height, image.height - y)
+              };
+            });
           }
 
           return Object.assign(
@@ -198,7 +221,9 @@ export default function project(state = initialState.project, action) {
             scene,
             action.values,
             action.values.imageId && {
-              collisions: newCollisions || []
+              collisions: newCollisions || [],
+              actors: newActors,
+              triggers: newTriggers
             }
           );
         })

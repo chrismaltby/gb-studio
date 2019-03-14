@@ -23,7 +23,7 @@ class ActorEditor extends Component {
   };
 
   render() {
-    const { actor, id, spriteSheet } = this.props;
+    const { actor, id, spriteSheet, sceneImage } = this.props;
 
     if (!actor) {
       return <div />;
@@ -59,7 +59,7 @@ class ActorEditor extends Component {
               value={actor.x}
               placeholder={0}
               min={0}
-              max={31}
+              max={sceneImage.width - 2}
               onChange={this.onEdit("x")}
             />
           </FormField>
@@ -72,7 +72,7 @@ class ActorEditor extends Component {
               value={actor.y}
               placeholder={0}
               min={0}
-              max={31}
+              max={sceneImage.height - 1}
               onChange={this.onEdit("y")}
             />
           </FormField>
@@ -119,11 +119,12 @@ class ActorEditor extends Component {
 
 function mapStateToProps(state, props) {
   const { project } = state;
-  const actor =
+  const scene =
     project.present.scenes &&
-    project.present.scenes.find(scene => scene.id === props.scene).actors[
-      props.id
-    ];
+    project.present.scenes.find(scene => scene.id === props.scene);
+  const sceneImage =
+    scene && project.present.images.find(image => image.id === scene.imageId);
+  const actor = scene && scene.actors[props.id];
   const spriteSheet =
     actor &&
     project.present.spriteSheets.find(
@@ -131,7 +132,8 @@ function mapStateToProps(state, props) {
     );
   return {
     actor,
-    spriteSheet
+    spriteSheet,
+    sceneImage
   };
 }
 
