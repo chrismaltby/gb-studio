@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Button from "../library/Button";
 
 class ImageViewer extends Component {
+  onOpen = () => {
+    const { projectRoot, file, folder } = this.props;
+    this.props.openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
+  };
+
   render() {
     const { projectRoot, file, folder, zoomRatio } = this.props;
     return (
@@ -21,6 +27,11 @@ class ImageViewer extends Component {
             </div>
           )}
         </div>
+        {file && (
+          <div className="ImageViewer__Edit">
+            <Button onClick={this.onOpen}>Edit</Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -47,4 +58,11 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(ImageViewer);
+const mapDispatchToProps = {
+  openFolder: actions.openFolder
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImageViewer);

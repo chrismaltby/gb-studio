@@ -26,6 +26,11 @@ class MusicViewer extends Component {
     }
   }
 
+  onOpen = () => {
+    const { projectRoot, file } = this.props;
+    this.props.openFolder(`${projectRoot}/assets/music/${file.filename}`);
+  };
+
   onPlay = () => {
     const { projectRoot, file } = this.props;
     if (file) {
@@ -67,6 +72,11 @@ class MusicViewer extends Component {
             <div className="MusicViewer__Filename">{file.filename}</div>
           </div>
         )}
+        {file && (
+          <div className="ImageViewer__Edit">
+            <Button onClick={this.onOpen}>Edit</Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -81,7 +91,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   playMusic: actions.playMusic,
-  pauseMusic: actions.pauseMusic
+  pauseMusic: actions.pauseMusic,
+  openFolder: actions.openFolder
 };
 
 export default connect(
