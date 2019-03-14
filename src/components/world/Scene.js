@@ -6,6 +6,8 @@ import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { throttle } from "lodash";
+import { findSceneEvent } from "../../lib/helpers/eventSystem";
+import EventHelper from "./EventHelper";
 
 const MAX_ACTORS = 8;
 const MAX_TRIGGERS = 8;
@@ -252,7 +254,7 @@ class Scene extends Component {
       editor,
       image,
       version,
-      worldId,
+      event,
       width,
       height,
       projectRoot,
@@ -344,6 +346,11 @@ class Scene extends Component {
               }}
             />
           )}
+          {event && (
+            <div className="Scene__EventHelper">
+              <EventHelper event={event} scene={scene} />
+            </div>
+          )}
         </div>
         <div
           className="Scene__Info"
@@ -367,6 +374,10 @@ function mapStateToProps(state, props) {
     projectRoot: state.document && state.document.root,
     tool: state.tools.selected,
     editor: state.editor,
+    event:
+      state.editor.eventId &&
+      state.editor.scene === props.id &&
+      findSceneEvent(props.scene, state.editor.eventId),
     image: image && image.filename,
     version: (image && image._v) || 0,
     width: image ? image.width : 32,

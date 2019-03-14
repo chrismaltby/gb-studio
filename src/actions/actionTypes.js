@@ -48,6 +48,7 @@ export const REMOVE_ACTOR = "REMOVE_ACTOR";
 export const REMOVE_ACTOR_AT = "REMOVE_ACTOR_AT";
 export const SELECT_ACTOR = "SELECT_ACTOR";
 export const EDIT_ACTOR = "EDIT_ACTOR";
+export const SELECT_SCRIPT_EVENT = "SELECT_SCRIPT_EVENT";
 
 export const ADD_TRIGGER = "CREATE_TRIGGER";
 export const RESIZE_TRIGGER = "RESIZE_TRIGGER";

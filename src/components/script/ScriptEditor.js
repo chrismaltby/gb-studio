@@ -18,6 +18,7 @@ import {
   filterEvents,
   findEvent
 } from "../../lib/helpers/eventSystem";
+import * as actions from "../../actions";
 
 const ItemTypes = {
   CARD: "card"
@@ -70,7 +71,9 @@ class ActionMini extends Component {
       moveActions,
       onAdd,
       onEdit,
-      onRemove
+      onRemove,
+      onMouseEnter,
+      onMouseLeave
     } = this.props;
     const { command } = action;
 
@@ -96,7 +99,11 @@ class ActionMini extends Component {
             "ActionMini--Conditional": command === EVENT_IF_FLAG
           })}
         >
-          <div className="ActionMini__Content">
+          <div
+            className="ActionMini__Content"
+            onMouseEnter={() => onMouseEnter(id)}
+            onMouseLeave={() => onMouseLeave(id)}
+          >
             {connectDragSource(
               <div className="ActionMini__Command">
                 {EventNames[command] || command}
@@ -132,6 +139,8 @@ class ActionMini extends Component {
                       onAdd={onAdd}
                       onRemove={onRemove}
                       onEdit={onEdit}
+                      onMouseEnter={() => onMouseEnter(action.id)}
+                      onMouseLeave={() => onMouseLeave(action.id)}
                     />
                   ))}
                 </div>
@@ -149,6 +158,8 @@ class ActionMini extends Component {
                     onAdd={onAdd}
                     onRemove={onRemove}
                     onEdit={onEdit}
+                    onMouseEnter={() => onMouseEnter(action.id)}
+                    onMouseLeave={() => onMouseLeave(action.id)}
                   />
                 ))}
               </div>
@@ -257,6 +268,14 @@ class ScriptEditor extends Component {
     this.props.onChange(input);
   };
 
+  onEnter = id => {
+    this.props.selectScriptEvent(id);
+  };
+
+  onLeave = id => {
+    this.props.selectScriptEvent("");
+  };
+
   render() {
     const { value } = this.props;
     return (
@@ -270,6 +289,8 @@ class ScriptEditor extends Component {
             onAdd={this.onAdd}
             onRemove={this.onRemove}
             onEdit={this.onEdit}
+            onMouseEnter={this.onEnter}
+            onMouseLeave={this.onLeave}
           />
         ))}
         {false && JSON.stringify(value, null, 4)}
@@ -294,7 +315,9 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  selectScriptEvent: actions.selectScriptEvent
+};
 
 export default connect(
   mapStateToProps,

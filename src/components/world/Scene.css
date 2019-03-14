@@ -86,3 +86,9 @@
   top: 0;
   left: 0;
 }
+
+.Scene__EventHelper {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

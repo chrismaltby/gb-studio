@@ -6,6 +6,7 @@ import {
   SELECT_TRIGGER,
   ADD_ACTOR,
   SELECT_ACTOR,
+  SELECT_SCRIPT_EVENT,
   ADD_SCENE,
   MOVE_SCENE,
   DRAG_SCENE,
@@ -85,6 +86,12 @@ export default function editor(state = initialState.editor, action) {
         type: "actors",
         scene: action.sceneId,
         index: action.index
+      };
+    }
+    case SELECT_SCRIPT_EVENT: {
+      return {
+        ...state,
+        eventId: action.eventId
       };
     }
     case DRAG_SCENE_START: {

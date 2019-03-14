@@ -217,6 +217,10 @@ export const editActor = (sceneId, index, values) => {
   return { type: types.EDIT_ACTOR, sceneId, index, values };
 };
 
+export const selectScriptEvent = eventId => {
+  return { type: types.SELECT_SCRIPT_EVENT, eventId };
+};
+
 export const addCollisionTile = (sceneId, x, y) => {
   return { type: types.ADD_COLLISION_TILE, sceneId, x, y };
 };

@@ -1,0 +1,13 @@
+.EventHelper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.EventHelper__CameraPos {
+  position: absolute;
+  width: 160px;
+  height: 144px;
+  outline: 10px solid red;
+}

@@ -12,14 +12,28 @@ const walkEvents = (events = [], callback) => {
 
 const walkScenesEvents = (scenes, callback) => {
   scenes.forEach(scene => {
-    walkEvents(scene.script, callback);
-    scene.actors.forEach(actor => {
-      walkEvents(actor.script, callback);
-    });
-    scene.triggers.forEach(trigger => {
-      walkEvents(trigger.script, callback);
-    });
+    walkSceneEvents(scene, callback);
   });
+};
+
+const walkSceneEvents = (scene, callback) => {
+  walkEvents(scene.script, callback);
+  scene.actors.forEach(actor => {
+    walkEvents(actor.script, callback);
+  });
+  scene.triggers.forEach(trigger => {
+    walkEvents(trigger.script, callback);
+  });
+};
+
+const findSceneEvent = (scene, id) => {
+  let event = null;
+  walkSceneEvents(scene, walkEvent => {
+    if (walkEvent.id === id) {
+      event = walkEvent;
+    }
+  });
+  return event;
 };
 
 const patchEvents = (data, id, patch) => {
@@ -108,6 +122,8 @@ const findEvent = (data, id) => {
 export {
   walkEvents,
   walkScenesEvents,
+  walkSceneEvents,
+  findSceneEvent,
   patchEvents,
   prependEvent,
   filterEvents,
