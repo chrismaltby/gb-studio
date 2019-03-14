@@ -5,6 +5,7 @@ import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
+import { EVENT_TEXT } from "./eventTypes";
 
 const STRINGS_PER_BANK = 430;
 
@@ -383,7 +384,10 @@ export const precompileFlags = scenes => {
 export const precompileStrings = scenes => {
   let strings = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.text !== undefined) {
+    if (
+      cmd.args &&
+      (cmd.args.text !== undefined || cmd.command === EVENT_TEXT)
+    ) {
       const text = cmd.args.text || " "; // Replace empty strings with single space
       // If never seen this string before add it to the list
       if (strings.indexOf(text) === -1) {
