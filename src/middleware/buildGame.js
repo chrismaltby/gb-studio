@@ -21,7 +21,6 @@ export default store => next => async action => {
     const dispatch = store.dispatch.bind(store);
 
     dispatch({ type: CMD_START });
-    dispatch({ type: SET_SECTION, section: "build" });
     try {
       const state = store.getState();
       const projectRoot = state.document && state.document.root;
@@ -73,8 +72,10 @@ export default store => next => async action => {
       };
     } catch (e) {
       if (typeof e === "string") {
+        dispatch({ type: SET_SECTION, section: "build" });
         dispatch({ type: CMD_STD_ERR, text: e });
       } else {
+        dispatch({ type: SET_SECTION, section: "build" });
         dispatch({ type: CMD_STD_ERR, text: e.toString() });
       }
       dispatch({ type: CMD_COMPLETE });
