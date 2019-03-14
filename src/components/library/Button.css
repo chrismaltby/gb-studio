@@ -47,6 +47,12 @@
   width: 16px;
 }
 
+.Button--Large {
+  padding: 20px;
+  min-width: 160px;
+  height: 96px;
+}
+
 .Button--Transparent svg {
   fill: var(--button-light-icon-color);
 }

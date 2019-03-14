@@ -117,6 +117,19 @@ export const removeMusic = filename => {
   };
 };
 
+export const playMusic = filename => {
+  return {
+    type: types.PLAY_MUSIC,
+    filename
+  };
+};
+
+export const pauseMusic = () => {
+  return {
+    type: types.PAUSE_MUSIC
+  };
+};
+
 export const saveProject = () => async (dispatch, getState) => {
   return asyncAction(
     dispatch,

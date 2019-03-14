@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/images/FilesSidebar";
-import ImageViewer from "../../components/images/ImageViewer";
+import MusicViewer from "../../components/images/MusicViewer";
 import * as actions from "../../actions";
 
 class MusicSection extends Component {
@@ -9,7 +9,7 @@ class MusicSection extends Component {
     const { files, file } = this.props;
     return (
       <div>
-        <ImageViewer file={file} />
+        <MusicViewer file={file} />
         <FilesSidebar
           files={files}
           onAdd={() => {

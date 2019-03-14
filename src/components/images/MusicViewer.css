@@ -1,0 +1,23 @@
+.MusicViewer {
+  /* background: red; */
+  position: fixed;
+  right: 300px;
+  left: 0px;
+  top: 38px;
+  bottom: 0px;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.MusicViewer__Content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.MusicViewer__Filename {
+  margin-top: 20px;
+}

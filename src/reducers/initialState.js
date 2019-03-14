@@ -30,6 +30,9 @@ export default {
     section: "world",
     status: {}
   },
+  music: {
+    playing: false
+  },
   console: {
     status: "idle",
     output: []

@@ -1,11 +1,12 @@
 import React from "react";
 import cx from "classnames";
 
-export default ({ transparent, small, ...props }) => (
+export default ({ transparent, small, large, ...props }) => (
   <div
     className={cx("Button", {
       "Button--Transparent": transparent,
-      "Button--Small": small
+      "Button--Small": small,
+      "Button--Large": large
     })}
     {...props}
   />
