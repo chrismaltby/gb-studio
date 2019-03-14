@@ -20,7 +20,8 @@ import {
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
   REMOVE_TRIGGER,
-  REMOVE_TRIGGER_AT
+  REMOVE_TRIGGER_AT,
+  EDIT_PLAYER_START_AT
 } from "../actions/actionTypes";
 
 export default function editor(state = initialState.editor, action) {
@@ -122,6 +123,7 @@ export default function editor(state = initialState.editor, action) {
     case REMOVE_TRIGGER:
     case REMOVE_ACTOR_AT:
     case REMOVE_TRIGGER_AT:
+    case EDIT_PLAYER_START_AT:
     case SELECT_WORLD: {
       return {
         ...state,
