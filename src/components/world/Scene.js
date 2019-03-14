@@ -249,9 +249,9 @@ class Scene extends Component {
     return triggers.find(
       trigger =>
         x >= trigger.x &&
-        x < trigger.x + trigger.width &&
+        x < trigger.x + (trigger.width || 1) &&
         y >= trigger.y &&
-        y < trigger.y + trigger.height
+        y < trigger.y + (trigger.height || 1)
     );
   };
 
