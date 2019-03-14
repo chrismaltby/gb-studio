@@ -72,7 +72,7 @@ const compile = async (
   });
 
   // Add event data
-  const eventPtrs = projectData.scenes.map(scene => {
+  const eventPtrs = precompiled.sceneData.map(scene => {
     const bankEntityEvents = entity => {
       const output = compileEntityEvents(entity.script, {
         scene,
