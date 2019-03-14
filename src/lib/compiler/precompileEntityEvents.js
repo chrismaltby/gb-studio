@@ -301,7 +301,7 @@ const precompileEntityScript = (
       const musicIndex = getMusicIndex(input[i].args.musicId, music);
       output.push(CMD_LOOKUP.MUSIC_PLAY);
       output.push(musicIndex);
-      output.push(1); // Loop track
+      output.push(input[i].args.loop ? 1 : 0); // Loop track
     } else if (command === EVENT_MUSIC_STOP) {
       output.push(CMD_LOOKUP.MUSIC_STOP);
     }

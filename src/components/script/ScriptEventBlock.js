@@ -12,14 +12,12 @@ import EmoteSelect from "../forms/EmoteSelect";
 import { FormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
+import castEventValue from "../../lib/helpers/castEventValue";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
   const onChangeField = (key, type = "text", updateFn) => e => {
-    let newValue = e.currentTarget ? e.currentTarget.value : e;
-    if (newValue && type === "number") {
-      newValue = parseFloat(newValue);
-    }
+    let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value[key]) {
       // Toggle direction
       newValue = "";
@@ -36,7 +34,9 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
       {fields.map((field, index) => {
         return (
           <FormField key={field.key || index} halfWidth={field.width === "50%"}>
-            {field.label && <label>{field.label}</label>}
+            {field.label && field.type !== "checkbox" && (
+              <label>{field.label}</label>
+            )}
             {field.type === "textarea" ? (
               <textarea
                 value={value[field.key]}
@@ -59,27 +59,19 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 max={field.max}
                 step={field.step}
                 placeholder={field.placeholder || field.defaultValue}
-                onChange={onChangeField(field.key, field.type, val => {
-                  if (val && (!field.step || field.step === 1)) {
-                    val = Math.round(val);
-                  }
-                  if (
-                    val &&
-                    typeof field.min !== undefined &&
-                    val < field.min
-                  ) {
-                    val = field.min;
-                  }
-                  if (
-                    val &&
-                    typeof field.max !== undefined &&
-                    val > field.max
-                  ) {
-                    val = field.max;
-                  }
-                  return val;
-                })}
+                onChange={onChangeField(field.key, field.type)}
               />
+            ) : field.type === "checkbox" ? (
+              <label>
+                <input
+                  type="checkbox"
+                  className="Checkbox"
+                  checked={value[field.key] || false}
+                  onChange={onChangeField(field.key)}
+                />
+                <div className="FormCheckbox" />
+                {field.label}
+              </label>
             ) : field.type === "scene" ? (
               <SceneSelect
                 value={value[field.key]}

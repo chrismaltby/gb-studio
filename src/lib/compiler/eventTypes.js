@@ -392,6 +392,12 @@ export const EventFields = {
       key: "musicId",
       type: "music",
       defaultValue: "LAST_MUSIC"
+    },
+    {
+      key: "loop",
+      label: "Loop",
+      type: "checkbox",
+      defaultValue: true
     }
   ],
   [EVENT_MUSIC_STOP]: [
