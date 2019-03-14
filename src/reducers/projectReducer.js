@@ -26,7 +26,8 @@ import {
   MOVE_TRIGGER,
   RENAME_FLAG,
   EDIT_PROJECT,
-  EDIT_PROJECT_SETTINGS
+  EDIT_PROJECT_SETTINGS,
+  EDIT_PLAYER_START_AT
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
@@ -583,6 +584,16 @@ export default function project(state = initialState.project, action) {
         settings: {
           ...state.settings,
           ...action.values
+        }
+      };
+    case EDIT_PLAYER_START_AT:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          startSceneId: action.sceneId,
+          startX: action.x,
+          startY: action.y
         }
       };
     default:

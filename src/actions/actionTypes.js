@@ -70,6 +70,7 @@ export const EDIT_WORLD = "EDIT_WORLD";
 
 export const EDIT_PROJECT = "EDIT_PROJECT";
 export const EDIT_PROJECT_SETTINGS = "EDIT_PROJECT_SETTINGS";
+export const EDIT_PLAYER_START_AT = "EDIT_PLAYER_START_AT";
 
 export const ZOOM_IN = "ZOOM_IN";
 export const ZOOM_OUT = "ZOOM_OUT";

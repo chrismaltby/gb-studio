@@ -27,12 +27,30 @@ class Scene extends Component {
   componentDidMount() {
     window.addEventListener("mousemove", this.onMoveDrag);
     window.addEventListener("mouseup", this.onEndDrag);
+    window.addEventListener("keydown", this.onKeyDown);
   }
 
   componentWillUnmount() {
     window.removeEventListener("mousemove", this.onMoveDrag);
     window.removeEventListener("mouseup", this.onEndDrag);
+    window.removeEventListener("keydown", this.onKeyDown);
   }
+
+  onKeyDown = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+      return;
+    }
+    if (e.key === "p") {
+      const { hoverX, hoverY, hover } = this.state;
+      if (hover) {
+        const { id } = this.props;
+        this.props.editPlayerStartAt(id, hoverX, hoverY);
+      }
+    }
+  };
 
   onMouseMove = e => {
     const {
@@ -409,7 +427,8 @@ const mapDispatchToProps = {
   setStatus: actions.setStatus,
   dragScene: actions.dragScene,
   dragSceneStart: actions.dragSceneStart,
-  dragSceneStop: actions.dragSceneStop
+  dragSceneStop: actions.dragSceneStop,
+  editPlayerStartAt: actions.editPlayerStartAt
 };
 
 export default connect(

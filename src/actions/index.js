@@ -281,6 +281,10 @@ export const editProjectSettings = values => {
   return { type: types.EDIT_PROJECT_SETTINGS, values };
 };
 
+export const editPlayerStartAt = (sceneId, x, y) => {
+  return { type: types.EDIT_PLAYER_START_AT, sceneId, x, y };
+};
+
 export const zoomIn = section => {
   return { type: types.ZOOM_IN, section };
 };
