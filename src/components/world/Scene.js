@@ -9,8 +9,8 @@ import { throttle } from "lodash";
 import { findSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 
-const MAX_ACTORS = 8;
-const MAX_TRIGGERS = 8;
+const MAX_ACTORS = 7;
+const MAX_TRIGGERS = 7;
 
 class Scene extends Component {
   constructor() {

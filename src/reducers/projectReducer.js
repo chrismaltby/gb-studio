@@ -32,8 +32,8 @@ import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
 import clamp from "../lib/helpers/clamp";
 
-const MAX_ACTORS = 8;
-const MAX_TRIGGERS = 8;
+const MAX_ACTORS = 7;
+const MAX_TRIGGERS = 7;
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
