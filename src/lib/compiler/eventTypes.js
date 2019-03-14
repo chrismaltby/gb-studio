@@ -379,7 +379,6 @@ export const EventFields = {
   [EVENT_MUSIC_PLAY]: [
     {
       key: "musicId",
-      label: "Track",
       type: "music",
       defaultValue: "LAST_MUSIC"
     }

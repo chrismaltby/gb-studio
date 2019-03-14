@@ -11,6 +11,7 @@ import ActorSelect from "../forms/ActorSelect";
 import EmoteSelect from "../forms/EmoteSelect";
 import { FormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
+import MusicSelect from "../forms/MusicSelect";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
@@ -127,6 +128,11 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               />
             ) : field.type === "emote" ? (
               <EmoteSelect
+                value={value[field.key]}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "music" ? (
+              <MusicSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />
