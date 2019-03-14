@@ -22,7 +22,7 @@ class Scene extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener("mousemove", this.onMoveDrag);
     window.addEventListener("mouseup", this.onEndDrag);
   }

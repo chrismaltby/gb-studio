@@ -14,19 +14,11 @@ class FilesSidebar extends Component {
   }
 
   onSearch = e => {
-    this.setState({
-      query: e.currentTarget.value
-    });
+    this.props.onSearch(e.currentTarget.value);
   };
 
   render() {
-    const { files, id, setNavigationId, onAdd } = this.props;
-    const { query } = this.state;
-    const filesList = query
-      ? files.filter(file => {
-          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
-        })
-      : files;
+    const { files, selectedFile, setNavigationId, onAdd, query } = this.props;
 
     return (
       <div className="FilesSidebar">
@@ -43,14 +35,12 @@ class FilesSidebar extends Component {
             </Button>
           )}
         </div>
-        {filesList.map((file, index) => (
+        {files.map((file, index) => (
           <div
             key={file.id}
             onClick={() => setNavigationId(file.id)}
             className={cx("FilesSidebar__ListItem", {
-              "FilesSidebar__ListItem--Active": id
-                ? file.id === id
-                : index === 0
+              "FilesSidebar__ListItem--Active": file.id === selectedFile.id
             })}
           >
             {file.name}
@@ -62,9 +52,7 @@ class FilesSidebar extends Component {
 }
 
 function mapStateToProps(state) {
-  return {
-    id: state.navigation.id
-  };
+  return {};
 }
 
 const mapDispatchToProps = {

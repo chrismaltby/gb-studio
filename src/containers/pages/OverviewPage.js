@@ -89,15 +89,24 @@ class OverviewPage extends Component {
             />
           ) : (
             <h1>
-              <span style={{
-                display: "inline-block",
-                maxWidth: "90%",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                paddingBottom: 5
-              }}>{name}</span>{" "}
-              <Button small transparent onClick={this.onStartEdit} style={{position:"relative", top:-6}}>
+              <span
+                style={{
+                  display: "inline-block",
+                  maxWidth: "90%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  paddingBottom: 5
+                }}
+              >
+                {name}
+              </span>{" "}
+              <Button
+                small
+                transparent
+                onClick={this.onStartEdit}
+                style={{ position: "relative", top: -6 }}
+              >
                 <PencilIcon />
               </Button>
             </h1>
@@ -132,7 +141,7 @@ class OverviewPage extends Component {
             }}
             onClick={this.setSection("sprites")}
           >
-            Manage Sprites
+            Sprites
           </Button>
           <Button
             style={{
@@ -144,7 +153,31 @@ class OverviewPage extends Component {
             }}
             onClick={this.setSection("backgrounds")}
           >
-            Manage Backgrounds
+            Backgrounds
+          </Button>
+          <Button
+            style={{
+              float: "left",
+              width: 200,
+              height: 150,
+              marginRight: 20,
+              marginBottom: 20
+            }}
+            onClick={this.setSection("ui")}
+          >
+            UI Elements
+          </Button>
+          <Button
+            style={{
+              float: "left",
+              width: 200,
+              height: 150,
+              marginRight: 20,
+              marginBottom: 20
+            }}
+            onClick={this.setSection("music")}
+          >
+            Music
           </Button>
           <Button
             style={{

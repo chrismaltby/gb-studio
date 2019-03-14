@@ -7,7 +7,7 @@ class SpriteSheetCanvas extends Component {
     super(props);
     this.canvas = React.createRef();
   }
-  componentWillMount() {
+  componentDidMount() {
     this.loadImage(this.props);
   }
 

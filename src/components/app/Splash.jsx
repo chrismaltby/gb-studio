@@ -36,7 +36,7 @@ class Splash extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
   }

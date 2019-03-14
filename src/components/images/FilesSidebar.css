@@ -59,5 +59,4 @@
 .FilesSidebar__ListItem--Active:hover,
 .FilesSidebar__ListItem--Active {
   background-color: var(--sidebar-selected-color);
-  cursor: pointer;
 }

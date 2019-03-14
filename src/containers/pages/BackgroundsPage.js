@@ -4,14 +4,40 @@ import FilesSidebar from "../../components/images/FilesSidebar";
 import ImageViewer from "../../components/images/ImageViewer";
 import * as actions from "../../actions";
 
-class ImagesSection extends Component {
+class ImagesPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: ""
+    };
+  }
+
+  onSearch = query => {
+    this.setState({
+      query
+    });
+  };
+
   render() {
-    const { files, file } = this.props;
+    const { files, id } = this.props;
+    const { query } = this.state;
+
+    const filesList = query
+      ? files.filter(file => {
+          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
+        })
+      : files;
+
+    const file = filesList.find(file => file.id === id) || filesList[0];
+
     return (
       <div>
         <ImageViewer file={file} />
         <FilesSidebar
-          files={files}
+          files={filesList}
+          selectedFile={file}
+          query={query}
+          onSearch={this.onSearch}
           onAdd={() => {
             this.props.openHelp("backgrounds");
           }}
@@ -27,10 +53,9 @@ function mapStateToProps(state) {
     state.project.present && state.project.present.images
       ? state.project.present.images
       : [];
-  const file = files.find(file => file.id === id) || files[0];
   return {
     files,
-    file
+    id
   };
 }
 
@@ -41,4 +66,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ImagesSection);
+)(ImagesPage);

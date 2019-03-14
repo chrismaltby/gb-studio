@@ -5,6 +5,14 @@ import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 
 class MusicViewer extends Component {
+  componentDidMount() {
+    window.addEventListener("keydown", this.onKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.onKeyDown);
+  }
+
   componentWillReceiveProps(nextProps) {
     const { projectRoot, file } = nextProps;
     const oldFile = this.props.file;
@@ -28,6 +36,17 @@ class MusicViewer extends Component {
 
   onPause = () => {
     this.props.pauseMusic();
+  };
+
+  onKeyDown = e => {
+    const { playing } = this.props;
+    if (e.key === "Enter") {
+      if (playing) {
+        this.onPause();
+      } else {
+        this.onPlay();
+      }
+    }
   };
 
   render() {

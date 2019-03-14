@@ -4,13 +4,41 @@ import FilesSidebar from "../../components/images/FilesSidebar";
 import ImageViewer from "../../components/images/ImageViewer";
 import * as actions from "../../actions";
 
-class ImagesSection extends Component {
+class UIPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: ""
+    };
+  }
+
+  onSearch = query => {
+    this.setState({
+      query
+    });
+  };
+
   render() {
-    const { images, image } = this.props;
+    const { files, id } = this.props;
+    const { query } = this.state;
+
+    const filesList = query
+      ? files.filter(file => {
+          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
+        })
+      : files;
+
+    const file = filesList.find(file => file.id === id) || filesList[0];
+
     return (
       <div>
-        <ImageViewer file={image} />
-        <FilesSidebar files={images} />
+        <ImageViewer file={file} />
+        <FilesSidebar
+          files={filesList}
+          selectedFile={file}
+          query={query}
+          onSearch={this.onSearch}
+        />
       </div>
     );
   }
@@ -19,7 +47,7 @@ class ImagesSection extends Component {
 function mapStateToProps(state) {
   const { id } = state.navigation;
   const projectRoot = state.document && state.document.root;
-  const images = projectRoot
+  const files = projectRoot
     ? [
         {
           id: "ui",
@@ -33,10 +61,9 @@ function mapStateToProps(state) {
         }
       ]
     : [];
-  const image = images.find(image => image.id === id) || images[0];
   return {
-    images,
-    image
+    files,
+    id
   };
 }
 
@@ -47,4 +74,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ImagesSection);
+)(UIPage);
