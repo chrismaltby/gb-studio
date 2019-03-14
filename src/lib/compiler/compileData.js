@@ -520,6 +520,11 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
         }
         return memo;
       }, []),
+      triggers: scene.triggers.filter(trigger => {
+        // Filter out unused triggers which cause slow down
+        // When walking over
+        return trigger.script && trigger.script.length > 1;
+      }),
       actorsData: [],
       triggersData: []
     };
