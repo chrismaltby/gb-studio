@@ -11,3 +11,10 @@
   height: 144px;
   outline: 10px solid red;
 }
+
+.EventHelper__PosMarker {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  background: red;
+}
