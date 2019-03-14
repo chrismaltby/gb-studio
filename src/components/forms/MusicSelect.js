@@ -7,7 +7,7 @@ import Button from "../library/Button";
 class MusicSelect extends Component {
   onPlay = () => {
     const { projectRoot, music, value } = this.props;
-    const file = music.find(track => track.id === value);
+    const file = music.find(track => track.id === value) || music[0];
     if (file) {
       const filename = `${projectRoot}/assets/music/${file.filename}`;
       this.props.playMusic(filename);
