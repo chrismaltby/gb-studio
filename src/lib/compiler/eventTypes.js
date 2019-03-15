@@ -163,7 +163,8 @@ export const EventFields = {
       rows: 2,
       maxPerLine: 18,
       placeholder: "Text...",
-      updateFn: trim2lines
+      updateFn: trim2lines,
+      defaultValue: ""
     }
   ],
   [EVENT_CAMERA_MOVE_TO]: [
@@ -290,13 +291,15 @@ export const EventFields = {
   [EVENT_ACTOR_SHOW]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     }
   ],
   [EVENT_ACTOR_HIDE]: [
     {
       key: "actorId",
-      type: "actor"
+      type: "actor",
+      defaultValue: "player"
     }
   ],
   [EVENT_SHOW_SPRITES]: [
