@@ -22,6 +22,10 @@ const ejectBuild = async ({
   await fs.copy(corePath, outputRoot);
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/node_modules`);
+  await fs.ensureDir(`${outputRoot}/obj`);
+  await fs.ensureDir(`${outputRoot}/obj/music`);
+  await fs.ensureDir(`${outputRoot}/obj/data`);
+
   /*await fs.ensureSymlink(
     `${__dirname}/../../../node_modules/gbdkjs`,
     `${outputRoot}/node_modules/gbdkjs`
