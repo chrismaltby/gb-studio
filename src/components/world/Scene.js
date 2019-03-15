@@ -15,6 +15,7 @@ const MAX_TRIGGERS = 7;
 class Scene extends Component {
   constructor() {
     super();
+    this.containerRef = React.createRef();
     this.state = {
       hover: false,
       hoverX: 0,
@@ -35,6 +36,19 @@ class Scene extends Component {
     window.removeEventListener("mouseup", this.onEndDrag);
     window.removeEventListener("keydown", this.onKeyDown);
   }
+
+  /*
+  componentDidUpdate(prevProps) {
+    if (this.props.selected && this.props.selected !== prevProps.selected) {
+      // Scroll scene into view when selected
+      this.containerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center"
+      });
+    }
+  }
+  */
 
   onKeyDown = e => {
     if (e.target.nodeName !== "BODY") {
@@ -276,17 +290,17 @@ class Scene extends Component {
       width,
       height,
       projectRoot,
-      showCollisions
+      showCollisions,
+      selected
     } = this.props;
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
     const { hover, hoverX, hoverY, dragX, dragY } = this.state;
 
-    const sceneSelected = editor.scene === id;
-
     return (
       <div
-        className={cx("Scene", { "Scene--Selected": sceneSelected })}
+        ref={this.containerRef}
+        className={cx("Scene", { "Scene--Selected": selected })}
         style={{
           top: y + dragY,
           left: x + dragX
@@ -405,7 +419,8 @@ function mapStateToProps(state, props) {
       (state.project.present.settings &&
         state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
-    zoomRatio: (state.editor.zoom || 100) / 100
+    zoomRatio: (state.editor.zoom || 100) / 100,
+    selected: state.editor.scene === props.id
   };
 }
 

@@ -13,7 +13,8 @@ class World extends Component {
       hoverY: 0,
       focused: false
     };
-    this.worldRef = React.createRef();
+    this.scrollRef = React.createRef();
+    this.scrollContentsRef = React.createRef();
   }
 
   componentDidMount() {
@@ -24,6 +25,29 @@ class World extends Component {
   componentWillUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("click", this.onClick);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.zoomRatio !== prevProps.zoomRatio) {
+      const view = this.scrollRef.current;
+      const viewContents = this.scrollContentsRef.current;
+      const oldScrollX = view.scrollLeft;
+      const oldScrollY = view.scrollTop;
+      const halfViewWidth = 0.5 * view.clientWidth;
+      const halfViewHeight = 0.5 * view.clientHeight;
+      const oldCenterX = oldScrollX + halfViewWidth;
+      const oldCenterY = oldScrollY + halfViewHeight;
+      const zoomChange = this.props.zoomRatio / prevProps.zoomRatio;
+      const newCenterX = oldCenterX * zoomChange;
+      const newCenterY = oldCenterY * zoomChange;
+      const newScrollX = newCenterX - halfViewWidth;
+      const newScrollY = newCenterY - halfViewHeight;
+      viewContents.style.transform = `scale(${this.props.zoomRatio})`;
+      view.scroll({
+        top: newScrollY,
+        left: newScrollX
+      });
+    }
   }
 
   onKeyDown = e => {
@@ -48,7 +72,7 @@ class World extends Component {
   onClick = e => {
     // If clicked on child of world then it is focused
     this.setState({
-      focused: this.worldRef.current.contains(e.target)
+      focused: this.scrollRef.current.contains(e.target)
     });
   };
 
@@ -76,7 +100,7 @@ class World extends Component {
       settings,
       tool,
       showConnections,
-      zoomRatio,
+      // zoomRatio,
       editor
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
@@ -87,26 +111,23 @@ class World extends Component {
       sceneDragY: dragY
     } = editor;
 
-    const scenesWidth =
+    const zoomRatio = 1;
+
+    const width =
       Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 20;
-    const scenesHeight =
+    const height =
       Math.max.apply(
         null,
         scenes.map(scene => 20 + scene.y + scene.height * 8)
       ) + 20;
 
-    const width = Math.max((window.innerWidth - 300) / zoomRatio, scenesWidth);
-    const height = Math.max(
-      (window.innerHeight - 35) / zoomRatio,
-      scenesHeight
-    );
-
     return (
-      <div ref={this.worldRef} className="World" onMouseMove={this.onMouseMove}>
-        <div
-          className="World__Content"
-          style={{ transform: `scale(${zoomRatio})` }}
-        >
+      <div
+        ref={this.scrollRef}
+        className="World"
+        onMouseMove={this.onMouseMove}
+      >
+        <div ref={this.scrollContentsRef} className="World__Content">
           <div
             className="World__Grid"
             style={{ width, height }}

@@ -10,14 +10,17 @@ const scriptMapTransition = script => {
 export default React.memo(
   ({ scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
     const width =
-      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) |
-      (0 + 100);
+      scenes && scenes.length > 0
+        ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
+          20
+        : 100;
     const height =
-      Math.max.apply(
-        null,
-        scenes.map(scene => 20 + scene.y + scene.height * 8)
-      ) |
-      (0 + 100);
+      scenes && scenes.length > 0
+        ? Math.max.apply(
+            null,
+            scenes.map(scene => 20 + scene.y + scene.height * 8)
+          ) + 20
+        : 100;
 
     const connections = scenes.reduce((memo, scene) => {
       const sceneEntities = [].concat(scene.triggers || [], scene.actors || []);

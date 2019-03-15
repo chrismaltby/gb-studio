@@ -8,9 +8,6 @@
 }
 
 .World__Grid {
-  /* min-width: 100%;
-  min-height: 100%; */
-  /* transition: 0.3s width ease-in-out, 0.3s height ease-in-out; */
   position: absolute;
 }
 
@@ -18,7 +15,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  transition: 0.3s transform ease-in-out;
 }
 
 .World__NewScene {

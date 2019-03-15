@@ -17,7 +17,6 @@
 
 .ImageViewer__Image {
   background-color: #fff;
-  transition: 0.3s transform ease-in-out;
 }
 
 .ImageViewer__Image img {
