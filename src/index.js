@@ -253,27 +253,31 @@ menu.on("open", async () => {
 });
 
 menu.on("save", async () => {
-  mainWindow.webContents.send("save-project");
+  mainWindow && mainWindow.webContents.send("save-project");
 });
 
 menu.on("undo", async () => {
-  mainWindow.webContents.send("undo");
+  mainWindow && mainWindow.webContents.send("undo");
 });
 
 menu.on("redo", async () => {
-  mainWindow.webContents.send("redo");
+  mainWindow && mainWindow.webContents.send("redo");
 });
 
 menu.on("section", async section => {
-  mainWindow.webContents.send("section", section);
+  mainWindow && mainWindow.webContents.send("section", section);
+});
+
+menu.on("zoom", zoomType => {
+  mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
 menu.on("run", () => {
-  mainWindow.webContents.send("run");
+  mainWindow && mainWindow.webContents.send("run");
 });
 
 menu.on("build", buildType => {
-  mainWindow.webContents.send("build", buildType);
+  mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
 const newProject = async () => {

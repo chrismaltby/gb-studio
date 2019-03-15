@@ -52,6 +52,17 @@ ipcRenderer.on("section", (event, section) => {
   store.dispatch(actions.setSection(section));
 });
 
+ipcRenderer.on("zoom", (event, zoomType) => {
+  const state = store.getState();
+  if (zoomType === "in") {
+    store.dispatch(actions.zoomIn(state.navigation.section));
+  } else if (zoomType === "out") {
+    store.dispatch(actions.zoomOut(state.navigation.section));
+  } else {
+    store.dispatch(actions.zoomReset(state.navigation.section));
+  }
+});
+
 ipcRenderer.on("run", event => {
   store.dispatch(actions.buildGame());
 });

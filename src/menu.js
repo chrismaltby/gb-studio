@@ -146,6 +146,28 @@ const template = [
         click: () => {
           notifyListeners("section", "build");
         }
+      },
+      { type: "separator" },
+      {
+        label: "Actual Size",
+        accelerator: "CommandOrControl+0",
+        click: () => {
+          notifyListeners("zoom", "reset");
+        }
+      },
+      {
+        label: "Zoom In",
+        accelerator: "CommandOrControl+=",
+        click: () => {
+          notifyListeners("zoom", "in");
+        }
+      },
+      {
+        label: "Zoom Out",
+        accelerator: "CommandOrControl+-",
+        click: () => {
+          notifyListeners("zoom", "out");
+        }
       }
     ]
   },
@@ -222,6 +244,7 @@ let listeners = {
   undo: [],
   redo: [],
   section: [],
+  zoom: [],
   run: [],
   build: []
 };
