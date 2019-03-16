@@ -28,7 +28,6 @@ export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 
 const prepareString = s =>
   `"${s
-    .toUpperCase()
     .replace(/"/g, '\\"')
     .replace(/\n/g, "\\n")}"`;
 
