@@ -8,15 +8,17 @@
 
 UINT8 ui_bank = 4;
 
-const unsigned char ui_frame_tl_tiles[1] = {0xC0};
-const unsigned char ui_frame_bl_tiles[1] = {0xE1};
-const unsigned char ui_frame_tr_tiles[1] = {0xC2};
-const unsigned char ui_frame_br_tiles[1] = {0xE3};
-const unsigned char ui_frame_t_tiles[1] = {0xC1};
-const unsigned char ui_frame_b_tiles[1] = {0xE2};
-const unsigned char ui_frame_l_tiles[1] = {0xC3};
-const unsigned char ui_frame_r_tiles[1] = {0xC4};
-const unsigned char ui_frame_bg_tiles[1] = {0xC5};
+#define FRAME_CENTER_OFFSET 64
+
+const unsigned char ui_frame_tl_tiles[1] = {0xD0};
+const unsigned char ui_frame_bl_tiles[1] = {0xD6};
+const unsigned char ui_frame_tr_tiles[1] = {0xD2};
+const unsigned char ui_frame_br_tiles[1] = {0xD8};
+const unsigned char ui_frame_t_tiles[1] = {0xD1};
+const unsigned char ui_frame_b_tiles[1] = {0xD7};
+const unsigned char ui_frame_l_tiles[1] = {0xD3};
+const unsigned char ui_frame_r_tiles[1] = {0xD5};
+const unsigned char ui_frame_bg_tiles[1] = {0xD4};
 const unsigned char ui_colors[2][1] = {{0xE5}, {0xC5}};
 
 void UIInit_b()
@@ -28,6 +30,10 @@ void UIInit_b()
   // Load global tiles from data bank
   ptr = ((UWORD)bank_data_ptrs[UI_BANK]) + UI_BANK_OFFSET;
   SetBankedBkgData(UI_BANK, 192, 64, ptr);
+
+  // Load frame tiles from data bank
+  ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET;
+  SetBankedBkgData(UI_BANK, 208, 9, ptr);
 }
 
 void UIUpdate_b()
@@ -85,6 +91,41 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
   {
     set_win_tiles(x, i, 1, 1, ui_frame_l_tiles);
     set_win_tiles(x + width - 1, i, 1, 1, ui_frame_r_tiles);
+  }
+}
+
+void UIDrawDialogueFrame_b()
+{
+  UBYTE i, x, y, tile1, tile2;
+  UWORD ptr;
+
+  // Clear tile data ready for text
+  // Offset is
+  ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET + FRAME_CENTER_OFFSET; // 16 * 4
+  for (i = 0; i < 36; i++)
+  {
+    SetBankedBkgData(UI_BANK, 217 + i, 1, ptr);
+  }
+
+  set_win_tiles(0, 0, 1, 1, ui_frame_tl_tiles);
+  set_win_tiles(0, 3, 1, 1, ui_frame_bl_tiles);
+  set_win_tiles(19, 0, 1, 1, ui_frame_tr_tiles);
+  set_win_tiles(19, 3, 1, 1, ui_frame_br_tiles);
+  set_win_tiles(0, 1, 1, 1, ui_frame_l_tiles);
+  set_win_tiles(0, 2, 1, 1, ui_frame_l_tiles);
+  set_win_tiles(19, 1, 1, 1, ui_frame_r_tiles);
+  set_win_tiles(19, 2, 1, 1, ui_frame_r_tiles);
+
+  tile1 = 0xD9;
+  tile2 = 0xEB;
+  for (x = 1; x != 19; ++x)
+  {
+    set_win_tiles(x, 0, 1, 1, ui_frame_t_tiles);
+    set_win_tiles(x, 3, 1, 1, ui_frame_b_tiles);
+    set_win_tiles(x, 1, 1, 1, &tile1);
+    set_win_tiles(x, 2, 1, 1, &tile2);
+    tile1++;
+    tile2++;
   }
 }
 

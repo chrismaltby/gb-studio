@@ -20,6 +20,7 @@ extern UBYTE win_dest_pos_y;
 void UIInit();
 void UIUpdate();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
+void UIDrawDialogueFrame();
 void UIDrawText(char *str, UBYTE x, UBYTE y);
 void UIDrawTextBkg(char *str, UBYTE x, UBYTE y);
 void UIShowText(UWORD line);

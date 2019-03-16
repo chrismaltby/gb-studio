@@ -3,10 +3,12 @@
 #include "game.h"
 #include "data_ptrs.h"
 #include "Macros.h"
+#include "BankData.h"
 
 void UIInit_b();
 void UIUpdate_b();
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
+void UIDrawDialogueFrame_b();
 void UIDrawTextBufferChar();
 void UISetColor_b(UWORD image_index);
 
@@ -44,6 +46,13 @@ void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
   POP_BANK;
 }
 
+void UIDrawDialogueFrame()
+{
+  PUSH_BANK(ui_bank);
+  UIDrawDialogueFrame_b();
+  POP_BANK;
+}
+
 void UIDrawText(char *str, UBYTE x, UBYTE y)
 {
   UBYTE letter, i, len;
@@ -68,7 +77,7 @@ void UIDrawTextBkg(char *str, UBYTE x, UBYTE y)
 
 void UIShowText(UWORD line)
 {
-  UIDrawFrame(0, 0, 20, 4);
+  UIDrawDialogueFrame();
   PUSH_BANK(16);
   strcpy(text_lines, "");
   strcat(text_lines, strings_16[line]);
@@ -104,6 +113,7 @@ void UIDrawTextBufferChar()
   UBYTE letter;
   UBYTE i, text_remaining, word_len;
   UBYTE text_size = strlen(text_lines);
+  UWORD ptr;
 
   if (text_wait > 0)
   {
@@ -121,8 +131,11 @@ void UIDrawTextBufferChar()
       text_x = 0;
       text_y = 0;
     }
-    // letter = text_lines[text_count].charCodeAt(0) + 0xA5;
-    letter = text_lines[text_count] + 0xA5;
+
+    letter = text_lines[text_count] - 32;
+
+    // Clear tile data ready for text
+    ptr = ((UWORD)bank_data_ptrs[FONT_BANK]) + FONT_BANK_OFFSET;
 
     // Determine if text can fit on line
     text_remaining = 18 - text_x;
@@ -143,7 +156,8 @@ void UIDrawTextBufferChar()
 
     if (text_lines[text_count] != '\b')
     {
-      set_win_tiles(text_x + 1, text_y + 1, 1, 1, &letter);
+      i = text_x + (18 * text_y);
+      SetBankedBkgData(FONT_BANK, 217 + i, 1, ptr + (letter << 4));
     }
 
     if (text_lines[text_count] == '\b')

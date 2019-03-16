@@ -7,6 +7,7 @@ import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
 import { EVENT_TEXT, EVENT_MUSIC_PLAY } from "./eventTypes";
 import compileMusic from "./compileMusic";
+import { fstat, copy } from "fs-extra";
 
 const STRINGS_PER_BANK = 430;
 const NUM_MUSIC_BANKS = 8;
@@ -119,6 +120,8 @@ const compile = async (
 
   // Add UI data
   const uiImagePtr = banked.push(precompiled.uiTiles);
+  const fontImagePtr = banked.push(precompiled.fontTiles);
+  const frameImagePtr = banked.push(precompiled.frameTiles);
 
   const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
@@ -242,6 +245,10 @@ const compile = async (
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
     `#define UI_BANK ${uiImagePtr.bank}\n` +
     `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
+    `#define FONT_BANK ${fontImagePtr.bank}\n` +
+    `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
+    `#define FRAME_BANK ${frameImagePtr.bank}\n` +
+    `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
     `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
     `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
     `\n` +
@@ -345,13 +352,14 @@ const precompile = async (
   );
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
-  const { uiTiles, emotesSprite } = await precompileUIImages(
-    projectRoot,
-    tmpPath,
-    {
-      warnings
-    }
-  );
+  const {
+    uiTiles,
+    emotesSprite,
+    fontTiles,
+    frameTiles
+  } = await precompileUIImages(projectRoot, tmpPath, {
+    warnings
+  });
 
   progress(EVENT_MSG_PRE_SPRITES);
   const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
@@ -388,6 +396,8 @@ const precompile = async (
     usedMusic,
     sceneData,
     uiTiles,
+    fontTiles,
+    frameTiles,
     emotesSprite
   };
 };
@@ -474,13 +484,29 @@ export const precompileUIImages = async (
   tmpPath,
   { warnings }
 ) => {
-  const uiPath = `${projectRoot}/assets/ui/ui.png`;
-  const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
+  const uiPath = await ensureProjectAsset("assets/ui/ui.png", {
+    projectRoot,
+    warnings
+  });
+  const fontPath = await ensureProjectAsset("assets/ui/ascii.png", {
+    projectRoot,
+    warnings
+  });
+  const framePath = await ensureProjectAsset("assets/ui/frame.png", {
+    projectRoot,
+    warnings
+  });
+  const emotesPath = await ensureProjectAsset("assets/ui/emotes.png", {
+    projectRoot,
+    warnings
+  });
 
-  const emotesPath = `${projectRoot}/assets/ui/emotes.png`;
+  const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
+  const frameTiles = await ggbgfx.imageToTilesIntArray(framePath);
+  const fontTiles = await ggbgfx.imageToTilesIntArray(fontPath);
   const emotesSprite = await ggbgfx.imageToSpriteIntArray(emotesPath);
 
-  return { uiTiles, emotesSprite };
+  return { uiTiles, emotesSprite, frameTiles, fontTiles };
 };
 
 export const precompileSprites = async (
@@ -653,6 +679,24 @@ export const compileTriggers = (triggers, { eventPtrs }) => {
 };
 
 //#endregion
+
+const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
+  const projectPath = `${projectRoot}/${relativePath}`;
+  const defaultPath = `${__dirname}/../../data/templates/gbhtml/${relativePath}`;
+  try {
+    await copy(defaultPath, projectPath, {
+      overwrite: false,
+      errorOnExist: true
+    });
+    warnings(
+      `${relativePath} was missing, copying default file to project assets`
+    );
+  } catch (e) {
+    // Don't need to catch this, if it failed then the file already exists
+    // and we can safely continue.
+  }
+  return projectPath;
+};
 
 const DIR_LOOKUP = {
   down: 1,
