@@ -114,12 +114,17 @@ class World extends Component {
     const zoomRatio = 1;
 
     const width =
-      Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) + 20;
+      scenes && scenes.length > 0
+        ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
+          20
+        : 100;
     const height =
-      Math.max.apply(
-        null,
-        scenes.map(scene => 20 + scene.y + scene.height * 8)
-      ) + 20;
+      scenes && scenes.length > 0
+        ? Math.max.apply(
+            null,
+            scenes.map(scene => 20 + scene.y + scene.height * 8)
+          ) + 20
+        : 100;
 
     return (
       <div
@@ -140,6 +145,8 @@ class World extends Component {
           ))}
           {showConnections && (
             <Connections
+              width={width}
+              height={height}
               scenes={scenes}
               settings={settings}
               zoomRatio={zoomRatio}
