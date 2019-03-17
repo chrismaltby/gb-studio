@@ -11,6 +11,7 @@ import EventHelper from "./EventHelper";
 
 const MAX_ACTORS = 7;
 const MAX_TRIGGERS = 7;
+const MAX_FRAMES = 26;
 
 class Scene extends Component {
   constructor() {
@@ -282,6 +283,7 @@ class Scene extends Component {
       id,
       index,
       scene,
+      sprites,
       tool,
       editor,
       image,
@@ -296,6 +298,13 @@ class Scene extends Component {
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
     const { hover, hoverX, hoverY, dragX, dragY } = this.state;
+
+    const framesLength = scene.actors.reduce((memo, actor) => {
+      const spriteSheet = sprites.find(
+        sprite => sprite.id === actor.spriteSheetId
+      );
+      return memo + (spriteSheet ? spriteSheet.numFrames : 0);
+    }, 0);
 
     return (
       <div
@@ -390,8 +399,36 @@ class Scene extends Component {
           onMouseMove={this.onMoveDrag}
           onMouseUp={this.onEndDrag}
         >
-          Actors: {scene.actors.length}/{MAX_ACTORS}
-          {"\u00A0 \u00A0"}Triggers: {scene.triggers.length}/{MAX_TRIGGERS}
+          <span
+            title={`Number of actors in scene. This scene has used ${
+              scene.actors.length
+            } of ${MAX_ACTORS} available.`}
+          >
+            A: {scene.actors.length}/{MAX_ACTORS}
+          </span>
+          {"\u00A0 \u00A0"}
+          <span
+            title={`Number of frames used by actors in scene. ${
+              framesLength <= MAX_FRAMES
+                ? `This scene has used ${framesLength} or ${MAX_FRAMES} available.`
+                : `This scene is over available limits and may have rendering issues. ` +
+                  `Try reducing number of actors in scene or use static and non animated ` +
+                  `sprites where possible.`
+            } Stay within limits to prevent tile data overwriting sprite data.`}
+            className={cx({
+              "Scene__Info--Warning": framesLength > MAX_FRAMES
+            })}
+          >
+            F: {framesLength}/{MAX_FRAMES}
+          </span>
+          {"\u00A0 \u00A0"}
+          <span
+            title={`Number of triggers in scene. This scene has used ${
+              scene.triggers.length
+            } of ${MAX_TRIGGERS} available.`}
+          >
+            T: {scene.triggers.length}/{MAX_TRIGGERS}
+          </span>
         </div>
       </div>
     );
@@ -402,6 +439,7 @@ function mapStateToProps(state, props) {
   const image = state.project.present.images.find(
     image => image.id === props.scene.imageId
   );
+  const sprites = state.project.present.spriteSheets;
   return {
     projectRoot: state.document && state.document.root,
     tool: state.tools.selected,
@@ -420,7 +458,8 @@ function mapStateToProps(state, props) {
         state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
     zoomRatio: (state.editor.zoom || 100) / 100,
-    selected: state.editor.scene === props.id
+    selected: state.editor.scene === props.id,
+    sprites
   };
 }
 

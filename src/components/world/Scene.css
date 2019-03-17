@@ -29,6 +29,10 @@
   transition: opacity 0.3s ease-in-out;
 }
 
+.Scene__Info--Warning {
+  color: #ff0000;
+}
+
 .Scene__Image {
   position: relative;
   background-color: #fff;
@@ -91,4 +95,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
