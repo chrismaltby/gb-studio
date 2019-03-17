@@ -1,6 +1,7 @@
 import trim2lines from "../helpers/trim2lines";
 
 export const EVENT_END = "EVENT_END";
+export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created
 export const EVENT_WAIT = "EVENT_WAIT";
 
 // Scenes
@@ -80,7 +81,8 @@ export const EventNames = {
   [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
   [EVENT_AWAIT_INPUT]: "Await Input",
   [EVENT_MUSIC_PLAY]: "Play Music",
-  [EVENT_MUSIC_STOP]: "Stop Music"
+  [EVENT_MUSIC_STOP]: "Stop Music",
+  [EVENT_STOP]: "Stop Script"
 };
 
 export const EventFields = {
@@ -465,6 +467,11 @@ export const EventFields = {
   [EVENT_MUSIC_STOP]: [
     {
       label: "Stops any music that was previously playing."
+    }
+  ],
+  [EVENT_STOP]: [
+    {
+      label: "Stops current script from running."
     }
   ]
 };

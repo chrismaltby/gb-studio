@@ -29,7 +29,8 @@ import {
   EVENT_OVERLAY_MOVE_TO,
   EVENT_AWAIT_INPUT,
   EVENT_MUSIC_PLAY,
-  EVENT_MUSIC_STOP
+  EVENT_MUSIC_STOP,
+  EVENT_STOP
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec } from "./helpers";
@@ -313,6 +314,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.loop ? 1 : 0); // Loop track
     } else if (command === EVENT_MUSIC_STOP) {
       output.push(CMD_LOOKUP.MUSIC_STOP);
+    } else if (command === EVENT_STOP) {
+      output.push(CMD_LOOKUP.END);
     }
 
     for (var oi = 0; oi < output.length; oi++) {
