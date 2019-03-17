@@ -51,9 +51,15 @@ function mapStateToProps(state) {
   const files = projectRoot
     ? [
         {
-          id: "ui",
-          name: "UI",
-          filename: `ui.png`,
+          id: "ascii",
+          name: "ASCII Extended",
+          filename: `ascii.png`,
+          _v: uiVersion
+        },
+        {
+          id: "frame",
+          name: "Window Frame",
+          filename: `frame.png`,
           _v: uiVersion
         },
         {
