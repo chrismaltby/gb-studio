@@ -9,7 +9,6 @@ import { EVENT_TEXT, EVENT_MUSIC_PLAY } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 
-const STRINGS_PER_BANK = 430;
 const NUM_MUSIC_BANKS = 8;
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
@@ -26,10 +25,7 @@ export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 
-const prepareString = s =>
-  `"${s
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, "\\n")}"`;
+const prepareString = s => `"${s.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`;
 
 const flatten = arr => [].concat(...arr);
 
@@ -40,7 +36,6 @@ const compile = async (
     tmpPath = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
-    stringsPerBank = STRINGS_PER_BANK,
     progress = () => {},
     warnings = () => {}
   } = {}
@@ -56,24 +51,12 @@ const compile = async (
     warnings
   });
 
-  // Strings
-  const stringsLength = precompiled.strings.length;
-  const stringNumBanks = Math.ceil(stringsLength / stringsPerBank);
-  const stringBanks = [];
-  for (let i = 0; i < stringNumBanks; i++) {
-    stringBanks.push(
-      precompiled.strings.slice(
-        i * stringsPerBank,
-        i * stringsPerBank + stringsPerBank
-      )
-    );
-  }
-
   const banked = new BankedData({
     bankSize,
-    bankOffset: bankOffset + stringBanks.length
+    bankOffset
   });
 
+  // Strings
   const stringPtrs = precompiled.strings.map(string => {
     const ascii = [];
     for (let i = 0; i < string.length; i++) {
@@ -172,14 +155,10 @@ const compile = async (
 
   const { startX, startY, startDirection } = projectData.settings;
 
-  const bankNums = [
-    ...Array(bankOffset + stringBanks.length + banked.data.length).keys()
-  ];
+  const bankNums = [...Array(bankOffset + banked.data.length).keys()];
 
   const bankDataPtrs = bankNums.map(bankNum => {
-    return bankNum >= bankOffset + stringBanks.length
-      ? `&bank_${bankNum}_data`
-      : 0;
+    return bankNum >= bankOffset ? `&bank_${bankNum}_data` : 0;
   });
 
   // console.log({ bankNums, bankDataPtrs });
@@ -263,13 +242,6 @@ const compile = async (
     `extern const unsigned char * music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
     `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
-    stringBanks
-      .map((bankStrings, index) => {
-        return `extern const unsigned char strings_${bankOffset +
-          index}[][38];`;
-      })
-      .join(`\n`) +
-    `\n` +
     music
       .map((track, index) => {
         return `extern const unsigned char * ${track.dataName}_Data[];`;
@@ -307,14 +279,8 @@ const compile = async (
 
   output[`banks.h`] = bankHeader;
 
-  stringBanks.forEach((bankStrings, index) => {
-    output[`strings_${bankOffset + index}.c`] = `#pragma bank=${bankOffset +
-      index}\n\nconst unsigned char strings_${bankOffset +
-      index}[][38] = {\n${bankStrings.map(prepareString).join(",\n")}\n};\n`;
-  });
-
   bankData.forEach((bankDataBank, index) => {
-    output[`bank_${bankOffset + stringBanks.length + index}.c`] = bankDataBank;
+    output[`bank_${bankOffset + index}.c`] = bankDataBank;
   });
 
   return {
