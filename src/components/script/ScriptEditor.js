@@ -3,13 +3,15 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
-import { CloseIcon } from "../library/Icons";
+import { CloseIcon, TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
   EventNames,
   EventFields,
-  EVENT_IF_FLAG,
+  EVENT_IF_TRUE,
+  EVENT_IF_FALSE,
+  EVENT_IF_VALUE,
   EVENT_END
 } from "../../lib/compiler/eventTypes";
 import {
@@ -58,7 +60,24 @@ const cardTarget = {
   }
 };
 
+const isConditionalEvent = command => {
+  return [EVENT_IF_TRUE, EVENT_IF_FALSE, EVENT_IF_VALUE].indexOf(command) > -1;
+};
+
 class ActionMini extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      elseOpen: props.action.false && props.action.false.length > 1
+    };
+  }
+
+  toggleElseOpen = () => {
+    this.setState({
+      elseOpen: !this.state.elseOpen
+    });
+  };
+
   render() {
     const {
       id,
@@ -76,6 +95,7 @@ class ActionMini extends Component {
       onMouseLeave
     } = this.props;
     const { command } = action;
+    const { elseOpen } = this.state;
 
     if (command === EVENT_END) {
       return connectDropTarget(
@@ -96,7 +116,7 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": command === EVENT_IF_FLAG
+            "ActionMini--Conditional": isConditionalEvent(command)
           })}
         >
           <div
@@ -145,8 +165,17 @@ class ActionMini extends Component {
                   ))}
                 </div>
               )}
-            {action.false && <div className="ActionMini__Else">Else</div>}
             {action.false && (
+              <div
+                className={cx("ActionMini__Else", {
+                  "ActionMini__Else--Open": elseOpen
+                })}
+                onClick={this.toggleElseOpen}
+              >
+                <TriangleIcon /> Else
+              </div>
+            )}
+            {action.false && elseOpen && (
               <div className="ActionMini__Children">
                 {action.false.map((action, index) => (
                   <ActionMiniDnD
@@ -228,7 +257,7 @@ class ScriptEditor extends Component {
           command,
           args: defaultArgs
         },
-        command === EVENT_IF_FLAG && {
+        isConditionalEvent(command) && {
           true: [
             {
               id: uuid(),
@@ -260,7 +289,6 @@ class ScriptEditor extends Component {
   };
 
   onEdit = (id, patch) => {
-    console.log("ONEDIT", id, patch);
     const root = this.props.value;
     const input = patchEvents(root, id, patch);
 
@@ -314,7 +342,7 @@ function mapStateToProps(state) {
   return {
     flags: state.project.present && state.project.present.flags,
     scenes: state.project.present && state.project.present.scenes,
-    music: state.project.present && state.project.present.music,    
+    music: state.project.present && state.project.present.music
   };
 }
 

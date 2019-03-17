@@ -9,10 +9,14 @@ export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
 
 // Conditional
-export const EVENT_IF_FLAG = "EVENT_IF_FLAG";
-export const EVENT_SET_FLAG = "EVENT_SET_FLAG";
-export const EVENT_CLEAR_FLAG = "EVENT_CLEAR_FLAG";
+export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
+export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
+export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
+export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
+export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
+export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
+export const EVENT_CLEAR_VARIABLES = "EVENT_CLEAR_VARIABLES";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -49,10 +53,14 @@ export const EventNames = {
   [EVENT_SWITCH_SCENE]: "Switch Scene",
   [EVENT_WAIT]: "Wait",
   [EVENT_CAMERA_SHAKE]: "Camera Shake",
-  [EVENT_IF_FLAG]: "If Flag",
-  [EVENT_SET_FLAG]: "Set Flag to 'True'",
-  [EVENT_CLEAR_FLAG]: "Reset Flag to 'False'",
+  [EVENT_IF_TRUE]: "If Variable Is 'True'",
+  [EVENT_IF_FALSE]: "If Variable Is 'False'",
+  [EVENT_IF_VALUE]: "If Variable Has Value",
+  [EVENT_SET_TRUE]: "Set Variable To 'True'",
+  [EVENT_SET_FALSE]: "Reset Variable To 'False'",
+  [EVENT_SET_VALUE]: "Set Variable To Value",
   [EVENT_CHOICE]: "Multiple Choice",
+  [EVENT_CLEAR_VARIABLES]: "Reset All Variables",
   [EVENT_TEXT]: "Display Text",
   [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
   [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
@@ -137,21 +145,49 @@ export const EventFields = {
       defaultValue: 0.5
     }
   ],
-  [EVENT_IF_FLAG]: [
+  [EVENT_IF_TRUE]: [
     {
       key: "flag",
       type: "flag",
       defaultValue: "LAST_FLAG"
     }
   ],
-  [EVENT_SET_FLAG]: [
+  [EVENT_IF_FALSE]: [
     {
       key: "flag",
       type: "flag",
       defaultValue: "LAST_FLAG"
     }
   ],
-  [EVENT_CLEAR_FLAG]: [
+  [EVENT_IF_VALUE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
+    },
+    {
+      key: "operator",
+      type: "operator",
+      width: "50%",
+      defaultValue: "=="
+    },
+    {
+      key: "comparator",
+      type: "number",
+      min: 0,
+      max: 255,
+      width: "50%",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_SET_TRUE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
+    }
+  ],
+  [EVENT_SET_FALSE]: [
     {
       key: "flag",
       type: "flag",

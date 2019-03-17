@@ -40,8 +40,7 @@
 /* Conditional Level 1 */
 
 .ActionMini--Conditional {
-  border-left: 2px solid var(--conditional-level1);
-  border-bottom: 3px solid var(--conditional-level1);
+  border-left: 10px solid var(--conditional-level1);
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
@@ -55,8 +54,7 @@
 /* Conditional Level 2 */
 
 .ActionMini--Conditional .ActionMini--Conditional {
-  border-left: 2px solid var(--conditional-level2);
-  border-bottom: 3px solid var(--conditional-level2);
+  border-left: 10px solid var(--conditional-level2);
 }
 
 .ActionMini--Conditional
@@ -76,8 +74,7 @@
 /* Conditional Level 3 */
 
 .ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
-  border-left: 2px solid var(--conditional-level3);
-  border-bottom: 3px solid var(--conditional-level3);
+  border-left: 10px solid var(--conditional-level3);
 }
 
 .ActionMini--Conditional
@@ -102,8 +99,7 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional {
-  border-left: 2px solid var(--conditional-level4);
-  border-bottom: 3px solid var(--conditional-level4);
+  border-left: 10px solid var(--conditional-level4);
 }
 
 .ActionMini--Conditional
@@ -155,6 +151,17 @@
   padding: 0 10px;
   background: #efefef;
   color: var(--script-command-text-color);
+}
+
+.ActionMini__Else svg {
+  width: 8px;
+  height: 8px;
+  transform: rotate(90deg);
+  fill: var(--script-command-text-color);
+}
+
+.ActionMini__Else--Open svg {
+  transform: rotate(180deg);
 }
 
 .ActionMini--Dragging {
