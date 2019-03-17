@@ -187,12 +187,16 @@
 }
 
 .ActionMini__Children {
-  padding-top: 5px;
+  padding-top: 10px;
+}
+
+.ScriptEventBlock + .ActionMini__Children {
+  padding-top: 0;
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Children {
-  margin-left: 5px;
-  margin-bottom: 5px;
+  margin-left: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid var(--sidebar-border-color);
 }
 
