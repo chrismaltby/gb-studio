@@ -1,9 +1,11 @@
 import {
   EVENT_END,
   EVENT_TEXT,
-  EVENT_IF_FLAG,
-  EVENT_SET_FLAG,
-  EVENT_CLEAR_FLAG,
+  EVENT_IF_TRUE,
+  EVENT_IF_FALSE,
+  EVENT_IF_VALUE,
+  EVENT_SET_TRUE,
+  EVENT_SET_FALSE,
   EVENT_FADE_IN,
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
@@ -53,10 +55,10 @@ const CMD_LOOKUP = {
   END: 0x00, // done
   TEXT: 0x01, // - done
   JUMP: 0x02,
-  IF_FLAG: 0x03,
+  IF_TRUE: 0x03,
   // script_cmd_unless_flag: 0x04,
-  SET_FLAG: 0x05,
-  CLEAR_FLAG: 0x06,
+  SET_TRUE: 0x05,
+  SET_FALSE: 0x06,
   ACTOR_SET_DIRECTION: 0x07,
   ACTOR_SET_ACTIVE: 0x08,
   CAMERA_MOVE_TO: 0x09,
@@ -105,9 +107,39 @@ const getFlagIndex = (flag, flags) => {
   return flagIndex;
 };
 
-const precompileEntityScript = (
-  input = [],
-  {
+const compileConditional = (truePath, falsePath, options) => {
+  const { output } = options;
+
+  const truePtrIndex = output.length;
+  output.push("PTR_PLACEHOLDER1");
+  output.push("PTR_PLACEHOLDER2");
+  precompileEntityScript(falsePath, {
+    ...options,
+    output,
+    branch: true
+  });
+
+  output.push(CMD_LOOKUP.JUMP);
+  const endPtrIndex = output.length;
+  output.push("PTR_PLACEHOLDER1");
+  output.push("PTR_PLACEHOLDER2");
+
+  const truePointer = output.length;
+  output[truePtrIndex] = truePointer >> 8;
+  output[truePtrIndex + 1] = truePointer & 0xff;
+
+  precompileEntityScript(truePath, {
+    ...options,
+    branch: true
+  });
+
+  const endIfPointer = output.length;
+  output[endPtrIndex] = endIfPointer >> 8;
+  output[endPtrIndex + 1] = endIfPointer & 0xff;
+};
+
+const precompileEntityScript = (input = [], options = {}) => {
+  const {
     output = [],
     strings,
     scene,
@@ -116,8 +148,8 @@ const precompileEntityScript = (
     images,
     flags,
     branch = false
-  } = {}
-) => {
+  } = options;
+
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
 
@@ -130,55 +162,32 @@ const precompileEntityScript = (
       output.push(CMD_LOOKUP.TEXT);
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
-    } else if (command === EVENT_IF_FLAG) {
-      output.push(CMD_LOOKUP.IF_FLAG);
+    } else if (command === EVENT_IF_TRUE) {
+      output.push(CMD_LOOKUP.IF_TRUE);
       const flagIndex = getFlagIndex(input[i].args.flag, flags);
       output.push(hi(flagIndex));
       output.push(lo(flagIndex));
-
-      const truePtrIndex = output.length;
-      output.push("PTR_PLACEHOLDER1");
-      output.push("PTR_PLACEHOLDER2");
-      precompileEntityScript(input[i].false, {
-        output,
-        strings,
-        scene,
-        scenes,
-        images,
-        flags,
-        branch: true
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
       });
-
-      output.push(CMD_LOOKUP.JUMP);
-      const endPtrIndex = output.length;
-      output.push("PTR_PLACEHOLDER1");
-      output.push("PTR_PLACEHOLDER2");
-
-      const truePointer = output.length;
-      output[truePtrIndex] = truePointer >> 8;
-      output[truePtrIndex + 1] = truePointer & 0xff;
-
-      precompileEntityScript(input[i].true, {
-        output,
-        strings,
-        scene,
-        scenes,
-        images,
-        flags,
-        branch: true
-      });
-
-      const endIfPointer = output.length;
-      output[endPtrIndex] = endIfPointer >> 8;
-      output[endPtrIndex + 1] = endIfPointer & 0xff;
-    } else if (command === EVENT_SET_FLAG) {
+    } else if (command === EVENT_IF_FALSE) {
+      output.push(CMD_LOOKUP.IF_TRUE);
       const flagIndex = getFlagIndex(input[i].args.flag, flags);
-      output.push(CMD_LOOKUP.SET_FLAG);
       output.push(hi(flagIndex));
       output.push(lo(flagIndex));
-    } else if (command === EVENT_CLEAR_FLAG) {
+      compileConditional(input[i].false, input[i].true, {
+        ...options,
+        output
+      });
+    } else if (command === EVENT_SET_TRUE) {
       const flagIndex = getFlagIndex(input[i].args.flag, flags);
-      output.push(CMD_LOOKUP.CLEAR_FLAG);
+      output.push(CMD_LOOKUP.SET_TRUE);
+      output.push(hi(flagIndex));
+      output.push(lo(flagIndex));
+    } else if (command === EVENT_SET_FALSE) {
+      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      output.push(CMD_LOOKUP.SET_FALSE);
       output.push(hi(flagIndex));
       output.push(lo(flagIndex));
     } else if (command === EVENT_FADE_IN) {
