@@ -6,6 +6,7 @@ import {
   EVENT_IF_VALUE,
   EVENT_SET_TRUE,
   EVENT_SET_FALSE,
+  EVENT_RESET_VARIABLES,
   EVENT_FADE_IN,
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
@@ -84,7 +85,8 @@ const CMD_LOOKUP = {
   OVERLAY_MOVE_TO: 0x1c,
   AWAIT_INPUT: 0x1d,
   MUSIC_PLAY: 0x1e,
-  MUSIC_STOP: 0x1f
+  MUSIC_STOP: 0x1f,
+  RESET_VARIABLES: 0x20
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -314,6 +316,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.loop ? 1 : 0); // Loop track
     } else if (command === EVENT_MUSIC_STOP) {
       output.push(CMD_LOOKUP.MUSIC_STOP);
+    } else if (command === EVENT_RESET_VARIABLES) {
+      output.push(CMD_LOOKUP.RESET_VARIABLES);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
     }

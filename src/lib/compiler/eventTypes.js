@@ -17,7 +17,7 @@ export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
-export const EVENT_CLEAR_VARIABLES = "EVENT_CLEAR_VARIABLES";
+export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -61,7 +61,7 @@ export const EventNames = {
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
   [EVENT_CHOICE]: "Multiple Choice",
-  [EVENT_CLEAR_VARIABLES]: "Reset All Variables",
+  [EVENT_RESET_VARIABLES]: "Reset All Variables",
   [EVENT_TEXT]: "Display Text",
   [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
   [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
@@ -194,6 +194,25 @@ export const EventFields = {
       key: "flag",
       type: "flag",
       defaultValue: "LAST_FLAG"
+    }
+  ],
+  [EVENT_SET_VALUE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_RESET_VARIABLES]: [
+    {
+      label: "Reset ALL variables back to 'False'."
     }
   ],
   [EVENT_CHOICE]: [

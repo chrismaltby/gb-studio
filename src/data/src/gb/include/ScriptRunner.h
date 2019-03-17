@@ -49,5 +49,6 @@ void Script_OverlayMoveTo_b();
 void Script_AwaitInput_b();
 void Script_MusicPlay_b();
 void Script_MusicStop_b();
+void Script_ResetVariables_b();
 
 #endif

@@ -467,3 +467,19 @@ void Script_MusicStop_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: ResetVariables
+ * ----------------------------
+ * Reset all variables back to false
+ */
+void Script_ResetVariables_b()
+{
+  UBYTE i;
+  for (i = 0; i != NUM_FLAGS; ++i)
+  {
+    script_flags[i] = FALSE;
+  }
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

@@ -231,6 +231,7 @@ const compile = async (
     `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
     `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
     `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
+    `#define NUM_FLAGS ${precompiled.flags.length}\n` +
     `\n` +
     Object.keys(dataPtrs)
       .map(name => {
