@@ -77,11 +77,21 @@ void UIDrawTextBkg(char *str, UBYTE x, UBYTE y)
 
 void UIShowText(UWORD line)
 {
+  BANK_PTR bank_ptr;
+  UWORD ptr;
+
   UIDrawDialogueFrame();
-  PUSH_BANK(16);
   strcpy(text_lines, "");
-  strcat(text_lines, strings_16[line]);
+
+  PUSH_BANK(16);
+  ReadBankedBankPtr(16, &bank_ptr, &string_bank_ptrs[line]);
+  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   POP_BANK;
+
+  PUSH_BANK(bank_ptr.bank);
+  strcat(text_lines, ptr);
+  POP_BANK;
+
   UISetPos(0, MENU_CLOSED_Y);
   UIMoveTo(0, MENU_OPEN_Y);
   text_drawn = FALSE;

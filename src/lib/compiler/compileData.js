@@ -58,7 +58,6 @@ const compile = async (
 
   // Strings
   const stringsLength = precompiled.strings.length;
-  // console.log({ stringsLength });
   const stringNumBanks = Math.ceil(stringsLength / stringsPerBank);
   const stringBanks = [];
   for (let i = 0; i < stringNumBanks; i++) {
@@ -75,6 +74,18 @@ const compile = async (
     bankOffset: bankOffset + stringBanks.length
   });
 
+  const stringPtrs = precompiled.strings.map(string => {
+    const ascii = [];
+    for (let i = 0; i < string.length; i++) {
+      const char = string.charCodeAt(i);
+      if (char < 256) {
+        ascii.push(string.charCodeAt(i));
+      }
+    }
+    ascii.push(0);
+    return banked.push(ascii);
+  });
+
   // Add event data
   const eventPtrs = precompiled.sceneData.map(scene => {
     const bankEntityEvents = entity => {
@@ -86,17 +97,7 @@ const compile = async (
         strings: precompiled.strings,
         flags: precompiled.flags
       });
-      if (banked.dataWillFitCurrentBank(output)) {
-        return banked.push(output);
-      } else {
-        const outputNewBank = compileEntityEvents(entity.script, {
-          scene,
-          scenes: precompiled.sceneData,
-          strings: precompiled.strings,
-          flags: precompiled.flags
-        });
-        return banked.push(output);
-      }
+      return banked.push(output);
     };
     return {
       start: bankEntityEvents(scene),
@@ -194,7 +195,8 @@ const compile = async (
     tileset_bank_ptrs: fixEmptyDataPtrs(tileSetPtrs),
     image_bank_ptrs: fixEmptyDataPtrs(imagePtrs),
     sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
-    scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs)
+    scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
+    string_bank_ptrs: fixEmptyDataPtrs(stringPtrs)
   };
 
   const bankHeader = banked.exportCHeader(bankOffset);
@@ -500,9 +502,9 @@ export const precompileUIImages = async (
     warnings
   });
 
-  const uiTiles = await ggbgfx.imageToTilesIntArray(uiPath);
-  const frameTiles = await ggbgfx.imageToTilesIntArray(framePath);
-  const fontTiles = await ggbgfx.imageToTilesIntArray(fontPath);
+  const uiTiles = await ggbgfx.imageToTilesDataIntArray(uiPath);
+  const frameTiles = await ggbgfx.imageToTilesDataIntArray(framePath);
+  const fontTiles = await ggbgfx.imageToTilesDataIntArray(fontPath);
   const emotesSprite = await ggbgfx.imageToSpriteIntArray(emotesPath);
 
   return { uiTiles, emotesSprite, frameTiles, fontTiles };

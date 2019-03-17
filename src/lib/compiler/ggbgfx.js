@@ -95,6 +95,25 @@ function tilePixelsToHexString(pixels, indexFn) {
   return tile;
 }
 
+function pixelsToTilesData(pixels) {
+  const rPixels = pixels.pick(null, null, 0);
+  const shape = rPixels.shape.slice();
+  const xTiles = Math.floor(shape[0] / TILE_SIZE);
+  const yTiles = Math.floor(shape[1] / TILE_SIZE);
+
+  var tiles = [];
+
+  for (var tyi = 0; tyi < yTiles; tyi++) {
+    for (var txi = 0; txi < xTiles; txi++) {
+      var tilePixels = rPixels
+        .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
+        .hi(TILE_SIZE, TILE_SIZE);
+      tiles.push(tilePixelsToHexString(tilePixels).slice(0, -1));
+    }
+  }
+  return tiles.join(",");
+}
+
 function pixelsToTilesLookup(pixels) {
   const rPixels = pixels.pick(null, null, 0);
   const shape = rPixels.shape.slice();
@@ -190,6 +209,18 @@ function tilesLookupToTilesIntArray(lookup) {
   return tilesLookupToTilesString(lookup)
     .split(",")
     .map(a => parseInt(a, 16));
+}
+
+// Dont collapse duplicate tiles just return raw data
+// used for building ui/font tiles where duplicates shouldn't collapse
+function imageToTilesDataString(filename) {
+  return getPixels(filename).then(pixelsToTilesData);
+}
+
+function imageToTilesDataIntArray(filename) {
+  return imageToTilesDataString(filename).then(s => {
+    return s.split(",").map(a => parseInt(a, 16));
+  });
 }
 
 function imageToTilesString(filename) {
@@ -325,5 +356,7 @@ module.exports = {
   tileLookupToImage,
   imageToTilesetLookup,
   tilesLookupToTilesString,
-  tilesLookupToTilesIntArray
+  tilesLookupToTilesIntArray,
+  imageToTilesDataString,
+  imageToTilesDataIntArray
 };
