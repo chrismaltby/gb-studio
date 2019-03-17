@@ -48,7 +48,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_MusicPlay_b, 2},      // 0x1E
     {Script_MusicStop_b, 0},      // 0x1F
     {Script_ResetVariables_b, 0}, // 0x20
-    {Script_NextFrame_b, 0}       // 0x21
+    {Script_NextFrame_b, 0},      // 0x21
+    {Script_IncFlag_b, 2},        // 0x22
+    {Script_DecFlag_b, 2}         // 0x23
 };
 
 UBYTE ScriptLastFnComplete();

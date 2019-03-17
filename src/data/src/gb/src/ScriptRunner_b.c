@@ -105,6 +105,7 @@ void Script_SetFlag_b()
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_flags[ptr] = TRUE;
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }
 
 /*
@@ -120,6 +121,7 @@ void Script_ClearFlag_b()
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_flags[ptr] = FALSE;
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }
 
 /*
@@ -493,4 +495,40 @@ void Script_NextFrame_b()
 {
   script_ptr += 1 + script_cmd_args_len;
   script_continue = FALSE;
+}
+
+/*
+ * Command: IncFlag
+ * ----------------------------
+ * Increase value stored in flag
+ */
+void Script_IncFlag_b()
+{
+  UBYTE value;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  value = script_flags[ptr];
+  if (value != 255)
+  {
+    script_flags[ptr] = value + 1;
+  }
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: DecFlag
+ * ----------------------------
+ * Decrease value stored in flag
+ */
+void Script_DecFlag_b()
+{
+  UBYTE value;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  value = script_flags[ptr];
+  if (value != 0)
+  {
+    script_flags[ptr] = value - 1;
+  }
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }

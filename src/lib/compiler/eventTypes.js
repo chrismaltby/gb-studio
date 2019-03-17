@@ -16,6 +16,8 @@ export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
+export const EVENT_INC_VALUE = "EVENT_INC_VALUE";
+export const EVENT_DEC_VALUE = "EVENT_DEC_VALUE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
 export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 export const EVENT_LOOP = "EVENT_LOOP";
@@ -61,6 +63,8 @@ export const EventNames = {
   [EVENT_SET_TRUE]: "Set Variable To 'True'",
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
+  [EVENT_INC_VALUE]: "Increment Variable By 1",
+  [EVENT_DEC_VALUE]: "Decrement Variable By 1",
   [EVENT_CHOICE]: "Multiple Choice",
   [EVENT_RESET_VARIABLES]: "Reset All Variables",
   [EVENT_LOOP]: "Loop Forever",
@@ -210,6 +214,20 @@ export const EventFields = {
       min: 0,
       max: 255,
       defaultValue: "0"
+    }
+  ],
+  [EVENT_INC_VALUE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
+    }
+  ],
+  [EVENT_DEC_VALUE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
     }
   ],
   [EVENT_RESET_VARIABLES]: [
