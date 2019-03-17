@@ -27,6 +27,7 @@ class AddCommandButton extends Component {
     const boundingRect = this.button.current.getBoundingClientRect();
     this.setState({
       open: true,
+      query: "",
       direction: boundingRect.y > 300 ? DIRECTION_UP : DIRECTION_DOWN
     });
   };
