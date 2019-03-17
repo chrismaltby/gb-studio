@@ -12,7 +12,8 @@ import {
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
-  EVENT_END
+  EVENT_END,
+  EVENT_LOOP
 } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
@@ -116,7 +117,8 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": isConditionalEvent(command)
+            "ActionMini--Conditional":
+              isConditionalEvent(command) || command === EVENT_LOOP
           })}
         >
           <div
@@ -265,6 +267,14 @@ class ScriptEditor extends Component {
             }
           ],
           false: [
+            {
+              id: uuid(),
+              command: EVENT_END
+            }
+          ]
+        },
+        command === EVENT_LOOP && {
+          true: [
             {
               id: uuid(),
               command: EVENT_END

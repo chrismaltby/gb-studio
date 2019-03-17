@@ -18,6 +18,7 @@ export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
 export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
+export const EVENT_LOOP = "EVENT_LOOP";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -213,6 +214,12 @@ export const EventFields = {
   [EVENT_RESET_VARIABLES]: [
     {
       label: "Reset ALL variables back to 'False'."
+    }
+  ],
+  [EVENT_LOOP]: [
+    {
+      label:
+        "Loop forever (remember to exit using 'Stop Script' or 'Switch Scene')."
     }
   ],
   [EVENT_CHOICE]: [

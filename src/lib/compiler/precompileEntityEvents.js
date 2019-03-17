@@ -7,6 +7,7 @@ import {
   EVENT_SET_TRUE,
   EVENT_SET_FALSE,
   EVENT_RESET_VARIABLES,
+  EVENT_LOOP,
   EVENT_FADE_IN,
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
@@ -274,6 +275,7 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(input[i].args.y || 0);
         output.push(dirDec(input[i].args.direction));
         output.push(input[i].args.fadeSpeed || 2);
+        output.push(CMD_LOOKUP.END);
       }
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
@@ -318,6 +320,16 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.MUSIC_STOP);
     } else if (command === EVENT_RESET_VARIABLES) {
       output.push(CMD_LOOKUP.RESET_VARIABLES);
+    } else if (command === EVENT_LOOP) {
+      const startPtrIndex = output.length;
+      precompileEntityScript(input[i].true, {
+        ...options,
+        output,
+        branch: true
+      });
+      output.push(CMD_LOOKUP.JUMP);
+      output.push(startPtrIndex >> 8);
+      output.push(startPtrIndex & 0xff);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
     }
