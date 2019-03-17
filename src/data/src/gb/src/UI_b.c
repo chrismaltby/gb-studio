@@ -27,10 +27,6 @@ void UIInit_b()
 
   UISetPos(160, 144);
 
-  // Load global tiles from data bank
-  ptr = ((UWORD)bank_data_ptrs[UI_BANK]) + UI_BANK_OFFSET;
-  SetBankedBkgData(UI_BANK, 192, 64, ptr);
-
   // Load frame tiles from data bank
   ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET;
   SetBankedBkgData(UI_BANK, 208, 9, ptr);
