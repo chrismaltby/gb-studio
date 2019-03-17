@@ -8,6 +8,7 @@
 #define AP_SYMBOL "#"
 #define MENU_OPEN_Y 112
 #define MENU_CLOSED_Y (MAXWNDPOSY + 1)
+#define TEXT_BUFFER_START 0xDC
 
 extern UINT8 ui_bank;
 extern unsigned char text_lines[80];

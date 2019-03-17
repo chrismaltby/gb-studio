@@ -19,7 +19,9 @@ const unsigned char ui_frame_b_tiles[1] = {0xD7};
 const unsigned char ui_frame_l_tiles[1] = {0xD3};
 const unsigned char ui_frame_r_tiles[1] = {0xD5};
 const unsigned char ui_frame_bg_tiles[1] = {0xD4};
-const unsigned char ui_colors[2][1] = {{0xE5}, {0xC5}};
+const unsigned char ui_colors[2][1] = {{0xDA}, {0xD9}};
+const unsigned char ui_white[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 void UIInit_b()
 {
@@ -30,6 +32,9 @@ void UIInit_b()
   // Load frame tiles from data bank
   ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET;
   SetBankedBkgData(UI_BANK, 208, 9, ptr);
+
+  set_bkg_data(0xD9, 1, ui_white);
+  set_bkg_data(0xDA, 1, ui_black);
 }
 
 void UIUpdate_b()
@@ -100,7 +105,7 @@ void UIDrawDialogueFrame_b()
   ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET + FRAME_CENTER_OFFSET; // 16 * 4
   for (i = 0; i < 36; i++)
   {
-    SetBankedBkgData(UI_BANK, 217 + i, 1, ptr);
+    SetBankedBkgData(UI_BANK, TEXT_BUFFER_START + i, 1, ptr);
   }
 
   set_win_tiles(0, 0, 1, 1, ui_frame_tl_tiles);
@@ -112,8 +117,8 @@ void UIDrawDialogueFrame_b()
   set_win_tiles(19, 1, 1, 1, ui_frame_r_tiles);
   set_win_tiles(19, 2, 1, 1, ui_frame_r_tiles);
 
-  tile1 = 0xD9;
-  tile2 = 0xEB;
+  tile1 = TEXT_BUFFER_START;
+  tile2 = TEXT_BUFFER_START + 18;
   for (x = 1; x != 19; ++x)
   {
     set_win_tiles(x, 0, 1, 1, ui_frame_t_tiles);

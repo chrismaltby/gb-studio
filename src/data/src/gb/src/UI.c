@@ -167,7 +167,7 @@ void UIDrawTextBufferChar()
     if (text_lines[text_count] != '\b')
     {
       i = text_x + (18 * text_y);
-      SetBankedBkgData(FONT_BANK, 217 + i, 1, ptr + (letter * 16));
+      SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + (letter * 16));
     }
 
     if (text_lines[text_count] == '\b')
