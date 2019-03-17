@@ -483,3 +483,14 @@ void Script_ResetVariables_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: NextFrame
+ * ----------------------------
+ * Wait until next frame
+ */
+void Script_NextFrame_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = FALSE;
+}

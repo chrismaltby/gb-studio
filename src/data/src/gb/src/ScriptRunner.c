@@ -15,39 +15,40 @@ UBYTE script_cmd_args_len;
 SCRIPT_CMD_FN last_fn;
 
 SCRIPT_CMD script_cmds[] = {
-    {Script_End_b, 0},           // 0x00
-    {Script_Text_b, 2},          // 0x01
-    {Script_Goto_b, 2},          // 0x02
-    {Script_IfFlag_b, 4},        // 0x03
-    {Script_Noop_b, 0},          // 0x04
-    {Script_SetFlag_b, 2},       // 0x05
-    {Script_ClearFlag_b, 2},     // 0x06
-    {Script_ActorSetDir_b, 1},   // 0x07
-    {Script_ActorActivate_b, 1}, // 0x08
-    {Script_CameraMoveTo_b, 3},  // 0x09
-    {Script_CameraLock_b, 1},    // 0x0A
-    {Script_Wait_b, 1},          // 0x0B
-    {Script_FadeOut_b, 1},       // 0x0C
-    {Script_FadeIn_b, 1},        // 0x0D
-    {Script_LoadScene_b, 6},     // 0x0E
-    {Script_ActorSetPos_b, 2},   // 0x0F
-    {Script_ActorMoveTo_b, 2},   // 0x10
-    {Script_ShowSprites_b, 0},   // 0x11
-    {Script_HideSprites_b, 0},   // 0x12
-    {Script_Noop_b, 1},          // 0x13
-    {Script_ActorShow_b, 1},     // 0x14
-    {Script_ActorHide_b, 1},     // 0x15
-    {Script_ActorSetEmote_b, 2}, // 0x16
-    {Script_CameraShake_b, 1},   // 0x17
-    {Script_Noop_b, 0},          // 0x18
-    {Script_ShowOverlay_b, 3},   // 0x19
-    {Script_HideOverlay_b, 0},   // 0x1A
-    {Script_OverlaySetPos_b, 2}, // 0x1B
-    {Script_OverlayMoveTo_b, 2}, // 0x1C
-    {Script_AwaitInput_b, 1},    // 0x1D
-    {Script_MusicPlay_b, 2},     // 0x1E
-    {Script_MusicStop_b, 0},     // 0x1F
-    {Script_ResetVariables_b, 0} // 0x20
+    {Script_End_b, 0},            // 0x00
+    {Script_Text_b, 2},           // 0x01
+    {Script_Goto_b, 2},           // 0x02
+    {Script_IfFlag_b, 4},         // 0x03
+    {Script_Noop_b, 0},           // 0x04
+    {Script_SetFlag_b, 2},        // 0x05
+    {Script_ClearFlag_b, 2},      // 0x06
+    {Script_ActorSetDir_b, 1},    // 0x07
+    {Script_ActorActivate_b, 1},  // 0x08
+    {Script_CameraMoveTo_b, 3},   // 0x09
+    {Script_CameraLock_b, 1},     // 0x0A
+    {Script_Wait_b, 1},           // 0x0B
+    {Script_FadeOut_b, 1},        // 0x0C
+    {Script_FadeIn_b, 1},         // 0x0D
+    {Script_LoadScene_b, 6},      // 0x0E
+    {Script_ActorSetPos_b, 2},    // 0x0F
+    {Script_ActorMoveTo_b, 2},    // 0x10
+    {Script_ShowSprites_b, 0},    // 0x11
+    {Script_HideSprites_b, 0},    // 0x12
+    {Script_Noop_b, 1},           // 0x13
+    {Script_ActorShow_b, 1},      // 0x14
+    {Script_ActorHide_b, 1},      // 0x15
+    {Script_ActorSetEmote_b, 2},  // 0x16
+    {Script_CameraShake_b, 1},    // 0x17
+    {Script_Noop_b, 0},           // 0x18
+    {Script_ShowOverlay_b, 3},    // 0x19
+    {Script_HideOverlay_b, 0},    // 0x1A
+    {Script_OverlaySetPos_b, 2},  // 0x1B
+    {Script_OverlayMoveTo_b, 2},  // 0x1C
+    {Script_AwaitInput_b, 1},     // 0x1D
+    {Script_MusicPlay_b, 2},      // 0x1E
+    {Script_MusicStop_b, 0},      // 0x1F
+    {Script_ResetVariables_b, 0}, // 0x20
+    {Script_NextFrame_b, 0}       // 0x21
 };
 
 UBYTE ScriptLastFnComplete();

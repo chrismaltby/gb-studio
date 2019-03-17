@@ -87,7 +87,8 @@ const CMD_LOOKUP = {
   AWAIT_INPUT: 0x1d,
   MUSIC_PLAY: 0x1e,
   MUSIC_STOP: 0x1f,
-  RESET_VARIABLES: 0x20
+  RESET_VARIABLES: 0x20,
+  NEXT_FRAME: 0x21
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -327,6 +328,7 @@ const precompileEntityScript = (input = [], options = {}) => {
         output,
         branch: true
       });
+      output.push(CMD_LOOKUP.NEXT_FRAME);
       output.push(CMD_LOOKUP.JUMP);
       output.push(startPtrIndex >> 8);
       output.push(startPtrIndex & 0xff);

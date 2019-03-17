@@ -63,6 +63,7 @@ export const EventNames = {
   [EVENT_SET_VALUE]: "Set Variable To Value",
   [EVENT_CHOICE]: "Multiple Choice",
   [EVENT_RESET_VARIABLES]: "Reset All Variables",
+  [EVENT_LOOP]: "Loop Forever",
   [EVENT_TEXT]: "Display Text",
   [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
   [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
@@ -218,8 +219,7 @@ export const EventFields = {
   ],
   [EVENT_LOOP]: [
     {
-      label:
-        "Loop forever (remember to exit using 'Stop Script' or 'Switch Scene')."
+      label: "Exit using 'Stop Script' or 'Switch Scene'."
     }
   ],
   [EVENT_CHOICE]: [
