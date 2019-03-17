@@ -12,6 +12,7 @@ export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
 export const EVENT_IF_FLAG = "EVENT_IF_FLAG";
 export const EVENT_SET_FLAG = "EVENT_SET_FLAG";
 export const EVENT_CLEAR_FLAG = "EVENT_CLEAR_FLAG";
+export const EVENT_CHOICE = "EVENT_CHOICE";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -49,8 +50,9 @@ export const EventNames = {
   [EVENT_WAIT]: "Wait",
   [EVENT_CAMERA_SHAKE]: "Camera Shake",
   [EVENT_IF_FLAG]: "If Flag",
-  [EVENT_SET_FLAG]: "Set Flag",
-  [EVENT_CLEAR_FLAG]: "Clear Flag",
+  [EVENT_SET_FLAG]: "Set Flag to 'True'",
+  [EVENT_CLEAR_FLAG]: "Reset Flag to 'False'",
+  [EVENT_CHOICE]: "Multiple Choice",
   [EVENT_TEXT]: "Display Text",
   [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
   [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
@@ -154,6 +156,27 @@ export const EventFields = {
       key: "flag",
       type: "flag",
       defaultValue: "LAST_FLAG"
+    }
+  ],
+  [EVENT_CHOICE]: [
+    {
+      key: "flag",
+      type: "flag",
+      defaultValue: "LAST_FLAG"
+    },
+    {
+      key: "trueText",
+      label: "Set to 'True' if",
+      type: "text",
+      defaultValue: "",
+      placeholder: "Choice A"
+    },
+    {
+      key: "falseText",
+      label: "Set to 'False' if",
+      type: "text",
+      defaultValue: "",
+      placeholder: "Choice B"
     }
   ],
   [EVENT_TEXT]: [
