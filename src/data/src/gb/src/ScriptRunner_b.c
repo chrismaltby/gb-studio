@@ -532,3 +532,16 @@ void Script_DecFlag_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: SetFlagValue
+ * ----------------------------
+ * Set flag to specific value
+ */
+void Script_SetFlagValue_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_flags[ptr] = script_cmd_args[2];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

@@ -53,5 +53,6 @@ void Script_ResetVariables_b();
 void Script_NextFrame_b();
 void Script_IncFlag_b();
 void Script_DecFlag_b();
+void Script_SetFlagValue_b();
 
 #endif

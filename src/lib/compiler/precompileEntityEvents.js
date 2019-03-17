@@ -34,7 +34,8 @@ import {
   EVENT_MUSIC_STOP,
   EVENT_STOP,
   EVENT_INC_VALUE,
-  EVENT_DEC_VALUE
+  EVENT_DEC_VALUE,
+  EVENT_SET_VALUE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec } from "./helpers";
@@ -92,7 +93,8 @@ const CMD_LOOKUP = {
   RESET_VARIABLES: 0x20,
   NEXT_FRAME: 0x21,
   INC_VALUE: 0x22,
-  DEC_VALUE: 0x23
+  DEC_VALUE: 0x23,
+  SET_VALUE: 0x24
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -209,6 +211,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.DEC_VALUE);
       output.push(hi(flagIndex));
       output.push(lo(flagIndex));
+    } else if (command === EVENT_SET_VALUE) {
+      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      output.push(CMD_LOOKUP.SET_VALUE);
+      output.push(hi(flagIndex));
+      output.push(lo(flagIndex));
+      output.push(input[i].args.value || 0);
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       let speed = input[i].args.speed || 1;
