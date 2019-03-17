@@ -466,7 +466,7 @@ void SceneUpdateActors_b()
 
   for (i = 0; i != len; ++i)
   {
-    LOG("MOVING actor %u\n", i);
+    // LOG("MOVING actor %u\n", i);
     // If running script only update script actor - Unless needs redraw
     // if (script_ptr && i != script_actor && !actors[i].redraw)
     // {
@@ -537,7 +537,7 @@ void SceneUpdateActorMovement_b(UBYTE i)
     return;
   }
 
-  LOG("UPDATE ACTOR MOVEMENT %u\n", i);
+  // LOG("UPDATE ACTOR MOVEMENT %u\n", i);
   actors[i].moving = TRUE;
 }
 
@@ -718,7 +718,7 @@ void SceneRenderActors_b()
 
   for (i = 0; i != len; ++i)
   {
-    LOG("CHECK FOR REDRAW Actor %u\n", i);
+    // LOG("CHECK FOR REDRAW Actor %u\n", i);
 
     redraw = actors[i].redraw;
 
@@ -755,7 +755,7 @@ void SceneRenderActors_b()
         }
       }
 
-      LOG("REDRAW Actor %u\n", i);
+      // LOG("REDRAW Actor %u\n", i);
 
       // Handle facing left
       if (flip)
@@ -779,7 +779,7 @@ void SceneRenderActors_b()
     for (i = 0; i != scene_num_actors; ++i)
     {
       sprite_index = MUL_2(i);
-      LOG("a Reposition Actor %u\n", i);
+      // LOG("a Reposition Actor %u\n", i);
       screen_x = actors[i].pos.x + scx;
       screen_y = actors[i].pos.y + scy;
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
@@ -822,7 +822,7 @@ void SceneRenderActors_b()
     for (i = 0; i != len; ++i)
     {
       sprite_index = MUL_2(i);
-      LOG("b Reposition Actor %u\n", i);
+      // LOG("b Reposition Actor %u\n", i);
       screen_x = actors[i].pos.x + scx;
       screen_y = actors[i].pos.y + scy;
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
