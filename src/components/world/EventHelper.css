@@ -2,7 +2,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: rgba(255, 0, 0, 0.2);
 }
 
 .EventHelper__CameraPos {
@@ -17,4 +16,22 @@
   width: 16px;
   height: 8px;
   background: red;
+}
+
+.EventHelper__OverlayPos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 144px;
+  outline: 80px solid black;
+  overflow: hidden;
+}
+
+.EventHelper__OverlayPos__Overlay {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  background: blue;
 }
