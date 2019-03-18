@@ -1,23 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
-import { Provider } from "react-redux";
-import * as actions from "../actions";
-import configureStore from "../store/configureStore";
 const { systemPreferences } = require("electron").remote;
-
-const store = configureStore();
-
-console.log(store);
 
 const render = () => {
   const Splash = require("../components/app/Splash").default;
   ReactDOM.render(
-    <Provider store={store}>
-      <AppContainer>
-        <Splash />
-      </AppContainer>
-    </Provider>,
+    <AppContainer>
+      <Splash />
+    </AppContainer>,
     document.getElementById("App")
   );
 };

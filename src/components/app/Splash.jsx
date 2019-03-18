@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import cx from "classnames";
 import { DotsIcon } from "../library/Icons";
 import stripInvalidFilenameCharacters from "../../lib/helpers/stripInvalidFilenameCharacters";
@@ -119,7 +118,6 @@ class Splash extends Component {
   };
 
   render() {
-    const { section } = this.props;
     const {
       blur,
       tab,
@@ -209,10 +207,4 @@ class Splash extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    section: state.navigation.section
-  };
-}
-
-export default connect(mapStateToProps)(Splash);
+export default Splash;
