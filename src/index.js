@@ -84,14 +84,8 @@ const createWindow = async projectPath => {
 
   mainWindowState.manage(mainWindow);
 
-  // mainWindow.loadURL(
-  //   `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
-  //     projectPath
-  //   )}`
-  // );
-
   mainWindow.loadURL(
-    `file://${__dirname}/../dist/project.html?path=${encodeURIComponent(
+    `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
       projectPath
     )}`
   );

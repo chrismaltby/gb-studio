@@ -6,3 +6,6 @@ src/data/src/gb/include/banks.h
 src/data/src/gb/src/data
 src/data/output
 coverage
+.cache
+.parcelCache
+/dist
