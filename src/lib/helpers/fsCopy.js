@@ -10,16 +10,16 @@ const copyDir = async (src, dest, options = {}) => {
     console.log(fileStat);
     if (fileStat.isDirectory()) {
       console.log("IS DIR");
-      await copyDir(`${src}/${fileName}`, `${dest}/${fileName}`);
+      await copyDir(`${src}/${fileName}`, `${dest}/${fileName}`, options);
     } else {
-      await copyFile(`${src}/${fileName}`, `${dest}/${fileName}`);
+      await copyFile(`${src}/${fileName}`, `${dest}/${fileName}`, options);
     }
   }
   console.log("DONE COPY");
 };
 
 const copyFile = async (src, dest, options = {}) => {
-  const { overwrite = true, errorOnExist = false } = options;
+  const { overwrite = true, errorOnExist = false, mode } = options;
   if (!overwrite) {
     try {
       const destStat = await fs.lstat(dest);
@@ -36,7 +36,7 @@ const copyFile = async (src, dest, options = {}) => {
   console.log("IS FILE");
   const fileData = await fs.readFile(src);
   console.log("READ FILE");
-  await fs.writeFile(dest, fileData);
+  await fs.writeFile(dest, fileData, { mode });
 };
 
 const copy = async (src, dest, options) => {

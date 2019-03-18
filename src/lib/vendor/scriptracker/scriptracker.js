@@ -868,15 +868,6 @@ ScripTracker.prototype.dispatchEvent = function(
   }
 };
 
-ScripTracker.prototype.debug = function() {
-  this.audioScriptNode.disconnect(this.audioContext.destination);
-  this.audioSource.disconnect(this.audioScriptNode);
-  this.isPlaying = false;
-  this.dispatchEvent(ScripTracker.Events.stop, this);
-  var registers = this.channelRegisters;
-  debugger;
-};
-
 ScripTracker.Events = {
   playerReady: "SONG_LOADED",
   play: "PLAY",

@@ -17,11 +17,11 @@ const ensureBuildTools = async () => {
   // Symlink build tools so that path doesn't contain any spaces
   // GBDKDIR doesn't work if path has spaces :-(
   try {
-    await fs.unlink(tmpBuildToolsPath);
-    await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
+    await fs.fstat(tmpBuildToolsPath);
   } catch (e) {
     await copy(buildToolsPath, tmpBuildToolsPath, {
-      overwrite: false
+      overwrite: false,
+      mode: 0o755
     });
   }
 

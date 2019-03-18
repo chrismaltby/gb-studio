@@ -21,7 +21,9 @@ const isDevMode = true;
 addBypassChecker(filePath => {
   return (
     // filePath.indexOf(app.getAppPath()) === -1 ||
+    filePath.indexOf("/dist/") > -1 ||
     filePath.indexOf("build/web") > -1 ||
+    /.mod/.test(filePath) ||
     /.jpg/.test(filePath) ||
     /.json/.test(filePath) ||
     /.png/.test(filePath) ||
