@@ -38,7 +38,7 @@ import {
   EVENT_SET_VALUE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
-import { dirDec, inputDec } from "./helpers";
+import { dirDec, inputDec, operatorDec } from "./helpers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const FLAG_NOT_FOUND = "FLAG_NOT_FOUND";
@@ -94,7 +94,8 @@ const CMD_LOOKUP = {
   NEXT_FRAME: 0x21,
   INC_VALUE: 0x22,
   DEC_VALUE: 0x23,
-  SET_VALUE: 0x24
+  SET_VALUE: 0x24,
+  IF_VALUE: 0x25
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -188,6 +189,17 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(flagIndex));
       output.push(lo(flagIndex));
       compileConditional(input[i].false, input[i].true, {
+        ...options,
+        output
+      });
+    } else if (command === EVENT_IF_VALUE) {
+      output.push(CMD_LOOKUP.IF_VALUE);
+      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      output.push(hi(flagIndex));
+      output.push(lo(flagIndex));
+      output.push(operatorDec(input[i].args.operator));
+      output.push(input[i].args.comparator || 0);
+      compileConditional(input[i].true, input[i].false, {
         ...options,
         output
       });

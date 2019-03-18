@@ -51,7 +51,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_NextFrame_b, 0},      // 0x21
     {Script_IncFlag_b, 2},        // 0x22
     {Script_DecFlag_b, 2},        // 0x23
-    {Script_SetFlagValue_b, 3}    // 0x24
+    {Script_SetFlagValue_b, 3},   // 0x24
+    {Script_IfValue_b, 6}         // 0x25
 };
 
 UBYTE ScriptLastFnComplete();

@@ -25,6 +25,16 @@ typedef enum
     SPRITE_ACTOR_ANIMATED
 } SPRITE_TYPE;
 
+typedef enum
+{
+    OPERATOR_EQ = 1,
+    OPERATOR_NE,
+    OPERATOR_LT,
+    OPERATOR_GT,
+    OPERATOR_LTE,
+    OPERATOR_GTE
+} OPERATOR_TYPE;
+
 typedef struct _POS
 {
     UBYTE x;

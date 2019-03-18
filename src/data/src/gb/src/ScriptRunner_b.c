@@ -75,18 +75,65 @@ void Script_Goto_b()
  */
 void Script_IfFlag_b()
 {
-  LOG("IF FLAG ((%u * 256) +  %u) = %u\n", script_cmd_args[0], script_cmd_args[1], (script_cmd_args[0] * 256) + script_cmd_args[1]);
   if (script_flags[(script_cmd_args[0] * 256) + script_cmd_args[1]])
-  {
-    // Trup path, jump to position specified by ptr
-    LOG("TRUE PATH\n");
-    // @ todo THIS SHOULD BE RELATIVE TO START OF SCRIPT
+  { // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
   else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
+  script_continue = TRUE;
+}
+
+/*
+ * Command: IfValue
+ * ----------------------------
+ * Jump to new script pointer position if specified flag is true when compared using operator to comparator.
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Operator
+ *   arg3: Comparator
+ *   arg4: High 8 bits for new pointer
+ *   arg5: Low 8 bits for new pointer
+ */
+void Script_IfValue_b()
+{
+  UBYTE value, match;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  value = script_flags[ptr];
+
+  switch (script_cmd_args[2])
   {
-    // False path, skip to next command
-    LOG("FALSE PATH\n");
+  case OPERATOR_EQ:
+    match = value == script_cmd_args[3];
+    break;
+  case OPERATOR_LT:
+    match = value < script_cmd_args[3];
+    break;
+  case OPERATOR_LTE:
+    match = value <= script_cmd_args[3];
+    break;
+  case OPERATOR_GT:
+    match = value > script_cmd_args[3];
+    break;
+  case OPERATOR_GTE:
+    match = value >= script_cmd_args[3];
+    break;
+  case OPERATOR_NE:
+    match = value != script_cmd_args[3];
+    break;
+  default:
+    match = FALSE;
+  }
+
+  if (match)
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
+  }
+  else
+  { // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;

@@ -13,6 +13,15 @@ const MOVEMENT_LOOKUP = {
   randomWalk: 5
 };
 
+const OPERATOR_LOOKUP = {
+  "==": 1,
+  "!=": 2,
+  "<": 3,
+  ">": 4,
+  "<=": 5,
+  ">=": 6
+};
+
 const KEY_BITS = {
   left: 0x02,
   right: 0x01,
@@ -50,9 +59,12 @@ const dirDec = dir => DIR_LOOKUP[dir] || 1;
 
 const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
+const operatorDec = operator => OPERATOR_LOOKUP[operator] || 1;
+
 module.exports = {
   nameToCName,
   dirDec,
   inputDec,
-  moveDec
+  moveDec,
+  operatorDec
 };

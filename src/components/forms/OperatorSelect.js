@@ -11,8 +11,8 @@ const operators = {
 
 const OperatorSelect = props => (
   <select {...props}>
-    {Object.keys(operators).map((key, index) => (
-      <option key={index} value={index}>
+    {Object.keys(operators).map(key => (
+      <option key={key} value={key}>
         {operators[key]}
       </option>
     ))}
