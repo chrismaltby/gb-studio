@@ -161,8 +161,8 @@ class ActionMini extends Component {
                       onAdd={onAdd}
                       onRemove={onRemove}
                       onEdit={onEdit}
-                      onMouseEnter={() => onMouseEnter(action.id)}
-                      onMouseLeave={() => onMouseLeave(action.id)}
+                      onMouseEnter={onMouseEnter}
+                      onMouseLeave={onMouseLeave}
                     />
                   ))}
                 </div>
@@ -189,8 +189,8 @@ class ActionMini extends Component {
                     onAdd={onAdd}
                     onRemove={onRemove}
                     onEdit={onEdit}
-                    onMouseEnter={() => onMouseEnter(action.id)}
-                    onMouseLeave={() => onMouseLeave(action.id)}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
                   />
                 ))}
               </div>
