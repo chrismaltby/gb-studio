@@ -3,6 +3,7 @@ import is from "electron-is";
 import path from "path";
 import { remote } from "electron";
 import fs from "fs-extra";
+import { buildToolsRoot } from "../../consts";
 
 const makeBuild = ({
   buildType = "rom",
@@ -13,10 +14,11 @@ const makeBuild = ({
   return new Promise(async (resolve, reject) => {
     let env = Object.create(process.env);
 
-    const buildToolsPath = path.resolve(
-      __dirname,
-      `../../../buildTools/${process.platform}-${process.arch}`
-    );
+    const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
+      process.arch
+    }`;
+
+    console.log("BUILD TOOLS", buildToolsPath);
 
     const tmpPath = remote.app.getPath("temp");
     const tmpBuildToolsPath = `${tmpPath}/_gbs`;

@@ -8,6 +8,8 @@ import watchProject from "../lib/project/watchProject";
 import "../lib/electron/handleFullScreen";
 import { ActionCreators } from "redux-undo";
 import AppContainerDnD from "../components/app/AppContainerDnD";
+import consts from "../consts";
+
 const { systemPreferences } = require("electron").remote;
 
 const store = configureStore();

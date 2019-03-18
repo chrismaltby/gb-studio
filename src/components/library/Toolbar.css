@@ -66,7 +66,7 @@
   -webkit-app-region: no-drag;
 }
 
-.Toolbar__Button path {
+.Toolbar__Button svg {
   fill: var(--toolbar-button-text-color);
 }
 
@@ -98,6 +98,12 @@
 
 .Toolbar__DropdownButton + .Toolbar__Button {
   margin-left: 5px;
+}
+
+.Toolbar__DropdownButton > .Toolbar__Button > svg {
+  transform: rotate(180deg);
+  width: 10px;
+  height: 10px;
 }
 
 .Toolbar__Button:active {

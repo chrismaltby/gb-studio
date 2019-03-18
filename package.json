@@ -9,6 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
+    "parcel": "parcel build src/windows/project.html --target=electron --public-url ./",
     "lint": "eslint --cache --color --ext .jsx,.js src",
     "test": "jest",
     "coverage": "jest --coverage --runInBand || true"
@@ -90,8 +91,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
+    "babel-core": "^6.26.3",
     "babel-jest": "^24.0.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",

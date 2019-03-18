@@ -1,10 +1,9 @@
 import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
+import { engineRoot } from "../../consts";
 
 const rmdir = promisify(rimraf);
-
-const coreRoot = __dirname + "/../../data/src";
 
 const ejectBuild = async ({
   projectType = "gb",
@@ -14,7 +13,8 @@ const ejectBuild = async ({
   warnings = () => {}
 } = {}) => {
   // console.log("EJECT to " + outputRoot);
-  const corePath = `${coreRoot}/${projectType}`;
+  progress("HERE CORE ROOT= " + engineRoot);
+  const corePath = `${engineRoot}/${projectType}`;
   progress("Unlink " + outputRoot);
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
@@ -26,10 +26,6 @@ const ejectBuild = async ({
   await fs.ensureDir(`${outputRoot}/obj/music`);
   await fs.ensureDir(`${outputRoot}/obj/data`);
 
-  /*await fs.ensureSymlink(
-    `${__dirname}/../../../node_modules/gbdkjs`,
-    `${outputRoot}/node_modules/gbdkjs`
-  );*/
   for (let filename in compiledData.files) {
     if (filename.endsWith(".h")) {
       progress("Copy header " + filename);

@@ -1,18 +1,19 @@
-module.exports = {
-  presets: [
+{
+  "presets": [
     [
       "env",
       {
-        targets: {
-          node: "current"
+        "targets": {
+          "node": "current"
         }
       }
-    ]
+    ],
+    "react"
   ],
-  plugins: [
+  "plugins": [
     "transform-class-properties",
     "transform-async-to-generator",
     "transform-object-rest-spread",
     "transform-es2015-classes"
   ]
-};
+}

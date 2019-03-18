@@ -8,6 +8,7 @@ import compileEntityEvents from "./precompileEntityEvents";
 import { EVENT_TEXT, EVENT_MUSIC_PLAY } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
+import { projectTemplatesRoot } from "../../consts";
 
 const NUM_MUSIC_BANKS = 8;
 
@@ -650,7 +651,7 @@ export const compileTriggers = (triggers, { eventPtrs }) => {
 
 const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
   const projectPath = `${projectRoot}/${relativePath}`;
-  const defaultPath = `${__dirname}/../../data/templates/gbhtml/${relativePath}`;
+  const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
   try {
     await copy(defaultPath, projectPath, {
       overwrite: false,

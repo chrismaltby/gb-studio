@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Menu, MenuOverlay } from "./Menu";
+import { TriangleIcon } from "./Icons";
 
 export const Toolbar = props => <div className="Toolbar" {...props} />;
 export const ToolbarButton = props => (
@@ -36,7 +37,7 @@ export class ToolbarDropdownButton extends Component {
       <div className="Toolbar__DropdownButton" {...props}>
         <ToolbarButton onClick={this.toggleOpen}>
           <div>{title}</div>
-          <small>▼</small>
+          <TriangleIcon />
         </ToolbarButton>
         {open && <MenuOverlay onClick={this.toggleOpen} />}
         {open && <Menu onClick={this.toggleOpen}>{children}</Menu>}

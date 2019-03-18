@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Button from "../library/Button";
+import * as actions from "../../actions";
 
 class ImageViewer extends Component {
   onOpen = () => {

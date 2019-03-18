@@ -14,7 +14,8 @@ let splashWindow = null;
 let playWindow = null;
 let helpWindow = null;
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
+// const isDevMode = process.execPath.match(/[\\/]electron/);
+const isDevMode = true;
 
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
@@ -83,8 +84,14 @@ const createWindow = async projectPath => {
 
   mainWindowState.manage(mainWindow);
 
+  // mainWindow.loadURL(
+  //   `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
+  //     projectPath
+  //   )}`
+  // );
+
   mainWindow.loadURL(
-    `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
+    `file://${__dirname}/../dist/project.html?path=${encodeURIComponent(
       projectPath
     )}`
   );
