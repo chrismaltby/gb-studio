@@ -2,7 +2,7 @@ import React from "react";
 
 const operators = {
   "==": "Equal To",
-  "!=": "Not Equal To,
+  "!=": "Not Equal To",
   "<": "Less Than",
   ">": "Greater Than",
   "<=": "Less Than Or Equal To",

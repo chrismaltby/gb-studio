@@ -13,6 +13,7 @@ import { FormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
+import OperatorSelect from "../forms/OperatorSelect";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
@@ -120,6 +121,11 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               />
             ) : field.type === "emote" ? (
               <EmoteSelect
+                value={value[field.key]}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "operator" ? (
+              <OperatorSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />
