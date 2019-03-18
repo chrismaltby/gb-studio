@@ -4,6 +4,7 @@ import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
 import compileMusic from "./compileMusic";
 import { emulatorRoot } from "../../consts";
+import copy from "../helpers/fsCopy";
 
 const buildProject = async (
   data,
@@ -42,8 +43,8 @@ const buildProject = async (
     warnings
   });
   if (buildType === "web") {
-    await fs.copy(emulatorRoot, `${outputRoot}/build/web`);
-    await fs.copy(
+    await copy(emulatorRoot, `${outputRoot}/build/web`);
+    await copy(
       `${outputRoot}/build/rom/game.gb`,
       `${outputRoot}/build/web/rom/game.gb`
     );

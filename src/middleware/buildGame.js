@@ -12,6 +12,7 @@ import {
   CMD_STD_ERR
 } from "../actions/actionTypes";
 import path from "path";
+import copy from "../lib/helpers/fsCopy";
 
 const buildUUID = uuid();
 
@@ -48,13 +49,13 @@ export default store => next => async action => {
       });
 
       if (exportBuild) {
-        await fs.copy(
+        await copy(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
         open(`${projectRoot}/build/${buildType}`);
       } else if (ejectBuild) {
-        await fs.copy(`${outputRoot}`, `${projectRoot}/eject`);
+        await copy(`${outputRoot}`, `${projectRoot}/eject`);
         open(`${projectRoot}/eject`);
       }
 

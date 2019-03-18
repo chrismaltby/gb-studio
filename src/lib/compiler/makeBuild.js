@@ -4,6 +4,7 @@ import path from "path";
 import { remote } from "electron";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
+import copy from "../helpers/fsCopy";
 
 const makeBuild = ({
   buildType = "rom",
@@ -29,7 +30,7 @@ const makeBuild = ({
       await fs.unlink(tmpBuildToolsPath);
       await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
     } catch (e) {
-      await fs.copy(buildToolsPath, tmpBuildToolsPath, {
+      await copy(buildToolsPath, tmpBuildToolsPath, {
         overwrite: false
       });
     }

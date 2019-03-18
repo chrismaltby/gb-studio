@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import { engineRoot } from "../../consts";
+import copy from "../helpers/fsCopy";
 
 const rmdir = promisify(rimraf);
 
@@ -19,7 +20,10 @@ const ejectBuild = async ({
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
   progress("Copy core");
-  await fs.copy(corePath, outputRoot);
+
+  console.log("COPYDIR", { corePath, outputRoot });
+  await copy(corePath, outputRoot);
+
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/node_modules`);
   await fs.ensureDir(`${outputRoot}/obj`);
