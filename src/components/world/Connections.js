@@ -41,6 +41,33 @@ export default React.memo(
           }
         });
       });
+      const sceneTransitions = scriptMapTransition(scene.script || []);
+      console.log({ sceneTransitions });
+      sceneTransitions.forEach(transition => {
+        const destScene = scenes.find(m => m.id === transition.args.sceneId);
+        if (destScene) {
+          const startX = scene.x + (dragScene === scene.id ? dragX : 0);
+          const startY = scene.y + (dragScene === scene.id ? dragY : 0);
+          const destX = destScene.x + (dragScene === destScene.id ? dragX : 0);
+          const destY = destScene.y + (dragScene === destScene.id ? dragY : 0);
+
+          const x1 = startX + (2 / 2) * 8;
+          const x2 = destX + (transition.args.x || 0) * 8 + 5;
+          const y1 = 20 + startY + (1 / 2) * 8;
+          const y2 = 20 + destY + (transition.args.y || 0) * 8 + 5;
+          const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
+          const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
+          memo.push({
+            x1,
+            y1,
+            x2,
+            y2,
+            qx,
+            qy,
+            direction: transition.args.direction
+          });
+        }
+      });
       return memo;
     }, []);
 
