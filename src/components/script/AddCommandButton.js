@@ -21,6 +21,7 @@ class AddCommandButton extends Component {
       selectedIndex: 0,
       open: false
     };
+    this.timeout = null;
   }
 
   onOpen = () => {
@@ -33,7 +34,7 @@ class AddCommandButton extends Component {
   };
 
   onClose = () => {
-    setTimeout(() => {
+    this.timeout = setTimeout(() => {
       this.setState({
         open: false
       });
@@ -41,6 +42,7 @@ class AddCommandButton extends Component {
   };
 
   onAdd = action => () => {
+    clearTimeout(this.timeout);
     this.props.onAdd(action);
     this.setState({
       open: false
