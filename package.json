@@ -9,7 +9,7 @@
     "package": "electron-forge package",
     "make": "npm run parcel; electron-forge make",
     "publish": "electron-forge publish",
-    "parcel": "parcel build src/index.js --target=electron --no-content-hash --out-dir dist --cache-dir .parcelCache --no-source-maps; parcel build src/windows/*.html --target=electron --no-content-hash --public-url ./ --out-dir dist/windows --cache-dir .parcelCache --no-source-maps; parcel build src/windows/help/*.html --target=electron --no-content-hash --public-url ./ --out-dir dist/windows/help --cache-dir .parcelCache --no-source-maps; cp -r src/styles dist/",
+    "parcel": "parcel build src/index.js --target=electron --no-content-hash --out-dir dist --cache-dir .parcelCache --no-source-maps; parcel build src/windows/*.html --target=electron --no-content-hash --public-url ./ --out-dir dist/windows --cache-dir .parcelCache --no-source-maps; parcel build src/windows/help/*.html --target=electron --no-content-hash --public-url ./ --out-dir dist/windows/help --cache-dir .parcelCache --no-source-maps; mkdir -p dist/styles; cp -r src/styles/theme* dist/styles/",
     "parcel:watch": "parcel watch src/windows/*.html --target=electron --public-url ./ --out-dir dist/windows --cache-dir .parcelCache",
     "lint": "eslint --cache --color --ext .jsx,.js src",
     "test": "jest",
