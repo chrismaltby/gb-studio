@@ -1,21 +1,22 @@
 import path from "path";
 
-const engineRoot = __dirname.endsWith("/dist")
-  ? path.normalize(__dirname + "/../src/data/src")
-  : path.normalize(__dirname + "/data/src");
+const isDist =
+  __dirname.endsWith("/dist") ||
+  __dirname.endsWith("/dist/windows") ||
+  __dirname.endsWith("/dist/windows/help");
 
-const buildToolsRoot = __dirname.endsWith("/dist")
-  ? path.normalize(__dirname + "/../buildTools")
-  : path.normalize(__dirname + "/../buildTools");
+const rootDir = isDist
+  ? __dirname
+      .replace(/\/dist\/windows\/help$/, "")
+      .replace(/\/dist\/windows$/, "")
+      .replace(/\/dist$/, "")
+  : path.normalize(__dirname + "/../");
 
-const emulatorRoot = __dirname.endsWith("/dist")
-  ? path.normalize(__dirname + "/../src/data/js-emulator")
-  : path.normalize(__dirname + "/data/js-emulator");
+const engineRoot = path.normalize(rootDir + "/data/src");
+const buildToolsRoot = path.normalize(rootDir + "/buildTools");
+const emulatorRoot = path.normalize(rootDir + "/data/js-emulator");
+const projectTemplatesRoot = path.normalize(rootDir + "/data/templates");
 
-const projectTemplatesRoot = __dirname.endsWith("/dist")
-  ? path.normalize(__dirname + "/../src/data/templates")
-  : path.normalize(__dirname + "/data/templates");
-
-console.log({ __dirname, engineRoot, buildToolsRoot, emulatorRoot });
+console.log({ __dirname, rootDir, engineRoot, buildToolsRoot, emulatorRoot });
 
 export { engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };
