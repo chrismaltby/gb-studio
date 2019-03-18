@@ -16,7 +16,7 @@ export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
 export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
-export const EVENT_MSG_PRE_FLAGS = "Preparing flags...";
+export const EVENT_MSG_PRE_VARIABLES = "Preparing variables...";
 export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
@@ -77,9 +77,9 @@ const compile = async (
         scene,
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
-        images: precompiled.usedImages,
+        backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
-        flags: precompiled.flags
+        variables: precompiled.variables
       });
       return banked.push(output);
     };
@@ -95,10 +95,10 @@ const compile = async (
     return banked.push([].concat(Math.ceil(tileset.length / 16), tileset));
   });
 
-  // Add image map data
-  const imagePtrs = precompiled.usedImages.map(image => {
+  // Add background map data
+  const backgroundPtrs = precompiled.usedBackgrounds.map(background => {
     return banked.push(
-      [].concat(image.tilesetIndex, image.width, image.height, image.data)
+      [].concat(background.tilesetIndex, background.width, background.height, background.data)
     );
   });
 
@@ -116,14 +116,14 @@ const compile = async (
 
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const sceneImage = precompiled.usedImages[scene.imageIndex];
+    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
     const collisionsLength = Math.ceil(
       (sceneImage.width * sceneImage.height) / 8
     );
     return banked.push(
       [].concat(
-        hi(scene.imageIndex),
-        lo(scene.imageIndex),
+        hi(scene.backgroundIndex),
+        lo(scene.backgroundIndex),
         scene.sprites.length,
         scene.sprites,
         scene.actors.length,
@@ -173,7 +173,7 @@ const compile = async (
 
   const dataPtrs = {
     tileset_bank_ptrs: fixEmptyDataPtrs(tileSetPtrs),
-    image_bank_ptrs: fixEmptyDataPtrs(imagePtrs),
+    background_bank_ptrs: fixEmptyDataPtrs(backgroundPtrs),
     sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
     scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
     string_bank_ptrs: fixEmptyDataPtrs(stringPtrs)
@@ -232,7 +232,7 @@ const compile = async (
     `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
     `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
     `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
-    `#define NUM_FLAGS ${precompiled.flags.length}\n` +
+    `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
     `\n` +
     Object.keys(dataPtrs)
       .map(name => {
@@ -243,7 +243,7 @@ const compile = async (
     `extern const unsigned char (*bank_data_ptrs[])[];\n` +
     `extern const unsigned char * music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
-    `extern unsigned char script_flags[${precompiled.flags.length + 1}];\n` +
+    `extern unsigned char script_variables[${precompiled.variables.length + 1}];\n` +
     music
       .map((track, index) => {
         return `extern const unsigned char * ${track.dataName}_Data[];`;
@@ -277,7 +277,7 @@ const compile = async (
     `const unsigned char music_banks[] = {\n` +
     (music.map(track => track.bank).join(", ") || 0) +
     `\n};\n\n` +
-    `unsigned char script_flags[${precompiled.flags.length + 1}] = { 0 };\n`;
+    `unsigned char script_variables[${precompiled.variables.length + 1}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 
@@ -299,21 +299,21 @@ const precompile = async (
   tmpPath,
   { progress, warnings }
 ) => {
-  progress(EVENT_MSG_PRE_FLAGS);
-  const flags = precompileFlags(projectData.scenes);
+  progress(EVENT_MSG_PRE_VARIABLES);
+  const variables = precompileVariables(projectData.scenes);
 
   progress(EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
-    usedImages,
-    imageLookup,
-    imageData,
+    usedBackgrounds,
+    backgroundLookup,
+    backgroundData,
     usedTilesets,
     usedTilesetLookup
-  } = await precompileImages(
-    projectData.images,
+  } = await precompileBackgrounds(
+    projectData.backgrounds,
     projectData.scenes,
     projectRoot,
     tmpPath,
@@ -347,20 +347,20 @@ const precompile = async (
   progress(EVENT_MSG_PRE_SCENES);
   const sceneData = precompileScenes(
     projectData.scenes,
-    usedImages,
+    usedBackgrounds,
     usedSprites
   );
 
   progress(EVENT_MSG_PRE_COMPLETE);
 
   return {
-    flags,
+    variables,
     strings,
-    usedImages,
-    imageLookup,
+    usedBackgrounds,
+    backgroundLookup,
     usedTilesets,
     usedTilesetLookup,
-    imageData,
+    backgroundData,
     usedSprites,
     usedMusic,
     sceneData,
@@ -371,17 +371,17 @@ const precompile = async (
   };
 };
 
-export const precompileFlags = scenes => {
-  let flags = [];
+export const precompileVariables = scenes => {
+  let variables = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.hasOwnProperty("flag")) {
-      const flag = cmd.args.flag || "0";
-      if (flags.indexOf(flag) === -1) {
-        flags.push(flag);
+    if (cmd.args && cmd.args.hasOwnProperty("variable")) {
+      const variable = cmd.args.variable || "0";
+      if (variables.indexOf(variable) === -1) {
+        variables.push(variable);
       }
     }
   });
-  return flags;
+  return variables;
 };
 
 export const precompileStrings = scenes => {
@@ -404,8 +404,8 @@ export const precompileStrings = scenes => {
   return strings;
 };
 
-export const precompileImages = async (
-  images,
+export const precompileBackgrounds = async (
+  backgrounds,
   scenes,
   projectRoot,
   tmpPath,
@@ -413,38 +413,38 @@ export const precompileImages = async (
 ) => {
   let eventImageIds = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.hasOwnProperty("imageId")) {
-      eventImageIds.push(cmd.args.imageId);
+    if (cmd.args && cmd.args.hasOwnProperty("backgroundId")) {
+      eventImageIds.push(cmd.args.backgroundId);
     }
   });
-  const usedImages = images.filter(
-    image =>
-      eventImageIds.indexOf(image.id) > -1 ||
-      scenes.find(scene => scene.imageId === image.id)
+  const usedBackgrounds = backgrounds.filter(
+    background =>
+      eventImageIds.indexOf(background.id) > -1 ||
+      scenes.find(scene => scene.backgroundId === background.id)
   );
-  const imageLookup = indexArray(usedImages, "id");
-  const imageData = await compileImages(usedImages, projectRoot, tmpPath, {
+  const backgroundLookup = indexArray(usedBackgrounds, "id");
+  const backgroundData = await compileImages(usedBackgrounds, projectRoot, tmpPath, {
     warnings
   });
   let usedTilesets = [];
   let usedTilesetLookup = {};
-  Object.keys(imageData.tilesets).forEach(tileKey => {
+  Object.keys(backgroundData.tilesets).forEach(tileKey => {
     usedTilesetLookup[tileKey] = usedTilesets.length;
-    usedTilesets.push(imageData.tilesets[tileKey]);
+    usedTilesets.push(backgroundData.tilesets[tileKey]);
   });
-  const usedImagesWithData = usedImages.map(image => {
+  const usedBackgroundsWithData = usedBackgrounds.map(background => {
     return {
-      ...image,
-      tilesetIndex: usedTilesetLookup[imageData.tilemapsTileset[image.id]],
-      data: imageData.tilemaps[image.id]
+      ...background,
+      tilesetIndex: usedTilesetLookup[backgroundData.tilemapsTileset[background.id]],
+      data: backgroundData.tilemaps[background.id]
     };
   });
   return {
-    usedImages: usedImagesWithData,
+    usedBackgrounds: usedBackgroundsWithData,
     usedTilesets,
     // usedTilesetLookup,
-    imageLookup
-    // imageData
+    backgroundLookup
+    // backgroundData
   };
 };
 
@@ -541,17 +541,17 @@ export const precompileMusic = (scenes, music) => {
   return { usedMusic };
 };
 
-export const precompileScenes = (scenes, usedImages, usedSprites) => {
+export const precompileScenes = (scenes, usedBackgrounds, usedSprites) => {
   const scenesData = scenes.map((scene, sceneIndex) => {
-    const imageIndex = usedImages.findIndex(
-      image => image.id === scene.imageId
+    const backgroundIndex = usedBackgrounds.findIndex(
+      background => background.id === scene.backgroundId
     );
-    if (imageIndex < 0) {
+    if (backgroundIndex < 0) {
       throw "Scene #" +
         sceneIndex +
         " '" +
         scene.name +
-        "' has missing or no image assigned.";
+        "' has missing or no background assigned.";
     }
     const actors = scene.actors.filter(actor => {
       return usedSprites.find(s => s.id === actor.spriteSheetId);
@@ -559,7 +559,7 @@ export const precompileScenes = (scenes, usedImages, usedSprites) => {
 
     return {
       ...scene,
-      imageIndex,
+      backgroundIndex,
       actors,
       sprites: actors.reduce((memo, actor) => {
         const spriteIndex = usedSprites.findIndex(

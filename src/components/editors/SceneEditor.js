@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon, TriggerIcon } from "../../components/library/Icons";
-import ImageSelect from "../forms/ImageSelect";
+import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -58,10 +58,10 @@ class SceneEditor extends Component {
 
           <FormField>
             <label htmlFor="sceneImage">Background</label>
-            <ImageSelect
+            <BackgroundSelect
               id="sceneImage"
-              value={scene.imageId}
-              onChange={this.onEdit("imageId")}
+              value={scene.backgroundId}
+              onChange={this.onEdit("backgroundId")}
             />
           </FormField>
         </div>

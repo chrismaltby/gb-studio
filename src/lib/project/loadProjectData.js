@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import loadAllImageData from "./loadImageData";
+import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 
@@ -9,36 +9,39 @@ const loadProject = async projectPath => {
 
   const projectRoot = path.dirname(projectPath);
 
-  const backgrounds = await loadAllImageData(projectRoot);
+  const backgrounds = await loadAllBackgroundData(projectRoot);
   const sprites = await loadAllSpriteData(projectRoot);
   const music = await loadAllMusicData(projectRoot);
 
-  const oldImageFilenamesToIds = (json.images || []).reduce((memo, oldData) => {
-    memo[oldData.filename] = oldData.id;
-    return memo;
-  }, {});
+  const oldBackgroundFilenamesToIds = (json.backgrounds || []).reduce(
+    (memo, oldData) => {
+      memo[oldData.filename] = oldData.id;
+      return memo;
+    },
+    {}
+  );
 
-  // Merge stored images data with file system data
-  const fixedImageIds = backgrounds
-    .map(image => {
-      const oldId = oldImageFilenamesToIds[image.filename];
+  // Merge stored backgrounds data with file system data
+  const fixedBackgroundIds = backgrounds
+    .map(background => {
+      const oldId = oldBackgroundFilenamesToIds[background.filename];
       if (oldId) {
-        image.id = oldId;
+        background.id = oldId;
       }
-      return image;
+      return background;
     })
     .filter(
-      image =>
-        // Only allow images with valid dimensions
-        image.width <= 32 &&
-        image.height <= 32 &&
-        image.width >= 20 &&
-        image.height >= 18 &&
-        image.width === Math.floor(image.width) &&
-        image.height === Math.floor(image.height)
+      background =>
+        // Only allow backgrounds with valid dimensions
+        background.width <= 32 &&
+        background.height <= 32 &&
+        background.width >= 20 &&
+        background.height >= 18 &&
+        background.width === Math.floor(background.width) &&
+        background.height === Math.floor(background.height)
     );
 
-  json.images = fixedImageIds;
+  json.backgrounds = fixedBackgroundIds;
 
   // Merge stored sprite data with file system data
   const oldSpriteFilenamesToIds = (json.spriteSheets || []).reduce(

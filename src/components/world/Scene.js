@@ -436,8 +436,8 @@ class Scene extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const image = state.project.present.images.find(
-    image => image.id === props.scene.imageId
+  const image = state.project.present.backgrounds.find(
+    background => background.id === props.scene.backgroundId
   );
   const sprites = state.project.present.spriteSheets;
   return {

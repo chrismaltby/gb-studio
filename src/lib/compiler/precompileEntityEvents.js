@@ -41,7 +41,7 @@ import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec, operatorDec } from "./helpers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
-const FLAG_NOT_FOUND = "FLAG_NOT_FOUND";
+const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 
 class CompileEventsError extends Error {
   constructor(message, data) {
@@ -62,7 +62,7 @@ const CMD_LOOKUP = {
   TEXT: 0x01, // - done
   JUMP: 0x02,
   IF_TRUE: 0x03,
-  // script_cmd_unless_flag: 0x04,
+  // script_cmd_unless_variable: 0x04,
   SET_TRUE: 0x05,
   SET_FALSE: 0x06,
   ACTOR_SET_DIRECTION: 0x07,
@@ -110,13 +110,13 @@ const getMusicIndex = (musicId, music) => {
   return musicIndex;
 };
 
-const getFlagIndex = (flag, flags) => {
-  const flagIndex = flags.indexOf(flag);
-  if (flagIndex === -1) {
-    throw new CompileEventsError(FLAG_NOT_FOUND, { flag });
+const getVariableIndex = (variable, variables) => {
+  const variableIndex = variables.indexOf(variable);
+  if (variableIndex === -1) {
+    throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
     return 0;
   }
-  return flagIndex;
+  return variableIndex;
 };
 
 const compileConditional = (truePath, falsePath, options) => {
@@ -157,8 +157,8 @@ const precompileEntityScript = (input = [], options = {}) => {
     scene,
     scenes,
     music,
-    images,
-    flags,
+    backgrounds,
+    variables,
     branch = false
   } = options;
 
@@ -176,27 +176,27 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(stringIndex));
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
       compileConditional(input[i].true, input[i].false, {
         ...options,
         output
       });
     } else if (command === EVENT_IF_FALSE) {
       output.push(CMD_LOOKUP.IF_TRUE);
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
       compileConditional(input[i].false, input[i].true, {
         ...options,
         output
       });
     } else if (command === EVENT_IF_VALUE) {
       output.push(CMD_LOOKUP.IF_VALUE);
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
       output.push(operatorDec(input[i].args.operator));
       output.push(input[i].args.comparator || 0);
       compileConditional(input[i].true, input[i].false, {
@@ -204,53 +204,53 @@ const precompileEntityScript = (input = [], options = {}) => {
         output
       });
     } else if (command === EVENT_SET_TRUE) {
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_TRUE);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_SET_FALSE) {
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_FALSE);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_INC_VALUE) {
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.INC_VALUE);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_DEC_VALUE) {
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.DEC_VALUE);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_SET_VALUE) {
-      const flagIndex = getFlagIndex(input[i].args.flag, flags);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_VALUE);
-      output.push(hi(flagIndex));
-      output.push(lo(flagIndex));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       let speed = input[i].args.speed || 1;
-      let speedFlag = (1 << speed) - 1;
+      let speedVariable = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_FADE_OUT) {
       output.push(CMD_LOOKUP.FADE_OUT);
       let speed = input[i].args.speed || 1;
-      let speedFlag = (1 << speed) - 1;
+      let speedVariable = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_CAMERA_MOVE_TO) {
       output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
       output.push(input[i].args.x);
       output.push(input[i].args.y);
       let speed = input[i].args.speed || 0;
-      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedFlag);
+      let speedVariable = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      output.push(speedVariable);
     } else if (command === EVENT_CAMERA_LOCK) {
       output.push(CMD_LOOKUP.CAMERA_LOCK);
       let speed = input[i].args.speed || 0;
-      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedFlag);
+      let speedVariable = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      output.push(speedVariable);
     } else if (command === EVENT_START_BATTLE) {
       let encounterIndex = parseInt(input[i].args.encounter, 10);
       if (encounterIndex > -1) {
@@ -389,4 +389,4 @@ const precompileEntityScript = (input = [], options = {}) => {
 
 export default precompileEntityScript;
 
-export { CMD_LOOKUP, STRING_NOT_FOUND, FLAG_NOT_FOUND };
+export { CMD_LOOKUP, STRING_NOT_FOUND, VARIABLE_NOT_FOUND };

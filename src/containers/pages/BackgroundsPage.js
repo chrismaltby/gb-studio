@@ -50,8 +50,8 @@ class ImagesPage extends Component {
 function mapStateToProps(state) {
   const { id } = state.navigation;
   const files =
-    state.project.present && state.project.present.images
-      ? state.project.present.images
+    state.project.present && state.project.present.backgrounds
+      ? state.project.present.backgrounds
       : [];
   return {
     files,

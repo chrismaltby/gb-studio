@@ -24,7 +24,7 @@ import {
   RESIZE_TRIGGER,
   EDIT_TRIGGER,
   MOVE_TRIGGER,
-  RENAME_FLAG,
+  RENAME_VARIABLE,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
   EDIT_PLAYER_START_AT
@@ -82,20 +82,20 @@ export default function project(state = initialState.project, action) {
     case BACKGROUND_REMOVE:
       return {
         ...state,
-        images: state.images.filter(image => {
-          return image.filename !== action.filename;
+        backgrounds: state.backgrounds.filter(background => {
+          return background.filename !== action.filename;
         })
       };
     case BACKGROUND_LOAD_SUCCESS:
-      const currentBackground = state.images.find(
-        image => image.filename === action.data.filename
+      const currentBackground = state.backgrounds.find(
+        background => background.filename === action.data.filename
       );
       return {
         ...state,
-        images: []
+        backgrounds: []
           .concat(
-            state.images.filter(image => {
-              return image.filename !== action.data.filename;
+            state.backgrounds.filter(background => {
+              return background.filename !== action.data.filename;
             }),
             {
               ...action.data,
@@ -135,10 +135,10 @@ export default function project(state = initialState.project, action) {
         scenes: [].concat(state.scenes, {
           id: action.id,
           name: "Scene " + (state.scenes.length + 1),
-          imageId:
-            state.images &&
-            state.images[0] &&
-            state.images.slice().sort(sortRecent)[0].id,
+          backgroundId:
+            state.backgrounds &&
+            state.backgrounds[0] &&
+            state.backgrounds.slice().sort(sortRecent)[0].id,
           x: Math.max(MIN_SCENE_X, action.x),
           y: Math.max(MIN_SCENE_Y, action.y),
           width: 32,
@@ -170,25 +170,25 @@ export default function project(state = initialState.project, action) {
             return scene;
           }
 
-          // If switched image use collisions from another
-          // scene using the image already if available
+          // If switched background use collisions from another
+          // scene using the background already if available
           // otherwise make empty collisions array of
           // the correct size
           let newCollisions;
           let newActors;
           let newTriggers;
-          if (action.values.imageId) {
+          if (action.values.backgroundId) {
             const otherScene = state.scenes.find(otherScene => {
-              return otherScene.imageId === action.values.imageId;
+              return otherScene.backgroundId === action.values.backgroundId;
             });
-            const image = state.images.find(
-              image => image.id === action.values.imageId
+            const background = state.backgrounds.find(
+              background => background.id === action.values.backgroundId
             );
 
             if (otherScene) {
               newCollisions = otherScene.collisions;
             } else {
-              let collisionsSize = Math.ceil((image.width * image.height) / 8);
+              let collisionsSize = Math.ceil((background.width * background.height) / 8);
               newCollisions = [];
               for (let i = 0; i < collisionsSize; i++) {
                 newCollisions[i] = 0;
@@ -198,20 +198,20 @@ export default function project(state = initialState.project, action) {
             newActors = scene.actors.map(actor => {
               return {
                 ...actor,
-                x: Math.min(actor.x, image.width - 2),
-                y: Math.min(actor.y, image.height - 1)
+                x: Math.min(actor.x, background.width - 2),
+                y: Math.min(actor.y, background.height - 1)
               };
             });
 
             newTriggers = scene.triggers.map(trigger => {
-              const x = Math.min(trigger.x, image.width - 1);
-              const y = Math.min(trigger.y, image.height - 1);
+              const x = Math.min(trigger.x, background.width - 1);
+              const y = Math.min(trigger.y, background.height - 1);
               return {
                 ...trigger,
                 x,
                 y,
-                width: Math.min(trigger.width, image.width - x),
-                height: Math.min(trigger.height, image.height - y)
+                width: Math.min(trigger.width, background.width - x),
+                height: Math.min(trigger.height, background.height - y)
               };
             });
           }
@@ -220,7 +220,7 @@ export default function project(state = initialState.project, action) {
             {},
             scene,
             action.values,
-            action.values.imageId && {
+            action.values.backgroundId && {
               collisions: newCollisions || [],
               actors: newActors,
               triggers: newTriggers
@@ -268,8 +268,8 @@ export default function project(state = initialState.project, action) {
           if (scene.id !== action.sceneId) {
             return scene;
           }
-          const sceneImage = state.images.find(
-            image => image.id === scene.imageId
+          const sceneImage = state.backgrounds.find(
+            background => background.id === scene.backgroundId
           );
           return {
             ...scene,
@@ -377,14 +377,14 @@ export default function project(state = initialState.project, action) {
             return scene;
           }
 
-          const image =
-            scene.imageId &&
-            state.images.find(image => image.id === scene.imageId);
-          if (!image) {
+          const background =
+            scene.backgroundId &&
+            state.backgrounds.find(background => background.id === scene.backgroundId);
+          if (!background) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil((image.width * image.height) / 8);
+          let collisionsSize = Math.ceil((background.width * background.height) / 8);
           const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
@@ -393,7 +393,7 @@ export default function project(state = initialState.project, action) {
             }
           }
 
-          const collisionIndex = image.width * action.y + action.x;
+          const collisionIndex = background.width * action.y + action.x;
           const collisionByteIndex = collisionIndex >> 3;
           const collisionByteOffset = collisionIndex & 7;
           const collisionByteMask = 1 << collisionByteOffset;
@@ -414,14 +414,14 @@ export default function project(state = initialState.project, action) {
             return scene;
           }
 
-          const image =
-            scene.imageId &&
-            state.images.find(image => image.id === scene.imageId);
-          if (!image) {
+          const background =
+            scene.backgroundId &&
+            state.backgrounds.find(background => background.id === scene.backgroundId);
+          if (!background) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil((image.width * image.height) / 8);
+          let collisionsSize = Math.ceil((background.width * background.height) / 8);
           const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
@@ -430,7 +430,7 @@ export default function project(state = initialState.project, action) {
             }
           }
 
-          const collisionIndex = image.width * action.y + action.x;
+          const collisionIndex = background.width * action.y + action.x;
           const collisionByteIndex = collisionIndex >> 3;
           const collisionByteOffset = collisionIndex & 7;
           const collisionByteMask = 1 << collisionByteOffset;
@@ -556,8 +556,8 @@ export default function project(state = initialState.project, action) {
           if (scene.id !== action.sceneId) {
             return scene;
           }
-          const sceneImage = state.images.find(
-            image => image.id === scene.imageId
+          const sceneImage = state.backgrounds.find(
+            background => background.id === scene.backgroundId
           );
           return {
             ...scene,
@@ -582,16 +582,16 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case RENAME_FLAG: {
+    case RENAME_VARIABLE: {
       return {
         ...state,
-        flags: [].concat(
-          state.flags.filter(flag => {
-            return flag.id !== action.flagId;
+        variables: [].concat(
+          state.variables.filter(variable => {
+            return variable.id !== action.variableId;
           }),
           action.name
             ? {
-                id: action.flagId,
+                id: action.variableId,
                 name: action.name
               }
             : []

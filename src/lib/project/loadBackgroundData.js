@@ -1,5 +1,3 @@
-import fs from "fs-extra";
-import path from "path";
 import glob from "glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";

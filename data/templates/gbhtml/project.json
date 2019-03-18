@@ -12,11 +12,11 @@
     "startSceneId": "94c18861-b352-4f49-a64d-52f2e3415077",
     "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
   },
-  "flags": [
+  "variables": [
     { "id": "0", "name": "Seen Cat" },
     { "id": "1", "name": "Seen duck" }
   ],
-  "images": [
+  "backgrounds": [
     {
       "id": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
       "name": "cave",
@@ -108,7 +108,7 @@
     {
       "id": "94c18861-b352-4f49-a64d-52f2e3415077",
       "name": "Outside",
-      "imageId": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
+      "backgroundId": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
       "x": 197,
       "y": 332,
       "width": 32,
@@ -156,8 +156,8 @@
             },
             {
               "id": "ef31c786-4d05-4ec4-9828-0b20bea82a50",
-              "command": "EVENT_IF_FLAG",
-              "args": { "flag": "0" },
+              "command": "EVENT_IF_TRUE",
+              "args": { "variable": "0" },
               "true": [
                 {
                   "id": "a36892fc-7718-4107-b5b5-07b6c5eea254",
@@ -197,8 +197,8 @@
             },
             {
               "id": "c585ca68-8cb8-4a26-bcff-072845e80702",
-              "command": "EVENT_SET_FLAG",
-              "args": { "flag": "0" }
+              "command": "EVENT_SET_TRUE",
+              "args": { "variable": "0" }
             },
             {
               "id": "f49f1e60-9513-4486-9d3b-6f86d1baa938",
@@ -216,8 +216,8 @@
           "script": [
             {
               "id": "81f7693e-8544-4bb2-bf47-b8963fe90982",
-              "command": "EVENT_IF_FLAG",
-              "args": { "flag": "1" },
+              "command": "EVENT_IF_TRUE",
+              "args": { "variable": "1" },
               "true": [
                 {
                   "id": "a991435c-89ad-4303-b6f0-a18054cc0ea7",
@@ -270,8 +270,8 @@
             },
             {
               "id": "0830a973-dd64-44ad-ad07-a677a31a27aa",
-              "command": "EVENT_SET_FLAG",
-              "args": { "flag": "1" }
+              "command": "EVENT_SET_TRUE",
+              "args": { "variable": "1" }
             },
             {
               "id": "8ffac2a0-a735-40f1-b51e-dd270cc09ba9",
@@ -489,7 +489,7 @@
     {
       "id": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
       "name": "Cave",
-      "imageId": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
+      "backgroundId": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
       "x": 519,
       "y": 126,
       "width": 32,
@@ -596,7 +596,7 @@
     {
       "id": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55",
       "name": "House",
-      "imageId": "b340b9a2-2865-4e05-91c0-148846a693c8",
+      "backgroundId": "b340b9a2-2865-4e05-91c0-148846a693c8",
       "x": 198,
       "y": 123,
       "width": 32,
@@ -741,7 +741,7 @@
     {
       "id": "8a52b387-2a88-4741-8d4e-ca56acea4672",
       "name": "Stars",
-      "imageId": "40fda058-df90-4205-a239-fe77bce4fa79",
+      "backgroundId": "40fda058-df90-4205-a239-fe77bce4fa79",
       "x": 698,
       "y": 327,
       "width": 32,

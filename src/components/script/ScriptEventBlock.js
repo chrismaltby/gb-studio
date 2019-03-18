@@ -1,8 +1,8 @@
 import React from "react";
 import { EventFields } from "../../lib/compiler/eventTypes";
 import SceneSelect from "../forms/SceneSelect";
-import ImageSelect from "../forms/ImageSelect";
-import FlagSelect from "../forms/FlagSelect";
+import BackgroundSelect from "../forms/BackgroundSelect";
+import VariableSelect from "../forms/VariableSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
@@ -78,13 +78,13 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />
-            ) : field.type === "image" ? (
-              <ImageSelect
+            ) : field.type === "background" ? (
+              <BackgroundSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />
-            ) : field.type === "flag" ? (
-              <FlagSelect
+            ) : field.type === "variable" ? (
+              <VariableSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />

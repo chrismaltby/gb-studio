@@ -240,8 +240,11 @@ class ScriptEditor extends Component {
             memo[field.key] = this.props.scenes[
               this.props.scenes.length - 1
             ].id;
-          } else if (field.defaultValue === "LAST_FLAG") {
-            memo[field.key] = this.props.flags[this.props.flags.length - 1].id;
+          } else if (field.defaultValue === "LAST_VARIABLE") {
+            memo[field.key] =
+              this.props.variables.length > 0
+                ? this.props.variables[this.props.variables.length - 1].id
+                : 0;
           } else if (field.defaultValue === "LAST_MUSIC") {
             memo[field.key] = this.props.music[0].id;
           } else if (field.defaultValue !== undefined) {
@@ -350,7 +353,7 @@ ScriptEditor.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    flags: state.project.present && state.project.present.flags,
+    variables: state.project.present && state.project.present.variables,
     scenes: state.project.present && state.project.present.scenes,
     music: state.project.present && state.project.present.music
   };

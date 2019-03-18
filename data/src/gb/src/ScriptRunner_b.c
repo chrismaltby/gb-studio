@@ -75,7 +75,7 @@ void Script_Goto_b()
  */
 void Script_IfFlag_b()
 {
-  if (script_flags[(script_cmd_args[0] * 256) + script_cmd_args[1]])
+  if (script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]])
   { // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
@@ -102,7 +102,7 @@ void Script_IfValue_b()
 {
   UBYTE value, match;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  value = script_flags[ptr];
+  value = script_variables[ptr];
 
   switch (script_cmd_args[2])
   {
@@ -150,7 +150,7 @@ void Script_IfValue_b()
 void Script_SetFlag_b()
 {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_flags[ptr] = TRUE;
+  script_variables[ptr] = TRUE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -166,7 +166,7 @@ void Script_SetFlag_b()
 void Script_ClearFlag_b()
 {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_flags[ptr] = FALSE;
+  script_variables[ptr] = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -525,9 +525,9 @@ void Script_MusicStop_b()
 void Script_ResetVariables_b()
 {
   UBYTE i;
-  for (i = 0; i != NUM_FLAGS; ++i)
+  for (i = 0; i != NUM_VARIABLES; ++i)
   {
-    script_flags[i] = FALSE;
+    script_variables[i] = FALSE;
   }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -553,10 +553,10 @@ void Script_IncFlag_b()
 {
   UBYTE value;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  value = script_flags[ptr];
+  value = script_variables[ptr];
   if (value != 255)
   {
-    script_flags[ptr] = value + 1;
+    script_variables[ptr] = value + 1;
   }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -571,10 +571,10 @@ void Script_DecFlag_b()
 {
   UBYTE value;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  value = script_flags[ptr];
+  value = script_variables[ptr];
   if (value != 0)
   {
-    script_flags[ptr] = value - 1;
+    script_variables[ptr] = value - 1;
   }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -588,7 +588,7 @@ void Script_DecFlag_b()
 void Script_SetFlagValue_b()
 {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_flags[ptr] = script_cmd_args[2];
+  script_variables[ptr] = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

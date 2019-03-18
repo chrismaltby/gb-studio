@@ -2,7 +2,7 @@ import * as types from "./actionTypes";
 import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
-import { loadImageData } from "../lib/project/loadImageData";
+import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
 import uuid from "uuid/v4";
 
@@ -74,7 +74,7 @@ export const loadBackground = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadImageData(
+      const data = await loadBackgroundData(
         `${projectRoot}/assets/backgrounds/${filename}`
       );
       return {
@@ -257,8 +257,8 @@ export const selectTrigger = (sceneId, index) => {
   return { type: types.SELECT_TRIGGER, sceneId, index };
 };
 
-export const renameFlag = (flagId, name) => {
-  return { type: types.RENAME_FLAG, flagId, name };
+export const renameVariable = (variableId, name) => {
+  return { type: types.RENAME_VARIABLE, variableId, name };
 };
 
 export const setStatus = status => {

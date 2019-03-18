@@ -123,7 +123,7 @@ function mapStateToProps(state, props) {
     project.present.scenes &&
     project.present.scenes.find(scene => scene.id === props.scene);
   const sceneImage =
-    scene && project.present.images.find(image => image.id === scene.imageId);
+    scene && project.present.backgrounds.find(background => background.id === scene.backgroundId);
   const actor = scene && scene.actors[props.id];
   const spriteSheet =
     actor &&

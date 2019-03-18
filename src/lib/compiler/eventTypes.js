@@ -155,23 +155,23 @@ export const EventFields = {
   ],
   [EVENT_IF_TRUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_IF_FALSE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_IF_VALUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     },
     {
       key: "operator",
@@ -190,23 +190,23 @@ export const EventFields = {
   ],
   [EVENT_SET_TRUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_SET_FALSE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_SET_VALUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     },
     {
       key: "value",
@@ -218,16 +218,16 @@ export const EventFields = {
   ],
   [EVENT_INC_VALUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_DEC_VALUE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_RESET_VARIABLES]: [
@@ -242,9 +242,9 @@ export const EventFields = {
   ],
   [EVENT_CHOICE]: [
     {
-      key: "flag",
-      type: "flag",
-      defaultValue: "LAST_FLAG"
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     },
     {
       key: "trueText",

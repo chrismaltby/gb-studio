@@ -167,7 +167,7 @@ void SceneInit_b()
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
 
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
-  ReadBankedBankPtr(16, &bank_ptr, &image_bank_ptrs[image_index]);
+  ReadBankedBankPtr(16, &bank_ptr, &background_bank_ptrs[image_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   tileset_index = ReadBankedUBYTE(bank_ptr.bank, ptr);
   scene_width = ReadBankedUBYTE(bank_ptr.bank, ptr + 1u);

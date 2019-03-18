@@ -20,7 +20,7 @@ import {
   REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
   EDIT_TRIGGER,
-  RENAME_FLAG,
+  RENAME_VARIABLE,
   EDIT_WORLD,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS
@@ -57,7 +57,7 @@ export default function modified(state = initialState.document, action) {
     case REMOVE_TRIGGER:
     case REMOVE_TRIGGER_AT:
     case EDIT_TRIGGER:
-    case RENAME_FLAG:
+    case RENAME_VARIABLE:
     case EDIT_WORLD:
     case EDIT_PROJECT:
     case EDIT_PROJECT_SETTINGS:
