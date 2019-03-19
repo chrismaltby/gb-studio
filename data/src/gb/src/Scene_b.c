@@ -22,6 +22,14 @@ UINT8 scene_bank = 3;
 // Private vars
 ////////////////////////////////////////////////////////////////////////////////
 
+// Scene Init Globals - Needed since split init across multiple functions
+UWORD image_index;
+BANK_PTR bank_ptr, sprite_bank_ptr;
+UWORD scene_load_ptr, scene_load_sprite_ptr, scene_load_col_ptr;
+UBYTE tileset_index, sprite_index;
+UBYTE sprite_len, collision_tiles_len, col_bank;
+// End of Scene Init Globals
+
 UBYTE scene_num_actors;
 UBYTE scene_num_triggers;
 UBYTE emote_type = 1;
@@ -60,12 +68,6 @@ void SceneSetEmote_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
 
-UWORD image_index;
-BANK_PTR bank_ptr, sprite_bank_ptr, events_ptr;
-UWORD ptr, sprite_ptr, col_ptr;
-UBYTE i, tileset_index, tileset_size, sprite_index;
-UBYTE k, j, sprite_len, collision_tiles_len, col_bank;
-
 ////////////////////////////////////////////////////////////////////////////////
 // Initialise
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,83 +86,87 @@ void SceneInit_b1()
 
   // Load scene
   ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
-  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  image_index = ReadBankedUWORD(bank_ptr.bank, ptr);
+  scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
+  image_index = ReadBankedUWORD(bank_ptr.bank, scene_load_ptr);
 }
 
 void SceneInit_b2()
 {
-  UBYTE num_sprites;
-  num_sprites = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
+  UBYTE num_sprites, k, i;
+  num_sprites = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
 
   // Load sprites
   k = 24;
-  ptr = ptr + 3;
+  scene_load_ptr = scene_load_ptr + 3;
   for (i = 0; i != num_sprites; i++)
   {
     // LOG("LOAD SPRITE=%u k=%u\n", i, k);
-    sprite_index = ReadBankedUBYTE(bank_ptr.bank, ptr + i);
+    sprite_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + i);
     // LOG("SPRITE INDEX=%u\n", sprite_index);
     ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-    sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-    sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr));
+    scene_load_sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+    sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, scene_load_sprite_ptr));
     // LOG("SPRITE LEN=%u\n", sprite_len);
-    SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
+    SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, scene_load_sprite_ptr + 1);
     k += sprite_len;
   }
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
-  ptr = ptr + num_sprites;
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, scene_load_sprite_ptr + 1);
+  scene_load_ptr = scene_load_ptr + num_sprites;
 }
 
 void SceneInit_b3()
 {
+  UBYTE i, j;
+
   // Load actors
-  scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr) + 1;
-  ptr = ptr + 1;
+  scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr) + 1;
+  scene_load_ptr = scene_load_ptr + 1;
   // LOG("NUM ACTORS=%u\n", scene_num_actors);
   for (i = 1; i != scene_num_actors; i++)
   {
     // LOG("LOAD ACTOR %u\n", i);
-    actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, ptr);
+    actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
     // LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
     actors[i].redraw = TRUE;
     actors[i].enabled = TRUE;
     actors[i].moving = FALSE;
     actors[i].sprite_type = FALSE; // WTF needed
-    actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
-    actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 2)) + 8;
-    actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, ptr + 3)) + 8;
-    j = ReadBankedUBYTE(bank_ptr.bank, ptr + 4);
+    actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
+    actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2)) + 8;
+    actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3)) + 8;
+    j = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4);
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
     actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
     actors[i].movement_type = 0; // WTF needed
-    actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
+    actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5);
     // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
-    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 6);
-    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 8);
+    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
+    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
-    ptr = ptr + 9u;
+    scene_load_ptr = scene_load_ptr + 9u;
   }
 }
 
 void SceneInit_b4()
 {
+  UBYTE i;
+
   // Load triggers
-  scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  ptr = ptr + 1;
+  scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+  scene_load_ptr = scene_load_ptr + 1;
   // LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
   for (i = 0; i != scene_num_triggers; i++)
   {
-    triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, ptr);
-    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, ptr + 1);
+    triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
     triggers[i].w = 0;
-    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
+    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
     triggers[i].h = 0;
-    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, ptr + 3);
+    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
     // @todo 5th byte is type of trigger
-    triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr + 5);
-    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
-    ptr = ptr + 8u;
+    triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5);
+    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7);
+    scene_load_ptr = scene_load_ptr + 8u;
   }
 }
 
@@ -169,17 +175,17 @@ void SceneInit_b5()
   UBYTE sprite_frames;
 
   // Store pointer to collisions for later
-  collision_tiles_len = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  col_ptr = ptr + 1;
+  collision_tiles_len = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+  scene_load_col_ptr = scene_load_ptr + 1;
   col_bank = bank_ptr.bank;
 
   // Load Player Sprite
   sprite_index = START_PLAYER_SPRITE;
   ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+  scene_load_sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, scene_load_sprite_ptr);
   sprite_len = MUL_4(sprite_frames);
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, scene_load_sprite_ptr + 1);
   actors[0].sprite = 0;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
 }
@@ -188,34 +194,40 @@ void SceneInit_b6()
 {
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
   ReadBankedBankPtr(16, &bank_ptr, &background_bank_ptrs[image_index]);
-  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  tileset_index = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  scene_width = ReadBankedUBYTE(bank_ptr.bank, ptr + 1u);
-  scene_height = ReadBankedUBYTE(bank_ptr.bank, ptr + 2u);
-  SetBankedBkgTiles(bank_ptr.bank, 0, 0, scene_width, scene_height, ptr + 3u);
+  scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
+  tileset_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+  scene_width = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1u);
+  scene_height = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2u);
+  SetBankedBkgTiles(bank_ptr.bank, 0, 0, scene_width, scene_height, scene_load_ptr + 3u);
 }
 
 void SceneInit_b7()
 {
+  UBYTE tileset_size;
   // Load Image Tileset
   ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tileset_index]);
-  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  tileset_size = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  SetBankedBkgData(bank_ptr.bank, 0, tileset_size, ptr + 1u);
+  scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
+  tileset_size = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+  SetBankedBkgData(bank_ptr.bank, 0, tileset_size, scene_load_ptr + 1u);
 }
 
 void SceneInit_b8()
 {
+  UBYTE i;
+
   // Load collisions ( bitwise ceil by adding the divisor minus one to the dividend )
   for (i = 0; i != collision_tiles_len; i++)
   {
-    scene_col_tiles[i] = ReadBankedUBYTE(col_bank, col_ptr);
-    col_ptr++;
+    scene_col_tiles[i] = ReadBankedUBYTE(col_bank, scene_load_col_ptr);
+    scene_load_col_ptr++;
   }
 }
 
 void SceneInit_b9()
 {
+  UBYTE i;
+  BANK_PTR events_ptr;
+
   // Init player
   actors[0].redraw = TRUE;
   actors[0].enabled = TRUE;
@@ -226,9 +238,9 @@ void SceneInit_b9()
   actors[0].dir.y = map_next_dir.y;
 
   // Load starting script
-  ptr = col_ptr;
-  events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
-  events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
+  scene_load_ptr = scene_load_col_ptr;
+  events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
+  events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
   ScriptStart(&events_ptr);
 
   // Hide unused Sprites
@@ -946,11 +958,11 @@ UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a)
 
 void SceneSetEmote_b(UBYTE actor, UBYTE type)
 {
-  UWORD ptr;
+  UWORD scene_load_ptr;
 
   hide_sprite_pair(BUBBLE_SPRITE_LEFT);
-  ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
-  SetBankedSpriteData(EMOTES_SPRITE_BANK, 124, 4, ptr + (type * 64));
+  scene_load_ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
+  SetBankedSpriteData(EMOTES_SPRITE_BANK, 124, 4, scene_load_ptr + (type * 64));
 
   set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
   emote_timer = 1;
