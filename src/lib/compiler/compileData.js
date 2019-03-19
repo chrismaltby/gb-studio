@@ -125,6 +125,9 @@ const compile = async (
     const collisionsLength = Math.ceil(
       (sceneImage.width * sceneImage.height) / 8
     );
+    const collisions = []
+      .concat(scene.collisions, Array(collisionsLength).fill(0))
+      .slice(0, collisionsLength);
     return banked.push(
       [].concat(
         hi(scene.backgroundIndex),
@@ -142,7 +145,7 @@ const compile = async (
           eventPtrs: eventPtrs[sceneIndex].triggers
         }),
         collisionsLength,
-        scene.collisions.slice(0, collisionsLength),
+        collisions,
         eventPtrs[sceneIndex].start.bank, // Event bank ptr
         hi(eventPtrs[sceneIndex].start.offset), // Event offset ptr
         lo(eventPtrs[sceneIndex].start.offset)
