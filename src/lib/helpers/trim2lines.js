@@ -9,12 +9,12 @@ const trim2lines = string => {
       if (lineIndex > 0) {
         return line.substring(0, 18);
       }
-      const lastBreakSymbol = line.lastIndexOf(" ");
+      const lastBreakSymbol = line.substring(0, 19).lastIndexOf(" ");
       if (lastBreakSymbol > -1) {
         return (
           line.substring(0, lastBreakSymbol) +
           "\n" +
-          line.substring(lastBreakSymbol + 1)
+          line.substring(lastBreakSymbol + 1, lastBreakSymbol + 19)
         );
       } else {
         return line.substring(0, 18);
