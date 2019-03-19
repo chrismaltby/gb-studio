@@ -246,6 +246,7 @@ void SceneInit_b9()
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
   {
+    actors[i].enabled = FALSE;
     hide_sprite_pair(MUL_2(i));
   }
 
