@@ -24,6 +24,13 @@ UBYTE text_drawn;
 UBYTE text_count;
 UBYTE text_wait;
 
+UBYTE choice_enabled = 0;
+UBYTE choice_index = 0;
+UWORD choice_flag;
+
+const unsigned char ui_cursor_tiles[1] = {0xDB};
+const unsigned char ui_bg_tiles[1] = {0xD4};
+
 unsigned char text_lines[80] = "";
 
 void UIInit()
@@ -101,7 +108,12 @@ void UIShowText(UWORD line)
 
 void UIShowChoice(UWORD flag_index, UWORD line)
 {
+  choice_index = 0;
+  choice_flag = flag_index;
+  choice_enabled = TRUE;
   UIShowText(line);
+  set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
+  set_win_tiles(1, 2, 1, 1, ui_bg_tiles);
 }
 
 void UISetTextBuffer(unsigned char *text)
@@ -174,7 +186,7 @@ void UIDrawTextBufferChar()
       i = text_x + (18 * text_y);
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + (letter * 16));
       tile = TEXT_BUFFER_START + text_x + (text_y * 18);
-      set_win_tiles(text_x + 1, text_y + 1, 1, 1, &tile);
+      set_win_tiles(text_x + 1 + choice_enabled, text_y + 1, 1, 1, &tile);
     }
 
     if (text_lines[text_count] == '\b')
@@ -233,9 +245,33 @@ UBYTE UIIsClosed()
 
 void UIOnInteract()
 {
-  if (text_drawn && text_count != 0)
+  if (JOY_PRESSED(J_A))
   {
-    UIMoveTo(0, MENU_CLOSED_Y, 1);
+    if (text_drawn && text_count != 0)
+    {
+      if (choice_enabled)
+      {
+        script_variables[choice_flag] = !choice_index;
+        choice_enabled = FALSE;
+      }
+      UIMoveTo(0, MENU_CLOSED_Y, 1);
+    }
+  }
+  else if (choice_enabled)
+  {
+    if (JOY(J_UP))
+    {
+      set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
+      set_win_tiles(1, 2, 1, 1, ui_bg_tiles);
+      // set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
+      choice_index = 0;
+    }
+    else if (JOY(J_DOWN))
+    {
+      set_win_tiles(1, 1, 1, 1, ui_bg_tiles);
+      set_win_tiles(1, 2, 1, 1, ui_cursor_tiles);
+      choice_index = 1;
+    }
   }
 }
 

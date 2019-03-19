@@ -108,10 +108,9 @@ const compile = async (
   });
 
   // Add UI data
-  const uiImagePtr = banked.push(precompiled.uiTiles);
   const fontImagePtr = banked.push(precompiled.fontTiles);
   const frameImagePtr = banked.push(precompiled.frameTiles);
-
+  const cursorImagePtr = banked.push(precompiled.cursorTiles);
   const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   // Add sprite data
@@ -232,12 +231,12 @@ const compile = async (
     `#define START_SCENE_DIR_X ${startDirectionX}\n` +
     `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
-    `#define UI_BANK ${uiImagePtr.bank}\n` +
-    `#define UI_BANK_OFFSET ${uiImagePtr.offset}\n` +
     `#define FONT_BANK ${fontImagePtr.bank}\n` +
     `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
     `#define FRAME_BANK ${frameImagePtr.bank}\n` +
     `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
+    `#define CURSOR_BANK ${cursorImagePtr.bank}\n` +
+    `#define CURSOR_BANK_OFFSET ${cursorImagePtr.offset}\n` +
     `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
     `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
     `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
@@ -332,10 +331,10 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
   const {
-    uiTiles,
     emotesSprite,
     fontTiles,
-    frameTiles
+    frameTiles,
+    cursorTiles
   } = await precompileUIImages(projectRoot, tmpPath, {
     warnings
   });
@@ -374,9 +373,9 @@ const precompile = async (
     usedSprites,
     usedMusic,
     sceneData,
-    uiTiles,
     fontTiles,
     frameTiles,
+    cursorTiles,
     emotesSprite
   };
 };
@@ -408,10 +407,7 @@ export const precompileStrings = scenes => {
       }
     } else if (cmd.command === EVENT_CHOICE) {
       const text =
-        " " +
-        cmd.args.trueText.slice(0, 17) +
-        "\n " +
-        cmd.args.falseText.slice(0, 17);
+        cmd.args.trueText.slice(0, 17) + "\n" + cmd.args.falseText.slice(0, 17);
       if (strings.indexOf(text) === -1) {
         strings.push(text);
       }
@@ -478,10 +474,6 @@ export const precompileUIImages = async (
   tmpPath,
   { warnings }
 ) => {
-  const uiPath = await ensureProjectAsset("assets/ui/ui.png", {
-    projectRoot,
-    warnings
-  });
   const fontPath = await ensureProjectAsset("assets/ui/ascii.png", {
     projectRoot,
     warnings
@@ -494,13 +486,17 @@ export const precompileUIImages = async (
     projectRoot,
     warnings
   });
+  const cursorPath = await ensureProjectAsset("assets/ui/cursor.png", {
+    projectRoot,
+    warnings
+  });
 
-  const uiTiles = await ggbgfx.imageToTilesDataIntArray(uiPath);
   const frameTiles = await ggbgfx.imageToTilesDataIntArray(framePath);
   const fontTiles = await ggbgfx.imageToTilesDataIntArray(fontPath);
+  const cursorTiles = await ggbgfx.imageToTilesDataIntArray(cursorPath);
   const emotesSprite = await ggbgfx.imageToSpriteIntArray(emotesPath);
 
-  return { uiTiles, emotesSprite, frameTiles, fontTiles };
+  return { emotesSprite, frameTiles, fontTiles, cursorTiles };
 };
 
 export const precompileSprites = async (

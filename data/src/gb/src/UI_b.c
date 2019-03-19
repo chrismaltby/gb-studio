@@ -37,6 +37,9 @@ void UIInit_b()
 
   set_bkg_data(0xD9, 1, ui_white);
   set_bkg_data(0xDA, 1, ui_black);
+
+  ptr = ((UWORD)bank_data_ptrs[CURSOR_BANK]) + CURSOR_BANK_OFFSET;
+  SetBankedBkgData(FRAME_BANK, 0xDB, 1, ptr);
 }
 
 void UIUpdate_b()

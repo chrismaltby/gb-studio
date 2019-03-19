@@ -258,6 +258,7 @@ export const EventFields = {
       key: "trueText",
       label: "Set to 'True' if",
       type: "text",
+      maxLength: 17,
       defaultValue: "",
       placeholder: "Choice A"
     },
@@ -265,6 +266,7 @@ export const EventFields = {
       key: "falseText",
       label: "Set to 'False' if",
       type: "text",
+      maxLength: 17,
       defaultValue: "",
       placeholder: "Choice B"
     }

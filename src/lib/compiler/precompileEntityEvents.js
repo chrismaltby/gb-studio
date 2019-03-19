@@ -179,9 +179,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(stringIndex));
     } else if (command === EVENT_CHOICE) {
       const text =
-        " " +
         input[i].args.trueText.slice(0, 17) +
-        "\n " +
+        "\n" +
         input[i].args.falseText.slice(0, 17);
       const stringIndex = strings.indexOf(text);
       if (stringIndex === -1) {
@@ -193,7 +192,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
-      console.log("CHOICE", stringIndex, text);
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);

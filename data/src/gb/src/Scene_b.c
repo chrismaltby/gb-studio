@@ -650,10 +650,7 @@ static void SceneHandleInput()
   UBYTE npc;
 
   // If menu open - check if A pressed to close
-  if (JOY_PRESSED(J_A))
-  {
-    UIOnInteract();
-  }
+  UIOnInteract();
 
   // If player between tiles can't handle input
   if (!ACTOR_ON_TILE(0))

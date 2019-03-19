@@ -50,6 +50,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 type="text"
                 value={value[field.key]}
                 placeholder={field.placeholder || field.defaultValue}
+                maxLength={field.maxLength}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "number" ? (
