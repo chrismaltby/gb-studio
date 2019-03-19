@@ -176,10 +176,6 @@ void UIDrawTextBufferChar()
       text_x--;
       text_wait = 10;
     }
-    else if (text_lines[text_count] == ' ' && text_x == 0)
-    {
-      text_x--;
-    }
 
     text_count++;
     text_x++;
