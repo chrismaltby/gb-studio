@@ -97,16 +97,7 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
 
 void UIDrawDialogueFrame_b()
 {
-  UBYTE i, x, y, tile1, tile2;
-  UWORD ptr;
-
-  // Clear tile data ready for text
-  // Offset is
-  ptr = ((UWORD)bank_data_ptrs[FRAME_BANK]) + FRAME_BANK_OFFSET + FRAME_CENTER_OFFSET; // 16 * 4
-  for (i = 0; i < 36; i++)
-  {
-    SetBankedBkgData(UI_BANK, TEXT_BUFFER_START + i, 1, ptr);
-  }
+  UBYTE i, x, y;
 
   set_win_tiles(0, 0, 1, 1, ui_frame_tl_tiles);
   set_win_tiles(0, 3, 1, 1, ui_frame_bl_tiles);
@@ -117,16 +108,12 @@ void UIDrawDialogueFrame_b()
   set_win_tiles(19, 1, 1, 1, ui_frame_r_tiles);
   set_win_tiles(19, 2, 1, 1, ui_frame_r_tiles);
 
-  tile1 = TEXT_BUFFER_START;
-  tile2 = TEXT_BUFFER_START + 18;
   for (x = 1; x != 19; ++x)
   {
     set_win_tiles(x, 0, 1, 1, ui_frame_t_tiles);
     set_win_tiles(x, 3, 1, 1, ui_frame_b_tiles);
-    set_win_tiles(x, 1, 1, 1, &tile1);
-    set_win_tiles(x, 2, 1, 1, &tile2);
-    tile1++;
-    tile2++;
+    set_win_tiles(x, 1, 1, 1, ui_frame_bg_tiles);
+    set_win_tiles(x, 2, 1, 1, ui_frame_bg_tiles);
   }
 }
 

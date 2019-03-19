@@ -123,6 +123,7 @@ void UIDrawTextBufferChar()
   UBYTE letter;
   UBYTE i, text_remaining, word_len;
   UBYTE text_size = strlen(text_lines);
+  UBYTE tile;
   UWORD ptr;
 
   if (text_wait > 0)
@@ -168,6 +169,8 @@ void UIDrawTextBufferChar()
     {
       i = text_x + (18 * text_y);
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + (letter * 16));
+      tile = TEXT_BUFFER_START + text_x + (text_y * 18);
+      set_win_tiles(text_x + 1, text_y + 1, 1, 1, &tile);
     }
 
     if (text_lines[text_count] == '\b')
