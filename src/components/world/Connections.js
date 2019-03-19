@@ -1,10 +1,15 @@
 import React from "react";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
+import { walkEvents } from "../../lib/helpers/eventSystem";
 
 const scriptMapTransition = script => {
-  return script.filter(action => {
-    return action.command === EVENT_SWITCH_SCENE;
+  let sceneTransitions = [];
+  walkEvents(script, action => {
+    if (action.command === EVENT_SWITCH_SCENE) {
+      sceneTransitions.push(action);
+    }
   });
+  return sceneTransitions;
 };
 
 export default React.memo(
@@ -42,7 +47,6 @@ export default React.memo(
         });
       });
       const sceneTransitions = scriptMapTransition(scene.script || []);
-      console.log({ sceneTransitions });
       sceneTransitions.forEach(transition => {
         const destScene = scenes.find(m => m.id === transition.args.sceneId);
         if (destScene) {
