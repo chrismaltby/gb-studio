@@ -5,7 +5,7 @@ import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./precompileEntityEvents";
-import { EVENT_TEXT, EVENT_MUSIC_PLAY } from "./eventTypes";
+import { EVENT_TEXT, EVENT_MUSIC_PLAY, EVENT_CHOICE } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
@@ -98,7 +98,12 @@ const compile = async (
   // Add background map data
   const backgroundPtrs = precompiled.usedBackgrounds.map(background => {
     return banked.push(
-      [].concat(background.tilesetIndex, background.width, background.height, background.data)
+      [].concat(
+        background.tilesetIndex,
+        background.width,
+        background.height,
+        background.data
+      )
     );
   });
 
@@ -243,7 +248,8 @@ const compile = async (
     `extern const unsigned char (*bank_data_ptrs[])[];\n` +
     `extern const unsigned char * music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
-    `extern unsigned char script_variables[${precompiled.variables.length + 1}];\n` +
+    `extern unsigned char script_variables[${precompiled.variables.length +
+      1}];\n` +
     music
       .map((track, index) => {
         return `extern const unsigned char * ${track.dataName}_Data[];`;
@@ -277,7 +283,8 @@ const compile = async (
     `const unsigned char music_banks[] = {\n` +
     (music.map(track => track.bank).join(", ") || 0) +
     `\n};\n\n` +
-    `unsigned char script_variables[${precompiled.variables.length + 1}] = { 0 };\n`;
+    `unsigned char script_variables[${precompiled.variables.length +
+      1}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 
@@ -397,9 +404,8 @@ export const precompileStrings = scenes => {
         strings.push(text);
       }
     } else if (cmd.command === EVENT_CHOICE) {
-      const text = " " + 
-        cmd.args.trueText.slice(0,17) + "\n" +
-        cmd.args.falseText(0,17);
+      const text =
+        " " + cmd.args.trueText.slice(0, 17) + "\n" + cmd.args.falseText(0, 17);
       if (strings.indexOf(text) === -1) {
         strings.push(text);
       }
@@ -430,9 +436,14 @@ export const precompileBackgrounds = async (
       scenes.find(scene => scene.backgroundId === background.id)
   );
   const backgroundLookup = indexArray(usedBackgrounds, "id");
-  const backgroundData = await compileImages(usedBackgrounds, projectRoot, tmpPath, {
-    warnings
-  });
+  const backgroundData = await compileImages(
+    usedBackgrounds,
+    projectRoot,
+    tmpPath,
+    {
+      warnings
+    }
+  );
   let usedTilesets = [];
   let usedTilesetLookup = {};
   Object.keys(backgroundData.tilesets).forEach(tileKey => {
@@ -442,7 +453,8 @@ export const precompileBackgrounds = async (
   const usedBackgroundsWithData = usedBackgrounds.map(background => {
     return {
       ...background,
-      tilesetIndex: usedTilesetLookup[backgroundData.tilemapsTileset[background.id]],
+      tilesetIndex:
+        usedTilesetLookup[backgroundData.tilemapsTileset[background.id]],
       data: backgroundData.tilemaps[background.id]
     };
   });
