@@ -21,6 +21,8 @@ void FadeIn()
   fade_direction = FADE_IN;
   fade_running = TRUE;
   fade_timer = 0;
+  OBP0_REG = obj_fade_vals[fade_timer];
+  BGP_REG = bgp_fade_vals[fade_timer];
 }
 
 void FadeOut()
@@ -29,6 +31,8 @@ void FadeOut()
   fade_direction = FADE_OUT;
   fade_running = TRUE;
   fade_timer = 5;
+  OBP0_REG = obj_fade_vals[fade_timer];
+  BGP_REG = bgp_fade_vals[fade_timer];
 }
 
 void FadeUpdate()
