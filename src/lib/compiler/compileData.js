@@ -77,6 +77,7 @@ const compile = async (
         scene,
         scenes: precompiled.sceneData,
         music: precompiled.usedMusic,
+        sprites: precompiled.usedSprites,
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
         variables: precompiled.variables

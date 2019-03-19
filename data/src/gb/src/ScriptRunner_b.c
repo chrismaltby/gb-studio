@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "MusicManager.h"
 #include "FadeManager.h"
+#include "BankData.h"
 #include "UI.h"
 #include "Macros.h"
 #include "Math.h"
@@ -621,4 +622,30 @@ void Script_Choice_b()
   script_ptr += 1 + script_cmd_args_len;
   UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3]);
   script_action_complete = FALSE;
+}
+
+/*
+ * Command: PlayerSetSprite
+ * ----------------------------
+ * Change sprite used by player
+ */
+void Script_PlayerSetSprite_b()
+{
+  BANK_PTR sprite_bank_ptr;
+  UWORD sprite_ptr;
+  UBYTE sprite_index, sprite_frames, sprite_len;
+
+  // Load Player Sprite
+  sprite_index = script_cmd_args[0];
+  ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
+  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+  sprite_len = MUL_4(sprite_frames);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+  actors[0].sprite = 0;
+  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[0].redraw = TRUE;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
 }

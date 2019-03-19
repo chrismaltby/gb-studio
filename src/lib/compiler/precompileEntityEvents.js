@@ -24,6 +24,7 @@ import {
   EVENT_HIDE_SPRITES,
   EVENT_ACTOR_SHOW,
   EVENT_ACTOR_HIDE,
+  EVENT_PLAYER_SET_SPRITE,
   EVENT_RETURN_TO_TITLE,
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_HIDE,
@@ -78,7 +79,7 @@ const CMD_LOOKUP = {
   ACTOR_MOVE_TO: 0x10,
   SHOW_SPRITES: 0x11,
   HIDE_SPRITES: 0x12,
-  START_BATTLE: 0x13,
+  PLAYER_SET_SPRITE: 0x13,
   ACTOR_SHOW: 0x14,
   ACTOR_HIDE: 0x15,
   ACTOR_EMOTE: 0x16,
@@ -111,6 +112,14 @@ const getMusicIndex = (musicId, music) => {
     return 0;
   }
   return musicIndex;
+};
+
+const getSpriteIndex = (spriteId, sprites) => {
+  const spriteIndex = sprites.findIndex(sprite => sprite.id === spriteId);
+  if (spriteIndex === -1) {
+    return 0;
+  }
+  return spriteIndex;
 };
 
 const getVariableIndex = (variable, variables) => {
@@ -160,6 +169,7 @@ const precompileEntityScript = (input = [], options = {}) => {
     scene,
     scenes,
     music,
+    sprites,
     backgrounds,
     variables,
     branch = false
@@ -349,6 +359,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_HIDE);
       output.push(actorIndex);
+    } else if (command === EVENT_PLAYER_SET_SPRITE) {
+      const spriteIndex = getSpriteIndex(input[i].args.spriteId, sprites);
+      output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);
+      output.push(spriteIndex);
     } else if (command === EVENT_RETURN_TO_TITLE) {
       output.push(CMD_LOOKUP.RETURN_TO_TITLE);
     } else if (command === EVENT_END) {

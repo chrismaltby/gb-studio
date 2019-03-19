@@ -2,6 +2,7 @@ import React from "react";
 import { EventFields } from "../../lib/compiler/eventTypes";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
+import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import VariableSelect from "../forms/VariableSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
@@ -81,6 +82,11 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
               />
             ) : field.type === "background" ? (
               <BackgroundSelect
+                value={value[field.key]}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "sprite" ? (
+              <SpriteSheetSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />

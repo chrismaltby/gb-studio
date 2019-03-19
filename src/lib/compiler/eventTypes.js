@@ -32,6 +32,7 @@ export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
+export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -80,6 +81,7 @@ export const EventNames = {
   [EVENT_ACTOR_EMOTE]: "Actor Emote Bubble",
   [EVENT_ACTOR_SHOW]: "Show Actor",
   [EVENT_ACTOR_HIDE]: "Hide Actor",
+  [EVENT_PLAYER_SET_SPRITE]: "Set Player Sprite Sheet",
   [EVENT_SHOW_SPRITES]: "Show Sprites",
   [EVENT_HIDE_SPRITES]: "Hide Sprites",
   [EVENT_OVERLAY_SHOW]: "Show Overlay",
@@ -415,6 +417,13 @@ export const EventFields = {
       key: "actorId",
       type: "actor",
       defaultValue: "player"
+    }
+  ],
+  [EVENT_PLAYER_SET_SPRITE]: [
+    {
+      key: "spriteSheetId",
+      type: "sprite",
+      defaultValue: "LAST_SPRITE"
     }
   ],
   [EVENT_SHOW_SPRITES]: [

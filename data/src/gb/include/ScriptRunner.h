@@ -57,5 +57,6 @@ void Script_SetFlagValue_b();
 void Script_IfValue_b();
 void Script_IfInput_b();
 void Script_Choice_b();
+void Script_PlayerSetSprite_b();
 
 #endif

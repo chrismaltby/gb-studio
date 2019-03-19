@@ -2,8 +2,9 @@
 #include "UI.h"
 #include "Scene.h"
 #include "FadeManager.h"
-
+#include "BankData.h"
 #include "ScriptRunner.h"
+#include "Macros.h"
 #include "gbt_player.h"
 
 UBYTE joy;
@@ -26,6 +27,10 @@ void game_loop();
 
 int main()
 {
+  BANK_PTR sprite_bank_ptr;
+  UWORD sprite_ptr;
+  UBYTE sprite_index, sprite_frames, sprite_len;
+
   // Init LCD
   LCDC_REG = 0x67;
   set_interrupts(VBL_IFLAG | LCD_IFLAG);
@@ -48,6 +53,17 @@ int main()
   map_next_dir.y = actors[0].dir.y = START_SCENE_DIR_Y;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
+
+  // Load Player Sprite
+  sprite_index = START_PLAYER_SPRITE;
+  ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
+  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+  sprite_len = MUL_4(sprite_frames);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+  actors[0].sprite = 0;
+  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[0].redraw = TRUE;
 
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;

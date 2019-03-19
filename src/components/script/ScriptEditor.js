@@ -252,6 +252,8 @@ class ScriptEditor extends Component {
                 : 0;
           } else if (field.defaultValue === "LAST_MUSIC") {
             memo[field.key] = this.props.music[0].id;
+          } else if (field.defaultValue === "LAST_SPRITE") {
+            memo[field.key] = this.props.spriteSheets[0].id;
           } else if (field.defaultValue !== undefined) {
             memo[field.key] = field.defaultValue;
           }
@@ -360,7 +362,8 @@ function mapStateToProps(state) {
   return {
     variables: state.project.present && state.project.present.variables,
     scenes: state.project.present && state.project.present.scenes,
-    music: state.project.present && state.project.present.music
+    music: state.project.present && state.project.present.music,
+    spriteSheets: state.project.present && state.project.present.spriteSheets
   };
 }
 

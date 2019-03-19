@@ -24,9 +24,9 @@ UINT8 scene_bank = 3;
 
 // Scene Init Globals - Needed since split init across multiple functions
 UWORD image_index;
-BANK_PTR bank_ptr, sprite_bank_ptr;
-UWORD scene_load_ptr, scene_load_sprite_ptr, scene_load_col_ptr;
-UBYTE tileset_index, sprite_index;
+BANK_PTR bank_ptr;
+UWORD scene_load_ptr, scene_load_col_ptr;
+UBYTE tileset_index;
 UBYTE sprite_len, collision_tiles_len, col_bank;
 // End of Scene Init Globals
 
@@ -92,6 +92,8 @@ void SceneInit_b1()
 
 void SceneInit_b2()
 {
+  BANK_PTR sprite_bank_ptr;
+  UWORD sprite_ptr, sprite_index;
   UBYTE num_sprites, k, i;
   num_sprites = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
 
@@ -104,13 +106,13 @@ void SceneInit_b2()
     sprite_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + i);
     // LOG("SPRITE INDEX=%u\n", sprite_index);
     ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-    scene_load_sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-    sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, scene_load_sprite_ptr));
+    sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+    sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr));
     // LOG("SPRITE LEN=%u\n", sprite_len);
-    SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, scene_load_sprite_ptr + 1);
+    SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
   }
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, scene_load_sprite_ptr + 1);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   scene_load_ptr = scene_load_ptr + num_sprites;
 }
 
@@ -172,22 +174,10 @@ void SceneInit_b4()
 
 void SceneInit_b5()
 {
-  UBYTE sprite_frames;
-
   // Store pointer to collisions for later
   collision_tiles_len = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
   scene_load_col_ptr = scene_load_ptr + 1;
   col_bank = bank_ptr.bank;
-
-  // Load Player Sprite
-  sprite_index = START_PLAYER_SPRITE;
-  ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-  scene_load_sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, scene_load_sprite_ptr);
-  sprite_len = MUL_4(sprite_frames);
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, scene_load_sprite_ptr + 1);
-  actors[0].sprite = 0;
-  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
 }
 
 void SceneInit_b6()
