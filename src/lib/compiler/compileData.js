@@ -396,6 +396,13 @@ export const precompileStrings = scenes => {
       if (strings.indexOf(text) === -1) {
         strings.push(text);
       }
+    } else if (cmd.command === EVENT_CHOICE) {
+      const text = " " + 
+        cmd.args.trueText.slice(0,17) + "\n" +
+        cmd.args.falseText(0,17);
+      if (strings.indexOf(text) === -1) {
+        strings.push(text);
+      }
     }
   });
   if (strings.length == 0) {
