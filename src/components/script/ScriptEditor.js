@@ -12,6 +12,7 @@ import {
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
+  EVENT_IF_INPUT,
   EVENT_END,
   EVENT_LOOP
 } from "../../lib/compiler/eventTypes";
@@ -62,7 +63,11 @@ const cardTarget = {
 };
 
 const isConditionalEvent = command => {
-  return [EVENT_IF_TRUE, EVENT_IF_FALSE, EVENT_IF_VALUE].indexOf(command) > -1;
+  return (
+    [EVENT_IF_TRUE, EVENT_IF_FALSE, EVENT_IF_VALUE, EVENT_IF_INPUT].indexOf(
+      command
+    ) > -1
+  );
 };
 
 class ActionMini extends Component {

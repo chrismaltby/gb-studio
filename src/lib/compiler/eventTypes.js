@@ -13,6 +13,7 @@ export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
 export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
+export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
@@ -60,6 +61,7 @@ export const EventNames = {
   [EVENT_IF_TRUE]: "If Variable Is 'True'",
   [EVENT_IF_FALSE]: "If Variable Is 'False'",
   [EVENT_IF_VALUE]: "If Variable Has Value",
+  [EVENT_IF_INPUT]: "If Joypad Input Pressed",
   [EVENT_SET_TRUE]: "Set Variable To 'True'",
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
@@ -85,7 +87,7 @@ export const EventNames = {
   [EVENT_OVERLAY_HIDE]: "Hide Overlay",
   [EVENT_OVERLAY_SET_POSITION]: "Overlay Set Position",
   [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
-  [EVENT_AWAIT_INPUT]: "Await Input",
+  [EVENT_AWAIT_INPUT]: "Await Joypad Input",
   [EVENT_MUSIC_PLAY]: "Play Music",
   [EVENT_MUSIC_STOP]: "Stop Music",
   [EVENT_STOP]: "Stop Script"
@@ -186,6 +188,14 @@ export const EventFields = {
       max: 255,
       width: "50%",
       defaultValue: "0"
+    }
+  ],
+  [EVENT_IF_INPUT]: [
+    {
+      key: "input",
+      label: "Any of",
+      type: "input",
+      defaultValue: ["a", "b"]
     }
   ],
   [EVENT_SET_TRUE]: [

@@ -592,3 +592,33 @@ void Script_SetFlagValue_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: IfInput
+ * ----------------------------
+ * Goto true path if joy mask overlaps
+ */
+void Script_IfInput_b()
+{
+  if ((joy & script_cmd_args[0]) != 0)
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
+  script_continue = TRUE;
+}
+
+/*
+ * Command: Choice
+ * ----------------------------
+ * Display multiple choice input
+ */
+void Script_Choice_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  script_action_complete = FALSE;
+}

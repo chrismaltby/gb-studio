@@ -405,7 +405,10 @@ export const precompileStrings = scenes => {
       }
     } else if (cmd.command === EVENT_CHOICE) {
       const text =
-        " " + cmd.args.trueText.slice(0, 17) + "\n" + cmd.args.falseText(0, 17);
+        " " +
+        cmd.args.trueText.slice(0, 17) +
+        "\n" +
+        cmd.args.falseText.slice(0, 17);
       if (strings.indexOf(text) === -1) {
         strings.push(text);
       }

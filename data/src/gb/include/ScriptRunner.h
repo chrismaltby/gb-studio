@@ -55,5 +55,7 @@ void Script_IncFlag_b();
 void Script_DecFlag_b();
 void Script_SetFlagValue_b();
 void Script_IfValue_b();
+void Script_IfInput_b();
+void Script_Choice_b();
 
 #endif

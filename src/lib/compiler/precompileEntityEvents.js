@@ -35,7 +35,9 @@ import {
   EVENT_STOP,
   EVENT_INC_VALUE,
   EVENT_DEC_VALUE,
-  EVENT_SET_VALUE
+  EVENT_SET_VALUE,
+  EVENT_IF_INPUT,
+  EVENT_CHOICE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec, operatorDec } from "./helpers";
@@ -95,7 +97,9 @@ const CMD_LOOKUP = {
   INC_VALUE: 0x22,
   DEC_VALUE: 0x23,
   SET_VALUE: 0x24,
-  IF_VALUE: 0x25
+  IF_VALUE: 0x25,
+  IF_INPUT: 0x26,
+  CHOICE: 0x27
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -174,6 +178,23 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.TEXT);
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
+    } else if (command === EVENT_CHOICE) {
+      const text =
+        " " +
+        input[i].args.trueText.slice(0, 17) +
+        "\n" +
+        input[i].args.falseText.slice(0, 17);
+      const stringIndex = strings.indexOf(text);
+      if (stringIndex === -1) {
+        throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
+      }
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(CMD_LOOKUP.CHOICE);
+      // output.push(hi(variableIndex));
+      // output.push(lo(variableIndex));
+      output.push(hi(stringIndex));
+      output.push(lo(stringIndex));
+      console.log("CHOICE", stringIndex, text);
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
@@ -199,6 +220,13 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(operatorDec(input[i].args.operator));
       output.push(input[i].args.comparator || 0);
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
+      });
+    } else if (command === EVENT_IF_INPUT) {
+      output.push(CMD_LOOKUP.IF_INPUT);
+      output.push(inputDec(input[i].args.input));
       compileConditional(input[i].true, input[i].false, {
         ...options,
         output
