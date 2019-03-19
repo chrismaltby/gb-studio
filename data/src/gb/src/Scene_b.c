@@ -60,18 +60,18 @@ void SceneSetEmote_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
 
+UWORD image_index;
+BANK_PTR bank_ptr, sprite_bank_ptr, events_ptr;
+UWORD ptr, sprite_ptr, col_ptr;
+UBYTE i, tileset_index, tileset_size, sprite_index;
+UBYTE k, j, sprite_len, collision_tiles_len, col_bank;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Initialise
 ////////////////////////////////////////////////////////////////////////////////
 
-void SceneInit_b()
+void SceneInit_b1()
 {
-  UWORD image_index;
-  BANK_PTR bank_ptr, sprite_bank_ptr, events_ptr;
-  UWORD ptr, sprite_ptr, col_ptr;
-  UBYTE i, tileset_index, tileset_size, num_sprites, sprite_index;
-  UBYTE k, j, sprite_frames, sprite_len, collision_tiles_len, col_bank;
-
   DISPLAY_OFF;
 
   SpritesReset();
@@ -86,6 +86,11 @@ void SceneInit_b()
   ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   image_index = ReadBankedUWORD(bank_ptr.bank, ptr);
+}
+
+void SceneInit_b2()
+{
+  UBYTE num_sprites;
   num_sprites = ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
 
   // Load sprites
@@ -104,9 +109,12 @@ void SceneInit_b()
     k += sprite_len;
   }
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
-
-  // Load actors
   ptr = ptr + num_sprites;
+}
+
+void SceneInit_b3()
+{
+  // Load actors
   scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, ptr) + 1;
   ptr = ptr + 1;
   // LOG("NUM ACTORS=%u\n", scene_num_actors);
@@ -133,7 +141,10 @@ void SceneInit_b()
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
     ptr = ptr + 9u;
   }
+}
 
+void SceneInit_b4()
+{
   // Load triggers
   scene_num_triggers = ReadBankedUBYTE(bank_ptr.bank, ptr);
   ptr = ptr + 1;
@@ -151,6 +162,11 @@ void SceneInit_b()
     triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 7);
     ptr = ptr + 8u;
   }
+}
+
+void SceneInit_b5()
+{
+  UBYTE sprite_frames;
 
   // Store pointer to collisions for later
   collision_tiles_len = ReadBankedUBYTE(bank_ptr.bank, ptr);
@@ -166,7 +182,10 @@ void SceneInit_b()
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+}
 
+void SceneInit_b6()
+{
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
   ReadBankedBankPtr(16, &bank_ptr, &background_bank_ptrs[image_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
@@ -174,22 +193,29 @@ void SceneInit_b()
   scene_width = ReadBankedUBYTE(bank_ptr.bank, ptr + 1u);
   scene_height = ReadBankedUBYTE(bank_ptr.bank, ptr + 2u);
   SetBankedBkgTiles(bank_ptr.bank, 0, 0, scene_width, scene_height, ptr + 3u);
+}
 
+void SceneInit_b7()
+{
   // Load Image Tileset
   ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tileset_index]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   tileset_size = ReadBankedUBYTE(bank_ptr.bank, ptr);
   SetBankedBkgData(bank_ptr.bank, 0, tileset_size, ptr + 1u);
+}
 
+void SceneInit_b8()
+{
   // Load collisions ( bitwise ceil by adding the divisor minus one to the dividend )
   for (i = 0; i != collision_tiles_len; i++)
   {
     scene_col_tiles[i] = ReadBankedUBYTE(col_bank, col_ptr);
     col_ptr++;
   }
+}
 
-  // LOG("COL TILES LEN = %u\n", collision_tiles_len);
-
+void SceneInit_b9()
+{
   // Init player
   actors[0].redraw = TRUE;
   actors[0].enabled = TRUE;
@@ -199,15 +225,11 @@ void SceneInit_b()
   actors[0].dir.x = map_next_dir.x;
   actors[0].dir.y = map_next_dir.y;
 
-  SHOW_SPRITES;
-
   // Load starting script
   ptr = col_ptr;
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, ptr + 2);
   ScriptStart(&events_ptr);
-
-  // scene_num_actors = 1;
 
   // Hide unused Sprites
   for (i = scene_num_actors; i != MAX_ACTORS; i++)
@@ -227,6 +249,7 @@ void SceneInit_b()
 
   time = 0;
 
+  SHOW_SPRITES;
   DISPLAY_ON;
 }
 
