@@ -84,6 +84,17 @@ class AddCommandButton extends Component {
     }
   };
 
+  onKeyUp = e => {
+    const { selectedIndex } = this.state;
+    const actionsList = this.filteredList();
+    this.setState({
+      selectedIndex: Math.max(
+        0,
+        Math.min(actionsList.length - 1, selectedIndex)
+      )
+    });
+  };
+
   filteredList = () => {
     const { query } = this.state;
     return query
@@ -116,6 +127,7 @@ class AddCommandButton extends Component {
                 placeholder="Search..."
                 onChange={this.onSearch}
                 onKeyDown={this.onKeyDown}
+                onKeyUp={this.onKeyUp}
                 onBlur={this.onClose}
                 value={query}
               />
