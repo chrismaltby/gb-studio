@@ -35,13 +35,15 @@ class World extends Component {
       const oldScrollY = view.scrollTop;
       const halfViewWidth = 0.5 * view.clientWidth;
       const halfViewHeight = 0.5 * view.clientHeight;
-      const oldCenterX = oldScrollX + halfViewWidth;
-      const oldCenterY = oldScrollY + halfViewHeight;
+      const offsetX = this.mouseOver ? this.offsetX : halfViewWidth;
+      const offsetY = this.mouseOver ? this.offsetY : halfViewHeight;
+      const oldCenterX = oldScrollX + offsetX;
+      const oldCenterY = oldScrollY + offsetY;
       const zoomChange = this.props.zoomRatio / prevProps.zoomRatio;
       const newCenterX = oldCenterX * zoomChange;
       const newCenterY = oldCenterY * zoomChange;
-      const newScrollX = newCenterX - halfViewWidth;
-      const newScrollY = newCenterY - halfViewHeight;
+      const newScrollX = newCenterX - offsetX;
+      const newScrollY = newCenterY - offsetY;
       viewContents.style.transform = `scale(${this.props.zoomRatio})`;
       view.scroll({
         top: newScrollY,
@@ -81,11 +83,23 @@ class World extends Component {
     const boundingRect = e.currentTarget.getBoundingClientRect();
     const x = e.pageX + e.currentTarget.scrollLeft - 0;
     const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
+
+    this.offsetX = e.pageX;
+    this.offsetY = e.pageY - boundingRect.y;
+
     this.setState({
       hover: true,
       hoverX: x / zoomRatio - 128,
       hoverY: y / zoomRatio - 128
     });
+  };
+
+  onMouseEnter = e => {
+    this.mouseOver = true;
+  };
+
+  onMouseLeave = e => {
+    this.mouseOver = false;
   };
 
   onAddScene = e => {
@@ -131,6 +145,8 @@ class World extends Component {
         ref={this.scrollRef}
         className="World"
         onMouseMove={this.onMouseMove}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
