@@ -8,9 +8,12 @@
 }
 
 .AddCommandButton__Menu {
-  position: absolute;
-  left: 4px;
-  right: 4px;
+  position: fixed;
+  left: 50%;
+  top: 40px;
+  width: 600px;
+  max-height: 515px;
+  transform: translate(-50%, 0);
   padding-bottom: 4px;
   border-radius: 4px;
   font-size: 13px;
@@ -52,7 +55,7 @@
 }
 
 .EditorSidebar .AddCommandButton__List {
-  max-height: 215px;
+  max-height: 480px;
   overflow: auto;
 }
 
