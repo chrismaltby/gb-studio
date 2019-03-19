@@ -8,7 +8,7 @@ const TILE_SIZE = 8;
 const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
-const loadImageData = async filename => {
+const loadBackgroundData = async filename => {
   const size = await sizeOfAsync(filename);
   const relativePath = filename.replace(/.*assets\/backgrounds\//, "");
   return {
@@ -21,13 +21,13 @@ const loadImageData = async filename => {
   };
 };
 
-const loadAllImageData = async projectRoot => {
+const loadAllBackgroundData = async projectRoot => {
   const imagePaths = await globAsync(
     projectRoot + "/assets/backgrounds/**/*.png"
   );
-  const imageData = await Promise.all(imagePaths.map(loadImageData));
+  const imageData = await Promise.all(imagePaths.map(loadBackgroundData));
   return imageData;
 };
 
-export default loadAllImageData;
-export { loadImageData };
+export default loadAllBackgroundData;
+export { loadBackgroundData };
