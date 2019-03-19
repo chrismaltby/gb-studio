@@ -410,7 +410,7 @@ export const precompileStrings = scenes => {
       const text =
         " " +
         cmd.args.trueText.slice(0, 17) +
-        "\n" +
+        "\n " +
         cmd.args.falseText.slice(0, 17);
       if (strings.indexOf(text) === -1) {
         strings.push(text);

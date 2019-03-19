@@ -54,7 +54,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagValue_b, 3},   // 0x24
     {Script_IfValue_b, 6},        // 0x25
     {Script_IfInput_b, 3},        // 0x26
-    {Script_Choice_b, 2}          // 0x26
+    {Script_Choice_b, 4}          // 0x26
 
 };
 

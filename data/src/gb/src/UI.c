@@ -98,6 +98,11 @@ void UIShowText(UWORD line)
   text_count = 0;
 }
 
+void UIShowChoice(UWORD flag_index, UWORD line)
+{
+  UIShowText(line);
+}
+
 void UISetTextBuffer(unsigned char *text)
 {
   UIDrawFrame(0, 2, 20, 4);

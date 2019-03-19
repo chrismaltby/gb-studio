@@ -25,6 +25,7 @@ void UIDrawDialogueFrame();
 void UIDrawText(char *str, UBYTE x, UBYTE y);
 void UIDrawTextBkg(char *str, UBYTE x, UBYTE y);
 void UIShowText(UWORD line);
+void UIShowChoice(UWORD flag_index, UWORD line);
 void UISetTextBuffer(unsigned char *text);
 void UIDrawTextBuffer();
 void UISetPos(UBYTE x, UBYTE y);

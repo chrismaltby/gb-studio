@@ -619,6 +619,6 @@ void Script_IfInput_b()
 void Script_Choice_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3]);
   script_action_complete = FALSE;
 }
