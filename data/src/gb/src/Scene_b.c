@@ -75,6 +75,7 @@ void SceneInit_b()
   DISPLAY_OFF;
 
   SpritesReset();
+  UIInit();
 
   SCX_REG = 0;
   SCY_REG = 0;
