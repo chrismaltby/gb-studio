@@ -27,7 +27,6 @@ import {
   EVENT_RETURN_TO_TITLE,
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_HIDE,
-  EVENT_OVERLAY_SET_POSITION,
   EVENT_OVERLAY_MOVE_TO,
   EVENT_AWAIT_INPUT,
   EVENT_MUSIC_PLAY,
@@ -260,25 +259,25 @@ const precompileEntityScript = (input = [], options = {}) => {
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       let speed = input[i].args.speed || 1;
-      let speedVariable = (1 << speed) - 1;
+      let speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_FADE_OUT) {
       output.push(CMD_LOOKUP.FADE_OUT);
       let speed = input[i].args.speed || 1;
-      let speedVariable = (1 << speed) - 1;
+      let speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_CAMERA_MOVE_TO) {
       output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
       output.push(input[i].args.x);
       output.push(input[i].args.y);
       let speed = input[i].args.speed || 0;
-      let speedVariable = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedVariable);
+      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      output.push(speedFlag);
     } else if (command === EVENT_CAMERA_LOCK) {
       output.push(CMD_LOOKUP.CAMERA_LOCK);
       let speed = input[i].args.speed || 0;
-      let speedVariable = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedVariable);
+      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      output.push(speedFlag);
     } else if (command === EVENT_START_BATTLE) {
       let encounterIndex = parseInt(input[i].args.encounter, 10);
       if (encounterIndex > -1) {
@@ -363,14 +362,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.y || 0);
     } else if (command === EVENT_OVERLAY_HIDE) {
       output.push(CMD_LOOKUP.OVERLAY_HIDE);
-    } else if (command === EVENT_OVERLAY_SET_POSITION) {
-      output.push(CMD_LOOKUP.OVERLAY_SET_POSITION);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
     } else if (command === EVENT_OVERLAY_MOVE_TO) {
       output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+      let speed = input[i].args.speed || 0;
+      output.push(speed);
     } else if (command === EVENT_AWAIT_INPUT) {
       output.push(CMD_LOOKUP.AWAIT_INPUT);
       output.push(inputDec(input[i].args.input));

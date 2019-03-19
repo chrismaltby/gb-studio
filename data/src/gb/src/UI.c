@@ -16,6 +16,7 @@ UBYTE win_pos_x;
 UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
 UBYTE win_dest_pos_y;
+UBYTE win_speed;
 
 UBYTE text_x;
 UBYTE text_y;
@@ -91,7 +92,7 @@ void UIShowText(UWORD line)
   POP_BANK;
 
   UISetPos(0, MENU_CLOSED_Y);
-  UIMoveTo(0, MENU_OPEN_Y);
+  UIMoveTo(0, MENU_OPEN_Y, 1);
   text_drawn = FALSE;
   text_x = 0;
   text_y = 0;
@@ -210,10 +211,19 @@ void UISetPos(UBYTE x, UBYTE y)
   win_dest_pos_y = y;
 }
 
-void UIMoveTo(UBYTE x, UBYTE y)
+void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed)
 {
   win_dest_pos_x = x;
   win_dest_pos_y = y;
+  if (speed == 0)
+  {
+    win_pos_x = x;
+    win_pos_y = y;
+  }
+  else
+  {
+    win_speed = speed;
+  }
 }
 
 UBYTE UIIsClosed()
@@ -225,7 +235,7 @@ void UIOnInteract()
 {
   if (text_drawn && text_count != 0)
   {
-    UIMoveTo(0, MENU_CLOSED_Y);
+    UIMoveTo(0, MENU_CLOSED_Y, 1);
   }
 }
 

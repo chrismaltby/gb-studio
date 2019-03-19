@@ -476,7 +476,7 @@ void Script_OverlaySetPos_b()
  */
 void Script_OverlayMoveTo_b()
 {
-  UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
+  UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3, script_cmd_args[2]);
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }

@@ -42,8 +42,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_Noop_b, 0},           // 0x18
     {Script_ShowOverlay_b, 3},    // 0x19
     {Script_HideOverlay_b, 0},    // 0x1A
-    {Script_OverlaySetPos_b, 2},  // 0x1B
-    {Script_OverlayMoveTo_b, 2},  // 0x1C
+    {Script_Noop_b, 0},           // 0x1B
+    {Script_OverlayMoveTo_b, 3},  // 0x1C
     {Script_AwaitInput_b, 1},     // 0x1D
     {Script_MusicPlay_b, 2},      // 0x1E
     {Script_MusicStop_b, 0},      // 0x1F

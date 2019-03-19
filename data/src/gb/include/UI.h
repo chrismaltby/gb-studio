@@ -17,6 +17,7 @@ extern UBYTE win_pos_x;
 extern UBYTE win_pos_y;
 extern UBYTE win_dest_pos_x;
 extern UBYTE win_dest_pos_y;
+extern UBYTE win_speed;
 
 void UIInit();
 void UIUpdate();
@@ -29,7 +30,7 @@ void UIShowChoice(UWORD flag_index, UWORD line);
 void UISetTextBuffer(unsigned char *text);
 void UIDrawTextBuffer();
 void UISetPos(UBYTE x, UBYTE y);
-void UIMoveTo(UBYTE x, UBYTE y);
+void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed);
 UBYTE UIIsClosed();
 void UIOnInteract();
 UBYTE UIAtDest();

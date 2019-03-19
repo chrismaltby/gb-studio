@@ -47,7 +47,6 @@ export const EVENT_ACTOR_HIDE = "EVENT_ACTOR_HIDE";
 // Overlay
 export const EVENT_OVERLAY_SHOW = "EVENT_OVERLAY_SHOW";
 export const EVENT_OVERLAY_HIDE = "EVENT_OVERLAY_HIDE";
-export const EVENT_OVERLAY_SET_POSITION = "EVENT_OVERLAY_SET_POSITION";
 export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 
 // Music
@@ -85,7 +84,6 @@ export const EventNames = {
   [EVENT_HIDE_SPRITES]: "Hide Sprites",
   [EVENT_OVERLAY_SHOW]: "Show Overlay",
   [EVENT_OVERLAY_HIDE]: "Hide Overlay",
-  [EVENT_OVERLAY_SET_POSITION]: "Overlay Set Position",
   [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
   [EVENT_AWAIT_INPUT]: "Await Joypad Input",
   [EVENT_MUSIC_PLAY]: "Play Music",
@@ -457,26 +455,6 @@ export const EventFields = {
       label: "Hides overlay window from screen."
     }
   ],
-  [EVENT_OVERLAY_SET_POSITION]: [
-    {
-      key: "x",
-      label: "X",
-      type: "number",
-      min: 0,
-      max: 20,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "y",
-      label: "Y",
-      type: "number",
-      min: 0,
-      max: 18,
-      defaultValue: 0,
-      width: "50%"
-    }
-  ],
   [EVENT_OVERLAY_MOVE_TO]: [
     {
       key: "x",
@@ -495,6 +473,11 @@ export const EventFields = {
       max: 18,
       defaultValue: 0,
       width: "50%"
+    },
+    {
+      key: "speed",
+      type: "cameraSpeed",
+      defaultValue: "0"
     }
   ],
   [EVENT_AWAIT_INPUT]: [
