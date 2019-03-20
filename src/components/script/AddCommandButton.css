@@ -10,20 +10,17 @@
 .AddCommandButton__Menu {
   position: fixed;
   left: 50%;
-  top: 40px;
+  top: 37px;
   width: 600px;
   max-height: 515px;
   transform: translate(-50%, 0);
   padding-bottom: 4px;
-  border-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
   font-size: 13px;
   background: var(--menu-bg-color);
-  box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 1px 50px rgba(0, 0, 0, 0.3);
   z-index: 1001;
-}
-
-.AddCommandButton__Menu--Upwards {
-  bottom: 34px;
 }
 
 .AddCommandButton__Search {

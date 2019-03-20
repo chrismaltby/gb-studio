@@ -28,8 +28,7 @@ class AddCommandButton extends Component {
     const boundingRect = this.button.current.getBoundingClientRect();
     this.setState({
       open: true,
-      query: "",
-      direction: boundingRect.y > 300 ? DIRECTION_UP : DIRECTION_DOWN
+      query: ""
     });
   };
 
@@ -68,6 +67,10 @@ class AddCommandButton extends Component {
       if (actionsList[selectedIndex]) {
         this.onAdd(actionsList[selectedIndex])();
       }
+    } else if (e.key === "Escape") {
+      this.setState({
+        open: false
+      });
     } else if (e.key === "ArrowDown") {
       this.setState({
         selectedIndex: Math.min(actionsList.length - 1, selectedIndex + 1)
@@ -110,17 +113,13 @@ class AddCommandButton extends Component {
   };
 
   render() {
-    const { query, open, direction, selectedIndex } = this.state;
+    const { query, open, selectedIndex } = this.state;
     const actionsList = this.filteredList();
     return (
       <div ref={this.button} className="AddCommandButton">
         <Button onClick={this.onOpen}>Add Command</Button>
         {open && (
-          <div
-            className={cx("AddCommandButton__Menu", {
-              "AddCommandButton__Menu--Upwards": direction === DIRECTION_UP
-            })}
-          >
+          <div className={cx("AddCommandButton__Menu")}>
             <div className="AddCommandButton__Search">
               <input
                 autoFocus
