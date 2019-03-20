@@ -15,20 +15,21 @@ const render = () => {
 
 render();
 
-systemPreferences.subscribeNotification(
-  "AppleInterfaceThemeChangedNotification",
-  function theThemeHasChanged() {
-    updateMyAppTheme(systemPreferences.isDarkMode());
-  }
-);
-
 function updateMyAppTheme(darkMode) {
   console.log("updateMyAppTheme", darkMode);
   const themeStyle = document.getElementById("theme");
   themeStyle.href = "../styles/" + (darkMode ? "theme-dark.css" : "theme.css");
 }
 
-updateMyAppTheme(systemPreferences.isDarkMode());
+if (systemPreferences.subscribeNotification) {
+  systemPreferences.subscribeNotification(
+    "AppleInterfaceThemeChangedNotification",
+    function theThemeHasChanged() {
+      updateMyAppTheme(systemPreferences.isDarkMode());
+    }
+  );
+  updateMyAppTheme(systemPreferences.isDarkMode());
+}
 
 if (module.hot) {
   module.hot.accept(render);
