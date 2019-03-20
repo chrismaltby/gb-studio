@@ -360,7 +360,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_HIDE);
       output.push(actorIndex);
     } else if (command === EVENT_PLAYER_SET_SPRITE) {
-      const spriteIndex = getSpriteIndex(input[i].args.spriteId, sprites);
+      const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);
       output.push(spriteIndex);
     } else if (command === EVENT_RETURN_TO_TITLE) {

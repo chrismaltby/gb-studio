@@ -26,13 +26,27 @@ const walkSceneEvents = (scene, callback) => {
   });
 };
 
-const findSceneEvent = (scene, id) => {
+const findSceneEvent = (scene, fn) => {
   let event = null;
-  walkSceneEvents(scene, walkEvent => {
-    if (walkEvent.id === id) {
-      event = walkEvent;
+  if (typeof fn === "string") {
+    const id = fn;
+    fn = walkEvent => {
+      return walkEvent.id === id;
+    };
+  }
+  try {
+    walkSceneEvents(scene, walkEvent => {
+      if (fn(walkEvent)) {
+        event = walkEvent;
+        throw "FOUND_EVENT";
+      }
+    });
+  } catch (err) {
+    if (event) {
+      return event;
     }
-  });
+    throw err;
+  }
   return event;
 };
 

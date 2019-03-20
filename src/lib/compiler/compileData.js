@@ -1,5 +1,5 @@
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
-import { walkScenesEvents } from "../helpers/eventSystem";
+import { walkScenesEvents, findSceneEvent } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
@@ -509,8 +509,12 @@ export const precompileSprites = async (
   const usedSprites = spriteSheets.filter(
     spriteSheet =>
       spriteSheet.id === playerSpriteSheetId ||
-      scenes.find(scene =>
-        scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id)
+      scenes.find(
+        scene =>
+          scene.actors.find(actor => actor.spriteSheetId === spriteSheet.id) ||
+          findSceneEvent(scene, event => {
+            return event.args && event.args.spriteSheetId === spriteSheet.id;
+          })
       )
   );
 
