@@ -20,9 +20,6 @@ UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 
-extern const unsigned char song_palette_town0[];
-extern const unsigned char *song_palette_town_Data[];
-
 void game_loop();
 
 int main()

@@ -16,7 +16,6 @@ void SceneSetEmote_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
 UBYTE SceneCameraAtDest_b();
 
-// UWORD map_next_index;
 POS map_next_pos;
 VEC2D map_next_dir;
 ACTOR actors[MAX_ACTORS];
