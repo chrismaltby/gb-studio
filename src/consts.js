@@ -15,11 +15,19 @@ const rootDir = isDist
       .replace(/[\\/]dist$/, "")
   : path.normalize(__dirname + "/../");
 
-const engineRoot = path.normalize(rootDir + "/data/src");
+const engineRoot = path.normalize(rootDir + "/appData/src");
 const buildToolsRoot = path.normalize(rootDir + "/buildTools");
-const emulatorRoot = path.normalize(rootDir + "/data/js-emulator");
-const projectTemplatesRoot = path.normalize(rootDir + "/data/templates");
+const emulatorRoot = path.normalize(rootDir + "/appData/js-emulator");
+const projectTemplatesRoot = path.normalize(rootDir + "/appData/templates");
 
-console.log({ __dirname, isDist, rootDir, engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot });
+console.log({
+  __dirname,
+  isDist,
+  rootDir,
+  engineRoot,
+  buildToolsRoot,
+  emulatorRoot,
+  projectTemplatesRoot
+});
 
 export { engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };
