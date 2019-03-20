@@ -5,6 +5,7 @@ import { remote } from "electron";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
+import buildMakeBat from "./buildMakeBat";
 
 const makeBuild = ({
   buildType = "rom",
@@ -37,6 +38,9 @@ const makeBuild = ({
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
+
+    const makeBat = await buildMakeBat(buildRoot);
+    await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
     const command = process.platform === "win32" ? "make.bat" : "make";
     const args = ["rom"];
