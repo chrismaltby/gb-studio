@@ -14,14 +14,13 @@ export default async buildRoot => {
   const srcFiles = await fs.readdir(srcRoot);
   const dataFiles = await fs.readdir(dataRoot);
 
-  cmds.push(`md obj\data`);
-  cmds.push(`md obj\music`);
-  cmds.push(`md build\rom`);
+  cmds.push(`md obj\\data`);
+  cmds.push(`md obj\\music`);
+  cmds.push(`md build\\rom`);
 
   for (let file of srcFiles) {
     const fileStat = await fs.lstat(`${srcRoot}/${file}`);
     const ext = Path.extname(file);
-    console.log(ext);
     if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
       buildFiles.push(`src/${file}`);
     }
@@ -30,7 +29,6 @@ export default async buildRoot => {
   for (let file of dataFiles) {
     const fileStat = await fs.lstat(`${dataRoot}/${file}`);
     const ext = Path.extname(file);
-    console.log(ext);
     if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
       buildFiles.push(`src/data/${file}`);
     }
