@@ -6,11 +6,12 @@ import createProject, {
   ERR_PROJECT_EXISTS
 } from "../../lib/project/createProject";
 import { ipcRenderer, remote } from "electron";
+import Path from "path";
 
 const getLastUsedPath = () => {
   const storedPath = localStorage.getItem("__lastUsedPath");
   if (storedPath) {
-    return storedPath;
+    return Path.normalize(storedPath);
   } else {
     return remote.app.getPath("documents");
   }
@@ -77,7 +78,7 @@ class Splash extends Component {
 
   onSelectFolder = e => {
     if (e.target.files && e.target.files[0]) {
-      const newPath = e.target.files[0].path + "/";
+      const newPath = Path.normalize(e.target.files[0].path + "/");
       setLastUsedPath(newPath);
       this.setState({
         path: newPath
