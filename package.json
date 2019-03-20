@@ -44,9 +44,8 @@
           "/.parcelCache($|/)",
           "/.vscode($|/)",
           "/coverage($|/)",
-          "/dist($|/)",
           "/test($|/)",
-          "/data($|/)",
+          "/appData($|/)",
           "/buildTools($|/)"
         ]
       },
