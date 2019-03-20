@@ -112,7 +112,6 @@ void SceneInit_b2()
     SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
   }
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   scene_load_ptr = scene_load_ptr + num_sprites;
 }
 
