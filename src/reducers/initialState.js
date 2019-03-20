@@ -5,6 +5,8 @@ export default {
   document: {
     path: "",
     root: "",
+    loaded: false,
+    saving: false,
     modified: false
   },
   project: {
