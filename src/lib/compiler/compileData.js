@@ -705,7 +705,8 @@ const MOVEMENT_LOOKUP = {
   playerInput: 2,
   randomFace: 3,
   faceInteraction: 4,
-  randomWalk: 5
+  randomWalk: 5,
+  rotateTRB: 6
 };
 
 const dirDec = dir => DIR_LOOKUP[dir] || 1;

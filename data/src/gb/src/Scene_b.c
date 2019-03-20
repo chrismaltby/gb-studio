@@ -425,6 +425,23 @@ void SceneUpdateActors_b()
             actors[i].moving = FALSE;
             ++r;
           }
+          else if (actors[i].movement_type == AI_ROTATE_TRB)
+          {
+            if (actors[i].dir.y == -1)
+            {
+              memcpy(&actors[i].dir, directions[3], sizeof(POS));
+            }
+            else if (actors[i].dir.y == 1)
+            {
+              memcpy(&actors[i].dir, directions[0], sizeof(POS));
+            }
+            else if (actors[i].dir.y == 0)
+            {
+              memcpy(&actors[i].dir, directions[1], sizeof(POS));
+            }
+            actors[i].redraw = TRUE;
+            actors[i].moving = FALSE;
+          }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
           {
             update_dir = directions[r & 3];
@@ -452,6 +469,23 @@ void SceneUpdateActors_b()
             actors[i].redraw = TRUE;
             actors[i].moving = FALSE;
             ++r;
+          }
+          else if (actors[i].movement_type == AI_ROTATE_TRB)
+          {
+            if (actors[i].dir.y == -1)
+            {
+              memcpy(&actors[i].dir, directions[3], sizeof(POS));
+            }
+            else if (actors[i].dir.y == 1)
+            {
+              memcpy(&actors[i].dir, directions[0], sizeof(POS));
+            }
+            else if (actors[i].dir.y == 0)
+            {
+              memcpy(&actors[i].dir, directions[1], sizeof(POS));
+            }
+            actors[i].redraw = TRUE;
+            actors[i].moving = FALSE;
           }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
           {
@@ -663,7 +697,7 @@ static void SceneHandleInput()
     if (npc != scene_num_actors)
     {
       actors[0].moving = FALSE;
-      if (actors[npc].movement_type != NONE)
+      if (actors[npc].movement_type != NONE && actors[npc].movement_type != AI_ROTATE_TRB)
       {
         actors[npc].dir.x = -actors[0].dir.x;
         actors[npc].dir.y = -actors[0].dir.y;
@@ -912,6 +946,10 @@ UBYTE SceneNpcAt_b(UBYTE tx_a, UBYTE ty_a)
   UBYTE i, tx_b, ty_b;
   for (i = 1; i != scene_num_actors; i++)
   {
+    if (!actors[i].enabled || actors[i].movement_type == AI_ROTATE_TRB)
+    {
+      continue;
+    }
     tx_b = DIV_8(actors[i].pos.x);
     ty_b = DIV_8(actors[i].pos.y);
     if ((ty_a == ty_b || ty_a == ty_b - 1) &&

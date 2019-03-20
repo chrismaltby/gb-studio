@@ -15,7 +15,8 @@ typedef enum
     PLAYER_INPUT,
     AI_RANDOM_FACE,
     AI_INTERACT_FACE,
-    AI_RANDOM_WALK
+    AI_RANDOM_WALK,
+    AI_ROTATE_TRB
 } MOVEMENT_TYPE;
 
 typedef enum
