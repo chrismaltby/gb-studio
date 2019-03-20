@@ -163,8 +163,6 @@ const createPlay = async url => {
     playWindow = new BrowserWindow({
       width: 480,
       height: 454,
-      resizable: false,
-      maximizable: false,
       fullscreenable: false,
       webPreferences: {
         nodeIntegration: false,
