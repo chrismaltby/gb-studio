@@ -132,7 +132,6 @@ class AddCommandButton extends Component {
               />
             </div>
             <div className="AddCommandButton__List">
-              <div className="AddCommandButton__ListDivider" />
               {actionsList.map((action, actionIndex) => (
                 <div
                   key={action}
