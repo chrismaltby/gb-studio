@@ -26,7 +26,6 @@
 #define CAMERA_TRANSITION_FLAG 0x20
 
 extern UINT8 scene_bank;
-extern UWORD map_next_index;
 extern POS map_next_pos;
 extern VEC2D map_next_dir;
 extern ACTOR actors[MAX_ACTORS];
