@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include "BankManager.h"
-#include "gbt_player.h";
+#include "gbt_player.h"
 
 void SceneInit_b1();
 void SceneInit_b2();
