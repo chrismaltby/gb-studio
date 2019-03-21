@@ -10,7 +10,7 @@ import {
 import { MenuItem } from "../components/library/Menu";
 import {
   PlayIcon,
-  DownloadIcon,
+  ExportIcon,
   PlusIcon,
   MinusIcon,
   FolderIcon,
@@ -57,6 +57,10 @@ class AppToolbar extends Component {
     this.props.buildGame({ buildType: "web" });
   };
 
+  onBuild = buildType => e => {
+    this.props.buildGame({ buildType, exportBuild: true });
+  };
+
   openProjectFolder = e => {
     this.props.openFolder(`${this.props.projectRoot}`);
   };
@@ -67,11 +71,15 @@ class AppToolbar extends Component {
     return (
       <Toolbar>
         <ToolbarDropdownButton
-          title={sectionNames[section]}
-          style={{ width: 130 }}
+          label={<div style={{ width: 106 }}>{sectionNames[section]}</div>}
         >
           {Object.keys(sectionNames).map(key => (
-            <MenuItem key={key} value={key} onClick={this.setSection(key)}>
+            <MenuItem
+              key={key}
+              value={key}
+              onClick={this.setSection(key)}
+              style={{ minWidth: 200 }}
+            >
               {sectionNames[key]}
             </MenuItem>
           ))}
@@ -94,14 +102,22 @@ class AppToolbar extends Component {
         <ToolbarTitle>{name || "Untitled"}</ToolbarTitle>
         <ToolbarSpacer />
         <ToolbarFixedSpacer style={{ width: 186 }} />
-        <ToolbarButton onClick={this.openProjectFolder}>
+        <ToolbarButton
+          title="Open Project Folder"
+          onClick={this.openProjectFolder}
+        >
           <FolderIcon />
         </ToolbarButton>
-        {/* <ToolbarButton>
-          <DownloadIcon />
-        </ToolbarButton> */}
+        <ToolbarDropdownButton
+          title="Export As..."
+          label={<ExportIcon />}
+          showArrow={false}
+        >
+          <MenuItem onClick={this.onBuild("rom")}>Export ROM</MenuItem>
+          <MenuItem onClick={this.onBuild("web")}>Export Web</MenuItem>
+        </ToolbarDropdownButton>
         <ToolbarFixedSpacer />
-        <ToolbarButton onClick={this.onRun}>
+        <ToolbarButton title="Run" onClick={this.onRun}>
           {running ? <LoadingIcon /> : <PlayIcon />}
         </ToolbarButton>
       </Toolbar>

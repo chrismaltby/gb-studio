@@ -69,17 +69,17 @@ const template = [
         }
       },
       {
-        label: "Build As",
+        label: "Export As",
         submenu: [
           {
-            label: "Rom",
+            label: "Export Rom",
             accelerator: "CommandOrControl+Shift+B",
             click() {
               notifyListeners("build", "rom");
             }
           },
           {
-            label: "Web",
+            label: "Export Web",
             accelerator: "CommandOrControl+Shift+N",
             click() {
               notifyListeners("build", "web");

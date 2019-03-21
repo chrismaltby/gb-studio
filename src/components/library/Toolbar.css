@@ -92,15 +92,21 @@
   font-size: 12px;
 }
 
-.Toolbar__Button + .Toolbar__Button {
+.Toolbar__Button + .Toolbar__Button,
+.Toolbar__DropdownButton + .Toolbar__Button,
+.Toolbar__Button + .Toolbar__DropdownButton {
   margin-left: 5px;
 }
 
-.Toolbar__DropdownButton + .Toolbar__Button {
-  margin-left: 5px;
+.Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
+  width: 10px;
+  flex-grow: 0;
 }
 
-.Toolbar__DropdownButton > .Toolbar__Button > svg {
+.Toolbar__DropdownButton
+  > .Toolbar__Button
+  .Toolbar__DropdownButton__Triangle
+  > svg {
   transform: rotate(180deg);
   width: 10px;
   height: 10px;

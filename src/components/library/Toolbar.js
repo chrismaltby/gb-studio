@@ -30,14 +30,18 @@ export class ToolbarDropdownButton extends Component {
   };
 
   render() {
-    const { children, title, ...props } = this.props;
+    const { children, label, showArrow = true, ...props } = this.props;
     const { open } = this.state;
 
     return (
       <div className="Toolbar__DropdownButton" {...props}>
         <ToolbarButton onClick={this.toggleOpen}>
-          <div>{title}</div>
-          <TriangleIcon />
+          {label}
+          {showArrow && (
+            <div className="Toolbar__DropdownButton__Triangle">
+              <TriangleIcon />
+            </div>
+          )}
         </ToolbarButton>
         {open && <MenuOverlay onClick={this.toggleOpen} />}
         {open && <Menu onClick={this.toggleOpen}>{children}</Menu>}
