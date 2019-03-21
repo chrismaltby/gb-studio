@@ -65,6 +65,7 @@ int main()
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;
 
+  UIInit();
   FadeInit();
 
   DISPLAY_ON;
