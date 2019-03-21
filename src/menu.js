@@ -1,7 +1,6 @@
 const { app, Menu } = require("electron");
 
-// const isDevMode = process.execPath.match(/[\\/]electron/);
-const isDevMode = true;
+const isDevMode = process.execPath.match(/[\\/]electron/);
 
 const template = [
   {

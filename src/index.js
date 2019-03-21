@@ -14,8 +14,7 @@ let splashWindow = null;
 let playWindow = null;
 let helpWindow = null;
 
-// const isDevMode = process.execPath.match(/[\\/]electron/);
-const isDevMode = true;
+const isDevMode = process.execPath.match(/[\\/]electron/);
 
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
