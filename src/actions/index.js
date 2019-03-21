@@ -320,11 +320,16 @@ export const buildGame = ({
   buildType = "web",
   exportBuild = false,
   ejectBuild = false
-} = {}) => {
-  return {
+} = {}) => async (dispatch, getState) => {
+  const state = getState();
+  if (state.console.status === "running") {
+    // Can't build while previous build still in progress
+    return;
+  }
+  dispatch({
     type: types.BUILD_GAME,
     buildType,
     exportBuild,
     ejectBuild
-  };
+  });
 };
