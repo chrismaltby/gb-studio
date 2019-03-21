@@ -3,7 +3,7 @@ import path from "path";
 
 const saveProjectData = async (projectPath, project) => {
   console.log("SAVING PROJECT TO ", projectPath);
-  await fs.writeJson(projectPath, project);
+  await fs.writeFile(projectPath, JSON.stringify(project, null, 4));
   console.log("WROTE TO ", projectPath);
 };
 
