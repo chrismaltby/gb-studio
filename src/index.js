@@ -7,6 +7,9 @@ import { enableLiveReload, addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import menu from "./menu";
 
+// Stop app launching during squirrel install
+if (require("electron-squirrel-startup")) return app.quit();
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
