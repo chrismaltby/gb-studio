@@ -126,7 +126,7 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
 
 void UIDrawDialogueFrame_b()
 {
-  UBYTE i, x, y;
+  UBYTE x;
 
   set_win_tiles(0, 0, 1, 1, ui_frame_tl_tiles);
   set_win_tiles(0, 3, 1, 1, ui_frame_bl_tiles);
@@ -148,7 +148,6 @@ void UIDrawDialogueFrame_b()
 
 void UISetColor_b(UBYTE color)
 {
-  UBYTE i, j;
   // Not sure why need to set_bkg_data again but this doesn't
   // work in rom without reseting here
   set_bkg_data(0xD9, 1, ui_white);
