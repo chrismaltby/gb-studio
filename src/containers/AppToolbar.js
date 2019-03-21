@@ -101,7 +101,7 @@ class AppToolbar extends Component {
         <ToolbarSpacer />
         <ToolbarTitle>{name || "Untitled"}</ToolbarTitle>
         <ToolbarSpacer />
-        <ToolbarFixedSpacer style={{ width: 186 }} />
+        <ToolbarFixedSpacer style={{ width: 138 }} />
         <ToolbarButton
           title="Open Project Folder"
           onClick={this.openProjectFolder}

@@ -28,3 +28,10 @@
   bottom: 0px;
   z-index: 1000;
 }
+
+.Platform__win32 .Menu {
+  border-radius: 0;
+  border: 1px solid #bababa;
+  box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.3);
+  background-color: white;
+}

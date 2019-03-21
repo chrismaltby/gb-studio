@@ -20,18 +20,6 @@
   font-weight: normal;
 }
 
-.Platform__win32 .Button {
-  box-shadow: none;
-  border-radius: 2px;
-  background: #fff;
-  border-color: #ddd;
-}
-
-.Platform__win32 .Button--Transparent {
-  background: transparent;
-  border-color: transparent;
-}
-
 .Button--Transparent {
   background: transparent;
   border-color: transparent;
@@ -80,4 +68,20 @@
 
 .ButtonToolbar__Spacer {
   flex: 1;
+}
+
+.Platform__win32 .Button {
+  box-shadow: none;
+  border-radius: 2px;
+  background: #fff;
+  border-color: #ddd;
+}
+
+.Platform__win32 .Button:hover {
+  background: #fafafa;
+}
+
+.Platform__win32 .Button--Transparent {
+  background: transparent;
+  border-color: transparent;
 }
