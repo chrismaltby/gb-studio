@@ -290,7 +290,7 @@ export const EventFields = {
       label: "X",
       type: "number",
       min: 0,
-      max: 11,
+      max: 12,
       width: "50%",
       defaultValue: 0
     },
@@ -299,7 +299,7 @@ export const EventFields = {
       label: "Y",
       type: "number",
       min: 0,
-      max: 13,
+      max: 14,
       width: "50%",
       defaultValue: 0
     },
