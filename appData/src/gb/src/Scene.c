@@ -2,7 +2,15 @@
 #include "BankManager.h"
 #include "gbt_player.h"
 
-void SceneInit_b();
+void SceneInit_b1();
+void SceneInit_b2();
+void SceneInit_b3();
+void SceneInit_b4();
+void SceneInit_b5();
+void SceneInit_b6();
+void SceneInit_b7();
+void SceneInit_b8();
+void SceneInit_b9();
 void SceneUpdate_b();
 void SceneSetEmote_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
@@ -25,7 +33,55 @@ UBYTE scene_height;
 void SceneInit()
 {
   PUSH_BANK(scene_bank);
-  SceneInit_b();
+  SceneInit_b1();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b2();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b3();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b4();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b5();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b6();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b7();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b8();
+  POP_BANK;
+  gbt_update();
+  wait_vbl_done();
+
+  PUSH_BANK(scene_bank);
+  SceneInit_b9();
   POP_BANK;
 }
 
