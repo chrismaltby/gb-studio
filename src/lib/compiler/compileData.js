@@ -282,6 +282,7 @@ const compile = async (
     `\n` +
     `const unsigned char * music_tracks[] = {\n` +
     (music.map(track => track.dataName + "_Data").join(", ") || "0, 0") +
+    (music.length === 1 ? "," + music.map(track => track.dataName + "_Data").join(", ") : "") + // Needed for windows??
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
     (music.map(track => track.bank).join(", ") || "0, 0") +
