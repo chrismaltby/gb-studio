@@ -8,4 +8,5 @@ src/data/output
 coverage
 .cache
 .parcelCache
+.vscode
 /dist
