@@ -159,15 +159,15 @@ void SceneInit_b4()
   // LOG("NUM TRIGGERS=%u\n", scene_num_triggers);
   for (i = 0; i != scene_num_triggers; i++)
   {
-    triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
-    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
+    triggers[i].pos.x = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr);
+    triggers[i].pos.y = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 1);
     triggers[i].w = 0;
-    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
+    triggers[i].w = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 2);
     triggers[i].h = 0;
-    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
+    triggers[i].h = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 3);
     // @todo 5th byte is type of trigger
-    triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5);
-    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7);
+    triggers[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 5);
+    triggers[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 6) * 256) + ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_ptr + 7);
     scene_load_ptr = scene_load_ptr + 8u;
   }
 }
