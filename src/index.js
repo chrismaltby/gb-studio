@@ -163,7 +163,7 @@ const createHelp = async helpPage => {
 const createPlay = async url => {
   if (!playWindow) {
     const playWidth = process.platform === "win32" ? 494 : 480;
-    const playHeight = process.platform === "win32" ? 491 : 454;
+    const playHeight = process.platform === "win32" ? 471 : 454;
 
     // Create the browser window.
     playWindow = new BrowserWindow({
