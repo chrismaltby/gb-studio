@@ -40,24 +40,25 @@ const compileTrack = async (
     warnings = () => {}
   }
 ) => {
+  let env = Object.create(process.env);
+
+  console.log("ABOUT TO COMPILE TRACK", track);
+  console.log(buildRoot);
+
+  env.PATH = [`${buildToolsPath}/mod2gbt`, env.PATH].join(":");
+  const command = process.platform === "win32" ? `${buildToolsPath}\\mod2gbt\\mod2gbt.exe` : "mod2gbt";
+
+  const modPath = `"${projectRoot}/assets/music/${track.filename}"`;
+  const outputFile = process.platform === "win32" ? "output.c" : "music.c";
+  const args = [modPath, track.dataName, "-c", track.bank];
+
+  const options = {
+    cwd: buildRoot,
+    env,
+    shell: true
+  };
+  
   await new Promise(async (resolve, reject) => {
-    let env = Object.create(process.env);
-
-    console.log("ABOUT TO COMPILE TRACK", track);
-    console.log(buildRoot);
-
-    env.PATH = [`${buildToolsPath}/mod2gbt`, env.PATH].join(":");
-    const command = process.platform === "win32" ? "mod2gbt.exe" : "mod2gbt";
-
-    const modPath = `"${projectRoot}/assets/music/${track.filename}"`;
-
-    const args = [modPath, track.dataName, "-c", track.bank];
-
-    const options = {
-      cwd: buildRoot,
-      env,
-      shell: true
-    };
 
     let child = childProcess.spawn(command, args, options, {
       encoding: "utf8"
@@ -88,7 +89,7 @@ const compileTrack = async (
   });
 
   await fs.move(
-    `${buildRoot}/music.c`,
+    `${buildRoot}/${outputFile}`,
     `${buildRoot}/src/music/${track.dataName}.c`
   );
 };
