@@ -8,8 +8,8 @@
 #include "Macros.h"
 
 UBYTE script_ptr_bank = 0;
-ULWORD script_ptr = 0;
-ULWORD script_start_ptr = 0;
+UWORD script_ptr = 0;
+UWORD script_start_ptr = 0;
 UBYTE script_cmd_args[6] = {0};
 UBYTE script_cmd_args_len;
 SCRIPT_CMD_FN last_fn;
@@ -63,7 +63,7 @@ UBYTE ScriptLastFnComplete();
 void ScriptStart(BANK_PTR *events_ptr)
 {
   script_ptr_bank = events_ptr->bank;
-  script_ptr = ((ULWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
+  script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
   script_start_ptr = script_ptr;
 }
 
