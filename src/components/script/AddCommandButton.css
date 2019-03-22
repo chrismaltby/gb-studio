@@ -13,6 +13,7 @@
   top: 37px;
   width: 600px;
   max-height: 515px;
+  bottom: 20px;
   transform: translate(-50%, 0);
   padding-bottom: 4px;
   border-bottom-left-radius: 4px;
@@ -52,7 +53,7 @@
 }
 
 .EditorSidebar .AddCommandButton__List {
-  max-height: 480px;
+  max-height: calc(100% - 40px);
   overflow: auto;
 }
 
