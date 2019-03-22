@@ -15,7 +15,7 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
   if (index != current_index)
   {
     current_index = index;
-    music_bank = ReadBankedUBYTE(16, &music_banks[index]);
+    music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
     PUSH_BANK(return_bank);
     gbt_play(music_tracks[index], music_bank, 7);

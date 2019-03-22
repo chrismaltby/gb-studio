@@ -86,7 +86,7 @@ void SceneInit_b1()
   WY_REG = MAXWNDPOSY;
 
   // Load scene
-  ReadBankedBankPtr(16, &bank_ptr, &scene_bank_ptrs[scene_index]);
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   image_index = ReadBankedUWORD(bank_ptr.bank, scene_load_ptr);
 }
@@ -106,7 +106,7 @@ void SceneInit_b2()
     // LOG("LOAD SPRITE=%u k=%u\n", i, k);
     sprite_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + i);
     // LOG("SPRITE INDEX=%u\n", sprite_index);
-    ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
+    ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
     sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
     sprite_len = MUL_4(ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr));
     // LOG("SPRITE LEN=%u\n", sprite_len);
@@ -183,7 +183,7 @@ void SceneInit_b5()
 void SceneInit_b6()
 {
   // Load Image Tiles - V3 pointer to bank_ptr (31000) (42145)
-  ReadBankedBankPtr(16, &bank_ptr, &background_bank_ptrs[image_index]);
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &background_bank_ptrs[image_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   tileset_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
   scene_width = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1u);
@@ -195,7 +195,7 @@ void SceneInit_b7()
 {
   UBYTE tileset_size;
   // Load Image Tileset
-  ReadBankedBankPtr(16, &bank_ptr, &tileset_bank_ptrs[tileset_index]);
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &tileset_bank_ptrs[tileset_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   tileset_size = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
   SetBankedBkgData(bank_ptr.bank, 0, tileset_size, scene_load_ptr + 1u);

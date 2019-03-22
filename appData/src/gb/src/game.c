@@ -5,6 +5,7 @@
 #include "BankData.h"
 #include "ScriptRunner.h"
 #include "Macros.h"
+#include "data_ptrs.h"
 #include "gbt_player.h"
 
 UBYTE joy;
@@ -53,7 +54,7 @@ int main()
 
   // Load Player Sprite
   sprite_index = START_PLAYER_SPRITE;
-  ReadBankedBankPtr(16, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
+  ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
   sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
   sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
   sprite_len = MUL_4(sprite_frames);

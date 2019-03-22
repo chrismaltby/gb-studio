@@ -91,7 +91,7 @@ void UIShowText(UWORD line)
   UIDrawDialogueFrame();
   strcpy(text_lines, "");
 
-  ReadBankedBankPtr(16, &bank_ptr, &string_bank_ptrs[line]);
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &string_bank_ptrs[line]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
 
   PUSH_BANK(bank_ptr.bank);

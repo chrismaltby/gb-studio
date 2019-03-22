@@ -10,6 +10,7 @@ import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 
+const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
@@ -226,6 +227,7 @@ const compile = async (
     `  unsigned char bank;\n` +
     `  unsigned int offset;\n` +
     `} BANK_PTR;\n\n` +
+    `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
     `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
     `#define START_SCENE_X ${decHex(startX || 0)}\n` +
     `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
@@ -260,7 +262,7 @@ const compile = async (
       .join(`\n`) +
     `\n\n#endif\n`;
   output[`data_ptrs.c`] =
-    `#pragma bank=16\n` +
+    `#pragma bank=${DATA_PTRS_BANK}\n` +
     `#include "data_ptrs.h"\n` +
     `#include "banks.h"\n\n` +
     `const unsigned char (*bank_data_ptrs[])[] = {\n` +
@@ -282,7 +284,9 @@ const compile = async (
     `\n` +
     `const unsigned char * music_tracks[] = {\n` +
     (music.map(track => track.dataName + "_Data").join(", ") || "0, 0") +
-    (music.length === 1 ? "," + music.map(track => track.dataName + "_Data").join(", ") : "") + // Needed for windows??
+    (music.length === 1
+      ? "," + music.map(track => track.dataName + "_Data").join(", ")
+      : "") + // Needed for windows??
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
     (music.map(track => track.bank).join(", ") || "0, 0") +
