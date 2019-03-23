@@ -3,6 +3,7 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import { engineRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
+import Path from "path";
 
 const rmdir = promisify(rimraf);
 
@@ -13,10 +14,8 @@ const ejectBuild = async ({
   progress = () => {},
   warnings = () => {}
 } = {}) => {
-  // console.log("EJECT to " + outputRoot);
-  progress("HERE CORE ROOT= " + engineRoot);
   const corePath = `${engineRoot}/${projectType}`;
-  progress("Unlink " + outputRoot);
+  progress("Unlink " + Path.basename(outputRoot));
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
   progress("Copy core");

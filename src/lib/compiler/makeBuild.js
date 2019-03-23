@@ -7,6 +7,10 @@ import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
 
+const filterLogs = str => {
+  return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music/g, "");
+};
+
 const makeBuild = ({
   buildType = "rom",
   buildRoot = "/tmp",
@@ -62,7 +66,7 @@ const makeBuild = ({
     child.stdout.on("data", function(data) {
       const lines = data.toString().split("\n");
       lines.forEach(line => {
-        progress(line);
+        progress(filterLogs(line));
       });
     });
 

@@ -5,6 +5,10 @@ import { remote } from "electron";
 import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 
+const filterLogs = str => {
+  return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music\//g, "");
+};
+
 const compileMusic = async ({
   music = [],
   buildRoot = "/tmp",
@@ -46,7 +50,10 @@ const compileTrack = async (
   console.log(buildRoot);
 
   env.PATH = [`${buildToolsPath}/mod2gbt`, env.PATH].join(":");
-  const command = process.platform === "win32" ? `${buildToolsPath}\\mod2gbt\\mod2gbt.exe` : "mod2gbt";
+  const command =
+    process.platform === "win32"
+      ? `${buildToolsPath}\\mod2gbt\\mod2gbt.exe`
+      : "mod2gbt";
 
   const modPath = `"${projectRoot}/assets/music/${track.filename}"`;
   const outputFile = process.platform === "win32" ? "output.c" : "music.c";
@@ -57,9 +64,8 @@ const compileTrack = async (
     env,
     shell: true
   };
-  
-  await new Promise(async (resolve, reject) => {
 
+  await new Promise(async (resolve, reject) => {
     let child = childProcess.spawn(command, args, options, {
       encoding: "utf8"
     });
@@ -71,7 +77,7 @@ const compileTrack = async (
     child.stdout.on("data", function(data) {
       const lines = data.toString().split("\n");
       lines.forEach(line => {
-        progress(line);
+        progress(filterLogs(line));
       });
     });
 
