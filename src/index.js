@@ -88,6 +88,14 @@ const createWindow = async projectPath => {
     }
   });
 
+  // Enable documentEdited functionality on windows
+  Object.defineProperty(mainWindow, "documentEdited", {
+    value: false,
+    configurable: true,
+    enumerable: true,
+    writable: true
+  });
+
   mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(
@@ -115,7 +123,7 @@ const createWindow = async projectPath => {
   });
 
   mainWindow.on("close", e => {
-    if (mainWindow.isDocumentEdited()) {
+    if (mainWindow.documentEdited) {
       const choice = require("electron").dialog.showMessageBox(mainWindow, {
         type: "question",
         buttons: ["Quit", "Cancel"],
@@ -246,10 +254,12 @@ ipcMain.on("open-play", async (event, url) => {
 
 ipcMain.on("document-modified", () => {
   mainWindow.setDocumentEdited(true);
+  mainWindow.documentEdited = true; // For Windows
 });
 
 ipcMain.on("document-unmodified", () => {
   mainWindow.setDocumentEdited(false);
+  mainWindow.documentEdited = false; // For Windows
 });
 
 menu.on("new", async () => {
