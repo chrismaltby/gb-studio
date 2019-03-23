@@ -29,6 +29,7 @@ const ejectBuild = async ({
   await fs.ensureDir(`${outputRoot}/obj`);
   await fs.ensureDir(`${outputRoot}/obj/music`);
   await fs.ensureDir(`${outputRoot}/obj/data`);
+  await fs.ensureDir(`${outputRoot}/build/rom`);
 
   for (let filename in compiledData.files) {
     if (filename.endsWith(".h")) {

@@ -19,10 +19,6 @@ export default async buildRoot => {
     musicFiles = await fs.readdir(musicRoot);
   } catch (e) {}
 
-  cmds.push(`md obj\\data`);
-  cmds.push(`md obj\\music`);
-  cmds.push(`md build\\rom`);
-
   for (let file of srcFiles) {
     const fileStat = await fs.lstat(`${srcRoot}/${file}`);
     const ext = Path.extname(file);
