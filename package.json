@@ -3,12 +3,14 @@
   "productName": "GB Studio",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
+    "parcel": "NODE_ENV=production node parcel.js",
+    "parcel:watch": "node parcel.js",
     "lint": "eslint --cache --color --ext .jsx,.js src",
     "test": "jest",
     "coverage": "jest --coverage --runInBand || true"
