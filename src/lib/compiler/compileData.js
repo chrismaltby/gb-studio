@@ -283,13 +283,12 @@ const compile = async (
       .join(`\n`) +
     `\n` +
     `const unsigned char * music_tracks[] = {\n` +
-    (music.map(track => track.dataName + "_Data").join(", ") || "0, 0") +
-    (music.length === 1
-      ? "," + music.map(track => track.dataName + "_Data").join(", ")
-      : "") + // Needed for windows??
+    (music.map(track => track.dataName + "_Data").join(", ") || "0") +
+    ", 0" +
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
-    (music.map(track => track.bank).join(", ") || "0, 0") +
+    (music.map(track => track.bank).join(", ") || "0") +
+    ", 0" +
     `\n};\n\n` +
     `unsigned char script_variables[${precompiled.variables.length +
       1}] = { 0 };\n`;
