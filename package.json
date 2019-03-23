@@ -63,6 +63,10 @@
         "owner": "",
         "name": ""
       },
+      "electronInstallerDMG": {
+        "background": "src/images/dmg/background.tiff",
+        "format": "ULFO"
+      },
       "windowsStoreConfig": {
         "packageName": "",
         "name": "gbstudio"
