@@ -33,8 +33,8 @@ import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
 import clamp from "../lib/helpers/clamp";
 
-const MAX_ACTORS = 7;
-const MAX_TRIGGERS = 7;
+const MAX_ACTORS = 9;
+const MAX_TRIGGERS = 9;
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
@@ -188,7 +188,9 @@ export default function project(state = initialState.project, action) {
             if (otherScene) {
               newCollisions = otherScene.collisions;
             } else {
-              let collisionsSize = Math.ceil((background.width * background.height) / 8);
+              let collisionsSize = Math.ceil(
+                (background.width * background.height) / 8
+              );
               newCollisions = [];
               for (let i = 0; i < collisionsSize; i++) {
                 newCollisions[i] = 0;
@@ -379,12 +381,16 @@ export default function project(state = initialState.project, action) {
 
           const background =
             scene.backgroundId &&
-            state.backgrounds.find(background => background.id === scene.backgroundId);
+            state.backgrounds.find(
+              background => background.id === scene.backgroundId
+            );
           if (!background) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil((background.width * background.height) / 8);
+          let collisionsSize = Math.ceil(
+            (background.width * background.height) / 8
+          );
           const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
@@ -416,12 +422,16 @@ export default function project(state = initialState.project, action) {
 
           const background =
             scene.backgroundId &&
-            state.backgrounds.find(background => background.id === scene.backgroundId);
+            state.backgrounds.find(
+              background => background.id === scene.backgroundId
+            );
           if (!background) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil((background.width * background.height) / 8);
+          let collisionsSize = Math.ceil(
+            (background.width * background.height) / 8
+          );
           const collisions = scene.collisions.slice(0, collisionsSize);
 
           if (collisions.length < collisionsSize) {
