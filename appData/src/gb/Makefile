@@ -14,26 +14,14 @@ OBJ_DIR = obj
 SOURCE_DIR = src
 
 CFLAGS = -DUSE_SFR_FOR_REG -Wl-yo32 -Wl-ya4
-# CIGNORE = 3>&1 1>&2 2>&3 3>&- | sed 's/.*pragma.*/IGNORE/g' | sed "s/^'/IGNORE/g" | grep -v IGNORE || test "${PIPESTATUS[0]}" -eq 0
 CIGNORE = 3>&1 1>&2 2>&3 3>&- 
-
 
 SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')
 SOURCES_ASM := $(shell find -L $(SOURCE_DIR) -name '*.s')
 OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.o) $(SOURCES_ASM:$(SOURCE_DIR)/%.s=$(OBJ_DIR)/%.o)
 EM_OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.bc)
 
-MUSIC = tetris \
-	mymod3 \
-	effects \
-	instrcm
-
 all:	game.html
-
-publish:	$(ROM_BUILD_DIR)/game.gb
-	cd ../ems/; \
-	./ems-flasher --write --rom --bank 1 --verbose ../gbdkjs-example-jrpg2/build/gb/game.gb; \
-	./ems-flasher --write --rom --bank 2 --verbose ../gbdkjs-example-jrpg2/build/gb/game.gb;
 
 %.music.c:	%.mod
 	$(MOD2GBT) $< 'song_'$(basename $(basename $@)) -c 28
@@ -48,7 +36,7 @@ $(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.s
 $(OBJ_DIR)/%.bc:	$(SOURCE_DIR)/%.c
 	$(EMCC) -o $@ $<
 
-$(ROM_BUILD_DIR)/%.gb:  $(OBJS) # $(addsuffix .music.o,$(MUSIC))
+$(ROM_BUILD_DIR)/%.gb:  $(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $^	
 
