@@ -5,7 +5,8 @@
   "description": "My Electron application description",
   "main": "dist/index.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "run-p parcel:watch start:electron",
+    "start:electron": "electron-forge start",
     "package": "electron-forge package",
     "make:electron": "electron-forge make",
     "make": "run-s parcel make:electron",
