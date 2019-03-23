@@ -994,7 +994,7 @@ void SceneSetEmote_b(UBYTE actor, UBYTE type)
 
   hide_sprite_pair(BUBBLE_SPRITE_LEFT);
   scene_load_ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
-  SetBankedSpriteData(EMOTES_SPRITE_BANK, 124, 4, scene_load_ptr + (type * 64));
+  SetBankedSpriteData(EMOTES_SPRITE_BANK, 124, 4, scene_load_ptr + ((UWORD)type * 64));
 
   set_sprite_tile_pair(BUBBLE_SPRITE_LEFT, 124, 126);
   emote_timer = 1;
