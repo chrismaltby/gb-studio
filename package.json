@@ -1,8 +1,8 @@
 {
   "name": "gb-studio",
   "productName": "GB Studio",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.1.0",
+  "description": "Visual retro game maker",
   "main": "dist/index.js",
   "scripts": {
     "start": "run-p parcel:watch start:electron",
@@ -19,7 +19,7 @@
   },
   "keywords": [],
   "author": "cmaltby",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "config": {
     "forge": {
       "make_targets": {
