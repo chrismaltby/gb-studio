@@ -39,8 +39,6 @@ extern UBYTE wait_time;
 extern UBYTE shake_time;
 extern UBYTE scene_width;
 extern UBYTE scene_height;
-extern BANK_PTR events_ptr;
-extern BANK_PTR bank_ptr;
 
 void SceneInit();
 void SceneUpdate();
