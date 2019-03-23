@@ -6,7 +6,7 @@ import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 
 const filterLogs = str => {
-  return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music\//g, "");
+  return str.replace(/.*[\/|\\]([^\/|\\]*.mod)/g, "$1");
 };
 
 const compileMusic = async ({
