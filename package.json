@@ -7,7 +7,8 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make:electron": "electron-forge make",
+    "make": "run-s parcel make:electron",
     "publish": "electron-forge publish",
     "parcel": "NODE_ENV=production node parcel.js",
     "parcel:watch": "node parcel.js",
@@ -46,13 +47,14 @@
           "/.parcelCache($|/)",
           "/.vscode($|/)",
           "/coverage($|/)",
+          "/src($|/)",
           "/test($|/)",
           "/appData($|/)",
           "/buildTools($|/)"
         ]
       },
       "electronWinstallerConfig": {
-        "name": "gb_rpg_builder"
+        "name": "gb_studio"
       },
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
@@ -62,7 +64,7 @@
       },
       "windowsStoreConfig": {
         "packageName": "",
-        "name": "gbrpgbuilder"
+        "name": "gbstudio"
       }
     }
   },
@@ -111,6 +113,7 @@
     "eslint-plugin-jsx-a11y": "^5",
     "eslint-plugin-react": "^7",
     "jest": "^24.0.0",
+    "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.2",
     "parcel-plugin-clean-dist": "^0.0.6",
     "redux-devtools-extension": "^2.13.7"
