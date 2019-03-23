@@ -24,7 +24,6 @@ UINT8 scene_bank = 3;
 
 // Scene Init Globals - Needed since split init across multiple functions
 UWORD image_index;
-BANK_PTR bank_ptr;
 UWORD scene_load_col_ptr;
 UBYTE tileset_index;
 UBYTE sprite_len, collision_tiles_len, col_bank;
@@ -216,7 +215,6 @@ void SceneInit_b8()
 void SceneInit_b9()
 {
   UBYTE i;
-  BANK_PTR events_ptr;
 
   // Init player
   actors[0].redraw = TRUE;
@@ -227,10 +225,10 @@ void SceneInit_b9()
   actors[0].dir.x = map_next_dir.x;
   actors[0].dir.y = map_next_dir.y;
 
-  // Load starting script
-  scene_load_ptr = scene_load_col_ptr;
-  events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
-  events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
+  // Init start script
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
+  events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_col_ptr);
+  events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 2);
   ScriptStart(&events_ptr);
 
   // Hide unused Sprites
