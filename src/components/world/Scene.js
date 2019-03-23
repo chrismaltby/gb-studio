@@ -403,6 +403,9 @@ class Scene extends Component {
             title={`Number of actors in scene. This scene has used ${
               scene.actors.length
             } of ${MAX_ACTORS} available.`}
+            className={cx({
+              "Scene__Info--Warning": scene.actors.length >= MAX_ACTORS
+            })}
           >
             A: {scene.actors.length}/{MAX_ACTORS}
           </span>
@@ -416,7 +419,8 @@ class Scene extends Component {
                   `sprites where possible.`
             } Stay within limits to prevent tile data overwriting sprite data.`}
             className={cx({
-              "Scene__Info--Warning": framesLength > MAX_FRAMES
+              "Scene__Info--Warning": framesLength == MAX_FRAMES,
+              "Scene__Info--Error": framesLength > MAX_FRAMES
             })}
           >
             F: {framesLength}/{MAX_FRAMES}
@@ -426,6 +430,9 @@ class Scene extends Component {
             title={`Number of triggers in scene. This scene has used ${
               scene.triggers.length
             } of ${MAX_TRIGGERS} available.`}
+            className={cx({
+              "Scene__Info--Warning": scene.triggers.length >= MAX_TRIGGERS
+            })}
           >
             T: {scene.triggers.length}/{MAX_TRIGGERS}
           </span>

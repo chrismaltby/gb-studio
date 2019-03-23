@@ -30,7 +30,11 @@
 }
 
 .Scene__Info--Warning {
-  color: #ff0000;
+  color: rgb(243, 168, 30);
+}
+
+.Scene__Info--Error {
+  color: rgb(243, 0, 0);
 }
 
 .Scene__Image {
