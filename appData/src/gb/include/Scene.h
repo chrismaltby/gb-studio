@@ -35,6 +35,7 @@ extern UWORD scene_next_index;
 extern UBYTE await_input;
 extern POS camera_dest;
 extern UBYTE camera_settings;
+extern UBYTE camera_speed;
 extern UBYTE wait_time;
 extern UBYTE shake_time;
 extern UBYTE scene_width;
