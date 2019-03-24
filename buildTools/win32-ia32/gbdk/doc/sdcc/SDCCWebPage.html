@@ -1,0 +1,399 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (X11; I; Linux 2.2.12-20 i686) [Netscape]">
+   <title>SDCC - Freeware, Optimizing C_Compiler (8051)</title>
+</head>
+<body>
+
+<center>
+<hr WIDTH="10%">
+<br><b><font color="#666666"><font size=+3>SDCC</font></font></b>
+<hr WIDTH="100%">
+<p><b><font color="#009900"><font size=+2>Official Home of SDCC</font></font></b></center>
+
+<p><b><font size=+1>What is SDCC ?</font></b>
+<dl><blckquote>
+<dl>
+<dt>
+<font size=+1><b>SDCC</b> is a<u> </u><b><i><font color="#660000">Free
+ware , retargettable, optimizing ANSI - C compiler. The</font></i></b>
+current version targets <b><i><font color="#660000">Intel 8051 </font></i></b>based
+MCUs, it can be retargeted for other 8 bit MCUs or PICs. The&nbsp; entire
+source code for the compiler is distributed under GPL. SDCC uses ASXXXX
+&amp; ASLINK a Free ware, retargettable assembler &amp; linker. SDCC has
+<b><i><font color="#660000">extensive
+MCU (8051) specific language extensions, which</font></i></b> lets it utilize
+the underlying hardware effectively. The front end (parser) will be enhanced
+to handle language extensions for other MCUs as and when they are targeted.
+In addition to the MCU Specific optimizations SDCC also does a host of
+standard optimizations like <b><i><font color="#660000">global sub expression
+elimination, loop optimizations (loop invariant , strength reduction of
+induction variables and loop reversing ), constant folding &amp; propagation,
+copy propagation, dead code elimination and jump tables for 'switch' statements.
+For</font></i></b> the Back end SDCC uses a <b><i><font color="#660000">global
+register allocation </font></i></b>scheme which should be well suited for
+other 8 bit MCUs , the peep hole optimizer uses a rule based substitution
+mechanism which is MCU independent. Supported data types are <b><i><font color="#660000">short
+(8</font></i></b> bits, 1 byte), <b><i><font color="#660000">char (8</font></i></b>
+bits, 1 byte) , int (16 bits, 2 bytes ), <b><i><font color="#660000">long
+(32</font></i></b> bit, 4 bytes) &amp; <b><i><font color="#660000">float
+(4</font></i></b> byte IEEE).&nbsp; SDCC also comes with a <b><i>source
+level debugger</i> SDCDB</b>, the current version of the debugger uses
+Daniel's s51 simulator. The compiler also allows <b><i><font color="#660000">inline
+assembler code</font></i></b> to be embedded anywhere in a function. In
+addition routines developed in assembly can also be called. SDCC also provides
+an option to report the relative complexity of a function, these functions
+can then be further optimized , or hand coded in assembly if need be.</font></dt>
+</dl>
+
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<br><b><font size=+1>Download [Sun Jan 16 12:08:15 CST 2000]</font></b>
+<br>&nbsp;
+<dl><font size=+1>To compile SDCC, <b><i><font color="#993300">Linux (
+and other Unix )</font> </i></b>users will need to install <i>gcc</i> or
+any other <i>C</i> compiler. Windows 95/NT users will need to download
+the <i>full</i> development version of CYGWIN32 from <b><a href="http://sourceware.cygnus.com/cygwin/">http://sourceware.cygnus.com/cygwin/
+</a></b>.
+Note that <b>cygnus</b> distributes CYGWIN32 in two packages you will need
+the <i>full development</i> package, this contains the compiler and other
+utilities that you will need to compile SDCC, I have not tried compiling
+the system with any other compiler under MS/Windows.</font>
+<p><font size=+1>Version 2.1.8 onwards will be distributed in *.tar.gz
+format, the installation procedure will also change. Installation section
+of the&nbsp; documentation has been updated to include the new procedure.
+Click here to download&nbsp; </font><b><font size=+2><a href="ftp://sdcc.sourceforge.net/pub/sdcc/sdcc-2.1.9Ga.tar.gz">sdcc-2.1.9Ga.tar.gz
+</a></font></b><font size=+1> in
+the new distribution format. This distribution also contains Daniel's simulator
+.</font>
+<p><font size=+1><a href="http://www.kd0yu.com">Vote for the next target
+of SDCC</a></font>
+<p><font size=+1>Having trouble downloading ? Here are some alternate site.</font>
+<dl>
+<dl>
+<ul>
+<li>
+<b><font size=+1><a href="http://web.kd0yu.com/sdcc/">http://web.kd0yu.com/sdcc/
+</a></font></b><font size=-1>provided
+by dave@kd0yu.com</font></li>
+
+<li>
+<b><font size=+1><a href="http://www.ozemail.com.au/~bkk/sdcc">http://www.ozemail.com.au/~bkk/sdcc
+</a></font></b><font size=-1>provided
+by ben knight bkk@ozemail.com.au></font></li>
+
+<li>
+<font size=+1>Two sites </font><font size=-1>provided by irk Verwiebe dirk@verwiebe.de></font></li>
+
+<br><font size=+1>Binaries on: <b><a href="http://members.aol.com/sdccwin/pub">http://members.aol.com/sdccwin/pub</a></b></font>
+<br><font size=+1>Sources on: <b><a href="http://members.aol.com/sdccsrc/pub">http://members.aol.com/sdccsrc/pub</a></b></font></ul>
+</dl>
+</dl>
+Looking for Sample code ? Have some code developed for SDCC you want to
+share ?
+<b><font size=+1><a href="http://42.fht-esslingen.de/SDCC_OKR/">Click
+here for the SDCC "Open Knowledge" website</a></font></b>
+<br>&nbsp;
+<p><b><font size=+2><a href="ftp://sdcc.sourceforge.net/pub/sdcc/sdcc-2.1.9Gawinbin.tar.gz">Binary distribution
+of Version 2.1.9Ga </a></font></b><font size=+1>for Windows is available
+. The distribution is compiled to run from the directory /usr/local. Gunzip
+&amp; untar the binary distribution at the root (/) directory of the partition/drive
+you want to install the software on. The source distribution of this version
+compiles with CYGWIN. <b><a href="cygwininst.txt">Click here to view more
+detailed installation</a></b> instructions for Win95/NT (provided by Michael
+Jamet mjamet@computer.org).</font>
+<p><font size=+1>A binary distribution of the package for DOS can be <b><a href="http://www.geocities.com/SiliconValley/Vista/6552/sdcc.html">downloaded
+from SET's&nbsp; page.</a></b></font>
+<p><font size=+2>Michael Hope &lt;michaelh@earthling.net> is working on
+a Z80 target ,a snapshot of which can be downloaded by <b><a href="http://earthling.net.nz/~michaelh/snapshots/">clicking
+here.</a></b></font>
+<p>The debugger works the DDD (Data Display debugger), Terry Porter &lt;tp@gronk.apana.org.au>
+has a screenshot and a brief HOWTO at <a href=http://www.odyssey.apana.org.au/~tjporter/ddd_sdcc.gif> http://www.odyssey.apana.org.au/~tjporter/ddd_sdcc.gif </a>
+<p>An alternate simulator &amp; source level debugger can be downloaded
+from Jens Altmann's JSIM page <b><a href="http://home.t-online.de/home/Jens.Altmann/jsim-e.htm">http://home.t-online.de/home/Jens.Altmann/jsim-e.htm</a></b>
+<br>&nbsp;
+<p><font size=+1>Older versions can be <b><a href="http://nipkow.cs.abo.fi">downloaded
+from Marcus Alanen's Page.</a></b></font>
+<p><!-- Begin ListBot Code --><form method="post" action="http://www.listbot.com/cgi-bin/subscriber">
+<table BORDER=0 >
+<tr>
+<td COLSPAN="2"><font size=+2>Join our mailing list! Enter your email address
+below, then click the 'Join List' button:</font></td>
+</tr>
+
+<tr>
+<td><input type=text name="e_mail"><input type=hidden name="list_id" value="sdcc"><input type=hidden name="Act" value="subscribe_list"></td>
+
+<td><input type=image src="http://www.listbot.com/subscribe_button.gif" border=0 width=88 height=31 alt="Click here to join our mailing list!"></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><font face="arial"><font size=-2><a href="http://www.listbot.com/" target="_top">Powered
+by ListBot</a></font></font></td>
+</tr>
+</table>
+</form><!-- End ListBot Code -->
+<p><font size=+1>You can </font><b><font size=+2><a href="http://sdcc.listbot.com">view
+the archive</a> </font></b><font size=+1>of messages posted to the mailing
+list (poor man's FAQ).</font>
+<p><font size=+1><b><a href="http://www.insidetheweb.com/mbs.cgi/mb576992">Click
+here for SDCC Message Board </a></b>, maintained by <a href="mailto:ratzefumm@gmx.net">Alex
+Ratzefumm &lt;ratzefumm@gmx.net> .</a></font>
+<p>
+<hr WIDTH="100%"></dl>
+<b><font size=+1>Documentation</font></b>
+<br>&nbsp;
+<dl>
+<dt>
+<b><i><font size=+2>SDCC User Guide :</font></i></b></dt>
+
+<ul>
+<li>
+<b><i><font size=+2>&nbsp;<a href="SDCCUdoc.html">HTML Format (included
+with Source bundle)</a></font></i></b></li>
+
+<li>
+<b><i><font size=+2><a href="SDCCUdoc.ps">PostScript Format (Not included
+with Source Bundle)</a></font></i></b></li>
+
+<li>
+<b><i><font size=+2><a href="SDCCUdoc.txt">Plain Text Format. (Not included
+with source bundle)</a></font></i></b></li>
+</ul>
+</dl>
+</dl>
+
+<dl>
+<dl>
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<dt>
+</dt>
+</dl>
+<b><font size=+1>Known Problems</font></b>
+<dl>
+<dl>
+<li>
+<font color="#CC0000"><font size=+1>MS/Windows Users note that due to some
+bugs in the CYGWIN runtime library the compiler generated temporary files
+are NOT cleared from the </font><b><font size=+2>/tmp </font></b><font size=+1>directory,
+these have to be manually deleted.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>--xstack options not yet fully implemented.</font></font></li>
+
+<li>
+<font color="#CC0000"><font size=+1>first storage class specified overrides
+in declarations . e.g.,</font></font></li>
+
+<dl><font color="#CC0000"><font size=+1>short xdata x, idata y.</font></font></dl>
+<font color="#CC0000"><font size=+1>will declare both x &amp; y in xdata
+space. The work around for this is to declare variables with different
+storage classes separately e.g..</font></font>
+<dl><font color="#CC0000"><font size=+1>xdata short x;</font></font>
+<br><font color="#CC0000"><font size=+1>idata&nbsp; short y;</font></font></dl>
+</dl>
+</dl>
+
+<dl>
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<dt>
+</dt>
+</dl>
+
+<dt>
+<b><font size=+1>Enhancements &amp; Bugs Fixes.</font></b></dt>
+
+<dl>
+<dl><font color="#330000"><font size=+1>Click</font><b><font size=+2><a href="SDCCBugsFixed.html">
+here </a></font></b><font size=+1>to see the enhancements and bug fixes
+done till date.</font></font></dl>
+
+<hr WIDTH="100%"></dl>
+<b><font size=+1>What IDE to use ?</font></b>
+<br>&nbsp;
+<dl><font size=+1>I recommend using <b><i><a href="http://www.xemacs.org">XEmacs</a></i></b>,
+it is free and is also a really GREAT editor. Linux / Unix users can download
+binaries for their specific platforms from <b><i><a href="ftp://ftp.xemacs.org">ftp://ftp.xemacs.org</a></i></b>
+.&nbsp; Windows 95/98/NT Users , can download binaries from <b><i><a href="ftp://ftp.xemacs.org/pub/xemacs/binary-kits/win32/">ftp://ftp.xemacs.org/pub/xemacs/binary-kits/win32/</a></i></b></font>
+<p><font size=+1>The interface files required for the debugger to interact
+with XEmacs is distributed with the source code.</font></dl>
+
+<dl>
+<dl>&nbsp;</dl>
+
+<hr WIDTH="100%"></dl>
+<b><font size=+1>Reporting Bugs.</font></b></dl>
+
+<dl>
+<dl>
+<dt>
+<font size=+1>Click on this </font><b><font size=+2><a href="mailto:sandeep.dutta@usa.net">sandeep.dutta@usa.net</a></font></b><font size=+1>to
+send me an email, also send an </font><b><font size=+2><a href="mailto:sdcc@listbot.com">email
+to the mailing list</a></font></b><font size=+1> for the benefit of other
+users .Bugs will be fixed according to their severity. I will update the
+Known Problems section. The compiler alone without the assembler , linker,
+Preprocessor &amp; garbage collector is about 40,000 lines of blank skipped
+code, as with any project of this size there are bound to be bugs, I will
+try me level best to fix them as quickly as I can . If you can trace the
+bug and fix it, please do so, do&nbsp; send me a copy of the fixed source
+code so I can update my copy.</font></dt>
+
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<dt>
+</dt>
+</dl>
+
+<dt>
+<b><font size=+1>Things we are working on .</font></b></dt>
+
+<dl>
+<li>
+<font size=+1>More optimizations.</font></li>
+
+<li>
+<font size=+1>Retargeting to for ATMEL AVR (8 bit RISC MCUs).</font></li>
+</dl>
+</dl>
+
+<dl>
+<dl>
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<dt>
+</dt>
+</dl>
+
+<dt>
+<b><font size=+1>Notes for Users of Version 1.xx</font></b></dt>
+
+<dl>
+<dt>
+<font size=+1>For the benefit of&nbsp; users of the previous Version, I
+have kept the parser almost identical, I have added a few features, but
+the programs developed using the first version should compile without change
+with the new version. The command line options however have changed, the
+compiler will generate a warning when it encounters an older option and
+prompt you with the new option.</font></dt>
+
+<dt>
+<font size=+1>Version 2.xx is a almost a complete rewrite, it is much more
+stable and ANSI Compliant than the previous version.</font></dt>
+
+<dt>
+
+<hr WIDTH="100%"></dt>
+
+<dt>
+</dt>
+</dl>
+
+<dt>
+<b><font size=+1>Links</font></b></dt>
+
+<dl>
+<dt>
+<font size=+1>Here are some links I found useful.</font></dt>
+
+<ul>
+<li>
+<font size=+1>Daniel Drotos has a <a href="http://mazsola.iit.uni-miskolc.hu/~drdani/embedded/s51/">Freeware
+simulator for MCS51.</a>&nbsp; This simulator is distributed with the compiler
+. I found this simulator very very useful (MUST HAVE).</font></li>
+
+<li>
+<font size=+1>J<a href="http://www.caseconsole.com/mcb152">oachim Elen&nbsp;
+has a 8051 Micro controller board </a>with Packet Radio interface .</font></li>
+
+<li>
+<font size=+1><a href="http://www.goofee.com/goofee.htm">Goofee </a>is
+a very interesting visual programming environment. The software used to
+be free now you have to buy his book, but worth taking a look.</font></li>
+
+<li>
+<font size=+1><a href="http://www.8052.com">www.8052.com</a> is a great
+site for 8051 programmers.</font></li>
+
+<li>
+<font size=+1><a href="http://welcome.to/obukhov">Dimitry Obukhov</a> has
+some useful routines in C, for&nbsp; I</font><sup>2</sup><font size=+1>C&nbsp;
+and other stuff. His malloc &amp; serial I/O routines are included with
+the compiler.</font></li>
+
+<li>
+<font size=+1><a href="http://ourworld.compuserve.com/homepages/jhartman">John
+Hartman </a>sells NoICE, an emulator. He also created ASXXXX &amp; ASLINK
+for 8051. SDCC will eventually support NoICE.</font></li>
+
+<li>
+<font size=+1><a href="http://www.pagesz.net/~thyphoon">Tayfun</a> sells
+a Single Board Computer based on Phillips 80C552.</font></li>
+</ul>
+</dl>
+</dl>
+
+<dl>
+<dl>
+<hr WIDTH="100%"></dl>
+
+<dt>
+<b><font size=+1>Acknowledgments.</font></b></dt>
+
+<ul>
+<ul>
+<li>
+<font size=+1><a href="mailto:baldwin@shop-pdp.kent.edu">Alan Baldwin (baldwin@shop-pdp.kent.edu)
+</a>-
+Initial version of ASXXXX&nbsp; and&nbsp; ASLINK.</font></li>
+
+<li>
+<font size=+1>J<a href="jhartman@compuserve.com">ohn Hartman (jhartman@compuserve.com)
+</a>-
+Porting ASXXX&nbsp;&nbsp; and ASLINK for 8051.</font></li>
+
+<li>
+<font size=+1><a href="mailto:dso@usa.net">Dmitry S. Obukhov (dso@usa.net)</a>
+- malloc and serial I/O routines.</font></li>
+
+<li>
+<font size=+1><a href="boehm@sgi.com">Jans J Boehm(boehm@sgi.com)</a> and
+Alan J Demers - Conservative garbage collector for C &amp; C++.</font></li>
+
+<li>
+<font size=+1><a href="mailto:jlvern@writeme.com">Jean Loius-VERN (jlvern@writeme.com></a>
+- substantial improvement in the back-end code generation.</font></li>
+
+<li>
+<font size=+1><a href="mailto:drdani@mazsola.iit.uni-miskolc.hu">Daniel
+Drotos &lt;drdani@mazsola.iit.uni-miskolc.hu> </a>- Free ware simulator
+for 8051.</font></li>
+
+<li>
+<font size=+1><a href="mailto:malini_dutta@hotmail.com">Malini Dutta(malini@mediaone.net)</a>
+- my wife for her patience and support.</font></li>
+
+<li>
+<font size=+1>Unknown - for the GNU C - preprocessor.</font></li>
+</ul>
+</ul>
+</dl>
+
+<center>This page has been accessed&nbsp;<img SRC="/cgi-bin/counter" > times since
+March 6th 1999</center>
+
+</body>
+</html>

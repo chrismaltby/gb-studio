@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Library routines.</TITLE>
+ <LINK HREF="SDCCUdoc-21.html" REL=next>
+ <LINK HREF="SDCCUdoc-19.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc20" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-21.html">Next</A>
+<A HREF="SDCCUdoc-19.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc20">Contents</A>
+<HR>
+<H2><A NAME="Library"></A> <A NAME="s20">20. Library routines.</A> </H2>
+
+<P>The following library routines are provided for your convenience.
+<P><B>stdio.h </B>- Contains the following functions printf &amp; sprintf these routines
+are developed by Martijn van Balen &lt;balen@natlab.research.philips.com&gt;.
+<P>
+<P>
+<PRE>
+%[flags][width][b|B|l|L]type           flags: -        left justify output in specified field width
+ 
+                 +        prefix output with +/- sign if output is signed
+ type 
+                 space    prefix output with a blank if it's a signed
+ positive value 
+          width:          specifies minimum number of characters
+ outputted for numbers 
+                          or strings. 
+                         
+ - For numbers, spaces are added on the left when needed. 
+                           
+ If width starts with a zero character, zeroes and used 
+                           
+ instead of spaces. 
+                          - For strings, spaces are are
+ added on the left or right (when 
+                            flag '-' is used)
+ when needed. 
+                          
+          b/B:            byte argument
+ (used by d, u, o, x, X) 
+          l/L:            long argument (used by d,
+ u, o, x, X)
+          type:  d        decimal number 
+                 u       
+ unsigned decimal number 
+                 o        unsigned octal number 
+                
+ x        unsigned hexadecimal number (0-9, a-f) 
+                 X       
+ unsigned hexadecimal number (0-9, A-F) 
+                 c        character
+ 
+                 s        string (generic pointer) 
+                 p       
+ generic pointer (I:data/idata, C:code, X:xdata, P:paged) 
+                
+ f        float (still to be implemented)
+ 
+</PRE>
+<P>Also contains a very simple version of printf (<B>printf_small</B>). This simplified
+version of printf supports only the following formats.
+<P>
+<PRE>
+format     output type     argument-type &lt;bf>
+%d         decimal      
+ int 
+%ld        decimal       long 
+%hd        decimal       short/char
+ 
+%x        hexadecimal    int 
+%lx       hexadecimal    long
+ 
+%hx       hexadecimal    short/char 
+%o         octal         int
+ 
+%lo        octal         long 
+%ho        octal         short/char
+ 
+%c        character      char/short 
+%s        character     _generic
+ pointer
+ &lt;p>&lt;tt>The routine is &lt;tt>&lt;bf>very stack intesive , --stack-after-data parameter should
+ be used when using this routine, the routine also takes about 1K of code space
+ .It also expects an external function named putchar(char ) to be present (this
+ can be changed). When using the %s format the string / pointer should
+ be cast to a generic pointer. eg.
+ 
+</PRE>
+<HR>
+<A HREF="SDCCUdoc-21.html">Next</A>
+<A HREF="SDCCUdoc-19.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc20">Contents</A>
+</BODY>
+</HTML>

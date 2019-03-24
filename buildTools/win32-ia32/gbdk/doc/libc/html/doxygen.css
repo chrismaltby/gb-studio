@@ -1,0 +1,16 @@
+H1 { text-align: center }
+A.qindex {}
+A.qindexRef {}
+A.el { text-decoration: none; font-weight: bold }
+A.elRef { font-weight: bold }
+A.code { text-decoration: none; font-weight: normal; color: #4444ee }
+A.codeRef { font-weight: normal; color: #4444ee }
+A.gl:link { color: #ffffff }
+A.gl:visited { color: #ffffff }
+A.gl { text-decoration: none; font-weight: bold; background-color: #ff8080 }
+DL.el { margin-left: -1cm }
+DIV.fragment { width: 100%; border: none; background-color: #eeeeee }
+DIV.in { margin-left: 16 }
+DIV.ah { background-color: black; margin-bottom: 3; margin-top: 3 }
+TD.md { background-color: #f2f2ff }
+

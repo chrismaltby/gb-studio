@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Inline assembler code.</TITLE>
+ <LINK HREF="SDCCUdoc-14.html" REL=next>
+ <LINK HREF="SDCCUdoc-12.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc13" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-14.html">Next</A>
+<A HREF="SDCCUdoc-12.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc13">Contents</A>
+<HR>
+<H2><A NAME="Inline"></A> <A NAME="s13">13. Inline assembler code.</A> </H2>
+
+<P>SDCC allows the use of in-line assembler with a few restriction as regards
+labels. All labels defined within inline assembler code HAS TO BE of the form
+nnnnn$ where nnnn is a number less than 100 (which implies a limit of
+utmost 100 inline assembler labels per function). It is strongly recommended
+that each assembly instruction (including labels) be placed in a separate line
+( as the example shows). When the <B>--peep-asm</B> command line option is used, the
+inline assembler code will be passed through the peephole optimizer, this might
+cause some unexpected changes in the inline assembler code, please go throught
+the peephole optimizer rules defined in file 'SDCCpeeph.def' carefully before
+using this option.
+<P>
+<PRE>
+eg_asm 
+         mov b,#10 
+00001$: 
+         djnz b,00001$
+ 
+_endasm ;
+ 
+</PRE>
+<P>The inline assembler code can contain any valid code understood by the
+assembler (this includes any assembler directives and comment lines ) . The
+compiler does not do any validation of the code within the _asm ... _endasm;
+keyword pair. 
+<P>Inline assembler code cannot reference any C-Labels however it can reference
+labels defined by the inline assembler.
+<P>
+<PRE>
+egfoo() { 
+... /* some c code */ 
+_asm 
+     ; some assembler code 
+ 
+   ljmp $0003 
+_endasm ; 
+... /* some more c code */ 
+clabel:   /* inline
+ assembler cannot reference this label */ 
+_asm 
+   $0003: ;label (can
+ be reference by inline assembler only) 
+_endasm ; 
+... 
+}
+ 
+</PRE>
+<P>In other words inline assembly code can access labels defined in inline
+assembly. The same goes the other way, ie. labels defines in inline assembly
+CANNOT be accessed by C statements.
+<HR>
+<A HREF="SDCCUdoc-14.html">Next</A>
+<A HREF="SDCCUdoc-12.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc13">Contents</A>
+</BODY>
+</HTML>

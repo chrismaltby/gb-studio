@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Memory Models</TITLE>
+ <LINK HREF="SDCCUdoc-17.html" REL=next>
+ <LINK HREF="SDCCUdoc-15.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc16" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-17.html">Next</A>
+<A HREF="SDCCUdoc-15.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc16">Contents</A>
+<HR>
+<H2><A NAME="Memory Models"></A> <A NAME="s16">16. Memory Models</A> </H2>
+
+<P>SDCC allows two memory models, modules compiled with different memory models
+should be combined together, the results would be unpredictable. The support
+routines supplied with the compiler are compiled in small-model by default,
+and will need to be recompiled using the large model if the large model is
+used. In general the use of the large model is discouraged.
+<P>When the large model is used all variables declared without a storage class
+will be allocated into the external ram, this includes all parameters and local
+variables (for non-reentrant functions). When the small model is used variables
+without storage class are allocated in the internal ram.
+<P>Judicious usage of the processor specific storage classes and the 'reentrant'
+function type will yield much more efficient code, than using the large-model.
+Several optimizations are disabled when the program is compiled using the large
+model, it is therefore strongly recommdended that the small model be used unless
+absolutely required.
+<HR>
+<A HREF="SDCCUdoc-17.html">Next</A>
+<A HREF="SDCCUdoc-15.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc16">Contents</A>
+</BODY>
+</HTML>

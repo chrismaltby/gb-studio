@@ -1,0 +1,42 @@
+XL
+H 3 areas 1B global symbols
+S .add_TIM Ref0000
+S .add_SIO Ref0000
+S _main Ref0000
+S .STACK Ref0000
+S __cpu Ref0000
+S .add_JOY Ref0000
+S .wait_vbl_done Ref0000
+S __io_in Ref0000
+S __io_out Ref0000
+S banked_ret Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S __io_status Ref0000
+S banked_call Ref0000
+S .init Ref0000
+S .add_LCD Ref0000
+S .OAM Ref0000
+S .refresh_OAM Ref0000
+S .add_VBL Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 2B flags 0
+S _rand Def0000
+S _randw Def0000
+A _BSS size 2 flags 0
+S .randhi Def0000
+S .randlo Def0001
+A _BASE size B flags 0
+S .initrand Def0002
+S _initrand Def0000
+T 00 00 FA 01 00 6F 5F FA 00 00 57 CB 25 17 CB 25
+R 00 00 00 00 00 03 01 00 00 08 01 00
+T 0E 00 17 CB 25 17 CB 25 17 67 7B 85 6F 7C 8A 67
+R 00 00 00 00
+T 1C 00 7D C6 93 EA 01 00 57 7C CE 5C EA 00 00 5F
+R 00 00 00 00 00 06 01 00 00 0D 01 00
+T 2A 00 C9
+R 00 00 00 00
+T 00 00 F8 02 2A EA 01 00 7E EA 00 00 C9
+R 00 00 02 00 00 06 01 00 00 0A 01 00

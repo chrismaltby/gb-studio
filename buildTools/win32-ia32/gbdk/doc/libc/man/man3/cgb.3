@@ -1,0 +1,110 @@
+.TH cgb.h 3 "19 Aug 2000" "gbdk-lib" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+cgb.h \- Support for Color GameBoy. 
+.SH SYNOPSIS
+.br
+.PP
+.SS Defines
+
+.in +1c
+.ti -1c
+.RI "
+#define \fBRGB\fR (r, g, b) "
+.br
+.RI "\fIMacro to create a palette entry out of the color components.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+#define \fBRGB_RED\fR"
+.br
+.RI "\fICommon colors based on the EGA default palette.\fR"
+.PP
+
+.in -1c
+.SS Functions
+
+.in +1c
+.ti -1c
+.RI "
+void \fBset_bkg_palette\fR (\fBUINT8\fR first_palette, \fBUINT8\fR nb_palettes, \fBUINT16\fR *rgb_data) NONBANKED"
+.br
+.RI "\fISet bkg palette(s).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBset_sprite_palette\fR (\fBUINT8\fR first_palette, \fBUINT8\fR nb_palettes, \fBUINT16\fR *rgb_data) NONBANKED"
+.br
+.RI "\fISet sprite palette(s).\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBset_bkg_palette_entry\fR (\fBUINT8\fR palette, \fBUINT8\fR entry, \fBUINT16\fR rgb_data)"
+.br
+.RI "\fISet a bkg palette entry.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBset_sprite_palette_entry\fR (\fBUINT8\fR palette, \fBUINT8\fR entry, \fBUINT16\fR rgb_data)"
+.br
+.RI "\fISet a sprite palette entry.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void \fBcpu_slow\fR (void)"
+.br
+.RI "\fISet CPU speed to slow operation.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "void \fBcpu_fast\fR (void)"
+.br
+.RI "\fISet CPU speed to fast operation.\fR"
+.PP
+.in +1c
+
+.ti -1c
+.RI "
+void \fBcgb_compatibility\fR (void)"
+.br
+.RI "\fISet defaults compatible with normal GameBoy.\fR"
+.PP
+
+.in -1c
+.SH DETAILED DESCRIPTION
+.PP 
+Support for Color GameBoy.
+.SH FUNCTION DOCUMENTATION
+.PP 
+.SS void cpu_slow (void)
+.PP
+Set CPU speed to slow operation.
+.PP
+Make sure interrupts are disabled before call.
+.PP
+\fBSee also: \fR
+.in +1c
+\fBcpu_fast\fR() 
+.SS void cpu_fast (void)
+.PP
+Set CPU speed to fast operation.
+.PP
+Make sure interrupts are disabled before call.
+.PP
+\fBSee also: \fR
+.in +1c
+\fBcpu_slow\fR() 
+.SH AUTHOR
+.PP 
+Generated automatically by Doxygen for gbdk-lib from the source code.
