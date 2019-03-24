@@ -325,9 +325,8 @@ void SceneUpdateCamera_b()
     // If camera is animating move towards location
     if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG)
     {
-      if ((time & (camera_settings & CAMERA_SPEED_MASK)) == 0)
+      if ((time & camera_speed) == 0)
       {
-
         if (SCX_REG > camera_dest.x)
         {
           SCX_REG--;
