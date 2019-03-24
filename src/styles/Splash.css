@@ -22,7 +22,7 @@
 }
 
 .Splash__Tab--Active {
-  border-bottom: 4px solid #c92c61;
+  border-bottom: 4px solid var(--highlight-color);
 }
 
 .Splash--Blur .Splash__Tab--Active {
@@ -85,6 +85,13 @@
   height: 40px;
 }
 
+.Splash__FormGroup input:focus,
+.Splash__FormGroup select:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+}
+
 .Splash__InputButton {
   position: absolute;
   display: flex;
@@ -121,7 +128,7 @@ input.Splash__InputButton {
   float: left;
   text-align: center;
   padding: 10px 20px;
-  background-color: #c92c61;
+  background-color: var(--highlight-color);
   color: #fff;
   border-radius: 4px;
   user-select: none;
