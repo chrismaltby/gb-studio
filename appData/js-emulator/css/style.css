@@ -33,6 +33,7 @@ body {
   height: 210px;
   width: 100%;
   touch-action: none;
+  opacity: 0.8;
 }
 
 #controller_dpad {
@@ -265,6 +266,12 @@ body {
 
   #controller_select {
     right: 80px;
+  }
+}
+
+@media only screen and (max-width: 500px) and (max-height: 500px) {
+  #controller {
+    display: none;
   }
 }
 

@@ -19,6 +19,9 @@ const JS_KEY_X = 88;
 
 const DEADZONE = 0.1;
 
+var isTouchEnabled = "ontouchstart" in document.documentElement;
+isTouchEnabled = true;
+
 var controller = document.getElementById("controller");
 var btnA = document.getElementById("controller_a");
 var btnB = document.getElementById("controller_b");
@@ -111,6 +114,10 @@ function bindDpad(el) {
 function bindKeyboard() {
   window.onkeydown = function(e) {
     initSound();
+    if (isTouchEnabled) {
+      controller.style.display = "none";
+      isTouchEnabled = false;
+    }
     if (
       e.keyCode !== JS_KEY_CTRL &&
       e.keyCode !== JS_KEY_ALT &&
@@ -185,7 +192,7 @@ function bindKeyboard() {
   };
 }
 
-if ("ontouchstart" in document.documentElement) {
+if (isTouchEnabled) {
   bindButton(btnA, "a");
   bindButton(btnB, "b");
   bindButton(btnStart, "start");
