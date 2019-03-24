@@ -63,6 +63,12 @@ function mapStateToProps(state) {
           _v: uiVersion
         },
         {
+          id: "cursor",
+          name: "Cursor",
+          filename: `cursor.png`,
+          _v: uiVersion
+        },
+        {
           id: "emotes",
           name: "Emotes",
           filename: `emotes.png`,
