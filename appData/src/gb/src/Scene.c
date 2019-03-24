@@ -25,6 +25,7 @@ UWORD scene_next_index;
 UBYTE await_input;
 POS camera_dest;
 UBYTE camera_settings = CAMERA_LOCK_FLAG;
+UBYTE camera_speed;
 UBYTE wait_time = 0;
 UBYTE shake_time = 0;
 UBYTE scene_width;

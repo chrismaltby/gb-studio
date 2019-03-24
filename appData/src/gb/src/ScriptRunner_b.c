@@ -216,7 +216,8 @@ void Script_CameraMoveTo_b()
   camera_dest.x = script_cmd_args[0] << 3;
   camera_dest.y = 0; // @wtf-but-needed
   camera_dest.y = script_cmd_args[1] << 3;
-  camera_settings = script_cmd_args[2] & ~CAMERA_LOCK_FLAG;
+  camera_settings = (UBYTE)script_cmd_args[2] & ~CAMERA_LOCK_FLAG;
+  camera_speed = (UBYTE)script_cmd_args[2] & CAMERA_SPEED_MASK;
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
