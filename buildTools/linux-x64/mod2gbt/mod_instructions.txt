@@ -1,0 +1,49 @@
+                         FREQUENCIES
+                         -----------
+
+You can use notes from C3 to B8.
+
+                         INSTRUMENTS
+                         -----------
+
++----------------------------------------------------------------+
+|CHANNEL|RANGE|                      NOTES                       |
++-------+-----+--------------------------------------------------+
+|   1   | 1-4 |                                                  |
+|   2   | 1-4 |                                                  |
+|   3   | 8-15|Volume is usually a bit lower than other channels.|
+|   4   |16-31|Doesn't change with frequency (always C5).        |
++-------+-----+--------------------------------------------------+
+
+                           EFFECTS
+                           -------
+
+0xy - Arpeggio. Only channels 1, 2 and 3.
+
+Bnn - Jump to pattern in order nn (in hexadecimal).
+
+Cnn - Sets the volume to nn (in hexadecimal). Valid values from 00h to 40h.
+      Channel 3 can only be set to 0%, 25%, 50% and 100%. Others can be set
+      in a range of 0-Fh.
+
+Dnn - Ends this pattern and jumps to position nn (in decimal) in next pattern.
+      If used the last step of a pattern it will jump two patterns, not one!
+
+E8n - Sets the panning to n (in hexadecimal).
+      Left --- Both --- Right
+      0123   456789AB    CDEF
+
+ECn - Cut Note after n ticks. If n > speed or n = 0, it won't work.
+
+Fnn - Sets speed to nn (in hexadecimal). Valid values are 01h to 1Fh.
+      The higher the value, the slower the song. BPM speed not supported.
+
+Effects are limited in channel 3 when setting a new note (only half of them
+are available). It shouldn't be a problem since the effects that can't be
+used are control commands that can be used by other channels.
+
+**********************************************************************
+* You should set volume and instrument whenever you put a new note!! *
+* You should set instrument whenever you change volume in CH3!!      *
+* You should always put an instrument whenever you use arpeggio!!    *
+**********************************************************************
