@@ -20,11 +20,13 @@ class World extends Component {
   componentDidMount() {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
+    window.addEventListener("mouseup", this.onMouseUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("click", this.onClick);
+    window.removeEventListener("mouseup", this.onMouseUp);
   }
 
   componentDidUpdate(prevProps) {
@@ -76,6 +78,15 @@ class World extends Component {
     this.setState({
       focused: this.scrollRef.current.contains(e.target)
     });
+  };
+
+  onMouseUp = e => {
+    if (this.props.playerDragging) {
+      this.props.dragPlayerStop();
+    }
+    if (this.props.destinationDragging) {
+      this.props.dragDestinationStop();
+    }
   };
 
   onMouseMove = e => {
@@ -171,6 +182,8 @@ class World extends Component {
               dragScene={sceneDragging ? dragScene : ""}
               dragX={dragX}
               dragY={dragY}
+              onDragPlayerStart={this.props.dragPlayerStart}
+              onDragDestinationStart={this.props.dragDestinationStart}
             />
           )}
           {tool === "scene" && hover && (
@@ -198,7 +211,9 @@ function mapStateToProps(state) {
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections:
       state.project.present.settings &&
-      state.project.present.settings.showConnections
+      state.project.present.settings.showConnections,
+    playerDragging: state.editor.playerDragging,
+    destinationDragging: state.editor.destinationDragging
   };
 }
 
@@ -208,7 +223,11 @@ const mapDispatchToProps = {
   selectWorld: actions.selectWorld,
   removeScene: actions.removeScene,
   removeTrigger: actions.removeTrigger,
-  removeActor: actions.removeActor
+  removeActor: actions.removeActor,
+  dragPlayerStart: actions.dragPlayerStart,
+  dragPlayerStop: actions.dragPlayerStop,
+  dragDestinationStart: actions.dragDestinationStart,
+  dragDestinationStop: actions.dragDestinationStop
 };
 
 export default connect(

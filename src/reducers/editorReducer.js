@@ -12,6 +12,10 @@ import {
   DRAG_SCENE,
   DRAG_SCENE_START,
   DRAG_SCENE_STOP,
+  DRAG_PLAYER_START,
+  DRAG_PLAYER_STOP,
+  DRAG_DESTINATION_START,
+  DRAG_DESTINATION_STOP,
   SELECT_WORLD,
   ZOOM_IN,
   ZOOM_OUT,
@@ -117,6 +121,33 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         sceneDragX: action.moveX,
         sceneDragY: action.moveY
+      };
+    }
+    case DRAG_PLAYER_START: {
+      return {
+        ...state,
+        playerDragging: true
+      };
+    }
+    case DRAG_PLAYER_STOP: {
+      return {
+        ...state,
+        playerDragging: false
+      };
+    }
+    case DRAG_DESTINATION_START: {
+      return {
+        ...state,
+        destinationDragging: action.eventId,
+        type: action.selectionType,
+        index: action.index,
+        scene: action.sceneId
+      };
+    }
+    case DRAG_DESTINATION_STOP: {
+      return {
+        ...state,
+        destinationDragging: null
       };
     }
     case REMOVE_SCENE:

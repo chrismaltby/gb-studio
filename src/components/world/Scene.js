@@ -76,7 +76,9 @@ class Scene extends Component {
       showCollisions,
       zoomRatio,
       width,
-      height
+      height,
+      playerDragging,
+      destinationDragging
     } = this.props;
     const { creating, downX, downY } = this.state;
 
@@ -136,6 +138,22 @@ class Scene extends Component {
           hoverX: tX,
           hoverY: tY
         });
+
+        if (playerDragging) {
+          const { id } = this.props;
+          this.props.editPlayerStartAt(id, tX, tY);
+        } else if (destinationDragging) {
+          const { id, editor } = this.props;
+          this.props.editDestinationPosition(
+            destinationDragging,
+            editor.scene,
+            editor.type,
+            editor.index,
+            id,
+            tX,
+            tY
+          );
+        }
       }
 
       this.lastTX = tX;
@@ -466,6 +484,8 @@ function mapStateToProps(state, props) {
       state.tools.selected === "collisions",
     zoomRatio: (state.editor.zoom || 100) / 100,
     selected: state.editor.scene === props.id,
+    playerDragging: state.editor.playerDragging,
+    destinationDragging: state.editor.destinationDragging,
     sprites
   };
 }
@@ -489,7 +509,8 @@ const mapDispatchToProps = {
   dragScene: actions.dragScene,
   dragSceneStart: actions.dragSceneStart,
   dragSceneStop: actions.dragSceneStop,
-  editPlayerStartAt: actions.editPlayerStartAt
+  editPlayerStartAt: actions.editPlayerStartAt,
+  editDestinationPosition: actions.editDestinationPosition
 };
 
 export default connect(

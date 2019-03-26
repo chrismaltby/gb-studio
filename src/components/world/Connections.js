@@ -12,64 +12,130 @@ const scriptMapTransition = script => {
   return sceneTransitions;
 };
 
-export default React.memo(
-  ({ width, height, scenes, settings, zoomRatio, dragScene, dragX, dragY }) => {
-    const connections = scenes.reduce((memo, scene) => {
-      const sceneEntities = [].concat(scene.triggers || [], scene.actors || []);
-      sceneEntities.forEach(entity => {
-        const transitions = scriptMapTransition(entity.script || []);
-        transitions.forEach(transition => {
-          const destScene = scenes.find(m => m.id === transition.args.sceneId);
-          if (destScene) {
-            const startX = scene.x + (dragScene === scene.id ? dragX : 0);
-            const startY = scene.y + (dragScene === scene.id ? dragY : 0);
-            const destX =
-              destScene.x + (dragScene === destScene.id ? dragX : 0);
-            const destY =
-              destScene.y + (dragScene === destScene.id ? dragY : 0);
+const calculateTransitionCoords = ({
+  type,
+  event,
+  scene,
+  destScene,
+  dragScene,
+  dragX,
+  dragY,
+  entityIndex,
+  entityX = 0,
+  entityY = 0,
+  entityWidth = 0,
+  entityHeight = 0
+}) => {
+  const startX = scene.x + (dragScene === scene.id ? dragX : 0);
+  const startY = scene.y + (dragScene === scene.id ? dragY : 0);
+  const destX = destScene.x + (dragScene === destScene.id ? dragX : 0);
+  const destY = destScene.y + (dragScene === destScene.id ? dragY : 0);
 
-            const x1 = startX + (entity.x + (entity.width || 2) / 2) * 8;
-            const x2 = destX + (transition.args.x || 0) * 8 + 5;
-            const y1 = 20 + startY + (entity.y + (entity.height || 1) / 2) * 8;
-            const y2 = 20 + destY + (transition.args.y || 0) * 8 + 5;
-            const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
-            const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
-            memo.push({
-              x1,
-              y1,
-              x2,
-              y2,
-              qx,
-              qy,
-              direction: transition.args.direction
-            });
+  const x1 = startX + (entityX + entityWidth / 2) * 8;
+  const x2 = destX + (event.args.x || 0) * 8 + 5;
+  const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
+  const y2 = 20 + destY + (event.args.y || 0) * 8 + 5;
+  const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
+  const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
+
+  return {
+    x1,
+    y1,
+    x2,
+    y2,
+    qx,
+    qy,
+    type,
+    type,
+    eventId: event.id,
+    sceneId: scene.id,
+    entityIndex,
+    direction: event.args.direction
+  };
+};
+
+export default React.memo(
+  ({
+    width,
+    height,
+    scenes,
+    settings,
+    zoomRatio,
+    dragScene,
+    dragX,
+    dragY,
+    onDragPlayerStart,
+    onDragDestinationStart
+  }) => {
+    const connections = scenes.reduce((memo, scene) => {
+      // Actor Transitions
+      scene.actors.forEach((entity, entityIndex) => {
+        const transitionEvents = scriptMapTransition(entity.script || []);
+        transitionEvents.forEach(event => {
+          const destScene = scenes.find(m => m.id === event.args.sceneId);
+          if (destScene) {
+            memo.push(
+              calculateTransitionCoords({
+                type: "actors",
+                event,
+                scene,
+                destScene,
+                dragScene,
+                dragX,
+                dragY,
+                entityIndex,
+                entityX: entity.x,
+                entityY: entity.y,
+                entityWidth: entity.width || 2,
+                entityHeight: entity.height || 1
+              })
+            );
           }
         });
       });
-      const sceneTransitions = scriptMapTransition(scene.script || []);
-      sceneTransitions.forEach(transition => {
-        const destScene = scenes.find(m => m.id === transition.args.sceneId);
-        if (destScene) {
-          const startX = scene.x + (dragScene === scene.id ? dragX : 0);
-          const startY = scene.y + (dragScene === scene.id ? dragY : 0);
-          const destX = destScene.x + (dragScene === destScene.id ? dragX : 0);
-          const destY = destScene.y + (dragScene === destScene.id ? dragY : 0);
 
-          const x1 = startX + (2 / 2) * 8;
-          const x2 = destX + (transition.args.x || 0) * 8 + 5;
-          const y1 = 20 + startY + (1 / 2) * 8;
-          const y2 = 20 + destY + (transition.args.y || 0) * 8 + 5;
-          const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
-          const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
-          memo.push({
-            x1,
-            y1,
-            x2,
-            y2,
-            qx,
-            qy,
-            direction: transition.args.direction
-          });
+      // Trigger Transitions
+      scene.triggers.forEach((entity, entityIndex) => {
+        const transitionEvents = scriptMapTransition(entity.script || []);
+        transitionEvents.forEach(event => {
+          const destScene = scenes.find(m => m.id === event.args.sceneId);
+          if (destScene) {
+            memo.push(
+              calculateTransitionCoords({
+                type: "triggers",
+                event,
+                scene,
+                destScene,
+                dragScene,
+                dragX,
+                dragY,
+                entityIndex,
+                entityX: entity.x,
+                entityY: entity.y,
+                entityWidth: entity.width || 2,
+                entityHeight: entity.height || 1
+              })
+            );
+          }
+        });
+      });
+
+      // Scene Event Transitions
+      const sceneTransitionEvents = scriptMapTransition(scene.script || []);
+      sceneTransitionEvents.forEach(event => {
+        const destScene = scenes.find(m => m.id === event.args.sceneId);
+        if (destScene) {
+          memo.push(
+            calculateTransitionCoords({
+              type: "scenes",
+              event,
+              scene,
+              destScene,
+              dragScene,
+              dragX,
+              dragY
+            })
+          );
         }
       });
       return memo;
@@ -112,55 +178,70 @@ export default React.memo(
             />
           </g>
         ))}
-        {connections.map(({ x2, y2, direction }, index) => (
-          <g key={index}>
-            <rect
-              x={x2 - 4}
-              y={y2 - 4}
-              rx={4}
-              ry={4}
-              width={16}
-              height={8}
-              style={{
-                fill: "#00bcd4"
-              }}
-            />
-            {direction === "up" ? (
-              <polygon
-                points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 +
-                  2}`}
+        {connections.map(
+          (
+            { x2, y2, direction, eventId, sceneId, type, entityIndex },
+            index
+          ) => (
+            <g
+              key={index}
+              className="Connections__Destination"
+              onMouseDown={() =>
+                onDragDestinationStart(eventId, sceneId, type, entityIndex)
+              }
+            >
+              <rect
+                x={x2 - 4}
+                y={y2 - 4}
+                rx={4}
+                ry={4}
+                width={16}
+                height={8}
                 style={{
-                  fill: "#006064"
+                  fill: "#00bcd4"
                 }}
               />
-            ) : direction === "down" ? (
-              <polygon
-                points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 -
-                  2}`}
-                style={{
-                  fill: "#006064"
-                }}
-              />
-            ) : direction === "left" ? (
-              <polygon
-                points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`}
-                style={{
-                  fill: "#006064"
-                }}
-              />
-            ) : direction === "right" ? (
-              <polygon
-                points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 +
-                  3}`}
-                style={{
-                  fill: "#006064"
-                }}
-              />
-            ) : null}
-          </g>
-        ))}
+              {direction === "up" ? (
+                <polygon
+                  points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 +
+                    2}`}
+                  style={{
+                    fill: "#006064"
+                  }}
+                />
+              ) : direction === "down" ? (
+                <polygon
+                  points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 -
+                    2}`}
+                  style={{
+                    fill: "#006064"
+                  }}
+                />
+              ) : direction === "left" ? (
+                <polygon
+                  points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`}
+                  style={{
+                    fill: "#006064"
+                  }}
+                />
+              ) : direction === "right" ? (
+                <polygon
+                  points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 +
+                    3}`}
+                  style={{
+                    fill: "#006064"
+                  }}
+                />
+              ) : null}
+            </g>
+          )
+        )}
         {startScene && (
-          <g title="Game Starting Position">
+          <g
+            className="Connections__PlayerStart"
+            title="Game Starting Position"
+            onMouseDown={onDragPlayerStart}
+          >
             <rect
               x={startX2 - 4}
               y={startY2 - 4}

@@ -5,3 +5,9 @@
   stroke-width: 2px;
   pointer-events: none;
 }
+
+.Connections__PlayerStart,
+.Connections__Destination {
+  pointer-events: all;
+  cursor: move;
+}

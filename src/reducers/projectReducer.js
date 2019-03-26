@@ -27,11 +27,15 @@ import {
   RENAME_VARIABLE,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
-  EDIT_PLAYER_START_AT
+  EDIT_PLAYER_START_AT,
+  EDIT_SCENE_EVENT_DESTINATION_POSITION,
+  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
+  EDIT_ACTOR_EVENT_DESTINATION_POSITION
 } from "../actions/actionTypes";
 import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
 import clamp from "../lib/helpers/clamp";
+import { patchEvents } from "../lib/helpers/eventSystem";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -631,6 +635,76 @@ export default function project(state = initialState.project, action) {
           startY: action.y
         }
       };
+    case EDIT_SCENE_EVENT_DESTINATION_POSITION: {
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            script: patchEvents(scene.script, action.eventId, {
+              sceneId: action.destSceneId,
+              x: action.x,
+              y: action.y
+            })
+          };
+        })
+      };
+    }
+    case EDIT_ACTOR_EVENT_DESTINATION_POSITION: {
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            actors: scene.actors.map((actor, index) => {
+              if (index !== action.index) {
+                return actor;
+              }
+              return {
+                ...actor,
+                script: patchEvents(actor.script, action.eventId, {
+                  sceneId: action.destSceneId,
+                  x: action.x,
+                  y: action.y
+                })
+              };
+            })
+          };
+        })
+      };
+    }
+    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION: {
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            triggers: scene.triggers.map((trigger, index) => {
+              if (index !== action.index) {
+                return trigger;
+              }
+              return {
+                ...trigger,
+                script: patchEvents(trigger.script, action.eventId, {
+                  sceneId: action.destSceneId,
+                  x: action.x,
+                  y: action.y
+                })
+              };
+            })
+          };
+        })
+      };
+    }
     default:
       return state;
   }

@@ -288,6 +288,74 @@ export const editPlayerStartAt = (sceneId, x, y) => {
   return { type: types.EDIT_PLAYER_START_AT, sceneId, x, y };
 };
 
+export const dragPlayerStart = () => {
+  return { type: types.DRAG_PLAYER_START };
+};
+
+export const dragPlayerStop = () => {
+  return { type: types.DRAG_PLAYER_STOP };
+};
+
+export const dragDestinationStart = (
+  eventId,
+  sceneId,
+  selectionType,
+  index
+) => {
+  return {
+    type: types.DRAG_DESTINATION_START,
+    eventId,
+    sceneId,
+    selectionType,
+    index
+  };
+};
+
+export const editDestinationPosition = (
+  eventId,
+  sceneId,
+  selectionType,
+  index,
+  destSceneId,
+  x,
+  y
+) => {
+  if (selectionType === "actors") {
+    return {
+      type: types.EDIT_ACTOR_EVENT_DESTINATION_POSITION,
+      eventId,
+      sceneId,
+      index,
+      destSceneId,
+      x,
+      y
+    };
+  } else if (selectionType === "triggers") {
+    return {
+      type: types.EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
+      eventId,
+      sceneId,
+      index,
+      destSceneId,
+      x,
+      y
+    };
+  } else {
+    return {
+      type: types.EDIT_SCENE_EVENT_DESTINATION_POSITION,
+      eventId,
+      sceneId,
+      destSceneId,
+      x,
+      y
+    };
+  }
+};
+
+export const dragDestinationStop = () => {
+  return { type: types.DRAG_DESTINATION_STOP };
+};
+
 export const zoomIn = section => {
   return { type: types.ZOOM_IN, section };
 };
