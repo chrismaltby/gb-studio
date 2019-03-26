@@ -27,19 +27,24 @@ class DirectionPicker extends Component {
     return (
       <div className="DirectionPicker">
         {directions.map(direction => (
-          <div
-            key={direction.key}
-            onClick={() => onChange(direction.key)}
-            className={cx(
-              "DirectionPicker__Button",
-              "DirectionPicker__Button--" + direction.name,
-              {
-                "DirectionPicker__Button--Active": value === direction.key
-              }
-            )}
-          >
-            <TriangleIcon />
-          </div>
+          <label key={direction.key} title={direction.name}>
+            <input
+              type="radio"
+              checked={value === direction.key}
+              onChange={() => onChange(direction.key)}
+            />
+            <div
+              className={cx(
+                "DirectionPicker__Button",
+                "DirectionPicker__Button--" + direction.name,
+                {
+                  "DirectionPicker__Button--Active": value === direction.key
+                }
+              )}
+            >
+              <TriangleIcon />
+            </div>
+          </label>
         ))}
       </div>
     );

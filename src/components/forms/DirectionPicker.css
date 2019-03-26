@@ -3,10 +3,37 @@
   display: flex;
 }
 
+.DirectionPicker label,
+.DirectionPicker label ~ label {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  margin-top: 0px;
+}
+
+.DirectionPicker input:focus + .DirectionPicker__Button {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+  z-index: 10;
+  position: relative;
+}
+
+.DirectionPicker label input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+}
+
 .DirectionPicker__Button {
   flex: 1;
-  width: 28px;
-  height: 28px;
   background: var(--input-bg-color);
   font-size: 10px;
   line-height: 28px;
@@ -20,16 +47,16 @@
   background: var(--input-button-hover-color);
 }
 
-.DirectionPicker__Button:last-child {
+.DirectionPicker__Button--Right {
   border-right: 1px solid var(--input-border-color);
 }
 
-.DirectionPicker__Button:first-child {
+.DirectionPicker__Button--Left {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
 
-.DirectionPicker__Button:last-child {
+.DirectionPicker__Button--Right {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
