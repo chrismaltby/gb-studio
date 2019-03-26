@@ -70,3 +70,8 @@
 .EditorSidebar .AddCommandButton__ListDivider {
   border-bottom: 1px solid var(--sidebar-edge-color);
 }
+
+.AddCommandButton__ListItem__Highlight {
+  color: var(--highlight-color);
+  background: var(--menu-hover-color);
+}
