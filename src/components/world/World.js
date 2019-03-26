@@ -114,7 +114,7 @@ class World extends Component {
       settings,
       tool,
       showConnections,
-      // zoomRatio,
+      zoomRatio,
       editor
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
@@ -125,20 +125,22 @@ class World extends Component {
       sceneDragY: dragY
     } = editor;
 
-    const zoomRatio = 1;
-
-    const width =
+    const width = Math.max(
+      window.innerWidth - 300,
       scenes && scenes.length > 0
         ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
-          20
-        : 100;
-    const height =
+            20
+        : 100
+    );
+    const height = Math.max(
+      window.innerHeight,
       scenes && scenes.length > 0
         ? Math.max.apply(
             null,
             scenes.map(scene => 20 + scene.y + scene.height * 8)
           ) + 20
-        : 100;
+        : 100
+    );
 
     return (
       <div
