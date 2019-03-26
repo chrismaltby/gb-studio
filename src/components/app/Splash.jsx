@@ -39,11 +39,13 @@ class Splash extends Component {
   componentDidMount() {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
+    window.addEventListener("keydown", this.onKeyDown);
   }
 
   componentWillUnmount() {
     window.removeEventListener("blur", this.onBlur);
     window.removeEventListener("focus", this.onFocus);
+    window.removeEventListener("keydown", this.onKeyDown);
   }
 
   onBlur = () => {
@@ -151,11 +153,7 @@ class Splash extends Component {
               <label className={nameError ? "Splash__Label--Error" : ""}>
                 {nameError ? nameError : "Project name"}
               </label>
-              <input
-                value={name}
-                onChange={this.onChange("name")}
-                onKeyDown={this.onKeyDown}
-              />
+              <input value={name} onChange={this.onChange("name")} />
             </div>
 
             <div className="Splash__FormGroup">
@@ -170,11 +168,7 @@ class Splash extends Component {
               <label className={pathError ? "Splash__Label--Error" : ""}>
                 {pathError ? pathError : "Path"}
               </label>
-              <input
-                value={path}
-                onChange={this.onChange("path")}
-                onKeyDown={this.onKeyDown}
-              />
+              <input value={path} onChange={this.onChange("path")} />
               <div className="Splash__InputButton">
                 <DotsIcon />
               </div>
