@@ -8,8 +8,9 @@ import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
 import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
-import Button from "../library/Button";
+import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
+import { MenuItem } from "../library/Menu";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -34,9 +35,9 @@ class ActorEditor extends Component {
         <SidebarHeading
           title="Actor"
           buttons={
-            <Button small onClick={this.onRemove}>
-              Delete
-            </Button>
+            <DropdownButton small transparent right>
+              <MenuItem onClick={this.onRemove}>Delete Actor</MenuItem>
+            </DropdownButton>
           }
         />
 
@@ -123,7 +124,10 @@ function mapStateToProps(state, props) {
     project.present.scenes &&
     project.present.scenes.find(scene => scene.id === props.scene);
   const sceneImage =
-    scene && project.present.backgrounds.find(background => background.id === scene.backgroundId);
+    scene &&
+    project.present.backgrounds.find(
+      background => background.id === scene.backgroundId
+    );
   const actor = scene && scene.actors[props.id];
   const spriteSheet =
     actor &&

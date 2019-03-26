@@ -112,6 +112,7 @@ class AppToolbar extends Component {
           title="Export As..."
           label={<ExportIcon />}
           showArrow={false}
+          right
         >
           <MenuItem onClick={this.onBuild("rom")}>Export ROM</MenuItem>
           <MenuItem onClick={this.onBuild("web")}>Export Web</MenuItem>

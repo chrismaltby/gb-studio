@@ -23,6 +23,8 @@ import {
   findEvent
 } from "../../lib/helpers/eventSystem";
 import * as actions from "../../actions";
+import { DropdownButton } from "../library/Button";
+import { MenuItem, MenuDivider } from "../library/Menu";
 
 const ItemTypes = {
   CARD: "card"
@@ -137,12 +139,17 @@ class ActionMini extends Component {
               </div>
             )}
 
-            <div
-              className="ActionMini__Remove"
-              onClick={onRemove(id)}
-              title="Delete"
-            >
-              <CloseIcon />
+            <div className="ActionMini__Dropdown">
+              <DropdownButton small transparent right>
+                <MenuItem>Copy Values</MenuItem>
+                <MenuItem>Paste Values</MenuItem>
+                <MenuDivider />
+                <MenuItem>Copy Event</MenuItem>
+                <MenuItem>Paste Event Before</MenuItem>
+                <MenuItem>Paste Event After</MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={onRemove(id)}>Delete Event</MenuItem>
+              </DropdownButton>
             </div>
 
             <ScriptEventBlock

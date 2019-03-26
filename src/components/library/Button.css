@@ -70,6 +70,16 @@
   flex: 1;
 }
 
+.DropdownButton {
+  position: relative;
+}
+
+.DropdownButton > .Button .DropdownButton__Triangle > svg {
+  transform: rotate(180deg);
+  width: 8px;
+  height: 8px;
+}
+
 .Platform__win32 .Button {
   box-shadow: none;
   border-radius: 2px;

@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { CloseIcon, TriggerIcon } from "../../components/library/Icons";
+import { TriggerIcon } from "../../components/library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
-import Button from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
+import { DropdownButton } from "../library/Button";
+import { MenuItem } from "../library/Menu";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -33,9 +34,9 @@ class SceneEditor extends Component {
         <SidebarHeading
           title="Scene"
           buttons={
-            <Button small onClick={this.onRemove}>
-              Delete
-            </Button>
+            <DropdownButton small transparent right>
+              <MenuItem onClick={this.onRemove}>Delete Scene</MenuItem>
+            </DropdownButton>
           }
         />
         <div>

@@ -30,7 +30,7 @@ export class ToolbarDropdownButton extends Component {
   };
 
   render() {
-    const { children, label, showArrow = true, ...props } = this.props;
+    const { children, label, showArrow = true, right, ...props } = this.props;
     const { open } = this.state;
 
     return (
@@ -44,7 +44,11 @@ export class ToolbarDropdownButton extends Component {
           )}
         </ToolbarButton>
         {open && <MenuOverlay onClick={this.toggleOpen} />}
-        {open && <Menu onClick={this.toggleOpen}>{children}</Menu>}
+        {open && (
+          <Menu onClick={this.toggleOpen} right={right}>
+            {children}
+          </Menu>
+        )}
       </div>
     );
   }

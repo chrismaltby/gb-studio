@@ -5,8 +5,9 @@ import { CloseIcon } from "../../components/library/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import { FormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
-import Button from "../library/Button";
+import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
+import { MenuItem } from "../library/Menu";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
@@ -31,9 +32,9 @@ class TriggerEditor extends Component {
         <SidebarHeading
           title="Trigger"
           buttons={
-            <Button small onClick={this.onRemove}>
-              Delete
-            </Button>
+            <DropdownButton small transparent right>
+              <MenuItem onClick={this.onRemove}>Delete Trigger</MenuItem>
+            </DropdownButton>
           }
         />
         <div>

@@ -11,9 +11,17 @@ class EditorSidebar extends Component {
     const { editor } = this.props;
     const editorForm =
       editor.type === "triggers" ? (
-        <TriggerEditor key={editor.index} id={editor.index} scene={editor.scene} />
+        <TriggerEditor
+          key={editor.index}
+          id={editor.index}
+          scene={editor.scene}
+        />
       ) : editor.type === "actors" ? (
-        <ActorEditor key={editor.index} id={editor.index} scene={editor.scene} />
+        <ActorEditor
+          key={editor.index}
+          id={editor.index}
+          scene={editor.scene}
+        />
       ) : editor.type === "scenes" ? (
         <SceneEditor key={editor.scene} id={editor.scene} />
       ) : editor.type === "world" ? (

@@ -8,15 +8,28 @@
   min-width: 60px;
   z-index: 1001;
   font-size: 13px;
+  line-height: normal;
+  font-weight: normal;
   user-select: none;
+}
+
+.Menu--Right {
+  right: 0;
 }
 
 .MenuItem {
   padding: 6px 10px;
   padding-right: 20px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .MenuItem:hover {
+  background-color: var(--menu-hover-color);
+}
+
+.MenuDivider {
+  height: 1px;
   background-color: var(--menu-hover-color);
 }
 

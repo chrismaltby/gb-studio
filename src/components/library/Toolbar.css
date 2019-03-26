@@ -92,6 +92,10 @@
   font-size: 12px;
 }
 
+.Toolbar__DropdownButton {
+  position: relative;
+}
+
 .Toolbar__Button + .Toolbar__Button,
 .Toolbar__DropdownButton + .Toolbar__Button,
 .Toolbar__Button + .Toolbar__DropdownButton {
