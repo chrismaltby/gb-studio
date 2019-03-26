@@ -9,5 +9,4 @@
 .Connections__PlayerStart,
 .Connections__Destination {
   pointer-events: all;
-  cursor: move;
 }
