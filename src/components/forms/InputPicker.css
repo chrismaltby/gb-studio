@@ -1,6 +1,32 @@
 .InputPicker {
   width: 100%;
-  /* display: flex; */
+  display: flex;
+  flex-direction: column;
+}
+
+.InputPicker__Row {
+  display: flex;
+}
+
+.InputPicker label,
+.InputPicker label ~ label {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  margin-top: 0px;
+}
+
+.InputPicker label input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
 }
 
 .InputPicker__Button {
@@ -14,7 +40,7 @@
   border: 1px solid var(--input-border-color);
   border-right: 0;
   display: inline-flex;
-  width: 25%;
+  width: 100%;
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
@@ -22,11 +48,20 @@
   color: var(--button-text-color);
 }
 
+.InputPicker input:focus + .InputPicker__Button {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+  z-index: 10;
+  position: relative;
+}
+
 .InputPicker__Button:hover {
   background: var(--input-button-hover-color);
 }
 
-.InputPicker__Button:last-child {
+.InputPicker__Button--Right,
+.InputPicker__Button--Select {
   border-right: 1px solid var(--input-border-color);
 }
 
@@ -46,11 +81,11 @@
   border-top: 0;
 }
 
-.InputPicker__Button:first-child {
+.InputPicker__Button--Left {
   border-top-left-radius: 4px;
 }
 
-.InputPicker__Button:last-child {
+.InputPicker__Button--Select {
   border-bottom-right-radius: 4px;
 }
 
