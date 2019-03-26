@@ -75,7 +75,8 @@ export default React.memo(
       return memo;
     }, []);
 
-    const startScene = scenes.find(scene => scene.id === settings.startSceneId);
+    const startScene =
+      scenes.find(scene => scene.id === settings.startSceneId) || scenes[0];
     const startX2 =
       startScene &&
       startScene.x +
