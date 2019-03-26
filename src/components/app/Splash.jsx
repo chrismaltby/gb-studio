@@ -159,9 +159,10 @@ class Splash extends Component {
             </div>
 
             <div className="Splash__FormGroup">
-              <label>Target system</label>
+              <label>Template</label>
               <select value={target} onChange={this.onChange("target")}>
                 <option value="gbhtml">GB + HTML</option>
+                <option value="blank">Blank Project</option>
               </select>
             </div>
 
