@@ -394,8 +394,9 @@ export const buildGame = ({
   ejectBuild = false
 } = {}) => async (dispatch, getState) => {
   const state = getState();
-  if (state.console.status === "running") {
+  if (!state.document.loaded || state.console.status === "running") {
     // Can't build while previous build still in progress
+    // or loading project
     return;
   }
   dispatch({
