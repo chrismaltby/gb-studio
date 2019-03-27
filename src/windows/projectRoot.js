@@ -54,6 +54,15 @@ ipcRenderer.on("section", (event, section) => {
   store.dispatch(actions.setSection(section));
 });
 
+ipcRenderer.on("updateSetting", (event, setting, value) => {
+  console.log("updateSetting", setting, value);
+  store.dispatch(
+    actions.editProjectSettings({
+      [setting]: value
+    })
+  );
+});
+
 ipcRenderer.on("zoom", (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {

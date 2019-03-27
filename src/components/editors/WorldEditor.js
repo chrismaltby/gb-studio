@@ -56,36 +56,6 @@ class WorldEditor extends Component {
           </FormField>
         </div>
 
-        <SidebarHeading title="Settings" />
-
-        <div>
-          <FormField>
-            <label>
-              <input
-                type="checkbox"
-                className="Checkbox"
-                checked={settings.showCollisions}
-                onChange={this.onEditSetting("showCollisions")}
-              />
-              <div className="FormCheckbox" />
-              Show Collisions
-            </label>
-          </FormField>
-
-          <FormField>
-            <label>
-              <input
-                type="checkbox"
-                className="Checkbox"
-                checked={settings.showConnections}
-                onChange={this.onEditSetting("showConnections")}
-              />
-              <div className="FormCheckbox" />
-              Show Connections
-            </label>
-          </FormField>
-        </div>
-
         {scenes.length > 0 && (
           <div>
             <SidebarHeading title="Starting Scene" />

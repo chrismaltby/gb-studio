@@ -142,6 +142,25 @@ const template = [
       },
       { type: "separator" },
       {
+        id: "showCollisions",
+        label: "Show Collisions",
+        type: "checkbox",
+        checked: true,
+        click: item => {
+          notifyListeners("updateSetting", "showCollisions", item.checked);
+        }
+      },
+      {
+        id: "showConnections",
+        label: "Show Connections",
+        type: "checkbox",
+        checked: true,
+        click: item => {
+          notifyListeners("updateSetting", "showConnections", item.checked);
+        }
+      },
+      { type: "separator" },
+      {
         label: "Actual Size",
         accelerator: "CommandOrControl+0",
         click: () => {
@@ -238,13 +257,14 @@ let listeners = {
   redo: [],
   section: [],
   zoom: [],
+  updateSetting: [],
   run: [],
   build: []
 };
 
-const notifyListeners = (event, data) => {
+const notifyListeners = (event, ...data) => {
   for (let fn of listeners[event]) {
-    fn(data);
+    fn.apply(null, data);
   }
 };
 
@@ -258,5 +278,6 @@ const off = (event, fn) => {
 
 export default {
   on,
-  off
+  off,
+  ref: menu
 };

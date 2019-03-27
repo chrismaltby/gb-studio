@@ -1,5 +1,9 @@
 import { ipcRenderer, shell } from "electron";
-import { OPEN_HELP, OPEN_FOLDER } from "../actions/actionTypes";
+import {
+  OPEN_HELP,
+  OPEN_FOLDER,
+  PROJECT_LOAD_SUCCESS
+} from "../actions/actionTypes";
 import open from "open";
 
 export default store => next => action => {
@@ -7,6 +11,8 @@ export default store => next => action => {
     ipcRenderer.send("open-help", action.page);
   } else if (action.type === OPEN_FOLDER) {
     open(action.path);
+  } else if (action.type === PROJECT_LOAD_SUCCESS) {
+    ipcRenderer.send("project-loaded", action.data);
   }
 
   let result = next(action);

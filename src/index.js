@@ -265,6 +265,13 @@ ipcMain.on("document-unmodified", () => {
   mainWindow.documentEdited = false; // For Windows
 });
 
+ipcMain.on("project-loaded", (event, project) => {
+  menu.ref.getMenuItemById("showCollisions").checked =
+    project.settings.showCollisions;
+  menu.ref.getMenuItemById("showConnections").checked =
+    project.settings.showConnections;
+});
+
 menu.on("new", async () => {
   newProject();
 });
@@ -299,6 +306,10 @@ menu.on("run", () => {
 
 menu.on("build", buildType => {
   mainWindow && mainWindow.webContents.send("build", buildType);
+});
+
+menu.on("updateSetting", (setting, value) => {
+  mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
 });
 
 const newProject = async () => {
