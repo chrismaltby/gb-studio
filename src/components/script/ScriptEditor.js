@@ -20,7 +20,9 @@ import {
   patchEvents,
   prependEvent,
   filterEvents,
-  findEvent
+  findEvent,
+  appendEvent,
+  regenerateEventIds
 } from "../../lib/helpers/eventSystem";
 import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
@@ -101,8 +103,9 @@ class ActionMini extends Component {
     onEdit(id, newArgs);
   };
 
-  onPasteEvent = e => {
-    console.log("PASTE EVENT", this.props.clipboardEvent);
+  onPasteEvent = before => e => {
+    const { id, clipboardEvent, onPaste } = this.props;
+    onPaste(id, clipboardEvent, before);
   };
 
   render() {
@@ -119,6 +122,7 @@ class ActionMini extends Component {
       onEdit,
       onRemove,
       onCopy,
+      onPaste,
       onMouseEnter,
       onMouseLeave,
       clipboardEvent
@@ -165,10 +169,10 @@ class ActionMini extends Component {
                 <MenuItem onClick={onCopy(action)}>Copy Event</MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={this.onPasteValues}>Paste Values</MenuItem>
-                <MenuItem onClick={this.onPasteEvent}>
+                <MenuItem onClick={this.onPasteEvent(true)}>
                   Paste Event Before
                 </MenuItem>
-                <MenuItem onClick={this.onPasteEvent}>
+                <MenuItem onClick={this.onPasteEvent(false)}>
                   Paste Event After
                 </MenuItem>
                 <MenuDivider />
@@ -198,6 +202,7 @@ class ActionMini extends Component {
                       onRemove={onRemove}
                       onEdit={onEdit}
                       onCopy={onCopy}
+                      onPaste={onPaste}
                       onMouseEnter={onMouseEnter}
                       onMouseLeave={onMouseLeave}
                       clipboardEvent={clipboardEvent}
@@ -228,6 +233,7 @@ class ActionMini extends Component {
                     onRemove={onRemove}
                     onEdit={onEdit}
                     onCopy={onCopy}
+                    onPaste={onPaste}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
                     clipboardEvent={clipboardEvent}
@@ -357,6 +363,18 @@ class ScriptEditor extends Component {
     this.props.copyEvent(event);
   };
 
+  onPaste = (id, event, before) => {
+    const root = this.props.value;
+    const newEvent = regenerateEventIds(event);
+    const input = before
+      ? prependEvent(root, id, newEvent)
+      : appendEvent(root, id, newEvent);
+    this.setState({
+      input
+    });
+    this.props.onChange(input);
+  };
+
   onEnter = id => {
     this.props.selectScriptEvent(id);
   };
@@ -379,6 +397,7 @@ class ScriptEditor extends Component {
             onRemove={this.onRemove}
             onEdit={this.onEdit}
             onCopy={this.onCopy}
+            onPaste={this.onPaste}
             onMouseEnter={this.onEnter}
             onMouseLeave={this.onLeave}
             clipboardEvent={this.props.clipboardEvent}

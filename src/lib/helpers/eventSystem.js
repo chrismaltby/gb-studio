@@ -1,3 +1,5 @@
+import uuid from "uuid/v4";
+
 const walkEvents = (events = [], callback) => {
   for (let i = 0; i < events.length; i++) {
     callback(events[i]);
@@ -101,6 +103,44 @@ const prependEvent = (data, id, newData) => {
   }, []);
 };
 
+const appendEvent = (data, id, newData) => {
+  return data.reduce((memo, o) => {
+    if (o.true) {
+      o = {
+        ...o,
+        true: appendEvent(o.true, id, newData)
+      };
+    }
+    if (o.false) {
+      o = {
+        ...o,
+        false: appendEvent(o.false, id, newData)
+      };
+    }
+    memo.push(o);
+    if (o.id === id) {
+      memo.push(newData);
+    }
+    return memo;
+  }, []);
+};
+
+const regenerateEventIds = event => {
+  return Object.assign(
+    {},
+    event,
+    {
+      id: uuid()
+    },
+    event.true && {
+      true: event.true.map(regenerateEventIds)
+    },
+    event.false && {
+      false: event.false.map(regenerateEventIds)
+    }
+  );
+};
+
 const filterEvents = (data, id) => {
   return data.reduce((memo, o) => {
     if (o.id !== id) {
@@ -140,6 +180,8 @@ export {
   findSceneEvent,
   patchEvents,
   prependEvent,
+  appendEvent,
+  regenerateEventIds,
   filterEvents,
   findEvent
 };

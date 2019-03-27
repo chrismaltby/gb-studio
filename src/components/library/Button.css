@@ -66,6 +66,14 @@
   );
 }
 
+.Button--Transparent:hover {
+  background: rgba(128, 128, 128, 0.3);
+}
+
+.Button--Transparent:active {
+  background: rgba(128, 128, 128, 0.4);
+}
+
 .ButtonToolbar__Spacer {
   flex: 1;
 }
