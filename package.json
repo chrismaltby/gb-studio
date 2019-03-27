@@ -3,7 +3,7 @@
   "productName": "GB Studio",
   "version": "0.1.0",
   "description": "Visual retro game maker",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "run-s parcel:dev start:watch",
     "start:watch": "run-p parcel:watch start:electron",
