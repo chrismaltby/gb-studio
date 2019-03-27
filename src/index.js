@@ -44,6 +44,7 @@ const createSplash = async () => {
     maximizable: false,
     fullscreenable: false,
     show: false,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       devTools: isDevMode
@@ -151,6 +152,7 @@ const createHelp = async helpPage => {
       resizable: true,
       maximizable: true,
       fullscreenable: false,
+      autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
         devTools: isDevMode
@@ -179,6 +181,7 @@ const createPlay = async url => {
       width: playWidth,
       height: playHeight,
       fullscreenable: false,
+      autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: false,
         webSecurity: false
