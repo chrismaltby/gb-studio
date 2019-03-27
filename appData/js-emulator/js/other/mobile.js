@@ -70,7 +70,7 @@ function deleteValue(key) {
 // Allow Audio context to be created in places which require
 // user input first. Hook this up to keyboard and touch inputs
 function initSound() {
-  if (!soundReady && GameBoyEmulatorInitialized()) {
+  if (!soundReady && !settings[0] && GameBoyEmulatorInitialized()) {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     window.audioContext = new AudioContext();
     if (window.audioContext) {

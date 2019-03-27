@@ -192,7 +192,7 @@ const createPlay = async url => {
   }
 
   playWindow.setMenu(null);
-  playWindow.loadURL(url);
+  playWindow.loadURL(`${url}?audio=true`);
 
   playWindow.on("closed", () => {
     playWindow = null;
