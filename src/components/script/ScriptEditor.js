@@ -20,7 +20,9 @@ import {
   patchEvents,
   prependEvent,
   filterEvents,
-  findEvent
+  findEvent,
+  appendEvent,
+  regenerateEventIds
 } from "../../lib/helpers/eventSystem";
 import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
@@ -86,6 +88,26 @@ class ActionMini extends Component {
     });
   };
 
+  onPasteValues = e => {
+    const { id, clipboardEvent, onEdit, action } = this.props;
+    // Only include values from clipboard event that existed on current event already
+    const newArgs = Object.keys(clipboardEvent.args || {}).reduce(
+      (memo, key) => {
+        if (action.args && action.args[key] !== undefined) {
+          memo[key] = clipboardEvent.args[key];
+        }
+        return memo;
+      },
+      {}
+    );
+    onEdit(id, newArgs);
+  };
+
+  onPasteEvent = before => e => {
+    const { id, clipboardEvent, onPaste } = this.props;
+    onPaste(id, clipboardEvent, before);
+  };
+
   render() {
     const {
       id,
@@ -99,8 +121,11 @@ class ActionMini extends Component {
       onAdd,
       onEdit,
       onRemove,
+      onCopy,
+      onPaste,
       onMouseEnter,
-      onMouseLeave
+      onMouseLeave,
+      clipboardEvent
     } = this.props;
     const { command } = action;
     const { elseOpen } = this.state;
@@ -141,12 +166,15 @@ class ActionMini extends Component {
 
             <div className="ActionMini__Dropdown">
               <DropdownButton small transparent right>
-                <MenuItem>Copy Values</MenuItem>
-                <MenuItem>Paste Values</MenuItem>
+                <MenuItem onClick={onCopy(action)}>Copy Event</MenuItem>
                 <MenuDivider />
-                <MenuItem>Copy Event</MenuItem>
-                <MenuItem>Paste Event Before</MenuItem>
-                <MenuItem>Paste Event After</MenuItem>
+                <MenuItem onClick={this.onPasteValues}>Paste Values</MenuItem>
+                <MenuItem onClick={this.onPasteEvent(true)}>
+                  Paste Event Before
+                </MenuItem>
+                <MenuItem onClick={this.onPasteEvent(false)}>
+                  Paste Event After
+                </MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={onRemove(id)}>Delete Event</MenuItem>
               </DropdownButton>
@@ -173,8 +201,11 @@ class ActionMini extends Component {
                       onAdd={onAdd}
                       onRemove={onRemove}
                       onEdit={onEdit}
+                      onCopy={onCopy}
+                      onPaste={onPaste}
                       onMouseEnter={onMouseEnter}
                       onMouseLeave={onMouseLeave}
+                      clipboardEvent={clipboardEvent}
                     />
                   ))}
                 </div>
@@ -201,8 +232,11 @@ class ActionMini extends Component {
                     onAdd={onAdd}
                     onRemove={onRemove}
                     onEdit={onEdit}
+                    onCopy={onCopy}
+                    onPaste={onPaste}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
+                    clipboardEvent={clipboardEvent}
                   />
                 ))}
               </div>
@@ -325,6 +359,22 @@ class ScriptEditor extends Component {
     this.props.onChange(input);
   };
 
+  onCopy = event => () => {
+    this.props.copyEvent(event);
+  };
+
+  onPaste = (id, event, before) => {
+    const root = this.props.value;
+    const newEvent = regenerateEventIds(event);
+    const input = before
+      ? prependEvent(root, id, newEvent)
+      : appendEvent(root, id, newEvent);
+    this.setState({
+      input
+    });
+    this.props.onChange(input);
+  };
+
   onEnter = id => {
     this.props.selectScriptEvent(id);
   };
@@ -346,8 +396,11 @@ class ScriptEditor extends Component {
             onAdd={this.onAdd}
             onRemove={this.onRemove}
             onEdit={this.onEdit}
+            onCopy={this.onCopy}
+            onPaste={this.onPaste}
             onMouseEnter={this.onEnter}
             onMouseLeave={this.onLeave}
+            clipboardEvent={this.props.clipboardEvent}
           />
         ))}
         {false && JSON.stringify(value, null, 4)}
@@ -370,12 +423,14 @@ function mapStateToProps(state) {
     variables: state.project.present && state.project.present.variables,
     scenes: state.project.present && state.project.present.scenes,
     music: state.project.present && state.project.present.music,
-    spriteSheets: state.project.present && state.project.present.spriteSheets
+    spriteSheets: state.project.present && state.project.present.spriteSheets,
+    clipboardEvent: state.clipboard.event
   };
 }
 
 const mapDispatchToProps = {
-  selectScriptEvent: actions.selectScriptEvent
+  selectScriptEvent: actions.selectScriptEvent,
+  copyEvent: actions.copyEvent
 };
 
 export default connect(

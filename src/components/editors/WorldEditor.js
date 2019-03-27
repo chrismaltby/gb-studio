@@ -9,8 +9,14 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
 
 class WorldEditor extends Component {
-  onEdit = key => e => {
+  onEditSetting = key => e => {
     this.props.editProjectSettings({
+      [key]: castEventValue(e)
+    });
+  };
+
+  onEditProject = key => e => {
+    this.props.editProject({
       [key]: castEventValue(e)
     });
   };
@@ -22,8 +28,34 @@ class WorldEditor extends Component {
       return <div />;
     }
 
+    const scenes = project.scenes;
+
     return (
       <div className="WorldEditor">
+        <SidebarHeading title="Project" />
+
+        <div>
+          <FormField>
+            <label htmlFor="projectName">Name</label>
+            <input
+              id="projectName"
+              value={project.name || ""}
+              placeholder="Project Name"
+              onChange={this.onEditProject("name")}
+            />
+          </FormField>
+
+          <FormField>
+            <label htmlFor="projectAuthor">Author</label>
+            <input
+              id="projectAuthor"
+              value={project.author || ""}
+              placeholder="Author"
+              onChange={this.onEditProject("author")}
+            />
+          </FormField>
+        </div>
+
         <SidebarHeading title="Settings" />
 
         <div>
@@ -33,7 +65,7 @@ class WorldEditor extends Component {
                 type="checkbox"
                 className="Checkbox"
                 checked={settings.showCollisions}
-                onChange={this.onEdit("showCollisions")}
+                onChange={this.onEditSetting("showCollisions")}
               />
               <div className="FormCheckbox" />
               Show Collisions
@@ -46,7 +78,7 @@ class WorldEditor extends Component {
                 type="checkbox"
                 className="Checkbox"
                 checked={settings.showConnections}
-                onChange={this.onEdit("showConnections")}
+                onChange={this.onEditSetting("showConnections")}
               />
               <div className="FormCheckbox" />
               Show Connections
@@ -54,63 +86,67 @@ class WorldEditor extends Component {
           </FormField>
         </div>
 
-        <SidebarHeading title="Starting Scene" />
+        {scenes.length > 0 && (
+          <div>
+            <SidebarHeading title="Starting Scene" />
 
-        <FormField>
-          <label>
-            <div className="Select">
-              <SceneSelect
-                value={settings.startSceneId || ""}
-                onChange={this.onEdit("startSceneId")}
+            <FormField>
+              <label>
+                <div className="Select">
+                  <SceneSelect
+                    value={settings.startSceneId || ""}
+                    onChange={this.onEditSetting("startSceneId")}
+                  />
+                </div>
+              </label>
+            </FormField>
+
+            <FormField>
+              <label htmlFor="playerSprite">Player Sprite Sheet</label>
+              <SpriteSheetSelect
+                id="playerSprite"
+                value={settings.playerSpriteSheetId}
+                direction={settings.startDirection}
+                onChange={this.onEditSetting("playerSpriteSheetId")}
               />
-            </div>
-          </label>
-        </FormField>
+            </FormField>
 
-        <FormField>
-          <label htmlFor="playerSprite">Player Sprite Sheet</label>
-          <SpriteSheetSelect
-            id="playerSprite"
-            value={settings.playerSpriteSheetId}
-            direction={settings.startDirection}
-            onChange={this.onEdit("playerSpriteSheetId")}
-          />
-        </FormField>
+            <FormField halfWidth>
+              <label htmlFor="startX">X</label>
+              <input
+                id="startX"
+                type="number"
+                value={settings.startX}
+                min={0}
+                max={30}
+                placeholder={0}
+                onChange={this.onEditSetting("startX")}
+              />
+            </FormField>
 
-        <FormField halfWidth>
-          <label htmlFor="startX">X</label>
-          <input
-            id="startX"
-            type="number"
-            value={settings.startX}
-            min={0}
-            max={30}
-            placeholder={0}
-            onChange={this.onEdit("startX")}
-          />
-        </FormField>
+            <FormField halfWidth>
+              <label htmlFor="startY">Y</label>
+              <input
+                id="startY"
+                type="number"
+                value={settings.startY}
+                min={0}
+                max={31}
+                placeholder={0}
+                onChange={this.onEditSetting("startY")}
+              />
+            </FormField>
 
-        <FormField halfWidth>
-          <label htmlFor="startY">Y</label>
-          <input
-            id="startY"
-            type="number"
-            value={settings.startY}
-            min={0}
-            max={31}
-            placeholder={0}
-            onChange={this.onEdit("startY")}
-          />
-        </FormField>
-
-        <FormField>
-          <label htmlFor="startDirection">Direction</label>
-          <DirectionPicker
-            id="startDirection"
-            value={settings.startDirection || 0}
-            onChange={this.onEdit("startDirection")}
-          />
-        </FormField>
+            <FormField>
+              <label htmlFor="startDirection">Direction</label>
+              <DirectionPicker
+                id="startDirection"
+                value={settings.startDirection || 0}
+                onChange={this.onEditSetting("startDirection")}
+              />
+            </FormField>
+          </div>
+        )}
       </div>
     );
   }
@@ -124,6 +160,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
+  editProject: actions.editProject,
   editProjectSettings: actions.editProjectSettings
 };
 

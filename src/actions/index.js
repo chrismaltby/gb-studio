@@ -356,6 +356,10 @@ export const dragDestinationStop = () => {
   return { type: types.DRAG_DESTINATION_STOP };
 };
 
+export const copyEvent = event => {
+  return { type: types.COPY_EVENT, event };
+};
+
 export const zoomIn = section => {
   return { type: types.ZOOM_IN, section };
 };

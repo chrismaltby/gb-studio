@@ -101,3 +101,5 @@ export const PLAY_MUSIC = "PLAY_MUSIC";
 export const PAUSE_MUSIC = "PAUSE_MUSIC";
 
 export const EDIT_UI = "EDIT_UI";
+
+export const COPY_EVENT = "COPY_EVENT";

@@ -7,6 +7,7 @@ import navigation from "./navigationReducer";
 import document from "./documentReducer";
 import console from "./consoleReducer";
 import music from "./musicReducer";
+import clipboard from "./clipboardReducer";
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_SUCCESS
@@ -39,7 +40,8 @@ const rootReducer = combineReducers({
   document,
   navigation,
   console,
-  music
+  music,
+  clipboard
 });
 
 export default rootReducer;

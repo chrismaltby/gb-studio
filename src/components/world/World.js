@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Scene from "./Scene";
+import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
 
@@ -167,6 +168,9 @@ class World extends Component {
             style={{ width, height }}
             onClick={this.props.selectWorld}
           />
+
+          {scenes.length === 0 && <WorldHelp />}
+
           {scenes.map((scene, index) => (
             <div key={scene.id}>
               <Scene id={scene.id} index={index} scene={scene} />

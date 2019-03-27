@@ -4,7 +4,6 @@ import cx from "classnames";
 import AppToolbar from "../../containers/AppToolbar";
 import BackgroundsPage from "../../containers/pages/BackgroundsPage";
 import SpritesPage from "../../containers/pages/SpritesPage";
-import OverviewPage from "../../containers/pages/OverviewPage";
 import ScriptPage from "../../containers/pages/ScriptPage";
 import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
@@ -39,7 +38,6 @@ class App extends Component {
       <div className={cx("App", { "App--Blur": blur })}>
         <AppToolbar />
         <div className="App__Content">
-          {section === "overview" && <OverviewPage />}
           {section === "world" && <WorldPage />}
           {section === "backgrounds" && <BackgroundsPage />}
           {section === "sprites" && <SpritesPage />}

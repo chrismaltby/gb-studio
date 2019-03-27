@@ -92,57 +92,50 @@ const template = [
     label: "View",
     submenu: [
       {
-        label: "Overview",
-        accelerator: "CommandOrControl+1",
-        click: () => {
-          notifyListeners("section", "overview");
-        }
-      },
-      {
         label: "Game World",
-        accelerator: "CommandOrControl+2",
+        accelerator: "CommandOrControl+1",
         click: () => {
           notifyListeners("section", "world");
         }
       },
       {
         label: "Sprites",
-        accelerator: "CommandOrControl+3",
+        accelerator: "CommandOrControl+2",
         click: () => {
           notifyListeners("section", "sprites");
         }
       },
       {
         label: "Backgrounds",
-        accelerator: "CommandOrControl+4",
+        accelerator: "CommandOrControl+3",
         click: () => {
           notifyListeners("section", "backgrounds");
         }
       },
       {
         label: "UI Elements",
-        accelerator: "CommandOrControl+5",
+        accelerator: "CommandOrControl+4",
         click: () => {
           notifyListeners("section", "ui");
         }
       },
       {
         label: "Music",
-        accelerator: "CommandOrControl+6",
+        accelerator: "CommandOrControl+5",
         click: () => {
           notifyListeners("section", "music");
         }
       },
       {
         label: "Script Review",
-        accelerator: "CommandOrControl+7",
+        accelerator: "CommandOrControl+6",
         click: () => {
           notifyListeners("section", "script");
         }
       },
       {
         label: "Build && Run",
-        accelerator: "CommandOrControl+8",
+        accelerator: "CommandOrControl+7",
         click: () => {
           notifyListeners("section", "build");
         }

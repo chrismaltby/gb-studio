@@ -20,7 +20,6 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 
 const sectionNames = {
-  overview: "Overview",
   world: "Game World",
   sprites: "Sprites",
   backgrounds: "Backgrounds",
@@ -66,7 +65,7 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, section = "overview", zoom, showZoom, running } = this.props;
+    const { name, section = "world", zoom, showZoom, running } = this.props;
 
     return (
       <Toolbar>

@@ -39,5 +39,8 @@ export default {
   console: {
     status: "idle",
     output: []
+  },
+  clipboard: {
+    event: null
   }
 };
