@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const Path = require("path");
 
 const isDevMode = process.env.NODE_ENV !== "production";
+const watch = process.argv[2] === "--watch";
 
 // Single entrypoint file location:
 const entryFiles = [Path.join(__dirname, "./src/index.js")];
@@ -15,7 +16,7 @@ const options = {
   outDir: "./dist", // The out directory to put the build files in, defaults to dist
   // outFile: 'index.html', // The name of the outputFile
   publicUrl: "./", // The url to serve on, defaults to '/'
-  watch: isDevMode, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
+  watch, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
   cache: isDevMode, // Enabled or disables caching, defaults to true
   cacheDir: ".parcelCache", // The directory cache gets put in, defaults to .cache
   contentHash: false, // Disable content hash from being included on the filename
@@ -33,7 +34,7 @@ const optionsWin = {
   outDir: "./dist/windows", // The out directory to put the build files in, defaults to dist
   // outFile: 'index.html', // The name of the outputFile
   publicUrl: "./", // The url to serve on, defaults to '/'
-  watch: isDevMode, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
+  watch, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
   cache: isDevMode, // Enabled or disables caching, defaults to true
   cacheDir: ".parcelCache", // The directory cache gets put in, defaults to .cache
   contentHash: false, // Disable content hash from being included on the filename
@@ -51,7 +52,7 @@ const optionsHelp = {
   outDir: "./dist/windows/help", // The out directory to put the build files in, defaults to dist
   // outFile: 'index.html', // The name of the outputFile
   publicUrl: "./", // The url to serve on, defaults to '/'
-  watch: isDevMode, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
+  watch, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
   cache: isDevMode, // Enabled or disables caching, defaults to true
   cacheDir: ".parcelCache", // The directory cache gets put in, defaults to .cache
   contentHash: false, // Disable content hash from being included on the filename
@@ -69,7 +70,7 @@ const optionsStyles = {
   outDir: "./dist/styles", // The out directory to put the build files in, defaults to dist
   // outFile: 'index.html', // The name of the outputFile
   publicUrl: "./", // The url to serve on, defaults to '/'
-  watch: isDevMode, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
+  watch, // Whether to watch the files and rebuild them on change, defaults to process.env.NODE_ENV !== 'production'
   cache: isDevMode, // Enabled or disables caching, defaults to true
   cacheDir: ".parcelCache", // The directory cache gets put in, defaults to .cache
   contentHash: false, // Disable content hash from being included on the filename
