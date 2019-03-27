@@ -11,7 +11,7 @@ import EventHelper from "./EventHelper";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
-const MAX_FRAMES = 26;
+const MAX_FRAMES = 25;
 
 class Scene extends Component {
   constructor() {
@@ -317,10 +317,17 @@ class Scene extends Component {
 
     const { hover, hoverX, hoverY, dragX, dragY } = this.state;
 
-    const framesLength = scene.actors.reduce((memo, actor) => {
+    const uniqueSprites = scene.actors.reduce((memo, actor) => {
       const spriteSheet = sprites.find(
         sprite => sprite.id === actor.spriteSheetId
       );
+      if (memo.indexOf(spriteSheet) === -1) {
+        memo.push(spriteSheet);
+      }
+      return memo;
+    }, []);
+
+    const framesLength = uniqueSprites.reduce((memo, spriteSheet) => {
       return memo + (spriteSheet ? spriteSheet.numFrames : 0);
     }, 0);
 
