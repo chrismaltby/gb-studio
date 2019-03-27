@@ -118,7 +118,10 @@ class AppToolbar extends Component {
           <MenuItem onClick={this.onBuild("web")}>Export Web</MenuItem>
         </ToolbarDropdownButton>
         <ToolbarFixedSpacer />
-        <ToolbarButton title="Run" onClick={this.onRun}>
+        <ToolbarButton
+          title="Run"
+          onClick={running ? this.setSection("build") : this.onRun}
+        >
           {running ? <LoadingIcon /> : <PlayIcon />}
         </ToolbarButton>
       </Toolbar>
