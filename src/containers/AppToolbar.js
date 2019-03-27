@@ -83,14 +83,20 @@ class AppToolbar extends Component {
             </MenuItem>
           ))}
         </ToolbarDropdownButton>
-        <ToolbarButton style={{ width: 90, visibility: !showZoom && "hidden" }}>
+        <ToolbarButton
+          style={{
+            width: 80,
+            flexShrink: 0,
+            visibility: !showZoom && "hidden"
+          }}
+        >
           <ToolbarButton onClick={this.onZoomOut} title="Zoom Out">
             <MinusIcon />
           </ToolbarButton>
           <div
             title="Reset Zoom"
             onClick={this.onZoomReset}
-            style={{ width: 44, flexShrink: 0, textAlign: "center" }}
+            style={{ width: 34, flexShrink: 0, textAlign: "center" }}
           >
             {Math.round(zoom)}%
           </div>
