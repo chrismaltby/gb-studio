@@ -43,7 +43,7 @@
       },
       "electronPackagerConfig": {
         "name": "GB Studio",
-        "executableName": "gbstudio",
+        "executableName": "gb-studio",
         "packageManager": "yarn",
         "icon": "src/images/app/icon/app_icon",
         "darwinDarkModeSupport": true,
