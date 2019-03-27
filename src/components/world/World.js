@@ -122,7 +122,7 @@ class World extends Component {
 
   render() {
     const {
-      scenes = [],
+      scenes,
       settings,
       tool,
       showConnections,
@@ -169,14 +169,16 @@ class World extends Component {
             onClick={this.props.selectWorld}
           />
 
-          {scenes.length === 0 && <WorldHelp />}
+          {scenes && scenes.length === 0 && <WorldHelp />}
 
-          {scenes.map((scene, index) => (
-            <div key={scene.id}>
-              <Scene id={scene.id} index={index} scene={scene} />
-            </div>
-          ))}
-          {showConnections && (
+          {scenes &&
+            scenes.map((scene, index) => (
+              <div key={scene.id}>
+                <Scene id={scene.id} index={index} scene={scene} />
+              </div>
+            ))}
+
+          {scenes && showConnections && (
             <Connections
               width={width}
               height={height}
@@ -190,6 +192,7 @@ class World extends Component {
               onDragDestinationStart={this.props.dragDestinationStart}
             />
           )}
+
           {tool === "scene" && hover && (
             <div
               className="World__NewScene"
