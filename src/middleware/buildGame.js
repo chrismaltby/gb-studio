@@ -11,7 +11,7 @@ import {
   CMD_STD_OUT,
   CMD_STD_ERR
 } from "../actions/actionTypes";
-import path from "path";
+import Path from "path";
 import copy from "../lib/helpers/fsCopy";
 
 const buildUUID = uuid();
@@ -26,7 +26,7 @@ export default store => next => async action => {
       const state = store.getState();
       const projectRoot = state.document && state.document.root;
       const project = state.project.present;
-      const outputRoot = path.normalize(
+      const outputRoot = Path.normalize(
         remote.app.getPath("temp") + "/" + buildUUID
       );
 
@@ -54,6 +54,20 @@ export default store => next => async action => {
           `${projectRoot}/build/${buildType}`
         );
         open(`${projectRoot}/build/${buildType}`);
+        dispatch({
+          type: CMD_STD_OUT,
+          text: "-"
+        });
+        dispatch({
+          type: CMD_STD_OUT,
+          text:
+            "Success! " +
+            (buildType === "web"
+              ? "Site is ready at " +
+                Path.normalize(`${projectRoot}/build/web/index.html`)
+              : "ROM is ready at " +
+                Path.normalize(`${projectRoot}/build/rom/game.gb`))
+        });
       } else if (ejectBuild) {
         await copy(`${outputRoot}`, `${projectRoot}/eject`);
         open(`${projectRoot}/eject`);
@@ -62,6 +76,14 @@ export default store => next => async action => {
       dispatch({ type: CMD_COMPLETE });
 
       if (buildType === "web" && !exportBuild && !ejectBuild) {
+        dispatch({
+          type: CMD_STD_OUT,
+          text: "-"
+        });
+        dispatch({
+          type: CMD_STD_OUT,
+          text: "Success! Starting emulator..."
+        });
         ipcRenderer.send(
           "open-play",
           `file://${outputRoot}/build/web/index.html`
