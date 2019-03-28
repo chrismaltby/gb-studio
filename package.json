@@ -1,7 +1,7 @@
 {
   "name": "gb-studio",
   "productName": "GB Studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Visual retro game maker",
   "main": "dist/index.js",
   "scripts": {
@@ -63,6 +63,7 @@
       },
       "electronWinstallerConfig": {
         "name": "gb_studio",
+        "exe": "gb-studio.exe",
         "loadingGif": "src/images/app/install.gif"
       },
       "electronInstallerDebian": {},
