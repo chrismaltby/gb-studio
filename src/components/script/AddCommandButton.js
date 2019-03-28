@@ -146,7 +146,7 @@ class AddCommandButton extends Component {
     const actionsList = this.filteredList();
     return (
       <div ref={this.button} className="AddCommandButton">
-        <Button onClick={this.onOpen}>Add Command</Button>
+        <Button onClick={this.onOpen}>Add Event</Button>
         {open && (
           <div className={cx("AddCommandButton__Menu")}>
             <div className="AddCommandButton__Search">
