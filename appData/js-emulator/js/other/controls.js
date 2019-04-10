@@ -20,7 +20,6 @@ const JS_KEY_X = 88;
 const DEADZONE = 0.1;
 
 var isTouchEnabled = "ontouchstart" in document.documentElement;
-isTouchEnabled = true;
 
 var controller = document.getElementById("controller");
 var btnA = document.getElementById("controller_a");
