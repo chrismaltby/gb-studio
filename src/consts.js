@@ -20,14 +20,4 @@ const buildToolsRoot = path.normalize(rootDir + "/buildTools");
 const emulatorRoot = path.normalize(rootDir + "/appData/js-emulator");
 const projectTemplatesRoot = path.normalize(rootDir + "/appData/templates");
 
-console.log({
-  __dirname,
-  isDist,
-  rootDir,
-  engineRoot,
-  buildToolsRoot,
-  emulatorRoot,
-  projectTemplatesRoot
-});
-
 export { engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };
