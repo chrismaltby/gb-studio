@@ -6,7 +6,8 @@ import {
   EVENT_ACTOR_SET_POSITION,
   EVENT_OVERLAY_SHOW,
   EVENT_OVERLAY_MOVE_TO,
-  EVENT_OVERLAY_SET_POSITION
+  EVENT_OVERLAY_SET_POSITION,
+  EVENT_IF_ACTOR_AT_POSITION
 } from "../../lib/compiler/eventTypes";
 
 const TILE_SIZE = 8;
@@ -26,7 +27,8 @@ class EventHelper extends Component {
             }}
           />
         ) : event.command === EVENT_ACTOR_MOVE_TO ||
-          event.command === EVENT_ACTOR_SET_POSITION ? (
+          event.command === EVENT_ACTOR_SET_POSITION ||
+          event.command === EVENT_IF_ACTOR_AT_POSITION ? (
           <div
             className="EventHelper__PosMarker"
             style={{

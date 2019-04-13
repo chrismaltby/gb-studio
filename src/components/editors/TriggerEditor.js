@@ -102,7 +102,11 @@ class TriggerEditor extends Component {
         </div>
 
         <SidebarHeading title="Trigger Script" />
-        <ScriptEditor value={trigger.script} onChange={this.onEdit("script")} />
+        <ScriptEditor
+          value={trigger.script}
+          type="trigger"
+          onChange={this.onEdit("script")}
+        />
       </div>
     );
   }

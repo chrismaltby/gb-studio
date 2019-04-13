@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import Button from "../library/Button";
-import { EventFields, EventNames } from "../../lib/compiler/eventTypes";
+import {
+  EventFields,
+  EventNames,
+  EventsOnlyForActors
+} from "../../lib/compiler/eventTypes";
 import Highlighter from "react-highlight-words";
 
 const actions = Object.keys(EventFields).sort((a, b) => {
@@ -44,10 +48,11 @@ class AddCommandButton extends Component {
   onAdd = action => () => {
     clearTimeout(this.timeout);
     this.props.onAdd(action);
+    const typeActions = this.typeActions();
     this.setState({
       open: false,
       query: "",
-      selectedIndex: actions.indexOf(action)
+      selectedIndex: typeActions.indexOf(action)
     });
   };
 
@@ -101,10 +106,19 @@ class AddCommandButton extends Component {
     });
   };
 
+  typeActions = () => {
+    const { type } = this.props;
+    return actions.filter(action => {
+      return type === "actor" || EventsOnlyForActors.indexOf(action) === -1;
+    });
+  };
+
   filteredList = () => {
     const { query } = this.state;
+    const typeActions = this.typeActions();
     return query
-      ? actions
+      ? typeActions
+
           .filter(action => {
             // Split filter into words so they can be in any order
             // and have words between matches
@@ -138,7 +152,7 @@ class AddCommandButton extends Component {
             }, Number.MAX_SAFE_INTEGER);
             return firstMatchA - firstMatchB;
           })
-      : actions;
+      : typeActions;
   };
 
   render() {

@@ -112,7 +112,11 @@ class ActorEditor extends Component {
 
         <SidebarHeading title="Actor Script" />
 
-        <ScriptEditor value={actor.script} onChange={this.onEdit("script")} />
+        <ScriptEditor
+          value={actor.script}
+          type="actor"
+          onChange={this.onEdit("script")}
+        />
       </div>
     );
   }

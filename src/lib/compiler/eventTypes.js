@@ -14,6 +14,7 @@ export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
+export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
@@ -31,6 +32,7 @@ export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
+export const EVENT_ACTOR_PUSH = "EVENT_ACTOR_PUSH";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
 export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
 
@@ -62,6 +64,7 @@ export const EventNames = {
   [EVENT_IF_FALSE]: "If Variable Is 'False'",
   [EVENT_IF_VALUE]: "If Variable Has Value",
   [EVENT_IF_INPUT]: "If Joypad Input Pressed",
+  [EVENT_IF_ACTOR_AT_POSITION]: "If Actor At Position",
   [EVENT_SET_TRUE]: "Set Variable To 'True'",
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
@@ -78,6 +81,7 @@ export const EventNames = {
   [EVENT_ACTOR_SET_DIRECTION]: "Actor Set Direction",
   [EVENT_ACTOR_SET_POSITION]: "Actor Set Position",
   [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
+  [EVENT_ACTOR_PUSH]: "Push Actor",
   [EVENT_ACTOR_EMOTE]: "Actor Emote Bubble",
   [EVENT_ACTOR_SHOW]: "Show Actor",
   [EVENT_ACTOR_HIDE]: "Hide Actor",
@@ -92,6 +96,8 @@ export const EventNames = {
   [EVENT_MUSIC_STOP]: "Stop Music",
   [EVENT_STOP]: "Stop Script"
 };
+
+export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 
 export const EventFields = {
   [EVENT_SWITCH_SCENE]: [
@@ -196,6 +202,31 @@ export const EventFields = {
       label: "Any of",
       type: "input",
       defaultValue: ["a", "b"]
+    }
+  ],
+  [EVENT_IF_ACTOR_AT_POSITION]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "x",
+      label: "X",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%",
+      defaultValue: 0
+    },
+    {
+      key: "y",
+      label: "Y",
+      type: "number",
+      min: 0,
+      max: 32,
+      width: "50%",
+      defaultValue: 0
     }
   ],
   [EVENT_SET_TRUE]: [
@@ -390,6 +421,14 @@ export const EventFields = {
       max: 32,
       width: "50%",
       defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_PUSH]: [
+    {
+      key: "continue",
+      label: "Continue Until Collision",
+      type: "checkbox",
+      defaultValue: false
     }
   ],
   [EVENT_ACTOR_EMOTE]: [

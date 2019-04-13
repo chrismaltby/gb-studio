@@ -13,6 +13,7 @@ import {
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
   EVENT_IF_INPUT,
+  EVENT_IF_ACTOR_AT_POSITION,
   EVENT_END,
   EVENT_LOOP
 } from "../../lib/compiler/eventTypes";
@@ -68,9 +69,13 @@ const cardTarget = {
 
 const isConditionalEvent = command => {
   return (
-    [EVENT_IF_TRUE, EVENT_IF_FALSE, EVENT_IF_VALUE, EVENT_IF_INPUT].indexOf(
-      command
-    ) > -1
+    [
+      EVENT_IF_TRUE,
+      EVENT_IF_FALSE,
+      EVENT_IF_VALUE,
+      EVENT_IF_INPUT,
+      EVENT_IF_ACTOR_AT_POSITION
+    ].indexOf(command) > -1
   );
 };
 
@@ -111,6 +116,7 @@ class ActionMini extends Component {
   render() {
     const {
       id,
+      type,
       action,
       connectDragSource,
       connectDragPreview,
@@ -138,7 +144,7 @@ class ActionMini extends Component {
             "ActionMini--Over": isOverCurrent
           })}
         >
-          <AddCommandButton onAdd={onAdd(id)} />
+          <AddCommandButton onAdd={onAdd(id)} type={type} />
         </div>
       );
     }
@@ -195,6 +201,7 @@ class ActionMini extends Component {
                     <ActionMiniDnD
                       key={index}
                       id={action.id}
+                      type={type}
                       path={id + "_true_" + action.id}
                       action={action}
                       moveActions={moveActions}
@@ -226,6 +233,7 @@ class ActionMini extends Component {
                   <ActionMiniDnD
                     key={index}
                     id={action.id}
+                    type={type}
                     path={id + "_true_" + action.id}
                     action={action}
                     moveActions={moveActions}
@@ -384,13 +392,14 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    const { value } = this.props;
+    const { value, type } = this.props;
     return (
       <div className="ScriptEditor">
         {value.map((action, index) => (
           <ActionMiniDnD
             key={action.id}
             id={action.id}
+            type={type}
             action={action}
             moveActions={this.moveActions}
             onAdd={this.onAdd}
@@ -403,7 +412,6 @@ class ScriptEditor extends Component {
             clipboardEvent={this.props.clipboardEvent}
           />
         ))}
-        {false && JSON.stringify(value, null, 4)}
       </div>
     );
   }

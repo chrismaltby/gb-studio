@@ -101,7 +101,11 @@ class SceneEditor extends Component {
         )}
 
         <SidebarHeading title="Scene Start Script" />
-        <ScriptEditor value={scene.script} onChange={this.onEdit("script")} />
+        <ScriptEditor
+          value={scene.script}
+          type="scene"
+          onChange={this.onEdit("script")}
+        />
       </div>
     );
   }
