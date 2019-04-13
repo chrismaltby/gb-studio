@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import FilesSidebar from "../../components/images/FilesSidebar";
-import ImageViewer from "../../components/images/ImageViewer";
+import FilesSidebar from "../../components/assets/FilesSidebar";
+import ImageViewer from "../../components/assets/ImageViewer";
 import * as actions from "../../actions";
 
 class SpritesPage extends Component {

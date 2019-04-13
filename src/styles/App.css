@@ -5,9 +5,9 @@
 @import url("./../components/forms/MusicSelect.css");
 @import url("./../components/editors/EditorSidebar.css");
 @import url("./../components/editors/SidebarHeading.css");
-@import url("./../components/images/FilesSidebar.css");
-@import url("./../components/images/ImageViewer.css");
-@import url("./../components/images/MusicViewer.css");
+@import url("./../components/assets/FilesSidebar.css");
+@import url("./../components/assets/ImageViewer.css");
+@import url("./../components/assets/MusicViewer.css");
 @import url("./../components/world/Actor.css");
 @import url("./../components/world/Connections.css");
 @import url("./../components/world/Scene.css");

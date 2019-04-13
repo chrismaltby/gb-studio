@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import FilesSidebar from "../../components/images/FilesSidebar";
-import MusicViewer from "../../components/images/MusicViewer";
+import FilesSidebar from "../../components/assets/FilesSidebar";
+import MusicViewer from "../../components/assets/MusicViewer";
 import * as actions from "../../actions";
 
 class MusicPage extends Component {
