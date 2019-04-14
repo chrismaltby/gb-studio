@@ -426,7 +426,7 @@ export const EventFields = {
   [EVENT_ACTOR_PUSH]: [
     {
       key: "continue",
-      label: "Continue Until Collision",
+      label: "Slide Until Collision",
       type: "checkbox",
       defaultValue: false
     }
