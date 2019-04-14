@@ -10,6 +10,7 @@
 #define ACTOR_WIDTH 16
 #define ACTOR_HALF_WIDTH 8
 #define ACTOR_MOVE_ENABLED 0x80
+#define ACTOR_NOCLIP 0x40
 
 #define BUBBLE_SPRITE_LEFT 38
 #define BUBBLE_SPRITE_RIGHT 39
@@ -40,6 +41,8 @@ extern UBYTE wait_time;
 extern UBYTE shake_time;
 extern UBYTE scene_width;
 extern UBYTE scene_height;
+extern UBYTE actor_move_settings;
+extern POS actor_move_dest;
 
 void SceneInit();
 void SceneUpdate();

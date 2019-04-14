@@ -15,8 +15,6 @@
 
 extern STAGE_TYPE stage_type;
 extern STAGE_TYPE stage_next_type;
-extern UBYTE actor_move_settings;
-extern POS actor_move_dest;
 extern UBYTE joy;
 extern UBYTE prev_joy;
 extern UBYTE time;

@@ -350,6 +350,7 @@ void Script_ActorSetPos_b()
 void Script_ActorMoveTo_b()
 {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
+  actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = (script_cmd_args[0] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
@@ -648,5 +649,91 @@ void Script_PlayerSetSprite_b()
   actors[0].redraw = TRUE;
 
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorPush
+ * ----------------------------
+ * Push actor in direction player is facing
+ */
+void Script_ActorPush_b()
+{
+  UBYTE dest_x, dest_y;
+
+  if (script_cmd_args[0])
+  {
+    if (actors[0].dir.x < 0)
+    {
+      dest_x = 0;
+    }
+    else if (actors[0].dir.x > 0)
+    {
+      dest_x = 240;
+    }
+    else
+    {
+      dest_x = actors[script_actor].pos.x;
+    }
+    if (actors[0].dir.y < 0)
+    {
+      dest_y = 0;
+    }
+    else if (actors[0].dir.y > 0)
+    {
+      dest_y = 240;
+    }
+    else
+    {
+      dest_y = actors[script_actor].pos.y;
+    }
+  }
+  else
+  {
+    dest_x = actors[script_actor].pos.x + (actors[0].dir.x * 16);
+    dest_y = actors[script_actor].pos.y + (actors[0].dir.y * 16);
+  }
+
+  actor_move_settings |= ACTOR_MOVE_ENABLED;
+  actor_move_settings &= ~ACTOR_NOCLIP;
+  actor_move_dest.x = 0; // @wtf-but-needed
+  actor_move_dest.x = dest_x;
+  actor_move_dest.y = 0; // @wtf-but-needed
+  actor_move_dest.y = dest_y;
+  // script_ptr += 1 + script_cmd_args_len;
+  // script_action_complete = FALSE;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_action_complete = FALSE;
+}
+
+/*
+ * Command: IfActorPos
+ * ----------------------------
+ * Jump to new script pointer position if specified actor is at desired position.
+ *
+ *   arg0: Actor index
+ *   arg1: Actor X Pos
+ *   arg2: Actor Y Pos
+ *   arg3: High 8 bits for new pointer
+ *   arg4: Low 8 bits for new pointer
+ */
+void Script_IfActorPos_b()
+{
+  UBYTE pos_x, pos_y;
+
+  pos_x = (script_cmd_args[1] << 3) + 8;
+  pos_y = (script_cmd_args[2] << 3) + 8;
+
+  if (
+      (actors[script_cmd_args[0]].pos.x == pos_x) &&
+      (actors[script_cmd_args[0]].pos.y == pos_y))
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[3] * 256) + script_cmd_args[4];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
   script_continue = TRUE;
 }

@@ -37,7 +37,9 @@ import {
   EVENT_DEC_VALUE,
   EVENT_SET_VALUE,
   EVENT_IF_INPUT,
-  EVENT_CHOICE
+  EVENT_CHOICE,
+  EVENT_ACTOR_PUSH,
+  EVENT_IF_ACTOR_AT_POSITION
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import { dirDec, inputDec, operatorDec } from "./helpers";
@@ -99,7 +101,9 @@ const CMD_LOOKUP = {
   SET_VALUE: 0x24,
   IF_VALUE: 0x25,
   IF_INPUT: 0x26,
-  CHOICE: 0x27
+  CHOICE: 0x27,
+  ACTOR_PUSH: 0x28,
+  IF_ACTOR_AT_POSITION: 0x29
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -238,6 +242,16 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
+    } else if (command === EVENT_IF_ACTOR_AT_POSITION) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.IF_ACTOR_AT_POSITION);
+      output.push(actorIndex);
+      output.push(input[i].args.x || 0);
+      output.push(input[i].args.y || 0);
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
+      });
     } else if (command === EVENT_SET_TRUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_TRUE);
@@ -359,6 +373,9 @@ const precompileEntityScript = (input = [], options = {}) => {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_HIDE);
       output.push(actorIndex);
+    } else if (command === EVENT_ACTOR_PUSH) {
+      output.push(CMD_LOOKUP.ACTOR_PUSH);
+      output.push(input[i].args.continue ? 1 : 0); // Continue until collision
     } else if (command === EVENT_PLAYER_SET_SPRITE) {
       const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);

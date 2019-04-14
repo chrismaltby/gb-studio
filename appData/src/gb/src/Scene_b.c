@@ -53,7 +53,7 @@ VEC2D *update_dir;
 
 static void SceneHandleInput();
 void SceneRender();
-UBYTE SceneNpcAt_b(UBYTE tx_a, UBYTE ty_a);
+UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a);
 UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a);
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
@@ -402,6 +402,13 @@ void SceneUpdateActors_b()
       }
 
       SceneUpdateActorMovement_b(script_actor);
+
+      if (actors[script_actor].moving == FALSE)
+      {
+        actor_move_settings &= ~ACTOR_MOVE_ENABLED;
+        script_action_complete = TRUE;
+        actors[script_actor].moving = FALSE;
+      }
     }
   }
 
@@ -558,7 +565,8 @@ void SceneUpdateActorMovement_b(UBYTE i)
 
   actors[i].redraw = TRUE;
 
-  if (script_ptr != 0)
+  // Dont check collisions when running script
+  if (script_ptr != 0 && (actor_move_settings & ACTOR_NOCLIP))
   {
     actors[i].moving = TRUE;
     return;
@@ -568,23 +576,11 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
   // Check for npc collisions
-  if (i == 0)
+  npc = SceneNpcAt_b(i, next_tx, next_ty);
+  if (npc != scene_num_actors)
   {
-    npc = SceneNpcAt_b(next_tx, next_ty);
-    if (npc != scene_num_actors)
-    {
-      actors[i].moving = FALSE;
-      return;
-    }
-  }
-  else
-  {
-    npc = ScenePlayerAt_b(next_tx, next_ty);
-    if (npc != 0)
-    {
-      actors[i].moving = FALSE;
-      return;
-    }
+    actors[i].moving = FALSE;
+    return;
   }
 
   // Check collisions on left tile
@@ -699,7 +695,7 @@ static void SceneHandleInput()
     actors[0].moving = FALSE;
     next_tx = DIV_8(actors[0].pos.x) + actors[0].dir.x;
     next_ty = DIV_8(actors[0].pos.y) + actors[0].dir.y;
-    npc = SceneNpcAt_b(next_tx, next_ty);
+    npc = SceneNpcAt_b(0, next_tx, next_ty);
     if (npc != scene_num_actors)
     {
       actors[0].moving = FALSE;
@@ -947,12 +943,12 @@ UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a)
   }
 }
 
-UBYTE SceneNpcAt_b(UBYTE tx_a, UBYTE ty_a)
+UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE i, tx_b, ty_b;
-  for (i = 1; i != scene_num_actors; i++)
+  for (i = 0; i != scene_num_actors; i++)
   {
-    if (!actors[i].enabled || actors[i].movement_type == AI_ROTATE_TRB)
+    if (i == index || !actors[i].enabled)
     {
       continue;
     }
