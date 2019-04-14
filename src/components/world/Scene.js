@@ -168,36 +168,40 @@ class Scene extends Component {
   onMouseDown = e => {
     const { id, tool, scene, width, showCollisions } = this.props;
     const { hoverX, hoverY } = this.state;
+
+    let trigger = this.triggerAt(hoverX, hoverY);
+    let actor = this.actorAt(hoverX, hoverY);
+
+    if (trigger) {
+      this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
+    } else if (actor) {
+      this.props.selectActor(id, scene.actors.indexOf(actor));
+    }
+
     if (tool === "select") {
-      let trigger = this.triggerAt(hoverX, hoverY);
-      let actor = this.actorAt(hoverX, hoverY);
-      if (trigger) {
-        this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
-      } else if (actor) {
-        this.props.selectActor(id, scene.actors.indexOf(actor));
-      } else {
+      if (!trigger && !actor) {
         this.props.selectScene(id);
       }
     } else if (tool === "actors") {
-      this.props.addActor(id, hoverX, hoverY);
+      if (!actor) {
+        this.props.addActor(id, hoverX, hoverY);
+      }
     } else if (tool === "collisions") {
-      const collisionIndex = width * hoverY + hoverX;
-      const collisionByteIndex = collisionIndex >> 3;
-      const collisionByteOffset = collisionIndex & 7;
-      const collisionByteMask = 1 << collisionByteOffset;
-
-      if (scene.collisions[collisionByteIndex] & collisionByteMask) {
-        this.props.removeCollisionTile(id, hoverX, hoverY);
-        this.remove = true;
-      } else {
-        this.props.addCollisionTile(id, hoverX, hoverY);
-        this.remove = false;
+      if (!trigger && !actor) {
+        const collisionIndex = width * hoverY + hoverX;
+        const collisionByteIndex = collisionIndex >> 3;
+        const collisionByteOffset = collisionIndex & 7;
+        const collisionByteMask = 1 << collisionByteOffset;
+        if (scene.collisions[collisionByteIndex] & collisionByteMask) {
+          this.props.removeCollisionTile(id, hoverX, hoverY);
+          this.remove = true;
+        } else {
+          this.props.addCollisionTile(id, hoverX, hoverY);
+          this.remove = false;
+        }
       }
     } else if (tool === "triggers") {
-      let trigger = this.triggerAt(hoverX, hoverY);
-      if (trigger) {
-        this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
-      } else {
+      if (!trigger) {
         this.props.addTrigger(id, hoverX, hoverY);
       }
     } else if (tool === "eraser") {

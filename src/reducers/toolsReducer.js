@@ -1,5 +1,5 @@
 import initialState from "./initialState";
-import { SET_TOOL, SELECT_TRIGGER } from "../actions/actionTypes";
+import { SET_TOOL, SELECT_ACTOR, SELECT_TRIGGER } from "../actions/actionTypes";
 
 export default function tools(state = initialState.tools, action) {
   switch (action.type) {
@@ -8,6 +8,7 @@ export default function tools(state = initialState.tools, action) {
         ...state,
         selected: action.tool
       };
+    case SELECT_ACTOR:
     case SELECT_TRIGGER:
       return {
         ...state,
