@@ -449,7 +449,8 @@
                 "sceneId": "5e64882f-8ce6-423e-b582-70fdb2142ff6",
                 "x": 9,
                 "y": 15,
-                "direction": "up"
+                "direction": "up",
+                "fadeSpeed": "2"
               }
             },
             {
@@ -472,7 +473,8 @@
                 "x": 9,
                 "y": 14,
                 "direction": "up",
-                "sceneId": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55"
+                "sceneId": "1b7f9ffd-2bbb-470b-9189-c2ac435d2a55",
+                "fadeSpeed": "2"
               }
             },
             {
@@ -673,7 +675,8 @@
                 "x": 24,
                 "y": 9,
                 "direction": "down",
-                "sceneId": "94c18861-b352-4f49-a64d-52f2e3415077"
+                "sceneId": "94c18861-b352-4f49-a64d-52f2e3415077",
+                "fadeSpeed": "2"
               }
             },
             {
@@ -949,7 +952,8 @@
                 "sceneId": "94c18861-b352-4f49-a64d-52f2e3415077",
                 "x": 10,
                 "y": 9,
-                "direction": "down"
+                "direction": "down",
+                "fadeSpeed": "2"
               }
             },
             {
