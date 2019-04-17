@@ -19,7 +19,7 @@
   },
   "keywords": [],
   "author": "cmaltby",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "config": {
     "forge": {
       "make_targets": {
