@@ -1,14 +1,14 @@
 import compile, {
-  precompileFlags,
+  precompileVariables,
   precompileStrings,
-  precompileImages,
+  precompileBackgrounds,
   precompileSprites,
   precompileScenes
 } from "../../../src/lib/compiler/compileData";
 import {
   EVENT_TEXT,
-  EVENT_IF_FLAG,
-  EVENT_SET_FLAG,
+  EVENT_IF_TRUE,
+  EVENT_SET_TRUE,
   EVENT_END
 } from "../../../src/lib/compiler/eventTypes";
 
@@ -25,7 +25,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "1",
         name: "first_scene",
-        imageId: "2",
+        backgroundId: "2",
         width: 20,
         height: 18,
         // prettier-ignore
@@ -90,7 +90,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "5",
         name: "second_scene",
-        imageId: "3",
+        backgroundId: "3",
         width: 32,
         height: 32,
         // prettier-ignore
@@ -107,9 +107,9 @@ test("should compile simple project into files object", async () => {
             spriteSheetId: "SPRITE_1",
             script: [
               {
-                command: EVENT_IF_FLAG,
+                command: EVENT_IF_TRUE,
                 args: {
-                  flag: "1"
+                  variable: "1"
                 },
                 true: [
                   {
@@ -127,9 +127,9 @@ test("should compile simple project into files object", async () => {
                     }
                   },
                   {
-                    command: EVENT_SET_FLAG,
+                    command: EVENT_SET_TRUE,
                     args: {
-                      flag: "1"
+                      variable: "1"
                     }
                   }
                 ]
@@ -142,7 +142,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "6",
         name: "third_scene",
-        imageId: "4",
+        backgroundId: "4",
         width: 20,
         height: 18,
         // prettier-ignore
@@ -165,7 +165,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "9",
         name: "fourth_scene",
-        imageId: "7",
+        backgroundId: "7",
         width: 20,
         height: 18,
         // prettier-ignore
@@ -182,7 +182,7 @@ test("should compile simple project into files object", async () => {
       {
         id: "10",
         name: "fifth_scene",
-        imageId: "8",
+        backgroundId: "8",
         width: 20,
         height: 18,
         // prettier-ignore
@@ -214,7 +214,7 @@ test("should compile simple project into files object", async () => {
         ]
       }
     ],
-    images: [
+    backgrounds: [
       {
         id: "2",
         width: 20,
@@ -259,7 +259,8 @@ test("should compile simple project into files object", async () => {
         id: "SPRITE_3",
         filename: "sprite_3.png"
       }
-    ]
+    ],
+    music: []
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`
@@ -270,7 +271,7 @@ test("should compile simple project into files object", async () => {
   expect(compiled).toBeInstanceOf(Object);
 });
 
-test("should walk all scene events to build list of used flags", () => {
+test("should walk all scene events to build list of used variables", () => {
   const scenes = [
     {
       id: "1",
@@ -280,8 +281,8 @@ test("should walk all scene events to build list of used flags", () => {
           script: [
             {
               id: "3",
-              command: EVENT_IF_FLAG,
-              args: { flag: "9" },
+              command: EVENT_IF_TRUE,
+              args: { variable: "9" },
               true: [
                 {
                   id: "4",
@@ -296,8 +297,8 @@ test("should walk all scene events to build list of used flags", () => {
               false: [
                 {
                   id: "6",
-                  command: EVENT_SET_FLAG,
-                  args: { flag: "9" }
+                  command: EVENT_SET_TRUE,
+                  args: { variable: "9" }
                 },
                 {
                   id: "7",
@@ -323,13 +324,13 @@ test("should walk all scene events to build list of used flags", () => {
           script: [
             {
               id: "11",
-              command: EVENT_SET_FLAG,
-              args: { flag: "10" }
+              command: EVENT_SET_TRUE,
+              args: { variable: "10" }
             },
             {
               id: "12",
-              command: EVENT_SET_FLAG,
-              args: { flag: "9" }
+              command: EVENT_SET_TRUE,
+              args: { variable: "9" }
             },
             {
               id: "13",
@@ -340,8 +341,8 @@ test("should walk all scene events to build list of used flags", () => {
       ]
     }
   ];
-  const precompiledFlags = precompileFlags(scenes);
-  expect(precompiledFlags).toEqual(["9", "10"]);
+  const precompiledVariables = precompileVariables(scenes);
+  expect(precompiledVariables).toEqual(["9", "10"]);
 });
 
 test("should walk all scene events to build list of strings", () => {
@@ -354,8 +355,8 @@ test("should walk all scene events to build list of strings", () => {
           script: [
             {
               id: "3",
-              command: EVENT_IF_FLAG,
-              args: { flag: "9" },
+              command: EVENT_IF_TRUE,
+              args: { variable: "9" },
               true: [
                 {
                   id: "4",
@@ -370,8 +371,8 @@ test("should walk all scene events to build list of strings", () => {
               false: [
                 {
                   id: "6",
-                  command: EVENT_SET_FLAG,
-                  args: { flag: "9" }
+                  command: EVENT_SET_TRUE,
+                  args: { variable: "9" }
                 },
                 {
                   id: "7",
@@ -415,7 +416,7 @@ test("should walk all scene events to build list of strings", () => {
 });
 
 test("should precompile image data", async () => {
-  const images = [
+  const backgrounds = [
     {
       id: "2",
       name: "test_img",
@@ -435,38 +436,37 @@ test("should precompile image data", async () => {
     {
       id: "1",
       name: "first_scene",
-      imageId: "2",
+      backgroundId: "2",
       actors: [],
       triggers: []
     }
   ];
-  const { usedImages, imageLookup, imageData } = await precompileImages(
-    images,
+  const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
+    backgrounds,
     scenes,
     `${__dirname}/_files`,
     `${__dirname}/_tmp`
   );
-  expect(usedImages).toHaveLength(1);
-  expect(imageLookup["2"]).toBe(images[0]);
-  expect(imageLookup["3"]).toBeUndefined();
+  expect(usedBackgrounds).toHaveLength(1);
+  expect(backgroundLookup["2"]).toBe(backgrounds[0]);
+  expect(backgroundLookup["3"]).toBeUndefined();
 });
-
-test.todo("should precompile sprites");
 
 test("should precompile scenes", async () => {
   const scenes = [
     {
       id: "1",
-      imageId: "3",
+      backgroundId: "3",
       actors: [
         {
           spriteSheetId: "5"
         }
-      ]
+      ],
+      triggers: []
     },
     {
       id: "2",
-      imageId: "4",
+      backgroundId: "4",
       actors: [
         {
           spriteSheetId: "5"
@@ -474,10 +474,11 @@ test("should precompile scenes", async () => {
         {
           spriteSheetId: "6"
         }
-      ]
+      ],
+      triggers: []
     }
   ];
-  const usedImages = [
+  const usedBackgrounds = [
     {
       id: "3"
     },
@@ -493,12 +494,9 @@ test("should precompile scenes", async () => {
       id: "6"
     }
   ];
-  const sceneData = precompileScenes(scenes, usedImages, spriteData);
+  const sceneData = precompileScenes(scenes, usedBackgrounds, spriteData);
 
   expect(sceneData).toHaveLength(scenes.length);
-
-  // expect(sceneData[0].tilemap).toBe(imageData.tilemaps["3"]);
-  // expect(sceneData[0].tileset).toBe(imageData.tilemapsTileset["3"]);
   expect(sceneData[0].sprites).toHaveLength(1);
   expect(sceneData[1].sprites).toHaveLength(2);
 });

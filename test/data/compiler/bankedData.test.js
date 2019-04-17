@@ -140,10 +140,10 @@ test("Should construct C header from input", async () => {
 });
 
 test("should calculate rom banks needed to store banked data", () => {
-  const banked = new BankedData({ bankSize: 2 });
+  const banked = new BankedData({ bankSize: 2, bankOffset: 0 });
   banked.push([0]);
   banked.push([1, 2]);
-  expect(banked.romBanksNeeded()).toBe(32);
+  expect(banked.romBanksNeeded()).toBe(2);
 });
 
 test("should calculate rom banks needed to store banked data when offset", () => {

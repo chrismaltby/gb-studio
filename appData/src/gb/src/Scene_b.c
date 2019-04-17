@@ -172,6 +172,7 @@ void SceneInit_b2()
 
 void SceneInit_b3()
 {
+  // There used to be code here
 }
 
 void SceneInit_b4()
@@ -352,13 +353,6 @@ void SceneUpdateCamera_b()
       SCY_REG = camera_dest.y;
     }
   }
-
-  // @todo - should event finish checks be included here, or seperate file?
-  // if (((last_fn == Script_CameraMoveTo_b) || (last_fn == Script_CameraLock_b)) && SCX_REG == camera_dest.x && SCY_REG == camera_dest.y)
-  // {
-  //   script_action_complete = TRUE;
-  //   camera_settings &= ~CAMERA_TRANSITION_FLAG; // Remove transition flag
-  // }
 }
 
 void SceneUpdateActors_b()
@@ -369,8 +363,6 @@ void SceneUpdateActors_b()
   // Handle script move
   if (actor_move_settings & ACTOR_MOVE_ENABLED && ((actors[script_actor].pos.x & 7) == 0) && ((actors[script_actor].pos.y & 7) == 0))
   {
-    // LOG("TEST posx=%d posy=%d destx=%d desty=%d\n", actors[script_actor].pos.x,
-    // actors[script_actor].pos.y, actor_move_dest.x, actor_move_dest.y);
     if (actors[script_actor].pos.x == actor_move_dest.x && actors[script_actor].pos.y == actor_move_dest.y)
     {
       actor_move_settings &= ~ACTOR_MOVE_ENABLED;
@@ -379,7 +371,6 @@ void SceneUpdateActors_b()
     }
     else
     {
-      // LOG("NOT THERE YET\n");
       if (actors[script_actor].pos.x > actor_move_dest.x)
       {
         update_dir = &dir_left;
@@ -539,13 +530,6 @@ void SceneUpdateActors_b()
 
   for (i = 0; i != len; ++i)
   {
-    // LOG("MOVING actor %u\n", i);
-    // If running script only update script actor - Unless needs redraw
-    // if (script_ptr && i != script_actor && !actors[i].redraw)
-    // {
-    //   continue;
-    // }
-
     // Move actors
     if (actors[i].moving)
     {
@@ -608,7 +592,6 @@ void SceneHandleTriggers_b()
   UBYTE trigger, trigger_tile_offset;
 
   if (ACTOR_ON_TILE(0) || actors[0].pos.y == 254)
-  // if (((actors[0].pos.x & 7) == 0) && (((actors[0].pos.y & 7) == 0) || actors[0].pos.y == 254))
   {
     if (actors[0].moving)
     {

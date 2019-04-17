@@ -1,25 +1,25 @@
-import precompileEntityEvents, {
+import compileEntityEvents, {
   CMD_LOOKUP,
   STRING_NOT_FOUND,
-  FLAG_NOT_FOUND
-} from "../../../src/lib/compiler/precompileEntityEvents";
+  VARIABLE_NOT_FOUND
+} from "../../../src/lib/compiler/compileEntityEvents";
 import {
   EVENT_END,
   EVENT_TEXT,
-  EVENT_IF_FLAG,
-  EVENT_SET_FLAG
+  EVENT_IF_TRUE,
+  EVENT_SET_TRUE
 } from "../../../src/lib/compiler/eventTypes";
 
 test("should precompile empty events", () => {
   const input = [];
-  const output = precompileEntityEvents(input);
+  const output = compileEntityEvents(input);
   expect(output).toEqual([CMD_LOOKUP.END]);
 });
 
 test("should allow passing in output object", () => {
   const input = [];
   let output = [];
-  const newOutput = precompileEntityEvents(input, { output });
+  const newOutput = compileEntityEvents(input, { output });
   expect(output).toBe(newOutput);
 });
 
@@ -32,7 +32,7 @@ test("should collapse multiple end events", () => {
       command: EVENT_END
     }
   ];
-  const output = precompileEntityEvents(input);
+  const output = compileEntityEvents(input);
   expect(output).toEqual([CMD_LOOKUP.END]);
 });
 
@@ -46,7 +46,7 @@ test("should output text command", () => {
     }
   ];
   const strings = ["HELLO WORLD"];
-  const output = precompileEntityEvents(input, { strings });
+  const output = compileEntityEvents(input, { strings });
   expect(output).toEqual([CMD_LOOKUP.TEXT, 0, 0, CMD_LOOKUP.END]);
 });
 
@@ -70,7 +70,7 @@ test("should output text command string pointers", () => {
     strings.push("TEST_" + i);
   }
   strings.push("HELLO WORLD");
-  const output = precompileEntityEvents(input, { strings });
+  const output = compileEntityEvents(input, { strings });
   expect(output).toEqual([
     CMD_LOOKUP.TEXT,
     0,
@@ -85,9 +85,9 @@ test("should output text command string pointers", () => {
 test("should allow conditional statements", () => {
   const input = [
     {
-      command: EVENT_IF_FLAG,
+      command: EVENT_IF_TRUE,
       args: {
-        flag: "4"
+        variable: "4"
       },
       true: [
         {
@@ -108,12 +108,12 @@ test("should allow conditional statements", () => {
     }
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH"];
-  const flags = ["1", "2", "3", "4"];
-  const output = precompileEntityEvents(input, { strings, flags });
+  const variables = ["1", "2", "3", "4"];
+  const output = compileEntityEvents(input, { strings, variables });
   expect(output).toEqual([
-    CMD_LOOKUP.IF_FLAG, // 0
-    0, // 1 Flag ptr hi
-    3, // 2 Flag ptr lo
+    CMD_LOOKUP.IF_TRUE, // 0
+    0, // 1 Variable ptr hi
+    3, // 2 Variable ptr lo
     0, // 3 Jump ptr hi
     11, // 4 Jump ptr lo
     // False path
@@ -131,14 +131,12 @@ test("should allow conditional statements", () => {
   ]);
 });
 
-test.todo("should allow commands before conditional");
-
 test("should allow commands after conditional", () => {
   const input = [
     {
-      command: EVENT_IF_FLAG,
+      command: EVENT_IF_TRUE,
       args: {
-        flag: "4"
+        variable: "4"
       },
       true: [
         {
@@ -165,12 +163,12 @@ test("should allow commands after conditional", () => {
     }
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH", "AFTER"];
-  const flags = ["1", "2", "3", "4"];
-  const output = precompileEntityEvents(input, { strings, flags });
+  const variables = ["1", "2", "3", "4"];
+  const output = compileEntityEvents(input, { strings, variables });
   expect(output).toEqual([
-    CMD_LOOKUP.IF_FLAG, // 0
-    0, // 1 Flag ptr hi
-    3, // 2 Flag ptr lo
+    CMD_LOOKUP.IF_TRUE, // 0
+    0, // 1 Variable ptr hi
+    3, // 2 Variable ptr lo
     0, // 3 Jump ptr hi
     11, // 4 Jump ptr lo
     // False path
@@ -191,8 +189,6 @@ test("should allow commands after conditional", () => {
   ]);
 });
 
-test.todo("should allow nested conditionals");
-
 test("should error if any string lookups return negative values", () => {
   const input = [
     {
@@ -203,22 +199,22 @@ test("should error if any string lookups return negative values", () => {
     }
   ];
   const strings = ["LOREM IPSUM"];
-  expect(() => precompileEntityEvents(input, { strings })).toThrow(
+  expect(() => compileEntityEvents(input, { strings })).toThrow(
     STRING_NOT_FOUND
   );
 });
 
-test("should error if any flag lookups return negative values", () => {
+test("should error if any variable lookups return negative values", () => {
   const input = [
     {
-      command: EVENT_SET_FLAG,
+      command: EVENT_SET_TRUE,
       args: {
-        flag: "1"
+        variable: "1"
       }
     }
   ];
-  const flags = ["2"];
-  expect(() => precompileEntityEvents(input, { flags })).toThrow(
-    FLAG_NOT_FOUND
+  const variables = ["2"];
+  expect(() => compileEntityEvents(input, { variables })).toThrow(
+    VARIABLE_NOT_FOUND
   );
 });

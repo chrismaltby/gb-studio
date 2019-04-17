@@ -4,7 +4,7 @@ import compileImages from "./compileImages";
 import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
-import compileEntityEvents from "./precompileEntityEvents";
+import compileEntityEvents from "./compileEntityEvents";
 import { EVENT_TEXT, EVENT_MUSIC_PLAY, EVENT_CHOICE } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
