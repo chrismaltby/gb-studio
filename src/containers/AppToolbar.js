@@ -65,7 +65,7 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, section = "world", zoom, showZoom, running } = this.props;
+    const { name, section = "world", zoom, showZoom, running, modified } = this.props;
 
     return (
       <Toolbar>
@@ -105,7 +105,7 @@ class AppToolbar extends Component {
           </ToolbarButton>
         </ToolbarButton>
         <ToolbarSpacer />
-        <ToolbarTitle>{name || "Untitled"}</ToolbarTitle>
+        <ToolbarTitle>{name || "Untitled"} {modified && " (modified)"}</ToolbarTitle>
         <ToolbarSpacer />
         <ToolbarFixedSpacer style={{ width: 138 }} />
         <ToolbarButton
@@ -149,6 +149,7 @@ function mapStateToProps(state) {
       : 100;
   return {
     projectRoot: state.document && state.document.root,
+    modified: state.document && state.document.modified,
     name: state.project.present && state.project.present.name,
     section,
     zoom,

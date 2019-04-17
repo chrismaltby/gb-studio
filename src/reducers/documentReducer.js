@@ -26,7 +26,11 @@ import {
   RENAME_VARIABLE,
   EDIT_WORLD,
   EDIT_PROJECT,
-  EDIT_PROJECT_SETTINGS
+  EDIT_PROJECT_SETTINGS,
+  EDIT_SCENE_EVENT_DESTINATION_POSITION,
+  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
+  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
+  EDIT_PLAYER_START_AT
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -81,6 +85,10 @@ export default function modified(state = initialState.document, action) {
     case EDIT_WORLD:
     case EDIT_PROJECT:
     case EDIT_PROJECT_SETTINGS:
+    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
+    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
+    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
+    case EDIT_PLAYER_START_AT:
       return {
         ...state,
         modified: true
