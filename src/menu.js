@@ -191,9 +191,17 @@ const template = [
     role: "help",
     submenu: [
       {
+        label: "Documentation",
+        click() {
+          require("electron").shell.openExternal(
+            "https://www.gbstudio.dev/docs/"
+          );
+        }
+      },
+      {
         label: "Learn More",
         click() {
-          require("electron").shell.openExternal("https://gbstudio.dev");
+          require("electron").shell.openExternal("https://www.gbstudio.dev");
         }
       }
     ]

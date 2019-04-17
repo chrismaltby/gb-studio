@@ -38,6 +38,9 @@ class UIPage extends Component {
           selectedFile={file}
           query={query}
           onSearch={this.onSearch}
+          onAdd={() => {
+            this.props.openHelp("ui-elements");
+          }}
         />
       </div>
     );

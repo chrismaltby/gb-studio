@@ -1,4 +1,4 @@
-import electron, { app, BrowserWindow, ipcMain, dialog } from "electron";
+import electron, { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
@@ -17,7 +17,6 @@ if (require("electron-squirrel-startup")) {
 let mainWindow = null;
 let splashWindow = null;
 let playWindow = null;
-let helpWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -143,32 +142,16 @@ const createWindow = async projectPath => {
   });
 };
 
-const createHelp = async helpPage => {
-  if (!helpWindow) {
-    // Create the browser window.
-    helpWindow = new BrowserWindow({
-      width: 430,
-      height: 550,
-      resizable: true,
-      maximizable: true,
-      fullscreenable: false,
-      autoHideMenuBar: true,
-      webPreferences: {
-        nodeIntegration: true,
-        devTools: isDevMode
-      }
-    });
-    helpWindow.setMenu(null);
-  } else {
-    helpWindow.show();
+const openHelp = async helpPage => {
+  if (helpPage === "sprites") {
+    shell.openExternal("https://www.gbstudio.dev/docs/sprites/");
+  } else if (helpPage === "backgrounds") {
+    shell.openExternal("https://www.gbstudio.dev/docs/backgrounds/");
+  } else if (helpPage === "ui-elements") {
+    shell.openExternal("https://www.gbstudio.dev/docs/ui-elements/");
+  } else if (helpPage === "music") {
+    shell.openExternal("https://www.gbstudio.dev/docs/music/");
   }
-
-  helpWindow.loadURL(`file://${__dirname}/windows/help/${helpPage}.html`);
-
-  // Emitted when the window is closed.
-  helpWindow.on("closed", () => {
-    helpWindow = null;
-  });
 };
 
 const createPlay = async url => {
@@ -248,7 +231,7 @@ ipcMain.on("open-project-picker", async (event, arg) => {
 });
 
 ipcMain.on("open-help", async (event, helpPage) => {
-  createHelp(helpPage);
+  openHelp(helpPage);
 });
 
 ipcMain.on("open-play", async (event, url) => {
