@@ -73,7 +73,7 @@ const compile = async (
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map(scene => {
-    const bankEntityEvents = entity => {
+    const bankEntityEvents = entityType => (entity, entityIndex) => {
       const output = compileEntityEvents(entity.script, {
         scene,
         scenes: precompiled.sceneData,
@@ -81,14 +81,16 @@ const compile = async (
         sprites: precompiled.usedSprites,
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
-        variables: precompiled.variables
+        variables: precompiled.variables,
+        entityType,
+        entityIndex
       });
       return banked.push(output);
     };
     return {
-      start: bankEntityEvents(scene),
-      actors: scene.actors.map(bankEntityEvents),
-      triggers: scene.triggers.map(bankEntityEvents)
+      start: bankEntityEvents("scene")(scene),
+      actors: scene.actors.map(bankEntityEvents("actor")),
+      triggers: scene.triggers.map(bankEntityEvents("trigger"))
     };
   });
 

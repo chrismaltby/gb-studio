@@ -176,6 +176,8 @@ const precompileEntityScript = (input = [], options = {}) => {
     sprites,
     backgrounds,
     variables,
+    entityType,
+    entityIndex,
     branch = false
   } = options;
 
@@ -374,8 +376,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_HIDE);
       output.push(actorIndex);
     } else if (command === EVENT_ACTOR_PUSH) {
-      output.push(CMD_LOOKUP.ACTOR_PUSH);
-      output.push(input[i].args.continue ? 1 : 0); // Continue until collision
+      if (entityType === "actor" && entityIndex !== undefined) {
+        output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+        output.push(entityIndex + 1);
+        output.push(CMD_LOOKUP.ACTOR_PUSH);
+        output.push(input[i].args.continue ? 1 : 0); // Continue until collision
+      }
     } else if (command === EVENT_PLAYER_SET_SPRITE) {
       const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);
