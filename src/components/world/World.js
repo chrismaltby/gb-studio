@@ -22,6 +22,12 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
+
+    const viewContents = this.scrollContentsRef.current;
+    // Set zoom ratio on component mount incase it wasn't at 100%
+    if (viewContents) {
+      viewContents.style.transform = `scale(${this.props.zoomRatio})`;
+    }
   }
 
   componentWillUnmount() {
