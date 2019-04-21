@@ -1,5 +1,7 @@
 # GB Studio
 
+Twitter: [@maltby](https://www.twitter.com/maltby)
+
 GB Studio is a free and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
 For more information see the [GB Studio](https://www.gbstudio.dev) site
 
