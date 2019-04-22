@@ -10,3 +10,4 @@ coverage
 .parcelCache
 .vscode
 /dist
+.DS_Store
