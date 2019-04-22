@@ -5,6 +5,8 @@ For more information see the [GB Studio](https://www.gbstudio.dev) site
 
 GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/), music is provided by [GBT Player](https://github.com/AntonioND/gbt-player)
 
+![GB Studio](gbstudio.gif)
+
 ## Installation
 
 Download a release for your operating system from the [GB Studio Downloads](https://www.gbstudio.dev/download) page.
