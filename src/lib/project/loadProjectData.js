@@ -9,9 +9,13 @@ const loadProject = async projectPath => {
 
   const projectRoot = path.dirname(projectPath);
 
-  const backgrounds = await loadAllBackgroundData(projectRoot);
-  const sprites = await loadAllSpriteData(projectRoot);
-  const music = await loadAllMusicData(projectRoot);
+  const backgroundsPromise = loadAllBackgroundData(projectRoot);
+  const spritesPromise = loadAllSpriteData(projectRoot);
+  const musicPromise = loadAllMusicData(projectRoot);
+
+  const [backgrounds, sprites, music] = await Promise.all(
+    [backgroundsPromise, spritesPromise, musicPromise]
+  );
 
   const oldBackgroundFilenamesToIds = (json.backgrounds || []).reduce(
     (memo, oldData) => {
