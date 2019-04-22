@@ -9,6 +9,7 @@ import { EVENT_TEXT, EVENT_MUSIC_PLAY, EVENT_CHOICE } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
+import { combineMultipleChoiceText } from "./helpers";
 
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
@@ -413,8 +414,7 @@ export const precompileStrings = scenes => {
         strings.push(text);
       }
     } else if (cmd.command === EVENT_CHOICE) {
-      const text =
-        cmd.args.trueText.slice(0, 17) + "\n" + cmd.args.falseText.slice(0, 17);
+      const text = combineMultipleChoiceText(cmd.args);
       if (strings.indexOf(text) === -1) {
         strings.push(text);
       }

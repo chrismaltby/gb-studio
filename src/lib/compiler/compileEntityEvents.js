@@ -42,7 +42,12 @@ import {
   EVENT_IF_ACTOR_AT_POSITION
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
-import { dirDec, inputDec, operatorDec } from "./helpers";
+import {
+  dirDec,
+  inputDec,
+  operatorDec,
+  combineMultipleChoiceText
+} from "./helpers";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -194,10 +199,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
     } else if (command === EVENT_CHOICE) {
-      const text =
-        input[i].args.trueText.slice(0, 17) +
-        "\n" +
-        input[i].args.falseText.slice(0, 17);
+      const text = combineMultipleChoiceText(input[i].args);
       const stringIndex = strings.indexOf(text);
       if (stringIndex === -1) {
         throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);

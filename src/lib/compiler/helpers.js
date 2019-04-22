@@ -61,10 +61,17 @@ const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
 const operatorDec = operator => OPERATOR_LOOKUP[operator] || 1;
 
+const combineMultipleChoiceText = args => {
+  const trueText = args.trueText.slice(0, 17) || "Choice A";
+  const falseText = args.falseText.slice(0, 17) || "Choice B";
+  return trueText + "\n" + falseText;
+};
+
 module.exports = {
   nameToCName,
   dirDec,
   inputDec,
   moveDec,
-  operatorDec
+  operatorDec,
+  combineMultipleChoiceText
 };
