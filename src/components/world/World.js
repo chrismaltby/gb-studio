@@ -5,6 +5,8 @@ import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
 
+const MIDDLE_MOUSE = 2;
+
 class World extends Component {
   constructor(props) {
     super(props);
@@ -14,6 +16,7 @@ class World extends Component {
       hoverY: 0,
       focused: false
     };
+    this.worldDragging = false;
     this.scrollRef = React.createRef();
     this.scrollContentsRef = React.createRef();
   }
@@ -94,22 +97,51 @@ class World extends Component {
     if (this.props.destinationDragging) {
       this.props.dragDestinationStop();
     }
+    this.worldDragging = false;
   };
 
   onMouseMove = e => {
-    const { zoomRatio } = this.props;
-    const boundingRect = e.currentTarget.getBoundingClientRect();
-    const x = e.pageX + e.currentTarget.scrollLeft - 0;
-    const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
+    if (this.worldDragging) {
+      e.currentTarget.scrollLeft -= e.movementX;
+      e.currentTarget.scrollTop -= e.movementY;
+    } else {
+      const { zoomRatio } = this.props;
+      const boundingRect = e.currentTarget.getBoundingClientRect();
+      const x = e.pageX + e.currentTarget.scrollLeft - 0;
+      const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
 
-    this.offsetX = e.pageX;
-    this.offsetY = e.pageY - boundingRect.y;
+      this.offsetX = e.pageX;
+      this.offsetY = e.pageY - boundingRect.y;
 
-    this.setState({
-      hover: true,
-      hoverX: x / zoomRatio - 128,
-      hoverY: y / zoomRatio - 128
-    });
+      this.setState({
+        hover: true,
+        hoverX: x / zoomRatio - 128,
+        hoverY: y / zoomRatio - 128
+      });
+    }
+  };
+
+  startWorldDrag = e => {
+    this.worldDragging = true;
+  };
+
+  startWorldDragIfAltOrMiddleClick = e => {
+    if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
+      this.worldDragging = true;
+      e.stopPropagation();
+    }
+  };
+
+  dragPlayerStart = e => {
+    if (!this.worldDragging) {
+      this.props.dragPlayerStart(e);
+    }
+  };
+
+  dragDestinationStart = e => {
+    if (!this.worldDragging) {
+      this.props.dragDestinationStart(e);
+    }
   };
 
   onMouseEnter = e => {
@@ -167,12 +199,14 @@ class World extends Component {
         onMouseMove={this.onMouseMove}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
+        onMouseDown={this.startWorldDragIfAltOrMiddleClick}
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
             className="World__Grid"
             style={{ width, height }}
             onClick={this.props.selectWorld}
+            onMouseDown={this.startWorldDrag}
           />
 
           {scenes && scenes.length === 0 && <WorldHelp />}
@@ -194,8 +228,8 @@ class World extends Component {
               dragScene={sceneDragging ? dragScene : ""}
               dragX={dragX}
               dragY={dragY}
-              onDragPlayerStart={this.props.dragPlayerStart}
-              onDragDestinationStart={this.props.dragDestinationStart}
+              onDragPlayerStart={this.dragPlayerStart}
+              onDragDestinationStart={this.dragDestinationStart}
             />
           )}
 
