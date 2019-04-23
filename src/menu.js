@@ -1,3 +1,4 @@
+import openAboutWindow from "about-window";
 const { app, Menu } = require("electron");
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -224,7 +225,12 @@ if (process.platform === "darwin") {
   template.unshift({
     label: app.getName(),
     submenu: [
-      { role: "about" },
+      {
+        label: "About GB Studio",
+        click() {
+          openAbout();
+        }
+      },
       { type: "separator" },
       { role: "services" },
       { type: "separator" },
@@ -252,6 +258,17 @@ if (process.platform === "darwin") {
     { type: "separator" },
     { role: "front" }
   ];
+} else {
+  // About menu item for Windows / Linux
+  template[5].submenu.push(
+    { type: "separator" },
+    {
+      label: "About GB Studio",
+      click() {
+        openAbout();
+      }
+    }
+  );
 }
 
 const menu = Menu.buildFromTemplate(template);
@@ -282,6 +299,12 @@ const on = (event, fn) => {
 
 const off = (event, fn) => {
   listeners[event] = listeners[event].filter(f => f !== fn);
+};
+
+const openAbout = () => {
+  return openAboutWindow({
+    icon_path: "../../src/images/app/icon/app_icon.png"
+  });
 };
 
 export default {
