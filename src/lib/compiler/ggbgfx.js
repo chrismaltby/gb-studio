@@ -18,29 +18,31 @@ function memoize(fn) {
   };
 }
 
-const indexColour = memoize(value => {
-  if (value < 40) {
+const indexColour = (r, g, b, a) => {
+  if (g < 65) {
     return 3;
-  } else if (value < 120) {
+  } else if (g < 130) {
     return 2;
-  } else if (value < 220) {
+  } else if (g < 205) {
     return 1;
   } else {
     return 0;
   }
-});
+};
 
-const spriteIndexColour = memoize(value => {
-  if (value < 40) {
+const spriteIndexColour = (r, g, b, a) => {
+  if (g < 65) {
     return 3;
-  } else if (value < 120) {
-    return 0;
-  } else if (value < 220) {
+  } else if (g < 130) {
+    return 3;
+  } else if (g < 205) {
     return 2;
+  } else if ((g > 250 && b < 100) || a < 10) {
+    return 0;
   } else {
     return 1;
   }
-});
+};
 
 const bin2 = memoize(value => {
   return pad(value.toString(2), 2);
@@ -85,7 +87,12 @@ function tilePixelsToHexString(pixels, indexFn) {
     var row1 = "";
     var row2 = "";
     for (var x = 0; x < 8; x++) {
-      var col = indexFn(pixels.get(x, y));
+      var col = indexFn(
+        pixels.get(x, y, 0), // Red
+        pixels.get(x, y, 1), // Green
+        pixels.get(x, y, 2), // Blue
+        pixels.get(x, y, 3) // Alpha
+      );
       var binary = bin2(col);
       row1 += binary[1];
       row2 += binary[0];
@@ -96,8 +103,8 @@ function tilePixelsToHexString(pixels, indexFn) {
 }
 
 function pixelsToTilesData(pixels) {
-  const rPixels = pixels.pick(null, null, 0);
-  const shape = rPixels.shape.slice();
+  const shape = pixels.shape.slice();
+
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
@@ -105,7 +112,7 @@ function pixelsToTilesData(pixels) {
 
   for (var tyi = 0; tyi < yTiles; tyi++) {
     for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = rPixels
+      var tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
       tiles.push(tilePixelsToHexString(tilePixels).slice(0, -1));
@@ -115,8 +122,8 @@ function pixelsToTilesData(pixels) {
 }
 
 function pixelsToTilesLookup(pixels) {
-  const rPixels = pixels.pick(null, null, 0);
-  const shape = rPixels.shape.slice();
+  const shape = pixels.shape.slice();
+
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
@@ -125,7 +132,7 @@ function pixelsToTilesLookup(pixels) {
 
   for (var tyi = 0; tyi < yTiles; tyi++) {
     for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = rPixels
+      var tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
       var tile = tilePixelsToHexString(tilePixels);
@@ -140,16 +147,14 @@ function pixelsToTilesLookup(pixels) {
 }
 
 function pixelsToSpriteData(pixels) {
-  const rPixels = pixels.pick(null, null, 0);
-  const shape = rPixels.shape.slice();
+  const shape = pixels.shape.slice();
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
   var output = "";
-
   for (var txi = 0; txi < xTiles; txi++) {
     for (var tyi = 0; tyi < yTiles; tyi++) {
-      var tilePixels = rPixels
+      var tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
       var tile = tilePixelsToHexString(tilePixels, spriteIndexColour);
@@ -162,8 +167,7 @@ function pixelsToSpriteData(pixels) {
 
 function pixelsAndLookupToTilemap(pixels, lookup, offset) {
   offset = offset || 0;
-  const rPixels = pixels.pick(null, null, 0);
-  const shape = rPixels.shape.slice();
+  const shape = pixels.shape.slice();
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
@@ -171,7 +175,7 @@ function pixelsAndLookupToTilemap(pixels, lookup, offset) {
 
   for (var tyi = 0; tyi < yTiles; tyi++) {
     for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = rPixels
+      var tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
       var tile = tilePixelsToHexString(tilePixels);
