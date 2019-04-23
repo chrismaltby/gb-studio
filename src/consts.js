@@ -1,5 +1,7 @@
 import path from "path";
 
+const gbStudioVersion = '1.0.0.0';
+
 const isDist =
   __dirname.endsWith("/dist") ||
   __dirname.endsWith("/dist/windows") ||
@@ -20,4 +22,4 @@ const buildToolsRoot = path.normalize(rootDir + "/buildTools");
 const emulatorRoot = path.normalize(rootDir + "/appData/js-emulator");
 const projectTemplatesRoot = path.normalize(rootDir + "/appData/templates");
 
-export { engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };
+export { gbStudioVersion, engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };

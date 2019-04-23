@@ -1,3 +1,5 @@
+import { gbStudioVersion } from "./consts";
+
 const { app, Menu } = require("electron");
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -202,6 +204,19 @@ const template = [
         label: "Learn More",
         click() {
           require("electron").shell.openExternal("https://www.gbstudio.dev");
+        }
+      },
+      { type: 'separator' },
+      {
+        label: "About",
+        click() {
+          var options = {
+            type: 'info',
+            buttons: ['OK'],
+            message: 'GB Studio',
+            detail: 'Version ' + gbStudioVersion
+          };
+          require("electron").dialog.showMessageBox(null, options);
         }
       }
     ]
