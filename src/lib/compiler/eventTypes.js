@@ -19,6 +19,7 @@ export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
+export const EVENT_IF_ACTOR_DIRECTION = "EVENT_IF_ACTOR_DIRECTION";
 export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
 export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
@@ -71,6 +72,7 @@ export const EventNames = {
   [EVENT_IF_VALUE]: "If Variable Has Value",
   [EVENT_IF_INPUT]: "If Joypad Input Pressed",
   [EVENT_IF_ACTOR_AT_POSITION]: "If Actor At Position",
+  [EVENT_IF_ACTOR_DIRECTION]: "If Actor Direction matches",
   [EVENT_SET_TRUE]: "Set Variable To 'True'",
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
@@ -238,6 +240,18 @@ export const EventFields = {
       width: "50%",
       defaultValue: 0
     }
+  ],
+  [EVENT_IF_ACTOR_DIRECTION]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "direction",
+      type: "direction",
+      defaultValue: "up"
+    },
   ],
   [EVENT_SET_TRUE]: [
     {

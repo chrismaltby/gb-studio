@@ -14,6 +14,7 @@ import {
   EVENT_IF_VALUE,
   EVENT_IF_INPUT,
   EVENT_IF_ACTOR_AT_POSITION,
+  EVENT_IF_ACTOR_DIRECTION,
   EVENT_IF_SAVED_DATA,
   EVENT_END,
   EVENT_LOOP
@@ -76,6 +77,7 @@ const isConditionalEvent = command => {
       EVENT_IF_VALUE,
       EVENT_IF_INPUT,
       EVENT_IF_ACTOR_AT_POSITION,
+      EVENT_IF_ACTOR_DIRECTION,
       EVENT_IF_SAVED_DATA
     ].indexOf(command) > -1
   );

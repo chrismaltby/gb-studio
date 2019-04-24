@@ -880,3 +880,37 @@ void Script_IfSavedData_b()
     script_ptr += 1 + script_cmd_args_len;
   }
 }
+
+/*
+ * Command: IfActorDirection
+ * ----------------------------
+ * Jump to new script pointer position if actor direction matches.
+ *
+ *   arg0: Actor index
+ *   arg1: Direction for active actor to match
+ *   arg2: High 8 bits for new pointer
+ *   arg3: Low 8 bits for new pointer
+ */
+void Script_IfActorDirection_b()
+{
+  script_actor = script_cmd_args[0];
+
+  if (
+    (
+      actors[script_actor].dir.x == 1 && script_cmd_args[1] == 4 ||
+      actors[script_actor].dir.x == -1 && script_cmd_args[1] == 2
+    ) ||
+    (
+      actors[script_actor].dir.y == 1 && script_cmd_args[1] == 1 ||
+      actors[script_actor].dir.y == -1 && script_cmd_args[1] == 8
+    ))
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
+
+  script_continue = TRUE;
+}
