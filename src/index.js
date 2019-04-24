@@ -295,6 +295,10 @@ menu.on("updateSetting", (setting, value) => {
   mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
 });
 
+menu.on("changeTheme", (theme) => {
+  mainWindow && mainWindow.webContents.send("changeTheme", theme);
+});
+
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.reload();

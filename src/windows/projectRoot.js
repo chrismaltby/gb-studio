@@ -63,6 +63,23 @@ ipcRenderer.on("updateSetting", (event, setting, value) => {
   );
 });
 
+ipcRenderer.on("changeTheme", (event, theme) => {
+  const themeStyle = document.getElementById("theme");
+  let newTheme;
+
+  switch (theme) {
+    case "light":
+      newTheme = "theme.css"
+      break;
+    
+    case "dark":
+      newTheme = "theme-dark.css"
+      break;
+  }
+  
+  themeStyle.href = "../styles/" + newTheme;
+});
+
 ipcRenderer.on("zoom", (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {

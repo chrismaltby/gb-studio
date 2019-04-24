@@ -185,7 +185,26 @@ const template = [
   },
   {
     role: "window",
-    submenu: [{ role: "minimize" }]
+    submenu: [
+      { role: "minimize" },
+      {
+        label: "Theme",
+        submenu: [
+          {
+            label: "Dark",
+            click: () => {
+              notifyListeners("changeTheme", "dark");
+            }
+          },
+          {
+            label: "Light",
+            click: () => {
+              notifyListeners("changeTheme", "light");
+            }
+          }
+        ]
+      }
+    ]
   },
   {
     role: "help",
@@ -267,7 +286,8 @@ let listeners = {
   zoom: [],
   updateSetting: [],
   run: [],
-  build: []
+  build: [],
+  changeTheme: []
 };
 
 const notifyListeners = (event, ...data) => {

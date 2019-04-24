@@ -45,10 +45,6 @@
   fill: var(--button-light-icon-color);
 }
 
-.Button:hover {
-  background-color: var(--toolbar-button-active-bottom-color);
-}
-
 .ButtonToolbar {
   display: flex;
   flex-direction: row;
@@ -86,17 +82,6 @@
   transform: rotate(180deg);
   width: 8px;
   height: 8px;
-}
-
-.Platform__win32 .Button {
-  box-shadow: none;
-  border-radius: 2px;
-  background: #fff;
-  border-color: #ddd;
-}
-
-.Platform__win32 .Button:hover {
-  background: #fafafa;
 }
 
 .Platform__win32 .Button--Transparent {

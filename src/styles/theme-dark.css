@@ -24,6 +24,7 @@
   --button-border-top-color: #9f9e9e;
   --button-text-color: #fbfeff;
   --button-light-icon-color: #999999;
+  --button-background: #6a6d6e;
 
   --menu-bg-color: #000000;
   --menu-hover-color: #282a2a;
@@ -54,3 +55,7 @@
   --conditional-level3: #1b5e20;
   --conditional-level4: #311b92;
 }
+
+.Button:hover {
+  background: #383d3e;
+} 
