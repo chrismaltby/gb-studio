@@ -13,6 +13,8 @@
 
 UINT8 scriptrunner_bank = 4;
 
+UBYTE *RAMPtr;
+
 /*
  * Command: Noop
  * ----------------------------
@@ -651,6 +653,9 @@ void Script_PlayerSetSprite_b()
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
   actors[0].redraw = TRUE;
 
+  // Keep new sprite when switching scene
+  map_next_sprite = sprite_index;
+
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -734,4 +739,144 @@ void Script_IfActorPos_b()
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;
+}
+
+/*
+ * Command: SaveData
+ * ----------------------------
+ * Store current scene, player position and direction, current sprite and variable values into RAM
+ */
+void Script_SaveData_b()
+{
+  UBYTE i;
+
+  ENABLE_RAM_MBC1;
+
+  RAMPtr = (UBYTE *)0xa000;
+  RAMPtr[0] = TRUE; // Flag to determine if data has been stored
+
+  RAMPtr[1] = scene_index;
+  RAMPtr[2] = actors[0].pos.x;
+  RAMPtr[3] = actors[0].pos.y;
+  if (actors[0].dir.x < 0)
+  {
+    RAMPtr[4] = 2;
+  }
+  else if (actors[0].dir.x > 0)
+  {
+    RAMPtr[4] = 4;
+  }
+  else if (actors[0].dir.y < 0)
+  {
+    RAMPtr[4] = 8;
+  }
+  else
+  {
+    RAMPtr[4] = 1;
+  }
+
+  RAMPtr[5] = map_next_sprite;
+
+  for (i = 0; i < NUM_VARIABLES; i++)
+  {
+    // Leaving the first 32 bytes for storing non variable data
+    RAMPtr[32 + i] = script_variables[i];
+  }
+
+  DISABLE_RAM_MBC1;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: LoadData
+ * ----------------------------
+ * Restore current scene, player position and direction, current sprite and variable values from RAM
+ */
+void Script_LoadData_b()
+{
+  UBYTE i;
+
+  ENABLE_RAM_MBC1;
+
+  RAMPtr = (UBYTE *)0xa000;
+  if (RAMPtr[0] == TRUE)
+  {
+
+    scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
+    scene_next_index = RAMPtr[1];
+    scene_index = scene_next_index + 1;
+
+    map_next_pos.x = 0; // @wtf-but-needed
+    map_next_pos.x = RAMPtr[2];
+    map_next_pos.y = 0; // @wtf-but-needed
+    map_next_pos.y = RAMPtr[3];
+    map_next_dir.x = RAMPtr[4] == 2 ? -1 : RAMPtr[4] == 4 ? 1 : 0;
+    map_next_dir.y = RAMPtr[4] == 8 ? -1 : RAMPtr[4] == 1 ? 1 : 0;
+
+    stage_next_type = SCENE;
+
+    FadeSetSpeed(2);
+    FadeOut();
+
+    // Load Player Sprite
+    map_next_sprite = RAMPtr[5];
+
+    // Load variable values
+    for (i = 0; i < NUM_VARIABLES; i++)
+    {
+      script_variables[i] = RAMPtr[32 + i];
+    }
+
+    script_action_complete = FALSE;
+  }
+
+  DISABLE_RAM_MBC1;
+
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: ClearData
+ * ----------------------------
+ * Clear current data in RAM
+ */
+void Script_ClearData_b()
+{
+  ENABLE_RAM_MBC1;
+  RAMPtr = (UBYTE *)0xa000;
+  RAMPtr[0] = FALSE;
+  DISABLE_RAM_MBC1;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: IfSavedData
+ * ----------------------------
+ * Jump to new script pointer position if data is saved in RAM.
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ */
+void Script_IfSavedData_b()
+{
+  UBYTE jump;
+
+  ENABLE_RAM_MBC1;
+  RAMPtr = (UBYTE *)0xa000;
+  jump = 0;
+  jump = RAMPtr[0] == TRUE;
+  DISABLE_RAM_MBC1;
+
+  if (jump)
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
 }

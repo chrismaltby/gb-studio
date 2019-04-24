@@ -49,19 +49,9 @@ int main()
   map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3) + 8;
   map_next_dir.x = actors[0].dir.x = START_SCENE_DIR_X;
   map_next_dir.y = actors[0].dir.y = START_SCENE_DIR_Y;
+  map_next_sprite = START_PLAYER_SPRITE;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
-
-  // Load Player Sprite
-  sprite_index = START_PLAYER_SPRITE;
-  ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
-  sprite_len = MUL_4(sprite_frames);
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
-  actors[0].sprite = 0;
-  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[0].redraw = TRUE;
 
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;

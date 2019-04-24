@@ -9,11 +9,17 @@ export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
 
+// Data
+export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
+export const EVENT_SAVE_DATA = "EVENT_SAVE_DATA";
+export const EVENT_CLEAR_DATA = "EVENT_CLEAR_DATA";
+
 // Conditional
 export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
+export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
 export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
@@ -94,7 +100,11 @@ export const EventNames = {
   [EVENT_AWAIT_INPUT]: "Await Joypad Input",
   [EVENT_MUSIC_PLAY]: "Play Music",
   [EVENT_MUSIC_STOP]: "Stop Music",
-  [EVENT_STOP]: "Stop Script"
+  [EVENT_STOP]: "Stop Script",
+  [EVENT_LOAD_DATA]: "Load Game Data",
+  [EVENT_SAVE_DATA]: "Save Game Data",
+  [EVENT_CLEAR_DATA]: "Clear Game Data",
+  [EVENT_IF_SAVED_DATA]: "If Saved Game Data"
 };
 
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
@@ -559,6 +569,26 @@ export const EventFields = {
   [EVENT_STOP]: [
     {
       label: "Stops current script from running."
+    }
+  ],
+  [EVENT_LOAD_DATA]: [
+    {
+      label: "Load game data from memory."
+    }
+  ],
+  [EVENT_SAVE_DATA]: [
+    {
+      label: "Save current game data to memory."
+    }
+  ],
+  [EVENT_CLEAR_DATA]: [
+    {
+      label: "Clear all saved game data from memory."
+    }
+  ],
+  [EVENT_IF_SAVED_DATA]: [
+    {
+      label: "Run if player has saved a game."
     }
   ]
 };

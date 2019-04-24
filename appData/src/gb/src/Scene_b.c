@@ -181,6 +181,19 @@ void SceneInit_b4()
 
 void SceneInit_b5()
 {
+  BANK_PTR sprite_bank_ptr;
+  UWORD sprite_ptr;
+  UBYTE sprite_frames, sprite_len;
+
+  // Load Player Sprite
+  ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[map_next_sprite]);
+  sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+  sprite_len = MUL_4(sprite_frames);
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+  actors[0].sprite = 0;
+  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[0].redraw = TRUE;
 }
 
 void SceneInit_b6()

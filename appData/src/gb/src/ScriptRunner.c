@@ -54,9 +54,13 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagValue_b, 3},    // 0x24
     {Script_IfValue_b, 6},         // 0x25
     {Script_IfInput_b, 3},         // 0x26
-    {Script_Choice_b, 4},          // 0x26
-    {Script_ActorPush_b, 1},       // 0x27
-    {Script_IfActorPos_b, 5}       // 0x28
+    {Script_Choice_b, 4},          // 0x27
+    {Script_ActorPush_b, 1},       // 0x28
+    {Script_IfActorPos_b, 5},      // 0x29
+    {Script_LoadData_b, 0},        // 0x2A
+    {Script_SaveData_b, 0},        // 0x2B
+    {Script_ClearData_b, 0},       // 0x2C
+    {Script_IfSavedData_b, 2}      // 0x2D
 };
 
 UBYTE ScriptLastFnComplete();
@@ -134,6 +138,11 @@ UBYTE ScriptLastFnComplete()
   }
 
   if (last_fn == Script_LoadScene_b && !IsFading())
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_LoadData_b && !IsFading())
   {
     return TRUE;
   }

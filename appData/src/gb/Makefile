@@ -13,7 +13,7 @@ WEB_DEBUG_BUILD_DIR = build/debug
 OBJ_DIR = obj
 SOURCE_DIR = src
 
-CFLAGS = -DUSE_SFR_FOR_REG -Wl-yo32 -Wl-ya4
+CFLAGS = -DUSE_SFR_FOR_REG -Wl-yt3 -Wl-yo32 -Wl-ya4
 CIGNORE = 3>&1 1>&2 2>&3 3>&- 
 
 SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')

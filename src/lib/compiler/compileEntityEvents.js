@@ -39,7 +39,11 @@ import {
   EVENT_IF_INPUT,
   EVENT_CHOICE,
   EVENT_ACTOR_PUSH,
-  EVENT_IF_ACTOR_AT_POSITION
+  EVENT_IF_ACTOR_AT_POSITION,
+  EVENT_LOAD_DATA,
+  EVENT_SAVE_DATA,
+  EVENT_CLEAR_DATA,
+  EVENT_IF_SAVED_DATA
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -108,7 +112,11 @@ const CMD_LOOKUP = {
   IF_INPUT: 0x26,
   CHOICE: 0x27,
   ACTOR_PUSH: 0x28,
-  IF_ACTOR_AT_POSITION: 0x29
+  IF_ACTOR_AT_POSITION: 0x29,
+  LOAD_DATA: 0x2a,
+  SAVE_DATA: 0x2b,
+  CLEAR_DATA: 0x2c,
+  IF_SAVED_DATA: 0x2d
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -430,6 +438,18 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(startPtrIndex & 0xff);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_LOAD_DATA) {
+      output.push(CMD_LOOKUP.LOAD_DATA);
+    } else if (command === EVENT_SAVE_DATA) {
+      output.push(CMD_LOOKUP.SAVE_DATA);
+    } else if (command === EVENT_CLEAR_DATA) {
+      output.push(CMD_LOOKUP.CLEAR_DATA);
+    } else if (command === EVENT_IF_SAVED_DATA) {
+      output.push(CMD_LOOKUP.IF_SAVED_DATA);
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
+      });
     }
 
     for (var oi = 0; oi < output.length; oi++) {

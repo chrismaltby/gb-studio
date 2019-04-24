@@ -60,5 +60,8 @@ void Script_Choice_b();
 void Script_PlayerSetSprite_b();
 void Script_ActorPush_b();
 void Script_IfActorPos_b();
-
+void Script_LoadData_b();
+void Script_SaveData_b();
+void Script_ClearData_b();
+void Script_IfSavedData_b();
 #endif
