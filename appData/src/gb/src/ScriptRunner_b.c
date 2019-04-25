@@ -11,6 +11,9 @@
 #include "Macros.h"
 #include "Math.h"
 
+#define RAM_START_PTR 0xA000
+#define RAM_START_VARS_PTR 0xA0FF
+
 UINT8 scriptrunner_bank = 4;
 
 UBYTE *RAMPtr;
@@ -748,14 +751,17 @@ void Script_IfActorPos_b()
  */
 void Script_SaveData_b()
 {
-  UBYTE i;
+  UWORD i;
 
   ENABLE_RAM_MBC1;
 
-  RAMPtr = (UBYTE *)0xa000;
+  RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = TRUE; // Flag to determine if data has been stored
 
+  // Save current scene
   RAMPtr[1] = scene_index;
+
+  // Save player position
   RAMPtr[2] = actors[0].pos.x;
   RAMPtr[3] = actors[0].pos.y;
   if (actors[0].dir.x < 0)
@@ -775,12 +781,14 @@ void Script_SaveData_b()
     RAMPtr[4] = 1;
   }
 
+  // Save player sprite
   RAMPtr[5] = map_next_sprite;
 
+  // Save variable values
+  RAMPtr = (UBYTE *)RAM_START_VARS_PTR;  
   for (i = 0; i < NUM_VARIABLES; i++)
   {
-    // Leaving the first 32 bytes for storing non variable data
-    RAMPtr[32 + i] = script_variables[i];
+    RAMPtr[i] = script_variables[i];
   }
 
   DISABLE_RAM_MBC1;
@@ -796,38 +804,44 @@ void Script_SaveData_b()
  */
 void Script_LoadData_b()
 {
-  UBYTE i;
+  UWORD i;
 
   ENABLE_RAM_MBC1;
 
-  RAMPtr = (UBYTE *)0xa000;
-  if (RAMPtr[0] == TRUE)
+  RAMPtr = (UBYTE *)RAM_START_PTR;
+  if (*RAMPtr == TRUE)
   {
-
-    scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
-    scene_next_index = RAMPtr[1];
+    // Set scene index
+    RAMPtr++;
+    scene_next_index = *RAMPtr;
     scene_index = scene_next_index + 1;
 
+    // Position player
+    RAMPtr++;
     map_next_pos.x = 0; // @wtf-but-needed
-    map_next_pos.x = RAMPtr[2];
+    map_next_pos.x = *RAMPtr;
+    RAMPtr++;
     map_next_pos.y = 0; // @wtf-but-needed
-    map_next_pos.y = RAMPtr[3];
-    map_next_dir.x = RAMPtr[4] == 2 ? -1 : RAMPtr[4] == 4 ? 1 : 0;
-    map_next_dir.y = RAMPtr[4] == 8 ? -1 : RAMPtr[4] == 1 ? 1 : 0;
+    map_next_pos.y = *RAMPtr;
+    RAMPtr++;
+    map_next_dir.x = *RAMPtr == 2 ? -1 : *RAMPtr == 4 ? 1 : 0;
+    map_next_dir.y = *RAMPtr == 8 ? -1 : *RAMPtr == 1 ? 1 : 0;
 
-    stage_next_type = SCENE;
-
-    FadeSetSpeed(2);
-    FadeOut();
-
-    // Load Player Sprite
-    map_next_sprite = RAMPtr[5];
+    // Load player sprite
+    RAMPtr++;
+    map_next_sprite = *RAMPtr;
 
     // Load variable values
+    RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
     for (i = 0; i < NUM_VARIABLES; i++)
     {
-      script_variables[i] = RAMPtr[32 + i];
+      script_variables[i] = RAMPtr[i];
     }
+
+    // Switch to next scene
+    stage_next_type = SCENE;
+    FadeSetSpeed(2);
+    FadeOut();
 
     script_action_complete = FALSE;
   }
@@ -845,7 +859,7 @@ void Script_LoadData_b()
 void Script_ClearData_b()
 {
   ENABLE_RAM_MBC1;
-  RAMPtr = (UBYTE *)0xa000;
+  RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = FALSE;
   DISABLE_RAM_MBC1;
 
@@ -866,9 +880,9 @@ void Script_IfSavedData_b()
   UBYTE jump;
 
   ENABLE_RAM_MBC1;
-  RAMPtr = (UBYTE *)0xa000;
+  RAMPtr = (UBYTE *)RAM_START_PTR;
   jump = 0;
-  jump = RAMPtr[0] == TRUE;
+  jump = *RAMPtr == TRUE;
   DISABLE_RAM_MBC1;
 
   if (jump)
