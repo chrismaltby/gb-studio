@@ -82,6 +82,7 @@
   "EVENT_IF_VALUE": "If Variable Has Value",
   "EVENT_IF_INPUT": "If Joypad Input Pressed",
   "EVENT_IF_ACTOR_AT_POSITION": "If Actor At Position",
+  "EVENT_IF_ACTOR_DIRECTION": "If Actor Facing Direction",
   "EVENT_SET_TRUE": "Set Variable To 'True'",
   "EVENT_SET_FALSE": "Reset Variable To 'False'",
   "EVENT_SET_VALUE": "Set Variable To Value",
