@@ -44,7 +44,8 @@ import {
   EVENT_LOAD_DATA,
   EVENT_SAVE_DATA,
   EVENT_CLEAR_DATA,
-  EVENT_IF_SAVED_DATA
+  EVENT_IF_SAVED_DATA,
+  EVENT_SET_RANDOM_VALUE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -118,7 +119,8 @@ const CMD_LOOKUP = {
   SAVE_DATA: 0x2b,
   CLEAR_DATA: 0x2c,
   IF_SAVED_DATA: 0x2d,
-  IF_ACTOR_DIRECTION: 0x2e
+  IF_ACTOR_DIRECTION: 0x2e,
+  SET_RANDOM_VALUE: 0x2f
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -301,6 +303,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(variableIndex));
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
+    } else if (command === EVENT_SET_RANDOM_VALUE) {
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(CMD_LOOKUP.SET_RANDOM_VALUE);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
+      output.push(input[i].args.maxValue || 0);
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       let speed = input[i].args.speed || 1;
