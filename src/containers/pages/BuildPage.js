@@ -7,6 +7,7 @@ import Button, {
   ButtonToolbarFixedSpacer
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
+import l10n from "../../lib/helpers/l10n";
 
 class BuildPage extends Component {
   constructor(props) {
@@ -72,12 +73,16 @@ class BuildPage extends Component {
         </div>
         <PageContent style={{ padding: 20, flexGrow: 0 }}>
           <ButtonToolbar>
-            <Button onClick={this.onRun}>Run</Button>
+            <Button onClick={this.onRun}>{l10n("BUILD_RUN")}</Button>
             <ButtonToolbarFixedSpacer style={{ width: 10 }} />
-            <Button onClick={this.onBuild("rom")}>Export ROM</Button>
-            <Button onClick={this.onBuild("web")}>Export Web</Button>
+            <Button onClick={this.onBuild("rom")}>
+              {l10n("BUILD_EXPORT_ROM")}
+            </Button>
+            <Button onClick={this.onBuild("web")}>
+              {l10n("BUILD_EXPORT_WEB")}
+            </Button>
             <ButtonToolbarSpacer />
-            <Button onClick={this.onClear}>Clear</Button>
+            <Button onClick={this.onClear}>{l10n("BUILD_CLEAR")}</Button>
           </ButtonToolbar>
         </PageContent>
       </div>

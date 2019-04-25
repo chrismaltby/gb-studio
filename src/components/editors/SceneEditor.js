@@ -10,6 +10,7 @@ import SidebarHeading from "./SidebarHeading";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
+import l10n from "../../lib/helpers/l10n";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -32,7 +33,7 @@ class SceneEditor extends Component {
     return (
       <div>
         <SidebarHeading
-          title="Scene"
+          title={l10n("SCENE")}
           buttons={
             <DropdownButton small transparent right>
               <MenuItem onClick={this.onRemove}>Delete Scene</MenuItem>
@@ -41,7 +42,7 @@ class SceneEditor extends Component {
         />
         <div>
           <FormField>
-            <label htmlFor="sceneName">Name</label>
+            <label htmlFor="sceneName">{l10n("FIELD_NAME")}</label>
             <input
               id="sceneName"
               placeholder={"Scene " + (sceneIndex + 1)}
@@ -51,14 +52,14 @@ class SceneEditor extends Component {
           </FormField>
 
           <FormField>
-            <label htmlFor="sceneType">Type</label>
+            <label htmlFor="sceneType">{l10n("FIELD_TYPE")}</label>
             <select id="sceneType">
               <option>Top Down 2D</option>
             </select>
           </FormField>
 
           <FormField>
-            <label htmlFor="sceneImage">Background</label>
+            <label htmlFor="sceneImage">{l10n("FIELD_BACKGROUND")}</label>
             <BackgroundSelect
               id="sceneImage"
               value={scene.backgroundId}
@@ -69,7 +70,7 @@ class SceneEditor extends Component {
 
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (
           <div>
-            <SidebarHeading title="Navigation" />
+            <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
             <ul>
               {scene.actors.map((actor, index) => (
                 <li
@@ -100,7 +101,7 @@ class SceneEditor extends Component {
           </div>
         )}
 
-        <SidebarHeading title="Scene Start Script" />
+        <SidebarHeading title={l10n("SIDEBAR_SCENE_START_SCRIPT")} />
         <ScriptEditor
           value={scene.script}
           type="scene"

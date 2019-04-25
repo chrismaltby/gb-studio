@@ -7,6 +7,7 @@ import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
+import l10n from "../../lib/helpers/l10n";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -32,11 +33,11 @@ class WorldEditor extends Component {
 
     return (
       <div className="WorldEditor">
-        <SidebarHeading title="Project" />
+        <SidebarHeading title={l10n("PROJECT")} />
 
         <div>
           <FormField>
-            <label htmlFor="projectName">Name</label>
+            <label htmlFor="projectName">{l10n("FIELD_NAME")}</label>
             <input
               id="projectName"
               value={project.name || ""}
@@ -46,7 +47,7 @@ class WorldEditor extends Component {
           </FormField>
 
           <FormField>
-            <label htmlFor="projectAuthor">Author</label>
+            <label htmlFor="projectAuthor">{l10n("FIELD_AUTHOR")}</label>
             <input
               id="projectAuthor"
               value={project.author || ""}
@@ -58,7 +59,7 @@ class WorldEditor extends Component {
 
         {scenes.length > 0 && (
           <div>
-            <SidebarHeading title="Starting Scene" />
+            <SidebarHeading title={l10n("SIDEBAR_STARTING_SCENE")} />
 
             <FormField>
               <label>
@@ -72,7 +73,9 @@ class WorldEditor extends Component {
             </FormField>
 
             <FormField>
-              <label htmlFor="playerSprite">Player Sprite Sheet</label>
+              <label htmlFor="playerSprite">
+                {l10n("FIELD_PLAYER_SPRITE_SHEET")}
+              </label>
               <SpriteSheetSelect
                 id="playerSprite"
                 value={settings.playerSpriteSheetId}
@@ -82,7 +85,7 @@ class WorldEditor extends Component {
             </FormField>
 
             <FormField halfWidth>
-              <label htmlFor="startX">X</label>
+              <label htmlFor="startX">{l10n("FIELD_X")}</label>
               <input
                 id="startX"
                 type="number"
@@ -95,7 +98,7 @@ class WorldEditor extends Component {
             </FormField>
 
             <FormField halfWidth>
-              <label htmlFor="startY">Y</label>
+              <label htmlFor="startY">{l10n("FIELD_Y")}</label>
               <input
                 id="startY"
                 type="number"
@@ -108,7 +111,7 @@ class WorldEditor extends Component {
             </FormField>
 
             <FormField>
-              <label htmlFor="startDirection">Direction</label>
+              <label htmlFor="startDirection">{l10n("FIELD_DIRECTION")}</label>
               <DirectionPicker
                 id="startDirection"
                 value={settings.startDirection || 0}

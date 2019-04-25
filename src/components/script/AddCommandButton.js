@@ -3,10 +3,15 @@ import cx from "classnames";
 import Button from "../library/Button";
 import {
   EventFields,
-  EventNames,
   EventsOnlyForActors
 } from "../../lib/compiler/eventTypes";
 import Highlighter from "react-highlight-words";
+import l10n from "../../lib/helpers/l10n";
+
+const EventNames = Object.keys(EventFields).reduce((memo, key) => {
+  memo[key] = l10n(key);
+  return memo;
+}, {});
 
 const actions = Object.keys(EventFields).sort((a, b) => {
   var textA = (EventNames[a] || a).toUpperCase();
@@ -160,7 +165,7 @@ class AddCommandButton extends Component {
     const actionsList = this.filteredList();
     return (
       <div ref={this.button} className="AddCommandButton">
-        <Button onClick={this.onOpen}>Add Event</Button>
+        <Button onClick={this.onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
         {open && (
           <div className={cx("AddCommandButton__Menu")}>
             <div className="AddCommandButton__Search">

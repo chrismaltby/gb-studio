@@ -3,6 +3,7 @@ import cx from "classnames";
 import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "../library/Icons";
 import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
 import { connect } from "react-redux";
+import l10n from "../../lib/helpers/l10n";
 import * as actions from "../../actions";
 
 class ToolPicker extends Component {
@@ -74,7 +75,7 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": "select" === selected
           })}
-          title="Select (v)"
+          title={`${l10n("TOOL_SELECT_LABEL")} (v)`}
         >
           <SelectIcon />
         </div>
@@ -84,6 +85,7 @@ class ToolPicker extends Component {
             "ToolPicker__Item--Selected":
               ["actors", "triggers", "map"].indexOf(selected) > -1
           })}
+          title={`${l10n("TOOL_ADD_LABEL")}`}
         >
           <PlusIcon />
           {add && <MenuOverlay onClick={this.closeAdd} />}
@@ -94,16 +96,22 @@ class ToolPicker extends Component {
                 top: 5
               }}
             >
-              <MenuItem onClick={this.setTool("actors")} title="Add Actor (a)">
+              <MenuItem
+                onClick={this.setTool("actors")}
+                title={`${l10n("TOOL_ACTOR_LABEL")} (a)`}
+              >
                 Actor
               </MenuItem>
               <MenuItem
                 onClick={this.setTool("triggers")}
-                title="Add Trigger (t)"
+                title={`${l10n("TOOL_TRIGGER_LABEL")} (t)`}
               >
                 Trigger
               </MenuItem>
-              <MenuItem onClick={this.setTool("scene")} title="Add Scene (s)">
+              <MenuItem
+                onClick={this.setTool("scene")}
+                title={`${l10n("TOOL_SCENE_LABEL")} (s)`}
+              >
                 Scene
               </MenuItem>
             </Menu>
@@ -114,7 +122,7 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": "eraser" === selected
           })}
-          title="Eraser (e)"
+          title={`${l10n("TOOL_ERASER_LABEL")} (e)`}
         >
           <EraserIcon />
         </div>
@@ -124,6 +132,7 @@ class ToolPicker extends Component {
             "ToolPicker__Item--Selected": "collisions" === selected
           })}
           title="Collisions (c)"
+          title={`${l10n("TOOL_COLLISIONS_LABEL")} (c)`}
         >
           <BrickIcon />
         </div>

@@ -8,6 +8,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
 import { MenuItem } from "../library/Menu";
+import l10n from "../../lib/helpers/l10n";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
@@ -30,7 +31,7 @@ class TriggerEditor extends Component {
     return (
       <div>
         <SidebarHeading
-          title="Trigger"
+          title={l10n("TRIGGER")}
           buttons={
             <DropdownButton small transparent right>
               <MenuItem onClick={this.onRemove}>Delete Trigger</MenuItem>
@@ -39,7 +40,7 @@ class TriggerEditor extends Component {
         />
         <div>
           <FormField>
-            <label htmlFor="triggerName">Name</label>
+            <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
             <input
               id="triggerName"
               placeholder={"Trigger " + (id + 1)}
@@ -49,7 +50,7 @@ class TriggerEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="triggerX">X</label>
+            <label htmlFor="triggerX">{l10n("FIELD_X")}</label>
             <input
               id="triggerX"
               type="number"
@@ -62,7 +63,7 @@ class TriggerEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="triggerY">Y</label>
+            <label htmlFor="triggerY">{l10n("FIELD_Y")}</label>
             <input
               id="triggerY"
               type="number"
@@ -75,7 +76,7 @@ class TriggerEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="triggerWidth">Width</label>
+            <label htmlFor="triggerWidth">{l10n("FIELD_WIDTH")}</label>
             <input
               id="triggerWidth"
               type="number"
@@ -88,7 +89,7 @@ class TriggerEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="triggerHeight">Height</label>
+            <label htmlFor="triggerHeight">{l10n("FIELD_HEIGHT")}</label>
             <input
               id="triggerHeight"
               type="number"
@@ -101,7 +102,7 @@ class TriggerEditor extends Component {
           </FormField>
         </div>
 
-        <SidebarHeading title="Trigger Script" />
+        <SidebarHeading title={l10n("SIDEBAR_TRIGGER_SCRIPT")} />
         <ScriptEditor
           value={trigger.script}
           type="trigger"

@@ -1,4 +1,5 @@
 @import url("./Splash.css");
+@import url("./RTL.css");
 @import url("./../components/forms/DirectionPicker.css");
 @import url("./../components/forms/InputPicker.css");
 @import url("./../components/forms/SpriteSheetSelect.css");

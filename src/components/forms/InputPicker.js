@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import { TriangleIcon } from "../library/Icons";
+import l10n from "../../lib/helpers/l10n";
 
 class InputPicker extends Component {
   render() {
@@ -9,42 +10,50 @@ class InputPicker extends Component {
       {
         key: "left",
         name: "Left",
-        label: <TriangleIcon />
+        label: <TriangleIcon />,
+        title: l10n("FIELD_DIRECTION_LEFT")
       },
       {
         key: "up",
         name: "Up",
-        label: <TriangleIcon />
+        label: <TriangleIcon />,
+        title: l10n("FIELD_DIRECTION_UP")
       },
       {
         key: "down",
         name: "Down",
-        label: <TriangleIcon />
+        label: <TriangleIcon />,
+        title: l10n("FIELD_DIRECTION_DOWN")
       },
       {
         key: "right",
         name: "Right",
-        label: <TriangleIcon />
+        label: <TriangleIcon />,
+        title: l10n("FIELD_DIRECTION_RIGHT")
       },
       {
         key: "a",
         name: "A",
-        label: "A"
+        label: "A",
+        title: "A"
       },
       {
         key: "b",
         name: "B",
-        label: "B"
+        label: "B",
+        title: "B"
       },
       {
         key: "start",
         name: "Start",
-        label: "Start"
+        label: "Start",
+        title: "Start"
       },
       {
         key: "select",
         name: "Select",
-        label: "Select"
+        label: "Select",
+        title: "Select"
       }
     ];
 
@@ -62,7 +71,7 @@ class InputPicker extends Component {
 }
 
 const renderButton = (value, onChange) => input => (
-  <label key={input.key} title={input.name}>
+  <label key={input.key} title={input.title}>
     <input
       type="checkbox"
       checked={value && value.indexOf && value.indexOf(input.key) > -1}

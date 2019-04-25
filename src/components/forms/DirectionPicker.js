@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import cx from "classnames";
 import { TriangleIcon } from "../library/Icons";
+import l10n from "../../lib/helpers/l10n";
 
 class DirectionPicker extends Component {
   render() {
@@ -8,26 +9,30 @@ class DirectionPicker extends Component {
     const directions = [
       {
         key: "left",
-        name: "Left"
+        name: "Left",
+        title: l10n("FIELD_DIRECTION_LEFT")
       },
       {
         key: "up",
-        name: "Up"
+        name: "Up",
+        title: l10n("FIELD_DIRECTION_UP")
       },
       {
         key: "down",
-        name: "Down"
+        name: "Down",
+        title: l10n("FIELD_DIRECTION_DOWN")
       },
       {
         key: "right",
-        name: "Right"
+        name: "Right",
+        title: l10n("FIELD_DIRECTION_RIGHT")
       }
     ];
 
     return (
       <div className="DirectionPicker">
         {directions.map(direction => (
-          <label key={direction.key} title={direction.name}>
+          <label key={direction.key} title={direction.title}>
             <input
               type="radio"
               checked={value === direction.key}

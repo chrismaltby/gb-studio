@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Button from "../library/Button";
 import * as actions from "../../actions";
+import l10n from "../../lib/helpers/l10n";
 
 class ImageViewer extends Component {
   onOpen = () => {
@@ -30,7 +31,7 @@ class ImageViewer extends Component {
         </div>
         {file && (
           <div className="ImageViewer__Edit">
-            <Button onClick={this.onOpen}>Edit</Button>
+            <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
       </div>

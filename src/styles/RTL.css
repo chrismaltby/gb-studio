@@ -1,0 +1,5 @@
+.App--RTL input,
+.App--RTL textarea,
+.App--RTL select {
+  direction: rtl;
+}

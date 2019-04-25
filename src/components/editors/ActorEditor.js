@@ -11,6 +11,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
 import { MenuItem } from "../library/Menu";
+import l10n from "../../lib/helpers/l10n";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -33,7 +34,7 @@ class ActorEditor extends Component {
     return (
       <div className="ActorEditor">
         <SidebarHeading
-          title="Actor"
+          title={l10n("ACTOR")}
           buttons={
             <DropdownButton small transparent right>
               <MenuItem onClick={this.onRemove}>Delete Actor</MenuItem>
@@ -43,7 +44,7 @@ class ActorEditor extends Component {
 
         <div>
           <FormField>
-            <label htmlFor="actorName">Name</label>
+            <label htmlFor="actorName">{l10n("FIELD_NAME")}</label>
             <input
               id="actorName"
               placeholder={"Actor " + (id + 1)}
@@ -53,7 +54,7 @@ class ActorEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="actorX">X</label>
+            <label htmlFor="actorX">{l10n("FIELD_X")}</label>
             <input
               id="actorX"
               type="number"
@@ -66,7 +67,7 @@ class ActorEditor extends Component {
           </FormField>
 
           <FormField halfWidth>
-            <label htmlFor="actorY">Y</label>
+            <label htmlFor="actorY">{l10n("FIELD_Y")}</label>
             <input
               id="actorY"
               type="number"
@@ -79,7 +80,7 @@ class ActorEditor extends Component {
           </FormField>
 
           <FormField>
-            <label htmlFor="actorSprite">Sprite Sheet</label>
+            <label htmlFor="actorSprite">{l10n("FIELD_SPRITE_SHEET")}</label>
             <SpriteSheetSelect
               id="actorSprite"
               value={actor.spriteSheetId}
@@ -91,7 +92,9 @@ class ActorEditor extends Component {
           {spriteSheet && spriteSheet.type !== "static" && (
             <div>
               <FormField halfWidth>
-                <label htmlFor="actorMovement">Movement Type</label>
+                <label htmlFor="actorMovement">
+                  {l10n("FIELD_MOVEMENT_TYPE")}
+                </label>
                 <MovementTypeSelect
                   id="actorMovement"
                   value={actor.movementType}
@@ -99,7 +102,9 @@ class ActorEditor extends Component {
                 />
               </FormField>
               <FormField halfWidth>
-                <label htmlFor="actorDirection">Direction</label>
+                <label htmlFor="actorDirection">
+                  {l10n("FIELD_DIRECTION")}
+                </label>
                 <DirectionPicker
                   id="actorDirection"
                   value={actor.direction}
@@ -110,7 +115,7 @@ class ActorEditor extends Component {
           )}
         </div>
 
-        <SidebarHeading title="Actor Script" />
+        <SidebarHeading title={l10n("SIDEBAR_ACTOR_SCRIPT")} />
 
         <ScriptEditor
           value={actor.script}

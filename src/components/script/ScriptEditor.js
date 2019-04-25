@@ -29,6 +29,7 @@ import {
 import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
+import l10n from "../../lib/helpers/l10n";
 
 const ItemTypes = {
   CARD: "card"
@@ -168,7 +169,7 @@ class ActionMini extends Component {
           >
             {connectDragSource(
               <div className="ActionMini__Command">
-                {EventNames[command] || command}
+                {l10n(command) || command}
               </div>
             )}
 

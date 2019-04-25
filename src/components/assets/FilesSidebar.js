@@ -4,6 +4,7 @@ import cx from "classnames";
 import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
 import * as actions from "../../actions";
+import l10n from "../../lib/helpers/l10n";
 
 class FilesSidebar extends Component {
   constructor(props) {
@@ -25,12 +26,12 @@ class FilesSidebar extends Component {
         <div className="FilesSidebar__Search">
           <input
             autoFocus
-            placeholder="Search..."
+            placeholder={l10n("ASSET_SEARCH")}
             onChange={this.onSearch}
             value={query}
           />
           {onAdd && (
-            <Button onClick={onAdd}>
+            <Button onClick={onAdd} title={l10n("ASSET_ADD")}>
               <PlusIcon />
             </Button>
           )}

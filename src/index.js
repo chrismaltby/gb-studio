@@ -249,9 +249,9 @@ ipcMain.on("document-unmodified", () => {
 });
 
 ipcMain.on("project-loaded", (event, project) => {
-  menu.ref.getMenuItemById("showCollisions").checked =
+  menu.ref().getMenuItemById("showCollisions").checked =
     project.settings.showCollisions;
-  menu.ref.getMenuItemById("showConnections").checked =
+  menu.ref().getMenuItemById("showConnections").checked =
     project.settings.showConnections;
 });
 

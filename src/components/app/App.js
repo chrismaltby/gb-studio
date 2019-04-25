@@ -9,6 +9,7 @@ import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
 import UIPage from "../../containers/pages/UIPage";
 import MusicPage from "../../containers/pages/MusicPage";
+import l10n from "../../lib/helpers/l10n";
 
 class App extends Component {
   constructor() {
@@ -35,7 +36,12 @@ class App extends Component {
     const { section } = this.props;
     const { blur } = this.state;
     return (
-      <div className={cx("App", { "App--Blur": blur })}>
+      <div
+        className={cx("App", {
+          "App--Blur": blur,
+          "App--RTL": l10n("RTL") === true
+        })}
+      >
         <AppToolbar />
         <div className="App__Content">
           {section === "world" && <WorldPage />}

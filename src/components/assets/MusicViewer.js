@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
+import l10n from "../../lib/helpers/l10n";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -74,7 +75,7 @@ class MusicViewer extends Component {
         )}
         {file && (
           <div className="ImageViewer__Edit">
-            <Button onClick={this.onOpen}>Edit</Button>
+            <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
       </div>

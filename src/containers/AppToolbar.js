@@ -18,15 +18,16 @@ import {
 } from "../components/library/Icons";
 import { connect } from "react-redux";
 import * as actions from "../actions";
+import l10n from "../lib/helpers/l10n";
 
 const sectionNames = {
-  world: "Game World",
-  sprites: "Sprites",
-  backgrounds: "Backgrounds",
-  ui: "UI Elements",
-  music: "Music",
-  script: "Script Review",
-  build: "Build & Run"
+  world: l10n("NAV_GAME_WORLD"),
+  sprites: l10n("NAV_SPRITES"),
+  backgrounds: l10n("NAV_BACKGROUNDS"),
+  ui: l10n("NAV_UI_ELEMENTS"),
+  music: l10n("NAV_MUSIC"),
+  script: l10n("NAV_SCRIPT_REVIEW"),
+  build: l10n("NAV_BUILD_AND_RUN")
 };
 
 class AppToolbar extends Component {
@@ -65,7 +66,14 @@ class AppToolbar extends Component {
   };
 
   render() {
-    const { name, section = "world", zoom, showZoom, running, modified } = this.props;
+    const {
+      name,
+      section = "world",
+      zoom,
+      showZoom,
+      running,
+      modified
+    } = this.props;
 
     return (
       <Toolbar>
@@ -90,42 +98,54 @@ class AppToolbar extends Component {
             visibility: !showZoom && "hidden"
           }}
         >
-          <ToolbarButton onClick={this.onZoomOut} title="Zoom Out">
+          <ToolbarButton
+            onClick={this.onZoomOut}
+            title={l10n("TOOLBAR_ZOOM_OUT")}
+          >
             <MinusIcon />
           </ToolbarButton>
           <div
-            title="Reset Zoom"
+            title={l10n("TOOLBAR_ZOOM_RESET")}
             onClick={this.onZoomReset}
             style={{ width: 34, flexShrink: 0, textAlign: "center" }}
           >
             {Math.round(zoom)}%
           </div>
-          <ToolbarButton onClick={this.onZoomIn} title="Zoom In">
+          <ToolbarButton
+            onClick={this.onZoomIn}
+            title={l10n("TOOLBAR_ZOOM_IN")}
+          >
             <PlusIcon />
           </ToolbarButton>
         </ToolbarButton>
         <ToolbarSpacer />
-        <ToolbarTitle>{name || "Untitled"} {modified && " (modified)"}</ToolbarTitle>
+        <ToolbarTitle>
+          {name || "Untitled"} {modified && ` (${l10n("TOOLBAR_MODIFIED")})`}
+        </ToolbarTitle>
         <ToolbarSpacer />
         <ToolbarFixedSpacer style={{ width: 138 }} />
         <ToolbarButton
-          title="Open Project Folder"
+          title={l10n("TOOLBAR_OPEN_PROJECT_FOLDER")}
           onClick={this.openProjectFolder}
         >
           <FolderIcon />
         </ToolbarButton>
         <ToolbarDropdownButton
-          title="Export As..."
+          title={l10n("TOOLBAR_EXPORT_AS")}
           label={<ExportIcon />}
           showArrow={false}
           right
         >
-          <MenuItem onClick={this.onBuild("rom")}>Export ROM</MenuItem>
-          <MenuItem onClick={this.onBuild("web")}>Export Web</MenuItem>
+          <MenuItem onClick={this.onBuild("rom")}>
+            {l10n("TOOLBAR_EXPORT_ROM")}
+          </MenuItem>
+          <MenuItem onClick={this.onBuild("web")}>
+            {l10n("TOOLBAR_EXPORT_WEB")}
+          </MenuItem>
         </ToolbarDropdownButton>
         <ToolbarFixedSpacer />
         <ToolbarButton
-          title="Run"
+          title={l10n("TOOLBAR_RUN")}
           onClick={running ? this.setSection("build") : this.onRun}
         >
           {running ? <LoadingIcon /> : <PlayIcon />}
