@@ -25,6 +25,7 @@ export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
+export const EVENT_SET_RANDOM_VALUE = "EVENT_SET_RANDOM_VALUE";
 export const EVENT_INC_VALUE = "EVENT_INC_VALUE";
 export const EVENT_DEC_VALUE = "EVENT_DEC_VALUE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
@@ -76,6 +77,7 @@ export const EventNames = {
   [EVENT_SET_TRUE]: "Set Variable To 'True'",
   [EVENT_SET_FALSE]: "Reset Variable To 'False'",
   [EVENT_SET_VALUE]: "Set Variable To Value",
+  [EVENT_SET_RANDOM_VALUE]: "Set Variable To Random Value",
   [EVENT_INC_VALUE]: "Increment Variable By 1",
   [EVENT_DEC_VALUE]: "Decrement Variable By 1",
   [EVENT_CHOICE]: "Multiple Choice",
@@ -279,6 +281,21 @@ export const EventFields = {
       min: 0,
       max: 255,
       defaultValue: "0"
+    }
+  ],
+  [EVENT_SET_RANDOM_VALUE]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "maxValue",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "Max value",
+      defaultValue: "255"
     }
   ],
   [EVENT_INC_VALUE]: [

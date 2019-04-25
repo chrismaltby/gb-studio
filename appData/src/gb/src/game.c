@@ -11,6 +11,7 @@
 UBYTE joy;
 UBYTE prev_joy;
 UBYTE time;
+UWORD rand_seed;
 
 UBYTE actor_move_settings;
 POS actor_move_dest;
@@ -102,6 +103,9 @@ void game_loop()
 
   prev_joy = joy;
   time++;
+
+  rand_seed += time;
+  initrand(rand_seed);
 
   gbt_update();
 }
