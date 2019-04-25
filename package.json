@@ -19,7 +19,7 @@
     "coverage": "jest --coverage --runInBand || true"
   },
   "keywords": [],
-  "author": "cmaltby",
+  "author": "GB Studio",
   "license": "MIT",
   "config": {
     "forge": {
