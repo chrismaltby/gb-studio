@@ -40,6 +40,7 @@ import {
   EVENT_CHOICE,
   EVENT_ACTOR_PUSH,
   EVENT_IF_ACTOR_AT_POSITION,
+  EVENT_IF_ACTOR_DIRECTION,
   EVENT_LOAD_DATA,
   EVENT_SAVE_DATA,
   EVENT_CLEAR_DATA,
@@ -116,7 +117,8 @@ const CMD_LOOKUP = {
   LOAD_DATA: 0x2a,
   SAVE_DATA: 0x2b,
   CLEAR_DATA: 0x2c,
-  IF_SAVED_DATA: 0x2d
+  IF_SAVED_DATA: 0x2d,
+  IF_ACTOR_DIRECTION: 0x2e
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -260,6 +262,15 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
+      });
+    } else if (command === EVENT_IF_ACTOR_DIRECTION) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.IF_ACTOR_DIRECTION);
+      output.push(actorIndex);
+      output.push(dirDec(input[i].args.direction));
       compileConditional(input[i].true, input[i].false, {
         ...options,
         output

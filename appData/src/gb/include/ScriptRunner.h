@@ -64,4 +64,5 @@ void Script_LoadData_b();
 void Script_SaveData_b();
 void Script_ClearData_b();
 void Script_IfSavedData_b();
+void Script_IfActorDirection_b();
 #endif

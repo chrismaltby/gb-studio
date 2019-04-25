@@ -60,7 +60,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_LoadData_b, 0},        // 0x2A
     {Script_SaveData_b, 0},        // 0x2B
     {Script_ClearData_b, 0},       // 0x2C
-    {Script_IfSavedData_b, 2}      // 0x2D
+    {Script_IfSavedData_b, 2},     // 0x2D
+    {Script_IfActorDirection_b, 4} // 0x2E
 };
 
 UBYTE ScriptLastFnComplete();
