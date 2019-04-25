@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import Path from "path";
 
 const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude`;
-const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo32 -Wl-ya4`;
+const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yt3 -Wl-yo32 -Wl-ya4`;
 
 export default async buildRoot => {
   let cmds = [];
