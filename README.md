@@ -2,8 +2,9 @@
 
 Copyright (c) 2019 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
-Twitter: [@maltby](https://www.twitter.com/maltby)
-Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)
+Twitter: [@maltby](https://www.twitter.com/maltby) 
+
+Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)  
 Discord: [Join Chat](https://discord.gg/bxerKnc)
 
 GB Studio is a free and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
