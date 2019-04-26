@@ -65,4 +65,5 @@ void Script_SaveData_b();
 void Script_ClearData_b();
 void Script_IfSavedData_b();
 void Script_IfActorDirection_b();
+void Script_SetFlagRandomValue_b();
 #endif

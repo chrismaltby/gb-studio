@@ -928,3 +928,21 @@ void Script_IfActorDirection_b()
 
   script_continue = TRUE;
 }
+
+/*
+ * Command: SetFlagRandomValue
+ * ----------------------------
+ * Set flag to random value
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Max value
+ */
+void Script_SetFlagRandomValue_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_variables[ptr] = rand();
+  script_variables[ptr] %= script_cmd_args[2] + 1;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

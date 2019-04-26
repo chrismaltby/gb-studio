@@ -86,6 +86,7 @@
   "EVENT_SET_TRUE": "Set Variable To 'True'",
   "EVENT_SET_FALSE": "Reset Variable To 'False'",
   "EVENT_SET_VALUE": "Set Variable To Value",
+  "EVENT_SET_RANDOM_VALUE": "Set Variable To Random Value",
   "EVENT_INC_VALUE": "Increment Variable By 1",
   "EVENT_DEC_VALUE": "Decrement Variable By 1",
   "EVENT_CHOICE": "Multiple Choice",
