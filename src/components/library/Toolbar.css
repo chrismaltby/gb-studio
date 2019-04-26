@@ -104,6 +104,7 @@
 
 .Toolbar__DropdownButton .Toolbar__DropdownButton__Triangle {
   width: 10px;
+  margin-left: 5px;
   flex-grow: 0;
 }
 

@@ -78,7 +78,7 @@ class AppToolbar extends Component {
     return (
       <Toolbar>
         <ToolbarDropdownButton
-          label={<div style={{ width: 106 }}>{sectionNames[section]}</div>}
+          label={<div style={{ minWidth: 106 }}>{sectionNames[section]}</div>}
         >
           {Object.keys(sectionNames).map(key => (
             <MenuItem
