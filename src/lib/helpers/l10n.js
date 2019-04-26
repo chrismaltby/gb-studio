@@ -23,6 +23,11 @@ const translations = Object.keys(en).reduce(
         memo[key] = key;
         return memo;
       }
+    : process.env.DEBUG_L10N === "missing"
+    ? (memo, key) => {
+        memo[key] = languageOverrides[key] || key;
+        return memo;
+      }
     : (memo, key) => {
         memo[key] = languageOverrides[key] || en[key];
         return memo;
