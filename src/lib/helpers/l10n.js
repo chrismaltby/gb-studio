@@ -17,10 +17,18 @@ if (locale && locale !== "en") {
   }
 }
 
-const translations = Object.keys(en).reduce((memo, key) => {
-  memo[key] = languageOverrides[key] || en[key];
-  return memo;
-}, {});
+const translations = Object.keys(en).reduce(
+  process.env.DEBUG_L10N === "true"
+    ? (memo, key) => {
+        memo[key] = key;
+        return memo;
+      }
+    : (memo, key) => {
+        memo[key] = languageOverrides[key] || en[key];
+        return memo;
+      },
+  {}
+);
 
 export default key => {
   return translations[key];
