@@ -23,3 +23,5 @@ export const decHex16 = dec =>
 export const hi = longNum => wrap16Bit(longNum) >> 8;
 
 export const lo = longNum => wrap16Bit(longNum) % 256;
+
+export const divisibleBy8 = n => (n >> 3) << 3 == n;

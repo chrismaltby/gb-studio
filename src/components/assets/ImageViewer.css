@@ -30,3 +30,18 @@
   top: 48px;
   right: 310px;
 }
+
+.ImageViewer__Warning {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffc107;
+  color: #000;
+  padding: 10px;
+}
+
+.ImageViewer__Warning ul {
+  padding-left: 25px;
+  line-height: 1.5;
+}

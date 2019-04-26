@@ -153,5 +153,11 @@
   "MENU_DOCUMENTATION": "Documentation",
   "MENU_LEARN_MORE": "Learn More",
   "MENU_SPEECH": "Speech",
-  "MENU_ABOUT": "About GB Studio"
+  "MENU_ABOUT": "About GB Studio",
+
+  "// 11": "Warnings -----------------------------------------------------",
+
+  "WARNING_BACKGROUND_TOO_SMALL": "Background is too small, must be at least 160px x 144px",
+  "WARNING_BACKGROUND_TOO_LARGE": "Background is too large, must be at most 256px x 256px",
+  "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "Background dimensions are not a multiple of 8"
 }

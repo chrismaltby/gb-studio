@@ -22,24 +22,13 @@ const loadProject = async projectPath => {
   );
 
   // Merge stored backgrounds data with file system data
-  const fixedBackgroundIds = backgrounds
-    .map(background => {
-      const oldId = oldBackgroundFilenamesToIds[background.filename];
-      if (oldId) {
-        background.id = oldId;
-      }
-      return background;
-    })
-    .filter(
-      background =>
-        // Only allow backgrounds with valid dimensions
-        background.width <= 32 &&
-        background.height <= 32 &&
-        background.width >= 20 &&
-        background.height >= 18 &&
-        background.width === Math.floor(background.width) &&
-        background.height === Math.floor(background.height)
-    );
+  const fixedBackgroundIds = backgrounds.map(background => {
+    const oldId = oldBackgroundFilenamesToIds[background.filename];
+    if (oldId) {
+      background.id = oldId;
+    }
+    return background;
+  });
 
   json.backgrounds = fixedBackgroundIds;
 

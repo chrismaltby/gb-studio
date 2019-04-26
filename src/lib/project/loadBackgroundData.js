@@ -14,8 +14,10 @@ const loadBackgroundData = async filename => {
   return {
     id: uuid(),
     name: relativePath.replace(".png", ""),
-    width: size.width / TILE_SIZE,
-    height: size.height / TILE_SIZE,
+    width: Math.min(Math.floor(size.width / TILE_SIZE), 32),
+    height: Math.min(Math.floor(size.height / TILE_SIZE), 32),
+    imageWidth: size.width,
+    imageHeight: size.height,
     filename: relativePath,
     _v: Date.now()
   };

@@ -12,6 +12,7 @@ import EventHelper from "./EventHelper";
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
 const MAX_FRAMES = 25;
+const TILE_SIZE = 8;
 
 class Scene extends Component {
   constructor() {
@@ -357,6 +358,10 @@ class Scene extends Component {
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
           onMouseLeave={this.onMouseLeave}
+          style={{
+            width: width * TILE_SIZE,
+            height: height * TILE_SIZE
+          }}
         >
           <img
             className="Scene__Background"

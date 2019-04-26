@@ -42,6 +42,7 @@
   background-color: #fff;
   border: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
+  overflow: hidden;
 }
 
 .Scene__Image img {

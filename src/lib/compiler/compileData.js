@@ -105,8 +105,8 @@ const compile = async (
     return banked.push(
       [].concat(
         background.tilesetIndex,
-        background.width,
-        background.height,
+        Math.floor(background.width),
+        Math.floor(background.height),
         background.data
       )
     );
