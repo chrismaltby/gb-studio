@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { SelectRenamable } from "../library/Forms";
 import * as actions from "../../actions";
+import l10n from "../../lib/helpers/l10n";
 
 const variables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
@@ -23,7 +24,7 @@ class VariableSelect extends Component {
     const { dispatch, renameVariable, variableNames, ...rest } = this.props;
     return (
       <SelectRenamable
-        editPlaceholder="Variable Name"
+        editPlaceholder={l10n("FIELD_VARIABLE_NAME")}
         editDefaultValue={this.variableName(this.props.value || "0")}
         onRename={this.onRename}
         {...rest}

@@ -7,6 +7,7 @@ import createProject, {
 } from "../../lib/project/createProject";
 import { ipcRenderer, remote } from "electron";
 import Path from "path";
+import l10n from "../../lib/helpers/l10n";
 
 const getLastUsedPath = () => {
   const storedPath = localStorage.getItem("__lastUsedPath");
@@ -27,7 +28,7 @@ class Splash extends Component {
     this.state = {
       blur: false,
       tab: "new",
-      name: "Untitled",
+      name: l10n("SPLASH_DEFAULT_PROJECT_NAME"),
       target: "gbhtml",
       path: getLastUsedPath(),
       nameError: null,
@@ -96,11 +97,15 @@ class Splash extends Component {
     const { name, target, path } = this.state;
 
     if (!name) {
-      return this.setState({ nameError: "Please enter a project name" });
+      return this.setState({
+        nameError: l10n("ERROR_PLEASE_ENTER_PROJECT_NAME")
+      });
     }
 
     if (!path) {
-      return this.setState({ pathError: "Please enter a project path" });
+      return this.setState({
+        pathError: l10n("ERROR_PLEASE_ENTER_PROJECT_PATH")
+      });
     }
 
     try {
@@ -115,7 +120,10 @@ class Splash extends Component {
       ipcRenderer.send("open-project", { projectPath });
     } catch (e) {
       if (e === ERR_PROJECT_EXISTS) {
-        this.setState({ nameError: "Project already exists", creating: false });
+        this.setState({
+          nameError: l10n("ERROR_PROJECT_ALREADY_EXISTS"),
+          creating: false
+        });
       }
     }
   };
@@ -140,10 +148,10 @@ class Splash extends Component {
             })}
             onClick={this.onSetTab("new")}
           >
-            New
+            {l10n("SPLASH_NEW")}
           </div>
           <div className="Splash__Tab" onClick={this.onOpen}>
-            Open
+            {l10n("SPLASH_OPEN")}
           </div>
         </div>
 
@@ -151,22 +159,22 @@ class Splash extends Component {
           <div className="Splash__Content">
             <div className="Splash__FormGroup">
               <label className={nameError ? "Splash__Label--Error" : ""}>
-                {nameError ? nameError : "Project name"}
+                {nameError ? nameError : l10n("SPLASH_PROJECT_NAME")}
               </label>
               <input value={name} onChange={this.onChange("name")} />
             </div>
 
             <div className="Splash__FormGroup">
-              <label>Template</label>
+              <label>{l10n("SPLASH_PROJECT_TEMPLATE")}</label>
               <select value={target} onChange={this.onChange("target")}>
-                <option value="gbhtml">Sample Project</option>
-                <option value="blank">Blank Project</option>
+                <option value="gbhtml">{l10n("SPLASH_SAMPLE_PROJECT")}</option>
+                <option value="blank">{l10n("SPLASH_BLANK_PROJECT")}</option>
               </select>
             </div>
 
             <div className="Splash__FormGroup">
               <label className={pathError ? "Splash__Label--Error" : ""}>
-                {pathError ? pathError : "Path"}
+                {pathError ? pathError : l10n("SPLASH_PATH")}
               </label>
               <input value={path} onChange={this.onChange("path")} />
               <div className="Splash__InputButton">
@@ -189,7 +197,7 @@ class Splash extends Component {
                 })}
                 onClick={!creating && this.onSubmit}
               >
-                {creating ? "Creating..." : "Create"}
+                {creating ? l10n("SPLASH_CREATING") : l10n("SPLASH_CREATE")}
               </div>
             </div>
           </div>

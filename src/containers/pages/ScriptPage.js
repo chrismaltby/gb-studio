@@ -7,6 +7,7 @@ import ScriptReviewLine from "../../components/script/ScriptReviewLine";
 import trim2lines from "../../lib/helpers/trim2lines";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
+import l10n from "../../lib/helpers/l10n";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {
@@ -39,12 +40,16 @@ class ScriptsPage extends Component {
     return (
       <div style={{ width: "100%", flexDirection: "column", overflow: "auto" }}>
         <PageHeader>
-          <h1>Script Review</h1>
+          <h1>{l10n("SCRIPT_REVIEW")}</h1>
           <p>
-            {scriptLines.length} {scriptLines.length === 1 ? "Line" : "Lines"}
+            {scriptLines.length}{" "}
+            {scriptLines.length === 1
+              ? l10n("SCRIPT_LINE")
+              : l10n("SCRIPT_LINES")}
           </p>
           <p>
-            {scriptWords} {scriptWords === 1 ? "Word" : "Words"}
+            {scriptWords}{" "}
+            {scriptWords === 1 ? l10n("SCRIPT_WORD") : l10n("SCRIPT_WORDS")}
           </p>
         </PageHeader>
         <PageContent>

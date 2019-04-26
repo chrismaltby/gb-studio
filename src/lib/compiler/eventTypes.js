@@ -1,4 +1,5 @@
 import trim2lines from "../helpers/trim2lines";
+import l10n from "../helpers/l10n";
 
 export const EVENT_END = "EVENT_END";
 export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created
@@ -64,53 +65,6 @@ export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 
-export const EventNames = {
-  [EVENT_SWITCH_SCENE]: "Switch Scene",
-  [EVENT_WAIT]: "Wait",
-  [EVENT_CAMERA_SHAKE]: "Camera Shake",
-  [EVENT_IF_TRUE]: "If Variable Is 'True'",
-  [EVENT_IF_FALSE]: "If Variable Is 'False'",
-  [EVENT_IF_VALUE]: "If Variable Has Value",
-  [EVENT_IF_INPUT]: "If Joypad Input Pressed",
-  [EVENT_IF_ACTOR_AT_POSITION]: "If Actor At Position",
-  [EVENT_IF_ACTOR_DIRECTION]: "If Actor Facing Direction",
-  [EVENT_SET_TRUE]: "Set Variable To 'True'",
-  [EVENT_SET_FALSE]: "Reset Variable To 'False'",
-  [EVENT_SET_VALUE]: "Set Variable To Value",
-  [EVENT_SET_RANDOM_VALUE]: "Set Variable To Random Value",
-  [EVENT_INC_VALUE]: "Increment Variable By 1",
-  [EVENT_DEC_VALUE]: "Decrement Variable By 1",
-  [EVENT_CHOICE]: "Multiple Choice",
-  [EVENT_RESET_VARIABLES]: "Reset All Variables",
-  [EVENT_LOOP]: "Loop Forever",
-  [EVENT_TEXT]: "Display Text",
-  [EVENT_CAMERA_MOVE_TO]: "Camera Move To",
-  [EVENT_CAMERA_LOCK]: "Camera Lock To Player",
-  [EVENT_FADE_IN]: "Fade In",
-  [EVENT_FADE_OUT]: "Fade Out",
-  [EVENT_ACTOR_SET_DIRECTION]: "Actor Set Direction",
-  [EVENT_ACTOR_SET_POSITION]: "Actor Set Position",
-  [EVENT_ACTOR_MOVE_TO]: "Actor Move To",
-  [EVENT_ACTOR_PUSH]: "Push Actor",
-  [EVENT_ACTOR_EMOTE]: "Actor Emote Bubble",
-  [EVENT_ACTOR_SHOW]: "Show Actor",
-  [EVENT_ACTOR_HIDE]: "Hide Actor",
-  [EVENT_PLAYER_SET_SPRITE]: "Set Player Sprite Sheet",
-  [EVENT_SHOW_SPRITES]: "Show Sprites",
-  [EVENT_HIDE_SPRITES]: "Hide Sprites",
-  [EVENT_OVERLAY_SHOW]: "Show Overlay",
-  [EVENT_OVERLAY_HIDE]: "Hide Overlay",
-  [EVENT_OVERLAY_MOVE_TO]: "Overlay Move To",
-  [EVENT_AWAIT_INPUT]: "Await Joypad Input",
-  [EVENT_MUSIC_PLAY]: "Play Music",
-  [EVENT_MUSIC_STOP]: "Stop Music",
-  [EVENT_STOP]: "Stop Script",
-  [EVENT_LOAD_DATA]: "Load Game Data",
-  [EVENT_SAVE_DATA]: "Save Game Data",
-  [EVENT_CLEAR_DATA]: "Clear Game Data",
-  [EVENT_IF_SAVED_DATA]: "If Saved Game Data"
-};
-
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 
 export const EventFields = {
@@ -122,7 +76,7 @@ export const EventFields = {
     },
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -131,7 +85,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
@@ -140,14 +94,14 @@ export const EventFields = {
     },
     {
       key: "direction",
-      label: "Direction",
+      label: l10n("FIELD_DIRECTION"),
       type: "direction",
       width: "50%",
       defaultValue: ""
     },
     {
       key: "fadeSpeed",
-      label: "Fade Speed",
+      label: l10n("FIELD_FADE_SPEED"),
       type: "fadeSpeed",
       defaultValue: "2",
       width: "50%"
@@ -157,7 +111,7 @@ export const EventFields = {
     {
       key: "time",
       type: "number",
-      label: "Seconds",
+      label: l10n("FIELD_SECONDS"),
       min: 0,
       max: 10,
       step: 0.1,
@@ -168,7 +122,7 @@ export const EventFields = {
     {
       key: "time",
       type: "number",
-      label: "Seconds",
+      label: l10n("FIELD_SECONDS"),
       min: 0,
       max: 10,
       step: 0.1,
@@ -213,7 +167,7 @@ export const EventFields = {
   [EVENT_IF_INPUT]: [
     {
       key: "input",
-      label: "Any of",
+      label: l10n("FIELD_ANY_OF"),
       type: "input",
       defaultValue: ["a", "b"]
     }
@@ -226,7 +180,7 @@ export const EventFields = {
     },
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -235,7 +189,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -253,7 +207,7 @@ export const EventFields = {
       key: "direction",
       type: "direction",
       defaultValue: "up"
-    },
+    }
   ],
   [EVENT_SET_TRUE]: [
     {
@@ -294,7 +248,7 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 255,
-      label: "Max value",
+      label: l10n("FIELD_MAX_VALUE"),
       defaultValue: "255"
     }
   ],
@@ -314,12 +268,12 @@ export const EventFields = {
   ],
   [EVENT_RESET_VARIABLES]: [
     {
-      label: "Reset ALL variables back to 'False'."
+      label: l10n("FIELD_RESET_VARIABLES")
     }
   ],
   [EVENT_LOOP]: [
     {
-      label: "Exit using 'Stop Script' or 'Switch Scene'."
+      label: l10n("FIELD_LOOP_EXIT")
     }
   ],
   [EVENT_CHOICE]: [
@@ -330,19 +284,19 @@ export const EventFields = {
     },
     {
       key: "trueText",
-      label: "Set to 'True' if",
+      label: l10n("FIELD_SET_TRUE_IF"),
       type: "text",
       maxLength: 17,
       defaultValue: "",
-      placeholder: "Choice A"
+      placeholder: l10n("FIELD_CHOICE_A")
     },
     {
       key: "falseText",
-      label: "Set to 'False' if",
+      label: l10n("FIELD_SET_FALSE_IF"),
       type: "text",
       maxLength: 17,
       defaultValue: "",
-      placeholder: "Choice B"
+      placeholder: l10n("FIELD_CHOICE_B")
     }
   ],
   [EVENT_TEXT]: [
@@ -351,7 +305,7 @@ export const EventFields = {
       type: "textarea",
       rows: 2,
       maxPerLine: 18,
-      placeholder: "Text...",
+      placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
       updateFn: trim2lines,
       defaultValue: ""
     }
@@ -359,7 +313,7 @@ export const EventFields = {
   [EVENT_CAMERA_MOVE_TO]: [
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 12,
@@ -368,7 +322,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 14,
@@ -422,7 +376,7 @@ export const EventFields = {
     },
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -431,7 +385,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -447,7 +401,7 @@ export const EventFields = {
     },
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -456,7 +410,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 32,
@@ -467,7 +421,7 @@ export const EventFields = {
   [EVENT_ACTOR_PUSH]: [
     {
       key: "continue",
-      label: "Slide Until Collision",
+      label: l10n("FIELD_SLIDE_UNTIL_COLLISION"),
       type: "checkbox",
       defaultValue: false
     }
@@ -508,12 +462,12 @@ export const EventFields = {
   ],
   [EVENT_SHOW_SPRITES]: [
     {
-      label: "Unhide all active sprites."
+      label: l10n("FIELD_UNHIDE_SPRITES")
     }
   ],
   [EVENT_HIDE_SPRITES]: [
     {
-      label: "Hide all sprites from screen."
+      label: l10n("FIELD_HIDE_SPRITES")
     }
   ],
   [EVENT_OVERLAY_SHOW]: [
@@ -524,7 +478,7 @@ export const EventFields = {
     },
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 20,
@@ -533,7 +487,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 18,
@@ -543,13 +497,13 @@ export const EventFields = {
   ],
   [EVENT_OVERLAY_HIDE]: [
     {
-      label: "Hides overlay window from screen."
+      label: l10n("FIELD_OVERLAY_HIDE")
     }
   ],
   [EVENT_OVERLAY_MOVE_TO]: [
     {
       key: "x",
-      label: "X",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 20,
@@ -558,7 +512,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: "Y",
+      label: l10n("FIELD_X"),
       type: "number",
       min: 0,
       max: 18,
@@ -574,7 +528,7 @@ export const EventFields = {
   [EVENT_AWAIT_INPUT]: [
     {
       key: "input",
-      label: "Any of",
+      label: l10n("FIELD_ANY_OF"),
       type: "input",
       defaultValue: ["a", "b"]
     }
@@ -587,39 +541,39 @@ export const EventFields = {
     },
     {
       key: "loop",
-      label: "Loop",
+      label: l10n("FIELD_LOOP"),
       type: "checkbox",
       defaultValue: true
     }
   ],
   [EVENT_MUSIC_STOP]: [
     {
-      label: "Stops any music that was previously playing."
+      label: l10n("FIELD_STOP_MUSIC")
     }
   ],
   [EVENT_STOP]: [
     {
-      label: "Stops current script from running."
+      label: l10n("FIELD_STOP_SCRIPT")
     }
   ],
   [EVENT_LOAD_DATA]: [
     {
-      label: "Load game data from memory."
+      label: l10n("FIELD_LOAD_DATA")
     }
   ],
   [EVENT_SAVE_DATA]: [
     {
-      label: "Save current game data to memory."
+      label: l10n("FIELD_SAVE_DATA")
     }
   ],
   [EVENT_CLEAR_DATA]: [
     {
-      label: "Clear all saved game data from memory."
+      label: l10n("FIELD_CLEAR_DATA")
     }
   ],
   [EVENT_IF_SAVED_DATA]: [
     {
-      label: "Run if player has saved a game."
+      label: l10n("FIELD_IF_SAVED_DATA")
     }
   ]
 };

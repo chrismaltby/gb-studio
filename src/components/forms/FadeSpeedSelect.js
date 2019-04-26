@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import l10n from "../../lib/helpers/l10n";
 
 const speeds = [1, 2, 3, 4, 5, 6];
 
@@ -11,8 +12,12 @@ class FadeSpeedSelect extends Component {
         {allowNone && <option value={0}>Instant</option>}
         {speeds.map((speed, index) => (
           <option key={speed} value={speed}>
-            Speed {speed}{" "}
-            {speed === 1 ? "(Faster)" : speed === 6 ? "(Slower)" : ""}
+            {l10n("FIELD_SPEED")} {speed}{" "}
+            {speed === 1
+              ? `(${l10n("FIELD_FASTER")})`
+              : speed === 6
+              ? `(${l10n("FIELD_SLOWER")})`
+              : ""}
           </option>
         ))}
       </select>

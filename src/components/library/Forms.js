@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import l10n from "../../lib/helpers/l10n";
 
 export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
   <textarea
@@ -79,11 +80,11 @@ export class SelectRenamable extends Component {
         )}
         {edit ? (
           <div className="SelectRenamable__EditBtn" onClick={this.onSave}>
-            Save
+            {l10n("FIELD_SAVE")}
           </div>
         ) : (
           <div className="SelectRenamable__EditBtn" onClick={this.onStartEdit}>
-            Rename
+            {l10n("FIELD_RENAME")}
           </div>
         )}
       </div>
