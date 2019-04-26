@@ -19,7 +19,7 @@
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "modified",
   "TOOLBAR_ZOOM_IN": "Zoom In",
-  "TOOLBAR_ZOOM_OUT": "Zoom In",
+  "TOOLBAR_ZOOM_OUT": "Zoom Out",
   "TOOLBAR_ZOOM_RESET": "Zoom Reset",
   "TOOLBAR_OPEN_PROJECT_FOLDER": "Open Project Folder",
   "TOOLBAR_EXPORT_AS": "Export As...",
