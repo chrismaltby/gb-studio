@@ -940,9 +940,12 @@ void Script_IfActorDirection_b()
  */
 void Script_SetFlagRandomValue_b()
 {
+  UBYTE rand_val;
+  UBYTE modulo;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_variables[ptr] = rand();
-  script_variables[ptr] %= script_cmd_args[2] + 1;
+  rand_val = rand();
+  modulo = script_cmd_args[2] + 1;
+  script_variables[ptr] = rand_val % modulo;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
