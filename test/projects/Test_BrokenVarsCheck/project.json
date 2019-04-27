@@ -1,0 +1,100 @@
+{
+    "settings": {
+        "showCollisions": true,
+        "showConnections": true,
+        "startX": 9,
+        "startY": 9,
+        "startDirection": "down",
+        "zoom": 100,
+        "startSceneId": "",
+        "playerSpriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd"
+    },
+    "_version": "1",
+    "name": "Test_BrokenVarsCheck",
+    "variables": [],
+    "backgrounds": [
+        {
+            "id": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "name": "placeholder",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "placeholder.png",
+            "_v": 1556356164001
+        }
+    ],
+    "spriteSheets": [
+        {
+            "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+            "name": "actor_animated",
+            "numFrames": 6,
+            "type": "actor_animated",
+            "filename": "actor_animated.png",
+            "_v": 1556356164007
+        },
+        {
+            "id": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
+            "name": "actor",
+            "numFrames": 3,
+            "type": "actor",
+            "filename": "actor.png",
+            "_v": 1556356164007
+        },
+        {
+            "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+            "name": "static",
+            "numFrames": 1,
+            "type": "static",
+            "filename": "static.png",
+            "_v": 1556356164007
+        }
+    ],
+    "scenes": [
+        {
+            "id": "5a75f859-245b-4373-9616-3fdd5351e78a",
+            "name": "Scene 1",
+            "backgroundId": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "x": 289,
+            "y": 99,
+            "width": 32,
+            "height": 32,
+            "actors": [],
+            "triggers": [],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "7483255f-2135-47ff-8aa1-051bd3841b46",
+                    "command": "EVENT_IF_TRUE",
+                    "args": {
+                        "variable": 0
+                    },
+                    "true": [
+                        {
+                            "id": "82267d86-6963-4448-982a-609c8a87835b",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "false": [
+                        {
+                            "id": "caec4ccd-8244-461e-a584-3e368fa99eb5",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "e182c6dd-7db7-4f4c-8b76-1ad81f0aeb55",
+                    "command": "EVENT_END"
+                }
+            ]
+        }
+    ],
+    "music": [
+        {
+            "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
+            "name": "template",
+            "filename": "template.mod",
+            "_v": 1556356164008
+        }
+    ]
+}

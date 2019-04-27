@@ -144,7 +144,7 @@ const getSpriteIndex = (spriteId, sprites) => {
 };
 
 const getVariableIndex = (variable, variables) => {
-  const variableIndex = variables.indexOf(variable);
+  const variableIndex = variables.indexOf(String(variable));
   if (variableIndex === -1) {
     throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
     return 0;

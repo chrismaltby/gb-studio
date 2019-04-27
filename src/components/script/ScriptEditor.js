@@ -304,7 +304,7 @@ class ScriptEditor extends Component {
               memo[field.key] =
                 this.props.variables.length > 0
                   ? this.props.variables[this.props.variables.length - 1].id
-                  : 0;
+                  : "0";
             } else if (field.defaultValue === "LAST_MUSIC") {
               memo[field.key] = this.props.music[0].id;
             } else if (field.defaultValue === "LAST_SPRITE") {
