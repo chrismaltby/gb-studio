@@ -290,30 +290,37 @@ class ScriptEditor extends Component {
     this.props.onChange(input);
   };
 
-  onAdd = id => command => {
+  onAdd = id => (command, defaults = {}) => {
     const root = this.props.value;
     const eventFields = EventFields[command];
     const defaultArgs = eventFields
-      ? eventFields.reduce((memo, field) => {
-          if (field.defaultValue === "LAST_SCENE") {
-            memo[field.key] = this.props.scenes[
-              this.props.scenes.length - 1
-            ].id;
-          } else if (field.defaultValue === "LAST_VARIABLE") {
-            memo[field.key] =
-              this.props.variables.length > 0
-                ? this.props.variables[this.props.variables.length - 1].id
-                : 0;
-          } else if (field.defaultValue === "LAST_MUSIC") {
-            memo[field.key] = this.props.music[0].id;
-          } else if (field.defaultValue === "LAST_SPRITE") {
-            memo[field.key] = this.props.spriteSheets[0].id;
-          } else if (field.defaultValue !== undefined) {
-            memo[field.key] = field.defaultValue;
-          }
-          return memo;
-        }, {})
-      : {};
+      ? eventFields.reduce(
+          (memo, field) => {
+            if (field.defaultValue === "LAST_SCENE") {
+              memo[field.key] = this.props.scenes[
+                this.props.scenes.length - 1
+              ].id;
+            } else if (field.defaultValue === "LAST_VARIABLE") {
+              memo[field.key] =
+                this.props.variables.length > 0
+                  ? this.props.variables[this.props.variables.length - 1].id
+                  : 0;
+            } else if (field.defaultValue === "LAST_MUSIC") {
+              memo[field.key] = this.props.music[0].id;
+            } else if (field.defaultValue === "LAST_SPRITE") {
+              memo[field.key] = this.props.spriteSheets[0].id;
+            } else if (
+              field.defaultValue !== undefined &&
+              !defaults[field.key]
+            ) {
+              memo[field.key] = field.defaultValue;
+            }
+            return memo;
+          },
+          { ...defaults }
+        )
+      : { ...defaults };
+
     const input = prependEvent(
       root,
       id,
