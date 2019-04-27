@@ -67,7 +67,18 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetPosToVal_b, 4},   // 0x31
     {Script_ActorMoveToVal_b, 4},     // 0x32
     {Script_ActorMoveRel_b, 4},       // 0x33
-    {Script_ActorSetPosRel_b, 4}      // 0x34
+    {Script_ActorSetPosRel_b, 4},     // 0x34
+    {Script_MathAdd_b, 3},            // 0x35
+    {Script_MathSub_b, 3},            // 0x36
+    {Script_MathMul_b, 3},            // 0x37
+    {Script_MathDiv_b, 3},            // 0x38
+    {Script_MathMod_b, 3},            // 0x39
+    {Script_MathAddVal_b, 4},         // 0x3A
+    {Script_MathSubVal_b, 4},         // 0x3B
+    {Script_MathMulVal_b, 4},         // 0x3C
+    {Script_MathDivVal_b, 4},         // 0x3D
+    {Script_MathModVal_b, 4},         // 0x3E
+    {Script_CopyVal_b, 4}             // 0x3F
 };
 
 UBYTE ScriptLastFnComplete();

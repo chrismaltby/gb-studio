@@ -1091,3 +1091,223 @@ void Script_ActorSetPosRel_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: MathAdd
+ * ----------------------------
+ * Add value to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_MathAdd_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a + b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathSub
+ * ----------------------------
+ * Subtract value from flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_MathSub_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a - b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathMul
+ * ----------------------------
+ * Multiply flag by value
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_MathMul_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a * b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathDiv
+ * ----------------------------
+ * Divide flag by value
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_MathDiv_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a / b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathMod
+ * ----------------------------
+ * Flag modulo by value
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_MathMod_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a % b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathAddVal
+ * ----------------------------
+ * Add value from flag to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: High 8 bits for value index
+ *   arg3: Low 8 bits for value index
+ */
+void Script_MathAddVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD val_a = script_variables[ptr_a];
+  UWORD val_b = script_variables[ptr_b];
+  script_variables[ptr_a] = val_a + val_b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathSubVal
+ * ----------------------------
+ * Subtract value from flag to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: High 8 bits for value index
+ *   arg3: Low 8 bits for value index
+ */
+void Script_MathSubVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD val_a = script_variables[ptr_a];
+  UWORD val_b = script_variables[ptr_b];
+  script_variables[ptr_a] = val_a - val_b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathMulVal
+ * ----------------------------
+ * Multiply value from flag to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: High 8 bits for value index
+ *   arg3: Low 8 bits for value index
+ */
+void Script_MathMulVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD val_a = script_variables[ptr_a];
+  UWORD val_b = script_variables[ptr_b];
+  script_variables[ptr_a] = val_a * val_b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathDiv
+ * ----------------------------
+ * Divide value from flag to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: High 8 bits for value index
+ *   arg3: Low 8 bits for value index
+ */
+void Script_MathDivVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD val_a = script_variables[ptr_a];
+  UWORD val_b = script_variables[ptr_b];
+  script_variables[ptr_a] = val_a / val_b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: MathModVal
+ * ----------------------------
+ * Modulo value from flag to flag
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: High 8 bits for value index
+ *   arg3: Low 8 bits for value index
+ */
+void Script_MathModVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD val_a = script_variables[ptr_a];
+  UWORD val_b = script_variables[ptr_b];
+  script_variables[ptr_a] = val_a % val_b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: CopyVal
+ * ----------------------------
+ * Copy value from flag to flag
+ *
+ *   arg0: High 8 bits for to index
+ *   arg1: Low 8 bits for to index
+ *   arg2: High 8 bits for from index
+ *   arg3: Low 8 bits for from index
+ */
+void Script_CopyVal_b()
+{
+  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  UWORD value = script_variables[ptr_b];
+  script_variables[ptr_a] = value;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

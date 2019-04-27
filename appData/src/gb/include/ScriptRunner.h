@@ -71,4 +71,15 @@ void Script_ActorSetPosToVal_b();
 void Script_ActorMoveToVal_b();
 void Script_ActorMoveRel_b();
 void Script_ActorSetPosRel_b();
+void Script_MathAdd_b();
+void Script_MathSub_b();
+void Script_MathMul_b();
+void Script_MathDiv_b();
+void Script_MathMod_b();
+void Script_MathAddVal_b();
+void Script_MathSubVal_b();
+void Script_MathMulVal_b();
+void Script_MathDivVal_b();
+void Script_MathModVal_b();
+void Script_CopyVal_b();
 #endif

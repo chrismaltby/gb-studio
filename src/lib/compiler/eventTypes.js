@@ -25,13 +25,26 @@ export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
 export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
+export const EVENT_CHOICE = "EVENT_CHOICE";
+export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
+export const EVENT_LOOP = "EVENT_LOOP";
+
+// Math
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_SET_RANDOM_VALUE = "EVENT_SET_RANDOM_VALUE";
 export const EVENT_INC_VALUE = "EVENT_INC_VALUE";
 export const EVENT_DEC_VALUE = "EVENT_DEC_VALUE";
-export const EVENT_CHOICE = "EVENT_CHOICE";
-export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
-export const EVENT_LOOP = "EVENT_LOOP";
+export const EVENT_MATH_ADD = "EVENT_MATH_ADD";
+export const EVENT_MATH_SUB = "EVENT_MATH_SUB";
+export const EVENT_MATH_MUL = "EVENT_MATH_MUL";
+export const EVENT_MATH_DIV = "EVENT_MATH_DIV";
+export const EVENT_MATH_MOD = "EVENT_MATH_MOD";
+export const EVENT_MATH_ADD_VALUE = "EVENT_MATH_ADD_VALUE";
+export const EVENT_MATH_SUB_VALUE = "EVENT_MATH_SUB_VALUE";
+export const EVENT_MATH_MUL_VALUE = "EVENT_MATH_MUL_VALUE";
+export const EVENT_MATH_DIV_VALUE = "EVENT_MATH_DIV_VALUE";
+export const EVENT_MATH_MOD_VALUE = "EVENT_MATH_MOD_VALUE";
+export const EVENT_COPY_VALUE = "EVENT_COPY_VALUE";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -686,6 +699,161 @@ export const EventFields = {
   [EVENT_IF_SAVED_DATA]: [
     {
       label: l10n("FIELD_IF_SAVED_DATA")
+    }
+  ],
+  [EVENT_MATH_ADD]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "+",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_SUB]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "-",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_MUL]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "*",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_DIV]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "/",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_MOD]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "%",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_ADD_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "+",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_SUB_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "-",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_MUL_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "*",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_DIV_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "/",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_MOD_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "%",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_COPY_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      label: "To",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "From",
+      label: "",
+      defaultValue: "LAST_VARIABLE"
     }
   ]
 };
