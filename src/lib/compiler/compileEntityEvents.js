@@ -270,8 +270,9 @@ const precompileEntityScript = (input = [], options = {}) => {
       });
     } else if (command === EVENT_IF_ACTOR_DIRECTION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.IF_ACTOR_DIRECTION);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
+      output.push(CMD_LOOKUP.IF_ACTOR_DIRECTION);
       output.push(dirDec(input[i].args.direction));
       compileConditional(input[i].true, input[i].false, {
         ...options,
