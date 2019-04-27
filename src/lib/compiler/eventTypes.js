@@ -44,6 +44,9 @@ export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
 export const EVENT_ACTOR_PUSH = "EVENT_ACTOR_PUSH";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
 export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
+export const EVENT_ACTOR_GET_POSITION = "EVENT_ACTOR_GET_POSITION";
+export const EVENT_ACTOR_SET_POSITION_TO_VALUE = "EVENT_ACTOR_SET_POSITION_TO_VALUE";
+export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -368,6 +371,25 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
+  [EVENT_ACTOR_GET_POSITION]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
   [EVENT_ACTOR_SET_POSITION]: [
     {
       key: "actorId",
@@ -393,6 +415,25 @@ export const EventFields = {
       defaultValue: 0
     }
   ],
+  [EVENT_ACTOR_SET_POSITION_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
   [EVENT_ACTOR_MOVE_TO]: [
     {
       key: "actorId",
@@ -416,6 +457,25 @@ export const EventFields = {
       max: 32,
       width: "50%",
       defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_MOVE_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_ACTOR_PUSH]: [

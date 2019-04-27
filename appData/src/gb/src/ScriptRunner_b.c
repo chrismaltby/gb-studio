@@ -785,7 +785,7 @@ void Script_SaveData_b()
   RAMPtr[5] = map_next_sprite;
 
   // Save variable values
-  RAMPtr = (UBYTE *)RAM_START_VARS_PTR;  
+  RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
   for (i = 0; i < NUM_VARIABLES; i++)
   {
     RAMPtr[i] = script_variables[i];
@@ -948,4 +948,80 @@ void Script_SetFlagRandomValue_b()
   script_variables[ptr] = rand_val % modulo;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
+}
+
+/*
+ * Command: ActorGetPos
+ * ----------------------------
+ * Store Actor position in variables
+ *
+ *   arg0: High 8 bits for variable x pointer
+ *   arg1: Low 8 bits for variable x pointer
+ *   arg2: High 8 bits for variable y pointer
+ *   arg3: Low 8 bits for variable y pointer
+ */
+void Script_ActorGetPos_b()
+{
+  UWORD x, y;
+
+  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+
+  script_variables[x] = actors[script_actor].pos.x - 8 >> 3;
+  script_variables[y] = actors[script_actor].pos.y - 8 >> 3;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorSetPosToVal
+ * ----------------------------
+ * Set Actor position from variables
+ *
+ *   arg0: High 8 bits for variable x pointer
+ *   arg1: Low 8 bits for variable x pointer
+ *   arg2: High 8 bits for variable y pointer
+ *   arg3: Low 8 bits for variable y pointer
+ */
+void Script_ActorSetPosToVal_b()
+{
+  UWORD x, y;
+
+  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+
+  actors[script_actor].pos.x = 0; // @wtf-but-needed
+  actors[script_actor].pos.x = (script_variables[x] << 3) + 8;
+
+  actors[script_actor].pos.y = 0; // @wtf-but-needed
+  actors[script_actor].pos.y = (script_variables[y] << 3) + 8;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorMoveToVal
+ * ----------------------------
+ * Set Actor position from variables
+ *
+ *   arg0: High 8 bits for variable x pointer
+ *   arg1: Low 8 bits for variable x pointer
+ *   arg2: High 8 bits for variable y pointer
+ *   arg3: Low 8 bits for variable y pointer
+ */
+void Script_ActorMoveToVal_b()
+{
+  UWORD x, y;
+  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  actor_move_settings |= ACTOR_MOVE_ENABLED;
+  actor_move_settings |= ACTOR_NOCLIP;
+  actor_move_dest.x = 0; // @wtf-but-needed
+  actor_move_dest.x = (script_variables[x] << 3) + 8;
+  actor_move_dest.y = 0; // @wtf-but-needed
+  actor_move_dest.y = (script_variables[y] << 3) + 8;
+  script_ptr += 1 + script_cmd_args_len;
+  script_action_complete = FALSE;
 }

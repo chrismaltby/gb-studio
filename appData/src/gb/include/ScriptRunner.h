@@ -66,4 +66,7 @@ void Script_ClearData_b();
 void Script_IfSavedData_b();
 void Script_IfActorDirection_b();
 void Script_SetFlagRandomValue_b();
+void Script_ActorGetPos_b();
+void Script_ActorSetPosToVal_b();
+void Script_ActorMoveToVal_b();
 #endif

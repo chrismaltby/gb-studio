@@ -14,7 +14,9 @@ import {
   EVENT_CAMERA_LOCK,
   EVENT_SWITCH_SCENE,
   EVENT_START_BATTLE,
+  EVENT_ACTOR_GET_POSITION,
   EVENT_ACTOR_SET_POSITION,
+  EVENT_ACTOR_SET_POSITION_TO_VALUE,
   EVENT_ACTOR_SET_DIRECTION,
   EVENT_ACTOR_MOVE_TO,
   EVENT_WAIT,
@@ -45,7 +47,8 @@ import {
   EVENT_SAVE_DATA,
   EVENT_CLEAR_DATA,
   EVENT_IF_SAVED_DATA,
-  EVENT_SET_RANDOM_VALUE
+  EVENT_SET_RANDOM_VALUE,
+  EVENT_ACTOR_MOVE_TO_VALUE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -120,7 +123,10 @@ const CMD_LOOKUP = {
   CLEAR_DATA: 0x2c,
   IF_SAVED_DATA: 0x2d,
   IF_ACTOR_DIRECTION: 0x2e,
-  SET_RANDOM_VALUE: 0x2f
+  SET_RANDOM_VALUE: 0x2f,
+  ACTOR_GET_POSITION: 0x30,
+  ACTOR_SET_POSITION_TO_VALUE: 0x31,
+  ACTOR_MOVE_TO_VALUE: 0x32
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -337,6 +343,39 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(CMD_LOOKUP.START_BATTLE);
         output.push(encounterIndex);
       }
+    } else if (command === EVENT_ACTOR_GET_POSITION) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
+      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_GET_POSITION);
+      output.push(hi(xIndex));
+      output.push(lo(xIndex));
+      output.push(hi(yIndex));
+      output.push(lo(yIndex));
+    } else if (command === EVENT_ACTOR_SET_POSITION_TO_VALUE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
+      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_POSITION_TO_VALUE);
+      output.push(hi(xIndex));
+      output.push(lo(xIndex));
+      output.push(hi(yIndex));
+      output.push(lo(yIndex));
+    } else if (command === EVENT_ACTOR_MOVE_TO_VALUE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
+      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_MOVE_TO_VALUE);
+      output.push(hi(xIndex));
+      output.push(lo(xIndex));
+      output.push(hi(yIndex));
+      output.push(lo(yIndex));
     } else if (command === EVENT_ACTOR_SET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
