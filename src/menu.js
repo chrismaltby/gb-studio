@@ -310,7 +310,7 @@ const off = (event, fn) => {
 
 const openAbout = () => {
   return openAboutWindow({
-    icon_path: "../../src/images/app/icon/app_icon.png"
+    icon_path: "../../src/assets/app/icon/app_icon.png"
   });
 };
 

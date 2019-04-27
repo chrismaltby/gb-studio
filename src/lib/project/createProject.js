@@ -10,7 +10,8 @@ const createProject = async options => {
   const projectFolderName = stripInvalidFilenameCharacters(options.name);
   const projectPath = path.join(options.path, projectFolderName);
   const templatePath = `${projectTemplatesRoot}/${options.target}`;
-  const projectDataPath = `${projectPath}/project.json`;
+  const projectTmpDataPath = `${projectPath}/project.gbsproj`;
+  const projectDataPath = `${projectPath}/${projectFolderName}.gbsproj`;
 
   if (fs.existsSync(projectPath)) {
     throw ERR_PROJECT_EXISTS;
@@ -20,10 +21,10 @@ const createProject = async options => {
   await copy(templatePath, projectPath);
 
   // Replace placeholders in data file
-  let dataFile = await fs.readFile(projectDataPath, "utf8");
+  let dataFile = await fs.readFile(projectTmpDataPath, "utf8");
   dataFile = dataFile.replace(/___PROJECT_NAME___/g, projectFolderName);
   await fs.writeFile(projectDataPath, dataFile);
-
+  await fs.unlink(projectTmpDataPath);
   return projectDataPath;
 };
 

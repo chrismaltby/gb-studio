@@ -194,6 +194,8 @@
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Please enter a project name",
   "ERROR_PLEASE_ENTER_PROJECT_PATH": "Please enter a project path",
   "ERROR_PROJECT_ALREADY_EXISTS": "Project already exists",
+  "ERROR_INVALID_FILE_TYPE": "Invalid File Type",
+  "ERROR_OPEN_GBSPROJ_FILE": "Please select a .gbsproj or .json file",
 
   "// 13": "Splash -------------------------------------------------------",
 

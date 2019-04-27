@@ -41,8 +41,12 @@
         "name": "GB Studio",
         "executableName": "gb-studio",
         "packageManager": "yarn",
-        "icon": "src/images/app/icon/app_icon",
+        "icon": "src/assets/app/icon/app_icon",
         "darwinDarkModeSupport": true,
+        "extendInfo": "src/assets/app/Info.plist",
+        "extraResource": [
+          "src/assets/app/icon/gbsproj.icns"
+        ],
         "afterCopy": [
           "./after-copy"
         ],
@@ -58,7 +62,7 @@
       "electronWinstallerConfig": {
         "name": "gb_studio",
         "exe": "gb-studio.exe",
-        "loadingGif": "src/images/app/install.gif"
+        "loadingGif": "src/assets/app/install.gif"
       },
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
@@ -67,7 +71,7 @@
         "name": ""
       },
       "electronInstallerDMG": {
-        "background": "src/images/app/dmg/background.tiff",
+        "background": "src/assets/app/dmg/background.tiff",
         "format": "ULFO"
       },
       "windowsStoreConfig": {

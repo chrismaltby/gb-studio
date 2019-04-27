@@ -6,6 +6,8 @@ import installExtension, {
 import { enableLiveReload, addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import menu from "./menu";
+import Path from "path";
+import l10n from "./lib/helpers/l10n";
 
 // Stop app launching during squirrel install
 if (require("electron-squirrel-startup")) {
@@ -19,6 +21,8 @@ let splashWindow = null;
 let playWindow = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
+
+const validProjectExt = [".json", ".gbsproj"];
 
 // Allow images and json outside of application package to be loaded in production build
 addBypassChecker(filePath => {
@@ -193,7 +197,14 @@ app.on("ready", async () => {
     await installExtension(REDUX_DEVTOOLS);
   }
 
-  createSplash();
+  if (splashWindow === null && mainWindow === null) {
+    createSplash();
+  }
+});
+
+app.on("open-file", async (e, projectPath) => {
+  await app.whenReady();
+  openProject(projectPath);
 });
 
 // Quit when all windows are closed.
@@ -322,6 +333,15 @@ const openProjectPicker = async () => {
 };
 
 const openProject = async projectPath => {
+  const ext = Path.extname(projectPath);
+  if (validProjectExt.indexOf(ext) === -1) {
+    dialog.showErrorBox(
+      l10n("ERROR_INVALID_FILE_TYPE"),
+      l10n("ERROR_OPEN_GBSPROJ_FILE")
+    );
+    return;
+  }
+
   let oldMainWindow = mainWindow;
   await createWindow(projectPath);
   let newMainWindow = mainWindow;
