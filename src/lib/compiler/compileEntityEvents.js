@@ -48,7 +48,9 @@ import {
   EVENT_CLEAR_DATA,
   EVENT_IF_SAVED_DATA,
   EVENT_SET_RANDOM_VALUE,
-  EVENT_ACTOR_MOVE_TO_VALUE
+  EVENT_ACTOR_MOVE_TO_VALUE,
+  EVENT_ACTOR_MOVE_RELATIVE,
+  EVENT_ACTOR_SET_POSITION_RELATIVE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -126,7 +128,9 @@ const CMD_LOOKUP = {
   SET_RANDOM_VALUE: 0x2f,
   ACTOR_GET_POSITION: 0x30,
   ACTOR_SET_POSITION_TO_VALUE: 0x31,
-  ACTOR_MOVE_TO_VALUE: 0x32
+  ACTOR_MOVE_TO_VALUE: 0x32,
+  ACTOR_MOVE_RELATIVE: 0x33,
+  ACTOR_SET_POSITION_RELATIVE: 0x34
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -365,6 +369,15 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(xIndex));
       output.push(hi(yIndex));
       output.push(lo(yIndex));
+    } else if (command === EVENT_ACTOR_SET_POSITION_RELATIVE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_POSITION_RELATIVE);
+      output.push(Math.abs(input[i].args.x));
+      output.push(input[i].args.x < 0 ? 1 : 0);
+      output.push(Math.abs(input[i].args.x));
+      output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_ACTOR_MOVE_TO_VALUE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       const xIndex = getVariableIndex(input[i].args.vectorX, variables);
@@ -396,6 +409,16 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+    } else if (command === EVENT_ACTOR_MOVE_RELATIVE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_MOVE_RELATIVE);
+      output.push(Math.abs(input[i].args.x));
+      output.push(input[i].args.x < 0 ? 1 : 0);
+      output.push(Math.abs(input[i].args.x));
+      output.push(input[i].args.y < 0 ? 1 : 0);
+      debugger
     } else if (command === EVENT_WAIT) {
       let seconds =
         typeof input[i].args.time === "number" ? input[i].args.time : 0.5;

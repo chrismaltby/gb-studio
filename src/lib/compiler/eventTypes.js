@@ -40,6 +40,8 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
+export const EVENT_ACTOR_SET_POSITION_RELATIVE = "EVENT_ACTOR_SET_POSITION_RELATIVE";
+export const EVENT_ACTOR_MOVE_RELATIVE = "EVENT_ACTOR_MOVE_RELATIVE";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
 export const EVENT_ACTOR_PUSH = "EVENT_ACTOR_PUSH";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
@@ -415,6 +417,31 @@ export const EventFields = {
       defaultValue: 0
     }
   ],
+  [EVENT_ACTOR_SET_POSITION_RELATIVE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "x",
+      label: l10n("FIELD_X"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    },
+    {
+      key: "y",
+      label: l10n("FIELD_X"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    }
+  ],
   [EVENT_ACTOR_SET_POSITION_TO_VALUE]: [
     {
       key: "actorId",
@@ -432,6 +459,31 @@ export const EventFields = {
       type: "variable",
       label: l10n("FIELD_Y"),
       defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_ACTOR_MOVE_RELATIVE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "x",
+      label: l10n("FIELD_X"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    },
+    {
+      key: "y",
+      label: l10n("FIELD_Y"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
     }
   ],
   [EVENT_ACTOR_MOVE_TO]: [

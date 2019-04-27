@@ -69,4 +69,6 @@ void Script_SetFlagRandomValue_b();
 void Script_ActorGetPos_b();
 void Script_ActorSetPosToVal_b();
 void Script_ActorMoveToVal_b();
+void Script_ActorMoveRel_b();
+void Script_ActorSetPosRel_b();
 #endif

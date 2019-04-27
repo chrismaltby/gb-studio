@@ -65,7 +65,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagRandomValue_b, 3}, // 0x2F
     {Script_ActorGetPos_b, 4},        // 0x30
     {Script_ActorSetPosToVal_b, 4},   // 0x31
-    {Script_ActorMoveToVal_b, 4}      // 0x32
+    {Script_ActorMoveToVal_b, 4},     // 0x32
+    {Script_ActorMoveRel_b, 4},       // 0x33
+    {Script_ActorSetPosRel_b, 4}      // 0x34
 };
 
 UBYTE ScriptLastFnComplete();

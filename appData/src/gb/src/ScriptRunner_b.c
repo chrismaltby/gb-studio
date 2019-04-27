@@ -1025,3 +1025,70 @@ void Script_ActorMoveToVal_b()
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
+
+/*
+ * Command: ActorMoveRel
+ * ----------------------------
+ * Walk actor to relative location.
+ *
+ *   arg0: Offset X Pos
+ *   arg1: Offset Y Pos
+ */
+void Script_ActorMoveRel_b()
+{
+  actor_move_settings |= ACTOR_MOVE_ENABLED;
+  actor_move_settings |= ACTOR_NOCLIP;
+
+  actor_move_dest.x = 0; // @wtf-but-needed
+  actor_move_dest.x = actors[script_actor].pos.x;
+  if (script_cmd_args[0] > 0) {
+    if (script_cmd_args[1]) {
+      actor_move_dest.x = actor_move_dest.x - ((script_cmd_args[0] << 3) + 8);
+    } else {
+      actor_move_dest.x = actor_move_dest.x + ((script_cmd_args[0] << 3) + 8);
+    }
+  }
+
+  actor_move_dest.y = 0; // @wtf-but-needed
+  actor_move_dest.y = actors[script_actor].pos.y;
+  if (script_cmd_args[2] > 0) {
+    if (script_cmd_args[3]) {
+      actor_move_dest.y = actor_move_dest.y - ((script_cmd_args[2] << 3) + 8);
+    } else {
+      actor_move_dest.y = actor_move_dest.y + ((script_cmd_args[2] << 3) + 8);
+    }
+  }
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_action_complete = FALSE;
+}
+
+/*
+ * Command: ActorSetPosRel
+ * ----------------------------
+ * Instantly position actor at relative location.
+ *
+ *   arg0: Offset X Pos
+ *   arg1: Offset Y Pos
+ */
+void Script_ActorSetPosRel_b()
+{
+  if (script_cmd_args[0] > 0) {
+    if (script_cmd_args[1]) {
+      actors[script_actor].pos.x = actors[script_actor].pos.x - ((script_cmd_args[0] << 3) + 8);
+    } else {
+      actors[script_actor].pos.x = actors[script_actor].pos.x + ((script_cmd_args[0] << 3) + 8);
+    }
+  }
+
+  if (script_cmd_args[2] > 0) {
+    if (script_cmd_args[3]) {
+      actors[script_actor].pos.y = actors[script_actor].pos.y - ((script_cmd_args[2] << 3) + 8);
+    } else {
+      actors[script_actor].pos.y = actors[script_actor].pos.y + ((script_cmd_args[2] << 3) + 8);
+    }
+  }
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
