@@ -907,19 +907,18 @@ void Script_IfSavedData_b()
  */
 void Script_IfActorDirection_b()
 {
-  script_actor = script_cmd_args[0];
 
   if (
     (
-      actors[script_actor].dir.x == 1 && script_cmd_args[1] == 4 ||
-      actors[script_actor].dir.x == -1 && script_cmd_args[1] == 2
+      actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
+      actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2
     ) ||
     (
-      actors[script_actor].dir.y == 1 && script_cmd_args[1] == 1 ||
-      actors[script_actor].dir.y == -1 && script_cmd_args[1] == 8
+      actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
+      actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8
     ))
   { // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
   else
   { // False path, skip to next command
