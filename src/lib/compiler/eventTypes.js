@@ -194,7 +194,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
@@ -327,7 +327,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 14,
@@ -409,7 +409,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
@@ -434,7 +434,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: -16,
       max: 16,
@@ -503,7 +503,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
@@ -599,7 +599,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 18,
@@ -624,7 +624,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 18,
