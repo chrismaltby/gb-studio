@@ -138,9 +138,9 @@ class World extends Component {
     }
   };
 
-  dragDestinationStart = e => {
+  dragDestinationStart = (eventId, sceneId, type, entityIndex) => {
     if (!this.worldDragging) {
-      this.props.dragDestinationStart(e);
+      this.props.dragDestinationStart(eventId, sceneId, type, entityIndex);
     }
   };
 
