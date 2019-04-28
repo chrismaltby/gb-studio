@@ -31,6 +31,7 @@ class VariableSelect extends Component {
       >
         {variables.map((variable, index) => (
           <option key={index} value={index}>
+            {index < 100 && "$" + String(index).padStart(2, "0") + "$ : "}
             {this.variableName(index)}
           </option>
         ))}

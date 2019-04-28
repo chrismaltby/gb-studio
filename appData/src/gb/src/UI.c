@@ -32,6 +32,7 @@ const unsigned char ui_cursor_tiles[1] = {0xDB};
 const unsigned char ui_bg_tiles[1] = {0xD4};
 
 unsigned char text_lines[80] = "";
+unsigned char tmp_text_lines[80] = "";
 
 void UIInit()
 {
@@ -87,16 +88,59 @@ void UIShowText(UWORD line)
 {
   BANK_PTR bank_ptr;
   UWORD ptr;
+  unsigned char value_string[6];
+  UBYTE i, j, k, value_len;
+  UBYTE value, var_index;
 
   UIDrawDialogueFrame();
-  strcpy(text_lines, "");
+  strcpy(tmp_text_lines, "");
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &string_bank_ptrs[line]);
   ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
 
   PUSH_BANK(bank_ptr.bank);
-  strcat(text_lines, ptr);
+  strcat(tmp_text_lines, ptr);
   POP_BANK;
+
+  for (i = 0, k = 0; i < 80; i++)
+  {
+    // Replace variable references in text
+    if (tmp_text_lines[i] == '$' && tmp_text_lines[i + 3] == '$')
+    {
+      var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
+      value = script_variables[var_index];
+      j = 0;
+
+      if (value == 0)
+      {
+        text_lines[k] = '0';
+      }
+      else
+      {
+        // itoa implementation
+        while (value != 0)
+        {
+          value_string[j++] = '0' + (value % 10);
+          value /= 10;
+        }
+        j--;
+        while (j != 255)
+        {
+          text_lines[k] = value_string[j];
+          k++;
+          j--;
+        }
+        k--;
+      }
+      // Jump though input past variable placeholder
+      i += 3;
+    }
+    else
+    {
+      text_lines[k] = tmp_text_lines[i];
+    }
+    ++k;
+  }
 
   UISetPos(0, MENU_CLOSED_Y);
   UIMoveTo(0, MENU_OPEN_Y, 1);

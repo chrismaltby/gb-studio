@@ -390,6 +390,9 @@ const precompile = async (
 
 export const precompileVariables = scenes => {
   let variables = [];
+  for (let i = 0; i <= 99; i++) {
+    variables.push(String(i));
+  }
   walkScenesEvents(scenes, cmd => {
     if (cmd.args && cmd.args.hasOwnProperty("variable")) {
       const variable = cmd.args.variable || "0";
