@@ -198,7 +198,11 @@ app.on("ready", async () => {
   }
 
   const lastArg = process.argv[process.argv.length - 1];
-  if (process.argv.length >= 2 && lastArg.indexOf("-") !== 0) {
+  if (
+    process.argv.length >= 2 &&
+    lastArg !== "." &&
+    lastArg.indexOf("-") !== 0
+  ) {
     openProject(lastArg);
   } else if (splashWindow === null && mainWindow === null) {
     createSplash();
