@@ -17,7 +17,8 @@ import {
   EVENT_IF_ACTOR_DIRECTION,
   EVENT_IF_SAVED_DATA,
   EVENT_END,
-  EVENT_LOOP
+  EVENT_LOOP,
+  EVENT_IF_VALUE_COMPARE
 } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
@@ -79,7 +80,8 @@ const isConditionalEvent = command => {
       EVENT_IF_INPUT,
       EVENT_IF_ACTOR_AT_POSITION,
       EVENT_IF_ACTOR_DIRECTION,
-      EVENT_IF_SAVED_DATA
+      EVENT_IF_SAVED_DATA,
+      EVENT_IF_VALUE_COMPARE
     ].indexOf(command) > -1
   );
 };

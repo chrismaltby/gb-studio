@@ -62,7 +62,8 @@ import {
   EVENT_MATH_MUL_VALUE,
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
-  EVENT_COPY_VALUE
+  EVENT_COPY_VALUE,
+  EVENT_IF_VALUE_COMPARE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -153,7 +154,9 @@ const CMD_LOOKUP = {
   MATH_MUL_VALUE: 0x3c,
   MATH_DIV_VALUE: 0x3d,
   MATH_MOD_VALUE: 0x3e,
-  COPY_VALUE: 0x3f
+  COPY_VALUE: 0x3f,
+  IF_VALUE_COMPARE: 0x40,
+  LOAD_VECTORS: 0x41
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -183,6 +186,16 @@ const getVariableIndex = (variable, variables) => {
     return 0;
   }
   return variableIndex;
+};
+
+const loadVectors = (args, output, variables) => {
+  const vectorX = getVariableIndex(args.vectorX, variables);
+  const vectorY = getVariableIndex(args.vectorY, variables);
+  output.push(CMD_LOOKUP.LOAD_VECTORS);
+  output.push(hi(vectorX));
+  output.push(lo(vectorX));
+  output.push(hi(vectorY));
+  output.push(lo(vectorY));
 };
 
 const compileConditional = (truePath, falsePath, options) => {
@@ -270,7 +283,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(variableIndex));
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
-      debugger
     } else if (command === EVENT_MATH_SUB) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.MATH_SUB);
@@ -283,7 +295,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(variableIndex));
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
-      debugger
     } else if (command === EVENT_MATH_DIV) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.MATH_DIV);
@@ -297,53 +308,23 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
     } else if (command === EVENT_MATH_ADD_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.MATH_ADD_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_MATH_SUB_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.MATH_SUB_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_MATH_MUL_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.MATH_MUL_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_MATH_DIV_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.MATH_DIV_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_MATH_MOD_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.MATH_MOD_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_COPY_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.COPY_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_IF_FALSE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
@@ -360,6 +341,14 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(operatorDec(input[i].args.operator));
       output.push(input[i].args.comparator || 0);
+      compileConditional(input[i].true, input[i].false, {
+        ...options,
+        output
+      });
+    } else if (command === EVENT_IF_VALUE_COMPARE) {
+      loadVectors(input[i].args, output, variables);
+      output.push(CMD_LOOKUP.IF_VALUE_COMPARE);
+      output.push(operatorDec(input[i].args.operator));
       compileConditional(input[i].true, input[i].false, {
         ...options,
         output
@@ -418,13 +407,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
     } else if (command === EVENT_COPY_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const valueIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.SET_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(valueIndex));
-      output.push(lo(valueIndex));
     } else if (command === EVENT_SET_RANDOM_VALUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_RANDOM_VALUE);
@@ -461,26 +445,16 @@ const precompileEntityScript = (input = [], options = {}) => {
       }
     } else if (command === EVENT_ACTOR_GET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_GET_POSITION);
-      output.push(hi(xIndex));
-      output.push(lo(xIndex));
-      output.push(hi(yIndex));
-      output.push(lo(yIndex));
     } else if (command === EVENT_ACTOR_SET_POSITION_TO_VALUE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION_TO_VALUE);
-      output.push(hi(xIndex));
-      output.push(lo(xIndex));
-      output.push(hi(yIndex));
-      output.push(lo(yIndex));
     } else if (command === EVENT_ACTOR_SET_POSITION_RELATIVE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
@@ -492,15 +466,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_ACTOR_MOVE_TO_VALUE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      const xIndex = getVariableIndex(input[i].args.vectorX, variables);
-      const yIndex = getVariableIndex(input[i].args.vectorY, variables);
+      loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_MOVE_TO_VALUE);
-      output.push(hi(xIndex));
-      output.push(lo(xIndex));
-      output.push(hi(yIndex));
-      output.push(lo(yIndex));
     } else if (command === EVENT_ACTOR_SET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);

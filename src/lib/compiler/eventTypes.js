@@ -19,6 +19,7 @@ export const EVENT_CLEAR_DATA = "EVENT_CLEAR_DATA";
 export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
+export const EVENT_IF_VALUE_COMPARE = "EVENT_IF_VALUE_COMPARE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
 export const EVENT_IF_ACTOR_DIRECTION = "EVENT_IF_ACTOR_DIRECTION";
 export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
@@ -180,6 +181,24 @@ export const EventFields = {
       max: 255,
       width: "50%",
       defaultValue: "0"
+    }
+  ],
+  [EVENT_IF_VALUE_COMPARE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "operator",
+      type: "operator",
+      width: "50%",
+      defaultValue: "=="
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_IF_INPUT]: [

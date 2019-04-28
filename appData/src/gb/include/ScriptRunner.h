@@ -11,6 +11,8 @@ extern UBYTE script_cmd_args[6];
 extern UBYTE script_cmd_args_len;
 
 extern UWORD script_ptr;
+extern UWORD script_ptr_x;
+extern UWORD script_ptr_y;
 extern UBYTE script_action_complete;
 extern UBYTE script_continue;
 extern UBYTE script_actor;
@@ -82,4 +84,6 @@ void Script_MathMulVal_b();
 void Script_MathDivVal_b();
 void Script_MathModVal_b();
 void Script_CopyVal_b();
+void Script_IfValueCompare_b();
+void Script_LoadVectors_b();
 #endif

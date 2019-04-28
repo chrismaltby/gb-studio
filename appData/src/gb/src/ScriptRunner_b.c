@@ -953,22 +953,11 @@ void Script_SetFlagRandomValue_b()
  * Command: ActorGetPos
  * ----------------------------
  * Store Actor position in variables
- *
- *   arg0: High 8 bits for variable x pointer
- *   arg1: Low 8 bits for variable x pointer
- *   arg2: High 8 bits for variable y pointer
- *   arg3: Low 8 bits for variable y pointer
  */
 void Script_ActorGetPos_b()
 {
-  UWORD x, y;
-
-  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
-
-  script_variables[x] = actors[script_actor].pos.x - 8 >> 3;
-  script_variables[y] = actors[script_actor].pos.y - 8 >> 3;
-
+  script_variables[script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
+  script_variables[script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -977,25 +966,13 @@ void Script_ActorGetPos_b()
  * Command: ActorSetPosToVal
  * ----------------------------
  * Set Actor position from variables
- *
- *   arg0: High 8 bits for variable x pointer
- *   arg1: Low 8 bits for variable x pointer
- *   arg2: High 8 bits for variable y pointer
- *   arg3: Low 8 bits for variable y pointer
  */
 void Script_ActorSetPosToVal_b()
 {
-  UWORD x, y;
-
-  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
-
   actors[script_actor].pos.x = 0; // @wtf-but-needed
-  actors[script_actor].pos.x = (script_variables[x] << 3) + 8;
-
+  actors[script_actor].pos.x = (script_variables[script_ptr_x] << 3) + 8;
   actors[script_actor].pos.y = 0; // @wtf-but-needed
-  actors[script_actor].pos.y = (script_variables[y] << 3) + 8;
-
+  actors[script_actor].pos.y = (script_variables[script_ptr_y] << 3) + 8;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1004,23 +981,15 @@ void Script_ActorSetPosToVal_b()
  * Command: ActorMoveToVal
  * ----------------------------
  * Set Actor position from variables
- *
- *   arg0: High 8 bits for variable x pointer
- *   arg1: Low 8 bits for variable x pointer
- *   arg2: High 8 bits for variable y pointer
- *   arg3: Low 8 bits for variable y pointer
  */
 void Script_ActorMoveToVal_b()
 {
-  UWORD x, y;
-  x = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  y = (script_cmd_args[2] * 256) + script_cmd_args[3];
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest.x = 0; // @wtf-but-needed
-  actor_move_dest.x = (script_variables[x] << 3) + 8;
+  actor_move_dest.x = (script_variables[script_ptr_x] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
-  actor_move_dest.y = (script_variables[y] << 3) + 8;
+  actor_move_dest.y = (script_variables[script_ptr_y] << 3) + 8;
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
@@ -1037,7 +1006,6 @@ void Script_ActorMoveRel_b()
 {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
-
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = actors[script_actor].pos.x;
   if (script_cmd_args[0] > 0) {
@@ -1191,19 +1159,12 @@ void Script_MathMod_b()
  * Command: MathAddVal
  * ----------------------------
  * Add value from flag to flag
- *
- *   arg0: High 8 bits for flag index
- *   arg1: Low 8 bits for flag index
- *   arg2: High 8 bits for value index
- *   arg3: Low 8 bits for value index
  */
 void Script_MathAddVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD val_a = script_variables[ptr_a];
-  UWORD val_b = script_variables[ptr_b];
-  script_variables[ptr_a] = val_a + val_b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a + b;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1212,19 +1173,12 @@ void Script_MathAddVal_b()
  * Command: MathSubVal
  * ----------------------------
  * Subtract value from flag to flag
- *
- *   arg0: High 8 bits for flag index
- *   arg1: Low 8 bits for flag index
- *   arg2: High 8 bits for value index
- *   arg3: Low 8 bits for value index
  */
 void Script_MathSubVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD val_a = script_variables[ptr_a];
-  UWORD val_b = script_variables[ptr_b];
-  script_variables[ptr_a] = val_a - val_b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a - b;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1233,19 +1187,12 @@ void Script_MathSubVal_b()
  * Command: MathMulVal
  * ----------------------------
  * Multiply value from flag to flag
- *
- *   arg0: High 8 bits for flag index
- *   arg1: Low 8 bits for flag index
- *   arg2: High 8 bits for value index
- *   arg3: Low 8 bits for value index
  */
 void Script_MathMulVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD val_a = script_variables[ptr_a];
-  UWORD val_b = script_variables[ptr_b];
-  script_variables[ptr_a] = val_a * val_b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a * b;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1254,19 +1201,12 @@ void Script_MathMulVal_b()
  * Command: MathDiv
  * ----------------------------
  * Divide value from flag to flag
- *
- *   arg0: High 8 bits for flag index
- *   arg1: Low 8 bits for flag index
- *   arg2: High 8 bits for value index
- *   arg3: Low 8 bits for value index
  */
 void Script_MathDivVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD val_a = script_variables[ptr_a];
-  UWORD val_b = script_variables[ptr_b];
-  script_variables[ptr_a] = val_a / val_b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a / b;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1275,19 +1215,12 @@ void Script_MathDivVal_b()
  * Command: MathModVal
  * ----------------------------
  * Modulo value from flag to flag
- *
- *   arg0: High 8 bits for flag index
- *   arg1: Low 8 bits for flag index
- *   arg2: High 8 bits for value index
- *   arg3: Low 8 bits for value index
  */
 void Script_MathModVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD val_a = script_variables[ptr_a];
-  UWORD val_b = script_variables[ptr_b];
-  script_variables[ptr_a] = val_a % val_b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a % b;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1296,18 +1229,79 @@ void Script_MathModVal_b()
  * Command: CopyVal
  * ----------------------------
  * Copy value from flag to flag
- *
- *   arg0: High 8 bits for to index
- *   arg1: Low 8 bits for to index
- *   arg2: High 8 bits for from index
- *   arg3: Low 8 bits for from index
  */
 void Script_CopyVal_b()
 {
-  UWORD ptr_a = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  UWORD ptr_b = (script_cmd_args[2] * 256) + script_cmd_args[3];
-  UWORD value = script_variables[ptr_b];
-  script_variables[ptr_a] = value;
+  UBYTE value = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = value;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: IfValue
+ * ----------------------------
+ * Jump to new script pointer position if specified flag is true when compared using operator to comparator.
+ *
+ *   arg0: Operator
+ *   arg1: High 8 bits for new pointer
+ *   arg2: Low 8 bits for new pointer
+ */
+void Script_IfValueCompare_b()
+{
+  UBYTE match;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+
+  switch (script_cmd_args[0])
+  {
+  case OPERATOR_EQ:
+    match = a == b;
+    break;
+  case OPERATOR_LT:
+    match = a < b;
+    break;
+  case OPERATOR_LTE:
+    match = a <= b;
+    break;
+  case OPERATOR_GT:
+    match = a > b;
+    break;
+  case OPERATOR_GTE:
+    match = a >= b;
+    break;
+  case OPERATOR_NE:
+    match = a != b;
+    break;
+  default:
+    match = FALSE;
+  }
+
+  if (match)
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
+  script_continue = TRUE;
+}
+
+/*
+ * Command: LoadVectors
+ * ----------------------------
+ * Loads a vector pair
+ *
+ *   arg0: High 8 bits for first pointer
+ *   arg1: Low 8 bits for first pointer
+ *   arg2: High 8 bits for second pointer
+ *   arg3: Low 8 bits for second pointer
+ */
+void Script_LoadVectors_b()
+{
+  script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

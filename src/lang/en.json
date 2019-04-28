@@ -108,6 +108,7 @@
   "EVENT_IF_TRUE": "If Variable Is 'True'",
   "EVENT_IF_FALSE": "If Variable Is 'False'",
   "EVENT_IF_VALUE": "If Variable Has Value",
+  "EVENT_IF_VALUE_COMPARE": "If Variable Compare",
   "EVENT_IF_INPUT": "If Joypad Input Pressed",
   "EVENT_IF_ACTOR_AT_POSITION": "If Actor At Position",
   "EVENT_IF_ACTOR_DIRECTION": "If Actor Facing Direction",
