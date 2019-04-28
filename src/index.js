@@ -330,7 +330,7 @@ const openProjectPicker = async () => {
     filters: [
       {
         name: "Projects",
-        extensions: "json"
+        extensions: ["gbsproj", "json"]
       }
     ]
   });
