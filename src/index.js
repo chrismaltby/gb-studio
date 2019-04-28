@@ -197,7 +197,10 @@ app.on("ready", async () => {
     await installExtension(REDUX_DEVTOOLS);
   }
 
-  if (splashWindow === null && mainWindow === null) {
+  const lastArg = process.argv[process.argv.length - 1];
+  if (process.argv.length >= 2 && lastArg.indexOf("-") !== 0) {
+    openProject(lastArg);
+  } else if (splashWindow === null && mainWindow === null) {
     createSplash();
   }
 });
