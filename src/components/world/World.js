@@ -183,7 +183,7 @@ class World extends Component {
         : 100
     );
     const height = Math.max(
-      window.innerHeight,
+      window.innerHeight - 40,
       scenes && scenes.length > 0
         ? Math.max.apply(
             null,
