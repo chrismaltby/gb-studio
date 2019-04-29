@@ -52,7 +52,7 @@ const compileTrack = async (
   env.PATH = [`${buildToolsPath}/mod2gbt`, env.PATH].join(":");
   const command =
     process.platform === "win32"
-      ? `${buildToolsPath}\\mod2gbt\\mod2gbt.exe`
+      ? `"${buildToolsPath}\\mod2gbt\\mod2gbt.exe"`
       : "mod2gbt";
 
   const modPath = `"${projectRoot}/assets/music/${track.filename}"`;
