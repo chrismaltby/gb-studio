@@ -394,10 +394,24 @@ export const precompileVariables = scenes => {
     variables.push(String(i));
   }
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.hasOwnProperty("variable")) {
-      const variable = cmd.args.variable || "0";
-      if (variables.indexOf(variable) === -1) {
-        variables.push(variable);
+    if (cmd.args) {
+      if (cmd.args.hasOwnProperty("variable")) {
+        const variable = cmd.args.variable || "0";
+        if (variables.indexOf(variable) === -1) {
+          variables.push(variable);
+        }
+      }
+      if (cmd.args.hasOwnProperty("vectorX")) {
+        const x = cmd.args.vectorX || "0";
+        if (variables.indexOf(x) === -1) {
+          variables.push(x);
+        }
+      }
+      if (cmd.args.hasOwnProperty("vectorY")) {
+        const y = cmd.args.vectorY || "0";
+        if (variables.indexOf(y) === -1) {
+          variables.push(y);
+        }
       }
     }
   });

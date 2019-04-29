@@ -19,19 +19,33 @@ export const EVENT_CLEAR_DATA = "EVENT_CLEAR_DATA";
 export const EVENT_IF_TRUE = "EVENT_IF_TRUE";
 export const EVENT_IF_FALSE = "EVENT_IF_FALSE";
 export const EVENT_IF_VALUE = "EVENT_IF_VALUE";
+export const EVENT_IF_VALUE_COMPARE = "EVENT_IF_VALUE_COMPARE";
 export const EVENT_IF_INPUT = "EVENT_IF_INPUT";
 export const EVENT_IF_ACTOR_DIRECTION = "EVENT_IF_ACTOR_DIRECTION";
 export const EVENT_IF_SAVED_DATA = "EVENT_IF_SAVED_DATA";
 export const EVENT_IF_ACTOR_AT_POSITION = "EVENT_IF_ACTOR_AT_POSITION";
 export const EVENT_SET_TRUE = "EVENT_SET_TRUE";
 export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
+export const EVENT_CHOICE = "EVENT_CHOICE";
+export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
+export const EVENT_LOOP = "EVENT_LOOP";
+
+// Math
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_SET_RANDOM_VALUE = "EVENT_SET_RANDOM_VALUE";
 export const EVENT_INC_VALUE = "EVENT_INC_VALUE";
 export const EVENT_DEC_VALUE = "EVENT_DEC_VALUE";
-export const EVENT_CHOICE = "EVENT_CHOICE";
-export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
-export const EVENT_LOOP = "EVENT_LOOP";
+export const EVENT_MATH_ADD = "EVENT_MATH_ADD";
+export const EVENT_MATH_SUB = "EVENT_MATH_SUB";
+export const EVENT_MATH_MUL = "EVENT_MATH_MUL";
+export const EVENT_MATH_DIV = "EVENT_MATH_DIV";
+export const EVENT_MATH_MOD = "EVENT_MATH_MOD";
+export const EVENT_MATH_ADD_VALUE = "EVENT_MATH_ADD_VALUE";
+export const EVENT_MATH_SUB_VALUE = "EVENT_MATH_SUB_VALUE";
+export const EVENT_MATH_MUL_VALUE = "EVENT_MATH_MUL_VALUE";
+export const EVENT_MATH_DIV_VALUE = "EVENT_MATH_DIV_VALUE";
+export const EVENT_MATH_MOD_VALUE = "EVENT_MATH_MOD_VALUE";
+export const EVENT_COPY_VALUE = "EVENT_COPY_VALUE";
 
 // Input
 export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
@@ -40,10 +54,15 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
+export const EVENT_ACTOR_SET_POSITION_RELATIVE = "EVENT_ACTOR_SET_POSITION_RELATIVE";
+export const EVENT_ACTOR_MOVE_RELATIVE = "EVENT_ACTOR_MOVE_RELATIVE";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
 export const EVENT_ACTOR_PUSH = "EVENT_ACTOR_PUSH";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
 export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
+export const EVENT_ACTOR_GET_POSITION = "EVENT_ACTOR_GET_POSITION";
+export const EVENT_ACTOR_SET_POSITION_TO_VALUE = "EVENT_ACTOR_SET_POSITION_TO_VALUE";
+export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -164,6 +183,24 @@ export const EventFields = {
       defaultValue: "0"
     }
   ],
+  [EVENT_IF_VALUE_COMPARE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "operator",
+      type: "operator",
+      width: "50%",
+      defaultValue: "=="
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
   [EVENT_IF_INPUT]: [
     {
       key: "input",
@@ -189,7 +226,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
@@ -322,7 +359,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 14,
@@ -368,6 +405,25 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
+  [EVENT_ACTOR_GET_POSITION]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
   [EVENT_ACTOR_SET_POSITION]: [
     {
       key: "actorId",
@@ -385,10 +441,79 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
+      width: "50%",
+      defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_SET_POSITION_RELATIVE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "x",
+      label: l10n("FIELD_X"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    },
+    {
+      key: "y",
+      label: l10n("FIELD_Y"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_SET_POSITION_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_ACTOR_MOVE_RELATIVE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "x",
+      label: l10n("FIELD_X"),
+      type: "number",
+      min: -16,
+      max: 16,
+      width: "50%",
+      defaultValue: 0
+    },
+    {
+      key: "y",
+      label: l10n("FIELD_Y"),
+      type: "number",
+      min: -16,
+      max: 16,
       width: "50%",
       defaultValue: 0
     }
@@ -410,12 +535,31 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 32,
       width: "50%",
       defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_MOVE_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "vectorX",
+      type: "variable",
+      label: l10n("FIELD_X"),
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: l10n("FIELD_Y"),
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_ACTOR_PUSH]: [
@@ -487,7 +631,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 18,
@@ -512,7 +656,7 @@ export const EventFields = {
     },
     {
       key: "y",
-      label: l10n("FIELD_X"),
+      label: l10n("FIELD_Y"),
       type: "number",
       min: 0,
       max: 18,
@@ -574,6 +718,161 @@ export const EventFields = {
   [EVENT_IF_SAVED_DATA]: [
     {
       label: l10n("FIELD_IF_SAVED_DATA")
+    }
+  ],
+  [EVENT_MATH_ADD]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "+",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_SUB]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "-",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_MUL]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "*",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_DIV]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "/",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_MOD]: [
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "value",
+      type: "number",
+      min: 0,
+      max: 255,
+      label: "%",
+      defaultValue: "0"
+    }
+  ],
+  [EVENT_MATH_ADD_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "+",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_SUB_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "-",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_MUL_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "*",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_DIV_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "/",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_MATH_MOD_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "%",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_COPY_VALUE]: [
+    {
+      key: "vectorX",
+      type: "variable",
+      label: "To",
+      defaultValue: "LAST_VARIABLE"
+    },
+    {
+      key: "vectorY",
+      type: "variable",
+      label: "From",
+      label: "",
+      defaultValue: "LAST_VARIABLE"
     }
   ]
 };
