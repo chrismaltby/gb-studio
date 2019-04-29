@@ -133,28 +133,28 @@ workflows:
           filters:
             branches:
               only:
-                - devleop
+                - develop
       - "make:win32":
           requires:
             - checkout
           filters:
             branches:
               only:
-                - devleop
+                - develop
       - "make:win64":
           requires:
             - checkout
           filters:
             branches:
               only:
-                - devleop
+                - develop
       - "make:linux":
           requires:
             - checkout
           filters:
             branches:
               only:
-                - devleop
+                - develop
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -164,4 +164,4 @@ workflows:
           filters:
             branches:
               only:
-                - devleop
+                - develop
