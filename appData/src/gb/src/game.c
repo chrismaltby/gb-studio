@@ -26,10 +26,6 @@ void game_loop();
 
 int main()
 {
-  BANK_PTR sprite_bank_ptr;
-  UWORD sprite_ptr;
-  UBYTE sprite_index, sprite_frames, sprite_len;
-
   // Init LCD
   LCDC_REG = 0x67;
   set_interrupts(VBL_IFLAG | LCD_IFLAG);
