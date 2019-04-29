@@ -28,17 +28,18 @@ $ npm start
 
 ## Development builds
 
-These builds reflects the latest changes from the `develop` branch and is updated automatically.
+These builds reflects the latest changes from the `develop` branch and are updated automatically. It is recommended to make a backup of your project before using any of these versions.
 
 #### macOS
-[![MacOS](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=apple&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-darwin_x86_64.zip?branch=citest&filter=successful)
+
+[![MacOS](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=apple&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-darwin_x86_64.zip?branch=develop&filter=successful)
 
 #### Linux
 
-[![DEB](https://img.shields.io/static/v1.svg?label=&message=deb&color=blue&logo=Ubuntu&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-linux_x86_64.rpm?branch=citest&filter=successful)
-[![RPM](https://img.shields.io/static/v1.svg?label=&message=RPM&color=blue&logo=linux&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-linux_x86_64.deb?branch=citest&filter=successful)
+[![DEB](https://img.shields.io/static/v1.svg?label=&message=deb&color=blue&logo=Ubuntu&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-linux_x86_64.rpm?branch=develop&filter=successful)
+[![RPM](https://img.shields.io/static/v1.svg?label=&message=RPM&color=blue&logo=linux&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-linux_x86_64.deb?branch=develop&filter=successful)
 
 #### Windows
 
-[![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86_64.zip?branch=citest&filter=successful)
-[![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86.zip?branch=citest&filter=successful)
+[![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86_64.zip?branch=develop&filter=successful)
+[![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86.zip?branch=develop&filter=successful)
