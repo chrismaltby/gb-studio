@@ -86,7 +86,7 @@
   "FIELD_STOP_MUSIC": "Stops any music that was previously playing.",
   "FIELD_STOP_SCRIPT": "Stops current script from running.",
   "FIELD_LOAD_DATA": "Load game data from memory.",
-  "FIELD_SAVE_DATA": "Save current game data to memory.",
+  "FIELD_SAVE_DATA": "Save current game data to memory. Requires cartridge type with BATTERY.",
   "FIELD_CLEAR_DATA": "Clear all saved game data from memory.",
   "FIELD_IF_SAVED_DATA": "Run if player has saved a game.",
 
@@ -199,6 +199,7 @@
   "MENU_LEARN_MORE": "Learn More",
   "MENU_SPEECH": "Speech",
   "MENU_ABOUT": "About GB Studio",
+  "MENU_CART_TYPE": "Cartridge Type",
 
   "// 11": "Warnings -----------------------------------------------------",
 

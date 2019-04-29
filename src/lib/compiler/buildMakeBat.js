@@ -1,14 +1,14 @@
 import fs from "fs-extra";
 import Path from "path";
 
-const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt1 -Iinclude`;
-const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yt3 -Wl-yo32 -Wl-ya4`;
-
-export default async buildRoot => {
+export default async (buildRoot, { CART_TYPE }) => {
   let cmds = [];
   let buildFiles = [];
   let objFiles = [];
   let musicFiles = [];
+
+  const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
+  const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo64 -Wl-ya4`;
 
   const srcRoot = `${buildRoot}/src`;
   const dataRoot = `${buildRoot}/src/data`;

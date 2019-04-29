@@ -753,7 +753,7 @@ void Script_SaveData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC1;
+  ENABLE_RAM_MBC5;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = TRUE; // Flag to determine if data has been stored
@@ -791,7 +791,7 @@ void Script_SaveData_b()
     RAMPtr[i] = script_variables[i];
   }
 
-  DISABLE_RAM_MBC1;
+  DISABLE_RAM_MBC5;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -806,7 +806,7 @@ void Script_LoadData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC1;
+  ENABLE_RAM_MBC5;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   if (*RAMPtr == TRUE)
@@ -846,7 +846,7 @@ void Script_LoadData_b()
     script_action_complete = FALSE;
   }
 
-  DISABLE_RAM_MBC1;
+  DISABLE_RAM_MBC5;
 
   script_ptr += 1 + script_cmd_args_len;
 }
@@ -858,10 +858,10 @@ void Script_LoadData_b()
  */
 void Script_ClearData_b()
 {
-  ENABLE_RAM_MBC1;
+  ENABLE_RAM_MBC5;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = FALSE;
-  DISABLE_RAM_MBC1;
+  DISABLE_RAM_MBC5;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -879,11 +879,11 @@ void Script_IfSavedData_b()
 {
   UBYTE jump;
 
-  ENABLE_RAM_MBC1;
+  ENABLE_RAM_MBC5;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
-  DISABLE_RAM_MBC1;
+  DISABLE_RAM_MBC5;
 
   if (jump)
   { // True path, jump to position specified by ptr
@@ -909,14 +909,11 @@ void Script_IfActorDirection_b()
 {
 
   if (
-    (
-      actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
-      actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2
-    ) ||
-    (
-      actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
-      actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8
-    ))
+      (
+          actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
+          actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
+      (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
+       actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8))
   { // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
@@ -1008,20 +1005,28 @@ void Script_ActorMoveRel_b()
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = actors[script_actor].pos.x;
-  if (script_cmd_args[0] > 0) {
-    if (script_cmd_args[1]) {
+  if (script_cmd_args[0] > 0)
+  {
+    if (script_cmd_args[1])
+    {
       actor_move_dest.x = actor_move_dest.x - ((script_cmd_args[0] << 3) + 8);
-    } else {
+    }
+    else
+    {
       actor_move_dest.x = actor_move_dest.x + ((script_cmd_args[0] << 3) + 8);
     }
   }
 
   actor_move_dest.y = 0; // @wtf-but-needed
   actor_move_dest.y = actors[script_actor].pos.y;
-  if (script_cmd_args[2] > 0) {
-    if (script_cmd_args[3]) {
+  if (script_cmd_args[2] > 0)
+  {
+    if (script_cmd_args[3])
+    {
       actor_move_dest.y = actor_move_dest.y - ((script_cmd_args[2] << 3) + 8);
-    } else {
+    }
+    else
+    {
       actor_move_dest.y = actor_move_dest.y + ((script_cmd_args[2] << 3) + 8);
     }
   }
@@ -1040,18 +1045,26 @@ void Script_ActorMoveRel_b()
  */
 void Script_ActorSetPosRel_b()
 {
-  if (script_cmd_args[0] > 0) {
-    if (script_cmd_args[1]) {
+  if (script_cmd_args[0] > 0)
+  {
+    if (script_cmd_args[1])
+    {
       actors[script_actor].pos.x = actors[script_actor].pos.x - ((script_cmd_args[0] << 3) + 8);
-    } else {
+    }
+    else
+    {
       actors[script_actor].pos.x = actors[script_actor].pos.x + ((script_cmd_args[0] << 3) + 8);
     }
   }
 
-  if (script_cmd_args[2] > 0) {
-    if (script_cmd_args[3]) {
+  if (script_cmd_args[2] > 0)
+  {
+    if (script_cmd_args[3])
+    {
       actors[script_actor].pos.y = actors[script_actor].pos.y - ((script_cmd_args[2] << 3) + 8);
-    } else {
+    }
+    else
+    {
       actors[script_actor].pos.y = actors[script_actor].pos.y + ((script_cmd_args[2] << 3) + 8);
     }
   }

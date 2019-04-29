@@ -268,10 +268,10 @@ ipcMain.on("document-unmodified", () => {
 });
 
 ipcMain.on("project-loaded", (event, project) => {
-  menu.ref().getMenuItemById("showCollisions").checked =
-    project.settings.showCollisions;
-  menu.ref().getMenuItemById("showConnections").checked =
-    project.settings.showConnections;
+  const { showCollisions, showConnections, cartType = "1B" } = project.settings;
+  menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
+  menu.ref().getMenuItemById("showConnections").checked = showConnections;
+  menu.ref().getMenuItemById("cart" + cartType).checked = true;
 });
 
 menu.on("new", async () => {

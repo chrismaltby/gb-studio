@@ -12,6 +12,6 @@ void PopBank();
 
 #define PUSH_BANK(N) PushBank(N);
 #define POP_BANK PopBank();
-#define REFRESH_BANK SWITCH_ROM_MBC1(StackPeek(bank_stack))
+#define REFRESH_BANK SWITCH_ROM_MBC5(StackPeek(bank_stack))
 
 #endif

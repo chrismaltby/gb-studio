@@ -11,9 +11,19 @@ const filterLogs = str => {
   return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music/g, "");
 };
 
+const setROMTitle = async (filename, title) => {
+  const romData = await fs.readFile(filename);
+  for (let i = 0; i < 15; i++) {
+    const charCode = title.charCodeAt(i) < 256 ? title.charCodeAt(i) || 0 : 0;
+    romData[308 + i] = charCode;
+  }
+  await fs.writeFile(filename, romData);
+};
+
 const makeBuild = ({
   buildType = "rom",
   buildRoot = "/tmp",
+  data = {},
   progress = () => {},
   warnings = () => {}
 } = {}) => {
@@ -42,8 +52,9 @@ const makeBuild = ({
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
+    env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
 
-    const makeBat = await buildMakeBat(buildRoot);
+    const makeBat = await buildMakeBat(buildRoot, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
     const command = process.platform === "win32" ? "make.bat" : "make";
@@ -77,9 +88,11 @@ const makeBuild = ({
       });
     });
 
-    child.on("close", function(code) {
-      if (code == 0) resolve();
-      else reject(code);
+    child.on("close", async function(code) {
+      if (code == 0) {
+        await setROMTitle(`${buildRoot}/build/rom/game.gb`, data.name);
+        resolve();
+      } else reject(code);
     });
   });
 };
