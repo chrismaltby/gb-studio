@@ -89,7 +89,7 @@ void UIShowText(UWORD line)
   BANK_PTR bank_ptr;
   UWORD ptr;
   unsigned char value_string[6];
-  UBYTE i, j, k, value_len;
+  UBYTE i, j, k;
   UBYTE value, var_index;
 
   UIDrawDialogueFrame();
