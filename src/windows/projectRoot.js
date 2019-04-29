@@ -8,6 +8,7 @@ import watchProject from "../lib/project/watchProject";
 import "../lib/electron/handleFullScreen";
 import { ActionCreators } from "redux-undo";
 import AppContainerDnD from "../components/app/AppContainerDnD";
+import settings from "electron-settings";
 import consts from "../consts";
 
 const { systemPreferences } = require("electron").remote;
@@ -63,6 +64,10 @@ ipcRenderer.on("updateSetting", (event, setting, value) => {
   );
 });
 
+ipcRenderer.on("update-theme", (event, value) => {
+  updateMyAppTheme();
+});
+
 ipcRenderer.on("zoom", (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {
@@ -110,8 +115,12 @@ const render = () => {
   );
 };
 
-function updateMyAppTheme(darkMode) {
-  console.log("updateMyAppTheme", darkMode);
+function updateMyAppTheme() {
+  const darkMode =
+    settings.get("theme") === "dark" ||
+    (settings.get("theme") === undefined &&
+      systemPreferences.isDarkMode &&
+      systemPreferences.isDarkMode());
   const themeStyle = document.getElementById("theme");
   themeStyle.href = "../styles/" + (darkMode ? "theme-dark.css" : "theme.css");
 }
@@ -120,11 +129,11 @@ if (systemPreferences.subscribeNotification) {
   systemPreferences.subscribeNotification(
     "AppleInterfaceThemeChangedNotification",
     function theThemeHasChanged() {
-      updateMyAppTheme(systemPreferences.isDarkMode());
+      updateMyAppTheme();
     }
   );
-  updateMyAppTheme(systemPreferences.isDarkMode());
 }
+updateMyAppTheme();
 
 render();
 

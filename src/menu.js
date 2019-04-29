@@ -1,4 +1,5 @@
 import openAboutWindow from "about-window";
+import settings from "electron-settings";
 const { app, Menu } = require("electron");
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -146,6 +147,40 @@ app.on("ready", async () => {
           click: () => {
             notifyListeners("section", "build");
           }
+        },
+        { type: "separator" },
+        {
+          label: l10n("MENU_THEME"),
+          submenu: [
+            {
+              id: "themeDefault",
+              label: l10n("MENU_THEME_DEFAULT"),
+              type: "checkbox",
+              checked: settings.get("theme") === undefined,
+              click() {
+                notifyListeners("updateSetting", "theme", undefined);
+              }
+            },
+            { type: "separator" },
+            {
+              id: "themeLight",
+              label: l10n("MENU_THEME_LIGHT"),
+              type: "checkbox",
+              checked: settings.get("theme") === "light",
+              click() {
+                notifyListeners("updateSetting", "theme", "light");
+              }
+            },
+            {
+              id: "themeDark",
+              label: l10n("MENU_THEME_DARK"),
+              type: "checkbox",
+              checked: settings.get("theme") === "dark",
+              click() {
+                notifyListeners("updateSetting", "theme", "dark");
+              }
+            }
+          ]
         },
         { type: "separator" },
         {

@@ -5,6 +5,7 @@ import installExtension, {
 } from "electron-devtools-installer";
 import { enableLiveReload, addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
+import settings from "electron-settings";
 import menu from "./menu";
 import Path from "path";
 import l10n from "./lib/helpers/l10n";
@@ -310,7 +311,16 @@ menu.on("build", buildType => {
 });
 
 menu.on("updateSetting", (setting, value) => {
-  mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
+  settings.set(setting, value);
+  if (setting === "theme") {
+    menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
+    menu.ref().getMenuItemById("themeLight").checked = value === "light";
+    menu.ref().getMenuItemById("themeDark").checked = value === "dark";
+    splashWindow && splashWindow.webContents.send("update-theme", value);
+    mainWindow && mainWindow.webContents.send("update-theme", value);
+  } else {
+    mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
+  }
 });
 
 const newProject = async () => {
