@@ -73,6 +73,31 @@ body {
   animation: Rotating 2s linear infinite;
 }
 
+
+div::-webkit-scrollbar-track
+{
+	border-radius: 0px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar
+{
+  width: 17px;
+  height: 17px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar-thumb
+{
+	border-radius: 17px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+  background-color: rgba(180,180,180,0.3);
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+
+div::-webkit-scrollbar-corner { background: var(--main-bg-color); }
+
 @keyframes Rotating {
   from {
     transform: rotate(360deg);

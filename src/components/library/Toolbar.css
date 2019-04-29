@@ -31,7 +31,7 @@
 
 .Platform__win32 .Toolbar,
 .Platform__win32 .App--Blur .Toolbar {
-  background: #f0f0f0;
+  background: var(--toolbar-background-color);
 }
 
 .Toolbar__Spacer {
@@ -78,8 +78,8 @@
 .Platform__win32 .Toolbar__Button {
   box-shadow: none;
   border-radius: 2px;
-  background: #fff;
-  border-color: #ddd;
+  background: var(--toolbar-button-top-color);
+  border-color: var(--toolbar-bottom-color);
 }
 
 .Toolbar__Button div {

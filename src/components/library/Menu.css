@@ -44,7 +44,6 @@
 
 .Platform__win32 .Menu {
   border-radius: 0;
-  border: 1px solid #bababa;
+  border: 1px solid var(--toolbar-bottom-color);
   box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.3);
-  background-color: white;
 }

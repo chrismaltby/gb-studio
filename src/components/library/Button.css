@@ -91,12 +91,11 @@
 .Platform__win32 .Button {
   box-shadow: none;
   border-radius: 2px;
-  background: #fff;
-  border-color: #ddd;
+  background: var(--toolbar-button-top-color);
+  border-color: var(--toolbar-bottom-color);
 }
 
 .Platform__win32 .Button:hover {
-  background: #fafafa;
 }
 
 .Platform__win32 .Button--Transparent {
