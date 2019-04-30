@@ -196,6 +196,7 @@ UBYTE ScriptLastFnComplete()
 
   if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
   {
+    camera_settings = camera_settings & ~CAMERA_TRANSITION_FLAG;
     return TRUE;
   }
 
