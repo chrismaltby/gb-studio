@@ -239,10 +239,12 @@ ipcMain.on("open-project", async (event, arg) => {
 });
 
 ipcMain.on("check-full-screen", async (event, arg) => {
-  if (mainWindow && mainWindow.isFullScreen()) {
-    mainWindow.webContents.send("enter-full-screen");
-  } else {
-    mainWindow.webContents.send("leave-full-screen");
+  if (mainWindow) {
+    if (mainWindow.isFullScreen()) {
+      mainWindow.webContents.send("enter-full-screen");
+    } else {
+      mainWindow.webContents.send("leave-full-screen");
+    }
   }
 });
 
