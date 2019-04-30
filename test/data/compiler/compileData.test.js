@@ -271,7 +271,7 @@ test("should compile simple project into files object", async () => {
   expect(compiled).toBeInstanceOf(Object);
 });
 
-test("should walk all scene events to build list of used variables", () => {
+test("should walk all scene events to build list of used variables (including first 100 by default)", () => {
   const scenes = [
     {
       id: "1",
@@ -282,7 +282,7 @@ test("should walk all scene events to build list of used variables", () => {
             {
               id: "3",
               command: EVENT_IF_TRUE,
-              args: { variable: "9" },
+              args: { variable: "109" },
               true: [
                 {
                   id: "4",
@@ -298,7 +298,7 @@ test("should walk all scene events to build list of used variables", () => {
                 {
                   id: "6",
                   command: EVENT_SET_TRUE,
-                  args: { variable: "9" }
+                  args: { variable: "109" }
                 },
                 {
                   id: "7",
@@ -325,12 +325,12 @@ test("should walk all scene events to build list of used variables", () => {
             {
               id: "11",
               command: EVENT_SET_TRUE,
-              args: { variable: "10" }
+              args: { variable: "110" }
             },
             {
               id: "12",
               command: EVENT_SET_TRUE,
-              args: { variable: "9" }
+              args: { variable: "109" }
             },
             {
               id: "13",
@@ -342,7 +342,13 @@ test("should walk all scene events to build list of used variables", () => {
     }
   ];
   const precompiledVariables = precompileVariables(scenes);
-  expect(precompiledVariables).toEqual(["9", "10"]);
+  let output = [];
+  for (let i = 0; i < 100; i++) {
+    output.push(String(i));
+  }
+  output.push("109");
+  output.push("110");
+  expect(precompiledVariables).toEqual(output);
 });
 
 test("should walk all scene events to build list of strings", () => {

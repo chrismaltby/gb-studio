@@ -8,7 +8,6 @@ import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import menu from "./menu";
 import Path from "path";
-import l10n from "./lib/helpers/l10n";
 
 // Stop app launching during squirrel install
 if (require("electron-squirrel-startup")) {
@@ -350,6 +349,7 @@ const openProjectPicker = async () => {
 };
 
 const openProject = async projectPath => {
+  const l10n = require("./lib/helpers/l10n").default;
   const ext = Path.extname(projectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(

@@ -1,8 +1,8 @@
 import electron from "electron";
 import en from "../../lang/en";
 
-const app = electron.app || electron.remote.app;
-const locale = app.getLocale();
+const app = electron.app || (electron.remote && electron.remote.app);
+const locale = app ? app.getLocale() : "en";
 
 let languageOverrides = {};
 
