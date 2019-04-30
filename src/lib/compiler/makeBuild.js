@@ -7,6 +7,10 @@ import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
 
+const HEADER_TITLE = 0x134;
+const HEADER_CHECKSUM = 0x14d;
+const GLOBAL_CHECKSUM = 0x14e;
+
 const filterLogs = str => {
   return str.replace(/.*:\\.*>/g, "").replace(/.*:\\.*music/g, "");
 };
@@ -15,10 +19,34 @@ const setROMTitle = async (filename, title) => {
   const romData = await fs.readFile(filename);
   for (let i = 0; i < 15; i++) {
     const charCode = title.charCodeAt(i) < 256 ? title.charCodeAt(i) || 0 : 0;
-    romData[308 + i] = charCode;
+    romData[HEADER_TITLE + i] = charCode;
   }
-  await fs.writeFile(filename, romData);
+  await fs.writeFile(filename, await patchROM(romData));
 };
+
+const patchROM = romData => {
+  let checksum = 0;
+  let headerChecksum = 0;
+  const view = new DataView(romData.buffer);
+
+  // Recalculate header checksum
+  for (let i = HEADER_TITLE; i < HEADER_CHECKSUM; i++) {
+    headerChecksum = headerChecksum - view.getUint8(i) - 1;
+  }
+
+  view.setUint8(HEADER_CHECKSUM, headerChecksum);
+
+  // Recalculate cart checksum
+  for (let i = 0; i < romData.length; i++) {
+    if (i !== GLOBAL_CHECKSUM && i !== GLOBAL_CHECKSUM + 1) {
+      checksum = checksum + view.getUint8(i);
+    }
+  }
+
+  view.setUint16(GLOBAL_CHECKSUM, checksum, false);
+
+  return romData
+}
 
 const makeBuild = ({
   buildType = "rom",
@@ -90,7 +118,7 @@ const makeBuild = ({
 
     child.on("close", async function(code) {
       if (code == 0) {
-        await setROMTitle(`${buildRoot}/build/rom/game.gb`, data.name);
+        await setROMTitle(`${buildRoot}/build/rom/game.gb`, data.name.toUpperCase());
         resolve();
       } else reject(code);
     });
