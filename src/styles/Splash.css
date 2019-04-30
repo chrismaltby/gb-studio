@@ -33,17 +33,16 @@
   border-radius: 4px;
   background: linear-gradient(
     to bottom,
-    var(--toolbar-button-top-color) 0%,
-    var(--toolbar-button-bottom-color) 100%
+    var(--button-top-color) 0%,
+    var(--button-bottom-color) 100%
   );
-  border: 1px solid var(--toolbar-button-border-color);
-  border-top: 1px solid var(--toolbar-button-border-top-color);
-  box-shadow: 0px 1px var(--toolbar-button-shadow-color);
-  color: var(--toolbar-button-text-color);
+  border: 1px solid var(--button-border-color);
+  border-top: 1px solid var(--button-border-top-color);
+  color: var(--button-text-color);
   white-space: nowrap;
   padding: 0px 20px;
-  overflow: hidden;
-  -webkit-app-region: no-drag;
+  box-sizing: border-box;
+  font-weight: normal;
 }
 
 .Platform__win32 .Splash__OpenButton {
