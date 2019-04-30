@@ -1,0 +1,1004 @@
+{
+    "settings": {
+        "showCollisions": true,
+        "showConnections": true,
+        "startX": 2,
+        "startY": 2,
+        "startDirection": "left",
+        "zoom": 200,
+        "startSceneId": "0ee3526a-71ee-4276-8e32-e1e7b9274581",
+        "playerSpriteSheetId": "a09a6bba-2f12-4861-bff6-ff851306ce0b"
+    },
+    "_version": "1",
+    "name": "RelativePos",
+    "variables": [
+        {
+            "id": "0",
+            "name": "Last X"
+        },
+        {
+            "id": "1",
+            "name": "Last Y"
+        },
+        {
+            "id": "3",
+            "name": "Moved in Y"
+        },
+        {
+            "id": "2",
+            "name": "Moved in X"
+        }
+    ],
+    "backgrounds": [
+        {
+            "id": "0e264bb3-5372-4ede-87a6-afa16fce1b10",
+            "name": "32x",
+            "width": 32,
+            "height": 32,
+            "imageWidth": 256,
+            "imageHeight": 256,
+            "filename": "32x.png",
+            "_v": 1556624125135
+        },
+        {
+            "id": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "name": "placeholder",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "placeholder.png",
+            "_v": 1556624125135
+        },
+        {
+            "id": "74590a22-5d52-49ad-a7b3-3b84105ce94c",
+            "name": "placeholder2",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "placeholder2.png",
+            "_v": 1556624125135
+        },
+        {
+            "id": "b327374e-bc5f-48ca-a79e-8be9dba49c5d",
+            "name": "placeholder3",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "placeholder3.png",
+            "_v": 1556624125135
+        }
+    ],
+    "spriteSheets": [
+        {
+            "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+            "name": "actor_animated",
+            "numFrames": 6,
+            "type": "actor_animated",
+            "filename": "actor_animated.png",
+            "_v": 1556624125148
+        },
+        {
+            "id": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
+            "name": "actor",
+            "numFrames": 3,
+            "type": "actor",
+            "filename": "actor.png",
+            "_v": 1556624125148
+        },
+        {
+            "id": "a09a6bba-2f12-4861-bff6-ff851306ce0b",
+            "name": "Pointer",
+            "numFrames": 1,
+            "type": "static",
+            "filename": "Pointer.png",
+            "_v": 1556624125148
+        },
+        {
+            "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+            "name": "static",
+            "numFrames": 1,
+            "type": "static",
+            "filename": "static.png",
+            "_v": 1556624125151
+        }
+    ],
+    "scenes": [
+        {
+            "id": "1df060f1-ad98-4509-9ee0-153fcf3a9450",
+            "name": "Scene 1",
+            "backgroundId": "b327374e-bc5f-48ca-a79e-8be9dba49c5d",
+            "x": 431.5,
+            "y": 274,
+            "width": 20,
+            "height": 18,
+            "actors": [],
+            "triggers": [],
+            "collisions": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "script": [
+                {
+                    "id": "75247610-9a5f-4d13-8bc9-213e911fdf4a",
+                    "command": "EVENT_ACTOR_GET_POSITION",
+                    "args": {
+                        "actorId": "player",
+                        "vectorX": "0",
+                        "vectorY": "1"
+                    }
+                },
+                {
+                    "id": "3c79790f-d319-45d4-9dbd-02b628d819ca",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "     X=$00$ Y=$01$"
+                    }
+                },
+                {
+                    "id": "153539a8-8f28-41d4-908b-1632c9620325",
+                    "command": "EVENT_IF_TRUE",
+                    "args": {
+                        "variable": "34"
+                    },
+                    "true": [
+                        {
+                            "id": "35c4d8ad-27e5-4ecf-95b3-0ad44dc0d148",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "false": [
+                        {
+                            "id": "fc581c08-5cfa-40f7-9972-09b1e80bad4a",
+                            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                            "args": {
+                                "actorId": "player",
+                                "x": 5,
+                                "y": 5
+                            }
+                        },
+                        {
+                            "id": "f374048e-4081-40f4-8882-bc271cb3c73c",
+                            "command": "EVENT_ACTOR_GET_POSITION",
+                            "args": {
+                                "actorId": "player",
+                                "vectorX": "2",
+                                "vectorY": "3"
+                            }
+                        },
+                        {
+                            "id": "84aa77a1-9241-46a8-bcc4-2c7bcadc03c7",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "X$00$ Y$01$ x+5y+5\nX$02$ Y$03$"
+                            }
+                        },
+                        {
+                            "id": "87b802df-e35e-4aa1-a65c-0da628f25f46",
+                            "command": "EVENT_ACTOR_GET_POSITION",
+                            "args": {
+                                "actorId": "player",
+                                "vectorX": "0",
+                                "vectorY": "1"
+                            }
+                        },
+                        {
+                            "id": "5c1a5573-3306-401c-ba37-9e2a4dfe34a4",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "d7a0b681-fb5e-4ec4-ba8d-bf73f32a9603",
+                    "command": "EVENT_LOOP",
+                    "args": {},
+                    "true": [
+                        {
+                            "id": "c7c43540-e2e2-494c-a20a-1fa7ad7ef81e",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "43b8e5ec-3c77-4b81-939d-cf3a6629348f",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "316c9c54-91ea-4861-8f79-49580717a183",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -1,
+                                        "y": -1
+                                    }
+                                },
+                                {
+                                    "id": "ae4054fe-5c49-43a2-b6f2-0ab430d8e449",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "e3b9ce9e-ff05-40c6-9c37-3267cee7f00e",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-1y-1\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "d69b758f-f833-4fcc-9159-a10505d7e5d6",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "98605387-9285-4ef3-87fe-16d6314e465c",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "6f830c63-e490-4cc6-814a-9c7d32987748",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "dbaa740a-45a1-4a01-91ac-7b2ca122b800",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "21ac9776-088b-42b5-8fa2-715012dde3bf",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": 2,
+                                        "y": 0
+                                    }
+                                },
+                                {
+                                    "id": "448009e2-8797-4f5e-828b-87039c2ea34a",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "c2bc2e38-9d1e-496e-bd66-68b875cdbec4",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x+2y+0\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "dd4c07a1-f7b9-4e1c-899a-dd9efda168dd",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "80e54d8d-9800-492e-8831-1f68d8470b2c",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "e551f4eb-99d0-4b28-bd16-2df8496173d4",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "668bd221-5dd0-4882-88c1-76c454ac5710",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "05317696-874d-4410-bb52-b7ff80932994",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -2,
+                                        "y": -1
+                                    }
+                                },
+                                {
+                                    "id": "913f02b2-5124-4d0a-b0f4-7fe3d3692425",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "e2a8c5b7-c903-405e-b37c-46cb421580ec",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-2y-1\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "ccc34b5f-66e9-4cb1-8367-a387db7be4ad",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "d6b7b742-d838-491f-9c20-48616c9e4463",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "a9249a1b-8dfb-4f1c-ab0c-8212bbed1734",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "0dbb26d1-57ee-45ff-9754-01b6323602dd",
+                    "command": "EVENT_END"
+                }
+            ]
+        },
+        {
+            "id": "0ee3526a-71ee-4276-8e32-e1e7b9274581",
+            "name": "Scene 2",
+            "backgroundId": "0e264bb3-5372-4ede-87a6-afa16fce1b10",
+            "x": 629,
+            "y": 273,
+            "width": 32,
+            "height": 32,
+            "actors": [],
+            "triggers": [],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "26b5ad5c-f29c-4b1e-bb97-83f6f42df4bc",
+                    "command": "EVENT_ACTOR_GET_POSITION",
+                    "args": {
+                        "actorId": "player",
+                        "vectorX": "0",
+                        "vectorY": "1"
+                    }
+                },
+                {
+                    "id": "670fca65-d41f-4542-8416-455ad0626d1d",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "     X=$00$ Y=$01$"
+                    }
+                },
+                {
+                    "id": "e78dc341-29cd-45d9-b8c1-499336798e3b",
+                    "command": "EVENT_IF_TRUE",
+                    "args": {
+                        "variable": "34"
+                    },
+                    "true": [
+                        {
+                            "id": "e00f532a-b371-4869-8a76-c8e35da11eac",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "false": [
+                        {
+                            "id": "986bb5c9-219e-475e-87ab-f6d9a93e2624",
+                            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                            "args": {
+                                "actorId": "player",
+                                "x": 5,
+                                "y": 5
+                            }
+                        },
+                        {
+                            "id": "f9400fa6-a287-4fc8-9129-b760166efd9b",
+                            "command": "EVENT_ACTOR_GET_POSITION",
+                            "args": {
+                                "actorId": "player",
+                                "vectorX": "2",
+                                "vectorY": "3"
+                            }
+                        },
+                        {
+                            "id": "120be028-3edb-451d-b89c-3c6bd684be07",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "X$00$ Y$01$ x+5y+5\nX$02$ Y$03$"
+                            }
+                        },
+                        {
+                            "id": "90f1ad9c-162f-4f91-8912-fd978b8ebc96",
+                            "command": "EVENT_ACTOR_GET_POSITION",
+                            "args": {
+                                "actorId": "player",
+                                "vectorX": "0",
+                                "vectorY": "1"
+                            }
+                        },
+                        {
+                            "id": "776d8663-bb13-48af-8794-c983e954eac9",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "f625037a-65dd-40e7-8bff-38f0c268f74b",
+                    "command": "EVENT_LOOP",
+                    "args": {},
+                    "true": [
+                        {
+                            "id": "6ebfeffa-03df-4c5c-8810-29022ff95c8e",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "93daa49b-d23f-42ac-a0d9-8e44e4384a87",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "6be6e516-14a2-4317-9254-65412cb9a8e8",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -1,
+                                        "y": -1
+                                    }
+                                },
+                                {
+                                    "id": "a6f8696e-717f-443f-839e-6e84384ba362",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "7a30bccf-43d5-49a1-996e-a82caf857dde",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-1y-1\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "01bcc94d-2fc3-416a-8290-8e49bb8d33f0",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "e50431fc-9e84-4ea5-bd8f-8e3f5bf5a013",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "67379d4b-5553-46f6-9212-c7c4aac54737",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "a873afb0-7df8-498e-94b6-abd5d73727f1",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "95edd8ad-767a-4c27-ada2-f4541f1311de",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": 2,
+                                        "y": 0
+                                    }
+                                },
+                                {
+                                    "id": "b44c6d17-8ee9-40e2-8241-dc12bf7dad05",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "f79860d5-e8b6-4400-806d-a25dc2617023",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x+2y+0\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "75939623-6cf7-4230-b8a7-9234694def48",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "b3c0075f-7bc7-4f2b-a197-c64e6ac0e737",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "2f3ca05c-523f-4f43-a9c6-4938fcdc5303",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "f4071055-9292-4d5f-ad7c-f470176dc21e",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "89f55649-7e2d-4bfe-9bcd-c527ad374d6f",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -2,
+                                        "y": -1
+                                    }
+                                },
+                                {
+                                    "id": "80fb71f7-fd23-4300-a160-c89548985d89",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "a9aefe3b-c4f6-4c30-97ac-4f1bf01a6030",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-2y-1\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "e8aca883-f2a5-422c-a35f-66465ee05bd8",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "c0e4d2a7-871b-4476-a41b-d3912a2dfdcd",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "6b88190f-1f4b-417d-bc36-5ee0031502d3",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "57c74e5d-953e-46f6-a1fe-2bcfe2681853",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "d81c1503-1570-4c61-8be4-bfe1af284fa2",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": 0,
+                                        "y": 5
+                                    }
+                                },
+                                {
+                                    "id": "8639d3fe-b979-4114-b69d-2b7935bb188d",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "25e869b7-6e7a-4b3b-ad26-ea66944f1039",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x0y+5\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "81668376-fc46-4a3e-89d9-bcee6dff15fc",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "eb915e75-9a66-4a5b-ba98-c6e592d77fe0",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "e4d156f4-34b8-4936-9772-27271c6714ea",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "280ccf01-4f7f-4b4c-8aaf-c76c17b2e15c",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "045efd7d-09af-4f08-858f-97350114d6d4",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": 1,
+                                        "y": -5
+                                    }
+                                },
+                                {
+                                    "id": "6c7b42ee-1a79-482e-b9a9-2fa2a398fd92",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "7938fca7-bf6a-46b3-b510-2544adce2feb",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x+1y-5\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "9184b549-0351-47e1-9635-12332847e2b8",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "d372b25d-d1d4-44f1-b122-ef8bbab58762",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "41c61a10-8a9d-4d94-8882-9933f1e74675",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "0c176aac-17a8-4668-9d31-859434311087",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "987bf541-de94-4d8f-a838-f78f09d45e47",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -2,
+                                        "y": 1
+                                    }
+                                },
+                                {
+                                    "id": "444faac0-050d-4abe-b28c-c4e9985ea309",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "57621a9c-5fee-4c09-bd29-d4e2039abb3a",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-2y+1\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "b213ec9d-a12f-43e7-bd99-9f51b10cb4ca",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "17c86ad1-f41b-43d7-ac6a-d5c864ad04bd",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3c898c5a-ea78-4666-ade3-47f8e20ca337",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "64daeb04-ff38-49ec-9cff-7aff0dd09b44",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "c8a40614-f387-4dcf-8de1-226f90c6f4c9",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -5,
+                                        "y": 6
+                                    }
+                                },
+                                {
+                                    "id": "17ed7e63-fda9-4776-888c-9271687e468f",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "008d0c7c-08e0-424b-b180-bf4ec4303e0c",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-5y+6\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "c9e7b37c-3dca-40ab-882b-20d766bbcc5e",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "6025da48-0fde-4db8-b73a-2c0d702f41fa",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "7beba0d5-555e-429d-bbea-bfb27482ad95",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "93de976b-45b9-44cc-a975-8d97379124d7",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "dbbfe623-40e8-48ce-9bc8-3469545185cd",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -1,
+                                        "y": -9
+                                    }
+                                },
+                                {
+                                    "id": "80230bb1-9e5b-4830-b494-e4b1b2167fdd",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "2df3dcb4-05d6-48b4-8e68-6c65bb9111b3",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$ Y$01$ x-1y-9\nX$02$ Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "285e4ec7-66e1-462c-bc8e-a479ed4ce87a",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "543510b6-a266-4f06-a87e-e6ea154476d9",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "7327d0b4-e9e9-4502-97e4-7d86091d5ea3",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "34"
+                            },
+                            "true": [
+                                {
+                                    "id": "b025ff61-f0ce-475a-9132-ecdf50d7572b",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "2b1bf505-ef44-47ac-b5d0-21c80e273e73",
+                                    "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                                    "args": {
+                                        "actorId": "player",
+                                        "x": -16,
+                                        "y": 5
+                                    }
+                                },
+                                {
+                                    "id": "83769cc7-e116-4740-b4fd-1f2681d71c52",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "2",
+                                        "vectorY": "3"
+                                    }
+                                },
+                                {
+                                    "id": "9a874e4c-a7e5-48c8-a997-219f8e9e6849",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "X$00$Y$01$ x-16y+5\nX$02$Y$03$"
+                                    }
+                                },
+                                {
+                                    "id": "2a595542-d800-4ab7-a4cd-c831a98e9196",
+                                    "command": "EVENT_ACTOR_GET_POSITION",
+                                    "args": {
+                                        "actorId": "player",
+                                        "vectorX": "0",
+                                        "vectorY": "1"
+                                    }
+                                },
+                                {
+                                    "id": "f5493c36-7b9f-4cfb-aa47-f0eb9f4c100c",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "489c1ed0-3853-4f7a-8c15-1f2153bc36d4",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Looping script."
+                            }
+                        },
+                        {
+                            "id": "6a212a73-d357-4ffc-a41b-001a13c8dbb9",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "61cd90e1-40f8-4df2-be02-779b470e3863",
+                    "command": "EVENT_END"
+                }
+            ]
+        }
+    ],
+    "music": [
+        {
+            "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
+            "name": "template",
+            "filename": "template.mod",
+            "_v": 1556624125152
+        }
+    ],
+    "author": "RichardULZ"
+}
