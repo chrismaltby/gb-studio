@@ -228,6 +228,8 @@
   "SPLASH_PATH": "Path",
   "SPLASH_CREATE": "Create",
   "SPLASH_CREATING": "Creating",
+  "SPLASH_CLEAR_RECENT": "Clear Recent",
+  "SPLASH_NO_RECENT_PROJECTS": "No projects have been opened recently.",
 
   "// 14": "Script Review ------------------------------------------------",
 

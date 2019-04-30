@@ -12,6 +12,7 @@
   padding: 0px 10px;
   padding-left: 40px;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .Splash__Tab {
@@ -19,6 +20,37 @@
   padding: 20px 30px;
   position: relative;
   overflow: hidden;
+}
+
+.Splash__OpenButton {
+  padding: 8px 20px;
+  margin: -8px 0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to bottom,
+    var(--toolbar-button-top-color) 0%,
+    var(--toolbar-button-bottom-color) 100%
+  );
+  border: 1px solid var(--toolbar-button-border-color);
+  border-top: 1px solid var(--toolbar-button-border-top-color);
+  box-shadow: 0px 1px var(--toolbar-button-shadow-color);
+  color: var(--toolbar-button-text-color);
+  white-space: nowrap;
+  padding: 0px 20px;
+  overflow: hidden;
+  -webkit-app-region: no-drag;
+}
+
+.Platform__win32 .Splash__OpenButton {
+  box-shadow: none;
+  border-radius: 2px;
+  background: var(--toolbar-button-top-color);
+  border-color: var(--toolbar-bottom-color);
 }
 
 .Splash__Tab--Active {
@@ -140,4 +172,32 @@ input.Splash__InputButton {
 
 .Splash--Blur .Splash__Button {
   background-color: #ccc;
+}
+
+.Splash__RecentProjects {
+  overflow: auto;
+}
+
+.Splash__RecentProject {
+  padding: 10px;
+  margin: 0 -10px;
+}
+
+.Splash__RecentProject:hover {
+  background: rgba(180, 180, 180, 0.1);
+}
+
+.Splash__RecentProject__Name {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.Splash__RecentProject__Path {
+  opacity: 0.3;
+}
+
+.Splash__ClearRecent {
+  color: var(--highlight-color);
+  text-decoration: underline;
+  margin: 10px 0;
 }

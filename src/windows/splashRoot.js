@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import settings from "electron-settings";
 import { ipcRenderer } from "electron";
+import "../lib/electron/handleFullScreen";
 const { systemPreferences } = require("electron").remote;
 
 ipcRenderer.on("update-theme", event => {

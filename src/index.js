@@ -38,7 +38,7 @@ addBypassChecker(filePath => {
   );
 });
 
-const createSplash = async () => {
+const createSplash = async (forceNew = false) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 700,
@@ -55,7 +55,9 @@ const createSplash = async () => {
   });
 
   splashWindow.setMenu(null);
-  splashWindow.loadURL(`file://${__dirname}/windows/splash.html`);
+  splashWindow.loadURL(
+    `file://${__dirname}/windows/splash.html?new=${forceNew}`
+  );
 
   splashWindow.webContents.on("did-finish-load", function() {
     setTimeout(function() {
@@ -248,6 +250,19 @@ ipcMain.on("open-project-picker", async (event, arg) => {
   openProjectPicker();
 });
 
+ipcMain.on("request-recent-projects", async event => {
+  splashWindow &&
+    splashWindow.webContents.send(
+      "recent-projects",
+      settings.get("recentProjects")
+    );
+});
+
+ipcMain.on("clear-recent-projects", async event => {
+  settings.set("recentProjects", []);
+  app.clearRecentDocuments();
+});
+
 ipcMain.on("open-help", async (event, helpPage) => {
   openHelp(helpPage);
 });
@@ -324,9 +339,10 @@ menu.on("updateSetting", (setting, value) => {
 
 const newProject = async () => {
   if (splashWindow) {
-    splashWindow.reload();
+    splashWindow.close();
+    await createSplash(true);
   } else {
-    await createSplash();
+    await createSplash(true);
     if (mainWindow) {
       mainWindow.close();
     }
@@ -358,6 +374,18 @@ const openProject = async projectPath => {
     );
     return;
   }
+
+  // Store recent projects
+  settings.set(
+    "recentProjects",
+    []
+      .concat(settings.get("recentProjects") || [], projectPath)
+      .reverse()
+      .filter((filename, index, arr) => arr.indexOf(filename) === index) // Only unique
+      .reverse()
+      .slice(-10)
+  );
+  app.addRecentDocument(projectPath);
 
   let oldMainWindow = mainWindow;
   await createWindow(projectPath);

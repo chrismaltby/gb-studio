@@ -33,7 +33,8 @@ class Splash extends Component {
       path: getLastUsedPath(),
       nameError: null,
       pathError: null,
-      creating: false
+      creating: false,
+      recentProjects: []
     };
   }
 
@@ -41,6 +42,18 @@ class Splash extends Component {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("keydown", this.onKeyDown);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceNew = urlParams.get("new");
+    ipcRenderer.send("request-recent-projects");
+    ipcRenderer.once("recent-projects", (event, projectPaths) => {
+      if (projectPaths && projectPaths.length > 0) {
+        this.setState({
+          tab: forceNew === "true" ? "new" : "recent",
+          recentProjects: projectPaths.reverse()
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -93,6 +106,17 @@ class Splash extends Component {
     ipcRenderer.send("open-project-picker");
   };
 
+  openRecent = projectPath => e => {
+    ipcRenderer.send("open-project", { projectPath });
+  };
+
+  clearRecent = e => {
+    this.setState({
+      recentProjects: []
+    });
+    ipcRenderer.send("clear-recent-projects");
+  };
+
   onSubmit = async e => {
     const { name, target, path } = this.state;
 
@@ -137,7 +161,8 @@ class Splash extends Component {
       path,
       nameError,
       pathError,
-      creating
+      creating,
+      recentProjects
     } = this.state;
     return (
       <div className={cx("Splash", { "Splash--Blur": blur })}>
@@ -150,8 +175,17 @@ class Splash extends Component {
           >
             {l10n("SPLASH_NEW")}
           </div>
+          <div
+            className={cx("Splash__Tab", {
+              "Splash__Tab--Active": tab === "recent"
+            })}
+            onClick={this.onSetTab("recent")}
+          >
+            {l10n("SPLASH_RECENT")}
+          </div>
+          <div className="Splash__FlexSpacer" />
           <div className="Splash__Tab" onClick={this.onOpen}>
-            {l10n("SPLASH_OPEN")}
+            <div className="Splash__OpenButton">{l10n("SPLASH_OPEN")}</div>
           </div>
         </div>
 
@@ -203,7 +237,34 @@ class Splash extends Component {
           </div>
         ) : (
           tab === "recent" && (
-            <div className="Splash__Content">Not implemented</div>
+            <div className="Splash__RecentProjects">
+              <div className="Splash__Content">
+                {recentProjects.map((projectPath, index) => (
+                  <div
+                    key={index}
+                    className="Splash__RecentProject"
+                    onClick={this.openRecent(projectPath)}
+                  >
+                    <div className="Splash__RecentProject__Name">
+                      {Path.basename(projectPath)}
+                    </div>
+                    <div className="Splash__RecentProject__Path">
+                      {Path.dirname(projectPath)}
+                    </div>
+                  </div>
+                ))}
+                {recentProjects.length > 0 ? (
+                  <div
+                    className="Splash__ClearRecent"
+                    onClick={this.clearRecent}
+                  >
+                    {l10n("SPLASH_CLEAR_RECENT")}
+                  </div>
+                ) : (
+                  <div>{l10n("SPLASH_NO_RECENT_PROJECTS")}</div>
+                )}
+              </div>
+            </div>
           )
         )}
       </div>
