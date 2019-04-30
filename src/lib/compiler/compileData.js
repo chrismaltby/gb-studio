@@ -177,8 +177,6 @@ const compile = async (
     return bankNum >= bankOffset ? `&bank_${bankNum}_data` : 0;
   });
 
-  // console.log({ bankNums, bankDataPtrs });
-
   const fixEmptyDataPtrs = ptrs => {
     if (ptrs.length === 0) {
       return [{ bank: 0, offset: 0 }];
@@ -198,16 +196,12 @@ const compile = async (
   const bankData = banked.exportCData(bankOffset);
   const nextAvailableBank = bankData.length + bankOffset + 1;
 
-  // console.log("NEXT AVAILABLE BANK = " + nextAvailableBank);
-
   const music = precompiled.usedMusic.map((track, index) => {
     return {
       ...track,
       bank: nextAvailableBank + (index % NUM_MUSIC_BANKS)
     };
   });
-
-  console.log({ music });
 
   let playerSpriteIndex = precompiled.usedSprites.findIndex(
     s => s.id === projectData.settings.playerSpriteSheetId
