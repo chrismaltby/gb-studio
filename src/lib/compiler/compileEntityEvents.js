@@ -462,7 +462,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION_RELATIVE);
       output.push(Math.abs(input[i].args.x));
       output.push(input[i].args.x < 0 ? 1 : 0);
-      output.push(Math.abs(input[i].args.x));
+      output.push(Math.abs(input[i].args.y));
       output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_ACTOR_MOVE_TO_VALUE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
@@ -497,7 +497,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_MOVE_RELATIVE);
       output.push(Math.abs(input[i].args.x));
       output.push(input[i].args.x < 0 ? 1 : 0);
-      output.push(Math.abs(input[i].args.x));
+      output.push(Math.abs(input[i].args.y));
       output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_WAIT) {
       let seconds =

@@ -1005,29 +1005,29 @@ void Script_ActorMoveRel_b()
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = actors[script_actor].pos.x;
-  if (script_cmd_args[0] > 0)
+  if (script_cmd_args[0] != 0)
   {
-    if (script_cmd_args[1])
+    if (script_cmd_args[1] == 1)
     {
-      actor_move_dest.x = actor_move_dest.x - ((script_cmd_args[0] << 3) + 8);
+      actor_move_dest.x = actor_move_dest.x - (script_cmd_args[0] << 3);
     }
     else
     {
-      actor_move_dest.x = actor_move_dest.x + ((script_cmd_args[0] << 3) + 8);
+      actor_move_dest.x = actor_move_dest.x + (script_cmd_args[0] << 3);
     }
   }
 
   actor_move_dest.y = 0; // @wtf-but-needed
   actor_move_dest.y = actors[script_actor].pos.y;
-  if (script_cmd_args[2] > 0)
+  if (script_cmd_args[2] != 0)
   {
-    if (script_cmd_args[3])
+    if (script_cmd_args[3] == 1)
     {
-      actor_move_dest.y = actor_move_dest.y - ((script_cmd_args[2] << 3) + 8);
+      actor_move_dest.y = actor_move_dest.y - (script_cmd_args[2] << 3);
     }
     else
     {
-      actor_move_dest.y = actor_move_dest.y + ((script_cmd_args[2] << 3) + 8);
+      actor_move_dest.y = actor_move_dest.y + (script_cmd_args[2] << 3);
     }
   }
 
@@ -1045,27 +1045,27 @@ void Script_ActorMoveRel_b()
  */
 void Script_ActorSetPosRel_b()
 {
-  if (script_cmd_args[0] > 0)
+  if (script_cmd_args[0] != 0)
   {
     if (script_cmd_args[1])
     {
-      actors[script_actor].pos.x = actors[script_actor].pos.x - ((script_cmd_args[0] << 3) + 8);
+      actors[script_actor].pos.x = actors[script_actor].pos.x - (script_cmd_args[0] << 3);
     }
     else
     {
-      actors[script_actor].pos.x = actors[script_actor].pos.x + ((script_cmd_args[0] << 3) + 8);
+      actors[script_actor].pos.x = actors[script_actor].pos.x + (script_cmd_args[0] << 3);
     }
   }
 
-  if (script_cmd_args[2] > 0)
+  if (script_cmd_args[2] != 0)
   {
     if (script_cmd_args[3])
     {
-      actors[script_actor].pos.y = actors[script_actor].pos.y - ((script_cmd_args[2] << 3) + 8);
+      actors[script_actor].pos.y = actors[script_actor].pos.y - (script_cmd_args[2] << 3);
     }
     else
     {
-      actors[script_actor].pos.y = actors[script_actor].pos.y + ((script_cmd_args[2] << 3) + 8);
+      actors[script_actor].pos.y = actors[script_actor].pos.y + (script_cmd_args[2] << 3);
     }
   }
 
