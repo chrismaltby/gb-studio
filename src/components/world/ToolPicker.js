@@ -98,19 +98,19 @@ class ToolPicker extends Component {
             >
               <MenuItem
                 onClick={this.setTool("actors")}
-                title={`${l10n("TOOL_ACTOR_LABEL")} (a)`}
+                title={`${l10n("TOOL_ADD_ACTOR_LABEL")} (a)`}
               >
                 Actor
               </MenuItem>
               <MenuItem
                 onClick={this.setTool("triggers")}
-                title={`${l10n("TOOL_TRIGGER_LABEL")} (t)`}
+                title={`${l10n("TOOL_ADD_TRIGGER_LABEL")} (t)`}
               >
                 Trigger
               </MenuItem>
               <MenuItem
                 onClick={this.setTool("scene")}
-                title={`${l10n("TOOL_SCENE_LABEL")} (s)`}
+                title={`${l10n("TOOL_ADD_SCENE_LABEL")} (s)`}
               >
                 Scene
               </MenuItem>
