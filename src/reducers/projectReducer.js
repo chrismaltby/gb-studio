@@ -54,10 +54,40 @@ const sortRecent = (a, b) => {
   return 0;
 };
 
+const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
+  const backgroundLookup = backgrounds.reduce((memo, background) => {
+    memo[background.id] = background;
+    return memo;
+  }, {});
+  return scene => {
+    // Determine how large the collisions array should be based on the size of the
+    // image, if image size has changed then clear the collisions array in scene
+    const background = backgroundLookup[scene.backgroundId];
+    let collisionsSize = Math.ceil((background.width * background.height) / 8);
+    if (
+      !background ||
+      !scene.collisions ||
+      scene.collisions.length != collisionsSize
+    ) {
+      return {
+        ...scene,
+        collisions: []
+      };
+    }
+    return scene;
+  };
+};
+
 export default function project(state = initialState.project, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS:
-      return deepmerge(state, action.data);
+      const newState = deepmerge(state, action.data);
+      return {
+        ...newState,
+        scenes: newState.scenes.map(
+          sceneClearCollisionsIfDimensionsChanged(newState.backgrounds)
+        )
+      };
     case SPRITE_REMOVE:
       return {
         ...state,
@@ -96,6 +126,9 @@ export default function project(state = initialState.project, action) {
       );
       return {
         ...state,
+        scenes: state.scenes.map(
+          sceneClearCollisionsIfDimensionsChanged(state.backgrounds)
+        ),
         backgrounds: []
           .concat(
             state.backgrounds.filter(background => {
@@ -181,6 +214,8 @@ export default function project(state = initialState.project, action) {
           let newCollisions;
           let newActors;
           let newTriggers;
+          let newBackground;
+
           if (action.values.backgroundId) {
             const otherScene = state.scenes.find(otherScene => {
               return otherScene.backgroundId === action.values.backgroundId;
@@ -220,6 +255,8 @@ export default function project(state = initialState.project, action) {
                 height: Math.min(trigger.height, background.height - y)
               };
             });
+
+            newBackground = background;
           }
 
           return Object.assign(
@@ -229,7 +266,9 @@ export default function project(state = initialState.project, action) {
             action.values.backgroundId && {
               collisions: newCollisions || [],
               actors: newActors,
-              triggers: newTriggers
+              triggers: newTriggers,
+              width: newBackground.width,
+              height: newBackground.height
             }
           );
         })
