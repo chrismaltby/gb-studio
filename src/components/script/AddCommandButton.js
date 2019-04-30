@@ -8,7 +8,7 @@ import {
 } from "../../lib/compiler/eventTypes";
 import Highlighter from "react-highlight-words";
 import l10n from "../../lib/helpers/l10n";
-import trim2lines from "../../lib/helpers/trim2lines";
+import trimlines from "../../lib/helpers/trimlines";
 
 const EventNames = Object.keys(EventFields).reduce((memo, key) => {
   memo[key] = l10n(key);
@@ -65,7 +65,7 @@ class AddCommandButton extends Component {
 
   onAddText = () => {
     clearTimeout(this.timeout);
-    this.props.onAdd(EVENT_TEXT, { text: trim2lines(this.state.query) });
+    this.props.onAdd(EVENT_TEXT, { text: trimlines(this.state.query) });
     this.setState({
       open: false,
       query: "",

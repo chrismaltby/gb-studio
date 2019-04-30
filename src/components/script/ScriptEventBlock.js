@@ -15,6 +15,7 @@ import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
+import { textNumLines } from "../../lib/helpers/trimlines";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
@@ -42,7 +43,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             {field.type === "textarea" ? (
               <textarea
                 value={value[field.key]}
-                rows={field.rows}
+                rows={textNumLines(value[field.key])}
                 placeholder={field.placeholder}
                 onChange={onChangeField(field.key, "text", field.updateFn)}
               />

@@ -10,6 +10,7 @@ import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot } from "../../consts";
 import { combineMultipleChoiceText } from "./helpers";
+import { textNumLines } from "../helpers/trimlines";
 
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
@@ -62,6 +63,8 @@ const compile = async (
   // Strings
   const stringPtrs = precompiled.strings.map(string => {
     const ascii = [];
+    // Number of lines in string
+    ascii.push(textNumLines(string));
     for (let i = 0; i < string.length; i++) {
       const char = string.charCodeAt(i);
       if (char < 256) {

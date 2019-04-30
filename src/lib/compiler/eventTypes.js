@@ -1,4 +1,4 @@
-import trim2lines from "../helpers/trim2lines";
+import trimlines from "../helpers/trimlines";
 import l10n from "../helpers/l10n";
 
 export const EVENT_END = "EVENT_END";
@@ -343,7 +343,7 @@ export const EventFields = {
       rows: 2,
       maxPerLine: 18,
       placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
-      updateFn: trim2lines,
+      updateFn: trimlines,
       defaultValue: ""
     }
   ],

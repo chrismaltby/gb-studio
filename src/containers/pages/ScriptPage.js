@@ -4,14 +4,14 @@ import * as actions from "../../actions";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import ScriptReviewLine from "../../components/script/ScriptReviewLine";
-import trim2lines from "../../lib/helpers/trim2lines";
+import trimlines from "../../lib/helpers/trimlines";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => e => {
-    const value = trim2lines(e.currentTarget.value);
+    const value = trimlines(e.currentTarget.value);
     const newData = patchEvents(currentScript, id, {
       text: value
     });

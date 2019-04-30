@@ -8,7 +8,7 @@
 void UIInit_b();
 void UIUpdate_b();
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
-void UIDrawDialogueFrame_b();
+void UIDrawDialogueFrame_b(UBYTE h);
 void UIDrawTextBufferChar();
 void UISetColor_b(UWORD image_index);
 
@@ -28,8 +28,8 @@ UBYTE choice_enabled = 0;
 UBYTE choice_index = 0;
 UWORD choice_flag;
 
-const unsigned char ui_cursor_tiles[1] = {0xDB};
-const unsigned char ui_bg_tiles[1] = {0xD4};
+const unsigned char ui_cursor_tiles[1] = {0xCB};
+const unsigned char ui_bg_tiles[1] = {0xC4};
 
 unsigned char text_lines[80] = "";
 unsigned char tmp_text_lines[80] = "";
@@ -55,10 +55,10 @@ void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
   POP_BANK;
 }
 
-void UIDrawDialogueFrame()
+void UIDrawDialogueFrame(UBYTE h)
 {
   PUSH_BANK(ui_bank);
-  UIDrawDialogueFrame_b();
+  UIDrawDialogueFrame_b(h);
   POP_BANK;
 }
 
@@ -89,10 +89,9 @@ void UIShowText(UWORD line)
   BANK_PTR bank_ptr;
   UWORD ptr;
   unsigned char value_string[6];
-  UBYTE i, j, k;
+  UBYTE i, j, k, height;
   UBYTE value, var_index;
 
-  UIDrawDialogueFrame();
   strcpy(tmp_text_lines, "");
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &string_bank_ptrs[line]);
@@ -102,7 +101,10 @@ void UIShowText(UWORD line)
   strcat(tmp_text_lines, ptr);
   POP_BANK;
 
-  for (i = 0, k = 0; i < 80; i++)
+  height = tmp_text_lines[0];
+  UIDrawDialogueFrame(height);
+
+  for (i = 1, k = 0; i < 81; i++)
   {
     // Replace variable references in text
     if (tmp_text_lines[i] == '$' && tmp_text_lines[i + 3] == '$')
@@ -143,7 +145,7 @@ void UIShowText(UWORD line)
   }
 
   UISetPos(0, MENU_CLOSED_Y);
-  UIMoveTo(0, MENU_OPEN_Y, 1);
+  UIMoveTo(0, MENU_CLOSED_Y - ((height + 2) << 3), 1);
   text_drawn = FALSE;
   text_x = 0;
   text_y = 0;

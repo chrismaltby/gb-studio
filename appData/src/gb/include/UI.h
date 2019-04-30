@@ -8,7 +8,7 @@
 #define AP_SYMBOL "#"
 #define MENU_OPEN_Y 112
 #define MENU_CLOSED_Y (MAXWNDPOSY + 1)
-#define TEXT_BUFFER_START 0xDC
+#define TEXT_BUFFER_START 0xCC
 
 extern UINT8 ui_bank;
 extern unsigned char text_lines[80];
@@ -23,7 +23,7 @@ extern UBYTE win_speed;
 void UIInit();
 void UIUpdate();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
-void UIDrawDialogueFrame();
+void UIDrawDialogueFrame(UBYTE h);
 void UIDrawText(char *str, UBYTE x, UBYTE y);
 void UIDrawTextBkg(char *str, UBYTE x, UBYTE y);
 void UIShowText(UWORD line);
