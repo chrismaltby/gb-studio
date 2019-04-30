@@ -63,7 +63,9 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
     // Determine how large the collisions array should be based on the size of the
     // image, if image size has changed then clear the collisions array in scene
     const background = backgroundLookup[scene.backgroundId];
-    let collisionsSize = Math.ceil((background.width * background.height) / 8);
+    let collisionsSize = background
+      ? Math.ceil((background.width * background.height) / 8)
+      : 0;
     if (
       !background ||
       !scene.collisions ||
