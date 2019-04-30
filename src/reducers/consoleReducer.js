@@ -12,13 +12,15 @@ export default function console(state = initialState.console, action) {
     case CMD_CLEAR:
       return {
         ...state,
-        output: []
+        output: [],
+        warnings: []
       };
     case CMD_START:
       return {
         ...state,
         status: "running",
-        output: []
+        output: [],
+        warnings: []
       };
     case CMD_STD_OUT:
       return {
@@ -32,6 +34,10 @@ export default function console(state = initialState.console, action) {
       return {
         ...state,
         output: [].concat(state.output.slice(-2000), {
+          type: "err",
+          text: action.text
+        }),
+        warnings: [].concat(state.warnings, {
           type: "err",
           text: action.text
         })

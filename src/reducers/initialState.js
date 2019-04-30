@@ -38,7 +38,8 @@ export default {
   },
   console: {
     status: "idle",
-    output: []
+    output: [],
+    warnings: []
   },
   clipboard: {
     event: null

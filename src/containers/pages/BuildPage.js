@@ -41,7 +41,7 @@ class BuildPage extends Component {
   };
 
   render() {
-    const { output } = this.props;
+    const { output, warnings, status } = this.props;
     return (
       <div
         style={{
@@ -70,6 +70,17 @@ class BuildPage extends Component {
               {out.text}
             </div>
           ))}
+          {status === "complete" && warnings.length > 0 && (
+            <div>
+              <br />
+              Warnings:
+              {warnings.map((out, index) => (
+                <div key={index} style={{ color: "orange" }}>
+                  - {out.text}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <PageContent style={{ padding: 20, flexGrow: 0 }}>
           <ButtonToolbar>
@@ -94,7 +105,8 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     status: state.console.status,
-    output: state.console.output
+    output: state.console.output,
+    warnings: state.console.warnings
   };
 }
 

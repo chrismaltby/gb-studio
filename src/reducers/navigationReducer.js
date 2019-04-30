@@ -6,7 +6,8 @@ import {
   SELECT_TRIGGER,
   ADD_ACTOR,
   ADD_TRIGGER,
-  SET_STATUS
+  SET_STATUS,
+  CMD_STD_ERR
 } from "../actions/actionTypes";
 
 export default function tools(state = initialState.navigation, action) {
@@ -34,6 +35,11 @@ export default function tools(state = initialState.navigation, action) {
       return {
         ...state,
         status: action.status
+      };
+    case CMD_STD_ERR:
+      return {
+        ...state,
+        section: "build"
       };
     default:
       return state;
