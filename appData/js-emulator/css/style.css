@@ -249,11 +249,13 @@ body {
 
 @media only screen and (max-device-width: 320px) and (orientation: portrait) {
   #controller_dpad {
-    left: 10px;
+    left: -5px;
+    bottom: -5px;
   }
 
   #controller_a {
     right: 5px;
+    bottom: 95px;
   }
 
   #controller_b {
@@ -269,7 +271,7 @@ body {
   }
 }
 
-@media only screen and (max-width: 500px) and (max-height: 500px) {
+@media only screen and (max-width: 500px) and (max-height: 400px) {
   #controller {
     display: none;
   }
