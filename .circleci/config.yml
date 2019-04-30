@@ -127,6 +127,14 @@ workflows:
   deployment:
     jobs:
       - checkout
+      - test:
+          requires:
+            - checkout
+          filters:
+            branches:
+              ignore:
+                - develop
+                - master            
       - "make:mac":
           requires:
             - checkout
