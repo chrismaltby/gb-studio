@@ -214,6 +214,8 @@
   "MENU_PASTE_SCRIPT_BEFORE": "Paste Script Before",
   "MENU_PASTE_SCRIPT_AFTER": "Paste Script After",
   "MENU_DELETE_SCRIPT": "Delete Script",
+  "EVENT_COLLISIONS_ENABLE": "Collisions Enable",
+  "EVENT_COLLISIONS_DISABLE": "Collisions Disable",
 
   "// 11": "Warnings -----------------------------------------------------",
 

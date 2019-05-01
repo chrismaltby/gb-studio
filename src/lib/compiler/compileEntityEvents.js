@@ -63,7 +63,9 @@ import {
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_COLLISIONS_ENABLE,
+  EVENT_COLLISIONS_DISABLE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -156,7 +158,8 @@ const CMD_LOOKUP = {
   MATH_MOD_VALUE: 0x3e,
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
-  LOAD_VECTORS: 0x41
+  LOAD_VECTORS: 0x41,
+  COLLISIONS_TOGGLE: 0x42
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -182,6 +185,7 @@ const getSpriteIndex = (spriteId, sprites) => {
 const getVariableIndex = (variable, variables) => {
   const variableIndex = variables.indexOf(String(variable));
   if (variableIndex === -1) {
+    debugger
     throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
     return 0;
   }
@@ -611,6 +615,12 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
+    } else if (command === EVENT_COLLISIONS_ENABLE) {
+      output.push(CMD_LOOKUP.COLLISIONS_TOGGLE);
+      output.push(1);
+    } else if (command === EVENT_COLLISIONS_DISABLE) {
+      output.push(CMD_LOOKUP.COLLISIONS_TOGGLE);
+      output.push(0);
     }
 
     for (var oi = 0; oi < output.length; oi++) {

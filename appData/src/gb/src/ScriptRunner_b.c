@@ -17,6 +17,7 @@
 UINT8 scriptrunner_bank = 4;
 
 UBYTE *RAMPtr;
+extern UBYTE collisions_enabled;
 
 /*
  * Command: Noop
@@ -1315,6 +1316,20 @@ void Script_LoadVectors_b()
 {
   script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: CollisionsToggle
+ * ----------------------------
+ * Enable or disable Collisions
+ *
+*   arg0: Enable or disable flag
+ */
+void Script_CollisionsToggle_b()
+{
+  collisions_enabled = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

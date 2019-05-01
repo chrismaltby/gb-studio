@@ -9,6 +9,8 @@ export const EVENT_WAIT = "EVENT_WAIT";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
+export const EVENT_COLLISIONS_ENABLE = "EVENT_COLLISIONS_ENABLE";
+export const EVENT_COLLISIONS_DISABLE = "EVENT_COLLISIONS_DISABLE";
 
 // Data
 export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
@@ -874,5 +876,7 @@ export const EventFields = {
       label: "",
       defaultValue: "LAST_VARIABLE"
     }
-  ]
+  ],
+  [EVENT_COLLISIONS_ENABLE]: [],
+  [EVENT_COLLISIONS_DISABLE]: []
 };

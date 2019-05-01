@@ -31,6 +31,7 @@ BANK_PTR events_ptr;
 BANK_PTR bank_ptr;
 // End of Scene Init Globals
 
+UBYTE collisions_enabled = TRUE;
 UBYTE scene_num_actors;
 UBYTE scene_num_triggers;
 UBYTE emote_type = 1;
@@ -231,6 +232,7 @@ void SceneInit_b8()
   {
     scene_col_tiles[i] = ReadBankedUBYTE(col_bank, scene_load_col_ptr);
     scene_load_col_ptr++;
+    collisions_enabled = TRUE;
   }
 }
 
@@ -572,28 +574,30 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
-  // Check for npc collisions
-  npc = SceneNpcAt_b(i, next_tx, next_ty);
-  if (npc != scene_num_actors)
-  {
-    actors[i].moving = FALSE;
-    return;
-  }
+  if (collisions_enabled) {
+    // Check for npc collisions
+    npc = SceneNpcAt_b(i, next_tx, next_ty);
+    if (npc != scene_num_actors)
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on left tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
-  }
+    // Check collisions on left tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on right tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
+    // Check collisions on right tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
   }
 
   // LOG("UPDATE ACTOR MOVEMENT %u\n", i);
