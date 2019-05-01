@@ -175,16 +175,16 @@ export default function editor(state = initialState.editor, action) {
           ...state
         },
         action.section === "world" && {
-          zoom: Math.min(800, state.zoom * 2)
+          zoom: Math.min(800, action.delta ? state.zoom + -action.delta : state.zoom * 2)
         },
         action.section === "sprites" && {
-          zoomSprite: Math.min(800, state.zoomSprite * 2)
+          zoomSprite: Math.min(800, action.delta ? state.zoomSprite + -action.delta : state.zoom * 2)
         },
         action.section === "backgrounds" && {
-          zoomImage: Math.min(800, state.zoomImage * 2)
+          zoomImage: Math.min(800, action.delta ? state.zoomImage + -action.delta : state.zoom * 2)
         },
         action.section === "ui" && {
-          zoomUI: Math.min(800, state.zoomUI * 2)
+          zoomUI: Math.min(800, action.delta ? state.zoomUI + -action.delta : state.zoom * 2)
         }
       );
     case ZOOM_OUT:
@@ -193,16 +193,16 @@ export default function editor(state = initialState.editor, action) {
           ...state
         },
         action.section === "world" && {
-          zoom: Math.max(25, state.zoom / 2)
+          zoom: Math.max(25, action.delta ? state.zoom - action.delta : state.zoom / 2)
         },
         action.section === "sprites" && {
-          zoomSprite: Math.max(25, state.zoomSprite / 2)
+          zoomSprite: Math.max(25, action.delta ? state.zoomSprite - action.delta : state.zoomSprite / 2)
         },
         action.section === "backgrounds" && {
-          zoomImage: Math.max(25, state.zoomImage / 2)
+          zoomImage: Math.max(25, action.delta ? state.zoomImage - action.delta : state.zoomImage / 2)
         },
         action.section === "ui" && {
-          zoomUI: Math.max(25, state.zoomUI / 2)
+          zoomUI: Math.max(25, action.delta ? state.zoomUI - action.delta : state.zoomImage / 2)
         }
       );
     case ZOOM_RESET:

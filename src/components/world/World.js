@@ -4,6 +4,7 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
+import { remote, BrowserWindow } from "electron";
 
 const MIDDLE_MOUSE = 2;
 
@@ -25,6 +26,14 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
+    window.addEventListener("mousewheel", event => {
+      if (event.ctrlKey) {
+        const currentWindow = remote.getCurrentWindow();
+        if (currentWindow) {
+          currentWindow.webContents.send("zoom", event.wheelDelta > 0 ? "in" : "out", event.deltaY);
+        }
+      }
+    });
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
