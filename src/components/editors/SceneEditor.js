@@ -66,6 +66,16 @@ class SceneEditor extends Component {
               onChange={this.onEdit("backgroundId")}
             />
           </FormField>
+
+          <FormField>
+            <label htmlFor="sceneNotes">{l10n("FIELD_NOTES")}</label>
+            <textarea
+              id="sceneNotes"
+              value={scene.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEdit("notes")}
+            />
+          </FormField>
         </div>
 
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (
