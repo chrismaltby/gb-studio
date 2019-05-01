@@ -89,6 +89,10 @@
   "FIELD_SAVE_DATA": "Save current game data to memory. Requires cartridge type with BATTERY.",
   "FIELD_CLEAR_DATA": "Clear all saved game data from memory.",
   "FIELD_IF_SAVED_DATA": "Run if player has saved a game.",
+  "FIELD_MOVEMENT_STATIC": "Static",
+  "FIELD_MOVEMENT_FACE_INTERACTION": "Face Interaction",
+  "FIELD_MOVEMENT_RANDOM_ROTATION": "Random Rotation",
+  "FIELD_MOVEMENT_RANDOM_WALK": "Random Walk",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
