@@ -200,6 +200,16 @@
   "MENU_SPEECH": "Speech",
   "MENU_ABOUT": "About GB Studio",
   "MENU_CART_TYPE": "Cartridge Type",
+  "MENU_COPY_EVENT": "Copy Event",
+  "MENU_PASTE_VALUES": "Paste Values",
+  "MENU_PASTE_EVENT_BEFORE": "Paste Event Before",
+  "MENU_PASTE_EVENT_AFTER": "Paste Event After",
+  "MENU_DELETE_EVENT": "Delete Event",
+  "MENU_COPY_SCRIPT": "Copy Script",
+  "MENU_REPLACE_SCRIPT": "Replace Script",
+  "MENU_PASTE_SCRIPT_BEFORE": "Paste Script Before",
+  "MENU_PASTE_SCRIPT_AFTER": "Paste Script After",
+  "MENU_DELETE_SCRIPT": "Delete Script",
 
   "// 11": "Warnings -----------------------------------------------------",
 

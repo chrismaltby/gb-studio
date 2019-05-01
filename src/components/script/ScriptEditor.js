@@ -179,17 +179,23 @@ class ActionMini extends Component {
 
             <div className="ActionMini__Dropdown">
               <DropdownButton small transparent right>
-                <MenuItem onClick={onCopy(action)}>Copy Event</MenuItem>
+                <MenuItem onClick={onCopy(action)}>
+                  {l10n("MENU_COPY_EVENT")}
+                </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={this.onPasteValues}>Paste Values</MenuItem>
+                <MenuItem onClick={this.onPasteValues}>
+                  {l10n("MENU_PASTE_VALUES")}
+                </MenuItem>
                 <MenuItem onClick={this.onPasteEvent(true)}>
-                  Paste Event Before
+                  {l10n("MENU_PASTE_EVENT_BEFORE")}
                 </MenuItem>
                 <MenuItem onClick={this.onPasteEvent(false)}>
-                  Paste Event After
+                  {l10n("MENU_PASTE_EVENT_AFTER")}
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={onRemove(id)}>Delete Event</MenuItem>
+                <MenuItem onClick={onRemove(id)}>
+                  {l10n("MENU_DELETE_EVENT")}
+                </MenuItem>
               </DropdownButton>
             </div>
 
