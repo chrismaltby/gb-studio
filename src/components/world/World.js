@@ -28,9 +28,14 @@ class World extends Component {
     window.addEventListener("mouseup", this.onMouseUp);
     window.addEventListener("mousewheel", event => {
       if (event.ctrlKey) {
+        event.preventDefault();
         const currentWindow = remote.getCurrentWindow();
         if (currentWindow) {
-          currentWindow.webContents.send("zoom", event.wheelDelta > 0 ? "in" : "out", event.deltaY);
+          currentWindow.webContents.send(
+            "zoom",
+            event.wheelDelta > 0 ? "in" : "out",
+            event.deltaY
+          );
         }
       }
     });
