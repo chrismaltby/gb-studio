@@ -664,6 +664,14 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
           : spriteFrames === 3
           ? 1 // Actor
           : 0, // Static
+        moveDec(actor.movementType) === 1
+          ? spriteFrames
+          : spriteFrames === 6
+          ? 2 // Actor Animated
+          : spriteFrames === 3
+          ? 1 // Actor
+          : spriteFrames,
+        actor.animate ? 1 : 0,
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction

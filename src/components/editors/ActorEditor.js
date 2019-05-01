@@ -111,6 +111,22 @@ class ActorEditor extends Component {
                   onChange={this.onEdit("direction")}
                 />
               </FormField>
+
+              {(actor.movementType === "static" ||
+                spriteSheet.type !== "actor") && (
+                <FormField>
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="Checkbox"
+                      checked={actor.animate || false}
+                      onChange={this.onEdit("animate")}
+                    />
+                    <div className="FormCheckbox" />
+                    Animate when stationary
+                  </label>
+                </FormField>
+              )}
             </div>
           )}
         </div>

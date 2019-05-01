@@ -60,6 +60,9 @@ typedef struct _ACTORSPRITE
     POS pos;
     VEC2D dir;
     UBYTE redraw;
+    UBYTE frame;
+    UBYTE frames_len;
+    UBYTE animate;
     UBYTE enabled;
     UBYTE moving;
     SPRITE_TYPE sprite_type;

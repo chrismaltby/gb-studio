@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#define LOG(fmt, args...) 
+#define LOG(fmt, args...)
 
 #define UNUSED(x) (void)(x)
 
@@ -14,6 +14,7 @@
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
 #define ACTOR_ON_TILE(i) (((actors[(i)].pos.x & 7) == 0) && ((actors[(i)].pos.y & 7) == 0))
 
+#define IS_FRAME_128 ((time & 0x7F) == 0)
 #define IS_FRAME_64 ((time & 0x3F) == 0)
 #define IS_FRAME_32 ((time & 0x1F) == 0)
 #define IS_FRAME_16 ((time & 0xF) == 0)
@@ -35,6 +36,8 @@
 #define DIV_8(a) ((a) >> 3)
 #define DIV_4(a) ((a) >> 2)
 #define DIV_2(a) ((a) >> 1)
+
+#define IS_NEG(a) ((UBYTE)(a)&0x80)
 
 #define hide_sprite(a) (move_sprite((a), 0, 0))
 #define hide_sprite_pair(a) \

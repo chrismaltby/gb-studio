@@ -62,6 +62,7 @@ void SceneUpdateCameraShake_b();
 void SceneUpdateEmoteBubble_b();
 void SceneHandleTriggers_b();
 void SceneRenderActors_b();
+void SceneRenderActor_b(UBYTE i);
 void SceneRenderEmoteBubble_b();
 void SceneRenderCameraShake_b();
 void SceneUpdateActorMovement_b(UBYTE i);
@@ -132,18 +133,24 @@ void SceneInit_b2()
     actors[i].moving = FALSE;
     actors[i].sprite_type = FALSE; // WTF needed
     actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
-    actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2)) + 8;
-    actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3)) + 8;
-    j = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4);
+    actors[i].frames_len = 0;
+    actors[i].frames_len = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
+    actors[i].animate = FALSE;
+    actors[i].animate = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
+    actors[i].frame = 0;
+    actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4)) + 8;
+    actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5)) + 8;
+    j = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
     actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
+
     actors[i].movement_type = 0; // WTF needed
-    actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5);
+    actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7);
     // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
-    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
-    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
+    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
+    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 10);
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
-    scene_load_ptr = scene_load_ptr + 9u;
+    scene_load_ptr = scene_load_ptr + 11u;
   }
 
   // Load triggers
@@ -192,6 +199,9 @@ void SceneInit_b5()
   sprite_len = MUL_4(sprite_frames);
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
+  actors[0].frame = 0;
+  actors[0].frames_len = 2;
+  actors[0].animate = FALSE;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
   actors[0].redraw = TRUE;
 }
@@ -550,6 +560,19 @@ void SceneUpdateActors_b()
       actors[i].pos.y += actors[i].dir.y;
     }
   }
+
+  if (IS_FRAME_16)
+  {
+    len = scene_num_actors;
+
+    for (i = 0; i != len; ++i)
+    {
+      if (actors[i].moving || actors[i].animate)
+      {
+        actors[i].frame = (actors[i].frame + 1) % actors[i].frames_len;
+      }
+    }
+  }
 }
 
 void SceneUpdateActorMovement_b(UBYTE i)
@@ -596,7 +619,6 @@ void SceneUpdateActorMovement_b(UBYTE i)
     return;
   }
 
-  // LOG("UPDATE ACTOR MOVEMENT %u\n", i);
   actors[i].moving = TRUE;
 }
 
@@ -731,6 +753,11 @@ static void SceneHandleInput()
     }
 
     SceneUpdateActorMovement_b(0);
+
+    if (actors[0].moving)
+    {
+      SceneRenderActor_b(0);
+    }
   }
 }
 
@@ -756,45 +783,27 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, redraw, len, scx, scy;
+  UBYTE i, flip, frame, sprite_index, screen_x, screen_y, len, scx, scy;
 
   scx = 0 - SCX_REG;
   scy = 0 - SCY_REG;
 
-  if (IS_FRAME_64 || script_ptr != 0)
+  if (IS_FRAME_16)
   {
     len = scene_num_actors;
-  }
-  else
-  {
-    // Else only update player
-    len = 1;
-  }
 
-  for (i = 0; i != len; ++i)
-  {
-    // LOG("CHECK FOR REDRAW Actor %u\n", i);
-
-    redraw = actors[i].redraw;
-
-    // If just landed on new tile or needs a redraw
-    if (redraw)
+    for (i = 0; i != len; ++i)
     {
       sprite_index = MUL_2(i);
-
       flip = FALSE;
-      frame = actors[i].sprite;
+      frame = actors[i].sprite + actors[i].frame;
 
-      if (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED)
-      {
-        // Set frame offset based on position, every 16px switch frame
-        frame += (DIV_16(actors[i].pos.x) & 1) == (DIV_16(actors[i].pos.y) & 1);
-      }
-
+      // If sprite not static increment frame count
+      // based on direction of actor
       if (actors[i].sprite_type != SPRITE_STATIC)
       {
         // Increase frame based on facing direction
-        if (actors[i].dir.y < 0)
+        if (IS_NEG(actors[i].dir.y))
         {
           frame += 1 + (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
         }
@@ -803,29 +812,25 @@ void SceneRenderActors_b()
           frame += 2 + MUL_2(actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
 
           // Facing left so flip sprite
-          if (actors[i].dir.x < 0)
+          if (IS_NEG(actors[i].dir.x))
           {
             flip = TRUE;
           }
         }
       }
 
-      // LOG("REDRAW Actor %u\n", i);
-
-      // Handle facing left
       if (flip)
       {
+        // Handle facing left
         set_sprite_prop_pair(sprite_index, S_FLIPX);
         set_sprite_tile_pair(sprite_index, MUL_4(frame) + 2, MUL_4(frame));
       }
       else
       {
+        // Handle facing right
         set_sprite_prop_pair(sprite_index, 0x0);
         set_sprite_tile_pair(sprite_index, MUL_4(frame), MUL_4(frame) + 2);
       }
-
-      actors[i].redraw = FALSE;
-      redraw = TRUE;
     }
   }
 
@@ -877,7 +882,6 @@ void SceneRenderActors_b()
     for (i = 0; i != len; ++i)
     {
       sprite_index = MUL_2(i);
-      // LOG("b Reposition Actor %u\n", i);
       screen_x = actors[i].pos.x + scx;
       screen_y = actors[i].pos.y + scy;
       if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
@@ -889,6 +893,47 @@ void SceneRenderActors_b()
         hide_sprite_pair(sprite_index);
       }
     }
+  }
+}
+
+void SceneRenderActor_b(UBYTE i)
+{
+  UBYTE sprite_index, flip, frame;
+
+  sprite_index = MUL_2(i);
+  flip = FALSE;
+  frame = actors[i].sprite + actors[i].frame;
+
+  if (actors[i].sprite_type != SPRITE_STATIC)
+  {
+    // Increase frame based on facing direction
+    if (IS_NEG(actors[i].dir.y))
+    {
+      frame += 1 + (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
+    }
+    else if (actors[i].dir.x != 0)
+    {
+      frame += 2 + MUL_2(actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
+
+      // Facing left so flip sprite
+      if (IS_NEG(actors[i].dir.x))
+      {
+        flip = TRUE;
+      }
+    }
+  }
+
+  if (flip)
+  {
+    // Handle facing left
+    set_sprite_prop_pair(sprite_index, S_FLIPX);
+    set_sprite_tile_pair(sprite_index, MUL_4(frame) + 2, MUL_4(frame));
+  }
+  else
+  {
+    // Handle facing right
+    set_sprite_prop_pair(sprite_index, 0x0);
+    set_sprite_tile_pair(sprite_index, MUL_4(frame), MUL_4(frame) + 2);
   }
 }
 
