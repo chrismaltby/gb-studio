@@ -360,12 +360,12 @@ export const copyEvent = event => {
   return { type: types.COPY_EVENT, event };
 };
 
-export const zoomIn = section => {
-  return { type: types.ZOOM_IN, section };
+export const zoomIn = (section, delta = 0) => {
+  return { type: types.ZOOM_IN, section, delta };
 };
 
-export const zoomOut = section => {
-  return { type: types.ZOOM_OUT, section };
+export const zoomOut = (section, delta = 0) => {
+  return { type: types.ZOOM_OUT, section, delta };
 };
 
 export const zoomReset = section => {

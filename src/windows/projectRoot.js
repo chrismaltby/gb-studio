@@ -68,14 +68,24 @@ ipcRenderer.on("update-theme", (event, value) => {
   updateMyAppTheme();
 });
 
-ipcRenderer.on("zoom", (event, zoomType) => {
+let lastZoomDelta = 0;
+let zoomAcceleration = 1;
+
+ipcRenderer.on("zoom", (event, zoomType, delta = 0) => {
   const state = store.getState();
   if (zoomType === "in") {
-    store.dispatch(actions.zoomIn(state.navigation.section));
+    store.dispatch(actions.zoomIn(state.navigation.section, delta * zoomAcceleration));
   } else if (zoomType === "out") {
-    store.dispatch(actions.zoomOut(state.navigation.section));
+    store.dispatch(actions.zoomOut(state.navigation.section, delta * zoomAcceleration));
   } else {
     store.dispatch(actions.zoomReset(state.navigation.section));
+  }
+
+  zoomAcceleration *= 2;
+  lastZoomDelta = delta
+
+  if (Math.sign(delta) === Math.sign(lastZoomDelta)) {
+    zoomAcceleration = 1;
   }
 });
 
