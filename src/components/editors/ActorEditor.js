@@ -89,46 +89,49 @@ class ActorEditor extends Component {
             />
           </FormField>
 
-          {spriteSheet && spriteSheet.type !== "static" && (
-            <div>
-              <FormField halfWidth>
-                <label htmlFor="actorMovement">
-                  {l10n("FIELD_MOVEMENT_TYPE")}
-                </label>
-                <MovementTypeSelect
-                  id="actorMovement"
-                  value={actor.movementType}
-                  onChange={this.onEdit("movementType")}
-                />
-              </FormField>
-              <FormField halfWidth>
-                <label htmlFor="actorDirection">
-                  {l10n("FIELD_DIRECTION")}
-                </label>
-                <DirectionPicker
-                  id="actorDirection"
-                  value={actor.direction}
-                  onChange={this.onEdit("direction")}
-                />
-              </FormField>
-
-              {(actor.movementType === "static" ||
-                spriteSheet.type !== "actor") && (
-                <FormField>
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="Checkbox"
-                      checked={actor.animate || false}
-                      onChange={this.onEdit("animate")}
-                    />
-                    <div className="FormCheckbox" />
-                    Animate when stationary
+          {spriteSheet &&
+            spriteSheet.type !== "static" &&
+            spriteSheet.type !== "animated" && (
+              <div>
+                <FormField halfWidth>
+                  <label htmlFor="actorMovement">
+                    {l10n("FIELD_MOVEMENT_TYPE")}
                   </label>
+                  <MovementTypeSelect
+                    id="actorMovement"
+                    value={actor.movementType}
+                    onChange={this.onEdit("movementType")}
+                  />
                 </FormField>
-              )}
-            </div>
-          )}
+                <FormField halfWidth>
+                  <label htmlFor="actorDirection">
+                    {l10n("FIELD_DIRECTION")}
+                  </label>
+                  <DirectionPicker
+                    id="actorDirection"
+                    value={actor.direction}
+                    onChange={this.onEdit("direction")}
+                  />
+                </FormField>
+              </div>
+            )}
+
+          {spriteSheet.numFrames > 1 &&
+            (actor.movementType === "static" ||
+              spriteSheet.type !== "actor") && (
+              <FormField>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="Checkbox"
+                    checked={actor.animate || false}
+                    onChange={this.onEdit("animate")}
+                  />
+                  <div className="FormCheckbox" />
+                  Animate when stationary
+                </label>
+              </FormField>
+            )}
         </div>
 
         <SidebarHeading title={l10n("SIDEBAR_ACTOR_SCRIPT")} />

@@ -23,7 +23,7 @@ const loadSpriteData = async filename => {
         ? "actor"
         : numFrames === 1
         ? "static"
-        : "invalid",
+        : "animated",
     filename: relativePath,
     _v: Date.now()
   };
