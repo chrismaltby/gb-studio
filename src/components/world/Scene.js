@@ -165,14 +165,14 @@ class Scene extends Component {
     let trigger = this.triggerAt(hoverX, hoverY);
     let actor = this.actorAt(hoverX, hoverY);
 
-    if (trigger) {
+    if (actor) {
+      this.props.dragActorStart(id, actor.id, scene.actors.indexOf(actor));
+    } else if (trigger) {
       this.props.dragTriggerStart(
         id,
         trigger.id,
         scene.triggers.indexOf(trigger)
       );
-    } else if (actor) {
-      this.props.dragActorStart(id, actor.id, scene.actors.indexOf(actor));
     }
 
     if (tool === "select") {
