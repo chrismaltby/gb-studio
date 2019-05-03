@@ -9,7 +9,7 @@ import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
-import { MenuItem } from "../library/Menu";
+import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 
 class ActorEditor extends Component {
@@ -19,12 +19,28 @@ class ActorEditor extends Component {
     });
   };
 
+  onCopy = e => {
+    this.props.copyActor(this.props.actor);
+  };
+
+  onPaste = e => {
+    const { clipboardActor } = this.props;
+    this.props.pasteActor(this.props.scene, clipboardActor);
+  };
+
   onRemove = e => {
     this.props.removeActor(this.props.scene, this.props.id);
   };
 
   render() {
-    const { index, actor, id, spriteSheet, sceneImage } = this.props;
+    const {
+      index,
+      actor,
+      id,
+      spriteSheet,
+      sceneImage,
+      clipboardActor
+    } = this.props;
 
     if (!actor) {
       return <div />;
@@ -36,7 +52,18 @@ class ActorEditor extends Component {
           title={l10n("ACTOR")}
           buttons={
             <DropdownButton small transparent right>
-              <MenuItem onClick={this.onRemove}>Delete Actor</MenuItem>
+              <MenuItem onClick={this.onCopy}>
+                {l10n("MENU_COPY_ACTOR")}
+              </MenuItem>
+              {clipboardActor && (
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemove}>
+                {l10n("MENU_DELETE_ACTOR")}
+              </MenuItem>
             </DropdownButton>
           }
         />
@@ -146,13 +173,16 @@ function mapStateToProps(state, props) {
     index,
     actor,
     spriteSheet,
-    sceneImage
+    sceneImage,
+    clipboardActor: state.clipboard.actor
   };
 }
 
 const mapDispatchToProps = {
   editActor: actions.editActor,
-  removeActor: actions.removeActor
+  removeActor: actions.removeActor,
+  copyActor: actions.copyActor,
+  pasteActor: actions.pasteActor
 };
 
 export default connect(

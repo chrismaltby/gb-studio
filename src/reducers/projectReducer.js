@@ -14,6 +14,7 @@ import {
   ADD_ACTOR,
   MOVE_ACTOR,
   EDIT_ACTOR,
+  PASTE_ACTOR,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
   ADD_COLLISION_TILE,
@@ -23,6 +24,7 @@ import {
   REMOVE_TRIGGER_AT,
   RESIZE_TRIGGER,
   EDIT_TRIGGER,
+  PASTE_TRIGGER,
   MOVE_TRIGGER,
   RENAME_VARIABLE,
   EDIT_PROJECT,
@@ -35,7 +37,7 @@ import {
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
 import deepmerge from "deepmerge";
 import clamp from "../lib/helpers/clamp";
-import { patchEvents } from "../lib/helpers/eventSystem";
+import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -409,6 +411,29 @@ export default function project(state = initialState.project, action) {
                 ...action.values
               };
             })
+          };
+        })
+      };
+    case PASTE_ACTOR:
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            actors: []
+              .concat(scene.actors, {
+                ...action.actor,
+                id: action.id,
+                x: 1,
+                y: 1,
+                script:
+                  action.actor.script &&
+                  action.actor.script.map(regenerateEventIds)
+              })
+              .slice(0, MAX_ACTORS)
           };
         })
       };

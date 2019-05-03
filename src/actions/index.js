@@ -371,6 +371,30 @@ export const copyEvent = event => {
   return { type: types.COPY_EVENT, event };
 };
 
+export const copyActor = actor => {
+  return { type: types.COPY_ACTOR, actor };
+};
+
+export const copyTrigger = trigger => {
+  return { type: types.COPY_TRIGGER, trigger };
+};
+
+export const pasteActor = (sceneId, actor) => {
+  return { type: types.PASTE_ACTOR, sceneId, actor, id: uuid() };
+};
+
+export const pasteTrigger = (sceneId, trigger) => {
+  return { type: types.PASTE_TRIGGER, sceneId, trigger, id: uuid() };
+};
+
+export const pasteScene = scene => {
+  return { type: types.PASTE_SCENE, scene, id: uuid() };
+};
+
+export const copyScene = scene => {
+  return { type: types.COPY_SCENE, scene };
+};
+
 export const zoomIn = (section, delta = 0) => {
   return { type: types.ZOOM_IN, section, delta };
 };
