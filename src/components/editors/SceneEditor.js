@@ -28,12 +28,28 @@ class SceneEditor extends Component {
     this.props.pasteScene(clipboardScene);
   };
 
+  onPasteActor = e => {
+    const { scene, clipboardActor } = this.props;
+    this.props.pasteActor(scene.id, clipboardActor);
+  };
+
+  onPasteTrigger = e => {
+    const { scene, clipboardTrigger } = this.props;
+    this.props.pasteTrigger(scene.id, clipboardTrigger);
+  };
+
   onRemove = e => {
     this.props.removeScene(this.props.id);
   };
 
   render() {
-    const { scene, sceneIndex, clipboardScene } = this.props;
+    const {
+      scene,
+      sceneIndex,
+      clipboardScene,
+      clipboardActor,
+      clipboardTrigger
+    } = this.props;
 
     if (!scene) {
       return <div />;
@@ -51,6 +67,16 @@ class SceneEditor extends Component {
               {clipboardScene && (
                 <MenuItem onClick={this.onPaste}>
                   {l10n("MENU_PASTE_SCENE")}
+                </MenuItem>
+              )}
+              {clipboardActor && (
+                <MenuItem onClick={this.onPasteActor}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
+              )}
+              {clipboardTrigger && (
+                <MenuItem onClick={this.onPasteTrigger}>
+                  {l10n("MENU_PASTE_TRIGGER")}
                 </MenuItem>
               )}
               <MenuDivider />
@@ -94,8 +120,8 @@ class SceneEditor extends Component {
             <ul>
               {scene.actors.map((actor, index) => (
                 <li
-                  key={index}
-                  onClick={() => this.props.selectActor(scene.id, index)}
+                  key={actor.id}
+                  onClick={() => this.props.selectActor(scene.id, actor.id)}
                 >
                   <div className="EditorSidebar__Icon">
                     <SpriteSheetCanvas
@@ -108,8 +134,8 @@ class SceneEditor extends Component {
               ))}
               {scene.triggers.map((trigger, index) => (
                 <li
-                  key={index}
-                  onClick={() => this.props.selectTrigger(scene.id, index)}
+                  key={trigger.id}
+                  onClick={() => this.props.selectTrigger(scene.id, trigger.id)}
                 >
                   <div className="EditorSidebar__Icon">
                     <TriggerIcon />
@@ -140,7 +166,9 @@ function mapStateToProps(state, props) {
   return {
     sceneIndex,
     scene: sceneIndex != -1 && state.project.present.scenes[sceneIndex],
-    clipboardScene: state.clipboard.scene
+    clipboardScene: state.clipboard.scene,
+    clipboardActor: state.clipboard.actor,
+    clipboardTrigger: state.clipboard.trigger
   };
 }
 
@@ -150,7 +178,9 @@ const mapDispatchToProps = {
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
   copyScene: actions.copyScene,
-  pasteScene: actions.pasteScene
+  pasteScene: actions.pasteScene,
+  pasteActor: actions.pasteActor,
+  pasteTrigger: actions.pasteTrigger
 };
 
 export default connect(
