@@ -7,7 +7,7 @@ import { FormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
-import { MenuItem } from "../library/Menu";
+import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 
 class TriggerEditor extends Component {
@@ -17,12 +17,21 @@ class TriggerEditor extends Component {
     });
   };
 
+  onCopy = e => {
+    this.props.copyTrigger(this.props.trigger);
+  };
+
+  onPaste = e => {
+    const { clipboardTrigger } = this.props;
+    this.props.pasteTrigger(this.props.scene, clipboardTrigger);
+  };
+
   onRemove = e => {
     this.props.removeTrigger(this.props.scene, this.props.id);
   };
 
   render() {
-    const { index, trigger, id } = this.props;
+    const { index, trigger, id, clipboardTrigger } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -34,7 +43,18 @@ class TriggerEditor extends Component {
           title={l10n("TRIGGER")}
           buttons={
             <DropdownButton small transparent right>
-              <MenuItem onClick={this.onRemove}>Delete Trigger</MenuItem>
+              <MenuItem onClick={this.onCopy}>
+                {l10n("MENU_COPY_TRIGGER")}
+              </MenuItem>
+              {clipboardTrigger && (
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_TRIGGER")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemove}>
+                {l10n("MENU_DELETE_TRIGGER")}
+              </MenuItem>
             </DropdownButton>
           }
         />
@@ -121,13 +141,16 @@ function mapStateToProps(state, props) {
 
   return {
     index,
-    trigger
+    trigger,
+    clipboardTrigger: state.clipboard.trigger
   };
 }
 
 const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
-  removeTrigger: actions.removeTrigger
+  removeTrigger: actions.removeTrigger,
+  copyTrigger: actions.copyTrigger,
+  pasteTrigger: actions.pasteTrigger
 };
 
 export default connect(

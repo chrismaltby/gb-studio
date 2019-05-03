@@ -663,6 +663,29 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
+    case PASTE_TRIGGER:
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            triggers: []
+              .concat(scene.triggers, {
+                ...action.trigger,
+                id: action.id,
+                x: 1,
+                y: 1,
+                script:
+                  action.trigger.script &&
+                  action.trigger.script.map(regenerateEventIds)
+              })
+              .slice(0, MAX_TRIGGERS)
+          };
+        })
+      };
     case MOVE_TRIGGER: {
       const moveScene = state.scenes.find(s => s.id === action.newSceneId);
       const sceneImage = state.backgrounds.find(
