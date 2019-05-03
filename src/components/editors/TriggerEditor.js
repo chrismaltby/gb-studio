@@ -102,9 +102,9 @@ class TriggerEditor extends Component {
           </FormField>
         </div>
 
-        <SidebarHeading title={l10n("SIDEBAR_TRIGGER_SCRIPT")} />
         <ScriptEditor
           value={trigger.script}
+          title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
           type="trigger"
           onChange={this.onEdit("script")}
         />

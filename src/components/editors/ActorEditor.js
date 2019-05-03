@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { CloseIcon } from "../library/Icons";
 import MovementTypeSelect from "../forms/MovementTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
@@ -115,11 +114,10 @@ class ActorEditor extends Component {
           )}
         </div>
 
-        <SidebarHeading title={l10n("SIDEBAR_ACTOR_SCRIPT")} />
-
         <ScriptEditor
           value={actor.script}
           type="actor"
+          title={l10n("SIDEBAR_ACTOR_SCRIPT")}
           onChange={this.onEdit("script")}
         />
       </div>
