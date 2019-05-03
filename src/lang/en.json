@@ -106,6 +106,8 @@
   "FIELD_SPRITE_ACTORS": "Actors",
   "FIELD_SPRITES": "Sprites",
   "FIELD_SPRITE_FRAMES": "Frames",
+  "FIELD_ANIMATE_WHEN_STATIONARY": "Animate while stationary",
+  "FIELD_ANIMATE_FRAMES": "Animate by cycling frames",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

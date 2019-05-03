@@ -118,28 +118,31 @@ class ActorEditor extends Component {
           {spriteSheet &&
             spriteSheet.type !== "static" &&
             spriteSheet.type !== "animated" && (
-              <div>
-                <FormField halfWidth>
-                  <label htmlFor="actorMovement">
-                    {l10n("FIELD_MOVEMENT_TYPE")}
-                  </label>
-                  <MovementTypeSelect
-                    id="actorMovement"
-                    value={actor.movementType}
-                    onChange={this.onEdit("movementType")}
-                  />
-                </FormField>
-                <FormField halfWidth>
-                  <label htmlFor="actorDirection">
-                    {l10n("FIELD_DIRECTION")}
-                  </label>
-                  <DirectionPicker
-                    id="actorDirection"
-                    value={actor.direction}
-                    onChange={this.onEdit("direction")}
-                  />
-                </FormField>
-              </div>
+              <FormField halfWidth>
+                <label htmlFor="actorMovement">
+                  {l10n("FIELD_MOVEMENT_TYPE")}
+                </label>
+                <MovementTypeSelect
+                  id="actorMovement"
+                  value={actor.movementType}
+                  onChange={this.onEdit("movementType")}
+                />
+              </FormField>
+            )}
+
+          {spriteSheet &&
+            spriteSheet.type !== "static" &&
+            spriteSheet.type !== "animated" && (
+              <FormField halfWidth>
+                <label htmlFor="actorDirection">
+                  {l10n("FIELD_DIRECTION")}
+                </label>
+                <DirectionPicker
+                  id="actorDirection"
+                  value={actor.direction}
+                  onChange={this.onEdit("direction")}
+                />
+              </FormField>
             )}
 
           {spriteSheet.numFrames > 1 &&
@@ -154,7 +157,10 @@ class ActorEditor extends Component {
                     onChange={this.onEdit("animate")}
                   />
                   <div className="FormCheckbox" />
-                  Animate when stationary
+                  {actor.movementType !== "static" &&
+                  spriteSheet.type === "actor_animated"
+                    ? l10n("FIELD_ANIMATE_WHEN_STATIONARY")
+                    : l10n("FIELD_ANIMATE_FRAMES")}
                 </label>
               </FormField>
             )}
