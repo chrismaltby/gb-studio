@@ -11,6 +11,7 @@
     "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
   },
   "_version": "1",
+  "author": "___AUTHOR___",
   "name": "___PROJECT_NAME___",
   "variables": [
     {
