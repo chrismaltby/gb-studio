@@ -10,6 +10,7 @@ import {
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
+  PASTE_SCENE,
   REMOVE_SCENE,
   ADD_ACTOR,
   MOVE_ACTOR,
@@ -38,6 +39,7 @@ import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
 import deepmerge from "deepmerge";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
+import uuid from "uuid/v4";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -273,6 +275,30 @@ export default function project(state = initialState.project, action) {
               height: newBackground.height
             }
           );
+        })
+      };
+    case PASTE_SCENE:
+      return {
+        ...state,
+        scenes: [].concat(state.scenes, {
+          ...action.scene,
+          id: action.id,
+          x: MIN_SCENE_X,
+          y: MIN_SCENE_Y,
+          actors: action.scene.actors.map(actor => {
+            return {
+              ...actor,
+              id: uuid(),
+              script: actor.script && actor.script.map(regenerateEventIds)
+            };
+          }),
+          triggers: action.scene.triggers.map(trigger => {
+            return {
+              ...trigger,
+              id: uuid(),
+              script: trigger.script && trigger.script.map(regenerateEventIds)
+            };
+          })
         })
       };
     case REMOVE_SCENE:

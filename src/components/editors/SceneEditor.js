@@ -9,7 +9,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
-import { MenuItem } from "../library/Menu";
+import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 
 class SceneEditor extends Component {
@@ -19,12 +19,21 @@ class SceneEditor extends Component {
     });
   };
 
+  onCopy = e => {
+    this.props.copyScene(this.props.scene);
+  };
+
+  onPaste = e => {
+    const { clipboardScene } = this.props;
+    this.props.pasteScene(clipboardScene);
+  };
+
   onRemove = e => {
     this.props.removeScene(this.props.id);
   };
 
   render() {
-    const { scene, sceneIndex } = this.props;
+    const { scene, sceneIndex, clipboardScene } = this.props;
 
     if (!scene) {
       return <div />;
@@ -36,7 +45,18 @@ class SceneEditor extends Component {
           title={l10n("SCENE")}
           buttons={
             <DropdownButton small transparent right>
-              <MenuItem onClick={this.onRemove}>Delete Scene</MenuItem>
+              <MenuItem onClick={this.onCopy}>
+                {l10n("MENU_COPY_SCENE")}
+              </MenuItem>
+              {clipboardScene && (
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_SCENE")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemove}>
+                {l10n("MENU_DELETE_SCENE")}
+              </MenuItem>
             </DropdownButton>
           }
         />
@@ -119,7 +139,8 @@ function mapStateToProps(state, props) {
     : -1;
   return {
     sceneIndex,
-    scene: sceneIndex != -1 && state.project.present.scenes[sceneIndex]
+    scene: sceneIndex != -1 && state.project.present.scenes[sceneIndex],
+    clipboardScene: state.clipboard.scene
   };
 }
 
@@ -127,7 +148,9 @@ const mapDispatchToProps = {
   editScene: actions.editScene,
   removeScene: actions.removeScene,
   selectActor: actions.selectActor,
-  selectTrigger: actions.selectTrigger
+  selectTrigger: actions.selectTrigger,
+  copyScene: actions.copyScene,
+  pasteScene: actions.pasteScene
 };
 
 export default connect(
