@@ -29,6 +29,8 @@ class World extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener("copy", this.onCopy);
+    window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
@@ -54,6 +56,8 @@ class World extends Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener("copy", this.onCopy);
+    window.removeEventListener("paste", this.onPaste);
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
@@ -83,6 +87,48 @@ class World extends Component {
       });
     }
   }
+
+  onCopy = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    e.preventDefault();
+    const { editor, scenes } = this.props;
+    if (editor.type === "scenes") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      this.props.copyScene(scene);
+    } else if (editor.type === "triggers") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      const trigger = scene.triggers.find(t => t.id === editor.entityId);
+      this.props.copyTrigger(trigger);
+    } else if (editor.type === "actors") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      const actor = scene.actors.find(a => a.id === editor.entityId);
+      this.props.copyActor(actor);
+    }
+  };
+
+  onPaste = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    e.preventDefault();
+    const { clipboardType, editor } = this.props;
+    if (clipboardType === "actor") {
+      const { clipboardActor } = this.props;
+      if (editor.scene) {
+        this.props.pasteActor(editor.scene, clipboardActor);
+      }
+    } else if (clipboardType === "trigger") {
+      const { clipboardTrigger } = this.props;
+      if (editor.scene) {
+        this.props.pasteTrigger(editor.scene, clipboardTrigger);
+      }
+    } else if (clipboardType === "scene") {
+      const { clipboardScene } = this.props;
+      this.props.pasteScene(clipboardScene);
+    }
+  };
 
   onKeyDown = e => {
     if (e.target.nodeName !== "BODY") {
@@ -283,7 +329,11 @@ function mapStateToProps(state) {
     showConnections:
       state.project.present.settings &&
       state.project.present.settings.showConnections,
-    dragging: state.editor.dragging
+    dragging: state.editor.dragging,
+    clipboardScene: state.clipboard.scene,
+    clipboardActor: state.clipboard.actor,
+    clipboardTrigger: state.clipboard.trigger,
+    clipboardType: state.clipboard.last
   };
 }
 
@@ -301,7 +351,13 @@ const mapDispatchToProps = {
   dragActorStart: actions.dragActorStart,
   dragActorStop: actions.dragActorStop,
   dragTriggerStart: actions.dragTriggerStart,
-  dragTriggerStop: actions.dragTriggerStop
+  dragTriggerStop: actions.dragTriggerStop,
+  copyScene: actions.copyScene,
+  copyActor: actions.copyActor,
+  copyTrigger: actions.copyTrigger,
+  pasteScene: actions.pasteScene,
+  pasteActor: actions.pasteActor,
+  pasteTrigger: actions.pasteTrigger
 };
 
 export default connect(

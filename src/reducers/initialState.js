@@ -42,6 +42,10 @@ export default {
     warnings: []
   },
   clipboard: {
-    event: null
+    event: null,
+    actor: null,
+    trigger: null,
+    scene: null,
+    last: null
   }
 };
