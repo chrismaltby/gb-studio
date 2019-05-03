@@ -80,7 +80,7 @@ SCRIPT_CMD script_cmds[] = {
   {Script_MathMulVal_b, 0},         // 0x3C
   {Script_MathDivVal_b, 0},         // 0x3D
   {Script_MathModVal_b, 0},         // 0x3E
-  {Script_CopyVal_b, 4},            // 0x3F
+  {Script_CopyVal_b, 0},            // 0x3F
   {Script_IfValueCompare_b, 3},     // 0xD0,
   {Script_LoadVectors_b, 4}         // 0xD1
 };
