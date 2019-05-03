@@ -32,6 +32,7 @@ import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import SidebarHeading from "../editors/SidebarHeading";
 
 const ItemTypes = {
   CARD: "card"
@@ -102,6 +103,10 @@ class ActionMini extends Component {
 
   onPasteValues = e => {
     const { id, clipboardEvent, onEdit, action } = this.props;
+    if (!clipboardEvent || Array.isArray(clipboardEvent)) {
+      // Can't paste values if copied entire script, or not copied anything
+      return;
+    }
     // Only include values from clipboard event that existed on current event already
     const newArgs = Object.keys(clipboardEvent.args || {}).reduce(
       (memo, key) => {
@@ -183,15 +188,21 @@ class ActionMini extends Component {
                   {l10n("MENU_COPY_EVENT")}
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={this.onPasteValues}>
-                  {l10n("MENU_PASTE_VALUES")}
-                </MenuItem>
-                <MenuItem onClick={this.onPasteEvent(true)}>
-                  {l10n("MENU_PASTE_EVENT_BEFORE")}
-                </MenuItem>
-                <MenuItem onClick={this.onPasteEvent(false)}>
-                  {l10n("MENU_PASTE_EVENT_AFTER")}
-                </MenuItem>
+                {clipboardEvent && !Array.isArray(clipboardEvent) && (
+                  <MenuItem onClick={this.onPasteValues}>
+                    {l10n("MENU_PASTE_VALUES")}
+                  </MenuItem>
+                )}
+                {clipboardEvent && (
+                  <MenuItem onClick={this.onPasteEvent(true)}>
+                    {l10n("MENU_PASTE_EVENT_BEFORE")}
+                  </MenuItem>
+                )}
+                {clipboardEvent && (
+                  <MenuItem onClick={this.onPasteEvent(false)}>
+                    {l10n("MENU_PASTE_EVENT_AFTER")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 <MenuItem onClick={onRemove(id)}>
                   {l10n("MENU_DELETE_EVENT")}
@@ -391,9 +402,15 @@ class ScriptEditor extends Component {
     this.props.copyEvent(event);
   };
 
+  onCopyScript = () => {
+    this.props.copyEvent(this.props.value);
+  };
+
   onPaste = (id, event, before) => {
     const root = this.props.value;
-    const newEvent = regenerateEventIds(event);
+    const newEvent = Array.isArray(event)
+      ? event.slice(0, -1).map(regenerateEventIds)
+      : regenerateEventIds(event);
     const input = before
       ? prependEvent(root, id, newEvent)
       : appendEvent(root, id, newEvent);
@@ -401,6 +418,38 @@ class ScriptEditor extends Component {
       input
     });
     this.props.onChange(input);
+  };
+
+  onRemoveScript = e => {
+    this.props.onChange([
+      {
+        id: uuid(),
+        command: EVENT_END
+      }
+    ]);
+  };
+
+  onReplaceScript = e => {
+    const { clipboardEvent } = this.props;
+    if (clipboardEvent) {
+      this.props.onChange([].concat(clipboardEvent).map(regenerateEventIds));
+    }
+  };
+
+  onPasteScript = before => () => {
+    const { clipboardEvent, value } = this.props;
+    const newEvent = Array.isArray(clipboardEvent)
+      ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
+      : regenerateEventIds(clipboardEvent);
+    if (clipboardEvent) {
+      if (before) {
+        this.props.onChange([].concat(newEvent, value));
+      } else {
+        this.props.onChange(
+          [].concat(value.slice(0, -1), newEvent, value.slice(-1))
+        );
+      }
+    }
   };
 
   onEnter = id => {
@@ -412,26 +461,58 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    const { value, type } = this.props;
+    const { value, type, title, clipboardEvent } = this.props;
     return (
-      <div className="ScriptEditor">
-        {value.map((action, index) => (
-          <ActionMiniDnD
-            key={action.id}
-            id={action.id}
-            type={type}
-            action={action}
-            moveActions={this.moveActions}
-            onAdd={this.onAdd}
-            onRemove={this.onRemove}
-            onEdit={this.onEdit}
-            onCopy={this.onCopy}
-            onPaste={this.onPaste}
-            onMouseEnter={this.onEnter}
-            onMouseLeave={this.onLeave}
-            clipboardEvent={this.props.clipboardEvent}
-          />
-        ))}
+      <div>
+        <SidebarHeading
+          title={title}
+          buttons={
+            <DropdownButton small transparent right>
+              <MenuItem onClick={this.onCopyScript}>
+                {l10n("MENU_COPY_SCRIPT")}
+              </MenuItem>
+              <MenuDivider />
+              {clipboardEvent && (
+                <MenuItem onClick={this.onReplaceScript}>
+                  {l10n("MENU_REPLACE_SCRIPT")}
+                </MenuItem>
+              )}
+              {clipboardEvent && value && value.length > 1 && (
+                <MenuItem onClick={this.onPasteScript(true)}>
+                  {l10n("MENU_PASTE_SCRIPT_BEFORE")}
+                </MenuItem>
+              )}
+              {clipboardEvent && value && value.length > 1 && (
+                <MenuItem onClick={this.onPasteScript(false)}>
+                  {l10n("MENU_PASTE_SCRIPT_AFTER")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemoveScript}>
+                {l10n("MENU_DELETE_SCRIPT")}
+              </MenuItem>
+            </DropdownButton>
+          }
+        />{" "}
+        <div className="ScriptEditor">
+          {value.map((action, index) => (
+            <ActionMiniDnD
+              key={action.id}
+              id={action.id}
+              type={type}
+              action={action}
+              moveActions={this.moveActions}
+              onAdd={this.onAdd}
+              onRemove={this.onRemove}
+              onEdit={this.onEdit}
+              onCopy={this.onCopy}
+              onPaste={this.onPaste}
+              onMouseEnter={this.onEnter}
+              onMouseLeave={this.onLeave}
+              clipboardEvent={this.props.clipboardEvent}
+            />
+          ))}
+        </div>
       </div>
     );
   }

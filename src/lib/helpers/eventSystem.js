@@ -96,7 +96,7 @@ const prependEvent = (data, id, newData) => {
       };
     }
     if (o.id === id) {
-      memo.push(newData);
+      memo = [].concat(memo, newData);
     }
     memo.push(o);
     return memo;
@@ -119,7 +119,7 @@ const appendEvent = (data, id, newData) => {
     }
     memo.push(o);
     if (o.id === id) {
-      memo.push(newData);
+      memo = [].concat(memo, newData);
     }
     return memo;
   }, []);

@@ -10,10 +10,12 @@ import {
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
+  PASTE_SCENE,
   REMOVE_SCENE,
   ADD_ACTOR,
   MOVE_ACTOR,
   EDIT_ACTOR,
+  PASTE_ACTOR,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
   ADD_COLLISION_TILE,
@@ -23,6 +25,7 @@ import {
   REMOVE_TRIGGER_AT,
   RESIZE_TRIGGER,
   EDIT_TRIGGER,
+  PASTE_TRIGGER,
   MOVE_TRIGGER,
   RENAME_VARIABLE,
   EDIT_PROJECT,
@@ -32,13 +35,12 @@ import {
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
   EDIT_ACTOR_EVENT_DESTINATION_POSITION
 } from "../actions/actionTypes";
+import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
 import deepmerge from "deepmerge";
-import uuid from "uuid/v4";
 import clamp from "../lib/helpers/clamp";
-import { patchEvents } from "../lib/helpers/eventSystem";
+import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
+import uuid from "uuid/v4";
 
-const MAX_ACTORS = 9;
-const MAX_TRIGGERS = 9;
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
@@ -275,6 +277,30 @@ export default function project(state = initialState.project, action) {
           );
         })
       };
+    case PASTE_SCENE:
+      return {
+        ...state,
+        scenes: [].concat(state.scenes, {
+          ...action.scene,
+          id: action.id,
+          x: MIN_SCENE_X,
+          y: MIN_SCENE_Y,
+          actors: action.scene.actors.map(actor => {
+            return {
+              ...actor,
+              id: uuid(),
+              script: actor.script && actor.script.map(regenerateEventIds)
+            };
+          }),
+          triggers: action.scene.triggers.map(trigger => {
+            return {
+              ...trigger,
+              id: uuid(),
+              script: trigger.script && trigger.script.map(regenerateEventIds)
+            };
+          })
+        })
+      };
     case REMOVE_SCENE:
       return {
         ...state,
@@ -294,7 +320,7 @@ export default function project(state = initialState.project, action) {
             actors: []
               .concat(
                 {
-                  id: uuid(),
+                  id: action.id,
                   spriteSheetId:
                     state.spriteSheets[0] && state.spriteSheets[0].id,
                   x: action.x,
@@ -308,31 +334,67 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case MOVE_ACTOR:
+    case MOVE_ACTOR: {
+      const moveScene = state.scenes.find(s => s.id === action.newSceneId);
+      const sceneImage = state.backgrounds.find(
+        background => background.id === moveScene.backgroundId
+      );
       return {
         ...state,
         scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
+          if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
             return scene;
           }
-          const sceneImage = state.backgrounds.find(
-            background => background.id === scene.backgroundId
-          );
+          // Remove from previous scene if changed
+          if (
+            scene.id === action.sceneId &&
+            action.sceneId !== action.newSceneId
+          ) {
+            return {
+              ...scene,
+              actors: scene.actors.filter(actor => {
+                return actor.id !== action.id;
+              })
+            };
+          }
+          // Add to new scene if changed
+          if (
+            scene.id === action.newSceneId &&
+            action.sceneId !== action.newSceneId
+          ) {
+            const oldScene = state.scenes.find(s => s.id === action.sceneId);
+            const oldActor =
+              oldScene && oldScene.actors.find(a => a.id === action.id);
+            if (!oldActor) {
+              return scene;
+            }
+            return {
+              ...scene,
+              actors: [].concat(scene.actors, {
+                ...oldActor,
+                x: clamp(action.x, 0, sceneImage.width - 2),
+                y: clamp(action.y, 0, sceneImage.height - 1)
+              })
+            };
+          }
+          // If moving within current scene just map old actors
+          // to new actors
           return {
             ...scene,
-            actors: scene.actors.map((actor, index) => {
-              if (index !== action.index) {
+            actors: scene.actors.map(actor => {
+              if (actor.id !== action.id) {
                 return actor;
               }
               return {
                 ...actor,
-                x: clamp(actor.x + action.moveX, 0, sceneImage.width - 2),
-                y: clamp(actor.y + action.moveY, 0, sceneImage.height - 1)
+                x: clamp(action.x, 0, sceneImage.width - 2),
+                y: clamp(action.y, 0, sceneImage.height - 1)
               };
             })
           };
         })
       };
+    }
     case EDIT_ACTOR:
       return {
         ...state,
@@ -342,8 +404,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            actors: scene.actors.map((actor, index) => {
-              if (index !== action.index) {
+            actors: scene.actors.map(actor => {
+              if (actor.id !== action.id) {
                 return actor;
               }
               if (action.values.spriteSheetId) {
@@ -378,6 +440,29 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
+    case PASTE_ACTOR:
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId) {
+            return scene;
+          }
+          return {
+            ...scene,
+            actors: []
+              .concat(scene.actors, {
+                ...action.actor,
+                id: action.id,
+                x: 1,
+                y: 1,
+                script:
+                  action.actor.script &&
+                  action.actor.script.map(regenerateEventIds)
+              })
+              .slice(0, MAX_ACTORS)
+          };
+        })
+      };
     case REMOVE_ACTOR:
       return {
         ...state,
@@ -387,8 +472,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            actors: scene.actors.filter((actor, index) => {
-              return action.index !== index;
+            actors: scene.actors.filter(actor => {
+              return action.id !== actor.id;
             })
           };
         })
@@ -510,7 +595,7 @@ export default function project(state = initialState.project, action) {
             triggers: []
               .concat(
                 {
-                  id: uuid(),
+                  id: action.id,
                   x: action.x,
                   y: action.y,
                   width: 1,
@@ -532,8 +617,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: scene.triggers.filter((trigger, index) => {
-              return action.index !== index;
+            triggers: scene.triggers.filter(trigger => {
+              return action.id !== trigger.id;
             })
           };
         })
@@ -568,8 +653,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: scene.triggers.map((trigger, index) => {
-              if (index !== action.index) {
+            triggers: scene.triggers.map(trigger => {
+              if (trigger.id !== action.id) {
                 return trigger;
               }
               return {
@@ -592,8 +677,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: scene.triggers.map((trigger, index) => {
-              if (index !== action.index) {
+            triggers: scene.triggers.map(trigger => {
+              if (trigger.id !== action.id) {
                 return trigger;
               }
               return {
@@ -604,39 +689,90 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case MOVE_TRIGGER:
+    case PASTE_TRIGGER:
       return {
         ...state,
         scenes: state.scenes.map(scene => {
           if (scene.id !== action.sceneId) {
             return scene;
           }
-          const sceneImage = state.backgrounds.find(
-            background => background.id === scene.backgroundId
-          );
           return {
             ...scene,
-            triggers: scene.triggers.map((trigger, index) => {
-              if (index !== action.index) {
+            triggers: []
+              .concat(scene.triggers, {
+                ...action.trigger,
+                id: action.id,
+                x: 1,
+                y: 1,
+                script:
+                  action.trigger.script &&
+                  action.trigger.script.map(regenerateEventIds)
+              })
+              .slice(0, MAX_TRIGGERS)
+          };
+        })
+      };
+    case MOVE_TRIGGER: {
+      const moveScene = state.scenes.find(s => s.id === action.newSceneId);
+      const sceneImage = state.backgrounds.find(
+        background => background.id === moveScene.backgroundId
+      );
+      return {
+        ...state,
+        scenes: state.scenes.map(scene => {
+          if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
+            return scene;
+          }
+          // Remove from previous scene if changed
+          if (
+            scene.id === action.sceneId &&
+            action.sceneId !== action.newSceneId
+          ) {
+            return {
+              ...scene,
+              triggers: scene.triggers.filter(trigger => {
+                return trigger.id !== action.id;
+              })
+            };
+          }
+          // Add to new scene if changed
+          if (
+            scene.id === action.newSceneId &&
+            action.sceneId !== action.newSceneId
+          ) {
+            const oldScene = state.scenes.find(s => s.id === action.sceneId);
+            const oldTrigger =
+              oldScene && oldScene.triggers.find(a => a.id === action.id);
+            if (!oldTrigger) {
+              return scene;
+            }
+            return {
+              ...scene,
+              triggers: [].concat(scene.triggers, {
+                ...oldTrigger,
+                x: clamp(action.x, 0, sceneImage.width - oldTrigger.width),
+                y: clamp(action.y, 0, sceneImage.height - oldTrigger.height)
+              })
+            };
+          }
+          // If moving within current scene just map old triggers
+          // to new triggers
+          return {
+            ...scene,
+            triggers: scene.triggers.map(trigger => {
+              if (trigger.id !== action.id) {
                 return trigger;
               }
               return {
                 ...trigger,
-                x: clamp(
-                  trigger.x + action.moveX,
-                  0,
-                  sceneImage.width - trigger.width
-                ),
-                y: clamp(
-                  trigger.y + action.moveY,
-                  0,
-                  sceneImage.height - trigger.height
-                )
+                x: clamp(action.x, 0, sceneImage.width - trigger.width),
+                y: clamp(action.y, 0, sceneImage.height - trigger.height)
               };
             })
           };
         })
       };
+    }
     case RENAME_VARIABLE: {
       return {
         ...state,
@@ -703,8 +839,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            actors: scene.actors.map((actor, index) => {
-              if (index !== action.index) {
+            actors: scene.actors.map(actor => {
+              if (actor.id !== action.id) {
                 return actor;
               }
               return {
@@ -729,8 +865,8 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: scene.triggers.map((trigger, index) => {
-              if (index !== action.index) {
+            triggers: scene.triggers.map(trigger => {
+              if (trigger.id !== action.id) {
                 return trigger;
               }
               return {
