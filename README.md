@@ -1,7 +1,7 @@
 # GB Studio
 
 
-[![CircleCI](https://circleci.com/gh/chrismaltby/gb-studio.svg?style=shield)](https://circleci.com/gh/chrismaltby/gb-studio)
+[![CircleCI](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop.svg?style=shield)](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop)
 
 Copyright (c) 2019 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
