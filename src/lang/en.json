@@ -93,8 +93,8 @@
   "FIELD_MOVEMENT_FACE_INTERACTION": "Face Interaction",
   "FIELD_MOVEMENT_RANDOM_ROTATION": "Random Rotation",
   "FIELD_MOVEMENT_RANDOM_WALK": "Random Walk",
-  "FIELD_ADD_VALUE":  "Add",
-  "FIELD_ADD_VALUE_FROM":  "Add Variable",
+  "FIELD_ADD_VALUE": "Add",
+  "FIELD_ADD_VALUE_FROM": "Add Variable",
   "FIELD_TO_VARIABLE": "To Variable",
   "FIELD_BY_VALUE": "By Value",
   "FIELD_SUB_VALUE": "Subtract",
@@ -102,7 +102,10 @@
   "FIELD_MUL_VARIABLE": "Multiply",
   "FIELD_DIV_VARIABLE": "Divide",
   "FIELD_MOD_VARIABLE": "Modulus",
-
+  "FIELD_SPRITE_ANIMATED_ACTORS": "Animated Actors",
+  "FIELD_SPRITE_ACTORS": "Actors",
+  "FIELD_SPRITES": "Sprites",
+  "FIELD_SPRITE_FRAMES": "Frames",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
