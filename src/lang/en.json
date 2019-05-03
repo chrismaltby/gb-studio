@@ -247,6 +247,8 @@
   "ERROR_PROJECT_ALREADY_EXISTS": "Project already exists",
   "ERROR_INVALID_FILE_TYPE": "Invalid File Type",
   "ERROR_OPEN_GBSPROJ_FILE": "Please select a .gbsproj or .json file",
+  "ERROR_MISSING_PROJECT": "Project file is missing",
+  "ERROR_MOVED_OR_DELETED": "It may have moved location or been deleted",
 
   "// 13": "Splash -------------------------------------------------------",
 

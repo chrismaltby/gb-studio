@@ -8,6 +8,7 @@ import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import menu from "./menu";
 import Path from "path";
+import { stat } from "fs-extra";
 
 // Stop app launching during squirrel install
 if (require("electron-squirrel-startup")) {
@@ -373,6 +374,16 @@ const openProject = async projectPath => {
     dialog.showErrorBox(
       l10n("ERROR_INVALID_FILE_TYPE"),
       l10n("ERROR_OPEN_GBSPROJ_FILE")
+    );
+    return;
+  }
+
+  try {
+    await stat(projectPath);
+  } catch (e) {
+    dialog.showErrorBox(
+      l10n("ERROR_MISSING_PROJECT"),
+      l10n("ERROR_MOVED_OR_DELETED")
     );
     return;
   }
