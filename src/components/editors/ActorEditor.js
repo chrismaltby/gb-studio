@@ -25,7 +25,7 @@ class ActorEditor extends Component {
   };
 
   render() {
-    const { actor, id, spriteSheet, sceneImage } = this.props;
+    const { index, actor, id, spriteSheet, sceneImage } = this.props;
 
     if (!actor) {
       return <div />;
@@ -47,7 +47,7 @@ class ActorEditor extends Component {
             <label htmlFor="actorName">{l10n("FIELD_NAME")}</label>
             <input
               id="actorName"
-              placeholder={"Actor " + (id + 1)}
+              placeholder={"Actor " + (index + 1)}
               value={actor.name || ""}
               onChange={this.onEdit("name")}
             />
@@ -137,13 +137,15 @@ function mapStateToProps(state, props) {
     project.present.backgrounds.find(
       background => background.id === scene.backgroundId
     );
-  const actor = scene && scene.actors[props.id];
+  const actor = scene && scene.actors.find(a => a.id === props.id);
+  const index = scene && scene.actors.indexOf(actor);
   const spriteSheet =
     actor &&
     project.present.spriteSheets.find(
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
   return {
+    index,
     actor,
     spriteSheet,
     sceneImage

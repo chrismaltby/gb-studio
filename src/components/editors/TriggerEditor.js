@@ -22,7 +22,7 @@ class TriggerEditor extends Component {
   };
 
   render() {
-    const { trigger, id } = this.props;
+    const { index, trigger, id } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -43,7 +43,7 @@ class TriggerEditor extends Component {
             <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
             <input
               id="triggerName"
-              placeholder={"Trigger " + (id + 1)}
+              placeholder={"Trigger " + (index + 1)}
               value={trigger.name || ""}
               onChange={this.onEdit("name")}
             />
@@ -114,12 +114,14 @@ class TriggerEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
+  const scenes = state.project.present && state.project.present.scenes;
+  const scene = scenes && scenes.find(scene => scene.id === props.scene);
+  const trigger = scene && scene.triggers.find(t => t.id === props.id);
+  const index = scene && scene.triggers.indexOf(trigger);
+
   return {
-    trigger:
-      state.project.present &&
-      state.project.present.scenes &&
-      state.project.present.scenes.find(scene => scene.id === props.scene)
-        .triggers[props.id]
+    index,
+    trigger
   };
 }
 

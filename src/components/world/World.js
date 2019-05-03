@@ -5,6 +5,12 @@ import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
 import { remote, BrowserWindow } from "electron";
+import {
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_ACTOR,
+  DRAG_TRIGGER
+} from "../../reducers/editorReducer";
 
 const MIDDLE_MOUSE = 2;
 
@@ -90,9 +96,9 @@ class World extends Component {
       if (editor.type === "scenes") {
         this.props.removeScene(editor.scene);
       } else if (editor.type === "triggers") {
-        this.props.removeTrigger(editor.scene, editor.index);
+        this.props.removeTrigger(editor.scene, editor.entityId);
       } else if (editor.type === "actors") {
-        this.props.removeActor(editor.scene, editor.index);
+        this.props.removeActor(editor.scene, editor.entityId);
       }
     }
   };
@@ -105,11 +111,15 @@ class World extends Component {
   };
 
   onMouseUp = e => {
-    if (this.props.playerDragging) {
+    const { dragging } = this.props;
+    if (dragging === DRAG_PLAYER) {
       this.props.dragPlayerStop();
-    }
-    if (this.props.destinationDragging) {
+    } else if (dragging === DRAG_DESTINATION) {
       this.props.dragDestinationStop();
+    } else if (dragging === DRAG_ACTOR) {
+      this.props.dragActorStop();
+    } else if (dragging === DRAG_TRIGGER) {
+      this.props.dragTriggerStop();
     }
     this.worldDragging = false;
   };
@@ -273,8 +283,7 @@ function mapStateToProps(state) {
     showConnections:
       state.project.present.settings &&
       state.project.present.settings.showConnections,
-    playerDragging: state.editor.playerDragging,
-    destinationDragging: state.editor.destinationDragging
+    dragging: state.editor.dragging
   };
 }
 
@@ -288,7 +297,11 @@ const mapDispatchToProps = {
   dragPlayerStart: actions.dragPlayerStart,
   dragPlayerStop: actions.dragPlayerStop,
   dragDestinationStart: actions.dragDestinationStart,
-  dragDestinationStop: actions.dragDestinationStop
+  dragDestinationStop: actions.dragDestinationStop,
+  dragActorStart: actions.dragActorStart,
+  dragActorStop: actions.dragActorStop,
+  dragTriggerStart: actions.dragTriggerStart,
+  dragTriggerStop: actions.dragTriggerStop
 };
 
 export default connect(

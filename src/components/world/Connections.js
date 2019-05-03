@@ -21,6 +21,7 @@ const calculateTransitionCoords = ({
   dragX,
   dragY,
   entityIndex,
+  entityId,
   entityX = 0,
   entityY = 0,
   entityWidth = 0,
@@ -49,7 +50,7 @@ const calculateTransitionCoords = ({
     type,
     eventId: event.id,
     sceneId: scene.id,
-    entityIndex,
+    entityId,
     direction: event.args.direction
   };
 };
@@ -84,6 +85,7 @@ export default React.memo(
                 dragX,
                 dragY,
                 entityIndex,
+                entityId: entity.id,
                 entityX: entity.x,
                 entityY: entity.y,
                 entityWidth: entity.width || 2,
@@ -110,6 +112,7 @@ export default React.memo(
                 dragX,
                 dragY,
                 entityIndex,
+                entityId: entity.id,
                 entityX: entity.x,
                 entityY: entity.y,
                 entityWidth: entity.width || 2,
@@ -179,15 +182,12 @@ export default React.memo(
           </g>
         ))}
         {connections.map(
-          (
-            { x2, y2, direction, eventId, sceneId, type, entityIndex },
-            index
-          ) => (
+          ({ x2, y2, direction, eventId, sceneId, type, entityId }, index) => (
             <g
               key={index}
               className="Connections__Destination"
               onMouseDown={() =>
-                onDragDestinationStart(eventId, sceneId, type, entityIndex)
+                onDragDestinationStart(eventId, sceneId, type, entityId)
               }
             >
               <rect

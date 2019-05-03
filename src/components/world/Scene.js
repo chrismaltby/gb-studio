@@ -79,7 +79,9 @@ class Scene extends Component {
       width,
       height,
       playerDragging,
-      destinationDragging
+      destinationDragging,
+      actorDragging,
+      triggerDragging
     } = this.props;
     const { creating, downX, downY } = this.state;
 
@@ -98,26 +100,10 @@ class Scene extends Component {
             this.props.addCollisionTile(id, tX, tY);
           }
         } else if (tool === "triggers") {
-          this.props.resizeTrigger(id, 0, downX, downY, tX, tY);
+          this.props.resizeTrigger(id, editor.entityId, downX, downY, tX, tY);
         } else if (tool === "eraser") {
           if (showCollisions) {
             this.props.removeCollisionTile(id, tX, tY);
-          }
-        } else if (tool === "select") {
-          if (editor.type === "triggers") {
-            this.props.moveTrigger(
-              id,
-              editor.index,
-              tX - this.state.hoverX,
-              tY - this.state.hoverY
-            );
-          } else if (editor.type === "actors") {
-            this.props.moveActor(
-              id,
-              editor.index,
-              tX - this.state.hoverX,
-              tY - this.state.hoverY
-            );
           }
         }
       }
@@ -149,11 +135,17 @@ class Scene extends Component {
             destinationDragging,
             editor.scene,
             editor.type,
-            editor.index,
+            editor.entityId,
             id,
             tX,
             tY
           );
+        } else if (actorDragging) {
+          const { id, editor } = this.props;
+          this.props.moveActor(editor.scene, editor.entityId, id, tX, tY);
+        } else if (triggerDragging) {
+          const { id, editor } = this.props;
+          this.props.moveTrigger(editor.scene, editor.entityId, id, tX, tY);
         }
       }
 
@@ -174,9 +166,13 @@ class Scene extends Component {
     let actor = this.actorAt(hoverX, hoverY);
 
     if (trigger) {
-      this.props.selectTrigger(id, scene.triggers.indexOf(trigger));
+      this.props.dragTriggerStart(
+        id,
+        trigger.id,
+        scene.triggers.indexOf(trigger)
+      );
     } else if (actor) {
-      this.props.selectActor(id, scene.actors.indexOf(actor));
+      this.props.dragActorStart(id, actor.id, scene.actors.indexOf(actor));
     }
 
     if (tool === "select") {
@@ -375,7 +371,7 @@ class Scene extends Component {
                 "Scene__Trigger--Selected":
                   editor.type === "triggers" &&
                   editor.scene === id &&
-                  editor.index === index
+                  editor.entityId === trigger.id
               })}
               style={{
                 top: trigger.y * 8,
@@ -403,7 +399,7 @@ class Scene extends Component {
               selected={
                 editor.type === "actors" &&
                 editor.scene === id &&
-                editor.index === index
+                editor.entityId === actor.id
               }
             />
           ))}
@@ -502,6 +498,8 @@ function mapStateToProps(state, props) {
     selected: state.editor.scene === props.id,
     playerDragging: state.editor.playerDragging,
     destinationDragging: state.editor.destinationDragging,
+    actorDragging: state.editor.actorDragging,
+    triggerDragging: state.editor.triggerDragging,
     sprites
   };
 }
@@ -511,6 +509,7 @@ const mapDispatchToProps = {
   addActor: actions.addActor,
   selectActor: actions.selectActor,
   moveActor: actions.moveActor,
+  editActor: actions.editActor,
   removeActorAt: actions.removeActorAt,
   addCollisionTile: actions.addCollisionTile,
   removeCollisionTile: actions.removeCollisionTile,
@@ -518,6 +517,7 @@ const mapDispatchToProps = {
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
   moveTrigger: actions.moveTrigger,
+  editTrigger: actions.editTrigger,
   selectTrigger: actions.selectTrigger,
   selectScene: actions.selectScene,
   setTool: actions.setTool,
@@ -526,7 +526,9 @@ const mapDispatchToProps = {
   dragSceneStart: actions.dragSceneStart,
   dragSceneStop: actions.dragSceneStop,
   editPlayerStartAt: actions.editPlayerStartAt,
-  editDestinationPosition: actions.editDestinationPosition
+  editDestinationPosition: actions.editDestinationPosition,
+  dragActorStart: actions.dragActorStart,
+  dragTriggerStart: actions.dragTriggerStart
 };
 
 export default connect(
