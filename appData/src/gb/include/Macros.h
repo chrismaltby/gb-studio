@@ -37,6 +37,16 @@
 #define DIV_4(a) ((a) >> 2)
 #define DIV_2(a) ((a) >> 1)
 
+#define ACTOR_SPRITE(ptr) (*(ptr))
+#define ACTOR_X(ptr) (*((ptr) + 1))
+#define ACTOR_Y(ptr) (*((ptr) + 2))
+#define ACTOR_REDRAW(ptr) (*((ptr) + 5))
+#define ACTOR_FRAME(ptr) (*((ptr) + 6))
+#define ACTOR_ENABLED(ptr) (*((ptr) + 9))
+#define ACTOR_FLIP(ptr) (*((ptr) + 10))
+#define ACTOR_FRAME_OFFSET(ptr) (*((ptr) + 11))
+#define ACTOR_MOVING(ptr) (*((ptr) + 12))
+
 #define IS_NEG(a) ((UBYTE)(a)&0x80)
 
 #define hide_sprite(a) (move_sprite((a), 0, 0))

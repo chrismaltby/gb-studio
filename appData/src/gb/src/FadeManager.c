@@ -1,6 +1,7 @@
 #include "FadeManager.h"
 
-static UBYTE fade_running;
+UBYTE fade_running;
+
 static UBYTE fade_frame;
 static UBYTE fade_frames_per_step;
 static UBYTE fade_timer;
