@@ -81,8 +81,14 @@ SCRIPT_CMD script_cmds[] = {
   {Script_MathDivVal_b, 0},         // 0x3D
   {Script_MathModVal_b, 0},         // 0x3E
   {Script_CopyVal_b, 0},            // 0x3F
-  {Script_IfValueCompare_b, 3},     // 0xD0,
-  {Script_LoadVectors_b, 4}         // 0xD1
+  {Script_IfValueCompare_b, 3},     // 0x40,
+  {Script_LoadVectors_b, 4},        // 0x41
+  {NULL, 0},                        // 0x42 : RESERVED FOR RichardULZ
+  {NULL, 0},                        // 0x43 : RESERVED FOR RichardULZ
+  {Script_ScenePushState_b, 0},     // 0x44
+  {Script_ScenePopState_b, 1},      // 0x45
+  {Script_ActorGetDir_b, 2},        // 0x46
+  {Script_ActorSetDirVal_b, 2},     // 0x47
 };
 
 UBYTE ScriptLastFnComplete();
@@ -159,7 +165,7 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
-  if (last_fn == Script_LoadScene_b && !IsFading())
+  if (!IsFading() && (last_fn == Script_LoadScene_b || last_fn == Script_ScenePopState_b))
   {
     return TRUE;
   }
