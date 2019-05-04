@@ -63,7 +63,9 @@ import {
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_SET_BG_SCRIPT,
+  EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -156,7 +158,9 @@ const CMD_LOOKUP = {
   MATH_MOD_VALUE: 0x3e,
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
-  LOAD_VECTORS: 0x41
+  LOAD_VECTORS: 0x41,
+  SET_BG_SCRIPT: 0x42,
+  CLEAR_BG_SCRIPT: 0x43
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -599,6 +603,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(startPtrIndex & 0xff);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_SET_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.SET_BG_SCRIPT);
+    } else if (command === EVENT_CLEAR_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.CLEAR_BG_SCRIPT);
     } else if (command === EVENT_LOAD_DATA) {
       output.push(CMD_LOOKUP.LOAD_DATA);
     } else if (command === EVENT_SAVE_DATA) {

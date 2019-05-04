@@ -15,6 +15,10 @@ UWORD script_start_ptr = 0;
 UBYTE script_cmd_args[6] = {0};
 UBYTE script_cmd_args_len;
 SCRIPT_CMD_FN last_fn;
+UBYTE BG_ptr_bank = 0;
+UWORD BG_ptr = 0;
+UWORD BG_start_ptr = 0;
+UBYTE BGscript_active = FALSE;
 
 SCRIPT_CMD script_cmds[] = {
   {Script_End_b, 0},                // 0x00
@@ -81,17 +85,23 @@ SCRIPT_CMD script_cmds[] = {
   {Script_MathDivVal_b, 0},         // 0x3D
   {Script_MathModVal_b, 0},         // 0x3E
   {Script_CopyVal_b, 0},            // 0x3F
-  {Script_IfValueCompare_b, 3},     // 0xD0,
-  {Script_LoadVectors_b, 4}         // 0xD1
+  {Script_IfValueCompare_b, 3},     // 0x40
+  {Script_LoadVectors_b, 4},        // 0x41
+  {Script_SetBGscript_b, 0},        // 0x42
+  {Script_ClearBGscript_b, 0}       // 0x43
 };
 
 UBYTE ScriptLastFnComplete();
 
 void ScriptStart(BANK_PTR *events_ptr)
 {
+  actors[script_actor].moving = FALSE;
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
   script_start_ptr = script_ptr;
+  script_action_complete = TRUE;
+  BGscript_active = FALSE;
+  actor_move_settings &= ~ACTOR_MOVE_ENABLED;
 }
 
 void ScriptRunnerUpdate()
@@ -116,9 +126,20 @@ void ScriptRunnerUpdate()
   if (!script_cmd_index)
   {
     LOG("SCRIPT FINISHED\n");
-    script_ptr_bank = 0;
-    script_ptr = 0;
+    if(BG_ptr!=0 && !BGscript_active)
+    {
+      script_ptr_bank = BG_ptr_bank; 
+      script_ptr = BG_ptr;
+      script_start_ptr = BG_start_ptr;
+      BGscript_active = TRUE; 
+    return; 
+    }
+    else
+    {
+      script_ptr_bank = 0;
+      script_ptr = 0;
     return;
+    }
   }
 
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;

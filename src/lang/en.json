@@ -102,7 +102,8 @@
   "FIELD_MUL_VARIABLE": "Multiply",
   "FIELD_DIV_VARIABLE": "Divide",
   "FIELD_MOD_VARIABLE": "Modulus",
-
+  "FIELD_SET_BG_SCRIPT": "Allow script to run in the Background from this point onward. Pauses & resumes when another script starts & ends. **VERY EXPEREMENTAL**",
+  "FIELD_CLEAR_BG_SCRIPT": "Removes the BG script from memory so it can not restart. **VERY EXPEREMENTAL**",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -177,6 +178,8 @@
   "EVENT_SAVE_DATA": "Save Game Data",
   "EVENT_CLEAR_DATA": "Clear Game Data",
   "EVENT_IF_SAVED_DATA": "If Saved Game Data",
+  "EVENT_SET_BG_SCRIPT": "Set as Background Script",
+  "EVENT_CLEAR_BG_SCRIPT": "Clear Background Script",
 
   "// 10": "Menu -----------------------------------------------------",
 
