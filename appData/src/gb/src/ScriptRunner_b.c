@@ -36,8 +36,19 @@ void Script_Noop_b()
  */
 void Script_End_b()
 {
-  script_ptr_bank = 0;
-  script_ptr = 0;
+if(BG_ptr != 0)// && !BGscript_active)
+  {
+    script_ptr_bank = BG_ptr_bank; 
+    script_ptr = BG_ptr;
+
+    BGscript_active = TRUE;
+    script_continue = TRUE;
+  }
+  else
+  { 
+    script_ptr_bank = 0;
+    script_ptr = 0;
+  }
 }
 
 /*
@@ -1315,6 +1326,38 @@ void Script_LoadVectors_b()
 {
   script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: setBGscript
+ * ----------------------------
+ * Copy curent script bank, script_ptr, and script_start_ptr to bg backup
+ * Also sets BGscript_active to True 
+ */
+void Script_SetBGscript_b()
+{
+  BG_ptr_bank = script_ptr_bank;
+  BG_ptr = script_ptr;
+  BG_start_ptr = script_start_ptr;
+  BGscript_active = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ClearBGscript
+ * ----------------------------
+ * Resets BG ptr
+ * Sets BGscript_active to False 
+ */
+void Script_ClearBGscript_b()
+{
+  BG_ptr_bank = 0;
+  BG_ptr = 0;
+  BG_start_ptr = 0;
+  BGscript_active = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

@@ -4,6 +4,8 @@ import l10n from "../helpers/l10n";
 export const EVENT_END = "EVENT_END";
 export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created
 export const EVENT_WAIT = "EVENT_WAIT";
+export const EVENT_SET_BG_SCRIPT = "EVENT_SET_BG_SCRIPT";
+export const EVENT_CLEAR_BG_SCRIPT = "EVENT_CLEAR_BG_SCRIPT";
 
 // Scenes
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
@@ -698,6 +700,16 @@ export const EventFields = {
   [EVENT_STOP]: [
     {
       label: l10n("FIELD_STOP_SCRIPT")
+    }
+  ],
+  [EVENT_SET_BG_SCRIPT]: [
+    {
+      label: l10n("FIELD_SET_BG_SCRIPT")
+    }
+  ],
+  [EVENT_CLEAR_BG_SCRIPT]: [
+    {
+      label: l10n("FIELD_CLEAR_BG_SCRIPT")
     }
   ],
   [EVENT_LOAD_DATA]: [

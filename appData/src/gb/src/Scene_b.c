@@ -563,7 +563,7 @@ void SceneUpdateActorMovement_b(UBYTE i)
   actors[i].redraw = TRUE;
 
   // Dont check collisions when running script
-  if (script_ptr != 0 && (actor_move_settings & ACTOR_NOCLIP))
+  if ((script_ptr != 0 && !BGscript_active) && (actor_move_settings & ACTOR_NOCLIP))
   {
     actors[i].moving = TRUE;
     return;
@@ -680,7 +680,7 @@ static void SceneHandleInput()
   }
 
   // Can't move while script is running
-  if (script_ptr != 0 || emote_timer != 0 || IsFading())
+  if ((script_ptr != 0 && !BGscript_active)|| emote_timer != 0 || IsFading())
   {
     actors[0].moving = FALSE;
     return;
