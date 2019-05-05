@@ -39,7 +39,8 @@ class ActorEditor extends Component {
       id,
       spriteSheet,
       sceneImage,
-      clipboardActor
+      clipboardActor,
+      collisions
     } = this.props;
 
     if (!actor) {
@@ -139,6 +140,19 @@ class ActorEditor extends Component {
               </FormField>
             </div>
           )}
+
+          <FormField>
+            <label>
+              <input
+                type="checkbox"
+                className="Checkbox"
+                checked={actor.collisionsDisabled || false}
+                onChange={this.onEdit("collisionsDisabled")}
+              />
+              <div className="FormCheckbox" />
+              {l10n("FIELD_COLLISIONS")}
+            </label>
+          </FormField>
         </div>
 
         <FormField>

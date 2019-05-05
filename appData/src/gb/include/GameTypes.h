@@ -66,6 +66,7 @@ typedef struct _ACTORSPRITE
     UWORD script_ptr;
     BANK_PTR events_ptr;
     MOVEMENT_TYPE movement_type;
+    UBYTE collisions_disabled;
 } ACTOR;
 
 typedef struct _TRIGGER

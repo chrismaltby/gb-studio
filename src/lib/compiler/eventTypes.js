@@ -13,6 +13,8 @@ export const EVENT_SCENE_POP_STATE = "EVENT_SCENE_POP_STATE";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
+export const EVENT_SCENE_ENABLE_COLLISIONS = "EVENT_SCENE_ENABLE_COLLISIONS";
+export const EVENT_SCENE_DISABLE_COLLISIONS = "EVENT_SCENE_DISABLE_COLLISIONS";
 
 // Data
 export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
@@ -69,6 +71,8 @@ export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
 export const EVENT_ACTOR_GET_POSITION = "EVENT_ACTOR_GET_POSITION";
 export const EVENT_ACTOR_SET_POSITION_TO_VALUE = "EVENT_ACTOR_SET_POSITION_TO_VALUE";
 export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
+export const EVENT_ACTOR_ENABLE_COLLISIONS = "EVENT_ACTOR_ENABLE_COLLISIONS";
+export const EVENT_ACTOR_DISABLE_COLLISIONS = "EVENT_ACTOR_DISABLE_COLLISIONS";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -147,6 +151,16 @@ export const EventFields = {
       type: "fadeSpeed",
       defaultValue: "2",
       width: "50%"
+    }
+  ],
+  [EVENT_SCENE_ENABLE_COLLISIONS]: [
+    {
+      label: l10n("FIELD_SCENE_ENABLE_COLLISIONS")
+    }
+  ],
+  [EVENT_SCENE_DISABLE_COLLISIONS]: [
+    {
+      label: l10n("FIELD_SCENE_DISABLE_COLLISIONS")
     }
   ],
   [EVENT_WAIT]: [
@@ -414,6 +428,20 @@ export const EventFields = {
       key: "speed",
       type: "fadeSpeed",
       defaultValue: "2"
+    }
+  ],
+  [EVENT_ACTOR_ENABLE_COLLISIONS]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    }
+  ],
+  [EVENT_ACTOR_DISABLE_COLLISIONS]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
     }
   ],
   [EVENT_ACTOR_SET_DIRECTION]: [
