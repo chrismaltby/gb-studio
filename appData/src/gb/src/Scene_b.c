@@ -461,24 +461,7 @@ void SceneUpdateActors_b()
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
             memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
-            actors[i].moving = FALSE;
             ++r;
-          }
-          else if (actors[i].movement_type == AI_ROTATE_TRB)
-          {
-            if (actors[i].dir.y == -1)
-            {
-              memcpy(&actors[i].dir, directions[3], sizeof(POS));
-            }
-            else if (actors[i].dir.y == 1)
-            {
-              memcpy(&actors[i].dir, directions[0], sizeof(POS));
-            }
-            else if (actors[i].dir.y == 0)
-            {
-              memcpy(&actors[i].dir, directions[1], sizeof(POS));
-            }
-            actors[i].moving = FALSE;
           }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
           {
@@ -504,24 +487,7 @@ void SceneUpdateActors_b()
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
             memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
-            actors[i].moving = FALSE;
             ++r;
-          }
-          else if (actors[i].movement_type == AI_ROTATE_TRB)
-          {
-            if (actors[i].dir.y == -1)
-            {
-              memcpy(&actors[i].dir, directions[3], sizeof(POS));
-            }
-            else if (actors[i].dir.y == 1)
-            {
-              memcpy(&actors[i].dir, directions[0], sizeof(POS));
-            }
-            else if (actors[i].dir.y == 0)
-            {
-              memcpy(&actors[i].dir, directions[1], sizeof(POS));
-            }
-            actors[i].moving = FALSE;
           }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
           {
@@ -531,12 +497,16 @@ void SceneUpdateActors_b()
           }
         }
       }
+    
     }
     else if ((time == 8) || (time == 72) || (time == 136) || (time == 200))
     {
+      ptr = actors;
+      ptr += jump;
       for (i = 1; i != scene_num_actors; i++)
       {
-        actors[i].moving = FALSE;
+        ACTOR_MOVING(ptr) = FALSE;
+        ptr += jump;
       }
     }
   }
