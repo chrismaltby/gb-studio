@@ -22,4 +22,8 @@ class MovementSpeedSelect extends Component {
   }
 }
 
+MovementSpeedSelect.defaultProps = {
+  value: "1"
+};
+
 export default MovementSpeedSelect;

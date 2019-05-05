@@ -23,4 +23,8 @@ class AnimationSpeedSelect extends Component {
   }
 }
 
+AnimationSpeedSelect.defaultProps = {
+    value: "3"
+};
+
 export default AnimationSpeedSelect;

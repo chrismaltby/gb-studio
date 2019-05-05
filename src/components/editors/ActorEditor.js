@@ -177,7 +177,8 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
-            {((spriteSheet.type === "actor_animated" && actor.movementType !== "static") || actor.animate) && (
+            {((spriteSheet.type === "actor_animated" && actor.movementType !== "static") || (actor.animate && (actor.movementType === "static" ||
+              spriteSheet.type !== "actor"))) && (
               <FormField>
                 <label htmlFor="actorAnimSpeed">Animation Speed</label>
                 <AnimationSpeedSelect

@@ -326,7 +326,9 @@ export default function project(state = initialState.project, action) {
                   x: action.x,
                   y: action.y,
                   movementType: "static",
-                  direction: "down"
+                  direction: "down",
+                  moveSpeed: "1",
+                  animSpeed: "3"
                 },
                 scene.actors
               )
