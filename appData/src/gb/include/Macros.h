@@ -52,6 +52,8 @@
 #define ACTOR_FLIP(ptr) (*((ptr) + 10))
 #define ACTOR_FRAME_OFFSET(ptr) (*((ptr) + 11))
 #define ACTOR_MOVING(ptr) (*((ptr) + 12))
+#define ACTOR_MOVE_SPEED(ptr) (*((ptr) + 13))
+#define ACTOR_ANIM_SPEED(ptr) (*((ptr) + 14))
 
 #define IS_NEG(a) ((UBYTE)(a)&0x80)
 

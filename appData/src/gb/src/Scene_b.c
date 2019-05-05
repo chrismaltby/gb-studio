@@ -141,6 +141,10 @@ void SceneInit_b2()
     actors[i].flip = FALSE;
     actors[i].animate = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
     actors[i].frame = 0;
+    actors[i].move_speed = 0;
+    actors[i].anim_speed = 0;
+    actors[i].move_speed = 0;
+    actors[i].anim_speed = 0; 
     actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4)) + 8;
     actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5)) + 8;
     j = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
@@ -264,7 +268,9 @@ void SceneInit_b9()
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
   actors[0].dir.y = map_next_dir.y;
-
+  actors[0].move_speed = 0;
+  actors[0].anim_speed = 1;
+  
   // Init start script
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_col_ptr);
@@ -591,15 +597,21 @@ void SceneUpdateActors_b()
 
     for (i = 0; i != len; ++i)
     {
-      if(ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
-      {
-        if(ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)
+      if(ACTOR_ANIM_SPEED(ptr)==0
+      ||(ACTOR_ANIM_SPEED(ptr)==1 && IS_FRAME_16)
+      ||(ACTOR_ANIM_SPEED(ptr)==2 && IS_FRAME_32)
+      ||(ACTOR_ANIM_SPEED(ptr)==3 && IS_FRAME_64)
+      ||(ACTOR_ANIM_SPEED(ptr)==4 && IS_FRAME_128)) {
+        if(ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
         {
-          ACTOR_FRAME(ptr) = 0;
-        }
-        else
-        {
-          ACTOR_FRAME(ptr) = ACTOR_FRAME(ptr) + 1;
+          if(ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)
+          {
+            ACTOR_FRAME(ptr) = 0;
+          }
+          else
+          {
+            ACTOR_FRAME(ptr) = ACTOR_FRAME(ptr) + 1;
+          }
         }
       }
 
