@@ -46,6 +46,7 @@ const VEC2D dir_right = {1, 0};
 const VEC2D dir_none = {0, 0};
 VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
 VEC2D *update_dir;
+UBYTE last_joy;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private functions
@@ -281,6 +282,7 @@ void SceneInit_b9()
   FadeIn();
 
   time = 0;
+  last_joy = 0;
 
   SHOW_SPRITES;
   DISPLAY_ON;
@@ -380,8 +382,11 @@ void SceneUpdateCamera_b()
 
 void SceneUpdateActors_b()
 {
-  UBYTE i, len;
+  UBYTE i, len, jump;
   BYTE r;
+  UBYTE *ptr;
+
+  jump = sizeof(ACTOR);
 
   // Handle script move
   if (actor_move_settings & ACTOR_MOVE_ENABLED && ((actors[script_actor].pos.x & 7) == 0) && ((actors[script_actor].pos.y & 7) == 0))
@@ -533,9 +538,11 @@ void SceneUpdateActors_b()
   }
 
   // Is frame where npc would move
+  /*
   if (((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
   {
-    len = scene_num_actors;
+    // len = scene_num_actors;
+    len = 1;
   }
   else
   {
@@ -543,41 +550,53 @@ void SceneUpdateActors_b()
     len = 1;
 
     // Move script actor
-    if (script_ptr != 0 && script_actor != 0 && actors[script_actor].moving)
-    {
-      // Move actors
-      actors[script_actor].pos.x += actors[script_actor].dir.x;
-      actors[script_actor].pos.y += actors[script_actor].dir.y;
+    if(script_ptr != 0 && script_actor != 0) {
+      ptr = actors + (jump * script_actor);
+      if(ACTOR_MOVING(ptr)) {
+        ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
+        ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);
+      }
     }
   }
+  */
+
+  ptr = actors;
+  len = scene_num_actors;
 
   for (i = 0; i != len; ++i)
   {
     // Move actors
-    if (actors[i].moving)
+    if (ACTOR_MOVING(ptr))
     {
-      actors[i].pos.x += actors[i].dir.x;
-      actors[i].pos.y += actors[i].dir.y;
+      ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
+      ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);
     }
+
+    ptr += jump;
   }
 
+
+  // Cycle through animation frames
   if (IS_FRAME_8)
   {
     len = scene_num_actors;
+    ptr = actors;
 
     for (i = 0; i != len; ++i)
     {
-      if (actors[i].moving || actors[i].animate)
+      if(ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
       {
-        if (actors[i].frame == actors[i].frames_len - 1)
+        if(ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)
         {
-          actors[i].frame = 0;
+          ACTOR_FRAME(ptr) = 0;
         }
         else
         {
-          actors[i].frame += 1;
+          ACTOR_FRAME(ptr) = ACTOR_FRAME(ptr) + 1;
         }
       }
+
+      ptr += jump;
     }
   }
 }
@@ -737,8 +756,10 @@ static void SceneHandleInput()
       ScriptStart(&actors[npc].events_ptr);
     }
   }
-  else if (IS_FRAME_4)
+  else if (IS_FRAME_4 && (actors[0].moving || joy != last_joy))
   {
+    last_joy = joy;
+
     if (JOY(J_LEFT))
     {
       update_dir = &dir_left;
@@ -787,19 +808,18 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, s, x, y, jump;
+  UBYTE i, s, x, y, len, jump;
   UBYTE *ptr;
 
-  if (IS_FRAME_8)
+  if (IS_FRAME_9)
   {
     ptr = actors;
     jump = sizeof(ACTOR);
 
     for (i = 0; i != scene_num_actors; ++i)
     {
-
       s = MUL_2(i);
-      x = MUL_4(ACTOR_SPRITE(ptr) + ACTOR_FRAME_OFFSET(ptr));
+      x = MUL_4(ACTOR_SPRITE(ptr) + ACTOR_FRAME(ptr) + ACTOR_FRAME_OFFSET(ptr));
       if (ACTOR_FLIP(ptr))
       {
         set_sprite_tile(s + 1, x);
@@ -818,23 +838,52 @@ void SceneRenderActors_b()
   ptr = actors;
   jump = sizeof(ACTOR);
 
-  for (i = 0; i != scene_num_actors; ++i)
+  if (camera_moved)
   {
-    s = MUL_2(i);
-    x = ACTOR_X(ptr) - SCX_REG;
-    y = ACTOR_Y(ptr) - SCY_REG;
+    for (i = 0; i != scene_num_actors; ++i)
+    {
+      s = MUL_2(i);
+      x = ACTOR_X(ptr) - SCX_REG;
+      y = ACTOR_Y(ptr) - SCY_REG;
 
-    if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
-    {
-      move_sprite(s, x, y);
-      move_sprite(s + 1, x + 8, y);
+      if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
+      {
+        move_sprite(s, x, y);
+        move_sprite(s + 1, x + 8, y);
+      }
+      else
+      {
+        move_sprite(s, 0, 0);
+        move_sprite(s + 1, 0, 0);
+      }
+      ptr += jump;
     }
-    else
+  } else {
+    if (win_pos_y != MENU_CLOSED_Y || ((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
     {
-      move_sprite(s, 0, 0);
-      move_sprite(s + 1, 0, 0);
+      len = scene_num_actors;
+    } else {
+      len = 1;
     }
-    ptr += jump;
+
+    for (i = 0; i != len; ++i)
+    {
+      s = MUL_2(i);
+      x = ACTOR_X(ptr) - SCX_REG;
+      y = ACTOR_Y(ptr) - SCY_REG;
+
+      if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
+      {
+        move_sprite(s, x, y);
+        move_sprite(s + 1, x + 8, y);
+      }
+      else
+      {
+        move_sprite(s, 0, 0);
+        move_sprite(s + 1, 0, 0);
+      }
+      ptr += jump;
+    }
   }
 
   // move_sprite(2, 32, 32);
@@ -984,24 +1033,21 @@ void SceneRenderActor_b(UBYTE i)
     }
   }
 
-  // frame = MUL_4(actors[i].sprite + actors[i].frame + fo);
+  frame = MUL_4(actors[i].sprite + actors[i].frame + fo);
 
-  if (flip != actors[i].flip)
+  if (flip)
   {
-    if (flip)
-    {
-      // Handle facing left
-      set_sprite_prop_pair(s, S_FLIPX);
-      set_sprite_tile_pair(s, frame + 2, frame);
-    }
-    else
-    {
-      // Handle facing right
-      set_sprite_prop_pair(s, 0x0);
-      set_sprite_tile_pair(s, frame, frame + 2);
-    }
+    // Handle facing left
+    set_sprite_prop_pair(s, S_FLIPX);
+    set_sprite_tile_pair(s, frame + 2, frame);
   }
-
+  else
+  {
+    // Handle facing right
+    set_sprite_prop_pair(s, 0x0);
+    set_sprite_tile_pair(s, frame, frame + 2);
+  }
+  
   actors[i].flip = flip;
   actors[i].frame_offset = fo;
 }
