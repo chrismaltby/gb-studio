@@ -1,9 +1,21 @@
-.EditorSidebar {
+.EditorSidebarWrapper {
+  right: 0;
   position: fixed;
-  width: 300px;
-  right: -300px;
   top: 38px;
   bottom: 0px;
+  display: flex;
+  flex-direction: row;
+}
+
+.EditorSidebarDragHandle {
+  width: 16px;
+  height: 100vh;
+  position: fixed;
+  margin-left: -8px;
+  cursor: ew-resize;
+}
+
+.EditorSidebar {
   background-color: var(--sidebar-bg-color);
   border-left: 1px solid var(--sidebar-edge-color);
   overflow: auto;

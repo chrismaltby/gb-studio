@@ -16,6 +16,10 @@ extern UWORD script_ptr_y;
 extern UBYTE script_action_complete;
 extern UBYTE script_continue;
 extern UBYTE script_actor;
+extern UBYTE BG_ptr_bank;
+extern UWORD BG_ptr;
+extern UWORD BG_start_ptr;
+extern UBYTE BGscript_active;
 
 void ScriptStart(BANK_PTR *events_ptr);
 void ScriptRunnerUpdate();
@@ -88,4 +92,11 @@ void Script_IfValueCompare_b();
 void Script_LoadVectors_b();
 void Script_ToggleSceneCol_b();
 void Script_ToggleActorCol_b();
+void Script_ScenePushState_b();
+void Script_ScenePopState_b();
+void Script_LoadSceneVal_b();
+void Script_ActorGetDir_b();
+void Script_ActorSetDirVal_b();
+void Script_SetBGscript_b();
+void Script_ClearBGscript_b();
 #endif

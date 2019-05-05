@@ -36,8 +36,19 @@ void Script_Noop_b()
  */
 void Script_End_b()
 {
-  script_ptr_bank = 0;
-  script_ptr = 0;
+if(BG_ptr != 0)// && !BGscript_active)
+  {
+    script_ptr_bank = BG_ptr_bank; 
+    script_ptr = BG_ptr;
+
+    BGscript_active = TRUE;
+    script_continue = TRUE;
+  }
+  else
+  { 
+    script_ptr_bank = 0;
+    script_ptr = 0;
+  }
 }
 
 /*
@@ -1333,6 +1344,92 @@ void Script_ToggleSceneCol_b() {
 }
 
 /*
+ * Command: ScenePushState
+ * ----------------------------
+ * Stores the state of the current scene
+ */
+void Script_ScenePushState_b()
+{
+  state_dir.x = actors[0].dir.x;
+  state_dir.y = actors[0].dir.y;
+  state_pos.x = 0;
+  state_pos.x = actors[0].pos.x;
+  state_pos.y = 0;
+  state_pos.y = actors[0].pos.y;
+  state_scene_index = scene_index;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: setBGscript
+ * ----------------------------
+ * Copy curent script bank, script_ptr, and script_start_ptr to bg backup
+ * Also sets BGscript_active to True 
+ */
+void Script_SetBGscript_b()
+{
+  BG_ptr_bank = script_ptr_bank;
+  BG_ptr = script_ptr;
+  BG_start_ptr = script_start_ptr;
+  BGscript_active = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ScenePopState
+ * ----------------------------
+ * Restores the saved scene state
+ *
+ *   arg0: Fade speed
+ */
+void Script_ScenePopState_b()
+{
+  scene_next_index = state_scene_index;
+  scene_index = scene_next_index + 1;
+
+  map_next_pos.x = 0; // @wtf-but-needed
+  map_next_pos.x = state_pos.x;
+  map_next_pos.y = 0; // @wtf-but-needed
+  map_next_pos.y = state_pos.y;
+  map_next_dir.x = state_dir.x;
+  map_next_dir.y = state_dir.y;
+
+  stage_next_type = SCENE;
+  script_action_complete = FALSE;
+
+  FadeSetSpeed(script_cmd_args[0]);
+  FadeOut();
+
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: ActorGetDir
+ * ----------------------------
+ * Set variable to actor direction
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ */
+void Script_ActorGetDir_b() {
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_variables[ptr] = 1;
+
+  if (actors[script_actor].dir.x) {
+    script_variables[ptr] = actors[script_actor].dir.x == -1 ? 2 : 4;
+  }
+
+  if (!actors[script_actor].dir.x && actors[script_actor].dir.y) {
+    script_variables[ptr] = actors[script_actor].dir.y == -1 ? 8 : 1;
+  }
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
  * Command: ToggleActorCol
  * ----------------------------
  * Enable or disable actor collisions
@@ -1341,6 +1438,39 @@ void Script_ToggleSceneCol_b() {
  */
 void Script_ToggleActorCol_b() {
   actors[script_actor].collisions_disabled = !script_cmd_args[0];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorSetDirVal
+ * ----------------------------
+ * Set the direction of actor from variable
+ *
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ */
+void Script_ActorSetDirVal_b() {
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  actors[script_actor].dir.x = script_variables[ptr] == 2 ? -1 : script_variables[ptr] == 4 ? 1 : 0;
+  actors[script_actor].dir.y = script_variables[ptr] == 8 ? -1 : script_variables[ptr] == 1 ? 1 : 0;
+  actors[script_actor].redraw = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ClearBGscript
+ * ----------------------------
+ * Resets BG ptr
+ * Sets BGscript_active to False 
+ */
+void Script_ClearBGscript_b()
+{
+  BG_ptr_bank = 0;
+  BG_ptr = 0;
+  BG_start_ptr = 0;
+  BGscript_active = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

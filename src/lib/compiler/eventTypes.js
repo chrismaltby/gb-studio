@@ -4,8 +4,12 @@ import l10n from "../helpers/l10n";
 export const EVENT_END = "EVENT_END";
 export const EVENT_STOP = "EVENT_STOP"; // Same as End except explicitly user created
 export const EVENT_WAIT = "EVENT_WAIT";
+export const EVENT_SET_BG_SCRIPT = "EVENT_SET_BG_SCRIPT";
+export const EVENT_CLEAR_BG_SCRIPT = "EVENT_CLEAR_BG_SCRIPT";
 
 // Scenes
+export const EVENT_SCENE_PUSH_STATE = "EVENT_SCENE_PUSH_STATE";
+export const EVENT_SCENE_POP_STATE = "EVENT_SCENE_POP_STATE";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
@@ -55,6 +59,8 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 // Actor
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
+export const EVENT_ACTOR_GET_DIRECTION = "EVENT_ACTOR_GET_DIRECTION";
+export const EVENT_ACTOR_SET_DIRECTION_TO_VALUE = "EVENT_ACTOR_SET_DIRECTION_TO_VALUE";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_SET_POSITION_RELATIVE = "EVENT_ACTOR_SET_POSITION_RELATIVE";
 export const EVENT_ACTOR_MOVE_RELATIVE = "EVENT_ACTOR_MOVE_RELATIVE";
@@ -91,6 +97,23 @@ export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 
 export const EventFields = {
+  [EVENT_SCENE_PUSH_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
+    },
+  ],
+  [EVENT_SCENE_POP_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
+    },
+    {
+      key: "fadeSpeed",
+      label: l10n("FIELD_FADE_SPEED"),
+      type: "fadeSpeed",
+      defaultValue: "2",
+      width: "50%"
+    }
+  ],
   [EVENT_SWITCH_SCENE]: [
     {
       key: "sceneId",
@@ -433,6 +456,30 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
+  [EVENT_ACTOR_SET_DIRECTION_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
+  [EVENT_ACTOR_GET_DIRECTION]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
+    }
+  ],
   [EVENT_ACTOR_GET_POSITION]: [
     {
       key: "actorId",
@@ -726,6 +773,16 @@ export const EventFields = {
   [EVENT_STOP]: [
     {
       label: l10n("FIELD_STOP_SCRIPT")
+    }
+  ],
+  [EVENT_SET_BG_SCRIPT]: [
+    {
+      label: l10n("FIELD_SET_BG_SCRIPT")
+    }
+  ],
+  [EVENT_CLEAR_BG_SCRIPT]: [
+    {
+      label: l10n("FIELD_CLEAR_BG_SCRIPT")
     }
   ],
   [EVENT_LOAD_DATA]: [

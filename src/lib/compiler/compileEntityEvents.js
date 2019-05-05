@@ -17,7 +17,9 @@ import {
   EVENT_ACTOR_GET_POSITION,
   EVENT_ACTOR_SET_POSITION,
   EVENT_ACTOR_SET_POSITION_TO_VALUE,
+  EVENT_ACTOR_GET_DIRECTION,
   EVENT_ACTOR_SET_DIRECTION,
+  EVENT_ACTOR_SET_DIRECTION_TO_VALUE,
   EVENT_ACTOR_MOVE_TO,
   EVENT_WAIT,
   EVENT_CAMERA_SHAKE,
@@ -68,6 +70,10 @@ import {
   EVENT_SCENE_DISABLE_COLLISIONS,
   EVENT_ACTOR_ENABLE_COLLISIONS,
   EVENT_ACTOR_DISABLE_COLLISIONS,
+  EVENT_SCENE_PUSH_STATE,
+  EVENT_SCENE_POP_STATE,
+  EVENT_SET_BG_SCRIPT,
+  EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -161,8 +167,14 @@ const CMD_LOOKUP = {
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
   LOAD_VECTORS: 0x41,
+  SET_BG_SCRIPT: 0x42,
+  CLEAR_BG_SCRIPT: 0x43,
+  SCENE_PUSH_STATE: 0x44,
+  SCENE_POP_STATE: 0x45,
+  ACTOR_GET_DIRECTION: 0x46,
+  ACTOR_SET_DIRECTION_TO_VALUE: 0x47,
   SCENE_TOGGLE_COLLISIONS: 0x48,
-  ACTOR_TOGGLE_COLLISIONS: 0x49,
+  ACTOR_TOGGLE_COLLISIONS: 0x49
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -495,6 +507,22 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
+    } else if (command === EVENT_ACTOR_GET_DIRECTION) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_GET_DIRECTION);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
+    } else if (command === EVENT_ACTOR_SET_DIRECTION_TO_VALUE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION_TO_VALUE);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_ACTOR_SET_DIRECTION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
@@ -558,6 +586,12 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(input[i].args.fadeSpeed || 2);
         output.push(CMD_LOOKUP.END);
       }
+    } else if (command === EVENT_SCENE_PUSH_STATE) {
+      output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
+    } else if (command === EVENT_SCENE_POP_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {
@@ -623,6 +657,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(startPtrIndex & 0xff);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_SET_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.SET_BG_SCRIPT);
+    } else if (command === EVENT_CLEAR_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.CLEAR_BG_SCRIPT);
     } else if (command === EVENT_LOAD_DATA) {
       output.push(CMD_LOOKUP.LOAD_DATA);
     } else if (command === EVENT_SAVE_DATA) {
