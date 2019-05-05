@@ -83,8 +83,14 @@ SCRIPT_CMD script_cmds[] = {
   {Script_CopyVal_b, 0},            // 0x3F
   {Script_IfValueCompare_b, 3},     // 0x40
   {Script_LoadVectors_b, 4},        // 0x41
-  {Script_ToggleSceneCol_b, 1},     // 0x42
-  {Script_ToggleActorCol_b, 1}      // 0x43
+  {NULL, 0},                        // 0x42
+  {NULL, 0},                        // 0x43
+  {NULL, 0},                        // 0x44
+  {NULL, 0},                        // 0x45
+  {NULL, 0},                        // 0x46
+  {NULL, 0},                        // 0x47
+  {Script_ToggleSceneCol_b, 1},     // 0x48
+  {Script_ToggleActorCol_b, 1}      // 0x49
 };
 
 UBYTE ScriptLastFnComplete();
