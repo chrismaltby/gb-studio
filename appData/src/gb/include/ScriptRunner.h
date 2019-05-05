@@ -90,6 +90,11 @@ void Script_MathModVal_b();
 void Script_CopyVal_b();
 void Script_IfValueCompare_b();
 void Script_LoadVectors_b();
+void Script_ScenePushState_b();
+void Script_ScenePopState_b();
+void Script_LoadSceneVal_b();
+void Script_ActorGetDir_b();
+void Script_ActorSetDirVal_b();
 void Script_SetBGscript_b();
 void Script_ClearBGscript_b();
 #endif

@@ -20,4 +20,8 @@ extern UBYTE prev_joy;
 extern UBYTE time;
 extern UBYTE text_drawn;
 
+extern POS state_pos;
+extern POS state_dir;
+extern UWORD state_scene_index;
+
 #endif
