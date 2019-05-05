@@ -540,11 +540,11 @@ void SceneUpdateActors_b()
 
     for (i = 0; i != len; ++i)
     {
-      if(ACTOR_ANIM_SPEED(ptr)==0
-      ||(ACTOR_ANIM_SPEED(ptr)==1 && IS_FRAME_16)
+      if(ACTOR_ANIM_SPEED(ptr)==4
+      ||(ACTOR_ANIM_SPEED(ptr)==3 && IS_FRAME_16)
       ||(ACTOR_ANIM_SPEED(ptr)==2 && IS_FRAME_32)
-      ||(ACTOR_ANIM_SPEED(ptr)==3 && IS_FRAME_64)
-      ||(ACTOR_ANIM_SPEED(ptr)==4 && IS_FRAME_128)) {
+      ||(ACTOR_ANIM_SPEED(ptr)==1 && IS_FRAME_64)
+      ||(ACTOR_ANIM_SPEED(ptr)==0 && IS_FRAME_128)) {
         if(ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
         {
           if(ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)

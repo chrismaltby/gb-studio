@@ -11,6 +11,8 @@ import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -164,6 +166,26 @@ class ActorEditor extends Component {
                 </label>
               </FormField>
             )}
+
+            {actor.movementType === "randomWalk" && (
+              <FormField>
+                <label htmlFor="actorMoveSpeed">Movement Speed</label>
+                <MovementSpeedSelect
+                  id="actorMoveSpeed"
+                  value={actor.moveSpeed}
+                  onChange={this.onEdit("moveSpeed")}/>
+              </FormField>
+            )}
+
+            {((spriteSheet.type === "actor_animated" && actor.movementType !== "static") || actor.animate) && (
+              <FormField>
+                <label htmlFor="actorAnimSpeed">Animation Speed</label>
+                <AnimationSpeedSelect
+                  id="actorAnimSpeed"
+                  value={actor.animSpeed}
+                  onChange={this.onEdit("animSpeed")}/>
+              </FormField>    
+            )}                    
         </div>
 
         <ScriptEditor
