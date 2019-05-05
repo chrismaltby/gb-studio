@@ -137,6 +137,8 @@ void SceneInit_b2()
     actors[i].frames_len = 0;
     actors[i].frames_len = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
     actors[i].animate = FALSE;
+    actors[i].frame_offset = 0;
+    actors[i].flip = FALSE;
     actors[i].animate = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
     actors[i].frame = 0;
     actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4)) + 8;
@@ -185,6 +187,11 @@ void SceneInit_b3()
 
 void SceneInit_b4()
 {
+  UBYTE i;
+  for(i=1; i != scene_num_actors; ++i)
+  {
+    SceneRenderActor_b(i);
+  }
 }
 
 void SceneInit_b5()
@@ -737,6 +744,7 @@ static void SceneHandleInput()
 
   if (JOY_PRESSED(J_A))
   {
+    last_joy = joy;
     actors[0].moving = FALSE;
     next_tx = DIV_8(actors[0].pos.x) + actors[0].dir.x;
     next_ty = DIV_8(actors[0].pos.y) + actors[0].dir.y;
@@ -864,6 +872,21 @@ void SceneRenderActors_b()
       len = scene_num_actors;
     } else {
       len = 1;
+      // Unless running script on actor
+      if (script_ptr != 0 && script_actor != 0)
+      {
+        s = MUL_2(script_actor);
+        x = actors[script_actor].pos.x - SCX_REG;
+        y = actors[script_actor].pos.y - SCY_REG;
+        if (actors[script_actor].enabled && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
+        {
+          move_sprite_pair(s, x, y);
+        }
+        else
+        {
+          hide_sprite_pair(s);
+        }
+      }
     }
 
     for (i = 0; i != len; ++i)
@@ -1009,6 +1032,7 @@ void SceneRenderActor_b(UBYTE i)
 
   s = MUL_2(i);
   flip = FALSE;
+  fo = 0;
 
   if (actors[i].sprite_type != SPRITE_STATIC)
   {
@@ -1034,7 +1058,7 @@ void SceneRenderActor_b(UBYTE i)
   }
 
   frame = MUL_4(actors[i].sprite + actors[i].frame + fo);
-
+  
   if (flip)
   {
     // Handle facing left
