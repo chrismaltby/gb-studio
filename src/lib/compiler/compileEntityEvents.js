@@ -63,7 +63,11 @@ import {
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_SCENE_ENABLE_COLLISIONS,
+  EVENT_SCENE_DISABLE_COLLISIONS,
+  EVENT_ACTOR_ENABLE_COLLISIONS,
+  EVENT_ACTOR_DISABLE_COLLISIONS,
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -156,7 +160,9 @@ const CMD_LOOKUP = {
   MATH_MOD_VALUE: 0x3e,
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
-  LOAD_VECTORS: 0x41
+  LOAD_VECTORS: 0x41,
+  SCENE_TOGGLE_COLLISIONS: 0x42,
+  ACTOR_TOGGLE_COLLISIONS: 0x43,
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -380,6 +386,18 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
+    } else if (command === EVENT_ACTOR_ENABLE_COLLISIONS) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_TOGGLE_COLLISIONS);
+      output.push(true);
+    } else if (command === EVENT_ACTOR_DISABLE_COLLISIONS) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_TOGGLE_COLLISIONS);
+      output.push(false);
     } else if (command === EVENT_SET_TRUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_TRUE);
@@ -522,6 +540,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_EMOTE);
       output.push(actorIndex);
       output.push(input[i].args.emoteId || 0);
+    } else if (command === EVENT_SCENE_ENABLE_COLLISIONS) {
+      output.push(CMD_LOOKUP.SCENE_TOGGLE_COLLISIONS);
+      output.push(true);
+    } else if (command === EVENT_SCENE_DISABLE_COLLISIONS) {
+      output.push(CMD_LOOKUP.SCENE_TOGGLE_COLLISIONS);
+      output.push(false);
     } else if (command === EVENT_SWITCH_SCENE) {
       let sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
       if (sceneIndex > -1) {

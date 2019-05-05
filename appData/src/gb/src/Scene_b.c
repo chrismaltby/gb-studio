@@ -46,6 +46,7 @@ const VEC2D dir_right = {1, 0};
 const VEC2D dir_none = {0, 0};
 VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
 VEC2D *update_dir;
+UBYTE collisions_disabled = FALSE;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private functions
@@ -142,8 +143,9 @@ void SceneInit_b2()
     // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
     actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
     actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
+    actors[i].collisions_disabled = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9));
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
-    scene_load_ptr = scene_load_ptr + 9u;
+    scene_load_ptr = scene_load_ptr + 10u;
   }
 
   // Load triggers
@@ -251,6 +253,8 @@ void SceneInit_b9()
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_col_ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 2);
+  collisions_disabled = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 3));
+
   ScriptStart(&events_ptr);
 
   // Hide unused Sprites
@@ -572,28 +576,30 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
-  // Check for npc collisions
-  npc = SceneNpcAt_b(i, next_tx, next_ty);
-  if (npc != scene_num_actors)
-  {
-    actors[i].moving = FALSE;
-    return;
-  }
+  if (!collisions_disabled && !actors[i].collisions_disabled) {
+    // Check for npc collisions
+    npc = SceneNpcAt_b(i, next_tx, next_ty);
+    if (npc != scene_num_actors)
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on left tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
-  }
+    // Check collisions on left tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on right tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
+    // Check collisions on right tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
   }
 
   // LOG("UPDATE ACTOR MOVEMENT %u\n", i);

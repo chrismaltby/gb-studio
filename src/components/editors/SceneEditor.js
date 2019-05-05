@@ -112,6 +112,19 @@ class SceneEditor extends Component {
               onChange={this.onEdit("backgroundId")}
             />
           </FormField>
+
+          <FormField>
+            <label>
+              <input
+                type="checkbox"
+                className="Checkbox"
+                checked={scene.collisionsDisabled || false}
+                onChange={this.onEdit("collisionsDisabled")}
+              />
+              <div className="FormCheckbox" />
+              {l10n("FIELD_COLLISIONS")}
+            </label>
+          </FormField>
         </div>
 
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (

@@ -155,7 +155,8 @@ const compile = async (
         collisions,
         eventPtrs[sceneIndex].start.bank, // Event bank ptr
         hi(eventPtrs[sceneIndex].start.offset), // Event offset ptr
-        lo(eventPtrs[sceneIndex].start.offset)
+        lo(eventPtrs[sceneIndex].start.offset),
+        scene.collisionsDisabled ? 1 : 0
       )
     );
   });
@@ -670,7 +671,8 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
         moveDec(actor.movementType), // Movement Type
         eventPtrs[actorIndex].bank, // Event bank ptr
         hi(eventPtrs[actorIndex].offset), // Event offset ptr
-        lo(eventPtrs[actorIndex].offset)
+        lo(eventPtrs[actorIndex].offset),
+        actor.collisionsDisabled ? 1 : 0
       ];
     })
   );
