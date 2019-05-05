@@ -52,6 +52,8 @@
   "FIELD_SPRITE_SHEET": "Sprite Sheet",
   "FIELD_PLAYER_SPRITE_SHEET": "Player Sprite Sheet",
   "FIELD_MOVEMENT_TYPE": "Movement Type",
+  "FIELD_MOVEMENT_SPEED": "Movement Speed",
+  "FIELD_ANIMATION_SPEED": "Animation Speed",
   "FIELD_DIRECTION": "Direction",
   "FIELD_X": "X",
   "FIELD_Y": "Y",
