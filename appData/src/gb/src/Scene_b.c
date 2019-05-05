@@ -581,13 +581,18 @@ void SceneUpdateActors_b()
     // Move actors
     if (ACTOR_MOVING(ptr))
     {
-      ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
-      ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);
+      if(ACTOR_MOVE_SPEED(ptr)==0) {
+        if(IS_FRAME_2) {
+          ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
+          ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);      
+        }
+      } else {
+        ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr) * ACTOR_MOVE_SPEED(ptr);
+        ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
+      }
     }
-
     ptr += jump;
   }
-
 
   // Cycle through animation frames
   if (IS_FRAME_8)
@@ -776,7 +781,7 @@ static void SceneHandleInput()
       ScriptStart(&actors[npc].events_ptr);
     }
   }
-  else if (IS_FRAME_4 && (actors[0].moving || joy != last_joy))
+  else if ((actors[0].moving || joy != last_joy))
   {
     last_joy = joy;
 
