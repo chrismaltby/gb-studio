@@ -676,6 +676,8 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction
         moveDec(actor.movementType), // Movement Type
+        actor.moveSpeed === undefined ? 1 : actor.moveSpeed,
+        actor.animSpeed === undefined ? 3 : actor.animSpeed,
         eventPtrs[actorIndex].bank, // Event bank ptr
         hi(eventPtrs[actorIndex].offset), // Event offset ptr
         lo(eventPtrs[actorIndex].offset)

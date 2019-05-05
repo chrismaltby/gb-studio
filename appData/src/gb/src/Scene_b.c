@@ -142,8 +142,7 @@ void SceneInit_b2()
     actors[i].frame = 0;
     actors[i].move_speed = 0;
     actors[i].anim_speed = 0;
-    actors[i].move_speed = 0;
-    actors[i].anim_speed = 0; 
+
     actors[i].pos.x = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 4)) + 8;
     actors[i].pos.y = MUL_8(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 5)) + 8;
     j = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 6);
@@ -152,11 +151,16 @@ void SceneInit_b2()
 
     actors[i].movement_type = 0; // WTF needed
     actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7);
+    
+    actors[i].move_speed = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
+    actors[i].anim_speed = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9); 
+    
     // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
-    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
-    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 10);
+    actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 10);
+    actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 11) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 12);
+    
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
-    scene_load_ptr = scene_load_ptr + 11u;
+    scene_load_ptr = scene_load_ptr + 13u;
   }
 
   // Load triggers
