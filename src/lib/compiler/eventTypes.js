@@ -724,38 +724,41 @@ export const EventFields = {
   ],
   [EVENT_MATH_ADD]: [
     {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
       key: "value",
       type: "number",
+      label: l10n("FIELD_ADD_VALUE"),
       min: 0,
       max: 255,
-      label: "+",
       defaultValue: "0"
+    },
+    {
+      key: "variable",
+      type: "variable",
+      label: l10n("FIELD_TO_VARIABLE"),
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_MATH_SUB]: [
     {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
       key: "value",
       type: "number",
       min: 0,
       max: 255,
-      label: "-",
+      label: l10n("FIELD_SUB_VALUE"),
       defaultValue: "0"
+    },
+    {
+      key: "variable",
+      type: "variable",
+      label: l10n("FIELD_FROM_VARIABLE"),
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_MATH_MUL]: [
     {
       key: "variable",
       type: "variable",
+      label: l10n("FIELD_MUL_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
@@ -763,7 +766,7 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 255,
-      label: "*",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "0"
     }
   ],
@@ -771,6 +774,7 @@ export const EventFields = {
     {
       key: "variable",
       type: "variable",
+      label: l10n("FIELD_DIV_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
@@ -778,7 +782,7 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 255,
-      label: "/",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "0"
     }
   ],
@@ -786,6 +790,7 @@ export const EventFields = {
     {
       key: "variable",
       type: "variable",
+      label: l10n("FIELD_MOD_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
@@ -793,33 +798,35 @@ export const EventFields = {
       type: "number",
       min: 0,
       max: 255,
-      label: "%",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "0"
     }
   ],
   [EVENT_MATH_ADD_VALUE]: [
     {
-      key: "vectorX",
+      key: "vectorY",
       type: "variable",
+      label: l10n("FIELD_ADD_VALUE_FROM"),
       defaultValue: "LAST_VARIABLE"
     },
     {
-      key: "vectorY",
+      key: "vectorX",
       type: "variable",
-      label: "+",
+      label: l10n("FIELD_TO_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_MATH_SUB_VALUE]: [
     {
-      key: "vectorX",
+      key: "vectorY",
       type: "variable",
+      label: l10n("FIELD_SUB_VALUE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
-      key: "vectorY",
+      key: "vectorX",
       type: "variable",
-      label: "-",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "LAST_VARIABLE"
     }
   ],
@@ -827,12 +834,13 @@ export const EventFields = {
     {
       key: "vectorX",
       type: "variable",
+      label: l10n("FIELD_MUL_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
       key: "vectorY",
       type: "variable",
-      label: "*",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "LAST_VARIABLE"
     }
   ],
@@ -840,12 +848,13 @@ export const EventFields = {
     {
       key: "vectorX",
       type: "variable",
+      label: l10n("FIELD_DIV_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
       key: "vectorY",
       type: "variable",
-      label: "/",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "LAST_VARIABLE"
     }
   ],
@@ -853,27 +862,27 @@ export const EventFields = {
     {
       key: "vectorX",
       type: "variable",
+      label: l10n("FIELD_MOD_VARIABLE"),
       defaultValue: "LAST_VARIABLE"
     },
     {
       key: "vectorY",
       type: "variable",
-      label: "%",
+      label: l10n("FIELD_BY_VALUE"),
       defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_COPY_VALUE]: [
     {
-      key: "vectorX",
+      key: "vectorY",
       type: "variable",
-      label: "To",
+      label: "Copy Variable",
       defaultValue: "LAST_VARIABLE"
     },
     {
-      key: "vectorY",
+      key: "vectorX",
       type: "variable",
-      label: "From",
-      label: "",
+      label: "To Variable",
       defaultValue: "LAST_VARIABLE"
     }
   ],

@@ -8,7 +8,7 @@ import compileEntityEvents from "./compileEntityEvents";
 import { EVENT_TEXT, EVENT_MUSIC_PLAY, EVENT_CHOICE } from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
-import { projectTemplatesRoot } from "../../consts";
+import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import { combineMultipleChoiceText } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 
@@ -599,7 +599,7 @@ export const precompileScenes = (scenes, usedBackgrounds, usedSprites) => {
         scene.name +
         "' has missing or no background assigned.";
     }
-    const actors = scene.actors.filter(actor => {
+    const actors = scene.actors.slice(0, MAX_ACTORS).filter(actor => {
       return usedSprites.find(s => s.id === actor.spriteSheetId);
     });
 
@@ -616,7 +616,7 @@ export const precompileScenes = (scenes, usedBackgrounds, usedSprites) => {
         }
         return memo;
       }, []),
-      triggers: scene.triggers.filter(trigger => {
+      triggers: scene.triggers.slice(0, MAX_TRIGGERS).filter(trigger => {
         // Filter out unused triggers which cause slow down
         // When walking over
         return trigger.script && trigger.script.length > 1;

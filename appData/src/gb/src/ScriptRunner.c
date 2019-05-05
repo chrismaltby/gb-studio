@@ -83,7 +83,7 @@ SCRIPT_CMD script_cmds[] = {
   {Script_CopyVal_b, 4},            // 0x3F
   {Script_IfValueCompare_b, 3},     // 0x40,
   {Script_LoadVectors_b, 4},        // 0x41
-  {Script_CollisionsToggle_b, 1},   // 0x42
+  {Script_CollisionsToggle_b, 1}   // 0x42
 };
 
 UBYTE ScriptLastFnComplete();

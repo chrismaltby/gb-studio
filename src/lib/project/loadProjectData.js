@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import uuid from "uuid/v4";
 import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
@@ -68,6 +69,24 @@ const loadProject = async projectPath => {
   });
 
   json.music = fixedMusicIds;
+
+  const addMissingEntityId = entity => {
+    if (!entity.id) {
+      entity.id = uuid();
+    }
+    return entity;
+  };
+
+  // Fix ids on actors and triggers
+  const fixedScenes = (json.scenes || []).map(scene => {
+    return {
+      ...scene,
+      actors: scene.actors.map(addMissingEntityId),
+      triggers: scene.triggers.map(addMissingEntityId)
+    };
+  });
+
+  json.scenes = fixedScenes;
 
   return json;
 };

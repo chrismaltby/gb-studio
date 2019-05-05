@@ -5,6 +5,12 @@ import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
 import { remote, BrowserWindow } from "electron";
+import {
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_ACTOR,
+  DRAG_TRIGGER
+} from "../../reducers/editorReducer";
 
 const MIDDLE_MOUSE = 2;
 
@@ -23,6 +29,8 @@ class World extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener("copy", this.onCopy);
+    window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
@@ -48,6 +56,8 @@ class World extends Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener("copy", this.onCopy);
+    window.removeEventListener("paste", this.onPaste);
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
@@ -78,6 +88,48 @@ class World extends Component {
     }
   }
 
+  onCopy = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    e.preventDefault();
+    const { editor, scenes } = this.props;
+    if (editor.type === "scenes") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      this.props.copyScene(scene);
+    } else if (editor.type === "triggers") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      const trigger = scene.triggers.find(t => t.id === editor.entityId);
+      this.props.copyTrigger(trigger);
+    } else if (editor.type === "actors") {
+      const scene = scenes.find(s => s.id === editor.scene);
+      const actor = scene.actors.find(a => a.id === editor.entityId);
+      this.props.copyActor(actor);
+    }
+  };
+
+  onPaste = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    e.preventDefault();
+    const { clipboardType, editor } = this.props;
+    if (clipboardType === "actor") {
+      const { clipboardActor } = this.props;
+      if (editor.scene) {
+        this.props.pasteActor(editor.scene, clipboardActor);
+      }
+    } else if (clipboardType === "trigger") {
+      const { clipboardTrigger } = this.props;
+      if (editor.scene) {
+        this.props.pasteTrigger(editor.scene, clipboardTrigger);
+      }
+    } else if (clipboardType === "scene") {
+      const { clipboardScene } = this.props;
+      this.props.pasteScene(clipboardScene);
+    }
+  };
+
   onKeyDown = e => {
     if (e.target.nodeName !== "BODY") {
       return;
@@ -90,9 +142,9 @@ class World extends Component {
       if (editor.type === "scenes") {
         this.props.removeScene(editor.scene);
       } else if (editor.type === "triggers") {
-        this.props.removeTrigger(editor.scene, editor.index);
+        this.props.removeTrigger(editor.scene, editor.entityId);
       } else if (editor.type === "actors") {
-        this.props.removeActor(editor.scene, editor.index);
+        this.props.removeActor(editor.scene, editor.entityId);
       }
     }
   };
@@ -105,11 +157,15 @@ class World extends Component {
   };
 
   onMouseUp = e => {
-    if (this.props.playerDragging) {
+    const { dragging } = this.props;
+    if (dragging === DRAG_PLAYER) {
       this.props.dragPlayerStop();
-    }
-    if (this.props.destinationDragging) {
+    } else if (dragging === DRAG_DESTINATION) {
       this.props.dragDestinationStop();
+    } else if (dragging === DRAG_ACTOR) {
+      this.props.dragActorStop();
+    } else if (dragging === DRAG_TRIGGER) {
+      this.props.dragTriggerStop();
     }
     this.worldDragging = false;
   };
@@ -273,8 +329,11 @@ function mapStateToProps(state) {
     showConnections:
       state.project.present.settings &&
       state.project.present.settings.showConnections,
-    playerDragging: state.editor.playerDragging,
-    destinationDragging: state.editor.destinationDragging
+    dragging: state.editor.dragging,
+    clipboardScene: state.clipboard.scene,
+    clipboardActor: state.clipboard.actor,
+    clipboardTrigger: state.clipboard.trigger,
+    clipboardType: state.clipboard.last
   };
 }
 
@@ -288,7 +347,17 @@ const mapDispatchToProps = {
   dragPlayerStart: actions.dragPlayerStart,
   dragPlayerStop: actions.dragPlayerStop,
   dragDestinationStart: actions.dragDestinationStart,
-  dragDestinationStop: actions.dragDestinationStop
+  dragDestinationStop: actions.dragDestinationStop,
+  dragActorStart: actions.dragActorStart,
+  dragActorStop: actions.dragActorStop,
+  dragTriggerStart: actions.dragTriggerStart,
+  dragTriggerStop: actions.dragTriggerStop,
+  copyScene: actions.copyScene,
+  copyActor: actions.copyActor,
+  copyTrigger: actions.copyTrigger,
+  pasteScene: actions.pasteScene,
+  pasteActor: actions.pasteActor,
+  pasteTrigger: actions.pasteTrigger
 };
 
 export default connect(
