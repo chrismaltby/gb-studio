@@ -67,7 +67,9 @@ import {
   EVENT_COPY_VALUE,
   EVENT_IF_VALUE_COMPARE,
   EVENT_SCENE_PUSH_STATE,
-  EVENT_SCENE_POP_STATE
+  EVENT_SCENE_POP_STATE,
+  EVENT_SET_BG_SCRIPT,
+  EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -161,6 +163,8 @@ const CMD_LOOKUP = {
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
   LOAD_VECTORS: 0x41,
+  SET_BG_SCRIPT: 0x42,
+  CLEAR_BG_SCRIPT: 0x43,
   SCENE_PUSH_STATE: 0x44,
   SCENE_POP_STATE: 0x45,
   ACTOR_GET_DIRECTION: 0x46,
@@ -629,6 +633,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(startPtrIndex & 0xff);
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_SET_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.SET_BG_SCRIPT);
+    } else if (command === EVENT_CLEAR_BG_SCRIPT) {
+      output.push(CMD_LOOKUP.CLEAR_BG_SCRIPT);
     } else if (command === EVENT_LOAD_DATA) {
       output.push(CMD_LOOKUP.LOAD_DATA);
     } else if (command === EVENT_SAVE_DATA) {
