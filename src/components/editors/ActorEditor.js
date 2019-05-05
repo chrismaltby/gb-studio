@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { CloseIcon } from "../library/Icons";
 import MovementTypeSelect from "../forms/MovementTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
@@ -10,7 +9,7 @@ import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
-import { MenuItem } from "../library/Menu";
+import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 
 class ActorEditor extends Component {
@@ -20,12 +19,28 @@ class ActorEditor extends Component {
     });
   };
 
+  onCopy = e => {
+    this.props.copyActor(this.props.actor);
+  };
+
+  onPaste = e => {
+    const { clipboardActor } = this.props;
+    this.props.pasteActor(this.props.scene, clipboardActor);
+  };
+
   onRemove = e => {
     this.props.removeActor(this.props.scene, this.props.id);
   };
 
   render() {
-    const { actor, id, spriteSheet, sceneImage } = this.props;
+    const {
+      index,
+      actor,
+      id,
+      spriteSheet,
+      sceneImage,
+      clipboardActor
+    } = this.props;
 
     if (!actor) {
       return <div />;
@@ -37,7 +52,18 @@ class ActorEditor extends Component {
           title={l10n("ACTOR")}
           buttons={
             <DropdownButton small transparent right>
-              <MenuItem onClick={this.onRemove}>Delete Actor</MenuItem>
+              <MenuItem onClick={this.onCopy}>
+                {l10n("MENU_COPY_ACTOR")}
+              </MenuItem>
+              {clipboardActor && (
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemove}>
+                {l10n("MENU_DELETE_ACTOR")}
+              </MenuItem>
             </DropdownButton>
           }
         />
@@ -47,7 +73,7 @@ class ActorEditor extends Component {
             <label htmlFor="actorName">{l10n("FIELD_NAME")}</label>
             <input
               id="actorName"
-              placeholder={"Actor " + (id + 1)}
+              placeholder={"Actor " + (index + 1)}
               value={actor.name || ""}
               onChange={this.onEdit("name")}
             />
@@ -130,6 +156,7 @@ class ActorEditor extends Component {
         <ScriptEditor
           value={actor.script}
           type="actor"
+          title={l10n("SIDEBAR_ACTOR_SCRIPT")}
           onChange={this.onEdit("script")}
         />
       </div>
@@ -147,22 +174,27 @@ function mapStateToProps(state, props) {
     project.present.backgrounds.find(
       background => background.id === scene.backgroundId
     );
-  const actor = scene && scene.actors[props.id];
+  const actor = scene && scene.actors.find(a => a.id === props.id);
+  const index = scene && scene.actors.indexOf(actor);
   const spriteSheet =
     actor &&
     project.present.spriteSheets.find(
       spriteSheet => spriteSheet.id === actor.spriteSheetId
     );
   return {
+    index,
     actor,
     spriteSheet,
-    sceneImage
+    sceneImage,
+    clipboardActor: state.clipboard.actor
   };
 }
 
 const mapDispatchToProps = {
   editActor: actions.editActor,
-  removeActor: actions.removeActor
+  removeActor: actions.removeActor,
+  copyActor: actions.copyActor,
+  pasteActor: actions.pasteActor
 };
 
 export default connect(

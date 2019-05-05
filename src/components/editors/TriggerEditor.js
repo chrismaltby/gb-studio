@@ -7,7 +7,7 @@ import { FormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
-import { MenuItem } from "../library/Menu";
+import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 
 class TriggerEditor extends Component {
@@ -17,12 +17,21 @@ class TriggerEditor extends Component {
     });
   };
 
+  onCopy = e => {
+    this.props.copyTrigger(this.props.trigger);
+  };
+
+  onPaste = e => {
+    const { clipboardTrigger } = this.props;
+    this.props.pasteTrigger(this.props.scene, clipboardTrigger);
+  };
+
   onRemove = e => {
     this.props.removeTrigger(this.props.scene, this.props.id);
   };
 
   render() {
-    const { trigger, id } = this.props;
+    const { index, trigger, id, clipboardTrigger } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -34,7 +43,18 @@ class TriggerEditor extends Component {
           title={l10n("TRIGGER")}
           buttons={
             <DropdownButton small transparent right>
-              <MenuItem onClick={this.onRemove}>Delete Trigger</MenuItem>
+              <MenuItem onClick={this.onCopy}>
+                {l10n("MENU_COPY_TRIGGER")}
+              </MenuItem>
+              {clipboardTrigger && (
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_TRIGGER")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={this.onRemove}>
+                {l10n("MENU_DELETE_TRIGGER")}
+              </MenuItem>
             </DropdownButton>
           }
         />
@@ -43,7 +63,7 @@ class TriggerEditor extends Component {
             <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
             <input
               id="triggerName"
-              placeholder={"Trigger " + (id + 1)}
+              placeholder={"Trigger " + (index + 1)}
               value={trigger.name || ""}
               onChange={this.onEdit("name")}
             />
@@ -102,9 +122,9 @@ class TriggerEditor extends Component {
           </FormField>
         </div>
 
-        <SidebarHeading title={l10n("SIDEBAR_TRIGGER_SCRIPT")} />
         <ScriptEditor
           value={trigger.script}
+          title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
           type="trigger"
           onChange={this.onEdit("script")}
         />
@@ -114,18 +134,23 @@ class TriggerEditor extends Component {
 }
 
 function mapStateToProps(state, props) {
+  const scenes = state.project.present && state.project.present.scenes;
+  const scene = scenes && scenes.find(scene => scene.id === props.scene);
+  const trigger = scene && scene.triggers.find(t => t.id === props.id);
+  const index = scene && scene.triggers.indexOf(trigger);
+
   return {
-    trigger:
-      state.project.present &&
-      state.project.present.scenes &&
-      state.project.present.scenes.find(scene => scene.id === props.scene)
-        .triggers[props.id]
+    index,
+    trigger,
+    clipboardTrigger: state.clipboard.trigger
   };
 }
 
 const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
-  removeTrigger: actions.removeTrigger
+  removeTrigger: actions.removeTrigger,
+  copyTrigger: actions.copyTrigger,
+  pasteTrigger: actions.pasteTrigger
 };
 
 export default connect(

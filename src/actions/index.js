@@ -197,27 +197,27 @@ export const removeScene = sceneId => {
 };
 
 export const addActor = (sceneId, x, y) => {
-  return { type: types.ADD_ACTOR, sceneId, x, y };
+  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid() };
 };
 
-export const moveActor = (sceneId, index, moveX, moveY) => {
-  return { type: types.MOVE_ACTOR, sceneId, index, moveX, moveY };
+export const moveActor = (sceneId, id, newSceneId, x, y) => {
+  return { type: types.MOVE_ACTOR, sceneId, id, newSceneId, x, y };
 };
 
-export const selectActor = (sceneId, index) => {
-  return { type: types.SELECT_ACTOR, sceneId, index };
+export const selectActor = (sceneId, id) => {
+  return { type: types.SELECT_ACTOR, sceneId, id };
 };
 
-export const removeActor = (sceneId, index) => {
-  return { type: types.REMOVE_ACTOR, sceneId, index };
+export const removeActor = (sceneId, id) => {
+  return { type: types.REMOVE_ACTOR, sceneId, id };
 };
 
 export const removeActorAt = (sceneId, x, y) => {
   return { type: types.REMOVE_ACTOR_AT, sceneId, x, y };
 };
 
-export const editActor = (sceneId, index, values) => {
-  return { type: types.EDIT_ACTOR, sceneId, index, values };
+export const editActor = (sceneId, id, values) => {
+  return { type: types.EDIT_ACTOR, sceneId, id, values };
 };
 
 export const selectScriptEvent = eventId => {
@@ -233,31 +233,31 @@ export const removeCollisionTile = (sceneId, x, y) => {
 };
 
 export const addTrigger = (sceneId, x, y) => {
-  return { type: types.ADD_TRIGGER, sceneId, x, y };
+  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid() };
 };
 
-export const removeTrigger = (sceneId, index) => {
-  return { type: types.REMOVE_TRIGGER, sceneId, index };
+export const removeTrigger = (sceneId, id) => {
+  return { type: types.REMOVE_TRIGGER, sceneId, id };
 };
 
 export const removeTriggerAt = (sceneId, x, y) => {
   return { type: types.REMOVE_TRIGGER_AT, sceneId, x, y };
 };
 
-export const resizeTrigger = (sceneId, index, startX, startY, x, y) => {
-  return { type: types.RESIZE_TRIGGER, sceneId, index, startX, startY, x, y };
+export const resizeTrigger = (sceneId, id, startX, startY, x, y) => {
+  return { type: types.RESIZE_TRIGGER, sceneId, id, startX, startY, x, y };
 };
 
-export const moveTrigger = (sceneId, index, moveX, moveY) => {
-  return { type: types.MOVE_TRIGGER, sceneId, index, moveX, moveY };
+export const moveTrigger = (sceneId, id, newSceneId, x, y) => {
+  return { type: types.MOVE_TRIGGER, sceneId, id, newSceneId, x, y };
 };
 
-export const editTrigger = (sceneId, index, values) => {
-  return { type: types.EDIT_TRIGGER, sceneId, index, values };
+export const editTrigger = (sceneId, id, values) => {
+  return { type: types.EDIT_TRIGGER, sceneId, id, values };
 };
 
-export const selectTrigger = (sceneId, index) => {
-  return { type: types.SELECT_TRIGGER, sceneId, index };
+export const selectTrigger = (sceneId, id) => {
+  return { type: types.SELECT_TRIGGER, sceneId, id };
 };
 
 export const renameVariable = (variableId, name) => {
@@ -296,18 +296,29 @@ export const dragPlayerStop = () => {
   return { type: types.DRAG_PLAYER_STOP };
 };
 
-export const dragDestinationStart = (
-  eventId,
-  sceneId,
-  selectionType,
-  index
-) => {
+export const dragActorStart = (sceneId, id, index) => {
+  return { type: types.DRAG_ACTOR_START, sceneId, index, id };
+};
+
+export const dragActorStop = () => {
+  return { type: types.DRAG_ACTOR_STOP };
+};
+
+export const dragTriggerStart = (sceneId, id, index) => {
+  return { type: types.DRAG_TRIGGER_START, sceneId, index, id };
+};
+
+export const dragTriggerStop = () => {
+  return { type: types.DRAG_TRIGGER_STOP };
+};
+
+export const dragDestinationStart = (eventId, sceneId, selectionType, id) => {
   return {
     type: types.DRAG_DESTINATION_START,
     eventId,
     sceneId,
     selectionType,
-    index
+    id
   };
 };
 
@@ -315,7 +326,7 @@ export const editDestinationPosition = (
   eventId,
   sceneId,
   selectionType,
-  index,
+  id,
   destSceneId,
   x,
   y
@@ -325,7 +336,7 @@ export const editDestinationPosition = (
       type: types.EDIT_ACTOR_EVENT_DESTINATION_POSITION,
       eventId,
       sceneId,
-      index,
+      id,
       destSceneId,
       x,
       y
@@ -335,7 +346,7 @@ export const editDestinationPosition = (
       type: types.EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
       eventId,
       sceneId,
-      index,
+      id,
       destSceneId,
       x,
       y
@@ -358,6 +369,30 @@ export const dragDestinationStop = () => {
 
 export const copyEvent = event => {
   return { type: types.COPY_EVENT, event };
+};
+
+export const copyActor = actor => {
+  return { type: types.COPY_ACTOR, actor };
+};
+
+export const copyTrigger = trigger => {
+  return { type: types.COPY_TRIGGER, trigger };
+};
+
+export const pasteActor = (sceneId, actor) => {
+  return { type: types.PASTE_ACTOR, sceneId, actor, id: uuid() };
+};
+
+export const pasteTrigger = (sceneId, trigger) => {
+  return { type: types.PASTE_TRIGGER, sceneId, trigger, id: uuid() };
+};
+
+export const pasteScene = scene => {
+  return { type: types.PASTE_SCENE, scene, id: uuid() };
+};
+
+export const copyScene = scene => {
+  return { type: types.COPY_SCENE, scene };
 };
 
 export const zoomIn = (section, delta = 0) => {

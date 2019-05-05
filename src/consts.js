@@ -20,4 +20,14 @@ const buildToolsRoot = path.normalize(rootDir + "/buildTools");
 const emulatorRoot = path.normalize(rootDir + "/appData/js-emulator");
 const projectTemplatesRoot = path.normalize(rootDir + "/appData/templates");
 
-export { engineRoot, buildToolsRoot, emulatorRoot, projectTemplatesRoot };
+const MAX_ACTORS = 9;
+const MAX_TRIGGERS = 9;
+
+export {
+  engineRoot,
+  buildToolsRoot,
+  emulatorRoot,
+  projectTemplatesRoot,
+  MAX_ACTORS,
+  MAX_TRIGGERS
+};
