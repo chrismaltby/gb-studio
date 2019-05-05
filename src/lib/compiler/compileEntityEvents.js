@@ -66,8 +66,6 @@ import {
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
   EVENT_IF_VALUE_COMPARE,
-  EVENT_SCENE_ENABLE_COLLISIONS,
-  EVENT_SCENE_DISABLE_COLLISIONS,
   EVENT_ACTOR_ENABLE_COLLISIONS,
   EVENT_ACTOR_DISABLE_COLLISIONS,
   EVENT_SCENE_PUSH_STATE,
@@ -173,8 +171,7 @@ const CMD_LOOKUP = {
   SCENE_POP_STATE: 0x45,
   ACTOR_GET_DIRECTION: 0x46,
   ACTOR_SET_DIRECTION_TO_VALUE: 0x47,
-  SCENE_TOGGLE_COLLISIONS: 0x48,
-  ACTOR_TOGGLE_COLLISIONS: 0x49
+  ACTOR_TOGGLE_COLLISIONS: 0x48
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -403,13 +400,13 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_TOGGLE_COLLISIONS);
-      output.push(true);
+      output.push(0);
     } else if (command === EVENT_ACTOR_DISABLE_COLLISIONS) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_TOGGLE_COLLISIONS);
-      output.push(false);
+      output.push(1);
     } else if (command === EVENT_SET_TRUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.SET_TRUE);
@@ -568,12 +565,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_EMOTE);
       output.push(actorIndex);
       output.push(input[i].args.emoteId || 0);
-    } else if (command === EVENT_SCENE_ENABLE_COLLISIONS) {
-      output.push(CMD_LOOKUP.SCENE_TOGGLE_COLLISIONS);
-      output.push(true);
-    } else if (command === EVENT_SCENE_DISABLE_COLLISIONS) {
-      output.push(CMD_LOOKUP.SCENE_TOGGLE_COLLISIONS);
-      output.push(false);
     } else if (command === EVENT_SWITCH_SCENE) {
       let sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
       if (sceneIndex > -1) {

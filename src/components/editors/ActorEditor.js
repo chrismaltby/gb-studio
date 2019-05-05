@@ -156,16 +156,14 @@ class ActorEditor extends Component {
         </div>
 
         <FormField>
-            <label htmlFor="actorNotes">{l10n("FIELD_NOTES")}</label>
-            <textarea
-              id="actorNotes"
-              value={actor.notes || ""}
-              placeholder={l10n("FIELD_NOTES")}
-              onChange={this.onEdit("notes")}
-            />
-          </FormField>
-
-        <SidebarHeading title={l10n("SIDEBAR_ACTOR_SCRIPT")} />
+          <label htmlFor="actorNotes">{l10n("FIELD_NOTES")}</label>
+          <textarea
+            id="actorNotes"
+            value={actor.notes || ""}
+            placeholder={l10n("FIELD_NOTES")}
+            onChange={this.onEdit("notes")}
+          />
+        </FormField>
 
         <ScriptEditor
           value={actor.script}

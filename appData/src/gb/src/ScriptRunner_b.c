@@ -920,12 +920,11 @@ void Script_IfActorDirection_b()
 {
 
   if (
-      (
-          actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
-          actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
-      (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
-       actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8))
-  { // True path, jump to position specified by ptr
+    (actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
+     actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
+    (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
+     actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8)
+  ) { // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
   else
@@ -1331,19 +1330,6 @@ void Script_LoadVectors_b()
 }
 
 /*
- * Command: ToggleSceneCol
- * ----------------------------
- * Enable or disable scene collisions
- *
- *   arg0: enabled
- */
-void Script_ToggleSceneCol_b() {
-  collisions_disabled = !script_cmd_args[0];
-  script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
-}
-
-/*
  * Command: ScenePushState
  * ----------------------------
  * Stores the state of the current scene
@@ -1437,7 +1423,7 @@ void Script_ActorGetDir_b() {
  *   arg0: enabled
  */
 void Script_ToggleActorCol_b() {
-  actors[script_actor].collisions_disabled = !script_cmd_args[0];
+  actors[script_actor].collisions_disabled = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

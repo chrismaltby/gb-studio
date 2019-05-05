@@ -67,7 +67,7 @@ SCRIPT_CMD script_cmds[] = {
   {Script_SaveData_b, 0},           // 0x2B
   {Script_ClearData_b, 0},          // 0x2C
   {Script_IfSavedData_b, 2},        // 0x2D
-  {Script_IfActorDirection_b, 4},   // 0x2E
+  {Script_IfActorDirection_b, 3},   // 0x2E
   {Script_SetFlagRandomValue_b, 3}, // 0x2F
   {Script_ActorGetPos_b, 0},        // 0x30
   {Script_ActorSetPosToVal_b, 0},   // 0x31
@@ -93,8 +93,7 @@ SCRIPT_CMD script_cmds[] = {
   {Script_ScenePopState_b, 1},      // 0x45
   {Script_ActorGetDir_b, 2},        // 0x46
   {Script_ActorSetDirVal_b, 2},     // 0x47
-  {Script_ToggleSceneCol_b, 1},     // 0x48
-  {Script_ToggleActorCol_b, 1}      // 0x49
+  {Script_ToggleActorCol_b, 1}      // 0x48
 };
 
 UBYTE ScriptLastFnComplete();
@@ -134,11 +133,11 @@ void ScriptRunnerUpdate()
     LOG("SCRIPT FINISHED\n");
     if(BG_ptr!=0 && !BGscript_active)
     {
-      script_ptr_bank = BG_ptr_bank; 
+      script_ptr_bank = BG_ptr_bank;
       script_ptr = BG_ptr;
       script_start_ptr = BG_start_ptr;
-      BGscript_active = TRUE; 
-    return; 
+      BGscript_active = TRUE;
+    return;
     }
     else
     {

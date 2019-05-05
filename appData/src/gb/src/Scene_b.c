@@ -46,7 +46,6 @@ const VEC2D dir_right = {1, 0};
 const VEC2D dir_none = {0, 0};
 VEC2D *directions[5] = {&dir_up, &dir_down, &dir_left, &dir_right, &dir_none};
 VEC2D *update_dir;
-UBYTE collisions_disabled = FALSE;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private functions
@@ -253,7 +252,6 @@ void SceneInit_b9()
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, (UWORD)scene_load_col_ptr);
   events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 1) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 2);
-  collisions_disabled = ReadBankedUBYTE(bank_ptr.bank, scene_load_col_ptr + 3);
 
   ScriptStart(&events_ptr);
 
@@ -576,7 +574,7 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_tx = DIV_8(actors[i].pos.x) + actors[i].dir.x;
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
-  if (!collisions_disabled && !actors[i].collisions_disabled) {
+  if (!actors[i].collisions_disabled) {
     // Check for npc collisions
     npc = SceneNpcAt_b(i, next_tx, next_ty);
     if (npc != scene_num_actors)

@@ -114,19 +114,6 @@ class SceneEditor extends Component {
           </FormField>
 
           <FormField>
-            <label>
-              <input
-                type="checkbox"
-                className="Checkbox"
-                checked={scene.collisionsDisabled || false}
-                onChange={this.onEdit("collisionsDisabled")}
-              />
-              <div className="FormCheckbox" />
-              {l10n("FIELD_COLLISIONS")}
-            </label>
-          </FormField>
-
-          <FormField>
             <label htmlFor="sceneNotes">{l10n("FIELD_NOTES")}</label>
             <textarea
               id="sceneNotes"

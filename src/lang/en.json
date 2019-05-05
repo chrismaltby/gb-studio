@@ -49,8 +49,6 @@
   "FIELD_AUTHOR": "Author",
   "FIELD_NOTES": "Notes",
   "FIELD_TYPE": "Type",
-  "FIELD_SCENE_ENABLE_COLLISIONS": "Enables collisions for this scene",
-  "FIELD_SCENE_DISABLE_COLLISIONS": "Disables collisions for this scene",
   "FIELD_BACKGROUND": "Background",
   "FIELD_SPRITE_SHEET": "Sprite Sheet",
   "FIELD_PLAYER_SPRITE_SHEET": "Player Sprite Sheet",
@@ -124,8 +122,6 @@
 
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_SWITCH_SCENE": "Switch Scene",
-  "EVENT_SCENE_DISABLE_COLLISIONS": "Scene Disable Collisions",
-  "EVENT_SCENE_ENABLE_COLLISIONS": "Scene Enable Collisions",
   "EVENT_SCENE_PUSH_STATE": "Push Scene State",
   "EVENT_SCENE_POP_STATE": "Pop Scene State",
   "EVENT_WAIT": "Wait",
