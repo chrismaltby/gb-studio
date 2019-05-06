@@ -21,6 +21,11 @@ extern UWORD BG_ptr;
 extern UWORD BG_start_ptr;
 extern UBYTE BGscript_active;
 
+// Max 8 levels of nested invokations
+#define STACK_SIZE 8
+extern UWORD script_stack[STACK_SIZE];
+extern UBYTE script_stack_ptr;
+
 void ScriptStart(BANK_PTR *events_ptr);
 void ScriptRunnerUpdate();
 
@@ -99,4 +104,7 @@ void Script_ActorGetDir_b();
 void Script_ActorSetDirVal_b();
 void Script_SetBGscript_b();
 void Script_ClearBGscript_b();
+void Script_ActorInvoke_b();
+void Script_StackPush_b();
+void Script_StackPop_b();
 #endif

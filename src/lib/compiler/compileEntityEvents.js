@@ -71,7 +71,8 @@ import {
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
   EVENT_SET_BG_SCRIPT,
-  EVENT_CLEAR_BG_SCRIPT
+  EVENT_CLEAR_BG_SCRIPT,
+  EVENT_ACTOR_INVOKE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -171,7 +172,10 @@ const CMD_LOOKUP = {
   SCENE_POP_STATE: 0x45,
   ACTOR_GET_DIRECTION: 0x46,
   ACTOR_SET_DIRECTION_TO_VALUE: 0x47,
-  ACTOR_TOGGLE_COLLISIONS: 0x48
+  ACTOR_TOGGLE_COLLISIONS: 0x48,
+  ACTOR_INVOKE: 0x49,
+  STACK_PUSH: 0x4a,
+  STACK_POP: 0x4b
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -271,6 +275,11 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.TEXT);
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
+    } else if (command === EVENT_ACTOR_INVOKE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_INVOKE);
     } else if (command === EVENT_CHOICE) {
       const text = combineMultipleChoiceText(input[i].args);
       const stringIndex = strings.indexOf(text);
