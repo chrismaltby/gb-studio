@@ -501,13 +501,15 @@ void SceneUpdateActors_b()
       }
     
     }
-    else if ((time == 8) || (time == 72) || (time == 136) || (time == 200))
+    else
     {
       ptr = actors;
       ptr += jump;
       for (i = 1; i != scene_num_actors; i++)
       {
-        ACTOR_MOVING(ptr) = FALSE;
+        if(ACTOR_MOVING(ptr) && ACTOR_ON_TILE(i)){
+          ACTOR_MOVING(ptr) = FALSE;
+        }
         ptr += jump;
       }
     }
@@ -801,184 +803,24 @@ void SceneRenderActors_b()
   ptr = actors;
   jump = sizeof(ACTOR);
 
-  if (camera_moved)
+  for (i = 0; i != scene_num_actors; ++i)
   {
-    for (i = 0; i != scene_num_actors; ++i)
+    s = MUL_2(i);
+    x = ACTOR_X(ptr) - SCX_REG;
+    y = ACTOR_Y(ptr) - SCY_REG;
+
+    if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
     {
-      s = MUL_2(i);
-      x = ACTOR_X(ptr) - SCX_REG;
-      y = ACTOR_Y(ptr) - SCY_REG;
-
-      if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
-      {
-        move_sprite(s, x, y);
-        move_sprite(s + 1, x + 8, y);
-      }
-      else
-      {
-        move_sprite(s, 0, 0);
-        move_sprite(s + 1, 0, 0);
-      }
-      ptr += jump;
-    }
-  } else {
-    if (win_pos_y != MENU_CLOSED_Y || ((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
-    {
-      len = scene_num_actors;
-    } else {
-      len = 1;
-      // Unless running script on actor
-      if (script_ptr != 0 && script_actor != 0)
-      {
-        s = MUL_2(script_actor);
-        x = actors[script_actor].pos.x - SCX_REG;
-        y = actors[script_actor].pos.y - SCY_REG;
-        if (actors[script_actor].enabled && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
-        {
-          move_sprite_pair(s, x, y);
-        }
-        else
-        {
-          hide_sprite_pair(s);
-        }
-      }
-    }
-
-    for (i = 0; i != len; ++i)
-    {
-      s = MUL_2(i);
-      x = ACTOR_X(ptr) - SCX_REG;
-      y = ACTOR_Y(ptr) - SCY_REG;
-
-      if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
-      {
-        move_sprite(s, x, y);
-        move_sprite(s + 1, x + 8, y);
-      }
-      else
-      {
-        move_sprite(s, 0, 0);
-        move_sprite(s + 1, 0, 0);
-      }
-      ptr += jump;
-    }
-  }
-
-  // move_sprite(2, 32, 32);
-  // move_sprite(3, 16, 48);
-  // move_sprite(4, 8, 64);
-
-  /*
-  UBYTE i, frame, sprite_index, screen_x, screen_y, len, scx, scy;
-
-  scx = 0 - SCX_REG;
-  scy = 0 - SCY_REG;
-
-  // if (IS_FRAME_8)
-  {
-    // len = scene_num_actors;
-
-    for (i = 0; i != scene_num_actors; ++i)
-    {
-      // flip = FALSE;
-      frame = actors[i].sprite + actors[i].frame;
-
-      // If sprite not static increment frame count
-      // based on direction of actor
-      if (actors[i].sprite_type != SPRITE_STATIC)
-      {
-        // Increase frame based on facing direction
-        if (IS_NEG(actors[i].dir.y))
-        {
-          frame += 1 + (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
-        }
-        else if (actors[i].dir.x != 0)
-        {
-          frame += 2 + MUL_2(actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
-
-          // // Facing left so flip sprite
-          // if (IS_NEG(actors[i].dir.x))
-          // {
-          //   flip = TRUE;
-          // }
-        }
-      }
-
-      sprite_index = MUL_2(i);
-      if (actors[i].flip)
-      {
-        set_sprite_tile_pair(sprite_index, MUL_4(frame) + 2, MUL_4(frame));
-      }
-      else
-      {
-        set_sprite_tile_pair(sprite_index, MUL_4(frame), MUL_4(frame) + 2);
-      }
-    }
-  }
-  */
-
-  /*
-  if (camera_moved)
-  {
-    for (i = 0; i != scene_num_actors; ++i)
-    {
-      sprite_index = MUL_2(i);
-      // LOG("a Reposition Actor %u\n", i);
-      screen_x = actors[i].pos.x + scx;
-      screen_y = actors[i].pos.y + scy;
-      if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
-      {
-        move_sprite_pair(sprite_index, screen_x, screen_y);
-      }
-      else
-      {
-        hide_sprite_pair(sprite_index);
-      }
-    }
-  }
-  else
-  {
-    // If frame when npc would move
-    if (win_pos_y != MENU_CLOSED_Y || ((time & 7) && !(time & 56)) || ((time & 0x3F) == 0))
-    {
-      len = scene_num_actors;
+      move_sprite(s, x, y);
+      move_sprite(s + 1, x + 8, y);
     }
     else
     {
-      // Else only move player
-      len = 1;
-      // Unless running script on actor
-      if (script_ptr != 0 && script_actor != 0)
-      {
-        sprite_index = MUL_2(script_actor);
-        screen_x = actors[script_actor].pos.x + scx;
-        screen_y = actors[script_actor].pos.y + scy;
-        if (actors[script_actor].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
-        {
-          move_sprite_pair(sprite_index, screen_x, screen_y);
-        }
-        else
-        {
-          hide_sprite_pair(sprite_index);
-        }
-      }
+      move_sprite(s, 0, 0);
+      move_sprite(s + 1, 0, 0);
     }
-    for (i = 0; i != len; ++i)
-    {
-      sprite_index = MUL_2(i);
-      screen_x = actors[i].pos.x + scx;
-      screen_y = actors[i].pos.y + scy;
-      if (actors[i].enabled && (win_pos_y == MENU_CLOSED_Y || screen_y < win_pos_y + 16))
-      {
-        move_sprite_pair(sprite_index, screen_x, screen_y);
-      }
-      else
-      {
-        hide_sprite_pair(sprite_index);
-      }
-    }
+    ptr += jump;
   }
-  */
 }
 
 void SceneRenderActor_b(UBYTE i)
