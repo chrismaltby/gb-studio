@@ -71,6 +71,7 @@ export const EVENT_ACTOR_SET_POSITION_TO_VALUE = "EVENT_ACTOR_SET_POSITION_TO_VA
 export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
 export const EVENT_ACTOR_ENABLE_COLLISIONS = "EVENT_ACTOR_ENABLE_COLLISIONS";
 export const EVENT_ACTOR_DISABLE_COLLISIONS = "EVENT_ACTOR_DISABLE_COLLISIONS";
+export const EVENT_ACTOR_INVOKE = "EVENT_ACTOR_INVOKE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -426,6 +427,16 @@ export const EventFields = {
     }
   ],
   [EVENT_ACTOR_DISABLE_COLLISIONS]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    }
+  ],
+  [EVENT_ACTOR_INVOKE]: [
+    {
+      label: l10n("FIELD_ACTOR_INVOKE")
+    },
     {
       key: "actorId",
       type: "actor",

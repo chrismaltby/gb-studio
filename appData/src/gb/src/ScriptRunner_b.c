@@ -36,19 +36,16 @@ void Script_Noop_b()
  */
 void Script_End_b()
 {
-if(BG_ptr != 0)// && !BGscript_active)
-  {
+  if (BG_ptr) {
     script_ptr_bank = BG_ptr_bank;
     script_ptr = BG_ptr;
-
     BGscript_active = TRUE;
     script_continue = TRUE;
+    return;
   }
-  else
-  {
-    script_ptr_bank = 0;
-    script_ptr = 0;
-  }
+
+  script_ptr_bank = 0;
+  script_ptr = 0;
 }
 
 /*
@@ -918,7 +915,6 @@ void Script_IfSavedData_b()
  */
 void Script_IfActorDirection_b()
 {
-
   if (
     (actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
      actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
@@ -1458,5 +1454,25 @@ void Script_ClearBGscript_b()
   BG_start_ptr = 0;
   BGscript_active = FALSE;
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+void Script_ActorInvoke_b()
+{
+  Script_StackPush_b();
+  ScriptStart(&actors[script_actor].events_ptr);
+}
+
+void Script_StackPush_b()
+{
+  script_stack[script_stack_ptr] = script_ptr;
+  script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
+  script_stack_ptr++;
+}
+
+void Script_StackPop_b()
+{
+  script_stack_ptr--;
+  script_ptr = script_stack[script_stack_ptr];
   script_continue = TRUE;
 }

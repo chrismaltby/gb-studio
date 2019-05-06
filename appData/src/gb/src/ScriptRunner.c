@@ -20,6 +20,9 @@ UWORD BG_ptr = 0;
 UWORD BG_start_ptr = 0;
 UBYTE BGscript_active = FALSE;
 
+UBYTE script_stack_ptr = 0;
+UWORD script_stack[STACK_SIZE] = {0};
+
 SCRIPT_CMD script_cmds[] = {
   {Script_End_b, 0},                // 0x00
   {Script_Text_b, 2},               // 0x01
@@ -93,7 +96,10 @@ SCRIPT_CMD script_cmds[] = {
   {Script_ScenePopState_b, 1},      // 0x45
   {Script_ActorGetDir_b, 2},        // 0x46
   {Script_ActorSetDirVal_b, 2},     // 0x47
-  {Script_ToggleActorCol_b, 1}      // 0x48
+  {Script_ToggleActorCol_b, 1},     // 0x48
+  {Script_ActorInvoke_b, 0},        // 0x49
+  {Script_StackPush_b, 0},          // 0x4A
+  {Script_StackPop_b, 0}            // 0x4B
 };
 
 UBYTE ScriptLastFnComplete();
@@ -131,20 +137,24 @@ void ScriptRunnerUpdate()
   if (!script_cmd_index)
   {
     LOG("SCRIPT FINISHED\n");
-    if(BG_ptr!=0 && !BGscript_active)
-    {
+
+    if (script_stack_ptr) {
+      PUSH_BANK(scriptrunner_bank);
+      Script_StackPop_b();
+      POP_BANK;
+      return;
+    }
+
+    if (BG_ptr && !BGscript_active) {
       script_ptr_bank = BG_ptr_bank;
       script_ptr = BG_ptr;
-      script_start_ptr = BG_start_ptr;
       BGscript_active = TRUE;
-    return;
+      return;
     }
-    else
-    {
-      script_ptr_bank = 0;
-      script_ptr = 0;
+
+    script_ptr_bank = 0;
+    script_ptr = 0;
     return;
-    }
   }
 
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
