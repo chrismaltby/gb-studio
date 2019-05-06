@@ -196,8 +196,6 @@ void SceneInit_b3()
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
   actors[0].dir.y = map_next_dir.y;
-  actors[0].move_speed = 0;
-  actors[0].anim_speed = 1;
 }
 
 void SceneInit_b4()

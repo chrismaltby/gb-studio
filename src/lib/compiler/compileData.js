@@ -169,7 +169,7 @@ const compile = async (
     startSceneIndex = 0;
   }
 
-  const { startX, startY, startDirection } = projectData.settings;
+  const { startX, startY, startDirection, startMoveSpeed="1", startAnimSpeed="3" } = projectData.settings;
 
   const bankNums = [...Array(bankOffset + banked.data.length).keys()];
 
@@ -234,6 +234,8 @@ const compile = async (
     `#define START_SCENE_DIR_X ${startDirectionX}\n` +
     `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
+    `#define START_PLAYER_MOVE_SPEED ${startMoveSpeed}\n` +
+    `#define START_PLAYER_ANIM_SPEED ${startAnimSpeed}\n` +    
     `#define FONT_BANK ${fontImagePtr.bank}\n` +
     `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
     `#define FRAME_BANK ${frameImagePtr.bank}\n` +
