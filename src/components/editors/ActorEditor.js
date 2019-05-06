@@ -134,7 +134,8 @@ class ActorEditor extends Component {
 
           {spriteSheet &&
             spriteSheet.type !== "static" &&
-            spriteSheet.type !== "animated" && (
+            spriteSheet.type !== "animated" &&
+            (actor.movementType !== "static" || !actor.animate) && (
               <FormField halfWidth>
                 <label htmlFor="actorDirection">
                   {l10n("FIELD_DIRECTION")}
