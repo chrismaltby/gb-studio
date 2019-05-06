@@ -774,7 +774,7 @@ void SceneRenderCameraShake_b()
 
 void SceneRenderActors_b()
 {
-  UBYTE i, s, x, y, len, jump;
+  UBYTE i, s, x, y, jump;
   UBYTE *ptr;
 
   if (IS_FRAME_9)
