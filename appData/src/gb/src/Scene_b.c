@@ -151,14 +151,14 @@ void SceneInit_b2()
 
     actors[i].movement_type = 0; // WTF needed
     actors[i].movement_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 7);
-    
+
     actors[i].move_speed = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 8);
-    actors[i].anim_speed = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9); 
-    
+    actors[i].anim_speed = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 9);
+
     // LOG("ACTOR_POS [%u,%u]\n", actors[i].pos.x, actors[i].pos.y);
     actors[i].events_ptr.bank = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 10);
     actors[i].events_ptr.offset = (ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 11) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 12);
-    
+
     // LOG("ACTOR_EVENT_PTR BANK=%u OFFSET=%u\n", actors[i].events_ptr.bank, actors[i].events_ptr.offset);
     scene_load_ptr = scene_load_ptr + 13u;
   }
@@ -201,7 +201,7 @@ void SceneInit_b3()
 void SceneInit_b4()
 {
   UBYTE i;
-  for(i=0; i != scene_num_actors; ++i)
+  for (i = 0; i != scene_num_actors; ++i)
   {
     SceneRenderActor_b(i);
   }
@@ -499,7 +499,6 @@ void SceneUpdateActors_b()
           }
         }
       }
-    
     }
     else
     {
@@ -507,7 +506,8 @@ void SceneUpdateActors_b()
       ptr += jump;
       for (i = 1; i != scene_num_actors; i++)
       {
-        if(ACTOR_MOVING(ptr) && ACTOR_ON_TILE(i)){
+        if (ACTOR_MOVING(ptr) && ACTOR_ON_TILE(i))
+        {
           ACTOR_MOVING(ptr) = FALSE;
         }
         ptr += jump;
@@ -523,12 +523,16 @@ void SceneUpdateActors_b()
     // Move actors
     if (ACTOR_MOVING(ptr))
     {
-      if(ACTOR_MOVE_SPEED(ptr)==0) {
-        if(IS_FRAME_2) {
+      if (ACTOR_MOVE_SPEED(ptr) == 0)
+      {
+        if (IS_FRAME_2)
+        {
           ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
-          ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);      
+          ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);
         }
-      } else {
+      }
+      else
+      {
         ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr) * ACTOR_MOVE_SPEED(ptr);
         ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
       }
@@ -544,14 +548,11 @@ void SceneUpdateActors_b()
 
     for (i = 0; i != len; ++i)
     {
-      if(ACTOR_ANIM_SPEED(ptr)==4
-      ||(ACTOR_ANIM_SPEED(ptr)==3 && IS_FRAME_16)
-      ||(ACTOR_ANIM_SPEED(ptr)==2 && IS_FRAME_32)
-      ||(ACTOR_ANIM_SPEED(ptr)==1 && IS_FRAME_64)
-      ||(ACTOR_ANIM_SPEED(ptr)==0 && IS_FRAME_128)) {
-        if(ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
+      if (ACTOR_ANIM_SPEED(ptr) == 4 || (ACTOR_ANIM_SPEED(ptr) == 3 && IS_FRAME_16) || (ACTOR_ANIM_SPEED(ptr) == 2 && IS_FRAME_32) || (ACTOR_ANIM_SPEED(ptr) == 1 && IS_FRAME_64) || (ACTOR_ANIM_SPEED(ptr) == 0 && IS_FRAME_128))
+      {
+        if (ACTOR_MOVING(ptr) || ACTOR_ANIMATE(ptr))
         {
-          if(ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)
+          if (ACTOR_FRAME(ptr) == ACTOR_FRAMES_LEN(ptr) - 1)
           {
             ACTOR_FRAME(ptr) = 0;
           }
@@ -855,7 +856,7 @@ void SceneRenderActor_b(UBYTE i)
   }
 
   frame = MUL_4(actors[i].sprite + actors[i].frame + fo);
-  
+
   if (flip)
   {
     // Handle facing left
@@ -868,7 +869,7 @@ void SceneRenderActor_b(UBYTE i)
     set_sprite_prop_pair(s, 0x0);
     set_sprite_tile_pair(s, frame, frame + 2);
   }
-  
+
   actors[i].flip = flip;
   actors[i].frame_offset = fo;
 }
@@ -907,8 +908,8 @@ void SceneRenderEmoteBubble_b()
 UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a)
 {
   UBYTE tx_b, ty_b;
-  tx_b = DIV_8(ACTOR_X((UBYTE*)actors));
-  ty_b = DIV_8(ACTOR_Y((UBYTE*)actors));
+  tx_b = DIV_8(ACTOR_X((UBYTE *)actors));
+  ty_b = DIV_8(ACTOR_Y((UBYTE *)actors));
   if ((ty_a == ty_b || ty_a == ty_b - 1) &&
       (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
   {
@@ -927,7 +928,7 @@ UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
 
   ptr = actors;
   jump = sizeof(ACTOR);
- 
+
   for (i = 0; i != scene_num_actors; i++)
   {
     if (i == index || !ACTOR_ENABLED(ptr))
