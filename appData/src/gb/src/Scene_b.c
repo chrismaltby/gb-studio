@@ -870,7 +870,9 @@ void SceneRenderActor_b(UBYTE i)
     set_sprite_tile_pair(s, frame, frame + 2);
   }
 
+  actors[i].flip = FALSE;
   actors[i].flip = flip;
+  actors[i].frame_offset = 0;
   actors[i].frame_offset = fo;
 }
 
