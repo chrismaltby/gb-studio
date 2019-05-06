@@ -1332,13 +1332,14 @@ void Script_LoadVectors_b()
  */
 void Script_ScenePushState_b()
 {
-  state_dir.x = actors[0].dir.x;
-  state_dir.y = actors[0].dir.y;
-  state_pos.x = 0;
-  state_pos.x = actors[0].pos.x >> 3;
-  state_pos.y = 0;
-  state_pos.y = actors[0].pos.y >> 3;
-  state_scene_index = scene_index;
+  scene_states[scene_state_ptr].dir.x = actors[0].dir.x;
+  scene_states[scene_state_ptr].dir.y = actors[0].dir.y;
+  scene_states[scene_state_ptr].pos.x = 0;
+  scene_states[scene_state_ptr].pos.x = actors[0].pos.x >> 3;
+  scene_states[scene_state_ptr].pos.y = 0;
+  scene_states[scene_state_ptr].pos.y = actors[0].pos.y >> 3;
+  scene_states[scene_state_ptr].scene_index = scene_index;
+  scene_state_ptr++;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1368,15 +1369,17 @@ void Script_SetBGscript_b()
  */
 void Script_ScenePopState_b()
 {
-  scene_next_index = state_scene_index;
+  scene_state_ptr--;
+
+  scene_next_index = scene_states[scene_state_ptr].scene_index;
   scene_index = scene_next_index + 1;
 
   map_next_pos.x = 0; // @wtf-but-needed
-  map_next_pos.x = state_pos.x << 3;
+  map_next_pos.x = scene_states[scene_state_ptr].pos.x << 3;
   map_next_pos.y = 0; // @wtf-but-needed
-  map_next_pos.y = state_pos.y << 3;
-  map_next_dir.x = state_dir.x;
-  map_next_dir.y = state_dir.y;
+  map_next_pos.y = scene_states[scene_state_ptr].pos.y << 3;
+  map_next_dir.x = scene_states[scene_state_ptr].dir.x;
+  map_next_dir.y = scene_states[scene_state_ptr].dir.y;
 
   stage_next_type = SCENE;
   script_action_complete = FALSE;

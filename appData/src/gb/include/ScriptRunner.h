@@ -22,7 +22,7 @@ extern UWORD BG_start_ptr;
 extern UBYTE BGscript_active;
 
 // Max 8 levels of nested invokations
-#define STACK_SIZE 8
+#define STACK_SIZE 2
 extern UWORD script_stack[STACK_SIZE];
 extern UBYTE script_stack_ptr;
 

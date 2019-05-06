@@ -22,12 +22,8 @@ UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 
-// Scene state
-// @todo: Rewrite as a struct,
-//        maybe add support for multiple states.
-POS state_pos;
-POS state_dir;
-UWORD state_scene_index;
+UBYTE scene_state_ptr = 0;
+SCENESTATE scene_states[MAX_SCENE_STATES] = {0};
 
 void game_loop();
 

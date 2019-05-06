@@ -95,7 +95,7 @@
                             "id": "90a383dd-d815-4979-a926-b110de67f038",
                             "command": "EVENT_TEXT",
                             "args": {
-                                "text": "Be careful with\nrecursion! Max\ncall stack is 8"
+                                "text": "Be careful with\nrecursion! Max\ncall stack is 2"
                             }
                         },
                         {
