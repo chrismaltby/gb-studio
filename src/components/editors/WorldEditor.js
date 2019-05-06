@@ -121,7 +121,7 @@ class WorldEditor extends Component {
               />
             </FormField>
 
-            <FormField>
+            <FormField halfWidth>
               <label htmlFor="startMoveSpeed">{l10n("FIELD_MOVEMENT_SPEED")}</label>
               <MovementSpeedSelect
                 id="startMoveSpeed"
@@ -129,7 +129,7 @@ class WorldEditor extends Component {
                 onChange={this.onEditSetting("startMoveSpeed")}/>
             </FormField>
 
-            <FormField>
+            <FormField halfWidth>
               <label htmlFor="startAnimSpeed">{l10n("FIELD_ANIMATION_SPEED")}</label>
               <AnimationSpeedSelect
                 id="startAnimSpeed"

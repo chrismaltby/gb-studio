@@ -169,7 +169,7 @@ class ActorEditor extends Component {
             )}
 
             {actor.movementType === "randomWalk" && (
-              <FormField>
+              <FormField halfWidth>
                 <label htmlFor="actorMoveSpeed">{l10n("FIELD_MOVEMENT_SPEED")}</label>
                 <MovementSpeedSelect
                   id="actorMoveSpeed"
@@ -180,7 +180,7 @@ class ActorEditor extends Component {
 
             {((spriteSheet.type === "actor_animated" && actor.movementType !== "static") || (actor.animate && (actor.movementType === "static" ||
               spriteSheet.type !== "actor"))) && (
-              <FormField>
+              <FormField halfWidth>
                 <label htmlFor="actorAnimSpeed">{l10n("FIELD_ANIMATION_SPEED")}</label>
                 <AnimationSpeedSelect
                   id="actorAnimSpeed"
