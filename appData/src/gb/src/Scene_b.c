@@ -201,7 +201,7 @@ void SceneInit_b3()
 void SceneInit_b4()
 {
   UBYTE i;
-  for (i = 0; i != scene_num_actors; ++i)
+  for (i = 1; i != scene_num_actors; ++i)
   {
     SceneRenderActor_b(i);
   }
@@ -221,9 +221,10 @@ void SceneInit_b5()
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
   actors[0].frame = 0;
-  actors[0].frames_len = 2;
   actors[0].animate = FALSE;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  SceneRenderActor_b(0);
 }
 
 void SceneInit_b6()

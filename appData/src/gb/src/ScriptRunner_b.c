@@ -189,7 +189,7 @@ void Script_ActorSetDir_b()
 {
   actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
   actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
-  actors[script_actor].redraw = TRUE;
+  SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -654,8 +654,10 @@ void Script_PlayerSetSprite_b()
   sprite_len = MUL_4(sprite_frames);
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
+  actors[0].frame = 0;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[0].redraw = TRUE;
+  actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  SceneRenderActor(0);
 
   // Keep new sprite when switching scene
   map_next_sprite = sprite_index;
