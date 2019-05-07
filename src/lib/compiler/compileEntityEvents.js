@@ -66,7 +66,9 @@ import {
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_SCENE_PUSH_STATE,
+  EVENT_SCENE_POP_STATE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -162,7 +164,9 @@ const CMD_LOOKUP = {
   LOAD_VECTORS: 0x41,
   ACTOR_SET_MOVE_SPEED: 0x42,
   ACTOR_SET_ANIM_SPEED: 0x43,
-  TEXT_SET_ANIM_SPEED: 0x44
+  TEXT_SET_ANIM_SPEED: 0x44,
+  SCENE_PUSH_STATE: 0x45,
+  SCENE_POP_STATE: 0x46
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -557,6 +561,12 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(input[i].args.fadeSpeed || 2);
         output.push(CMD_LOOKUP.END);
       }
+    } else if (command === EVENT_SCENE_PUSH_STATE) {
+      output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
+    } else if (command === EVENT_SCENE_POP_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {

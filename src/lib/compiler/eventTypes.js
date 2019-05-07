@@ -9,6 +9,8 @@ export const EVENT_WAIT = "EVENT_WAIT";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
+export const EVENT_SCENE_PUSH_STATE = "EVENT_SCENE_PUSH_STATE";
+export const EVENT_SCENE_POP_STATE = "EVENT_SCENE_POP_STATE";
 
 // Data
 export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
@@ -123,6 +125,23 @@ export const EventFields = {
       type: "direction",
       width: "50%",
       defaultValue: ""
+    },
+    {
+      key: "fadeSpeed",
+      label: l10n("FIELD_FADE_SPEED"),
+      type: "fadeSpeed",
+      defaultValue: "2",
+      width: "50%"
+    }
+  ],
+  [EVENT_SCENE_PUSH_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
+    },
+  ],
+  [EVENT_SCENE_POP_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
     },
     {
       key: "fadeSpeed",

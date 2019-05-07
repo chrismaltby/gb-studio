@@ -84,6 +84,13 @@ typedef struct _TRIGGER
     BANK_PTR events_ptr;
 } TRIGGER;
 
+typedef struct _SCENE_STATE
+{
+    UWORD scene_index;
+    POS player_pos;
+    VEC2D player_dir;
+} SCENE_STATE;
+
 typedef void (*SCRIPT_CMD_FN)();
 
 typedef struct _SCRIPT_CMD
