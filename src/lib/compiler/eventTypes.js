@@ -356,21 +356,23 @@ export const EventFields = {
   [EVENT_TEXT_SET_ANIMATION_SPEED]: [
     {
       label: l10n("TEXT_SPEED_IN"),
-      key: "speed_in",
+      key: "speedIn",
       type: "cameraSpeed",
-      //min: 0,
-      //max: 5,
       defaultValue: 1,
       width: "50%"
     },
     {
       label: l10n("TEXT_SPEED_OUT"),
-      key: "speed_out",
+      key: "speedOut",
       type: "cameraSpeed",
-      //min: 0,
-      //max: 5,
       defaultValue: 1,
       width: "50%"
+    },
+    {
+      label: l10n("TEXT_SPEED"),
+      key: "speed",
+      type: "cameraSpeed",
+      defaultValue: 1
     }
   ],
   [EVENT_CAMERA_MOVE_TO]: [

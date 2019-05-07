@@ -25,6 +25,7 @@ UBYTE text_count;
 UBYTE text_wait;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
+UBYTE text_draw_speed = 1;
 
 UBYTE choice_enabled = 0;
 UBYTE choice_index = 0;
@@ -198,7 +199,7 @@ void UIDrawTextBufferChar()
 
   if (text_count < text_size)
   {
-
+    win_speed = text_draw_speed;
     text_drawn = FALSE;
 
     if (text_count == 0)
@@ -255,6 +256,10 @@ void UIDrawTextBufferChar()
     {
       text_x = 0;
       text_y++;
+    }
+
+    if (text_draw_speed==0) {
+      UIDrawTextBufferChar();
     }
   }
   else

@@ -276,8 +276,9 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(stringIndex));
     } else if (command === EVENT_TEXT_SET_ANIMATION_SPEED) {
       output.push(CMD_LOOKUP.TEXT_SET_ANIM_SPEED);
-      output.push(input[i].args.speed_in);
-      output.push(input[i].args.speed_out);
+      output.push(input[i].args.speedIn);
+      output.push(input[i].args.speedOut);
+      output.push(input[i].args.speed !== undefined ? input[i].args.speed : 1);
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);

@@ -114,6 +114,7 @@
   "FIELD_ANIMATE_FRAMES": "Animate by cycling frames",
   "TEXT_SPEED_IN": "Text Open Speed",
   "TEXT_SPEED_OUT": "Text Close Speed",
+  "TEXT_SPEED": "Text Draw Speed",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
