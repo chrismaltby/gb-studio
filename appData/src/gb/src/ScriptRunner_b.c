@@ -1352,7 +1352,7 @@ void Script_ActorSetAnimSpeed_b()
  * ----------------------------
  * Set global text animation speed.
  *
- *   arg0: Animation speed to use 
+ *   arg0: Animation speed to use
  *   arg1: Animation speed to use fading out
  */
 void Script_TextSetAnimSpeed_b()
@@ -1361,5 +1361,40 @@ void Script_TextSetAnimSpeed_b()
   text_out_speed = script_cmd_args[1];
   text_draw_speed = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorInvoke
+ * ----------------------------
+ * Invoke Actor script
+ */
+void Script_ActorInvoke_b()
+{
+  Script_StackPush_b();
+  ScriptStart(&actors[script_actor].events_ptr);
+}
+
+/*
+ * Command: StackPush
+ * ----------------------------
+ * Push the current script pointer to the stack
+ */
+void Script_StackPush_b()
+{
+  script_stack[script_stack_ptr] = script_ptr;
+  script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
+  script_stack_ptr++;
+}
+
+/*
+ * Command: ActorInvoke
+ * ----------------------------
+ * Pop the script pointer from the stack
+ */
+void Script_StackPop_b()
+{
+  script_stack_ptr--;
+  script_ptr = script_stack[script_stack_ptr];
   script_continue = TRUE;
 }

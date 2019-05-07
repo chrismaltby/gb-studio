@@ -66,7 +66,8 @@ import {
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_ACTOR_INVOKE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -162,7 +163,10 @@ const CMD_LOOKUP = {
   LOAD_VECTORS: 0x41,
   ACTOR_SET_MOVE_SPEED: 0x42,
   ACTOR_SET_ANIM_SPEED: 0x43,
-  TEXT_SET_ANIM_SPEED: 0x44
+  TEXT_SET_ANIM_SPEED: 0x44,
+  ACTOR_INVOKE: 0x45,
+  STACK_PUSH: 0x46,
+  STACK_POP: 0x47
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -576,6 +580,11 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(CMD_LOOKUP.ACTOR_PUSH);
         output.push(input[i].args.continue ? 1 : 0); // Continue until collision
       }
+    } else if (command === EVENT_ACTOR_INVOKE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_INVOKE);
     } else if (command === EVENT_PLAYER_SET_SPRITE) {
       const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);
