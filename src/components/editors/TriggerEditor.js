@@ -120,6 +120,16 @@ class TriggerEditor extends Component {
               onChange={this.onEdit("height")}
             />
           </FormField>
+
+          <FormField>
+            <label htmlFor="triggerNotes">{l10n("FIELD_NOTES")}</label>
+            <textarea
+              id="triggerNotes"
+              value={trigger.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEdit("notes")}
+            />
+          </FormField>
         </div>
 
         <ScriptEditor

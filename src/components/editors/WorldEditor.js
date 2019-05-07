@@ -8,6 +8,8 @@ import { FormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
 import l10n from "../../lib/helpers/l10n";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -53,6 +55,16 @@ class WorldEditor extends Component {
               value={project.author || ""}
               placeholder="Author"
               onChange={this.onEditProject("author")}
+            />
+          </FormField>
+
+          <FormField>
+            <label htmlFor="projectNotes">{l10n("FIELD_NOTES")}</label>
+            <textarea
+              id="projectNotes"
+              value={project.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEditProject("notes")}
             />
           </FormField>
         </div>
@@ -118,6 +130,23 @@ class WorldEditor extends Component {
                 onChange={this.onEditSetting("startDirection")}
               />
             </FormField>
+
+            <FormField halfWidth>
+              <label htmlFor="startMoveSpeed">{l10n("FIELD_MOVEMENT_SPEED")}</label>
+              <MovementSpeedSelect
+                id="startMoveSpeed"
+                value={settings.startMoveSpeed}
+                onChange={this.onEditSetting("startMoveSpeed")}/>
+            </FormField>
+
+            <FormField halfWidth>
+              <label htmlFor="startAnimSpeed">{l10n("FIELD_ANIMATION_SPEED")}</label>
+              <AnimationSpeedSelect
+                id="startAnimSpeed"
+                value={settings.startAnimSpeed}
+                onChange={this.onEditSetting("startAnimSpeed")}/>
+            </FormField>                
+
           </div>
         )}
       </div>

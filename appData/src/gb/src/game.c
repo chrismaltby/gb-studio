@@ -49,6 +49,8 @@ int main()
   map_next_sprite = START_PLAYER_SPRITE;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
+  actors[0].move_speed = START_PLAYER_MOVE_SPEED;
+  actors[0].anim_speed = START_PLAYER_ANIM_SPEED;
 
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;

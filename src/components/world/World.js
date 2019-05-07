@@ -9,7 +9,8 @@ import {
   DRAG_PLAYER,
   DRAG_DESTINATION,
   DRAG_ACTOR,
-  DRAG_TRIGGER
+  DRAG_TRIGGER,
+  SIDE
 } from "../../reducers/editorReducer";
 
 const MIDDLE_MOUSE = 2;
@@ -242,11 +243,12 @@ class World extends Component {
       sceneDragging,
       scene: dragScene,
       sceneDragX: dragX,
-      sceneDragY: dragY
+      sceneDragY: dragY,
+      sidebarWidth
     } = editor;
 
     const width = Math.max(
-      window.innerWidth - 300,
+      window.innerWidth - editor.sidebarWidth,
       scenes && scenes.length > 0
         ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
             20
@@ -262,10 +264,13 @@ class World extends Component {
         : 100
     );
 
+    const worldStyle = { right: editor.sidebarWidth }
+
     return (
       <div
         ref={this.scrollRef}
         className="World"
+        style={worldStyle}
         onMouseMove={this.onMouseMove}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}

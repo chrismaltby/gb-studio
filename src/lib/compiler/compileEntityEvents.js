@@ -18,6 +18,8 @@ import {
   EVENT_ACTOR_SET_POSITION,
   EVENT_ACTOR_SET_POSITION_TO_VALUE,
   EVENT_ACTOR_SET_DIRECTION,
+  EVENT_ACTOR_SET_MOVEMENT_SPEED,
+  EVENT_ACTOR_SET_ANIMATION_SPEED,
   EVENT_ACTOR_MOVE_TO,
   EVENT_WAIT,
   EVENT_CAMERA_SHAKE,
@@ -156,7 +158,9 @@ const CMD_LOOKUP = {
   MATH_MOD_VALUE: 0x3e,
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
-  LOAD_VECTORS: 0x41
+  LOAD_VECTORS: 0x41,
+  ACTOR_SET_MOVE_SPEED: 0x42,
+  ACTOR_SET_ANIM_SPEED: 0x43
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -483,6 +487,18 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
+    } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_MOVE_SPEED);
+      output.push(input[i].args.speed);
+    } else if (command === EVENT_ACTOR_SET_ANIMATION_SPEED) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
+      output.push(input[i].args.speed);
     } else if (command === EVENT_ACTOR_MOVE_TO) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);

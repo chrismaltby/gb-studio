@@ -42,15 +42,13 @@ const loadProject = async projectPath => {
     {}
   );
 
-  const fixedSpriteIds = sprites
-    .map(sprite => {
-      const oldId = oldSpriteFilenamesToIds[sprite.filename];
-      if (oldId) {
-        sprite.id = oldId;
-      }
-      return sprite;
-    })
-    .filter(sprite => sprite.type !== "invalid");
+  const fixedSpriteIds = sprites.map(sprite => {
+    const oldId = oldSpriteFilenamesToIds[sprite.filename];
+    if (oldId) {
+      sprite.id = oldId;
+    }
+    return sprite;
+  });
 
   json.spriteSheets = fixedSpriteIds;
 

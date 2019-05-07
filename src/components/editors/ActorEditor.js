@@ -11,6 +11,8 @@ import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
@@ -115,8 +117,9 @@ class ActorEditor extends Component {
             />
           </FormField>
 
-          {spriteSheet && spriteSheet.type !== "static" && (
-            <div>
+          {spriteSheet &&
+            spriteSheet.type !== "static" &&
+            spriteSheet.type !== "animated" && (
               <FormField halfWidth>
                 <label htmlFor="actorMovement">
                   {l10n("FIELD_MOVEMENT_TYPE")}
@@ -127,6 +130,12 @@ class ActorEditor extends Component {
                   onChange={this.onEdit("movementType")}
                 />
               </FormField>
+            )}
+
+          {spriteSheet &&
+            spriteSheet.type !== "static" &&
+            spriteSheet.type !== "animated" &&
+            (actor.movementType !== "static" || !actor.animate) && (
               <FormField halfWidth>
                 <label htmlFor="actorDirection">
                   {l10n("FIELD_DIRECTION")}
@@ -137,8 +146,65 @@ class ActorEditor extends Component {
                   onChange={this.onEdit("direction")}
                 />
               </FormField>
-            </div>
+            )}
+
+          {spriteSheet.numFrames > 1 &&
+            (actor.movementType === "static" ||
+              spriteSheet.type !== "actor") && (
+              <FormField>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="Checkbox"
+                    checked={actor.animate || false}
+                    onChange={this.onEdit("animate")}
+                  />
+                  <div className="FormCheckbox" />
+                  {actor.movementType !== "static" &&
+                  spriteSheet.type === "actor_animated"
+                    ? l10n("FIELD_ANIMATE_WHEN_STATIONARY")
+                    : l10n("FIELD_ANIMATE_FRAMES")}
+                </label>
+              </FormField>
+            )}
+
+          <FormField halfWidth>
+            <label htmlFor="actorMoveSpeed">
+              {l10n("FIELD_MOVEMENT_SPEED")}
+            </label>
+            <MovementSpeedSelect
+              id="actorMoveSpeed"
+              value={actor.moveSpeed}
+              onChange={this.onEdit("moveSpeed")}
+            />
+          </FormField>
+
+          {((spriteSheet.type === "actor_animated" &&
+            actor.movementType !== "static") ||
+            (actor.animate &&
+              (actor.movementType === "static" ||
+                spriteSheet.type !== "actor"))) && (
+            <FormField halfWidth>
+              <label htmlFor="actorAnimSpeed">
+                {l10n("FIELD_ANIMATION_SPEED")}
+              </label>
+              <AnimationSpeedSelect
+                id="actorAnimSpeed"
+                value={actor.animSpeed}
+                onChange={this.onEdit("animSpeed")}
+              />
+            </FormField>
           )}
+
+          <FormField>
+            <label htmlFor="actorNotes">{l10n("FIELD_NOTES")}</label>
+            <textarea
+              id="actorNotes"
+              value={actor.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEdit("notes")}
+            />
+          </FormField>
         </div>
 
         <ScriptEditor

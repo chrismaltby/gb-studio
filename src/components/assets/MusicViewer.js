@@ -56,9 +56,9 @@ class MusicViewer extends Component {
   };
 
   render() {
-    const { projectRoot, file, playing } = this.props;
+    const { projectRoot, file, playing, editor } = this.props;
     return (
-      <div className="MusicViewer">
+      <div className="MusicViewer" style={{ right: editor.sidebarWidth }}>
         {file && (
           <div className="MusicViewer__Content">
             {playing ? (
@@ -74,7 +74,10 @@ class MusicViewer extends Component {
           </div>
         )}
         {file && (
-          <div className="ImageViewer__Edit">
+          <div
+            className="ImageViewer__Edit"
+            style={{ right: editor.sidebarWidth + 10 }}
+          >
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
@@ -86,7 +89,8 @@ class MusicViewer extends Component {
 function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
-    playing: state.music.playing
+    playing: state.music.playing,
+    editor: state.editor
   };
 }
 

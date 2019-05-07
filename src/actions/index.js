@@ -23,6 +23,13 @@ const asyncAction = async (
   }
 };
 
+export const resizeSidebar = width => {
+  return {
+    type: types.SIDEBAR_RESIZE,
+    width
+  }
+}
+
 export const loadProject = path => async dispatch => {
   return asyncAction(
     dispatch,
