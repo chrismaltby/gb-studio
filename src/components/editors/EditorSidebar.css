@@ -98,6 +98,10 @@
   background: var(--sidebar-bg-color);
 }
 
+.EditorSidebar .Navigation__Error {
+  color: rgb(243, 0, 0);
+}
+
 .EditorSidebar__Icon {
   width: 16px;
   height: 16px;
