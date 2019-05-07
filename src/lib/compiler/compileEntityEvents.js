@@ -1,6 +1,7 @@
 import {
   EVENT_END,
   EVENT_TEXT,
+  EVENT_TEXT_SET_ANIMATION_SPEED,
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
@@ -160,7 +161,8 @@ const CMD_LOOKUP = {
   IF_VALUE_COMPARE: 0x40,
   LOAD_VECTORS: 0x41,
   ACTOR_SET_MOVE_SPEED: 0x42,
-  ACTOR_SET_ANIM_SPEED: 0x43
+  ACTOR_SET_ANIM_SPEED: 0x43,
+  TEXT_SET_ANIM_SPEED: 0x44
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -272,6 +274,10 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
+    } else if (command === EVENT_TEXT_SET_ANIMATION_SPEED) {
+      output.push(CMD_LOOKUP.TEXT_SET_ANIM_SPEED);
+      output.push(input[i].args.speed_in);
+      output.push(input[i].args.speed_out);
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);

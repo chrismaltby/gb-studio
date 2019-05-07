@@ -81,10 +81,11 @@ SCRIPT_CMD script_cmds[] = {
     {Script_MathDivVal_b, 0},         // 0x3D
     {Script_MathModVal_b, 0},         // 0x3E
     {Script_CopyVal_b, 0},            // 0x3F
-    {Script_IfValueCompare_b, 3},     // 0xD0,
-    {Script_LoadVectors_b, 4},        // 0xD1
-    {Script_ActorSetMoveSpeed_b, 1},  // 0xD2
-    {Script_ActorSetAnimSpeed_b, 1}   // 0xD3
+    {Script_IfValueCompare_b, 3},     // 0x40
+    {Script_LoadVectors_b, 4},        // 0x41
+    {Script_ActorSetMoveSpeed_b, 1},  // 0x42
+    {Script_ActorSetAnimSpeed_b, 1},  // 0x43
+    {Script_TextSetAnimSpeed_b, 2}    // 0x44
 };
 
 UBYTE ScriptLastFnComplete();

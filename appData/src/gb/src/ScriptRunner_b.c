@@ -1346,3 +1346,19 @@ void Script_ActorSetAnimSpeed_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: TextSetAnimSpeed
+ * ----------------------------
+ * Set global text animation speed.
+ *
+ *   arg0: Animation speed to use 
+ *   arg1: Animation speed to use fading out
+ */
+void Script_TextSetAnimSpeed_b()
+{
+  text_in_speed = script_cmd_args[0];
+  text_out_speed = script_cmd_args[1];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
