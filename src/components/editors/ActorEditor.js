@@ -5,7 +5,7 @@ import MovementTypeSelect from "../forms/MovementTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
-import { FormField } from "../library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
@@ -196,15 +196,20 @@ class ActorEditor extends Component {
             </FormField>
           )}
 
-          <FormField>
-            <label htmlFor="actorNotes">{l10n("FIELD_NOTES")}</label>
+          <ToggleableFormField
+            htmlFor="actorNotes"
+            closedLabel={l10n("FIELD_ADD_NOTES")}
+            label={l10n("FIELD_NOTES")}
+            open={actor.notes}
+          >
             <textarea
               id="actorNotes"
               value={actor.notes || ""}
               placeholder={l10n("FIELD_NOTES")}
               onChange={this.onEdit("notes")}
+              rows={3}
             />
-          </FormField>
+          </ToggleableFormField>
         </div>
 
         <ScriptEditor

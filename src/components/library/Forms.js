@@ -24,6 +24,37 @@ export const FormField = ({ halfWidth, children }) => (
   </div>
 );
 
+export class ToggleableFormField extends Component {
+  constructor() {
+    super();
+    this.state = {
+      open: false
+    };
+  }
+
+  onOpen = () => {
+    this.setState({ open: true });
+  };
+
+  render() {
+    const { halfWidth, htmlFor, label, closedLabel, children } = this.props;
+    const open = this.state.open || this.props.open;
+    return (
+      <div
+        className={cx("FormField", "FormField--Toggleable", {
+          "FormField--HalfWidth": halfWidth,
+          "FormField--ToggleableClosed": !open
+        })}
+      >
+        <label onClick={this.onOpen} htmlFor={htmlFor}>
+          {open ? label : closedLabel}
+        </label>
+        {open && children}
+      </div>
+    );
+  }
+}
+
 export class SelectRenamable extends Component {
   constructor() {
     super();

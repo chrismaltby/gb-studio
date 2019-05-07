@@ -48,6 +48,11 @@ textarea {
   width: 50%;
 }
 
+.FormField--ToggleableClosed label {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .FormField label {
   display: block;
   text-align: left;

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { TriggerIcon } from "../../components/library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
-import { FormField } from "../../components/library/Forms";
+import { FormField, ToggleableFormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
@@ -113,15 +113,20 @@ class SceneEditor extends Component {
             />
           </FormField>
 
-          <FormField>
-            <label htmlFor="sceneNotes">{l10n("FIELD_NOTES")}</label>
+          <ToggleableFormField
+            htmlFor="sceneNotes"
+            closedLabel={l10n("FIELD_ADD_NOTES")}
+            label={l10n("FIELD_NOTES")}
+            open={scene.notes}
+          >
             <textarea
               id="sceneNotes"
               value={scene.notes || ""}
               placeholder={l10n("FIELD_NOTES")}
               onChange={this.onEdit("notes")}
+              rows={3}
             />
-          </FormField>
+          </ToggleableFormField>
         </div>
 
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (
