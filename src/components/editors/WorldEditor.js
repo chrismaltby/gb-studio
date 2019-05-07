@@ -57,6 +57,16 @@ class WorldEditor extends Component {
               onChange={this.onEditProject("author")}
             />
           </FormField>
+
+          <FormField>
+            <label htmlFor="projectNotes">{l10n("FIELD_NOTES")}</label>
+            <textarea
+              id="projectNotes"
+              value={project.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEditProject("notes")}
+            />
+          </FormField>
         </div>
 
         {scenes.length > 0 && (

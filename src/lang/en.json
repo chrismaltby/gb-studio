@@ -47,6 +47,7 @@
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
   "FIELD_AUTHOR": "Author",
+  "FIELD_NOTES": "Notes",
   "FIELD_TYPE": "Type",
   "FIELD_BACKGROUND": "Background",
   "FIELD_SPRITE_SHEET": "Sprite Sheet",
