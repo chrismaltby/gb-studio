@@ -57,7 +57,7 @@ export default function editor(state = initialState.editor, action) {
     case SIDEBAR_RESIZE: {
       return {
         ...state,
-        sidebarWidth: action.width
+        sidebarWidth: Math.max(200, action.width)
       };
     }
     case MOVE_SCENE: {

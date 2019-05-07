@@ -12,7 +12,16 @@ class EditorSidebar extends Component {
     super(props);
     this.state = { dragging: false };
     this.dragHandler = React.createRef();
-    window.addEventListener('mousemove', this.onMouseMove);
+  }
+
+  componentDidMount() {
+    window.addEventListener("mousemove", this.onMouseMove);
+    window.addEventListener("mouseup", this.onMouseUp);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("mousemove", this.onMouseMove);
+    window.removeEventListener("mouseup", this.onMouseUp);
   }
 
   onMouseDown = () => {
@@ -20,20 +29,22 @@ class EditorSidebar extends Component {
       ...this.state,
       dragging: true
     });
-  }
+  };
 
   onMouseUp = () => {
-    this.setState({
-      ...this.state,
-      dragging: false
-    });
-  }
+    if (this.state.dragging) {
+      this.setState({
+        ...this.state,
+        dragging: false
+      });
+    }
+  };
 
-  onMouseMove = (event) => {
+  onMouseMove = event => {
     if (this.state.dragging) {
       this.props.resizeSidebar(window.innerWidth - event.pageX);
     }
-  }
+  };
 
   render() {
     const { editor } = this.props;
@@ -55,10 +66,10 @@ class EditorSidebar extends Component {
       ) : editor.type === "world" ? (
         <WorldEditor />
       ) : null;
-      const editorSidebarStyle = {
-        width: editorForm ? editor.sidebarWidth : 0,
-        right: editorForm ? 0 : -editor.sidebarWidth
-      };
+    const editorSidebarStyle = {
+      width: editorForm ? editor.sidebarWidth : 0,
+      right: editorForm ? 0 : -editor.sidebarWidth
+    };
     return (
       <div className="EditorSidebarWrapper">
         <div
@@ -66,7 +77,7 @@ class EditorSidebar extends Component {
           className="EditorSidebarDragHandle"
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
-        ></div>
+        />
         <div
           style={editorSidebarStyle}
           className={cx("EditorSidebar", {
