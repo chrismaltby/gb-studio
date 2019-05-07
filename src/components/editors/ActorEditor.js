@@ -168,26 +168,33 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
-            {actor.movementType === "randomWalk" && (
-              <FormField halfWidth>
-                <label htmlFor="actorMoveSpeed">{l10n("FIELD_MOVEMENT_SPEED")}</label>
-                <MovementSpeedSelect
-                  id="actorMoveSpeed"
-                  value={actor.moveSpeed}
-                  onChange={this.onEdit("moveSpeed")}/>
-              </FormField>
-            )}
+          <FormField halfWidth>
+            <label htmlFor="actorMoveSpeed">
+              {l10n("FIELD_MOVEMENT_SPEED")}
+            </label>
+            <MovementSpeedSelect
+              id="actorMoveSpeed"
+              value={actor.moveSpeed}
+              onChange={this.onEdit("moveSpeed")}
+            />
+          </FormField>
 
-            {((spriteSheet.type === "actor_animated" && actor.movementType !== "static") || (actor.animate && (actor.movementType === "static" ||
-              spriteSheet.type !== "actor"))) && (
-              <FormField halfWidth>
-                <label htmlFor="actorAnimSpeed">{l10n("FIELD_ANIMATION_SPEED")}</label>
-                <AnimationSpeedSelect
-                  id="actorAnimSpeed"
-                  value={actor.animSpeed}
-                  onChange={this.onEdit("animSpeed")}/>
-              </FormField>    
-            )}                    
+          {((spriteSheet.type === "actor_animated" &&
+            actor.movementType !== "static") ||
+            (actor.animate &&
+              (actor.movementType === "static" ||
+                spriteSheet.type !== "actor"))) && (
+            <FormField halfWidth>
+              <label htmlFor="actorAnimSpeed">
+                {l10n("FIELD_ANIMATION_SPEED")}
+              </label>
+              <AnimationSpeedSelect
+                id="actorAnimSpeed"
+                value={actor.animSpeed}
+                onChange={this.onEdit("animSpeed")}
+              />
+            </FormField>
+          )}
         </div>
 
         <ScriptEditor

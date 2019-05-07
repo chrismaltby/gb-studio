@@ -86,4 +86,7 @@ void Script_MathModVal_b();
 void Script_CopyVal_b();
 void Script_IfValueCompare_b();
 void Script_LoadVectors_b();
+void Script_ActorSetMoveSpeed_b();
+void Script_ActorSetAnimSpeed_b();
+
 #endif

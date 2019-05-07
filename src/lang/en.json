@@ -184,6 +184,8 @@
   "EVENT_SAVE_DATA": "Save Game Data",
   "EVENT_CLEAR_DATA": "Clear Game Data",
   "EVENT_IF_SAVED_DATA": "If Saved Game Data",
+  "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Actor Set Movement Speed",
+  "EVENT_ACTOR_SET_ANIMATION_SPEED": "Actor Set Animation Speed",
 
   "// 10": "Menu -----------------------------------------------------",
 

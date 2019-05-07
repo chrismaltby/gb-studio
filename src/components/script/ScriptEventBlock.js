@@ -8,6 +8,8 @@ import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import ActorSelect from "../forms/ActorSelect";
 import EmoteSelect from "../forms/EmoteSelect";
 import { FormField } from "../library/Forms";
@@ -114,6 +116,16 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "cameraSpeed" ? (
               <CameraSpeedSelect
                 allowNone
+                value={value[field.key]}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "moveSpeed" ? (
+              <MovementSpeedSelect
+                value={value[field.key]}
+                onChange={onChangeField(field.key)}
+              />
+            ) : field.type === "animSpeed" ? (
+              <AnimationSpeedSelect
                 value={value[field.key]}
                 onChange={onChangeField(field.key)}
               />

@@ -1318,3 +1318,31 @@ void Script_LoadVectors_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: ActorSetMoveSpeed
+ * ----------------------------
+ * Set active actor movement speed.
+ *
+ *   arg0: Movement speed to use
+ */
+void Script_ActorSetMoveSpeed_b()
+{
+  actors[script_actor].move_speed = script_cmd_args[0];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorSetAnimSpeed
+ * ----------------------------
+ * Set active actor animation speed.
+ *
+ *   arg0: Animation speed to use
+ */
+void Script_ActorSetAnimSpeed_b()
+{
+  actors[script_actor].anim_speed = script_cmd_args[0];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
