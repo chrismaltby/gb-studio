@@ -1,13 +1,28 @@
-.FilesSidebar {
+.FilesSidebarWrapper {
+  right: 0;
   position: fixed;
-  width: 300px;
-  right: 0px;
   top: 38px;
   bottom: 0px;
+  display: flex;
+  flex-direction: row;
+}
+
+.FilesSidebarDragHandle {
+  width: 16px;
+  height: 100vh;
+  position: fixed;
+  margin-left: -8px;
+  cursor: ew-resize;
+}
+
+.FilesSidebar {
   background-color: var(--sidebar-bg-color);
   border-left: 1px solid var(--sidebar-edge-color);
   overflow: auto;
+  overflow-x: hidden;
+  padding: 0px;
   box-sizing: border-box;
+  transition: right 0.3s ease-in-out;
 }
 
 .FilesSidebar__Search {
