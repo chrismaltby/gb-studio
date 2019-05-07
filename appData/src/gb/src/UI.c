@@ -23,6 +23,8 @@ UBYTE text_y;
 UBYTE text_drawn;
 UBYTE text_count;
 UBYTE text_wait;
+UBYTE text_in_speed = 1;
+UBYTE text_out_speed = 1;
 
 UBYTE choice_enabled = 0;
 UBYTE choice_index = 0;
@@ -145,7 +147,7 @@ void UIShowText(UWORD line)
   }
 
   UISetPos(0, MENU_CLOSED_Y);
-  UIMoveTo(0, MENU_CLOSED_Y - ((height + 2) << 3), 1);
+  UIMoveTo(0, MENU_CLOSED_Y - ((height + 2) << 3), text_in_speed);
   text_drawn = FALSE;
   text_x = 0;
   text_y = 0;
@@ -300,7 +302,7 @@ void UIOnInteract()
         script_variables[choice_flag] = !choice_index;
         choice_enabled = FALSE;
       }
-      UIMoveTo(0, MENU_CLOSED_Y, 1);
+      UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
     }
   }
   else if (choice_enabled)

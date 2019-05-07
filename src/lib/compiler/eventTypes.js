@@ -52,6 +52,7 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 
 // Actor
 export const EVENT_TEXT = "EVENT_TEXT";
+export const EVENT_TEXT_SET_ANIMATION_SPEED = "EVENT_TEXT_SET_ANIMATION_SPEED";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_SET_POSITION_RELATIVE =
@@ -350,6 +351,26 @@ export const EventFields = {
       placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
       updateFn: trimlines,
       defaultValue: ""
+    }
+  ],
+  [EVENT_TEXT_SET_ANIMATION_SPEED]: [
+    {
+      label: l10n("TEXT_SPEED_IN"),
+      key: "speed_in",
+      type: "cameraSpeed",
+      //min: 0,
+      //max: 5,
+      defaultValue: 1,
+      width: "50%"
+    },
+    {
+      label: l10n("TEXT_SPEED_OUT"),
+      key: "speed_out",
+      type: "cameraSpeed",
+      //min: 0,
+      //max: 5,
+      defaultValue: 1,
+      width: "50%"
     }
   ],
   [EVENT_CAMERA_MOVE_TO]: [
