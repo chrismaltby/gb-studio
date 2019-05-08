@@ -17,6 +17,11 @@ extern UBYTE script_action_complete;
 extern UBYTE script_continue;
 extern UBYTE script_actor;
 
+// Max call stack depth
+#define STACK_SIZE 8
+extern UWORD script_stack[STACK_SIZE];
+extern UBYTE script_stack_ptr;
+
 void ScriptStart(BANK_PTR *events_ptr);
 void ScriptRunnerUpdate();
 
@@ -91,5 +96,8 @@ void Script_ActorSetAnimSpeed_b();
 void Script_TextSetAnimSpeed_b();
 void Script_ScenePushState_b();
 void Script_ScenePopState_b();
+void Script_ActorInvoke_b();
+void Script_StackPush_b();
+void Script_StackPop_b();
 
 #endif
