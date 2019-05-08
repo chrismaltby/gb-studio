@@ -29,10 +29,10 @@ class ImageViewer extends Component {
   };
 
   render() {
-    const { projectRoot, file, folder, zoomRatio } = this.props;
+    const { projectRoot, file, folder, zoomRatio, editor } = this.props;
     const warnings = this.getWarnings();
     return (
-      <div className="ImageViewer">
+      <div className="ImageViewer" style={{ right: editor.sidebarWidth }}>
         <div className="ImageViewer__Content">
           {file && (
             <div
@@ -49,7 +49,10 @@ class ImageViewer extends Component {
           )}
         </div>
         {file && (
-          <div className="ImageViewer__Edit">
+          <div
+            className="ImageViewer__Edit"
+            style={{ right: editor.sidebarWidth + 10 }}
+          >
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
@@ -84,7 +87,8 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     folder,
-    zoomRatio: (zoom || 100) / 100
+    zoomRatio: (zoom || 100) / 100,
+    editor: state.editor
   };
 }
 

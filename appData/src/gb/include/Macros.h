@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#define LOG(fmt, args...) 
+#define LOG(fmt, args...)
 
 #define UNUSED(x) (void)(x)
 
@@ -10,14 +10,17 @@
 
 #define JOY(a) (joy & (a))
 #define JOY_PRESSED(a) ((joy & (a)) && !(prev_joy & (a)))
+#define JOY_CHANGED (joy != prev_joy)
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
 #define ACTOR_ON_TILE(i) (((actors[(i)].pos.x & 7) == 0) && ((actors[(i)].pos.y & 7) == 0))
 
+#define IS_FRAME_128 ((time & 0x7F) == 0)
 #define IS_FRAME_64 ((time & 0x3F) == 0)
 #define IS_FRAME_32 ((time & 0x1F) == 0)
 #define IS_FRAME_16 ((time & 0xF) == 0)
 #define IS_FRAME_8 ((time & 0x7) == 0)
+#define IS_FRAME_9 ((time & 0x7) == 1)
 #define IS_FRAME_4 ((time & 0x3) == 0)
 #define IS_FRAME_2 ((time & 0x1) == 0)
 
@@ -35,6 +38,24 @@
 #define DIV_8(a) ((a) >> 3)
 #define DIV_4(a) ((a) >> 2)
 #define DIV_2(a) ((a) >> 1)
+
+#define ACTOR_SPRITE(ptr) (*(ptr))
+#define ACTOR_X(ptr) (*((ptr) + 1))
+#define ACTOR_Y(ptr) (*((ptr) + 2))
+#define ACTOR_DX(ptr) (*((ptr) + 3))
+#define ACTOR_DY(ptr) (*((ptr) + 4))
+#define ACTOR_REDRAW(ptr) (*((ptr) + 5))
+#define ACTOR_FRAME(ptr) (*((ptr) + 6))
+#define ACTOR_FRAMES_LEN(ptr) (*((ptr) + 7))
+#define ACTOR_ANIMATE(ptr) (*((ptr) + 8))
+#define ACTOR_ENABLED(ptr) (*((ptr) + 9))
+#define ACTOR_FLIP(ptr) (*((ptr) + 10))
+#define ACTOR_FRAME_OFFSET(ptr) (*((ptr) + 11))
+#define ACTOR_MOVING(ptr) (*((ptr) + 12))
+#define ACTOR_MOVE_SPEED(ptr) (*((ptr) + 13))
+#define ACTOR_ANIM_SPEED(ptr) (*((ptr) + 14))
+
+#define IS_NEG(a) ((UBYTE)(a)&0x80)
 
 #define hide_sprite(a) (move_sprite((a), 0, 0))
 #define hide_sprite_pair(a) \

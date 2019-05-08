@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { CloseIcon } from "../../components/library/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
-import { FormField } from "../../components/library/Forms";
+import { FormField, ToggleableFormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import SidebarHeading from "./SidebarHeading";
@@ -120,6 +120,21 @@ class TriggerEditor extends Component {
               onChange={this.onEdit("height")}
             />
           </FormField>
+
+          <ToggleableFormField
+            htmlFor="triggerNotes"
+            closedLabel={l10n("FIELD_ADD_NOTES")}
+            label={l10n("FIELD_NOTES")}
+            open={trigger.notes}
+          >
+            <textarea
+              id="triggerNotes"
+              value={trigger.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEdit("notes")}
+              rows={3}
+            />
+          </ToggleableFormField>
         </div>
 
         <ScriptEditor

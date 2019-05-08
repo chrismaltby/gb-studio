@@ -326,7 +326,9 @@ export default function project(state = initialState.project, action) {
                   x: action.x,
                   y: action.y,
                   movementType: "static",
-                  direction: "down"
+                  direction: "down",
+                  moveSpeed: "1",
+                  animSpeed: "3"
                 },
                 scene.actors
               )
@@ -408,33 +410,31 @@ export default function project(state = initialState.project, action) {
               if (actor.id !== action.id) {
                 return actor;
               }
-              if (action.values.spriteSheetId) {
+              let patch = {...action.values};
+
+              if (patch.spriteSheetId) {
                 const newSprite = state.spriteSheets.find(
-                  s => s.id === action.values.spriteSheetId
+                  s => s.id === patch.spriteSheetId
                 );
                 // If new sprite only has one frame reset movement type back to static
                 if (newSprite.numFrames === 1) {
-                  return {
-                    ...actor,
-                    ...action.values,
-                    movementType: "static"
-                  };
+                  patch.movementType = "static"
                 }
                 const oldSprite = state.spriteSheets.find(
                   s => s.id === actor.spriteSheetId
                 );
                 // If previous sprite had only one frame reset movement type to face interaction
-                if (oldSprite.numFrames === 1) {
-                  return {
-                    ...actor,
-                    ...action.values,
-                    movementType: "faceInteraction"
-                  };
+                if (oldSprite && newSprite && oldSprite.id !== newSprite.id && oldSprite.numFrames === 1) {
+                  patch.movementType = "faceInteraction";
                 }
               }
+              // If static and cycling frames start from frame 1 (facing downwards)
+              if((patch.animate && actor.movementType === "static") || (actor.animate && patch.movementType === "static")) {
+                patch.direction = "down";
+              }              
               return {
                 ...actor,
-                ...action.values
+                ...patch
               };
             })
           };

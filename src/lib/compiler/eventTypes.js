@@ -11,6 +11,8 @@ export const EVENT_CLEAR_BG_SCRIPT = "EVENT_CLEAR_BG_SCRIPT";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
+export const EVENT_SCENE_PUSH_STATE = "EVENT_SCENE_PUSH_STATE";
+export const EVENT_SCENE_POP_STATE = "EVENT_SCENE_POP_STATE";
 
 // Data
 export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
@@ -54,16 +56,22 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 
 // Actor
 export const EVENT_TEXT = "EVENT_TEXT";
+export const EVENT_TEXT_SET_ANIMATION_SPEED = "EVENT_TEXT_SET_ANIMATION_SPEED";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
-export const EVENT_ACTOR_SET_POSITION_RELATIVE = "EVENT_ACTOR_SET_POSITION_RELATIVE";
+export const EVENT_ACTOR_SET_POSITION_RELATIVE =
+  "EVENT_ACTOR_SET_POSITION_RELATIVE";
 export const EVENT_ACTOR_MOVE_RELATIVE = "EVENT_ACTOR_MOVE_RELATIVE";
 export const EVENT_ACTOR_MOVE_TO = "EVENT_ACTOR_MOVE_TO";
 export const EVENT_ACTOR_PUSH = "EVENT_ACTOR_PUSH";
+export const EVENT_ACTOR_SET_ANIMATION_SPEED =
+  "EVENT_ACTOR_SET_ANIMATION_SPEED";
+export const EVENT_ACTOR_SET_MOVEMENT_SPEED = "EVENT_ACTOR_SET_MOVEMENT_SPEED";
 export const EVENT_ACTOR_EMOTE = "EVENT_ACTOR_EMOTE";
 export const EVENT_PLAYER_SET_SPRITE = "EVENT_PLAYER_SET_SPRITE";
 export const EVENT_ACTOR_GET_POSITION = "EVENT_ACTOR_GET_POSITION";
-export const EVENT_ACTOR_SET_POSITION_TO_VALUE = "EVENT_ACTOR_SET_POSITION_TO_VALUE";
+export const EVENT_ACTOR_SET_POSITION_TO_VALUE =
+  "EVENT_ACTOR_SET_POSITION_TO_VALUE";
 export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
 
 // Camera
@@ -119,6 +127,23 @@ export const EventFields = {
       type: "direction",
       width: "50%",
       defaultValue: ""
+    },
+    {
+      key: "fadeSpeed",
+      label: l10n("FIELD_FADE_SPEED"),
+      type: "fadeSpeed",
+      defaultValue: "2",
+      width: "50%"
+    }
+  ],
+  [EVENT_SCENE_PUSH_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
+    },
+  ],
+  [EVENT_SCENE_POP_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
     },
     {
       key: "fadeSpeed",
@@ -349,6 +374,28 @@ export const EventFields = {
       defaultValue: ""
     }
   ],
+  [EVENT_TEXT_SET_ANIMATION_SPEED]: [
+    {
+      label: l10n("TEXT_SPEED_IN"),
+      key: "speedIn",
+      type: "cameraSpeed",
+      defaultValue: 1,
+      width: "50%"
+    },
+    {
+      label: l10n("TEXT_SPEED_OUT"),
+      key: "speedOut",
+      type: "cameraSpeed",
+      defaultValue: 1,
+      width: "50%"
+    },
+    {
+      label: l10n("TEXT_SPEED"),
+      key: "speed",
+      type: "cameraSpeed",
+      defaultValue: 1
+    }
+  ],
   [EVENT_CAMERA_MOVE_TO]: [
     {
       key: "x",
@@ -405,6 +452,30 @@ export const EventFields = {
       key: "direction",
       type: "direction",
       defaultValue: "up"
+    }
+  ],
+  [EVENT_ACTOR_SET_ANIMATION_SPEED]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "speed",
+      type: "animSpeed",
+      defaultValue: "3"
+    }
+  ],
+  [EVENT_ACTOR_SET_MOVEMENT_SPEED]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "player"
+    },
+    {
+      key: "speed",
+      type: "moveSpeed",
+      defaultValue: "1"
     }
   ],
   [EVENT_ACTOR_GET_POSITION]: [

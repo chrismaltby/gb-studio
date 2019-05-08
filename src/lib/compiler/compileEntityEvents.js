@@ -1,6 +1,7 @@
 import {
   EVENT_END,
   EVENT_TEXT,
+  EVENT_TEXT_SET_ANIMATION_SPEED,
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
@@ -18,6 +19,8 @@ import {
   EVENT_ACTOR_SET_POSITION,
   EVENT_ACTOR_SET_POSITION_TO_VALUE,
   EVENT_ACTOR_SET_DIRECTION,
+  EVENT_ACTOR_SET_MOVEMENT_SPEED,
+  EVENT_ACTOR_SET_ANIMATION_SPEED,
   EVENT_ACTOR_MOVE_TO,
   EVENT_WAIT,
   EVENT_CAMERA_SHAKE,
@@ -64,6 +67,8 @@ import {
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
   EVENT_IF_VALUE_COMPARE,
+  EVENT_SCENE_PUSH_STATE,
+  EVENT_SCENE_POP_STATE,
   EVENT_SET_BG_SCRIPT,
   EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
@@ -159,8 +164,13 @@ const CMD_LOOKUP = {
   COPY_VALUE: 0x3f,
   IF_VALUE_COMPARE: 0x40,
   LOAD_VECTORS: 0x41,
-  SET_BG_SCRIPT: 0x42,
-  CLEAR_BG_SCRIPT: 0x43
+  ACTOR_SET_MOVE_SPEED: 0x42,
+  ACTOR_SET_ANIM_SPEED: 0x43,
+  TEXT_SET_ANIM_SPEED: 0x44,
+  SCENE_PUSH_STATE: 0x45,
+  SCENE_POP_STATE: 0x46,
+  SET_BG_SCRIPT: 0x47,
+  CLEAR_BG_SCRIPT: 0x48
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -272,6 +282,11 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(lo(variableIndex));
       output.push(hi(stringIndex));
       output.push(lo(stringIndex));
+    } else if (command === EVENT_TEXT_SET_ANIMATION_SPEED) {
+      output.push(CMD_LOOKUP.TEXT_SET_ANIM_SPEED);
+      output.push(input[i].args.speedIn);
+      output.push(input[i].args.speedOut);
+      output.push(input[i].args.speed !== undefined ? input[i].args.speed : 1);
     } else if (command === EVENT_IF_TRUE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
@@ -487,6 +502,18 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
+    } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_MOVE_SPEED);
+      output.push(input[i].args.speed);
+    } else if (command === EVENT_ACTOR_SET_ANIMATION_SPEED) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
+      output.push(input[i].args.speed);
     } else if (command === EVENT_ACTOR_MOVE_TO) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
@@ -538,6 +565,12 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(input[i].args.fadeSpeed || 2);
         output.push(CMD_LOOKUP.END);
       }
+    } else if (command === EVENT_SCENE_PUSH_STATE) {
+      output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
+    } else if (command === EVENT_SCENE_POP_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {

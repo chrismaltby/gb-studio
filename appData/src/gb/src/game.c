@@ -22,6 +22,9 @@ UBYTE script_continue;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 
+UBYTE scene_stack_ptr = 0;
+SCENE_STATE scene_stack[MAX_SCENE_STATES] = {0};
+
 void game_loop();
 
 int main()
@@ -49,6 +52,8 @@ int main()
   map_next_sprite = START_PLAYER_SPRITE;
   actors[0].movement_type = PLAYER_INPUT;
   actors[0].enabled = TRUE;
+  actors[0].move_speed = START_PLAYER_MOVE_SPEED;
+  actors[0].anim_speed = START_PLAYER_ANIM_SPEED;
 
   scene_index = START_SCENE_INDEX;
   scene_next_index = START_SCENE_INDEX;

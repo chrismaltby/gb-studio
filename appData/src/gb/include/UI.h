@@ -19,6 +19,9 @@ extern UBYTE win_pos_y;
 extern UBYTE win_dest_pos_x;
 extern UBYTE win_dest_pos_y;
 extern UBYTE win_speed;
+extern UBYTE text_in_speed;
+extern UBYTE text_out_speed;
+extern UBYTE text_draw_speed;
 
 void UIInit();
 void UIUpdate();
@@ -36,5 +39,6 @@ UBYTE UIIsClosed();
 void UIOnInteract();
 UBYTE UIAtDest();
 void UISetColor(UBYTE color);
+void UISetTextSpeed(UBYTE in, UBYTE out);
 
 #endif

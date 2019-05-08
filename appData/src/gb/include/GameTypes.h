@@ -60,8 +60,15 @@ typedef struct _ACTORSPRITE
     POS pos;
     VEC2D dir;
     UBYTE redraw;
+    UBYTE frame;
+    UBYTE frames_len;
+    UBYTE animate;
     UBYTE enabled;
+    UBYTE flip;
+    UBYTE frame_offset;
     UBYTE moving;
+    UBYTE move_speed;
+    UBYTE anim_speed;
     SPRITE_TYPE sprite_type;
     UWORD script_ptr;
     BANK_PTR events_ptr;
@@ -76,6 +83,13 @@ typedef struct _TRIGGER
     UWORD script_ptr;
     BANK_PTR events_ptr;
 } TRIGGER;
+
+typedef struct _SCENE_STATE
+{
+    UWORD scene_index;
+    POS player_pos;
+    VEC2D player_dir;
+} SCENE_STATE;
 
 typedef void (*SCRIPT_CMD_FN)();
 

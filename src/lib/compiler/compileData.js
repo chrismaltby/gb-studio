@@ -169,7 +169,13 @@ const compile = async (
     startSceneIndex = 0;
   }
 
-  const { startX, startY, startDirection } = projectData.settings;
+  const {
+    startX,
+    startY,
+    startDirection,
+    startMoveSpeed = "1",
+    startAnimSpeed = "3"
+  } = projectData.settings;
 
   const bankNums = [...Array(bankOffset + banked.data.length).keys()];
 
@@ -234,6 +240,8 @@ const compile = async (
     `#define START_SCENE_DIR_X ${startDirectionX}\n` +
     `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
+    `#define START_PLAYER_MOVE_SPEED ${startMoveSpeed}\n` +
+    `#define START_PLAYER_ANIM_SPEED ${startAnimSpeed}\n` +
     `#define FONT_BANK ${fontImagePtr.bank}\n` +
     `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
     `#define FRAME_BANK ${frameImagePtr.bank}\n` +
@@ -362,7 +370,10 @@ const precompile = async (
   const sceneData = precompileScenes(
     projectData.scenes,
     usedBackgrounds,
-    usedSprites
+    usedSprites,
+    {
+      warnings
+    }
   );
 
   progress(EVENT_MSG_PRE_COMPLETE);
@@ -587,18 +598,42 @@ export const precompileMusic = (scenes, music) => {
   return { usedMusic };
 };
 
-export const precompileScenes = (scenes, usedBackgrounds, usedSprites) => {
+export const precompileScenes = (
+  scenes,
+  usedBackgrounds,
+  usedSprites,
+  { warnings } = {}
+) => {
   const scenesData = scenes.map((scene, sceneIndex) => {
     const backgroundIndex = usedBackgrounds.findIndex(
       background => background.id === scene.backgroundId
     );
     if (backgroundIndex < 0) {
-      throw "Scene #" +
-        sceneIndex +
-        " '" +
-        scene.name +
-        "' has missing or no background assigned.";
+      throw `Scene #${sceneIndex + 1} ${
+        scene.name ? `'${scene.name}'` : ""
+      } has missing or no background assigned.`;
     }
+
+    if (scene.actors.length > MAX_ACTORS) {
+      warnings(
+        `Scene #${sceneIndex + 1} ${
+          scene.name ? `'${scene.name}'` : ""
+        } contains ${
+          scene.actors.length
+        } actors when maximum is ${MAX_ACTORS}. Some actors will be removed.`
+      );
+    }
+
+    if (scene.triggers.length > MAX_TRIGGERS) {
+      warnings(
+        `Scene #${sceneIndex + 1} ${
+          scene.name ? `'${scene.name}'` : ""
+        } contains ${
+          scene.triggers.length
+        } triggers when maximum is ${MAX_TRIGGERS}. Some triggers will be removed.`
+      );
+    }
+
     const actors = scene.actors.slice(0, MAX_ACTORS).filter(actor => {
       return usedSprites.find(s => s.id === actor.spriteSheetId);
     });
@@ -664,10 +699,20 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
           : spriteFrames === 3
           ? 1 // Actor
           : 0, // Static
+        moveDec(actor.movementType) === 1
+          ? spriteFrames
+          : spriteFrames === 6
+          ? 2 // Actor Animated
+          : spriteFrames === 3
+          ? 1 // Actor
+          : spriteFrames,
+        actor.animate ? 1 : 0,
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction
         moveDec(actor.movementType), // Movement Type
+        actor.moveSpeed === undefined ? 1 : actor.moveSpeed,
+        actor.animSpeed === undefined ? 3 : actor.animSpeed,
         eventPtrs[actorIndex].bank, // Event bank ptr
         hi(eventPtrs[actorIndex].offset), // Event offset ptr
         lo(eventPtrs[actorIndex].offset)

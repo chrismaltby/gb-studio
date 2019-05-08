@@ -4,10 +4,12 @@ import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { FormField } from "../library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
 import l10n from "../../lib/helpers/l10n";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -55,6 +57,21 @@ class WorldEditor extends Component {
               onChange={this.onEditProject("author")}
             />
           </FormField>
+
+          <ToggleableFormField
+            htmlFor="projectNotes"
+            closedLabel={l10n("FIELD_ADD_NOTES")}
+            label={l10n("FIELD_NOTES")}
+            open={project.notes}
+          >
+            <textarea
+              id="projectNotes"
+              value={project.notes || ""}
+              placeholder={l10n("FIELD_NOTES")}
+              onChange={this.onEditProject("notes")}
+              rows={3}
+            />
+          </ToggleableFormField>
         </div>
 
         {scenes.length > 0 && (
@@ -116,6 +133,28 @@ class WorldEditor extends Component {
                 id="startDirection"
                 value={settings.startDirection || 0}
                 onChange={this.onEditSetting("startDirection")}
+              />
+            </FormField>
+
+            <FormField halfWidth>
+              <label htmlFor="startMoveSpeed">
+                {l10n("FIELD_MOVEMENT_SPEED")}
+              </label>
+              <MovementSpeedSelect
+                id="startMoveSpeed"
+                value={settings.startMoveSpeed}
+                onChange={this.onEditSetting("startMoveSpeed")}
+              />
+            </FormField>
+
+            <FormField halfWidth>
+              <label htmlFor="startAnimSpeed">
+                {l10n("FIELD_ANIMATION_SPEED")}
+              </label>
+              <AnimationSpeedSelect
+                id="startAnimSpeed"
+                value={settings.startAnimSpeed}
+                onChange={this.onEditSetting("startAnimSpeed")}
               />
             </FormField>
           </div>

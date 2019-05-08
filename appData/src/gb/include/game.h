@@ -20,4 +20,9 @@ extern UBYTE prev_joy;
 extern UBYTE time;
 extern UBYTE text_drawn;
 
+#define MAX_SCENE_STATES 8
+
+extern UBYTE scene_stack_ptr;
+extern SCENE_STATE scene_stack[MAX_SCENE_STATES];
+
 #endif

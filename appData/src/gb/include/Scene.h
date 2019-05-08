@@ -50,5 +50,6 @@ void SceneUpdate();
 void SceneSetEmote(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting();
 UBYTE SceneCameraAtDest();
+void SceneRenderActor(UBYTE i);
 
 #endif

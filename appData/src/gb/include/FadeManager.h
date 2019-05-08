@@ -14,7 +14,10 @@ void FadeUpdate();
 void FadeSetSpeed(UBYTE speed);
 UBYTE IsFading();
 
-typedef enum {
+extern UBYTE fade_running;
+
+typedef enum
+{
   FADE_IN,
   FADE_OUT
 } FADE_DIRECTION;
