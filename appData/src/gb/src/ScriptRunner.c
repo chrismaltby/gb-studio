@@ -100,7 +100,7 @@ UBYTE ScriptLastFnComplete();
 
 void ScriptStart(BANK_PTR *events_ptr)
 {
-  wait_time = 0
+  wait_time = 0;
   actors[script_actor].moving = FALSE;
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
