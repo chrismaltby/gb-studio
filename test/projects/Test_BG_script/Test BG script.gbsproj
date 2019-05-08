@@ -75,7 +75,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "cave.png",
-            "_v": 1557003876592
+            "_v": 1557307086999
         },
         {
             "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
@@ -85,7 +85,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "house.png",
-            "_v": 1557003876592
+            "_v": 1557307086999
         },
         {
             "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
@@ -95,7 +95,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "outside.png",
-            "_v": 1557003876592
+            "_v": 1557307086999
         },
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
@@ -105,7 +105,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "stars.png",
-            "_v": 1557003876593
+            "_v": 1557307086999
         },
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
@@ -115,7 +115,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "underground.png",
-            "_v": 1557003876593
+            "_v": 1557307086999
         }
     ],
     "spriteSheets": [
@@ -125,7 +125,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "cat.png",
-            "_v": 1557003876616
+            "_v": 1557307087005
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
@@ -133,7 +133,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "dog.png",
-            "_v": 1557003876616
+            "_v": 1557307087005
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
@@ -141,7 +141,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "duck.png",
-            "_v": 1557003876616
+            "_v": 1557307087008
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
@@ -149,7 +149,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "ice.png",
-            "_v": 1557003876616
+            "_v": 1557307087008
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
@@ -157,7 +157,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc001.png",
-            "_v": 1557003876616
+            "_v": 1557307087008
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
@@ -165,7 +165,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc002.png",
-            "_v": 1557003876616
+            "_v": 1557307087008
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
@@ -173,7 +173,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc003.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
@@ -181,7 +181,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
@@ -189,7 +189,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "radio.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
@@ -197,7 +197,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "rock.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
@@ -205,7 +205,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "sage.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
@@ -213,7 +213,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "signpost.png",
-            "_v": 1557003876617
+            "_v": 1557307087008
         }
     ],
     "scenes": [
@@ -416,10 +416,19 @@
                             }
                         },
                         {
+                            "id": "3ce161fc-5393-4437-8f20-d7143433bf32",
+                            "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
+                            "args": {
+                                "actorId": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
+                                "speed": "0"
+                            }
+                        },
+                        {
                             "id": "33df8c7d-32ef-4a21-9e05-9f5b50840cbe",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "13"
+                                "variable": "13",
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1297,8 +1306,8 @@
             "id": "8a52b387-2a88-4741-8d4e-ca56acea4672",
             "name": "Stars",
             "backgroundId": "40fda058-df90-4205-a239-fe77bce4fa79",
-            "x": 743,
-            "y": 399,
+            "x": 706,
+            "y": 386,
             "width": 32,
             "height": 32,
             "actors": [
@@ -1330,7 +1339,9 @@
                             "id": "eca7afd3-be27-45da-8015-099d5b844961",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "9"
+                                "variable": "9",
+                                "__collapse": true,
+                                "__collapseElse": true
                             },
                             "true": [
                                 {
@@ -1402,7 +1413,9 @@
                             "id": "02610a4e-bfba-4d25-8f79-d9dc0ef89aaf",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "9"
+                                "variable": "9",
+                                "__collapseElse": true,
+                                "__collapse": false
                             },
                             "true": [
                                 {
@@ -1465,7 +1478,9 @@
                             "id": "ca97873b-0771-486a-8734-c9c093152d7c",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "7"
+                                "variable": "7",
+                                "__collapse": true,
+                                "__collapseElse": true
                             },
                             "true": [
                                 {
@@ -1473,6 +1488,14 @@
                                     "command": "EVENT_SET_TRUE",
                                     "args": {
                                         "variable": "6"
+                                    }
+                                },
+                                {
+                                    "id": "7c476d60-c444-4990-98ff-048f1e0b7d86",
+                                    "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
+                                    "args": {
+                                        "actorId": "7f97f1a2-12bd-4ca5-a37f-2c97dce5333e",
+                                        "speed": "0"
                                     }
                                 },
                                 {
@@ -1562,7 +1585,8 @@
                             "id": "cdeafbee-21e2-4c58-a2a6-b62911fb2564",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "5"
+                                "variable": "5",
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1630,7 +1654,9 @@
                             "id": "2f1a4527-6c7f-4636-bf2b-b69b00b48bbc",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "3"
+                                "variable": "3",
+                                "__collapseElse": true,
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1643,7 +1669,9 @@
                                 {
                                     "id": "95c11781-86ab-4815-b907-0a5696d4c712",
                                     "command": "EVENT_LOOP",
-                                    "args": {},
+                                    "args": {
+                                        "__collapse": true
+                                    },
                                     "true": [
                                         {
                                             "id": "fe554a21-ef7b-4e3a-8763-6710a7d8eed5",
@@ -1750,7 +1778,8 @@
                             "id": "27ee73c6-d019-421f-8022-a2079903300e",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "3"
+                                "variable": "3",
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1842,7 +1871,8 @@
                             "id": "6a791448-62fe-420a-9725-1e58b0cc8b4f",
                             "command": "EVENT_IF_TRUE",
                             "args": {
-                                "variable": "4"
+                                "variable": "4",
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1908,7 +1938,9 @@
                         {
                             "id": "c4406736-5f4d-447a-9fa0-32fcd8802075",
                             "command": "EVENT_LOOP",
-                            "args": {},
+                            "args": {
+                                "__collapse": true
+                            },
                             "true": [
                                 {
                                     "id": "37dc786e-f365-454b-bbba-222fb767edba",
@@ -2492,6 +2524,15 @@
                     "args": {}
                 },
                 {
+                    "id": "9620e996-b8ef-491f-8743-35b7b39c5627",
+                    "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                    "args": {
+                        "speedIn": "0",
+                        "speedOut": "0",
+                        "speed": 1
+                    }
+                },
+                {
                     "id": "c75de9ff-1e60-4d44-a863-f474878c5a7c",
                     "command": "EVENT_END"
                 }
@@ -2845,13 +2886,13 @@
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
             "filename": "template.mod",
-            "_v": 1557003876619
+            "_v": 1557307087012
         },
         {
             "id": "d34c27eb-af6b-4f36-9587-722f10962866",
             "name": "undergroundCave",
             "filename": "undergroundCave.mod",
-            "_v": 1557003876619
+            "_v": 1557307087012
         }
     ],
     "author": "RichardULZ"
