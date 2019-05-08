@@ -305,16 +305,16 @@ void SceneInit_b9()
 
 void SceneUpdate_b()
 {
+  SceneUpdateCameraShake_b();
+  SceneUpdateCamera_b();
+  SceneRender();
   SceneHandleInput();
   ScriptRunnerUpdate();
   SceneUpdateActors_b();
   SceneUpdateEmoteBubble_b();
-  SceneUpdateCameraShake_b();
   SceneHandleWait();
   SceneHandleTransition();
   UIUpdate();
-  SceneUpdateCamera_b();
-  SceneRender();
   SceneHandleTriggers_b();
 }
 
@@ -759,9 +759,9 @@ static void SceneHandleInput()
 
 void SceneRender()
 {
+  SceneRenderCameraShake_b();
   SceneRenderActors_b();
   SceneRenderEmoteBubble_b();
-  SceneRenderCameraShake_b();
 }
 
 void SceneRenderCameraShake_b()
