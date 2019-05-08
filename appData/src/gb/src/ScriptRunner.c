@@ -89,9 +89,11 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetMoveSpeed_b, 1},  // 0x42
     {Script_ActorSetAnimSpeed_b, 1},  // 0x43
     {Script_TextSetAnimSpeed_b, 3},   // 0x44
-    {Script_ActorInvoke_b, 0},        // 0x45
-    {Script_StackPush_b, 0},          // 0x46
-    {Script_StackPop_b, 0},           // 0x47
+    {Script_ScenePushState_b, 0},     // 0x45
+    {Script_ScenePopState_b, 1},      // 0x46
+    {Script_ActorInvoke_b, 0},        // 0x47
+    {Script_StackPush_b, 0},          // 0x48
+    {Script_StackPop_b, 0}            // 0x49
 };
 
 UBYTE ScriptLastFnComplete();
@@ -165,22 +167,29 @@ void ScriptRunnerUpdate()
 
 UBYTE ScriptLastFnComplete()
 {
-  if (last_fn == Script_FadeIn_b && !IsFading())
+  UBYTE fading = IsFading();
+
+  if (last_fn == Script_FadeIn_b && !fading)
   {
     return TRUE;
   }
 
-  if (last_fn == Script_FadeOut_b && !IsFading())
+  if (last_fn == Script_FadeOut_b && !fading)
   {
     return TRUE;
   }
 
-  if (last_fn == Script_LoadScene_b && !IsFading())
+  if (last_fn == Script_LoadScene_b && !fading)
   {
     return TRUE;
   }
 
-  if (last_fn == Script_LoadData_b && !IsFading())
+  if (last_fn == Script_ScenePopState_b)
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_LoadData_b && !fading)
   {
     return TRUE;
   }

@@ -9,6 +9,7 @@ import {
   EVENT_SET_FALSE,
   EVENT_RESET_VARIABLES,
   EVENT_LOOP,
+  EVENT_GROUP,
   EVENT_FADE_IN,
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
@@ -67,6 +68,8 @@ import {
   EVENT_MATH_MOD_VALUE,
   EVENT_COPY_VALUE,
   EVENT_IF_VALUE_COMPARE,
+  EVENT_SCENE_PUSH_STATE,
+  EVENT_SCENE_POP_STATE,
   EVENT_ACTOR_INVOKE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
@@ -164,6 +167,8 @@ const CMD_LOOKUP = {
   ACTOR_SET_MOVE_SPEED: 0x42,
   ACTOR_SET_ANIM_SPEED: 0x43,
   TEXT_SET_ANIM_SPEED: 0x44,
+  SCENE_PUSH_STATE: 0x45,
+  SCENE_POP_STATE: 0x46,
   ACTOR_INVOKE: 0x45,
   STACK_PUSH: 0x46,
   STACK_POP: 0x47
@@ -561,6 +566,12 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(input[i].args.fadeSpeed || 2);
         output.push(CMD_LOOKUP.END);
       }
+    } else if (command === EVENT_SCENE_PUSH_STATE) {
+      output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
+    } else if (command === EVENT_SCENE_POP_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {
       output.push(CMD_LOOKUP.SHOW_SPRITES);
     } else if (command === EVENT_HIDE_SPRITES) {
@@ -629,6 +640,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.JUMP);
       output.push(startPtrIndex >> 8);
       output.push(startPtrIndex & 0xff);
+    } else if (command === EVENT_GROUP) {
+      precompileEntityScript(input[i].true, {
+        ...options,
+        output,
+        branch: true
+      });
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_LOAD_DATA) {

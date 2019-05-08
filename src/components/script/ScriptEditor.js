@@ -18,6 +18,7 @@ import {
   EVENT_IF_SAVED_DATA,
   EVENT_END,
   EVENT_LOOP,
+  EVENT_GROUP,
   EVENT_IF_VALUE_COMPARE
 } from "../../lib/compiler/eventTypes";
 import {
@@ -88,16 +89,17 @@ const isConditionalEvent = command => {
 };
 
 class ActionMini extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      elseOpen: props.action.false && props.action.false.length > 1
-    };
-  }
+  toggleOpen = () => {
+    const { id, action, onEdit } = this.props;
+    onEdit(id, {
+      __collapse: !action.args.__collapse
+    });
+  };
 
   toggleElseOpen = () => {
-    this.setState({
-      elseOpen: !this.state.elseOpen
+    const { id, action, onEdit } = this.props;
+    onEdit(id, {
+      __collapseElse: !action.args.__collapseElse
     });
   };
 
@@ -146,7 +148,6 @@ class ActionMini extends Component {
       clipboardEvent
     } = this.props;
     const { command } = action;
-    const { elseOpen } = this.state;
 
     if (command === EVENT_END) {
       return connectDropTarget(
@@ -161,6 +162,9 @@ class ActionMini extends Component {
       );
     }
 
+    const open = action.args && !action.args.__collapse;
+    const elseOpen = action.args && !action.args.__collapseElse;
+
     return connectDropTarget(
       connectDragPreview(
         <div
@@ -168,7 +172,9 @@ class ActionMini extends Component {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
             "ActionMini--Conditional":
-              isConditionalEvent(command) || command === EVENT_LOOP
+              isConditionalEvent(command) ||
+              command === EVENT_LOOP ||
+              command === EVENT_GROUP
           })}
         >
           <div
@@ -177,8 +183,14 @@ class ActionMini extends Component {
             onMouseLeave={() => onMouseLeave(id)}
           >
             {connectDragSource(
-              <div className="ActionMini__Command">
-                {l10n(command) || command}
+              <div
+                className={cx("ActionMini__Command", {
+                  "ActionMini__Command--Open": open
+                })}
+                onClick={this.toggleOpen}
+              >
+                <TriangleIcon />{" "}
+                {action.args.__label || l10n(command) || command}
               </div>
             )}
 
@@ -210,15 +222,18 @@ class ActionMini extends Component {
               </DropdownButton>
             </div>
 
-            <ScriptEventBlock
-              command={command}
-              value={action.args}
-              onChange={newValue => {
-                onEdit(id, newValue);
-              }}
-            />
+            {open && (
+              <ScriptEventBlock
+                command={command}
+                value={action.args}
+                onChange={newValue => {
+                  onEdit(id, newValue);
+                }}
+              />
+            )}
 
-            {action.true &&
+            {open &&
+              action.true &&
               connectDropTarget(
                 <div className="ActionMini__Children">
                   {action.true.map((action, index) => (
@@ -364,6 +379,14 @@ class ScriptEditor extends Component {
           ]
         },
         command === EVENT_LOOP && {
+          true: [
+            {
+              id: uuid(),
+              command: EVENT_END
+            }
+          ]
+        },
+        command === EVENT_GROUP && {
           true: [
             {
               id: uuid(),
