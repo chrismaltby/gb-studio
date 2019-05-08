@@ -89,5 +89,7 @@ void Script_LoadVectors_b();
 void Script_ActorSetMoveSpeed_b();
 void Script_ActorSetAnimSpeed_b();
 void Script_TextSetAnimSpeed_b();
+void Script_ScenePushState_b();
+void Script_ScenePopState_b();
 
 #endif

@@ -15,6 +15,7 @@ void SceneUpdate_b();
 void SceneSetEmote_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
 UBYTE SceneCameraAtDest_b();
+void SceneRenderActor_b(UBYTE i);
 
 POS map_next_pos;
 VEC2D map_next_dir;
@@ -117,4 +118,11 @@ UBYTE SceneCameraAtDest()
   at_dest = SceneCameraAtDest_b();
   POP_BANK;
   return at_dest;
+}
+
+void SceneRenderActor(UBYTE i)
+{
+  PUSH_BANK(scene_bank);
+  SceneRenderActor_b(i);
+  POP_BANK;
 }

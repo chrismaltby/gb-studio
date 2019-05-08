@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import cx from "classnames";
 import * as actions from "../../actions";
 import { TriggerIcon } from "../../components/library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
-import { FormField } from "../../components/library/Forms";
+import { FormField, ToggleableFormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SidebarHeading from "./SidebarHeading";
@@ -11,6 +12,7 @@ import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -113,15 +115,20 @@ class SceneEditor extends Component {
             />
           </FormField>
 
-          <FormField>
-            <label htmlFor="sceneNotes">{l10n("FIELD_NOTES")}</label>
+          <ToggleableFormField
+            htmlFor="sceneNotes"
+            closedLabel={l10n("FIELD_ADD_NOTES")}
+            label={l10n("FIELD_NOTES")}
+            open={scene.notes}
+          >
             <textarea
               id="sceneNotes"
               value={scene.notes || ""}
               placeholder={l10n("FIELD_NOTES")}
               onChange={this.onEdit("notes")}
+              rows={3}
             />
-          </FormField>
+          </ToggleableFormField>
         </div>
 
         {(scene.actors.length > 0 || scene.triggers.length > 0) && (
@@ -132,6 +139,7 @@ class SceneEditor extends Component {
                 <li
                   key={actor.id}
                   onClick={() => this.props.selectActor(scene.id, actor.id)}
+                  className={cx({ Navigation__Error: index >= MAX_ACTORS })}
                 >
                   <div className="EditorSidebar__Icon">
                     <SpriteSheetCanvas
@@ -146,6 +154,7 @@ class SceneEditor extends Component {
                 <li
                   key={trigger.id}
                   onClick={() => this.props.selectTrigger(scene.id, trigger.id)}
+                  className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
                 >
                   <div className="EditorSidebar__Icon">
                     <TriggerIcon />

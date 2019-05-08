@@ -9,6 +9,8 @@ export const EVENT_WAIT = "EVENT_WAIT";
 export const EVENT_SWITCH_SCENE = "EVENT_SWITCH_SCENE";
 export const EVENT_START_BATTLE = "EVENT_START_BATTLE";
 export const EVENT_RETURN_TO_TITLE = "EVENT_RETURN_TO_TITLE";
+export const EVENT_SCENE_PUSH_STATE = "EVENT_SCENE_PUSH_STATE";
+export const EVENT_SCENE_POP_STATE = "EVENT_SCENE_POP_STATE";
 
 // Data
 export const EVENT_LOAD_DATA = "EVENT_LOAD_DATA";
@@ -123,6 +125,23 @@ export const EventFields = {
       type: "direction",
       width: "50%",
       defaultValue: ""
+    },
+    {
+      key: "fadeSpeed",
+      label: l10n("FIELD_FADE_SPEED"),
+      type: "fadeSpeed",
+      defaultValue: "2",
+      width: "50%"
+    }
+  ],
+  [EVENT_SCENE_PUSH_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
+    },
+  ],
+  [EVENT_SCENE_POP_STATE]: [
+    {
+      label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
     },
     {
       key: "fadeSpeed",
@@ -356,21 +375,23 @@ export const EventFields = {
   [EVENT_TEXT_SET_ANIMATION_SPEED]: [
     {
       label: l10n("TEXT_SPEED_IN"),
-      key: "speed_in",
+      key: "speedIn",
       type: "cameraSpeed",
-      //min: 0,
-      //max: 5,
       defaultValue: 1,
       width: "50%"
     },
     {
       label: l10n("TEXT_SPEED_OUT"),
-      key: "speed_out",
+      key: "speedOut",
       type: "cameraSpeed",
-      //min: 0,
-      //max: 5,
       defaultValue: 1,
       width: "50%"
+    },
+    {
+      label: l10n("TEXT_SPEED"),
+      key: "speed",
+      type: "cameraSpeed",
+      defaultValue: 1
     }
   ],
   [EVENT_CAMERA_MOVE_TO]: [

@@ -9,6 +9,7 @@
 #include "BankData.h"
 #include "UI.h"
 #include "Macros.h"
+#include "game.h"
 #include "Math.h"
 
 #define RAM_START_PTR 0xA000
@@ -188,7 +189,7 @@ void Script_ActorSetDir_b()
 {
   actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
   actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
-  actors[script_actor].redraw = TRUE;
+  SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -653,8 +654,10 @@ void Script_PlayerSetSprite_b()
   sprite_len = MUL_4(sprite_frames);
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
+  actors[0].frame = 0;
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[0].redraw = TRUE;
+  actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  SceneRenderActor(0);
 
   // Keep new sprite when switching scene
   map_next_sprite = sprite_index;
@@ -1352,13 +1355,71 @@ void Script_ActorSetAnimSpeed_b()
  * ----------------------------
  * Set global text animation speed.
  *
- *   arg0: Animation speed to use 
+ *   arg0: Animation speed to use
  *   arg1: Animation speed to use fading out
  */
 void Script_TextSetAnimSpeed_b()
 {
   text_in_speed = script_cmd_args[0];
   text_out_speed = script_cmd_args[1];
+  text_draw_speed = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
+}
+
+/*
+ * Command: ScenePushState
+ * ----------------------------
+ * Stores the state of the current scene
+ */
+void Script_ScenePushState_b()
+{
+  if (scene_stack_ptr < MAX_SCENE_STATES) {
+    scene_stack[scene_stack_ptr].scene_index = scene_index;
+    scene_stack[scene_stack_ptr].player_dir.x = actors[0].dir.x;
+    scene_stack[scene_stack_ptr].player_dir.y = actors[0].dir.y;
+    scene_stack[scene_stack_ptr].player_pos.x = 0; // @wtf-but-needed
+    scene_stack[scene_stack_ptr].player_pos.x = actors[0].pos.x >> 3;
+    scene_stack[scene_stack_ptr].player_pos.y = 0; // @wtf-but-needed
+    scene_stack[scene_stack_ptr].player_pos.y = actors[0].pos.y >> 3;
+    scene_stack_ptr++;
+  }
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ScenePopState
+ * ----------------------------
+ * Restores the saved scene state
+ *
+ *   arg0: Fade speed
+ */
+void Script_ScenePopState_b()
+{
+  if (scene_stack_ptr) {
+    scene_stack_ptr--;
+
+    scene_next_index = scene_stack[scene_stack_ptr].scene_index;
+    scene_index = scene_next_index + 1;
+
+    map_next_pos.x = 0; // @wtf-but-needed
+    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x << 3;
+    map_next_pos.y = 0; // @wtf-but-needed
+    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y << 3;
+    map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
+    map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
+
+    stage_next_type = SCENE;
+    script_action_complete = FALSE;
+    FadeSetSpeed(script_cmd_args[0]);
+    FadeOut();
+    script_ptr += 1 + script_cmd_args_len;
+
+    return;
+  }
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
 }
