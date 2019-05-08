@@ -169,9 +169,9 @@ const CMD_LOOKUP = {
   TEXT_SET_ANIM_SPEED: 0x44,
   SCENE_PUSH_STATE: 0x45,
   SCENE_POP_STATE: 0x46,
-  ACTOR_INVOKE: 0x45,
-  STACK_PUSH: 0x46,
-  STACK_POP: 0x47
+  ACTOR_INVOKE: 0x47,
+  STACK_PUSH: 0x48,
+  STACK_POP: 0x49
 };
 
 const getActorIndex = (actorId, scene) => {
