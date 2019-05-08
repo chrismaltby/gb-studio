@@ -9,6 +9,7 @@ import {
   EVENT_SET_FALSE,
   EVENT_RESET_VARIABLES,
   EVENT_LOOP,
+  EVENT_GROUP,
   EVENT_FADE_IN,
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
@@ -630,6 +631,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.JUMP);
       output.push(startPtrIndex >> 8);
       output.push(startPtrIndex & 0xff);
+    } else if (command === EVENT_GROUP) {
+      precompileEntityScript(input[i].true, {
+        ...options,
+        output,
+        branch: true
+      });
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_LOAD_DATA) {

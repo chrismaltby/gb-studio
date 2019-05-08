@@ -117,6 +117,7 @@
   "TEXT_SPEED_IN": "Text Open Speed",
   "TEXT_SPEED_OUT": "Text Close Speed",
   "TEXT_SPEED": "Text Draw Speed",
+  "FIELD_LABEL" : "Label",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -162,6 +163,7 @@
   "EVENT_CHOICE": "Multiple Choice",
   "EVENT_RESET_VARIABLES": "Reset All Variables",
   "EVENT_LOOP": "Loop Forever",
+  "EVENT_GROUP": "Event Group",
   "EVENT_TEXT": "Display Text",
   "EVENT_CAMERA_MOVE_TO": "Camera Move To",
   "EVENT_CAMERA_LOCK": "Camera Lock To Player",

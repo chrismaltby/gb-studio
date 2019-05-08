@@ -31,6 +31,7 @@ export const EVENT_SET_FALSE = "EVENT_SET_FALSE";
 export const EVENT_CHOICE = "EVENT_CHOICE";
 export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 export const EVENT_LOOP = "EVENT_LOOP";
+export const EVENT_GROUP = "EVENT_GROUP";
 
 // Math
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
@@ -137,7 +138,7 @@ export const EventFields = {
   [EVENT_SCENE_PUSH_STATE]: [
     {
       label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
-    },
+    }
   ],
   [EVENT_SCENE_POP_STATE]: [
     {
@@ -336,6 +337,14 @@ export const EventFields = {
   [EVENT_LOOP]: [
     {
       label: l10n("FIELD_LOOP_EXIT")
+    }
+  ],
+  [EVENT_GROUP]: [
+    {
+      key: "__label",
+      type: "text",
+      placeholder: l10n("FIELD_LABEL"),
+      defaultValue: ""
     }
   ],
   [EVENT_CHOICE]: [

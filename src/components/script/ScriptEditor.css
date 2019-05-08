@@ -160,6 +160,17 @@
   transform: rotate(180deg);
 }
 
+.ActionMini__Command svg {
+  width: 8px;
+  height: 8px;
+  transform: rotate(90deg);
+  fill: var(--script-command-text-color);
+}
+
+.ActionMini__Command--Open svg {
+  transform: rotate(180deg);
+}
+
 .ActionMini--Dragging {
   display: none;
 }
