@@ -343,6 +343,13 @@ class ScriptEditor extends Component {
               memo[field.key] = this.props.music[0].id;
             } else if (field.defaultValue === "LAST_SPRITE") {
               memo[field.key] = this.props.spriteSheets[0].id;
+            } else if (field.defaultValue === "LAST_ACTOR") {
+              const actors = this.props.scene.actors;
+              memo[field.key] =
+                actors.length > 0
+                  ? this.props.scene.actors[this.props.scene.actors.length - 1]
+                      .id
+                  : "player";
             } else if (
               field.defaultValue !== undefined &&
               !defaults[field.key]
@@ -554,6 +561,11 @@ function mapStateToProps(state) {
   return {
     variables: state.project.present && state.project.present.variables,
     scenes: state.project.present && state.project.present.scenes,
+    scene:
+      state.project.present &&
+      state.project.present.scenes.find(scene => {
+        return scene.id === state.editor.scene;
+      }),
     music: state.project.present && state.project.present.music,
     spriteSheets: state.project.present && state.project.present.spriteSheets,
     clipboardEvent: state.clipboard.event
