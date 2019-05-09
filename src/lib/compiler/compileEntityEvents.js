@@ -70,7 +70,9 @@ import {
   EVENT_IF_VALUE_COMPARE,
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
-  EVENT_ACTOR_INVOKE
+  EVENT_ACTOR_INVOKE,
+  EVENT_SCENE_RESET_STATE,
+  EVENT_SCENE_POP_ALL_STATE
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -171,7 +173,9 @@ const CMD_LOOKUP = {
   SCENE_POP_STATE: 0x46,
   ACTOR_INVOKE: 0x47,
   STACK_PUSH: 0x48,
-  STACK_POP: 0x49
+  STACK_POP: 0x49,
+  SCENE_STATE_RESET: 0x4a,
+  SCENE_POP_ALL_STATE: 0x4b
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -570,6 +574,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
     } else if (command === EVENT_SCENE_POP_STATE) {
       output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_SCENE_RESET_STATE) {
+      output.push(CMD_LOOKUP.SCENE_STATE_RESET);
+    } else if (command === EVENT_SCENE_POP_ALL_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_ALL_STATE);
       output.push(input[i].args.fadeSpeed || 2);
       output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {

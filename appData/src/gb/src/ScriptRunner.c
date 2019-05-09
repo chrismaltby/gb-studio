@@ -93,7 +93,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ScenePopState_b, 1},      // 0x46
     {Script_ActorInvoke_b, 0},        // 0x47
     {Script_StackPush_b, 0},          // 0x48
-    {Script_StackPop_b, 0}            // 0x49
+    {Script_StackPop_b, 0},           // 0x49
+    {Script_SceneResetStack_b, 0},    // 0x4A
+    {Script_ScenePopAllState_b, 1}    // 0x4B
 };
 
 UBYTE ScriptLastFnComplete();
@@ -185,6 +187,11 @@ UBYTE ScriptLastFnComplete()
   }
 
   if (last_fn == Script_ScenePopState_b)
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_ScenePopAllState_b)
   {
     return TRUE;
   }

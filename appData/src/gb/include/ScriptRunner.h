@@ -99,5 +99,7 @@ void Script_ScenePopState_b();
 void Script_ActorInvoke_b();
 void Script_StackPush_b();
 void Script_StackPop_b();
+void Script_SceneResetStack_b();
+void Script_ScenePopAllState_b();
 
 #endif
