@@ -442,7 +442,7 @@ void SceneUpdateActors_b()
     }
   }
 
-  if (script_ptr == 0)
+  if (script_ptr == 0 || (BGscript_active && await_input)) // Allows idle move if bg script is only checking buttons.
   {
     if (IS_FRAME_64)
     {

@@ -75,7 +75,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "cave.png",
-            "_v": 1557361557275
+            "_v": 1557386568816
         },
         {
             "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
@@ -85,7 +85,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "house.png",
-            "_v": 1557361557275
+            "_v": 1557386568816
         },
         {
             "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
@@ -95,7 +95,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "outside.png",
-            "_v": 1557361557275
+            "_v": 1557386568816
         },
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
@@ -105,7 +105,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "stars.png",
-            "_v": 1557361557275
+            "_v": 1557386568816
         },
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
@@ -115,7 +115,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "underground.png",
-            "_v": 1557361557281
+            "_v": 1557386568816
         }
     ],
     "spriteSheets": [
@@ -125,7 +125,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "cat.png",
-            "_v": 1557361557289
+            "_v": 1557386568830
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
@@ -133,15 +133,23 @@
             "numFrames": 1,
             "type": "static",
             "filename": "dog.png",
-            "_v": 1557361557289
+            "_v": 1557386568830
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
             "name": "duck",
-            "numFrames": 1,
-            "type": "static",
+            "numFrames": 2,
+            "type": "animated",
             "filename": "duck.png",
-            "_v": 1557361557289
+            "_v": 1557387455492
+        },
+        {
+            "id": "074f444e-7aae-4de0-9e2c-86aa3d870f86",
+            "name": "fire",
+            "numFrames": 4,
+            "type": "animated",
+            "filename": "fire.png",
+            "_v": 1557387453105
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
@@ -149,7 +157,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "ice.png",
-            "_v": 1557361557289
+            "_v": 1557386568833
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
@@ -157,7 +165,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc001.png",
-            "_v": 1557361557289
+            "_v": 1557386568830
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
@@ -165,7 +173,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc002.png",
-            "_v": 1557361557289
+            "_v": 1557386568830
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
@@ -173,7 +181,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc003.png",
-            "_v": 1557361557289
+            "_v": 1557386568833
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
@@ -181,7 +189,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player.png",
-            "_v": 1557361557289
+            "_v": 1557386568833
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
@@ -189,7 +197,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "radio.png",
-            "_v": 1557361557289
+            "_v": 1557386568833
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
@@ -197,7 +205,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "rock.png",
-            "_v": 1557361557289
+            "_v": 1557386568833
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
@@ -205,7 +213,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "sage.png",
-            "_v": 1557361557289
+            "_v": 1557386568834
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
@@ -213,7 +221,15 @@
             "numFrames": 1,
             "type": "static",
             "filename": "signpost.png",
-            "_v": 1557361557289
+            "_v": 1557386568834
+        },
+        {
+            "id": "cb7202b9-8fa0-4d29-800d-447e6cb4caf6",
+            "name": "torch",
+            "numFrames": 1,
+            "type": "static",
+            "filename": "torch.png",
+            "_v": 1557387453075
         }
     ],
     "scenes": [
@@ -313,7 +329,8 @@
                     "x": 21,
                     "y": 18,
                     "movementType": "static",
-                    "direction": "down"
+                    "direction": "down",
+                    "animate": true
                 },
                 {
                     "id": "c73c195d-5cc8-4417-bdb0-b0c55c4b6188",
@@ -389,7 +406,8 @@
                             "id": "f49f1e60-9513-4486-9d3b-6f86d1baa938",
                             "command": "EVENT_END"
                         }
-                    ]
+                    ],
+                    "moveSpeed": "1"
                 },
                 {
                     "id": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
@@ -921,6 +939,27 @@
             "height": 32,
             "actors": [
                 {
+                    "id": "11a7288c-de55-41fb-b245-f50638c23340",
+                    "spriteSheetId": "074f444e-7aae-4de0-9e2c-86aa3d870f86",
+                    "x": 5,
+                    "y": 5,
+                    "movementType": "faceInteraction",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "animate": true
+                },
+                {
+                    "id": "2d815619-2e26-45da-ba8b-097a741e20e2",
+                    "spriteSheetId": "cb7202b9-8fa0-4d29-800d-447e6cb4caf6",
+                    "x": 5,
+                    "y": 7,
+                    "movementType": "faceInteraction",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3"
+                },
+                {
                     "id": "15d7cf30-df3a-427b-883a-996b605edb40",
                     "spriteSheetId": "e20ce140-53a5-4b1b-9964-138ba0c86925",
                     "x": 9,
@@ -947,6 +986,27 @@
                             "command": "EVENT_END"
                         }
                     ]
+                },
+                {
+                    "id": "b3411640-644f-4a84-8ef9-311438886c44",
+                    "spriteSheetId": "cb7202b9-8fa0-4d29-800d-447e6cb4caf6",
+                    "x": 13,
+                    "y": 7,
+                    "movementType": "faceInteraction",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3"
+                },
+                {
+                    "id": "ceba6985-dae0-4a2c-83e9-2af52c231464",
+                    "spriteSheetId": "074f444e-7aae-4de0-9e2c-86aa3d870f86",
+                    "x": 13,
+                    "y": 5,
+                    "movementType": "faceInteraction",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "animate": true
                 }
             ],
             "triggers": [
@@ -1427,7 +1487,7 @@
                     "spriteSheetId": "52ad34df-f245-4b2a-b94c-a82af1002871",
                     "x": 6,
                     "y": 15,
-                    "movementType": "faceInteraction",
+                    "movementType": "randomWalk",
                     "direction": "right",
                     "name": "Follow",
                     "script": [
@@ -2356,7 +2416,19 @@
                             "command": "EVENT_END"
                         }
                     ],
-                    "name": "DUCK"
+                    "name": "DUCK",
+                    "animate": true
+                },
+                {
+                    "id": "47f1f88c-a3f1-4e83-9d93-bff2af50e028",
+                    "spriteSheetId": "074f444e-7aae-4de0-9e2c-86aa3d870f86",
+                    "x": 12,
+                    "y": 20,
+                    "movementType": "faceInteraction",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "4",
+                    "animate": true
                 }
             ],
             "triggers": [
@@ -2893,13 +2965,13 @@
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
             "filename": "template.mod",
-            "_v": 1557361557290
+            "_v": 1557386568844
         },
         {
             "id": "d34c27eb-af6b-4f36-9587-722f10962866",
             "name": "undergroundCave",
             "filename": "undergroundCave.mod",
-            "_v": 1557361557290
+            "_v": 1557386568844
         }
     ],
     "author": "RichardULZ"

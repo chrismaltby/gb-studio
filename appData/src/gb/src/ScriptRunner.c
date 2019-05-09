@@ -110,10 +110,11 @@ UBYTE ScriptLastFnComplete();
 void ScriptStart(BANK_PTR *events_ptr)
 {
   wait_time = 0;
+  await_input = 0;
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
   script_start_ptr = script_ptr;
-  // BGscript halt most loose functions, ^ wait time needed an exception too
+  // BGscript halt most loose functions, ^ wait time needed an exception too, and await input reset line.
   if (BGscript_active)
   {
     actors[BGscript_actor].pos.x = ((actors[BGscript_actor].pos.x) >> 3 << 3);
