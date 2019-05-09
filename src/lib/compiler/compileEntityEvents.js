@@ -70,6 +70,7 @@ import {
   EVENT_IF_VALUE_COMPARE,
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
+  EVENT_ACTOR_INVOKE,
   EVENT_SET_BG_SCRIPT,
   EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
@@ -170,8 +171,11 @@ const CMD_LOOKUP = {
   TEXT_SET_ANIM_SPEED: 0x44,
   SCENE_PUSH_STATE: 0x45,
   SCENE_POP_STATE: 0x46,
-  SET_BG_SCRIPT: 0x47,
-  CLEAR_BG_SCRIPT: 0x48
+  ACTOR_INVOKE: 0x47,
+  STACK_PUSH: 0x48,
+  STACK_POP: 0x49,
+  SET_BG_SCRIPT: 0x4A,
+  CLEAR_BG_SCRIPT: 0x4B
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -591,6 +595,11 @@ const precompileEntityScript = (input = [], options = {}) => {
         output.push(CMD_LOOKUP.ACTOR_PUSH);
         output.push(input[i].args.continue ? 1 : 0); // Continue until collision
       }
+    } else if (command === EVENT_ACTOR_INVOKE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_INVOKE);
     } else if (command === EVENT_PLAYER_SET_SPRITE) {
       const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);

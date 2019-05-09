@@ -74,6 +74,7 @@ export const EVENT_ACTOR_GET_POSITION = "EVENT_ACTOR_GET_POSITION";
 export const EVENT_ACTOR_SET_POSITION_TO_VALUE =
   "EVENT_ACTOR_SET_POSITION_TO_VALUE";
 export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
+export const EVENT_ACTOR_INVOKE = "EVENT_ACTOR_INVOKE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -677,6 +678,16 @@ export const EventFields = {
       key: "actorId",
       type: "actor",
       defaultValue: "player"
+    }
+  ],
+  [EVENT_ACTOR_INVOKE]: [
+    {
+      label: l10n("FIELD_ACTOR_INVOKE")
+    },
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "LAST_ACTOR"
     }
   ],
   [EVENT_PLAYER_SET_SPRITE]: [

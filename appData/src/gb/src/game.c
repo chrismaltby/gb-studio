@@ -77,6 +77,9 @@ void game_loop()
 
   joy = joypad();
 
+  // Handle Fade
+  FadeUpdate();
+
   // Handle stage switch
   if (stage_type != stage_next_type && !IsFading())
   {
@@ -98,9 +101,6 @@ void game_loop()
   {
     SceneUpdate();
   }
-
-  // Handle Fade
-  FadeUpdate();
 
   prev_joy = joy;
   time++;

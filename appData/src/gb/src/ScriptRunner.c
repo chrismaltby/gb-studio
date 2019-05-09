@@ -20,6 +20,9 @@ UWORD BG_ptr = 0;
 UWORD BG_start_ptr = 0;
 UBYTE BGscript_active = FALSE;
 
+UBYTE script_stack_ptr = 0;
+UWORD script_stack[STACK_SIZE] = {0};
+
 SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},                // 0x00
     {Script_Text_b, 2},               // 0x01
@@ -92,8 +95,11 @@ SCRIPT_CMD script_cmds[] = {
     {Script_TextSetAnimSpeed_b, 3},   // 0x44
     {Script_ScenePushState_b, 0},     // 0x45
     {Script_ScenePopState_b, 1},      // 0x46
-    {Script_SetBGscript_b, 0},        // 0x47
-    {Script_ClearBGscript_b, 0}       // 0x48
+    {Script_ActorInvoke_b, 0},        // 0x47
+    {Script_StackPush_b, 0},          // 0x48
+    {Script_StackPop_b, 0},           // 0x49
+    {Script_SetBGscript_b, 0},        // 0x4A
+    {Script_ClearBGscript_b, 0}       // 0x4B
 };
 
 UBYTE ScriptLastFnComplete();
@@ -131,6 +137,13 @@ void ScriptRunnerUpdate()
 
   if (!script_cmd_index)
   {
+    if (script_stack_ptr) {
+      // Return from Actor Invocation
+      PUSH_BANK(scriptrunner_bank);
+      Script_StackPop_b();
+      POP_BANK;
+      return;
+    }
     LOG("SCRIPT FINISHED\n");
     if(BG_ptr!=0 && !BGscript_active)
     {
