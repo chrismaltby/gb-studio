@@ -205,7 +205,27 @@ XAudioServer.prototype.initializeWebAudio = function () {
     }
 	XAudioJSWebAudioAudioNode.onaudioprocess = XAudioJSWebAudioEvent;
 	var gainNode = XAudioJSWebAudioContextHandle.createGain();
-	XAudioJSWebAudioAudioNode.connect(gainNode); //Connect the audio processing event to a handling function so we can manipulate output
+	var scriptNode = XAudioJSWebAudioContextHandle.createScriptProcessor(4096, 1, 1);
+
+	scriptNode.onaudioprocess = function(audioProcessingEvent) {
+		var inputBuffer = audioProcessingEvent.inputBuffer;
+		var outputBuffer = audioProcessingEvent.outputBuffer;
+
+		// Loop through the output channels (in this case there is only one)
+		for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+		  var inputData = inputBuffer.getChannelData(channel);
+		  var outputData = outputBuffer.getChannelData(channel);
+	  
+		  // Loop through the 4096 samples
+		  for (var sample = 0; sample < inputBuffer.length; sample++) {
+			// make output equal to the same as the input
+			outputData[sample] = 0.5 + (inputData[sample] / 2);
+		  }
+		}
+	  }
+
+	XAudioJSWebAudioAudioNode.connect(scriptNode); //Connect the audio processing event to a handling function so we can manipulate output
+	scriptNode.connect(gainNode);
 	//Connect the audio processing event to a handling function so we can manipulate output
 	gainNode.connect(XAudioJSWebAudioContextHandle.destination);
 	// Ramp up gain to avoid pop when initialised
