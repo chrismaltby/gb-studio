@@ -634,6 +634,7 @@ void SceneHandleTriggers_b()
       if (trigger != scene_num_triggers)
       {
         // LOG("ON TRIGGER\n");
+        last_joy = 0;
         actors[0].moving = FALSE;
         script_actor = 0;
         ScriptStart(&triggers[trigger].events_ptr);

@@ -174,8 +174,9 @@ const CMD_LOOKUP = {
   ACTOR_INVOKE: 0x47,
   STACK_PUSH: 0x48,
   STACK_POP: 0x49,
-  SET_BG_SCRIPT: 0x4A,
-  CLEAR_BG_SCRIPT: 0x4B
+
+  SET_BG_SCRIPT: 0x4C,
+  CLEAR_BG_SCRIPT: 0x4D
 };
 
 const getActorIndex = (actorId, scene) => {

@@ -119,8 +119,8 @@
   "TEXT_SPEED_OUT": "Text Close Speed",
   "TEXT_SPEED": "Text Draw Speed",
   "FIELD_LABEL" : "Label",
-  "FIELD_SET_BG_SCRIPT": "Allow script to run in the Background from this point onward. Pauses & resumes when another script starts & ends. **VERY EXPEREMENTAL**",
-  "FIELD_CLEAR_BG_SCRIPT": "Removes the BG script from memory so it can not restart. **VERY EXPEREMENTAL**",
+  "FIELD_SET_BG_SCRIPT": "Allow player movement while this script runs in the Background. Stops & Resumes when another script Starts & Ends. *EXPEREMENTAL*",
+  "FIELD_CLEAR_BG_SCRIPT": "Removes the BG script from memory so it can not restart. Continues running script. *EXPEREMENTAL*",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

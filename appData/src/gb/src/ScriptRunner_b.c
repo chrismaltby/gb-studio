@@ -39,7 +39,9 @@ void Script_End_b()
 {
   if (BG_ptr) {
     script_ptr_bank = BG_ptr_bank;
+    script_start_ptr = BG_start_ptr;
     script_ptr = BG_ptr;
+    script_actor = BGscript_actor;
     BGscript_active = TRUE;
     script_continue = TRUE;
     return;
@@ -1362,8 +1364,9 @@ void Script_ActorSetAnimSpeed_b()
  * ----------------------------
  * Set global text animation speed.
  *
- *   arg0: Animation speed to use
- *   arg1: Animation speed to use fading out
+ *   arg0: Open textbox speed
+ *   arg1: Close textbox speed
+ *   arg2: Write text speed
  */
 void Script_TextSetAnimSpeed_b()
 {
@@ -1471,12 +1474,14 @@ void Script_ScenePopState_b()
  * ----------------------------
  * Copy curent script bank, script_ptr, and script_start_ptr to bg backup
  * Also sets BGscript_active to True 
+ * Will return to BGscript after another script finishes.
  */
 void Script_SetBGscript_b()
 {
   BG_ptr_bank = script_ptr_bank;
   BG_ptr = script_ptr;
   BG_start_ptr = script_start_ptr;
+  BGscript_actor = script_actor;
   BGscript_active = TRUE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -1485,14 +1490,16 @@ void Script_SetBGscript_b()
 /*
  * Command: ClearBGscript
  * ----------------------------
- * Resets BG ptr
- * Sets BGscript_active to False 
+ * Resets BG ptr, BG ptr start, and BG bank
+ * Sets BGscript_active to False
+ * Will not end the script that is running,
  */
 void Script_ClearBGscript_b()
 {
   BG_ptr_bank = 0;
   BG_ptr = 0;
   BG_start_ptr = 0;
+  BGscript_actor = 0;
   BGscript_active = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;

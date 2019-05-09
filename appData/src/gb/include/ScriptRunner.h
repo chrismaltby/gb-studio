@@ -20,6 +20,7 @@ extern UBYTE BG_ptr_bank;
 extern UWORD BG_ptr;
 extern UWORD BG_start_ptr;
 extern UBYTE BGscript_active;
+extern UBYTE BGscript_actor;
 
 // Max call stack depth
 #define STACK_SIZE 8

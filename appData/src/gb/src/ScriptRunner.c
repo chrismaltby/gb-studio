@@ -19,6 +19,7 @@ UBYTE BG_ptr_bank = 0;
 UWORD BG_ptr = 0;
 UWORD BG_start_ptr = 0;
 UBYTE BGscript_active = FALSE;
+UBYTE BGscript_actor;
 
 UBYTE script_stack_ptr = 0;
 UWORD script_stack[STACK_SIZE] = {0};
@@ -98,8 +99,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ActorInvoke_b, 0},        // 0x47
     {Script_StackPush_b, 0},          // 0x48
     {Script_StackPop_b, 0},           // 0x49
-    {Script_SetBGscript_b, 0},        // 0x4A
-    {Script_ClearBGscript_b, 0}       // 0x4B
+  
+    {Script_SetBGscript_b, 0},        // 0x4C
+    {Script_ClearBGscript_b, 0}       // 0x4D
 };
 
 UBYTE ScriptLastFnComplete();
@@ -107,13 +109,19 @@ UBYTE ScriptLastFnComplete();
 void ScriptStart(BANK_PTR *events_ptr)
 {
   wait_time = 0;
-  actors[script_actor].moving = FALSE;
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
   script_start_ptr = script_ptr;
+  // BGscript halt most loose functions, ^ wait time needed an exception too
+  if (BGscript_active)
+  {
+    actors[BGscript_actor].pos.x = ((actors[BGscript_actor].pos.x) >> 3 << 3);
+    actors[BGscript_actor].pos.y = ((actors[BGscript_actor].pos.y) >> 3 << 3);
+    actors[BGscript_actor].moving = FALSE;
+    actor_move_settings &= ~ACTOR_MOVE_ENABLED;
+    BGscript_active = FALSE;
+  }
   script_action_complete = TRUE;
-  BGscript_active = FALSE;
-  actor_move_settings &= ~ACTOR_MOVE_ENABLED;
 }
 
 void ScriptRunnerUpdate()
@@ -150,6 +158,7 @@ void ScriptRunnerUpdate()
       script_ptr_bank = BG_ptr_bank; 
       script_ptr = BG_ptr;
       script_start_ptr = BG_start_ptr;
+      script_actor = BGscript_actor;
       BGscript_active = TRUE; 
     return; 
     }

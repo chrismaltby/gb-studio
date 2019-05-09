@@ -75,7 +75,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "cave.png",
-            "_v": 1557307086999
+            "_v": 1557361557275
         },
         {
             "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
@@ -85,7 +85,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "house.png",
-            "_v": 1557307086999
+            "_v": 1557361557275
         },
         {
             "id": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
@@ -95,7 +95,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "outside.png",
-            "_v": 1557307086999
+            "_v": 1557361557275
         },
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
@@ -105,7 +105,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "stars.png",
-            "_v": 1557307086999
+            "_v": 1557361557275
         },
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
@@ -115,7 +115,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "underground.png",
-            "_v": 1557307086999
+            "_v": 1557361557281
         }
     ],
     "spriteSheets": [
@@ -125,7 +125,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "cat.png",
-            "_v": 1557307087005
+            "_v": 1557361557289
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
@@ -133,7 +133,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "dog.png",
-            "_v": 1557307087005
+            "_v": 1557361557289
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
@@ -141,7 +141,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "duck.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
@@ -149,7 +149,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "ice.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
@@ -157,7 +157,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc001.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
@@ -165,7 +165,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc002.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
@@ -173,7 +173,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc003.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
@@ -181,7 +181,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
@@ -189,7 +189,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "radio.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
@@ -197,7 +197,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "rock.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
@@ -205,7 +205,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "sage.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
@@ -213,7 +213,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "signpost.png",
-            "_v": 1557307087008
+            "_v": 1557361557289
         }
     ],
     "scenes": [
@@ -221,8 +221,8 @@
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
             "name": "Outside",
             "backgroundId": "1b7fa267-d716-40f0-b0d0-f4f966610e07",
-            "x": 378,
-            "y": 289,
+            "x": 379,
+            "y": 293,
             "width": 32,
             "height": 32,
             "actors": [
@@ -1042,52 +1042,25 @@
                     "direction": "down",
                     "script": [
                         {
-                            "id": "8208a6a1-7d0e-465b-ac1f-16868e6d250e",
-                            "command": "EVENT_IF_FALSE",
+                            "id": "b59a6d8f-a31e-4bff-8013-9a0233ec9a7a",
+                            "command": "EVENT_ACTOR_INVOKE",
                             "args": {
-                                "variable": "2"
-                            },
-                            "true": [
-                                {
-                                    "id": "94a866d1-d4cd-485b-8519-364104412bdb",
-                                    "command": "EVENT_TEXT",
-                                    "args": {
-                                        "text": "Have you tried\nusing this radio?"
-                                    }
-                                },
-                                {
-                                    "id": "71433d34-0d26-4f92-89e1-b04496f978c0",
-                                    "command": "EVENT_END"
-                                }
-                            ],
-                            "false": [
-                                {
-                                    "id": "aedfbb0e-a49e-4b10-a334-cc217f44e9d8",
-                                    "command": "EVENT_TEXT",
-                                    "args": {
-                                        "text": "Yeah it doesn't\nfit does it?"
-                                    }
-                                },
-                                {
-                                    "id": "6bd9950b-775e-4d5b-96f1-0e5488317c87",
-                                    "command": "EVENT_ACTOR_EMOTE",
-                                    "args": {
-                                        "actorId": "566c8812-a204-45b5-b93a-c113c10c20de",
-                                        "emoteId": "3"
-                                    }
-                                },
-                                {
-                                    "id": "5728dc6b-4c2c-4255-aa1b-b1f6211a2219",
-                                    "command": "EVENT_TEXT",
-                                    "args": {
-                                        "text": "But it's all I\nhave right now..."
-                                    }
-                                },
-                                {
-                                    "id": "965e5d34-eaaa-46fe-b090-8bbeaef0e19c",
-                                    "command": "EVENT_END"
-                                }
-                            ]
+                                "actorId": "9603b702-aa07-4ad7-8906-16112f308854"
+                            }
+                        },
+                        {
+                            "id": "dcab3ee0-af1f-4cd2-8963-9fd9681dac7d",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "hello"
+                            }
+                        },
+                        {
+                            "id": "6d7d5cae-c464-4581-a785-8c8d3715466b",
+                            "command": "EVENT_ACTOR_INVOKE",
+                            "args": {
+                                "actorId": "26bced35-c28a-4394-907e-d657789afdb5"
+                            }
                         },
                         {
                             "id": "262b6a60-ae31-496d-9b82-a0765f1f7965",
@@ -1415,7 +1388,7 @@
                             "args": {
                                 "variable": "9",
                                 "__collapseElse": true,
-                                "__collapse": false
+                                "__collapse": true
                             },
                             "true": [
                                 {
@@ -1479,7 +1452,7 @@
                             "command": "EVENT_IF_TRUE",
                             "args": {
                                 "variable": "7",
-                                "__collapse": true,
+                                "__collapse": false,
                                 "__collapseElse": true
                             },
                             "true": [
@@ -1495,7 +1468,7 @@
                                     "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
                                     "args": {
                                         "actorId": "7f97f1a2-12bd-4ca5-a37f-2c97dce5333e",
-                                        "speed": "0"
+                                        "speed": "1"
                                     }
                                 },
                                 {
@@ -2386,7 +2359,41 @@
                     "name": "DUCK"
                 }
             ],
-            "triggers": [],
+            "triggers": [
+                {
+                    "id": "e33085fe-44fc-47ee-964f-a102f4d99183",
+                    "x": 14,
+                    "y": 1,
+                    "width": 5,
+                    "height": 3,
+                    "trigger": "walk",
+                    "script": [
+                        {
+                            "id": "f8ecd04f-0daa-41ef-b6fb-48f55aa4d196",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "14"
+                            },
+                            "true": [
+                                {
+                                    "id": "c5feabe1-845d-4f43-853e-9e7142558822",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "3016c5b9-55ec-48b8-8ebf-ef4faf1f65e0",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "20ca5bf7-80a5-47c6-b277-7193ad4ed128",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
             "collisions": [
                 0,
                 0,
@@ -2886,13 +2893,13 @@
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
             "filename": "template.mod",
-            "_v": 1557307087012
+            "_v": 1557361557290
         },
         {
             "id": "d34c27eb-af6b-4f36-9587-722f10962866",
             "name": "undergroundCave",
             "filename": "undergroundCave.mod",
-            "_v": 1557307087012
+            "_v": 1557361557290
         }
     ],
     "author": "RichardULZ"
