@@ -211,7 +211,14 @@ class ActionMini extends Component {
                 onClick={this.toggleOpen}
               >
                 <TriangleIcon />{" "}
-                {action.args.__label || l10n(command) || command}
+                {action.args.__label ? (
+                  <span>
+                    {action.args.__label}
+                    <small>{l10n(command) || command}</small>
+                  </span>
+                ) : (
+                  l10n(command) || command
+                )}
               </div>
             )}
 

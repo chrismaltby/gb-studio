@@ -25,16 +25,27 @@
 }
 
 .ActionMini__Command {
-  min-height: 28px;
-  line-height: 28px;
+  display: flex;
+  line-height: 16px;
   font-weight: bold;
-  padding: 0 10px;
+  padding: 6px 10px;
+  padding-right: 35px;
   background: var(--script-command-bg-color);
   color: var(--script-command-text-color);
 }
 
 .ActionMini__Command:hover {
   cursor: move;
+}
+
+.ActionMini__Command > span {
+  margin-right: 5px;
+}
+
+.ActionMini__Command small {
+  margin-left: 4px;
+  opacity: 0.6;
+  font-weight: normal;
 }
 
 /* Conditional Level 1 */
@@ -141,17 +152,20 @@
 }
 
 .ActionMini__Else {
-  min-height: 28px;
-  line-height: 28px;
+  display: flex;
+  line-height: 16px;
   font-weight: bold;
-  padding: 0 10px;
+  padding: 6px 10px;
   background: #efefef;
   color: var(--script-command-text-color);
 }
 
 .ActionMini__Else svg {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
+  margin-right: 3px;
+  margin-top: 4px;
   transform: rotate(90deg);
   fill: var(--script-command-text-color);
 }
@@ -161,8 +175,11 @@
 }
 
 .ActionMini__Command svg {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
+  margin-right: 3px;
+  margin-top: 4px;
   transform: rotate(90deg);
   fill: var(--script-command-text-color);
 }
