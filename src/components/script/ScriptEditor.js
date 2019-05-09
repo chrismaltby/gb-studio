@@ -231,7 +231,9 @@ class ActionMini extends Component {
                 <MenuItem onClick={onCopy(action)}>
                   {l10n("MENU_COPY_EVENT")}
                 </MenuItem>
-                <MenuDivider />
+                {clipboardEvent && !Array.isArray(clipboardEvent) && (
+                  <MenuDivider />
+                )}
                 {clipboardEvent && !Array.isArray(clipboardEvent) && (
                   <MenuItem onClick={this.onPasteValues}>
                     {l10n("MENU_PASTE_VALUES")}
@@ -550,7 +552,7 @@ class ScriptEditor extends Component {
               <MenuItem onClick={this.onCopyScript}>
                 {l10n("MENU_COPY_SCRIPT")}
               </MenuItem>
-              <MenuDivider />
+              {clipboardEvent && <MenuDivider />}
               {clipboardEvent && (
                 <MenuItem onClick={this.onReplaceScript}>
                   {l10n("MENU_REPLACE_SCRIPT")}
