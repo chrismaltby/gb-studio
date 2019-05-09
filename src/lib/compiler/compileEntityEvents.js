@@ -71,6 +71,8 @@ import {
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
   EVENT_ACTOR_INVOKE,
+  EVENT_SCENE_RESET_STATE,
+  EVENT_SCENE_POP_ALL_STATE,
   EVENT_SET_BG_SCRIPT,
   EVENT_CLEAR_BG_SCRIPT
 } from "./eventTypes";
@@ -174,9 +176,10 @@ const CMD_LOOKUP = {
   ACTOR_INVOKE: 0x47,
   STACK_PUSH: 0x48,
   STACK_POP: 0x49,
-
-  SET_BG_SCRIPT: 0x4C,
-  CLEAR_BG_SCRIPT: 0x4D
+  SCENE_STATE_RESET: 0x4a,
+  SCENE_POP_ALL_STATE: 0x4b,
+  SET_BG_SCRIPT: 0x4c,
+  CLEAR_BG_SCRIPT: 0x4d
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -575,6 +578,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
     } else if (command === EVENT_SCENE_POP_STATE) {
       output.push(CMD_LOOKUP.SCENE_POP_STATE);
+      output.push(input[i].args.fadeSpeed || 2);
+      output.push(CMD_LOOKUP.END);
+    } else if (command === EVENT_SCENE_RESET_STATE) {
+      output.push(CMD_LOOKUP.SCENE_STATE_RESET);
+    } else if (command === EVENT_SCENE_POP_ALL_STATE) {
+      output.push(CMD_LOOKUP.SCENE_POP_ALL_STATE);
       output.push(input[i].args.fadeSpeed || 2);
       output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_SHOW_SPRITES) {

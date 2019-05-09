@@ -1470,6 +1470,51 @@ void Script_ScenePopState_b()
 }
 
 /*
+ * Command: SceneResetStack
+ * ----------------------------
+ * Clear all saved scene state
+ */
+void Script_SceneResetStack_b()
+{
+  scene_stack_ptr = 0;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ScenePopAllState
+ * ----------------------------
+ * Restores the first saved scene state
+ */
+void Script_ScenePopAllState_b()
+{
+  if (scene_stack_ptr) {
+    scene_stack_ptr = 0;
+
+    scene_next_index = scene_stack[scene_stack_ptr].scene_index;
+    scene_index = scene_next_index + 1;
+
+    map_next_pos.x = 0; // @wtf-but-needed
+    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x << 3;
+    map_next_pos.y = 0; // @wtf-but-needed
+    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y << 3;
+    map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
+    map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
+
+    stage_next_type = SCENE;
+    script_action_complete = FALSE;
+    FadeSetSpeed(script_cmd_args[0]);
+    FadeOut();
+    script_ptr += 1 + script_cmd_args_len;
+
+    return;
+  }
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
  * Command: setBGscript
  * ----------------------------
  * Copy curent script bank, script_ptr, and script_start_ptr to bg backup
