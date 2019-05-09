@@ -63,13 +63,20 @@
 
 .DirectionPicker__Button--Active,
 .DirectionPicker__Button--Active:hover {
-  background-color: var(--input-active-color);
+  background-color: var(--highlight-color);
+  border-color: rgba(128, 128, 128, 0.5);
+  color: #fff;
 }
 
 .DirectionPicker__Button svg {
   fill: var(--button-text-color);
   width: 8px;
   height: 8px;
+}
+
+.DirectionPicker__Button--Active svg,
+.DirectionPicker__Button--Active:hover svg {
+  fill: #fff;
 }
 
 .DirectionPicker__Button--Left svg {
