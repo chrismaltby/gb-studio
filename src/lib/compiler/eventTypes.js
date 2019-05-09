@@ -359,14 +359,7 @@ export const EventFields = {
       label: l10n("FIELD_LOOP_EXIT")
     }
   ],
-  [EVENT_GROUP]: [
-    {
-      key: "__label",
-      type: "text",
-      placeholder: l10n("FIELD_LABEL"),
-      defaultValue: ""
-    }
-  ],
+  [EVENT_GROUP]: [],
   [EVENT_CHOICE]: [
     {
       key: "variable",

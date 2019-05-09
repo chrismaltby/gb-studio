@@ -5,6 +5,7 @@ import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
 import { CloseIcon, TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
+import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
   EventNames,
@@ -89,6 +90,13 @@ const isConditionalEvent = command => {
 };
 
 class ActionMini extends Component {
+  constructor() {
+    super();
+    this.state = {
+      rename: false
+    };
+  }
+
   toggleOpen = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
@@ -101,6 +109,18 @@ class ActionMini extends Component {
     onEdit(id, {
       __collapseElse: !action.args.__collapseElse
     });
+  };
+
+  toggleRename = () => {
+    this.setState({
+      rename: !this.state.rename
+    });
+  };
+
+  submitOnEnter = e => {
+    if (e.key === "Enter") {
+      this.toggleRename();
+    }
   };
 
   onPasteValues = e => {
@@ -147,6 +167,7 @@ class ActionMini extends Component {
       onMouseLeave,
       clipboardEvent
     } = this.props;
+    const { rename } = this.state;
     const { command } = action;
 
     if (command === EVENT_END) {
@@ -196,6 +217,10 @@ class ActionMini extends Component {
 
             <div className="ActionMini__Dropdown">
               <DropdownButton small transparent right>
+                <MenuItem onClick={this.toggleRename}>
+                  {l10n("MENU_RENAME_EVENT")}
+                </MenuItem>
+                <MenuDivider />
                 <MenuItem onClick={onCopy(action)}>
                   {l10n("MENU_COPY_EVENT")}
                 </MenuItem>
@@ -222,7 +247,24 @@ class ActionMini extends Component {
               </DropdownButton>
             </div>
 
-            {open && (
+            {rename && (
+              <FormField>
+                <input
+                  placeholder={l10n("FIELD_LABEL")}
+                  value={action.args.__label || ""}
+                  autoFocus={true}
+                  onBlur={this.toggleRename}
+                  onChange={e => {
+                    onEdit(id, {
+                      __label: e.currentTarget.value
+                    });
+                  }}
+                  onKeyDown={this.submitOnEnter}
+                />
+              </FormField>
+            )}
+
+            {open && EventFields[command] && EventFields[command].length > 0 && (
               <ScriptEventBlock
                 command={command}
                 value={action.args}

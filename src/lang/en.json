@@ -242,6 +242,7 @@
   "MENU_ABOUT": "About GB Studio",
   "MENU_CART_TYPE": "Cartridge Type",
   "MENU_COPY_EVENT": "Copy Event",
+  "MENU_RENAME_EVENT": "Rename Event",
   "MENU_PASTE_VALUES": "Paste Values",
   "MENU_PASTE_EVENT_BEFORE": "Paste Event Before",
   "MENU_PASTE_EVENT_AFTER": "Paste Event After",
