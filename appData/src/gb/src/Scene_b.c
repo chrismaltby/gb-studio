@@ -729,7 +729,7 @@ static void SceneHandleInput()
     return;
   }
 
-  if (joy != 0 && joy != prev_joy)
+  if (joy != 0 && joy != last_joy)
   {
     input_index = 0;
     input_joy = joy;
@@ -741,7 +741,7 @@ static void SceneHandleInput()
     if (input_script_ptrs[input_index].bank)
     {
       actors[0].moving = FALSE;
-      input_joy = 0;
+      joy = last_joy;
       ScriptStart(&input_script_ptrs[input_index]);
       return;
     }
