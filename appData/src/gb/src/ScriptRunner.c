@@ -66,7 +66,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SaveData_b, 0},           // 0x2B
     {Script_ClearData_b, 0},          // 0x2C
     {Script_IfSavedData_b, 2},        // 0x2D
-    {Script_IfActorDirection_b, 4},   // 0x2E
+    {Script_IfActorDirection_b, 3},   // 0x2E
     {Script_SetFlagRandomValue_b, 3}, // 0x2F
     {Script_ActorGetPos_b, 0},        // 0x30
     {Script_ActorSetPosToVal_b, 0},   // 0x31
