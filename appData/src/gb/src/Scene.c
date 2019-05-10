@@ -32,7 +32,7 @@ UBYTE wait_time = 0;
 UBYTE shake_time = 0;
 UBYTE scene_width;
 UBYTE scene_height;
-BANK_PTR input_script_ptrs[NUM_INPUTS];
+BANK_PTR input_script_ptrs[NUM_INPUTS] = {{0}};
 
 void SceneInit()
 {
