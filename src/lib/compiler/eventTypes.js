@@ -38,6 +38,7 @@ export const EVENT_GROUP = "EVENT_GROUP";
 // Background Scripts
 export const EVENT_SET_INPUT_SCRIPT = "EVENT_SET_INPUT_SCRIPT";
 export const EVENT_SET_BACKGROUND_SCRIPT = "EVENT_SET_BACKGROUND_SCRIPT";
+export const EVENT_REMOVE_INPUT_SCRIPT = "EVENT_REMOVE_INPUT_SCRIPT";
 
 // Math
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
@@ -370,6 +371,14 @@ export const EventFields = {
       label: l10n("FIELD_ON_PRESS"),
       type: "input",
       defaultValue: "b"
+    }
+  ],
+  [EVENT_REMOVE_INPUT_SCRIPT]: [
+    {
+      key: "input",
+      label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
+      type: "input",
+      defaultValue: ["b"]
     }
   ],
   [EVENT_CHOICE]: [

@@ -96,7 +96,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_StackPop_b, 0},           // 0x49
     {Script_SceneResetStack_b, 0},    // 0x4A
     {Script_ScenePopAllState_b, 1},   // 0x4B
-    {Script_SetInputScript_b, 4}      // 0x4C
+    {Script_SetInputScript_b, 4},     // 0x4C
+    {Script_RemoveInputScript_b, 1}   // 0x4D
 };
 
 UBYTE ScriptLastFnComplete();

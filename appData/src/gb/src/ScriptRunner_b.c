@@ -1531,3 +1531,28 @@ void Script_SetInputScript_b()
   script_action_complete = TRUE;
   script_ptr += 1 + script_cmd_args_len;
 }
+
+/*
+ * Command: RemoveInputScript
+ * ----------------------------
+ * Remove script from button press
+ */
+void Script_RemoveInputScript_b()
+{
+  UBYTE input, index;
+
+  input = script_cmd_args[0];
+
+  index = 0;
+  for (index = 0; index != 8; ++index)
+  {
+    if (input & 1)
+    {
+      input_script_ptrs[index].bank = 0;
+    }
+    input = input >> 1;
+  }
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
