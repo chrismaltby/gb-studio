@@ -120,7 +120,7 @@ function bindKeyboard() {
     if (
       e.keyCode !== JS_KEY_CTRL &&
       e.keyCode !== JS_KEY_ALT &&
-      (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey)
+      (e.altKey || e.ctrlKey || e.metaKey)
     ) {
       return;
     }
