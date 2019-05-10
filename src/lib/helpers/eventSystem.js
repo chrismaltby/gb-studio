@@ -12,6 +12,18 @@ const walkEvents = (events = [], callback) => {
   }
 };
 
+const walkEventsDepthFirst = (events = [], callback) => {
+  for (let i = 0; i < events.length; i++) {
+    if (events[i].true) {
+      walkEvents(events[i].true, callback);
+    }
+    if (events[i].false) {
+      walkEvents(events[i].false, callback);
+    }
+    callback(events[i]);
+  }
+};
+
 const walkScenesEvents = (scenes, callback) => {
   scenes.forEach(scene => {
     walkSceneEvents(scene, callback);
@@ -175,6 +187,7 @@ const findEvent = (data, id) => {
 
 export {
   walkEvents,
+  walkEventsDepthFirst,
   walkScenesEvents,
   walkSceneEvents,
   findSceneEvent,

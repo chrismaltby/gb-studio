@@ -683,7 +683,7 @@ void SceneUpdateEmoteBubble_b()
 
 static void SceneHandleInput()
 {
-  UBYTE next_tx, next_ty;
+  UBYTE next_tx, next_ty, input_index, input_joy;
   UBYTE npc;
 
   // If menu open - check if A pressed to close
@@ -700,6 +700,22 @@ static void SceneHandleInput()
   {
     actors[0].moving = FALSE;
     return;
+  }
+
+  if (joy != 0)
+  {
+    input_index = 0;
+    input_joy = joy;
+    while (!(input_joy & 1) && input_joy != 0)
+    {
+      input_index += 1;
+      input_joy = input_joy >> 1;
+    }
+    if (input_script_ptrs[input_index].bank)
+    {
+      ScriptStart(&input_script_ptrs[input_index]);
+      return;
+    }
   }
 
   if (JOY_PRESSED(J_A))

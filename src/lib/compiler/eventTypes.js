@@ -35,6 +35,10 @@ export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 export const EVENT_LOOP = "EVENT_LOOP";
 export const EVENT_GROUP = "EVENT_GROUP";
 
+// Background Scripts
+export const EVENT_SET_INPUT_SCRIPT = "EVENT_SET_INPUT_SCRIPT";
+export const EVENT_SET_BACKGROUND_SCRIPT = "EVENT_SET_BACKGROUND_SCRIPT";
+
 // Math
 export const EVENT_SET_VALUE = "EVENT_SET_VALUE";
 export const EVENT_SET_RANDOM_VALUE = "EVENT_SET_RANDOM_VALUE";
@@ -360,6 +364,14 @@ export const EventFields = {
     }
   ],
   [EVENT_GROUP]: [],
+  [EVENT_SET_INPUT_SCRIPT]: [
+    {
+      key: "input",
+      label: l10n("FIELD_ON_PRESS"),
+      type: "input",
+      defaultValue: "b"
+    }
+  ],
   [EVENT_CHOICE]: [
     {
       key: "variable",

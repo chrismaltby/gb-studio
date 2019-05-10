@@ -35,8 +35,12 @@ const KEY_BITS = {
 
 const inputDec = input => {
   let output = 0;
-  for (let i = 0; i < input.length; i++) {
-    output |= KEY_BITS[input[i]];
+  if (Array.isArray(input)) {
+    for (let i = 0; i < input.length; i++) {
+      output |= KEY_BITS[input[i]];
+    }
+  } else {
+    output = KEY_BITS[input];
   }
   if (output === 0) {
     // If no input set game would hang

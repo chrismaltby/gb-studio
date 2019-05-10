@@ -101,5 +101,6 @@ void Script_StackPush_b();
 void Script_StackPop_b();
 void Script_SceneResetStack_b();
 void Script_ScenePopAllState_b();
+void Script_SetInputScript_b();
 
 #endif
