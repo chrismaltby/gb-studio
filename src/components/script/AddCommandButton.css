@@ -64,7 +64,6 @@
 
 .AddCommandButton__ListItem--Selected {
   background: var(--menu-hover-color);
-  cursor: pointer;
 }
 
 .EditorSidebar .AddCommandButton__ListDivider {

@@ -49,8 +49,15 @@ textarea {
 }
 
 .FormField--ToggleableClosed label {
+  float: left;
   text-decoration: underline;
-  cursor: pointer;
+}
+
+.FormField--ToggleableClosed label:hover {
+  padding: 5px;
+  margin: -5px -5px;
+  border-radius: 2px;
+  background: rgba(80, 80, 80, 0.1);
 }
 
 .FormField label {
@@ -161,7 +168,23 @@ textarea {
   text-decoration: underline;
   justify-content: center;
   align-items: center;
-  padding-left: 10px;
+  padding: 0 5px;
+  margin-right: -5px;
+  margin-left: 5px;
+  border-radius: 2px;
+}
+
+.SelectRenamable__EditBtn:hover {
+  background: rgba(80, 80, 80, 0.1);
+}
+
+.SelectRenamable__SaveBtn,
+.SelectRenamable__SaveBtn:hover {
+  background: var(--highlight-color);
+  border-radius: 2px;
+  color: #fff;
+  text-decoration: none;
+  padding: 0 10px;
 }
 
 .Platform__win32 .FormField input,

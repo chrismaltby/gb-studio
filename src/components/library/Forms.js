@@ -81,9 +81,11 @@ export class SelectRenamable extends Component {
   };
 
   onSave = () => {
-    const { editValue } = this.state;
-    this.props.onRename(editValue);
-    this.setState({ edit: false, editValue: "" });
+    const { edit, editValue } = this.state;
+    if (this.state.edit) {
+      this.props.onRename(editValue);
+      this.setState({ edit: false, editValue: "" });
+    }
   };
 
   onFocus = e => {
@@ -105,16 +107,25 @@ export class SelectRenamable extends Component {
             onChange={this.onChangeName}
             autoFocus
             onFocus={this.onFocus}
+            onBlur={this.onSave}
           />
         ) : (
           <select {...rest} />
         )}
         {edit ? (
-          <div className="SelectRenamable__EditBtn" onClick={this.onSave}>
+          <div
+            key={"save"}
+            className="SelectRenamable__EditBtn SelectRenamable__SaveBtn"
+            onClick={this.onSave}
+          >
             {l10n("FIELD_SAVE")}
           </div>
         ) : (
-          <div className="SelectRenamable__EditBtn" onClick={this.onStartEdit}>
+          <div
+            key={"edit"}
+            className="SelectRenamable__EditBtn"
+            onClick={this.onStartEdit}
+          >
             {l10n("FIELD_RENAME")}
           </div>
         )}

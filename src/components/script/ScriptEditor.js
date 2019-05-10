@@ -258,18 +258,23 @@ class ActionMini extends Component {
 
             {rename && (
               <FormField>
-                <input
-                  placeholder={l10n("FIELD_LABEL")}
-                  value={action.args.__label || ""}
-                  autoFocus={true}
-                  onBlur={this.toggleRename}
-                  onChange={e => {
-                    onEdit(id, {
-                      __label: e.currentTarget.value
-                    });
-                  }}
-                  onKeyDown={this.submitOnEnter}
-                />
+                <div style={{ display: "flex" }}>
+                  <input
+                    placeholder={l10n("FIELD_LABEL")}
+                    value={action.args.__label || ""}
+                    autoFocus={true}
+                    onBlur={this.toggleRename}
+                    onChange={e => {
+                      onEdit(id, {
+                        __label: e.currentTarget.value
+                      });
+                    }}
+                    onKeyDown={this.submitOnEnter}
+                  />
+                  <div className="SelectRenamable__EditBtn SelectRenamable__SaveBtn">
+                    {l10n("FIELD_SAVE")}
+                  </div>
+                </div>
               </FormField>
             )}
 
