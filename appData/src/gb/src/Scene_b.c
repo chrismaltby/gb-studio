@@ -729,7 +729,7 @@ static void SceneHandleInput()
     return;
   }
 
-  if (joy != 0)
+  if (joy != 0 && joy != prev_joy)
   {
     input_index = 0;
     input_joy = joy;
