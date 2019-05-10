@@ -1,11 +1,21 @@
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
-import { walkScenesEvents, findSceneEvent } from "../helpers/eventSystem";
+import {
+  walkScenesEvents,
+  findSceneEvent,
+  walkEvents,
+  walkEventsDepthFirst
+} from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
-import { EVENT_TEXT, EVENT_MUSIC_PLAY, EVENT_CHOICE } from "./eventTypes";
+import {
+  EVENT_TEXT,
+  EVENT_MUSIC_PLAY,
+  EVENT_CHOICE,
+  EVENT_SET_INPUT_SCRIPT
+} from "./eventTypes";
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
@@ -77,6 +87,31 @@ const compile = async (
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map(scene => {
+    let subScripts = {};
+    const bankEntitySubScripts = entityType => (entity, entityIndex) => {
+      walkEventsDepthFirst(entity.script, cmd => {
+        if (cmd.command === EVENT_SET_INPUT_SCRIPT) {
+          const output = compileEntityEvents(cmd.true, {
+            scene,
+            scenes: precompiled.sceneData,
+            music: precompiled.usedMusic,
+            sprites: precompiled.usedSprites,
+            backgrounds: precompiled.usedBackgrounds,
+            strings: precompiled.strings,
+            variables: precompiled.variables,
+            subScripts,
+            entityType,
+            entityIndex
+          });
+          subScripts[cmd.id] = banked.push(output);
+        }
+      });
+    };
+
+    bankEntitySubScripts("scene")(scene);
+    scene.actors.map(bankEntitySubScripts("actor"));
+    scene.triggers.map(bankEntitySubScripts("trigger"));
+
     const bankEntityEvents = entityType => (entity, entityIndex) => {
       const output = compileEntityEvents(entity.script, {
         scene,
@@ -86,6 +121,7 @@ const compile = async (
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
         variables: precompiled.variables,
+        subScripts,
         entityType,
         entityIndex
       });

@@ -23,7 +23,7 @@ UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 
 UBYTE scene_stack_ptr = 0;
-SCENE_STATE scene_stack[MAX_SCENE_STATES] = {0};
+SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 
 void game_loop();
 

@@ -20,7 +20,8 @@ import {
   EVENT_END,
   EVENT_LOOP,
   EVENT_GROUP,
-  EVENT_IF_VALUE_COMPARE
+  EVENT_IF_VALUE_COMPARE,
+  EVENT_SET_INPUT_SCRIPT
 } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
@@ -195,7 +196,8 @@ class ActionMini extends Component {
             "ActionMini--Conditional":
               isConditionalEvent(command) ||
               command === EVENT_LOOP ||
-              command === EVENT_GROUP
+              command === EVENT_GROUP ||
+              command === EVENT_SET_INPUT_SCRIPT
           })}
         >
           <div
@@ -450,6 +452,14 @@ class ScriptEditor extends Component {
           ]
         },
         command === EVENT_GROUP && {
+          true: [
+            {
+              id: uuid(),
+              command: EVENT_END
+            }
+          ]
+        },
+        command === EVENT_SET_INPUT_SCRIPT && {
           true: [
             {
               id: uuid(),

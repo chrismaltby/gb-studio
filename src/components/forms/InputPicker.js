@@ -65,10 +65,11 @@ class InputPicker extends Component {
         <div className="InputPicker__Row">
           {inputs.slice(4, 8).map(renderButton(value, onChange))}
         </div>
-        {inputs
-          .filter(input => value.indexOf(input.key) > -1)
-          .map(input => input.name)
-          .join(", ")}
+        {Array.isArray(value) &&
+          inputs
+            .filter(input => value.indexOf(input.key) > -1)
+            .map(input => input.name)
+            .join(", ")}
       </div>
     );
   }
@@ -78,7 +79,11 @@ const renderButton = (value, onChange) => input => (
   <label key={input.key} title={input.title}>
     <input
       type="checkbox"
-      checked={value && value.indexOf && value.indexOf(input.key) > -1}
+      checked={
+        Array.isArray(value)
+          ? value.indexOf && value.indexOf(input.key) > -1
+          : value === input.key
+      }
       onChange={() => {
         if (Array.isArray(value)) {
           if (value.indexOf(input.key) > -1) {
@@ -87,7 +92,7 @@ const renderButton = (value, onChange) => input => (
             onChange([].concat(value, input.key));
           }
         } else {
-          onChange([input.key]);
+          onChange(input.key);
         }
       }}
     />
@@ -97,8 +102,9 @@ const renderButton = (value, onChange) => input => (
         "InputPicker__Button",
         "InputPicker__Button--" + input.name,
         {
-          "InputPicker__Button--Active":
-            value && value.indexOf && value.indexOf(input.key) > -1
+          "InputPicker__Button--Active": Array.isArray(value)
+            ? value.indexOf && value.indexOf(input.key) > -1
+            : value === input.key
         }
       )}
     >

@@ -519,8 +519,12 @@ void SceneUpdateActors_b()
   ptr = actors;
   len = scene_num_actors;
 
-  for (i = 0; i != len; ++i)
+  if (script_ptr != 0)
   {
+    for (i = 0; i != script_actor; ++i)
+    {
+      ptr += jump;
+    }
     // Move actors
     if (ACTOR_MOVING(ptr))
     {
@@ -538,7 +542,30 @@ void SceneUpdateActors_b()
         ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
       }
     }
-    ptr += jump;
+  }
+  else
+  {
+    for (i = 0; i != len; ++i)
+    {
+      // Move actors
+      if (ACTOR_MOVING(ptr))
+      {
+        if (ACTOR_MOVE_SPEED(ptr) == 0)
+        {
+          if (IS_FRAME_2)
+          {
+            ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr);
+            ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr);
+          }
+        }
+        else
+        {
+          ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr) * ACTOR_MOVE_SPEED(ptr);
+          ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
+        }
+      }
+      ptr += jump;
+    }
   }
 
   // Cycle through animation frames
@@ -683,7 +710,7 @@ void SceneUpdateEmoteBubble_b()
 
 static void SceneHandleInput()
 {
-  UBYTE next_tx, next_ty;
+  UBYTE next_tx, next_ty, input_index, input_joy;
   UBYTE npc;
 
   // If menu open - check if A pressed to close
@@ -700,6 +727,23 @@ static void SceneHandleInput()
   {
     actors[0].moving = FALSE;
     return;
+  }
+
+  if (joy != 0 && joy != prev_joy)
+  {
+    input_index = 0;
+    input_joy = joy;
+    while (!(input_joy & 1) && input_joy != 0)
+    {
+      input_index += 1;
+      input_joy = input_joy >> 1;
+    }
+    if (input_script_ptrs[input_index].bank)
+    {
+      actors[0].moving = FALSE;
+      ScriptStart(&input_script_ptrs[input_index]);
+      return;
+    }
   }
 
   if (JOY_PRESSED(J_A))

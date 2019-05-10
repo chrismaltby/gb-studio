@@ -72,7 +72,9 @@ import {
   EVENT_SCENE_POP_STATE,
   EVENT_ACTOR_INVOKE,
   EVENT_SCENE_RESET_STATE,
-  EVENT_SCENE_POP_ALL_STATE
+  EVENT_SCENE_POP_ALL_STATE,
+  EVENT_SET_INPUT_SCRIPT,
+  EVENT_REMOVE_INPUT_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -175,7 +177,9 @@ const CMD_LOOKUP = {
   STACK_PUSH: 0x48,
   STACK_POP: 0x49,
   SCENE_STATE_RESET: 0x4a,
-  SCENE_POP_ALL_STATE: 0x4b
+  SCENE_POP_ALL_STATE: 0x4b,
+  SET_INPUT_SCRIPT: 0x4c,
+  REMOVE_INPUT_SCRIPT: 0x4d
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -258,6 +262,7 @@ const precompileEntityScript = (input = [], options = {}) => {
     sprites,
     backgrounds,
     variables,
+    subScripts,
     entityType,
     entityIndex,
     branch = false
@@ -656,6 +661,18 @@ const precompileEntityScript = (input = [], options = {}) => {
         output,
         branch: true
       });
+    } else if (command === EVENT_SET_INPUT_SCRIPT) {
+      const bankPtr = subScripts[input[i].id];
+      if (bankPtr) {
+        output.push(CMD_LOOKUP.SET_INPUT_SCRIPT);
+        output.push(inputDec(input[i].args.input));
+        output.push(bankPtr.bank);
+        output.push(hi(bankPtr.offset));
+        output.push(lo(bankPtr.offset));
+      }
+    } else if (command === EVENT_REMOVE_INPUT_SCRIPT) {
+      output.push(CMD_LOOKUP.REMOVE_INPUT_SCRIPT);
+      output.push(inputDec(input[i].args.input));
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_LOAD_DATA) {

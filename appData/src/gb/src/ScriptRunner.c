@@ -95,7 +95,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_StackPush_b, 0},          // 0x48
     {Script_StackPop_b, 0},           // 0x49
     {Script_SceneResetStack_b, 0},    // 0x4A
-    {Script_ScenePopAllState_b, 1}    // 0x4B
+    {Script_ScenePopAllState_b, 1},   // 0x4B
+    {Script_SetInputScript_b, 4},     // 0x4C
+    {Script_RemoveInputScript_b, 1}   // 0x4D
 };
 
 UBYTE ScriptLastFnComplete();
@@ -128,7 +130,8 @@ void ScriptRunnerUpdate()
 
   if (!script_cmd_index)
   {
-    if (script_stack_ptr) {
+    if (script_stack_ptr)
+    {
       // Return from Actor Invocation
       PUSH_BANK(scriptrunner_bank);
       Script_StackPop_b();

@@ -6,6 +6,7 @@
 
 #define MAX_ACTORS 11
 #define MAX_TRIGGERS 10
+#define NUM_INPUTS 8
 #define ACTOR_HEIGHT 16
 #define ACTOR_WIDTH 16
 #define ACTOR_HALF_WIDTH 8
@@ -44,6 +45,7 @@ extern UBYTE scene_width;
 extern UBYTE scene_height;
 extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
+extern BANK_PTR input_script_ptrs[NUM_INPUTS];
 
 void SceneInit();
 void SceneUpdate();

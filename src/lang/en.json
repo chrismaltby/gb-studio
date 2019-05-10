@@ -121,6 +121,8 @@
   "TEXT_SPEED_OUT": "Text Close Speed",
   "TEXT_SPEED": "Text Draw Speed",
   "FIELD_LABEL": "Label",
+  "FIELD_ON_PRESS": "On Press",
+  "FIELD_REMOVE_INPUT_SCRIPT_ON": "Remove script attached to input",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -204,6 +206,8 @@
   "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Actor Set Movement Speed",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Actor Set Animation Speed",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Text Set Animation Speed",
+  "EVENT_SET_INPUT_SCRIPT": "Attach Script To Joypad Input",
+  "EVENT_REMOVE_INPUT_SCRIPT": "Remove Script From Joypad Input",
 
   "// 10": "Menu -----------------------------------------------------",
 

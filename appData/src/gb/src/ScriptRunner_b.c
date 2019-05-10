@@ -1409,7 +1409,8 @@ void Script_StackPop_b()
  */
 void Script_ScenePushState_b()
 {
-  if (scene_stack_ptr < MAX_SCENE_STATES) {
+  if (scene_stack_ptr < MAX_SCENE_STATES)
+  {
     scene_stack[scene_stack_ptr].scene_index = scene_index;
     scene_stack[scene_stack_ptr].player_dir.x = actors[0].dir.x;
     scene_stack[scene_stack_ptr].player_dir.y = actors[0].dir.y;
@@ -1433,7 +1434,8 @@ void Script_ScenePushState_b()
  */
 void Script_ScenePopState_b()
 {
-  if (scene_stack_ptr) {
+  if (scene_stack_ptr)
+  {
     scene_stack_ptr--;
 
     scene_next_index = scene_stack[scene_stack_ptr].scene_index;
@@ -1478,7 +1480,8 @@ void Script_SceneResetStack_b()
  */
 void Script_ScenePopAllState_b()
 {
-  if (scene_stack_ptr) {
+  if (scene_stack_ptr)
+  {
     scene_stack_ptr = 0;
 
     scene_next_index = scene_stack[scene_stack_ptr].scene_index;
@@ -1498,6 +1501,56 @@ void Script_ScenePopAllState_b()
     script_ptr += 1 + script_cmd_args_len;
 
     return;
+  }
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: SetInputScript
+ * ----------------------------
+ * Attach script to button press
+ */
+void Script_SetInputScript_b()
+{
+  UBYTE input, index;
+
+  input = script_cmd_args[0];
+
+  index = 0;
+  while (!(input & 1) && input != 0)
+  {
+    index += 1;
+    input = input >> 1;
+  }
+
+  input_script_ptrs[index].bank = script_cmd_args[1];
+  input_script_ptrs[index].offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: RemoveInputScript
+ * ----------------------------
+ * Remove script from button press
+ */
+void Script_RemoveInputScript_b()
+{
+  UBYTE input, index;
+
+  input = script_cmd_args[0];
+
+  index = 0;
+  for (index = 0; index != 8; ++index)
+  {
+    if (input & 1)
+    {
+      input_script_ptrs[index].bank = 0;
+    }
+    input = input >> 1;
   }
 
   script_action_complete = TRUE;
