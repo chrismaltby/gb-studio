@@ -713,6 +713,7 @@ static void SceneHandleInput()
     }
     if (input_script_ptrs[input_index].bank)
     {
+      actors[0].moving = FALSE;
       ScriptStart(&input_script_ptrs[input_index]);
       return;
     }
