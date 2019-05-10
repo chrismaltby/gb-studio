@@ -9,7 +9,7 @@ import compileImages from "./compileImages";
 import { indexArray } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
-import compileEntityEvents from "./compileEntityEvents";
+import compileEntityEvents, { CMD_LOOKUP } from "./compileEntityEvents";
 import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
@@ -690,7 +690,11 @@ export const precompileScenes = (
       triggers: scene.triggers.slice(0, MAX_TRIGGERS).filter(trigger => {
         // Filter out unused triggers which cause slow down
         // When walking over
-        return trigger.script && trigger.script.length > 1;
+        return (
+          trigger.script &&
+          trigger.script.length >= 1 &&
+          trigger.script[0].command != CMD_LOOKUP.END
+        );
       }),
       actorsData: [],
       triggersData: []
