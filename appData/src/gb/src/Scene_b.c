@@ -660,8 +660,8 @@ void SceneHandleTriggers_b()
 
       if (trigger != scene_num_triggers)
       {
-        // LOG("ON TRIGGER\n");
         actors[0].moving = FALSE;
+        last_joy = 0;
         script_actor = 0;
         ScriptStart(&triggers[trigger].events_ptr);
       }
@@ -741,6 +741,7 @@ static void SceneHandleInput()
     if (input_script_ptrs[input_index].bank)
     {
       actors[0].moving = FALSE;
+      input_joy = 0;
       ScriptStart(&input_script_ptrs[input_index]);
       return;
     }
