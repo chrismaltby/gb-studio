@@ -248,14 +248,14 @@ class World extends Component {
     } = editor;
 
     const width = Math.max(
-      window.innerWidth - editor.sidebarWidth,
+      window.innerWidth - editor.sidebarWidth - 17,
       scenes && scenes.length > 0
         ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
             20
         : 100
     );
     const height = Math.max(
-      window.innerHeight - 40,
+      window.innerHeight - 40 - 17,
       scenes && scenes.length > 0
         ? Math.max.apply(
             null,
