@@ -528,7 +528,19 @@ class ScriptEditor extends Component {
   onReplaceScript = e => {
     const { clipboardEvent } = this.props;
     if (clipboardEvent) {
-      this.props.onChange([].concat(clipboardEvent).map(regenerateEventIds));
+      this.props.onChange(
+        []
+          .concat(
+            clipboardEvent,
+            !Array.isArray(clipboardEvent)
+              ? {
+                  id: uuid(),
+                  command: EVENT_END
+                }
+              : []
+          )
+          .map(regenerateEventIds)
+      );
     }
   };
 
