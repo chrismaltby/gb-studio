@@ -148,7 +148,8 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
-          {spriteSheet.numFrames > 1 &&
+          {spriteSheet &&
+            spriteSheet.numFrames > 1 &&
             (actor.movementType === "static" ||
               spriteSheet.type !== "actor") && (
               <FormField>
@@ -179,11 +180,12 @@ class ActorEditor extends Component {
             />
           </FormField>
 
-          {((spriteSheet.type === "actor_animated" &&
+          {((spriteSheet &&
+            spriteSheet.type === "actor_animated" &&
             actor.movementType !== "static") ||
             (actor.animate &&
               (actor.movementType === "static" ||
-                spriteSheet.type !== "actor"))) && (
+                (spriteSheet && spriteSheet.type !== "actor")))) && (
             <FormField halfWidth>
               <label htmlFor="actorAnimSpeed">
                 {l10n("FIELD_ANIMATION_SPEED")}
