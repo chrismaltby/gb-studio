@@ -734,13 +734,15 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
       const spriteFrames = sprite.size / 64;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        spriteFrames === 6
+        moveDec(actor.movementType) === 1 && actor.animate
+          ? 0 // If movement type is static and cycling frames, always set as static sprite
+          : spriteFrames === 6
           ? 2 // Actor Animated
           : spriteFrames === 3
           ? 1 // Actor
           : 0, // Static
-        moveDec(actor.movementType) === 1
-          ? spriteFrames
+        moveDec(actor.movementType) === 1 && actor.animate
+          ? spriteFrames // If movement type is static and cycling frames, always set full frame count
           : spriteFrames === 6
           ? 2 // Actor Animated
           : spriteFrames === 3
