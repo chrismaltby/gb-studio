@@ -741,17 +741,19 @@ static void SceneHandleInput()
   {
     input_index = 0;
     input_joy = joy;
-    while (!(input_joy & 1) && input_joy != 0)
+    for (input_index = 0; input_index != 8; ++input_index)
     {
-      input_index += 1;
+      if (input_joy & 1)
+      {
+        if (input_script_ptrs[input_index].bank)
+        {
+          actors[0].moving = FALSE;
+          last_joy = joy;
+          ScriptStart(&input_script_ptrs[input_index]);
+          return;
+        }
+      }
       input_joy = input_joy >> 1;
-    }
-    if (input_script_ptrs[input_index].bank)
-    {
-      actors[0].moving = FALSE;
-      joy = last_joy;
-      ScriptStart(&input_script_ptrs[input_index]);
-      return;
     }
   }
 
