@@ -29,6 +29,7 @@ UWORD scene_load_col_ptr;
 UBYTE collision_tiles_len, col_bank;
 BANK_PTR events_ptr;
 BANK_PTR bank_ptr;
+UBYTE check_triggers;
 // End of Scene Init Globals
 
 UBYTE scene_num_actors;
@@ -286,9 +287,8 @@ void SceneInit_b9()
   camera_settings = CAMERA_LOCK_FLAG;
 
   SceneUpdateCamera_b();
-  actors[0].moving = TRUE;
+  check_triggers = TRUE;
   SceneHandleTriggers_b();
-  actors[0].moving = FALSE;
 
   FadeIn();
 
@@ -609,6 +609,10 @@ void SceneUpdateActorMovement_b(UBYTE i)
   // Dont check collisions when running script
   if (script_ptr != 0 && (actor_move_settings & ACTOR_NOCLIP))
   {
+    if (i == 0)
+    {
+      check_triggers = TRUE;
+    }
     actors[i].moving = TRUE;
     return;
   }
@@ -640,6 +644,10 @@ void SceneUpdateActorMovement_b(UBYTE i)
     return;
   }
 
+  if (i == 0)
+  {
+    check_triggers = TRUE;
+  }
   actors[i].moving = TRUE;
 }
 
@@ -647,24 +655,24 @@ void SceneHandleTriggers_b()
 {
   UBYTE trigger, trigger_tile_offset;
 
-  if (ACTOR_ON_TILE(0) || actors[0].pos.y == 254)
+  if (check_triggers && script_ptr == 0 && (ACTOR_ON_TILE(0) || actors[0].pos.y == 254))
   {
-    if (actors[0].moving)
+    check_triggers = FALSE;
+
+    // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
+    trigger_tile_offset = actors[0].pos.y == 254;
+
+    trigger =
+        SceneTriggerAt_b(DIV_8(actors[0].pos.x),
+                         trigger_tile_offset + DIV_8(actors[0].pos.y));
+
+    if (trigger != scene_num_triggers)
     {
-      // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
-      trigger_tile_offset = actors[0].pos.y == 254;
-
-      trigger =
-          SceneTriggerAt_b(DIV_8(actors[0].pos.x),
-                           trigger_tile_offset + DIV_8(actors[0].pos.y));
-
-      if (trigger != scene_num_triggers)
-      {
-        actors[0].moving = FALSE;
-        last_joy = 0;
-        script_actor = 0;
-        ScriptStart(&triggers[trigger].events_ptr);
-      }
+      actors[0].moving = FALSE;
+      last_joy = last_joy & 240;
+      script_actor = 0;
+      ScriptStart(&triggers[trigger].events_ptr);
+      ScriptRunnerUpdate();
     }
   }
 }
