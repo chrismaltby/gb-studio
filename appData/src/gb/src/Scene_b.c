@@ -856,7 +856,7 @@ void SceneRenderActors_b()
     x = ACTOR_X(ptr) - SCX_REG;
     y = ACTOR_Y(ptr) - SCY_REG;
 
-    if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || y < win_pos_y + 16))
+    if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || (y < win_pos_y + 16 || x < win_pos_x + 8)))
     {
       move_sprite(s, x, y);
       move_sprite(s + 1, x + 8, y);
