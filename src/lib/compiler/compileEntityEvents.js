@@ -80,6 +80,8 @@ import { hi, lo } from "../helpers/8bit";
 import {
   dirDec,
   inputDec,
+  moveSpeedDec,
+  animSpeedDec,
   operatorDec,
   combineMultipleChoiceText
 } from "./helpers";
@@ -517,13 +519,13 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_MOVE_SPEED);
-      output.push(input[i].args.speed);
+      output.push(moveSpeedDec(input[i].args.speed));
     } else if (command === EVENT_ACTOR_SET_ANIMATION_SPEED) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
-      output.push(input[i].args.speed);
+      output.push(animSpeedDec(input[i].args.speed));
     } else if (command === EVENT_ACTOR_MOVE_TO) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);

@@ -19,7 +19,13 @@ import {
 import compileMusic from "./compileMusic";
 import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
-import { combineMultipleChoiceText } from "./helpers";
+import {
+  combineMultipleChoiceText,
+  dirDec,
+  moveDec,
+  moveSpeedDec,
+  animSpeedDec
+} from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 
 const DATA_PTRS_BANK = 5;
@@ -276,8 +282,8 @@ const compile = async (
     `#define START_SCENE_DIR_X ${startDirectionX}\n` +
     `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
     `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
-    `#define START_PLAYER_MOVE_SPEED ${startMoveSpeed}\n` +
-    `#define START_PLAYER_ANIM_SPEED ${startAnimSpeed}\n` +
+    `#define START_PLAYER_MOVE_SPEED ${moveSpeedDec(startMoveSpeed)}\n` +
+    `#define START_PLAYER_ANIM_SPEED ${animSpeedDec(startAnimSpeed)}\n` +
     `#define FONT_BANK ${fontImagePtr.bank}\n` +
     `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
     `#define FRAME_BANK ${frameImagePtr.bank}\n` +
@@ -753,8 +759,8 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction
         moveDec(actor.movementType), // Movement Type
-        actor.moveSpeed === undefined ? 1 : actor.moveSpeed,
-        actor.animSpeed === undefined ? 3 : actor.animSpeed,
+        moveSpeedDec(actor.moveSpeed),
+        animSpeedDec(actor.animSpeed),
         eventPtrs[actorIndex].bank, // Event bank ptr
         hi(eventPtrs[actorIndex].offset), // Event offset ptr
         lo(eventPtrs[actorIndex].offset)
@@ -799,25 +805,5 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
   }
   return projectPath;
 };
-
-const DIR_LOOKUP = {
-  down: 1,
-  left: 2,
-  right: 4,
-  up: 8
-};
-
-const MOVEMENT_LOOKUP = {
-  static: 1,
-  playerInput: 2,
-  randomFace: 3,
-  faceInteraction: 4,
-  randomWalk: 5,
-  rotateTRB: 6
-};
-
-const dirDec = dir => DIR_LOOKUP[dir] || 1;
-
-const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
 export default compile;

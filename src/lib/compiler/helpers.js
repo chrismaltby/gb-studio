@@ -10,8 +10,11 @@ const MOVEMENT_LOOKUP = {
   playerInput: 2,
   randomFace: 3,
   faceInteraction: 4,
-  randomWalk: 5
+  randomWalk: 5,
+  rotateTRB: 6
 };
+
+const MOVEMENT_SPEED_LOOKUP = [0, 1, 2, 4, 8];
 
 const OPERATOR_LOOKUP = {
   "==": 1,
@@ -63,6 +66,13 @@ const dirDec = dir => DIR_LOOKUP[dir] || 1;
 
 const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
+const moveSpeedDec = moveSpeed =>
+  MOVEMENT_SPEED_LOOKUP[moveSpeed] !== undefined
+    ? MOVEMENT_SPEED_LOOKUP[moveSpeed]
+    : 1;
+
+const animSpeedDec = animSpeed => (animSpeed !== undefined ? animSpeed : 3);
+
 const operatorDec = operator => OPERATOR_LOOKUP[operator] || 1;
 
 const combineMultipleChoiceText = args => {
@@ -76,6 +86,8 @@ module.exports = {
   dirDec,
   inputDec,
   moveDec,
+  moveSpeedDec,
+  animSpeedDec,
   operatorDec,
   combineMultipleChoiceText
 };
