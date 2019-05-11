@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Event for attaching scripts to button inputs.
 - Extra actor commands for setting relative position, check facing direction. [@thomas-alrek](https://github.com/thomas-alrek)
 - Math commands, random numbers, add, subtract, multiply and divide variables with each other other and much more. [@thomas-alrek](https://github.com/thomas-alrek)
-- Events for pushing and popping scenes from a stack allowing nested menus to be created returning back to your initial positon when closed. [@thomas-alrek](https://github.com/thomas-alrek)
+- Events for pushing and popping scenes from a stack allowing nested menus to be created returning back to your initial position when closed. [@thomas-alrek](https://github.com/thomas-alrek)
 - Event to invoke a script from another actor. [@thomas-alrek](https://github.com/thomas-alrek)
 - Pan around world viewer using Alt + click, middle click or by clicking and dragging in the space between scenes.
 - Ability to control zoom using pinch gestures or Ctrl + Mouse Wheel [@thomas-alrek](https://github.com/thomas-alrek)
@@ -40,12 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Display text event now supports up to 3 lines of text.
-- Warnings when image assets don't follow specifications are now more noticable in build phase.
+- Warnings when image assets don't follow specifications are now more noticeable in build phase.
 
 ### Fixed
 
 - Fixed audio bugs in emulator where sound would pop as emulator opened and closed.
-- Fixed Vsync tearing. [@RichardULZ](https://github.com/RichardULZ)
+- Fixed vsync tearing. [@RichardULZ](https://github.com/RichardULZ)
 - Input handling fixes on Windows build.
 - Lots of other bug fixes.
 
