@@ -316,5 +316,13 @@
   "SCRIPT_LINE": "Line",
   "SCRIPT_LINES": "Lines",
   "SCRIPT_WORD": "Word",
-  "SCRIPT_WORDS": "Words"
+  "SCRIPT_WORDS": "Words",
+
+  "// 15": "Dialogs ------------------------------------------------------",
+
+  "DIALOG_OK": "OK",
+  "DIALOG_CANCEL": "Cancel",
+  "DIALIG_UPDATE_AVAILABLE": "Update available",
+  "DIALOG_UPDATE_DESCRIPTION": "Version {version} available.\nWould you like to update?",
+  "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again"
 }
