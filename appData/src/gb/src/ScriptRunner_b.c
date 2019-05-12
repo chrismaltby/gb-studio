@@ -941,10 +941,12 @@ void Script_SetFlagRandomValue_b()
 {
   UBYTE rand_val;
   UBYTE modulo;
+  UBYTE offset;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   rand_val = rand();
-  modulo = script_cmd_args[2] + 1;
-  script_variables[ptr] = rand_val % modulo;
+  offset = script_cmd_args[2];
+  modulo = script_cmd_args[3] + 1;
+  script_variables[ptr] = offset + (rand_val % modulo);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }

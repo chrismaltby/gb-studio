@@ -37,6 +37,12 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   return (
     <div className="ScriptEventBlock">
       {fields.map((field, index) => {
+        if (field.showIfKey) {
+          console.log({ value });
+          if (value[field.showIfKey] !== field.showIfValue) {
+            return null;
+          }
+        }
         return (
           <FormField key={field.key || index} halfWidth={field.width === "50%"}>
             {field.label && field.type !== "checkbox" && (
@@ -77,6 +83,19 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
                 />
                 <div className="FormCheckbox" />
                 {field.label}
+              </label>
+            ) : field.type === "select" ? (
+              <label>
+                <select
+                  onChange={onChangeField(field.key)}
+                  value={value[field.key] || field.options[0][0]}
+                >
+                  {field.options.map(option => (
+                    <option key={option[0]} value={option[0]}>
+                      {option[1]}
+                    </option>
+                  ))}
+                </select>
               </label>
             ) : field.type === "scene" ? (
               <SceneSelect

@@ -75,7 +75,8 @@ import {
   EVENT_SCENE_POP_ALL_STATE,
   EVENT_SET_INPUT_SCRIPT,
   EVENT_REMOVE_INPUT_SCRIPT,
-  EVENT_ACTOR_SET_FRAME
+  EVENT_ACTOR_SET_FRAME,
+  EVENT_VARIABLE_MATH
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -218,6 +219,14 @@ const getVariableIndex = (variable, variables) => {
 const loadVectors = (args, output, variables) => {
   const vectorX = getVariableIndex(args.vectorX, variables);
   const vectorY = getVariableIndex(args.vectorY, variables);
+  output.push(CMD_LOOKUP.LOAD_VECTORS);
+  output.push(hi(vectorX));
+  output.push(lo(vectorX));
+  output.push(hi(vectorY));
+  output.push(lo(vectorY));
+};
+
+const loadVectorsByIndex = (vectorX, vectorY, output) => {
   output.push(CMD_LOOKUP.LOAD_VECTORS);
   output.push(hi(vectorX));
   output.push(lo(vectorX));
@@ -439,15 +448,89 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(hi(variableIndex));
       output.push(lo(variableIndex));
       output.push(input[i].args.value || 0);
-    } else if (command === EVENT_COPY_VALUE) {
-      loadVectors(input[i].args, output, variables);
-      output.push(CMD_LOOKUP.SET_VALUE);
+    } else if (command === EVENT_VARIABLE_MATH) {
+      const variableIndex = getVariableIndex(input[i].args.vectorX, variables);
+      const tmpVariableIndex = getVariableIndex("tmp1", variables);
+      switch (input[i].args.other) {
+        case "true":
+          output.push(CMD_LOOKUP.SET_VALUE);
+          output.push(hi(tmpVariableIndex));
+          output.push(lo(tmpVariableIndex));
+          output.push(1);
+          break;
+        case "false":
+          output.push(CMD_LOOKUP.SET_VALUE);
+          output.push(hi(tmpVariableIndex));
+          output.push(lo(tmpVariableIndex));
+          output.push(0);
+          break;
+        case "var":
+          const otherVariableIndex = getVariableIndex(
+            input[i].args.vectorY,
+            variables
+          );
+          loadVectorsByIndex(tmpVariableIndex, otherVariableIndex, output);
+          output.push(CMD_LOOKUP.COPY_VALUE);
+          break;
+        case "rnd":
+          const min = input[i].args.minValue || 0;
+          const range = Math.min(
+            254,
+            Math.max(0, (input[i].args.maxValue || 0) - min)
+          );
+          output.push(CMD_LOOKUP.SET_RANDOM_VALUE);
+          output.push(hi(tmpVariableIndex));
+          output.push(lo(tmpVariableIndex));
+          output.push(min);
+          output.push(range);
+          break;
+        case "val":
+        default:
+          output.push(CMD_LOOKUP.SET_VALUE);
+          output.push(hi(tmpVariableIndex));
+          output.push(lo(tmpVariableIndex));
+          output.push(input[i].args.value || 0);
+          break;
+      }
+      switch (input[i].args.operation) {
+        case "add":
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.MATH_ADD_VALUE);
+          break;
+        case "sub":
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.MATH_SUB_VALUE);
+          break;
+        case "mul":
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.MATH_MUL_VALUE);
+          break;
+        case "div":
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.MATH_DIV_VALUE);
+          break;
+        case "mod":
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.MATH_MOD_VALUE);
+          break;
+        case "set":
+        default:
+          loadVectorsByIndex(variableIndex, tmpVariableIndex, output);
+          output.push(CMD_LOOKUP.COPY_VALUE);
+          break;
+      }
     } else if (command === EVENT_SET_RANDOM_VALUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      const min = input[i].args.minValue || 0;
+      const range = Math.min(
+        254,
+        Math.max(0, (input[i].args.maxValue || 0) - min)
+      );
       output.push(CMD_LOOKUP.SET_RANDOM_VALUE);
       output.push(hi(variableIndex));
       output.push(lo(variableIndex));
-      output.push(input[i].args.maxValue || 0);
+      output.push(min);
+      output.push(range);
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       let speed = input[i].args.speed || 1;

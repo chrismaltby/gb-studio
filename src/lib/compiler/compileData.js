@@ -465,6 +465,8 @@ export const precompileVariables = scenes => {
       }
     }
   });
+  variables.push("tmp1");
+  variables.push("tmp2");
   return variables;
 };
 
