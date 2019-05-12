@@ -7,7 +7,7 @@
   "SCENE": "Mapa",
   "PROJECT": "Projecto",
 
-  "// 2": "Painél de Navegação ------------------------------------------------",
+  "// 2": "Painel de Navegação ------------------------------------------------",
   "NAV_GAME_WORLD": "Espaço de Jogo",
   "NAV_SPRITES": "Imagens de Acção",
   "NAV_BACKGROUNDS": "Padrões de Fundo",
@@ -81,6 +81,8 @@
   "FIELD_SET_FALSE_IF": "Definir como 'False' se",
   "FIELD_CHOICE_A": "Opção A",
   "FIELD_CHOICE_B": "Opção B",
+  "FIELD_VALUE": "Valor",
+  "FIELD_MIN_VALUE": "Valor Mínimo",
   "FIELD_MAX_VALUE": "Valor Máximo",
   "FIELD_RENAME": "Renomear",
   "FIELD_SAVE": "Guardar",
@@ -123,6 +125,14 @@
   "FIELD_LABEL": "Descrição",
   "FIELD_ON_PRESS": "Ao Premir",
   "FIELD_REMOVE_INPUT_SCRIPT_ON": "Remover script associado a Controlador",
+  "FIELD_ANIMATION_FRAME": "Fotograma de Animação",
+  "FIELD_INITIAL_FRAME": "Fotograma Inicial",
+  "FIELD_MATH_NOTE": "Nota: As Variáveis tem valor máximo de 255 e darão a volta se aumentadas para além de 255 ou abaixo de 0",
+  "FIELD_TRUE": "True",
+  "FIELD_FALSE": "False",
+  "FIELD_VARIABLE": "Variável",
+  "FIELD_RANDOM": "Aleatório",
+  "FIELD_SET_TO": "Definir como",
 
   "// 7": "Visualizar Activos ---------------------------------------------",
   "ASSET_SEARCH": "Procurar...",
@@ -208,6 +218,8 @@
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Velocidade do Texto",
   "EVENT_SET_INPUT_SCRIPT": "Anexar Script a Clique de Botão",
   "EVENT_REMOVE_INPUT_SCRIPT": "Remover o Script do Clique de Botão",
+  "EVENT_ACTOR_SET_FRAME": "Actor: Definir Fotograma de Animação",
+  "EVENT_VARIABLE_MATH": "Variável: Funções de Cálculo",
 
   "// 10": "Menu -----------------------------------------------------",
 
