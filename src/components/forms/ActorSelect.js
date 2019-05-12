@@ -42,7 +42,7 @@ class ActorSelect extends Component {
             <SpriteSheetCanvas
               spriteSheetId={actor.spriteSheetId}
               direction={rest.direction || actor.direction}
-              frame={rest.frame % totalFrames}
+              frame={(rest.frame || 0) % totalFrames}
             />
           )}
         </div>
