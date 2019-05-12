@@ -103,5 +103,6 @@ void Script_SceneResetStack_b();
 void Script_ScenePopAllState_b();
 void Script_SetInputScript_b();
 void Script_RemoveInputScript_b();
+void Script_ActorSetFrame_b();
 
 #endif

@@ -139,8 +139,9 @@ void SceneInit_b2()
     actors[i].animate = FALSE;
     actors[i].frame_offset = 0;
     actors[i].flip = FALSE;
-    actors[i].animate = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3);
+    actors[i].animate = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3) & 1;
     actors[i].frame = 0;
+    actors[i].frame = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 3) >> 1;
     actors[i].move_speed = 0;
     actors[i].anim_speed = 0;
 

@@ -140,7 +140,7 @@
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_SWITCH_SCENE": "Switch Scene",
   "EVENT_WAIT": "Wait",
-  "EVENT_CAMERA_SHAKE": "Camera Shake",
+  "EVENT_CAMERA_SHAKE": "Camera: Shake",
   "EVENT_IF_TRUE": "If Variable Is 'True'",
   "EVENT_IF_FALSE": "If Variable Is 'False'",
   "EVENT_IF_VALUE": "If Variable Has Value",
@@ -210,6 +210,7 @@
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Text: Set Animation Speed",
   "EVENT_SET_INPUT_SCRIPT": "Joypad Input: Attach Script To Button",
   "EVENT_REMOVE_INPUT_SCRIPT": "Joypad Input: Remove Attached Script",
+  "EVENT_ACTOR_SET_FRAME": "Actor: Set Animation Frame",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -1556,3 +1556,12 @@ void Script_RemoveInputScript_b()
   script_action_complete = TRUE;
   script_ptr += 1 + script_cmd_args_len;
 }
+
+void Script_ActorSetFrame_b()
+{
+  actors[script_actor].frame = 0;
+  actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
+  SceneRenderActor(script_actor);
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

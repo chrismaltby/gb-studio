@@ -738,23 +738,27 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
       const sprite = sprites.find(s => s.id === actor.spriteSheetId);
       if (!sprite) return [];
       const spriteFrames = sprite.size / 64;
+      const actorFrames =
+        moveDec(actor.movementType) === 1
+          ? spriteFrames // If movement type is static and cycling frames, always set full frame count
+          : spriteFrames === 6
+          ? 2 // Actor Animated
+          : spriteFrames === 3
+          ? 1 // Actor
+          : spriteFrames;
+      const initialFrame =
+        moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        moveDec(actor.movementType) === 1 && actor.animate
+        moveDec(actor.movementType) === 1
           ? 0 // If movement type is static and cycling frames, always set as static sprite
           : spriteFrames === 6
           ? 2 // Actor Animated
           : spriteFrames === 3
           ? 1 // Actor
           : 0, // Static
-        moveDec(actor.movementType) === 1 && actor.animate
-          ? spriteFrames // If movement type is static and cycling frames, always set full frame count
-          : spriteFrames === 6
-          ? 2 // Actor Animated
-          : spriteFrames === 3
-          ? 1 // Actor
-          : spriteFrames,
-        actor.animate ? 1 : 0,
+        actorFrames,
+        (actor.animate ? 1 : 0) + (initialFrame << 1),
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction
