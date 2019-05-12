@@ -441,7 +441,7 @@ export default function project(state = initialState.project, action) {
               // If static and cycling frames start from frame 1 (facing downwards)
               if (
                 (patch.animate && actor.movementType === "static") ||
-                (actor.animate && patch.movementType === "static")
+                patch.movementType === "static"
               ) {
                 patch.direction = "down";
               }

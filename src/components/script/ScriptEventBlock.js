@@ -137,6 +137,8 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             ) : field.type === "actor" ? (
               <ActorSelect
                 value={value[field.key]}
+                direction={value.direction}
+                frame={value.frame}
                 onChange={onChangeField(field.key)}
               />
             ) : field.type === "emote" ? (

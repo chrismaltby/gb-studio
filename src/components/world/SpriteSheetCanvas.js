@@ -40,7 +40,7 @@ class SpriteSheetCanvas extends Component {
   };
 
   draw = () => {
-    const { spriteSheet = {}, direction = "down", frame } = this.props;
+    const { spriteSheet = {}, direction = "down", frame = 0 } = this.props;
     this.imgLoaded = true;
 
     if (this.canvas.current) {
@@ -56,14 +56,17 @@ class SpriteSheetCanvas extends Component {
           : 0;
 
       const spriteOffset =
-        frame !== false && frame !== undefined && frame !== ""
+        frame !== false &&
+        frame !== undefined &&
+        frame !== "" &&
+        spriteSheet.type === "static"
           ? frame
           : spriteSheet.type === "static"
           ? 0
           : spriteSheet.type === "actor"
-          ? directionOffset
+          ? directionOffset + frame
           : spriteSheet.type === "actor_animated"
-          ? directionOffset * 2
+          ? directionOffset * 2 + frame
           : 0;
 
       tmpCanvas.width = tmpCanvas.height = 16;
