@@ -2,7 +2,7 @@
   "name": "gb-studio",
   "productName": "GB Studio",
   "homepage": "https://www.gbstudio.dev",
-  "version": "1.1.0-rc.1",
+  "version": "1.1.0-rc.2",
   "description": "Visual retro game maker",
   "main": "src/index.js",
   "scripts": {
@@ -17,7 +17,8 @@
     "publish": "electron-forge publish",
     "lint": "eslint --cache --color --ext .jsx,.js src",
     "test": "jest",
-    "coverage": "jest --coverage --runInBand || true"
+    "coverage": "jest --coverage --runInBand || true",
+    "missing-translations": "node src/lang/list_missing.js"
   },
   "keywords": [],
   "author": "GB Studio",
