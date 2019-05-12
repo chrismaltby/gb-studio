@@ -41,8 +41,15 @@ class ActorSelect extends Component {
           {rest.value && actor && spriteSheet && (
             <SpriteSheetCanvas
               spriteSheetId={actor.spriteSheetId}
-              direction={rest.direction || actor.direction}
-              frame={(rest.frame || 0) % totalFrames}
+              direction={
+                actor.movementType === "static" && !rest.direction
+                  ? "down"
+                  : rest.direction || actor.direction
+              }
+              frame={
+                !rest.direction &&
+                (rest.frame || actor.frame || 0) % totalFrames
+              }
             />
           )}
         </div>

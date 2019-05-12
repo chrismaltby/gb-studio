@@ -56,21 +56,19 @@ class SpriteSheetCanvas extends Component {
           : 0;
 
       const spriteOffset =
-        frame !== false &&
-        frame !== undefined &&
-        frame !== "" &&
         spriteSheet.type === "static"
-          ? frame
-          : spriteSheet.type === "static"
           ? 0
           : spriteSheet.type === "actor"
           ? directionOffset + frame
           : spriteSheet.type === "actor_animated"
           ? directionOffset * 2 + frame
-          : 0;
+          : frame;
 
       tmpCanvas.width = tmpCanvas.height = 16;
-      if (direction === "left" && spriteSheet.type !== "static") {
+      if (
+        direction === "left" &&
+        (spriteSheet.type === "actor" || spriteSheet.type === "actor_animated")
+      ) {
         tmpCtx.translate(tmpCanvas.width, 0);
         tmpCtx.scale(-1, 1);
       }
