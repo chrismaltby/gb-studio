@@ -4,6 +4,7 @@ import Button from "../library/Button";
 import {
   EventFields,
   EventsOnlyForActors,
+  EventsDeprecated,
   EVENT_TEXT
 } from "../../lib/compiler/eventTypes";
 import Highlighter from "react-highlight-words";
@@ -128,7 +129,10 @@ class AddCommandButton extends Component {
   typeActions = () => {
     const { type } = this.props;
     return actions.filter(action => {
-      return type === "actor" || EventsOnlyForActors.indexOf(action) === -1;
+      return (
+        EventsDeprecated.indexOf(action) === -1 &&
+        (type === "actor" || EventsOnlyForActors.indexOf(action) === -1)
+      );
     });
   };
 
