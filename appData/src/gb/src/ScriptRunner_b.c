@@ -1559,10 +1559,30 @@ void Script_RemoveInputScript_b()
   script_ptr += 1 + script_cmd_args_len;
 }
 
+/*
+ * Command: ActorSetFrame
+ * ----------------------------
+ * Set animation frame of current actor
+ */
 void Script_ActorSetFrame_b()
 {
   actors[script_actor].frame = 0;
+  actors[script_actor].flip = 0;
   actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
+  SceneRenderActor(script_actor);
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: ActorSetFlip
+ * ----------------------------
+ * Set flip state of current actor
+ */
+void Script_ActorSetFlip_b()
+{
+  actors[script_actor].flip = 0;
+  actors[script_actor].flip = script_cmd_args[0];
   SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;

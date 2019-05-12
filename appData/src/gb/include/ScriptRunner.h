@@ -104,5 +104,6 @@ void Script_ScenePopAllState_b();
 void Script_SetInputScript_b();
 void Script_RemoveInputScript_b();
 void Script_ActorSetFrame_b();
+void Script_ActorSetFlip_b();
 
 #endif

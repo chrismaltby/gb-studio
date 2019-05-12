@@ -886,11 +886,14 @@ void SceneRenderActor_b(UBYTE i)
   UBYTE s, flip, frame, fo;
 
   s = MUL_2(i);
-  flip = FALSE;
   fo = 0;
+
+  flip = actors[i].flip;
 
   if (actors[i].sprite_type != SPRITE_STATIC)
   {
+    flip = FALSE;
+
     // Increase frame based on facing direction
     if (IS_NEG(actors[i].dir.y))
     {
@@ -910,6 +913,9 @@ void SceneRenderActor_b(UBYTE i)
     {
       fo = 0;
     }
+
+    actors[i].flip = FALSE;
+    actors[i].flip = flip;
   }
 
   frame = MUL_4(actors[i].sprite + actors[i].frame + fo);
@@ -927,8 +933,6 @@ void SceneRenderActor_b(UBYTE i)
     set_sprite_tile_pair(s, frame, frame + 2);
   }
 
-  actors[i].flip = FALSE;
-  actors[i].flip = flip;
   actors[i].frame_offset = 0;
   actors[i].frame_offset = fo;
 }

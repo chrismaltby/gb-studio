@@ -184,11 +184,16 @@ const CMD_LOOKUP = {
   SCENE_POP_ALL_STATE: 0x4b,
   SET_INPUT_SCRIPT: 0x4c,
   REMOVE_INPUT_SCRIPT: 0x4d,
-  ACTOR_SET_FRAME: 0x4e
+  ACTOR_SET_FRAME: 0x4e,
+  ACTOR_SET_FLIP: 0x4f
 };
 
 const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
+};
+
+const getActor = (actorId, scene) => {
+  return scene.actors.find(a => a.id === actorId);
 };
 
 const getMusicIndex = (musicId, music) => {
@@ -594,11 +599,25 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
     } else if (command === EVENT_ACTOR_SET_DIRECTION) {
+      const actor = getActor(input[i].args.actorId, scene);
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
+      if (actor.movementType === "static") {
+        output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
+        const frame =
+          input[i].args.direction === "up"
+            ? 1
+            : input[i].args.direction === "down"
+            ? 0
+            : 2;
+        output.push(frame);
+        const flip = input[i].args.direction === "left";
+        output.push(CMD_LOOKUP.ACTOR_SET_FLIP);
+        output.push(flip);
+      }
     } else if (command === EVENT_ACTOR_SET_FRAME) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
