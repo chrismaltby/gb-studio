@@ -8,6 +8,9 @@ import createProject, {
 import { ipcRenderer, remote } from "electron";
 import Path from "path";
 import l10n from "../../lib/helpers/l10n";
+import { getCurrentVersion, needsUpdate, getLatestVersion } from "../../lib/helpers/updateChecker";
+import settings from "electron-settings";
+import open from "open";
 
 const getLastUsedPath = () => {
   const storedPath = localStorage.getItem("__lastUsedPath");
@@ -54,7 +57,36 @@ class Splash extends Component {
         });
       }
     });
+
+    this.checkForUpdate();
   }
+
+  checkForUpdate = async () => {
+    settings.set("dontCheckForUpdates", false);
+    if (!settings.get("dontCheckForUpdates")) {
+      if (await needsUpdate()) {
+        const currentVersion = getCurrentVersion();
+        const latestVersion = await getLatestVersion();
+        const dialogOptions = {
+          type: 'info',
+          buttons: [l10n("DIALOG_OK"), l10n("DIALOG_CANCEL")],
+          title: l10n("DIALIG_UPDATE_AVAILABLE"),
+          message: l10n("DIALOG_UPDATE_DESCRIPTION", { version: latestVersion }),
+          checkboxLabel: l10n("DIALOG_UPDATE_DONT_ASK_AGAIN"),
+          checkboxChecked: false
+        };
+
+        remote.dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
+          if (checkboxChecked) {
+            settings.set("dontCheckForUpdates", true);
+          }
+          if (buttonIndex === 0) {
+            open("https://www.gbstudio.dev/download/");
+          }
+        })
+      }
+    }
+  };
 
   componentWillUnmount() {
     window.removeEventListener("blur", this.onBlur);
