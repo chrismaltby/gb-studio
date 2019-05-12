@@ -479,8 +479,16 @@ export const precompileStrings = scenes => {
     ) {
       const text = cmd.args.text || " "; // Replace empty strings with single space
       // If never seen this string before add it to the list
-      if (strings.indexOf(text) === -1) {
-        strings.push(text);
+      if (Array.isArray(text)) {
+        for (let i = 0; i < text.length; i++) {
+          if (strings.indexOf(text[i]) === -1) {
+            strings.push(text[i]);
+          }
+        }
+      } else {
+        if (strings.indexOf(text) === -1) {
+          strings.push(text);
+        }
       }
     } else if (cmd.command === EVENT_CHOICE) {
       const text = combineMultipleChoiceText(cmd.args);

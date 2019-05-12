@@ -22,6 +22,8 @@ extern UBYTE win_speed;
 extern UBYTE text_in_speed;
 extern UBYTE text_out_speed;
 extern UBYTE text_draw_speed;
+extern UBYTE tmp_text_in_speed;
+extern UBYTE tmp_text_out_speed;
 
 void UIInit();
 void UIUpdate();

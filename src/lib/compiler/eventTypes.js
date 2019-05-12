@@ -499,10 +499,10 @@ export const EventFields = {
     {
       key: "text",
       type: "textarea",
-      rows: 2,
       maxPerLine: 18,
       placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
       updateFn: trimlines,
+      multiple: true,
       defaultValue: ""
     }
   ],

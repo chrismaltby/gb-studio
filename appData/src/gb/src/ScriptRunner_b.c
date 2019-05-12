@@ -1587,3 +1587,41 @@ void Script_ActorSetFlip_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: TextMulti
+ * ----------------------------
+ * Set multi text box mode
+ * mode - 0 (store text close speed and set to instant)
+ *      - 1 (store open speed and set to instant)
+ *      - 2 (restore close speed)
+ *      - 3 (restore open and close speed)
+ */
+void Script_TextMulti_b()
+{
+  UBYTE mode;
+  mode = script_cmd_args[0];
+
+  if (mode == 0)
+  {
+    tmp_text_out_speed = text_out_speed;
+    text_out_speed = 0;
+  }
+  else if (mode == 1)
+  {
+    tmp_text_in_speed = text_in_speed;
+    text_in_speed = 0;
+  }
+  else if (mode == 2)
+  {
+    text_out_speed = tmp_text_out_speed;
+  }
+  else if (mode == 3)
+  {
+    text_in_speed = tmp_text_in_speed;
+    text_out_speed = tmp_text_out_speed;
+  }
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

@@ -185,7 +185,8 @@ const CMD_LOOKUP = {
   SET_INPUT_SCRIPT: 0x4c,
   REMOVE_INPUT_SCRIPT: 0x4d,
   ACTOR_SET_FRAME: 0x4e,
-  ACTOR_SET_FLIP: 0x4f
+  ACTOR_SET_FLIP: 0x4f,
+  TEXT_MULTI: 0x50
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -295,13 +296,50 @@ const precompileEntityScript = (input = [], options = {}) => {
 
     if (command === EVENT_TEXT) {
       const text = input[i].args.text || " "; // Replace empty strings with single space
-      const stringIndex = strings.indexOf(text);
-      if (stringIndex === -1) {
-        throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
+      if (Array.isArray(text)) {
+        // Handle multiple blocks of text
+        for (let j = 0; j < text.length; j++) {
+          const stringIndex = strings.indexOf(text[j]);
+          if (stringIndex === -1) {
+            throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
+          }
+          // Before first box, make close instant
+          if (j === 0) {
+            console.warn("SHOW START", j);
+            output.push(CMD_LOOKUP.TEXT_MULTI);
+            output.push(0);
+          }
+          // Before last box, restore close speed
+          if (j === text.length - 1) {
+            console.warn("SHOW END PT1", j);
+            output.push(CMD_LOOKUP.TEXT_MULTI);
+            output.push(2);
+          }
+          output.push(CMD_LOOKUP.TEXT);
+          output.push(hi(stringIndex));
+          output.push(lo(stringIndex));
+          // After first box, make open instant
+          if (j === 0) {
+            console.warn("SHOW START", j);
+            output.push(CMD_LOOKUP.TEXT_MULTI);
+            output.push(1);
+          }
+          // After last box, restore open speed
+          if (j === text.length - 1) {
+            console.warn("SHOW END PT2", j);
+            output.push(CMD_LOOKUP.TEXT_MULTI);
+            output.push(3);
+          }
+        }
+      } else {
+        const stringIndex = strings.indexOf(text);
+        if (stringIndex === -1) {
+          throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
+        }
+        output.push(CMD_LOOKUP.TEXT);
+        output.push(hi(stringIndex));
+        output.push(lo(stringIndex));
       }
-      output.push(CMD_LOOKUP.TEXT);
-      output.push(hi(stringIndex));
-      output.push(lo(stringIndex));
     } else if (command === EVENT_CHOICE) {
       const text = combineMultipleChoiceText(input[i].args);
       const stringIndex = strings.indexOf(text);

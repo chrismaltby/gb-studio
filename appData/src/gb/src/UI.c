@@ -26,6 +26,8 @@ UBYTE text_wait;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
+UBYTE tmp_text_in_speed = 1;
+UBYTE tmp_text_out_speed = 1;
 
 UBYTE choice_enabled = 0;
 UBYTE choice_index = 0;
@@ -258,7 +260,8 @@ void UIDrawTextBufferChar()
       text_y++;
     }
 
-    if (text_draw_speed==0) {
+    if (text_draw_speed == 0)
+    {
       UIDrawTextBufferChar();
     }
   }

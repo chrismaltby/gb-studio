@@ -105,5 +105,6 @@ void Script_SetInputScript_b();
 void Script_RemoveInputScript_b();
 void Script_ActorSetFrame_b();
 void Script_ActorSetFlip_b();
+void Script_TextMulti_b();
 
 #endif

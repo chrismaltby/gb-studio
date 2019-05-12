@@ -21,7 +21,7 @@ import { textNumLines } from "../../lib/helpers/trimlines";
 
 const ScriptEventBlock = ({ command, value = {}, onChange }) => {
   const fields = EventFields[command] || [];
-  const onChangeField = (key, type = "text", updateFn) => e => {
+  const onChangeField = (key, index, type = "text", updateFn) => e => {
     let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value[key]) {
       // Toggle direction
@@ -30,8 +30,36 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
     if (updateFn) {
       newValue = updateFn(newValue);
     }
+    if (Array.isArray(value[key])) {
+      return onChange({
+        [key]: value[key].map((v, i) => {
+          if (i !== index) {
+            return v;
+          }
+          return newValue;
+        })
+      });
+    } else {
+      return onChange({
+        [key]: newValue
+      });
+    }
+  };
+  const onAddValue = (key, field, index) => e => {
+    const current = [].concat(value[key]);
     return onChange({
-      [key]: newValue
+      [key]: [].concat(
+        [],
+        current.slice(0, index + 1),
+        field.defaultValue,
+        current.slice(index + 1)
+      )
+    });
+  };
+  const onRemoveValue = (key, field, index) => e => {
+    const current = [].concat(value[key]);
+    return onChange({
+      [key]: current.filter((v, i) => i !== index)
     });
   };
   return (
@@ -43,141 +71,175 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
             return null;
           }
         }
+
+        const fieldValue = field.multiple
+          ? [].concat([], value[field.key])
+          : value[field.key];
+
+        const renderInput = (index = 0) => {
+          const inputValue = field.multiple ? fieldValue[index] : fieldValue;
+          return field.type === "textarea" ? (
+            <textarea
+              value={inputValue}
+              rows={textNumLines(inputValue)}
+              placeholder={field.placeholder}
+              onChange={onChangeField(field.key, index, "text", field.updateFn)}
+            />
+          ) : field.type === "text" ? (
+            <input
+              type="text"
+              value={inputValue}
+              placeholder={field.placeholder || field.defaultValue}
+              maxLength={field.maxLength}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "number" ? (
+            <input
+              type="number"
+              value={inputValue}
+              min={field.min}
+              max={field.max}
+              step={field.step}
+              placeholder={field.placeholder || field.defaultValue}
+              onChange={onChangeField(field.key, index, field.type)}
+            />
+          ) : field.type === "checkbox" ? (
+            <label>
+              <input
+                type="checkbox"
+                className="Checkbox"
+                checked={inputValue || false}
+                onChange={onChangeField(field.key, index)}
+              />
+              <div className="FormCheckbox" />
+              {field.label}
+            </label>
+          ) : field.type === "select" ? (
+            <label>
+              <select
+                onChange={onChangeField(field.key, index)}
+                value={inputValue || field.options[0][0]}
+              >
+                {field.options.map(option => (
+                  <option key={option[0]} value={option[0]}>
+                    {option[1]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : field.type === "scene" ? (
+            <SceneSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "background" ? (
+            <BackgroundSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "sprite" ? (
+            <SpriteSheetSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "variable" ? (
+            <VariableSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "direction" ? (
+            <DirectionPicker
+              value={inputValue}
+              onChange={onChangeField(field.key, index, "direction")}
+            />
+          ) : field.type === "input" ? (
+            <InputPicker
+              value={inputValue}
+              onChange={onChangeField(field.key, index, "input")}
+            />
+          ) : field.type === "fadeSpeed" ? (
+            <FadeSpeedSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "cameraSpeed" ? (
+            <CameraSpeedSelect
+              allowNone
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "moveSpeed" ? (
+            <MovementSpeedSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "animSpeed" ? (
+            <AnimationSpeedSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "overlayColor" ? (
+            <OverlayColorSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "actor" ? (
+            <ActorSelect
+              value={inputValue}
+              direction={value.direction}
+              frame={value.frame}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "emote" ? (
+            <EmoteSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "operator" ? (
+            <OperatorSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : field.type === "music" ? (
+            <MusicSelect
+              value={inputValue}
+              onChange={onChangeField(field.key, index)}
+            />
+          ) : (
+            <div />
+          );
+        };
+
         return (
           <FormField key={field.key || index} halfWidth={field.width === "50%"}>
             {field.label && field.type !== "checkbox" && (
               <label>{field.label}</label>
             )}
-            {field.type === "textarea" ? (
-              <textarea
-                value={value[field.key]}
-                rows={textNumLines(value[field.key])}
-                placeholder={field.placeholder}
-                onChange={onChangeField(field.key, "text", field.updateFn)}
-              />
-            ) : field.type === "text" ? (
-              <input
-                type="text"
-                value={value[field.key]}
-                placeholder={field.placeholder || field.defaultValue}
-                maxLength={field.maxLength}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "number" ? (
-              <input
-                type="number"
-                value={value[field.key]}
-                min={field.min}
-                max={field.max}
-                step={field.step}
-                placeholder={field.placeholder || field.defaultValue}
-                onChange={onChangeField(field.key, field.type)}
-              />
-            ) : field.type === "checkbox" ? (
-              <label>
-                <input
-                  type="checkbox"
-                  className="Checkbox"
-                  checked={value[field.key] || false}
-                  onChange={onChangeField(field.key)}
-                />
-                <div className="FormCheckbox" />
-                {field.label}
-              </label>
-            ) : field.type === "select" ? (
-              <label>
-                <select
-                  onChange={onChangeField(field.key)}
-                  value={value[field.key] || field.options[0][0]}
-                >
-                  {field.options.map(option => (
-                    <option key={option[0]} value={option[0]}>
-                      {option[1]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : field.type === "scene" ? (
-              <SceneSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "background" ? (
-              <BackgroundSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "sprite" ? (
-              <SpriteSheetSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "variable" ? (
-              <VariableSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "direction" ? (
-              <DirectionPicker
-                value={value[field.key]}
-                onChange={onChangeField(field.key, "direction")}
-              />
-            ) : field.type === "input" ? (
-              <InputPicker
-                value={value[field.key]}
-                onChange={onChangeField(field.key, "input")}
-              />
-            ) : field.type === "fadeSpeed" ? (
-              <FadeSpeedSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "cameraSpeed" ? (
-              <CameraSpeedSelect
-                allowNone
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "moveSpeed" ? (
-              <MovementSpeedSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "animSpeed" ? (
-              <AnimationSpeedSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "overlayColor" ? (
-              <OverlayColorSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "actor" ? (
-              <ActorSelect
-                value={value[field.key]}
-                direction={value.direction}
-                frame={value.frame}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "emote" ? (
-              <EmoteSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "operator" ? (
-              <OperatorSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : field.type === "music" ? (
-              <MusicSelect
-                value={value[field.key]}
-                onChange={onChangeField(field.key)}
-              />
-            ) : (
-              <div />
-            )}
+            {field.multiple
+              ? fieldValue.map((value, index) => {
+                  return (
+                    <span key={index} className="ScriptEventBlock__InputRow">
+                      {renderInput(index)}
+                      <div className="ScriptEventBlock__BtnRow">
+                        {index !== 0 && (
+                          <div
+                            className="ScriptEventBlock__Btn"
+                            onClick={onRemoveValue(field.key, field, index)}
+                          >
+                            -
+                          </div>
+                        )}
+                        <div
+                          className="ScriptEventBlock__Btn"
+                          onClick={onAddValue(field.key, field, index)}
+                        >
+                          +
+                        </div>
+                      </div>
+                    </span>
+                  );
+                })
+              : renderInput()}
           </FormField>
         );
       })}

@@ -100,7 +100,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetInputScript_b, 4},     // 0x4C
     {Script_RemoveInputScript_b, 1},  // 0x4D
     {Script_ActorSetFrame_b, 1},      // 0x4E
-    {Script_ActorSetFlip_b, 1}        // 0x4F
+    {Script_ActorSetFlip_b, 1},       // 0x4F
+    {Script_TextMulti_b, 1}           //0x50
 };
 
 UBYTE ScriptLastFnComplete();
