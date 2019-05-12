@@ -7,6 +7,7 @@
 #include "game.h"
 #include "Macros.h"
 
+UBYTE *ptr_div_reg = (UBYTE *)0xFF04;
 UBYTE script_ptr_bank = 0;
 UWORD script_ptr = 0;
 UWORD script_ptr_x = 0;
@@ -105,8 +106,13 @@ UBYTE ScriptLastFnComplete();
 
 void ScriptStart(BANK_PTR *events_ptr)
 {
+  UBYTE rnd;
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UWORD)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
+
+  rnd = *(ptr_div_reg);
+  initrand(rnd);
+
   script_start_ptr = script_ptr;
 }
 
