@@ -123,6 +123,8 @@
   "FIELD_LABEL": "Label",
   "FIELD_ON_PRESS": "On Press",
   "FIELD_REMOVE_INPUT_SCRIPT_ON": "Remove script attached to input",
+  "FIELD_ANIMATION_FRAME": "Animation Frame",
+  "FIELD_INITIAL_FRAME": "Initial Frame",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

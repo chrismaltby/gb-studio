@@ -7,7 +7,7 @@ const type = t => s => s.type === t;
 
 class SpriteSheetSelect extends Component {
   render() {
-    const { spriteSheets, dispatch, direction, ...rest } = this.props;
+    const { spriteSheets, dispatch, direction, frame, ...rest } = this.props;
     return (
       <div className="SpriteSheetSelect">
         <select {...rest}>
@@ -44,6 +44,7 @@ class SpriteSheetSelect extends Component {
             <SpriteSheetCanvas
               spriteSheetId={rest.value}
               direction={direction}
+              frame={frame}
             />
           )}
         </div>

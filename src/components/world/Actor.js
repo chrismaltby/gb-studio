@@ -16,6 +16,7 @@ class Actor extends Component {
         <SpriteSheetCanvas
           spriteSheetId={actor.spriteSheetId}
           direction={actor.direction}
+          frame={actor.movementType === "static" && actor.frame}
         />
       </div>
     );

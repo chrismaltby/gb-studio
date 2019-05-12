@@ -113,6 +113,12 @@ class ActorEditor extends Component {
               id="actorSprite"
               value={actor.spriteSheetId}
               direction={actor.direction}
+              frame={
+                spriteSheet &&
+                spriteSheet.numFrames > 1 &&
+                actor.movementType === "static" &&
+                actor.frame
+              }
               onChange={this.onEdit("spriteSheetId")}
             />
           </FormField>
@@ -135,7 +141,7 @@ class ActorEditor extends Component {
           {spriteSheet &&
             spriteSheet.type !== "static" &&
             spriteSheet.type !== "animated" &&
-            (actor.movementType !== "static" || !actor.animate) && (
+            actor.movementType !== "static" && (
               <FormField halfWidth>
                 <label htmlFor="actorDirection">
                   {l10n("FIELD_DIRECTION")}
@@ -144,6 +150,25 @@ class ActorEditor extends Component {
                   id="actorDirection"
                   value={actor.direction}
                   onChange={this.onEdit("direction")}
+                />
+              </FormField>
+            )}
+
+          {spriteSheet &&
+            spriteSheet.numFrames > 1 &&
+            actor.movementType === "static" && (
+              <FormField halfWidth>
+                <label htmlFor="actorFrame">
+                  {l10n("FIELD_INITIAL_FRAME")}
+                </label>
+                <input
+                  id="actorFrame"
+                  type="number"
+                  min={0}
+                  max={spriteSheet.numFrames - 1}
+                  placeholder={0}
+                  value={actor.frame}
+                  onChange={this.onEdit("frame")}
                 />
               </FormField>
             )}
