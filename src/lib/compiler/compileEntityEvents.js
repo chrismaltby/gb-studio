@@ -212,6 +212,10 @@ const getSpriteIndex = (spriteId, sprites) => {
   return spriteIndex;
 };
 
+const getSprite = (spriteId, sprites) => {
+  return sprites.find(sprite => sprite.id === spriteId);
+};
+
 const getVariableIndex = (variable, variables) => {
   const variableIndex = variables.indexOf(String(variable));
   if (variableIndex === -1) {
@@ -606,17 +610,24 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
       if (actor.movementType === "static") {
-        output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
-        const frame =
-          input[i].args.direction === "up"
-            ? 1
-            : input[i].args.direction === "down"
-            ? 0
-            : 2;
-        output.push(frame);
-        const flip = input[i].args.direction === "left";
-        output.push(CMD_LOOKUP.ACTOR_SET_FLIP);
-        output.push(flip);
+        const spriteSheet = getSprite(actor.spriteSheetId, sprites);
+        if (
+          spriteSheet &&
+          (spriteSheet.numFrames === 3 || spriteSheet.numFrames === 6)
+        ) {
+          output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
+          const multiplier = spriteSheet.numFrames === 6 ? 2 : 1;
+          const frame =
+            input[i].args.direction === "up"
+              ? 1
+              : input[i].args.direction === "down"
+              ? 0
+              : 2;
+          output.push(multiplier * frame);
+          const flip = input[i].args.direction === "left";
+          output.push(CMD_LOOKUP.ACTOR_SET_FLIP);
+          output.push(flip);
+        }
       }
     } else if (command === EVENT_ACTOR_SET_FRAME) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
