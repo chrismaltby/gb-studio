@@ -348,6 +348,8 @@ test("should walk all scene events to build list of used variables (including fi
   }
   output.push("109");
   output.push("110");
+  output.push("tmp1");
+  output.push("tmp2");
   expect(precompiledVariables).toEqual(output);
 });
 
