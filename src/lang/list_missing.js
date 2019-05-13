@@ -3,8 +3,9 @@ const locale = process.argv[2];
 if (!locale) {
   console.log("No language to check specified");
   console.log("");
-  console.log("Run as:");
+  console.log("Run either one of the following (change pt-PT to the lang intended):");
   console.log("npm run missing-translations pt-PT");
+  console.log("node list_missing pt-PT");
   console.log("");
   process.exit();
 }
