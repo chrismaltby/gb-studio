@@ -21,6 +21,7 @@ if (require("electron-squirrel-startup")) {
 let mainWindow = null;
 let splashWindow = null;
 let playWindow = null;
+let hasCheckedForUpdate = false;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -64,6 +65,10 @@ const createSplash = async (forceNew = false) => {
   splashWindow.webContents.on("did-finish-load", function() {
     setTimeout(function() {
       splashWindow.show();
+      if(!hasCheckedForUpdate) {
+        hasCheckedForUpdate = true; 
+        checkForUpdate();
+      }
     }, 40);
   });
 
@@ -211,8 +216,6 @@ app.on("ready", async () => {
   } else if (splashWindow === null && mainWindow === null) {
     createSplash();
   }
-
-  checkForUpdate();
 });
 
 app.on("open-file", async (e, projectPath) => {
