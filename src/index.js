@@ -9,6 +9,7 @@ import settings from "electron-settings";
 import menu from "./menu";
 import Path from "path";
 import { stat } from "fs-extra";
+import { checkForUpdate } from "./lib/helpers/updateChecker";
 
 // Stop app launching during squirrel install
 if (require("electron-squirrel-startup")) {
@@ -210,6 +211,8 @@ app.on("ready", async () => {
   } else if (splashWindow === null && mainWindow === null) {
     createSplash();
   }
+
+  checkForUpdate();
 });
 
 app.on("open-file", async (e, projectPath) => {
@@ -325,6 +328,10 @@ menu.on("run", () => {
 
 menu.on("build", buildType => {
   mainWindow && mainWindow.webContents.send("build", buildType);
+});
+
+menu.on("checkUpdates", () => {
+  checkForUpdate(true);
 });
 
 menu.on("updateSetting", (setting, value) => {

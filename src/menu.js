@@ -315,6 +315,13 @@ app.on("ready", async () => {
           }
         },
         { type: "separator" },
+        {
+          label: l10n("MENU_CHECK_FOR_UPDATES"),
+          click: () => {
+            notifyListeners("checkUpdates");
+          }
+        },
+        { type: "separator" },
         { role: "services" },
         { type: "separator" },
         { role: "hide" },
@@ -350,7 +357,13 @@ app.on("ready", async () => {
         click() {
           openAbout();
         }
-      }
+      },
+      {
+        label: l10n("MENU_CHECK_FOR_UPDATES"),
+        click: () => {
+          notifyListeners("checkUpdates");
+        }
+      }      
     );
   }
 
@@ -362,6 +375,7 @@ let listeners = {
   new: [],
   open: [],
   save: [],
+  checkUpdates: [],
   undo: [],
   redo: [],
   section: [],

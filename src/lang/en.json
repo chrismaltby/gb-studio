@@ -277,6 +277,7 @@
   "MENU_COPY_SCENE": "Copy Scene",
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
+  "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -320,9 +321,14 @@
 
   "// 15": "Dialogs ------------------------------------------------------",
 
+  "DIALOG_DOWNLOAD": "Download",
+  "DIALOG_SKIP_VERSION": "Skip This Version",
+  "DIALOG_REMIND_LATER": "Remind Me Later",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancel",
-  "DIALIG_UPDATE_AVAILABLE": "Update available",
-  "DIALOG_UPDATE_DESCRIPTION": "Version {version} available.\nWould you like to update?",
-  "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again"
+  "DIALOG_UPDATE_AVAILABLE": "Update available",
+  "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} available. Would you like to update?",
+  "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
+  "DIALOG_UP_TO_DATE": "You’re up-to-date!",
+  "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} is currently the newest version available."
 }
