@@ -481,8 +481,9 @@ export const precompileStrings = scenes => {
       // If never seen this string before add it to the list
       if (Array.isArray(text)) {
         for (let i = 0; i < text.length; i++) {
-          if (strings.indexOf(text[i]) === -1) {
-            strings.push(text[i]);
+          const rowText = text[i] || " ";
+          if (strings.indexOf(rowText) === -1) {
+            strings.push(rowText);
           }
         }
       } else {

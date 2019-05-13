@@ -299,7 +299,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       if (Array.isArray(text)) {
         // Handle multiple blocks of text
         for (let j = 0; j < text.length; j++) {
-          const stringIndex = strings.indexOf(text[j]);
+          const rowText = text[j] || " ";
+          const stringIndex = strings.indexOf(rowText);
           if (stringIndex === -1) {
             throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
           }
