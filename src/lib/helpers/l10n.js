@@ -35,6 +35,15 @@ const translations = Object.keys(en).reduce(
   {}
 );
 
-export default key => {
-  return translations[key];
+export default (key, params = null) => {
+  let translation = translations[key];
+
+  if (params) {
+    Object.keys(params).forEach(param => {
+      const pattern = new RegExp(`{(\s+)?${param}(\s+)?}`)
+      translation = translation.replace(pattern, params[param]);
+    });
+  }
+
+  return translation;
 };
