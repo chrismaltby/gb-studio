@@ -647,7 +647,9 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
       output.push(dirDec(input[i].args.direction));
-      if (actor.movementType === "static") {
+      // If direction event applied to static actor
+      // calculate frame offset and apply that instead
+      if (actor && actor.movementType === "static") {
         const spriteSheet = getSprite(actor.spriteSheetId, sprites);
         if (
           spriteSheet &&
