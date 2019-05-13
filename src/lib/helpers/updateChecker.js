@@ -17,25 +17,21 @@ const cache = {
 };
 
 export const getLatestVersion = async () => {
-  try {
-    const now = new Date().getTime();
-    if (cache.latest.timestamp > now) {
-      return cache.latest.value;
-    }
+  const now = new Date().getTime();
+  if (cache.latest.timestamp > now) {
+    return cache.latest.value;
+  }
 
-    const latest = await github.repos.getLatestRelease({
-      owner: "chrismaltby",
-      repo: "gb-studio"
-    });
+  const latest = await github.repos.getLatestRelease({
+    owner: "chrismaltby",
+    repo: "gb-studio"
+  });
 
-    if (latest) {
-      const version = latest.data.tag_name.split("v").pop();
-      cache.latest.value = version;
-      cache.latest.timestamp = now + oneHour;
-      return version;
-    }
-  } catch (error) {
-    console.error("Unable to check for updates", error);
+  if (latest) {
+    const version = latest.data.tag_name.split("v").pop();
+    cache.latest.value = version;
+    cache.latest.timestamp = now + oneHour;
+    return version;
   }
 
   return null;
@@ -51,7 +47,6 @@ export const needsUpdate = async () => {
   if (semver.valid(currentVersion) && semver.valid(latestVersion)) {
     return semver.gt(latestVersion, currentVersion);
   }
-
   return false;
 };
 
@@ -62,7 +57,29 @@ export const checkForUpdate = async force => {
     settings.set("dontNotifyUpdatesForVersion", false);
   }
   if (!settings.get("dontCheckForUpdates")) {
-    const latestVersion = await getLatestVersion();
+    let latestVersion;
+
+    try {
+      latestVersion = await getLatestVersion();
+      if (!latestVersion) {
+        throw "NO_LATEST";
+      }
+    } catch (e) {
+      // If explicitly asked to check latest version and checking failed
+      // (no internet connection / github down)
+      // Show an error message
+      if (force) {
+        const dialogOptions = {
+          type: "info",
+          buttons: [l10n("DIALOG_OK")],
+          defaultId: 0,
+          title: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION"),
+          message: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION")
+        };
+        dialog.showMessageBox(dialogOptions);
+        return;
+      }
+    }
 
     if (await needsUpdate()) {
       if (settings.get("dontNotifyUpdatesForVersion") === latestVersion) {

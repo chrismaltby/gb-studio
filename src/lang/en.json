@@ -330,5 +330,6 @@
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} available. Would you like to update?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
   "DIALOG_UP_TO_DATE": "You’re up-to-date!",
-  "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} is currently the newest version available."
+  "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} is currently the newest version available.",
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Unable to check latest version at the moment"
 }
