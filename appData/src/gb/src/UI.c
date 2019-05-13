@@ -305,6 +305,8 @@ void UIOnInteract()
   {
     if (text_drawn && text_count != 0)
     {
+      text_count = 0;
+      text_lines[0] = '\0';
       if (choice_enabled)
       {
         script_variables[choice_flag] = !choice_index;
