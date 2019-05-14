@@ -27,6 +27,7 @@ import {
   animSpeedDec
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
+import uuid from "uuid/v4";
 
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
@@ -645,7 +646,7 @@ export const precompileMusic = (scenes, music) => {
     .map((track, index) => {
       return {
         ...track,
-        dataName: "music_track_" + index
+        dataName: "music_" + uuid().replace(/-.*/, "") + index
       };
     });
   return { usedMusic };
