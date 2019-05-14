@@ -27,8 +27,8 @@ export const resizeSidebar = width => {
   return {
     type: types.SIDEBAR_RESIZE,
     width
-  }
-}
+  };
+};
 
 export const loadProject = path => async dispatch => {
   return asyncAction(
@@ -402,11 +402,11 @@ export const copyScene = scene => {
   return { type: types.COPY_SCENE, scene };
 };
 
-export const zoomIn = (section, delta = 0) => {
+export const zoomIn = (section, delta) => {
   return { type: types.ZOOM_IN, section, delta };
 };
 
-export const zoomOut = (section, delta = 0) => {
+export const zoomOut = (section, delta) => {
   return { type: types.ZOOM_OUT, section, delta };
 };
 

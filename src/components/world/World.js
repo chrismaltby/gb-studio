@@ -4,7 +4,6 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
-import { remote, BrowserWindow } from "electron";
 import {
   DRAG_PLAYER,
   DRAG_DESTINATION,
@@ -35,19 +34,7 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", event => {
-      if (event.ctrlKey) {
-        event.preventDefault();
-        const currentWindow = remote.getCurrentWindow();
-        if (currentWindow) {
-          currentWindow.webContents.send(
-            "zoom",
-            event.wheelDelta > 0 ? "in" : "out",
-            event.deltaY
-          );
-        }
-      }
-    });
+    window.addEventListener("mousewheel", this.onMouseWheel);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -62,6 +49,7 @@ class World extends Component {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("click", this.onClick);
     window.removeEventListener("mouseup", this.onMouseUp);
+    window.removeEventListener("mousewheel", this.onMouseWheel);
   }
 
   componentDidUpdate(prevProps) {
@@ -192,6 +180,17 @@ class World extends Component {
     }
   };
 
+  onMouseWheel = e => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      if (event.wheelDelta > 0) {
+        this.props.zoomIn("world", event.deltaY * 0.5);
+      } else {
+        this.props.zoomOut("world", event.deltaY * 0.5);
+      }
+    }
+  };
+
   startWorldDrag = e => {
     this.worldDragging = true;
   };
@@ -264,7 +263,7 @@ class World extends Component {
         : 100
     );
 
-    const worldStyle = { right: editor.sidebarWidth }
+    const worldStyle = { right: editor.sidebarWidth };
 
     return (
       <div
@@ -272,7 +271,7 @@ class World extends Component {
         className="World"
         style={worldStyle}
         onMouseMove={this.onMouseMove}
-        onMouseEnter={this.onMouseEnter}
+        onMouseOver={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         onMouseDown={this.startWorldDragIfAltOrMiddleClick}
       >
@@ -362,7 +361,9 @@ const mapDispatchToProps = {
   copyTrigger: actions.copyTrigger,
   pasteScene: actions.pasteScene,
   pasteActor: actions.pasteActor,
-  pasteTrigger: actions.pasteTrigger
+  pasteTrigger: actions.pasteTrigger,
+  zoomIn: actions.zoomIn,
+  zoomOut: actions.zoomOut
 };
 
 export default connect(

@@ -6,6 +6,25 @@ import l10n from "../../lib/helpers/l10n";
 import { divisibleBy8 } from "../../lib/helpers/8bit";
 
 class ImageViewer extends Component {
+  componentDidMount() {
+    window.addEventListener("mousewheel", this.onMouseWheel);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("mousewheel", this.onMouseWheel);
+  }
+
+  onMouseWheel = e => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      if (event.wheelDelta > 0) {
+        this.props.zoomIn(this.props.section, event.deltaY * 0.5);
+      } else {
+        this.props.zoomOut(this.props.section, event.deltaY * 0.5);
+      }
+    }
+  };
+
   onOpen = () => {
     const { projectRoot, file, folder } = this.props;
     this.props.openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
@@ -87,13 +106,16 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     folder,
+    section,
     zoomRatio: (zoom || 100) / 100,
     editor: state.editor
   };
 }
 
 const mapDispatchToProps = {
-  openFolder: actions.openFolder
+  openFolder: actions.openFolder,
+  zoomIn: actions.zoomIn,
+  zoomOut: actions.zoomOut
 };
 
 export default connect(

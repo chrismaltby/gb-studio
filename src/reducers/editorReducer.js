@@ -243,13 +243,15 @@ export default function editor(state = initialState.editor, action) {
         action.section === "world" && {
           zoom: Math.min(
             800,
-            action.delta ? state.zoom + -action.delta : zoomIn(state.zoom)
+            action.delta !== undefined
+              ? state.zoom + -action.delta
+              : zoomIn(state.zoom)
           )
         },
         action.section === "sprites" && {
           zoomSprite: Math.min(
             800,
-            action.delta
+            action.delta !== undefined
               ? state.zoomSprite + -action.delta
               : zoomIn(state.zoomSprite)
           )
@@ -257,7 +259,7 @@ export default function editor(state = initialState.editor, action) {
         action.section === "backgrounds" && {
           zoomImage: Math.min(
             800,
-            action.delta
+            action.delta !== undefined
               ? state.zoomImage + -action.delta
               : zoomIn(state.zoomImage)
           )
@@ -265,7 +267,9 @@ export default function editor(state = initialState.editor, action) {
         action.section === "ui" && {
           zoomUI: Math.min(
             800,
-            action.delta ? state.zoomUI + -action.delta : zoomIn(state.zoomUI)
+            action.delta !== undefined
+              ? state.zoomUI + -action.delta
+              : zoomIn(state.zoomUI)
           )
         }
       );
@@ -277,13 +281,15 @@ export default function editor(state = initialState.editor, action) {
         action.section === "world" && {
           zoom: Math.max(
             25,
-            action.delta ? state.zoom - action.delta : zoomOut(state.zoom)
+            action.delta !== undefined
+              ? state.zoom - action.delta
+              : zoomOut(state.zoom)
           )
         },
         action.section === "sprites" && {
           zoomSprite: Math.max(
             25,
-            action.delta
+            action.delta !== undefined
               ? state.zoomSprite - action.delta
               : zoomOut(state.zoomSprite)
           )
@@ -291,7 +297,7 @@ export default function editor(state = initialState.editor, action) {
         action.section === "backgrounds" && {
           zoomImage: Math.max(
             25,
-            action.delta
+            action.delta !== undefined
               ? state.zoomImage - action.delta
               : zoomOut(state.zoomImage)
           )
@@ -299,7 +305,9 @@ export default function editor(state = initialState.editor, action) {
         action.section === "ui" && {
           zoomUI: Math.max(
             25,
-            action.delta ? state.zoomUI - action.delta : zoomOut(state.zoomUI)
+            action.delta !== undefined
+              ? state.zoomUI - action.delta
+              : zoomOut(state.zoomUI)
           )
         }
       );
