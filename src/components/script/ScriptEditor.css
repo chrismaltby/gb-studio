@@ -139,6 +139,152 @@
   background: var(--conditional-level4);
 }
 
+/* Conditional Level 5 */
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional {
+  border-left: 10px solid var(--conditional-level1);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  padding-left: 0px;
+  background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  padding-left: 0px;
+  background: var(--conditional-level1);
+}
+
+/* Conditional Level 6 */
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional {
+  border-left: 10px solid var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  padding-left: 0px;
+  background: var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  padding-left: 0px;
+  background: var(--conditional-level2);
+}
+
+/* Conditional Level 7 */
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional {
+  border-left: 10px solid var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  padding-left: 0px;
+  background: var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  padding-left: 0px;
+  background: var(--conditional-level3);
+}
+
+/* Conditional Level 8 */
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional {
+  border-left: 10px solid var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  padding-left: 0px;
+  background: var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ActionMini__Else {
+  padding-left: 0px;
+  background: var(--conditional-level4);
+}
+
 .ActionMini__Children > .ActionMini--Add:first-child {
   border-top: 1px solid var(--sidebar-border-color);
 }
