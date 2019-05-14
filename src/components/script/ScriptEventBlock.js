@@ -30,7 +30,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
     if (updateFn) {
       newValue = updateFn(newValue);
     }
-    if (Array.isArray(value[key])) {
+    if (Array.isArray(value[key]) && index !== undefined) {
       return onChange({
         [key]: value[key].map((v, i) => {
           if (i !== index) {
@@ -76,7 +76,7 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
           ? [].concat([], value[field.key])
           : value[field.key];
 
-        const renderInput = (index = 0) => {
+        const renderInput = index => {
           const inputValue = field.multiple ? fieldValue[index] : fieldValue;
           return field.type === "textarea" ? (
             <textarea
