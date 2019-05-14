@@ -48,7 +48,9 @@ class ActorSelect extends Component {
               }
               frame={
                 !rest.direction &&
-                (rest.frame || actor.frame || 0) % totalFrames
+                (rest.frame !== undefined
+                  ? rest.frame || 0
+                  : actor.frame || 0) % totalFrames
               }
             />
           )}
