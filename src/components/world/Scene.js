@@ -196,6 +196,8 @@ class Scene extends Component {
           this.props.addCollisionTile(id, hoverX, hoverY);
           this.remove = false;
         }
+      } else {
+        this.props.setTool("select");
       }
     } else if (tool === "triggers") {
       if (!trigger) {
