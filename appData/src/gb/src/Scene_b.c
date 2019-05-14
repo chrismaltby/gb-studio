@@ -465,6 +465,7 @@ void SceneUpdateActors_b()
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
             memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
+            SceneRenderActor_b(i);
             ++r;
           }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
@@ -491,6 +492,7 @@ void SceneUpdateActors_b()
           if (actors[i].movement_type == AI_RANDOM_FACE)
           {
             memcpy(&actors[i].dir, directions[r & 3], sizeof(POS));
+            SceneRenderActor_b(i);
             ++r;
           }
           else if (actors[i].movement_type == AI_RANDOM_WALK)
