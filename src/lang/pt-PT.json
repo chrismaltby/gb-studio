@@ -277,6 +277,7 @@
   "MENU_COPY_SCENE": "Copiar Mapa",
   "MENU_PASTE_SCENE": "Colar Mapa",
   "MENU_DELETE_SCENE": "Apagar Mapa",
+  "MENU_CHECK_FOR_UPDATES": "A verificar se está Actualizado...",
 
   "// 11": "Advertências -----------------------------------------------------",
 
@@ -317,4 +318,19 @@
   "SCRIPT_LINES": "Linhas",
   "SCRIPT_WORD": "Palavra",
   "SCRIPT_WORDS": "Palavras"
+}
+
+ "// 15": "Diálogos ------------------------------------------------------",
+
+  "DIALOG_DOWNLOAD": "Transferir",
+  "DIALOG_SKIP_VERSION": "Ignorar esta Versão",
+  "DIALOG_REMIND_LATER": "Lembre-me mais tarde",
+  "DIALOG_OK": "OK",
+  "DIALOG_CANCEL": "Cancelar",
+  "DIALOG_UPDATE_AVAILABLE": "Actualização Disponível",
+  "DIALOG_UPDATE_DESCRIPTION": "Nova versão de GB Studio {version} disponível. Deseja actualizar?",
+  "DIALOG_UPDATE_DONT_ASK_AGAIN": "Não perguntar novamente",
+  "DIALOG_UP_TO_DATE": "Actualização concluída com sucesso!",
+  "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} é a versão mais recente",
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Não é possivel verificar a versão mais recente neste moment. Por favor tente mais tarde."
 }
