@@ -49,6 +49,16 @@ const buildProject = async (
       `${outputRoot}/build/rom/game.gb`,
       `${outputRoot}/build/web/rom/game.gb`
     );
+    const sanitize = s => String(s || "").replace(/["<>]/g, "");
+    const projectName = sanitize(data.name);
+    const author = sanitize(data.author);
+    const html = (await fs.readFile(
+      `${outputRoot}/build/web/index.html`,
+      "utf8"
+    ))
+      .replace(/___PROJECT_NAME___/g, projectName)
+      .replace(/___AUTHOR___/g, author);
+    await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }
 };
 
