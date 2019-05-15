@@ -277,6 +277,7 @@
   "MENU_COPY_SCENE": "复制场景",
   "MENU_PASTE_SCENE": "粘贴场景",
   "MENU_DELETE_SCENE": "删除场景",
+  "MENU_CHECK_FOR_UPDATES": "检查更新…",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -316,5 +317,18 @@
   "SCRIPT_LINE": "Line",
   "SCRIPT_LINES": "Lines",
   "SCRIPT_WORD": "Word",
-  "SCRIPT_WORDS": "Words"
+  "SCRIPT_WORDS": "Words",
+
+  "// 15": "Dialogs ------------------------------------------------------",
+  "DIALOG_DOWNLOAD": "下载",
+  "DIALOG_SKIP_VERSION": "跳过此版本",
+  "DIALOG_REMIND_LATER": "稍后提醒我",
+  "DIALOG_OK": "确定",
+  "DIALOG_CANCEL": "取消",
+  "DIALOG_UPDATE_AVAILABLE": "有可用的更新",
+  "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} 已准备好. 现在就要更新吗？",
+  "DIALOG_UPDATE_DONT_ASK_AGAIN": "下次不再询问",
+  "DIALOG_UP_TO_DATE": "当前已是最新版本！",
+  "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} 已是现在最新的版本。",
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "当前无法检查更新"
 }
