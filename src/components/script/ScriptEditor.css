@@ -356,7 +356,17 @@
 }
 
 .ActionMini__Children {
+  position: relative;
   padding-top: 10px;
+}
+
+.ActionMini__ChildrenBorder {
+  position: absolute;
+  width: 20px;
+  top: 0;
+  bottom: 0;
+  left: -20px;
+  background: transparent;
 }
 
 .ScriptEventBlock + .ActionMini__Children {

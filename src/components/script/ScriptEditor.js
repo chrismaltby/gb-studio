@@ -187,6 +187,11 @@ class ActionMini extends Component {
     const open = action.args && !action.args.__collapse;
     const elseOpen = action.args && !action.args.__collapseElse;
 
+    const eventName =
+      (action.args.__label ? action.args.__label + ": " : "") +
+      (l10n(command) || command);
+    const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
+
     return connectDropTarget(
       connectDragPreview(
         <div
@@ -312,6 +317,10 @@ class ActionMini extends Component {
                       clipboardEvent={clipboardEvent}
                     />
                   ))}
+                  <div
+                    className="ActionMini__ChildrenBorder"
+                    title={eventName}
+                  />
                 </div>
               )}
             {action.false && (
@@ -344,6 +353,7 @@ class ActionMini extends Component {
                     clipboardEvent={clipboardEvent}
                   />
                 ))}
+                <div className="ActionMini__ChildrenBorder" title={elseName} />
               </div>
             )}
           </div>
