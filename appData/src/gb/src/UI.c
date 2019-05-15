@@ -330,6 +330,14 @@ void UIOnInteract()
       set_win_tiles(1, 2, 1, 1, ui_cursor_tiles);
       choice_index = 1;
     }
+    else if (JOY(J_B))
+    {
+      text_count = 0;
+      text_lines[0] = '\0';
+      script_variables[choice_flag] = FALSE;
+      choice_enabled = FALSE;
+      UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
+    }
   }
 }
 
