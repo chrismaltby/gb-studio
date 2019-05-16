@@ -4,9 +4,10 @@ import uuid from "uuid/v4";
 import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
+import migrateProject from "./migrateProject";
 
 const loadProject = async projectPath => {
-  const json = await fs.readJson(projectPath);
+  const json = migrateProject(await fs.readJson(projectPath));
 
   const projectRoot = path.dirname(projectPath);
 
