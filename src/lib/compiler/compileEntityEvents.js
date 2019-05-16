@@ -591,8 +591,11 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(speed);
     } else if (command === EVENT_CAMERA_MOVE_TO) {
       output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
-      output.push(input[i].args.x);
-      output.push(input[i].args.y);
+      // Limit camera move to be within scene bounds
+      let camX = Math.min(input[i].args.x, scene.width - 20);
+      let camY = Math.min(input[i].args.y, scene.height - 18);
+      output.push(camX);
+      output.push(camY);
       let speed = input[i].args.speed || 0;
       let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
       output.push(speedFlag);
