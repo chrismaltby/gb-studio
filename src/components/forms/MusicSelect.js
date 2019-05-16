@@ -28,9 +28,11 @@ class MusicSelect extends Component {
       pauseMusic,
       ...rest
     } = this.props;
+    const current = music.find(m => m.id === rest.value);
     return (
       <div className="MusicSelect">
         <select {...rest}>
+          {!current && <option value="" />}
           {music.map(track => (
             <option key={track.id} value={track.id}>
               {track.name}
@@ -38,7 +40,7 @@ class MusicSelect extends Component {
           ))}
         </select>
         <div className="MusicSelect__Preview">
-          {rest.value && (
+          {rest.value && current && (
             <div>
               {playing ? (
                 <Button small transparent onClick={this.onPause}>

@@ -199,9 +199,6 @@ const getActor = (actorId, scene) => {
 
 const getMusicIndex = (musicId, music) => {
   const musicIndex = music.findIndex(track => track.id === musicId);
-  if (musicIndex === -1) {
-    return 0;
-  }
   return musicIndex;
 };
 
@@ -306,13 +303,11 @@ const precompileEntityScript = (input = [], options = {}) => {
           }
           // Before first box, make close instant
           if (j === 0) {
-            console.warn("SHOW START", j);
             output.push(CMD_LOOKUP.TEXT_MULTI);
             output.push(0);
           }
           // Before last box, restore close speed
           if (j === text.length - 1) {
-            console.warn("SHOW END PT1", j);
             output.push(CMD_LOOKUP.TEXT_MULTI);
             output.push(2);
           }
@@ -321,13 +316,11 @@ const precompileEntityScript = (input = [], options = {}) => {
           output.push(lo(stringIndex));
           // After first box, make open instant
           if (j === 0) {
-            console.warn("SHOW START", j);
             output.push(CMD_LOOKUP.TEXT_MULTI);
             output.push(1);
           }
           // After last box, restore open speed
           if (j === text.length - 1) {
-            console.warn("SHOW END PT2", j);
             output.push(CMD_LOOKUP.TEXT_MULTI);
             output.push(3);
           }
@@ -804,9 +797,11 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(inputDec(input[i].args.input));
     } else if (command === EVENT_MUSIC_PLAY) {
       const musicIndex = getMusicIndex(input[i].args.musicId, music);
-      output.push(CMD_LOOKUP.MUSIC_PLAY);
-      output.push(musicIndex);
-      output.push(input[i].args.loop ? 1 : 0); // Loop track
+      if (musicIndex >= 0) {
+        output.push(CMD_LOOKUP.MUSIC_PLAY);
+        output.push(musicIndex);
+        output.push(input[i].args.loop ? 1 : 0); // Loop track
+      }
     } else if (command === EVENT_MUSIC_STOP) {
       output.push(CMD_LOOKUP.MUSIC_STOP);
     } else if (command === EVENT_RESET_VARIABLES) {

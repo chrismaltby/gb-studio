@@ -8,9 +8,11 @@ const type = t => s => s.type === t;
 class SpriteSheetSelect extends Component {
   render() {
     const { spriteSheets, dispatch, direction, frame, ...rest } = this.props;
+    const current = spriteSheets.find(s => s.id === rest.value);
     return (
       <div className="SpriteSheetSelect">
         <select {...rest}>
+          {!current && <option value="" />}
           <optgroup label={l10n("FIELD_SPRITE_ANIMATED_ACTORS")}>
             {spriteSheets.filter(type("actor_animated")).map(spriteSheet => (
               <option key={spriteSheet.id} value={spriteSheet.id}>
