@@ -171,19 +171,20 @@ export default function project(state = initialState.project, action) {
           .sort(sortFilename)
       };
     case ADD_SCENE:
+      const defaultBackground =
+        state.backgrounds &&
+        state.backgrounds[0] &&
+        state.backgrounds.slice().sort(sortRecent)[0];
       return {
         ...state,
         scenes: [].concat(state.scenes, {
           id: action.id,
           name: "Scene " + (state.scenes.length + 1),
-          backgroundId:
-            state.backgrounds &&
-            state.backgrounds[0] &&
-            state.backgrounds.slice().sort(sortRecent)[0].id,
+          backgroundId: defaultBackground && defaultBackground.id,
           x: Math.max(MIN_SCENE_X, action.x),
           y: Math.max(MIN_SCENE_Y, action.y),
-          width: 32,
-          height: 32,
+          width: defaultBackground ? defaultBackground.width : 32,
+          height: defaultBackground ? defaultBackground.height : 32,
           actors: [],
           triggers: [],
           collisions: []

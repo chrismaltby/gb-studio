@@ -4,6 +4,7 @@ const migrateProject = project => {
 
   // Migrate from 1 to 1.1.0
   if (version === "1") {
+    data = migrate_1_110_Scenes(data);
     data = migrate_1_110_Actors(data);
     data = migrate_1_110_Collisions(data);
     version = "1.1.0";
@@ -81,6 +82,34 @@ const migrate_1_110_Collisions = data => {
         return {
           ...scene,
           collisions: collisions.slice(0, collisionsSize)
+        };
+      }
+      return scene;
+    })
+  };
+};
+
+/*
+ * In version 1 scenes would not contain their widths and heights. To get the width or height
+ * of a scene you needed to manually find the background image of the scene and get the
+ * dimensions of that instead. This function reads the current background images set in a
+ * scene and stores the correct widths and heights
+ */
+const migrate_1_110_Scenes = data => {
+  const backgroundLookup = data.backgrounds.reduce((memo, background) => {
+    memo[background.id] = background;
+    return memo;
+  }, {});
+
+  return {
+    ...data,
+    scenes: data.scenes.map(scene => {
+      const background = backgroundLookup[scene.backgroundId];
+      if (background) {
+        return {
+          ...scene,
+          width: background.width,
+          height: background.height
         };
       }
       return scene;
