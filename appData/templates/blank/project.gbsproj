@@ -9,7 +9,7 @@
     "startSceneId": "",
     "playerSpriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd"
   },
-  "_version": "1",
+  "_version": "1.1.0",
   "author": "___AUTHOR___",
   "name": "___PROJECT_NAME___",
   "variables": [],
