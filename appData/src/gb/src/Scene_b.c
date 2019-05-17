@@ -843,7 +843,7 @@ void SceneRenderActors_b()
 
     for (i = 0; i != scene_num_actors; ++i)
     {
-      s = MUL_2(i);
+      s = MUL_2(i) + ACTOR_SPRITE_OFFSET;
       x = MUL_4(ACTOR_SPRITE(ptr) + ACTOR_FRAME(ptr) + ACTOR_FRAME_OFFSET(ptr));
       if (ACTOR_FLIP(ptr))
       {
@@ -865,7 +865,7 @@ void SceneRenderActors_b()
 
   for (i = 0; i != scene_num_actors; ++i)
   {
-    s = MUL_2(i);
+    s = MUL_2(i) + ACTOR_SPRITE_OFFSET;
     x = ACTOR_X(ptr) - SCX_REG;
     y = ACTOR_Y(ptr) - SCY_REG;
 
@@ -887,7 +887,7 @@ void SceneRenderActor_b(UBYTE i)
 {
   UBYTE s, flip, frame, fo;
 
-  s = MUL_2(i);
+  s = MUL_2(i) + ACTOR_SPRITE_OFFSET;
   fo = 0;
 
   flip = actors[i].flip;
