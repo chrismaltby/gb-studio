@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Norwegian localisation. [@thomas-alrek](https://github.com/thomas-alrek)
+
 ## [1.1.0]
 
 ### Added
@@ -35,7 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Editor sidebar now resizable. [@thomas-alrek](https://github.com/thomas-alrek)
 - Support for 32-bit Windows.
 - Support for localisation of the app (now accepting pull requests for all languages).
-- Norwegian localisation. [@thomas-alrek](https://github.com/thomas-alrek)
 - Chinese localisation. [@InchouRyu](https://github.com/InchouRyu)
 - Brazilian Portuguese localisation [@junkajii](https://github.com/junkajii)
 - Portuguese localisation [@toxworks](https://github.com/toxworks)
