@@ -68,9 +68,10 @@ jobs:
       - checkout
       - run: sudo yarn make:win32
       - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
-      - run: sudo mv ~/repo/out/make/squirrel.windows/x64 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel
-      - run: sudo cd ~/repo/out/make
-      - run: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel/*
+      - run: sudo mv ~/repo/out/make/squirrel.windows/ia32 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel
+      - run:
+        command: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel/*
+        working_directory: ~/repo/out/make
       - persist_to_workspace:
           root: ~/
           paths:
@@ -92,8 +93,9 @@ jobs:
       - run: sudo yarn make:win
       - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
       - run: sudo mv ~/repo/out/make/squirrel.windows/x64 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel
-      - run: sudo cd ~/repo/out/make
-      - run: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel/*
+      - run:
+          command: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel/*
+          working_directory: ~/repo/out/make
       - persist_to_workspace:
           root: ~/
           paths:
