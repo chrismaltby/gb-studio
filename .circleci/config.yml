@@ -68,6 +68,9 @@ jobs:
       - checkout
       - run: sudo yarn make:win32
       - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86.zip
+      - run: sudo mv ~/repo/out/make/squirrel.windows/x64 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel
+      - run: sudo cd ~/repo/out/make
+      - run: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86-squirrel/*
       - persist_to_workspace:
           root: ~/
           paths:
@@ -88,6 +91,9 @@ jobs:
       - checkout
       - run: sudo yarn make:win
       - run: sudo mv ~/repo/out/make/*.zip ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
+      - run: sudo mv ~/repo/out/make/squirrel.windows/x64 ~/repo/out/make/gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel
+      - run: sudo cd ~/repo/out/make
+      - run: sudo zip gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel.zip ./gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel/*
       - persist_to_workspace:
           root: ~/
           paths:
@@ -137,6 +143,7 @@ workflows:
             branches:
               only:
                 - develop
+                - master
       - "make:win32":
           requires:
             - checkout
@@ -144,6 +151,7 @@ workflows:
             branches:
               only:
                 - develop
+                - master
       - "make:win64":
           requires:
             - checkout
@@ -151,6 +159,7 @@ workflows:
             branches:
               only:
                 - develop
+                - master
       - "make:linux":
           requires:
             - checkout
@@ -158,6 +167,7 @@ workflows:
             branches:
               only:
                 - develop
+                - master
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -168,3 +178,4 @@ workflows:
             branches:
               only:
                 - develop
+                - master
