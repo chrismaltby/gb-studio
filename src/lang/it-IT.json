@@ -286,9 +286,9 @@
 
   "// 11": "Warnings -----------------------------------------------------",
 
-  "WARNING_BACKGROUND_TOO_SMALL": "Background is too small, must be at least 160px x 144px",
-  "WARNING_BACKGROUND_TOO_LARGE": "Background is too large, must be at most 256px x 256px",
-  "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "Background dimensions are not a multiple of 8",
+  "WARNING_BACKGROUND_TOO_SMALL": "Il Background è troppo piccolo, dovrebbe essere almeno di 160px x 144px",
+  "WARNING_BACKGROUND_TOO_LARGE": "Il Background è troppo grande, dovrebbe essere al massimo di 256px x 256px",
+  "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "Le dimensioni del Background non sono un multiplo di 8",
 
   "// 12": "Errors -------------------------------------------------------",
 
