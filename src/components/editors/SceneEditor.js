@@ -7,12 +7,12 @@ import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField, ToggleableFormField } from "../../components/library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
-import SidebarHeading from "./SidebarHeading";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
+import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 
 class SceneEditor extends Component {
   onEdit = key => e => {
@@ -58,121 +58,127 @@ class SceneEditor extends Component {
     }
 
     return (
-      <div>
-        <SidebarHeading
-          title={l10n("SCENE")}
-          buttons={
-            <DropdownButton small transparent right>
-              <MenuItem onClick={this.onCopy}>
-                {l10n("MENU_COPY_SCENE")}
-              </MenuItem>
-              {clipboardScene && (
-                <MenuItem onClick={this.onPaste}>
-                  {l10n("MENU_PASTE_SCENE")}
+      <Sidebar>
+        <SidebarColumn>
+          <SidebarHeading
+            title={l10n("SCENE")}
+            buttons={
+              <DropdownButton small transparent right>
+                <MenuItem onClick={this.onCopy}>
+                  {l10n("MENU_COPY_SCENE")}
                 </MenuItem>
-              )}
-              {clipboardActor && (
-                <MenuItem onClick={this.onPasteActor}>
-                  {l10n("MENU_PASTE_ACTOR")}
+                {clipboardScene && (
+                  <MenuItem onClick={this.onPaste}>
+                    {l10n("MENU_PASTE_SCENE")}
+                  </MenuItem>
+                )}
+                {clipboardActor && (
+                  <MenuItem onClick={this.onPasteActor}>
+                    {l10n("MENU_PASTE_ACTOR")}
+                  </MenuItem>
+                )}
+                {clipboardTrigger && (
+                  <MenuItem onClick={this.onPasteTrigger}>
+                    {l10n("MENU_PASTE_TRIGGER")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
+                <MenuItem onClick={this.onRemove}>
+                  {l10n("MENU_DELETE_SCENE")}
                 </MenuItem>
-              )}
-              {clipboardTrigger && (
-                <MenuItem onClick={this.onPasteTrigger}>
-                  {l10n("MENU_PASTE_TRIGGER")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={this.onRemove}>
-                {l10n("MENU_DELETE_SCENE")}
-              </MenuItem>
-            </DropdownButton>
-          }
-        />
-        <div>
-          <FormField>
-            <label htmlFor="sceneName">{l10n("FIELD_NAME")}</label>
-            <input
-              id="sceneName"
-              placeholder={"Scene " + (sceneIndex + 1)}
-              value={scene.name}
-              onChange={this.onEdit("name")}
-            />
-          </FormField>
-
-          <FormField>
-            <label htmlFor="sceneType">{l10n("FIELD_TYPE")}</label>
-            <select id="sceneType">
-              <option>Top Down 2D</option>
-            </select>
-          </FormField>
-
-          <FormField>
-            <label htmlFor="sceneImage">{l10n("FIELD_BACKGROUND")}</label>
-            <BackgroundSelect
-              id="sceneImage"
-              value={scene.backgroundId}
-              onChange={this.onEdit("backgroundId")}
-            />
-          </FormField>
-
-          <ToggleableFormField
-            htmlFor="sceneNotes"
-            closedLabel={l10n("FIELD_ADD_NOTES")}
-            label={l10n("FIELD_NOTES")}
-            open={scene.notes}
-          >
-            <textarea
-              id="sceneNotes"
-              value={scene.notes || ""}
-              placeholder={l10n("FIELD_NOTES")}
-              onChange={this.onEdit("notes")}
-              rows={3}
-            />
-          </ToggleableFormField>
-        </div>
-
-        {(scene.actors.length > 0 || scene.triggers.length > 0) && (
+              </DropdownButton>
+            }
+          />
           <div>
-            <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-            <ul>
-              {scene.actors.map((actor, index) => (
-                <li
-                  key={actor.id}
-                  onClick={() => this.props.selectActor(scene.id, actor.id)}
-                  className={cx({ Navigation__Error: index >= MAX_ACTORS })}
-                >
-                  <div className="EditorSidebar__Icon">
-                    <SpriteSheetCanvas
-                      spriteSheetId={actor.spriteSheetId}
-                      direction={actor.direction}
-                    />
-                  </div>
-                  {actor.name || "Actor " + (index + 1)}
-                </li>
-              ))}
-              {scene.triggers.map((trigger, index) => (
-                <li
-                  key={trigger.id}
-                  onClick={() => this.props.selectTrigger(scene.id, trigger.id)}
-                  className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
-                >
-                  <div className="EditorSidebar__Icon">
-                    <TriggerIcon />
-                  </div>
-                  {trigger.name || "Trigger " + (index + 1)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+            <FormField>
+              <label htmlFor="sceneName">{l10n("FIELD_NAME")}</label>
+              <input
+                id="sceneName"
+                placeholder={"Scene " + (sceneIndex + 1)}
+                value={scene.name}
+                onChange={this.onEdit("name")}
+              />
+            </FormField>
 
-        <ScriptEditor
-          value={scene.script}
-          title={l10n("SIDEBAR_SCENE_START_SCRIPT")}
-          type="scene"
-          onChange={this.onEdit("script")}
-        />
-      </div>
+            <FormField>
+              <label htmlFor="sceneType">{l10n("FIELD_TYPE")}</label>
+              <select id="sceneType">
+                <option>Top Down 2D</option>
+              </select>
+            </FormField>
+
+            <FormField>
+              <label htmlFor="sceneImage">{l10n("FIELD_BACKGROUND")}</label>
+              <BackgroundSelect
+                id="sceneImage"
+                value={scene.backgroundId}
+                onChange={this.onEdit("backgroundId")}
+              />
+            </FormField>
+
+            <ToggleableFormField
+              htmlFor="sceneNotes"
+              closedLabel={l10n("FIELD_ADD_NOTES")}
+              label={l10n("FIELD_NOTES")}
+              open={scene.notes}
+            >
+              <textarea
+                id="sceneNotes"
+                value={scene.notes || ""}
+                placeholder={l10n("FIELD_NOTES")}
+                onChange={this.onEdit("notes")}
+                rows={3}
+              />
+            </ToggleableFormField>
+          </div>
+
+          {(scene.actors.length > 0 || scene.triggers.length > 0) && (
+            <div>
+              <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
+              <ul>
+                {scene.actors.map((actor, index) => (
+                  <li
+                    key={actor.id}
+                    onClick={() => this.props.selectActor(scene.id, actor.id)}
+                    className={cx({ Navigation__Error: index >= MAX_ACTORS })}
+                  >
+                    <div className="EditorSidebar__Icon">
+                      <SpriteSheetCanvas
+                        spriteSheetId={actor.spriteSheetId}
+                        direction={actor.direction}
+                      />
+                    </div>
+                    {actor.name || "Actor " + (index + 1)}
+                  </li>
+                ))}
+                {scene.triggers.map((trigger, index) => (
+                  <li
+                    key={trigger.id}
+                    onClick={() =>
+                      this.props.selectTrigger(scene.id, trigger.id)
+                    }
+                    className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
+                  >
+                    <div className="EditorSidebar__Icon">
+                      <TriggerIcon />
+                    </div>
+                    {trigger.name || "Trigger " + (index + 1)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </SidebarColumn>
+
+        <SidebarColumn>
+          <ScriptEditor
+            value={scene.script}
+            title={l10n("SIDEBAR_SCENE_START_SCRIPT")}
+            type="scene"
+            onChange={this.onEdit("script")}
+          />
+        </SidebarColumn>
+      </Sidebar>
     );
   }
 }

@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { CloseIcon } from "../../components/library/Icons";
 import ScriptEditor from "../../components/script/ScriptEditor";
 import { FormField, ToggleableFormField } from "../../components/library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
-import SidebarHeading from "./SidebarHeading";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
@@ -38,112 +37,116 @@ class TriggerEditor extends Component {
     }
 
     return (
-      <div>
-        <SidebarHeading
-          title={l10n("TRIGGER")}
-          buttons={
-            <DropdownButton small transparent right>
-              <MenuItem onClick={this.onCopy}>
-                {l10n("MENU_COPY_TRIGGER")}
-              </MenuItem>
-              {clipboardTrigger && (
-                <MenuItem onClick={this.onPaste}>
-                  {l10n("MENU_PASTE_TRIGGER")}
+      <Sidebar>
+        <SidebarColumn>
+          <SidebarHeading
+            title={l10n("TRIGGER")}
+            buttons={
+              <DropdownButton small transparent right>
+                <MenuItem onClick={this.onCopy}>
+                  {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={this.onRemove}>
-                {l10n("MENU_DELETE_TRIGGER")}
-              </MenuItem>
-            </DropdownButton>
-          }
-        />
-        <div>
-          <FormField>
-            <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
-            <input
-              id="triggerName"
-              placeholder={"Trigger " + (index + 1)}
-              value={trigger.name || ""}
-              onChange={this.onEdit("name")}
-            />
-          </FormField>
+                {clipboardTrigger && (
+                  <MenuItem onClick={this.onPaste}>
+                    {l10n("MENU_PASTE_TRIGGER")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
+                <MenuItem onClick={this.onRemove}>
+                  {l10n("MENU_DELETE_TRIGGER")}
+                </MenuItem>
+              </DropdownButton>
+            }
+          />
+          <div>
+            <FormField>
+              <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
+              <input
+                id="triggerName"
+                placeholder={"Trigger " + (index + 1)}
+                value={trigger.name || ""}
+                onChange={this.onEdit("name")}
+              />
+            </FormField>
 
-          <FormField halfWidth>
-            <label htmlFor="triggerX">{l10n("FIELD_X")}</label>
-            <input
-              id="triggerX"
-              type="number"
-              value={trigger.x}
-              placeholder={0}
-              min={0}
-              max={31}
-              onChange={this.onEdit("x")}
-            />
-          </FormField>
+            <FormField halfWidth>
+              <label htmlFor="triggerX">{l10n("FIELD_X")}</label>
+              <input
+                id="triggerX"
+                type="number"
+                value={trigger.x}
+                placeholder={0}
+                min={0}
+                max={31}
+                onChange={this.onEdit("x")}
+              />
+            </FormField>
 
-          <FormField halfWidth>
-            <label htmlFor="triggerY">{l10n("FIELD_Y")}</label>
-            <input
-              id="triggerY"
-              type="number"
-              value={trigger.y}
-              placeholder={0}
-              min={0}
-              max={31}
-              onChange={this.onEdit("y")}
-            />
-          </FormField>
+            <FormField halfWidth>
+              <label htmlFor="triggerY">{l10n("FIELD_Y")}</label>
+              <input
+                id="triggerY"
+                type="number"
+                value={trigger.y}
+                placeholder={0}
+                min={0}
+                max={31}
+                onChange={this.onEdit("y")}
+              />
+            </FormField>
 
-          <FormField halfWidth>
-            <label htmlFor="triggerWidth">{l10n("FIELD_WIDTH")}</label>
-            <input
-              id="triggerWidth"
-              type="number"
-              value={trigger.width}
-              placeholder={1}
-              min={1}
-              max={32}
-              onChange={this.onEdit("width")}
-            />
-          </FormField>
+            <FormField halfWidth>
+              <label htmlFor="triggerWidth">{l10n("FIELD_WIDTH")}</label>
+              <input
+                id="triggerWidth"
+                type="number"
+                value={trigger.width}
+                placeholder={1}
+                min={1}
+                max={32}
+                onChange={this.onEdit("width")}
+              />
+            </FormField>
 
-          <FormField halfWidth>
-            <label htmlFor="triggerHeight">{l10n("FIELD_HEIGHT")}</label>
-            <input
-              id="triggerHeight"
-              type="number"
-              value={trigger.height}
-              placeholder={1}
-              min={1}
-              max={32}
-              onChange={this.onEdit("height")}
-            />
-          </FormField>
+            <FormField halfWidth>
+              <label htmlFor="triggerHeight">{l10n("FIELD_HEIGHT")}</label>
+              <input
+                id="triggerHeight"
+                type="number"
+                value={trigger.height}
+                placeholder={1}
+                min={1}
+                max={32}
+                onChange={this.onEdit("height")}
+              />
+            </FormField>
 
-          <ToggleableFormField
-            htmlFor="triggerNotes"
-            closedLabel={l10n("FIELD_ADD_NOTES")}
-            label={l10n("FIELD_NOTES")}
-            open={trigger.notes}
-          >
-            <textarea
-              id="triggerNotes"
-              value={trigger.notes || ""}
-              placeholder={l10n("FIELD_NOTES")}
-              onChange={this.onEdit("notes")}
-              rows={3}
-            />
-          </ToggleableFormField>
-        </div>
+            <ToggleableFormField
+              htmlFor="triggerNotes"
+              closedLabel={l10n("FIELD_ADD_NOTES")}
+              label={l10n("FIELD_NOTES")}
+              open={trigger.notes}
+            >
+              <textarea
+                id="triggerNotes"
+                value={trigger.notes || ""}
+                placeholder={l10n("FIELD_NOTES")}
+                onChange={this.onEdit("notes")}
+                rows={3}
+              />
+            </ToggleableFormField>
+          </div>
+        </SidebarColumn>
 
-        <ScriptEditor
-          value={trigger.script}
-          title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
-          type="trigger"
-          onChange={this.onEdit("script")}
-        />
-      </div>
+        <SidebarColumn>
+          <ScriptEditor
+            value={trigger.script}
+            title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
+            type="trigger"
+            onChange={this.onEdit("script")}
+          />
+        </SidebarColumn>
+      </Sidebar>
     );
   }
 }

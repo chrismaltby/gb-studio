@@ -12,7 +12,7 @@
   align-items: center;
 }
 
-.EditorSidebar > div > .SidebarHeading:first-child {
+.EditorSidebarColumn > .SidebarHeading:first-child {
   border-top: 0;
 }
 
