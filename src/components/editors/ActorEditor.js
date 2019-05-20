@@ -13,10 +13,11 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import { SceneIcon } from "../library/Icons";
 
 class ActorEditor extends Component {
   onEdit = key => e => {
-    this.props.editActor(this.props.scene, this.props.id, {
+    this.props.editActor(this.props.sceneId, this.props.id, {
       [key]: castEventValue(e)
     });
   };
@@ -27,11 +28,11 @@ class ActorEditor extends Component {
 
   onPaste = e => {
     const { clipboardActor } = this.props;
-    this.props.pasteActor(this.props.scene, clipboardActor);
+    this.props.pasteActor(this.props.sceneId, clipboardActor);
   };
 
   onRemove = e => {
-    this.props.removeActor(this.props.scene, this.props.id);
+    this.props.removeActor(this.props.sceneId, this.props.id);
   };
 
   render() {
@@ -39,6 +40,7 @@ class ActorEditor extends Component {
       index,
       actor,
       id,
+      scene,
       spriteSheet,
       sceneImage,
       clipboardActor
@@ -239,6 +241,16 @@ class ActorEditor extends Component {
               />
             </ToggleableFormField>
           </div>
+
+          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
+          <ul>
+            <li onClick={() => this.props.selectScene(scene.id)}>
+              <div className="EditorSidebar__Icon">
+                <SceneIcon />
+              </div>
+              {scene.name || "Scene " + (index + 1)}
+            </li>
+          </ul>
         </SidebarColumn>
 
         <SidebarColumn>
@@ -258,7 +270,7 @@ function mapStateToProps(state, props) {
   const { project } = state;
   const scene =
     project.present.scenes &&
-    project.present.scenes.find(scene => scene.id === props.scene);
+    project.present.scenes.find(scene => scene.id === props.sceneId);
   const sceneImage =
     scene &&
     project.present.backgrounds.find(
@@ -274,6 +286,7 @@ function mapStateToProps(state, props) {
   return {
     index,
     actor,
+    scene,
     spriteSheet,
     sceneImage,
     clipboardActor: state.clipboard.actor
@@ -284,7 +297,8 @@ const mapDispatchToProps = {
   editActor: actions.editActor,
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
-  pasteActor: actions.pasteActor
+  pasteActor: actions.pasteActor,
+  selectScene: actions.selectScene
 };
 
 export default connect(

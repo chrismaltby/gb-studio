@@ -12,13 +12,13 @@ class EditorSidebar extends Component {
       <TriggerEditor
         key={editor.entityId}
         id={editor.entityId}
-        scene={editor.scene}
+        sceneId={editor.scene}
       />
     ) : editor.type === "actors" ? (
       <ActorEditor
         key={editor.entityId}
         id={editor.entityId}
-        scene={editor.scene}
+        sceneId={editor.scene}
       />
     ) : editor.type === "scenes" ? (
       <SceneEditor key={editor.scene} id={editor.scene} />

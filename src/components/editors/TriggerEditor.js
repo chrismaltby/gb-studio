@@ -8,10 +8,11 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import { SceneIcon } from "../library/Icons";
 
 class TriggerEditor extends Component {
   onEdit = key => e => {
-    this.props.editTrigger(this.props.scene, this.props.id, {
+    this.props.editTrigger(this.props.sceneId, this.props.id, {
       [key]: castEventValue(e)
     });
   };
@@ -22,15 +23,15 @@ class TriggerEditor extends Component {
 
   onPaste = e => {
     const { clipboardTrigger } = this.props;
-    this.props.pasteTrigger(this.props.scene, clipboardTrigger);
+    this.props.pasteTrigger(this.props.sceneId, clipboardTrigger);
   };
 
   onRemove = e => {
-    this.props.removeTrigger(this.props.scene, this.props.id);
+    this.props.removeTrigger(this.props.sceneId, this.props.id);
   };
 
   render() {
-    const { index, trigger, id, clipboardTrigger } = this.props;
+    const { index, trigger, id, scene, clipboardTrigger } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -136,6 +137,16 @@ class TriggerEditor extends Component {
               />
             </ToggleableFormField>
           </div>
+
+          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
+          <ul>
+            <li onClick={() => this.props.selectScene(scene.id)}>
+              <div className="EditorSidebar__Icon">
+                <SceneIcon />
+              </div>
+              {scene.name || "Scene " + (index + 1)}
+            </li>
+          </ul>
         </SidebarColumn>
 
         <SidebarColumn>
@@ -153,13 +164,14 @@ class TriggerEditor extends Component {
 
 function mapStateToProps(state, props) {
   const scenes = state.project.present && state.project.present.scenes;
-  const scene = scenes && scenes.find(scene => scene.id === props.scene);
+  const scene = scenes && scenes.find(scene => scene.id === props.sceneId);
   const trigger = scene && scene.triggers.find(t => t.id === props.id);
   const index = scene && scene.triggers.indexOf(trigger);
 
   return {
     index,
     trigger,
+    scene,
     clipboardTrigger: state.clipboard.trigger
   };
 }
@@ -168,7 +180,8 @@ const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
-  pasteTrigger: actions.pasteTrigger
+  pasteTrigger: actions.pasteTrigger,
+  selectScene: actions.selectScene
 };
 
 export default connect(

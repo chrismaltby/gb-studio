@@ -128,3 +128,16 @@ export const TriangleIcon = () => (
     <path d="M24 22h-24l12-20z" />
   </svg>
 );
+
+export const SceneIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    xmlns="http://www.w3.org/2000/svg"
+    fillRule="evenodd"
+    clipRule="evenodd"
+    viewBox="0 0 24 24"
+  >
+    <path d="M24 5c0-2.761-2.238-5-5-5h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14z" />{" "}
+  </svg>
+);
