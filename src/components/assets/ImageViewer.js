@@ -48,10 +48,17 @@ class ImageViewer extends Component {
   };
 
   render() {
-    const { projectRoot, file, folder, zoomRatio, editor } = this.props;
+    const {
+      projectRoot,
+      file,
+      folder,
+      zoomRatio,
+      editor,
+      sidebarWidth
+    } = this.props;
     const warnings = this.getWarnings();
     return (
-      <div className="ImageViewer" style={{ right: editor.sidebarWidth }}>
+      <div className="ImageViewer" style={{ right: sidebarWidth }}>
         <div className="ImageViewer__Content">
           {file && (
             <div
@@ -70,7 +77,7 @@ class ImageViewer extends Component {
         {file && (
           <div
             className="ImageViewer__Edit"
-            style={{ right: editor.sidebarWidth + 10 }}
+            style={{ right: sidebarWidth + 10 }}
           >
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
@@ -108,7 +115,8 @@ function mapStateToProps(state) {
     folder,
     section,
     zoomRatio: (zoom || 100) / 100,
-    editor: state.editor
+    editor: state.editor,
+    sidebarWidth: state.project.present.settings.sidebarWidth
   };
 }
 

@@ -12,7 +12,8 @@ export default {
   project: {
     settings: {
       showCollisions: true,
-      showConnections: true
+      showConnections: true,
+      sidebarWidth: 300
     }
   },
   world: {},

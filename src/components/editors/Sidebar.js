@@ -78,10 +78,7 @@ class Sidebar extends Component {
 function mapStateToProps(state) {
   return {
     editor: state.editor,
-    width:
-      (state.project.present.settings &&
-        state.project.present.settings.sidebarWidth) ||
-      300
+    width: state.project.present.settings.sidebarWidth
   };
 }
 

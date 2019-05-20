@@ -59,12 +59,8 @@ class FilesSidebar extends Component {
       setNavigationId,
       onAdd,
       query,
-      editor
+      width
     } = this.props;
-
-    const editorSidebarStyle = {
-      width: editor.sidebarWidth
-    };
 
     return (
       <div className="FilesSidebarWrapper">
@@ -74,7 +70,7 @@ class FilesSidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div className="FilesSidebar" style={editorSidebarStyle}>
+        <div className="FilesSidebar" style={{ width }}>
           <div className="FilesSidebar__Search">
             <input
               autoFocus
@@ -107,7 +103,7 @@ class FilesSidebar extends Component {
 
 function mapStateToProps(state) {
   return {
-    editor: state.editor
+    width: state.project.present.settings.sidebarWidth
   };
 }
 

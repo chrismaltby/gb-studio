@@ -235,19 +235,19 @@ class World extends Component {
       tool,
       showConnections,
       zoomRatio,
-      editor
+      editor,
+      sidebarWidth
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
     const {
       sceneDragging,
       scene: dragScene,
       sceneDragX: dragX,
-      sceneDragY: dragY,
-      sidebarWidth
+      sceneDragY: dragY
     } = editor;
 
     const width = Math.max(
-      window.innerWidth - editor.sidebarWidth - 17,
+      window.innerWidth - sidebarWidth - 17,
       scenes && scenes.length > 0
         ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
             20
@@ -263,7 +263,7 @@ class World extends Component {
         : 100
     );
 
-    const worldStyle = { right: editor.sidebarWidth };
+    const worldStyle = { right: sidebarWidth };
 
     return (
       <div
@@ -337,7 +337,8 @@ function mapStateToProps(state) {
     clipboardScene: state.clipboard.scene,
     clipboardActor: state.clipboard.actor,
     clipboardTrigger: state.clipboard.trigger,
-    clipboardType: state.clipboard.last
+    clipboardType: state.clipboard.last,
+    sidebarWidth: state.project.present.settings.sidebarWidth
   };
 }
 
