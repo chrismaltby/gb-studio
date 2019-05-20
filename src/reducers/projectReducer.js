@@ -823,7 +823,7 @@ export default function project(state = initialState.project, action) {
         ...state,
         settings: {
           ...state.settings,
-          sidebarWidth: Math.max(200, action.width)
+          sidebarWidth: Math.min(740, Math.max(200, action.width))
         }
       };
     }
