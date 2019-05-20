@@ -33,7 +33,8 @@ import {
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_ACTOR_EVENT_DESTINATION_POSITION
+  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
+  SIDEBAR_RESIZE
 } from "../actions/actionTypes";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
 import deepmerge from "deepmerge";
@@ -817,6 +818,15 @@ export default function project(state = initialState.project, action) {
           ...action.values
         }
       };
+    case SIDEBAR_RESIZE: {
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          sidebarWidth: Math.max(200, action.width)
+        }
+      };
+    }
     case EDIT_PLAYER_START_AT:
       return {
         ...state,

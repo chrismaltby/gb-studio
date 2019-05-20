@@ -53,16 +53,12 @@ class Sidebar extends Component {
   };
 
   render() {
-    const { editor, children } = this.props;
-    const editorSidebarStyle = {
-      width: editor.sidebarWidth,
-      right: -editor.sidebarWidth
-    };
+    const { width, children } = this.props;
     return (
       <div
         className={cx("Sidebar", {
           "Sidebar--Open": true,
-          "Sidebar--TwoColumn": editor.sidebarWidth >= 600
+          "Sidebar--TwoColumn": width >= 500
         })}
       >
         <div
@@ -71,7 +67,7 @@ class Sidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div style={editorSidebarStyle} className="Sidebar__Content">
+        <div style={{ width }} className="Sidebar__Content">
           {children}
         </div>
       </div>
@@ -81,7 +77,11 @@ class Sidebar extends Component {
 
 function mapStateToProps(state) {
   return {
-    editor: state.editor
+    editor: state.editor,
+    width:
+      (state.project.present.settings &&
+        state.project.present.settings.sidebarWidth) ||
+      300
   };
 }
 
