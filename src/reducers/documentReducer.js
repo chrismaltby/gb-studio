@@ -30,8 +30,7 @@ import {
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_PLAYER_START_AT,
-  SIDEBAR_RESIZE
+  EDIT_PLAYER_START_AT
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -90,7 +89,6 @@ export default function modified(state = initialState.document, action) {
     case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
     case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
     case EDIT_PLAYER_START_AT:
-    case SIDEBAR_RESIZE:
       return {
         ...state,
         modified: true
