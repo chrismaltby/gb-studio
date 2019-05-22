@@ -1,17 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { ActionCreators } from "redux-undo";
+import { ipcRenderer } from "electron";
 import * as actions from "../actions";
 import configureStore from "../store/configureStore";
-import { ipcRenderer } from "electron";
 import watchProject from "../lib/project/watchProject";
+import App from "../components/app/App";
 import "../lib/electron/handleFullScreen";
-import { ActionCreators } from "redux-undo";
 import AppContainerDnD from "../components/app/AppContainerDnD";
-import settings from "electron-settings";
-import consts from "../consts";
-
-const { systemPreferences } = require("electron").remote;
+import "../lib/helpers/handleTheme";
 
 const store = configureStore();
 
@@ -34,8 +32,7 @@ watchProject(projectPath, {
 
 window.ActionCreators = ActionCreators;
 window.store = store;
-window.undo = function() {
-  console.log("undo");
+window.undo = () => {
   store.dispatch(ActionCreators.undo());
 };
 
@@ -56,16 +53,11 @@ ipcRenderer.on("section", (event, section) => {
 });
 
 ipcRenderer.on("updateSetting", (event, setting, value) => {
-  console.log("updateSetting", setting, value);
   store.dispatch(
     actions.editProjectSettings({
       [setting]: value
     })
   );
-});
-
-ipcRenderer.on("update-theme", (event, value) => {
-  updateMyAppTheme();
 });
 
 ipcRenderer.on("zoom", (event, zoomType) => {
@@ -104,7 +96,6 @@ store.subscribe(() => {
 });
 
 const render = () => {
-  const App = require("../components/app/App").default;
   ReactDOM.render(
     <Provider store={store}>
       <AppContainerDnD>
@@ -114,26 +105,6 @@ const render = () => {
     document.getElementById("App")
   );
 };
-
-function updateMyAppTheme() {
-  const darkMode =
-    settings.get("theme") === "dark" ||
-    (settings.get("theme") === undefined &&
-      systemPreferences.isDarkMode &&
-      systemPreferences.isDarkMode());
-  const themeStyle = document.getElementById("theme");
-  themeStyle.href = "../styles/" + (darkMode ? "theme-dark.css" : "theme.css");
-}
-
-if (systemPreferences.subscribeNotification) {
-  systemPreferences.subscribeNotification(
-    "AppleInterfaceThemeChangedNotification",
-    function theThemeHasChanged() {
-      updateMyAppTheme();
-    }
-  );
-}
-updateMyAppTheme();
 
 render();
 

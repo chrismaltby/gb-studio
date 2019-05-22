@@ -1,10 +1,10 @@
-import { ipcRenderer, shell } from "electron";
+import { ipcRenderer } from "electron";
+import open from "open";
 import {
   OPEN_HELP,
   OPEN_FOLDER,
   PROJECT_LOAD_SUCCESS
 } from "../actions/actionTypes";
-import open from "open";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {
@@ -15,6 +15,5 @@ export default store => next => action => {
     ipcRenderer.send("project-loaded", action.data);
   }
 
-  let result = next(action);
-  return result;
+  return next(action);
 };

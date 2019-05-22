@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import undoable, { distinctState } from "redux-undo";
+import undoable from "redux-undo";
 import tools from "./toolsReducer";
 import project from "./projectReducer";
 import editor from "./editorReducer";

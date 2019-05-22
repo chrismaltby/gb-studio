@@ -9,7 +9,6 @@ import {
 let modPlayer;
 
 function initMusic() {
-  console.log("Init music");
   modPlayer = new ScripTracker();
   modPlayer.on(ScripTracker.Events.playerReady, onSongLoaded);
   window.removeEventListener("click", initMusic);
@@ -22,7 +21,6 @@ window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
 function onSongLoaded(player) {
-  console.log("ONLOADED");
   player.play();
 }
 
@@ -40,7 +38,6 @@ function pause() {
 
 export default store => next => action => {
   if (action.type === PLAY_MUSIC) {
-    console.log(action);
     play(action.filename);
   } else if (action.type === PAUSE_MUSIC) {
     pause();
@@ -49,6 +46,5 @@ export default store => next => action => {
   } else if (action.type === SET_NAVIGATION_ID) {
     pause();
   }
-  let result = next(action);
-  return result;
+  return next(action);
 };

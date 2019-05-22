@@ -1,7 +1,8 @@
 const open = require("open");
+
 window.open = open;
 
-window.openUrl = function(url) {
+window.openUrl = url => {
   open(url);
   return false;
 };
