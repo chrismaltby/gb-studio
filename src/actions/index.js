@@ -1,10 +1,10 @@
+import uuid from "uuid/v4";
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
-import uuid from "uuid/v4";
 
 const asyncAction = async (
   dispatch,
@@ -18,7 +18,6 @@ const asyncAction = async (
     const res = await fn();
     dispatch({ ...res, type: successType });
   } catch (e) {
-    console.log(e);
     dispatch({ type: failureType });
   }
 };
@@ -37,7 +36,7 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
-      const data = await loadProjectData(path, { loadSprite, loadBackground });
+      const data = await loadProjectData(path);
       return {
         data,
         path
@@ -142,7 +141,7 @@ export const saveProject = () => async (dispatch, getState) => {
   if (!state.document.loaded || state.document.saving) {
     return;
   }
-  return asyncAction(
+  await asyncAction(
     dispatch,
     types.PROJECT_SAVE_REQUEST,
     types.PROJECT_SAVE_SUCCESS,
@@ -358,16 +357,15 @@ export const editDestinationPosition = (
       x,
       y
     };
-  } else {
-    return {
-      type: types.EDIT_SCENE_EVENT_DESTINATION_POSITION,
-      eventId,
-      sceneId,
-      destSceneId,
-      x,
-      y
-    };
   }
+  return {
+    type: types.EDIT_SCENE_EVENT_DESTINATION_POSITION,
+    eventId,
+    sceneId,
+    destSceneId,
+    x,
+    y
+  };
 };
 
 export const dragDestinationStop = () => {
