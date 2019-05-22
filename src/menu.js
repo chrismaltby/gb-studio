@@ -1,7 +1,6 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
-
-const { app, Menu } = require("electron");
+import { app, Menu, shell } from "electron";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -9,6 +8,7 @@ let menu;
 
 app.on("ready", async () => {
   // L10N requires app ready to get locale
+  // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
 
   const template = [
@@ -278,15 +278,13 @@ app.on("ready", async () => {
         {
           label: l10n("MENU_DOCUMENTATION"),
           click() {
-            require("electron").shell.openExternal(
-              "https://www.gbstudio.dev/docs/"
-            );
+            shell.openExternal("https://www.gbstudio.dev/docs/");
           }
         },
         {
           label: l10n("MENU_LEARN_MORE"),
           click() {
-            require("electron").shell.openExternal("https://www.gbstudio.dev");
+            shell.openExternal("https://www.gbstudio.dev");
           }
         }
       ]
@@ -388,7 +386,7 @@ const listeners = {
 
 const notifyListeners = (event, ...data) => {
   for (const fn of listeners[event]) {
-    fn.apply(null, data);
+    fn(...data);
   }
 };
 

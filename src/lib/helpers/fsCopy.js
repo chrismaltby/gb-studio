@@ -1,31 +1,25 @@
 import fs from "fs-extra";
 
 const copyDir = async (src, dest, options = {}) => {
-  const { overwrite = true } = options;
   const filePaths = await fs.readdir(src);
   await fs.ensureDir(dest);
-  for (const fileName of filePaths) {
-    // console.log(fileName);
+  filePaths.forEach(async fileName => {
     const fileStat = await fs.lstat(`${src}/${fileName}`);
-    // console.log(fileStat);
     if (fileStat.isDirectory()) {
-      // console.log("IS DIR");
       await copyDir(`${src}/${fileName}`, `${dest}/${fileName}`, options);
     } else {
       await copyFile(`${src}/${fileName}`, `${dest}/${fileName}`, options);
     }
-  }
-  // console.log("DONE COPY");
+  });
 };
 
 const copyFile = async (src, dest, options = {}) => {
   const { overwrite = true, errorOnExist = false, mode } = options;
   if (!overwrite) {
     try {
-      const destStat = await fs.lstat(dest);
-      // console.log("dest already existed", destStat);
+      await fs.lstat(dest);
       if (errorOnExist) {
-        throw new Error(`File already exists ${  destFile}`);
+        throw new Error(`File already exists ${dest}`);
       } else {
         return;
       }

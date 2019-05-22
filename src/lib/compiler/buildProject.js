@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import compile, { EVENT_DATA_COMPILE_PROGRESS } from "./compileData";
+import compile from "./compileData";
 import ejectBuild from "./ejectBuild";
 import makeBuild from "./makeBuild";
 import compileMusic from "./compileMusic";

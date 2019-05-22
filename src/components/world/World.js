@@ -8,8 +8,7 @@ import {
   DRAG_PLAYER,
   DRAG_DESTINATION,
   DRAG_ACTOR,
-  DRAG_TRIGGER,
-  SIDE
+  DRAG_TRIGGER
 } from "../../reducers/editorReducer";
 
 const MIDDLE_MOUSE = 2;
@@ -43,15 +42,6 @@ class World extends Component {
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("copy", this.onCopy);
-    window.removeEventListener("paste", this.onPaste);
-    window.removeEventListener("keydown", this.onKeyDown);
-    window.removeEventListener("click", this.onClick);
-    window.removeEventListener("mouseup", this.onMouseUp);
-    window.removeEventListener("mousewheel", this.onMouseWheel);
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
@@ -75,6 +65,15 @@ class World extends Component {
         left: newScrollX
       });
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("copy", this.onCopy);
+    window.removeEventListener("paste", this.onPaste);
+    window.removeEventListener("keydown", this.onKeyDown);
+    window.removeEventListener("click", this.onClick);
+    window.removeEventListener("mouseup", this.onMouseUp);
+    window.removeEventListener("mousewheel", this.onMouseWheel);
   }
 
   onCopy = e => {

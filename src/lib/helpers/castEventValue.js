@@ -6,10 +6,10 @@ export default event => {
     if (value && (!el.step || el.step === 1)) {
       value = Math.round(value);
     }
-    if (value && typeof el.min !== undefined && value < el.min) {
+    if (value && typeof el.min !== "undefined" && value < el.min) {
       value = el.min;
     }
-    if (value && typeof el.max !== undefined && value > el.max) {
+    if (value && typeof el.max !== "undefined" && value > el.max) {
       value = el.max;
     }
   }

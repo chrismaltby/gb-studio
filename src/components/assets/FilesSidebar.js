@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import { PlusIcon } from "../library/Icons";
@@ -10,7 +11,6 @@ class FilesSidebar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: "",
       dragging: false
     };
     this.dragHandler = React.createRef();
@@ -28,28 +28,30 @@ class FilesSidebar extends Component {
 
   onMouseDown = () => {
     this.setState({
-      ...this.state,
       dragging: true
     });
   };
 
   onMouseUp = () => {
-    if (this.state.dragging) {
+    const { dragging } = this.state;
+    if (dragging) {
       this.setState({
-        ...this.state,
         dragging: false
       });
     }
   };
 
   onMouseMove = event => {
-    if (this.state.dragging) {
-      this.props.resizeSidebar(window.innerWidth - event.pageX);
+    const { resizeSidebar } = this.props;
+    const { dragging } = this.state;
+    if (dragging) {
+      resizeSidebar(window.innerWidth - event.pageX);
     }
   };
 
   onSearch = e => {
-    this.props.onSearch(e.currentTarget.value);
+    const { onSearch } = this.props;
+    onSearch(e.currentTarget.value);
   };
 
   render() {
@@ -100,6 +102,29 @@ class FilesSidebar extends Component {
     );
   }
 }
+
+FilesSidebar.propTypes = {
+  resizeSidebar: PropTypes.func.isRequired,
+  setNavigationId: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
+  width: PropTypes.number,
+  files: PropTypes.arrayOf({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }).isRequired,
+  selectedFile: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }),
+  onAdd: PropTypes.func,
+  query: PropTypes.string.isRequired
+};
+
+FilesSidebar.defaultProps = {
+  width: 300,
+  selectedFile: {},
+  onAdd: undefined
+};
 
 function mapStateToProps(state) {
   return {

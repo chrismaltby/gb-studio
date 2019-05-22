@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import cx from "classnames";
 import { TriangleIcon } from "./Icons";
 import { MenuOverlay, Menu } from "./Menu";
@@ -13,6 +14,18 @@ const Button = ({ transparent, small, large, ...props }) => (
     {...props}
   />
 );
+
+Button.propTypes = {
+  transparent: PropTypes.bool,
+  small: PropTypes.bool,
+  large: PropTypes.bool
+};
+
+Button.defaultProps = {
+  transparent: false,
+  small: false,
+  large: false
+};
 
 export default Button;
 
@@ -37,14 +50,18 @@ export class DropdownButton extends Component {
   }
 
   toggleOpen = () => {
-    this.setState({ open: !this.state.open });
+    this.setState(prevState => {
+      return {
+        open: !prevState.open
+      };
+    });
   };
 
   render() {
     const {
       children,
       label,
-      showArrow = true,
+      showArrow,
       transparent,
       small,
       large,
@@ -78,3 +95,23 @@ export class DropdownButton extends Component {
     );
   }
 }
+
+DropdownButton.propTypes = {
+  children: PropTypes.node,
+  label: PropTypes.string,
+  showArrow: PropTypes.bool,
+  transparent: PropTypes.bool,
+  small: PropTypes.bool,
+  large: PropTypes.bool,
+  right: PropTypes.bool
+};
+
+DropdownButton.defaultProps = {
+  children: undefined,
+  label: "",
+  showArrow: true,
+  transparent: false,
+  small: false,
+  large: false,
+  right: false
+};

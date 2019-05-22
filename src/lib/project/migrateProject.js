@@ -1,12 +1,14 @@
+import indexById from "../helpers/indexById";
+
 const migrateProject = project => {
   let data = { ...project };
   let version = project._version || "1";
 
   // Migrate from 1 to 1.1.0
   if (version === "1") {
-    data = migrate_1_110_Scenes(data);
-    data = migrate_1_110_Actors(data);
-    data = migrate_1_110_Collisions(data);
+    data = migrateFrom1To110Scenes(data);
+    data = migrateFrom1To110Actors(data);
+    data = migrateFrom1To110Collisions(data);
     version = "1.1.0";
   }
 
@@ -20,7 +22,29 @@ const migrateProject = project => {
  * to match other static sprites. This function migrates all static actors
  * to the new format
  */
-const migrate_1_110_Actors = data => {
+const migrateFrom1To110Actors = data => {
+  const actorDefaultFrame = actor => {
+    const actorSprite = data.spriteSheets.find(
+      sprite => sprite.id === actor.spriteSheetId
+    );
+    const isActor = actorSprite.numFrames === 3 || actorSprite.numFrames === 6;
+    const framesPerDirection = actorSprite.numFrames === 6 ? 2 : 1;
+
+    if (actor.frame !== undefined) {
+      return actor.frame;
+    }
+    if (isActor) {
+      if (actor.direction === "down") {
+        return 0;
+      }
+      if (actor.direction === "up") {
+        return framesPerDirection;
+      }
+      return framesPerDirection * 2;
+    }
+    return 0;
+  };
+
   return {
     ...data,
     scenes: data.scenes.map(scene => {
@@ -31,26 +55,11 @@ const migrate_1_110_Actors = data => {
             actor.movementType === "static" ||
             actor.movementType === "Static"
           ) {
-            const actorSprite = data.spriteSheets.find(
-              sprite => sprite.id === actor.spriteSheetId
-            );
-            const isActor =
-              actorSprite.numFrames === 3 || actorSprite.numFrames === 6;
-            const framesPerDirection = actorSprite.numFrames === 6 ? 2 : 1;
             return {
               ...actor,
               direction: "down",
               movementType: "static",
-              frame:
-                actor.frame !== undefined
-                  ? actor.frame
-                  : isActor
-                  ? actor.direction === "down"
-                    ? 0
-                    : actor.direction === "up"
-                    ? framesPerDirection
-                    : framesPerDirection * 2
-                  : 0
+              frame: actorDefaultFrame(actor)
             };
           }
           return actor;
@@ -64,11 +73,8 @@ const migrate_1_110_Actors = data => {
  * In version 1 scenes would store collisions for tiles outside of their boundaries
  * this function removes the excess data allowing collsions to work again on old scenes
  */
-const migrate_1_110_Collisions = data => {
-  const backgroundLookup = data.backgrounds.reduce((memo, background) => {
-    memo[background.id] = background;
-    return memo;
-  }, {});
+const migrateFrom1To110Collisions = data => {
+  const backgroundLookup = indexById(data.backgrounds);
 
   return {
     ...data,
@@ -78,7 +84,7 @@ const migrate_1_110_Collisions = data => {
         ? Math.ceil((background.width * background.height) / 8)
         : 0;
       const collisions = scene.collisions || [];
-      if (!background || collisions.length != collisionsSize) {
+      if (!background || collisions.length !== collisionsSize) {
         return {
           ...scene,
           collisions: collisions.slice(0, collisionsSize)
@@ -95,11 +101,8 @@ const migrate_1_110_Collisions = data => {
  * dimensions of that instead. This function reads the current background images set in a
  * scene and stores the correct widths and heights
  */
-const migrate_1_110_Scenes = data => {
-  const backgroundLookup = data.backgrounds.reduce((memo, background) => {
-    memo[background.id] = background;
-    return memo;
-  }, {});
+const migrateFrom1To110Scenes = data => {
+  const backgroundLookup = indexById(data.backgrounds);
 
   return {
     ...data,

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import AppToolbar from "../../containers/AppToolbar";
@@ -56,6 +57,18 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  section: PropTypes.oneOf([
+    "world",
+    "backgrounds",
+    "sprites",
+    "ui",
+    "music",
+    "script",
+    "build"
+  ]).isRequired
+};
 
 function mapStateToProps(state) {
   return {

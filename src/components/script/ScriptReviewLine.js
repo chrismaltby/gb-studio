@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Textarea } from "../library/Forms";
 import trimlines, { textNumLines } from "../../lib/helpers/trimlines";
 import l10n from "../../lib/helpers/l10n";

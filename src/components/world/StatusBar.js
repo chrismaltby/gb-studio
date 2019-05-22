@@ -1,36 +1,35 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import l10n from "../../lib/helpers/l10n";
 
 class StatusBar extends Component {
   render() {
-    const { status } = this.props;
-    if (!status.sceneName) {
+    const { sceneName, x, y, actor } = this.props;
+    if (!sceneName) {
       return <div />;
     }
     return (
       <div className="StatusBar">
-        {status.sceneName !== undefined && (
+        {sceneName !== undefined && (
           <span>
-            {status.sceneName}
+            {sceneName}
             {": "}
           </span>
         )}
-        {status.x !== undefined && (
+        {x !== undefined && (
           <span>
-            X=
-            {status.x}{" "}
+            {l10n("FIELD_X")}={x}{" "}
           </span>
         )}
-        {status.y !== undefined && (
+        {y !== undefined && (
           <span>
-            Y=
-            {status.y}{" "}
+            {l10n("FIELD_Y")}={y}{" "}
           </span>
         )}
-        {status.actor !== undefined && (
+        {actor !== undefined && (
           <span>
-            Actor=
-            {status.actor}{" "}
+            {l10n("ACTOR")}={actor}{" "}
           </span>
         )}
       </div>
@@ -38,10 +37,22 @@ class StatusBar extends Component {
   }
 }
 
+StatusBar.propTypes = {
+  sceneName: PropTypes.string,
+  x: PropTypes.number,
+  y: PropTypes.number,
+  actor: PropTypes.string
+};
+
+StatusBar.defaultProps = {
+  sceneName: undefined,
+  x: undefined,
+  y: undefined,
+  actor: undefined
+};
+
 function mapStateToProps(state) {
-  return {
-    status: state.navigation.status
-  };
+  return state.navigation.status;
 }
 
 export default connect(mapStateToProps)(StatusBar);

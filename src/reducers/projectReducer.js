@@ -59,8 +59,10 @@ const sortRecent = (a, b) => {
 
 const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
   const backgroundLookup = backgrounds.reduce((memo, background) => {
-    memo[background.id] = background;
-    return memo;
+    return {
+      ...memo,
+      [background.id]: background
+    };
   }, {});
   return scene => {
     // Determine how large the collisions array should be based on the size of the
@@ -72,7 +74,7 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
     if (
       !background ||
       !scene.collisions ||
-      scene.collisions.length != collisionsSize
+      scene.collisions.length !== collisionsSize
     ) {
       return {
         ...scene,
@@ -85,7 +87,7 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
 
 export default function project(state = initialState.project, action) {
   switch (action.type) {
-    case PROJECT_LOAD_SUCCESS:
+    case PROJECT_LOAD_SUCCESS: {
       const newState = deepmerge(state, action.data);
       return {
         ...newState,
@@ -93,6 +95,7 @@ export default function project(state = initialState.project, action) {
           sceneClearCollisionsIfDimensionsChanged(newState.backgrounds)
         )
       };
+    }
     case SPRITE_REMOVE:
       return {
         ...state,
@@ -100,7 +103,7 @@ export default function project(state = initialState.project, action) {
           return spriteSheet.filename !== action.filename;
         })
       };
-    case SPRITE_LOAD_SUCCESS:
+    case SPRITE_LOAD_SUCCESS: {
       const currentSprite = state.spriteSheets.find(
         sprite => sprite.filename === action.data.filename
       );
@@ -118,6 +121,7 @@ export default function project(state = initialState.project, action) {
           )
           .sort(sortFilename)
       };
+    }
     case BACKGROUND_REMOVE:
       return {
         ...state,
@@ -125,7 +129,7 @@ export default function project(state = initialState.project, action) {
           return background.filename !== action.filename;
         })
       };
-    case BACKGROUND_LOAD_SUCCESS:
+    case BACKGROUND_LOAD_SUCCESS: {
       const currentBackground = state.backgrounds.find(
         background => background.filename === action.data.filename
       );
@@ -146,6 +150,7 @@ export default function project(state = initialState.project, action) {
           )
           .sort(sortFilename)
       };
+    }
     case MUSIC_REMOVE:
       return {
         ...state,
@@ -153,7 +158,7 @@ export default function project(state = initialState.project, action) {
           return music.filename !== action.filename;
         })
       };
-    case MUSIC_LOAD_SUCCESS:
+    case MUSIC_LOAD_SUCCESS: {
       const currentMusic = state.music.find(
         music => music.filename === action.data.filename
       );
@@ -171,7 +176,8 @@ export default function project(state = initialState.project, action) {
           )
           .sort(sortFilename)
       };
-    case ADD_SCENE:
+    }
+    case ADD_SCENE: {
       const defaultBackground =
         state.backgrounds &&
         state.backgrounds[0] &&
@@ -191,6 +197,7 @@ export default function project(state = initialState.project, action) {
           collisions: []
         })
       };
+    }
     case MOVE_SCENE:
       return {
         ...state,
@@ -223,11 +230,11 @@ export default function project(state = initialState.project, action) {
           let newBackground;
 
           if (action.values.backgroundId) {
-            const otherScene = state.scenes.find(otherScene => {
-              return otherScene.backgroundId === action.values.backgroundId;
+            const otherScene = state.scenes.find(s => {
+              return s.backgroundId === action.values.backgroundId;
             });
             const background = state.backgrounds.find(
-              background => background.id === action.values.backgroundId
+              b => b.id === action.values.backgroundId
             );
 
             if (otherScene) {
@@ -437,7 +444,7 @@ export default function project(state = initialState.project, action) {
                 }
 
                 if (newSprite && newSprite.numFrames <= actor.frame) {
-                  actor.frame = 0;
+                  patch.frame = 0;
                 }
               }
               // If static and cycling frames start from frame 1 (facing downwards)
@@ -513,11 +520,6 @@ export default function project(state = initialState.project, action) {
         })
       };
     case ADD_COLLISION_TILE: {
-      console.log("ADD_COLLISION_TILE", {
-        a: state,
-        b: state.scenes
-      });
-
       return {
         ...state,
         scenes: state.scenes.map(scene => {
@@ -527,9 +529,7 @@ export default function project(state = initialState.project, action) {
 
           const background =
             scene.backgroundId &&
-            state.backgrounds.find(
-              background => background.id === scene.backgroundId
-            );
+            state.backgrounds.find(b => b.id === scene.backgroundId);
           if (!background) {
             return scene;
           }
@@ -568,9 +568,7 @@ export default function project(state = initialState.project, action) {
 
           const background =
             scene.backgroundId &&
-            state.backgrounds.find(
-              background => background.id === scene.backgroundId
-            );
+            state.backgrounds.find(b => b.id === scene.backgroundId);
           if (!background) {
             return scene;
           }

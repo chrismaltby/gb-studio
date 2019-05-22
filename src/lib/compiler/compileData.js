@@ -1,10 +1,9 @@
-import { fstat, copy } from "fs-extra";
+import { copy } from "fs-extra";
 import uuid from "uuid/v4";
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
 import {
   walkScenesEvents,
   findSceneEvent,
-  walkEvents,
   walkEventsDepthFirst
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
@@ -18,7 +17,6 @@ import {
   EVENT_CHOICE,
   EVENT_SET_INPUT_SCRIPT
 } from "./eventTypes";
-import compileMusic from "./compileMusic";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import {
   combineMultipleChoiceText,

@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
-import { CloseIcon, TriangleIcon } from "../library/Icons";
+import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
-  EventNames,
   EventFields,
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
@@ -188,7 +187,7 @@ class ActionMini extends Component {
     const elseOpen = action.args && !action.args.__collapseElse;
 
     const eventName =
-      (action.args.__label ? `${action.args.__label  }: ` : "") +
+      (action.args.__label ? `${action.args.__label}: ` : "") +
       (l10n(command) || command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
@@ -217,8 +216,7 @@ class ActionMini extends Component {
                 })}
                 onClick={this.toggleOpen}
               >
-                <TriangleIcon />
-                {" "}
+                <TriangleIcon />{" "}
                 {action.args.__label ? (
                   <span>
                     {action.args.__label}
@@ -305,7 +303,7 @@ class ActionMini extends Component {
                       key={index}
                       id={action.id}
                       type={type}
-                      path={`${id  }_true_${  action.id}`}
+                      path={`${id}_true_${action.id}`}
                       action={action}
                       moveActions={moveActions}
                       onAdd={onAdd}
@@ -331,9 +329,7 @@ class ActionMini extends Component {
                 })}
                 onClick={this.toggleElseOpen}
               >
-                <TriangleIcon />
-                {' '}
-Else
+                <TriangleIcon /> Else
               </div>
             )}
             {action.false && elseOpen && (
@@ -343,7 +339,7 @@ Else
                     key={index}
                     id={action.id}
                     type={type}
-                    path={`${id  }_true_${  action.id}`}
+                    path={`${id}_true_${action.id}`}
                     action={action}
                     moveActions={moveActions}
                     onAdd={onAdd}
@@ -587,35 +583,34 @@ class ScriptEditor extends Component {
       <div>
         <SidebarHeading
           title={title}
-          buttons={(
+          buttons={
             <DropdownButton small transparent right>
               <MenuItem onClick={this.onCopyScript}>
                 {l10n("MENU_COPY_SCRIPT")}
               </MenuItem>
               {clipboardEvent && <MenuDivider />}
               {clipboardEvent && (
-              <MenuItem onClick={this.onReplaceScript}>
-                {l10n("MENU_REPLACE_SCRIPT")}
-              </MenuItem>
+                <MenuItem onClick={this.onReplaceScript}>
+                  {l10n("MENU_REPLACE_SCRIPT")}
+                </MenuItem>
               )}
               {clipboardEvent && value && value.length > 1 && (
-              <MenuItem onClick={this.onPasteScript(true)}>
-                {l10n("MENU_PASTE_SCRIPT_BEFORE")}
-              </MenuItem>
+                <MenuItem onClick={this.onPasteScript(true)}>
+                  {l10n("MENU_PASTE_SCRIPT_BEFORE")}
+                </MenuItem>
               )}
               {clipboardEvent && value && value.length > 1 && (
-              <MenuItem onClick={this.onPasteScript(false)}>
-                {l10n("MENU_PASTE_SCRIPT_AFTER")}
-              </MenuItem>
+                <MenuItem onClick={this.onPasteScript(false)}>
+                  {l10n("MENU_PASTE_SCRIPT_AFTER")}
+                </MenuItem>
               )}
               <MenuDivider />
               <MenuItem onClick={this.onRemoveScript}>
                 {l10n("MENU_DELETE_SCRIPT")}
               </MenuItem>
             </DropdownButton>
-)}
-        />
-        {" "}
+          }
+        />{" "}
         <div className="ScriptEditor">
           {value.map((action, index) => (
             <ActionMiniDnD
