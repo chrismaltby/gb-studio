@@ -1,5 +1,10 @@
 {
-  "extends": ["eslint-config-airbnb", "prettier"],
+  "extends": ["eslint-config-airbnb", "react-app", "prettier"],
+  "parser": "babel-eslint",
+  "plugins": ["babel"],
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
   "rules": {
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
@@ -7,5 +12,10 @@
     "linebreak-style": 0,
     "react/prefer-stateless-function": 0,
     "react/jsx-filename-extension": 0
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
   }
 }

@@ -8,7 +8,6 @@
   display: flex;
   flex-direction: row;
   background: var(--sidebar-bg-color);
-  font-size: 20px;
   padding: 0px 10px;
   padding-left: 40px;
   user-select: none;
@@ -20,6 +19,12 @@
   padding: 20px 30px;
   position: relative;
   overflow: hidden;
+  border: 0;
+  border-bottom: 4px solid transparent;
+  background: transparent;
+  color: var(--main-text-color);
+  text-align: left;
+  font-size: 20px;
 }
 
 .Splash__OpenButton {
@@ -43,6 +48,7 @@
   padding: 0px 20px;
   box-sizing: border-box;
   font-weight: normal;
+  height: 43px;
 }
 
 .Platform__win32 .Splash__OpenButton {
@@ -94,6 +100,15 @@
   color: #999;
   padding-bottom: 5px;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.Splash__FormGroup label input,
+.Splash__FormGroup label select {
+  margin-top: 5px;
+  flex-shrink: 0;
 }
 
 .Splash__FormGroup label.Splash__Label--Error {
@@ -128,10 +143,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  bottom: 24px;
+  bottom: 4px;
   right: 4px;
   border-radius: 4px;
-  height: 36px;
+  height: 33px;
   width: 40px;
   user-select: none;
   cursor: default;
@@ -161,6 +176,7 @@ input.Splash__InputButton {
   padding: 10px 20px;
   background-color: var(--highlight-color);
   color: #fff;
+  border: 0;
   border-radius: 4px;
   user-select: none;
 }
@@ -180,6 +196,10 @@ input.Splash__InputButton {
 .Splash__RecentProject {
   padding: 10px;
   margin: 0 -10px;
+  border: 0;
+  background: transparent;
+  color: var(--main-text-color);
+  text-align: left;
 }
 
 .Splash__RecentProject:hover {
@@ -199,4 +219,8 @@ input.Splash__InputButton {
   color: var(--highlight-color);
   text-decoration: underline;
   margin: 10px 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0;
 }

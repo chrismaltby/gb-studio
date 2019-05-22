@@ -1,21 +1,22 @@
+/* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
+import { ipcRenderer, remote } from "electron";
 import cx from "classnames";
+import Path from "path";
 import { DotsIcon } from "../library/Icons";
 import stripInvalidFilenameCharacters from "../../lib/helpers/stripInvalidFilenameCharacters";
 import createProject, {
   ERR_PROJECT_EXISTS
 } from "../../lib/project/createProject";
-import { ipcRenderer, remote } from "electron";
-import Path from "path";
 import l10n from "../../lib/helpers/l10n";
+import "../../lib/helpers/handleFirstTab";
 
 const getLastUsedPath = () => {
   const storedPath = localStorage.getItem("__lastUsedPath");
   if (storedPath) {
     return Path.normalize(storedPath);
-  } else {
-    return remote.app.getPath("documents");
   }
+  return remote.app.getPath("documents");
 };
 
 const setLastUsedPath = path => {
@@ -75,7 +76,7 @@ class Splash extends Component {
   };
 
   onChange = key => e => {
-    let value = e.currentTarget.value;
+    let { value } = e.currentTarget;
     if (key === "name") {
       value = stripInvalidFilenameCharacters(value);
     }
@@ -87,6 +88,11 @@ class Splash extends Component {
   };
 
   onKeyDown = e => {
+    const { tab } = this.state;
+    const { nodeName } = e.target;
+    if (tab !== "new" || (nodeName !== "INPUT" && nodeName !== "SELECT")) {
+      return;
+    }
     if (e.key === "Enter") {
       this.onSubmit(e);
     }
@@ -94,7 +100,7 @@ class Splash extends Component {
 
   onSelectFolder = e => {
     if (e.target.files && e.target.files[0]) {
-      const newPath = Path.normalize(e.target.files[0].path + "/");
+      const newPath = Path.normalize(`${e.target.files[0].path}/`);
       setLastUsedPath(newPath);
       this.setState({
         path: newPath
@@ -121,15 +127,17 @@ class Splash extends Component {
     const { name, target, path } = this.state;
 
     if (!name) {
-      return this.setState({
+      this.setState({
         nameError: l10n("ERROR_PLEASE_ENTER_PROJECT_NAME")
       });
+      return;
     }
 
     if (!path) {
-      return this.setState({
+      this.setState({
         pathError: l10n("ERROR_PLEASE_ENTER_PROJECT_PATH")
       });
+      return;
     }
 
     try {
@@ -142,8 +150,8 @@ class Splash extends Component {
         path
       });
       ipcRenderer.send("open-project", { projectPath });
-    } catch (e) {
-      if (e === ERR_PROJECT_EXISTS) {
+    } catch (err) {
+      if (err === ERR_PROJECT_EXISTS) {
         this.setState({
           nameError: l10n("ERROR_PROJECT_ALREADY_EXISTS"),
           creating: false
@@ -167,72 +175,97 @@ class Splash extends Component {
     return (
       <div className={cx("Splash", { "Splash--Blur": blur })}>
         <div className="Splash__Tabs">
-          <div
+          <button
             className={cx("Splash__Tab", {
               "Splash__Tab--Active": tab === "new"
             })}
             onClick={this.onSetTab("new")}
+            type="button"
           >
             {l10n("SPLASH_NEW")}
-          </div>
-          <div
+          </button>
+          <button
             className={cx("Splash__Tab", {
               "Splash__Tab--Active": tab === "recent"
             })}
             onClick={this.onSetTab("recent")}
+            type="button"
           >
             {l10n("SPLASH_RECENT")}
-          </div>
+          </button>
           <div className="Splash__FlexSpacer" />
-          <div className="Splash__Tab" onClick={this.onOpen}>
+          <button className="Splash__Tab" onClick={this.onOpen} type="button">
             <div className="Splash__OpenButton">{l10n("SPLASH_OPEN")}</div>
-          </div>
+          </button>
         </div>
 
         {tab === "new" ? (
           <div className="Splash__Content">
             <div className="Splash__FormGroup">
-              <label className={nameError ? "Splash__Label--Error" : ""}>
-                {nameError ? nameError : l10n("SPLASH_PROJECT_NAME")}
+              <label
+                className={nameError ? "Splash__Label--Error" : ""}
+                htmlFor="projectName"
+              >
+                {nameError || l10n("SPLASH_PROJECT_NAME")}
+                <input
+                  id="projectName"
+                  value={name}
+                  onChange={this.onChange("name")}
+                />
               </label>
-              <input value={name} onChange={this.onChange("name")} />
             </div>
 
             <div className="Splash__FormGroup">
-              <label>{l10n("SPLASH_PROJECT_TEMPLATE")}</label>
-              <select value={target} onChange={this.onChange("target")}>
-                <option value="gbhtml">{l10n("SPLASH_SAMPLE_PROJECT")}</option>
-                <option value="blank">{l10n("SPLASH_BLANK_PROJECT")}</option>
-              </select>
+              <label htmlFor="projectTemplate">
+                {l10n("SPLASH_PROJECT_TEMPLATE")}
+                <select
+                  id="projectTemplate"
+                  value={target}
+                  onChange={this.onChange("target")}
+                >
+                  <option value="gbhtml">
+                    {l10n("SPLASH_SAMPLE_PROJECT")}
+                  </option>
+                  <option value="blank">{l10n("SPLASH_BLANK_PROJECT")}</option>
+                </select>
+              </label>
             </div>
 
             <div className="Splash__FormGroup">
-              <label className={pathError ? "Splash__Label--Error" : ""}>
-                {pathError ? pathError : l10n("SPLASH_PATH")}
+              <label
+                htmlFor="projectPath"
+                className={pathError ? "Splash__Label--Error" : ""}
+              >
+                {pathError || l10n("SPLASH_PATH")}
+                <input
+                  id="projectPath"
+                  value={path}
+                  onChange={this.onChange("path")}
+                />
+                <div className="Splash__InputButton">
+                  <DotsIcon />
+                </div>
+                <input
+                  type="file"
+                  directory=""
+                  webkitdirectory=""
+                  className="Splash__InputButton"
+                  onChange={this.onSelectFolder}
+                />
               </label>
-              <input value={path} onChange={this.onChange("path")} />
-              <div className="Splash__InputButton">
-                <DotsIcon />
-              </div>
-              <input
-                type="file"
-                directory=""
-                webkitdirectory=""
-                className="Splash__InputButton"
-                onChange={this.onSelectFolder}
-              />
             </div>
             <div className="Splash__FlexSpacer" />
 
             <div>
-              <div
+              <button
                 className={cx("Splash__Button", {
                   "Splash__Button--Disabled": creating
                 })}
-                onClick={!creating && this.onSubmit}
+                onClick={!creating ? this.onSubmit : undefined}
+                type="button"
               >
                 {creating ? l10n("SPLASH_CREATING") : l10n("SPLASH_CREATE")}
-              </div>
+              </button>
             </div>
           </div>
         ) : (
@@ -240,10 +273,11 @@ class Splash extends Component {
             <div className="Splash__RecentProjects">
               <div className="Splash__Content">
                 {recentProjects.map((projectPath, index) => (
-                  <div
-                    key={index}
+                  <button
+                    key={projectPath}
                     className="Splash__RecentProject"
                     onClick={this.openRecent(projectPath)}
+                    type="button"
                   >
                     <div className="Splash__RecentProject__Name">
                       {Path.basename(projectPath)}
@@ -251,15 +285,16 @@ class Splash extends Component {
                     <div className="Splash__RecentProject__Path">
                       {Path.dirname(projectPath)}
                     </div>
-                  </div>
+                  </button>
                 ))}
                 {recentProjects.length > 0 ? (
-                  <div
+                  <button
                     className="Splash__ClearRecent"
                     onClick={this.clearRecent}
+                    type="button"
                   >
                     {l10n("SPLASH_CLEAR_RECENT")}
-                  </div>
+                  </button>
                 ) : (
                   <div>{l10n("SPLASH_NO_RECENT_PROJECTS")}</div>
                 )}

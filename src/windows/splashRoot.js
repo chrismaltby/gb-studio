@@ -3,15 +3,12 @@ import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import settings from "electron-settings";
 import { ipcRenderer } from "electron";
+import Splash from "../components/app/Splash";
 import "../lib/electron/handleFullScreen";
+
 const { systemPreferences } = require("electron").remote;
 
-ipcRenderer.on("update-theme", event => {
-  updateMyAppTheme();
-});
-
 const render = () => {
-  const Splash = require("../components/app/Splash").default;
   ReactDOM.render(
     <AppContainer>
       <Splash />
@@ -29,7 +26,8 @@ function updateMyAppTheme() {
       systemPreferences.isDarkMode &&
       systemPreferences.isDarkMode());
   const themeStyle = document.getElementById("theme");
-  themeStyle.href = "../styles/" + (darkMode ? "theme-dark.css" : "theme.css");
+  const cssFile = darkMode ? "theme-dark.css" : "theme.css";
+  themeStyle.href = `../styles/${cssFile}`;
 }
 
 if (systemPreferences.subscribeNotification) {
@@ -40,7 +38,12 @@ if (systemPreferences.subscribeNotification) {
     }
   );
 }
+
 updateMyAppTheme();
+
+ipcRenderer.on("update-theme", () => {
+  updateMyAppTheme();
+});
 
 if (module.hot) {
   module.hot.accept(render);
