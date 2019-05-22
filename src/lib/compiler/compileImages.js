@@ -4,10 +4,10 @@ const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
 
 const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
-  let tilesetLookups = [];
-  let tilesetStrings = [];
-  let tilesetIndexes = [];
-  let output = {
+  const tilesetLookups = [];
+  const tilesetStrings = [];
+  const tilesetIndexes = [];
+  const output = {
     tilesets: {},
     tilemaps: {},
     tilemapsTileset: {}
@@ -17,7 +17,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   for (let i = 0; i < imgs.length; i++) {
     const img = imgs[i];
     const tilesetLookup = await ggbgfx.imageToTilesetLookup(
-      projectPath + "/assets/backgrounds/" + img.filename
+      `${projectPath}/assets/backgrounds/${img.filename}`
     );
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
@@ -87,7 +87,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     if (tilesetLookups[i]) {
       await ggbgfx.tileLookupToImage(
         tilesetLookups[i],
-        tmpPath + "/tileset_" + i + ".png"
+        `${tmpPath}/tileset_${i}.png`
       );
 
       // output.tilesets[i] = ggbgfx.tilesLookupToTilesString(tilesetLookups[i]);
@@ -97,8 +97,8 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
   for (let i = 0; i < imgs.length; i++) {
     const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
-      projectPath + "/assets/backgrounds/" + imgs[i].filename,
-      tmpPath + "/tileset_" + tilesetIndexes[i] + ".png"
+      `${projectPath}/assets/backgrounds/${imgs[i].filename}`,
+      `${tmpPath}/tileset_${tilesetIndexes[i]}.png`
     );
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];

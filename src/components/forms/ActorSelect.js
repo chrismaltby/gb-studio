@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { connect } from "react-redux";
+import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 
 class ActorSelect extends Component {
   render() {
@@ -33,7 +33,7 @@ class ActorSelect extends Component {
           <option value="player">Player</option>
           {actors.map((actor, index) => (
             <option key={actor.id} value={actor.id}>
-              {actor.name || "Actor " + (index + 1)}
+              {actor.name || `Actor ${  index + 1}`}
             </option>
           ))}
         </select>

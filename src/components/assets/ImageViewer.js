@@ -32,7 +32,7 @@ class ImageViewer extends Component {
 
   getWarnings = () => {
     const { file, folder } = this.props;
-    let warnings = [];
+    const warnings = [];
     if (file && folder === "backgrounds") {
       if (file.imageWidth < 160 || file.imageHeight < 144) {
         warnings.push(l10n("WARNING_BACKGROUND_TOO_SMALL"));

@@ -17,6 +17,7 @@ class BankedData {
     this.data = [];
     this.currentBank = 0;
   }
+
   push(newData) {
     if (!Array.isArray(newData)) {
       throw BANKED_DATA_NOT_ARRAY;
@@ -32,10 +33,8 @@ class BankedData {
       };
       this.data[this.currentBank] = newData;
       return ptr;
-    } else if (
-      this.data[this.currentBank].length + newData.length >
-      this.bankSize
-    ) {
+    }
+    if (this.data[this.currentBank].length + newData.length > this.bankSize) {
       // Current bank is over size, make a new one
       this.currentBank++;
       const ptr = {
@@ -44,33 +43,36 @@ class BankedData {
       };
       this.data[this.currentBank] = newData;
       return ptr;
-    } else {
-      const ptr = {
-        bank: this.currentBank + this.bankOffset,
-        offset: this.data[this.currentBank].length
-      };
-      // Bank has room, append contents
-      this.data[this.currentBank] = [].concat(
-        this.data[this.currentBank],
-        newData
-      );
-      return ptr;
     }
+    const ptr = {
+      bank: this.currentBank + this.bankOffset,
+      offset: this.data[this.currentBank].length
+    };
+    // Bank has room, append contents
+    this.data[this.currentBank] = [].concat(
+      this.data[this.currentBank],
+      newData
+    );
+    return ptr;
   }
+
   dataWillFitCurrentBank(newData) {
     return (
       (this.data[this.currentBank] || []).length + newData.length <=
       this.bankSize
     );
   }
+
   currentBankSize() {
     return (this.data[this.currentBank] || []).length;
   }
+
   nextBank() {
     if (this.data[this.currentBank] && this.data[this.currentBank].length > 0) {
       this.currentBank++;
     }
   }
+
   romBanksNeeded() {
     const maxBank = this.data.length + this.bankOffset;
     const nearestPow2 = Math.pow(2, Math.ceil(Math.log(maxBank) / Math.log(2)));
@@ -79,9 +81,11 @@ class BankedData {
     }
     return nearestPow2;
   }
+
   exportRaw() {
     return this.data;
   }
+
   exportCData() {
     return this.data.map((data, index) => {
       const bank = index + this.bankOffset;
@@ -91,6 +95,7 @@ class BankedData {
       )}\n`;
     });
   }
+
   exportCHeader() {
     return `#ifndef BANKS_H\n#define BANKS_H\n\n${this.data
       .map((data, index) => {

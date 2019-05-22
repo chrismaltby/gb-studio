@@ -1,3 +1,5 @@
+import deepmerge from "deepmerge";
+import uuid from "uuid/v4";
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
@@ -37,10 +39,8 @@ import {
   SIDEBAR_RESIZE
 } from "../actions/actionTypes";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
-import deepmerge from "deepmerge";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
-import uuid from "uuid/v4";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -66,7 +66,7 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
     // Determine how large the collisions array should be based on the size of the
     // image, if image size has changed then clear the collisions array in scene
     const background = backgroundLookup[scene.backgroundId];
-    let collisionsSize = background
+    const collisionsSize = background
       ? Math.ceil((background.width * background.height) / 8)
       : 0;
     if (
@@ -180,7 +180,7 @@ export default function project(state = initialState.project, action) {
         ...state,
         scenes: [].concat(state.scenes, {
           id: action.id,
-          name: "Scene " + (state.scenes.length + 1),
+          name: `Scene ${state.scenes.length + 1}`,
           backgroundId: defaultBackground && defaultBackground.id,
           x: Math.max(MIN_SCENE_X, action.x),
           y: Math.max(MIN_SCENE_Y, action.y),
@@ -233,7 +233,7 @@ export default function project(state = initialState.project, action) {
             if (otherScene) {
               newCollisions = otherScene.collisions;
             } else {
-              let collisionsSize = Math.ceil(
+              const collisionsSize = Math.ceil(
                 (background.width * background.height) / 8
               );
               newCollisions = [];
@@ -412,7 +412,7 @@ export default function project(state = initialState.project, action) {
               if (actor.id !== action.id) {
                 return actor;
               }
-              let patch = { ...action.values };
+              const patch = { ...action.values };
 
               if (patch.spriteSheetId) {
                 const newSprite = state.spriteSheets.find(
@@ -534,7 +534,7 @@ export default function project(state = initialState.project, action) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil(
+          const collisionsSize = Math.ceil(
             (background.width * background.height) / 8
           );
           const collisions = scene.collisions.slice(0, collisionsSize);
@@ -575,7 +575,7 @@ export default function project(state = initialState.project, action) {
             return scene;
           }
 
-          let collisionsSize = Math.ceil(
+          const collisionsSize = Math.ceil(
             (background.width * background.height) / 8
           );
           const collisions = scene.collisions.slice(0, collisionsSize);

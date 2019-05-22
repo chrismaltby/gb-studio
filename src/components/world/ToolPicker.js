@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import { connect } from "react-redux";
 import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "../library/Icons";
 import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
-import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
 import * as actions from "../../actions";
 
@@ -73,7 +73,7 @@ class ToolPicker extends Component {
         <div
           onClick={this.setTool("select")}
           className={cx("ToolPicker__Item", {
-            "ToolPicker__Item--Selected": "select" === selected
+            "ToolPicker__Item--Selected": selected === "select"
           })}
           title={`${l10n("TOOL_SELECT_LABEL")} (v)`}
         >
@@ -120,7 +120,7 @@ class ToolPicker extends Component {
         <div
           onClick={this.setTool("eraser")}
           className={cx("ToolPicker__Item", {
-            "ToolPicker__Item--Selected": "eraser" === selected
+            "ToolPicker__Item--Selected": selected === "eraser"
           })}
           title={`${l10n("TOOL_ERASER_LABEL")} (e)`}
         >
@@ -129,7 +129,7 @@ class ToolPicker extends Component {
         <div
           onClick={this.setTool("collisions")}
           className={cx("ToolPicker__Item", {
-            "ToolPicker__Item--Selected": "collisions" === selected
+            "ToolPicker__Item--Selected": selected === "collisions"
           })}
           title="Collisions (c)"
           title={`${l10n("TOOL_COLLISIONS_LABEL")} (c)`}

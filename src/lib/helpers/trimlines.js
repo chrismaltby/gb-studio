@@ -17,16 +17,16 @@ const trimlines = string => {
         .lastIndexOf(" ");
       if (lastBreakSymbol > -1) {
         return (
-          line.substring(0, lastBreakSymbol) +
-          "\n" +
+          `${line.substring(0, lastBreakSymbol) 
+          }\n${ 
           line.substring(
             lastBreakSymbol + 1,
             lastBreakSymbol + CHARS_PER_LINE + 1
-          )
+          )}`
         );
-      } else {
+      } 
         return line.substring(0, CHARS_PER_LINE);
-      }
+      
     })
     .join("\n")
     .split("\n")

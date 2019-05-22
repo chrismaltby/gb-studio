@@ -74,7 +74,7 @@ const migrate_1_110_Collisions = data => {
     ...data,
     scenes: data.scenes.map(scene => {
       const background = backgroundLookup[scene.backgroundId];
-      let collisionsSize = background
+      const collisionsSize = background
         ? Math.ceil((background.width * background.height) / 8)
         : 0;
       const collisions = scene.collisions || [];

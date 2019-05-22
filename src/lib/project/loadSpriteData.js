@@ -30,7 +30,7 @@ const loadSpriteData = async filename => {
 };
 
 const loadAllSpriteData = async projectRoot => {
-  const spritePaths = await globAsync(projectRoot + "/assets/sprites/**/*.png");
+  const spritePaths = await globAsync(`${projectRoot}/assets/sprites/**/*.png`);
   const spriteData = await Promise.all(spritePaths.map(loadSpriteData));
   return spriteData;
 };

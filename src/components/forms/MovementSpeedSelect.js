@@ -8,13 +8,13 @@ class MovementSpeedSelect extends Component {
     const { allowNone, dispatch, ...rest } = this.props;
     return (
       <select {...rest}>
-        <option value={0}>{l10n("FIELD_SPEED")} ½ ({l10n("FIELD_SLOWER")})</option>
+        <option value={0}>
+          {l10n("FIELD_SPEED")} ½ ({l10n("FIELD_SLOWER")})
+        </option>
         {speeds.map((speed, index) => (
           <option key={speed} value={speed}>
             {l10n("FIELD_SPEED")} {speed}{" "}
-            {speed === 4
-              ? `(${l10n("FIELD_FASTER")})`
-              : ""}
+            {speed === 4 ? `(${l10n("FIELD_FASTER")})` : ""}
           </option>
         ))}
       </select>

@@ -3,7 +3,7 @@ import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
 import { walkEvents } from "../../lib/helpers/eventSystem";
 
 const scriptMapTransition = script => {
-  let sceneTransitions = [];
+  const sceneTransitions = [];
   walkEvents(script, action => {
     if (action.command === EVENT_SWITCH_SCENE) {
       sceneTransitions.push(action);

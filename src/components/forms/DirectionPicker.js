@@ -41,7 +41,7 @@ class DirectionPicker extends Component {
             <div
               className={cx(
                 "DirectionPicker__Button",
-                "DirectionPicker__Button--" + direction.name,
+                `DirectionPicker__Button--${direction.name}`,
                 {
                   "DirectionPicker__Button--Active": value === direction.key
                 }

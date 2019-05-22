@@ -1,3 +1,5 @@
+import { fstat, copy } from "fs-extra";
+import uuid from "uuid/v4";
 import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
 import {
   walkScenesEvents,
@@ -17,7 +19,6 @@ import {
   EVENT_SET_INPUT_SCRIPT
 } from "./eventTypes";
 import compileMusic from "./compileMusic";
-import { fstat, copy } from "fs-extra";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import {
   combineMultipleChoiceText,
@@ -27,7 +28,6 @@ import {
   animSpeedDec
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
-import uuid from "uuid/v4";
 
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
@@ -94,7 +94,7 @@ const compile = async (
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map(scene => {
-    let subScripts = {};
+    const subScripts = {};
     const bankEntitySubScripts = entityType => (entity, entityIndex) => {
       walkEventsDepthFirst(entity.script, cmd => {
         if (cmd.command === EVENT_SET_INPUT_SCRIPT) {
@@ -271,75 +271,65 @@ const compile = async (
     startDirectionValue == 8 ? -1 : startDirectionValue == 1 ? 1 : 0;
 
   output[`data_ptrs.h`] =
-    `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-    `typedef struct _BANK_PTR {\n` +
-    `  unsigned char bank;\n` +
-    `  unsigned int offset;\n` +
-    `} BANK_PTR;\n\n` +
-    `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
-    `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
-    `#define START_SCENE_X ${decHex(startX || 0)}\n` +
-    `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
-    `#define START_SCENE_DIR_X ${startDirectionX}\n` +
-    `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
-    `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
-    `#define START_PLAYER_MOVE_SPEED ${moveSpeedDec(startMoveSpeed)}\n` +
-    `#define START_PLAYER_ANIM_SPEED ${animSpeedDec(startAnimSpeed)}\n` +
-    `#define FONT_BANK ${fontImagePtr.bank}\n` +
-    `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
-    `#define FRAME_BANK ${frameImagePtr.bank}\n` +
-    `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
-    `#define CURSOR_BANK ${cursorImagePtr.bank}\n` +
-    `#define CURSOR_BANK_OFFSET ${cursorImagePtr.offset}\n` +
-    `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
-    `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
-    `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
-    `\n` +
-    Object.keys(dataPtrs)
+    `${`#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
+      `typedef struct _BANK_PTR {\n` +
+      `  unsigned char bank;\n` +
+      `  unsigned int offset;\n` +
+      `} BANK_PTR;\n\n` +
+      `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
+      `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
+      `#define START_SCENE_X ${decHex(startX || 0)}\n` +
+      `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
+      `#define START_SCENE_DIR_X ${startDirectionX}\n` +
+      `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
+      `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
+      `#define START_PLAYER_MOVE_SPEED ${moveSpeedDec(startMoveSpeed)}\n` +
+      `#define START_PLAYER_ANIM_SPEED ${animSpeedDec(startAnimSpeed)}\n` +
+      `#define FONT_BANK ${fontImagePtr.bank}\n` +
+      `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
+      `#define FRAME_BANK ${frameImagePtr.bank}\n` +
+      `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
+      `#define CURSOR_BANK ${cursorImagePtr.bank}\n` +
+      `#define CURSOR_BANK_OFFSET ${cursorImagePtr.offset}\n` +
+      `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
+      `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
+      `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
+      `\n`}${Object.keys(dataPtrs)
       .map(name => {
         return `extern const BANK_PTR ${name}[];`;
       })
-      .join(`\n`) +
-    `\n` +
+      .join(`\n`)}\n` +
     `extern const unsigned char (*bank_data_ptrs[])[];\n` +
     `extern const unsigned char * music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
     `extern unsigned char script_variables[${precompiled.variables.length +
-      1}];\n` +
-    music
+      1}];\n${music
       .map((track, index) => {
         return `extern const unsigned char * ${track.dataName}_Data[];`;
       })
-      .join(`\n`) +
-    `\n\n#endif\n`;
+      .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
-    `#pragma bank=${DATA_PTRS_BANK}\n` +
-    `#include "data_ptrs.h"\n` +
-    `#include "banks.h"\n\n` +
-    `const unsigned char (*bank_data_ptrs[])[] = {\n` +
-    bankDataPtrs.join(",") +
-    "\n};\n\n" +
-    Object.keys(dataPtrs)
+    `${`#pragma bank=${DATA_PTRS_BANK}\n` +
+      `#include "data_ptrs.h"\n` +
+      `#include "banks.h"\n\n` +
+      `const unsigned char (*bank_data_ptrs[])[] = {\n`}${bankDataPtrs.join(
+      ","
+    )}\n};\n\n${Object.keys(dataPtrs)
       .map(name => {
-        return (
-          `const BANK_PTR ${name}[] = {\n` +
-          dataPtrs[name]
-            .map(dataPtr => {
-              return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
-            })
-            .join(",") +
-          `\n};\n`
-        );
+        return `const BANK_PTR ${name}[] = {\n${dataPtrs[name]
+          .map(dataPtr => {
+            return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
+          })
+          .join(",")}\n};\n`;
       })
-      .join(`\n`) +
-    `\n` +
-    `const unsigned char * music_tracks[] = {\n` +
-    (music.map(track => track.dataName + "_Data").join(", ") || "0") +
-    ", 0" +
+      .join(`\n`)}\n` +
+    `const unsigned char * music_tracks[] = {\n${music
+      .map(track => `${track.dataName}_Data`)
+      .join(", ") || "0"}, 0` +
     `\n};\n\n` +
-    `const unsigned char music_banks[] = {\n` +
-    (music.map(track => track.bank).join(", ") || "0") +
-    ", 0" +
+    `const unsigned char music_banks[] = {\n${music
+      .map(track => track.bank)
+      .join(", ") || "0"}, 0` +
     `\n};\n\n` +
     `unsigned char script_variables[${precompiled.variables.length +
       1}] = { 0 };\n`;
@@ -356,7 +346,7 @@ const compile = async (
   };
 };
 
-//#region precompile
+// #region precompile
 
 const precompile = async (
   projectData,
@@ -440,7 +430,7 @@ const precompile = async (
 };
 
 export const precompileVariables = scenes => {
-  let variables = [];
+  const variables = [];
   for (let i = 0; i <= 99; i++) {
     variables.push(String(i));
   }
@@ -472,7 +462,7 @@ export const precompileVariables = scenes => {
 };
 
 export const precompileStrings = scenes => {
-  let strings = [];
+  const strings = [];
   walkScenesEvents(scenes, cmd => {
     if (
       cmd.args &&
@@ -487,10 +477,8 @@ export const precompileStrings = scenes => {
             strings.push(rowText);
           }
         }
-      } else {
-        if (strings.indexOf(text) === -1) {
-          strings.push(text);
-        }
+      } else if (strings.indexOf(text) === -1) {
+        strings.push(text);
       }
     } else if (cmd.command === EVENT_CHOICE) {
       const text = combineMultipleChoiceText(cmd.args);
@@ -512,7 +500,7 @@ export const precompileBackgrounds = async (
   tmpPath,
   { warnings } = {}
 ) => {
-  let eventImageIds = [];
+  const eventImageIds = [];
   walkScenesEvents(scenes, cmd => {
     if (cmd.args && cmd.args.hasOwnProperty("backgroundId")) {
       eventImageIds.push(cmd.args.backgroundId);
@@ -532,8 +520,8 @@ export const precompileBackgrounds = async (
       warnings
     }
   );
-  let usedTilesets = [];
-  let usedTilesetLookup = {};
+  const usedTilesets = [];
+  const usedTilesetLookup = {};
   Object.keys(backgroundData.tilesets).forEach(tileKey => {
     usedTilesetLookup[tileKey] = usedTilesets.length;
     usedTilesets.push(backgroundData.tilesets[tileKey]);
@@ -626,7 +614,7 @@ export const precompileSprites = async (
 };
 
 export const precompileMusic = (scenes, music) => {
-  let usedMusicIds = [];
+  const usedMusicIds = [];
   walkScenesEvents(scenes, cmd => {
     if (
       cmd.args &&
@@ -646,7 +634,7 @@ export const precompileMusic = (scenes, music) => {
     .map((track, index) => {
       return {
         ...track,
-        dataName: "music_" + uuid().replace(/-.*/, "") + index
+        dataName: `music_${uuid().replace(/-.*/, "")}${index}`
       };
     });
   return { usedMusic };
@@ -723,7 +711,7 @@ export const precompileScenes = (
 
 export const compileActors = (actors, { eventPtrs, sprites }) => {
   // console.log("ACTOR", actor, eventsPtr);
-  let mapSpritesLookup = {};
+  const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
 
   // console.log({ sprites, eventPtrs });
@@ -802,7 +790,7 @@ export const compileTriggers = (triggers, { eventPtrs }) => {
   );
 };
 
-//#endregion
+// #endregion
 
 const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
   const projectPath = `${projectRoot}/${relativePath}`;

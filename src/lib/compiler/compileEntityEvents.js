@@ -574,31 +574,31 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(range);
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
-      let speed = input[i].args.speed || 1;
-      let speedFlag = (1 << speed) - 1;
+      const speed = input[i].args.speed || 1;
+      const speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_FADE_OUT) {
       output.push(CMD_LOOKUP.FADE_OUT);
-      let speed = input[i].args.speed || 1;
-      let speedFlag = (1 << speed) - 1;
+      const speed = input[i].args.speed || 1;
+      const speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_CAMERA_MOVE_TO) {
       output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
       // Limit camera move to be within scene bounds
-      let camX = Math.min(input[i].args.x, scene.width - 20);
-      let camY = Math.min(input[i].args.y, scene.height - 18);
+      const camX = Math.min(input[i].args.x, scene.width - 20);
+      const camY = Math.min(input[i].args.y, scene.height - 18);
       output.push(camX);
       output.push(camY);
-      let speed = input[i].args.speed || 0;
-      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      const speed = input[i].args.speed || 0;
+      const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
       output.push(speedFlag);
     } else if (command === EVENT_CAMERA_LOCK) {
       output.push(CMD_LOOKUP.CAMERA_LOCK);
-      let speed = input[i].args.speed || 0;
-      let speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+      const speed = input[i].args.speed || 0;
+      const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
       output.push(speedFlag);
     } else if (command === EVENT_START_BATTLE) {
-      let encounterIndex = parseInt(input[i].args.encounter, 10);
+      const encounterIndex = parseInt(input[i].args.encounter, 10);
       if (encounterIndex > -1) {
         output.push(CMD_LOOKUP.START_BATTLE);
         output.push(encounterIndex);
@@ -704,7 +704,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       let seconds =
         typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
       while (seconds > 0) {
-        let time = Math.min(seconds, 1);
+        const time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.WAIT);
         output.push(Math.ceil(60 * time));
         seconds -= time;
@@ -713,7 +713,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       let seconds =
         typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
       while (seconds > 0) {
-        let time = Math.min(seconds, 1);
+        const time = Math.min(seconds, 1);
         output.push(CMD_LOOKUP.CAMERA_SHAKE);
         output.push(Math.ceil(60 * time));
         seconds -= time;
@@ -724,7 +724,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(input[i].args.emoteId || 0);
     } else if (command === EVENT_SWITCH_SCENE) {
-      let sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
+      const sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
       if (sceneIndex > -1) {
         output.push(CMD_LOOKUP.SWITCH_SCENE);
         output.push(hi(sceneIndex));
@@ -790,7 +790,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-      let speed = input[i].args.speed || 0;
+      const speed = input[i].args.speed || 0;
       output.push(speed);
     } else if (command === EVENT_AWAIT_INPUT) {
       output.push(CMD_LOOKUP.AWAIT_INPUT);
@@ -851,7 +851,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       });
     }
 
-    for (var oi = 0; oi < output.length; oi++) {
+    for (let oi = 0; oi < output.length; oi++) {
       if (output[oi] < 0) {
         console.log("OUTPUT FAILED");
         console.log(command);

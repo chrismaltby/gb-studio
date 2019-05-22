@@ -169,7 +169,7 @@ const filterEvents = (data, id) => {
 const findEvent = (data, id) => {
   let r = null;
   for (let i = 0; i < data.length; i++) {
-    let o = data[i];
+    const o = data[i];
     if (o.id === id) {
       return o;
     }

@@ -17,7 +17,7 @@ class VariableSelect extends Component {
     const { variableNames } = this.props;
     return variableNames[index]
       ? variableNames[index]
-      : "Variable " + String(index).padStart(3, "0");
+      : `Variable ${String(index).padStart(3, "0")}`;
   };
 
   render() {
@@ -31,7 +31,7 @@ class VariableSelect extends Component {
       >
         {variables.map((variable, index) => (
           <option key={index} value={index}>
-            {index < 100 && "$" + String(index).padStart(2, "0") + "$ : "}
+            {index < 100 && `$${String(index).padStart(2, "0")}$ : `}
             {this.variableName(index)}
           </option>
         ))}

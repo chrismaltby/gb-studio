@@ -6,9 +6,9 @@ import installExtension, {
 import { enableLiveReload, addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
-import menu from "./menu";
 import Path from "path";
 import { stat } from "fs-extra";
+import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 
 // Stop app launching during squirrel install
@@ -65,8 +65,8 @@ const createSplash = async (forceNew = false) => {
   splashWindow.webContents.on("did-finish-load", function() {
     setTimeout(function() {
       splashWindow.show();
-      if(!hasCheckedForUpdate) {
-        hasCheckedForUpdate = true; 
+      if (!hasCheckedForUpdate) {
+        hasCheckedForUpdate = true;
         checkForUpdate();
       }
     }, 40);
@@ -78,7 +78,7 @@ const createSplash = async (forceNew = false) => {
 };
 
 const createWindow = async projectPath => {
-  let mainWindowState = windowStateKeeper({
+  const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800
   });
@@ -294,7 +294,7 @@ ipcMain.on("project-loaded", (event, project) => {
   const { showCollisions, showConnections, cartType = "1B" } = project.settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnections").checked = showConnections;
-  menu.ref().getMenuItemById("cart" + cartType).checked = true;
+  menu.ref().getMenuItemById(`cart${cartType}`).checked = true;
 });
 
 menu.on("new", async () => {
@@ -410,9 +410,9 @@ const openProject = async projectPath => {
   );
   app.addRecentDocument(projectPath);
 
-  let oldMainWindow = mainWindow;
+  const oldMainWindow = mainWindow;
   await createWindow(projectPath);
-  let newMainWindow = mainWindow;
+  const newMainWindow = mainWindow;
   if (splashWindow) {
     splashWindow.close();
   }

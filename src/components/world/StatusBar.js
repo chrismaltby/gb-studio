@@ -9,23 +9,30 @@ class StatusBar extends Component {
     }
     return (
       <div className="StatusBar">
-        {status.sceneName !== undefined &&
+        {status.sceneName !== undefined && (
           <span>
             {status.sceneName}
             {": "}
-          </span>}
-        {status.x !== undefined &&
+          </span>
+        )}
+        {status.x !== undefined && (
           <span>
-            X={status.x}{" "}
-          </span>}
-        {status.y !== undefined &&
+            X=
+            {status.x}{" "}
+          </span>
+        )}
+        {status.y !== undefined && (
           <span>
-            Y={status.y}{" "}
-          </span>}
-        {status.actor !== undefined &&
+            Y=
+            {status.y}{" "}
+          </span>
+        )}
+        {status.actor !== undefined && (
           <span>
-            Actor={status.actor}{" "}
-          </span>}
+            Actor=
+            {status.actor}{" "}
+          </span>
+        )}
       </div>
     );
   }

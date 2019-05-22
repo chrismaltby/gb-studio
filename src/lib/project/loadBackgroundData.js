@@ -25,7 +25,7 @@ const loadBackgroundData = async filename => {
 
 const loadAllBackgroundData = async projectRoot => {
   const imagePaths = await globAsync(
-    projectRoot + "/assets/backgrounds/**/*.png"
+    `${projectRoot}/assets/backgrounds/**/*.png`
   );
   const imageData = await Promise.all(imagePaths.map(loadBackgroundData));
   return imageData;

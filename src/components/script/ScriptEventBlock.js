@@ -39,11 +39,10 @@ const ScriptEventBlock = ({ command, value = {}, onChange }) => {
           return newValue;
         })
       });
-    } else {
-      return onChange({
-        [key]: newValue
-      });
     }
+    return onChange({
+      [key]: newValue
+    });
   };
   const onAddValue = (key, field, index) => e => {
     const current = [].concat(value[key]);

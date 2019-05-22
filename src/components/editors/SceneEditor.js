@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 import * as actions from "../../actions";
-import { TriggerIcon } from "../../components/library/Icons";
+import { TriggerIcon } from "../library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
-import { FormField, ToggleableFormField } from "../../components/library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
@@ -62,39 +62,39 @@ class SceneEditor extends Component {
         <SidebarColumn>
           <SidebarHeading
             title={l10n("SCENE")}
-            buttons={
+            buttons={(
               <DropdownButton small transparent right>
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_SCENE")}
                 </MenuItem>
                 {clipboardScene && (
-                  <MenuItem onClick={this.onPaste}>
-                    {l10n("MENU_PASTE_SCENE")}
-                  </MenuItem>
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_SCENE")}
+                </MenuItem>
                 )}
                 {clipboardActor && (
-                  <MenuItem onClick={this.onPasteActor}>
-                    {l10n("MENU_PASTE_ACTOR")}
-                  </MenuItem>
+                <MenuItem onClick={this.onPasteActor}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
                 )}
                 {clipboardTrigger && (
-                  <MenuItem onClick={this.onPasteTrigger}>
-                    {l10n("MENU_PASTE_TRIGGER")}
-                  </MenuItem>
+                <MenuItem onClick={this.onPasteTrigger}>
+                  {l10n("MENU_PASTE_TRIGGER")}
+                </MenuItem>
                 )}
                 <MenuDivider />
                 <MenuItem onClick={this.onRemove}>
                   {l10n("MENU_DELETE_SCENE")}
                 </MenuItem>
               </DropdownButton>
-            }
+)}
           />
           <div>
             <FormField>
               <label htmlFor="sceneName">{l10n("FIELD_NAME")}</label>
               <input
                 id="sceneName"
-                placeholder={"Scene " + (sceneIndex + 1)}
+                placeholder={`Scene ${  sceneIndex + 1}`}
                 value={scene.name}
                 onChange={this.onEdit("name")}
               />
@@ -148,7 +148,7 @@ class SceneEditor extends Component {
                         direction={actor.direction}
                       />
                     </div>
-                    {actor.name || "Actor " + (index + 1)}
+                    {actor.name || `Actor ${  index + 1}`}
                   </li>
                 ))}
                 {scene.triggers.map((trigger, index) => (
@@ -162,7 +162,7 @@ class SceneEditor extends Component {
                     <div className="EditorSidebar__Icon">
                       <TriggerIcon />
                     </div>
-                    {trigger.name || "Trigger " + (index + 1)}
+                    {trigger.name || `Trigger ${  index + 1}`}
                   </li>
                 ))}
               </ul>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cx from "classnames";
+import Highlighter from "react-highlight-words";
 import Button from "../library/Button";
 import {
   EventFields,
@@ -7,7 +8,6 @@ import {
   EventsDeprecated,
   EVENT_TEXT
 } from "../../lib/compiler/eventTypes";
-import Highlighter from "react-highlight-words";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 
@@ -17,8 +17,8 @@ const EventNames = Object.keys(EventFields).reduce((memo, key) => {
 }, {});
 
 const actions = Object.keys(EventFields).sort((a, b) => {
-  var textA = (EventNames[a] || a).toUpperCase();
-  var textB = (EventNames[b] || b).toUpperCase();
+  const textA = (EventNames[a] || a).toUpperCase();
+  const textB = (EventNames[b] || b).toUpperCase();
   return textA < textB ? -1 : textA > textB ? 1 : 0;
 });
 
@@ -147,9 +147,9 @@ class AddCommandButton extends Component {
             // and have words between matches
             const queryWords = query.toUpperCase().split(" ");
             const searchName =
-              (EventNames[action] ? EventNames[action].toUpperCase() : "") +
-              " " +
-              action.toUpperCase();
+              `${EventNames[action] ? EventNames[action].toUpperCase() : "" 
+              } ${ 
+              action.toUpperCase()}`;
             return queryWords.reduce((memo, word) => {
               return memo && searchName.indexOf(word) > -1;
             }, true);
@@ -158,13 +158,13 @@ class AddCommandButton extends Component {
             // Sort so that first match is listed at top
             const queryWords = query.toUpperCase().split(" ");
             const searchNameA =
-              (EventNames[a] ? EventNames[a].toUpperCase() : "") +
-              " " +
-              a.toUpperCase();
+              `${EventNames[a] ? EventNames[a].toUpperCase() : "" 
+              } ${ 
+              a.toUpperCase()}`;
             const searchNameB =
-              (EventNames[b] ? EventNames[b].toUpperCase() : "") +
-              " " +
-              b.toUpperCase();
+              `${EventNames[b] ? EventNames[b].toUpperCase() : "" 
+              } ${ 
+              b.toUpperCase()}`;
             const firstMatchA = queryWords.reduce((memo, word) => {
               const index = searchNameA.indexOf(word);
               return index > -1 ? Math.min(memo, index) : memo;
@@ -211,7 +211,7 @@ class AddCommandButton extends Component {
                   <Highlighter
                     highlightClassName="AddCommandButton__ListItem__Highlight"
                     searchWords={query.split(" ")}
-                    autoEscape={true}
+                    autoEscape
                     textToHighlight={EventNames[action] || action}
                   />
                 </div>
@@ -227,8 +227,8 @@ class AddCommandButton extends Component {
                   <Highlighter
                     highlightClassName="AddCommandButton__ListItem__Highlight"
                     searchWords={query.split(" ")}
-                    autoEscape={true}
-                    textToHighlight={`${EventNames["EVENT_TEXT"]} "${query}"`}
+                    autoEscape
+                    textToHighlight={`${EventNames.EVENT_TEXT} "${query}"`}
                   />
                 </div>
               )}

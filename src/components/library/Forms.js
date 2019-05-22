@@ -114,7 +114,7 @@ export class SelectRenamable extends Component {
         )}
         {edit ? (
           <div
-            key={"save"}
+            key="save"
             className="SelectRenamable__EditBtn SelectRenamable__SaveBtn"
             onClick={this.onSave}
           >
@@ -122,7 +122,7 @@ export class SelectRenamable extends Component {
           </div>
         ) : (
           <div
-            key={"edit"}
+            key="edit"
             className="SelectRenamable__EditBtn"
             onClick={this.onStartEdit}
           >

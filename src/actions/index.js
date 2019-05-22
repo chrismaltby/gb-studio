@@ -347,7 +347,7 @@ export const editDestinationPosition = (
       x,
       y
     };
-  } else if (selectionType === "triggers") {
+  } if (selectionType === "triggers") {
     return {
       type: types.EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
       eventId,

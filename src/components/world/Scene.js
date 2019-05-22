@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
+import { throttle } from "lodash";
 import * as actions from "../../actions";
 import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
-import { throttle } from "lodash";
 import { findSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 
@@ -108,7 +108,7 @@ class Scene extends Component {
         }
       }
 
-      let actor = this.actorAt(tX, tY);
+      const actor = this.actorAt(tX, tY);
 
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
         this.setStatus({
@@ -116,8 +116,7 @@ class Scene extends Component {
           x: tX,
           y: tY,
           actor:
-            actor &&
-            (actor.name || "Actor " + (scene.actors.indexOf(actor) + 1))
+            actor && (actor.name || `Actor ${scene.actors.indexOf(actor) + 1}`)
         });
 
         this.setState({
@@ -162,8 +161,8 @@ class Scene extends Component {
     const { id, tool, scene, width, showCollisions } = this.props;
     const { hoverX, hoverY } = this.state;
 
-    let trigger = this.triggerAt(hoverX, hoverY);
-    let actor = this.actorAt(hoverX, hoverY);
+    const trigger = this.triggerAt(hoverX, hoverY);
+    const actor = this.actorAt(hoverX, hoverY);
 
     if (actor) {
       this.props.dragActorStart(id, actor.id, scene.actors.indexOf(actor));
@@ -349,7 +348,7 @@ class Scene extends Component {
           onMouseMove={this.onMoveDrag}
           onMouseUp={this.onEndDrag}
         >
-          {scene.name || "Scene " + (index + 1)}
+          {scene.name || `Scene ${index + 1}`}
         </div>
         <div
           className="Scene__Image"

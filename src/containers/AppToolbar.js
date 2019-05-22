@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Toolbar,
   ToolbarTitle,
@@ -16,7 +17,6 @@ import {
   FolderIcon,
   LoadingIcon
 } from "../components/library/Icons";
-import { connect } from "react-redux";
 import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
 

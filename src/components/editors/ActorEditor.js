@@ -55,22 +55,22 @@ class ActorEditor extends Component {
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
-            buttons={
+            buttons={(
               <DropdownButton small transparent right>
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_ACTOR")}
                 </MenuItem>
                 {clipboardActor && (
-                  <MenuItem onClick={this.onPaste}>
-                    {l10n("MENU_PASTE_ACTOR")}
-                  </MenuItem>
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
                 )}
                 <MenuDivider />
                 <MenuItem onClick={this.onRemove}>
                   {l10n("MENU_DELETE_ACTOR")}
                 </MenuItem>
               </DropdownButton>
-            }
+)}
           />
 
           <div>
@@ -78,7 +78,7 @@ class ActorEditor extends Component {
               <label htmlFor="actorName">{l10n("FIELD_NAME")}</label>
               <input
                 id="actorName"
-                placeholder={"Actor " + (index + 1)}
+                placeholder={`Actor ${  index + 1}`}
                 value={actor.name || ""}
                 onChange={this.onEdit("name")}
               />
@@ -214,16 +214,16 @@ class ActorEditor extends Component {
               (actor.animate &&
                 (actor.movementType === "static" ||
                   (spriteSheet && spriteSheet.type !== "actor")))) && (
-              <FormField halfWidth>
-                <label htmlFor="actorAnimSpeed">
-                  {l10n("FIELD_ANIMATION_SPEED")}
-                </label>
-                <AnimationSpeedSelect
-                  id="actorAnimSpeed"
-                  value={actor.animSpeed}
-                  onChange={this.onEdit("animSpeed")}
-                />
-              </FormField>
+                  <FormField halfWidth>
+                    <label htmlFor="actorAnimSpeed">
+                      {l10n("FIELD_ANIMATION_SPEED")}
+                    </label>
+                    <AnimationSpeedSelect
+                      id="actorAnimSpeed"
+                      value={actor.animSpeed}
+                      onChange={this.onEdit("animSpeed")}
+                    />
+                  </FormField>
             )}
 
             <ToggleableFormField
@@ -248,7 +248,7 @@ class ActorEditor extends Component {
               <div className="EditorSidebar__Icon">
                 <SceneIcon />
               </div>
-              {scene.name || "Scene " + (index + 1)}
+              {scene.name || `Scene ${  index + 1}`}
             </li>
           </ul>
         </SidebarColumn>

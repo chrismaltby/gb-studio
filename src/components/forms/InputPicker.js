@@ -100,7 +100,7 @@ const renderButton = (value, onChange) => input => (
       key={input.key}
       className={cx(
         "InputPicker__Button",
-        "InputPicker__Button--" + input.name,
+        `InputPicker__Button--${input.name}`,
         {
           "InputPicker__Button--Active": Array.isArray(value)
             ? value.indexOf && value.indexOf(input.key) > -1

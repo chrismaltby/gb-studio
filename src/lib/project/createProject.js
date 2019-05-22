@@ -1,9 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
+import os from "os";
 import stripInvalidFilenameCharacters from "../helpers/stripInvalidFilenameCharacters";
 import { projectTemplatesRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
-import os from "os";
 
 const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 
@@ -23,7 +23,7 @@ const createProject = async options => {
   await copy(templatePath, projectPath);
 
   // Replace placeholders in data file
-  let dataFile = (await fs.readFile(projectTmpDataPath, "utf8"))
+  const dataFile = (await fs.readFile(projectTmpDataPath, "utf8"))
     .replace(/___PROJECT_NAME___/g, projectFolderName)
     .replace(/___AUTHOR___/g, username);
 

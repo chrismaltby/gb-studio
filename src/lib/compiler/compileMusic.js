@@ -20,7 +20,7 @@ const compileMusic = async ({
 
   console.log("ABOUT TO COMPILE", music);
 
-  for (var i = 0; i < music.length; i++) {
+  for (let i = 0; i < music.length; i++) {
     const track = music[i];
     await compileTrack(track, {
       buildRoot,
@@ -44,7 +44,7 @@ const compileTrack = async (
     warnings = () => {}
   }
 ) => {
-  let env = Object.create(process.env);
+  const env = Object.create(process.env);
 
   console.log("ABOUT TO COMPILE TRACK", track);
   console.log(buildRoot);
@@ -66,7 +66,7 @@ const compileTrack = async (
   };
 
   await new Promise(async (resolve, reject) => {
-    let child = childProcess.spawn(command, args, options, {
+    const child = childProcess.spawn(command, args, options, {
       encoding: "utf8"
     });
 

@@ -11,7 +11,7 @@ class SceneSelect extends Component {
         {allowNone && <option>None</option>}
         {maps.map((map, index) => (
           <option key={map.id} value={map.id}>
-            {map.name || "Scene " + (index + 1)}
+            {map.name || `Scene ${index + 1}`}
           </option>
         ))}
       </select>

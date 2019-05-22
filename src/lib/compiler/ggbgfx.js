@@ -9,7 +9,7 @@ const MAX_TILEMAP_TILE_WIDTH = 16;
 const MAX_TILEMAP_WIDTH = TILE_SIZE * MAX_TILEMAP_TILE_WIDTH;
 
 function memoize(fn) {
-  var cache = {};
+  const cache = {};
   return function(x) {
     if (cache[x]) {
       return cache[x];
@@ -21,27 +21,30 @@ function memoize(fn) {
 const indexColour = (r, g, b, a) => {
   if (g < 65) {
     return 3;
-  } else if (g < 130) {
-    return 2;
-  } else if (g < 205) {
-    return 1;
-  } else {
-    return 0;
   }
+  if (g < 130) {
+    return 2;
+  }
+  if (g < 205) {
+    return 1;
+  }
+  return 0;
 };
 
 const spriteIndexColour = (r, g, b, a) => {
   if (g < 65) {
     return 3;
-  } else if (g < 130) {
-    return 3;
-  } else if (g < 205) {
-    return 2;
-  } else if ((g > 250 && b < 100) || a < 10) {
-    return 0;
-  } else {
-    return 1;
   }
+  if (g < 130) {
+    return 3;
+  }
+  if (g < 205) {
+    return 2;
+  }
+  if ((g > 250 && b < 100) || a < 10) {
+    return 0;
+  }
+  return 1;
 };
 
 const bin2 = memoize(value => {
@@ -51,27 +54,28 @@ const bin2 = memoize(value => {
 function colorFromIndex(index) {
   if (index === 0) {
     return 255;
-  } else if (index === 1) {
-    return 200;
-  } else if (index === 2) {
-    return 100;
-  } else {
-    return 0;
   }
+  if (index === 1) {
+    return 200;
+  }
+  if (index === 2) {
+    return 100;
+  }
+  return 0;
 }
 
 function pad(n, width, z) {
   z = z || "0";
-  n = n + "";
+  n += "";
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
 const binHex = memoize(binary => {
-  return "0x" + pad(parseInt(binary, 2).toString(16), 2).toUpperCase();
+  return `0x${pad(parseInt(binary, 2).toString(16), 2).toUpperCase()}`;
 });
 
 function decHex(dec) {
-  return "0x" + pad(((256 + dec) % 256).toString(16), 2).toUpperCase();
+  return `0x${pad(((256 + dec) % 256).toString(16), 2).toUpperCase()}`;
 }
 
 function parseTileString(string) {
@@ -82,22 +86,22 @@ function parseTileString(string) {
 
 function tilePixelsToHexString(pixels, indexFn) {
   indexFn = indexFn || indexColour;
-  var tile = "";
-  for (var y = 0; y < 8; y++) {
-    var row1 = "";
-    var row2 = "";
-    for (var x = 0; x < 8; x++) {
-      var col = indexFn(
+  let tile = "";
+  for (let y = 0; y < 8; y++) {
+    let row1 = "";
+    let row2 = "";
+    for (let x = 0; x < 8; x++) {
+      const col = indexFn(
         pixels.get(x, y, 0), // Red
         pixels.get(x, y, 1), // Green
         pixels.get(x, y, 2), // Blue
         pixels.get(x, y, 3) // Alpha
       );
-      var binary = bin2(col);
+      const binary = bin2(col);
       row1 += binary[1];
       row2 += binary[0];
     }
-    tile += binHex(row1) + "," + binHex(row2) + ",";
+    tile += `${binHex(row1)},${binHex(row2)},`;
   }
   return tile;
 }
@@ -108,11 +112,11 @@ function pixelsToTilesData(pixels) {
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
-  var tiles = [];
+  const tiles = [];
 
-  for (var tyi = 0; tyi < yTiles; tyi++) {
-    for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = pixels
+  for (let tyi = 0; tyi < yTiles; tyi++) {
+    for (let txi = 0; txi < xTiles; txi++) {
+      const tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
       tiles.push(tilePixelsToHexString(tilePixels).slice(0, -1));
@@ -127,15 +131,15 @@ function pixelsToTilesLookup(pixels) {
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
-  var tiles = {};
-  var tileIndex = 0;
+  const tiles = {};
+  let tileIndex = 0;
 
-  for (var tyi = 0; tyi < yTiles; tyi++) {
-    for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = pixels
+  for (let tyi = 0; tyi < yTiles; tyi++) {
+    for (let txi = 0; txi < xTiles; txi++) {
+      const tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
-      var tile = tilePixelsToHexString(tilePixels);
+      const tile = tilePixelsToHexString(tilePixels);
       if (tiles[tile] === undefined) {
         tiles[tile] = tileIndex;
         tileIndex++;
@@ -151,13 +155,13 @@ function pixelsToSpriteData(pixels) {
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
-  var output = "";
-  for (var txi = 0; txi < xTiles; txi++) {
-    for (var tyi = 0; tyi < yTiles; tyi++) {
-      var tilePixels = pixels
+  let output = "";
+  for (let txi = 0; txi < xTiles; txi++) {
+    for (let tyi = 0; tyi < yTiles; tyi++) {
+      const tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
-      var tile = tilePixelsToHexString(tilePixels, spriteIndexColour);
+      const tile = tilePixelsToHexString(tilePixels, spriteIndexColour);
       output += tile;
     }
   }
@@ -171,16 +175,16 @@ function pixelsAndLookupToTilemap(pixels, lookup, offset) {
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
 
-  var output = [];
+  const output = [];
 
-  for (var tyi = 0; tyi < yTiles; tyi++) {
-    for (var txi = 0; txi < xTiles; txi++) {
-      var tilePixels = pixels
+  for (let tyi = 0; tyi < yTiles; tyi++) {
+    for (let txi = 0; txi < xTiles; txi++) {
+      const tilePixels = pixels
         .lo(txi * TILE_SIZE, tyi * TILE_SIZE)
         .hi(TILE_SIZE, TILE_SIZE);
-      var tile = tilePixelsToHexString(tilePixels);
+      const tile = tilePixelsToHexString(tilePixels);
       if (lookup[tile] === undefined) {
-        throw new Error("Tile is missing from tileset: " + tile);
+        throw new Error(`Tile is missing from tileset: ${tile}`);
       }
       output.push(lookup[tile] + offset);
     }
@@ -190,10 +194,10 @@ function pixelsAndLookupToTilemap(pixels, lookup, offset) {
 }
 
 function mergeTileLookups(lookups) {
-  var tileIndex = 0;
+  let tileIndex = 0;
   return lookups.reduce(function(memo, lookup) {
-    var tiles = Object.keys(lookup);
-    for (var i = 0; i < tiles.length; i++) {
+    const tiles = Object.keys(lookup);
+    for (let i = 0; i < tiles.length; i++) {
       if (memo[tiles[i]] === undefined) {
         memo[tiles[i]] = tileIndex;
         tileIndex++;
@@ -250,7 +254,7 @@ function imageToSpriteIntArray(filename) {
 }
 
 function imageAndTilesetToTilemap(filename, tilesetFilename, offset) {
-  var tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
+  const tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
   return Promise.all([getPixels(filename), tilesetLookup])
     .then(function(res) {
       return pixelsAndLookupToTilemap(res[0], res[1], offset);
@@ -261,7 +265,7 @@ function imageAndTilesetToTilemap(filename, tilesetFilename, offset) {
 }
 
 function imageAndTilesetToTilemapIntArray(filename, tilesetFilename, offset) {
-  var tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
+  const tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
   return Promise.all([getPixels(filename), tilesetLookup]).then(function(res) {
     return pixelsAndLookupToTilemap(res[0], res[1], offset);
   });
@@ -300,18 +304,19 @@ function imagesToTilesetImage(filenames, outfile) {
 }
 
 function tileLookupToImage(lookup, outFile) {
-  var tiles = Object.keys(lookup);
-  var imgWidth = Math.min(tiles.length * TILE_SIZE, MAX_TILEMAP_WIDTH);
-  var imgHeight = TILE_SIZE * Math.ceil(tiles.length / MAX_TILEMAP_TILE_WIDTH);
-  var img = zeros([imgWidth, imgHeight]);
-  for (var t = 0; t < tiles.length; t++) {
-    var tileOffsetX = TILE_SIZE * (t % MAX_TILEMAP_TILE_WIDTH);
-    var tileOffsetY = TILE_SIZE * Math.floor(t / MAX_TILEMAP_TILE_WIDTH);
-    var data = parseTileString(tiles[t]);
-    for (var i = 0; i < 16; i += 2) {
-      for (var j = 0; j < 8; j++) {
-        var mask = Math.pow(2, j);
-        var index = (data[i] & mask ? 1 : 0) + (data[i + 1] & mask ? 2 : 0);
+  const tiles = Object.keys(lookup);
+  const imgWidth = Math.min(tiles.length * TILE_SIZE, MAX_TILEMAP_WIDTH);
+  const imgHeight =
+    TILE_SIZE * Math.ceil(tiles.length / MAX_TILEMAP_TILE_WIDTH);
+  const img = zeros([imgWidth, imgHeight]);
+  for (let t = 0; t < tiles.length; t++) {
+    const tileOffsetX = TILE_SIZE * (t % MAX_TILEMAP_TILE_WIDTH);
+    const tileOffsetY = TILE_SIZE * Math.floor(t / MAX_TILEMAP_TILE_WIDTH);
+    const data = parseTileString(tiles[t]);
+    for (let i = 0; i < 16; i += 2) {
+      for (let j = 0; j < 8; j++) {
+        const mask = Math.pow(2, j);
+        const index = (data[i] & mask ? 1 : 0) + (data[i + 1] & mask ? 2 : 0);
         img.set(
           tileOffsetX + 7 - j,
           tileOffsetY + i / 2,
@@ -325,13 +330,13 @@ function tileLookupToImage(lookup, outFile) {
 
 function writePixelsToFile(outFile, pixels) {
   return new Promise(function(resolve, reject) {
-    var imgStream = savePixels(pixels, "png");
-    var bufs = [];
+    const imgStream = savePixels(pixels, "png");
+    const bufs = [];
     imgStream.on("data", function(d) {
       bufs.push(d);
     });
     imgStream.on("end", function() {
-      var buf = Buffer.concat(bufs);
+      const buf = Buffer.concat(bufs);
       if (outFile) {
         fs.writeFile(outFile, buf, function(err) {
           if (err) {

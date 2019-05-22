@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import ScriptEditor from "../../components/script/ScriptEditor";
-import { FormField, ToggleableFormField } from "../../components/library/Forms";
+import ScriptEditor from "../script/ScriptEditor";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
@@ -42,29 +42,29 @@ class TriggerEditor extends Component {
         <SidebarColumn>
           <SidebarHeading
             title={l10n("TRIGGER")}
-            buttons={
+            buttons={(
               <DropdownButton small transparent right>
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
                 {clipboardTrigger && (
-                  <MenuItem onClick={this.onPaste}>
-                    {l10n("MENU_PASTE_TRIGGER")}
-                  </MenuItem>
+                <MenuItem onClick={this.onPaste}>
+                  {l10n("MENU_PASTE_TRIGGER")}
+                </MenuItem>
                 )}
                 <MenuDivider />
                 <MenuItem onClick={this.onRemove}>
                   {l10n("MENU_DELETE_TRIGGER")}
                 </MenuItem>
               </DropdownButton>
-            }
+)}
           />
           <div>
             <FormField>
               <label htmlFor="triggerName">{l10n("FIELD_NAME")}</label>
               <input
                 id="triggerName"
-                placeholder={"Trigger " + (index + 1)}
+                placeholder={`Trigger ${  index + 1}`}
                 value={trigger.name || ""}
                 onChange={this.onEdit("name")}
               />
@@ -144,7 +144,7 @@ class TriggerEditor extends Component {
               <div className="EditorSidebar__Icon">
                 <SceneIcon />
               </div>
-              {scene.name || "Scene " + (index + 1)}
+              {scene.name || `Scene ${  index + 1}`}
             </li>
           </ul>
         </SidebarColumn>

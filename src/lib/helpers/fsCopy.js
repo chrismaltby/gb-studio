@@ -4,7 +4,7 @@ const copyDir = async (src, dest, options = {}) => {
   const { overwrite = true } = options;
   const filePaths = await fs.readdir(src);
   await fs.ensureDir(dest);
-  for (let fileName of filePaths) {
+  for (const fileName of filePaths) {
     // console.log(fileName);
     const fileStat = await fs.lstat(`${src}/${fileName}`);
     // console.log(fileStat);
@@ -25,7 +25,7 @@ const copyFile = async (src, dest, options = {}) => {
       const destStat = await fs.lstat(dest);
       // console.log("dest already existed", destStat);
       if (errorOnExist) {
-        throw new Error("File already exists " + destFile);
+        throw new Error(`File already exists ${  destFile}`);
       } else {
         return;
       }

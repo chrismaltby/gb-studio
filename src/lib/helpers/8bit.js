@@ -7,21 +7,19 @@ export const decBin = dec =>
     .padStart(8, "0");
 
 export const decHex = dec =>
-  "0x" +
-  wrap8Bit(dec)
+  `0x${wrap8Bit(dec)
     .toString(16)
     .padStart(2, "0")
-    .toUpperCase();
+    .toUpperCase()}`;
 
 export const decHex16 = dec =>
-  "0x" +
-  wrap16Bit(dec)
+  `0x${wrap16Bit(dec)
     .toString(16)
     .padStart(4, "0")
-    .toUpperCase();
+    .toUpperCase()}`;
 
 export const hi = longNum => wrap16Bit(longNum) >> 8;
 
 export const lo = longNum => wrap16Bit(longNum) % 256;
 
-export const divisibleBy8 = n => (n >> 3) << 3 == n;
+export const divisibleBy8 = n => (n >> 3) << 3 === n;

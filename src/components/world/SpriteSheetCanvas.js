@@ -7,6 +7,7 @@ class SpriteSheetCanvas extends Component {
     super(props);
     this.canvas = React.createRef();
   }
+
   componentDidMount() {
     this.loadImage(this.props);
   }
@@ -26,7 +27,7 @@ class SpriteSheetCanvas extends Component {
 
   imageSrc = props => {
     return `${props.projectRoot}/assets/sprites/${props.spriteSheet &&
-      props.spriteSheet.filename + "?v=" + (props.spriteSheet._v || 0)}`;
+      `${props.spriteSheet.filename}?v=${props.spriteSheet._v || 0}`}`;
   };
 
   loadImage = props => {
@@ -75,7 +76,7 @@ class SpriteSheetCanvas extends Component {
       tmpCtx.drawImage(this.img, spriteOffset * -16, 0);
 
       // Remove background colour
-      let imgData = tmpCtx.getImageData(0, 0, 16, 16);
+      const imgData = tmpCtx.getImageData(0, 0, 16, 16);
 
       for (let i = 0; i < imgData.data.length; i += 4) {
         if (imgData.data[i + 1] === 255) {

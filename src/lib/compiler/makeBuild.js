@@ -39,14 +39,14 @@ const patchROM = romData => {
   // Recalculate cart checksum
   for (let i = 0; i < romData.length; i++) {
     if (i !== GLOBAL_CHECKSUM && i !== GLOBAL_CHECKSUM + 1) {
-      checksum = checksum + view.getUint8(i);
+      checksum += view.getUint8(i);
     }
   }
 
   view.setUint16(GLOBAL_CHECKSUM, checksum, false);
 
-  return romData
-}
+  return romData;
+};
 
 const makeBuild = ({
   buildType = "rom",
@@ -56,7 +56,7 @@ const makeBuild = ({
   warnings = () => {}
 } = {}) => {
   return new Promise(async (resolve, reject) => {
-    let env = Object.create(process.env);
+    const env = Object.create(process.env);
 
     const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
       process.arch
@@ -94,7 +94,7 @@ const makeBuild = ({
       shell: true
     };
 
-    let child = childProcess.spawn(command, args, options, {
+    const child = childProcess.spawn(command, args, options, {
       encoding: "utf8"
     });
 
@@ -118,7 +118,10 @@ const makeBuild = ({
 
     child.on("close", async function(code) {
       if (code == 0) {
-        await setROMTitle(`${buildRoot}/build/rom/game.gb`, data.name.toUpperCase());
+        await setROMTitle(
+          `${buildRoot}/build/rom/game.gb`,
+          data.name.toUpperCase()
+        );
         resolve();
       } else reject(code);
     });

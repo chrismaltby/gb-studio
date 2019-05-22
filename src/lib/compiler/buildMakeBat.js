@@ -2,9 +2,9 @@ import fs from "fs-extra";
 import Path from "path";
 
 export default async (buildRoot, { CART_TYPE }) => {
-  let cmds = [];
-  let buildFiles = [];
-  let objFiles = [];
+  const cmds = [];
+  const buildFiles = [];
+  const objFiles = [];
   let musicFiles = [];
 
   const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
@@ -19,7 +19,7 @@ export default async (buildRoot, { CART_TYPE }) => {
     musicFiles = await fs.readdir(musicRoot);
   } catch (e) {}
 
-  for (let file of srcFiles) {
+  for (const file of srcFiles) {
     const fileStat = await fs.lstat(`${srcRoot}/${file}`);
     const ext = Path.extname(file);
     if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
@@ -27,7 +27,7 @@ export default async (buildRoot, { CART_TYPE }) => {
     }
   }
 
-  for (let file of dataFiles) {
+  for (const file of dataFiles) {
     const fileStat = await fs.lstat(`${dataRoot}/${file}`);
     const ext = Path.extname(file);
     if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
@@ -35,7 +35,7 @@ export default async (buildRoot, { CART_TYPE }) => {
     }
   }
 
-  for (let file of musicFiles) {
+  for (const file of musicFiles) {
     const fileStat = await fs.lstat(`${musicRoot}/${file}`);
     const ext = Path.extname(file);
     if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
@@ -43,8 +43,8 @@ export default async (buildRoot, { CART_TYPE }) => {
     }
   }
 
-  for (let file of buildFiles) {
-    const objFile = file.replace(/^src/, "obj").replace(/\.[cs]$/, "") + ".o";
+  for (const file of buildFiles) {
+    const objFile = `${file.replace(/^src/, "obj").replace(/\.[cs]$/, "")}.o`;
     cmds.push(`${CC} -c -o ${objFile} ${file}`);
     objFiles.push(objFile);
   }

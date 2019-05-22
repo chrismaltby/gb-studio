@@ -1,5 +1,6 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
+
 const { app, Menu } = require("electron");
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -363,7 +364,7 @@ app.on("ready", async () => {
         click: () => {
           notifyListeners("checkUpdates");
         }
-      }      
+      }
     );
   }
 
@@ -371,7 +372,7 @@ app.on("ready", async () => {
   Menu.setApplicationMenu(menu);
 });
 
-let listeners = {
+const listeners = {
   new: [],
   open: [],
   save: [],
@@ -386,7 +387,7 @@ let listeners = {
 };
 
 const notifyListeners = (event, ...data) => {
-  for (let fn of listeners[event]) {
+  for (const fn of listeners[event]) {
     fn.apply(null, data);
   }
 };

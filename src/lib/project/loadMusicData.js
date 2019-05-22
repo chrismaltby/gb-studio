@@ -15,7 +15,7 @@ const loadMusicData = async filename => {
 };
 
 const loadAllMusicData = async projectRoot => {
-  const musicPaths = await globAsync(projectRoot + "/assets/music/**/*.mod");
+  const musicPaths = await globAsync(`${projectRoot}/assets/music/**/*.mod`);
   const musicData = await Promise.all(musicPaths.map(loadMusicData));
   return musicData;
 };

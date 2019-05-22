@@ -11,7 +11,7 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
           <p style={{ color: "#999" }}>
             {scriptLine.actor.name
               ? scriptLine.actor.name
-              : "Actor " + (scriptLine.actorIndex + 1)}{" "}
+              : `Actor ${scriptLine.actorIndex + 1}`}{" "}
             — {scriptLine.scene.name}{" "}
             {(text || "")
               .split("\n")
@@ -46,7 +46,7 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
         <p style={{ color: "#999" }}>
           {scriptLine.actor.name
             ? scriptLine.actor.name
-            : "Actor " + (scriptLine.actorIndex + 1)}{" "}
+            : `Actor ${scriptLine.actorIndex + 1}`}{" "}
           — {scriptLine.scene.name}{" "}
           {(scriptLine.line.args.text || "")
             .split("\n")
