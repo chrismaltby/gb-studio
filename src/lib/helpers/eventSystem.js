@@ -40,8 +40,9 @@ const walkSceneEvents = (scene, callback) => {
   });
 };
 
-const findSceneEvent = (scene, fn) => {
+const findSceneEvent = (scene, callback) => {
   let event = null;
+  let fn = callback;
   if (typeof fn === "string") {
     const id = fn;
     fn = walkEvent => {
@@ -52,7 +53,7 @@ const findSceneEvent = (scene, fn) => {
     walkSceneEvents(scene, walkEvent => {
       if (fn(walkEvent)) {
         event = walkEvent;
-        throw "FOUND_EVENT";
+        throw new Error("FOUND_EVENT");
       }
     });
   } catch (err) {
@@ -66,74 +67,63 @@ const findSceneEvent = (scene, fn) => {
 
 const patchEvents = (data, id, patch) => {
   return data.reduce((memo, o) => {
-    if (o.true) {
-      o = {
-        ...o,
-        true: patchEvents(o.true, id, patch)
-      };
-    }
-    if (o.false) {
-      o = {
-        ...o,
-        false: patchEvents(o.false, id, patch)
-      };
-    }
-    if (o.id === id) {
-      memo.push({
-        ...o,
-        args: {
-          ...o.args,
-          ...patch
+    return [].concat(
+      memo,
+      Object.assign(
+        {},
+        o,
+        o.true && {
+          true: patchEvents(o.true, id, patch)
+        },
+        o.false && {
+          false: patchEvents(o.false, id, patch)
+        },
+        o.id === id && {
+          args: {
+            ...o.args,
+            ...patch
+          }
         }
-      });
-    } else {
-      memo.push(o);
-    }
-    return memo;
+      )
+    );
   }, []);
 };
 
 const prependEvent = (data, id, newData) => {
   return data.reduce((memo, o) => {
-    if (o.true) {
-      o = {
-        ...o,
-        true: prependEvent(o.true, id, newData)
-      };
-    }
-    if (o.false) {
-      o = {
-        ...o,
-        false: prependEvent(o.false, id, newData)
-      };
-    }
-    if (o.id === id) {
-      memo = [].concat(memo, newData);
-    }
-    memo.push(o);
-    return memo;
+    return [].concat(
+      memo,
+      o.id === id ? newData : [],
+      Object.assign(
+        {},
+        o,
+        o.true && {
+          true: prependEvent(o.true, id, newData)
+        },
+        o.false && {
+          false: prependEvent(o.false, id, newData)
+        }
+      )
+    );
   }, []);
 };
 
 const appendEvent = (data, id, newData) => {
   return data.reduce((memo, o) => {
-    if (o.true) {
-      o = {
-        ...o,
-        true: appendEvent(o.true, id, newData)
-      };
-    }
-    if (o.false) {
-      o = {
-        ...o,
-        false: appendEvent(o.false, id, newData)
-      };
-    }
-    memo.push(o);
-    if (o.id === id) {
-      memo = [].concat(memo, newData);
-    }
-    return memo;
+    return [].concat(
+      memo,
+      Object.assign(
+        {},
+        o,
+        o.true && {
+          true: appendEvent(o.true, id, newData)
+        },
+        o.false && {
+          false: appendEvent(o.false, id, newData)
+        }
+      ),
+      o.id === id ? newData : []
+    );
   }, []);
 };
 

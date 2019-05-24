@@ -7,7 +7,7 @@ import {
   walkEventsDepthFirst
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
-import { indexArray } from "../helpers/array";
+import { indexBy, flatten } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
 import compileEntityEvents, { CMD_LOOKUP } from "./compileEntityEvents";
@@ -27,6 +27,8 @@ import {
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 
+const indexById = indexBy("id");
+
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
 
@@ -43,10 +45,6 @@ export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
-
-const prepareString = s => `"${s.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`;
-
-const flatten = arr => [].concat(...arr);
 
 const compile = async (
   projectData,
@@ -509,7 +507,7 @@ export const precompileBackgrounds = async (
       eventImageIds.indexOf(background.id) > -1 ||
       scenes.find(scene => scene.backgroundId === background.id)
   );
-  const backgroundLookup = indexArray(usedBackgrounds, "id");
+  const backgroundLookup = indexById(usedBackgrounds);
   const backgroundData = await compileImages(
     usedBackgrounds,
     projectRoot,
@@ -589,7 +587,7 @@ export const precompileSprites = async (
       )
   );
 
-  const spriteLookup = indexArray(usedSprites, "id");
+  const spriteLookup = indexById(usedSprites);
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
       const data = await ggbgfx.imageToSpriteIntArray(

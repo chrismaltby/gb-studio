@@ -1,4 +1,6 @@
-import indexById from "../helpers/indexById";
+import { indexBy } from "../helpers/array";
+
+const indexById = indexBy("id");
 
 const migrateProject = project => {
   let data = { ...project };

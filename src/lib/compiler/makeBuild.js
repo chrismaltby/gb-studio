@@ -1,6 +1,4 @@
 import childProcess from "child_process";
-import is from "electron-is";
-import path from "path";
 import { remote } from "electron";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
@@ -62,8 +60,6 @@ const makeBuild = ({
       process.arch
     }`;
 
-    console.log("BUILD TOOLS", buildToolsPath);
-
     const tmpPath = remote.app.getPath("temp");
     const tmpBuildToolsPath = `${tmpPath}/_gbs`;
 
@@ -98,26 +94,26 @@ const makeBuild = ({
       encoding: "utf8"
     });
 
-    child.on("error", function(err) {
+    child.on("error", err => {
       warnings(err.toString());
     });
 
-    child.stdout.on("data", function(data) {
-      const lines = data.toString().split("\n");
+    child.stdout.on("data", childData => {
+      const lines = childData.toString().split("\n");
       lines.forEach(line => {
         progress(filterLogs(line));
       });
     });
 
-    child.stderr.on("data", function(data) {
-      const lines = data.toString().split("\n");
+    child.stderr.on("data", childData => {
+      const lines = childData.toString().split("\n");
       lines.forEach(line => {
         warnings(line);
       });
     });
 
-    child.on("close", async function(code) {
-      if (code == 0) {
+    child.on("close", async code => {
+      if (code === 0) {
         await setROMTitle(
           `${buildRoot}/build/rom/game.gb`,
           data.name.toUpperCase()

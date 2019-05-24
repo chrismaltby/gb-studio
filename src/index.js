@@ -1,4 +1,4 @@
-import electron, { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
@@ -12,6 +12,7 @@ import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 
 // Stop app launching during squirrel install
+// eslint-disable-next-line global-require
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
@@ -62,8 +63,8 @@ const createSplash = async (forceNew = false) => {
     `file://${__dirname}/windows/splash.html?new=${forceNew}`
   );
 
-  splashWindow.webContents.on("did-finish-load", function() {
-    setTimeout(function() {
+  splashWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
       splashWindow.show();
       if (!hasCheckedForUpdate) {
         hasCheckedForUpdate = true;
@@ -144,8 +145,8 @@ const createWindow = async projectPath => {
         message:
           "You have unsaved changes, are you sure you want to close this project?"
       });
-      if (choice == 1) {
-        return e.preventDefault();
+      if (choice === 1) {
+        e.preventDefault();
       }
     }
   });

@@ -5,73 +5,69 @@ import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
+import { indexBy } from "../helpers/array";
+
+const indexByFilename = indexBy("filename");
 
 const loadProject = async projectPath => {
   const json = migrateProject(await fs.readJson(projectPath));
 
   const projectRoot = path.dirname(projectPath);
 
-  const backgrounds = await loadAllBackgroundData(projectRoot);
-  const sprites = await loadAllSpriteData(projectRoot);
-  const music = await loadAllMusicData(projectRoot);
-
-  const oldBackgroundFilenamesToIds = (json.backgrounds || []).reduce(
-    (memo, oldData) => {
-      memo[oldData.filename] = oldData.id;
-      return memo;
-    },
-    {}
-  );
+  const [backgrounds, sprites, music] = await Promise.all([
+    loadAllBackgroundData(projectRoot),
+    loadAllSpriteData(projectRoot),
+    loadAllMusicData(projectRoot)
+  ]);
 
   // Merge stored backgrounds data with file system data
+  const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
+
   const fixedBackgroundIds = backgrounds.map(background => {
-    const oldId = oldBackgroundFilenamesToIds[background.filename];
-    if (oldId) {
-      background.id = oldId;
+    const oldBackground = oldBackgroundByFilename[background.filename];
+    if (oldBackground) {
+      return {
+        ...background,
+        id: oldBackground.id
+      };
     }
     return background;
   });
 
-  json.backgrounds = fixedBackgroundIds;
-
   // Merge stored sprite data with file system data
-  const oldSpriteFilenamesToIds = (json.spriteSheets || []).reduce(
-    (memo, oldData) => {
-      memo[oldData.filename] = oldData.id;
-      return memo;
-    },
-    {}
-  );
+  const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
 
   const fixedSpriteIds = sprites.map(sprite => {
-    const oldId = oldSpriteFilenamesToIds[sprite.filename];
-    if (oldId) {
-      sprite.id = oldId;
+    const oldSprite = oldSpriteByFilename[sprite.filename];
+    if (oldSprite) {
+      return {
+        ...sprite,
+        id: oldSprite.id
+      };
     }
     return sprite;
   });
 
-  json.spriteSheets = fixedSpriteIds;
-
   // Merge stored music data with file system data
-  const oldMusicFilenamesToIds = (json.music || []).reduce((memo, oldData) => {
-    memo[oldData.filename] = oldData.id;
-    return memo;
-  }, {});
+  const oldMusicByFilename = indexByFilename(json.music || []);
 
-  const fixedMusicIds = music.map(music => {
-    const oldId = oldMusicFilenamesToIds[music.filename];
-    if (oldId) {
-      music.id = oldId;
+  const fixedMusicIds = music.map(track => {
+    const oldTrack = oldMusicByFilename[track.filename];
+    if (oldTrack) {
+      return {
+        ...track,
+        id: oldTrack.id
+      };
     }
-    return music;
+    return track;
   });
-
-  json.music = fixedMusicIds;
 
   const addMissingEntityId = entity => {
     if (!entity.id) {
-      entity.id = uuid();
+      return {
+        ...entity,
+        id: uuid()
+      };
     }
     return entity;
   };
@@ -85,9 +81,13 @@ const loadProject = async projectPath => {
     };
   });
 
-  json.scenes = fixedScenes;
-
-  return json;
+  return {
+    ...json,
+    backgrounds: fixedBackgroundIds,
+    spriteSheets: fixedSpriteIds,
+    music: fixedMusicIds,
+    scenes: fixedScenes
+  };
 };
 
 export default loadProject;

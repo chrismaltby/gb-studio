@@ -1,3 +1,6 @@
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable global-require */
+/* eslint-disable no-console */
 import electron from "electron";
 import en from "../../lang/en";
 
@@ -17,30 +20,39 @@ if (locale && locale !== "en") {
   }
 }
 
-const translations = Object.keys(en).reduce(
-  process.env.DEBUG_L10N === "true"
-    ? (memo, key) => {
-        memo[key] = key;
-        return memo;
-      }
-    : process.env.DEBUG_L10N === "missing"
-    ? (memo, key) => {
-        memo[key] = languageOverrides[key] || key;
-        return memo;
-      }
-    : (memo, key) => {
-        memo[key] = languageOverrides[key] || en[key];
-        return memo;
-      },
-  {}
-);
+const makeTranslationFunction = () => {
+  if (process.env.DEBUG_L10N === "true") {
+    return (memo, key) => {
+      return {
+        ...memo,
+        [key]: key
+      };
+    };
+  }
+  if (process.env.DEBUG_L10N === "missing") {
+    return (memo, key) => {
+      return {
+        ...memo,
+        [key]: languageOverrides[key] || key
+      };
+    };
+  }
+  return (memo, key) => {
+    return {
+      ...memo,
+      [key]: languageOverrides[key] || en[key]
+    };
+  };
+};
+
+const translations = Object.keys(en).reduce(makeTranslationFunction());
 
 export default (key, params = null) => {
   let translation = translations[key];
 
   if (params) {
     Object.keys(params).forEach(param => {
-      const pattern = new RegExp(`{(\s+)?${param}(\s+)?}`)
+      const pattern = new RegExp(`{(\s+)?${param}(\s+)?}`);
       translation = translation.replace(pattern, params[param]);
     });
   }

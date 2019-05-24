@@ -2,6 +2,7 @@ import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
+import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 
 const FRAME_SIZE = 16;
 
@@ -16,14 +17,7 @@ const loadSpriteData = async filename => {
     id: uuidv4(),
     name: relativePath.replace(".png", ""),
     numFrames,
-    type:
-      numFrames === 6
-        ? "actor_animated"
-        : numFrames === 3
-        ? "actor"
-        : numFrames === 1
-        ? "static"
-        : "animated",
+    type: spriteTypeFromNumFrames(numFrames),
     filename: relativePath,
     _v: Date.now()
   };

@@ -8,15 +8,16 @@ const TILE_SIZE = 8;
 const MAX_TILEMAP_TILE_WIDTH = 16;
 const MAX_TILEMAP_WIDTH = TILE_SIZE * MAX_TILEMAP_TILE_WIDTH;
 
-function memoize(fn) {
+const memoize = fn => {
   const cache = {};
-  return function(x) {
+  return x => {
     if (cache[x]) {
       return cache[x];
     }
-    return (cache[x] = fn(x));
+    cache[x] = fn(x);
+    return cache[x];
   };
-}
+};
 
 const indexColour = (r, g, b, a) => {
   if (g < 65) {
@@ -64,9 +65,8 @@ function colorFromIndex(index) {
   return 0;
 }
 
-function pad(n, width, z) {
-  z = z || "0";
-  n += "";
+function pad(str, width, z = "0") {
+  const n = String(str);
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
@@ -79,13 +79,12 @@ function decHex(dec) {
 }
 
 function parseTileString(string) {
-  return string.split(",").map(function(v) {
+  return string.split(",").map(v => {
     return parseInt(v, 16);
   });
 }
 
-function tilePixelsToHexString(pixels, indexFn) {
-  indexFn = indexFn || indexColour;
+function tilePixelsToHexString(pixels, indexFn = indexColour) {
   let tile = "";
   for (let y = 0; y < 8; y++) {
     let row1 = "";
@@ -169,8 +168,7 @@ function pixelsToSpriteData(pixels) {
   return output.slice(0, -1);
 }
 
-function pixelsAndLookupToTilemap(pixels, lookup, offset) {
-  offset = offset || 0;
+function pixelsAndLookupToTilemap(pixels, lookup, offset = 0) {
   const shape = pixels.shape.slice();
   const xTiles = Math.floor(shape[0] / TILE_SIZE);
   const yTiles = Math.floor(shape[1] / TILE_SIZE);
@@ -195,10 +193,11 @@ function pixelsAndLookupToTilemap(pixels, lookup, offset) {
 
 function mergeTileLookups(lookups) {
   let tileIndex = 0;
-  return lookups.reduce(function(memo, lookup) {
+  return lookups.reduce((memo, lookup) => {
     const tiles = Object.keys(lookup);
     for (let i = 0; i < tiles.length; i++) {
       if (memo[tiles[i]] === undefined) {
+        // eslint-disable-next-line no-param-reassign
         memo[tiles[i]] = tileIndex;
         tileIndex++;
       }
@@ -256,17 +255,17 @@ function imageToSpriteIntArray(filename) {
 function imageAndTilesetToTilemap(filename, tilesetFilename, offset) {
   const tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
   return Promise.all([getPixels(filename), tilesetLookup])
-    .then(function(res) {
+    .then(res => {
       return pixelsAndLookupToTilemap(res[0], res[1], offset);
     })
-    .then(function(tilemap) {
+    .then(tilemap => {
       return tilemap.map(decHex).join(",");
     });
 }
 
 function imageAndTilesetToTilemapIntArray(filename, tilesetFilename, offset) {
   const tilesetLookup = getPixels(tilesetFilename).then(pixelsToTilesLookup);
-  return Promise.all([getPixels(filename), tilesetLookup]).then(function(res) {
+  return Promise.all([getPixels(filename), tilesetLookup]).then(res => {
     return pixelsAndLookupToTilemap(res[0], res[1], offset);
   });
 }
@@ -276,10 +275,10 @@ function imageToTilesetLookup(filename) {
 }
 
 function imagesToTilesetLookups(filenames) {
-  const lookups = filenames.reduce(function(memo, filename) {
-    return memo.then(function(memo) {
-      return imageToTilesetLookup(filename).then(function(lookup) {
-        return [].concat(memo, lookup);
+  const lookups = filenames.reduce((memo, filename) => {
+    return memo.then(m => {
+      return imageToTilesetLookup(filename).then(lookup => {
+        return [].concat(m, lookup);
       });
     });
   }, Promise.resolve([]));
@@ -287,20 +286,9 @@ function imagesToTilesetLookups(filenames) {
 }
 
 function imagesToTilesetImage(filenames, outfile) {
-  return imagesToTilesetLookups.then(function(lookup) {
+  return imagesToTilesetLookups.then(lookup => {
     return tileLookupToImage(lookup, outfile);
   });
-  // const lookups = filenames.reduce(function(memo, filename) {
-  //   return memo.then(function(memo) {
-  //     return getPixels(filename)
-  //       .then(pixelsToTilesLookup)
-  //       .then(function(lookup) {
-  //         return [].concat(memo, lookup);
-  //       });
-  //   });
-  // }, Promise.resolve([]));
-
-  // return lookups.then(mergeTileLookups).then(tileLookupToImage(outfile));
 }
 
 function tileLookupToImage(lookup, outFile) {
@@ -329,18 +317,19 @@ function tileLookupToImage(lookup, outFile) {
 }
 
 function writePixelsToFile(outFile, pixels) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     const imgStream = savePixels(pixels, "png");
     const bufs = [];
-    imgStream.on("data", function(d) {
+    imgStream.on("data", d => {
       bufs.push(d);
     });
-    imgStream.on("end", function() {
+    imgStream.on("end", () => {
       const buf = Buffer.concat(bufs);
       if (outFile) {
-        fs.writeFile(outFile, buf, function(err) {
+        fs.writeFile(outFile, buf, err => {
           if (err) {
-            return reject(err);
+            reject(err);
+            return;
           }
           resolve(buf);
         });

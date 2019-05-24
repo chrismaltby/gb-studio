@@ -1,5 +1,9 @@
-export const indexArray = (arr, index) =>
-  arr.reduce((memo, row) => {
-    memo[row[index]] = row;
-    return memo;
+export const indexBy = key => arr =>
+  arr.reduce((memo, elem) => {
+    return {
+      ...memo,
+      [elem[key]]: elem
+    };
   }, {});
+
+export const flatten = arr => [].concat(...arr);

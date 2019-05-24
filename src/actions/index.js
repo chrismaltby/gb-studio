@@ -18,6 +18,8 @@ const asyncAction = async (
     const res = await fn();
     dispatch({ ...res, type: successType });
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     dispatch({ type: failureType });
   }
 };
@@ -347,7 +349,8 @@ export const editDestinationPosition = (
       x,
       y
     };
-  } if (selectionType === "triggers") {
+  }
+  if (selectionType === "triggers") {
     return {
       type: types.EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
       eventId,

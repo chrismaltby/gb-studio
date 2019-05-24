@@ -108,10 +108,12 @@ FilesSidebar.propTypes = {
   setNavigationId: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
   width: PropTypes.number,
-  files: PropTypes.arrayOf({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }).isRequired,
+  files: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
+  ).isRequired,
   selectedFile: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
