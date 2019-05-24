@@ -4,7 +4,6 @@ import Octokit from "@octokit/rest";
 import open from "open";
 import settings from "electron-settings";
 import meta from "../../../package.json";
-import l10n from "./l10n";
 
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
@@ -51,6 +50,8 @@ export const needsUpdate = async () => {
 };
 
 export const checkForUpdate = async force => {
+  // eslint-disable-next-line global-require
+  const l10n = require("./l10n").default;
   if (force) {
     // If manually checking for updates using menu, clear previous settings
     settings.set("dontCheckForUpdates", false);
