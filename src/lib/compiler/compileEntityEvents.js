@@ -42,7 +42,6 @@ import {
   EVENT_INC_VALUE,
   EVENT_DEC_VALUE,
   EVENT_SET_VALUE,
-  EVENT_SET_VALUE_TO_FLAG,
   EVENT_IF_INPUT,
   EVENT_CHOICE,
   EVENT_ACTOR_PUSH,
@@ -87,6 +86,7 @@ import {
   operatorDec,
   combineMultipleChoiceText
 } from "./helpers";
+import { directionToFrame } from "../helpers/gbstudio";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -218,7 +218,6 @@ const getVariableIndex = (variable, variables) => {
   const variableIndex = variables.indexOf(String(variable));
   if (variableIndex === -1) {
     throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
-    return 0;
   }
   return variableIndex;
 };
@@ -505,7 +504,7 @@ const precompileEntityScript = (input = [], options = {}) => {
           output.push(lo(tmpVariableIndex));
           output.push(0);
           break;
-        case "var":
+        case "var": {
           const otherVariableIndex = getVariableIndex(
             input[i].args.vectorY,
             variables
@@ -513,7 +512,8 @@ const precompileEntityScript = (input = [], options = {}) => {
           loadVectorsByIndex(tmpVariableIndex, otherVariableIndex, output);
           output.push(CMD_LOOKUP.COPY_VALUE);
           break;
-        case "rnd":
+        }
+        case "rnd": {
           const min = input[i].args.minValue || 0;
           const range = Math.min(
             254,
@@ -525,6 +525,7 @@ const precompileEntityScript = (input = [], options = {}) => {
           output.push(min);
           output.push(range);
           break;
+        }
         case "val":
         default:
           output.push(CMD_LOOKUP.SET_VALUE);
@@ -653,14 +654,9 @@ const precompileEntityScript = (input = [], options = {}) => {
           (spriteSheet.numFrames === 3 || spriteSheet.numFrames === 6)
         ) {
           output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
-          const multiplier = spriteSheet.numFrames === 6 ? 2 : 1;
-          const frame =
-            input[i].args.direction === "up"
-              ? 1
-              : input[i].args.direction === "down"
-              ? 0
-              : 2;
-          output.push(multiplier * frame);
+          output.push(
+            directionToFrame(input[i].args.direction, spriteSheet.numFrames)
+          );
           const flip = input[i].args.direction === "left";
           output.push(CMD_LOOKUP.ACTOR_SET_FLIP);
           output.push(flip);
@@ -853,10 +849,7 @@ const precompileEntityScript = (input = [], options = {}) => {
 
     for (let oi = 0; oi < output.length; oi++) {
       if (output[oi] < 0) {
-        console.log("OUTPUT FAILED");
-        console.log(command);
-        console.log(input[i]);
-        throw "OUTPUT FAILED";
+        throw new Error("OUTPUT FAILED");
       }
     }
   }

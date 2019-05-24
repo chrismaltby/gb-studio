@@ -11,3 +11,17 @@ export const spriteTypeFromNumFrames = numFrames => {
   }
   return "animated";
 };
+
+export const directionToFrame = (direction, numFrames) => {
+  if (numFrames !== 6 && numFrames !== 3) {
+    return 0;
+  }
+  const framesPerDirection = numFrames === 6 ? 2 : 1;
+  if (direction === "down") {
+    return 0;
+  }
+  if (direction === "up") {
+    return framesPerDirection;
+  }
+  return framesPerDirection * 2;
+};

@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 
 const filterLogs = str => {
-  return str.replace(/.*[\/|\\]([^\/|\\]*.mod)/g, "$1");
+  return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
 };
 
 const compileMusic = async ({
@@ -15,8 +15,6 @@ const compileMusic = async ({
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
 
-  console.log("ABOUT TO COMPILE", music);
-
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
     await compileTrack(track, {
@@ -27,8 +25,6 @@ const compileMusic = async ({
       warnings
     });
   }
-
-  console.log("DONE WITH MUSIC");
 };
 
 const compileTrack = async (
@@ -42,9 +38,6 @@ const compileTrack = async (
   }
 ) => {
   const env = Object.create(process.env);
-
-  console.log("ABOUT TO COMPILE TRACK", track);
-  console.log(buildRoot);
 
   env.PATH = [`${buildToolsPath}/mod2gbt`, env.PATH].join(":");
   const command =
@@ -67,26 +60,26 @@ const compileTrack = async (
       encoding: "utf8"
     });
 
-    child.on("error", function(err) {
+    child.on("error", err => {
       warnings(err.toString());
     });
 
-    child.stdout.on("data", function(data) {
+    child.stdout.on("data", data => {
       const lines = data.toString().split("\n");
       lines.forEach(line => {
         progress(filterLogs(line));
       });
     });
 
-    child.stderr.on("data", function(data) {
+    child.stderr.on("data", data => {
       const lines = data.toString().split("\n");
       lines.forEach(line => {
         warnings(line);
       });
     });
 
-    child.on("close", function(code) {
-      if (code == 0) resolve();
+    child.on("close", code => {
+      if (code === 0) resolve();
       else reject(code);
     });
   });

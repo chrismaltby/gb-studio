@@ -20,9 +20,7 @@ const ejectBuild = async ({
   await fs.ensureDir(outputRoot);
   progress("Copy core");
 
-  console.log("COPYDIR", { corePath, outputRoot });
   await copy(corePath, outputRoot);
-
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/node_modules`);
   await fs.ensureDir(`${outputRoot}/obj`);
@@ -33,7 +31,6 @@ const ejectBuild = async ({
   for (const filename in compiledData.files) {
     if (filename.endsWith(".h")) {
       progress(`Copy header ${filename}`);
-
       await fs.writeFile(
         `${outputRoot}/include/${filename}`,
         compiledData.files[filename]

@@ -182,10 +182,10 @@ class World extends Component {
   onMouseWheel = e => {
     if (e.ctrlKey) {
       e.preventDefault();
-      if (event.wheelDelta > 0) {
-        this.props.zoomIn("world", event.deltaY * 0.5);
+      if (e.wheelDelta > 0) {
+        this.props.zoomIn("world", e.deltaY * 0.5);
       } else {
-        this.props.zoomOut("world", event.deltaY * 0.5);
+        this.props.zoomOut("world", e.deltaY * 0.5);
       }
     }
   };

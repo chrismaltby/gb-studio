@@ -17,10 +17,10 @@ class ImageViewer extends Component {
   onMouseWheel = e => {
     if (e.ctrlKey) {
       e.preventDefault();
-      if (event.wheelDelta > 0) {
-        this.props.zoomIn(this.props.section, event.deltaY * 0.5);
+      if (e.wheelDelta > 0) {
+        this.props.zoomIn(this.props.section, e.deltaY * 0.5);
       } else {
-        this.props.zoomOut(this.props.section, event.deltaY * 0.5);
+        this.props.zoomOut(this.props.section, e.deltaY * 0.5);
       }
     }
   };
