@@ -164,7 +164,7 @@ class AppToolbar extends Component {
 }
 
 AppToolbar.propTypes = {
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string,
   projectRoot: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
   zoom: PropTypes.number.isRequired,
@@ -177,6 +177,10 @@ AppToolbar.propTypes = {
   running: PropTypes.bool.isRequired,
   modified: PropTypes.bool.isRequired,
   showZoom: PropTypes.bool.isRequired
+};
+
+AppToolbar.defaultProps = {
+  name: ""
 };
 
 const zoomForSection = (section, editor) => {

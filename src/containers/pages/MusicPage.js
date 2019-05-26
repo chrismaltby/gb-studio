@@ -60,7 +60,7 @@ MusicPage.propTypes = {
 };
 
 MusicPage.defaultProps = {
-  id: undefined
+  id: ""
 };
 
 function mapStateToProps(state) {
