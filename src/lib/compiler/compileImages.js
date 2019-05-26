@@ -5,7 +5,6 @@ const MAX_TILESET_TILES = 16 * 12;
 
 const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   const tilesetLookups = [];
-  const tilesetStrings = [];
   const tilesetIndexes = [];
   const output = {
     tilesets: {},

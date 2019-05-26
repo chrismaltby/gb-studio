@@ -175,6 +175,12 @@ const findEvent = (data, id) => {
   return r;
 };
 
+const eventHasArg = (event, argName) => {
+  return (
+    event.args && Object.prototype.hasOwnProperty.call(event.args, argName)
+  );
+};
+
 export {
   walkEvents,
   walkEventsDepthFirst,
@@ -186,5 +192,6 @@ export {
   appendEvent,
   regenerateEventIds,
   filterEvents,
-  findEvent
+  findEvent,
+  eventHasArg
 };

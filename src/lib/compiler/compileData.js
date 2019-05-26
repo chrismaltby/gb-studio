@@ -4,7 +4,8 @@ import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
 import {
   walkScenesEvents,
   findSceneEvent,
-  walkEventsDepthFirst
+  walkEventsDepthFirst,
+  eventHasArg
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
@@ -21,9 +22,13 @@ import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import {
   combineMultipleChoiceText,
   dirDec,
+  dirToXDec,
+  dirToYDec,
   moveDec,
   moveSpeedDec,
-  animSpeedDec
+  animSpeedDec,
+  spriteTypeDec,
+  actorFramesPerDir
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 
@@ -60,7 +65,9 @@ const compile = async (
   const output = {};
 
   if (projectData.scenes.length === 0) {
-    throw "No scenes are included in your project. Add some scenes in the Game World editor and try again.";
+    throw new Error(
+      "No scenes are included in your project. Add some scenes in the Game World editor and try again."
+    );
   }
 
   const precompiled = await precompile(projectData, projectRoot, tmpPath, {
@@ -94,19 +101,20 @@ const compile = async (
     const bankEntitySubScripts = entityType => (entity, entityIndex) => {
       walkEventsDepthFirst(entity.script, cmd => {
         if (cmd.command === EVENT_SET_INPUT_SCRIPT) {
-          const output = compileEntityEvents(cmd.true, {
-            scene,
-            scenes: precompiled.sceneData,
-            music: precompiled.usedMusic,
-            sprites: precompiled.usedSprites,
-            backgrounds: precompiled.usedBackgrounds,
-            strings: precompiled.strings,
-            variables: precompiled.variables,
-            subScripts,
-            entityType,
-            entityIndex
-          });
-          subScripts[cmd.id] = banked.push(output);
+          subScripts[cmd.id] = banked.push(
+            compileEntityEvents(cmd.true, {
+              scene,
+              scenes: precompiled.sceneData,
+              music: precompiled.usedMusic,
+              sprites: precompiled.usedSprites,
+              backgrounds: precompiled.usedBackgrounds,
+              strings: precompiled.strings,
+              variables: precompiled.variables,
+              subScripts,
+              entityType,
+              entityIndex
+            })
+          );
         }
       });
     };
@@ -116,19 +124,20 @@ const compile = async (
     scene.triggers.map(bankEntitySubScripts("trigger"));
 
     const bankEntityEvents = entityType => (entity, entityIndex) => {
-      const output = compileEntityEvents(entity.script, {
-        scene,
-        scenes: precompiled.sceneData,
-        music: precompiled.usedMusic,
-        sprites: precompiled.usedSprites,
-        backgrounds: precompiled.usedBackgrounds,
-        strings: precompiled.strings,
-        variables: precompiled.variables,
-        subScripts,
-        entityType,
-        entityIndex
-      });
-      return banked.push(output);
+      return banked.push(
+        compileEntityEvents(entity.script, {
+          scene,
+          scenes: precompiled.sceneData,
+          music: precompiled.usedMusic,
+          sprites: precompiled.usedSprites,
+          backgrounds: precompiled.usedBackgrounds,
+          strings: precompiled.strings,
+          variables: precompiled.variables,
+          subScripts,
+          entityType,
+          entityIndex
+        })
+      );
     };
     return {
       start: bankEntityEvents("scene")(scene),
@@ -257,14 +266,13 @@ const compile = async (
     );
   }
   if (playerSpriteIndex < 0) {
-    throw "Player sprite hasn't been set, add it from the Game World.";
+    throw new Error(
+      "Player sprite hasn't been set, add it from the Game World."
+    );
   }
 
-  const startDirectionValue = dirDec(startDirection);
-  const startDirectionX =
-    startDirectionValue == 2 ? -1 : startDirectionValue == 4 ? 1 : 0;
-  const startDirectionY =
-    startDirectionValue == 8 ? -1 : startDirectionValue == 1 ? 1 : 0;
+  const startDirectionX = dirToXDec(startDirection);
+  const startDirectionY = dirToYDec(startDirection);
 
   output[`data_ptrs.h`] =
     `${`#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
@@ -382,7 +390,7 @@ const precompile = async (
   });
 
   progress(EVENT_MSG_PRE_SPRITES);
-  const { usedSprites, spriteLookup, spriteData } = await precompileSprites(
+  const { usedSprites } = await precompileSprites(
     projectData.spriteSheets,
     projectData.scenes,
     projectData.settings.playerSpriteSheetId,
@@ -431,24 +439,22 @@ export const precompileVariables = scenes => {
     variables.push(String(i));
   }
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args) {
-      if (cmd.args.hasOwnProperty("variable")) {
-        const variable = cmd.args.variable || "0";
-        if (variables.indexOf(variable) === -1) {
-          variables.push(variable);
-        }
+    if (eventHasArg(cmd, "variable")) {
+      const variable = cmd.args.variable || "0";
+      if (variables.indexOf(variable) === -1) {
+        variables.push(variable);
       }
-      if (cmd.args.hasOwnProperty("vectorX")) {
-        const x = cmd.args.vectorX || "0";
-        if (variables.indexOf(x) === -1) {
-          variables.push(x);
-        }
+    }
+    if (eventHasArg(cmd, "vectorX")) {
+      const x = cmd.args.vectorX || "0";
+      if (variables.indexOf(x) === -1) {
+        variables.push(x);
       }
-      if (cmd.args.hasOwnProperty("vectorY")) {
-        const y = cmd.args.vectorY || "0";
-        if (variables.indexOf(y) === -1) {
-          variables.push(y);
-        }
+    }
+    if (eventHasArg(cmd, "vectorY")) {
+      const y = cmd.args.vectorY || "0";
+      if (variables.indexOf(y) === -1) {
+        variables.push(y);
       }
     }
   });
@@ -483,7 +489,7 @@ export const precompileStrings = scenes => {
       }
     }
   });
-  if (strings.length == 0) {
+  if (strings.length === 0) {
     return ["NOSTRINGS"];
   }
   return strings;
@@ -498,7 +504,7 @@ export const precompileBackgrounds = async (
 ) => {
   const eventImageIds = [];
   walkScenesEvents(scenes, cmd => {
-    if (cmd.args && cmd.args.hasOwnProperty("backgroundId")) {
+    if (eventHasArg(cmd, "backgroundId")) {
       eventImageIds.push(cmd.args.backgroundId);
     }
   });
@@ -647,9 +653,11 @@ export const precompileScenes = (
       background => background.id === scene.backgroundId
     );
     if (backgroundIndex < 0) {
-      throw `Scene #${sceneIndex + 1} ${
-        scene.name ? `'${scene.name}'` : ""
-      } has missing or no background assigned.`;
+      throw new Error(
+        `Scene #${sceneIndex + 1} ${
+          scene.name ? `'${scene.name}'` : ""
+        } has missing or no background assigned.`
+      );
     }
 
     if (scene.actors.length > MAX_ACTORS) {
@@ -695,7 +703,7 @@ export const precompileScenes = (
         return (
           trigger.script &&
           trigger.script.length >= 1 &&
-          trigger.script[0].command != CMD_LOOKUP.END
+          trigger.script[0].command !== CMD_LOOKUP.END
         );
       }),
       actorsData: [],
@@ -734,26 +742,13 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
       const sprite = sprites.find(s => s.id === actor.spriteSheetId);
       if (!sprite) return [];
       const spriteFrames = sprite.size / 64;
-      const actorFrames =
-        moveDec(actor.movementType) === 1
-          ? spriteFrames // If movement type is static and cycling frames, always set full frame count
-          : spriteFrames === 6
-          ? 2 // Actor Animated
-          : spriteFrames === 3
-          ? 1 // Actor
-          : spriteFrames;
+      const actorFrames = actorFramesPerDir(actor.movementType, spriteFrames);
       const initialFrame =
         moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        moveDec(actor.movementType) === 1
-          ? 0 // If movement type is static and cycling frames, always set as static sprite
-          : spriteFrames === 6
-          ? 2 // Actor Animated
-          : spriteFrames === 3
-          ? 1 // Actor
-          : 0, // Static
-        actorFrames,
+        spriteTypeDec(actor.movementType, spriteFrames), // Sprite Type
+        actorFrames, // Frames per direction
         (actor.animate ? 1 : 0) + (initialFrame << 1),
         actor.x, // X Pos
         actor.y, // Y Pos

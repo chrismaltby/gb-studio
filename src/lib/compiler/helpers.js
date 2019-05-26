@@ -64,6 +64,32 @@ const nameToCName = name => {
 
 const dirDec = dir => DIR_LOOKUP[dir] || 1;
 
+const dirToXDec = dir => {
+  const d = dirDec(dir);
+  if (d === 2) {
+    // Facing left
+    return -1;
+  }
+  if (d === 4) {
+    // Facing right
+    return 1;
+  }
+  return 0;
+};
+
+const dirToYDec = dir => {
+  const d = dirDec(dir);
+  if (d === 8) {
+    // Facing up
+    return -1;
+  }
+  if (d === 1) {
+    // Facing down
+    return 1;
+  }
+  return 0;
+};
+
 const moveDec = move => MOVEMENT_LOOKUP[move] || 1;
 
 const moveSpeedDec = moveSpeed =>
@@ -75,6 +101,36 @@ const animSpeedDec = animSpeed => (animSpeed !== undefined ? animSpeed : 3);
 
 const operatorDec = operator => OPERATOR_LOOKUP[operator] || 1;
 
+const spriteTypeDec = (movementType, numFrames) => {
+  if (moveDec(movementType) === 1) {
+    // If movement type is static and cycling frames, always set as static sprite
+    return 0;
+  }
+  if (numFrames === 6) {
+    return 2; // Actor Animated
+  }
+  if (numFrames === 3) {
+    return 1; // Actor
+  }
+  // Static;
+  return 0;
+};
+
+const actorFramesPerDir = (movementType, numFrames) => {
+  if (moveDec(movementType) === 1) {
+    // If movement type is static and cycling frames
+    return numFrames;
+  }
+  if (numFrames === 6) {
+    return 2; // Actor Animated
+  }
+  if (numFrames === 3) {
+    return 1; // Actor
+  }
+  // Static;
+  return numFrames;
+};
+
 const combineMultipleChoiceText = args => {
   const trueText = args.trueText.slice(0, 17) || "Choice A";
   const falseText = args.falseText.slice(0, 17) || "Choice B";
@@ -84,10 +140,14 @@ const combineMultipleChoiceText = args => {
 module.exports = {
   nameToCName,
   dirDec,
+  dirToXDec,
+  dirToYDec,
   inputDec,
   moveDec,
   moveSpeedDec,
   animSpeedDec,
   operatorDec,
+  spriteTypeDec,
+  actorFramesPerDir,
   combineMultipleChoiceText
 };

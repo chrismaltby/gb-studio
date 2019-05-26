@@ -279,7 +279,6 @@ const precompileEntityScript = (input = [], options = {}) => {
     scenes,
     music,
     sprites,
-    backgrounds,
     variables,
     subScripts,
     entityType,
@@ -576,12 +575,10 @@ const precompileEntityScript = (input = [], options = {}) => {
     } else if (command === EVENT_FADE_IN) {
       output.push(CMD_LOOKUP.FADE_IN);
       const speed = input[i].args.speed || 1;
-      const speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_FADE_OUT) {
       output.push(CMD_LOOKUP.FADE_OUT);
       const speed = input[i].args.speed || 1;
-      const speedFlag = (1 << speed) - 1;
       output.push(speed);
     } else if (command === EVENT_CAMERA_MOVE_TO) {
       output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
