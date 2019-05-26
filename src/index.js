@@ -120,10 +120,9 @@ const createWindow = async projectPath => {
 
   mainWindow.setRepresentedFilename(projectPath);
 
-  mainWindow.webContents.on("did-finish-load", function() {
-    mainWindow.webContents.send("ping", "whoooooooh!");
+  mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.webContents.send("open-project", projectPath);
-    setTimeout(function() {
+    setTimeout(() => {
       mainWindow.show();
     }, 40);
   });
@@ -138,7 +137,7 @@ const createWindow = async projectPath => {
 
   mainWindow.on("close", e => {
     if (mainWindow.documentEdited) {
-      const choice = require("electron").dialog.showMessageBox(mainWindow, {
+      const choice = dialog.showMessageBox(mainWindow, {
         type: "question",
         buttons: ["Quit", "Cancel"],
         title: "Confirm",
@@ -379,6 +378,7 @@ const openProjectPicker = async () => {
 };
 
 const openProject = async projectPath => {
+  // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
   const ext = Path.extname(projectPath);
   if (validProjectExt.indexOf(ext) === -1) {
