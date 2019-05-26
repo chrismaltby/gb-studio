@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   Toolbar,
@@ -32,37 +33,44 @@ const sectionNames = {
 
 class AppToolbar extends Component {
   setSection = section => e => {
-    this.props.setSection(section);
+    const { setSection } = this.props;
+    setSection(section);
   };
 
   onZoomIn = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomIn(this.props.section);
+    const { zoomIn, section } = this.props;
+    zoomIn(section);
   };
 
   onZoomOut = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomOut(this.props.section);
+    const { zoomOut, section } = this.props;
+    zoomOut(section);
   };
 
   onZoomReset = e => {
     e.preventDefault();
     e.stopPropagation();
-    this.props.zoomReset(this.props.section);
+    const { zoomReset, section } = this.props;
+    zoomReset(section);
   };
 
   onRun = async e => {
-    this.props.buildGame({ buildType: "web" });
+    const { buildGame } = this.props;
+    buildGame({ buildType: "web" });
   };
 
   onBuild = buildType => e => {
-    this.props.buildGame({ buildType, exportBuild: true });
+    const { buildGame } = this.props;
+    buildGame({ buildType, exportBuild: true });
   };
 
   openProjectFolder = e => {
-    this.props.openFolder(`${this.props.projectRoot}`);
+    const { openFolder, projectRoot } = this.props;
+    openFolder(projectRoot);
   };
 
   render() {
@@ -155,18 +163,41 @@ class AppToolbar extends Component {
   }
 }
 
+AppToolbar.propTypes = {
+  name: PropTypes.string.isRequired,
+  projectRoot: PropTypes.string.isRequired,
+  section: PropTypes.string.isRequired,
+  zoom: PropTypes.number.isRequired,
+  setSection: PropTypes.func.isRequired,
+  zoomIn: PropTypes.func.isRequired,
+  zoomOut: PropTypes.func.isRequired,
+  zoomReset: PropTypes.func.isRequired,
+  openFolder: PropTypes.func.isRequired,
+  buildGame: PropTypes.func.isRequired,
+  running: PropTypes.bool.isRequired,
+  modified: PropTypes.bool.isRequired,
+  showZoom: PropTypes.bool.isRequired
+};
+
+const zoomForSection = (section, editor) => {
+  if (section === "world") {
+    return editor.zoom;
+  }
+  if (section === "sprites") {
+    return editor.zoomSprite;
+  }
+  if (section === "backgrounds") {
+    return editor.zoomImage;
+  }
+  if (section === "ui") {
+    return editor.zoomUI;
+  }
+  return 100;
+};
+
 function mapStateToProps(state) {
   const section = state.navigation.section;
-  const zoom =
-    section === "world"
-      ? state.editor.zoom
-      : section === "sprites"
-      ? state.editor.zoomSprite
-      : section === "backgrounds"
-      ? state.editor.zoomImage
-      : section === "ui"
-      ? state.editor.zoomUI
-      : 100;
+  const zoom = zoomForSection(section, state.editor);
   return {
     projectRoot: state.document && state.document.root,
     modified: state.document && state.document.modified,
