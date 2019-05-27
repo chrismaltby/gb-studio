@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import * as actions from "../../actions";
@@ -10,6 +11,16 @@ const SidebarHeading = ({ title, buttons }) => (
     {buttons}
   </div>
 );
+
+SidebarHeading.propTypes = {
+  title: PropTypes.string,
+  buttons: PropTypes.node
+};
+
+SidebarHeading.defaultProps = {
+  title: "",
+  buttons: null
+};
 
 const SidebarColumn = props => <div className="SidebarColumn" {...props} />;
 
@@ -32,23 +43,24 @@ class Sidebar extends Component {
 
   onMouseDown = () => {
     this.setState({
-      ...this.state,
       dragging: true
     });
   };
 
   onMouseUp = () => {
-    if (this.state.dragging) {
+    const { dragging } = this.state;
+    if (dragging) {
       this.setState({
-        ...this.state,
         dragging: false
       });
     }
   };
 
   onMouseMove = event => {
-    if (this.state.dragging) {
-      this.props.resizeSidebar(window.innerWidth - event.pageX);
+    const { resizeSidebar } = this.props;
+    const { dragging } = this.state;
+    if (dragging) {
+      resizeSidebar(window.innerWidth - event.pageX);
     }
   };
 
@@ -75,9 +87,18 @@ class Sidebar extends Component {
   }
 }
 
+Sidebar.propTypes = {
+  width: PropTypes.number.isRequired,
+  resizeSidebar: PropTypes.func.isRequired,
+  children: PropTypes.node
+};
+
+Sidebar.defaultProps = {
+  children: null
+};
+
 function mapStateToProps(state) {
   return {
-    editor: state.editor,
     width: state.project.present.settings.sidebarWidth
   };
 }

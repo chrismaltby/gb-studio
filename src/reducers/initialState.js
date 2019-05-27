@@ -25,6 +25,7 @@ export default {
     zoomSprite: 400,
     zoomImage: 200,
     zoomUI: 200,
+    dragging: "",
     sceneDragging: false,
     sceneDragX: 0,
     sceneDragY: 0,

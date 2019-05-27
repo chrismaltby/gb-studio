@@ -12,16 +12,47 @@ export const spriteTypeFromNumFrames = numFrames => {
   return "animated";
 };
 
+export const framesPerDirection = (movementType, numFrames) => {
+  if (movementType === "static") {
+    // If movement type is static and cycling frames
+    return numFrames;
+  }
+  if (numFrames === 6) {
+    return 2; // Actor Animated
+  }
+  if (numFrames === 3) {
+    return 1; // Actor
+  }
+  // Static;
+  return numFrames;
+};
+
 export const directionToFrame = (direction, numFrames) => {
   if (numFrames !== 6 && numFrames !== 3) {
     return 0;
   }
-  const framesPerDirection = numFrames === 6 ? 2 : 1;
+  const frames = numFrames === 6 ? 2 : 1;
   if (direction === "down") {
     return 0;
   }
   if (direction === "up") {
-    return framesPerDirection;
+    return frames;
   }
-  return framesPerDirection * 2;
+  return frames * 2;
+};
+
+export const zoomForSection = (section, editor) => {
+  if (section === "world") {
+    return editor.zoom;
+  }
+  if (section === "sprites") {
+    return editor.zoomSprite;
+  }
+  if (section === "backgrounds") {
+    return editor.zoomImage;
+  }
+  if (section === "ui") {
+    return editor.zoomUI;
+  }
+  return 100;
 };

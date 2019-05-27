@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { divisibleBy8 } from "../../lib/helpers/8bit";
+import { zoomForSection } from "../../lib/helpers/gbstudio";
 
 class ImageViewer extends Component {
   componentDidMount() {
@@ -15,19 +17,20 @@ class ImageViewer extends Component {
   }
 
   onMouseWheel = e => {
+    const { zoomIn, zoomOut, section } = this.props;
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        this.props.zoomIn(this.props.section, e.deltaY * 0.5);
+        zoomIn(section, e.deltaY * 0.5);
       } else {
-        this.props.zoomOut(this.props.section, e.deltaY * 0.5);
+        zoomOut(section, e.deltaY * 0.5);
       }
     }
   };
 
   onOpen = () => {
-    const { projectRoot, file, folder } = this.props;
-    this.props.openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
+    const { projectRoot, file, folder, openFolder } = this.props;
+    openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
   };
 
   getWarnings = () => {
@@ -48,14 +51,7 @@ class ImageViewer extends Component {
   };
 
   render() {
-    const {
-      projectRoot,
-      file,
-      folder,
-      zoomRatio,
-      editor,
-      sidebarWidth
-    } = this.props;
+    const { projectRoot, file, folder, zoom, sidebarWidth } = this.props;
     const warnings = this.getWarnings();
     return (
       <div className="ImageViewer" style={{ right: sidebarWidth }}>
@@ -63,7 +59,7 @@ class ImageViewer extends Component {
           {file && (
             <div
               className="ImageViewer__Image"
-              style={{ transform: `scale(${zoomRatio})` }}
+              style={{ transform: `scale(${zoom})` }}
             >
               <img
                 alt=""
@@ -86,6 +82,7 @@ class ImageViewer extends Component {
           <div className="ImageViewer__Warning">
             <ul>
               {warnings.map((warning, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <li key={index}>{warning}</li>
               ))}
             </ul>
@@ -96,26 +93,34 @@ class ImageViewer extends Component {
   }
 }
 
+ImageViewer.propTypes = {
+  projectRoot: PropTypes.string.isRequired,
+  folder: PropTypes.string.isRequired,
+  file: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    filename: PropTypes.string.isRequired
+  }),
+  section: PropTypes.string.isRequired,
+  zoom: PropTypes.number.isRequired,
+  sidebarWidth: PropTypes.number.isRequired,
+  zoomIn: PropTypes.func.isRequired,
+  zoomOut: PropTypes.func.isRequired,
+  openFolder: PropTypes.func.isRequired
+};
+
+ImageViewer.defaultProps = {
+  file: {}
+};
+
 function mapStateToProps(state) {
-  const { id, section } = state.navigation;
-  const folder =
-    section === "backgrounds"
-      ? "backgrounds"
-      : section === "sprites"
-      ? "sprites"
-      : "ui";
-  const zoom =
-    section === "backgrounds"
-      ? state.editor.zoomImage
-      : section === "sprites"
-      ? state.editor.zoomSprite
-      : state.editor.zoomUI;
+  const { section } = state.navigation;
+  const folder = section;
+  const zoom = zoomForSection(section, state.editor);
   return {
     projectRoot: state.document && state.document.root,
     folder,
     section,
-    zoomRatio: (zoom || 100) / 100,
-    editor: state.editor,
+    zoom: (zoom || 100) / 100,
     sidebarWidth: state.project.present.settings.sidebarWidth
   };
 }

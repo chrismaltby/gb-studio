@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import { throttle } from "lodash";
@@ -8,6 +9,7 @@ import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { findSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
+import { SpriteShape, SceneShape, EventShape } from "../../reducers/stateShape";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -39,19 +41,6 @@ class Scene extends Component {
     window.removeEventListener("keydown", this.onKeyDown);
   }
 
-  /*
-  componentDidUpdate(prevProps) {
-    if (this.props.selected && this.props.selected !== prevProps.selected) {
-      // Scroll scene into view when selected
-      this.containerRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center"
-      });
-    }
-  }
-  */
-
   onKeyDown = e => {
     if (e.target.nodeName !== "BODY") {
       return;
@@ -62,8 +51,8 @@ class Scene extends Component {
     if (e.key === "p") {
       const { hoverX, hoverY, hover } = this.state;
       if (hover) {
-        const { id } = this.props;
-        this.props.editPlayerStartAt(id, hoverX, hoverY);
+        const { id, editPlayerStartAt } = this.props;
+        editPlayerStartAt(id, hoverX, hoverY);
       }
     }
   };
@@ -72,7 +61,9 @@ class Scene extends Component {
     const {
       id,
       tool,
-      editor,
+      sceneId,
+      entityId,
+      editorType,
       scene,
       showCollisions,
       zoomRatio,
@@ -81,7 +72,14 @@ class Scene extends Component {
       playerDragging,
       destinationDragging,
       actorDragging,
-      triggerDragging
+      triggerDragging,
+      removeCollisionTile,
+      addCollisionTile,
+      resizeTrigger,
+      editPlayerStartAt,
+      editDestinationPosition,
+      moveActor,
+      moveTrigger
     } = this.props;
     const { creating, downX, downY } = this.state;
 
@@ -95,15 +93,15 @@ class Scene extends Component {
       if (creating) {
         if (tool === "collisions") {
           if (this.remove) {
-            this.props.removeCollisionTile(id, tX, tY);
+            removeCollisionTile(id, tX, tY);
           } else {
-            this.props.addCollisionTile(id, tX, tY);
+            addCollisionTile(id, tX, tY);
           }
         } else if (tool === "triggers") {
-          this.props.resizeTrigger(id, editor.entityId, downX, downY, tX, tY);
+          resizeTrigger(id, entityId, downX, downY, tX, tY);
         } else if (tool === "eraser") {
           if (showCollisions) {
-            this.props.removeCollisionTile(id, tX, tY);
+            removeCollisionTile(id, tX, tY);
           }
         }
       }
@@ -126,25 +124,21 @@ class Scene extends Component {
         });
 
         if (playerDragging) {
-          const { id } = this.props;
-          this.props.editPlayerStartAt(id, tX, tY);
+          editPlayerStartAt(id, tX, tY);
         } else if (destinationDragging) {
-          const { id, editor } = this.props;
-          this.props.editDestinationPosition(
+          editDestinationPosition(
             destinationDragging,
-            editor.scene,
-            editor.type,
-            editor.entityId,
+            sceneId,
+            editorType,
+            entityId,
             id,
             tX,
             tY
           );
         } else if (actorDragging) {
-          const { id, editor } = this.props;
-          this.props.moveActor(editor.scene, editor.entityId, id, tX, tY);
+          moveActor(sceneId, entityId, id, tX, tY);
         } else if (triggerDragging) {
-          const { id, editor } = this.props;
-          this.props.moveTrigger(editor.scene, editor.entityId, id, tX, tY);
+          moveTrigger(sceneId, entityId, id, tX, tY);
         }
       }
 
@@ -154,33 +148,46 @@ class Scene extends Component {
   };
 
   setStatus = throttle(options => {
-    this.props.setStatus(options);
+    const { setStatus } = this.props;
+    setStatus(options);
   }, 200);
 
   onMouseDown = e => {
-    const { id, tool, scene, width, showCollisions } = this.props;
+    const {
+      id,
+      tool,
+      scene,
+      width,
+      showCollisions,
+      dragActorStart,
+      dragTriggerStart,
+      selectScene,
+      addActor,
+      removeCollisionTile,
+      addCollisionTile,
+      setTool,
+      addTrigger,
+      removeActorAt,
+      removeTriggerAt
+    } = this.props;
     const { hoverX, hoverY } = this.state;
 
     const trigger = this.triggerAt(hoverX, hoverY);
     const actor = this.actorAt(hoverX, hoverY);
 
     if (actor) {
-      this.props.dragActorStart(id, actor.id, scene.actors.indexOf(actor));
+      dragActorStart(id, actor.id, scene.actors.indexOf(actor));
     } else if (trigger) {
-      this.props.dragTriggerStart(
-        id,
-        trigger.id,
-        scene.triggers.indexOf(trigger)
-      );
+      dragTriggerStart(id, trigger.id, scene.triggers.indexOf(trigger));
     }
 
     if (tool === "select") {
       if (!trigger && !actor) {
-        this.props.selectScene(id);
+        selectScene(id);
       }
     } else if (tool === "actors") {
       if (!actor) {
-        this.props.addActor(id, hoverX, hoverY);
+        addActor(id, hoverX, hoverY);
       }
     } else if (tool === "collisions") {
       if (!trigger && !actor) {
@@ -189,25 +196,25 @@ class Scene extends Component {
         const collisionByteOffset = collisionIndex & 7;
         const collisionByteMask = 1 << collisionByteOffset;
         if (scene.collisions[collisionByteIndex] & collisionByteMask) {
-          this.props.removeCollisionTile(id, hoverX, hoverY);
+          removeCollisionTile(id, hoverX, hoverY);
           this.remove = true;
         } else {
-          this.props.addCollisionTile(id, hoverX, hoverY);
+          addCollisionTile(id, hoverX, hoverY);
           this.remove = false;
         }
       } else {
-        this.props.setTool("select");
+        setTool("select");
       }
     } else if (tool === "triggers") {
       if (!trigger) {
-        this.props.addTrigger(id, hoverX, hoverY);
+        addTrigger(id, hoverX, hoverY);
       }
     } else if (tool === "eraser") {
       if (showCollisions) {
-        this.props.removeCollisionTile(id, hoverX, hoverY);
+        removeCollisionTile(id, hoverX, hoverY);
       }
-      this.props.removeActorAt(id, hoverX, hoverY);
-      this.props.removeTriggerAt(id, hoverX, hoverY);
+      removeActorAt(id, hoverX, hoverY);
+      removeTriggerAt(id, hoverX, hoverY);
       this.remove = true;
     }
     this.setState({
@@ -225,7 +232,7 @@ class Scene extends Component {
   };
 
   onStartDrag = e => {
-    const { id } = this.props;
+    const { id, selectScene, dragSceneStart } = this.props;
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
     this.setState({
@@ -233,8 +240,8 @@ class Scene extends Component {
       dragX: 0,
       dragY: 0
     });
-    this.props.selectScene(id);
-    this.props.dragSceneStart();
+    selectScene(id);
+    dragSceneStart();
   };
 
   onMoveDrag = e => {
@@ -256,19 +263,20 @@ class Scene extends Component {
     }
   };
 
-  dragScene = throttle(
-    (dragX, dragY) => this.props.dragScene(dragX, dragY),
-    50
-  );
+  // eslint-disable-next-line react/sort-comp
+  dragScene = throttle((dragX, dragY) => {
+    const { dragScene } = this.props;
+    return dragScene(dragX, dragY);
+  }, 50);
 
   onEndDrag = e => {
-    const { id, tool } = this.props;
+    const { id, tool, moveScene, dragSceneStop, setTool } = this.props;
     const { dragging, creating, dragX, dragY } = this.state;
     if (dragging) {
-      this.props.moveScene(id, dragX, dragY);
-      this.props.dragSceneStop();
+      moveScene(id, dragX, dragY);
+      dragSceneStop();
     } else if (creating && (tool === "actors" || tool === "triggers")) {
-      this.props.setTool("select");
+      setTool("select");
     }
     this.setState({
       dragging: false,
@@ -305,7 +313,9 @@ class Scene extends Component {
       scene,
       sprites,
       tool,
-      editor,
+      editorType,
+      entityId,
+      sceneId,
       image,
       version,
       event,
@@ -365,14 +375,14 @@ class Scene extends Component {
             alt=""
             src={`${projectRoot}/assets/backgrounds/${image}?v=${version}`}
           />
-          {triggers.map((trigger, index) => (
+          {triggers.map(trigger => (
             <div
-              key={index}
+              key={trigger.id}
               className={cx("Scene__Trigger", {
                 "Scene__Trigger--Selected":
-                  editor.type === "triggers" &&
-                  editor.scene === id &&
-                  editor.entityId === trigger.id
+                  editorType === "triggers" &&
+                  sceneId === id &&
+                  entityId === trigger.id
               })}
               style={{
                 top: trigger.y * 8,
@@ -391,16 +401,16 @@ class Scene extends Component {
               />
             </div>
           )}
-          {actors.map((actor, index) => (
+          {actors.map(actor => (
             <Actor
-              key={index}
+              key={actor.id}
               x={actor.x}
               y={actor.y}
               actor={actor}
               selected={
-                editor.type === "actors" &&
-                editor.scene === id &&
-                editor.entityId === actor.id
+                editorType === "actors" &&
+                sceneId === id &&
+                entityId === actor.id
               }
             />
           ))}
@@ -475,19 +485,86 @@ class Scene extends Component {
   }
 }
 
+Scene.propTypes = {
+  index: PropTypes.number.isRequired,
+  sprites: PropTypes.arrayOf(SpriteShape).isRequired,
+  projectRoot: PropTypes.string.isRequired,
+  scene: SceneShape.isRequired,
+  event: EventShape,
+  editorType: PropTypes.string,
+  entityId: PropTypes.string,
+  sceneId: PropTypes.string,
+  id: PropTypes.string.isRequired,
+  image: PropTypes.string,
+  version: PropTypes.number,
+  tool: PropTypes.oneOf([
+    "triggers",
+    "actors",
+    "collisions",
+    "scene",
+    "eraser",
+    "select"
+  ]).isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  selected: PropTypes.bool.isRequired,
+  playerDragging: PropTypes.bool.isRequired,
+  actorDragging: PropTypes.bool.isRequired,
+  triggerDragging: PropTypes.bool.isRequired,
+  destinationDragging: PropTypes.string,
+  zoomRatio: PropTypes.number.isRequired,
+  showCollisions: PropTypes.bool.isRequired,
+  moveScene: PropTypes.func.isRequired,
+  addActor: PropTypes.func.isRequired,
+  moveActor: PropTypes.func.isRequired,
+  removeActorAt: PropTypes.func.isRequired,
+  addCollisionTile: PropTypes.func.isRequired,
+  removeCollisionTile: PropTypes.func.isRequired,
+  addTrigger: PropTypes.func.isRequired,
+  removeTriggerAt: PropTypes.func.isRequired,
+  resizeTrigger: PropTypes.func.isRequired,
+  moveTrigger: PropTypes.func.isRequired,
+  selectScene: PropTypes.func.isRequired,
+  setTool: PropTypes.func.isRequired,
+  setStatus: PropTypes.func.isRequired,
+  dragScene: PropTypes.func.isRequired,
+  dragSceneStart: PropTypes.func.isRequired,
+  dragSceneStop: PropTypes.func.isRequired,
+  editPlayerStartAt: PropTypes.func.isRequired,
+  editDestinationPosition: PropTypes.func.isRequired,
+  dragActorStart: PropTypes.func.isRequired,
+  dragTriggerStart: PropTypes.func.isRequired
+};
+
+Scene.defaultProps = {
+  editorType: "",
+  entityId: "",
+  sceneId: "",
+  image: "",
+  destinationDragging: "",
+  version: 0,
+  event: null
+};
+
 function mapStateToProps(state, props) {
+  const { type: editorType, entityId, scene: sceneId } = state.editor;
   const image = state.project.present.backgrounds.find(
     background => background.id === props.scene.backgroundId
   );
   const sprites = state.project.present.spriteSheets;
+  const event =
+    (state.editor.eventId &&
+      state.editor.scene === props.id &&
+      findSceneEvent(props.scene, state.editor.eventId)) ||
+    null;
   return {
+    editorType,
+    entityId,
+    sceneId,
     projectRoot: state.document && state.document.root,
     tool: state.tools.selected,
     editor: state.editor,
-    event:
-      state.editor.eventId &&
-      state.editor.scene === props.id &&
-      findSceneEvent(props.scene, state.editor.eventId),
+    event,
     image: image && image.filename,
     version: (image && image._v) || 0,
     width: image ? image.width : 32,
@@ -498,11 +575,11 @@ function mapStateToProps(state, props) {
         state.project.present.settings.showCollisions) ||
       state.tools.selected === "collisions",
     zoomRatio: (state.editor.zoom || 100) / 100,
-    selected: state.editor.scene === props.id,
-    playerDragging: state.editor.playerDragging,
+    selected: sceneId === props.id,
+    playerDragging: state.editor.playerDragging || false,
     destinationDragging: state.editor.destinationDragging,
-    actorDragging: state.editor.actorDragging,
-    triggerDragging: state.editor.triggerDragging,
+    actorDragging: state.editor.actorDragging || false,
+    triggerDragging: state.editor.triggerDragging || false,
     sprites
   };
 }
@@ -510,9 +587,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   moveScene: actions.moveScene,
   addActor: actions.addActor,
-  selectActor: actions.selectActor,
   moveActor: actions.moveActor,
-  editActor: actions.editActor,
   removeActorAt: actions.removeActorAt,
   addCollisionTile: actions.addCollisionTile,
   removeCollisionTile: actions.removeCollisionTile,
@@ -520,8 +595,6 @@ const mapDispatchToProps = {
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
   moveTrigger: actions.moveTrigger,
-  editTrigger: actions.editTrigger,
-  selectTrigger: actions.selectTrigger,
   selectScene: actions.selectScene,
   setTool: actions.setTool,
   setStatus: actions.setStatus,

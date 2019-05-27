@@ -20,6 +20,7 @@ import {
 } from "../components/library/Icons";
 import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
+import { zoomForSection } from "../lib/helpers/gbstudio";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -181,22 +182,6 @@ AppToolbar.propTypes = {
 
 AppToolbar.defaultProps = {
   name: ""
-};
-
-const zoomForSection = (section, editor) => {
-  if (section === "world") {
-    return editor.zoom;
-  }
-  if (section === "sprites") {
-    return editor.zoomSprite;
-  }
-  if (section === "backgrounds") {
-    return editor.zoomImage;
-  }
-  if (section === "ui") {
-    return editor.zoomUI;
-  }
-  return 100;
 };
 
 function mapStateToProps(state) {

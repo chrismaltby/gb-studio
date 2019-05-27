@@ -8,6 +8,7 @@ import ScriptReviewLine from "../../components/script/ScriptReviewLine";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
+import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => value => {
@@ -75,19 +76,10 @@ ScriptsPage.propTypes = {
   editActor: PropTypes.func.isRequired,
   scriptLines: PropTypes.arrayOf(
     PropTypes.shape({
-      scene: PropTypes.shape({
-        id: PropTypes.string
-      }),
-      actor: PropTypes.shape({
-        id: PropTypes.string
-      }),
+      scene: SceneShape,
+      actor: ActorShape,
       actorIndex: PropTypes.number,
-      line: PropTypes.shape({
-        id: PropTypes.string,
-        args: PropTypes.shape({
-          text: PropTypes.string
-        })
-      })
+      line: EventShape
     })
   ).isRequired
 };

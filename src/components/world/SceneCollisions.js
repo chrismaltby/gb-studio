@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 const TILE_SIZE = 8;
 
@@ -51,5 +52,11 @@ class SceneCollisions extends Component {
     );
   }
 }
+
+SceneCollisions.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  collisions: PropTypes.arrayOf(PropTypes.number).isRequired
+};
 
 export default SceneCollisions;
