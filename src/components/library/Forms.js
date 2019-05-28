@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-for */
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -82,7 +83,6 @@ export class ToggleableFormField extends Component {
       >
         <label onClick={this.onOpen} htmlFor={htmlFor}>
           {open ? label : closedLabel}
-
           {open && children}
         </label>
       </div>

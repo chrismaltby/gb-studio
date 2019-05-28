@@ -276,7 +276,8 @@ class World extends Component {
       sceneId,
       sceneDragging,
       sceneDragX,
-      sceneDragY
+      sceneDragY,
+      loaded
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
 
@@ -317,16 +318,15 @@ class World extends Component {
             onMouseDown={this.startWorldDrag}
           />
 
-          {scenes && scenes.length === 0 && <WorldHelp />}
+          {loaded && scenes.length === 0 && <WorldHelp />}
 
-          {scenes &&
-            scenes.map((scene, index) => (
-              <div key={scene.id}>
-                <Scene id={scene.id} index={index} scene={scene} />
-              </div>
-            ))}
+          {scenes.map((scene, index) => (
+            <div key={scene.id}>
+              <Scene id={scene.id} index={index} scene={scene} />
+            </div>
+          ))}
 
-          {scenes && showConnections && (
+          {showConnections && (
             <Connections
               width={width}
               height={height}
@@ -395,7 +395,8 @@ World.propTypes = {
   pasteActor: PropTypes.func.isRequired,
   pasteTrigger: PropTypes.func.isRequired,
   zoomIn: PropTypes.func.isRequired,
-  zoomOut: PropTypes.func.isRequired
+  zoomOut: PropTypes.func.isRequired,
+  loaded: PropTypes.bool.isRequired
 };
 
 World.defaultProps = {
@@ -443,7 +444,8 @@ function mapStateToProps(state) {
     clipboardActor: state.clipboard.actor,
     clipboardTrigger: state.clipboard.trigger,
     clipboardType: state.clipboard.last,
-    sidebarWidth: state.project.present.settings.sidebarWidth
+    sidebarWidth: state.project.present.settings.sidebarWidth,
+    loaded: state.document.loaded
   };
 }
 
