@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Button, {
@@ -24,15 +25,18 @@ class BuildPage extends Component {
   }
 
   onClear = () => {
-    this.props.consoleClear();
+    const { consoleClear } = this.props;
+    consoleClear();
   };
 
   onRun = e => {
-    this.props.buildGame();
+    const { buildGame } = this.props;
+    buildGame();
   };
 
   onBuild = buildType => e => {
-    this.props.buildGame({ buildType, exportBuild: true });
+    const { buildGame } = this.props;
+    buildGame({ buildType, exportBuild: true });
   };
 
   scrollToBottom = () => {
@@ -64,6 +68,7 @@ class BuildPage extends Component {
         >
           {output.map((out, index) => (
             <div
+              // eslint-disable-next-line react/no-array-index-key
               key={index}
               style={{ color: out.type === "err" ? "orange" : "white" }}
             >
@@ -75,6 +80,7 @@ class BuildPage extends Component {
               <br />
               Warnings:
               {warnings.map((out, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <div key={index} style={{ color: "orange" }}>
                   - {out.text}
                 </div>
@@ -101,9 +107,26 @@ class BuildPage extends Component {
   }
 }
 
+BuildPage.propTypes = {
+  status: PropTypes.string.isRequired,
+  output: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  warnings: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  buildGame: PropTypes.func.isRequired,
+  consoleClear: PropTypes.func.isRequired
+};
+
 function mapStateToProps(state) {
   return {
-    projectRoot: state.document && state.document.root,
     status: state.console.status,
     output: state.console.output,
     warnings: state.console.warnings

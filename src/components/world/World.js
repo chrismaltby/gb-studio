@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
@@ -10,6 +11,12 @@ import {
   DRAG_ACTOR,
   DRAG_TRIGGER
 } from "../../reducers/editorReducer";
+import {
+  SceneShape,
+  SettingsShape,
+  ActorShape,
+  TriggerShape
+} from "../../reducers/stateShape";
 
 const MIDDLE_MOUSE = 2;
 
@@ -38,12 +45,14 @@ class World extends Component {
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
     if (viewContents) {
-      viewContents.style.transform = `scale(${this.props.zoomRatio})`;
+      const { zoomRatio } = this.props;
+      viewContents.style.transform = `scale(${zoomRatio})`;
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.zoomRatio !== prevProps.zoomRatio) {
+    const { zoomRatio } = this.props;
+    if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
       const oldScrollX = view.scrollLeft;
@@ -54,12 +63,12 @@ class World extends Component {
       const offsetY = this.mouseOver ? this.offsetY : halfViewHeight;
       const oldCenterX = oldScrollX + offsetX;
       const oldCenterY = oldScrollY + offsetY;
-      const zoomChange = this.props.zoomRatio / prevProps.zoomRatio;
+      const zoomChange = zoomRatio / prevProps.zoomRatio;
       const newCenterX = oldCenterX * zoomChange;
       const newCenterY = oldCenterY * zoomChange;
       const newScrollX = newCenterX - offsetX;
       const newScrollY = newCenterY - offsetY;
-      viewContents.style.transform = `scale(${this.props.zoomRatio})`;
+      viewContents.style.transform = `scale(${zoomRatio})`;
       view.scroll({
         top: newScrollY,
         left: newScrollX
@@ -81,18 +90,22 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-    const { editor, scenes } = this.props;
-    if (editor.type === "scenes") {
-      const scene = scenes.find(s => s.id === editor.scene);
-      this.props.copyScene(scene);
-    } else if (editor.type === "triggers") {
-      const scene = scenes.find(s => s.id === editor.scene);
-      const trigger = scene.triggers.find(t => t.id === editor.entityId);
-      this.props.copyTrigger(trigger);
-    } else if (editor.type === "actors") {
-      const scene = scenes.find(s => s.id === editor.scene);
-      const actor = scene.actors.find(a => a.id === editor.entityId);
-      this.props.copyActor(actor);
+    const {
+      editorType,
+      entityId,
+      scene,
+      copyScene,
+      copyTrigger,
+      copyActor
+    } = this.props;
+    if (editorType === "scenes") {
+      copyScene(scene);
+    } else if (editorType === "triggers") {
+      const trigger = scene.triggers.find(t => t.id === entityId);
+      copyTrigger(trigger);
+    } else if (editorType === "actors") {
+      const actor = scene.actors.find(a => a.id === entityId);
+      copyActor(actor);
     }
   };
 
@@ -101,20 +114,26 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-    const { clipboardType, editor } = this.props;
+    const {
+      clipboardType,
+      sceneId,
+      pasteActor,
+      pasteTrigger,
+      pasteScene
+    } = this.props;
     if (clipboardType === "actor") {
       const { clipboardActor } = this.props;
-      if (editor.scene) {
-        this.props.pasteActor(editor.scene, clipboardActor);
+      if (sceneId) {
+        pasteActor(sceneId, clipboardActor);
       }
     } else if (clipboardType === "trigger") {
       const { clipboardTrigger } = this.props;
-      if (editor.scene) {
-        this.props.pasteTrigger(editor.scene, clipboardTrigger);
+      if (sceneId) {
+        pasteTrigger(sceneId, clipboardTrigger);
       }
     } else if (clipboardType === "scene") {
       const { clipboardScene } = this.props;
-      this.props.pasteScene(clipboardScene);
+      pasteScene(clipboardScene);
     }
   };
 
@@ -125,14 +144,22 @@ class World extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.key === "Backspace" && this.state.focused) {
-      const editor = this.props.editor;
-      if (editor.type === "scenes") {
-        this.props.removeScene(editor.scene);
-      } else if (editor.type === "triggers") {
-        this.props.removeTrigger(editor.scene, editor.entityId);
-      } else if (editor.type === "actors") {
-        this.props.removeActor(editor.scene, editor.entityId);
+    const { focused } = this.state;
+    if (e.key === "Backspace" && focused) {
+      const {
+        sceneId,
+        entityId,
+        editorType,
+        removeScene,
+        removeActor,
+        removeTrigger
+      } = this.props;
+      if (editorType === "scenes") {
+        removeScene(sceneId);
+      } else if (editorType === "triggers") {
+        removeTrigger(sceneId, entityId);
+      } else if (editorType === "actors") {
+        removeActor(sceneId, entityId);
       }
     }
   };
@@ -145,15 +172,21 @@ class World extends Component {
   };
 
   onMouseUp = e => {
-    const { dragging } = this.props;
+    const {
+      dragging,
+      dragPlayerStop,
+      dragDestinationStop,
+      dragActorStop,
+      dragTriggerStop
+    } = this.props;
     if (dragging === DRAG_PLAYER) {
-      this.props.dragPlayerStop();
+      dragPlayerStop();
     } else if (dragging === DRAG_DESTINATION) {
-      this.props.dragDestinationStop();
+      dragDestinationStop();
     } else if (dragging === DRAG_ACTOR) {
-      this.props.dragActorStop();
+      dragActorStop();
     } else if (dragging === DRAG_TRIGGER) {
-      this.props.dragTriggerStop();
+      dragTriggerStop();
     }
     this.worldDragging = false;
   };
@@ -180,12 +213,13 @@ class World extends Component {
   };
 
   onMouseWheel = e => {
+    const { zoomIn, zoomOut } = this.props;
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        this.props.zoomIn("world", e.deltaY * 0.5);
+        zoomIn("world", e.deltaY * 0.5);
       } else {
-        this.props.zoomOut("world", e.deltaY * 0.5);
+        zoomOut("world", e.deltaY * 0.5);
       }
     }
   };
@@ -203,13 +237,15 @@ class World extends Component {
 
   dragPlayerStart = e => {
     if (!this.worldDragging) {
-      this.props.dragPlayerStart(e);
+      const { dragPlayerStart } = this.props;
+      dragPlayerStart(e);
     }
   };
 
   dragDestinationStart = (eventId, sceneId, type, entityIndex) => {
     if (!this.worldDragging) {
-      this.props.dragDestinationStart(eventId, sceneId, type, entityIndex);
+      const { dragDestinationStart } = this.props;
+      dragDestinationStart(eventId, sceneId, type, entityIndex);
     }
   };
 
@@ -222,9 +258,10 @@ class World extends Component {
   };
 
   onAddScene = e => {
+    const { addScene, setTool } = this.props;
     const { hoverX, hoverY } = this.state;
-    this.props.addScene(hoverX, hoverY);
-    this.props.setTool("select");
+    addScene(hoverX, hoverY);
+    setTool("select");
   };
 
   render() {
@@ -234,16 +271,15 @@ class World extends Component {
       tool,
       showConnections,
       zoomRatio,
-      editor,
-      sidebarWidth
+      sidebarWidth,
+      selectWorld,
+      sceneId,
+      sceneDragging,
+      sceneDragX,
+      sceneDragY,
+      loaded
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
-    const {
-      sceneDragging,
-      scene: dragScene,
-      sceneDragX: dragX,
-      sceneDragY: dragY
-    } = editor;
 
     const width = Math.max(
       window.innerWidth - sidebarWidth - 17,
@@ -278,29 +314,28 @@ class World extends Component {
           <div
             className="World__Grid"
             style={{ width, height }}
-            onClick={this.props.selectWorld}
+            onClick={selectWorld}
             onMouseDown={this.startWorldDrag}
           />
 
-          {scenes && scenes.length === 0 && <WorldHelp />}
+          {loaded && scenes.length === 0 && <WorldHelp />}
 
-          {scenes &&
-            scenes.map((scene, index) => (
-              <div key={scene.id}>
-                <Scene id={scene.id} index={index} scene={scene} />
-              </div>
-            ))}
+          {scenes.map((scene, index) => (
+            <div key={scene.id}>
+              <Scene id={scene.id} index={index} scene={scene} />
+            </div>
+          ))}
 
-          {scenes && showConnections && (
+          {showConnections && (
             <Connections
               width={width}
               height={height}
               scenes={scenes}
               settings={settings}
               zoomRatio={zoomRatio}
-              dragScene={sceneDragging ? dragScene : ""}
-              dragX={dragX}
-              dragY={dragY}
+              dragScene={sceneDragging ? sceneId : ""}
+              dragX={sceneDragX}
+              dragY={sceneDragY}
               onDragPlayerStart={this.dragPlayerStart}
               onDragDestinationStart={this.dragDestinationStart}
             />
@@ -322,10 +357,82 @@ class World extends Component {
   }
 }
 
+World.propTypes = {
+  editorType: PropTypes.string,
+  entityId: PropTypes.string,
+  sceneId: PropTypes.string,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
+  scene: SceneShape,
+  sceneDragX: PropTypes.number,
+  sceneDragY: PropTypes.number,
+  settings: SettingsShape.isRequired,
+  zoomRatio: PropTypes.number.isRequired,
+  clipboardType: PropTypes.string,
+  clipboardActor: ActorShape,
+  clipboardTrigger: TriggerShape,
+  clipboardScene: SceneShape,
+  sidebarWidth: PropTypes.number.isRequired,
+  showConnections: PropTypes.bool.isRequired,
+  tool: PropTypes.string.isRequired,
+  dragging: PropTypes.string.isRequired,
+  sceneDragging: PropTypes.bool.isRequired,
+  addScene: PropTypes.func.isRequired,
+  setTool: PropTypes.func.isRequired,
+  selectWorld: PropTypes.func.isRequired,
+  removeScene: PropTypes.func.isRequired,
+  removeTrigger: PropTypes.func.isRequired,
+  removeActor: PropTypes.func.isRequired,
+  dragPlayerStart: PropTypes.func.isRequired,
+  dragPlayerStop: PropTypes.func.isRequired,
+  dragDestinationStart: PropTypes.func.isRequired,
+  dragDestinationStop: PropTypes.func.isRequired,
+  dragActorStop: PropTypes.func.isRequired,
+  dragTriggerStop: PropTypes.func.isRequired,
+  copyScene: PropTypes.func.isRequired,
+  copyActor: PropTypes.func.isRequired,
+  copyTrigger: PropTypes.func.isRequired,
+  pasteScene: PropTypes.func.isRequired,
+  pasteActor: PropTypes.func.isRequired,
+  pasteTrigger: PropTypes.func.isRequired,
+  zoomIn: PropTypes.func.isRequired,
+  zoomOut: PropTypes.func.isRequired,
+  loaded: PropTypes.bool.isRequired
+};
+
+World.defaultProps = {
+  editorType: "",
+  entityId: "",
+  sceneId: "",
+  scene: null,
+  sceneDragX: 0,
+  sceneDragY: 0,
+  clipboardType: "",
+  clipboardActor: {},
+  clipboardTrigger: {},
+  clipboardScene: {}
+};
+
 function mapStateToProps(state) {
+  const {
+    type: editorType,
+    entityId,
+    scene: sceneId,
+    sceneDragging,
+    sceneDragX,
+    sceneDragY
+  } = state.editor;
+  const scenes = state.project.present.scenes || [];
+  const scene = scenes.find(s => s.id === sceneId);
   return {
+    editorType,
+    entityId,
+    sceneId,
+    scenes,
+    scene,
+    sceneDragging,
+    sceneDragX,
+    sceneDragY,
     tool: state.tools.selected,
-    scenes: state.project.present && state.project.present.scenes,
     settings: state.project.present.settings,
     editor: state.editor,
     zoomRatio: (state.editor.zoom || 100) / 100,
@@ -337,7 +444,8 @@ function mapStateToProps(state) {
     clipboardActor: state.clipboard.actor,
     clipboardTrigger: state.clipboard.trigger,
     clipboardType: state.clipboard.last,
-    sidebarWidth: state.project.present.settings.sidebarWidth
+    sidebarWidth: state.project.present.settings.sidebarWidth,
+    loaded: state.document.loaded
   };
 }
 
@@ -352,9 +460,7 @@ const mapDispatchToProps = {
   dragPlayerStop: actions.dragPlayerStop,
   dragDestinationStart: actions.dragDestinationStart,
   dragDestinationStop: actions.dragDestinationStop,
-  dragActorStart: actions.dragActorStart,
   dragActorStop: actions.dragActorStop,
-  dragTriggerStart: actions.dragTriggerStart,
   dragTriggerStop: actions.dragTriggerStop,
   copyScene: actions.copyScene,
   copyActor: actions.copyActor,

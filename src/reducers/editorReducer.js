@@ -153,7 +153,7 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         playerDragging: false,
-        dragging: false
+        dragging: ""
       };
     }
     case DRAG_DESTINATION_START: {

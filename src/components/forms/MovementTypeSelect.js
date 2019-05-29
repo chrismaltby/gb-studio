@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import l10n from "../../lib/helpers/l10n";
 
 class MovementTypeSelect extends Component {
   render() {
+    const { id, value, onChange } = this.props;
     return (
-      <select {...this.props}>
+      <select id={id} value={value} onChange={onChange}>
         <option value="static">{l10n("FIELD_MOVEMENT_STATIC")}</option>
         <option value="faceInteraction">
           {l10n("FIELD_MOVEMENT_FACE_INTERACTION")}
@@ -17,5 +19,16 @@ class MovementTypeSelect extends Component {
     );
   }
 }
+
+MovementTypeSelect.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired
+};
+
+MovementTypeSelect.defaultProps = {
+  id: undefined,
+  value: "static"
+};
 
 export default MovementTypeSelect;

@@ -1,4 +1,6 @@
+/* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
@@ -34,7 +36,14 @@ import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import SidebarHeading from "../editors/SidebarHeading";
+import { SidebarHeading } from "../editors/Sidebar";
+import {
+  EventShape,
+  VariableShape,
+  MusicShape,
+  SceneShape,
+  SpriteShape
+} from "../../reducers/stateShape";
 
 const ItemTypes = {
   CARD: "card"
@@ -112,8 +121,10 @@ class ActionMini extends Component {
   };
 
   toggleRename = () => {
-    this.setState({
-      rename: !this.state.rename
+    this.setState(prevState => {
+      return {
+        rename: !prevState.rename
+      };
     });
   };
 
@@ -133,7 +144,10 @@ class ActionMini extends Component {
     const newArgs = Object.keys(clipboardEvent.args || {}).reduce(
       (memo, key) => {
         if (action.args && action.args[key] !== undefined) {
-          memo[key] = clipboardEvent.args[key];
+          return {
+            ...memo,
+            [key]: clipboardEvent.args[key]
+          };
         }
         return memo;
       },
@@ -286,6 +300,7 @@ class ActionMini extends Component {
 
             {open && EventFields[command] && EventFields[command].length > 0 && (
               <ScriptEventBlock
+                id={action.id}
                 command={command}
                 value={action.args}
                 onChange={newValue => {
@@ -298,13 +313,13 @@ class ActionMini extends Component {
               action.true &&
               connectDropTarget(
                 <div className="ActionMini__Children">
-                  {action.true.map((action, index) => (
+                  {action.true.map(childAction => (
                     <ActionMiniDnD
-                      key={index}
-                      id={action.id}
+                      key={childAction.id}
+                      id={childAction.id}
                       type={type}
-                      path={`${id}_true_${action.id}`}
-                      action={action}
+                      path={`${id}_true_${childAction.id}`}
+                      action={childAction}
                       moveActions={moveActions}
                       onAdd={onAdd}
                       onRemove={onRemove}
@@ -334,13 +349,13 @@ class ActionMini extends Component {
             )}
             {action.false && elseOpen && (
               <div className="ActionMini__Children">
-                {action.false.map((action, index) => (
+                {action.false.map(childAction => (
                   <ActionMiniDnD
-                    key={index}
-                    id={action.id}
+                    key={childAction.id}
+                    id={childAction.id}
                     type={type}
-                    path={`${id}_true_${action.id}`}
-                    action={action}
+                    path={`${id}_true_${childAction.id}`}
+                    action={childAction}
                     moveActions={moveActions}
                     onAdd={onAdd}
                     onRemove={onRemove}
@@ -362,66 +377,100 @@ class ActionMini extends Component {
   }
 }
 
+ActionMini.propTypes = {
+  id: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  action: EventShape.isRequired,
+  isDragging: PropTypes.bool.isRequired,
+  isOverCurrent: PropTypes.bool.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onCopy: PropTypes.func.isRequired,
+  onPaste: PropTypes.func.isRequired,
+  moveActions: PropTypes.func.isRequired,
+  onMouseLeave: PropTypes.func.isRequired,
+  onMouseEnter: PropTypes.func.isRequired,
+  connectDragSource: PropTypes.func.isRequired,
+  connectDragPreview: PropTypes.func.isRequired,
+  connectDropTarget: PropTypes.func.isRequired,
+  clipboardEvent: PropTypes.oneOfType([
+    EventShape,
+    PropTypes.arrayOf(EventShape)
+  ])
+};
+
+ActionMini.defaultProps = {
+  clipboardEvent: null
+};
+
 const ActionMiniDnD = DropTarget(
   ItemTypes.CARD,
   cardTarget,
-  (connect, monitor) => ({
-    connectDropTarget: connect.dropTarget(),
+  (dndConnect, monitor) => ({
+    connectDropTarget: dndConnect.dropTarget(),
     isOver: monitor.isOver(),
     isOverCurrent: monitor.isOver({ shallow: true })
   })
 )(
-  DragSource(ItemTypes.CARD, cardSource, (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview(),
+  DragSource(ItemTypes.CARD, cardSource, (dndConnect, monitor) => ({
+    connectDragSource: dndConnect.dragSource(),
+    connectDragPreview: dndConnect.dragPreview(),
     isDragging: monitor.isDragging()
   }))(ActionMini)
 );
 
 class ScriptEditor extends Component {
   moveActions = (a, b) => {
-    const root = this.props.value;
+    const { value: root, onChange } = this.props;
     if (a === b) {
       return;
     }
     const input = prependEvent(filterEvents(root, a), b, findEvent(root, a));
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
+    onChange(input);
   };
 
   onAdd = id => (command, defaults = {}) => {
-    const root = this.props.value;
+    const {
+      value: root,
+      onChange,
+      variables,
+      music,
+      scenes,
+      scene,
+      spriteSheets
+    } = this.props;
     const eventFields = EventFields[command];
     const defaultArgs = eventFields
       ? eventFields.reduce(
           (memo, field) => {
+            let replaceValue = null;
             if (field.defaultValue === "LAST_SCENE") {
-              memo[field.key] = this.props.scenes[
-                this.props.scenes.length - 1
-              ].id;
+              replaceValue = scenes[scenes.length - 1].id;
             } else if (field.defaultValue === "LAST_VARIABLE") {
-              memo[field.key] =
-                this.props.variables.length > 0
-                  ? this.props.variables[this.props.variables.length - 1].id
-                  : "0";
+              replaceValue =
+                variables.length > 0 ? variables[variables.length - 1].id : "0";
             } else if (field.defaultValue === "LAST_MUSIC") {
-              memo[field.key] = this.props.music[0].id;
+              replaceValue = music[0].id;
             } else if (field.defaultValue === "LAST_SPRITE") {
-              memo[field.key] = this.props.spriteSheets[0].id;
+              replaceValue = spriteSheets[0].id;
             } else if (field.defaultValue === "LAST_ACTOR") {
-              const actors = this.props.scene.actors;
-              memo[field.key] =
+              const actors = scene.actors;
+              replaceValue =
                 actors.length > 0
-                  ? this.props.scene.actors[this.props.scene.actors.length - 1]
-                      .id
+                  ? scene.actors[scene.actors.length - 1].id
                   : "player";
             } else if (
               field.defaultValue !== undefined &&
               !defaults[field.key]
             ) {
-              memo[field.key] = field.defaultValue;
+              replaceValue = field.defaultValue;
+            }
+            if (replaceValue !== null) {
+              return {
+                ...memo,
+                [field.key]: replaceValue
+              };
             }
             return memo;
           },
@@ -478,55 +527,45 @@ class ScriptEditor extends Component {
         }
       )
     );
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
+    onChange(input);
   };
 
   onRemove = id => () => {
-    const root = this.props.value;
-    const input = filterEvents(root, id);
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
+    const { value, onChange } = this.props;
+    const input = filterEvents(value, id);
+    onChange(input);
   };
 
   onEdit = (id, patch) => {
-    const root = this.props.value;
-    const input = patchEvents(root, id, patch);
-
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
+    const { value, onChange } = this.props;
+    const input = patchEvents(value, id, patch);
+    onChange(input);
   };
 
   onCopy = event => () => {
-    this.props.copyEvent(event);
+    const { copyEvent } = this.props;
+    copyEvent(event);
   };
 
   onCopyScript = () => {
-    this.props.copyEvent(this.props.value);
+    const { copyEvent, value } = this.props;
+    copyEvent(value);
   };
 
   onPaste = (id, event, before) => {
-    const root = this.props.value;
+    const { onChange, value } = this.props;
     const newEvent = Array.isArray(event)
       ? event.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(event);
     const input = before
-      ? prependEvent(root, id, newEvent)
-      : appendEvent(root, id, newEvent);
-    this.setState({
-      input
-    });
-    this.props.onChange(input);
+      ? prependEvent(value, id, newEvent)
+      : appendEvent(value, id, newEvent);
+    onChange(input);
   };
 
   onRemoveScript = e => {
-    this.props.onChange([
+    const { onChange } = this.props;
+    onChange([
       {
         id: uuid(),
         command: EVENT_END
@@ -535,9 +574,9 @@ class ScriptEditor extends Component {
   };
 
   onReplaceScript = e => {
-    const { clipboardEvent } = this.props;
+    const { onChange, clipboardEvent } = this.props;
     if (clipboardEvent) {
-      this.props.onChange(
+      onChange(
         []
           .concat(
             clipboardEvent,
@@ -554,27 +593,27 @@ class ScriptEditor extends Component {
   };
 
   onPasteScript = before => () => {
-    const { clipboardEvent, value } = this.props;
+    const { clipboardEvent, onChange, value } = this.props;
     const newEvent = Array.isArray(clipboardEvent)
       ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(clipboardEvent);
     if (clipboardEvent) {
       if (before) {
-        this.props.onChange([].concat(newEvent, value));
+        onChange([].concat(newEvent, value));
       } else {
-        this.props.onChange(
-          [].concat(value.slice(0, -1), newEvent, value.slice(-1))
-        );
+        onChange([].concat(value.slice(0, -1), newEvent, value.slice(-1)));
       }
     }
   };
 
   onEnter = id => {
-    this.props.selectScriptEvent(id);
+    const { selectScriptEvent } = this.props;
+    selectScriptEvent(id);
   };
 
   onLeave = id => {
-    this.props.selectScriptEvent("");
+    const { selectScriptEvent } = this.props;
+    selectScriptEvent("");
   };
 
   render() {
@@ -612,7 +651,7 @@ class ScriptEditor extends Component {
           }
         />{" "}
         <div className="ScriptEditor">
-          {value.map((action, index) => (
+          {value.map(action => (
             <ActionMiniDnD
               key={action.id}
               id={action.id}
@@ -626,7 +665,7 @@ class ScriptEditor extends Component {
               onPaste={this.onPaste}
               onMouseEnter={this.onEnter}
               onMouseLeave={this.onLeave}
-              clipboardEvent={this.props.clipboardEvent}
+              clipboardEvent={clipboardEvent}
             />
           ))}
         </div>
@@ -635,13 +674,32 @@ class ScriptEditor extends Component {
   }
 }
 
+ScriptEditor.propTypes = {
+  title: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  value: PropTypes.arrayOf(PropTypes.shape({})),
+  onChange: PropTypes.func.isRequired,
+  variables: PropTypes.arrayOf(VariableShape).isRequired,
+  music: PropTypes.arrayOf(MusicShape).isRequired,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
+  scene: SceneShape.isRequired,
+  spriteSheets: PropTypes.arrayOf(SpriteShape).isRequired,
+  clipboardEvent: PropTypes.oneOfType([
+    EventShape,
+    PropTypes.arrayOf(EventShape)
+  ]),
+  selectScriptEvent: PropTypes.func.isRequired,
+  copyEvent: PropTypes.func.isRequired
+};
+
 ScriptEditor.defaultProps = {
   value: [
     {
       id: uuid(),
       command: EVENT_END
     }
-  ]
+  ],
+  clipboardEvent: null
 };
 
 function mapStateToProps(state) {

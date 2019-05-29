@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import PageHeader from "../../components/library/PageHeader";
@@ -7,13 +8,15 @@ import ScriptReviewLine from "../../components/script/ScriptReviewLine";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
+import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
 
 class ScriptsPage extends Component {
   onChange = (map, actorIndex, currentScript, id) => value => {
+    const { editActor } = this.props;
     const newData = patchEvents(currentScript, id, {
       text: value
     });
-    this.props.editActor(map, actorIndex, {
+    editActor(map, actorIndex, {
       script: newData
     });
   };
@@ -69,6 +72,18 @@ class ScriptsPage extends Component {
   }
 }
 
+ScriptsPage.propTypes = {
+  editActor: PropTypes.func.isRequired,
+  scriptLines: PropTypes.arrayOf(
+    PropTypes.shape({
+      scene: SceneShape,
+      actor: ActorShape,
+      actorIndex: PropTypes.number,
+      line: EventShape
+    })
+  ).isRequired
+};
+
 function mapStateToProps(state) {
   const scenes = (state.project.present && state.project.present.scenes) || [];
   const scriptLines = scenes.reduce((memo, scene) => {
@@ -92,8 +107,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  editActor: actions.editActor,
-  editTrigger: actions.editTrigger
+  editActor: actions.editActor
 };
 
 export default connect(

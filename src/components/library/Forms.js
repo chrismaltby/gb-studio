@@ -1,4 +1,7 @@
+/* eslint-disable jsx-a11y/label-has-for */
+/* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import cx from "classnames";
 import l10n from "../../lib/helpers/l10n";
 
@@ -14,6 +17,20 @@ export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
   />
 );
 
+Textarea.propTypes = {
+  fixedSize: PropTypes.bool,
+  small: PropTypes.bool,
+  large: PropTypes.bool,
+  borderless: PropTypes.bool
+};
+
+Textarea.defaultProps = {
+  fixedSize: false,
+  small: false,
+  large: false,
+  borderless: false
+};
+
 export const FormField = ({ halfWidth, children }) => (
   <div
     className={cx("FormField", {
@@ -23,6 +40,16 @@ export const FormField = ({ halfWidth, children }) => (
     {children}
   </div>
 );
+
+FormField.propTypes = {
+  halfWidth: PropTypes.bool,
+  children: PropTypes.node
+};
+
+FormField.defaultProps = {
+  halfWidth: false,
+  children: null
+};
 
 export class ToggleableFormField extends Component {
   constructor() {
@@ -37,8 +64,16 @@ export class ToggleableFormField extends Component {
   };
 
   render() {
-    const { halfWidth, htmlFor, label, closedLabel, children } = this.props;
-    const open = this.state.open || this.props.open;
+    const {
+      halfWidth,
+      htmlFor,
+      label,
+      closedLabel,
+      children,
+      open: propsOpen
+    } = this.props;
+    const { open: stateOpen } = this.state;
+    const open = stateOpen || propsOpen;
     return (
       <div
         className={cx("FormField", "FormField--Toggleable", {
@@ -48,12 +83,30 @@ export class ToggleableFormField extends Component {
       >
         <label onClick={this.onOpen} htmlFor={htmlFor}>
           {open ? label : closedLabel}
+          {open && children}
         </label>
-        {open && children}
       </div>
     );
   }
 }
+
+ToggleableFormField.propTypes = {
+  halfWidth: PropTypes.bool,
+  children: PropTypes.node,
+  htmlFor: PropTypes.string,
+  label: PropTypes.node,
+  closedLabel: PropTypes.node,
+  open: PropTypes.bool
+};
+
+ToggleableFormField.defaultProps = {
+  halfWidth: false,
+  children: null,
+  htmlFor: "",
+  label: null,
+  closedLabel: null,
+  open: false
+};
 
 export class SelectRenamable extends Component {
   constructor() {
@@ -65,7 +118,8 @@ export class SelectRenamable extends Component {
   }
 
   onStartEdit = () => {
-    this.setState({ edit: true, editValue: this.props.editDefaultValue });
+    const { editDefaultValue } = this.props;
+    this.setState({ edit: true, editValue: editDefaultValue });
   };
 
   onKeyDown = e => {
@@ -81,9 +135,10 @@ export class SelectRenamable extends Component {
   };
 
   onSave = () => {
-    const { edit, editValue } = this.state;
-    if (this.state.edit) {
-      this.props.onRename(editValue);
+    const { onRename } = this.props;
+    const { editValue, edit } = this.state;
+    if (edit) {
+      onRename(editValue);
       this.setState({ edit: false, editValue: "" });
     }
   };
@@ -133,3 +188,14 @@ export class SelectRenamable extends Component {
     );
   }
 }
+
+SelectRenamable.propTypes = {
+  editDefaultValue: PropTypes.string,
+  editPlaceholder: PropTypes.string,
+  onRename: PropTypes.func.isRequired
+};
+
+SelectRenamable.defaultProps = {
+  editDefaultValue: "",
+  editPlaceholder: ""
+};

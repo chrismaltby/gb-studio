@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
@@ -19,16 +20,16 @@ class UIPage extends Component {
   };
 
   render() {
-    const { files, id } = this.props;
+    const { files, id, openHelp } = this.props;
     const { query } = this.state;
 
     const filesList = query
-      ? files.filter(file => {
-          return file.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
+      ? files.filter(f => {
+          return f.name.toUpperCase().indexOf(query.toUpperCase()) > -1;
         })
       : files;
 
-    const file = filesList.find(file => file.id === id) || filesList[0];
+    const file = filesList.find(f => f.id === id) || filesList[0];
 
     return (
       <div>
@@ -39,13 +40,30 @@ class UIPage extends Component {
           query={query}
           onSearch={this.onSearch}
           onAdd={() => {
-            this.props.openHelp("ui-elements");
+            openHelp("ui-elements");
           }}
         />
       </div>
     );
   }
 }
+
+UIPage.propTypes = {
+  id: PropTypes.string,
+  files: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      filename: PropTypes.string.isRequired,
+      _v: PropTypes.number.isRequired
+    })
+  ).isRequired,
+  openHelp: PropTypes.func.isRequired
+};
+
+UIPage.defaultProps = {
+  id: ""
+};
 
 function mapStateToProps(state) {
   const { id } = state.navigation;

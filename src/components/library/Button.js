@@ -98,7 +98,7 @@ export class DropdownButton extends Component {
 
 DropdownButton.propTypes = {
   children: PropTypes.node,
-  label: PropTypes.string,
+  label: PropTypes.node,
   showArrow: PropTypes.bool,
   transparent: PropTypes.bool,
   small: PropTypes.bool,

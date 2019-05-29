@@ -1,17 +1,19 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { SceneShape } from "../../reducers/stateShape";
 
 class SceneSelect extends Component {
   render() {
-    const { allowNone, maps, dispatch, ...rest } = this.props;
-    const current = maps.find(m => m.id === rest.value);
+    const { allowNone, scenes, id, value, onChange } = this.props;
+    const current = scenes.find(m => m.id === value);
     return (
-      <select {...rest}>
+      <select id={id} value={value} onChange={onChange}>
         {!current && !allowNone && <option value="" />}
         {allowNone && <option>None</option>}
-        {maps.map((map, index) => (
-          <option key={map.id} value={map.id}>
-            {map.name || `Scene ${index + 1}`}
+        {scenes.map((scene, index) => (
+          <option key={scene.id} value={scene.id}>
+            {scene.name || `Scene ${index + 1}`}
           </option>
         ))}
       </select>
@@ -19,9 +21,23 @@ class SceneSelect extends Component {
   }
 }
 
+SceneSelect.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  allowNone: PropTypes.bool,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired
+};
+
+SceneSelect.defaultProps = {
+  id: undefined,
+  value: "",
+  allowNone: false
+};
+
 function mapStateToProps(state) {
   return {
-    maps: (state.project.present && state.project.present.scenes) || []
+    scenes: (state.project.present && state.project.present.scenes) || []
   };
 }
 

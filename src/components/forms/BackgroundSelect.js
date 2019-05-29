@@ -1,12 +1,14 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { BackgroundShape } from "../../reducers/stateShape";
 
 class BackgroundSelect extends Component {
   render() {
-    const { backgrounds, dispatch, ...rest } = this.props;
-    const current = backgrounds.find(b => b.id === rest.value);
+    const { backgrounds, id, value, onChange } = this.props;
+    const current = backgrounds.find(b => b.id === value);
     return (
-      <select {...rest}>
+      <select id={id} value={value} onChange={onChange}>
         {!current && <option value="" />}
         {backgrounds.map(background => (
           <option key={background.id} value={background.id}>
@@ -17,6 +19,18 @@ class BackgroundSelect extends Component {
     );
   }
 }
+
+BackgroundSelect.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  backgrounds: PropTypes.arrayOf(BackgroundShape).isRequired
+};
+
+BackgroundSelect.defaultProps = {
+  id: undefined,
+  value: ""
+};
 
 function mapStateToProps(state) {
   return {
