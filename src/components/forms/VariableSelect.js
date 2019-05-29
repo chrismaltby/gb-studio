@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { SelectRenamable } from "../library/Forms";
 import * as actions from "../../actions";
@@ -10,7 +11,8 @@ const variables = Array.from(Array(512).keys()).map(n =>
 
 class VariableSelect extends Component {
   onRename = name => {
-    this.props.renameVariable(this.props.value || "0", name);
+    const { renameVariable, value } = this.props;
+    renameVariable(value || "0", name);
   };
 
   variableName = index => {
@@ -21,16 +23,18 @@ class VariableSelect extends Component {
   };
 
   render() {
-    const { dispatch, renameVariable, variableNames, ...rest } = this.props;
+    const { id, value, onChange } = this.props;
     return (
       <SelectRenamable
         editPlaceholder={l10n("FIELD_VARIABLE_NAME")}
-        editDefaultValue={this.variableName(this.props.value || "0")}
+        editDefaultValue={this.variableName(value || "0")}
         onRename={this.onRename}
-        {...rest}
+        id={id}
+        value={value}
+        onChange={onChange}
       >
         {variables.map((variable, index) => (
-          <option key={index} value={index}>
+          <option key={variable} value={index}>
             {index < 100 && `$${String(index).padStart(2, "0")}$ : `}
             {this.variableName(index)}
           </option>
@@ -39,6 +43,19 @@ class VariableSelect extends Component {
     );
   }
 }
+
+VariableSelect.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  variableNames: PropTypes.shape({}).isRequired,
+  renameVariable: PropTypes.func.isRequired
+};
+
+VariableSelect.defaultProps = {
+  id: undefined,
+  value: "0"
+};
 
 function mapStateToProps(state) {
   return {

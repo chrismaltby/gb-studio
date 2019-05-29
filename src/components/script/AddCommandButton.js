@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import cx from "classnames";
 import Highlighter from "react-highlight-words";
 import Button from "../library/Button";
@@ -12,18 +13,23 @@ import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 
 const EventNames = Object.keys(EventFields).reduce((memo, key) => {
-  memo[key] = l10n(key);
-  return memo;
+  return {
+    ...memo,
+    [key]: l10n(key)
+  };
 }, {});
 
 const actions = Object.keys(EventFields).sort((a, b) => {
   const textA = (EventNames[a] || a).toUpperCase();
   const textB = (EventNames[b] || b).toUpperCase();
-  return textA < textB ? -1 : textA > textB ? 1 : 0;
+  if (textA < textB) {
+    return -1;
+  }
+  if (textA > textB) {
+    return 1;
+  }
+  return 0;
 });
-
-const DIRECTION_UP = "UP";
-const DIRECTION_DOWN = "DOWN";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -38,7 +44,6 @@ class AddCommandButton extends Component {
   }
 
   onOpen = () => {
-    const boundingRect = this.button.current.getBoundingClientRect();
     this.setState({
       open: true,
       query: ""
@@ -54,8 +59,9 @@ class AddCommandButton extends Component {
   };
 
   onAdd = action => () => {
+    const { onAdd } = this.props;
     clearTimeout(this.timeout);
-    this.props.onAdd(action);
+    onAdd(action);
     const typeActions = this.typeActions();
     this.setState({
       open: false,
@@ -65,8 +71,10 @@ class AddCommandButton extends Component {
   };
 
   onAddText = () => {
+    const { onAdd } = this.props;
+    const { query } = this.state;
     clearTimeout(this.timeout);
-    this.props.onAdd(EVENT_TEXT, { text: trimlines(this.state.query) });
+    onAdd(EVENT_TEXT, { text: trimlines(query) });
     this.setState({
       open: false,
       query: "",
@@ -87,12 +95,12 @@ class AddCommandButton extends Component {
   };
 
   onKeyDown = e => {
-    const { selectedIndex } = this.state;
+    const { selectedIndex, query } = this.state;
     const actionsList = this.filteredList();
     if (e.key === "Enter") {
       if (actionsList[selectedIndex]) {
         this.onAdd(actionsList[selectedIndex])();
-      } else if (this.state.query.length > 0) {
+      } else if (query.length > 0) {
         this.onAddText();
       }
     } else if (e.key === "Escape") {
@@ -146,10 +154,9 @@ class AddCommandButton extends Component {
             // Split filter into words so they can be in any order
             // and have words between matches
             const queryWords = query.toUpperCase().split(" ");
-            const searchName =
-              `${EventNames[action] ? EventNames[action].toUpperCase() : "" 
-              } ${ 
-              action.toUpperCase()}`;
+            const searchName = `${
+              EventNames[action] ? EventNames[action].toUpperCase() : ""
+            } ${action.toUpperCase()}`;
             return queryWords.reduce((memo, word) => {
               return memo && searchName.indexOf(word) > -1;
             }, true);
@@ -157,14 +164,12 @@ class AddCommandButton extends Component {
           .sort((a, b) => {
             // Sort so that first match is listed at top
             const queryWords = query.toUpperCase().split(" ");
-            const searchNameA =
-              `${EventNames[a] ? EventNames[a].toUpperCase() : "" 
-              } ${ 
-              a.toUpperCase()}`;
-            const searchNameB =
-              `${EventNames[b] ? EventNames[b].toUpperCase() : "" 
-              } ${ 
-              b.toUpperCase()}`;
+            const searchNameA = `${
+              EventNames[a] ? EventNames[a].toUpperCase() : ""
+            } ${a.toUpperCase()}`;
+            const searchNameB = `${
+              EventNames[b] ? EventNames[b].toUpperCase() : ""
+            } ${b.toUpperCase()}`;
             const firstMatchA = queryWords.reduce((memo, word) => {
               const index = searchNameA.indexOf(word);
               return index > -1 ? Math.min(memo, index) : memo;
@@ -239,5 +244,10 @@ class AddCommandButton extends Component {
     );
   }
 }
+
+AddCommandButton.propTypes = {
+  onAdd: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired
+};
 
 export default AddCommandButton;

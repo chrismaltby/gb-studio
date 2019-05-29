@@ -1,7 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 import React from "react";
+import PropTypes from "prop-types";
 import { Textarea } from "../library/Forms";
 import trimlines, { textNumLines } from "../../lib/helpers/trimlines";
 import l10n from "../../lib/helpers/l10n";
+import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
 
 const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
   <div>
@@ -70,5 +73,15 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
     )}
   </div>
 );
+
+ScriptReviewLine.propTypes = {
+  scriptLine: PropTypes.shape({
+    scene: SceneShape,
+    actor: ActorShape,
+    actorIndex: PropTypes.number,
+    line: EventShape
+  }).isRequired,
+  onChange: PropTypes.func.isRequired
+};
 
 export default ScriptReviewLine;

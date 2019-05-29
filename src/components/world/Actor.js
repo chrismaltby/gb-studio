@@ -17,7 +17,7 @@ class Actor extends Component {
         <SpriteSheetCanvas
           spriteSheetId={actor.spriteSheetId}
           direction={actor.direction}
-          frame={actor.movementType === "static" && actor.frame}
+          frame={actor.movementType === "static" ? actor.frame : 0}
         />
       </div>
     );
@@ -25,8 +25,8 @@ class Actor extends Component {
 }
 
 Actor.propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
+  x: PropTypes.number,
+  y: PropTypes.number,
   actor: PropTypes.shape({
     spriteSheetId: PropTypes.string,
     direction: PropTypes.string,
@@ -38,6 +38,8 @@ Actor.propTypes = {
 
 Actor.defaultProps = {
   actor: {},
+  x: 0,
+  y: 0,
   selected: false
 };
 

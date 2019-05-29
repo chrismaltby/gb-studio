@@ -1,6 +1,9 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import cx from "classnames";
+import { directionToFrame } from "../../lib/helpers/gbstudio";
+
+const SPRITE_SIZE = 16;
 
 class SpriteSheetCanvas extends Component {
   constructor(props) {
@@ -9,39 +12,44 @@ class SpriteSheetCanvas extends Component {
   }
 
   componentDidMount() {
-    this.loadImage(this.props);
+    const { projectRoot, spriteSheet } = this.props;
+    this.loadImage(projectRoot, spriteSheet);
   }
 
   componentWillReceiveProps(nextProps) {
-    const newSrc = this.imageSrc(nextProps);
-    const newSprite = nextProps.sprite;
+    const { direction, frame } = this.props;
+    const {
+      projectRoot,
+      spriteSheet,
+      direction: nextDirection,
+      frame: nextFrame
+    } = nextProps;
+    const newSrc = this.imageSrc(projectRoot, spriteSheet);
     if (
       newSrc !== this.src ||
-      newSprite !== this.sprite ||
-      this.props.direction !== nextProps.direction ||
-      this.props.frame !== nextProps.frame
+      direction !== nextDirection ||
+      frame !== nextFrame
     ) {
-      this.loadImage(nextProps);
+      this.loadImage(projectRoot, spriteSheet);
     }
   }
 
-  imageSrc = props => {
-    return `${props.projectRoot}/assets/sprites/${props.spriteSheet &&
-      `${props.spriteSheet.filename}?v=${props.spriteSheet._v || 0}`}`;
+  imageSrc = (projectRoot, spriteSheet) => {
+    return `${projectRoot}/assets/sprites/${spriteSheet &&
+      `${spriteSheet.filename}?v=${spriteSheet._v || 0}`}`;
   };
 
-  loadImage = props => {
-    this.src = this.imageSrc(props);
+  loadImage = (projectRoot, spriteSheet) => {
+    this.src = this.imageSrc(projectRoot, spriteSheet);
     this.imgLoaded = false;
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
     this.img.onload = this.draw;
     this.img.src = this.src;
-    this.sprite = this.props.sprite;
   };
 
   draw = () => {
-    const { spriteSheet = {}, direction = "down", frame = 0 } = this.props;
+    const { spriteSheet = {}, direction = "down", frame } = this.props;
     this.imgLoaded = true;
 
     if (this.canvas.current) {
@@ -49,23 +57,11 @@ class SpriteSheetCanvas extends Component {
       const tmpCanvas = document.createElement("canvas");
       const tmpCtx = tmpCanvas.getContext("2d");
 
-      const directionOffset =
-        direction === "up"
-          ? 1
-          : direction === "left" || direction === "right"
-          ? 2
-          : 0;
+      const directionFrame = directionToFrame(direction, spriteSheet.numFrames);
+      const spriteOffset = directionFrame + (frame || 0);
 
-      const spriteOffset =
-        spriteSheet.type === "static"
-          ? 0
-          : spriteSheet.type === "actor"
-          ? directionOffset + frame
-          : spriteSheet.type === "actor_animated"
-          ? directionOffset * 2 + frame
-          : frame;
-
-      tmpCanvas.width = tmpCanvas.height = 16;
+      tmpCanvas.width = SPRITE_SIZE;
+      tmpCanvas.height = SPRITE_SIZE;
       if (
         direction === "left" &&
         (spriteSheet.type === "actor" || spriteSheet.type === "actor_animated")
@@ -73,17 +69,14 @@ class SpriteSheetCanvas extends Component {
         tmpCtx.translate(tmpCanvas.width, 0);
         tmpCtx.scale(-1, 1);
       }
-      tmpCtx.drawImage(this.img, spriteOffset * -16, 0);
+      tmpCtx.drawImage(this.img, spriteOffset * -SPRITE_SIZE, 0);
 
       // Remove background colour
-      const imgData = tmpCtx.getImageData(0, 0, 16, 16);
-
+      const imgData = tmpCtx.getImageData(0, 0, SPRITE_SIZE, SPRITE_SIZE);
       for (let i = 0; i < imgData.data.length; i += 4) {
+        // Full green
         if (imgData.data[i + 1] === 255) {
-          // Full green
-          imgData.data[i] = imgData.data[i + 1] = imgData.data[
-            i + 2
-          ] = imgData.data[i + 3] = 0;
+          imgData.data[i + 3] = 0;
         }
       }
 
@@ -92,13 +85,32 @@ class SpriteSheetCanvas extends Component {
   };
 
   render() {
-    return <canvas ref={this.canvas} width={16} height={16} />;
+    return (
+      <canvas ref={this.canvas} width={SPRITE_SIZE} height={SPRITE_SIZE} />
+    );
   }
 }
 
+SpriteSheetCanvas.propTypes = {
+  projectRoot: PropTypes.string.isRequired,
+  direction: PropTypes.string,
+  frame: PropTypes.number,
+  spriteSheet: PropTypes.shape({
+    filename: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    _v: PropTypes.number
+  })
+};
+
+SpriteSheetCanvas.defaultProps = {
+  direction: "down",
+  frame: 0,
+  spriteSheet: null
+};
+
 function mapStateToProps(state, props) {
   const spriteSheet = state.project.present.spriteSheets.find(
-    spriteSheet => spriteSheet.id === props.spriteSheetId
+    s => s.id === props.spriteSheetId
   );
   return {
     spriteSheet,

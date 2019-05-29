@@ -135,3 +135,25 @@
 .Sidebar--TwoColumn .Sidebar__Content .SidebarColumn:first-child {
   border-left: 0;
 }
+
+.SidebarHeading {
+  height: 36px;
+  line-height: 36px;
+  margin: 0px;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--sidebar-border-color);
+  border-top: 1px solid var(--sidebar-border-color);
+  text-align: left;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+.SidebarColumn > .SidebarHeading:first-child {
+  border-top: 0;
+}
+
+.SidebarHeading__FluidSpacer {
+  flex: 1;
+}

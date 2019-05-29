@@ -1,37 +1,32 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import Button from "../library/Button";
+import { MusicShape } from "../../reducers/stateShape";
 
 class MusicSelect extends Component {
   onPlay = () => {
-    const { projectRoot, music, value } = this.props;
+    const { projectRoot, music, value, playMusic } = this.props;
     const file = music.find(track => track.id === value) || music[0];
     if (file) {
       const filename = `${projectRoot}/assets/music/${file.filename}`;
-      this.props.playMusic(filename);
+      playMusic(filename);
     }
   };
 
   onPause = () => {
-    this.props.pauseMusic();
+    const { pauseMusic } = this.props;
+    pauseMusic();
   };
 
   render() {
-    const {
-      music,
-      dispatch,
-      playing,
-      projectRoot,
-      playMusic,
-      pauseMusic,
-      ...rest
-    } = this.props;
-    const current = music.find(m => m.id === rest.value);
+    const { music, playing, id, value, onChange } = this.props;
+    const current = music.find(m => m.id === value);
     return (
       <div className="MusicSelect">
-        <select {...rest}>
+        <select id={id} value={value} onChange={onChange}>
           {!current && <option value="" />}
           {music.map(track => (
             <option key={track.id} value={track.id}>
@@ -40,7 +35,7 @@ class MusicSelect extends Component {
           ))}
         </select>
         <div className="MusicSelect__Preview">
-          {rest.value && current && (
+          {value && current && (
             <div>
               {playing ? (
                 <Button small transparent onClick={this.onPause}>
@@ -58,6 +53,22 @@ class MusicSelect extends Component {
     );
   }
 }
+
+MusicSelect.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  music: PropTypes.arrayOf(MusicShape).isRequired,
+  projectRoot: PropTypes.string.isRequired,
+  playing: PropTypes.bool.isRequired,
+  playMusic: PropTypes.func.isRequired,
+  pauseMusic: PropTypes.func.isRequired
+};
+
+MusicSelect.defaultProps = {
+  id: undefined,
+  value: ""
+};
 
 function mapStateToProps(state) {
   return {

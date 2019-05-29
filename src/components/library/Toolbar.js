@@ -61,9 +61,8 @@ export class ToolbarDropdownButton extends Component {
 
 ToolbarDropdownButton.propTypes = {
   children: PropTypes.node,
-  label: PropTypes.string,
+  label: PropTypes.node,
   showArrow: PropTypes.bool,
-  transparent: PropTypes.bool,
   right: PropTypes.bool
 };
 
@@ -71,6 +70,5 @@ ToolbarDropdownButton.defaultProps = {
   children: undefined,
   label: "",
   showArrow: true,
-  transparent: false,
   right: false
 };

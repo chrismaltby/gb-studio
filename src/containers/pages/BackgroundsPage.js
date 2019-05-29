@@ -60,7 +60,7 @@ ImagesPage.propTypes = {
 };
 
 ImagesPage.defaultProps = {
-  id: undefined
+  id: ""
 };
 
 function mapStateToProps(state) {

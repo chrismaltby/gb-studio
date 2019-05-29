@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import cx from "classnames";
 import { TriangleIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 
 class InputPicker extends Component {
   render() {
-    const { value, onChange } = this.props;
+    const { id, value, onChange } = this.props;
     const inputs = [
       {
         key: "left",
@@ -58,12 +59,12 @@ class InputPicker extends Component {
     ];
 
     return (
-      <div className="InputPicker">
+      <div id={id} className="InputPicker">
         <div className="InputPicker__Row">
-          {inputs.slice(0, 4).map(renderButton(value, onChange))}
+          {inputs.slice(0, 4).map(renderButton(id, value, onChange))}
         </div>
         <div className="InputPicker__Row">
-          {inputs.slice(4, 8).map(renderButton(value, onChange))}
+          {inputs.slice(4, 8).map(renderButton(id, value, onChange))}
         </div>
         {Array.isArray(value) &&
           inputs
@@ -75,9 +76,10 @@ class InputPicker extends Component {
   }
 }
 
-const renderButton = (value, onChange) => input => (
-  <label key={input.key} title={input.title}>
+const renderButton = (id, value, onChange) => input => (
+  <label htmlFor={`${id}_${input.key}`} key={input.key} title={input.title}>
     <input
+      id={`${id}_${input.key}`}
       type="checkbox"
       checked={
         Array.isArray(value)
@@ -112,5 +114,19 @@ const renderButton = (value, onChange) => input => (
     </div>
   </label>
 );
+
+InputPicker.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string)
+  ]),
+  onChange: PropTypes.func.isRequired
+};
+
+InputPicker.defaultProps = {
+  id: undefined,
+  value: ""
+};
 
 export default InputPicker;

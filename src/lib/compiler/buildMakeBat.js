@@ -17,7 +17,9 @@ export default async (buildRoot, { CART_TYPE }) => {
   const dataFiles = await fs.readdir(dataRoot);
   try {
     musicFiles = await fs.readdir(musicRoot);
-  } catch (e) {}
+  } catch (e) {
+    // No music folder
+  }
 
   for (const file of srcFiles) {
     const fileStat = await fs.lstat(`${srcRoot}/${file}`);

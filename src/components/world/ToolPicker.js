@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { SelectIcon, BrickIcon, EraserIcon, PlusIcon } from "../library/Icons";
@@ -59,7 +60,8 @@ class ToolPicker extends Component {
 
   setTool = id => e => {
     e.stopPropagation();
-    this.props.setTool(id);
+    const { setTool } = this.props;
+    setTool(id);
     this.setState({
       add: false
     });
@@ -131,7 +133,6 @@ class ToolPicker extends Component {
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected": selected === "collisions"
           })}
-          title="Collisions (c)"
           title={`${l10n("TOOL_COLLISIONS_LABEL")} (c)`}
         >
           <BrickIcon />
@@ -140,6 +141,18 @@ class ToolPicker extends Component {
     );
   }
 }
+
+ToolPicker.propTypes = {
+  selected: PropTypes.oneOf([
+    "triggers",
+    "actors",
+    "collisions",
+    "scene",
+    "eraser",
+    "select"
+  ]).isRequired,
+  setTool: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
   return {

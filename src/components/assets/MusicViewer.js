@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Button from "../library/Button";
@@ -14,34 +15,22 @@ class MusicViewer extends Component {
     window.removeEventListener("keydown", this.onKeyDown);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { projectRoot, file } = nextProps;
-    const oldFile = this.props.file;
-
-    if (file && (!oldFile || file.filename != oldFile.filename)) {
-      const url =
-        file &&
-        `${projectRoot}/assets/music/${file.filename}?v=${file._v || 0}`;
-
-      console.log({ url });
-    }
-  }
-
   onOpen = () => {
-    const { projectRoot, file } = this.props;
-    this.props.openFolder(`${projectRoot}/assets/music/${file.filename}`);
+    const { projectRoot, file, openFolder } = this.props;
+    openFolder(`${projectRoot}/assets/music/${file.filename}`);
   };
 
   onPlay = () => {
-    const { projectRoot, file } = this.props;
+    const { projectRoot, file, playMusic } = this.props;
     if (file) {
       const filename = `${projectRoot}/assets/music/${file.filename}`;
-      this.props.playMusic(filename);
+      playMusic(filename);
     }
   };
 
   onPause = () => {
-    this.props.pauseMusic();
+    const { pauseMusic } = this.props;
+    pauseMusic();
   };
 
   onKeyDown = e => {
@@ -56,7 +45,7 @@ class MusicViewer extends Component {
   };
 
   render() {
-    const { projectRoot, file, playing, sidebarWidth } = this.props;
+    const { file, playing, sidebarWidth } = this.props;
     return (
       <div className="MusicViewer" style={{ right: sidebarWidth }}>
         {file && (
@@ -85,6 +74,23 @@ class MusicViewer extends Component {
     );
   }
 }
+
+MusicViewer.propTypes = {
+  projectRoot: PropTypes.string.isRequired,
+  file: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    filename: PropTypes.string.isRequired
+  }),
+  sidebarWidth: PropTypes.number.isRequired,
+  playing: PropTypes.bool.isRequired,
+  playMusic: PropTypes.func.isRequired,
+  pauseMusic: PropTypes.func.isRequired,
+  openFolder: PropTypes.func.isRequired
+};
+
+MusicViewer.defaultProps = {
+  file: {}
+};
 
 function mapStateToProps(state) {
   return {

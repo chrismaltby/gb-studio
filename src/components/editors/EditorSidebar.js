@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import TriggerEditor from "./TriggerEditor";
 import ActorEditor from "./ActorEditor";
@@ -7,33 +8,38 @@ import WorldEditor from "./WorldEditor";
 
 class EditorSidebar extends Component {
   render() {
-    const { editor } = this.props;
-    return editor.type === "triggers" ? (
-      <TriggerEditor
-        key={editor.entityId}
-        id={editor.entityId}
-        sceneId={editor.scene}
-      />
-    ) : editor.type === "actors" ? (
-      <ActorEditor
-        key={editor.entityId}
-        id={editor.entityId}
-        sceneId={editor.scene}
-      />
-    ) : editor.type === "scenes" ? (
-      <SceneEditor key={editor.scene} id={editor.scene} />
-    ) : editor.type === "world" ? (
-      <WorldEditor />
-    ) : (
-      <div />
-    );
+    const { type, entityId, sceneId } = this.props;
+    if (type === "triggers") {
+      return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
+    }
+    if (type === "actors") {
+      return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
+    }
+    if (type === "scenes") {
+      return <SceneEditor key={sceneId} id={sceneId} />;
+    }
+    if (type === "world") {
+      return <WorldEditor />;
+    }
+    return <div />;
   }
 }
 
+EditorSidebar.propTypes = {
+  type: PropTypes.string,
+  entityId: PropTypes.string,
+  sceneId: PropTypes.string
+};
+
+EditorSidebar.defaultProps = {
+  type: "",
+  entityId: "",
+  sceneId: ""
+};
+
 function mapStateToProps(state) {
-  return {
-    editor: state.editor
-  };
+  const { type, entityId, scene: sceneId } = state.editor;
+  return { type, entityId, sceneId };
 }
 
 const mapDispatchToProps = {};

@@ -1,6 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
 import { walkEvents } from "../../lib/helpers/eventSystem";
+import { SceneShape, SettingsShape } from "../../reducers/stateShape";
 
 const scriptMapTransition = script => {
   const sceneTransitions = [];
@@ -47,7 +49,6 @@ const calculateTransitionCoords = ({
     qx,
     qy,
     type,
-    type,
     eventId: event.id,
     sceneId: scene.id,
     entityId,
@@ -55,7 +56,7 @@ const calculateTransitionCoords = ({
   };
 };
 
-export default React.memo(
+const Connections = React.memo(
   ({
     width,
     height,
@@ -170,8 +171,8 @@ export default React.memo(
           strokeWidth: 2 / zoomRatio
         }}
       >
-        {connections.map(({ x1, y1, x2, y2, qx, qy }, index) => (
-          <g key={index}>
+        {connections.map(({ x1, y1, x2, y2, qx, qy, eventId }) => (
+          <g key={eventId}>
             <path
               d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
               e="M10 80 Q 95 10 180 80"
@@ -182,9 +183,9 @@ export default React.memo(
           </g>
         ))}
         {connections.map(
-          ({ x2, y2, direction, eventId, sceneId, type, entityId }, index) => (
+          ({ x2, y2, direction, eventId, sceneId, type, entityId }) => (
             <g
-              key={index}
+              key={eventId}
               className="Connections__Destination"
               onMouseDown={() =>
                 onDragDestinationStart(eventId, sceneId, type, entityId)
@@ -201,7 +202,7 @@ export default React.memo(
                   fill: "#00bcd4"
                 }}
               />
-              {direction === "up" ? (
+              {direction === "up" && (
                 <polygon
                   points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 +
                     2}`}
@@ -209,7 +210,8 @@ export default React.memo(
                     fill: "#006064"
                   }}
                 />
-              ) : direction === "down" ? (
+              )}
+              {direction === "down" && (
                 <polygon
                   points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 -
                     2}`}
@@ -217,14 +219,16 @@ export default React.memo(
                     fill: "#006064"
                   }}
                 />
-              ) : direction === "left" ? (
+              )}
+              {direction === "left" && (
                 <polygon
                   points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`}
                   style={{
                     fill: "#006064"
                   }}
                 />
-              ) : direction === "right" ? (
+              )}
+              {direction === "right" && (
                 <polygon
                   points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 +
                     3}`}
@@ -232,7 +236,7 @@ export default React.memo(
                     fill: "#006064"
                   }}
                 />
-              ) : null}
+              )}
             </g>
           )
         )}
@@ -253,7 +257,7 @@ export default React.memo(
                 fill: "#ff5722"
               }}
             />
-            {startDirection === "up" ? (
+            {startDirection === "up" && (
               <polygon
                 points={`${startX2},${startY2 + 2} ${startX2 + 4},${startY2 -
                   3} ${startX2 + 8},${startY2 + 2}`}
@@ -261,7 +265,8 @@ export default React.memo(
                   fill: "#fbe9e7"
                 }}
               />
-            ) : startDirection === "down" ? (
+            )}
+            {startDirection === "down" && (
               <polygon
                 points={`${startX2},${startY2 - 2} ${startX2 + 4},${startY2 +
                   3} ${startX2 + 8},${startY2 - 2}`}
@@ -269,7 +274,8 @@ export default React.memo(
                   fill: "#fbe9e7"
                 }}
               />
-            ) : startDirection === "left" ? (
+            )}
+            {startDirection === "left" && (
               <polygon
                 points={`${startX2},${startY2} ${startX2 + 6},${startY2 -
                   3} ${startX2 + 6},${startY2 + 3}`}
@@ -277,7 +283,8 @@ export default React.memo(
                   fill: "#fbe9e7"
                 }}
               />
-            ) : startDirection === "right" ? (
+            )}
+            {startDirection === "right" && (
               <polygon
                 points={`${startX2 + 8},${startY2} ${startX2 + 2},${startY2 -
                   3} ${startX2 + 2},${startY2 + 3}`}
@@ -285,10 +292,25 @@ export default React.memo(
                   fill: "#fbe9e7"
                 }}
               />
-            ) : null}
+            )}
           </g>
         )}
       </svg>
     );
   }
 );
+
+Connections.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
+  settings: SettingsShape.isRequired,
+  zoomRatio: PropTypes.number.isRequired,
+  dragScene: PropTypes.string.isRequired,
+  dragX: PropTypes.number.isRequired,
+  dragY: PropTypes.number.isRequired,
+  onDragPlayerStart: PropTypes.func.isRequired,
+  onDragDestinationStart: PropTypes.func.isRequired
+};
+
+export default Connections;

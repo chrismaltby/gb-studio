@@ -6,7 +6,7 @@ import l10n from "../../lib/helpers/l10n";
 
 class DirectionPicker extends Component {
   render() {
-    const { value, onChange } = this.props;
+    const { id, value, onChange } = this.props;
     const directions = [
       {
         key: "left",
@@ -32,9 +32,14 @@ class DirectionPicker extends Component {
 
     return (
       <div className="DirectionPicker">
-        {directions.map(direction => (
-          <label key={direction.key} title={direction.title}>
+        {directions.map((direction, index) => (
+          <label
+            htmlFor={`${id}_${index}`}
+            key={direction.key}
+            title={direction.title}
+          >
             <input
+              id={`${id}_${index}`}
               type="radio"
               checked={value === direction.key}
               onChange={() => onChange(direction.key)}
@@ -58,11 +63,13 @@ class DirectionPicker extends Component {
 }
 
 DirectionPicker.propTypes = {
+  id: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired
 };
 
 DirectionPicker.defaultProps = {
+  id: undefined,
   value: ""
 };
 
