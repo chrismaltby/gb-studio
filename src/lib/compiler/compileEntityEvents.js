@@ -1,3 +1,5 @@
+import glob from "glob";
+import Path from "path";
 import {
   EVENT_END,
   EVENT_TEXT,
@@ -87,6 +89,19 @@ import {
   combineMultipleChoiceText
 } from "./helpers";
 import { directionToFrame } from "../helpers/gbstudio";
+
+const eventHandlerRoot = Path.join(__dirname, "../events");
+const eventHandlerPaths = glob.sync(`${eventHandlerRoot}/event*`);
+const eventHandlers = eventHandlerPaths.reduce((memo, path) => {
+  const handler = require(path);
+  if (!handler.key) {
+    throw new Error(`Event handler ${path} is missing key`);
+  }
+  return {
+    ...memo,
+    [handler.key]: handler
+  };
+}, {});
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -290,6 +305,15 @@ const precompileEntityScript = (input = [], options = {}) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
 
+    if (eventHandlers[command]) {
+      eventHandlers[command].compile(input[i], output, {
+        ...options,
+        compile: precompileEntityScript
+      });
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
     if (command === EVENT_TEXT) {
       const text = input[i].args.text || " "; // Replace empty strings with single space
       if (Array.isArray(text)) {
@@ -350,15 +374,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.speedIn);
       output.push(input[i].args.speedOut);
       output.push(input[i].args.speed !== undefined ? input[i].args.speed : 1);
-    } else if (command === EVENT_IF_TRUE) {
-      output.push(CMD_LOOKUP.IF_TRUE);
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
     } else if (command === EVENT_MATH_ADD) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.MATH_ADD);
@@ -638,30 +653,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-    } else if (command === EVENT_ACTOR_SET_DIRECTION) {
-      const actor = getActor(input[i].args.actorId, scene);
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_DIRECTION);
-      output.push(dirDec(input[i].args.direction));
-      // If direction event applied to static actor
-      // calculate frame offset and apply that instead
-      if (actor && actor.movementType === "static") {
-        const spriteSheet = getSprite(actor.spriteSheetId, sprites);
-        if (
-          spriteSheet &&
-          (spriteSheet.numFrames === 3 || spriteSheet.numFrames === 6)
-        ) {
-          output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
-          output.push(
-            directionToFrame(input[i].args.direction, spriteSheet.numFrames)
-          );
-          const flip = input[i].args.direction === "left";
-          output.push(CMD_LOOKUP.ACTOR_SET_FLIP);
-          output.push(flip);
-        }
-      }
     } else if (command === EVENT_ACTOR_SET_FRAME) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
@@ -680,13 +671,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
       output.push(animSpeedDec(input[i].args.speed));
-    } else if (command === EVENT_ACTOR_MOVE_TO) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_MOVE_TO);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
     } else if (command === EVENT_ACTOR_MOVE_RELATIVE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
