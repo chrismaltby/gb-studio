@@ -135,17 +135,35 @@ const createWindow = async projectPath => {
     mainWindow.webContents.send("leave-full-screen");
   });
 
+  mainWindow.on("page-title-updated", (e, title) => {
+    mainWindow.name = title;
+  });
+
   mainWindow.on("close", e => {
     if (mainWindow.documentEdited) {
+      // eslint-disable-next-line global-require
+      const l10n = require("./lib/helpers/l10n").default;
       const choice = dialog.showMessageBox(mainWindow, {
         type: "question",
-        buttons: ["Quit", "Cancel"],
-        title: "Confirm",
-        message:
-          "You have unsaved changes, are you sure you want to close this project?"
+        buttons: [
+          l10n("DIALOG_SAVE"),
+          l10n("DIALOG_CANCEL"),
+          l10n("DIALOG_DONT_SAVE")
+        ],
+        defaultId: 0,
+        cancelId: 1,
+        message: l10n("DIALOG_SAVE_CHANGES", { name: mainWindow.name }),
+        detail: l10n("DIALOG_SAVE_WARNING")
       });
-      if (choice === 1) {
+      if (choice === 0) {
+        // Save
         e.preventDefault();
+        mainWindow.webContents.send("save-project-and-close");
+      } else if (choice === 1) {
+        // Cancel
+        e.preventDefault();
+      } else {
+        // Don't Save
       }
     }
   });
