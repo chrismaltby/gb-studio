@@ -9,11 +9,11 @@ const jsxPlugin = require("@babel/plugin-transform-react-jsx");
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
-const projectRoot = Path.dirname(projectPath);
+const projectRoot = projectPath && Path.dirname(projectPath);
 
-const pluginEventHandlerPaths = glob.sync(
-  `${projectRoot}/assets/plugins/**/event*.js`
-);
+const pluginEventHandlerPaths = projectRoot
+  ? glob.sync(`${projectRoot}/assets/plugins/**/event*.js`)
+  : [];
 
 const compiler = code =>
   babel.transform(code, {

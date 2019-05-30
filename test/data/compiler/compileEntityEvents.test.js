@@ -189,7 +189,7 @@ test("should allow commands after conditional", () => {
   ]);
 });
 
-test("should error if any string lookups return negative values", () => {
+test("should add strings to array if not found", () => {
   const input = [
     {
       command: EVENT_TEXT,
@@ -199,9 +199,8 @@ test("should error if any string lookups return negative values", () => {
     }
   ];
   const strings = ["LOREM IPSUM"];
-  expect(() => compileEntityEvents(input, { strings })).toThrow(
-    STRING_NOT_FOUND
-  );
+  compileEntityEvents(input, { strings });
+  expect(strings.length).toBe(2);
 });
 
 test("should error if any variable lookups return negative values", () => {

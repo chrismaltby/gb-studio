@@ -5,11 +5,6 @@ export const fields = [
     key: "variable",
     type: "variable",
     defaultValue: "LAST_VARIABLE"
-  },
-  {
-    key: "variable1",
-    type: "variable",
-    defaultValue: "LAST_VARIABLE"
   }
 ];
 
