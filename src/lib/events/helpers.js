@@ -1,5 +1,15 @@
 import { commandIndex as cmd, JUMP } from "./scriptCommands";
 
+class CompileEventsError extends Error {
+  constructor(message, data) {
+    super(message);
+    this.data = data;
+    this.name = "CompileEventsError";
+  }
+}
+
+const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
+
 export const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
 };
@@ -34,21 +44,21 @@ export const getVariableIndex = (variable, variables) => {
 };
 
 export const loadVectors = (args, output, variables) => {
-  const vectorX = getVariableIndex(args.vectorX, variables);
-  const vectorY = getVariableIndex(args.vectorY, variables);
-  output.push(CMD_LOOKUP.LOAD_VECTORS);
-  output.push(hi(vectorX));
-  output.push(lo(vectorX));
-  output.push(hi(vectorY));
-  output.push(lo(vectorY));
+  // const vectorX = getVariableIndex(args.vectorX, variables);
+  // const vectorY = getVariableIndex(args.vectorY, variables);
+  // output.push(CMD_LOOKUP.LOAD_VECTORS);
+  // output.push(hi(vectorX));
+  // output.push(lo(vectorX));
+  // output.push(hi(vectorY));
+  // output.push(lo(vectorY));
 };
 
 export const loadVectorsByIndex = (vectorX, vectorY, output) => {
-  output.push(CMD_LOOKUP.LOAD_VECTORS);
-  output.push(hi(vectorX));
-  output.push(lo(vectorX));
-  output.push(hi(vectorY));
-  output.push(lo(vectorY));
+  // output.push(CMD_LOOKUP.LOAD_VECTORS);
+  // output.push(hi(vectorX));
+  // output.push(lo(vectorX));
+  // output.push(hi(vectorY));
+  // output.push(lo(vectorY));
 };
 
 export const compileConditional = (truePath, falsePath, options) => {
@@ -57,11 +67,16 @@ export const compileConditional = (truePath, falsePath, options) => {
   const truePtrIndex = output.length;
   output.push("PTR_PLACEHOLDER1");
   output.push("PTR_PLACEHOLDER2");
-  compile(falsePath, {
-    ...options,
-    output,
-    branch: true
-  });
+
+  if (typeof falsePath === "function") {
+    falsePath();
+  } else {
+    compile(falsePath, {
+      ...options,
+      output,
+      branch: true
+    });
+  }
 
   output.push(cmd(JUMP));
   const endPtrIndex = output.length;
@@ -72,10 +87,15 @@ export const compileConditional = (truePath, falsePath, options) => {
   output[truePtrIndex] = truePointer >> 8;
   output[truePtrIndex + 1] = truePointer & 0xff;
 
-  compile(truePath, {
-    ...options,
-    branch: true
-  });
+  if (typeof truePath === "function") {
+    truePath();
+  } else {
+    compile(truePath, {
+      ...options,
+      output,
+      branch: true
+    });
+  }
 
   const endIfPointer = output.length;
   output[endPtrIndex] = endIfPointer >> 8;

@@ -1,12 +1,6 @@
-import { getActorIndex } from "./helpers";
 import l10n from "../helpers/l10n";
-import {
-  commandIndex as cmd,
-  ACTOR_SET_ACTIVE,
-  ACTOR_MOVE_TO
-} from "./scriptCommands";
 
-export const key = "EVENT_ACTOR_MOVE_TO";
+export const id = "EVENT_ACTOR_MOVE_TO";
 
 export const fields = [
   {
@@ -34,15 +28,8 @@ export const fields = [
   }
 ];
 
-export const compile = (input, output, options) => {
-  const { scene } = options;
-  const actorIndex = getActorIndex(input.args.actorId, scene);
-  const x = input.args.x || 0;
-  const y = input.args.y || 0;
-
-  output.push(cmd(ACTOR_SET_ACTIVE));
-  output.push(actorIndex);
-  output.push(cmd(ACTOR_MOVE_TO));
-  output.push(x);
-  output.push(y);
+export const compile = (input, helpers) => {
+  const { setActiveActor, actorMoveTo } = helpers;
+  setActiveActor(input.actorId);
+  actorMoveTo(input.x, input.y);
 };

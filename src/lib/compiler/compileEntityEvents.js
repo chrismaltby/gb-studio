@@ -1,14 +1,8 @@
-import glob from "glob";
-import Path from "path";
 import {
   EVENT_END,
-  EVENT_TEXT,
   EVENT_TEXT_SET_ANIMATION_SPEED,
-  EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
-  EVENT_SET_TRUE,
-  EVENT_SET_FALSE,
   EVENT_RESET_VARIABLES,
   EVENT_LOOP,
   EVENT_GROUP,
@@ -16,16 +10,11 @@ import {
   EVENT_FADE_OUT,
   EVENT_CAMERA_MOVE_TO,
   EVENT_CAMERA_LOCK,
-  EVENT_SWITCH_SCENE,
-  EVENT_START_BATTLE,
   EVENT_ACTOR_GET_POSITION,
   EVENT_ACTOR_SET_POSITION,
   EVENT_ACTOR_SET_POSITION_TO_VALUE,
-  EVENT_ACTOR_SET_DIRECTION,
   EVENT_ACTOR_SET_MOVEMENT_SPEED,
   EVENT_ACTOR_SET_ANIMATION_SPEED,
-  EVENT_ACTOR_MOVE_TO,
-  EVENT_WAIT,
   EVENT_CAMERA_SHAKE,
   EVENT_ACTOR_EMOTE,
   EVENT_SHOW_SPRITES,
@@ -88,20 +77,8 @@ import {
   operatorDec,
   combineMultipleChoiceText
 } from "./helpers";
-import { directionToFrame } from "../helpers/gbstudio";
-
-const eventHandlerRoot = Path.join(__dirname, "../events");
-const eventHandlerPaths = glob.sync(`${eventHandlerRoot}/event*`);
-const eventHandlers = eventHandlerPaths.reduce((memo, path) => {
-  const handler = require(path);
-  if (!handler.key) {
-    throw new Error(`Event handler ${path} is missing key`);
-  }
-  return {
-    ...memo,
-    [handler.key]: handler
-  };
-}, {});
+import ScriptBuilder from "./scriptBuilder";
+import events from "../events";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -208,10 +185,6 @@ const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
 };
 
-const getActor = (actorId, scene) => {
-  return scene.actors.find(a => a.id === actorId);
-};
-
 const getMusicIndex = (musicId, music) => {
   const musicIndex = music.findIndex(track => track.id === musicId);
   return musicIndex;
@@ -223,10 +196,6 @@ const getSpriteIndex = (spriteId, sprites) => {
     return 0;
   }
   return spriteIndex;
-};
-
-const getSprite = (spriteId, sprites) => {
-  return sprites.find(sprite => sprite.id === spriteId);
 };
 
 const getVariableIndex = (variable, variables) => {
@@ -291,7 +260,6 @@ const precompileEntityScript = (input = [], options = {}) => {
     output = [],
     strings,
     scene,
-    scenes,
     music,
     sprites,
     variables,
@@ -304,59 +272,28 @@ const precompileEntityScript = (input = [], options = {}) => {
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
 
-    if (eventHandlers[command]) {
-      eventHandlers[command].compile(input[i], output, {
+    if (events[command]) {
+      const helpers = {
         ...options,
         compile: precompileEntityScript
-      });
+      };
+      const scriptBuilder = new ScriptBuilder(output, helpers);
+      events[command].compile(
+        {
+          ...input[i].args,
+          true: input[i].true,
+          false: input[i].false
+        },
+        {
+          ...helpers,
+          ...scriptBuilder
+        }
+      );
       // eslint-disable-next-line no-continue
       continue;
     }
 
-    if (command === EVENT_TEXT) {
-      const text = input[i].args.text || " "; // Replace empty strings with single space
-      if (Array.isArray(text)) {
-        // Handle multiple blocks of text
-        for (let j = 0; j < text.length; j++) {
-          const rowText = text[j] || " ";
-          const stringIndex = strings.indexOf(rowText);
-          if (stringIndex === -1) {
-            throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
-          }
-          // Before first box, make close instant
-          if (j === 0) {
-            output.push(CMD_LOOKUP.TEXT_MULTI);
-            output.push(0);
-          }
-          // Before last box, restore close speed
-          if (j === text.length - 1) {
-            output.push(CMD_LOOKUP.TEXT_MULTI);
-            output.push(2);
-          }
-          output.push(CMD_LOOKUP.TEXT);
-          output.push(hi(stringIndex));
-          output.push(lo(stringIndex));
-          // After first box, make open instant
-          if (j === 0) {
-            output.push(CMD_LOOKUP.TEXT_MULTI);
-            output.push(1);
-          }
-          // After last box, restore open speed
-          if (j === text.length - 1) {
-            output.push(CMD_LOOKUP.TEXT_MULTI);
-            output.push(3);
-          }
-        }
-      } else {
-        const stringIndex = strings.indexOf(text);
-        if (stringIndex === -1) {
-          throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
-        }
-        output.push(CMD_LOOKUP.TEXT);
-        output.push(hi(stringIndex));
-        output.push(lo(stringIndex));
-      }
-    } else if (command === EVENT_CHOICE) {
+    if (command === EVENT_CHOICE) {
       const text = combineMultipleChoiceText(input[i].args);
       const stringIndex = strings.indexOf(text);
       if (stringIndex === -1) {
@@ -476,16 +413,6 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
-    } else if (command === EVENT_SET_TRUE) {
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.SET_TRUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-    } else if (command === EVENT_SET_FALSE) {
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.SET_FALSE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
     } else if (command === EVENT_INC_VALUE) {
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(CMD_LOOKUP.INC_VALUE);
@@ -610,12 +537,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       const speed = input[i].args.speed || 0;
       const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
       output.push(speedFlag);
-    } else if (command === EVENT_START_BATTLE) {
-      const encounterIndex = parseInt(input[i].args.encounter, 10);
-      if (encounterIndex > -1) {
-        output.push(CMD_LOOKUP.START_BATTLE);
-        output.push(encounterIndex);
-      }
     } else if (command === EVENT_ACTOR_GET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       loadVectors(input[i].args, output, variables);
@@ -677,15 +598,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.x < 0 ? 1 : 0);
       output.push(Math.abs(input[i].args.y));
       output.push(input[i].args.y < 0 ? 1 : 0);
-    } else if (command === EVENT_WAIT) {
-      let seconds =
-        typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
-      while (seconds > 0) {
-        const time = Math.min(seconds, 1);
-        output.push(CMD_LOOKUP.WAIT);
-        output.push(Math.ceil(60 * time));
-        seconds -= time;
-      }
     } else if (command === EVENT_CAMERA_SHAKE) {
       let seconds =
         typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
@@ -700,18 +612,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_EMOTE);
       output.push(actorIndex);
       output.push(input[i].args.emoteId || 0);
-    } else if (command === EVENT_SWITCH_SCENE) {
-      const sceneIndex = scenes.findIndex(s => s.id === input[i].args.sceneId);
-      if (sceneIndex > -1) {
-        output.push(CMD_LOOKUP.SWITCH_SCENE);
-        output.push(hi(sceneIndex));
-        output.push(lo(sceneIndex));
-        output.push(input[i].args.x || 0);
-        output.push(input[i].args.y || 0);
-        output.push(dirDec(input[i].args.direction));
-        output.push(input[i].args.fadeSpeed || 2);
-        output.push(CMD_LOOKUP.END);
-      }
     } else if (command === EVENT_SCENE_PUSH_STATE) {
       output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
     } else if (command === EVENT_SCENE_POP_STATE) {

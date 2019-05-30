@@ -10,7 +10,6 @@ import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
-  EventFields,
   EVENT_IF_TRUE,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
@@ -44,6 +43,7 @@ import {
   SceneShape,
   SpriteShape
 } from "../../reducers/stateShape";
+import events from "../../lib/events";
 
 const ItemTypes = {
   CARD: "card"
@@ -202,7 +202,7 @@ class ActionMini extends Component {
 
     const eventName =
       (action.args.__label ? `${action.args.__label}: ` : "") +
-      (l10n(command) || command);
+      (l10n(command) || events[command].name || command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
     return connectDropTarget(
@@ -234,10 +234,12 @@ class ActionMini extends Component {
                 {action.args.__label ? (
                   <span>
                     {action.args.__label}
-                    <small>{l10n(command) || command}</small>
+                    <small>
+                      {l10n(command) || events[command].name || command}
+                    </small>
                   </span>
                 ) : (
-                  l10n(command) || command
+                  l10n(command) || events[command].name || command
                 )}
               </div>
             )}
@@ -298,16 +300,19 @@ class ActionMini extends Component {
               </FormField>
             )}
 
-            {open && EventFields[command] && EventFields[command].length > 0 && (
-              <ScriptEventBlock
-                id={action.id}
-                command={command}
-                value={action.args}
-                onChange={newValue => {
-                  onEdit(id, newValue);
-                }}
-              />
-            )}
+            {open &&
+              events[command] &&
+              events[command].fields &&
+              events[command].fields.length > 0 && (
+                <ScriptEventBlock
+                  id={action.id}
+                  command={command}
+                  value={action.args}
+                  onChange={newValue => {
+                    onEdit(id, newValue);
+                  }}
+                />
+              )}
 
             {open &&
               action.true &&
@@ -440,7 +445,7 @@ class ScriptEditor extends Component {
       scene,
       spriteSheets
     } = this.props;
-    const eventFields = EventFields[command];
+    const eventFields = events[command].fields;
     const defaultArgs = eventFields
       ? eventFields.reduce(
           (memo, field) => {

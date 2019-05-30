@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React from "react";
 import PropTypes from "prop-types";
-import { EventFields } from "../../lib/compiler/eventTypes";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -20,11 +19,12 @@ import MusicSelect from "../forms/MusicSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import { textNumLines } from "../../lib/helpers/trimlines";
+import events from "../../lib/events";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
 const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
-  const fields = EventFields[command] || [];
+  const fields = (events[command] && events[command].fields) || [];
   const onChangeField = (key, index, type = "text", updateFn) => e => {
     let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value[key]) {
@@ -65,6 +65,15 @@ const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
       [key]: current.filter((v, i) => i !== index)
     });
   };
+
+  if (events[command] && events[command].renderEvent) {
+    return events[command].renderEvent({
+      fields,
+      value,
+      onChange
+    });
+  }
+
   return (
     <div className="ScriptEventBlock">
       {fields.map((field, index) => {

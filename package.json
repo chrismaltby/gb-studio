@@ -82,6 +82,8 @@
     }
   },
   "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@octokit/rest": "^16.25.4",
     "about-window": "^1.12.1",
     "chokidar": "^2.1.2",
@@ -113,7 +115,8 @@
     "redux-undo": "^0.6.1",
     "rimraf": "^2.6.3",
     "semver": "^6.0.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "vm2": "^3.8.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

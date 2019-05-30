@@ -80,21 +80,6 @@ const compile = async (
     bankOffset
   });
 
-  // Strings
-  const stringPtrs = precompiled.strings.map(string => {
-    const ascii = [];
-    // Number of lines in string
-    ascii.push(textNumLines(string));
-    for (let i = 0; i < string.length; i++) {
-      const char = string.charCodeAt(i);
-      if (char < 256) {
-        ascii.push(string.charCodeAt(i));
-      }
-    }
-    ascii.push(0);
-    return banked.push(ascii);
-  });
-
   // Add event data
   const eventPtrs = precompiled.sceneData.map(scene => {
     const subScripts = {};
@@ -112,7 +97,8 @@ const compile = async (
               variables: precompiled.variables,
               subScripts,
               entityType,
-              entityIndex
+              entityIndex,
+              banked
             })
           );
         }
@@ -135,7 +121,8 @@ const compile = async (
           variables: precompiled.variables,
           subScripts,
           entityType,
-          entityIndex
+          entityIndex,
+          banked
         })
       );
     };
@@ -144,6 +131,21 @@ const compile = async (
       actors: scene.actors.map(bankEntityEvents("actor")),
       triggers: scene.triggers.map(bankEntityEvents("trigger"))
     };
+  });
+
+  // Strings
+  const stringPtrs = precompiled.strings.map(string => {
+    const ascii = [];
+    // Number of lines in string
+    ascii.push(textNumLines(string));
+    for (let i = 0; i < string.length; i++) {
+      const char = string.charCodeAt(i);
+      if (char < 256) {
+        ascii.push(string.charCodeAt(i));
+      }
+    }
+    ascii.push(0);
+    return banked.push(ascii);
   });
 
   // Add tileset data

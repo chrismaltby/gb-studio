@@ -4,22 +4,22 @@ import cx from "classnames";
 import Highlighter from "react-highlight-words";
 import Button from "../library/Button";
 import {
-  EventFields,
   EventsOnlyForActors,
   EventsDeprecated,
   EVENT_TEXT
 } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
+import events from "../../lib/events";
 
-const EventNames = Object.keys(EventFields).reduce((memo, key) => {
+const EventNames = Object.keys(events).reduce((memo, key) => {
   return {
     ...memo,
-    [key]: l10n(key)
+    [key]: l10n(key) || events[key].name
   };
 }, {});
 
-const actions = Object.keys(EventFields).sort((a, b) => {
+const actions = Object.keys(events).sort((a, b) => {
   const textA = (EventNames[a] || a).toUpperCase();
   const textB = (EventNames[b] || b).toUpperCase();
   if (textA < textB) {

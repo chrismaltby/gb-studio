@@ -193,17 +193,6 @@ export const EventFields = {
       width: "50%"
     }
   ],
-  [EVENT_WAIT]: [
-    {
-      key: "time",
-      type: "number",
-      label: l10n("FIELD_SECONDS"),
-      min: 0,
-      max: 10,
-      step: 0.1,
-      defaultValue: 0.5
-    }
-  ],
   [EVENT_CAMERA_SHAKE]: [
     {
       key: "time",
@@ -311,13 +300,6 @@ export const EventFields = {
       key: "direction",
       type: "direction",
       defaultValue: "up"
-    }
-  ],
-  [EVENT_SET_TRUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_SET_FALSE]: [
