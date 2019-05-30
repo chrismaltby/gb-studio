@@ -35,7 +35,6 @@ import {
   EVENT_SET_VALUE,
   EVENT_IF_INPUT,
   EVENT_CHOICE,
-  EVENT_ACTOR_PUSH,
   EVENT_IF_ACTOR_AT_POSITION,
   EVENT_IF_ACTOR_DIRECTION,
   EVENT_LOAD_DATA,
@@ -264,8 +263,6 @@ const precompileEntityScript = (input = [], options = {}) => {
     sprites,
     variables,
     subScripts,
-    entityType,
-    entityIndex,
     branch = false
   } = options;
 
@@ -636,13 +633,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_HIDE);
       output.push(actorIndex);
-    } else if (command === EVENT_ACTOR_PUSH) {
-      if (entityType === "actor" && entityIndex !== undefined) {
-        output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-        output.push(entityIndex + 1);
-        output.push(CMD_LOOKUP.ACTOR_PUSH);
-        output.push(input[i].args.continue ? 1 : 0); // Continue until collision
-      }
     } else if (command === EVENT_ACTOR_INVOKE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);

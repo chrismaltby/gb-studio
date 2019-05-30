@@ -98,6 +98,7 @@ const compile = async (
               subScripts,
               entityType,
               entityIndex,
+              entity,
               banked
             })
           );
@@ -122,6 +123,7 @@ const compile = async (
           subScripts,
           entityType,
           entityIndex,
+          entity,
           banked
         })
       );

@@ -5,6 +5,7 @@ import {
   ACTOR_SET_DIRECTION,
   ACTOR_SET_FRAME,
   ACTOR_SET_FLIP,
+  ACTOR_PUSH,
   TEXT,
   TEXT_MULTI,
   SET_TRUE,
@@ -58,7 +59,13 @@ class ScriptBuilder {
   actorSetFlip = flip => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_FLIP));
-    output.push(flip);
+    output.push(flip ? 1 : 0);
+  };
+
+  actorPush = (continueUntilCollision = false) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_PUSH));
+    output.push(continueUntilCollision ? 1 : 0);
   };
 
   // Text
