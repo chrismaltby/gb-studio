@@ -326,9 +326,13 @@
 
   "// 15": "Dialogs ------------------------------------------------------",
 
+  "DIALOG_SAVE_CHANGES": "Do you want to save the changes you made to \"{name}\"?",
+  "DIALOG_SAVE_WARNING": "Your changes will be lost if you don't save them.",
   "DIALOG_DOWNLOAD": "Download",
   "DIALOG_SKIP_VERSION": "Skip This Version",
   "DIALOG_REMIND_LATER": "Remind Me Later",
+  "DIALOG_SAVE": "Save",
+  "DIALOG_DONT_SAVE": "Don't Save",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancel",
   "DIALOG_UPDATE_AVAILABLE": "Update available",

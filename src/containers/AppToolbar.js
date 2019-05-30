@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
 import {
   Toolbar,
@@ -86,6 +87,9 @@ class AppToolbar extends Component {
 
     return (
       <Toolbar>
+        <Helmet>
+          <title>{name}</title>
+        </Helmet>
         <ToolbarDropdownButton
           label={<div style={{ minWidth: 106 }}>{sectionNames[section]}</div>}
         >

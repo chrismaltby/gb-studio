@@ -40,6 +40,11 @@ ipcRenderer.on("save-project", () => {
   store.dispatch(actions.saveProject());
 });
 
+ipcRenderer.on("save-project-and-close", async () => {
+  await store.dispatch(actions.saveProject());
+  window.close();
+});
+
 ipcRenderer.on("undo", () => {
   store.dispatch(ActionCreators.undo());
 });
