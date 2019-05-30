@@ -46,8 +46,7 @@ import {
   EVENT_SCENE_RESET_STATE,
   EVENT_SCENE_POP_ALL_STATE,
   EVENT_SET_INPUT_SCRIPT,
-  EVENT_REMOVE_INPUT_SCRIPT,
-  EVENT_ACTOR_SET_FRAME
+  EVENT_REMOVE_INPUT_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -388,12 +387,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
       output.push(input[i].args.x || 0);
       output.push(input[i].args.y || 0);
-    } else if (command === EVENT_ACTOR_SET_FRAME) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
-      output.push(input[i].args.frame || 0);
     } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);

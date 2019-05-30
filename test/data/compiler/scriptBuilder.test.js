@@ -77,6 +77,14 @@ test("Should be able to set frame of active actor", () => {
   expect(output).toEqual([cmd(ACTOR_SET_FRAME), 7]);
 });
 
+test("Should set missing or empty of frame to 0", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetFrame();
+  sb.actorSetFrame("");
+  expect(output).toEqual([cmd(ACTOR_SET_FRAME), 0, cmd(ACTOR_SET_FRAME), 0]);
+});
+
 test("Should be able to set flip state of active actor", () => {
   const output = [];
   const sb = new ScriptBuilder(output);

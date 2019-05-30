@@ -65,10 +65,10 @@ class ScriptBuilder {
     output.push(dirDec(direction));
   };
 
-  actorSetFrame = frame => {
+  actorSetFrame = (frame = 0) => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_FRAME));
-    output.push(frame);
+    output.push(frame || 0);
   };
 
   actorSetFlip = flip => {

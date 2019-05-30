@@ -396,21 +396,6 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
-  [EVENT_ACTOR_SET_FRAME]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "LAST_ACTOR"
-    },
-    {
-      key: "frame",
-      label: l10n("FIELD_ANIMATION_FRAME"),
-      type: "number",
-      min: 0,
-      max: 25,
-      defaultValue: 0
-    }
-  ],
   [EVENT_ACTOR_SET_ANIMATION_SPEED]: [
     {
       key: "actorId",
