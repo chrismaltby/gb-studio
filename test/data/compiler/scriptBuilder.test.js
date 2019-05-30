@@ -24,7 +24,10 @@ import {
   MATH_DIV_VALUE,
   MATH_MOD_VALUE,
   MUSIC_PLAY,
-  MUSIC_STOP
+  MUSIC_STOP,
+  CAMERA_MOVE_TO,
+  CAMERA_LOCK,
+  CAMERA_SHAKE
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -272,6 +275,63 @@ test("Should default scene switch to facing downwards at origin with default fad
   });
   sb.switchScene("abc");
   expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2]);
+});
+
+test("Should be able to move camera to position", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      width: 32,
+      height: 28
+    }
+  });
+  sb.cameraMoveTo(5, 6, 0);
+  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 0]);
+});
+
+test("Should limit camera position to screen bounds", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      width: 32,
+      height: 28
+    }
+  });
+  sb.cameraMoveTo(40, 20, 0);
+  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 12, 10, 0]);
+});
+
+test("Should set camera move speed flag", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    scene: {
+      width: 32,
+      height: 28
+    }
+  });
+  sb.cameraMoveTo(5, 6, 2);
+  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 35]);
+});
+
+test("Should be able to lock camera to player position", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.cameraLock(0);
+  expect(output).toEqual([cmd(CAMERA_LOCK), 0]);
+});
+
+test("Should be able to lock camera with speed flag", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.cameraLock(3);
+  expect(output).toEqual([cmd(CAMERA_LOCK), 39]);
+});
+
+test("Should be able to shake camera for a number of frames", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.cameraShake(3);
+  expect(output).toEqual([cmd(CAMERA_SHAKE), 3]);
 });
 
 test("Should be able to play music", () => {

@@ -154,17 +154,6 @@ export const EventFields = {
       width: "50%"
     }
   ],
-  [EVENT_CAMERA_SHAKE]: [
-    {
-      key: "time",
-      type: "number",
-      label: l10n("FIELD_SECONDS"),
-      min: 0,
-      max: 10,
-      step: 0.1,
-      defaultValue: 0.5
-    }
-  ],
   [EVENT_IF_TRUE]: [
     {
       key: "variable",
@@ -379,38 +368,6 @@ export const EventFields = {
       key: "speed",
       type: "cameraSpeed",
       defaultValue: 1
-    }
-  ],
-  [EVENT_CAMERA_MOVE_TO]: [
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 12,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 14,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "speed",
-      type: "cameraSpeed",
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_CAMERA_LOCK]: [
-    {
-      key: "speed",
-      type: "cameraSpeed",
-      defaultValue: "0"
     }
   ],
   [EVENT_FADE_IN]: [

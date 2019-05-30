@@ -24,7 +24,10 @@ import {
   MATH_DIV_VALUE,
   MATH_MOD_VALUE,
   MUSIC_PLAY,
-  MUSIC_STOP
+  MUSIC_STOP,
+  CAMERA_MOVE_TO,
+  CAMERA_LOCK,
+  CAMERA_SHAKE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -245,6 +248,34 @@ class ScriptBuilder {
   setInputScript = (input, script) => {
     const output = this.output;
     output.push(cmd(END));
+  };
+
+  // Camera
+
+  cameraMoveTo = (x = 0, y = 0, speed = 0) => {
+    const output = this.output;
+    const { scene } = this.options;
+    output.push(cmd(CAMERA_MOVE_TO));
+    // Limit camera move to be within scene bounds
+    const camX = Math.min(x, scene.width - 20);
+    const camY = Math.min(y, scene.height - 18);
+    output.push(camX);
+    output.push(camY);
+    const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+    output.push(speedFlag);
+  };
+
+  cameraLock = (speed = 0) => {
+    const output = this.output;
+    const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+    output.push(cmd(CAMERA_LOCK));
+    output.push(speedFlag);
+  };
+
+  cameraShake = frames => {
+    const output = this.output;
+    output.push(cmd(CAMERA_SHAKE));
+    output.push(frames);
   };
 
   // Music

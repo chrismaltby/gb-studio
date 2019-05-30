@@ -357,21 +357,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.FADE_OUT);
       const speed = input[i].args.speed || 1;
       output.push(speed);
-    } else if (command === EVENT_CAMERA_MOVE_TO) {
-      output.push(CMD_LOOKUP.CAMERA_MOVE_TO);
-      // Limit camera move to be within scene bounds
-      const camX = Math.min(input[i].args.x, scene.width - 20);
-      const camY = Math.min(input[i].args.y, scene.height - 18);
-      output.push(camX);
-      output.push(camY);
-      const speed = input[i].args.speed || 0;
-      const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedFlag);
-    } else if (command === EVENT_CAMERA_LOCK) {
-      output.push(CMD_LOOKUP.CAMERA_LOCK);
-      const speed = input[i].args.speed || 0;
-      const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
-      output.push(speedFlag);
     } else if (command === EVENT_ACTOR_GET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       loadVectors(input[i].args, output, variables);
@@ -433,15 +418,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(input[i].args.x < 0 ? 1 : 0);
       output.push(Math.abs(input[i].args.y));
       output.push(input[i].args.y < 0 ? 1 : 0);
-    } else if (command === EVENT_CAMERA_SHAKE) {
-      let seconds =
-        typeof input[i].args.time === "number" ? input[i].args.time : 0.5;
-      while (seconds > 0) {
-        const time = Math.min(seconds, 1);
-        output.push(CMD_LOOKUP.CAMERA_SHAKE);
-        output.push(Math.ceil(60 * time));
-        seconds -= time;
-      }
     } else if (command === EVENT_ACTOR_EMOTE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_EMOTE);
