@@ -139,7 +139,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-transform-modules-commonjs@^7.4.3":
+"@babel/plugin-transform-modules-commonjs@^7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-commonjs/-/plugin-transform-modules-commonjs-7.4.4.tgz#0bef4713d30f1d78c2e59b3d6db40e60192cac1e"
   integrity sha512-4sfBOJt58sEo9a2BQXnZq+Q3ZTSAUXyK3E30o36BOGnJ+tvJ6YSxF0PG6kERvbeISgProodWuI9UVG3/FMY6iw==
@@ -163,7 +163,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/standalone@^7.4.3":
+"@babel/standalone@^7.4.5":
   version "7.4.5"
   resolved "https://registry.yarnpkg.com/@babel/standalone/-/standalone-7.4.5.tgz#60ded549756cf749eb6db0a54c21b4c48c7e18e5"
   integrity sha512-Ddjq6OS+NxpJdvMEMiKVU4BCg/2IOpbP+2JNM9ZY1HULxlZGTyNXKIqXHRqzV0N6e+51zmTwQg+c1Lfs44bBHg==
@@ -8367,14 +8367,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vm2-babel-compiler@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vm2-babel-compiler/-/vm2-babel-compiler-1.0.2.tgz#a3895ac6bfdbe32ba50788081e964c681f71f8d8"
-  integrity sha512-7zvZsh7BiTz6oQh13qBfWLRAhtmm6Mg+6B5ZsYoVhAsmc97kPeYrPd6v12cxGd3onngA4DBkFK1Cs4wROISjpg==
-  dependencies:
-    "@babel/plugin-transform-modules-commonjs" "^7.4.3"
-    "@babel/standalone" "^7.4.3"
 
 vm2@^3.8.1:
   version "3.8.1"
