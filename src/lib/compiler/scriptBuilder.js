@@ -22,11 +22,14 @@ import {
   MATH_SUB_VALUE,
   MATH_MUL_VALUE,
   MATH_DIV_VALUE,
-  MATH_MOD_VALUE
+  MATH_MOD_VALUE,
+  MUSIC_PLAY,
+  MUSIC_STOP
 } from "../events/scriptCommands";
 import {
   getActorIndex,
   getVariableIndex,
+  getMusicIndex,
   compileConditional
 } from "../events/helpers";
 import { dirDec } from "./helpers";
@@ -242,6 +245,24 @@ class ScriptBuilder {
   setInputScript = (input, script) => {
     const output = this.output;
     output.push(cmd(END));
+  };
+
+  // Music
+
+  playMusic = (musicId, loop = false) => {
+    const output = this.output;
+    const { music } = this.options;
+    const musicIndex = getMusicIndex(musicId, music);
+    if (musicIndex >= 0) {
+      output.push(cmd(MUSIC_PLAY));
+      output.push(musicIndex);
+      output.push(loop ? 1 : 0); // Loop track
+    }
+  };
+
+  stopMusic = () => {
+    const output = this.output;
+    output.push(cmd(MUSIC_STOP));
   };
 
   // Timing

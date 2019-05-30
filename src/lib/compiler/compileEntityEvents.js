@@ -27,8 +27,6 @@ import {
   EVENT_OVERLAY_HIDE,
   EVENT_OVERLAY_MOVE_TO,
   EVENT_AWAIT_INPUT,
-  EVENT_MUSIC_PLAY,
-  EVENT_MUSIC_STOP,
   EVENT_STOP,
   EVENT_INC_VALUE,
   EVENT_DEC_VALUE,
@@ -41,21 +39,9 @@ import {
   EVENT_SAVE_DATA,
   EVENT_CLEAR_DATA,
   EVENT_IF_SAVED_DATA,
-  EVENT_SET_RANDOM_VALUE,
   EVENT_ACTOR_MOVE_TO_VALUE,
   EVENT_ACTOR_MOVE_RELATIVE,
   EVENT_ACTOR_SET_POSITION_RELATIVE,
-  EVENT_MATH_ADD,
-  EVENT_MATH_SUB,
-  EVENT_MATH_MUL,
-  EVENT_MATH_DIV,
-  EVENT_MATH_MOD,
-  EVENT_MATH_ADD_VALUE,
-  EVENT_MATH_SUB_VALUE,
-  EVENT_MATH_MUL_VALUE,
-  EVENT_MATH_DIV_VALUE,
-  EVENT_MATH_MOD_VALUE,
-  EVENT_COPY_VALUE,
   EVENT_IF_VALUE_COMPARE,
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
@@ -64,8 +50,7 @@ import {
   EVENT_SCENE_POP_ALL_STATE,
   EVENT_SET_INPUT_SCRIPT,
   EVENT_REMOVE_INPUT_SCRIPT,
-  EVENT_ACTOR_SET_FRAME,
-  EVENT_VARIABLE_MATH
+  EVENT_ACTOR_SET_FRAME
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
 import {
@@ -184,11 +169,6 @@ const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
 };
 
-const getMusicIndex = (musicId, music) => {
-  const musicIndex = music.findIndex(track => track.id === musicId);
-  return musicIndex;
-};
-
 const getSpriteIndex = (spriteId, sprites) => {
   const spriteIndex = sprites.findIndex(sprite => sprite.id === spriteId);
   if (spriteIndex === -1) {
@@ -208,14 +188,6 @@ const getVariableIndex = (variable, variables) => {
 const loadVectors = (args, output, variables) => {
   const vectorX = getVariableIndex(args.vectorX, variables);
   const vectorY = getVariableIndex(args.vectorY, variables);
-  output.push(CMD_LOOKUP.LOAD_VECTORS);
-  output.push(hi(vectorX));
-  output.push(lo(vectorX));
-  output.push(hi(vectorY));
-  output.push(lo(vectorY));
-};
-
-const loadVectorsByIndex = (vectorX, vectorY, output) => {
   output.push(CMD_LOOKUP.LOAD_VECTORS);
   output.push(hi(vectorX));
   output.push(lo(vectorX));
@@ -259,7 +231,6 @@ const precompileEntityScript = (input = [], options = {}) => {
     output = [],
     strings,
     scene,
-    music,
     sprites,
     variables,
     subScripts,
@@ -529,15 +500,6 @@ const precompileEntityScript = (input = [], options = {}) => {
     } else if (command === EVENT_AWAIT_INPUT) {
       output.push(CMD_LOOKUP.AWAIT_INPUT);
       output.push(inputDec(input[i].args.input));
-    } else if (command === EVENT_MUSIC_PLAY) {
-      const musicIndex = getMusicIndex(input[i].args.musicId, music);
-      if (musicIndex >= 0) {
-        output.push(CMD_LOOKUP.MUSIC_PLAY);
-        output.push(musicIndex);
-        output.push(input[i].args.loop ? 1 : 0); // Loop track
-      }
-    } else if (command === EVENT_MUSIC_STOP) {
-      output.push(CMD_LOOKUP.MUSIC_STOP);
     } else if (command === EVENT_RESET_VARIABLES) {
       output.push(CMD_LOOKUP.RESET_VARIABLES);
     } else if (command === EVENT_LOOP) {

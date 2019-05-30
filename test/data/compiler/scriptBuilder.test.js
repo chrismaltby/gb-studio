@@ -22,7 +22,9 @@ import {
   MATH_SUB_VALUE,
   MATH_MUL_VALUE,
   MATH_DIV_VALUE,
-  MATH_MOD_VALUE
+  MATH_MOD_VALUE,
+  MUSIC_PLAY,
+  MUSIC_STOP
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -270,6 +272,58 @@ test("Should default scene switch to facing downwards at origin with default fad
   });
   sb.switchScene("abc");
   expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2]);
+});
+
+test("Should be able to play music", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    music: [
+      {
+        id: "1"
+      }
+    ]
+  });
+  sb.playMusic("1", false);
+  expect(output).toEqual([cmd(MUSIC_PLAY), 0, 0]);
+});
+
+test("Should be able to loop music", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    music: [
+      {
+        id: "1"
+      }
+    ]
+  });
+  sb.playMusic("1", true);
+  expect(output).toEqual([cmd(MUSIC_PLAY), 0, 1]);
+});
+
+test("Should skip missing music", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    music: [
+      {
+        id: "1"
+      }
+    ]
+  });
+  sb.playMusic("2", true);
+  expect(output).toEqual([]);
+});
+
+test("Should be able to stop music", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    music: [
+      {
+        id: "1"
+      }
+    ]
+  });
+  sb.stopMusic();
+  expect(output).toEqual([cmd(MUSIC_STOP)]);
 });
 
 test("Should be able to wait for a number of frames", () => {

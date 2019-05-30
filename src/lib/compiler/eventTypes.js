@@ -751,24 +751,6 @@ export const EventFields = {
       defaultValue: ["a", "b"]
     }
   ],
-  [EVENT_MUSIC_PLAY]: [
-    {
-      key: "musicId",
-      type: "music",
-      defaultValue: "LAST_MUSIC"
-    },
-    {
-      key: "loop",
-      label: l10n("FIELD_LOOP"),
-      type: "checkbox",
-      defaultValue: true
-    }
-  ],
-  [EVENT_MUSIC_STOP]: [
-    {
-      label: l10n("FIELD_STOP_MUSIC")
-    }
-  ],
   [EVENT_STOP]: [
     {
       label: l10n("FIELD_STOP_SCRIPT")
