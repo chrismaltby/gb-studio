@@ -13,7 +13,16 @@ import {
   IF_TRUE,
   SWITCH_SCENE,
   WAIT,
-  END
+  END,
+  SET_VALUE,
+  LOAD_VECTORS,
+  COPY_VALUE,
+  SET_RANDOM_VALUE,
+  MATH_ADD_VALUE,
+  MATH_SUB_VALUE,
+  MATH_MUL_VALUE,
+  MATH_DIV_VALUE,
+  MATH_MOD_VALUE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -109,7 +118,7 @@ class ScriptBuilder {
 
   // Variables
 
-  setTrue = variable => {
+  setVariableToTrue = variable => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = getVariableIndex(variable, variables);
@@ -118,13 +127,82 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
   };
 
-  setFalse = variable => {
+  setVariableToFalse = variable => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = getVariableIndex(variable, variables);
     output.push(cmd(SET_FALSE));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
+  };
+
+  setVariableToValue = (variable, value) => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(SET_VALUE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(value);
+  };
+
+  copyVariable = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(COPY_VALUE));
+  };
+
+  setVariableToRandom = (variable, min, range) => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(SET_RANDOM_VALUE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(min);
+    output.push(range);
+  };
+
+  variablesAdd = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(MATH_ADD_VALUE));
+  };
+
+  variablesSub = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(MATH_SUB_VALUE));
+  };
+
+  variablesMul = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(MATH_MUL_VALUE));
+  };
+
+  variablesDiv = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(MATH_DIV_VALUE));
+  };
+
+  variablesMod = (variableA, variableB) => {
+    const output = this.output;
+    this.loadVectors(variableA, variableB);
+    output.push(cmd(MATH_MOD_VALUE));
+  };
+
+  loadVectors = (variableX, variableY) => {
+    const output = this.output;
+    const { variables } = this.options;
+    const indexX = getVariableIndex(variableX, variables);
+    const indexY = getVariableIndex(variableY, variables);
+    output.push(cmd(LOAD_VECTORS));
+    output.push(hi(indexX));
+    output.push(lo(indexX));
+    output.push(hi(indexY));
+    output.push(lo(indexY));
   };
 
   // Scenes

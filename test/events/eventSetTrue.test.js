@@ -7,7 +7,7 @@ test("Should set variable to true", () => {
       variable: "2"
     },
     {
-      setTrue: mockSetTrue
+      setVariableToTrue: mockSetTrue
     }
   );
   expect(mockSetTrue).toBeCalledWith("2");

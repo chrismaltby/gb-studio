@@ -13,7 +13,16 @@ import {
   SET_FALSE,
   SWITCH_SCENE,
   WAIT,
-  END
+  END,
+  SET_VALUE,
+  LOAD_VECTORS,
+  COPY_VALUE,
+  SET_RANDOM_VALUE,
+  MATH_ADD_VALUE,
+  MATH_SUB_VALUE,
+  MATH_MUL_VALUE,
+  MATH_DIV_VALUE,
+  MATH_MOD_VALUE
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -157,15 +166,71 @@ test("Should be able to restore text box close speed", () => {
 test("Should be able to set variable to true", () => {
   const output = [];
   const sb = new ScriptBuilder(output, { variables: ["0"] });
-  sb.setTrue("0");
+  sb.setVariableToTrue("0");
   expect(output).toEqual([cmd(SET_TRUE), 0, 0]);
 });
 
 test("Should be able to set variable to false", () => {
   const output = [];
   const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
-  sb.setFalse("1");
+  sb.setVariableToFalse("1");
   expect(output).toEqual([cmd(SET_FALSE), 0, 1]);
+});
+
+test("Should be able to set variable to value", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.setVariableToValue("0", 5);
+  expect(output).toEqual([cmd(SET_VALUE), 0, 0, 5]);
+});
+
+test("Should be able to copy one variable to another", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.copyVariable("0", "1");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(COPY_VALUE)]);
+});
+
+test("Should be able to set variable to random number", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.setVariableToRandom("0", 10, 50);
+  expect(output).toEqual([cmd(SET_RANDOM_VALUE), 0, 0, 10, 50]);
+});
+
+test("Should be able to add variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.variablesAdd("0", "1");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_ADD_VALUE)]);
+});
+
+test("Should be able to subtract variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.variablesSub("1", "0");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 1, 0, 0, cmd(MATH_SUB_VALUE)]);
+});
+
+test("Should be able to multiply variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.variablesMul("1", "0");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 1, 0, 0, cmd(MATH_MUL_VALUE)]);
+});
+
+test("Should be able to divide variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"] });
+  sb.variablesDiv("2", "1");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 2, 0, 1, cmd(MATH_DIV_VALUE)]);
+});
+
+test("Should be able to modulus variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.variablesMod("0", "1");
+  expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_MOD_VALUE)]);
 });
 
 test("Should be able to switch scene", () => {

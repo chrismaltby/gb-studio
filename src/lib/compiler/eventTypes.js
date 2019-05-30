@@ -120,45 +120,6 @@ export const EventsDeprecated = [
 ];
 
 export const EventFields = {
-  [EVENT_SWITCH_SCENE]: [
-    {
-      key: "sceneId",
-      type: "scene",
-      defaultValue: "LAST_SCENE"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 32,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 32,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "direction",
-      label: l10n("FIELD_DIRECTION"),
-      type: "direction",
-      width: "50%",
-      defaultValue: ""
-    },
-    {
-      key: "fadeSpeed",
-      label: l10n("FIELD_FADE_SPEED"),
-      type: "fadeSpeed",
-      defaultValue: "2",
-      width: "50%"
-    }
-  ],
   [EVENT_SCENE_PUSH_STATE]: [
     {
       label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
@@ -321,96 +282,6 @@ export const EventFields = {
       min: 0,
       max: 255,
       defaultValue: "0"
-    }
-  ],
-  [EVENT_VARIABLE_MATH]: [
-    {
-      key: "vectorX",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "operation",
-      type: "select",
-      options: [
-        ["set", l10n("FIELD_SET_TO")],
-        ["add", l10n("FIELD_ADD_VALUE")],
-        ["sub", l10n("FIELD_SUB_VALUE")],
-        ["mul", l10n("FIELD_MUL_VARIABLE")],
-        ["div", l10n("FIELD_DIV_VARIABLE")],
-        ["mod", l10n("FIELD_MOD_VARIABLE")]
-      ],
-      defaultValue: "set",
-      width: "50%"
-    },
-    {
-      key: "other",
-      type: "select",
-      options: [
-        ["true", l10n("FIELD_TRUE")],
-        ["false", l10n("FIELD_FALSE")],
-        ["var", l10n("FIELD_VARIABLE")],
-        ["val", l10n("FIELD_VALUE")],
-        ["rnd", l10n("FIELD_RANDOM")]
-      ],
-      defaultValue: "true",
-      width: "50%"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      showIfKey: "other",
-      showIfValue: "var",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "value",
-      type: "number",
-      showIfKey: "other",
-      showIfValue: "val",
-      min: 0,
-      max: 255,
-      defaultValue: "1"
-    },
-    {
-      key: "minValue",
-      type: "number",
-      showIfKey: "other",
-      showIfValue: "rnd",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_MIN_VALUE"),
-      defaultValue: "0",
-      width: "50%"
-    },
-    {
-      key: "maxValue",
-      type: "number",
-      showIfKey: "other",
-      showIfValue: "rnd",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_MAX_VALUE"),
-      defaultValue: "255",
-      width: "50%"
-    },
-    {
-      label: l10n("FIELD_MATH_NOTE")
-    }
-  ],
-  [EVENT_SET_RANDOM_VALUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "maxValue",
-      type: "number",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_MAX_VALUE"),
-      defaultValue: "255"
     }
   ],
   [EVENT_INC_VALUE]: [
@@ -764,14 +635,6 @@ export const EventFields = {
       defaultValue: "LAST_VARIABLE"
     }
   ],
-  [EVENT_ACTOR_PUSH]: [
-    {
-      key: "continue",
-      label: l10n("FIELD_SLIDE_UNTIL_COLLISION"),
-      type: "checkbox",
-      defaultValue: false
-    }
-  ],
   [EVENT_ACTOR_EMOTE]: [
     {
       key: "actorId",
@@ -784,7 +647,6 @@ export const EventFields = {
       defaultValue: 0
     }
   ],
-  // [EVENT_RETURN_TO_TITLE]: [],
   [EVENT_ACTOR_SHOW]: [
     {
       key: "actorId",
@@ -930,170 +792,6 @@ export const EventFields = {
   [EVENT_IF_SAVED_DATA]: [
     {
       label: l10n("FIELD_IF_SAVED_DATA")
-    }
-  ],
-  [EVENT_MATH_ADD]: [
-    {
-      key: "value",
-      type: "number",
-      label: l10n("FIELD_ADD_VALUE"),
-      min: 0,
-      max: 255,
-      defaultValue: "0"
-    },
-    {
-      key: "variable",
-      type: "variable",
-      label: l10n("FIELD_TO_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_SUB]: [
-    {
-      key: "value",
-      type: "number",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_SUB_VALUE"),
-      defaultValue: "0"
-    },
-    {
-      key: "variable",
-      type: "variable",
-      label: l10n("FIELD_FROM_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_MUL]: [
-    {
-      key: "variable",
-      type: "variable",
-      label: l10n("FIELD_MUL_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "value",
-      type: "number",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_MATH_DIV]: [
-    {
-      key: "variable",
-      type: "variable",
-      label: l10n("FIELD_DIV_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "value",
-      type: "number",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_MATH_MOD]: [
-    {
-      key: "variable",
-      type: "variable",
-      label: l10n("FIELD_MOD_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "value",
-      type: "number",
-      min: 0,
-      max: 255,
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_MATH_ADD_VALUE]: [
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_ADD_VALUE_FROM"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_TO_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_SUB_VALUE]: [
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_SUB_VALUE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_MUL_VALUE]: [
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_MUL_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_DIV_VALUE]: [
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_DIV_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_MATH_MOD_VALUE]: [
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_MOD_VARIABLE"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_BY_VALUE"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_COPY_VALUE]: [
-    {
-      key: "vectorY",
-      type: "variable",
-      label: "Copy Variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: "To Variable",
-      defaultValue: "LAST_VARIABLE"
     }
   ]
 };

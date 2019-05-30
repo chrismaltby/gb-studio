@@ -9,6 +9,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setFalse } = helpers;
-  setFalse(input.variable);
+  const { setVariableToFalse } = helpers;
+  setVariableToFalse(input.variable);
 };

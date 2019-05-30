@@ -8,7 +8,7 @@ test("Should set variable to true", () => {
       variable: "5"
     },
     {
-      setFalse: mockSetFalse
+      setVariableToFalse: mockSetFalse
     }
   );
   expect(mockSetFalse).toBeCalledWith("5");
