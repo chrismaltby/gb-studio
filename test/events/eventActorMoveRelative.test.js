@@ -1,8 +1,8 @@
-import { compile } from "../../src/lib/events/eventActorMoveTo";
+import { compile } from "../../src/lib/events/eventActorMoveRelative";
 
-test("Should set move player to position", () => {
+test("Should move player relatively", () => {
   const mockSetActiveActor = jest.fn();
-  const mockActorMoveTo = jest.fn();
+  const mockActorMoveRelative = jest.fn();
 
   compile(
     {
@@ -13,9 +13,9 @@ test("Should set move player to position", () => {
     {
       scene: { actors: [] },
       setActiveActor: mockSetActiveActor,
-      actorMoveTo: mockActorMoveTo
+      actorMoveRelative: mockActorMoveRelative
     }
   );
   expect(mockSetActiveActor).toBeCalledWith("player");
-  expect(mockActorMoveTo).toBeCalledWith(5, 9);
+  expect(mockActorMoveRelative).toBeCalledWith(5, 9);
 });

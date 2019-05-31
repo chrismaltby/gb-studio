@@ -1,15 +1,11 @@
 import {
   EVENT_END,
-  EVENT_TEXT_SET_ANIMATION_SPEED,
   EVENT_IF_FALSE,
   EVENT_IF_VALUE,
   EVENT_RESET_VARIABLES,
   EVENT_LOOP,
   EVENT_GROUP,
-  EVENT_FADE_IN,
-  EVENT_FADE_OUT,
   EVENT_ACTOR_GET_POSITION,
-  EVENT_ACTOR_SET_POSITION,
   EVENT_ACTOR_SET_POSITION_TO_VALUE,
   EVENT_ACTOR_SET_MOVEMENT_SPEED,
   EVENT_ACTOR_SET_ANIMATION_SPEED,
@@ -20,25 +16,13 @@ import {
   EVENT_ACTOR_HIDE,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_RETURN_TO_TITLE,
-  EVENT_OVERLAY_SHOW,
-  EVENT_OVERLAY_HIDE,
-  EVENT_OVERLAY_MOVE_TO,
   EVENT_AWAIT_INPUT,
   EVENT_STOP,
-  EVENT_INC_VALUE,
-  EVENT_DEC_VALUE,
-  EVENT_SET_VALUE,
   EVENT_IF_INPUT,
-  EVENT_CHOICE,
   EVENT_IF_ACTOR_AT_POSITION,
   EVENT_IF_ACTOR_DIRECTION,
-  EVENT_LOAD_DATA,
-  EVENT_SAVE_DATA,
-  EVENT_CLEAR_DATA,
   EVENT_IF_SAVED_DATA,
   EVENT_ACTOR_MOVE_TO_VALUE,
-  EVENT_ACTOR_MOVE_RELATIVE,
-  EVENT_ACTOR_SET_POSITION_RELATIVE,
   EVENT_IF_VALUE_COMPARE,
   EVENT_SCENE_PUSH_STATE,
   EVENT_SCENE_POP_STATE,
@@ -54,8 +38,7 @@ import {
   inputDec,
   moveSpeedDec,
   animSpeedDec,
-  operatorDec,
-  combineMultipleChoiceText
+  operatorDec
 } from "./helpers";
 import ScriptBuilder from "./scriptBuilder";
 import events from "../events";
@@ -225,7 +208,6 @@ const compileConditional = (truePath, falsePath, options) => {
 const precompileEntityScript = (input = [], options = {}) => {
   const {
     output = [],
-    strings,
     scene,
     sprites,
     variables,
@@ -257,24 +239,7 @@ const precompileEntityScript = (input = [], options = {}) => {
       continue;
     }
 
-    if (command === EVENT_CHOICE) {
-      const text = combineMultipleChoiceText(input[i].args);
-      const stringIndex = strings.indexOf(text);
-      if (stringIndex === -1) {
-        throw new CompileEventsError(STRING_NOT_FOUND, input[i].args);
-      }
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.CHOICE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(hi(stringIndex));
-      output.push(lo(stringIndex));
-    } else if (command === EVENT_TEXT_SET_ANIMATION_SPEED) {
-      output.push(CMD_LOOKUP.TEXT_SET_ANIM_SPEED);
-      output.push(input[i].args.speedIn);
-      output.push(input[i].args.speedOut);
-      output.push(input[i].args.speed !== undefined ? input[i].args.speed : 1);
-    } else if (command === EVENT_IF_FALSE) {
+    if (command === EVENT_IF_FALSE) {
       output.push(CMD_LOOKUP.IF_TRUE);
       const variableIndex = getVariableIndex(input[i].args.variable, variables);
       output.push(hi(variableIndex));
@@ -329,30 +294,6 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
-    } else if (command === EVENT_INC_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.INC_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-    } else if (command === EVENT_DEC_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.DEC_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-    } else if (command === EVENT_SET_VALUE) {
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(CMD_LOOKUP.SET_VALUE);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(input[i].args.value || 0);
-    } else if (command === EVENT_FADE_IN) {
-      output.push(CMD_LOOKUP.FADE_IN);
-      const speed = input[i].args.speed || 1;
-      output.push(speed);
-    } else if (command === EVENT_FADE_OUT) {
-      output.push(CMD_LOOKUP.FADE_OUT);
-      const speed = input[i].args.speed || 1;
-      output.push(speed);
     } else if (command === EVENT_ACTOR_GET_POSITION) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       loadVectors(input[i].args, output, variables);
@@ -365,28 +306,12 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_POSITION_TO_VALUE);
-    } else if (command === EVENT_ACTOR_SET_POSITION_RELATIVE) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_POSITION_RELATIVE);
-      output.push(Math.abs(input[i].args.x));
-      output.push(input[i].args.x < 0 ? 1 : 0);
-      output.push(Math.abs(input[i].args.y));
-      output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_ACTOR_MOVE_TO_VALUE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       loadVectors(input[i].args, output, variables);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_MOVE_TO_VALUE);
-    } else if (command === EVENT_ACTOR_SET_POSITION) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_POSITION);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
     } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
@@ -399,15 +324,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
       output.push(animSpeedDec(input[i].args.speed));
-    } else if (command === EVENT_ACTOR_MOVE_RELATIVE) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_MOVE_RELATIVE);
-      output.push(Math.abs(input[i].args.x));
-      output.push(input[i].args.x < 0 ? 1 : 0);
-      output.push(Math.abs(input[i].args.y));
-      output.push(input[i].args.y < 0 ? 1 : 0);
     } else if (command === EVENT_ACTOR_EMOTE) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_EMOTE);
@@ -446,23 +362,8 @@ const precompileEntityScript = (input = [], options = {}) => {
       const spriteIndex = getSpriteIndex(input[i].args.spriteSheetId, sprites);
       output.push(CMD_LOOKUP.PLAYER_SET_SPRITE);
       output.push(spriteIndex);
-    } else if (command === EVENT_RETURN_TO_TITLE) {
-      output.push(CMD_LOOKUP.RETURN_TO_TITLE);
     } else if (command === EVENT_END) {
       // output.push(CMD_LOOKUP.END);
-    } else if (command === EVENT_OVERLAY_SHOW) {
-      output.push(CMD_LOOKUP.OVERLAY_SHOW);
-      output.push(input[i].args.color === "white" ? 1 : 0);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
-    } else if (command === EVENT_OVERLAY_HIDE) {
-      output.push(CMD_LOOKUP.OVERLAY_HIDE);
-    } else if (command === EVENT_OVERLAY_MOVE_TO) {
-      output.push(CMD_LOOKUP.OVERLAY_MOVE_TO);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
-      const speed = input[i].args.speed || 0;
-      output.push(speed);
     } else if (command === EVENT_AWAIT_INPUT) {
       output.push(CMD_LOOKUP.AWAIT_INPUT);
       output.push(inputDec(input[i].args.input));
@@ -499,12 +400,6 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(inputDec(input[i].args.input));
     } else if (command === EVENT_STOP) {
       output.push(CMD_LOOKUP.END);
-    } else if (command === EVENT_LOAD_DATA) {
-      output.push(CMD_LOOKUP.LOAD_DATA);
-    } else if (command === EVENT_SAVE_DATA) {
-      output.push(CMD_LOOKUP.SAVE_DATA);
-    } else if (command === EVENT_CLEAR_DATA) {
-      output.push(CMD_LOOKUP.CLEAR_DATA);
     } else if (command === EVENT_IF_SAVED_DATA) {
       output.push(CMD_LOOKUP.IF_SAVED_DATA);
       compileConditional(input[i].true, input[i].false, {

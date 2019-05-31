@@ -1,4 +1,3 @@
-import trimlines from "../helpers/trimlines";
 import l10n from "../helpers/l10n";
 
 export const EVENT_END = "EVENT_END";
@@ -252,41 +251,6 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
-  [EVENT_SET_FALSE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_SET_VALUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "value",
-      type: "number",
-      min: 0,
-      max: 255,
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_INC_VALUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_DEC_VALUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
   [EVENT_RESET_VARIABLES]: [
     {
       label: l10n("FIELD_RESET_VARIABLES")
@@ -312,88 +276,6 @@ export const EventFields = {
       label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
       type: "input",
       defaultValue: ["b"]
-    }
-  ],
-  [EVENT_CHOICE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "trueText",
-      label: l10n("FIELD_SET_TRUE_IF"),
-      type: "text",
-      maxLength: 17,
-      defaultValue: "",
-      placeholder: l10n("FIELD_CHOICE_A")
-    },
-    {
-      key: "falseText",
-      label: l10n("FIELD_SET_FALSE_IF"),
-      type: "text",
-      maxLength: 17,
-      defaultValue: "",
-      placeholder: l10n("FIELD_CHOICE_B")
-    }
-  ],
-  [EVENT_TEXT]: [
-    {
-      key: "text",
-      type: "textarea",
-      maxPerLine: 18,
-      placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
-      updateFn: trimlines,
-      multiple: true,
-      defaultValue: ""
-    }
-  ],
-  [EVENT_TEXT_SET_ANIMATION_SPEED]: [
-    {
-      label: l10n("TEXT_SPEED_IN"),
-      key: "speedIn",
-      type: "cameraSpeed",
-      defaultValue: 1,
-      width: "50%"
-    },
-    {
-      label: l10n("TEXT_SPEED_OUT"),
-      key: "speedOut",
-      type: "cameraSpeed",
-      defaultValue: 1,
-      width: "50%"
-    },
-    {
-      label: l10n("TEXT_SPEED"),
-      key: "speed",
-      type: "cameraSpeed",
-      defaultValue: 1
-    }
-  ],
-  [EVENT_FADE_IN]: [
-    {
-      key: "speed",
-      type: "fadeSpeed",
-      defaultValue: "2"
-    }
-  ],
-  [EVENT_FADE_OUT]: [
-    {
-      key: "speed",
-      type: "fadeSpeed",
-      defaultValue: "2"
-    }
-  ],
-  [EVENT_ACTOR_SET_DIRECTION]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "direction",
-      type: "direction",
-      defaultValue: "up"
     }
   ],
   [EVENT_ACTOR_SET_ANIMATION_SPEED]: [
@@ -439,31 +321,6 @@ export const EventFields = {
       defaultValue: "LAST_VARIABLE"
     }
   ],
-  [EVENT_ACTOR_SET_POSITION]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
-    }
-  ],
   [EVENT_ACTOR_SET_POSITION_RELATIVE]: [
     {
       key: "actorId",
@@ -506,56 +363,6 @@ export const EventFields = {
       type: "variable",
       label: l10n("FIELD_Y"),
       defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_ACTOR_MOVE_RELATIVE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: -16,
-      max: 16,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: -16,
-      max: 16,
-      width: "50%",
-      defaultValue: 0
-    }
-  ],
-  [EVENT_ACTOR_MOVE_TO]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
     }
   ],
   [EVENT_ACTOR_MOVE_TO_VALUE]: [
@@ -630,61 +437,6 @@ export const EventFields = {
       label: l10n("FIELD_HIDE_SPRITES")
     }
   ],
-  [EVENT_OVERLAY_SHOW]: [
-    {
-      key: "color",
-      type: "overlayColor",
-      defaultValue: "black"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 20,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 18,
-      defaultValue: 0,
-      width: "50%"
-    }
-  ],
-  [EVENT_OVERLAY_HIDE]: [
-    {
-      label: l10n("FIELD_OVERLAY_HIDE")
-    }
-  ],
-  [EVENT_OVERLAY_MOVE_TO]: [
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 20,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 18,
-      defaultValue: 0,
-      width: "50%"
-    },
-    {
-      key: "speed",
-      type: "cameraSpeed",
-      defaultValue: "0"
-    }
-  ],
   [EVENT_AWAIT_INPUT]: [
     {
       key: "input",
@@ -696,21 +448,6 @@ export const EventFields = {
   [EVENT_STOP]: [
     {
       label: l10n("FIELD_STOP_SCRIPT")
-    }
-  ],
-  [EVENT_LOAD_DATA]: [
-    {
-      label: l10n("FIELD_LOAD_DATA")
-    }
-  ],
-  [EVENT_SAVE_DATA]: [
-    {
-      label: l10n("FIELD_SAVE_DATA")
-    }
-  ],
-  [EVENT_CLEAR_DATA]: [
-    {
-      label: l10n("FIELD_CLEAR_DATA")
     }
   ],
   [EVENT_IF_SAVED_DATA]: [

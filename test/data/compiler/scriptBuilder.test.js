@@ -27,7 +27,27 @@ import {
   MUSIC_STOP,
   CAMERA_MOVE_TO,
   CAMERA_LOCK,
-  CAMERA_SHAKE
+  CAMERA_SHAKE,
+  INC_VALUE,
+  DEC_VALUE,
+  CHOICE,
+  TEXT_SET_ANIM_SPEED,
+  ACTOR_SET_POSITION,
+  ACTOR_SET_POSITION_RELATIVE,
+  ACTOR_MOVE_RELATIVE,
+  OVERLAY_SHOW,
+  OVERLAY_HIDE,
+  OVERLAY_MOVE_TO,
+  LOAD_DATA,
+  SAVE_DATA,
+  CLEAR_DATA,
+  FADE_IN,
+  FADE_OUT,
+  ACTOR_MOVE_TO_VALUE,
+  ACTOR_SET_POSITION_TO_VALUE,
+  ACTOR_GET_POSITION,
+  ACTOR_EMOTE,
+  ACTOR_INVOKE
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -54,6 +74,104 @@ test("Should default move active actor to position to origin", () => {
   const sb = new ScriptBuilder(output);
   sb.actorMoveTo();
   expect(output).toEqual([cmd(ACTOR_MOVE_TO), 0, 0]);
+});
+
+test("Should be able to move active actor relatively", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorMoveRelative(5, 6);
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 0, 6, 0]);
+});
+
+test("Should be able to move active actor to position defined by variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.actorMoveToVariables("0", "1");
+  expect(output).toEqual([
+    cmd(LOAD_VECTORS),
+    0,
+    0,
+    0,
+    1,
+    cmd(ACTOR_MOVE_TO_VALUE)
+  ]);
+});
+
+test("Should be able to move active actor relatively with negative values", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorMoveRelative(-5, -6);
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 1, 6, 1]);
+});
+
+test("Should default to relative actor move to no movement", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorMoveRelative();
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 0, 0, 0, 0]);
+});
+
+test("Should be able to reposition active actor", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetPosition(5, 6);
+  expect(output).toEqual([cmd(ACTOR_SET_POSITION), 5, 6]);
+});
+
+test("Should default reposition actor to origin", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetPosition();
+  expect(output).toEqual([cmd(ACTOR_SET_POSITION), 0, 0]);
+});
+
+test("Should be able to reposition active actor relatively", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetPositionRelative(5, 6);
+  expect(output).toEqual([cmd(ACTOR_SET_POSITION_RELATIVE), 5, 0, 6, 0]);
+});
+
+test("Should be able to reposition active actor relatively with negative values", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetPositionRelative(-5, -6);
+  expect(output).toEqual([cmd(ACTOR_SET_POSITION_RELATIVE), 5, 1, 6, 1]);
+});
+
+test("Should default to relative actor reposition to no movement", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetPositionRelative();
+  expect(output).toEqual([cmd(ACTOR_SET_POSITION_RELATIVE), 0, 0, 0, 0]);
+});
+
+test("Should be able to reposition active actor using variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.actorSetPositionToVariables("0", "1");
+  expect(output).toEqual([
+    cmd(LOAD_VECTORS),
+    0,
+    0,
+    0,
+    1,
+    cmd(ACTOR_SET_POSITION_TO_VALUE)
+  ]);
+});
+
+test("Should be able to store active actor in variables", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
+  sb.actorGetPosition("0", "1");
+  expect(output).toEqual([
+    cmd(LOAD_VECTORS),
+    0,
+    0,
+    0,
+    1,
+    cmd(ACTOR_GET_POSITION)
+  ]);
 });
 
 test("Should be able to set active actor direction", () => {
@@ -106,6 +224,20 @@ test("Should be able to push active actor", () => {
   expect(output).toEqual([cmd(ACTOR_PUSH), 0]);
 });
 
+test("Should allow active actor to display emote", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorEmote(2);
+  expect(output).toEqual([cmd(ACTOR_EMOTE), 2]);
+});
+
+test("Should be able to invoke script on active actor", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorInvoke();
+  expect(output).toEqual([cmd(ACTOR_INVOKE)]);
+});
+
 test("Should be able to push active actor continuing until collision", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
@@ -148,6 +280,24 @@ test("Should default to empty display text", () => {
   expect(strings).toEqual([" "]);
 });
 
+test("Should be able to display choice", () => {
+  const output = [];
+  const strings = ["Hello World"];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
+  sb.displayChoice("2", { trueText: "One", falseText: "Two" });
+  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 1]);
+  expect(strings).toEqual(["Hello World", "One\nTwo"]);
+});
+
+test("Should not store choice text multiple times", () => {
+  const output = [];
+  const strings = ["One\nTwo"];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
+  sb.displayChoice("2", { trueText: "One", falseText: "Two" });
+  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 0]);
+  expect(strings).toEqual(["One\nTwo"]);
+});
+
 test("Should be able to set text box to open instantly", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
@@ -167,6 +317,13 @@ test("Should be able to set text box to close instantly", () => {
   const sb = new ScriptBuilder(output);
   sb.textSetCloseInstant();
   expect(output).toEqual([cmd(TEXT_MULTI), 0]);
+});
+
+test("Should be able to set text animation speeds", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.textSetAnimSpeed(1, 2, 3);
+  expect(output).toEqual([cmd(TEXT_SET_ANIM_SPEED), 1, 2, 3]);
 });
 
 test("Should be able to restore text box close speed", () => {
@@ -244,6 +401,62 @@ test("Should be able to modulus variables", () => {
   const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
   sb.variablesMod("0", "1");
   expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_MOD_VALUE)]);
+});
+
+test("Should be able to increment a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableInc("0");
+  expect(output).toEqual([cmd(INC_VALUE), 0, 0]);
+});
+
+test("Should be able to decrement a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableDec("0");
+  expect(output).toEqual([cmd(DEC_VALUE), 0, 0]);
+});
+
+test("Should be able to show a white overlay", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayShow("white", 2, 3);
+  expect(output).toEqual([cmd(OVERLAY_SHOW), 1, 2, 3]);
+});
+
+test("Should be able to show a black overlay", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayShow("black", 2, 3);
+  expect(output).toEqual([cmd(OVERLAY_SHOW), 0, 2, 3]);
+});
+
+test("Should default to white overlay covering screen", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayShow();
+  expect(output).toEqual([cmd(OVERLAY_SHOW), 1, 0, 0]);
+});
+
+test("Should be able to hide the overlay", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayHide();
+  expect(output).toEqual([cmd(OVERLAY_HIDE)]);
+});
+
+test("Should be able to move the overlay", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayMoveTo(4, 9, 1);
+  expect(output).toEqual([cmd(OVERLAY_MOVE_TO), 4, 9, 1]);
+});
+
+test("Should default to moving the overlay instantly offscreen", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.overlayMoveTo();
+  expect(output).toEqual([cmd(OVERLAY_MOVE_TO), 0, 18, 0]);
 });
 
 test("Should be able to switch scene", () => {
@@ -392,6 +605,41 @@ test("Should be able to stop music", () => {
   });
   sb.stopMusic();
   expect(output).toEqual([cmd(MUSIC_STOP)]);
+});
+
+test("Should be able to fade in", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.fadeIn(2);
+  expect(output).toEqual([cmd(FADE_IN), 2]);
+});
+
+test("Should be able to fade out", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.fadeOut(2);
+  expect(output).toEqual([cmd(FADE_OUT), 2]);
+});
+
+test("Should be able to load data", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.loadData();
+  expect(output).toEqual([cmd(LOAD_DATA)]);
+});
+
+test("Should be able to save data", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.saveData();
+  expect(output).toEqual([cmd(SAVE_DATA)]);
+});
+
+test("Should be able to clear saved data", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.clearData();
+  expect(output).toEqual([cmd(CLEAR_DATA)]);
 });
 
 test("Should be able to wait for a number of frames", () => {

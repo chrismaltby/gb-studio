@@ -27,15 +27,42 @@ import {
   MUSIC_STOP,
   CAMERA_MOVE_TO,
   CAMERA_LOCK,
-  CAMERA_SHAKE
+  CAMERA_SHAKE,
+  CHOICE,
+  INC_VALUE,
+  DEC_VALUE,
+  TEXT_SET_ANIM_SPEED,
+  ACTOR_SET_POSITION,
+  ACTOR_SET_POSITION_RELATIVE,
+  ACTOR_MOVE_RELATIVE,
+  OVERLAY_MOVE_TO,
+  OVERLAY_SHOW,
+  OVERLAY_HIDE,
+  LOAD_DATA,
+  SAVE_DATA,
+  CLEAR_DATA,
+  FADE_IN,
+  FADE_OUT,
+  RESET_VARIABLES,
+  ACTOR_INVOKE,
+  ACTOR_GET_POSITION,
+  ACTOR_SET_POSITION_TO_VALUE,
+  ACTOR_MOVE_TO_VALUE,
+  ACTOR_EMOTE,
+  ACTOR_SHOW,
+  ACTOR_HIDE,
+  PLAYER_SET_SPRITE,
+  SHOW_SPRITES,
+  HIDE_SPRITES
 } from "../events/scriptCommands";
 import {
   getActorIndex,
   getVariableIndex,
+  getSpriteIndex,
   getMusicIndex,
   compileConditional
 } from "../events/helpers";
-import { dirDec } from "./helpers";
+import { dirDec, combineMultipleChoiceText } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
 class ScriptBuilder {
@@ -57,6 +84,49 @@ class ScriptBuilder {
     output.push(cmd(ACTOR_MOVE_TO));
     output.push(x);
     output.push(y);
+  };
+
+  actorMoveRelative = (x = 0, y = 0) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_MOVE_RELATIVE));
+    output.push(Math.abs(x));
+    output.push(x < 0 ? 1 : 0);
+    output.push(Math.abs(y));
+    output.push(y < 0 ? 1 : 0);
+  };
+
+  actorMoveToVariables = (variableX, variableY) => {
+    const output = this.output;
+    this.loadVectors(variableX, variableY);
+    output.push(cmd(ACTOR_MOVE_TO_VALUE));
+  };
+
+  actorSetPosition = (x = 0, y = 0) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_POSITION));
+    output.push(x);
+    output.push(y);
+  };
+
+  actorSetPositionRelative = (x = 0, y = 0) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_POSITION_RELATIVE));
+    output.push(Math.abs(x));
+    output.push(x < 0 ? 1 : 0);
+    output.push(Math.abs(y));
+    output.push(y < 0 ? 1 : 0);
+  };
+
+  actorSetPositionToVariables = (variableX, variableY) => {
+    const output = this.output;
+    this.loadVectors(variableX, variableY);
+    output.push(cmd(ACTOR_SET_POSITION_TO_VALUE));
+  };
+
+  actorGetPosition = (variableX, variableY) => {
+    const output = this.output;
+    this.loadVectors(variableX, variableY);
+    output.push(cmd(ACTOR_GET_POSITION));
   };
 
   actorSetDirection = (direction = "down") => {
@@ -83,6 +153,52 @@ class ScriptBuilder {
     output.push(continueUntilCollision ? 1 : 0);
   };
 
+  actorEmote = (emoteId = 0) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_EMOTE));
+    // @todo change this in engine to use active actor like other commands
+    output.push(emoteId);
+  };
+
+  actorInvoke = () => {
+    const output = this.output;
+    output.push(cmd(ACTOR_INVOKE));
+  };
+
+  actorShow = () => {
+    const output = this.output;
+    // @todo change this in engine to use active actor like other commands
+    output.push(cmd(ACTOR_SHOW));
+  };
+
+  actorHide = () => {
+    const output = this.output;
+    // @todo change this in engine to use active actor like other commands
+    output.push(cmd(ACTOR_HIDE));
+  };
+
+  // Player
+
+  playerSetSprite = spriteSheetId => {
+    const output = this.output;
+    const { sprites } = this.options;
+    const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
+    output.push(cmd(PLAYER_SET_SPRITE));
+    output.push(spriteIndex);
+  };
+
+  // Sprites
+
+  showSprites = () => {
+    const output = this.output;
+    output.push(cmd(SHOW_SPRITES));
+  };
+
+  hideSprites = () => {
+    const output = this.output;
+    output.push(cmd(HIDE_SPRITES));
+  };
+
   // Text
 
   displayText = (text = " ") => {
@@ -94,6 +210,23 @@ class ScriptBuilder {
       stringIndex = strings.length - 1;
     }
     output.push(cmd(TEXT));
+    output.push(hi(stringIndex));
+    output.push(lo(stringIndex));
+  };
+
+  displayChoice = (variable, args) => {
+    const output = this.output;
+    const { strings, variables } = this.options;
+    const choiceText = combineMultipleChoiceText(args);
+    let stringIndex = strings.indexOf(choiceText);
+    if (stringIndex === -1) {
+      strings.push(choiceText);
+      stringIndex = strings.length - 1;
+    }
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(CHOICE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
     output.push(hi(stringIndex));
     output.push(lo(stringIndex));
   };
@@ -120,6 +253,14 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(TEXT_MULTI));
     output.push(2);
+  };
+
+  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1) => {
+    const output = this.output;
+    output.push(cmd(TEXT_SET_ANIM_SPEED));
+    output.push(speedIn);
+    output.push(speedOut);
+    output.push(textSpeed);
   };
 
   // Variables
@@ -211,6 +352,29 @@ class ScriptBuilder {
     output.push(lo(indexY));
   };
 
+  variableInc = variable => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(INC_VALUE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+  };
+
+  variableDec = variable => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(DEC_VALUE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+  };
+
+  variablesReset = () => {
+    const output = this.output;
+    output.push(cmd(RESET_VARIABLES));
+  };
+
   // Scenes
 
   switchScene = (sceneId, x = 0, y = 0, direction = "down", fadeSpeed = 2) => {
@@ -226,6 +390,29 @@ class ScriptBuilder {
       output.push(dirDec(direction));
       output.push(fadeSpeed);
     }
+  };
+
+  // Overlays
+
+  overlayShow = (color = "white", x = 0, y = 0) => {
+    const output = this.output;
+    output.push(cmd(OVERLAY_SHOW));
+    output.push(color === "white" ? 1 : 0);
+    output.push(x);
+    output.push(y);
+  };
+
+  overlayHide = () => {
+    const output = this.output;
+    output.push(cmd(OVERLAY_HIDE));
+  };
+
+  overlayMoveTo = (x = 0, y = 18, speed = 0) => {
+    const output = this.output;
+    output.push(cmd(OVERLAY_MOVE_TO));
+    output.push(x);
+    output.push(y);
+    output.push(speed);
   };
 
   // Control Flow
@@ -278,6 +465,20 @@ class ScriptBuilder {
     output.push(frames);
   };
 
+  // Screen
+
+  fadeIn = (speed = 1) => {
+    const output = this.output;
+    output.push(cmd(FADE_IN));
+    output.push(speed);
+  };
+
+  fadeOut = (speed = 1) => {
+    const output = this.output;
+    output.push(cmd(FADE_OUT));
+    output.push(speed);
+  };
+
   // Music
 
   playMusic = (musicId, loop = false) => {
@@ -294,6 +495,23 @@ class ScriptBuilder {
   stopMusic = () => {
     const output = this.output;
     output.push(cmd(MUSIC_STOP));
+  };
+
+  // Data
+
+  loadData = () => {
+    const output = this.output;
+    output.push(cmd(LOAD_DATA));
+  };
+
+  saveData = () => {
+    const output = this.output;
+    output.push(cmd(SAVE_DATA));
+  };
+
+  clearData = () => {
+    const output = this.output;
+    output.push(cmd(CLEAR_DATA));
   };
 
   // Timing
