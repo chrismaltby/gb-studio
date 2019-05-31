@@ -156,7 +156,6 @@ class ScriptBuilder {
   actorEmote = (emoteId = 0) => {
     const output = this.output;
     output.push(cmd(ACTOR_EMOTE));
-    // @todo change this in engine to use active actor like other commands
     output.push(emoteId);
   };
 
@@ -167,13 +166,11 @@ class ScriptBuilder {
 
   actorShow = () => {
     const output = this.output;
-    // @todo change this in engine to use active actor like other commands
     output.push(cmd(ACTOR_SHOW));
   };
 
   actorHide = () => {
     const output = this.output;
-    // @todo change this in engine to use active actor like other commands
     output.push(cmd(ACTOR_HIDE));
   };
 
@@ -189,12 +186,12 @@ class ScriptBuilder {
 
   // Sprites
 
-  showSprites = () => {
+  spritesShow = () => {
     const output = this.output;
     output.push(cmd(SHOW_SPRITES));
   };
 
-  hideSprites = () => {
+  spritesHide = () => {
     const output = this.output;
     output.push(cmd(HIDE_SPRITES));
   };

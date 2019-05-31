@@ -396,7 +396,7 @@ void Script_HideSprites_b()
  */
 void Script_ActorShow_b()
 {
-  actors[script_cmd_args[0]].enabled = TRUE;
+  actors[script_actor].enabled = TRUE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -408,7 +408,7 @@ void Script_ActorShow_b()
  */
 void Script_ActorHide_b()
 {
-  actors[script_cmd_args[0]].enabled = FALSE;
+  actors[script_actor].enabled = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -423,7 +423,7 @@ void Script_ActorHide_b()
 void Script_ActorSetEmote_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  SceneSetEmote(script_cmd_args[0], script_cmd_args[1]);
+  SceneSetEmote(script_actor, script_cmd_args[0]);
   script_action_complete = FALSE;
 }
 

@@ -251,11 +251,6 @@ export const EventFields = {
       defaultValue: "up"
     }
   ],
-  [EVENT_RESET_VARIABLES]: [
-    {
-      label: l10n("FIELD_RESET_VARIABLES")
-    }
-  ],
   [EVENT_LOOP]: [
     {
       label: l10n("FIELD_LOOP_EXIT")
@@ -302,50 +297,6 @@ export const EventFields = {
       defaultValue: "1"
     }
   ],
-  [EVENT_ACTOR_GET_POSITION]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_X"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_Y"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_ACTOR_SET_POSITION_RELATIVE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: -16,
-      max: 16,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: -16,
-      max: 16,
-      width: "50%",
-      defaultValue: 0
-    }
-  ],
   [EVENT_ACTOR_SET_POSITION_TO_VALUE]: [
     {
       key: "actorId",
@@ -382,59 +333,6 @@ export const EventFields = {
       type: "variable",
       label: l10n("FIELD_Y"),
       defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_ACTOR_EMOTE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "emoteId",
-      type: "emote",
-      defaultValue: 0
-    }
-  ],
-  [EVENT_ACTOR_SHOW]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    }
-  ],
-  [EVENT_ACTOR_HIDE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    }
-  ],
-  [EVENT_ACTOR_INVOKE]: [
-    {
-      label: l10n("FIELD_ACTOR_INVOKE")
-    },
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "LAST_ACTOR"
-    }
-  ],
-  [EVENT_PLAYER_SET_SPRITE]: [
-    {
-      key: "spriteSheetId",
-      type: "sprite",
-      defaultValue: "LAST_SPRITE"
-    }
-  ],
-  [EVENT_SHOW_SPRITES]: [
-    {
-      label: l10n("FIELD_UNHIDE_SPRITES")
-    }
-  ],
-  [EVENT_HIDE_SPRITES]: [
-    {
-      label: l10n("FIELD_HIDE_SPRITES")
     }
   ],
   [EVENT_AWAIT_INPUT]: [

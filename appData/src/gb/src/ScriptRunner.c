@@ -41,9 +41,9 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ShowSprites_b, 0},        // 0x11
     {Script_HideSprites_b, 0},        // 0x12
     {Script_PlayerSetSprite_b, 1},    // 0x13
-    {Script_ActorShow_b, 1},          // 0x14
-    {Script_ActorHide_b, 1},          // 0x15
-    {Script_ActorSetEmote_b, 2},      // 0x16
+    {Script_ActorShow_b, 0},          // 0x14
+    {Script_ActorHide_b, 0},          // 0x15
+    {Script_ActorSetEmote_b, 1},      // 0x16
     {Script_CameraShake_b, 1},        // 0x17
     {Script_Noop_b, 0},               // 0x18
     {Script_ShowOverlay_b, 3},        // 0x19

@@ -47,7 +47,13 @@ import {
   ACTOR_SET_POSITION_TO_VALUE,
   ACTOR_GET_POSITION,
   ACTOR_EMOTE,
-  ACTOR_INVOKE
+  ACTOR_INVOKE,
+  ACTOR_HIDE,
+  ACTOR_SHOW,
+  HIDE_SPRITES,
+  SHOW_SPRITES,
+  RESET_VARIABLES,
+  PLAYER_SET_SPRITE
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -224,6 +230,20 @@ test("Should be able to push active actor", () => {
   expect(output).toEqual([cmd(ACTOR_PUSH), 0]);
 });
 
+test("Should be able to push active actor continuing until collision", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorPush(true);
+  expect(output).toEqual([cmd(ACTOR_PUSH), 1]);
+});
+
+test("Should default push active actor to not continue", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorPush();
+  expect(output).toEqual([cmd(ACTOR_PUSH), 0]);
+});
+
 test("Should allow active actor to display emote", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
@@ -238,18 +258,41 @@ test("Should be able to invoke script on active actor", () => {
   expect(output).toEqual([cmd(ACTOR_INVOKE)]);
 });
 
-test("Should be able to push active actor continuing until collision", () => {
+test("Should be able to hide active actor", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorPush(true);
-  expect(output).toEqual([cmd(ACTOR_PUSH), 1]);
+  sb.actorHide();
+  expect(output).toEqual([cmd(ACTOR_HIDE)]);
 });
 
-test("Should default push active actor to not continue", () => {
+test("Should be able to show active actor", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorPush();
-  expect(output).toEqual([cmd(ACTOR_PUSH), 0]);
+  sb.actorShow();
+  expect(output).toEqual([cmd(ACTOR_SHOW)]);
+});
+
+test("Should be able to change player sprite", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    sprites: [{ id: "def" }]
+  });
+  sb.playerSetSprite("def");
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0]);
+});
+
+test("Should be able to hide all sprites", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.spritesHide();
+  expect(output).toEqual([cmd(HIDE_SPRITES)]);
+});
+
+test("Should be able to show all sprites", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.spritesShow();
+  expect(output).toEqual([cmd(SHOW_SPRITES)]);
 });
 
 test("Should be able to display text", () => {
@@ -415,6 +458,13 @@ test("Should be able to decrement a variable", () => {
   const sb = new ScriptBuilder(output, { variables: ["0"] });
   sb.variableDec("0");
   expect(output).toEqual([cmd(DEC_VALUE), 0, 0]);
+});
+
+test("Should be able to reset all variables to false", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variablesReset();
+  expect(output).toEqual([cmd(RESET_VARIABLES)]);
 });
 
 test("Should be able to show a white overlay", () => {
