@@ -53,7 +53,13 @@ import {
   HIDE_SPRITES,
   SHOW_SPRITES,
   RESET_VARIABLES,
-  PLAYER_SET_SPRITE
+  PLAYER_SET_SPRITE,
+  SCENE_PUSH_STATE,
+  SCENE_POP_STATE,
+  SCENE_POP_ALL_STATE,
+  SCENE_STATE_RESET,
+  ACTOR_SET_MOVE_SPEED,
+  ACTOR_SET_ANIM_SPEED
 } from "../../../src/lib/events/scriptCommands";
 import { dirDec } from "../../../src/lib/compiler/helpers";
 
@@ -192,6 +198,20 @@ test("Should default set active actor direction to 'down'", () => {
   const sb = new ScriptBuilder(output);
   sb.actorSetDirection();
   expect(output).toEqual([cmd(ACTOR_SET_DIRECTION), dirDec("down")]);
+});
+
+test("Should be able to set actor movement speed", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetMovementSpeed(4);
+  expect(output).toEqual([cmd(ACTOR_SET_MOVE_SPEED), 4]);
+});
+
+test("Should be able to set actor animation speed", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.actorSetAnimationSpeed(2);
+  expect(output).toEqual([cmd(ACTOR_SET_ANIM_SPEED), 2]);
 });
 
 test("Should be able to set frame of active actor", () => {
@@ -546,6 +566,34 @@ test("Should default scene switch to facing downwards at origin with default fad
   });
   sb.switchScene("abc");
   expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2]);
+});
+
+test("Should be able to store current scene on stack", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.scenePushState();
+  expect(output).toEqual([cmd(SCENE_PUSH_STATE)]);
+});
+
+test("Should be able to pop scene from stack", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.scenePopState(3);
+  expect(output).toEqual([cmd(SCENE_POP_STATE), 3]);
+});
+
+test("Should be able to pop all scenes from stack", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.scenePopAllState(1);
+  expect(output).toEqual([cmd(SCENE_POP_ALL_STATE), 1]);
+});
+
+test("Should be able to reset scene stack", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.sceneResetState();
+  expect(output).toEqual([cmd(SCENE_STATE_RESET)]);
 });
 
 test("Should be able to move camera to position", () => {

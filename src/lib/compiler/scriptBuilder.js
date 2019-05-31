@@ -53,7 +53,13 @@ import {
   ACTOR_HIDE,
   PLAYER_SET_SPRITE,
   SHOW_SPRITES,
-  HIDE_SPRITES
+  HIDE_SPRITES,
+  ACTOR_SET_MOVE_SPEED,
+  ACTOR_SET_ANIM_SPEED,
+  SCENE_PUSH_STATE,
+  SCENE_STATE_RESET,
+  SCENE_POP_ALL_STATE,
+  SCENE_POP_STATE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -133,6 +139,18 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(ACTOR_SET_DIRECTION));
     output.push(dirDec(direction));
+  };
+
+  actorSetMovementSpeed = (speed = 1) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_MOVE_SPEED));
+    output.push(speed);
+  };
+
+  actorSetAnimationSpeed = (speed = 3) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_ANIM_SPEED));
+    output.push(speed);
   };
 
   actorSetFrame = (frame = 0) => {
@@ -387,6 +405,28 @@ class ScriptBuilder {
       output.push(dirDec(direction));
       output.push(fadeSpeed);
     }
+  };
+
+  scenePushState = () => {
+    const output = this.output;
+    output.push(cmd(SCENE_PUSH_STATE));
+  };
+
+  scenePopState = (fadeSpeed = 2) => {
+    const output = this.output;
+    output.push(cmd(SCENE_POP_STATE));
+    output.push(fadeSpeed);
+  };
+
+  scenePopAllState = (fadeSpeed = 2) => {
+    const output = this.output;
+    output.push(cmd(SCENE_POP_ALL_STATE));
+    output.push(fadeSpeed);
+  };
+
+  sceneResetState = () => {
+    const output = this.output;
+    output.push(cmd(SCENE_STATE_RESET));
   };
 
   // Overlays

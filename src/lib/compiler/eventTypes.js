@@ -119,40 +119,6 @@ export const EventsDeprecated = [
 ];
 
 export const EventFields = {
-  [EVENT_SCENE_PUSH_STATE]: [
-    {
-      label: l10n("FIELD_SCENE_PUSH_STATE_DESCRIPTION")
-    }
-  ],
-  [EVENT_SCENE_POP_STATE]: [
-    {
-      label: l10n("FIELD_SCENE_POP_STATE_DESCRIPTION")
-    },
-    {
-      key: "fadeSpeed",
-      label: l10n("FIELD_FADE_SPEED"),
-      type: "fadeSpeed",
-      defaultValue: "2",
-      width: "50%"
-    }
-  ],
-  [EVENT_SCENE_RESET_STATE]: [
-    {
-      label: l10n("FIELD_SCENE_RESET_STATE_DESCRIPTION")
-    }
-  ],
-  [EVENT_SCENE_POP_ALL_STATE]: [
-    {
-      label: l10n("FIELD_SCENE_POP_ALL_STATE_DESCRIPTION")
-    },
-    {
-      key: "fadeSpeed",
-      label: l10n("FIELD_FADE_SPEED"),
-      type: "fadeSpeed",
-      defaultValue: "2",
-      width: "50%"
-    }
-  ],
   [EVENT_IF_TRUE]: [
     {
       key: "variable",
@@ -271,68 +237,6 @@ export const EventFields = {
       label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
       type: "input",
       defaultValue: ["b"]
-    }
-  ],
-  [EVENT_ACTOR_SET_ANIMATION_SPEED]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "speed",
-      type: "animSpeed",
-      defaultValue: "3"
-    }
-  ],
-  [EVENT_ACTOR_SET_MOVEMENT_SPEED]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "speed",
-      type: "moveSpeed",
-      defaultValue: "1"
-    }
-  ],
-  [EVENT_ACTOR_SET_POSITION_TO_VALUE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_X"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_Y"),
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_ACTOR_MOVE_TO_VALUE]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "vectorX",
-      type: "variable",
-      label: l10n("FIELD_X"),
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      label: l10n("FIELD_Y"),
-      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_AWAIT_INPUT]: [

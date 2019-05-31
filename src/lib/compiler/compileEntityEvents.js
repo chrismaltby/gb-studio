@@ -4,8 +4,6 @@ import {
   EVENT_IF_VALUE,
   EVENT_LOOP,
   EVENT_GROUP,
-  EVENT_ACTOR_SET_MOVEMENT_SPEED,
-  EVENT_ACTOR_SET_ANIMATION_SPEED,
   EVENT_AWAIT_INPUT,
   EVENT_STOP,
   EVENT_IF_INPUT,
@@ -13,21 +11,11 @@ import {
   EVENT_IF_ACTOR_DIRECTION,
   EVENT_IF_SAVED_DATA,
   EVENT_IF_VALUE_COMPARE,
-  EVENT_SCENE_PUSH_STATE,
-  EVENT_SCENE_POP_STATE,
-  EVENT_SCENE_RESET_STATE,
-  EVENT_SCENE_POP_ALL_STATE,
   EVENT_SET_INPUT_SCRIPT,
   EVENT_REMOVE_INPUT_SCRIPT
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
-import {
-  dirDec,
-  inputDec,
-  moveSpeedDec,
-  animSpeedDec,
-  operatorDec
-} from "./helpers";
+import { dirDec, inputDec, operatorDec } from "./helpers";
 import ScriptBuilder from "./scriptBuilder";
 import events from "../events";
 
@@ -267,30 +255,6 @@ const precompileEntityScript = (input = [], options = {}) => {
         ...options,
         output
       });
-    } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_MOVE_SPEED);
-      output.push(moveSpeedDec(input[i].args.speed));
-    } else if (command === EVENT_ACTOR_SET_ANIMATION_SPEED) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.ACTOR_SET_ANIM_SPEED);
-      output.push(animSpeedDec(input[i].args.speed));
-    } else if (command === EVENT_SCENE_PUSH_STATE) {
-      output.push(CMD_LOOKUP.SCENE_PUSH_STATE);
-    } else if (command === EVENT_SCENE_POP_STATE) {
-      output.push(CMD_LOOKUP.SCENE_POP_STATE);
-      output.push(input[i].args.fadeSpeed || 2);
-      output.push(CMD_LOOKUP.END);
-    } else if (command === EVENT_SCENE_RESET_STATE) {
-      output.push(CMD_LOOKUP.SCENE_STATE_RESET);
-    } else if (command === EVENT_SCENE_POP_ALL_STATE) {
-      output.push(CMD_LOOKUP.SCENE_POP_ALL_STATE);
-      output.push(input[i].args.fadeSpeed || 2);
-      output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_END) {
       // output.push(CMD_LOOKUP.END);
     } else if (command === EVENT_AWAIT_INPUT) {
