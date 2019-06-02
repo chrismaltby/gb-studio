@@ -23,7 +23,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorGetPosition } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorGetPosition } = helpers;
+  actorSetActive(input.actorId);
   actorGetPosition(input.vectorX, input.vectorY);
 };

@@ -9,7 +9,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorHide } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorHide } = helpers;
+  actorSetActive(input.actorId);
   actorHide();
 };

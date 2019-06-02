@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventMusicPlay";
 
 test("Should be able to play music", () => {
-  const mockPlayMusic = jest.fn();
+  const mockMusicPlay = jest.fn();
 
   compile(
     {
@@ -9,14 +9,14 @@ test("Should be able to play music", () => {
       loop: false
     },
     {
-      playMusic: mockPlayMusic
+      musicPlay: mockMusicPlay
     }
   );
-  expect(mockPlayMusic).toBeCalledWith("1", false);
+  expect(mockMusicPlay).toBeCalledWith("1", false);
 });
 
 test("Should be able to loop music", () => {
-  const mockPlayMusic = jest.fn();
+  const mockMusicPlay = jest.fn();
 
   compile(
     {
@@ -24,8 +24,8 @@ test("Should be able to loop music", () => {
       loop: true
     },
     {
-      playMusic: mockPlayMusic
+      musicPlay: mockMusicPlay
     }
   );
-  expect(mockPlayMusic).toBeCalledWith("1", true);
+  expect(mockMusicPlay).toBeCalledWith("1", true);
 });

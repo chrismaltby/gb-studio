@@ -81,7 +81,7 @@ const compile = async (
   });
 
   // Add event data
-  const eventPtrs = precompiled.sceneData.map(scene => {
+  const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const subScripts = {};
     const bankEntitySubScripts = entityType => (entity, entityIndex) => {
       walkEventsDepthFirst(entity.script, cmd => {
@@ -89,6 +89,7 @@ const compile = async (
           subScripts[cmd.id] = banked.push(
             compileEntityEvents(cmd.true, {
               scene,
+              sceneIndex,
               scenes: precompiled.sceneData,
               music: precompiled.usedMusic,
               sprites: precompiled.usedSprites,
@@ -114,6 +115,7 @@ const compile = async (
       return banked.push(
         compileEntityEvents(entity.script, {
           scene,
+          sceneIndex,
           scenes: precompiled.sceneData,
           music: precompiled.usedMusic,
           sprites: precompiled.usedSprites,

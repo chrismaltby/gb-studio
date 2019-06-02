@@ -111,28 +111,30 @@ test("should compile simple project into files object", async () => {
                 args: {
                   variable: "1"
                 },
-                true: [
-                  {
-                    command: EVENT_TEXT,
-                    args: {
-                      text: "LOREM IPSUM"
+                children: {
+                  true: [
+                    {
+                      command: EVENT_TEXT,
+                      args: {
+                        text: "LOREM IPSUM"
+                      }
                     }
-                  }
-                ],
-                false: [
-                  {
-                    command: EVENT_TEXT,
-                    args: {
-                      text: "NOT YET"
+                  ],
+                  false: [
+                    {
+                      command: EVENT_TEXT,
+                      args: {
+                        text: "NOT YET"
+                      }
+                    },
+                    {
+                      command: EVENT_SET_TRUE,
+                      args: {
+                        variable: "1"
+                      }
                     }
-                  },
-                  {
-                    command: EVENT_SET_TRUE,
-                    args: {
-                      variable: "1"
-                    }
-                  }
-                ]
+                  ]
+                }
               }
             ]
           }
@@ -283,33 +285,35 @@ test("should walk all scene events to build list of used variables (including fi
               id: "3",
               command: EVENT_IF_TRUE,
               args: { variable: "109" },
-              true: [
-                {
-                  id: "4",
-                  command: EVENT_TEXT,
-                  args: { text: "LINE 2" }
-                },
-                {
-                  id: "5",
-                  command: EVENT_END
-                }
-              ],
-              false: [
-                {
-                  id: "6",
-                  command: EVENT_SET_TRUE,
-                  args: { variable: "109" }
-                },
-                {
-                  id: "7",
-                  command: EVENT_TEXT,
-                  args: { text: "LINE 1" }
-                },
-                {
-                  id: "8",
-                  command: EVENT_END
-                }
-              ]
+              children: {
+                true: [
+                  {
+                    id: "4",
+                    command: EVENT_TEXT,
+                    args: { text: "LINE 2" }
+                  },
+                  {
+                    id: "5",
+                    command: EVENT_END
+                  }
+                ],
+                false: [
+                  {
+                    id: "6",
+                    command: EVENT_SET_TRUE,
+                    args: { variable: "109" }
+                  },
+                  {
+                    id: "7",
+                    command: EVENT_TEXT,
+                    args: { text: "LINE 1" }
+                  },
+                  {
+                    id: "8",
+                    command: EVENT_END
+                  }
+                ]
+              }
             },
             {
               id: "9",
@@ -365,33 +369,35 @@ test("should walk all scene events to build list of strings", () => {
               id: "3",
               command: EVENT_IF_TRUE,
               args: { variable: "9" },
-              true: [
-                {
-                  id: "4",
-                  command: EVENT_TEXT,
-                  args: { text: "LINE 2" }
-                },
-                {
-                  id: "5",
-                  command: EVENT_END
-                }
-              ],
-              false: [
-                {
-                  id: "6",
-                  command: EVENT_SET_TRUE,
-                  args: { variable: "9" }
-                },
-                {
-                  id: "7",
-                  command: EVENT_TEXT,
-                  args: { text: "LINE 1" }
-                },
-                {
-                  id: "8",
-                  command: EVENT_END
-                }
-              ]
+              children: {
+                true: [
+                  {
+                    id: "4",
+                    command: EVENT_TEXT,
+                    args: { text: "LINE 2" }
+                  },
+                  {
+                    id: "5",
+                    command: EVENT_END
+                  }
+                ],
+                false: [
+                  {
+                    id: "6",
+                    command: EVENT_SET_TRUE,
+                    args: { variable: "9" }
+                  },
+                  {
+                    id: "7",
+                    command: EVENT_TEXT,
+                    args: { text: "LINE 1" }
+                  },
+                  {
+                    id: "8",
+                    command: EVENT_END
+                  }
+                ]
+              }
             },
             {
               id: "9",

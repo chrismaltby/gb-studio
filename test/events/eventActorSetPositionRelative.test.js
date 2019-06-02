@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorSetPositionRelative";
 
 test("Should set player position relatively", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorSetPositionRelative = jest.fn();
 
   compile(
@@ -12,10 +12,10 @@ test("Should set player position relatively", () => {
     },
     {
       scene: { actors: [] },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorSetPositionRelative: mockActorSetPositionRelative
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("player");
+  expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorSetPositionRelative).toBeCalledWith(5, 9);
 });

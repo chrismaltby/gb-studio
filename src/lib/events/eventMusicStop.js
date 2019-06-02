@@ -9,6 +9,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { stopMusic } = helpers;
-  stopMusic();
+  const { musicStop } = helpers;
+  musicStop();
 };

@@ -17,6 +17,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { playMusic } = helpers;
-  playMusic(input.musicId, input.loop);
+  const { musicPlay } = helpers;
+  musicPlay(input.musicId, input.loop);
 };

@@ -1,34 +1,8 @@
-import {
-  EVENT_END,
-  EVENT_IF_FALSE,
-  EVENT_IF_VALUE,
-  EVENT_LOOP,
-  EVENT_GROUP,
-  EVENT_AWAIT_INPUT,
-  EVENT_STOP,
-  EVENT_IF_INPUT,
-  EVENT_IF_ACTOR_AT_POSITION,
-  EVENT_IF_ACTOR_DIRECTION,
-  EVENT_IF_SAVED_DATA,
-  EVENT_IF_VALUE_COMPARE,
-  EVENT_SET_INPUT_SCRIPT,
-  EVENT_REMOVE_INPUT_SCRIPT
-} from "./eventTypes";
-import { hi, lo } from "../helpers/8bit";
-import { dirDec, inputDec, operatorDec } from "./helpers";
 import ScriptBuilder from "./scriptBuilder";
 import events from "../events";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
-
-class CompileEventsError extends Error {
-  constructor(message, data) {
-    super(message);
-    this.data = data;
-    this.name = "CompileEventsError";
-  }
-}
 
 // @todo
 // Maybe have list of script commands
@@ -120,199 +94,100 @@ const CMD_LOOKUP = {
   TEXT_MULTI: 0x50
 };
 
-const getActorIndex = (actorId, scene) => {
-  return scene.actors.findIndex(a => a.id === actorId) + 1;
-};
-
-const getVariableIndex = (variable, variables) => {
-  const variableIndex = variables.indexOf(String(variable));
-  if (variableIndex === -1) {
-    throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
-  }
-  return variableIndex;
-};
-
-const loadVectors = (args, output, variables) => {
-  const vectorX = getVariableIndex(args.vectorX, variables);
-  const vectorY = getVariableIndex(args.vectorY, variables);
-  output.push(CMD_LOOKUP.LOAD_VECTORS);
-  output.push(hi(vectorX));
-  output.push(lo(vectorX));
-  output.push(hi(vectorY));
-  output.push(lo(vectorY));
-};
-
-const compileConditional = (truePath, falsePath, options) => {
-  const { output } = options;
-
-  const truePtrIndex = output.length;
-  output.push("PTR_PLACEHOLDER1");
-  output.push("PTR_PLACEHOLDER2");
-  precompileEntityScript(falsePath, {
+const compileEntityEvents = (input = [], options = {}) => {
+  const {
+    output = [],
+    branch = false,
+    scene,
+    sceneIndex,
+    entity,
+    entityType,
+    entityIndex
+  } = options;
+  const helpers = {
     ...options,
-    output,
-    branch: true
-  });
+    compileEvents: (childInput, eventOutput = null, eventBranch = true) =>
+      compileEntityEvents(childInput, {
+        ...options,
+        output: eventOutput || output,
+        branch: eventBranch
+      })
+  };
+  const location = Object.assign(
+    {},
+    scene && {
+      scene: scene.name || `Scene ${sceneIndex + 1}`
+    },
+    entityType && {
+      scriptType: entityType
+    },
+    entityType === "actor" && {
+      actor: entity.name || `Actor ${entityIndex + 1}`
+    },
+    entityType === "trigger" && {
+      actor: entity.name || `Trigger ${entityIndex + 1}`
+    }
+  );
 
-  output.push(CMD_LOOKUP.JUMP);
-  const endPtrIndex = output.length;
-  output.push("PTR_PLACEHOLDER1");
-  output.push("PTR_PLACEHOLDER2");
-
-  const truePointer = output.length;
-  output[truePtrIndex] = truePointer >> 8;
-  output[truePtrIndex + 1] = truePointer & 0xff;
-
-  precompileEntityScript(truePath, {
-    ...options,
-    branch: true
-  });
-
-  const endIfPointer = output.length;
-  output[endPtrIndex] = endIfPointer >> 8;
-  output[endPtrIndex + 1] = endIfPointer & 0xff;
-};
-
-const precompileEntityScript = (input = [], options = {}) => {
-  const { output = [], scene, variables, subScripts, branch = false } = options;
+  const scriptBuilder = new ScriptBuilder(output, helpers);
 
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
-
     if (events[command]) {
-      const helpers = {
-        ...options,
-        compile: precompileEntityScript
-      };
-      const scriptBuilder = new ScriptBuilder(output, helpers);
-      events[command].compile(
-        {
-          ...input[i].args,
-          true: input[i].true,
-          false: input[i].false
-        },
-        {
-          ...helpers,
-          ...scriptBuilder
-        }
+      try {
+        events[command].compile(
+          { ...input[i].args, ...input[i].children },
+          {
+            ...helpers,
+            ...scriptBuilder,
+            event: input[i]
+          }
+        );
+      } catch (e) {
+        throw new Error(
+          `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
+            location
+          )}`
+        );
+      }
+    } else if (command !== "EVENT_END") {
+      throw new Error(
+        `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
+          location
+        )}`
       );
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-
-    if (command === EVENT_IF_FALSE) {
-      output.push(CMD_LOOKUP.IF_TRUE);
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      compileConditional(input[i].false, input[i].true, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_IF_VALUE) {
-      output.push(CMD_LOOKUP.IF_VALUE);
-      const variableIndex = getVariableIndex(input[i].args.variable, variables);
-      output.push(hi(variableIndex));
-      output.push(lo(variableIndex));
-      output.push(operatorDec(input[i].args.operator));
-      output.push(input[i].args.comparator || 0);
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_IF_VALUE_COMPARE) {
-      loadVectors(input[i].args, output, variables);
-      output.push(CMD_LOOKUP.IF_VALUE_COMPARE);
-      output.push(operatorDec(input[i].args.operator));
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_IF_INPUT) {
-      output.push(CMD_LOOKUP.IF_INPUT);
-      output.push(inputDec(input[i].args.input));
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_IF_ACTOR_AT_POSITION) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.IF_ACTOR_AT_POSITION);
-      output.push(actorIndex);
-      output.push(input[i].args.x || 0);
-      output.push(input[i].args.y || 0);
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_IF_ACTOR_DIRECTION) {
-      const actorIndex = getActorIndex(input[i].args.actorId, scene);
-      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
-      output.push(actorIndex);
-      output.push(CMD_LOOKUP.IF_ACTOR_DIRECTION);
-      output.push(dirDec(input[i].args.direction));
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    } else if (command === EVENT_END) {
-      // output.push(CMD_LOOKUP.END);
-    } else if (command === EVENT_AWAIT_INPUT) {
-      output.push(CMD_LOOKUP.AWAIT_INPUT);
-      output.push(inputDec(input[i].args.input));
-    } else if (command === EVENT_LOOP) {
-      const startPtrIndex = output.length;
-      precompileEntityScript(input[i].true, {
-        ...options,
-        output,
-        branch: true
-      });
-      output.push(CMD_LOOKUP.NEXT_FRAME);
-      output.push(CMD_LOOKUP.JUMP);
-      output.push(startPtrIndex >> 8);
-      output.push(startPtrIndex & 0xff);
-    } else if (command === EVENT_GROUP) {
-      precompileEntityScript(input[i].true, {
-        ...options,
-        output,
-        branch: true
-      });
-    } else if (command === EVENT_SET_INPUT_SCRIPT) {
-      const bankPtr = subScripts[input[i].id];
-      if (bankPtr) {
-        output.push(CMD_LOOKUP.SET_INPUT_SCRIPT);
-        output.push(inputDec(input[i].args.input));
-        output.push(bankPtr.bank);
-        output.push(hi(bankPtr.offset));
-        output.push(lo(bankPtr.offset));
-      }
-    } else if (command === EVENT_REMOVE_INPUT_SCRIPT) {
-      output.push(CMD_LOOKUP.REMOVE_INPUT_SCRIPT);
-      output.push(inputDec(input[i].args.input));
-    } else if (command === EVENT_STOP) {
-      output.push(CMD_LOOKUP.END);
-    } else if (command === EVENT_IF_SAVED_DATA) {
-      output.push(CMD_LOOKUP.IF_SAVED_DATA);
-      compileConditional(input[i].true, input[i].false, {
-        ...options,
-        output
-      });
-    }
-
-    for (let oi = 0; oi < output.length; oi++) {
-      if (output[oi] < 0) {
-        throw new Error("OUTPUT FAILED");
-      }
     }
   }
 
   if (!branch) {
     output.push(CMD_LOOKUP.END);
+
+    for (let oi = 0; oi < output.length; oi++) {
+      if (typeof output[oi] === "string" || output[oi] < 0) {
+        const intCmd = Number(output[oi]);
+        if (Number.isInteger(intCmd) && intCmd >= 0) {
+          // If string was equivent to position integer then replace it
+          // in output otherwise
+          output[oi] = intCmd;
+        } else {
+          let reason = "";
+          if (String(output[oi]).startsWith("goto:")) {
+            reason = "Did you remember to define a label in the script?";
+          }
+
+          throw new Error(
+            `Found invalid command "${output[oi]}". ${reason} ${JSON.stringify(
+              location
+            )}`
+          );
+        }
+      }
+    }
   }
 
   return output;
 };
 
-export default precompileEntityScript;
+export default compileEntityEvents;
 
 export { CMD_LOOKUP, STRING_NOT_FOUND, VARIABLE_NOT_FOUND };

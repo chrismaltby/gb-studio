@@ -1,8 +1,8 @@
 import { compile } from "../../src/lib/events/eventVariableMath";
 
 test("Should be able to set variable to value", () => {
-  const mockSetVariableToValue = jest.fn();
-  const mockCopyVariable = jest.fn();
+  const mockVariableSetToValue = jest.fn();
+  const mockVariableCopy = jest.fn();
 
   compile(
     {
@@ -12,17 +12,17 @@ test("Should be able to set variable to value", () => {
       operation: "set"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
-      copyVariable: mockCopyVariable
+      variableSetToValue: mockVariableSetToValue,
+      variableCopy: mockVariableCopy
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to set variable to true", () => {
-  const mockSetVariableToValue = jest.fn();
-  const mockCopyVariable = jest.fn();
+  const mockVariableSetToValue = jest.fn();
+  const mockVariableCopy = jest.fn();
 
   compile(
     {
@@ -31,17 +31,17 @@ test("Should be able to set variable to true", () => {
       operation: "set"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
-      copyVariable: mockCopyVariable
+      variableSetToValue: mockVariableSetToValue,
+      variableCopy: mockVariableCopy
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 1);
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 1);
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to set variable to false", () => {
-  const mockSetVariableToValue = jest.fn();
-  const mockCopyVariable = jest.fn();
+  const mockVariableSetToValue = jest.fn();
+  const mockVariableCopy = jest.fn();
 
   compile(
     {
@@ -50,16 +50,16 @@ test("Should be able to set variable to false", () => {
       operation: "set"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
-      copyVariable: mockCopyVariable
+      variableSetToValue: mockVariableSetToValue,
+      variableCopy: mockVariableCopy
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 0);
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 0);
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to set variable to another variable's value", () => {
-  const mockCopyVariable = jest.fn();
+  const mockVariableCopy = jest.fn();
 
   compile(
     {
@@ -69,16 +69,16 @@ test("Should be able to set variable to another variable's value", () => {
       operation: "set"
     },
     {
-      copyVariable: mockCopyVariable
+      variableCopy: mockVariableCopy
     }
   );
-  expect(mockCopyVariable).toBeCalledWith("tmp1", "3");
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableCopy).toBeCalledWith("tmp1", "3");
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to set variable to a random value", () => {
-  const mockCopyVariable = jest.fn();
-  const mockSetVariableToRandom = jest.fn();
+  const mockVariableCopy = jest.fn();
+  const mockVariableSetToRandom = jest.fn();
 
   compile(
     {
@@ -88,17 +88,17 @@ test("Should be able to set variable to a random value", () => {
       maxValue: 50
     },
     {
-      copyVariable: mockCopyVariable,
-      setVariableToRandom: mockSetVariableToRandom
+      variableCopy: mockVariableCopy,
+      variableSetToRandom: mockVariableSetToRandom
     }
   );
-  expect(mockSetVariableToRandom).toBeCalledWith("tmp1", 0, 50);
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableSetToRandom).toBeCalledWith("tmp1", 0, 50);
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to set variable to a random with min value", () => {
-  const mockCopyVariable = jest.fn();
-  const mockSetVariableToRandom = jest.fn();
+  const mockVariableCopy = jest.fn();
+  const mockVariableSetToRandom = jest.fn();
 
   compile(
     {
@@ -108,16 +108,16 @@ test("Should be able to set variable to a random with min value", () => {
       maxValue: 50
     },
     {
-      copyVariable: mockCopyVariable,
-      setVariableToRandom: mockSetVariableToRandom
+      variableCopy: mockVariableCopy,
+      variableSetToRandom: mockVariableSetToRandom
     }
   );
-  expect(mockSetVariableToRandom).toBeCalledWith("tmp1", 30, 20);
-  expect(mockCopyVariable).toBeCalledWith("2", "tmp1");
+  expect(mockVariableSetToRandom).toBeCalledWith("tmp1", 30, 20);
+  expect(mockVariableCopy).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to add value to variable", () => {
-  const mockSetVariableToValue = jest.fn();
+  const mockVariableSetToValue = jest.fn();
   const mockVariablesAdd = jest.fn();
 
   compile(
@@ -128,16 +128,16 @@ test("Should be able to add value to variable", () => {
       operation: "add"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
+      variableSetToValue: mockVariableSetToValue,
       variablesAdd: mockVariablesAdd
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
   expect(mockVariablesAdd).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to subtract value from variable", () => {
-  const mockSetVariableToValue = jest.fn();
+  const mockVariableSetToValue = jest.fn();
   const mockVariablesSub = jest.fn();
 
   compile(
@@ -148,16 +148,16 @@ test("Should be able to subtract value from variable", () => {
       operation: "sub"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
+      variableSetToValue: mockVariableSetToValue,
       variablesSub: mockVariablesSub
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
   expect(mockVariablesSub).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to multiply variable by value", () => {
-  const mockSetVariableToValue = jest.fn();
+  const mockVariableSetToValue = jest.fn();
   const mockVariablesMul = jest.fn();
 
   compile(
@@ -168,16 +168,16 @@ test("Should be able to multiply variable by value", () => {
       operation: "mul"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
+      variableSetToValue: mockVariableSetToValue,
       variablesMul: mockVariablesMul
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
   expect(mockVariablesMul).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to divide variable by value", () => {
-  const mockSetVariableToValue = jest.fn();
+  const mockVariableSetToValue = jest.fn();
   const mockVariablesDiv = jest.fn();
 
   compile(
@@ -188,16 +188,16 @@ test("Should be able to divide variable by value", () => {
       operation: "div"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
+      variableSetToValue: mockVariableSetToValue,
       variablesDiv: mockVariablesDiv
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
   expect(mockVariablesDiv).toBeCalledWith("2", "tmp1");
 });
 
 test("Should be able to modulus variable by value", () => {
-  const mockSetVariableToValue = jest.fn();
+  const mockVariableSetToValue = jest.fn();
   const mockVariablesMod = jest.fn();
 
   compile(
@@ -208,10 +208,10 @@ test("Should be able to modulus variable by value", () => {
       operation: "mod"
     },
     {
-      setVariableToValue: mockSetVariableToValue,
+      variableSetToValue: mockVariableSetToValue,
       variablesMod: mockVariablesMod
     }
   );
-  expect(mockSetVariableToValue).toBeCalledWith("tmp1", 5);
+  expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
   expect(mockVariablesMod).toBeCalledWith("2", "tmp1");
 });

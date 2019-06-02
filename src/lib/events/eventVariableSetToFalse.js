@@ -1,4 +1,4 @@
-export const id = "EVENT_SET_TRUE";
+export const id = "EVENT_SET_FALSE";
 
 export const fields = [
   {
@@ -9,6 +9,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setVariableToTrue } = helpers;
-  setVariableToTrue(input.variable);
+  const { variableSetToFalse } = helpers;
+  variableSetToFalse(input.variable);
 };

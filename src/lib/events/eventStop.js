@@ -1,14 +1,14 @@
 import l10n from "../helpers/l10n";
 
-export const id = "EVENT_CLEAR_DATA";
+export const id = "EVENT_STOP";
 
 export const fields = [
   {
-    label: l10n("FIELD_CLEAR_DATA")
+    label: l10n("FIELD_STOP_SCRIPT")
   }
 ];
 
 export const compile = (input, helpers) => {
-  const { clearData } = helpers;
-  clearData();
+  const { scriptEnd } = helpers;
+  scriptEnd();
 };

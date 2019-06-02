@@ -17,7 +17,7 @@ export const fields = [
 
 export const compile = (input, helpers) => {
   const {
-    displayText,
+    textDialogue,
     textSetOpenInstant,
     textSetCloseInstant,
     textRestoreOpenSpeed,
@@ -37,7 +37,7 @@ export const compile = (input, helpers) => {
         textRestoreCloseSpeed();
       }
 
-      displayText(rowText);
+      textDialogue(rowText);
 
       // After first box, make open instant
       if (j === 0) {
@@ -49,6 +49,6 @@ export const compile = (input, helpers) => {
       }
     }
   } else {
-    displayText(input.text);
+    textDialogue(input.text);
   }
 };

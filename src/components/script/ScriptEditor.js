@@ -9,20 +9,7 @@ import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
-import {
-  EVENT_IF_TRUE,
-  EVENT_IF_FALSE,
-  EVENT_IF_VALUE,
-  EVENT_IF_INPUT,
-  EVENT_IF_ACTOR_AT_POSITION,
-  EVENT_IF_ACTOR_DIRECTION,
-  EVENT_IF_SAVED_DATA,
-  EVENT_END,
-  EVENT_LOOP,
-  EVENT_GROUP,
-  EVENT_IF_VALUE_COMPARE,
-  EVENT_SET_INPUT_SCRIPT
-} from "../../lib/compiler/eventTypes";
+import { EVENT_END } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
@@ -81,21 +68,6 @@ const cardTarget = {
       end: props.end
     };
   }
-};
-
-const isConditionalEvent = command => {
-  return (
-    [
-      EVENT_IF_TRUE,
-      EVENT_IF_FALSE,
-      EVENT_IF_VALUE,
-      EVENT_IF_INPUT,
-      EVENT_IF_ACTOR_AT_POSITION,
-      EVENT_IF_ACTOR_DIRECTION,
-      EVENT_IF_SAVED_DATA,
-      EVENT_IF_VALUE_COMPARE
-    ].indexOf(command) > -1
-  );
 };
 
 class ActionMini extends Component {
@@ -205,17 +177,15 @@ class ActionMini extends Component {
       (l10n(command) || events[command].name || command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
+    const childKeys = action.children ? Object.keys(action.children) : [];
+
     return connectDropTarget(
       connectDragPreview(
         <div
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional":
-              isConditionalEvent(command) ||
-              command === EVENT_LOOP ||
-              command === EVENT_GROUP ||
-              command === EVENT_SET_INPUT_SCRIPT
+            "ActionMini--Conditional": childKeys.length > 0
           })}
         >
           <div
@@ -315,10 +285,10 @@ class ActionMini extends Component {
               )}
 
             {open &&
-              action.true &&
+              childKeys.length > 0 &&
               connectDropTarget(
                 <div className="ActionMini__Children">
-                  {action.true.map(childAction => (
+                  {action.children[childKeys[0]].map(childAction => (
                     <ActionMiniDnD
                       key={childAction.id}
                       id={childAction.id}
@@ -342,39 +312,53 @@ class ActionMini extends Component {
                   />
                 </div>
               )}
-            {action.false && (
-              <div
-                className={cx("ActionMini__Else", {
-                  "ActionMini__Else--Open": elseOpen
-                })}
-                onClick={this.toggleElseOpen}
-              >
-                <TriangleIcon /> Else
-              </div>
-            )}
-            {action.false && elseOpen && (
-              <div className="ActionMini__Children">
-                {action.false.map(childAction => (
-                  <ActionMiniDnD
-                    key={childAction.id}
-                    id={childAction.id}
-                    type={type}
-                    path={`${id}_true_${childAction.id}`}
-                    action={childAction}
-                    moveActions={moveActions}
-                    onAdd={onAdd}
-                    onRemove={onRemove}
-                    onEdit={onEdit}
-                    onCopy={onCopy}
-                    onPaste={onPaste}
-                    onMouseEnter={onMouseEnter}
-                    onMouseLeave={onMouseLeave}
-                    clipboardEvent={clipboardEvent}
-                  />
-                ))}
-                <div className="ActionMini__ChildrenBorder" title={elseName} />
-              </div>
-            )}
+
+            {childKeys.length > 1 &&
+              childKeys.map((key, index) => {
+                if (index === 0) {
+                  return [];
+                }
+                return [
+                  <div
+                    key={`child_${key}_header`}
+                    className={cx("ActionMini__Else", {
+                      "ActionMini__Else--Open": elseOpen
+                    })}
+                    onClick={this.toggleElseOpen}
+                  >
+                    <TriangleIcon /> Else
+                  </div>,
+                  elseOpen && (
+                    <div
+                      key={`child_${key}_body`}
+                      className="ActionMini__Children"
+                    >
+                      {action.children[key].map(childAction => (
+                        <ActionMiniDnD
+                          key={childAction.id}
+                          id={childAction.id}
+                          type={type}
+                          path={`${id}_true_${childAction.id}`}
+                          action={childAction}
+                          moveActions={moveActions}
+                          onAdd={onAdd}
+                          onRemove={onRemove}
+                          onEdit={onEdit}
+                          onCopy={onCopy}
+                          onPaste={onPaste}
+                          onMouseEnter={onMouseEnter}
+                          onMouseLeave={onMouseLeave}
+                          clipboardEvent={clipboardEvent}
+                        />
+                      ))}
+                      <div
+                        className="ActionMini__ChildrenBorder"
+                        title={elseName}
+                      />
+                    </div>
+                  )
+                ];
+              })}
           </div>
         </div>
       )
@@ -465,6 +449,8 @@ class ScriptEditor extends Component {
                 actors.length > 0
                   ? scene.actors[scene.actors.length - 1].id
                   : "player";
+            } else if (field.type === "events") {
+              replaceValue = undefined;
             } else if (
               field.defaultValue !== undefined &&
               !defaults[field.key]
@@ -483,6 +469,19 @@ class ScriptEditor extends Component {
         )
       : { ...defaults };
 
+    const childFields = eventFields.filter(field => field.type === "events");
+    const children = childFields.reduce((memo, field) => {
+      return {
+        ...memo,
+        [field.key]: [
+          {
+            id: uuid(),
+            command: EVENT_END
+          }
+        ]
+      };
+    }, {});
+
     const input = prependEvent(
       root,
       id,
@@ -492,43 +491,8 @@ class ScriptEditor extends Component {
           command,
           args: defaultArgs
         },
-        isConditionalEvent(command) && {
-          true: [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ],
-          false: [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ]
-        },
-        command === EVENT_LOOP && {
-          true: [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ]
-        },
-        command === EVENT_GROUP && {
-          true: [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ]
-        },
-        command === EVENT_SET_INPUT_SCRIPT && {
-          true: [
-            {
-              id: uuid(),
-              command: EVENT_END
-            }
-          ]
+        childFields.length > 0 && {
+          children
         }
       )
     );
@@ -674,6 +638,7 @@ class ScriptEditor extends Component {
             />
           ))}
         </div>
+        <pre>{JSON.stringify(value, null, 2)}</pre>
       </div>
     );
   }

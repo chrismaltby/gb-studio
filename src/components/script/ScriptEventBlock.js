@@ -82,6 +82,9 @@ const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
             return null;
           }
         }
+        if (field.type === "events") {
+          return null;
+        }
 
         const fieldValue = field.multiple
           ? [].concat([], value[field.key])

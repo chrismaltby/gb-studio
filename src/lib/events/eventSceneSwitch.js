@@ -43,13 +43,13 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { switchScene, endScript } = helpers;
-  switchScene(
+  const { sceneSwitch, scriptEnd } = helpers;
+  sceneSwitch(
     input.sceneId,
     input.x,
     input.y,
     input.direction,
     input.fadeSpeed
   );
-  endScript();
+  scriptEnd();
 };

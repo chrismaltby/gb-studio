@@ -19,7 +19,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorSetFrame } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorSetFrame } = helpers;
+  actorSetActive(input.actorId);
   actorSetFrame(input.frame);
 };

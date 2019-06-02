@@ -89,22 +89,24 @@ test("should allow conditional statements", () => {
       args: {
         variable: "4"
       },
-      true: [
-        {
-          command: EVENT_TEXT,
-          args: {
-            text: "TRUE PATH"
+      children: {
+        true: [
+          {
+            command: EVENT_TEXT,
+            args: {
+              text: "TRUE PATH"
+            }
           }
-        }
-      ],
-      false: [
-        {
-          command: EVENT_TEXT,
-          args: {
-            text: "FALSE PATH"
+        ],
+        false: [
+          {
+            command: EVENT_TEXT,
+            args: {
+              text: "FALSE PATH"
+            }
           }
-        }
-      ]
+        ]
+      }
     }
   ];
   const strings = ["HELLO WORLD", "TRUE PATH", "FALSE PATH"];
@@ -138,22 +140,24 @@ test("should allow commands after conditional", () => {
       args: {
         variable: "4"
       },
-      true: [
-        {
-          command: EVENT_TEXT,
-          args: {
-            text: "TRUE PATH"
+      children: {
+        true: [
+          {
+            command: EVENT_TEXT,
+            args: {
+              text: "TRUE PATH"
+            }
           }
-        }
-      ],
-      false: [
-        {
-          command: EVENT_TEXT,
-          args: {
-            text: "FALSE PATH"
+        ],
+        false: [
+          {
+            command: EVENT_TEXT,
+            args: {
+              text: "FALSE PATH"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     {
       command: EVENT_TEXT,

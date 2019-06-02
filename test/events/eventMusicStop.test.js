@@ -1,13 +1,13 @@
 import { compile } from "../../src/lib/events/eventMusicStop";
 
 test("Should be able to stop music", () => {
-  const mockStopMusic = jest.fn();
+  const mockMusicStop = jest.fn();
 
   compile(
     {},
     {
-      stopMusic: mockStopMusic
+      musicStop: mockMusicStop
     }
   );
-  expect(mockStopMusic).toBeCalledWith();
+  expect(mockMusicStop).toBeCalledWith();
 });

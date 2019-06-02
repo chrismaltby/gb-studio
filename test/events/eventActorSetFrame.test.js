@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorSetFrame";
 
 test("Should set player frame", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorSetFrame = jest.fn();
 
   compile(
@@ -11,10 +11,10 @@ test("Should set player frame", () => {
     },
     {
       scene: { actors: [] },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorSetFrame: mockActorSetFrame
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("player");
+  expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorSetFrame).toBeCalledWith(4);
 });

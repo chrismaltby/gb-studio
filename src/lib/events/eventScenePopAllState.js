@@ -16,7 +16,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { scenePopAllState, endScript } = helpers;
+  const { scenePopAllState, scriptEnd } = helpers;
   scenePopAllState(input.fadeSpeed);
-  endScript();
+  scriptEnd();
 };

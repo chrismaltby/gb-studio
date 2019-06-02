@@ -60,19 +60,21 @@ test("should walk node, then true path, then false path", () => {
   const events = [
     {
       id: 0,
-      true: [
-        {
-          id: 1
-        },
-        {
-          id: 2
-        }
-      ],
-      false: [
-        {
-          id: 3
-        }
-      ]
+      children: {
+        true: [
+          {
+            id: 1
+          },
+          {
+            id: 2
+          }
+        ],
+        false: [
+          {
+            id: 3
+          }
+        ]
+      }
     },
     {
       id: 4
@@ -102,29 +104,31 @@ test("should patch events following tree", () => {
   const events = [
     {
       id: 0,
-      true: [
-        {
-          id: 1,
-          args: {
-            data: "true path"
+      children: {
+        true: [
+          {
+            id: 1,
+            args: {
+              data: "true path"
+            }
           }
-        }
-      ],
-      false: [
-        {
-          id: 2,
-          args: {
-            data: "false path"
+        ],
+        false: [
+          {
+            id: 2,
+            args: {
+              data: "false path"
+            }
           }
-        }
-      ]
+        ]
+      }
     }
   ];
   const newEvents = patchEvents(events, 1, { data: "true path updated" });
   const newEvents2 = patchEvents(newEvents, 2, { data: "false path updated" });
 
-  expect(events[0].true[0].args.data).toBe("true path");
-  expect(events[0].false[0].args.data).toBe("false path");
-  expect(newEvents2[0].true[0].args.data).toBe("true path updated");
-  expect(newEvents2[0].false[0].args.data).toBe("false path updated");
+  expect(events[0].children.true[0].args.data).toBe("true path");
+  expect(events[0].children.false[0].args.data).toBe("false path");
+  expect(newEvents2[0].children.true[0].args.data).toBe("true path updated");
+  expect(newEvents2[0].children.false[0].args.data).toBe("false path updated");
 });

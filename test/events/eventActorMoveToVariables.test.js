@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorMoveToVariables";
 
 test("Should move player position to variables", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorMoveToVariables = jest.fn();
 
   compile(
@@ -13,10 +13,10 @@ test("Should move player position to variables", () => {
     {
       scene: { actors: [] },
       variables: ["0", "1"],
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorMoveToVariables: mockActorMoveToVariables
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("player");
+  expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorMoveToVariables).toBeCalledWith("0", "1");
 });

@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorEmote";
 
 test("Should be able to display actor emote", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorEmote = jest.fn();
 
   compile(
@@ -10,10 +10,10 @@ test("Should be able to display actor emote", () => {
       emoteId: 2
     },
     {
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorEmote: mockActorEmote
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("abc");
+  expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorEmote).toBeCalledWith(2);
 });

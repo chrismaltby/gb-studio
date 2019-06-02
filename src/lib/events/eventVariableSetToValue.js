@@ -16,6 +16,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setVariableToValue } = helpers;
-  setVariableToValue(input.variable, input.value);
+  const { variableSetToValue } = helpers;
+  variableSetToValue(input.variable, input.value);
 };

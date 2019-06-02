@@ -43,26 +43,8 @@ export const getVariableIndex = (variable, variables) => {
   return variableIndex;
 };
 
-export const loadVectors = (args, output, variables) => {
-  // const vectorX = getVariableIndex(args.vectorX, variables);
-  // const vectorY = getVariableIndex(args.vectorY, variables);
-  // output.push(CMD_LOOKUP.LOAD_VECTORS);
-  // output.push(hi(vectorX));
-  // output.push(lo(vectorX));
-  // output.push(hi(vectorY));
-  // output.push(lo(vectorY));
-};
-
-export const loadVectorsByIndex = (vectorX, vectorY, output) => {
-  // output.push(CMD_LOOKUP.LOAD_VECTORS);
-  // output.push(hi(vectorX));
-  // output.push(lo(vectorX));
-  // output.push(hi(vectorY));
-  // output.push(lo(vectorY));
-};
-
 export const compileConditional = (truePath, falsePath, options) => {
-  const { output, compile } = options;
+  const { output, compileEvents } = options;
 
   const truePtrIndex = output.length;
   output.push("PTR_PLACEHOLDER1");
@@ -71,11 +53,7 @@ export const compileConditional = (truePath, falsePath, options) => {
   if (typeof falsePath === "function") {
     falsePath();
   } else {
-    compile(falsePath, {
-      ...options,
-      output,
-      branch: true
-    });
+    compileEvents(falsePath);
   }
 
   output.push(cmd(JUMP));
@@ -90,11 +68,7 @@ export const compileConditional = (truePath, falsePath, options) => {
   if (typeof truePath === "function") {
     truePath();
   } else {
-    compile(truePath, {
-      ...options,
-      output,
-      branch: true
-    });
+    compileEvents(truePath);
   }
 
   const endIfPointer = output.length;

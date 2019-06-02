@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorHide";
 
 test("Should be able to hide actor", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorHide = jest.fn();
 
   compile(
@@ -9,10 +9,10 @@ test("Should be able to hide actor", () => {
       actorId: "abc"
     },
     {
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorHide: mockActorHide
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("abc");
+  expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorHide).toBeCalled();
 });

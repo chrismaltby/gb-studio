@@ -2,7 +2,7 @@ import { compile } from "../../src/lib/events/eventScenePopState";
 
 test("Should be able to pop a scene from the stack", () => {
   const mockScenePopState = jest.fn();
-  const mockEndScript = jest.fn();
+  const mockScriptEnd = jest.fn();
 
   compile(
     {
@@ -10,9 +10,9 @@ test("Should be able to pop a scene from the stack", () => {
     },
     {
       scenePopState: mockScenePopState,
-      endScript: mockEndScript
+      scriptEnd: mockScriptEnd
     }
   );
   expect(mockScenePopState).toBeCalledWith(2);
-  expect(mockEndScript).toHaveBeenCalledAfter(mockScenePopState);
+  expect(mockScriptEnd).toHaveBeenCalledAfter(mockScenePopState);
 });

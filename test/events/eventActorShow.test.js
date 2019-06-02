@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorShow";
 
 test("Should be able to show actor", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorShow = jest.fn();
 
   compile(
@@ -9,10 +9,10 @@ test("Should be able to show actor", () => {
       actorId: "abc"
     },
     {
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorShow: mockActorShow
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("abc");
+  expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorShow).toBeCalled();
 });

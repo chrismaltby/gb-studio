@@ -18,7 +18,7 @@ export const fields = [
 
 export const compile = (input, helpers) => {
   const {
-    setActiveActor,
+    actorSetActive,
     actorSetDirection,
     actorSetFrame,
     actorSetFlip,
@@ -27,7 +27,7 @@ export const compile = (input, helpers) => {
   } = helpers;
   const actor = getActor(input.actorId, scene);
 
-  setActiveActor(input.actorId);
+  actorSetActive(input.actorId);
   actorSetDirection(input.direction);
 
   if (actor && actor.movementType === "static") {

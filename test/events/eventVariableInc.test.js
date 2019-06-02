@@ -1,4 +1,4 @@
-import { compile } from "../../src/lib/events/eventIncValue";
+import { compile } from "../../src/lib/events/eventVariableInc";
 
 test("Should be able to increment value", () => {
   const mockVariableInc = jest.fn();

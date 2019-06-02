@@ -119,104 +119,6 @@ export const EventsDeprecated = [
 ];
 
 export const EventFields = {
-  [EVENT_IF_TRUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_IF_FALSE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_IF_VALUE]: [
-    {
-      key: "variable",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "operator",
-      type: "operator",
-      width: "50%",
-      defaultValue: "=="
-    },
-    {
-      key: "comparator",
-      type: "number",
-      min: 0,
-      max: 255,
-      width: "50%",
-      defaultValue: "0"
-    }
-  ],
-  [EVENT_IF_VALUE_COMPARE]: [
-    {
-      key: "vectorX",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    },
-    {
-      key: "operator",
-      type: "operator",
-      width: "50%",
-      defaultValue: "=="
-    },
-    {
-      key: "vectorY",
-      type: "variable",
-      defaultValue: "LAST_VARIABLE"
-    }
-  ],
-  [EVENT_IF_INPUT]: [
-    {
-      key: "input",
-      label: l10n("FIELD_ANY_OF"),
-      type: "input",
-      defaultValue: ["a", "b"]
-    }
-  ],
-  [EVENT_IF_ACTOR_AT_POSITION]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "x",
-      label: l10n("FIELD_X"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
-    },
-    {
-      key: "y",
-      label: l10n("FIELD_Y"),
-      type: "number",
-      min: 0,
-      max: 32,
-      width: "50%",
-      defaultValue: 0
-    }
-  ],
-  [EVENT_IF_ACTOR_DIRECTION]: [
-    {
-      key: "actorId",
-      type: "actor",
-      defaultValue: "player"
-    },
-    {
-      key: "direction",
-      type: "direction",
-      defaultValue: "up"
-    }
-  ],
   [EVENT_LOOP]: [
     {
       label: l10n("FIELD_LOOP_EXIT")
@@ -239,22 +141,9 @@ export const EventFields = {
       defaultValue: ["b"]
     }
   ],
-  [EVENT_AWAIT_INPUT]: [
-    {
-      key: "input",
-      label: l10n("FIELD_ANY_OF"),
-      type: "input",
-      defaultValue: ["a", "b"]
-    }
-  ],
   [EVENT_STOP]: [
     {
       label: l10n("FIELD_STOP_SCRIPT")
-    }
-  ],
-  [EVENT_IF_SAVED_DATA]: [
-    {
-      label: l10n("FIELD_IF_SAVED_DATA")
     }
   ]
 };

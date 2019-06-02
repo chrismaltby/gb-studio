@@ -14,7 +14,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorSetAnimationSpeed } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorSetAnimationSpeed } = helpers;
+  actorSetActive(input.actorId);
   actorSetAnimationSpeed(input.speed);
 };

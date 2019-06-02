@@ -12,9 +12,9 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { entityType, entity, setActiveActor, actorPush } = helpers;
+  const { entityType, entity, actorSetActive, actorPush } = helpers;
   if (entityType === "actor" && entity.id !== undefined) {
-    setActiveActor(entity.id);
+    actorSetActive(entity.id);
     actorPush(input.continue);
   }
 };

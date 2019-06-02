@@ -14,7 +14,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorInvoke } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorInvoke } = helpers;
+  actorSetActive(input.actorId);
   actorInvoke();
 };

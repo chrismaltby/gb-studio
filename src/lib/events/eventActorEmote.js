@@ -14,7 +14,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { setActiveActor, actorEmote } = helpers;
-  setActiveActor(input.actorId);
+  const { actorSetActive, actorEmote } = helpers;
+  actorSetActive(input.actorId);
   actorEmote(input.emoteId);
 };

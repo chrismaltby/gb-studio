@@ -1,14 +1,14 @@
 import l10n from "../helpers/l10n";
 
-export const id = "EVENT_LOAD_DATA";
+export const id = "EVENT_SAVE_DATA";
 
 export const fields = [
   {
-    label: l10n("FIELD_LOAD_DATA")
+    label: l10n("FIELD_SAVE_DATA")
   }
 ];
 
 export const compile = (input, helpers) => {
-  const { loadData } = helpers;
-  loadData();
+  const { dataSave } = helpers;
+  dataSave();
 };

@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorSetMovementSpeed";
 
 test("Should be able to set the actor movement speed", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorSetMovementSpeed = jest.fn();
 
   compile(
@@ -11,10 +11,10 @@ test("Should be able to set the actor movement speed", () => {
     },
     {
       scene: { actors: [] },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorSetMovementSpeed: mockActorSetMovementSpeed
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("player");
+  expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorSetMovementSpeed).toBeCalledWith(3);
 });

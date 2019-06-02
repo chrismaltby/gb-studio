@@ -1,4 +1,4 @@
-export const id = "EVENT_IF_TRUE";
+export const id = "EVENT_IF_FALSE";
 
 export const fields = [
   {
@@ -17,6 +17,6 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { ifTrue } = helpers;
-  ifTrue(input.variable, input.true, input.false);
+  const { ifVariableTrue } = helpers;
+  ifVariableTrue(input.variable, input.false, input.true);
 };

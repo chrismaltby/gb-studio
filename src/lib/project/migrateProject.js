@@ -1,4 +1,5 @@
 import { indexBy } from "../helpers/array";
+import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 
 const indexById = indexBy("id");
 
@@ -12,6 +13,10 @@ const migrateProject = project => {
     data = migrateFrom1To110Actors(data);
     data = migrateFrom1To110Collisions(data);
     version = "1.1.0";
+  }
+  if (version === "1.1.0") {
+    data = migrateFrom110To120Events(data);
+    version = "1.2.0";
   }
 
   data._version = version;
@@ -119,6 +124,27 @@ const migrateFrom1To110Scenes = data => {
       }
       return scene;
     })
+  };
+};
+
+const migrateFrom110To120Events = data => {
+  const migrateEvent = event => {
+    if (event.true || event.false) {
+      return {
+        ...event,
+        children: Object.assign(
+          {},
+          event.true && { true: mapEvents(event.true, migrateEvent) },
+          event.false && { false: mapEvents(event.false, migrateEvent) }
+        )
+      };
+    }
+    return event;
+  };
+
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateEvent)
   };
 };
 

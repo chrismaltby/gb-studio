@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorInvoke";
 
 test("Should be able to invoke actor script", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorInvoke = jest.fn();
 
   compile(
@@ -9,10 +9,10 @@ test("Should be able to invoke actor script", () => {
       actorId: "abc"
     },
     {
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorInvoke: mockActorInvoke
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("abc");
+  expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorInvoke).toBeCalled();
 });

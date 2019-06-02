@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorPush";
 
 test("Should be able to push actor", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorPush = jest.fn();
 
   compile(
@@ -13,16 +13,16 @@ test("Should be able to push actor", () => {
       entity: {
         id: "abc"
       },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorPush: mockActorPush
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("abc");
+  expect(mockactorSetActive).toBeCalledWith("abc");
   expect(mockActorPush).toBeCalledWith(false);
 });
 
 test("Should not be able to push trigger", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorPush = jest.fn();
 
   compile(
@@ -34,10 +34,10 @@ test("Should not be able to push trigger", () => {
       entity: {
         id: "abc"
       },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorPush: mockActorPush
     }
   );
-  expect(mockSetActiveActor).not.toBeCalled();
+  expect(mockactorSetActive).not.toBeCalled();
   expect(mockActorPush).not.toBeCalled();
 });

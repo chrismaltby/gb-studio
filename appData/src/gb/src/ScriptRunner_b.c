@@ -735,10 +735,10 @@ void Script_ActorPush_b()
 void Script_IfActorPos_b()
 {
   if (
-      ((script_cmd_args[1] << 3) + 8 == actors[script_cmd_args[0]].pos.x) &&
-      ((script_cmd_args[2] << 3) + 8 == actors[script_cmd_args[0]].pos.y))
+      ((script_cmd_args[0] << 3) + 8 == actors[script_actor].pos.x) &&
+      ((script_cmd_args[1] << 3) + 8 == actors[script_actor].pos.y))
   { // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[3] * 256) + script_cmd_args[4];
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
   else
   { // False path, skip to next command

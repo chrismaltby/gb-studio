@@ -1,7 +1,7 @@
 import { compile } from "../../src/lib/events/eventActorSetPosition";
 
 test("Should set player position", () => {
-  const mockSetActiveActor = jest.fn();
+  const mockactorSetActive = jest.fn();
   const mockActorSetPosition = jest.fn();
 
   compile(
@@ -12,10 +12,10 @@ test("Should set player position", () => {
     },
     {
       scene: { actors: [] },
-      setActiveActor: mockSetActiveActor,
+      actorSetActive: mockactorSetActive,
       actorSetPosition: mockActorSetPosition
     }
   );
-  expect(mockSetActiveActor).toBeCalledWith("player");
+  expect(mockactorSetActive).toBeCalledWith("player");
   expect(mockActorSetPosition).toBeCalledWith(5, 9);
 });

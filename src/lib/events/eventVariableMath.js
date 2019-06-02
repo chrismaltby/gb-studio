@@ -80,9 +80,9 @@ export const fields = [
 
 export const compile = (input, helpers) => {
   const {
-    setVariableToValue,
-    copyVariable,
-    setVariableToRandom,
+    variableSetToValue,
+    variableCopy,
+    variableSetToRandom,
     variablesAdd,
     variablesSub,
     variablesMul,
@@ -92,24 +92,24 @@ export const compile = (input, helpers) => {
   const tmp1 = "tmp1";
   switch (input.other) {
     case "true":
-      setVariableToValue(tmp1, 1);
+      variableSetToValue(tmp1, 1);
       break;
     case "false":
-      setVariableToValue(tmp1, 0);
+      variableSetToValue(tmp1, 0);
       break;
     case "var": {
-      copyVariable(tmp1, input.vectorY);
+      variableCopy(tmp1, input.vectorY);
       break;
     }
     case "rnd": {
       const min = input.minValue || 0;
       const range = Math.min(254, Math.max(0, (input.maxValue || 0) - min));
-      setVariableToRandom(tmp1, min, range);
+      variableSetToRandom(tmp1, min, range);
       break;
     }
     case "val":
     default:
-      setVariableToValue(tmp1, input.value || 0);
+      variableSetToValue(tmp1, input.value || 0);
       break;
   }
   switch (input.operation) {
@@ -130,7 +130,7 @@ export const compile = (input, helpers) => {
       break;
     case "set":
     default:
-      copyVariable(input.vectorX, tmp1);
+      variableCopy(input.vectorX, tmp1);
       break;
   }
 };

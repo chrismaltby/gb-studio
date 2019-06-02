@@ -27,7 +27,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { displayChoice } = helpers;
+  const { textChoice } = helpers;
   const { variable, trueText, falseText } = input;
-  displayChoice(variable, { trueText, falseText });
+  textChoice(variable, { trueText, falseText });
 };
