@@ -638,7 +638,6 @@ class ScriptEditor extends Component {
             />
           ))}
         </div>
-        <pre>{JSON.stringify(value, null, 2)}</pre>
       </div>
     );
   }

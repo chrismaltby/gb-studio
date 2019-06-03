@@ -59,9 +59,25 @@ import {
   SCENE_POP_ALL_STATE,
   SCENE_STATE_RESET,
   ACTOR_SET_MOVE_SPEED,
-  ACTOR_SET_ANIM_SPEED
+  ACTOR_SET_ANIM_SPEED,
+  NEXT_FRAME,
+  IF_TRUE,
+  JUMP,
+  IF_VALUE_COMPARE,
+  IF_INPUT,
+  IF_VALUE,
+  IF_ACTOR_AT_POSITION,
+  IF_ACTOR_DIRECTION,
+  IF_SAVED_DATA,
+  AWAIT_INPUT,
+  REMOVE_INPUT_SCRIPT,
+  SET_INPUT_SCRIPT
 } from "../../../src/lib/events/scriptCommands";
-import { dirDec } from "../../../src/lib/compiler/helpers";
+import {
+  dirDec,
+  operatorDec,
+  inputDec
+} from "../../../src/lib/compiler/helpers";
 
 test("Should be able to set active actor to player", () => {
   const output = [];
@@ -653,6 +669,245 @@ test("Should be able to shake camera for a number of frames", () => {
   expect(output).toEqual([cmd(CAMERA_SHAKE), 3]);
 });
 
+test("Should be able to conditionally execute if variable is true", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    variables: ["0", "1"],
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifVariableTrue("1", [], []);
+  expect(output).toEqual([cmd(IF_TRUE), 0, 1, 0, 9, 99, cmd(JUMP), 0, 10, 99]);
+});
+
+test("Should be able to conditionally execute if variable matches a value", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    variables: ["0", "1"],
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifVariableValue("1", "==", 42, [], []);
+  expect(output).toEqual([
+    cmd(IF_VALUE),
+    0,
+    1,
+    operatorDec("=="),
+    42,
+    0,
+    11,
+    99,
+    cmd(JUMP),
+    0,
+    12,
+    99
+  ]);
+});
+
+test("Should be able to conditionally execute if variable matches another", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    variables: ["0", "1"],
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifVariableCompare("0", "==", "1", [], []);
+  expect(output).toEqual([
+    cmd(LOAD_VECTORS),
+    0,
+    0,
+    0,
+    1,
+    cmd(IF_VALUE_COMPARE),
+    operatorDec("=="),
+    0,
+    13,
+    99,
+    cmd(JUMP),
+    0,
+    14,
+    99
+  ]);
+});
+
+test("Should be able to conditionally execute if input is pressed", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifInput(["a", "b"], [], []);
+  expect(output).toEqual([
+    cmd(IF_INPUT),
+    inputDec(["a", "b"]),
+    0,
+    8,
+    99,
+    cmd(JUMP),
+    0,
+    9,
+    99
+  ]);
+});
+
+test("Should be able to conditionally execute if active actor is at a position", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifActorAtPosition(5, 8, [], []);
+  expect(output).toEqual([
+    cmd(IF_ACTOR_AT_POSITION),
+    5,
+    8,
+    0,
+    9,
+    99,
+    cmd(JUMP),
+    0,
+    10,
+    99
+  ]);
+});
+
+test("Should be able to conditionally execute if active actor is facing direction", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifActorDirection("up", [], []);
+  expect(output).toEqual([
+    cmd(IF_ACTOR_DIRECTION),
+    dirDec("up"),
+    0,
+    8,
+    99,
+    cmd(JUMP),
+    0,
+    9,
+    99
+  ]);
+});
+
+test("Should be able to conditionally execute if data is saved", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.ifDataSaved([], []);
+  expect(output).toEqual([cmd(IF_SAVED_DATA), 0, 7, 99, cmd(JUMP), 0, 8, 99]);
+});
+
+test("Should be able to define a label", () => {
+  const output = [5, 6];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.labelDefine("my_label");
+  expect(sb.labels.my_label).toBe(2);
+});
+
+test("Should be replace gotos with label ptrs if found", () => {
+  const output = [5, 6, "goto: my_label", 0, 0, 7, 8];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.labelDefine("my_label");
+  expect(sb.labels.my_label).toBe(7);
+  expect(output).toEqual([5, 6, cmd(JUMP), 0, 7, 7, 8]);
+});
+
+test("Should be able to goto a label", () => {
+  const output = [5];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.labelDefine("my_label");
+  sb.labelGoto("my_label");
+  expect(output).toEqual([5, cmd(JUMP), 0, 1]);
+});
+
+test("Should add goto playholder if not defined yet", () => {
+  const output = [5];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: () => {
+      output.push(99);
+    }
+  });
+  sb.labelGoto("my_label");
+  expect(output).toEqual([5, `goto: my_label`, 0, 0]);
+});
+
+test("Should be able to await input", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.inputAwait(["b"]);
+  expect(output).toEqual([cmd(AWAIT_INPUT), inputDec(["b"])]);
+});
+
+test("Should be able to add input script", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: (input, subScript) => {
+      subScript.push(99);
+    },
+    banked: {
+      push: () => {
+        return {
+          bank: 99,
+          offset: 200
+        };
+      }
+    }
+  });
+  sb.inputScriptSet("b", []);
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+});
+
+test("Should be able to add input script as function", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: (input, subScript) => {
+      subScript.push(99);
+    },
+    banked: {
+      push: () => {
+        return {
+          bank: 99,
+          offset: 200
+        };
+      }
+    }
+  });
+  sb.inputScriptSet("b", () => {
+    sb.spritesHide();
+  });
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+});
+
+test("Should be able to remove input script", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.inputScriptRemove(["b"]);
+  expect(output).toEqual([cmd(REMOVE_INPUT_SCRIPT), inputDec(["b"])]);
+});
+
 test("Should be able to play music", () => {
   const output = [];
   const sb = new ScriptBuilder(output, {
@@ -738,6 +993,13 @@ test("Should be able to clear saved data", () => {
   const sb = new ScriptBuilder(output);
   sb.dataClear();
   expect(output).toEqual([cmd(CLEAR_DATA)]);
+});
+
+test("Should be able to wait for the next frame", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.nextFrameAwait();
+  expect(output).toEqual([cmd(NEXT_FRAME)]);
 });
 
 test("Should be able to wait for a number of frames", () => {

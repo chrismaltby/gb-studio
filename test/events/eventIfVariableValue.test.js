@@ -1,6 +1,6 @@
 import { compile } from "../../src/lib/events/eventIfVariableValue";
 
-test("Should be able to conditionally execute if variable is false", () => {
+test("Should be able to conditionally execute if variable matches a value", () => {
   const mockIfVariableValue = jest.fn();
   const truePath = [{ command: "EVENT_END", id: "abc" }];
   const falsePath = [{ command: "EVENT_END", id: "def" }];
