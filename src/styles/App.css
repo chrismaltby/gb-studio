@@ -26,6 +26,7 @@
 @import url("./../components/script/ScriptEventBlock.css");
 @import url("./../components/script/AddCommandButton.css");
 @import url("./../components/script/ScriptEditor.css");
+@import url("../../node_modules/codemirror/lib/codemirror.css");
 
 html,
 body {

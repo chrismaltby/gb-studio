@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React from "react";
 import PropTypes from "prop-types";
+import CodeMirror from "react-codemirror";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -20,6 +21,8 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import { textNumLines } from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
+
+require("codemirror/mode/javascript/javascript");
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -101,7 +104,7 @@ const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
                 id={fieldId}
                 key={fieldId}
                 value={inputValue || ""}
-                rows={textNumLines(inputValue)}
+                rows={field.rows || textNumLines(inputValue)}
                 placeholder={field.placeholder}
                 onChange={onChangeField(
                   field.key,
@@ -122,6 +125,19 @@ const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
                 placeholder={field.placeholder || field.defaultValue}
                 maxLength={field.maxLength}
                 onChange={onChangeField(field.key, fieldIndex)}
+              />
+            );
+          }
+          if (field.type === "code") {
+            const codeMirrorOptions = {
+              lineNumbers: true,
+              mode: "javascript"
+            };
+            return (
+              <CodeMirror
+                value={inputValue || ""}
+                onChange={onChangeField(field.key, fieldIndex)}
+                options={codeMirrorOptions}
               />
             );
           }

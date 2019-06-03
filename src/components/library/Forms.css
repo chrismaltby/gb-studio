@@ -209,3 +209,7 @@ textarea {
   border-color: transparent;
   box-shadow: 0 0 0px 2px var(--highlight-color);
 }
+
+.FormField .ReactCodeMirror {
+  margin: -10px;
+}
