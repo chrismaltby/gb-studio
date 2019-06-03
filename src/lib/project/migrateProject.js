@@ -127,6 +127,11 @@ const migrateFrom1To110Scenes = data => {
   };
 };
 
+/*
+ * Version 1.2.0 allows events to have multiple named child paths rather
+ * than just true/false allowing custom events to be created with more
+ * than two conditional paths.
+ */
 const migrateFrom110To120Events = data => {
   const migrateEvent = event => {
     if (event.true || event.false) {
@@ -141,7 +146,6 @@ const migrateFrom110To120Events = data => {
     }
     return event;
   };
-
   return {
     ...data,
     scenes: mapScenesEvents(data.scenes, migrateEvent)
