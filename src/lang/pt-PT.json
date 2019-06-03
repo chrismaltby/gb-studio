@@ -326,9 +326,13 @@
 
  "// 15": "Diálogos ------------------------------------------------------",
 
+  "DIALOG_SAVE_CHANGES": "Guardar alterações feitas em \"{name}\"?",
+  "DIALOG_SAVE_WARNING": "Qualquer alteração será perdida se não for guardada.",
   "DIALOG_DOWNLOAD": "Transferir",
   "DIALOG_SKIP_VERSION": "Ignorar esta Versão",
   "DIALOG_REMIND_LATER": "Lembre-me mais tarde",
+  "DIALOG_SAVE": "Guardar",
+  "DIALOG_DONT_SAVE": "Não Guardar",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancelar",
   "DIALOG_UPDATE_AVAILABLE": "Actualização Disponível",
