@@ -25,7 +25,8 @@ var ModModule = function(fileData) {
 					   856 , 808 , 762 , 720 , 678 , 640 , 604 , 570 , 538 , 508 , 480, 453,
 					   428 , 404 , 381 , 360 , 339 , 320 , 302 , 285 , 269 , 254 , 240, 226,
 					   214 , 202 , 190 , 180 , 170 , 160 , 151 , 143 , 135 , 127 , 120, 113,
-					   107 , 101 , 95  , 90  , 85  , 80  , 75  , 71  , 67  , 63  , 60 , 56 ];
+					   107 , 101 , 95  , 90  , 85  , 80  , 75  , 71  , 67  , 63  , 60 , 56 , 
+					   53  ,  50 ,  47 ,  45 ,  42 ,  40 ,  37 ,  35 ,  33 ,  31 ,  30 , 28];
 
 	// Find out the number of channels in this mod.
 	switch (Helpers.readString(fileData, 1080, 4)) {
@@ -136,23 +137,23 @@ var ModModule = function(fileData) {
 				if ((byte3 & 0x0F) == 0 && byte4 != 0) {
 					pattern.effect[r][c] = Effects.ARPEGGIO;
 				} else if ((byte3 & 0x0F) == 1) {
-					pattern.effect[r][c] = Effects.PORTA_UP;
+					pattern.effect[r][c] = Effects.NONE;//Effects.PORTA_UP;
 				} else if ((byte3 & 0x0F) == 2) {
-					pattern.effect[r][c] = Effects.PORTA_DOWN;
+					pattern.effect[r][c] = Effects.NONE;//Effects.PORTA_DOWN;
 				} else if ((byte3 & 0x0F) == 3) {
-					pattern.effect[r][c] = Effects.TONE_PORTA;
+					pattern.effect[r][c] = Effects.NONE;//Effects.TONE_PORTA;
 				} else if ((byte3 & 0x0F) == 4) {
-					pattern.effect[r][c] = Effects.VIBRATO;
+					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO;
 				} else if ((byte3 & 0x0F) == 5) {
 					pattern.effect[r][c] = Effects.TONE_PORTA_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 6) {
-					pattern.effect[r][c] = Effects.VIBRATO_VOL_SLIDE;
+					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 7) {
-					pattern.effect[r][c] = Effects.TREMOLO;
+					pattern.effect[r][c] = Effects.NONE;//Effects.TREMOLO;
 				} else if ((byte3 & 0x0F) == 8) {
 					pattern.effect[r][c] = Effects.SET_PAN;
 				} else if ((byte3 & 0x0F) == 9) {
-					pattern.effect[r][c] = Effects.SAMPLE_OFFSET;
+					pattern.effect[r][c] = Effects.NONE;//Effects.SAMPLE_OFFSET;
 				} else if ((byte3 & 0x0F) == 10) {
 					pattern.effect[r][c] = Effects.VOLUME_SLIDE;
 				} else if ((byte3 & 0x0F) == 11) {
@@ -167,25 +168,25 @@ var ModModule = function(fileData) {
 							pattern.effect[r][c] = Effects.SET_FILTER;
 							break;
 						case 1:
-							pattern.effect[r][c] = Effects.FINE_PORTA_UP;
+							pattern.effect[r][c] = Effects.NONE;//Effects.FINE_PORTA_UP;
 							break;
 						case 2:
-							pattern.effect[r][c] = Effects.FINE_PORTA_DOWN;
+							pattern.effect[r][c] = Effects.NONE;//Effects.FINE_PORTA_DOWN;
 							break;
 						case 3:
-							pattern.effect[r][c] = Effects.SET_GLISANDO;
+							pattern.effect[r][c] = Effects.NONE;//Effects.SET_GLISANDO;
 							break;
 						case 4:
-							pattern.effect[r][c] = Effects.SET_VIBRATO;
+							pattern.effect[r][c] = Effects.NONE;//Effects.SET_VIBRATO;
 							break;
 						case 5:
-							pattern.effect[r][c] = Effects.SET_FINETUNE;
+							pattern.effect[r][c] = Effects.NONE;//Effects.SET_FINETUNE;
 							break;
 						case 6:
 							pattern.effect[r][c] = Effects.SET_LOOP;
 							break;
 						case 7:
-							pattern.effect[r][c] = Effects.SET_TREMOLO;
+							pattern.effect[r][c] = Effects.NONE;//Effects.SET_TREMOLO;
 							break;
 						case 8:
 							pattern.effect[r][c] = Effects.SET_PAN_16;
@@ -203,7 +204,7 @@ var ModModule = function(fileData) {
 							pattern.effect[r][c] = Effects.CUT_NOTE;
 							break;
 						case 13:
-							pattern.effect[r][c] = Effects.DELAY_NOTE;
+							pattern.effect[r][c] = Effects.NONE;//Effects.DELAY_NOTE;
 							break;
 						case 14:
 							pattern.effect[r][c] = Effects.DELAY_PATTERN;
