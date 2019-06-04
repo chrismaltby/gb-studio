@@ -258,7 +258,7 @@ class ScriptBuilder {
     output.push(lo(stringIndex));
   };
 
-  textChoice = (variable, args) => {
+  textChoice = (setVariable, args) => {
     const output = this.output;
     const { strings, variables } = this.options;
     const choiceText = combineMultipleChoiceText(args);
@@ -267,7 +267,7 @@ class ScriptBuilder {
       strings.push(choiceText);
       stringIndex = strings.length - 1;
     }
-    const variableIndex = getVariableIndex(variable, variables);
+    const variableIndex = getVariableIndex(setVariable, variables);
     output.push(cmd(CHOICE));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
@@ -337,9 +337,9 @@ class ScriptBuilder {
     output.push(value);
   };
 
-  variableCopy = (variableA, variableB) => {
+  variableCopy = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(COPY_VALUE));
   };
 
@@ -354,33 +354,33 @@ class ScriptBuilder {
     output.push(range);
   };
 
-  variablesAdd = (variableA, variableB) => {
+  variablesAdd = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_ADD_VALUE));
   };
 
-  variablesSub = (variableA, variableB) => {
+  variablesSub = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_SUB_VALUE));
   };
 
-  variablesMul = (variableA, variableB) => {
+  variablesMul = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_MUL_VALUE));
   };
 
-  variablesDiv = (variableA, variableB) => {
+  variablesDiv = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_DIV_VALUE));
   };
 
-  variablesMod = (variableA, variableB) => {
+  variablesMod = (setVariable, otherVariable) => {
     const output = this.output;
-    this.vectorsLoad(variableA, variableB);
+    this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_MOD_VALUE));
   };
 
