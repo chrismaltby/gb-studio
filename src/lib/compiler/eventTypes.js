@@ -82,6 +82,7 @@ export const EVENT_ACTOR_SET_POSITION_TO_VALUE =
 export const EVENT_ACTOR_MOVE_TO_VALUE = "EVENT_ACTOR_MOVE_TO_VALUE";
 export const EVENT_ACTOR_INVOKE = "EVENT_ACTOR_INVOKE";
 export const EVENT_ACTOR_SET_FRAME = "EVENT_ACTOR_SET_FRAME";
+export const EVENT_ACTOR_SET_FRAME_TO_VALUE = "EVENT_ACTOR_SET_FRAME_TO_VALUE";
 
 // Camera
 export const EVENT_CAMERA_MOVE_TO = "EVENT_CAMERA_MOVE_TO";
@@ -599,6 +600,18 @@ export const EventFields = {
       min: 0,
       max: 25,
       defaultValue: 0
+    }
+  ],
+  [EVENT_ACTOR_SET_FRAME_TO_VALUE]: [
+    {
+      key: "actorId",
+      type: "actor",
+      defaultValue: "LAST_ACTOR"
+    },
+    {
+      key: "variable",
+      type: "variable",
+      defaultValue: "LAST_VARIABLE"
     }
   ],
   [EVENT_ACTOR_SET_ANIMATION_SPEED]: [

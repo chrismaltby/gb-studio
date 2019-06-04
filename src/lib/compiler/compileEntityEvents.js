@@ -75,6 +75,7 @@ import {
   EVENT_SET_INPUT_SCRIPT,
   EVENT_REMOVE_INPUT_SCRIPT,
   EVENT_ACTOR_SET_FRAME,
+  EVENT_ACTOR_SET_FRAME_TO_VALUE,
   EVENT_VARIABLE_MATH
 } from "./eventTypes";
 import { hi, lo } from "../helpers/8bit";
@@ -186,7 +187,8 @@ const CMD_LOOKUP = {
   REMOVE_INPUT_SCRIPT: 0x4d,
   ACTOR_SET_FRAME: 0x4e,
   ACTOR_SET_FLIP: 0x4f,
-  TEXT_MULTI: 0x50
+  TEXT_MULTI: 0x50,
+  ACTOR_SET_FRAME_TO_VALUE: 0x51
 };
 
 const getActorIndex = (actorId, scene) => {
@@ -665,6 +667,14 @@ const precompileEntityScript = (input = [], options = {}) => {
       output.push(actorIndex);
       output.push(CMD_LOOKUP.ACTOR_SET_FRAME);
       output.push(input[i].args.frame || 0);
+    } else if (command === EVENT_ACTOR_SET_FRAME_TO_VALUE) {
+      const actorIndex = getActorIndex(input[i].args.actorId, scene);
+      const variableIndex = getVariableIndex(input[i].args.variable, variables);
+      output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
+      output.push(actorIndex);
+      output.push(CMD_LOOKUP.ACTOR_SET_FRAME_TO_VALUE);
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));
     } else if (command === EVENT_ACTOR_SET_MOVEMENT_SPEED) {
       const actorIndex = getActorIndex(input[i].args.actorId, scene);
       output.push(CMD_LOOKUP.ACTOR_SET_ACTIVE);
