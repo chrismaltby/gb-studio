@@ -56,93 +56,101 @@
   --conditional-level4: #311b92;
 }
 
-.App .CodeMirror {
-  background: #304148;
+.App .GBScriptEditor .ace_gutter {
+  background: #292e2f;
+  color: #8f908a;
+}
+.App .GBScriptEditor .ace_print-margin {
+  width: 1px;
+  background: #555651;
+}
+.App .GBScriptEditor {
+  background-color: #1f2323;
   color: #f8f8f2;
 }
-.App div.CodeMirror-selected {
-  background: rgba(101, 115, 126, 0.33);
-}
-.App .CodeMirror-line::selection,
-.App .CodeMirror-line > span::selection,
-.App .CodeMirror-line > span > span::selection {
-  background: rgba(101, 115, 126, 0.33);
-}
-.App .CodeMirror-line::-moz-selection,
-.App .CodeMirror-line > span::-moz-selection,
-.App .CodeMirror-line > span > span::-moz-selection {
-  background: rgba(101, 115, 126, 0.33);
-}
-.App .CodeMirror-gutters {
-  background: #304148;
-  border-right: 1px solid #65737e;
-}
-.App .CodeMirror-guttermarker {
-  color: white;
-}
-.App .CodeMirror-guttermarker-subtle {
-  color: #d0d0d0;
-}
-.App .CodeMirror-linenumber {
-  color: #d0d0d0;
-}
-.App .CodeMirror-cursor {
-  border-left: 1px solid #f8f8f0;
-}
-
-.App span.cm-comment {
-  color: #65737e;
-}
-.App span.cm-atom {
-  color: #c594c5;
-}
-.App span.cm-number {
-  color: #f99157;
-}
-
-.App span.cm-property {
-  color: #99c794;
-}
-.App span.cm-attribute,
-.App span.cm-keyword {
-  color: #c594c5;
-}
-.App span.cm-builtin {
-  color: #66d9ef;
-}
-.App span.cm-string {
-  color: #99c794;
-}
-
-.App span.cm-variable,
-.App span.cm-variable-2,
-.App span.cm-variable-3 {
-  color: #f8f8f2;
-}
-.App span.cm-def {
-  color: #6699cc;
-}
-.App span.cm-bracket {
-  color: #5fb3b3;
-}
-.App span.cm-tag {
-  color: #c594c5;
-}
-.App span.cm-header {
-  color: #c594c5;
-}
-.App span.cm-link {
-  color: #c594c5;
-}
-.App span.cm-error {
-  background: #c594c5;
+.App .GBScriptEditor .ace_cursor {
   color: #f8f8f0;
 }
-
-.CodeMirror-activeline-background {
-  background: rgba(101, 115, 126, 0.33);
+.App .GBScriptEditor .ace_marker-layer .ace_selection {
+  background: #49483e;
 }
-.CodeMirror-matchingbracket {
-  text-decoration: underline;
-  color: white !important;
+.App .GBScriptEditor.ace_multiselect .ace_selection.ace_start {
+  box-shadow: 0 0 3px 0px #272822;
+}
+.App .GBScriptEditor .ace_marker-layer .ace_step {
+  background: rgb(102, 82, 0);
+}
+.App .GBScriptEditor .ace_marker-layer .ace_bracket {
+  margin: -1px 0 0 -1px;
+  border: 1px solid #49483e;
+}
+.App .GBScriptEditor .ace_marker-layer .ace_active-line {
+  background: #202020;
+}
+.App .GBScriptEditor .ace_gutter-active-line {
+  background-color: #272727;
+}
+.App .GBScriptEditor .ace_marker-layer .ace_selected-word {
+  border: 1px solid #49483e;
+}
+.App .GBScriptEditor .ace_invisible {
+  color: #52524d;
+}
+.App .GBScriptEditor .ace_entity.ace_name.ace_tag,
+.App .GBScriptEditor .ace_keyword,
+.App .GBScriptEditor .ace_meta.ace_tag,
+.App .GBScriptEditor .ace_storage {
+  color: #f92672;
+}
+.App .GBScriptEditor .ace_punctuation,
+.App .GBScriptEditor .ace_punctuation.ace_tag {
+  color: #fff;
+}
+.App .GBScriptEditor .ace_constant.ace_character,
+.App .GBScriptEditor .ace_constant.ace_language,
+.App .GBScriptEditor .ace_constant.ace_numeric,
+.App .GBScriptEditor .ace_constant.ace_other {
+  color: #ae81ff;
+}
+.App .GBScriptEditor .ace_invalid {
+  color: #f8f8f0;
+  background-color: #f92672;
+}
+.App .GBScriptEditor .ace_invalid.ace_deprecated {
+  color: #f8f8f0;
+  background-color: #ae81ff;
+}
+.App .GBScriptEditor .ace_support.ace_constant,
+.App .GBScriptEditor .ace_support.ace_function {
+  color: #66d9ef;
+}
+.App .GBScriptEditor .ace_fold {
+  background-color: #a6e22e;
+  border-color: #f8f8f2;
+}
+.App .GBScriptEditor .ace_storage.ace_type,
+.App .GBScriptEditor .ace_support.ace_class,
+.App .GBScriptEditor .ace_support.ace_type {
+  font-style: italic;
+  color: #66d9ef;
+}
+.App .GBScriptEditor .ace_entity.ace_name.ace_function,
+.App .GBScriptEditor .ace_entity.ace_other,
+.App .GBScriptEditor .ace_entity.ace_other.ace_attribute-name,
+.App .GBScriptEditor .ace_variable {
+  color: #a6e22e;
+}
+.App .GBScriptEditor .ace_variable.ace_parameter {
+  font-style: italic;
+  color: #fd971f;
+}
+.App .GBScriptEditor .ace_string {
+  color: #e6db74;
+}
+.App .GBScriptEditor .ace_comment {
+  color: #75715e;
+}
+.App .GBScriptEditor .ace_indent-guide {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPQ0FD0ZXBzd/wPAAjVAoxeSgNeAAAAAElFTkSuQmCC)
+    right repeat-y;
 }

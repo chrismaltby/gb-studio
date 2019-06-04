@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React from "react";
 import PropTypes from "prop-types";
-import CodeMirror from "react-codemirror";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -21,8 +20,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import { textNumLines } from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
-
-require("codemirror/mode/javascript/javascript");
+import GBScriptEditor from "../library/GBScriptEditor";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -129,15 +127,10 @@ const ScriptEventBlock = ({ command, id, value = {}, onChange }) => {
             );
           }
           if (field.type === "code") {
-            const codeMirrorOptions = {
-              lineNumbers: true,
-              mode: "javascript"
-            };
             return (
-              <CodeMirror
+              <GBScriptEditor
                 value={inputValue || ""}
                 onChange={onChangeField(field.key, fieldIndex)}
-                options={codeMirrorOptions}
               />
             );
           }

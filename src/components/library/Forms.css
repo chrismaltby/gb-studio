@@ -210,6 +210,6 @@ textarea {
   box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
-.FormField .ReactCodeMirror {
+.FormField .ace_editor {
   margin: -10px;
 }
