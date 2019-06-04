@@ -3,6 +3,7 @@ import AceEditor from "react-ace";
 import ScriptBuilder from "../../lib/compiler/scriptBuilder";
 
 import "brace/ext/language_tools";
+import "brace/theme/tomorrow";
 import "brace/mode/javascript";
 import "brace/ext/searchbox";
 
@@ -48,6 +49,7 @@ class GBScriptEditor extends Component {
       <AceEditor
         ref={this.aceEditor}
         mode="javascript"
+        theme="tomorrow"
         className="GBScriptEditor"
         onChange={onChange}
         fontSize={10}

@@ -4,6 +4,7 @@ import {
   ACTOR_MOVE_TO,
   ACTOR_SET_DIRECTION,
   ACTOR_SET_FRAME,
+  ACTOR_SET_FRAME_TO_VALUE,
   ACTOR_SET_FLIP,
   ACTOR_PUSH,
   TEXT,
@@ -176,6 +177,15 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(ACTOR_SET_FRAME));
     output.push(frame || 0);
+  };
+
+  actorSetFrameToVariable = variable => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    output.push(cmd(ACTOR_SET_FRAME_TO_VALUE));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
   };
 
   actorSetFlip = flip => {

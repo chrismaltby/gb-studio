@@ -85,7 +85,7 @@
   border: 1px solid #49483e;
 }
 .App .GBScriptEditor .ace_marker-layer .ace_active-line {
-  background: #202020;
+  background: #202020 !important;
 }
 .App .GBScriptEditor .ace_gutter-active-line {
   background-color: #272727;

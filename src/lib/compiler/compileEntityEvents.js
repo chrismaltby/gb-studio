@@ -91,7 +91,8 @@ const CMD_LOOKUP = {
   REMOVE_INPUT_SCRIPT: 0x4d,
   ACTOR_SET_FRAME: 0x4e,
   ACTOR_SET_FLIP: 0x4f,
-  TEXT_MULTI: 0x50
+  TEXT_MULTI: 0x50,
+  ACTOR_SET_FRAME_TO_VALUE: 0x51
 };
 
 const compileEntityEvents = (input = [], options = {}) => {

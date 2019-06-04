@@ -5,7 +5,7 @@
 ;        ---                       GBT PLAYER  v2.1.1               ---
 ;        ---                                                        ---
 ;        ---                                                        ---
-;        ---              Copyright (C) 2009-2015 Antonio Niño Díaz ---
+;        ---              Copyright (C) 2009-2015 Antonio Niï¿½o Dï¿½az ---
 ;        ---                      All rights reserved.              ---
 ;        --------------------------------------------------------------
 ;
@@ -1306,7 +1306,7 @@ gbt_ch4_jump_table$:
 	.DW	gbt_ch1234_nop
 
 gbt_ch4_pan$:
-	and	a,#0x44
+	and	a,#0x88
 	ld	(gbt_pan+3),a
 	ld	a,#1
 	ret ; ret 1

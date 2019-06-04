@@ -79,6 +79,7 @@ export const REMOVE_INPUT_SCRIPT = "REMOVE_INPUT_SCRIPT";
 export const ACTOR_SET_FRAME = "ACTOR_SET_FRAME";
 export const ACTOR_SET_FLIP = "ACTOR_SET_FLIP";
 export const TEXT_MULTI = "TEXT_MULTI";
+export const ACTOR_SET_FRAME_TO_VALUE = "ACTOR_SET_FRAME_TO_VALUE";
 
 export const scriptCommands = [
   END,
@@ -161,7 +162,8 @@ export const scriptCommands = [
   REMOVE_INPUT_SCRIPT,
   ACTOR_SET_FRAME,
   ACTOR_SET_FLIP,
-  TEXT_MULTI
+  TEXT_MULTI,
+  ACTOR_SET_FRAME_TO_VALUE
 ];
 
 export const commandIndex = key => {
