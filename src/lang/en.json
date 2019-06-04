@@ -221,6 +221,8 @@
   "EVENT_REMOVE_INPUT_SCRIPT": "Joypad Input: Remove Attached Script",
   "EVENT_ACTOR_SET_FRAME": "Actor: Set Animation Frame",
   "EVENT_VARIABLE_MATH": "Variable: Math Functions",
+  "EVENT_CODE": "Code: Custom Script",
+  "EVENT_NOTES": "Notes",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -55,3 +55,94 @@
   --conditional-level3: #1b5e20;
   --conditional-level4: #311b92;
 }
+
+.App .CodeMirror {
+  background: #304148;
+  color: #f8f8f2;
+}
+.App div.CodeMirror-selected {
+  background: rgba(101, 115, 126, 0.33);
+}
+.App .CodeMirror-line::selection,
+.App .CodeMirror-line > span::selection,
+.App .CodeMirror-line > span > span::selection {
+  background: rgba(101, 115, 126, 0.33);
+}
+.App .CodeMirror-line::-moz-selection,
+.App .CodeMirror-line > span::-moz-selection,
+.App .CodeMirror-line > span > span::-moz-selection {
+  background: rgba(101, 115, 126, 0.33);
+}
+.App .CodeMirror-gutters {
+  background: #304148;
+  border-right: 1px solid #65737e;
+}
+.App .CodeMirror-guttermarker {
+  color: white;
+}
+.App .CodeMirror-guttermarker-subtle {
+  color: #d0d0d0;
+}
+.App .CodeMirror-linenumber {
+  color: #d0d0d0;
+}
+.App .CodeMirror-cursor {
+  border-left: 1px solid #f8f8f0;
+}
+
+.App span.cm-comment {
+  color: #65737e;
+}
+.App span.cm-atom {
+  color: #c594c5;
+}
+.App span.cm-number {
+  color: #f99157;
+}
+
+.App span.cm-property {
+  color: #99c794;
+}
+.App span.cm-attribute,
+.App span.cm-keyword {
+  color: #c594c5;
+}
+.App span.cm-builtin {
+  color: #66d9ef;
+}
+.App span.cm-string {
+  color: #99c794;
+}
+
+.App span.cm-variable,
+.App span.cm-variable-2,
+.App span.cm-variable-3 {
+  color: #f8f8f2;
+}
+.App span.cm-def {
+  color: #6699cc;
+}
+.App span.cm-bracket {
+  color: #5fb3b3;
+}
+.App span.cm-tag {
+  color: #c594c5;
+}
+.App span.cm-header {
+  color: #c594c5;
+}
+.App span.cm-link {
+  color: #c594c5;
+}
+.App span.cm-error {
+  background: #c594c5;
+  color: #f8f8f0;
+}
+
+.CodeMirror-activeline-background {
+  background: rgba(101, 115, 126, 0.33);
+}
+.CodeMirror-matchingbracket {
+  text-decoration: underline;
+  color: white !important;
+}

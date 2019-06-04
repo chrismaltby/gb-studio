@@ -100,7 +100,8 @@ const compile = async (
               entityType,
               entityIndex,
               entity,
-              banked
+              banked,
+              warnings
             })
           );
         }
@@ -126,7 +127,8 @@ const compile = async (
           entityType,
           entityIndex,
           entity,
-          banked
+          banked,
+          warnings
         })
       );
     };

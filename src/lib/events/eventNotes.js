@@ -1,4 +1,4 @@
-export const id = "EVENT_NOTE";
+export const id = "EVENT_NOTES";
 
 export const fields = [
   {

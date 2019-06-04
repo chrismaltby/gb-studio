@@ -174,7 +174,7 @@ class ActionMini extends Component {
 
     const eventName =
       (action.args.__label ? `${action.args.__label}: ` : "") +
-      (l10n(command) || events[command].name || command);
+      (l10n(command) || (events[command] && events[command].name) || command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
     const childKeys = action.children ? Object.keys(action.children) : [];
@@ -205,11 +205,15 @@ class ActionMini extends Component {
                   <span>
                     {action.args.__label}
                     <small>
-                      {l10n(command) || events[command].name || command}
+                      {l10n(command) ||
+                        (events[command] && events[command].name) ||
+                        command}
                     </small>
                   </span>
                 ) : (
-                  l10n(command) || events[command].name || command
+                  l10n(command) ||
+                  (events[command] && events[command].name) ||
+                  command
                 )}
               </div>
             )}

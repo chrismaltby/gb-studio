@@ -207,7 +207,7 @@ test("should add strings to array if not found", () => {
   expect(strings.length).toBe(2);
 });
 
-test("should error if any variable lookups return negative values", () => {
+test("should allow previously undefined variables to be added automatically", () => {
   const input = [
     {
       command: EVENT_SET_TRUE,
@@ -217,7 +217,6 @@ test("should error if any variable lookups return negative values", () => {
     }
   ];
   const variables = ["2"];
-  expect(() => compileEntityEvents(input, { variables })).toThrow(
-    VARIABLE_NOT_FOUND
-  );
+  compileEntityEvents(input, { variables });
+  expect(variables.length).toEqual(2);
 });

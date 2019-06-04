@@ -1,15 +1,5 @@
 import { commandIndex as cmd, JUMP } from "./scriptCommands";
 
-class CompileEventsError extends Error {
-  constructor(message, data) {
-    super(message);
-    this.data = data;
-    this.name = "CompileEventsError";
-  }
-}
-
-const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
-
 export const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex(a => a.id === actorId) + 1;
 };
@@ -36,9 +26,13 @@ export const getSprite = (spriteId, sprites) => {
 };
 
 export const getVariableIndex = (variable, variables) => {
-  const variableIndex = variables.indexOf(String(variable));
+  const normalisedVariable = String(variable)
+    .replace(/\$/g, "")
+    .replace(/^0+([0-9])/, "$1");
+  let variableIndex = variables.indexOf(normalisedVariable);
   if (variableIndex === -1) {
-    throw new CompileEventsError(VARIABLE_NOT_FOUND, { variable });
+    variables.push(normalisedVariable);
+    variableIndex = variables.length - 1;
   }
   return variableIndex;
 };
@@ -52,7 +46,7 @@ export const compileConditional = (truePath, falsePath, options) => {
 
   if (typeof falsePath === "function") {
     falsePath();
-  } else {
+  } else if (falsePath) {
     compileEvents(falsePath);
   }
 
@@ -67,7 +61,7 @@ export const compileConditional = (truePath, falsePath, options) => {
 
   if (typeof truePath === "function") {
     truePath();
-  } else {
+  } else if (truePath) {
     compileEvents(truePath);
   }
 

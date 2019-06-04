@@ -102,7 +102,8 @@ const compileEntityEvents = (input = [], options = {}) => {
     sceneIndex,
     entity,
     entityType,
-    entityIndex
+    entityIndex,
+    warnings
   } = options;
   const helpers = {
     ...options,
@@ -151,7 +152,7 @@ const compileEntityEvents = (input = [], options = {}) => {
         );
       }
     } else if (command !== "EVENT_END") {
-      throw new Error(
+      warnings(
         `No compiler for command "${command}". Are you missing a plugin? ${JSON.stringify(
           location
         )}`
