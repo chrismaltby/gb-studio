@@ -279,7 +279,9 @@ class ActionMini extends Component {
             {open &&
               events[command] &&
               events[command].fields &&
-              events[command].fields.length > 0 && (
+              events[command].fields.filter(
+                field => childKeys.indexOf(field.key) === -1
+              ).length > 0 && (
                 <ScriptEventBlock
                   id={action.id}
                   command={command}

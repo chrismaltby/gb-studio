@@ -69,6 +69,7 @@ class GBScriptEditor extends Component {
         }}
         minLines={10}
         maxLines={Infinity}
+        width={"auto"}
       />
     );
   }

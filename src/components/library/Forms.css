@@ -212,4 +212,5 @@ textarea {
 
 .FormField .ace_editor {
   margin: -10px;
+  width: auto;
 }
