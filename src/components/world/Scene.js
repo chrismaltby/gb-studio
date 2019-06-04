@@ -186,7 +186,7 @@ class Scene extends Component {
         selectScene(id);
       }
     } else if (tool === "actors") {
-      if (!actor) {
+      if (!actor && scene.actors.length < MAX_ACTORS) {
         addActor(id, hoverX, hoverY);
       }
     } else if (tool === "collisions") {
@@ -206,7 +206,7 @@ class Scene extends Component {
         setTool("select");
       }
     } else if (tool === "triggers") {
-      if (!trigger) {
+      if (!trigger && scene.triggers.length < MAX_TRIGGERS) {
         addTrigger(id, hoverX, hoverY);
       }
     } else if (tool === "eraser") {
