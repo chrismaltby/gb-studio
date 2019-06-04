@@ -1,6 +1,7 @@
 export default {
   tools: {
-    selected: "select"
+    selected: "select",
+    prefab: null
   },
   document: {
     path: "",

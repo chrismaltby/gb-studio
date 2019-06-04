@@ -164,6 +164,18 @@ export const setTool = tool => {
   return { type: types.SET_TOOL, tool };
 };
 
+export const setActorPrefab = actor => {
+  return { type: types.SET_ACTOR_PREFAB, actor };
+};
+
+export const setTriggerPrefab = trigger => {
+  return { type: types.SET_TRIGGER_PREFAB, trigger };
+};
+
+export const setScenePrefab = scene => {
+  return { type: types.SET_SCENE_PREFAB, scene };
+};
+
 export const setSection = section => {
   return { type: types.SET_SECTION, section };
 };
@@ -172,8 +184,8 @@ export const setNavigationId = id => {
   return { type: types.SET_NAVIGATION_ID, id };
 };
 
-export const addScene = (x, y) => {
-  return { type: types.ADD_SCENE, x, y, id: uuid() };
+export const addScene = (x, y, defaults) => {
+  return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
 };
 
 export const selectScene = sceneId => {
@@ -204,8 +216,8 @@ export const removeScene = sceneId => {
   return { type: types.REMOVE_SCENE, sceneId };
 };
 
-export const addActor = (sceneId, x, y) => {
-  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid() };
+export const addActor = (sceneId, x, y, defaults) => {
+  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
 };
 
 export const moveActor = (sceneId, id, newSceneId, x, y) => {
@@ -240,8 +252,8 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
-export const addTrigger = (sceneId, x, y) => {
-  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid() };
+export const addTrigger = (sceneId, x, y, defaults) => {
+  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid(), defaults };
 };
 
 export const removeTrigger = (sceneId, id) => {

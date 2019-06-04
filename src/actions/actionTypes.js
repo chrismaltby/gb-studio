@@ -117,3 +117,7 @@ export const COPY_SCENE = "COPY_SCENE";
 export const PASTE_ACTOR = "PASTE_ACTOR";
 export const PASTE_TRIGGER = "PASTE_TRIGGER";
 export const PASTE_SCENE = "PASTE_SCENE";
+
+export const SET_ACTOR_PREFAB = "SET_ACTOR_PREFAB";
+export const SET_TRIGGER_PREFAB = "SET_TRIGGER_PREFAB";
+export const SET_SCENE_PREFAB = "SET_SCENE_PREFAB";

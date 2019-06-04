@@ -317,7 +317,22 @@ export default function project(state = initialState.project, action) {
           return scene.id !== action.sceneId;
         })
       };
-    case ADD_ACTOR:
+    case ADD_ACTOR: {
+      const newActor = Object.assign(
+        {
+          spriteSheetId: state.spriteSheets[0] && state.spriteSheets[0].id,
+          movementType: "static",
+          direction: "down",
+          moveSpeed: "1",
+          animSpeed: "3"
+        },
+        action.defaults || {},
+        {
+          id: action.id,
+          x: action.x,
+          y: action.y
+        }
+      );
       return {
         ...state,
         scenes: state.scenes.map(scene => {
@@ -326,25 +341,11 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            actors: []
-              .concat(
-                {
-                  id: action.id,
-                  spriteSheetId:
-                    state.spriteSheets[0] && state.spriteSheets[0].id,
-                  x: action.x,
-                  y: action.y,
-                  movementType: "static",
-                  direction: "down",
-                  moveSpeed: "1",
-                  animSpeed: "3"
-                },
-                scene.actors
-              )
-              .slice(-MAX_ACTORS)
+            actors: [].concat(newActor, scene.actors).slice(-MAX_ACTORS)
           };
         })
       };
+    }
     case MOVE_ACTOR: {
       const moveScene = state.scenes.find(s => s.id === action.newSceneId);
       const sceneImage = state.backgrounds.find(

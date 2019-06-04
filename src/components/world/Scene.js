@@ -168,7 +168,8 @@ class Scene extends Component {
       setTool,
       addTrigger,
       removeActorAt,
-      removeTriggerAt
+      removeTriggerAt,
+      prefab
     } = this.props;
     const { hoverX, hoverY } = this.state;
 
@@ -187,7 +188,7 @@ class Scene extends Component {
       }
     } else if (tool === "actors") {
       if (!actor && scene.actors.length < MAX_ACTORS) {
-        addActor(id, hoverX, hoverY);
+        addActor(id, hoverX, hoverY, prefab);
       }
     } else if (tool === "collisions") {
       if (!trigger && !actor) {
@@ -563,6 +564,7 @@ function mapStateToProps(state, props) {
     sceneId,
     projectRoot: state.document && state.document.root,
     tool: state.tools.selected,
+    prefab: state.tools.prefab,
     editor: state.editor,
     event,
     image: image && image.filename,
