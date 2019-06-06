@@ -9,7 +9,13 @@ import Actor from "./Actor";
 import SceneCollisions from "./SceneCollisions";
 import { findSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
-import { SpriteShape, SceneShape, EventShape } from "../../reducers/stateShape";
+import {
+  SpriteShape,
+  SceneShape,
+  EventShape,
+  BackgroundShape
+} from "../../reducers/stateShape";
+import { assetFilename } from "../../lib/helpers/gbstudio";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -318,7 +324,6 @@ class Scene extends Component {
       entityId,
       sceneId,
       image,
-      version,
       event,
       width,
       height,
@@ -374,7 +379,9 @@ class Scene extends Component {
           <img
             className="Scene__Background"
             alt=""
-            src={`${projectRoot}/assets/backgrounds/${image}?v=${version}`}
+            src={`${assetFilename(projectRoot, "backgrounds", image)}?v=${
+              image.version
+            }`}
           />
           {triggers.map(trigger => (
             <div
@@ -496,8 +503,7 @@ Scene.propTypes = {
   entityId: PropTypes.string,
   sceneId: PropTypes.string,
   id: PropTypes.string.isRequired,
-  image: PropTypes.string,
-  version: PropTypes.number,
+  image: BackgroundShape,
   tool: PropTypes.oneOf([
     "triggers",
     "actors",
@@ -542,7 +548,7 @@ Scene.defaultProps = {
   editorType: "",
   entityId: "",
   sceneId: "",
-  image: "",
+  image: null,
   destinationDragging: "",
   version: 0,
   event: null,
@@ -569,8 +575,7 @@ function mapStateToProps(state, props) {
     prefab: state.tools.prefab,
     editor: state.editor,
     event,
-    image: image && image.filename,
-    version: (image && image._v) || 0,
+    image,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
     worldId: state.project.present.id,

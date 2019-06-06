@@ -56,3 +56,9 @@ export const zoomForSection = (section, editor) => {
   }
   return 100;
 };
+
+export const assetFilename = (projectRoot, assetType, asset) => {
+  return asset.plugin
+    ? `${projectRoot}/plugins/${asset.plugin}/${assetType}/${asset.filename}`
+    : `${projectRoot}/assets/${assetType}/${asset.filename}`;
+};
