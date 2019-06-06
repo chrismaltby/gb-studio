@@ -208,7 +208,7 @@ class Scene extends Component {
       }
     } else if (tool === "triggers") {
       if (!trigger && scene.triggers.length < MAX_TRIGGERS) {
-        addTrigger(id, hoverX, hoverY);
+        addTrigger(id, hoverX, hoverY, prefab);
       }
     } else if (tool === "eraser") {
       if (showCollisions) {
@@ -506,6 +506,7 @@ Scene.propTypes = {
     "eraser",
     "select"
   ]).isRequired,
+  prefab: PropTypes.shape({}),
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
@@ -544,7 +545,8 @@ Scene.defaultProps = {
   image: "",
   destinationDragging: "",
   version: 0,
-  event: null
+  event: null,
+  prefab: null
 };
 
 function mapStateToProps(state, props) {

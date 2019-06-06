@@ -178,24 +178,37 @@ export default function project(state = initialState.project, action) {
       };
     }
     case ADD_SCENE: {
+      const script =
+        action.defaults &&
+        action.defaults.script &&
+        action.defaults.script.map(regenerateEventIds);
       const defaultBackground =
         state.backgrounds &&
         state.backgrounds[0] &&
         state.backgrounds.slice().sort(sortRecent)[0];
-      return {
-        ...state,
-        scenes: [].concat(state.scenes, {
-          id: action.id,
+      const newScene = Object.assign(
+        {
           name: `Scene ${state.scenes.length + 1}`,
           backgroundId: defaultBackground && defaultBackground.id,
-          x: Math.max(MIN_SCENE_X, action.x),
-          y: Math.max(MIN_SCENE_Y, action.y),
           width: defaultBackground ? defaultBackground.width : 32,
           height: defaultBackground ? defaultBackground.height : 32,
           actors: [],
           triggers: [],
           collisions: []
-        })
+        },
+        action.defaults || {},
+        script && {
+          script
+        },
+        {
+          id: action.id,
+          x: Math.max(MIN_SCENE_X, action.x),
+          y: Math.max(MIN_SCENE_Y, action.y)
+        }
+      );
+      return {
+        ...state,
+        scenes: [].concat(state.scenes, newScene)
       };
     }
     case MOVE_SCENE:
@@ -318,6 +331,10 @@ export default function project(state = initialState.project, action) {
         })
       };
     case ADD_ACTOR: {
+      const script =
+        action.defaults &&
+        action.defaults.script &&
+        action.defaults.script.map(regenerateEventIds);
       const newActor = Object.assign(
         {
           spriteSheetId: state.spriteSheets[0] && state.spriteSheets[0].id,
@@ -327,6 +344,9 @@ export default function project(state = initialState.project, action) {
           animSpeed: "3"
         },
         action.defaults || {},
+        script && {
+          script
+        },
         {
           id: action.id,
           x: action.x,
@@ -598,7 +618,27 @@ export default function project(state = initialState.project, action) {
         })
       };
     }
-    case ADD_TRIGGER:
+    case ADD_TRIGGER: {
+      const script =
+        action.defaults &&
+        action.defaults.script &&
+        action.defaults.script.map(regenerateEventIds);
+      const newTrigger = Object.assign(
+        {
+          trigger: "walk"
+        },
+        action.defaults || {},
+        script && {
+          script
+        },
+        {
+          id: action.id,
+          x: action.x,
+          y: action.y,
+          width: 1,
+          height: 1
+        }
+      );
       return {
         ...state,
         scenes: state.scenes.map(scene => {
@@ -607,22 +647,11 @@ export default function project(state = initialState.project, action) {
           }
           return {
             ...scene,
-            triggers: []
-              .concat(
-                {
-                  id: action.id,
-                  x: action.x,
-                  y: action.y,
-                  width: 1,
-                  height: 1,
-                  trigger: "walk"
-                },
-                scene.triggers
-              )
-              .slice(-MAX_TRIGGERS)
+            triggers: [].concat(newTrigger, scene.triggers).slice(-MAX_TRIGGERS)
           };
         })
       };
+    }
     case REMOVE_TRIGGER:
       return {
         ...state,

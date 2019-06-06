@@ -258,9 +258,9 @@ class World extends Component {
   };
 
   onAddScene = e => {
-    const { addScene, setTool } = this.props;
+    const { addScene, setTool, prefab } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene(hoverX, hoverY);
+    addScene(hoverX, hoverY, prefab);
     setTool("select");
   };
 
@@ -371,6 +371,7 @@ World.propTypes = {
   clipboardActor: ActorShape,
   clipboardTrigger: TriggerShape,
   clipboardScene: SceneShape,
+  prefab: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
@@ -409,7 +410,8 @@ World.defaultProps = {
   clipboardType: "",
   clipboardActor: {},
   clipboardTrigger: {},
-  clipboardScene: {}
+  clipboardScene: {},
+  prefab: null
 };
 
 function mapStateToProps(state) {
@@ -433,6 +435,7 @@ function mapStateToProps(state) {
     sceneDragX,
     sceneDragY,
     tool: state.tools.selected,
+    prefab: state.tools.prefab,
     settings: state.project.present.settings,
     editor: state.editor,
     zoomRatio: (state.editor.zoom || 100) / 100,
