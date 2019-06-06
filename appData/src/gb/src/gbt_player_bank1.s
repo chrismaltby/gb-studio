@@ -5,7 +5,7 @@
 ;        ---                       GBT PLAYER  v2.1.1               ---
 ;        ---                                                        ---
 ;        ---                                                        ---
-;        ---              Copyright (C) 2009-2015 Antonio Ni�o D�az ---
+;        ---              Copyright (C) 2009-2015 Antonio Niño Díaz ---
 ;        ---                      All rights reserved.              ---
 ;        --------------------------------------------------------------
 ;
