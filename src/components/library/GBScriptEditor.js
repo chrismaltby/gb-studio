@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import AceEditor from "react-ace";
 import ScriptBuilder from "../../lib/compiler/scriptBuilder";
 
@@ -69,10 +70,15 @@ class GBScriptEditor extends Component {
         }}
         minLines={10}
         maxLines={Infinity}
-        width={"auto"}
+        width="auto"
       />
     );
   }
 }
+
+GBScriptEditor.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired
+};
 
 export default GBScriptEditor;
