@@ -221,6 +221,7 @@
   "EVENT_REMOVE_INPUT_SCRIPT": "Comando: Remover o Script do Clique de Botão",
   "EVENT_ACTOR_SET_FRAME": "Actor: Definir Fotograma de Animação",
   "EVENT_VARIABLE_MATH": "Variável: Funções de Cálculo",
+  "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Definir Fotograma através de Variável",
 
   "// 10": "Menu -----------------------------------------------------",
 
