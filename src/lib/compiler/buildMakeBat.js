@@ -9,6 +9,7 @@ export default async (buildRoot, { CART_TYPE }) => {
 
   const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
   const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo64 -Wl-ya4`;
+  const CGBFLAGS = `-Wl-yp0x143=0x80`;
 
   const srcRoot = `${buildRoot}/src`;
   const dataRoot = `${buildRoot}/src/data`;
@@ -51,7 +52,7 @@ export default async (buildRoot, { CART_TYPE }) => {
     objFiles.push(objFile);
   }
 
-  cmds.push(`${CC} ${CFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
+  cmds.push(`${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
 
   return cmds.join("\n");
 };

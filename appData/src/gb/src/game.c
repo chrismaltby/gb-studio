@@ -24,6 +24,12 @@ UBYTE script_actor;
 
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
+#ifdef CUSTOM_COLORS
+UINT16 custom_palette[] = { RGB(CUSTOM_PALETTE_0_R, CUSTOM_PALETTE_0_G, CUSTOM_PALETTE_0_B), 
+                            RGB(CUSTOM_PALETTE_1_R, CUSTOM_PALETTE_1_G, CUSTOM_PALETTE_1_B), 
+                            RGB(CUSTOM_PALETTE_2_R, CUSTOM_PALETTE_2_G, CUSTOM_PALETTE_2_B), 
+                            RGB(CUSTOM_PALETTE_3_R, CUSTOM_PALETTE_3_G, CUSTOM_PALETTE_3_B)};
+#endif
 
 void game_loop();
 
@@ -35,8 +41,21 @@ int main()
   STAT_REG = 0x45;
 
   // Set palettes
+  #ifdef CUSTOM_COLORS
+  if (_cpu == CGB_TYPE)
+  {
+    set_bkg_palette(0, 1, custom_palette);
+    set_sprite_palette(0, 1, custom_palette);
+  }
+  else
+  {
+    BGP_REG = 0xE4U;
+    OBP0_REG = 0xD2U;
+  }
+  #else
   BGP_REG = 0xE4U;
   OBP0_REG = 0xD2U;
+  #endif
 
   // Position Window Layer
   WY_REG = MAXWNDPOSY - 7;
