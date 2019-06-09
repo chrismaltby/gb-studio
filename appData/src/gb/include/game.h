@@ -21,28 +21,10 @@
 #define SCREEN_HEIGHT_HALF 72
 
 #ifdef CUSTOM_COLORS
-	#define BG_PALETTE_0_R 28
-	#define BG_PALETTE_0_G 31
-	#define BG_PALETTE_0_B 26
-	#define BG_PALETTE_1_R 17
-	#define BG_PALETTE_1_G 24
-	#define BG_PALETTE_1_B 14
-	#define BG_PALETTE_2_R 6
-	#define BG_PALETTE_2_G 13
-	#define BG_PALETTE_2_B 10
-	#define BG_PALETTE_3_R 1
-	#define BG_PALETTE_3_G 3
-	#define BG_PALETTE_3_B 4
-
-	#define SPRITE1_PALETTE_0_R 28
-	#define SPRITE1_PALETTE_0_G 31
-	#define SPRITE1_PALETTE_0_B 26
-	#define SPRITE1_PALETTE_1_R 17
-	#define SPRITE1_PALETTE_1_G 24
-	#define SPRITE1_PALETTE_1_B 14
-	#define SPRITE1_PALETTE_2_R 1
-	#define SPRITE1_PALETTE_2_G 3
-	#define SPRITE1_PALETTE_2_B 4
+	#define DMG_WHITE 		RGB(28,  31,  26)
+	#define DMG_LIGHTGREEN 	RGB(17,  24,  14)
+	#define DMG_DARKGREEN 	RGB(6,  13,  10)
+	#define DMG_BLACK 		RGB(1,  3,  4)
 #ifdef CUSTOM_COLORS
 
 extern STAGE_TYPE stage_type;

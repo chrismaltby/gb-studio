@@ -25,14 +25,8 @@ UBYTE script_actor;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 #ifdef CUSTOM_COLORS
-UWORD bg_palette[] = { RGB(BG_PALETTE_0_R, BG_PALETTE_0_G, BG_PALETTE_0_B), 
-                       RGB(BG_PALETTE_1_R, BG_PALETTE_1_G, BG_PALETTE_1_B), 
-                       RGB(BG_PALETTE_2_R, BG_PALETTE_2_G, BG_PALETTE_2_B), 
-                       RGB(BG_PALETTE_3_R, BG_PALETTE_3_G, BG_PALETTE_3_B)};
-UWORD sprite1_palette[] = { RGB(0, 0, 0), 
-                           RGB(SPRITE1_PALETTE_0_R, SPRITE1_PALETTE_0_G, SPRITE1_PALETTE_0_B), 
-                           RGB(SPRITE1_PALETTE_1_R, SPRITE1_PALETTE_1_G, SPRITE1_PALETTE_1_B), 
-                           RGB(SPRITE1_PALETTE_2_R, SPRITE1_PALETTE_2_G, SPRITE1_PALETTE_2_B)};                      
+UWORD bg_palette[] = { DMG_WHITE, DMG_LIGHTGREEN, DMG_DARKGREEN, DMG_BLACK};
+UWORD sprite1_palette[] = { DMG_BLACK, DMG_WHITE, DMG_LIGHTGREEN, DMG_BLACK};                      
 #endif
 
 void game_loop();
