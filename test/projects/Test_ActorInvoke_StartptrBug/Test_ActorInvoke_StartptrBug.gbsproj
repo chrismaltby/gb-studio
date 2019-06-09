@@ -1,0 +1,976 @@
+{
+    "settings": {
+        "showCollisions": true,
+        "showConnections": true,
+        "sidebarWidth": 300,
+        "startX": 9,
+        "startY": 8,
+        "startDirection": "up",
+        "zoom": 100,
+        "startSceneId": "1c0cee84-0ec6-42b2-9566-fff62e5bad7b",
+        "playerSpriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd"
+    },
+    "_version": "1.1.0",
+    "author": "RichardULZ",
+    "name": "Fixing Invoke Actors",
+    "variables": [
+        {
+            "id": "1",
+            "name": "Script Pointer"
+        }
+    ],
+    "backgrounds": [
+        {
+            "id": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "name": "placeholder",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "placeholder.png",
+            "_v": 1560069895887
+        }
+    ],
+    "spriteSheets": [
+        {
+            "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+            "name": "actor_animated",
+            "numFrames": 6,
+            "type": "actor_animated",
+            "filename": "actor_animated.png",
+            "_v": 1560069895888
+        },
+        {
+            "id": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
+            "name": "actor",
+            "numFrames": 3,
+            "type": "actor",
+            "filename": "actor.png",
+            "_v": 1560069895887
+        },
+        {
+            "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+            "name": "static",
+            "numFrames": 1,
+            "type": "static",
+            "filename": "static.png",
+            "_v": 1560069895887
+        }
+    ],
+    "scenes": [
+        {
+            "id": "6876e33f-57f4-49a8-a52e-8c011a2b580a",
+            "name": "Scene Script Bad",
+            "backgroundId": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "x": 86,
+            "y": 203.5,
+            "width": 20,
+            "height": 18,
+            "actors": [
+                {
+                    "id": "ab4eb77d-0a15-414d-a533-6d9b2dc3a45f",
+                    "spriteSheetId": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+                    "x": 13,
+                    "y": 3,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "script": [
+                        {
+                            "id": "4abe2bad-234e-49d6-895c-9686a1cd803c",
+                            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                            "args": {
+                                "actorId": "ab4eb77d-0a15-414d-a533-6d9b2dc3a45f",
+                                "x": 0,
+                                "y": 1
+                            }
+                        },
+                        {
+                            "id": "827a7c3d-8015-43c8-8e7a-d80f652aabb9",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Actor1: My only\nexistinsce is for\nthis one text"
+                            }
+                        },
+                        {
+                            "id": "792575dd-5e12-49a5-8716-e2fb8f40a695",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "triggers": [
+                {
+                    "id": "812ee790-773c-4555-8231-277e45bcb9b0",
+                    "x": 0,
+                    "y": 11,
+                    "width": 20,
+                    "height": 7,
+                    "trigger": "walk",
+                    "script": [
+                        {
+                            "id": "94b468c7-35f9-417a-8bb5-f0b3fb06524a",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "restoring previous\nscene from stack"
+                            }
+                        },
+                        {
+                            "id": "7ed9f0ff-087b-4806-814e-5c435d5b1ee7",
+                            "command": "EVENT_SCENE_POP_STATE",
+                            "args": {
+                                "fadeSpeed": "1"
+                            }
+                        },
+                        {
+                            "id": "0f59225a-09cd-43ca-99d6-5723ab227ab0",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Restore fail?"
+                            }
+                        },
+                        {
+                            "id": "4416848c-bcbd-47e3-9d21-57c40a28ffd6",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "5372b072-c0f3-4b29-af82-f8334c51c43a",
+                    "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                    "args": {
+                        "speedIn": "0",
+                        "speedOut": "1",
+                        "speed": "0",
+                        "__collapse": false
+                    }
+                },
+                {
+                    "id": "c0fb4d0c-da00-4994-a1f2-010a05dd49d0",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "Scene Start:\nHeres a multi\nchoice.",
+                        "__collapse": true
+                    }
+                },
+                {
+                    "id": "f7a72740-1de2-4088-a95a-62cd03853c15",
+                    "command": "EVENT_CHOICE",
+                    "args": {
+                        "variable": "0",
+                        "trueText": "True (no fire)",
+                        "falseText": "False (gives clue",
+                        "__collapse": true
+                    }
+                },
+                {
+                    "id": "d5047a51-2439-455a-bec3-953c901b3942",
+                    "command": "EVENT_IF_TRUE",
+                    "args": {
+                        "variable": "0",
+                        "__collapse": true,
+                        "__collapseElse": true
+                    },
+                    "true": [
+                        {
+                            "id": "69e08c7e-ad00-48d9-a312-1f27a2dee4d8",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "You said True,\nNow lets invoke\nan actor"
+                            }
+                        },
+                        {
+                            "id": "f227ee99-d3dc-471f-a094-bf15a6951af6",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "false": [
+                        {
+                            "id": "1b382d5e-bd62-45d7-9bb0-ab238939ea5c",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "You said False,\nNow lets invoke\nan actor"
+                            }
+                        },
+                        {
+                            "id": "101fdb3e-87e7-40c3-9025-4f9ef61dafcf",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "7414466e-1497-4e28-ab26-f14896ff263f",
+                    "command": "EVENT_ACTOR_INVOKE",
+                    "args": {
+                        "actorId": "ab4eb77d-0a15-414d-a533-6d9b2dc3a45f",
+                        "__collapse": true
+                    }
+                },
+                {
+                    "id": "8337ba50-07d8-48f4-b1df-6a1441379e5c",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": [
+                            "Now, back on start\nscript, lets check\nthe var again.",
+                            "(if it breaks,\nyou'll be able to\nmove around)"
+                        ],
+                        "__collapse": true
+                    }
+                },
+                {
+                    "id": "f6d7cbe8-a761-4cf1-87d4-28b1ef79c67c",
+                    "command": "EVENT_IF_TRUE",
+                    "args": {
+                        "variable": "0",
+                        "__collapse": true,
+                        "__collapseElse": true
+                    },
+                    "true": [
+                        {
+                            "id": "06f3b944-27ba-4c65-9015-759bcbf5a85c",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "You said True,\nit worked?\nEnd of script"
+                            }
+                        },
+                        {
+                            "id": "4e669416-90c5-4949-bd87-043cc9d9045b",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "false": [
+                        {
+                            "id": "ff97fb79-c210-40d7-8885-6f32fca6806c",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "You said False,\nIt worked?\nEnd of script"
+                            }
+                        },
+                        {
+                            "id": "f4d9e8c7-2720-45f7-86fb-77ce494bb22d",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "db59a295-3797-48e1-9ab0-0d1facc4ac2d",
+                    "command": "EVENT_STOP",
+                    "args": {}
+                },
+                {
+                    "id": "792575dd-5e12-49a5-8716-e2fb8f40a695",
+                    "command": "EVENT_END"
+                }
+            ]
+        },
+        {
+            "id": "a4312450-e3f5-4b01-a8bf-75a2cc8854f7",
+            "name": "Actor Script Bad",
+            "backgroundId": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "x": 499,
+            "y": 187,
+            "width": 20,
+            "height": 18,
+            "actors": [
+                {
+                    "id": "8b1c6bfa-6281-4a38-95ee-158aef34acd4",
+                    "spriteSheetId": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+                    "x": 14,
+                    "y": 3,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "script": [
+                        {
+                            "id": "7e02ad86-2d26-4267-a8e6-90ef5c33e51b",
+                            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                            "args": {
+                                "actorId": "8b1c6bfa-6281-4a38-95ee-158aef34acd4",
+                                "x": 0,
+                                "y": 1
+                            }
+                        },
+                        {
+                            "id": "edb97a25-be00-43b5-85f5-92a0a4a67cba",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Actor1: My only\nexistinsce is for\nthis one text"
+                            }
+                        },
+                        {
+                            "id": "bce6ab72-0ac6-48bd-b264-cd5330d2a990",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "bb6ce75d-ef8a-4b76-8e61-5f77b3affca9",
+                    "spriteSheetId": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
+                    "x": 4,
+                    "y": 5,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "script": [
+                        {
+                            "id": "3b2b7fec-f4ab-4cb9-97e9-4c03f1fd4be2",
+                            "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                            "args": {
+                                "speedIn": "0",
+                                "speedOut": "1",
+                                "speed": "0"
+                            }
+                        },
+                        {
+                            "id": "ddc3b155-4477-4fa1-8234-bb217d7b0758",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": [
+                                    "Script Actor:\nHeres a multi\nchoice."
+                                ]
+                            }
+                        },
+                        {
+                            "id": "ab779bd2-da80-498f-84c9-ab16f882bc0f",
+                            "command": "EVENT_CHOICE",
+                            "args": {
+                                "variable": "0",
+                                "trueText": "True (crashes?)",
+                                "falseText": "False",
+                                "__collapse": false
+                            }
+                        },
+                        {
+                            "id": "e3dcdf99-c161-4195-998f-fdc078e932bd",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "0",
+                                "__collapse": true,
+                                "__collapseElse": true
+                            },
+                            "true": [
+                                {
+                                    "id": "a947314b-3984-492f-a26c-b41c7dc5bee8",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "You said True,\nNow lets invoke\nan actor"
+                                    }
+                                },
+                                {
+                                    "id": "8af5d2e0-8241-4369-83ab-20f1fbf37aba",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "c1076c54-c6cb-4d4c-ac1e-383084ef42f4",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "You said False,\nNow lets invoke\nan actor"
+                                    }
+                                },
+                                {
+                                    "id": "b5ba6f20-50c3-48f6-baab-e8de6392e43e",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "e0ffb76e-ce95-4a0c-ac84-6ebb2e54c9a7",
+                            "command": "EVENT_ACTOR_INVOKE",
+                            "args": {
+                                "actorId": "8b1c6bfa-6281-4a38-95ee-158aef34acd4",
+                                "__collapse": false
+                            }
+                        },
+                        {
+                            "id": "4900d9c6-d607-4524-80fc-35b68c28cec4",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": [
+                                    "Now, back on\nScript actor, lets\ncheck the var.",
+                                    "(if it breaks,\nyou'll be able to\nmove around)"
+                                ],
+                                "__collapse": false
+                            }
+                        },
+                        {
+                            "id": "4609630d-77fa-47c4-9dc3-64539acceda0",
+                            "command": "EVENT_IF_TRUE",
+                            "args": {
+                                "variable": "0",
+                                "__collapse": false,
+                                "__collapseElse": false
+                            },
+                            "true": [
+                                {
+                                    "id": "10f94ed7-b6db-4055-a757-bf8eeed9c649",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "You said True,\nit worked?\nEnd of script"
+                                    }
+                                },
+                                {
+                                    "id": "ff62496d-04ff-46b3-98ee-78ddbc8955eb",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "c15f5fb5-efbf-46e9-9332-b6157cfa1ff6",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": "You said False,\nIt worked?\nEnd of Script"
+                                    }
+                                },
+                                {
+                                    "id": "2729435a-bb2f-4a71-b2e2-1cc6466a1fec",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "f9c864e2-294f-449f-8106-b6149a329e78",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "animate": true,
+                    "name": "Script Actor"
+                }
+            ],
+            "triggers": [
+                {
+                    "id": "25e4a469-a622-4aea-99c2-39043c5c0c1d",
+                    "x": 0,
+                    "y": 11,
+                    "width": 20,
+                    "height": 7,
+                    "trigger": "walk",
+                    "script": [
+                        {
+                            "id": "649a565a-8ee1-43f0-8b8b-ef47070a47f2",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "restoring previous\nscene from stack"
+                            }
+                        },
+                        {
+                            "id": "59267721-158c-4ff8-803c-3598f95cf35f",
+                            "command": "EVENT_SCENE_POP_STATE",
+                            "args": {
+                                "fadeSpeed": "1"
+                            }
+                        },
+                        {
+                            "id": "778bc263-4ebe-4e38-b82d-9ec857070e99",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Restore fail?"
+                            }
+                        },
+                        {
+                            "id": "1e0cc77a-16d9-468a-8b86-b14176b903f5",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "5372b072-c0f3-4b29-af82-f8334c51c43a",
+                    "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                    "args": {
+                        "speedIn": "0",
+                        "speedOut": "1",
+                        "speed": "0"
+                    }
+                },
+                {
+                    "id": "120f08eb-d254-4a9a-9d1a-9475816e31ac",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "SceneStart:\nInvoking\nScript Actor"
+                    }
+                },
+                {
+                    "id": "0b1bd7d1-6226-4ea3-b8b4-a68e1439cd5b",
+                    "command": "EVENT_ACTOR_INVOKE",
+                    "args": {
+                        "actorId": "bb6ce75d-ef8a-4b76-8e61-5f77b3affca9"
+                    }
+                },
+                {
+                    "id": "792575dd-5e12-49a5-8716-e2fb8f40a695",
+                    "command": "EVENT_END"
+                }
+            ]
+        },
+        {
+            "id": "6f87b0ce-3a94-434b-89da-ffb9c82d1a81",
+            "name": "Actor Script re invoke OK",
+            "backgroundId": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "x": 287.5,
+            "y": 313,
+            "width": 20,
+            "height": 18,
+            "actors": [
+                {
+                    "id": "27df8311-0b32-4778-8ac0-9ae075e1837f",
+                    "spriteSheetId": "daf95270-e30d-423b-9ee7-990ae29f57f6",
+                    "x": 14,
+                    "y": 3,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "script": [
+                        {
+                            "id": "a74be38f-c659-4d4e-9219-10e4b043c01d",
+                            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+                            "args": {
+                                "actorId": "27df8311-0b32-4778-8ac0-9ae075e1837f",
+                                "x": 0,
+                                "y": 1
+                            }
+                        },
+                        {
+                            "id": "b6ed352c-4d55-45de-b6bf-34a9d14a8641",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": [
+                                    "Actor1: My only\nexistinsce is for\nthis one text",
+                                    "And to invoke the\nscript actor again\nnow."
+                                ]
+                            }
+                        },
+                        {
+                            "id": "b6466f85-0c71-4028-91a0-58878248a1ae",
+                            "command": "EVENT_ACTOR_INVOKE",
+                            "args": {
+                                "actorId": "d7c468a6-ec2e-4fa2-a978-81f60cab9f76"
+                            }
+                        },
+                        {
+                            "id": "9d02090f-6749-4cbd-bafd-d408b5ac9fc4",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "d7c468a6-ec2e-4fa2-a978-81f60cab9f76",
+                    "spriteSheetId": "11b5452b-187c-43a3-afb1-a1f4f74ffda2",
+                    "x": 4,
+                    "y": 5,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "script": [
+                        {
+                            "id": "84d0a538-affe-45eb-8d92-64b5016ad267",
+                            "command": "EVENT_IF_FALSE",
+                            "args": {
+                                "variable": "1"
+                            },
+                            "true": [
+                                {
+                                    "id": "84932e2e-750c-4656-9d5d-ef3b1c48ce2e",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": [
+                                            "Script Actor:\nHeres a multi\nchoice."
+                                        ],
+                                        "__collapse": true
+                                    }
+                                },
+                                {
+                                    "id": "cc1c58c7-59a2-4068-8c86-0618bcd8a304",
+                                    "command": "EVENT_CHOICE",
+                                    "args": {
+                                        "variable": "0",
+                                        "trueText": "True",
+                                        "falseText": "False",
+                                        "__collapse": true
+                                    }
+                                },
+                                {
+                                    "id": "ceee95ec-0b8f-4c4f-8644-587fcc21d990",
+                                    "command": "EVENT_IF_TRUE",
+                                    "args": {
+                                        "variable": "0",
+                                        "__collapse": true,
+                                        "__collapseElse": true
+                                    },
+                                    "true": [
+                                        {
+                                            "id": "8b7b16c2-9118-42fa-ba43-dd412e774cb3",
+                                            "command": "EVENT_TEXT",
+                                            "args": {
+                                                "text": "You said True,\nNow lets invoke\nan actor"
+                                            }
+                                        },
+                                        {
+                                            "id": "8d3e9924-62d3-4329-ba45-caa3417d5852",
+                                            "command": "EVENT_END"
+                                        }
+                                    ],
+                                    "false": [
+                                        {
+                                            "id": "a0924026-a423-4ea7-9dd6-90d4539bc9c6",
+                                            "command": "EVENT_TEXT",
+                                            "args": {
+                                                "text": "You said False,\nNow lets invoke\nan actor"
+                                            }
+                                        },
+                                        {
+                                            "id": "eff0ae21-ccfc-4bda-907c-ad8586488f2c",
+                                            "command": "EVENT_END"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ed601e9d-fd7f-450d-83ff-a7bf1e042cae",
+                                    "command": "EVENT_SET_VALUE",
+                                    "args": {
+                                        "variable": "1",
+                                        "value": 1
+                                    }
+                                },
+                                {
+                                    "id": "38af55b6-594f-47fe-b301-296d6cf1671a",
+                                    "command": "EVENT_ACTOR_INVOKE",
+                                    "args": {
+                                        "actorId": "27df8311-0b32-4778-8ac0-9ae075e1837f",
+                                        "__collapse": true
+                                    }
+                                },
+                                {
+                                    "id": "e51a7b23-2ed7-4275-b944-5c0a53375420",
+                                    "command": "EVENT_END"
+                                }
+                            ],
+                            "false": [
+                                {
+                                    "id": "9aba35d4-9193-42e3-a3fb-dbe016e43b74",
+                                    "command": "EVENT_TEXT",
+                                    "args": {
+                                        "text": [
+                                            "Now, back on\nScript actor, lets\ncheck the var.",
+                                            "We've set the\nright actor by\ninvoking."
+                                        ],
+                                        "__collapse": false
+                                    }
+                                },
+                                {
+                                    "id": "d7f40a9c-8036-447e-bfe9-a8e3ec4e2611",
+                                    "command": "EVENT_IF_TRUE",
+                                    "args": {
+                                        "variable": "0",
+                                        "__collapse": true,
+                                        "__collapseElse": true
+                                    },
+                                    "true": [
+                                        {
+                                            "id": "5cb23a5b-f218-4593-8097-4fe21a9b2c4a",
+                                            "command": "EVENT_TEXT",
+                                            "args": {
+                                                "text": "You said True,\nit worked?\nEnd of script"
+                                            }
+                                        },
+                                        {
+                                            "id": "017d2046-b603-41c9-b494-d5fffc9ba5b3",
+                                            "command": "EVENT_END"
+                                        }
+                                    ],
+                                    "false": [
+                                        {
+                                            "id": "8cd5c837-7266-4707-832b-e6b8df6c55f0",
+                                            "command": "EVENT_TEXT",
+                                            "args": {
+                                                "text": "You said False,\nIt worked?\nEnd of Script"
+                                            }
+                                        },
+                                        {
+                                            "id": "13bab4b4-19d6-46c0-a388-8d802da4ce68",
+                                            "command": "EVENT_END"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "e5f668ff-2629-4fd8-a0e5-b7d872944b1e",
+                                    "command": "EVENT_END"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "21212a15-856f-408b-84a5-0d9aef9126ff",
+                            "command": "EVENT_END"
+                        }
+                    ],
+                    "animate": true,
+                    "name": "Script Actor"
+                }
+            ],
+            "triggers": [
+                {
+                    "id": "eea137b9-ad72-4efe-9474-2a8569cf802b",
+                    "x": 0,
+                    "y": 11,
+                    "width": 20,
+                    "height": 7,
+                    "trigger": "walk",
+                    "script": [
+                        {
+                            "id": "9c629517-4e1a-4fb7-8f2f-3b34505b5c27",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "restoring previous\nscene from stack"
+                            }
+                        },
+                        {
+                            "id": "7cfe3654-230a-430c-95f8-1912a0db69ea",
+                            "command": "EVENT_SCENE_POP_STATE",
+                            "args": {
+                                "fadeSpeed": "1"
+                            }
+                        },
+                        {
+                            "id": "3bbb37ae-c09c-4e79-b729-e7f05d94126e",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Restore fail?"
+                            }
+                        },
+                        {
+                            "id": "3b2d1b29-f0c8-4429-b9a0-5c98b66d7870",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "5372b072-c0f3-4b29-af82-f8334c51c43a",
+                    "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                    "args": {
+                        "speedIn": "0",
+                        "speedOut": "1",
+                        "speed": "0"
+                    }
+                },
+                {
+                    "id": "120f08eb-d254-4a9a-9d1a-9475816e31ac",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "SceneStart:\nInvoking\nScript Actor"
+                    }
+                },
+                {
+                    "id": "0b1bd7d1-6226-4ea3-b8b4-a68e1439cd5b",
+                    "command": "EVENT_ACTOR_INVOKE",
+                    "args": {
+                        "actorId": "d7c468a6-ec2e-4fa2-a978-81f60cab9f76"
+                    }
+                },
+                {
+                    "id": "792575dd-5e12-49a5-8716-e2fb8f40a695",
+                    "command": "EVENT_END"
+                }
+            ]
+        },
+        {
+            "id": "1c0cee84-0ec6-42b2-9566-fff62e5bad7b",
+            "name": "Scene 4",
+            "backgroundId": "1e5f9d6a-bdbc-43e6-8c34-22f5bb5dea05",
+            "x": 295,
+            "y": 111,
+            "width": 20,
+            "height": 18,
+            "actors": [
+                {
+                    "id": "6229e967-80a3-40d6-84b6-ab0e6aa654ae",
+                    "spriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+                    "x": 12,
+                    "y": 8,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "frame": 4,
+                    "script": [
+                        {
+                            "id": "9d583d37-dfbe-46c0-be71-98e387004be9",
+                            "command": "EVENT_SCENE_PUSH_STATE",
+                            "args": {}
+                        },
+                        {
+                            "id": "832f7cea-303f-4257-9739-f6dfdbfb4558",
+                            "command": "EVENT_SWITCH_SCENE",
+                            "args": {
+                                "sceneId": "a4312450-e3f5-4b01-a8bf-75a2cc8854f7",
+                                "x": 15,
+                                "y": 9,
+                                "direction": "",
+                                "fadeSpeed": "2"
+                            }
+                        },
+                        {
+                            "id": "d7d53374-7b1a-4534-ab53-ba14a775ce99",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "fee501ae-3728-4031-bf96-71ccec122899",
+                    "spriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+                    "x": 9,
+                    "y": 6,
+                    "movementType": "static",
+                    "direction": "down",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "frame": 1,
+                    "script": [
+                        {
+                            "id": "a5f1f7a9-9eac-4421-88ed-cfffd000320c",
+                            "command": "EVENT_SCENE_PUSH_STATE",
+                            "args": {}
+                        },
+                        {
+                            "id": "04ee697e-2f4f-4945-b884-6e9c5cc0e1d5",
+                            "command": "EVENT_SWITCH_SCENE",
+                            "args": {
+                                "sceneId": "6f87b0ce-3a94-434b-89da-ffb9c82d1a81",
+                                "x": 9,
+                                "y": 9,
+                                "direction": "",
+                                "fadeSpeed": "2"
+                            }
+                        },
+                        {
+                            "id": "d7d53374-7b1a-4534-ab53-ba14a775ce99",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                },
+                {
+                    "id": "7118f43b-bf59-44a8-bab5-f715b2462f77",
+                    "spriteSheetId": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
+                    "x": 6,
+                    "y": 8,
+                    "movementType": "faceInteraction",
+                    "direction": "left",
+                    "moveSpeed": "1",
+                    "animSpeed": "3",
+                    "frame": 0,
+                    "script": [
+                        {
+                            "id": "ea5fa4f5-b0e8-49bb-92b0-daed55dbbdfc",
+                            "command": "EVENT_SCENE_PUSH_STATE",
+                            "args": {}
+                        },
+                        {
+                            "id": "7adec8e2-98d1-4679-81b2-236ec65c63fa",
+                            "command": "EVENT_SWITCH_SCENE",
+                            "args": {
+                                "sceneId": "6876e33f-57f4-49a8-a52e-8c011a2b580a",
+                                "x": 3,
+                                "y": 9,
+                                "direction": "up",
+                                "fadeSpeed": "2"
+                            }
+                        },
+                        {
+                            "id": "d7d53374-7b1a-4534-ab53-ba14a775ce99",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "triggers": [
+                {
+                    "id": "16fc3bf4-518b-4c54-9eb3-383c299411fe",
+                    "x": 0,
+                    "y": 11,
+                    "width": 20,
+                    "height": 7,
+                    "trigger": "walk",
+                    "script": [
+                        {
+                            "id": "7291de0b-3a32-42da-a019-f3f25d930662",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "restoring previous\nscene from stack"
+                            }
+                        },
+                        {
+                            "id": "46c8d52a-89ff-4681-9d22-df0163f3a32b",
+                            "command": "EVENT_SCENE_POP_STATE",
+                            "args": {
+                                "fadeSpeed": "1"
+                            }
+                        },
+                        {
+                            "id": "75ffa336-6291-4982-b277-73978963dd98",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Restore fail?\nRestore top scene"
+                            }
+                        },
+                        {
+                            "id": "f770a634-61a8-42c6-a167-3a89f5255076",
+                            "command": "EVENT_SCENE_POP_ALL_STATE",
+                            "args": {
+                                "fadeSpeed": "2"
+                            }
+                        },
+                        {
+                            "id": "6f104710-220f-4be9-9bb8-de5dda247b9a",
+                            "command": "EVENT_TEXT",
+                            "args": {
+                                "text": "Failed?"
+                            }
+                        },
+                        {
+                            "id": "4cb350f0-8bc5-40fc-b961-adb4e5a8da1a",
+                            "command": "EVENT_END"
+                        }
+                    ]
+                }
+            ],
+            "collisions": [],
+            "script": [
+                {
+                    "id": "4ae67857-c325-4a4a-8052-9f894dc4f7f9",
+                    "command": "EVENT_TEXT_SET_ANIMATION_SPEED",
+                    "args": {
+                        "speedIn": "0",
+                        "speedOut": "0",
+                        "speed": 1
+                    }
+                },
+                {
+                    "id": "bdf61646-77c4-4fb5-8aa1-e8b146ba2cc2",
+                    "command": "EVENT_TEXT",
+                    "args": {
+                        "text": "< scene Script\nV Re invoke OK\n> Actor Script"
+                    }
+                },
+                {
+                    "id": "d7d53374-7b1a-4534-ab53-ba14a775ce99",
+                    "command": "EVENT_END"
+                }
+            ]
+        }
+    ],
+    "music": [],
+    "notes": "Invoke actor was not storing the script start pointer, vital for 'if' functions."
+}
