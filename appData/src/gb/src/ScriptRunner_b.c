@@ -1388,6 +1388,7 @@ void Script_ActorInvoke_b()
 void Script_StackPush_b()
 {
   script_stack[script_stack_ptr] = script_ptr;
+  script_start_stack[script_stack_ptr] = script_start_ptr; 
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
   script_stack_ptr++;
 }
@@ -1401,6 +1402,7 @@ void Script_StackPop_b()
 {
   script_stack_ptr--;
   script_ptr = script_stack[script_stack_ptr];
+  script_start_ptr = script_start_stack[script_stack_ptr];
   script_continue = TRUE;
 }
 
