@@ -25,10 +25,14 @@ UBYTE script_actor;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 #ifdef CUSTOM_COLORS
-UINT16 custom_palette[] = { RGB(CUSTOM_PALETTE_0_R, CUSTOM_PALETTE_0_G, CUSTOM_PALETTE_0_B), 
-                            RGB(CUSTOM_PALETTE_1_R, CUSTOM_PALETTE_1_G, CUSTOM_PALETTE_1_B), 
-                            RGB(CUSTOM_PALETTE_2_R, CUSTOM_PALETTE_2_G, CUSTOM_PALETTE_2_B), 
-                            RGB(CUSTOM_PALETTE_3_R, CUSTOM_PALETTE_3_G, CUSTOM_PALETTE_3_B)};
+UWORD bg_palette[] = { RGB(BG_PALETTE_0_R, BG_PALETTE_0_G, BG_PALETTE_0_B), 
+                       RGB(BG_PALETTE_1_R, BG_PALETTE_1_G, BG_PALETTE_1_B), 
+                       RGB(BG_PALETTE_2_R, BG_PALETTE_2_G, BG_PALETTE_2_B), 
+                       RGB(BG_PALETTE_3_R, BG_PALETTE_3_G, BG_PALETTE_3_B)};
+UWORD sprite1_palette[] = { RGB(0, 0, 0), 
+                           RGB(SPRITE1_PALETTE_0_R, SPRITE1_PALETTE_0_G, SPRITE1_PALETTE_0_B), 
+                           RGB(SPRITE1_PALETTE_1_R, SPRITE1_PALETTE_1_G, SPRITE1_PALETTE_1_B), 
+                           RGB(SPRITE1_PALETTE_2_R, SPRITE1_PALETTE_2_G, SPRITE1_PALETTE_2_B)};                      
 #endif
 
 void game_loop();
@@ -44,8 +48,8 @@ int main()
   #ifdef CUSTOM_COLORS
   if (_cpu == CGB_TYPE)
   {
-    set_bkg_palette(0, 1, custom_palette);
-    set_sprite_palette(0, 1, custom_palette);
+    set_bkg_palette(0, 1, bg_palette);
+    set_sprite_palette(0, 1, sprite1_palette);
   }
   else
   {
