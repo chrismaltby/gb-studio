@@ -134,6 +134,7 @@
   "FIELD_RANDOM": "Random",
   "FIELD_SET_TO": "Set To",
   "FIELD_ELSE": "Else",
+  "FIELD_EXPORT_CUSTOM_COLORS": "Export With Custom Colors",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

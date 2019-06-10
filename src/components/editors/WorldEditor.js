@@ -6,7 +6,7 @@ import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { FormField, ToggleableFormField } from "../library/Forms";
+import { FormField, ToggleableFormField, ToggleableCheckBoxField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
@@ -82,6 +82,15 @@ class WorldEditor extends Component {
                 rows={3}
               />
             </ToggleableFormField>
+
+            <ToggleableCheckBoxField
+              label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
+              open={!!project.CustomColorsEnabled || project.CustomColorsEnabled}
+              onToggle={this.onEditProject("CustomColorsEnabled")}
+            >
+              (Color buttons go here)
+            </ToggleableCheckBoxField>
+
           </div>
         </SidebarColumn>
 
