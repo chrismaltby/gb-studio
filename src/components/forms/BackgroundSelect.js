@@ -61,29 +61,31 @@ class BackgroundSelect extends Component {
     const groupedBackgrounds = groupByPlugin(backgrounds);
     const backgroundsById = indexById(backgrounds);
 
-    const options = Object.keys(groupedBackgrounds).reduce((memo, plugin) => {
-      if (!plugin) {
-        return [].concat(
-          memo,
-          groupedBackgrounds[plugin].map(background => {
+    const options = Object.keys(groupedBackgrounds)
+      .sort()
+      .reduce((memo, plugin) => {
+        if (!plugin) {
+          return [].concat(
+            memo,
+            groupedBackgrounds[plugin].map(background => {
+              return {
+                label: background.name,
+                value: background.id
+              };
+            })
+          );
+        }
+        memo.push({
+          label: plugin,
+          options: groupedBackgrounds[plugin].map(background => {
             return {
               label: background.name,
               value: background.id
             };
           })
-        );
-      }
-      memo.push({
-        label: plugin,
-        options: groupedBackgrounds[plugin].map(background => {
-          return {
-            label: background.name,
-            value: background.id
-          };
-        })
-      });
-      return memo;
-    }, []);
+        });
+        return memo;
+      }, []);
 
     const MyDropdownIndicator = DropdownIndicator({
       backgroundsById,

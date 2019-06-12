@@ -86,29 +86,31 @@ class MusicSelect extends Component {
     const { music, playing, id, value, onChange } = this.props;
     const current = music.find(m => m.id === value);
     const groupedMusic = groupByPlugin(music);
-    const options = Object.keys(groupedMusic).reduce((memo, plugin) => {
-      if (!plugin) {
-        return [].concat(
-          memo,
-          groupedMusic[plugin].map(track => {
+    const options = Object.keys(groupedMusic)
+      .sort()
+      .reduce((memo, plugin) => {
+        if (!plugin) {
+          return [].concat(
+            memo,
+            groupedMusic[plugin].map(track => {
+              return {
+                label: track.name,
+                value: track.id
+              };
+            })
+          );
+        }
+        memo.push({
+          label: plugin,
+          options: groupedMusic[plugin].map(track => {
             return {
               label: track.name,
               value: track.id
             };
           })
-        );
-      }
-      memo.push({
-        label: plugin,
-        options: groupedMusic[plugin].map(track => {
-          return {
-            label: track.name,
-            value: track.id
-          };
-        })
-      });
-      return memo;
-    }, []);
+        });
+        return memo;
+      }, []);
 
     const MyDropdownIndicator = DropdownIndicator({
       playing,

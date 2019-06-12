@@ -94,10 +94,12 @@ class SpriteSheetSelect extends Component {
     const current = spriteSheets.find(s => s.id === value);
     const groupedSpriteSheets = groupByPlugin(spriteSheets);
 
-    const options = Object.keys(groupedSpriteSheets).reduce((memo, plugin) => {
-      buildOptions(memo, plugin, groupedSpriteSheets[plugin]);
-      return memo;
-    }, []);
+    const options = Object.keys(groupedSpriteSheets)
+      .sort()
+      .reduce((memo, plugin) => {
+        buildOptions(memo, plugin, groupedSpriteSheets[plugin]);
+        return memo;
+      }, []);
 
     const MyDropdownIndicator = DropdownIndicator(value, direction, frame);
     const MyOption = Option(direction, frame);
