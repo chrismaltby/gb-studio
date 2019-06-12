@@ -246,6 +246,8 @@ textarea {
   color: var(--main-text-color);
   background-color: var(--menu-bg-color);
   z-index: 100;
+  box-shadow: 0 0 0 1px rgba(120, 120, 120, 0.3),
+    0 4px 11px hsla(0, 0%, 0%, 0.1);
 }
 
 .FormField .ReactSelect__option {
