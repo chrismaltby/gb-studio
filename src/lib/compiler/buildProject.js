@@ -58,6 +58,9 @@ const buildProject = async (
     ))
       .replace(/___PROJECT_NAME___/g, projectName)
       .replace(/___AUTHOR___/g, author);
+
+      //.replace("<body>", "<body style='background-color:#" + data.bgColorHex + "'>")
+
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }
 };

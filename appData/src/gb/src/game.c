@@ -24,9 +24,9 @@ UBYTE script_actor;
 
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
+
 #ifdef CUSTOM_COLORS
-UWORD bg_palette[] = { DMG_WHITE, DMG_LIGHTGREEN, DMG_DARKGREEN, DMG_BLACK};
-UWORD sprite1_palette[] = { DMG_BLACK, DMG_WHITE, DMG_LIGHTGREEN, DMG_BLACK};                      
+              
 #endif
 
 void game_loop();
