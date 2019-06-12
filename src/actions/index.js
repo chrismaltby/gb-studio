@@ -56,9 +56,7 @@ export const loadSprite = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadSpriteData(
-        `${projectRoot}/assets/sprites/${filename}`
-      );
+      const data = await loadSpriteData(projectRoot)(filename);
       return {
         data
       };
@@ -66,11 +64,23 @@ export const loadSprite = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeSprite = filename => {
-  return {
+export const removeSprite = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/sprites/`, "")
+    : relativePath.replace("/assets/sprites/", "");
+  return dispatch({
     type: types.SPRITE_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const loadBackground = filename => async (dispatch, getState) => {
@@ -82,9 +92,7 @@ export const loadBackground = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadBackgroundData(
-        `${projectRoot}/assets/backgrounds/${filename}`
-      );
+      const data = await loadBackgroundData(projectRoot)(filename);
       return {
         data
       };
@@ -92,11 +100,23 @@ export const loadBackground = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeBackground = filename => {
-  return {
+export const removeBackground = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/backgrounds/`, "")
+    : relativePath.replace("/assets/backgrounds/", "");
+  return dispatch({
     type: types.BACKGROUND_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const loadMusic = filename => async (dispatch, getState) => {
@@ -108,9 +128,7 @@ export const loadMusic = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadMusicData(
-        `${projectRoot}/assets/music/${filename}`
-      );
+      const data = await loadMusicData(projectRoot)(filename);
       return {
         data
       };
@@ -118,11 +136,23 @@ export const loadMusic = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeMusic = filename => {
-  return {
+export const removeMusic = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/music/`, "")
+    : relativePath.replace("/assets/music/", "");
+  return dispatch({
     type: types.MUSIC_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const playMusic = filename => {

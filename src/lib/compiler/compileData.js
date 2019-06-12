@@ -31,6 +31,7 @@ import {
   actorFramesPerDir
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
+import { assetFilename } from "../helpers/gbstudio";
 
 const indexById = indexBy("id");
 
@@ -605,7 +606,7 @@ export const precompileSprites = async (
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
       const data = await ggbgfx.imageToSpriteIntArray(
-        `${projectRoot}/assets/sprites/${spriteSheet.filename}`
+        assetFilename(projectRoot, "sprites", spriteSheet)
       );
       const size = data.length;
       const frames = size / 64;

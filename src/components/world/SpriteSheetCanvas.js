@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { directionToFrame } from "../../lib/helpers/gbstudio";
+import { directionToFrame, assetFilename } from "../../lib/helpers/gbstudio";
 
 const SPRITE_SIZE = 16;
 
@@ -34,18 +34,37 @@ class SpriteSheetCanvas extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    const { direction, frame, spriteSheet } = this.props;
+    return (
+      nextProps.direction !== direction ||
+      nextProps.frame !== frame ||
+      spriteSheet === nextProps.spriteSheet
+    );
+  }
+
   imageSrc = (projectRoot, spriteSheet) => {
-    return `${projectRoot}/assets/sprites/${spriteSheet &&
-      `${spriteSheet.filename}?v=${spriteSheet._v || 0}`}`;
+    return (
+      spriteSheet &&
+      `${assetFilename(projectRoot, "sprites", spriteSheet)}?_v=${
+        spriteSheet._v
+      }`
+    );
   };
 
   loadImage = (projectRoot, spriteSheet) => {
-    this.src = this.imageSrc(projectRoot, spriteSheet);
-    this.imgLoaded = false;
-    this.img = new Image();
-    this.img.crossOrigin = "anonymous";
-    this.img.onload = this.draw;
-    this.img.src = this.src;
+    if (!spriteSheet) {
+      if (this.canvas.current) {
+        this.canvas.current.width = this.canvas.current.width;
+      }
+    } else {
+      this.src = this.imageSrc(projectRoot, spriteSheet);
+      this.imgLoaded = false;
+      this.img = new Image();
+      this.img.crossOrigin = "anonymous";
+      this.img.onload = this.draw;
+      this.img.src = this.src;
+    }
   };
 
   draw = () => {

@@ -376,13 +376,15 @@ class Scene extends Component {
             height: height * TILE_SIZE
           }}
         >
-          <img
-            className="Scene__Background"
-            alt=""
-            src={`${assetFilename(projectRoot, "backgrounds", image)}?v=${
-              image.version
-            }`}
-          />
+          {image && (
+            <img
+              className="Scene__Background"
+              alt=""
+              src={`${assetFilename(projectRoot, "backgrounds", image)}?_v=${
+                image._v
+              }`}
+            />
+          )}
           {triggers.map(trigger => (
             <div
               key={trigger.id}
@@ -550,7 +552,6 @@ Scene.defaultProps = {
   sceneId: "",
   image: null,
   destinationDragging: "",
-  version: 0,
   event: null,
   prefab: null
 };

@@ -57,6 +57,14 @@ const sortRecent = (a, b) => {
   return 0;
 };
 
+const matchAsset = assetA => assetB => {
+  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
+};
+
+const notMatchAsset = assetA => assetB => {
+  return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
+};
+
 const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
   const backgroundLookup = backgrounds.reduce((memo, background) => {
     return {
@@ -99,81 +107,54 @@ export default function project(state = initialState.project, action) {
     case SPRITE_REMOVE:
       return {
         ...state,
-        spriteSheets: state.spriteSheets.filter(spriteSheet => {
-          return spriteSheet.filename !== action.filename;
-        })
+        spriteSheets: state.spriteSheets.filter(notMatchAsset(action.data))
       };
     case SPRITE_LOAD_SUCCESS: {
-      const currentSprite = state.spriteSheets.find(
-        sprite => sprite.filename === action.data.filename
-      );
+      const currentSprite = state.spriteSheets.find(matchAsset(action.data));
       return {
         ...state,
         spriteSheets: []
-          .concat(
-            state.spriteSheets.filter(spriteSheet => {
-              return spriteSheet.filename !== action.data.filename;
-            }),
-            {
-              ...action.data,
-              id: currentSprite ? currentSprite.id : action.data.id
-            }
-          )
+          .concat(state.spriteSheets.filter(notMatchAsset(action.data)), {
+            ...action.data,
+            id: currentSprite ? currentSprite.id : action.data.id
+          })
           .sort(sortFilename)
       };
     }
     case BACKGROUND_REMOVE:
       return {
         ...state,
-        backgrounds: state.backgrounds.filter(background => {
-          return background.filename !== action.filename;
-        })
+        backgrounds: state.backgrounds.filter(notMatchAsset(action.data))
       };
     case BACKGROUND_LOAD_SUCCESS: {
-      const currentBackground = state.backgrounds.find(
-        background => background.filename === action.data.filename
-      );
+      const currentBackground = state.backgrounds.find(matchAsset(action.data));
       return {
         ...state,
         scenes: state.scenes.map(
           sceneClearCollisionsIfDimensionsChanged(state.backgrounds)
         ),
         backgrounds: []
-          .concat(
-            state.backgrounds.filter(background => {
-              return background.filename !== action.data.filename;
-            }),
-            {
-              ...action.data,
-              id: currentBackground ? currentBackground.id : action.data.id
-            }
-          )
+          .concat(state.backgrounds.filter(notMatchAsset(action.data)), {
+            ...action.data,
+            id: currentBackground ? currentBackground.id : action.data.id
+          })
           .sort(sortFilename)
       };
     }
     case MUSIC_REMOVE:
       return {
         ...state,
-        music: state.music.filter(music => {
-          return music.filename !== action.filename;
-        })
+        music: state.music.filter(notMatchAsset(action.data))
       };
     case MUSIC_LOAD_SUCCESS: {
-      const currentMusic = state.music.find(
-        music => music.filename === action.data.filename
-      );
+      const currentMusic = state.music.find(matchAsset(action.data));
       return {
         ...state,
         music: []
-          .concat(
-            state.music.filter(music => {
-              return music.filename !== action.data.filename;
-            }),
-            {
-              ...action.data,
-              id: currentMusic ? currentMusic.id : action.data.id
-            }
-          )
+          .concat(state.music.filter(notMatchAsset(action.data)), {
+            ...action.data,
+            id: currentMusic ? currentMusic.id : action.data.id
+          })
           .sort(sortFilename)
       };
     }

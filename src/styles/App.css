@@ -85,6 +85,7 @@ div::-webkit-scrollbar {
 
 div::-webkit-scrollbar-thumb {
   border-radius: 17px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   background-color: rgba(180, 180, 180, 0.3);
   border: 4px solid transparent;

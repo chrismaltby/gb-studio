@@ -1,5 +1,9 @@
-.SpriteSheetSelect {
+/* .SpriteSheetSelect {
   display: flex;
+}
+
+.SpriteSheetSelect div:first-child {
+  flex-grow: 1;
 }
 
 .SpriteSheetSelect__Preview {
@@ -8,4 +12,4 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */

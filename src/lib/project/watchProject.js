@@ -23,18 +23,10 @@ const watchProject = async (
   const backgroundsRoot = `${projectRoot}/assets/backgrounds`;
   const musicRoot = `${projectRoot}/assets/music`;
   const uiRoot = `${projectRoot}/assets/ui`;
+  const pluginsRoot = `${projectRoot}/plugins`;
 
-  const relativeSpritePath = fn => filename => {
-    fn(path.relative(spritesRoot, filename));
-  };
-  const relativeBackgroundPath = fn => filename => {
-    fn(path.relative(backgroundsRoot, filename));
-  };
-  const relativeMusicPath = fn => filename => {
-    fn(path.relative(musicRoot, filename));
-  };
-  const relativeUIPath = fn => filename => {
-    fn(path.relative(uiRoot, filename));
+  const pluginSubfolder = filename => {
+    return path.relative(pluginsRoot, filename).split("/")[1];
   };
 
   const spriteWatcher = chokidar
@@ -43,9 +35,9 @@ const watchProject = async (
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", relativeSpritePath(onAddSprite))
-    .on("change", relativeSpritePath(onChangedSprite))
-    .on("unlink", relativeSpritePath(onRemoveSprite));
+    .on("add", onAddSprite)
+    .on("change", onChangedSprite)
+    .on("unlink", onRemoveSprite);
 
   const backgroundWatcher = chokidar
     .watch(backgroundsRoot, {
@@ -53,9 +45,9 @@ const watchProject = async (
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", relativeBackgroundPath(onAddBackground))
-    .on("change", relativeBackgroundPath(onChangedBackground))
-    .on("unlink", relativeBackgroundPath(onRemoveBackground));
+    .on("add", onAddBackground)
+    .on("change", onChangedBackground)
+    .on("unlink", onRemoveBackground);
 
   const uiWatcher = chokidar
     .watch(uiRoot, {
@@ -63,9 +55,9 @@ const watchProject = async (
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", relativeUIPath(onAddUI))
-    .on("change", relativeUIPath(onChangedUI))
-    .on("unlink", relativeUIPath(onRemoveUI));
+    .on("add", onAddUI)
+    .on("change", onChangedUI)
+    .on("unlink", onRemoveUI);
 
   const musicWatcher = chokidar
     .watch(musicRoot, {
@@ -73,15 +65,56 @@ const watchProject = async (
       ignoreInitial: true,
       persistent: true
     })
-    .on("add", relativeMusicPath(onAddMusic))
-    .on("change", relativeMusicPath(onChangedMusic))
-    .on("unlink", relativeMusicPath(onRemoveMusic));
+    .on("add", onAddMusic)
+    .on("change", onChangedMusic)
+    .on("unlink", onRemoveMusic);
+
+  const pluginsWatcher = chokidar
+    .watch(pluginsRoot, {
+      ignored: /^.*\.(?!(png|mod)$)[^.]+$/,
+      ignoreInitial: true,
+      persistent: true
+    })
+    .on("add", filename => {
+      console.log("Plugin add", filename);
+      const subfolder = pluginSubfolder(filename);
+      if (subfolder === "backgrounds") {
+        onAddBackground(filename);
+      } else if (subfolder === "sprites") {
+        onAddSprite(filename);
+      } else if (subfolder === "music") {
+        onAddMusic(filename);
+      }
+    })
+    .on("change", filename => {
+      console.log("Plugin change", filename);
+      const subfolder = pluginSubfolder(filename);
+      if (subfolder === "backgrounds") {
+        onChangedBackground(filename);
+      } else if (subfolder === "sprites") {
+        onChangedSprite(filename);
+      } else if (subfolder === "music") {
+        onChangedMusic(filename);
+      }
+    })
+    .on("unlink", filename => {
+      console.log("Plugin remove", filename);
+      const subfolder = pluginSubfolder(filename);
+      if (subfolder === "backgrounds") {
+        onRemoveBackground(filename);
+      } else if (subfolder === "sprites") {
+        onRemoveSprite(filename);
+      } else if (subfolder === "music") {
+        onRemoveMusic(filename);
+      }
+    });
 
   const stopWatching = () => {
     spriteWatcher.close();
     backgroundWatcher.close();
     uiWatcher.close();
     musicWatcher.close();
+    pluginsWatcher.close();
   };
 
   return stopWatching;

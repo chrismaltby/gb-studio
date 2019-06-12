@@ -1,5 +1,4 @@
 import glob from "glob";
-import Path from "path";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import sizeOf from "image-size";
@@ -18,7 +17,6 @@ const loadBackgroundData = projectRoot => async filename => {
   const file = plugin
     ? relativePath.replace(`/plugins/${plugin}/backgrounds/`, "")
     : relativePath.replace("/assets/backgrounds/", "");
-
   return {
     id: uuid(),
     plugin,
