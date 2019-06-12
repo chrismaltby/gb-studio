@@ -64,8 +64,35 @@
   box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
+.FilesSidebar__Group {
+  padding-bottom: 0px;
+  padding-left: 0px;
+  border-top: 1px solid var(--menu-hover-color);
+  padding-top: 8px;
+  margin-top: 16px;
+}
+
+.FilesSidebar__GroupHeading {
+  color: #999;
+  cursor: default;
+  display: block;
+  font-size: 75%;
+  font-weight: 500;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  margin-top: -14px;
+  float: left;
+  background-color: var(--sidebar-bg-color);
+  margin-left: 5px;
+  padding-left: 5px;
+}
+
+.FilesSidebar__GroupHeading + .FilesSidebar__ListItem {
+  margin-top: 5px;
+}
+
 .FilesSidebar__ListItem {
-  padding: 5px 10px;
+  padding: 6px 10px;
 }
 
 .FilesSidebar__ListItem:hover {
