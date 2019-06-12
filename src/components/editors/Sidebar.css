@@ -136,6 +136,10 @@
   border-left: 0;
 }
 
+.Sidebar--TwoColumn .Sidebar__Content .SidebarColumn:last-child {
+  margin-top: -1px;
+}
+
 .SidebarHeading {
   height: 36px;
   line-height: 36px;
