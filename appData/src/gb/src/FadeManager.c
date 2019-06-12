@@ -1,3 +1,4 @@
+#include "game.h"
 #include "FadeManager.h"
 
 UBYTE fade_running;
@@ -11,6 +12,39 @@ static const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
 static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
 static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
 
+void ApplyPaletteChange(UBYTE index)
+{
+  #ifdef CUSTOM_COLORS
+  if (_cpu == CGB_TYPE) {
+    if (index == 0 || index == 1)
+    {
+      set_bkg_palette(0, 1, custom_palette_fade_step3);
+      set_sprite_palette(0, 1, custom_palette_fade_step3);
+    } 
+    else if (index == 2)
+    {
+      set_bkg_palette(0, 1, custom_palette_fade_step2);
+      set_sprite_palette(0, 1, custom_palette_fade_step2);
+    }
+    else if (index == 3)
+    {
+      set_bkg_palette(0, 1, custom_palette_fade_step1);
+      set_sprite_palette(0, 1, custom_palette_fade_step1);
+    }
+    else if (index == 4)
+    {
+      set_bkg_palette(0, 1, custom_palette);
+      set_sprite_palette(0, 1, custom_palette);
+    }
+  } 
+  else 
+  #endif
+  {
+    OBP0_REG = obj_fade_vals[index];
+    BGP_REG = bgp_fade_vals[index];
+  }
+}
+
 void FadeInit()
 {
   fade_frames_per_step = fade_speeds[2];
@@ -22,8 +56,7 @@ void FadeIn()
   fade_direction = FADE_IN;
   fade_running = TRUE;
   fade_timer = 0;
-  OBP0_REG = obj_fade_vals[fade_timer];
-  BGP_REG = bgp_fade_vals[fade_timer];
+  ApplyPaletteChange(fade_timer);
 }
 
 void FadeOut()
@@ -32,8 +65,7 @@ void FadeOut()
   fade_direction = FADE_OUT;
   fade_running = TRUE;
   fade_timer = 5;
-  OBP0_REG = obj_fade_vals[fade_timer];
-  BGP_REG = bgp_fade_vals[fade_timer];
+  ApplyPaletteChange(fade_timer);
 }
 
 void FadeUpdate()
@@ -59,8 +91,8 @@ void FadeUpdate()
         }
       }
     }
-    OBP0_REG = obj_fade_vals[fade_timer];
-    BGP_REG = bgp_fade_vals[fade_timer];
+
+    ApplyPaletteChange(fade_timer);
     fade_frame++;
   }
 }

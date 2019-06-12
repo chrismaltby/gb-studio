@@ -24,12 +24,6 @@ UBYTE script_actor;
 
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
-#ifdef CUSTOM_COLORS
-UINT16 custom_palette[] = { RGB(CUSTOM_PALETTE_0_R, CUSTOM_PALETTE_0_G, CUSTOM_PALETTE_0_B), 
-                            RGB(CUSTOM_PALETTE_1_R, CUSTOM_PALETTE_1_G, CUSTOM_PALETTE_1_B), 
-                            RGB(CUSTOM_PALETTE_2_R, CUSTOM_PALETTE_2_G, CUSTOM_PALETTE_2_B), 
-                            RGB(CUSTOM_PALETTE_3_R, CUSTOM_PALETTE_3_G, CUSTOM_PALETTE_3_B)};
-#endif
 
 void game_loop();
 
