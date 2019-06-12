@@ -25,6 +25,10 @@ UBYTE script_actor;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 
+#ifdef CUSTOM_COLORS
+              
+#endif
+
 void game_loop();
 
 int main()
@@ -38,8 +42,8 @@ int main()
   #ifdef CUSTOM_COLORS
   if (_cpu == CGB_TYPE)
   {
-    set_bkg_palette(0, 1, custom_palette);
-    set_sprite_palette(0, 1, custom_palette);
+    set_bkg_palette(0, 1, bg_palette);
+    set_sprite_palette(0, 1, sprite1_palette);
   }
   else
   {
