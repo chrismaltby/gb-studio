@@ -22,6 +22,19 @@ const setROMTitle = async (filename, title) => {
   await fs.writeFile(filename, await patchROM(romData));
 };
 
+const replaceStringInFile = async (filename, regex, replacement) => {
+  fs.readFile(filename, 'utf8', function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    var result = data.replace(regex, replacement);
+
+    fs.writeFile(filename, result, 'utf8', function (err) {
+       if (err) return console.log(err);
+    });
+  });
+}
+
 const patchROM = romData => {
   let checksum = 0;
   let headerChecksum = 0;
@@ -78,7 +91,14 @@ const makeBuild = ({
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
     env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
 
-    const makeBat = await buildMakeBat(buildRoot, { CART_TYPE: env.CART_TYPE });
+    // Apply changes for custom colors (if needed)
+    if (data.CustomColorsEnabled) {
+
+    } else {
+      replaceStringInFile(`${buildRoot}/include/game.h`, /#define CUSTOM_COLORS/g, '');
+    }
+
+    const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
     const command = process.platform === "win32" ? "make.bat" : "make";
