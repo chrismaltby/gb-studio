@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
-import { SceneShape } from "../../reducers/stateShape";
+import { SceneShape, BackgroundShape } from "../../reducers/stateShape";
 import { indexBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 
@@ -112,18 +112,6 @@ class SceneSelect extends Component {
         }}
       />
     );
-
-    return (
-      <select id={id} value={value} onChange={onChange}>
-        {!current && !allowNone && <option value="" />}
-        {allowNone && <option>None</option>}
-        {scenes.map((scene, index) => (
-          <option key={scene.id} value={scene.id}>
-            {scene.name || `Scene ${index + 1}`}
-          </option>
-        ))}
-      </select>
-    );
   }
 }
 
@@ -132,7 +120,9 @@ SceneSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   allowNone: PropTypes.bool,
-  scenes: PropTypes.arrayOf(SceneShape).isRequired
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
+  backgrounds: PropTypes.arrayOf(BackgroundShape).isRequired,
+  projectRoot: PropTypes.string.isRequired
 };
 
 SceneSelect.defaultProps = {
