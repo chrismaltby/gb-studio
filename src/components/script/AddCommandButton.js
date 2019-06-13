@@ -12,25 +12,6 @@ import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
 
-const EventNames = Object.keys(events).reduce((memo, key) => {
-  return {
-    ...memo,
-    [key]: l10n(key) || events[key].name
-  };
-}, {});
-
-const actions = Object.keys(events).sort((a, b) => {
-  const textA = (EventNames[a] || a).toUpperCase();
-  const textB = (EventNames[b] || b).toUpperCase();
-  if (textA < textB) {
-    return -1;
-  }
-  if (textA > textB) {
-    return 1;
-  }
-  return 0;
-});
-
 class AddCommandButton extends Component {
   constructor(props) {
     super(props);
@@ -62,11 +43,11 @@ class AddCommandButton extends Component {
     const { onAdd } = this.props;
     clearTimeout(this.timeout);
     onAdd(action);
-    const typeActions = this.typeActions();
+    const fullList = this.fullList();
     this.setState({
       open: false,
       query: "",
-      selectedIndex: typeActions.indexOf(action)
+      selectedIndex: fullList.findIndex(event => event.id === action)
     });
   };
 
@@ -99,7 +80,7 @@ class AddCommandButton extends Component {
     const actionsList = this.filteredList();
     if (e.key === "Enter") {
       if (actionsList[selectedIndex]) {
-        this.onAdd(actionsList[selectedIndex])();
+        this.onAdd(actionsList[selectedIndex].id)();
       } else if (query.length > 0) {
         this.onAddText();
       }
@@ -134,58 +115,62 @@ class AddCommandButton extends Component {
     });
   };
 
-  typeActions = () => {
+  fullList = () => {
     const { type } = this.props;
-    return actions.filter(action => {
-      return (
-        EventsDeprecated.indexOf(action) === -1 &&
-        (type === "actor" || EventsOnlyForActors.indexOf(action) === -1)
-      );
-    });
+    return Object.keys(events)
+      .filter(key => {
+        return (
+          EventsDeprecated.indexOf(key) === -1 &&
+          (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
+        );
+      })
+      .map(key => {
+        const name = l10n(key) || events[key].name || key;
+        const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
+        return {
+          ...events[key],
+          name,
+          searchName
+        };
+      });
   };
 
   filteredList = () => {
     const { query } = this.state;
-    const typeActions = this.typeActions();
-    return query
-      ? typeActions
+    const fullList = this.fullList();
 
-          .filter(action => {
-            // Split filter into words so they can be in any order
-            // and have words between matches
-            const queryWords = query.toUpperCase().split(" ");
-            const searchName = `${
-              EventNames[action] ? EventNames[action].toUpperCase() : ""
-            } ${action.toUpperCase()}`;
-            return queryWords.reduce((memo, word) => {
-              return memo && searchName.indexOf(word) > -1;
-            }, true);
-          })
-          .sort((a, b) => {
-            // Sort so that first match is listed at top
-            const queryWords = query.toUpperCase().split(" ");
-            const searchNameA = `${
-              EventNames[a] ? EventNames[a].toUpperCase() : ""
-            } ${a.toUpperCase()}`;
-            const searchNameB = `${
-              EventNames[b] ? EventNames[b].toUpperCase() : ""
-            } ${b.toUpperCase()}`;
-            const firstMatchA = queryWords.reduce((memo, word) => {
-              const index = searchNameA.indexOf(word);
-              return index > -1 ? Math.min(memo, index) : memo;
-            }, Number.MAX_SAFE_INTEGER);
-            const firstMatchB = queryWords.reduce((memo, word) => {
-              const index = searchNameB.indexOf(word);
-              return index > -1 ? Math.min(memo, index) : memo;
-            }, Number.MAX_SAFE_INTEGER);
-            return firstMatchA - firstMatchB;
-          })
-      : typeActions;
+    if (!query) {
+      return fullList;
+    }
+
+    const queryWords = query.toUpperCase().split(" ");
+
+    return fullList
+      .filter(event => {
+        // Split filter into words so they can be in any order
+        // and have words between matches
+        return queryWords.reduce((memo, word) => {
+          return memo && event.searchName.indexOf(word) > -1;
+        }, true);
+      })
+      .sort((a, b) => {
+        // Sort so that first match is listed at top
+        const firstMatchA = queryWords.reduce((memo, word) => {
+          const index = a.searchName.indexOf(word);
+          return index > -1 ? Math.min(memo, index) : memo;
+        }, Number.MAX_SAFE_INTEGER);
+        const firstMatchB = queryWords.reduce((memo, word) => {
+          const index = b.searchName.indexOf(word);
+          return index > -1 ? Math.min(memo, index) : memo;
+        }, Number.MAX_SAFE_INTEGER);
+        return firstMatchA - firstMatchB;
+      });
   };
 
   render() {
     const { query, open, selectedIndex } = this.state;
     const actionsList = this.filteredList();
+
     return (
       <div ref={this.button} className="AddCommandButton">
         <Button onClick={this.onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
@@ -205,19 +190,19 @@ class AddCommandButton extends Component {
             <div className="AddCommandButton__List">
               {actionsList.map((action, actionIndex) => (
                 <div
-                  key={action}
+                  key={action.id}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
                       selectedIndex === actionIndex
                   })}
-                  onClick={this.onAdd(action)}
+                  onClick={this.onAdd(action.id)}
                   onMouseEnter={this.onHover(actionIndex)}
                 >
                   <Highlighter
                     highlightClassName="AddCommandButton__ListItem__Highlight"
                     searchWords={query.split(" ")}
                     autoEscape
-                    textToHighlight={EventNames[action] || action}
+                    textToHighlight={action.name}
                   />
                 </div>
               ))}
@@ -233,7 +218,7 @@ class AddCommandButton extends Component {
                     highlightClassName="AddCommandButton__ListItem__Highlight"
                     searchWords={query.split(" ")}
                     autoEscape
-                    textToHighlight={`${EventNames.EVENT_TEXT} "${query}"`}
+                    textToHighlight={`${l10n(EVENT_TEXT)} "${query}"`}
                   />
                 </div>
               )}

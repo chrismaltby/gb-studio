@@ -170,6 +170,7 @@ const createWindow = async projectPath => {
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+    menu.buildMenu([]);
   });
 };
 
@@ -313,6 +314,40 @@ ipcMain.on("project-loaded", (event, project) => {
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnections").checked = showConnections;
   menu.ref().getMenuItemById(`cart${cartType}`).checked = true;
+});
+
+ipcMain.on("set-menu-plugins", (event, plugins) => {
+  // eslint-disable-next-line global-require
+  const l10n = require("./lib/helpers/l10n").default;
+  const distinct = (value, index, self) => self.indexOf(value) === index;
+
+  const pluginValues = Object.values(plugins);
+
+  const pluginNames = pluginValues
+    .map(plugin => plugin.plugin)
+    .filter(distinct);
+
+  menu.buildMenu(
+    pluginNames.map(pluginName => {
+      return {
+        label: pluginName,
+        submenu: pluginValues
+          .filter(plugin => {
+            return plugin.plugin === pluginName;
+          })
+          .map(plugin => {
+            return {
+              label: l10n(plugin.id) || plugin.name || plugin.name,
+              accelerator: plugin.accelerator,
+              click() {
+                mainWindow &&
+                  mainWindow.webContents.send("plugin-run", plugin.id);
+              }
+            };
+          })
+      };
+    })
+  );
 });
 
 menu.on("new", async () => {

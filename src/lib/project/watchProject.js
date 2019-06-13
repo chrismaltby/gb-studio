@@ -76,7 +76,6 @@ const watchProject = async (
       persistent: true
     })
     .on("add", filename => {
-      console.log("Plugin add", filename);
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onAddBackground(filename);
@@ -87,7 +86,6 @@ const watchProject = async (
       }
     })
     .on("change", filename => {
-      console.log("Plugin change", filename);
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onChangedBackground(filename);
@@ -98,7 +96,6 @@ const watchProject = async (
       }
     })
     .on("unlink", filename => {
-      console.log("Plugin remove", filename);
       const subfolder = pluginSubfolder(filename);
       if (subfolder === "backgrounds") {
         onRemoveBackground(filename);

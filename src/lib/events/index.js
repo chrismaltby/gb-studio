@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from "glob";
-import plugins from "../plugins/plugins";
+import plugins, { pluginEmitter } from "../plugins/plugins";
 
 const internalEventHandlerPaths = glob.sync(`${__dirname}/event*.js`);
 
@@ -18,5 +18,17 @@ const eventHandlers = {
   }, {}),
   ...plugins.events
 };
+
+pluginEmitter.on("update-event", plugin => {
+  eventHandlers[plugin.id] = plugin;
+});
+
+pluginEmitter.on("add-event", plugin => {
+  eventHandlers[plugin.id] = plugin;
+});
+
+pluginEmitter.on("remove-event", plugin => {
+  delete eventHandlers[plugin.id];
+});
 
 export default eventHandlers;

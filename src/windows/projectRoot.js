@@ -9,6 +9,7 @@ import watchProject from "../lib/project/watchProject";
 import App from "../components/app/App";
 import "../lib/electron/handleFullScreen";
 import AppContainerDnD from "../components/app/AppContainerDnD";
+import plugins from "../lib/plugins/plugins";
 import "../lib/helpers/handleTheme";
 
 const store = configureStore();
@@ -87,6 +88,12 @@ ipcRenderer.on("build", async (event, buildType) => {
       exportBuild: true
     })
   );
+});
+
+ipcRenderer.on("plugin-run", (event, pluginId) => {
+  if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
+    plugins.menu[pluginId].run(store, actions);
+  }
 });
 
 let modified = true;

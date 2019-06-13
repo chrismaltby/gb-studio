@@ -6,7 +6,7 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 
 let menu;
 
-app.on("ready", async () => {
+const buildMenu = async (plugins = []) => {
   // L10N requires app ready to get locale
   // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
@@ -291,9 +291,17 @@ app.on("ready", async () => {
     }
   ];
 
+  if (plugins && plugins.length > 0) {
+    template.splice(3, 0, {
+      id: "plugins",
+      label: l10n("MENU_PLUGINS"),
+      submenu: plugins
+    });
+  }
+
   if (isDevMode) {
-    template[3].submenu.push({ type: "separator" });
-    template[3].submenu.push({
+    template[template.length - 3].submenu.push({ type: "separator" });
+    template[template.length - 3].submenu.push({
       label: "Debug",
       submenu: [
         { role: "reload" },
@@ -341,7 +349,7 @@ app.on("ready", async () => {
     );
 
     // Window menu
-    template[5].submenu = [
+    template[template.length - 2].submenu = [
       { role: "minimize" },
       { role: "zoom" },
       { type: "separator" },
@@ -349,7 +357,7 @@ app.on("ready", async () => {
     ];
   } else {
     // About menu item for Windows / Linux
-    template[5].submenu.push(
+    template[template.length - 1].submenu.push(
       { type: "separator" },
       {
         label: l10n("MENU_ABOUT"),
@@ -368,7 +376,9 @@ app.on("ready", async () => {
 
   menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-});
+};
+
+app.on("ready", () => buildMenu([]));
 
 const listeners = {
   new: [],
@@ -407,5 +417,8 @@ const openAbout = () => {
 export default {
   on,
   off,
-  ref: () => menu
+  ref: () => menu,
+  buildMenu: plugins => {
+    buildMenu(plugins);
+  }
 };
