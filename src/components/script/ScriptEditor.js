@@ -418,6 +418,11 @@ const ActionMiniDnD = DropTarget(
 );
 
 class ScriptEditor extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { value } = this.props;
+    return nextProps.value !== value;
+  }
+
   moveActions = (a, b) => {
     const { value: root, onChange } = this.props;
     if (a === b) {
