@@ -169,7 +169,8 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_DESTINATION_STOP: {
       return {
         ...state,
-        destinationDragging: null
+        destinationDragging: null,
+        dragging: ""
       };
     }
     case DRAG_ACTOR_START: {
@@ -185,7 +186,8 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_ACTOR_STOP: {
       return {
         ...state,
-        actorDragging: null
+        actorDragging: null,
+        dragging: ""
       };
     }
     case DRAG_TRIGGER_START: {
@@ -201,7 +203,8 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_TRIGGER_STOP: {
       return {
         ...state,
-        triggerDragging: null
+        triggerDragging: null,
+        dragging: ""
       };
     }
     case MOVE_ACTOR: {

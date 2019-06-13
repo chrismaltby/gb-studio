@@ -47,6 +47,11 @@ class Scene extends Component {
     window.removeEventListener("keydown", this.onKeyDown);
   }
 
+  shouldComponentUpdate(nextProps) {
+    const { scene, sceneId } = this.props;
+    return nextProps.scene !== scene || scene.id === sceneId;
+  }
+
   onKeyDown = e => {
     if (e.target.nodeName !== "BODY") {
       return;
@@ -115,13 +120,13 @@ class Scene extends Component {
       const actor = this.actorAt(tX, tY);
 
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
-        this.setStatus({
-          sceneName: scene.name,
-          x: tX,
-          y: tY,
-          actor:
-            actor && (actor.name || `Actor ${scene.actors.indexOf(actor) + 1}`)
-        });
+        // this.setStatus({
+        //   sceneName: scene.name,
+        //   x: tX,
+        //   y: tY,
+        //   actor:
+        //     actor && (actor.name || `Actor ${scene.actors.indexOf(actor) + 1}`)
+        // });
 
         this.setState({
           hover: true,
@@ -153,10 +158,10 @@ class Scene extends Component {
     }
   };
 
-  setStatus = throttle(options => {
-    const { setStatus } = this.props;
-    setStatus(options);
-  }, 200);
+  // setStatus = throttle(options => {
+  //   const { setStatus } = this.props;
+  //   setStatus(options);
+  // }, 200);
 
   onMouseDown = e => {
     const {
@@ -232,7 +237,7 @@ class Scene extends Component {
   };
 
   onMouseLeave = e => {
-    this.setStatus({});
+    // this.setStatus({});
     this.setState({
       hover: false
     });
@@ -331,6 +336,9 @@ class Scene extends Component {
       showCollisions,
       selected
     } = this.props;
+
+    console.log("render: Scene.js");
+
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
     const { hover, hoverX, hoverY, dragX, dragY } = this.state;
