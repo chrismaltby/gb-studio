@@ -235,6 +235,7 @@ textarea {
 
 .FormField .ReactSelect__single-value {
   color: var(--input-text-color);
+  font-size: 11px;
 }
 
 .FormField .ReactSelect__control--is-focused {
