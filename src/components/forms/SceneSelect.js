@@ -22,11 +22,11 @@ const DropdownIndicator = ({
           <div
             className="Thumbnail"
             style={{
-              backgroundImage: `url(${assetFilename(
+              backgroundImage: `url("${assetFilename(
                 projectRoot,
                 "backgrounds",
                 backgroundsById[scenesById[value].backgroundId]
-              )})`
+              )}?_v=${backgroundsById[scenesById[value].backgroundId]._v}")`
             }}
           />
         )}
@@ -45,11 +45,11 @@ const Option = ({ scenesById, backgroundsById, projectRoot }) => props => {
           <div
             className="Thumbnail"
             style={{
-              backgroundImage: `url(${assetFilename(
+              backgroundImage: `url("${assetFilename(
                 projectRoot,
                 "backgrounds",
                 backgroundsById[scenesById[value].backgroundId]
-              )})`
+              )}?_v=${backgroundsById[scenesById[value].backgroundId]._v}")`
             }}
           />
         )}
