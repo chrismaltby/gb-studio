@@ -35,15 +35,21 @@ const vm = new NodeVM({
 });
 
 const loadPlugin = path => {
-  const pluginCode = fs.readFileSync(path, "utf8");
-  const plugin = vm.run(pluginCode);
-  if (!plugin.id) {
-    throw new Error(`Event plugin ${path} is missing id`);
+  try {
+    const pluginCode = fs.readFileSync(path, "utf8");
+    const plugin = vm.run(pluginCode);
+    if (!plugin.id) {
+      throw new Error(`Event plugin ${path} is missing id`);
+    }
+    plugin.plugin = Path.relative(`${projectRoot}/plugins`, path).split(
+      Path.sep
+    )[0];
+    return plugin;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return null;
   }
-  plugin.plugin = Path.relative(`${projectRoot}/plugins`, path).split(
-    Path.sep
-  )[0];
-  return plugin;
 };
 
 const pluginEventFilepaths = {};
@@ -52,6 +58,9 @@ const pluginMenuFilepaths = {};
 const plugins = {
   events: pluginEventHandlerPaths.reduce((memo, path) => {
     const plugin = loadPlugin(path);
+    if (!plugin) {
+      return memo;
+    }
     pluginEventFilepaths[path] = plugin.id;
     return {
       ...memo,
@@ -60,6 +69,9 @@ const plugins = {
   }, {}),
   menu: pluginMenuHandlerPaths.reduce((memo, path) => {
     const plugin = loadPlugin(path);
+    if (!plugin) {
+      return memo;
+    }
     pluginMenuFilepaths[path] = plugin.id;
     return {
       ...memo,
@@ -77,17 +89,25 @@ chokidar
   })
   .on("add", path => {
     const plugin = loadPlugin(path);
+    if (!plugin) {
+      return;
+    }
     plugins.events[plugin.id] = plugin;
     pluginEmitter.emit("add-event", plugin);
   })
   .on("change", path => {
     const plugin = loadPlugin(path);
     const oldPluginId = pluginEventFilepaths[path];
-    if (oldPluginId !== plugin.id) {
+    if (!plugin || oldPluginId !== plugin.id) {
       pluginEventFilepaths[path] = oldPluginId;
+      delete plugins.events[oldPluginId];
       pluginEmitter.emit("remove-event", { id: oldPluginId });
     }
+    if (!plugin) {
+      return;
+    }
     plugins.events[plugin.id] = plugin;
+    pluginEventFilepaths[path] = plugin.id;
     pluginEmitter.emit("update-event", plugin);
   })
   .on("unlink", path => {
@@ -104,6 +124,9 @@ chokidar
   })
   .on("add", path => {
     const plugin = loadPlugin(path);
+    if (!plugin) {
+      return;
+    }
     plugins.menu[plugin.id] = plugin;
     pluginEmitter.emit("add-menu", plugin);
     ipcRenderer.send("set-menu-plugins", plugins.menu);
@@ -111,11 +134,17 @@ chokidar
   .on("change", path => {
     const plugin = loadPlugin(path);
     const oldPluginId = pluginMenuFilepaths[path];
-    if (oldPluginId !== plugin.id) {
+    if (!plugin || oldPluginId !== plugin.id) {
       pluginMenuFilepaths[path] = oldPluginId;
+      delete plugins.menu[oldPluginId];
       pluginEmitter.emit("remove-menu", { id: oldPluginId });
     }
+    if (!plugin) {
+      ipcRenderer.send("set-menu-plugins", plugins.menu);
+      return;
+    }
     plugins.menu[plugin.id] = plugin;
+    pluginMenuFilepaths[path] = plugin.id;
     pluginEmitter.emit("update-menu", plugin);
     ipcRenderer.send("set-menu-plugins", plugins.menu);
   })
