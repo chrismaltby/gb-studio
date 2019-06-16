@@ -8,12 +8,15 @@ import document from "./documentReducer";
 import console from "./consoleReducer";
 import music from "./musicReducer";
 import clipboard from "./clipboardReducer";
+import entities from "./entitiesReducer";
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_SUCCESS
 } from "../actions/actionTypes";
 
 let lastUndoStateTime = 0;
+let lastEntityUndoStateTime = 0;
+
 const UNDO_THROTTLE = 2000;
 
 const rootReducer = combineReducers({
@@ -41,7 +44,25 @@ const rootReducer = combineReducers({
   navigation,
   console,
   music,
-  clipboard
+  clipboard,
+  entities: undoable(entities, {
+    limit: 50,
+    filter: (_action, currentState, previousState) => {
+      const shouldStoreUndo =
+        currentState !== previousState &&
+        Date.now() > lastEntityUndoStateTime + UNDO_THROTTLE;
+      if (shouldStoreUndo) {
+        lastEntityUndoStateTime = Date.now();
+      }
+      return shouldStoreUndo;
+    },
+    initTypes: [
+      "@@redux/INIT",
+      "@@INIT",
+      PROJECT_LOAD_SUCCESS,
+      PROJECT_SAVE_SUCCESS
+    ]
+  })
 });
 
 export default rootReducer;

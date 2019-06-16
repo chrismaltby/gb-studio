@@ -31,7 +31,13 @@ export default {
     sceneDragX: 0,
     sceneDragY: 0,
     uiVersion: 0,
-    sidebarWidth: 300
+    sidebarWidth: 300,
+    hover: {
+      sceneId: "",
+      actorId: "",
+      x: 0,
+      y: 0
+    }
   },
   navigation: {
     section: "world",
@@ -51,5 +57,24 @@ export default {
     trigger: null,
     scene: null,
     last: null
+  },
+  entities: {
+    entities: {
+      actors: {},
+      backgrounds: {},
+      music: {},
+      scenes: {},
+      spriteSheets: {},
+      triggers: {},
+      variables: {}
+    },
+    result: {
+      settings: {
+        showCollisions: true,
+        showConnections: true,
+        sidebarWidth: 300
+      },
+      scenes: []
+    }
   }
 };

@@ -2,100 +2,60 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
-import { framesPerDirection } from "../../lib/helpers/gbstudio";
-import { ActorShape, SpriteShape } from "../../reducers/stateShape";
-import { indexBy } from "../../lib/helpers/array";
-
-const indexById = indexBy("id");
-
-const renderActorCanvas = ({ actor, direction, frame, totalFrames }) => (
-  <SpriteSheetCanvas
-    spriteSheetId={actor.spriteSheetId}
-    direction={
-      actor.movementType === "static" && !direction
-        ? "down"
-        : direction || actor.direction
-    }
-    frame={
-      !direction
-        ? (frame !== null ? frame || 0 : actor.frame || 0) % totalFrames
-        : 0
-    }
-    _spriteSheetId={actor && actor.spriteSheetId}
-    _direction={direction}
-    _frame={frame}
-  />
-);
-
-renderActorCanvas.propTypes = {
-  actor: ActorShape.isRequired,
-  direction: PropTypes.string,
-  frame: PropTypes.number,
-  totalFrames: PropTypes.number
-};
-
-renderActorCanvas.defaultProps = {
-  direction: undefined,
-  frame: undefined,
-  totalFrames: 1
-};
-
-const DropdownIndicator = ({
-  value,
-  direction,
-  frame,
-  actorsById,
-  spriteSheetsById,
-  defaultValue
-}) => props => {
-  const actor = actorsById[value] || defaultValue;
-  if (!actor) {
-    return <components.DropdownIndicator {...props} />;
-  }
-  const spriteSheet = spriteSheetsById[actor.spriteSheetId];
-  const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
-  const totalFrames = framesPerDirection(actor.movementType, spriteFrames);
-
-  return (
-    <components.DropdownIndicator {...props}>
-      {actor && renderActorCanvas({ actor, direction, frame, totalFrames })}
-    </components.DropdownIndicator>
-  );
-};
-
-const Option = ({ actorsById, spriteSheetsById, defaultValue }) => props => {
-  // eslint-disable-next-line react/prop-types
-  const { value, label } = props;
-  const actor = actorsById[value] || defaultValue;
-  if (!actor) {
-    return <components.Option {...props} />;
-  }
-  const spriteSheet = spriteSheetsById[actor.spriteSheetId];
-  const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
-  const totalFrames = framesPerDirection(actor.movementType, spriteFrames);
-  return (
-    <components.Option {...props}>
-      <div style={{ display: "flex" }}>
-        <div style={{ flexGrow: 1 }}>{label}</div>
-        {actor && renderActorCanvas({ actor, totalFrames })}
-      </div>
-    </components.Option>
-  );
-};
+import ActorCanvas from "../world/ActorCanvas";
+import { ActorShape } from "../../reducers/stateShape";
+import { getSceneActors } from "../../reducers/entitiesReducer";
+import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 class ActorSelect extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    rerenderCheck("ActorSelect", this.props, {}, nextProps, {});
+    return true;
+  }
+
+  defaultValue = () => {
+    const { playerSpriteSheetId } = this.props;
+    return {
+      name: "Player",
+      spriteSheetId: playerSpriteSheetId,
+      movementType: "player"
+    };
+  };
+
+  renderDropdownIndicator = props => {
+    const { actors, value, direction, frame } = this.props;
+    const actor = actors.find(a => a.id === value) || this.defaultValue();
+    if (!actor) {
+      return <components.DropdownIndicator {...props} />;
+    }
+
+    return (
+      <components.DropdownIndicator {...props}>
+        <ActorCanvas actor={actor} direction={direction} frame={frame} />
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { actors, direction, frame } = this.props;
+    const { label, value } = props;
+    const actor = actors.find(a => a.id === value) || this.defaultValue();
+    if (!actor) {
+      return <components.Option {...props} />;
+    }
+
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <ActorCanvas actor={actor} direction={direction} frame={frame} />
+        </div>
+      </components.Option>
+    );
+  };
+
   render() {
-    const {
-      actors,
-      playerSpriteSheetId,
-      spriteSheets,
-      id,
-      value,
-      direction,
-      frame,
-      onChange
-    } = this.props;
+    const { actors, playerSpriteSheetId, id, value, onChange } = this.props;
 
     const defaultValue = {
       name: "Player",
@@ -104,8 +64,6 @@ class ActorSelect extends Component {
     };
     const current = actors.find(a => a.id === value) || defaultValue;
     const currentIndex = actors.indexOf(current);
-    const spriteSheetsById = indexById(spriteSheets);
-    const actorsById = indexById(actors);
 
     const options = [].concat(
       {
@@ -120,18 +78,6 @@ class ActorSelect extends Component {
         };
       })
     );
-
-    const componentProps = {
-      value,
-      direction,
-      frame,
-      actorsById,
-      spriteSheetsById,
-      defaultValue
-    };
-
-    const MyDropdownIndicator = DropdownIndicator(componentProps);
-    const MyOption = Option(componentProps);
 
     return (
       <Select
@@ -149,8 +95,8 @@ class ActorSelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: MyDropdownIndicator,
-          Option: MyOption
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
         }}
       />
     );
@@ -163,7 +109,6 @@ ActorSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   playerSpriteSheetId: PropTypes.string,
   actors: PropTypes.arrayOf(ActorShape).isRequired,
-  spriteSheets: PropTypes.arrayOf(SpriteShape).isRequired,
   direction: PropTypes.string,
   frame: PropTypes.number
 };
@@ -177,16 +122,12 @@ ActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scene = state.project.present.scenes.find(
-    s => s.id === state.editor.scene
-  );
-  const actors = scene ? scene.actors : [];
-  const spriteSheets = state.project.present.spriteSheets;
-  const settings = state.project.present.settings;
+  const actors = getSceneActors(state, { id: state.editor.scene });
+  const settings = state.entities.present.result.settings;
+  const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {
     actors,
-    spriteSheets,
-    playerSpriteSheetId: settings.playerSpriteSheetId
+    playerSpriteSheetId
   };
 }
 

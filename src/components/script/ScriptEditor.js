@@ -32,6 +32,7 @@ import {
   SpriteShape
 } from "../../reducers/stateShape";
 import events from "../../lib/events";
+import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const ItemTypes = {
   CARD: "card"
@@ -132,6 +133,18 @@ class ActionMini extends Component {
   onPasteEvent = before => e => {
     const { id, clipboardEvent, onPaste } = this.props;
     onPaste(id, clipboardEvent, before);
+  };
+
+  onEdit = newValue => {
+    const { onEdit, id } = this.props;
+    onEdit(id, newValue);
+  };
+
+  onEditLabel = e => {
+    const { onEdit, id } = this.props;
+    onEdit(id, {
+      __label: e.currentTarget.value
+    });
   };
 
   render() {
@@ -262,11 +275,7 @@ class ActionMini extends Component {
                       value={action.args.__label || ""}
                       autoFocus
                       onBlur={this.toggleRename}
-                      onChange={e => {
-                        onEdit(id, {
-                          __label: e.currentTarget.value
-                        });
-                      }}
+                      onChange={this.onEditLabel}
                       onKeyDown={this.submitOnEnter}
                     />
                     <div className="SelectRenamable__EditBtn SelectRenamable__SaveBtn">
@@ -287,9 +296,7 @@ class ActionMini extends Component {
                   id={action.id}
                   command={command}
                   value={action.args}
-                  onChange={newValue => {
-                    onEdit(id, newValue);
-                  }}
+                  onChange={this.onEdit}
                 />
               )}
 
@@ -426,6 +433,7 @@ class ScriptEditor extends Component {
 
   constructor(props) {
     super(props);
+    console.log("MAKE SCRIPT EDITOR");
     this.state = {
       value: props.value
     };
@@ -434,6 +442,10 @@ class ScriptEditor extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const { clipboardEvent } = this.props;
     const { value } = this.state;
+    console.log("SHOULD UPDATE SCRIPT EDITOR");
+
+    rerenderCheck("ScriptEditor", this.props, this.state, nextProps, nextState);
+
     return (
       nextState.value !== value || nextProps.clipboardEvent !== clipboardEvent
     );
@@ -454,7 +466,13 @@ class ScriptEditor extends Component {
   };
 
   onAdd = id => (command, defaults = {}) => {
-    const { variables, music, scenes, scene, spriteSheets } = this.props;
+    const {
+      variableIds,
+      musicIds,
+      sceneIds,
+      actorIds,
+      spriteSheetIds
+    } = this.props;
     const { value: root } = this.state;
     const eventFields = events[command].fields;
     const defaultArgs = eventFields
@@ -462,20 +480,19 @@ class ScriptEditor extends Component {
           (memo, field) => {
             let replaceValue = null;
             if (field.defaultValue === "LAST_SCENE") {
-              replaceValue = scenes[scenes.length - 1].id;
+              replaceValue = sceneIds[sceneIds.length - 1];
             } else if (field.defaultValue === "LAST_VARIABLE") {
               replaceValue =
-                variables.length > 0 ? variables[variables.length - 1].id : "0";
+                variableIds.length > 0
+                  ? variableIds[variableIds.length - 1]
+                  : "0";
             } else if (field.defaultValue === "LAST_MUSIC") {
-              replaceValue = music[0].id;
+              replaceValue = musicIds[0];
             } else if (field.defaultValue === "LAST_SPRITE") {
-              replaceValue = spriteSheets[0].id;
+              replaceValue = spriteSheetIds[0];
             } else if (field.defaultValue === "LAST_ACTOR") {
-              const actors = scene.actors;
               replaceValue =
-                actors.length > 0
-                  ? scene.actors[scene.actors.length - 1].id
-                  : "player";
+                actorIds.length > 0 ? actorIds[actorIds.length - 1] : "player";
             } else if (field.type === "events") {
               replaceValue = undefined;
             } else if (
@@ -606,12 +623,12 @@ class ScriptEditor extends Component {
 
   onEnter = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent(id);
+    // selectScriptEvent(id);
   };
 
   onLeave = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent("");
+    // selegctScriptEvent("");
   };
 
   render() {
@@ -679,11 +696,11 @@ ScriptEditor.propTypes = {
   type: PropTypes.string.isRequired,
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
-  variables: PropTypes.arrayOf(VariableShape).isRequired,
-  music: PropTypes.arrayOf(MusicShape).isRequired,
-  scenes: PropTypes.arrayOf(SceneShape).isRequired,
-  scene: SceneShape.isRequired,
-  spriteSheets: PropTypes.arrayOf(SpriteShape).isRequired,
+  variableIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  musicIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  sceneIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  actorIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  spriteSheetIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   clipboardEvent: PropTypes.oneOfType([
     EventShape,
     PropTypes.arrayOf(EventShape)
@@ -703,16 +720,13 @@ ScriptEditor.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const { result, entities } = state.entities.present;
   return {
-    variables: state.project.present && state.project.present.variables,
-    scenes: state.project.present && state.project.present.scenes,
-    scene:
-      state.project.present &&
-      state.project.present.scenes.find(scene => {
-        return scene.id === state.editor.scene;
-      }),
-    music: state.project.present && state.project.present.music,
-    spriteSheets: state.project.present && state.project.present.spriteSheets,
+    variableIds: result.variables,
+    sceneIds: result.scenes,
+    actorIds: entities.scenes[state.editor.scene].actors,
+    musicIds: result.music,
+    spriteSheetIds: result.spriteSheets,
     clipboardEvent: state.clipboard.event
   };
 }

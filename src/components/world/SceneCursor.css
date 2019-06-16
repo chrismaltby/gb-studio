@@ -1,0 +1,9 @@
+.SceneCursor {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  /* outline: 1px solid red; */
+  outline: 1px solid rgba(127, 127, 127, 0.9);
+  background: rgba(127, 127, 127, 0.2);
+  pointer-events: none;
+}

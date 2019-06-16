@@ -26,6 +26,8 @@ class ActorEditor extends Component {
     });
   };
 
+  onEditScript = this.onEdit("script");
+
   onCopy = e => {
     const { copyActor, actor } = this.props;
     copyActor(actor);
@@ -43,6 +45,8 @@ class ActorEditor extends Component {
 
   render() {
     const { index, actor, scene, spriteSheet, clipboardActor } = this.props;
+
+    // console.log("render: ActorEditor");
 
     if (!actor) {
       return <div />;
@@ -283,7 +287,7 @@ class ActorEditor extends Component {
             value={actor.script}
             type="actor"
             title={l10n("SIDEBAR_ACTOR_SCRIPT")}
-            onChange={this.onEdit("script")}
+            onChange={this.onEditScript}
           />
         </SidebarColumn>
       </Sidebar>
@@ -313,15 +317,11 @@ ActorEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const { project } = state;
-  const scene =
-    project.present.scenes &&
-    project.present.scenes.find(s => s.id === props.sceneId);
-  const actor = scene && scene.actors.find(a => a.id === props.id);
-  const index = scene && scene.actors.indexOf(actor);
+  const actor = state.entities.present.entities.actors[props.id];
+  const scene = state.entities.present.entities.scenes[props.sceneId];
   const spriteSheet =
-    actor &&
-    project.present.spriteSheets.find(s => s.id === actor.spriteSheetId);
+    state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+  const index = scene.actors.indexOf(props.id);
   return {
     index,
     actor,

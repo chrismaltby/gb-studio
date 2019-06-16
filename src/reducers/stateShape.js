@@ -22,8 +22,8 @@ export const TriggerShape = PropTypes.shape({
 export const SceneShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  actors: PropTypes.arrayOf(ActorShape).isRequired,
-  triggers: PropTypes.arrayOf(TriggerShape).isRequired
+  actors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  triggers: PropTypes.arrayOf(PropTypes.string).isRequired
 });
 
 export const SpriteShape = PropTypes.shape({
@@ -58,7 +58,7 @@ export const ProjectShape = PropTypes.shape({
   name: PropTypes.string,
   author: PropTypes.string,
   settings: SettingsShape,
-  scenes: PropTypes.arrayOf(SceneShape),
-  variables: PropTypes.arrayOf(VariableShape),
-  backgrounds: PropTypes.arrayOf(BackgroundShape)
+  scenes: PropTypes.arrayOf(PropTypes.string),
+  variables: PropTypes.arrayOf(PropTypes.string),
+  backgrounds: PropTypes.arrayOf(PropTypes.string)
 });

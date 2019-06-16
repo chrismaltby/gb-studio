@@ -170,6 +170,10 @@ textarea {
   display: flex;
 }
 
+.SelectRenamable .ReactSelectContainer {
+  width: 100%;
+}
+
 .SelectRenamable input {
   padding-left: 8px;
 }
@@ -252,7 +256,7 @@ textarea {
 }
 
 .FormField .ReactSelect__option {
-  font-size: 13px;
+  font-size: 11px;
   padding: 6px 10px;
 }
 

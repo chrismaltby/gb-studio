@@ -5,6 +5,12 @@ import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
+import {
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_TRIGGER,
+  DRAG_ACTOR
+} from "../reducers/editorReducer";
 
 const asyncAction = async (
   dispatch,
@@ -250,6 +256,39 @@ export const addActor = (sceneId, x, y, defaults) => {
   return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
 };
 
+export const sceneHover = (sceneId, x, y) => {
+  return { type: types.SCENE_HOVER, sceneId, x, y };
+};
+
+export const actorHover = (sceneId, id, x, y) => {
+  return { type: types.ACTOR_HOVER, sceneId, id, x, y };
+};
+
+export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
+  const state = getState();
+  const { dragging, scene, entityId } = state.editor;
+  if (dragging === DRAG_PLAYER) {
+    // moveTrigger(editPlayerStartAt(id, tX, tY));
+  } else if (dragging === DRAG_DESTINATION) {
+    /*
+    dispatch(editDestinationPosition(
+      destinationDragging,
+      sceneId,
+      editorType,
+      entityId,
+      id,
+      tX,
+      tY
+    ));
+    */
+  } else if (dragging === DRAG_ACTOR) {
+    dispatch(moveActor(scene, entityId, sceneId, x, y));
+  } else if (dragging === DRAG_TRIGGER) {
+    console.log("MOVE TRIGGER?", scene, entityId, sceneId, x, y);
+    dispatch(moveTrigger(scene, entityId, sceneId, x, y));
+  }
+};
+
 export const moveActor = (sceneId, id, newSceneId, x, y) => {
   return { type: types.MOVE_ACTOR, sceneId, id, newSceneId, x, y };
 };
@@ -346,16 +385,16 @@ export const dragPlayerStop = () => {
   return { type: types.DRAG_PLAYER_STOP };
 };
 
-export const dragActorStart = (sceneId, id, index) => {
-  return { type: types.DRAG_ACTOR_START, sceneId, index, id };
+export const dragActorStart = (sceneId, id) => {
+  return { type: types.DRAG_ACTOR_START, sceneId, id };
 };
 
 export const dragActorStop = () => {
   return { type: types.DRAG_ACTOR_STOP };
 };
 
-export const dragTriggerStart = (sceneId, id, index) => {
-  return { type: types.DRAG_TRIGGER_START, sceneId, index, id };
+export const dragTriggerStart = (sceneId, id) => {
+  return { type: types.DRAG_TRIGGER_START, sceneId, id };
 };
 
 export const dragTriggerStop = () => {

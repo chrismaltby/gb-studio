@@ -347,124 +347,124 @@ export default function project(state = initialState.project, action) {
         })
       };
     }
-    case MOVE_ACTOR: {
-      const moveScene = state.scenes.find(s => s.id === action.newSceneId);
-      const sceneImage = state.backgrounds.find(
-        background => background.id === moveScene.backgroundId
-      );
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
-            return scene;
-          }
-          // Remove from previous scene if changed
-          if (
-            scene.id === action.sceneId &&
-            action.sceneId !== action.newSceneId
-          ) {
-            return {
-              ...scene,
-              actors: scene.actors.filter(actor => {
-                return actor.id !== action.id;
-              })
-            };
-          }
-          // Add to new scene if changed
-          if (
-            scene.id === action.newSceneId &&
-            action.sceneId !== action.newSceneId
-          ) {
-            const oldScene = state.scenes.find(s => s.id === action.sceneId);
-            const oldActor =
-              oldScene && oldScene.actors.find(a => a.id === action.id);
-            if (!oldActor) {
-              return scene;
-            }
-            return {
-              ...scene,
-              actors: [].concat(scene.actors, {
-                ...oldActor,
-                x: clamp(action.x, 0, sceneImage.width - 2),
-                y: clamp(action.y, 0, sceneImage.height - 1)
-              })
-            };
-          }
-          // If moving within current scene just map old actors
-          // to new actors
-          return {
-            ...scene,
-            actors: scene.actors.map(actor => {
-              if (actor.id !== action.id) {
-                return actor;
-              }
-              return {
-                ...actor,
-                x: clamp(action.x, 0, sceneImage.width - 2),
-                y: clamp(action.y, 0, sceneImage.height - 1)
-              };
-            })
-          };
-        })
-      };
-    }
-    case EDIT_ACTOR:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: scene.actors.map(actor => {
-              if (actor.id !== action.id) {
-                return actor;
-              }
-              const patch = { ...action.values };
+    // case MOVE_ACTOR: {
+    //   const moveScene = state.scenes.find(s => s.id === action.newSceneId);
+    //   const sceneImage = state.backgrounds.find(
+    //     background => background.id === moveScene.backgroundId
+    //   );
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
+    //         return scene;
+    //       }
+    //       // Remove from previous scene if changed
+    //       if (
+    //         scene.id === action.sceneId &&
+    //         action.sceneId !== action.newSceneId
+    //       ) {
+    //         return {
+    //           ...scene,
+    //           actors: scene.actors.filter(actor => {
+    //             return actor.id !== action.id;
+    //           })
+    //         };
+    //       }
+    //       // Add to new scene if changed
+    //       if (
+    //         scene.id === action.newSceneId &&
+    //         action.sceneId !== action.newSceneId
+    //       ) {
+    //         const oldScene = state.scenes.find(s => s.id === action.sceneId);
+    //         const oldActor =
+    //           oldScene && oldScene.actors.find(a => a.id === action.id);
+    //         if (!oldActor) {
+    //           return scene;
+    //         }
+    //         return {
+    //           ...scene,
+    //           actors: [].concat(scene.actors, {
+    //             ...oldActor,
+    //             x: clamp(action.x, 0, sceneImage.width - 2),
+    //             y: clamp(action.y, 0, sceneImage.height - 1)
+    //           })
+    //         };
+    //       }
+    //       // If moving within current scene just map old actors
+    //       // to new actors
+    //       return {
+    //         ...scene,
+    //         actors: scene.actors.map(actor => {
+    //           if (actor.id !== action.id) {
+    //             return actor;
+    //           }
+    //           return {
+    //             ...actor,
+    //             x: clamp(action.x, 0, sceneImage.width - 2),
+    //             y: clamp(action.y, 0, sceneImage.height - 1)
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
+    // case EDIT_ACTOR:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: scene.actors.map(actor => {
+    //           if (actor.id !== action.id) {
+    //             return actor;
+    //           }
+    //           const patch = { ...action.values };
 
-              if (patch.spriteSheetId) {
-                const newSprite = state.spriteSheets.find(
-                  s => s.id === patch.spriteSheetId
-                );
-                // If new sprite not an actor then reset movement type back to static
-                if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-                  patch.movementType = "static";
-                }
-                const oldSprite = state.spriteSheets.find(
-                  s => s.id === actor.spriteSheetId
-                );
-                // If new sprite is an actor and old one wasn't reset movement type to face interaction
-                if (
-                  oldSprite &&
-                  newSprite &&
-                  oldSprite.id !== newSprite.id &&
-                  (oldSprite.numFrames !== 3 && oldSprite.numFrames !== 6) &&
-                  (newSprite.numFrames === 3 || newSprite.numFrames === 6)
-                ) {
-                  patch.movementType = "faceInteraction";
-                }
+    //           if (patch.spriteSheetId) {
+    //             const newSprite = state.spriteSheets.find(
+    //               s => s.id === patch.spriteSheetId
+    //             );
+    //             // If new sprite not an actor then reset movement type back to static
+    //             if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
+    //               patch.movementType = "static";
+    //             }
+    //             const oldSprite = state.spriteSheets.find(
+    //               s => s.id === actor.spriteSheetId
+    //             );
+    //             // If new sprite is an actor and old one wasn't reset movement type to face interaction
+    //             if (
+    //               oldSprite &&
+    //               newSprite &&
+    //               oldSprite.id !== newSprite.id &&
+    //               (oldSprite.numFrames !== 3 && oldSprite.numFrames !== 6) &&
+    //               (newSprite.numFrames === 3 || newSprite.numFrames === 6)
+    //             ) {
+    //               patch.movementType = "faceInteraction";
+    //             }
 
-                if (newSprite && newSprite.numFrames <= actor.frame) {
-                  patch.frame = 0;
-                }
-              }
-              // If static and cycling frames start from frame 1 (facing downwards)
-              if (
-                (patch.animate && actor.movementType === "static") ||
-                patch.movementType === "static"
-              ) {
-                patch.direction = "down";
-              }
+    //             if (newSprite && newSprite.numFrames <= actor.frame) {
+    //               patch.frame = 0;
+    //             }
+    //           }
+    //           // If static and cycling frames start from frame 1 (facing downwards)
+    //           if (
+    //             (patch.animate && actor.movementType === "static") ||
+    //             patch.movementType === "static"
+    //           ) {
+    //             patch.direction = "down";
+    //           }
 
-              return {
-                ...actor,
-                ...patch
-              };
-            })
-          };
-        })
-      };
+    //           return {
+    //             ...actor,
+    //             ...patch
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
     case PASTE_ACTOR:
       return {
         ...state,
@@ -814,19 +814,19 @@ export default function project(state = initialState.project, action) {
         )
       };
     }
-    case EDIT_PROJECT:
-      return {
-        ...state,
-        ...action.values
-      };
-    case EDIT_PROJECT_SETTINGS:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          ...action.values
-        }
-      };
+    // case EDIT_PROJECT:
+    //   return {
+    //     ...state,
+    //     ...action.values
+    //   };
+    // case EDIT_PROJECT_SETTINGS:
+    //   return {
+    //     ...state,
+    //     settings: {
+    //       ...state.settings,
+    //       ...action.values
+    //     }
+    //   };
     case SIDEBAR_RESIZE: {
       return {
         ...state,

@@ -4,6 +4,7 @@ import rootReducer from "../reducers/rootReducer";
 import electronMiddleware from "../middleware/electron";
 import buildGameMiddleware from "../middleware/buildGame";
 import musicMiddleware from "../middleware/music";
+import loggerMiddleware from "../middleware/logger";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -15,7 +16,8 @@ export default function configureStore() {
         thunk,
         electronMiddleware,
         buildGameMiddleware,
-        musicMiddleware
+        musicMiddleware,
+        loggerMiddleware
       )
     )
   );

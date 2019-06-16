@@ -17,6 +17,11 @@ import {
   ActorShape,
   TriggerShape
 } from "../../reducers/stateShape";
+import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import {
+  getMaxSceneRight,
+  getMaxSceneBottom
+} from "../../reducers/entitiesReducer";
 
 const MIDDLE_MOUSE = 2;
 
@@ -35,12 +40,12 @@ class World extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("copy", this.onCopy);
-    window.addEventListener("paste", this.onPaste);
-    window.addEventListener("keydown", this.onKeyDown);
-    window.addEventListener("click", this.onClick);
+    // window.addEventListener("copy", this.onCopy);
+    // window.addEventListener("paste", this.onPaste);
+    // window.addEventListener("keydown", this.onKeyDown);
+    // window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", this.onMouseWheel);
+    // window.addEventListener("mousewheel", this.onMouseWheel);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -50,7 +55,13 @@ class World extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    rerenderCheck("World", this.props, this.state, nextProps, nextState);
+    return true;
+  }
+
   componentDidUpdate(prevProps) {
+    console.log("DID UPDATE", prevProps, this.props);
     const { zoomRatio } = this.props;
     if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
@@ -90,6 +101,12 @@ class World extends Component {
       return;
     }
     e.preventDefault();
+
+    // !!!!!!!!!!!!!!!
+    // action.copySelectedEntity();
+    // !!!!!!!!!!!!!!!
+
+    /*
     const {
       editorType,
       entityId,
@@ -106,7 +123,7 @@ class World extends Component {
     } else if (editorType === "actors") {
       const actor = scene.actors.find(a => a.id === entityId);
       copyActor(actor);
-    }
+    }*/
   };
 
   onPaste = e => {
@@ -114,13 +131,20 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-    const {
-      clipboardType,
-      sceneId,
-      pasteActor,
-      pasteTrigger,
-      pasteScene
-    } = this.props;
+
+    // !!!!!!!!!!!!!!!
+    // action.pasteEntity();
+    // !!!!!!!!!!!!!!!
+
+    // const {
+    //   clipboardType,
+    //   sceneId,
+    //   pasteActor,
+    //   pasteTrigger,
+    //   pasteScene
+    // } = this.props;
+
+    /*
     if (clipboardType === "actor") {
       const { clipboardActor } = this.props;
       if (sceneId) {
@@ -135,6 +159,7 @@ class World extends Component {
       const { clipboardScene } = this.props;
       pasteScene(clipboardScene);
     }
+    */
   };
 
   onKeyDown = e => {
@@ -146,21 +171,22 @@ class World extends Component {
     }
     const { focused } = this.state;
     if (e.key === "Backspace" && focused) {
-      const {
-        sceneId,
-        entityId,
-        editorType,
-        removeScene,
-        removeActor,
-        removeTrigger
-      } = this.props;
-      if (editorType === "scenes") {
-        removeScene(sceneId);
-      } else if (editorType === "triggers") {
-        removeTrigger(sceneId, entityId);
-      } else if (editorType === "actors") {
-        removeActor(sceneId, entityId);
-      }
+      // actions.removeSelectedEntity();
+      // const {
+      //   sceneId,
+      //   entityId,
+      //   editorType,
+      //   removeScene,
+      //   removeActor,
+      //   removeTrigger
+      // } = this.props;
+      // if (editorType === "scenes") {
+      //   removeScene(sceneId);
+      // } else if (editorType === "triggers") {
+      //   removeTrigger(sceneId, entityId);
+      // } else if (editorType === "actors") {
+      //   removeActor(sceneId, entityId);
+      // }
     }
   };
 
@@ -179,24 +205,24 @@ class World extends Component {
       dragActorStop,
       dragTriggerStop
     } = this.props;
-    if (dragging === DRAG_PLAYER) {
-      dragPlayerStop();
-    } else if (dragging === DRAG_DESTINATION) {
-      dragDestinationStop();
-    } else if (dragging === DRAG_ACTOR) {
-      dragActorStop();
-    } else if (dragging === DRAG_TRIGGER) {
-      dragTriggerStop();
-    }
+    // if (dragging === DRAG_PLAYER) {
+    //   dragPlayerStop();
+    // } else if (dragging === DRAG_DESTINATION) {
+    //   dragDestinationStop();
+    // } else if (dragging === DRAG_ACTOR) {
+    //   dragActorStop();
+    // } else if (dragging === DRAG_TRIGGER) {
+    //   dragTriggerStop();
+    // }
     this.worldDragging = false;
   };
 
   onMouseMove = e => {
+    const { tool } = this.props;
     if (this.worldDragging) {
       e.currentTarget.scrollLeft -= e.movementX;
       e.currentTarget.scrollTop -= e.movementY;
     } else {
-      const { zoomRatio } = this.props;
       const boundingRect = e.currentTarget.getBoundingClientRect();
       const x = e.pageX + e.currentTarget.scrollLeft - 0;
       const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
@@ -204,11 +230,14 @@ class World extends Component {
       this.offsetX = e.pageX;
       this.offsetY = e.pageY - boundingRect.y;
 
-      this.setState({
-        hover: true,
-        hoverX: x / zoomRatio - 128,
-        hoverY: y / zoomRatio - 128
-      });
+      if (tool === "scene") {
+        const { zoomRatio } = this.props;
+        this.setState({
+          hover: true,
+          hoverX: x / zoomRatio - 128,
+          hoverY: y / zoomRatio - 128
+        });
+      }
     }
   };
 
@@ -243,10 +272,10 @@ class World extends Component {
   };
 
   dragDestinationStart = (eventId, sceneId, type, entityIndex) => {
-    if (!this.worldDragging) {
-      const { dragDestinationStart } = this.props;
-      dragDestinationStart(eventId, sceneId, type, entityIndex);
-    }
+    // if (!this.worldDragging) {
+    //   const { dragDestinationStart } = this.props;
+    //   dragDestinationStart(eventId, sceneId, type, entityIndex);
+    // }
   };
 
   onMouseEnter = e => {
@@ -267,13 +296,15 @@ class World extends Component {
   render() {
     const {
       scenes,
+      scrollWidth,
+      scrollHeight,
       settings,
       tool,
       showConnections,
       zoomRatio,
       sidebarWidth,
       selectWorld,
-      sceneId,
+      // sceneId,
       sceneDragging,
       sceneDragX,
       sceneDragY,
@@ -281,24 +312,11 @@ class World extends Component {
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
 
-    const width = Math.max(
-      window.innerWidth - sidebarWidth - 17,
-      scenes && scenes.length > 0
-        ? Math.max.apply(null, scenes.map(scene => scene.x + scene.width * 8)) +
-            20
-        : 100
-    );
-    const height = Math.max(
-      window.innerHeight - 40 - 17,
-      scenes && scenes.length > 0
-        ? Math.max.apply(
-            null,
-            scenes.map(scene => 20 + scene.y + scene.height * 8)
-          ) + 20
-        : 100
-    );
+    console.log("render: World");
 
     const worldStyle = { right: sidebarWidth };
+
+    // console.log({ scrollWidth, scrollHeight });
 
     return (
       <div
@@ -313,27 +331,25 @@ class World extends Component {
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
             className="World__Grid"
-            style={{ width, height }}
+            style={{ width: scrollWidth, height: scrollHeight }}
             onClick={selectWorld}
             onMouseDown={this.startWorldDrag}
           />
 
           {loaded && scenes.length === 0 && <WorldHelp />}
 
-          {scenes.map((scene, index) => (
-            <div key={scene.id}>
-              <Scene id={scene.id} index={index} scene={scene} />
-            </div>
+          {scenes.map((sceneId, index) => (
+            <Scene key={sceneId} id={sceneId} index={index} />
           ))}
 
-          {showConnections && (
+          {false && showConnections && (
             <Connections
-              width={width}
-              height={height}
+              width={scrollWidth}
+              height={scrollHeight}
               scenes={scenes}
               settings={settings}
               zoomRatio={zoomRatio}
-              dragScene={sceneDragging ? sceneId : ""}
+              dragScene={""}
               dragX={sceneDragX}
               dragY={sceneDragY}
               onDragPlayerStart={this.dragPlayerStart}
@@ -358,59 +374,62 @@ class World extends Component {
 }
 
 World.propTypes = {
-  editorType: PropTypes.string,
-  entityId: PropTypes.string,
-  sceneId: PropTypes.string,
-  scenes: PropTypes.arrayOf(SceneShape).isRequired,
-  scene: SceneShape,
+  scrollWidth: PropTypes.number.isRequired,
+  scrollHeight: PropTypes.number.isRequired,
+
+  // editorType: PropTypes.string,
+  // entityId: PropTypes.string,
+  // sceneId: PropTypes.string,
+  scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // scene: SceneShape,
   sceneDragX: PropTypes.number,
   sceneDragY: PropTypes.number,
-  settings: SettingsShape.isRequired,
+  // settings: SettingsShape.isRequired,
   zoomRatio: PropTypes.number.isRequired,
-  clipboardType: PropTypes.string,
-  clipboardActor: ActorShape,
-  clipboardTrigger: TriggerShape,
-  clipboardScene: SceneShape,
+  // clipboardType: PropTypes.string,
+  // clipboardActor: ActorShape,
+  // clipboardTrigger: TriggerShape,
+  // clipboardScene: SceneShape,
   prefab: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
-  dragging: PropTypes.string.isRequired,
+  // dragging: PropTypes.string.isRequired,
   sceneDragging: PropTypes.bool.isRequired,
   addScene: PropTypes.func.isRequired,
   setTool: PropTypes.func.isRequired,
   selectWorld: PropTypes.func.isRequired,
-  removeScene: PropTypes.func.isRequired,
-  removeTrigger: PropTypes.func.isRequired,
-  removeActor: PropTypes.func.isRequired,
+  // removeScene: PropTypes.func.isRequired,
+  // removeTrigger: PropTypes.func.isRequired,
+  // removeActor: PropTypes.func.isRequired,
   dragPlayerStart: PropTypes.func.isRequired,
   dragPlayerStop: PropTypes.func.isRequired,
-  dragDestinationStart: PropTypes.func.isRequired,
+  // dragDestinationStart: PropTypes.func.isRequired,
   dragDestinationStop: PropTypes.func.isRequired,
   dragActorStop: PropTypes.func.isRequired,
   dragTriggerStop: PropTypes.func.isRequired,
-  copyScene: PropTypes.func.isRequired,
-  copyActor: PropTypes.func.isRequired,
-  copyTrigger: PropTypes.func.isRequired,
-  pasteScene: PropTypes.func.isRequired,
-  pasteActor: PropTypes.func.isRequired,
-  pasteTrigger: PropTypes.func.isRequired,
+  // copyScene: PropTypes.func.isRequired,
+  // copyActor: PropTypes.func.isRequired,
+  // copyTrigger: PropTypes.func.isRequired,
+  // pasteScene: PropTypes.func.isRequired,
+  // pasteActor: PropTypes.func.isRequired,
+  // pasteTrigger: PropTypes.func.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
   loaded: PropTypes.bool.isRequired
 };
 
 World.defaultProps = {
-  editorType: "",
-  entityId: "",
-  sceneId: "",
-  scene: null,
+  // editorType: "",
+  // entityId: "",
+  // sceneId: "",
+  // scene: null,
   sceneDragX: 0,
   sceneDragY: 0,
-  clipboardType: "",
-  clipboardActor: {},
-  clipboardTrigger: {},
-  clipboardScene: {},
+  // clipboardType: "",
+  // clipboardActor: {},
+  // clipboardTrigger: {},
+  // clipboardScene: {},
   prefab: null
 };
 
@@ -423,32 +442,44 @@ function mapStateToProps(state) {
     sceneDragX,
     sceneDragY
   } = state.editor;
-  const scenes = state.project.present.scenes || [];
-  const scene = scenes.find(s => s.id === sceneId);
+  // const scenes = state.project.present.scenes || [];
+  // const scene = scenes.find(s => s.id === sceneId);
+  const loaded = state.document.loaded;
+  const scenes = state.entities.present.result.scenes;
+  const {
+    sidebarWidth,
+    showConnections
+  } = state.entities.present.result.settings;
+
+  const viewportWidth = window.innerWidth - sidebarWidth - 17;
+  const viewportHeight = window.innerHeight - 40 - 17;
+
+  const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state) + 20);
+  const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state) + 60);
+
   return {
-    editorType,
-    entityId,
-    sceneId,
+    // editorType,
+    // entityId,
+    // sceneId,
     scenes,
-    scene,
+    scrollWidth,
+    scrollHeight,
+    // scene,
     sceneDragging,
     sceneDragX,
     sceneDragY,
     tool: state.tools.selected,
     prefab: state.tools.prefab,
-    settings: state.project.present.settings,
-    editor: state.editor,
+    // editor: state.editor,
     zoomRatio: (state.editor.zoom || 100) / 100,
-    showConnections:
-      state.project.present.settings &&
-      state.project.present.settings.showConnections,
-    dragging: state.editor.dragging,
-    clipboardScene: state.clipboard.scene,
-    clipboardActor: state.clipboard.actor,
-    clipboardTrigger: state.clipboard.trigger,
-    clipboardType: state.clipboard.last,
-    sidebarWidth: state.project.present.settings.sidebarWidth,
-    loaded: state.document.loaded
+    showConnections,
+    // dragging: state.editor.dragging,
+    // clipboardScene: state.clipboard.scene,
+    // clipboardActor: state.clipboard.actor,
+    // clipboardTrigger: state.clipboard.trigger,
+    // clipboardType: state.clipboard.last,
+    sidebarWidth,
+    loaded
   };
 }
 

@@ -20,6 +20,8 @@ import {
   DRAG_ACTOR_STOP,
   DRAG_TRIGGER_START,
   DRAG_TRIGGER_STOP,
+  SCENE_HOVER,
+  ACTOR_HOVER,
   SELECT_WORLD,
   ZOOM_IN,
   ZOOM_OUT,
@@ -207,11 +209,35 @@ export default function editor(state = initialState.editor, action) {
         dragging: ""
       };
     }
-    case MOVE_ACTOR: {
+    case SCENE_HOVER: {
       return {
         ...state,
-        scene: action.newSceneId
+        hover: {
+          sceneId: action.sceneId,
+          x: action.x,
+          y: action.y
+        }
       };
+    }
+    case ACTOR_HOVER: {
+      return {
+        ...state,
+        hover: {
+          sceneId: action.sceneId,
+          actorId: action.id,
+          x: action.x,
+          y: action.y
+        }
+      };
+    }
+    case MOVE_ACTOR: {
+      if (state.scene !== action.newSceneId) {
+        return {
+          ...state,
+          scene: action.newSceneId
+        };
+      }
+      return state;
     }
     case MOVE_TRIGGER: {
       return {

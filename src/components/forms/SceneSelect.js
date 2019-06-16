@@ -9,24 +9,24 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 const indexById = indexBy("id");
 
 const DropdownIndicator = ({
-  scenesById,
-  backgroundsById,
+  scenesLookup,
+  backgroundsLookup,
   projectRoot,
   value
 }) => props => {
   return (
     <components.DropdownIndicator {...props}>
       {value &&
-        scenesById[value] &&
-        backgroundsById[scenesById[value].backgroundId] && (
+        scenesLookup[value] &&
+        backgroundsLookup[scenesLookup[value].backgroundId] && (
           <div
             className="Thumbnail"
             style={{
               backgroundImage: `url("${assetFilename(
                 projectRoot,
                 "backgrounds",
-                backgroundsById[scenesById[value].backgroundId]
-              )}?_v=${backgroundsById[scenesById[value].backgroundId]._v}")`
+                backgroundsLookup[scenesLookup[value].backgroundId]
+              )}?_v=${backgroundsLookup[scenesLookup[value].backgroundId]._v}")`
             }}
           />
         )}
@@ -34,25 +34,28 @@ const DropdownIndicator = ({
   );
 };
 
-const Option = ({ scenesById, backgroundsById, projectRoot }) => props => {
+const Option = ({ scenesLookup, backgroundsLookup, projectRoot }) => props => {
   // eslint-disable-next-line react/prop-types
   const { value, label } = props;
   return (
     <components.Option {...props}>
       <div style={{ display: "flex" }}>
         <div style={{ flexGrow: 1 }}>{label}</div>
-        {scenesById[value] && backgroundsById[scenesById[value].backgroundId] && (
-          <div
-            className="Thumbnail"
-            style={{
-              backgroundImage: `url("${assetFilename(
-                projectRoot,
-                "backgrounds",
-                backgroundsById[scenesById[value].backgroundId]
-              )}?_v=${backgroundsById[scenesById[value].backgroundId]._v}")`
-            }}
-          />
-        )}
+        {scenesLookup[value] &&
+          backgroundsLookup[scenesLookup[value].backgroundId] && (
+            <div
+              className="Thumbnail"
+              style={{
+                backgroundImage: `url("${assetFilename(
+                  projectRoot,
+                  "backgrounds",
+                  backgroundsLookup[scenesLookup[value].backgroundId]
+                )}?_v=${
+                  backgroundsLookup[scenesLookup[value].backgroundId]._v
+                }")`
+              }}
+            />
+          )}
       </div>
     </components.Option>
   );
@@ -66,12 +69,11 @@ class SceneSelect extends Component {
       id,
       value,
       onChange,
-      backgrounds,
+      backgroundsLookup,
+      scenesLookup,
       projectRoot
     } = this.props;
     const current = scenes.find(m => m.id === value);
-    const backgroundsById = indexById(backgrounds);
-    const scenesById = indexById(scenes);
 
     const options = [].concat(
       allowNone
@@ -89,12 +91,12 @@ class SceneSelect extends Component {
     );
 
     const MyDropdownIndicator = DropdownIndicator({
-      backgroundsById,
-      scenesById,
+      backgroundsLookup,
+      scenesLookup,
       projectRoot,
       value
     });
-    const MyOption = Option({ backgroundsById, scenesById, projectRoot });
+    const MyOption = Option({ backgroundsLookup, scenesLookup, projectRoot });
 
     return (
       <Select
@@ -121,7 +123,8 @@ SceneSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   allowNone: PropTypes.bool,
   scenes: PropTypes.arrayOf(SceneShape).isRequired,
-  backgrounds: PropTypes.arrayOf(BackgroundShape).isRequired,
+  scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
+  backgroundsLookup: PropTypes.objectOf(BackgroundShape).isRequired,
   projectRoot: PropTypes.string.isRequired
 };
 
@@ -132,10 +135,15 @@ SceneSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const backgrounds = state.project.present.backgrounds || [];
-  const scenes = (state.project.present && state.project.present.scenes) || [];
+  const scenes = state.entities.present.result.scenes.map(sceneId => {
+    return state.entities.present.entities.scenes[sceneId];
+  });
+  const backgroundsLookup = state.entities.present.entities.backgrounds;
+  const scenesLookup = state.entities.present.entities.scenes;
+
   return {
-    backgrounds,
+    backgroundsLookup,
+    scenesLookup,
     scenes,
     projectRoot: state.document && state.document.root
   };

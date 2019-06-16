@@ -16,6 +16,7 @@ class SpriteSheetCanvas extends Component {
   componentDidMount() {
     const { projectRoot, spriteSheet } = this.props;
     this.loadImage(projectRoot, spriteSheet);
+    // console.log("new spritesheetcanvas");
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,7 +64,7 @@ class SpriteSheetCanvas extends Component {
       this.src = this.imageSrc(projectRoot, spriteSheet);
       if (imageCache[this.src]) {
         this.img = imageCache[this.src];
-        this.draw();
+        requestAnimationFrame(this.draw);
       } else {
         this.imgLoaded = false;
         this.img = new Image();
@@ -101,6 +102,8 @@ class SpriteSheetCanvas extends Component {
       }
       tmpCtx.drawImage(this.img, spriteOffset * -SPRITE_SIZE, 0);
 
+      // console.log("spriteOffset", spriteOffset);
+
       // Remove background colour
       const imgData = tmpCtx.getImageData(0, 0, SPRITE_SIZE, SPRITE_SIZE);
       for (let i = 0; i < imgData.data.length; i += 4) {
@@ -115,6 +118,7 @@ class SpriteSheetCanvas extends Component {
   };
 
   render() {
+    // console.log("Render: SpriteSheetCanvas");
     return (
       <canvas ref={this.canvas} width={SPRITE_SIZE} height={SPRITE_SIZE} />
     );
@@ -139,9 +143,8 @@ SpriteSheetCanvas.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const spriteSheet = state.project.present.spriteSheets.find(
-    s => s.id === props.spriteSheetId
-  );
+  const spriteSheet =
+    state.entities.present.entities.spriteSheets[props.spriteSheetId];
   return {
     spriteSheet,
     projectRoot: state.document && state.document.root

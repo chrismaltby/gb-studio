@@ -197,15 +197,16 @@ TriggerEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const scenes = state.project.present && state.project.present.scenes;
-  const scene = scenes && scenes.find(s => s.id === props.sceneId);
-  const trigger = scene && scene.triggers.find(t => t.id === props.id);
-  const index = scene && scene.triggers.indexOf(trigger);
-
+  const trigger = state.entities.present.entities.triggers[props.id];
+  const scene = state.entities.present.entities.scenes[props.sceneId];
+  const spriteSheet =
+    state.entities.present.entities.spriteSheets[trigger.spriteSheetId];
+  const index = scene.triggers.indexOf(props.id);
   return {
     index,
     trigger,
     scene,
+    spriteSheet,
     clipboardTrigger: state.clipboard.trigger
   };
 }
