@@ -8,63 +8,9 @@ import Button from "../library/Button";
 import { MusicShape } from "../../reducers/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import { getMusic } from "../../reducers/entitiesReducer";
 
 const groupByPlugin = groupBy("plugin");
-
-const DropdownIndicator = ({ playing, onPause, onPlay }) => props => {
-  return (
-    <components.DropdownIndicator {...props}>
-      {playing ? (
-        <Button
-          small
-          transparent
-          onMouseDown={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            onPause();
-          }}
-        >
-          <PauseIcon />
-        </Button>
-      ) : (
-        <Button
-          small
-          transparent
-          onMouseDown={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            onPlay();
-          }}
-        >
-          <PlayIcon />
-        </Button>
-      )}
-    </components.DropdownIndicator>
-  );
-};
-
-const Option = ({ onPlay }) => props => {
-  // eslint-disable-next-line react/prop-types
-  const { value, label } = props;
-  return (
-    <components.Option {...props}>
-      <div style={{ display: "flex" }}>
-        <div style={{ flexGrow: 1 }}>{label}</div>
-        <Button
-          small
-          transparent
-          onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            onPlay(value);
-          }}
-        >
-          <PlayIcon />
-        </Button>
-      </div>
-    </components.Option>
-  );
-};
 
 class MusicSelect extends Component {
   onPlay = id => {
@@ -82,8 +28,63 @@ class MusicSelect extends Component {
     pauseMusic();
   };
 
+  renderDropdownIndicator = props => {
+    const { playing } = this.props;
+    return (
+      <components.DropdownIndicator {...props}>
+        {playing ? (
+          <Button
+            small
+            transparent
+            onMouseDown={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPause();
+            }}
+          >
+            <PauseIcon />
+          </Button>
+        ) : (
+          <Button
+            small
+            transparent
+            onMouseDown={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPlay();
+            }}
+          >
+            <PlayIcon />
+          </Button>
+        )}
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { value, label } = props;
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <Button
+            small
+            transparent
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPlay(value);
+            }}
+          >
+            <PlayIcon />
+          </Button>
+        </div>
+      </components.Option>
+    );
+  };
+
   render() {
-    const { music, playing, id, value, onChange } = this.props;
+    const { music, id, value, onChange } = this.props;
     const current = music.find(m => m.id === value);
     const groupedMusic = groupByPlugin(music);
     const options = Object.keys(groupedMusic)
@@ -112,15 +113,6 @@ class MusicSelect extends Component {
         return memo;
       }, []);
 
-    const MyDropdownIndicator = DropdownIndicator({
-      playing,
-      onPlay: this.onPlay,
-      onPause: this.onPause
-    });
-    const MyOption = Option({
-      onPlay: this.onPlay
-    });
-
     return (
       <Select
         id={id}
@@ -133,8 +125,8 @@ class MusicSelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: MyDropdownIndicator,
-          Option: MyOption
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
         }}
       />
     );
@@ -159,8 +151,8 @@ MusicSelect.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    music: (state.project.present && state.project.present.music) || [],
-    projectRoot: state.document && state.document.root,
+    music: getMusic(state),
+    projectRoot: state.document.root,
     playing: state.music.playing
   };
 }

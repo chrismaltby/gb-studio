@@ -227,13 +227,15 @@ SceneEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const hasScenes = state.project.present && state.project.present.scenes;
-  const sceneIndex = hasScenes
-    ? state.project.present.scenes.findIndex(scene => scene.id === props.id)
-    : -1;
+  // const hasScenes = state.project.present && state.project.present.scenes;
+  // const sceneIndex = hasScenes
+  //   ? state.project.present.scenes.findIndex(scene => scene.id === props.id)
+  //   : -1;
+  const scene = state.entities.present.entities.scenes[props.id];
+  const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
   return {
     sceneIndex,
-    scene: sceneIndex !== -1 && state.project.present.scenes[sceneIndex],
+    scene,
     clipboardScene: state.clipboard.scene,
     clipboardActor: state.clipboard.actor,
     clipboardTrigger: state.clipboard.trigger

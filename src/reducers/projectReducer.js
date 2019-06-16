@@ -2,21 +2,21 @@ import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
 import initialState from "./initialState";
 import {
-  PROJECT_LOAD_SUCCESS,
-  SPRITE_LOAD_SUCCESS,
-  SPRITE_REMOVE,
-  BACKGROUND_LOAD_SUCCESS,
+  // PROJECT_LOAD_SUCCESS,
+  // SPRITE_LOAD_SUCCESS,
+  // SPRITE_REMOVE,
+  // BACKGROUND_LOAD_SUCCESS,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
-  ADD_SCENE,
-  MOVE_SCENE,
-  EDIT_SCENE,
+  // ADD_SCENE,
+  // MOVE_SCENE,
+  // EDIT_SCENE,
   PASTE_SCENE,
   REMOVE_SCENE,
   ADD_ACTOR,
-  MOVE_ACTOR,
-  EDIT_ACTOR,
+  // MOVE_ACTOR,
+  // EDIT_ACTOR,
   PASTE_ACTOR,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
@@ -26,12 +26,12 @@ import {
   REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
   RESIZE_TRIGGER,
-  EDIT_TRIGGER,
+  // EDIT_TRIGGER,
   PASTE_TRIGGER,
-  MOVE_TRIGGER,
+  // MOVE_TRIGGER,
   RENAME_VARIABLE,
-  EDIT_PROJECT,
-  EDIT_PROJECT_SETTINGS,
+  // EDIT_PROJECT,
+  // EDIT_PROJECT_SETTINGS,
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
@@ -39,7 +39,6 @@ import {
   SIDEBAR_RESIZE
 } from "../actions/actionTypes";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
-import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 
 const MIN_SCENE_X = 60;
@@ -95,52 +94,52 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
 
 export default function project(state = initialState.project, action) {
   switch (action.type) {
-    case PROJECT_LOAD_SUCCESS: {
-      const newState = deepmerge(state, action.data);
-      return {
-        ...newState,
-        scenes: newState.scenes.map(
-          sceneClearCollisionsIfDimensionsChanged(newState.backgrounds)
-        )
-      };
-    }
-    case SPRITE_REMOVE:
-      return {
-        ...state,
-        spriteSheets: state.spriteSheets.filter(notMatchAsset(action.data))
-      };
-    case SPRITE_LOAD_SUCCESS: {
-      const currentSprite = state.spriteSheets.find(matchAsset(action.data));
-      return {
-        ...state,
-        spriteSheets: []
-          .concat(state.spriteSheets.filter(notMatchAsset(action.data)), {
-            ...action.data,
-            id: currentSprite ? currentSprite.id : action.data.id
-          })
-          .sort(sortFilename)
-      };
-    }
+    // case PROJECT_LOAD_SUCCESS: {
+    //   const newState = deepmerge(state, action.data);
+    //   return {
+    //     ...newState,
+    //     scenes: newState.scenes.map(
+    //       sceneClearCollisionsIfDimensionsChanged(newState.backgrounds)
+    //     )
+    //   };
+    // }
+    // case SPRITE_REMOVE:
+    //   return {
+    //     ...state,
+    //     spriteSheets: state.spriteSheets.filter(notMatchAsset(action.data))
+    //   };
+    // case SPRITE_LOAD_SUCCESS: {
+    //   const currentSprite = state.spriteSheets.find(matchAsset(action.data));
+    //   return {
+    //     ...state,
+    //     spriteSheets: []
+    //       .concat(state.spriteSheets.filter(notMatchAsset(action.data)), {
+    //         ...action.data,
+    //         id: currentSprite ? currentSprite.id : action.data.id
+    //       })
+    //       .sort(sortFilename)
+    //   };
+    // }
     case BACKGROUND_REMOVE:
       return {
         ...state,
         backgrounds: state.backgrounds.filter(notMatchAsset(action.data))
       };
-    case BACKGROUND_LOAD_SUCCESS: {
-      const currentBackground = state.backgrounds.find(matchAsset(action.data));
-      return {
-        ...state,
-        scenes: state.scenes.map(
-          sceneClearCollisionsIfDimensionsChanged(state.backgrounds)
-        ),
-        backgrounds: []
-          .concat(state.backgrounds.filter(notMatchAsset(action.data)), {
-            ...action.data,
-            id: currentBackground ? currentBackground.id : action.data.id
-          })
-          .sort(sortFilename)
-      };
-    }
+    // case BACKGROUND_LOAD_SUCCESS: {
+    //   const currentBackground = state.backgrounds.find(matchAsset(action.data));
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(
+    //       sceneClearCollisionsIfDimensionsChanged(state.backgrounds)
+    //     ),
+    //     backgrounds: []
+    //       .concat(state.backgrounds.filter(notMatchAsset(action.data)), {
+    //         ...action.data,
+    //         id: currentBackground ? currentBackground.id : action.data.id
+    //       })
+    //       .sort(sortFilename)
+    //   };
+    // }
     case MUSIC_REMOVE:
       return {
         ...state,
@@ -158,128 +157,128 @@ export default function project(state = initialState.project, action) {
           .sort(sortFilename)
       };
     }
-    case ADD_SCENE: {
-      const script =
-        action.defaults &&
-        action.defaults.script &&
-        action.defaults.script.map(regenerateEventIds);
-      const defaultBackground =
-        state.backgrounds &&
-        state.backgrounds[0] &&
-        state.backgrounds.slice().sort(sortRecent)[0];
-      const newScene = Object.assign(
-        {
-          name: `Scene ${state.scenes.length + 1}`,
-          backgroundId: defaultBackground && defaultBackground.id,
-          width: defaultBackground ? defaultBackground.width : 32,
-          height: defaultBackground ? defaultBackground.height : 32,
-          actors: [],
-          triggers: [],
-          collisions: []
-        },
-        action.defaults || {},
-        script && {
-          script
-        },
-        {
-          id: action.id,
-          x: Math.max(MIN_SCENE_X, action.x),
-          y: Math.max(MIN_SCENE_Y, action.y)
-        }
-      );
-      return {
-        ...state,
-        scenes: [].concat(state.scenes, newScene)
-      };
-    }
-    case MOVE_SCENE:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            x: Math.max(MIN_SCENE_X, scene.x + action.moveX),
-            y: Math.max(MIN_SCENE_Y, scene.y + action.moveY)
-          };
-        })
-      };
-    case EDIT_SCENE:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
+    // case ADD_SCENE: {
+    //   const script =
+    //     action.defaults &&
+    //     action.defaults.script &&
+    //     action.defaults.script.map(regenerateEventIds);
+    //   const defaultBackground =
+    //     state.backgrounds &&
+    //     state.backgrounds[0] &&
+    //     state.backgrounds.slice().sort(sortRecent)[0];
+    //   const newScene = Object.assign(
+    //     {
+    //       name: `Scene ${state.scenes.length + 1}`,
+    //       backgroundId: defaultBackground && defaultBackground.id,
+    //       width: defaultBackground ? defaultBackground.width : 32,
+    //       height: defaultBackground ? defaultBackground.height : 32,
+    //       actors: [],
+    //       triggers: [],
+    //       collisions: []
+    //     },
+    //     action.defaults || {},
+    //     script && {
+    //       script
+    //     },
+    //     {
+    //       id: action.id,
+    //       x: Math.max(MIN_SCENE_X, action.x),
+    //       y: Math.max(MIN_SCENE_Y, action.y)
+    //     }
+    //   );
+    //   return {
+    //     ...state,
+    //     scenes: [].concat(state.scenes, newScene)
+    //   };
+    // }
+    // case MOVE_SCENE:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         x: Math.max(MIN_SCENE_X, scene.x + action.moveX),
+    //         y: Math.max(MIN_SCENE_Y, scene.y + action.moveY)
+    //       };
+    //     })
+    //   };
+    // case EDIT_SCENE:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
 
-          // If switched background use collisions from another
-          // scene using the background already if available
-          // otherwise make empty collisions array of
-          // the correct size
-          let newCollisions;
-          let newActors;
-          let newTriggers;
-          let newBackground;
+    //       // If switched background use collisions from another
+    //       // scene using the background already if available
+    //       // otherwise make empty collisions array of
+    //       // the correct size
+    //       let newCollisions;
+    //       let newActors;
+    //       let newTriggers;
+    //       let newBackground;
 
-          if (action.values.backgroundId) {
-            const otherScene = state.scenes.find(s => {
-              return s.backgroundId === action.values.backgroundId;
-            });
-            const background = state.backgrounds.find(
-              b => b.id === action.values.backgroundId
-            );
+    //       if (action.values.backgroundId) {
+    //         const otherScene = state.scenes.find(s => {
+    //           return s.backgroundId === action.values.backgroundId;
+    //         });
+    //         const background = state.backgrounds.find(
+    //           b => b.id === action.values.backgroundId
+    //         );
 
-            if (otherScene) {
-              newCollisions = otherScene.collisions;
-            } else {
-              const collisionsSize = Math.ceil(
-                (background.width * background.height) / 8
-              );
-              newCollisions = [];
-              for (let i = 0; i < collisionsSize; i++) {
-                newCollisions[i] = 0;
-              }
-            }
+    //         if (otherScene) {
+    //           newCollisions = otherScene.collisions;
+    //         } else {
+    //           const collisionsSize = Math.ceil(
+    //             (background.width * background.height) / 8
+    //           );
+    //           newCollisions = [];
+    //           for (let i = 0; i < collisionsSize; i++) {
+    //             newCollisions[i] = 0;
+    //           }
+    //         }
 
-            newActors = scene.actors.map(actor => {
-              return {
-                ...actor,
-                x: Math.min(actor.x, background.width - 2),
-                y: Math.min(actor.y, background.height - 1)
-              };
-            });
+    //         newActors = scene.actors.map(actor => {
+    //           return {
+    //             ...actor,
+    //             x: Math.min(actor.x, background.width - 2),
+    //             y: Math.min(actor.y, background.height - 1)
+    //           };
+    //         });
 
-            newTriggers = scene.triggers.map(trigger => {
-              const x = Math.min(trigger.x, background.width - 1);
-              const y = Math.min(trigger.y, background.height - 1);
-              return {
-                ...trigger,
-                x,
-                y,
-                width: Math.min(trigger.width, background.width - x),
-                height: Math.min(trigger.height, background.height - y)
-              };
-            });
+    //         newTriggers = scene.triggers.map(trigger => {
+    //           const x = Math.min(trigger.x, background.width - 1);
+    //           const y = Math.min(trigger.y, background.height - 1);
+    //           return {
+    //             ...trigger,
+    //             x,
+    //             y,
+    //             width: Math.min(trigger.width, background.width - x),
+    //             height: Math.min(trigger.height, background.height - y)
+    //           };
+    //         });
 
-            newBackground = background;
-          }
+    //         newBackground = background;
+    //       }
 
-          return Object.assign(
-            {},
-            scene,
-            action.values,
-            action.values.backgroundId && {
-              collisions: newCollisions || [],
-              actors: newActors,
-              triggers: newTriggers,
-              width: newBackground.width,
-              height: newBackground.height
-            }
-          );
-        })
-      };
+    //       return Object.assign(
+    //         {},
+    //         scene,
+    //         action.values,
+    //         action.values.backgroundId && {
+    //           collisions: newCollisions || [],
+    //           actors: newActors,
+    //           triggers: newTriggers,
+    //           width: newBackground.width,
+    //           height: newBackground.height
+    //         }
+    //       );
+    //     })
+    //   };
     case PASTE_SCENE:
       return {
         ...state,
@@ -693,27 +692,27 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case EDIT_TRIGGER:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: scene.triggers.map(trigger => {
-              if (trigger.id !== action.id) {
-                return trigger;
-              }
-              return {
-                ...trigger,
-                ...action.values
-              };
-            })
-          };
-        })
-      };
+    // case EDIT_TRIGGER:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.map(trigger => {
+    //           if (trigger.id !== action.id) {
+    //             return trigger;
+    //           }
+    //           return {
+    //             ...trigger,
+    //             ...action.values
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
     case PASTE_TRIGGER:
       return {
         ...state,
@@ -737,67 +736,67 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case MOVE_TRIGGER: {
-      const moveScene = state.scenes.find(s => s.id === action.newSceneId);
-      const sceneImage = state.backgrounds.find(
-        background => background.id === moveScene.backgroundId
-      );
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
-            return scene;
-          }
-          // Remove from previous scene if changed
-          if (
-            scene.id === action.sceneId &&
-            action.sceneId !== action.newSceneId
-          ) {
-            return {
-              ...scene,
-              triggers: scene.triggers.filter(trigger => {
-                return trigger.id !== action.id;
-              })
-            };
-          }
-          // Add to new scene if changed
-          if (
-            scene.id === action.newSceneId &&
-            action.sceneId !== action.newSceneId
-          ) {
-            const oldScene = state.scenes.find(s => s.id === action.sceneId);
-            const oldTrigger =
-              oldScene && oldScene.triggers.find(a => a.id === action.id);
-            if (!oldTrigger) {
-              return scene;
-            }
-            return {
-              ...scene,
-              triggers: [].concat(scene.triggers, {
-                ...oldTrigger,
-                x: clamp(action.x, 0, sceneImage.width - oldTrigger.width),
-                y: clamp(action.y, 0, sceneImage.height - oldTrigger.height)
-              })
-            };
-          }
-          // If moving within current scene just map old triggers
-          // to new triggers
-          return {
-            ...scene,
-            triggers: scene.triggers.map(trigger => {
-              if (trigger.id !== action.id) {
-                return trigger;
-              }
-              return {
-                ...trigger,
-                x: clamp(action.x, 0, sceneImage.width - trigger.width),
-                y: clamp(action.y, 0, sceneImage.height - trigger.height)
-              };
-            })
-          };
-        })
-      };
-    }
+    // case MOVE_TRIGGER: {
+    //   const moveScene = state.scenes.find(s => s.id === action.newSceneId);
+    //   const sceneImage = state.backgrounds.find(
+    //     background => background.id === moveScene.backgroundId
+    //   );
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId && scene.id !== action.newSceneId) {
+    //         return scene;
+    //       }
+    //       // Remove from previous scene if changed
+    //       if (
+    //         scene.id === action.sceneId &&
+    //         action.sceneId !== action.newSceneId
+    //       ) {
+    //         return {
+    //           ...scene,
+    //           triggers: scene.triggers.filter(trigger => {
+    //             return trigger.id !== action.id;
+    //           })
+    //         };
+    //       }
+    //       // Add to new scene if changed
+    //       if (
+    //         scene.id === action.newSceneId &&
+    //         action.sceneId !== action.newSceneId
+    //       ) {
+    //         const oldScene = state.scenes.find(s => s.id === action.sceneId);
+    //         const oldTrigger =
+    //           oldScene && oldScene.triggers.find(a => a.id === action.id);
+    //         if (!oldTrigger) {
+    //           return scene;
+    //         }
+    //         return {
+    //           ...scene,
+    //           triggers: [].concat(scene.triggers, {
+    //             ...oldTrigger,
+    //             x: clamp(action.x, 0, sceneImage.width - oldTrigger.width),
+    //             y: clamp(action.y, 0, sceneImage.height - oldTrigger.height)
+    //           })
+    //         };
+    //       }
+    //       // If moving within current scene just map old triggers
+    //       // to new triggers
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.map(trigger => {
+    //           if (trigger.id !== action.id) {
+    //             return trigger;
+    //           }
+    //           return {
+    //             ...trigger,
+    //             x: clamp(action.x, 0, sceneImage.width - trigger.width),
+    //             y: clamp(action.y, 0, sceneImage.height - trigger.height)
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
     case RENAME_VARIABLE: {
       return {
         ...state,

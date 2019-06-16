@@ -552,9 +552,7 @@ function mapStateToProps(state, props) {
     dragging: editorDragging
   } = state.editor;
   const scene = state.entities.present.entities.scenes[props.id];
-  const image = state.project.present.backgrounds.find(
-    background => background.id === scene.backgroundId
-  );
+  const image = state.entities.present.entities.backgrounds[scene.backgroundId];
   const sprites = state.project.present.spriteSheets;
   const event =
     (state.editor.eventId &&

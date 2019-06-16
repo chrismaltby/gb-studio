@@ -6,6 +6,7 @@ import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import l10n from "../../lib/helpers/l10n";
 import { SpriteShape } from "../../reducers/stateShape";
 import { groupBy } from "../../lib/helpers/array";
+import { getSpriteSheets } from "../../reducers/entitiesReducer";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -48,35 +49,6 @@ const buildOptions = (memo, plugin, spriteSheets) => {
   });
 };
 
-const DropdownIndicator = (value, direction, frame) => props => {
-  return (
-    <components.DropdownIndicator {...props}>
-      <SpriteSheetCanvas
-        spriteSheetId={value}
-        direction={direction}
-        frame={frame}
-      />
-    </components.DropdownIndicator>
-  );
-};
-
-const Option = (direction, frame) => props => {
-  // eslint-disable-next-line react/prop-types
-  const { label, value } = props;
-  return (
-    <components.Option {...props}>
-      <div style={{ display: "flex" }}>
-        <div style={{ flexGrow: 1 }}>{label}</div>
-        <SpriteSheetCanvas
-          spriteSheetId={value}
-          direction={direction}
-          frame={frame}
-        />
-      </div>
-    </components.Option>
-  );
-};
-
 class SpriteSheetSelect extends Component {
   shouldComponentUpdate(nextProps) {
     const { value, direction, frame, spriteSheets } = this.props;
@@ -88,8 +60,38 @@ class SpriteSheetSelect extends Component {
     );
   }
 
+  renderDropdownIndicator = props => {
+    const { value, direction, frame } = this.props;
+    return (
+      <components.DropdownIndicator {...props}>
+        <SpriteSheetCanvas
+          spriteSheetId={value}
+          direction={direction}
+          frame={frame}
+        />
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { direction, frame } = this.props;
+    const { label, value } = props;
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <SpriteSheetCanvas
+            spriteSheetId={value}
+            direction={direction}
+            frame={frame}
+          />
+        </div>
+      </components.Option>
+    );
+  };
+
   render() {
-    const { spriteSheets, id, value, onChange, direction, frame } = this.props;
+    const { spriteSheets, id, value, onChange } = this.props;
 
     const current = spriteSheets.find(s => s.id === value);
     const groupedSpriteSheets = groupByPlugin(spriteSheets);
@@ -100,9 +102,6 @@ class SpriteSheetSelect extends Component {
         buildOptions(memo, plugin, groupedSpriteSheets[plugin]);
         return memo;
       }, []);
-
-    const MyDropdownIndicator = DropdownIndicator(value, direction, frame);
-    const MyOption = Option(direction, frame);
 
     return (
       <Select
@@ -115,8 +114,8 @@ class SpriteSheetSelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: MyDropdownIndicator,
-          Option: MyOption
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
         }}
       />
     );
@@ -140,7 +139,7 @@ SpriteSheetSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const spriteSheets = state.project.present.spriteSheets || [];
+  const spriteSheets = getSpriteSheets(state);
   return {
     spriteSheets
   };

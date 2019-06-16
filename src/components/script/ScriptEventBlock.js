@@ -26,10 +26,24 @@ import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
+function areEqualShallow(a, b) {
+  for (let key in a) {
+    if (!(key in b) || a[key] !== b[key]) {
+      return false;
+    }
+  }
+  for (let key in b) {
+    if (!(key in a)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class ScriptEventInput extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("ScriptEventInput", this.props, {}, nextProps, {});
-    return true;
+    return !areEqualShallow(this.props, nextProps);
   }
 
   onChange = e => {
@@ -181,7 +195,9 @@ class ScriptEventInput extends Component {
       );
     }
     if (type === "emote") {
-      return <EmoteSelect id={id} value={value} onChange={this.onChange} />;
+      return (
+        <EmoteSelect id={id} value={String(value)} onChange={this.onChange} />
+      );
     }
     if (type === "operator") {
       return <OperatorSelect id={id} value={value} onChange={this.onChange} />;
@@ -196,12 +212,10 @@ class ScriptEventInput extends Component {
 class ScriptEventField extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("ScriptEventField", this.props, {}, nextProps, {});
-    return true;
+    return !areEqualShallow(this.props, nextProps);
   }
 
   onChange = (newValue, valueIndex) => {
-    console.log("ONCHANGE", newValue, valueIndex);
-
     const { field, value, onChange } = this.props;
     const { key } = field;
 

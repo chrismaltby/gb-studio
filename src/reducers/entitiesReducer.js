@@ -19,6 +19,7 @@ import {
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
+import { stat } from "fs";
 
 const addEntity = (state, type, data) => {
   return {
@@ -250,11 +251,14 @@ const moveScene = (state, action) => {
 
 const editScene = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
+  const actors = state.entities.actors;
+  const triggers = state.entities.triggers;
 
   // If switched background use collisions from another
   // scene using the background already if available
   // otherwise make empty collisions array of
   // the correct size
+  let newState = state;
   let newCollisions;
   let newActors;
   let newTriggers;
@@ -278,31 +282,41 @@ const editScene = (state, action) => {
       }
     }
 
-    newActors = scene.actors.map(actor => {
-      return {
-        ...actor,
-        x: Math.min(actor.x, background.width - 2),
-        y: Math.min(actor.y, background.height - 1)
-      };
+    scene.actors.forEach(actorId => {
+      const actor = actors[actorId];
+      const x = Math.min(actor.x, background.width - 2);
+      const y = Math.min(actor.y, background.height - 1);
+      if (actor.x !== x || actor.y !== y) {
+        newState = editEntity(newState, "actors", actor.id, { x, y });
+      }
     });
 
-    newTriggers = scene.triggers.map(trigger => {
+    scene.triggers.forEach(triggerId => {
+      const trigger = triggers[triggerId];
       const x = Math.min(trigger.x, background.width - 1);
       const y = Math.min(trigger.y, background.height - 1);
-      return {
-        ...trigger,
-        x,
-        y,
-        width: Math.min(trigger.width, background.width - x),
-        height: Math.min(trigger.height, background.height - y)
-      };
+      const width = Math.min(trigger.width, background.width - x);
+      const height = Math.min(trigger.height, background.height - y);
+      if (
+        trigger.x !== x ||
+        trigger.y !== y ||
+        trigger.width !== width ||
+        trigger.height !== height
+      ) {
+        newState = editEntity(newState, "triggers", trigger.id, {
+          x,
+          y,
+          width,
+          height
+        });
+      }
     });
 
     newBackground = background;
   }
 
   return editEntity(
-    state,
+    newState,
     "scenes",
     action.sceneId,
     Object.assign(
@@ -310,8 +324,6 @@ const editScene = (state, action) => {
       action.values,
       action.values.backgroundId && {
         collisions: newCollisions || [],
-        actors: newActors,
-        triggers: newTriggers,
         width: newBackground.width,
         height: newBackground.height
       }
@@ -456,15 +468,24 @@ export default function project(state = initialState.entities, action) {
 
 // Selectors -------------------------------------------------------------------
 
-const getScenes = state => state.entities.present.entities.scenes;
-const getSceneIds = state => state.entities.present.result.scenes;
-const getActors = state => state.entities.present.entities.actors;
-const getSpriteSheets = state => state.entities.present.entities.spriteSheets;
-const getSceneActorIds = (state, props) =>
+export const getScenesLookup = state => state.entities.present.entities.scenes;
+export const getSceneIds = state => state.entities.present.result.scenes;
+export const getActorsLookup = state => state.entities.present.entities.actors;
+export const getBackgroundsLookup = state =>
+  state.entities.present.entities.backgrounds;
+export const getBackgroundIds = state =>
+  state.entities.present.result.backgrounds;
+export const getMusicLookup = state => state.entities.present.entities.music;
+export const getMusicIds = state => state.entities.present.result.music;
+export const getSpriteSheetsLookup = state =>
+  state.entities.present.entities.spriteSheets;
+export const getSpriteSheetIds = state =>
+  state.entities.present.result.spriteSheets;
+export const getSceneActorIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].actors;
 
 export const getMaxSceneRight = createSelector(
-  [getScenes, getSceneIds],
+  [getScenesLookup, getSceneIds],
   (scenes, sceneIds) =>
     sceneIds.reduce((memo, sceneId) => {
       const scene = scenes[sceneId];
@@ -477,7 +498,7 @@ export const getMaxSceneRight = createSelector(
 );
 
 export const getMaxSceneBottom = createSelector(
-  [getScenes, getSceneIds],
+  [getScenesLookup, getSceneIds],
   (scenes, sceneIds) =>
     sceneIds.reduce((memo, sceneId) => {
       const scene = scenes[sceneId];
@@ -490,9 +511,10 @@ export const getMaxSceneBottom = createSelector(
 );
 
 export const getSceneUniqueSpriteSheets = createSelector(
-  [getSceneActorIds, getActors, getSpriteSheets],
+  [getSceneActorIds, getActorsLookup, getSpriteSheetsLookup],
   (actorIds, actors, spriteSheets) =>
     actorIds.reduce((memo, actorId) => {
+      // console.log({ spriteSheets, actorIds, actors, actor: actors[actorId] });
       const spriteSheet = spriteSheets[actors[actorId].spriteSheetId];
       if (memo.indexOf(spriteSheet) === -1) {
         memo.push(spriteSheet);
@@ -510,6 +532,21 @@ export const getSceneFrameCount = createSelector(
 );
 
 export const getSceneActors = createSelector(
-  [getSceneActorIds, getActors],
+  [getSceneActorIds, getActorsLookup],
   (actorIds, actors) => actorIds.map(actorId => actors[actorId])
+);
+
+export const getMusic = createSelector(
+  [getMusicIds, getMusicLookup],
+  (musicIds, music) => musicIds.map(id => music[id])
+);
+
+export const getBackgrounds = createSelector(
+  [getBackgroundIds, getBackgroundsLookup],
+  (backgroundIds, backgrounds) => backgroundIds.map(id => backgrounds[id])
+);
+
+export const getSpriteSheets = createSelector(
+  [getSpriteSheetIds, getSpriteSheetsLookup],
+  (spriteSheetIds, spriteSheets) => spriteSheetIds.map(id => spriteSheets[id])
 );

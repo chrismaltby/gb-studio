@@ -7,15 +7,15 @@ import l10n from "../../lib/helpers/l10n";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 
-const variables = Array.from(Array(512).keys()).map(n =>
+const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
 );
 
 class VariableSelect extends Component {
   constructor() {
     super();
-    console.log("MAKE VariableSelect");
   }
+
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("VariableSelect", this.props, {}, nextProps, {});
     return true;
@@ -38,9 +38,9 @@ class VariableSelect extends Component {
   render() {
     const { id, value, onChange } = this.props;
     console.log("Render Variable Select");
-    const options = variables.map((variable, index) => {
+    const options = allVariables.map((variable, index) => {
       return {
-        value: index,
+        value: String(index),
         label: this.variableName(index)
       };
     });

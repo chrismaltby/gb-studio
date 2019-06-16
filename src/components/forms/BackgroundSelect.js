@@ -3,63 +3,62 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { BackgroundShape } from "../../reducers/stateShape";
-import { groupBy, indexBy } from "../../lib/helpers/array";
+import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import {
+  getBackgrounds,
+  getBackgroundsLookup
+} from "../../reducers/entitiesReducer";
 
 const groupByPlugin = groupBy("plugin");
-const indexById = indexBy("id");
-
-const DropdownIndicator = ({
-  backgroundsById,
-  projectRoot,
-  value
-}) => props => {
-  return (
-    <components.DropdownIndicator {...props}>
-      {value && backgroundsById[value] && (
-        <div
-          className="Thumbnail"
-          style={{
-            backgroundImage: `url("${assetFilename(
-              projectRoot,
-              "backgrounds",
-              backgroundsById[value]
-            )}?_v=${backgroundsById[value]._v}")`
-          }}
-        />
-      )}
-    </components.DropdownIndicator>
-  );
-};
-
-const Option = ({ backgroundsById, projectRoot }) => props => {
-  // eslint-disable-next-line react/prop-types
-  const { value, label } = props;
-  return (
-    <components.Option {...props}>
-      <div style={{ display: "flex" }}>
-        <div style={{ flexGrow: 1 }}>{label}</div>
-        <div
-          className="Thumbnail"
-          style={{
-            backgroundImage: `url("${assetFilename(
-              projectRoot,
-              "backgrounds",
-              backgroundsById[value]
-            )}?_v=${backgroundsById[value]._v}")`
-          }}
-        />
-      </div>
-    </components.Option>
-  );
-};
 
 class BackgroundSelect extends Component {
+  renderDropdownIndicator = props => {
+    const { backgroundsLookup, projectRoot, value } = this.props;
+    return (
+      <components.DropdownIndicator {...props}>
+        {value && backgroundsLookup[value] && (
+          <div
+            className="Thumbnail"
+            style={{
+              backgroundImage: `url("${assetFilename(
+                projectRoot,
+                "backgrounds",
+                backgroundsLookup[value]
+              )}?_v=${backgroundsLookup[value]._v}")`
+            }}
+          />
+        )}
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { value, label } = props;
+    const { backgroundsLookup, projectRoot } = this.props;
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <div
+            className="Thumbnail"
+            style={{
+              backgroundImage: `url("${assetFilename(
+                projectRoot,
+                "backgrounds",
+                backgroundsLookup[value]
+              )}?_v=${backgroundsLookup[value]._v}")`
+            }}
+          />
+        </div>
+      </components.Option>
+    );
+  };
+
   render() {
-    const { backgrounds, id, value, onChange, projectRoot } = this.props;
+    const { backgrounds, id, value, onChange } = this.props;
     const current = backgrounds.find(b => b.id === value);
     const groupedBackgrounds = groupByPlugin(backgrounds);
-    const backgroundsById = indexById(backgrounds);
 
     const options = Object.keys(groupedBackgrounds)
       .sort()
@@ -87,12 +86,7 @@ class BackgroundSelect extends Component {
         return memo;
       }, []);
 
-    const MyDropdownIndicator = DropdownIndicator({
-      backgroundsById,
-      projectRoot,
-      value
-    });
-    const MyOption = Option({ backgroundsById, projectRoot });
+    console.log({ options });
 
     return (
       <Select
@@ -105,8 +99,8 @@ class BackgroundSelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: MyDropdownIndicator,
-          Option: MyOption
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
         }}
       />
     );
@@ -118,6 +112,7 @@ BackgroundSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   backgrounds: PropTypes.arrayOf(BackgroundShape).isRequired,
+  backgroundsLookup: PropTypes.objectOf(BackgroundShape).isRequired,
   projectRoot: PropTypes.string.isRequired
 };
 
@@ -127,10 +122,12 @@ BackgroundSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const backgrounds = state.project.present.backgrounds || [];
+  const backgrounds = getBackgrounds(state);
+  const backgroundsLookup = getBackgroundsLookup(state);
   return {
     backgrounds,
-    projectRoot: state.document && state.document.root
+    backgroundsLookup,
+    projectRoot: state.document.root
   };
 }
 
