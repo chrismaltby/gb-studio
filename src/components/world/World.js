@@ -88,29 +88,7 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-
-    // !!!!!!!!!!!!!!!
-    // action.copySelectedEntity();
-    // !!!!!!!!!!!!!!!
-
-    /*
-    const {
-      editorType,
-      entityId,
-      scene,
-      copyScene,
-      copyTrigger,
-      copyActor
-    } = this.props;
-    if (editorType === "scenes") {
-      copyScene(scene);
-    } else if (editorType === "triggers") {
-      const trigger = scene.triggers.find(t => t.id === entityId);
-      copyTrigger(trigger);
-    } else if (editorType === "actors") {
-      const actor = scene.actors.find(a => a.id === entityId);
-      copyActor(actor);
-    }*/
+    // copySelectedEntity();
   };
 
   onPaste = e => {
@@ -118,35 +96,7 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-
-    // !!!!!!!!!!!!!!!
-    // action.pasteEntity();
-    // !!!!!!!!!!!!!!!
-
-    // const {
-    //   clipboardType,
-    //   sceneId,
-    //   pasteActor,
-    //   pasteTrigger,
-    //   pasteScene
-    // } = this.props;
-
-    /*
-    if (clipboardType === "actor") {
-      const { clipboardActor } = this.props;
-      if (sceneId) {
-        pasteActor(sceneId, clipboardActor);
-      }
-    } else if (clipboardType === "trigger") {
-      const { clipboardTrigger } = this.props;
-      if (sceneId) {
-        pasteTrigger(sceneId, clipboardTrigger);
-      }
-    } else if (clipboardType === "scene") {
-      const { clipboardScene } = this.props;
-      pasteScene(clipboardScene);
-    }
-    */
+    // pasteClipoardEntity();
   };
 
   onKeyDown = e => {
@@ -163,22 +113,6 @@ class World extends Component {
   };
 
   onMouseUp = e => {
-    const {
-      dragging,
-      dragPlayerStop,
-      dragDestinationStop,
-      dragActorStop,
-      dragTriggerStop
-    } = this.props;
-    // if (dragging === DRAG_PLAYER) {
-    //   dragPlayerStop();
-    // } else if (dragging === DRAG_DESTINATION) {
-    //   dragDestinationStop();
-    // } else if (dragging === DRAG_ACTOR) {
-    //   dragActorStop();
-    // } else if (dragging === DRAG_TRIGGER) {
-    //   dragTriggerStop();
-    // }
     this.worldDragging = false;
   };
 
@@ -227,20 +161,6 @@ class World extends Component {
       this.worldDragging = true;
       e.stopPropagation();
     }
-  };
-
-  dragPlayerStart = e => {
-    if (!this.worldDragging) {
-      const { dragPlayerStart } = this.props;
-      dragPlayerStart(e);
-    }
-  };
-
-  dragDestinationStart = (eventId, sceneId, type, entityIndex) => {
-    // if (!this.worldDragging) {
-    //   const { dragDestinationStart } = this.props;
-    //   dragDestinationStart(eventId, sceneId, type, entityIndex);
-    // }
   };
 
   onMouseEnter = e => {
@@ -327,41 +247,16 @@ class World extends Component {
 World.propTypes = {
   scrollWidth: PropTypes.number.isRequired,
   scrollHeight: PropTypes.number.isRequired,
-
-  // editorType: PropTypes.string,
-  // entityId: PropTypes.string,
-  // sceneId: PropTypes.string,
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // scene: SceneShape,
-  // settings: SettingsShape.isRequired,
   zoomRatio: PropTypes.number.isRequired,
-  // clipboardType: PropTypes.string,
-  // clipboardActor: ActorShape,
-  // clipboardTrigger: TriggerShape,
-  // clipboardScene: SceneShape,
   prefab: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
-  // dragging: PropTypes.string.isRequired,
   addScene: PropTypes.func.isRequired,
   setTool: PropTypes.func.isRequired,
   selectWorld: PropTypes.func.isRequired,
-  // removeScene: PropTypes.func.isRequired,
-  // removeTrigger: PropTypes.func.isRequired,
-  // removeActor: PropTypes.func.isRequired,
-  dragPlayerStart: PropTypes.func.isRequired,
-  dragPlayerStop: PropTypes.func.isRequired,
-  // dragDestinationStart: PropTypes.func.isRequired,
-  dragDestinationStop: PropTypes.func.isRequired,
-  dragActorStop: PropTypes.func.isRequired,
-  dragTriggerStop: PropTypes.func.isRequired,
-  // copyScene: PropTypes.func.isRequired,
-  // copyActor: PropTypes.func.isRequired,
-  // copyTrigger: PropTypes.func.isRequired,
-  // pasteScene: PropTypes.func.isRequired,
-  // pasteActor: PropTypes.func.isRequired,
-  // pasteTrigger: PropTypes.func.isRequired,
+  removeSelectedEntity: PropTypes.func.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
   loaded: PropTypes.bool.isRequired
