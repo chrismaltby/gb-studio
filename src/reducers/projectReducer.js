@@ -1,4 +1,3 @@
-import deepmerge from "deepmerge";
 import uuid from "uuid/v4";
 import initialState from "./initialState";
 import {
@@ -13,7 +12,7 @@ import {
   // MOVE_SCENE,
   // EDIT_SCENE,
   PASTE_SCENE,
-  REMOVE_SCENE,
+  // REMOVE_SCENE,
   ADD_ACTOR,
   // MOVE_ACTOR,
   // EDIT_ACTOR,
@@ -32,14 +31,14 @@ import {
   RENAME_VARIABLE,
   // EDIT_PROJECT,
   // EDIT_PROJECT_SETTINGS,
-  EDIT_PLAYER_START_AT,
-  EDIT_SCENE_EVENT_DESTINATION_POSITION,
-  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
+  // EDIT_PLAYER_START_AT,
+  // EDIT_SCENE_EVENT_DESTINATION_POSITION,
+  // EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
+  // EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   SIDEBAR_RESIZE
 } from "../actions/actionTypes";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
-import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
+import { regenerateEventIds } from "../lib/helpers/eventSystem";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -50,11 +49,11 @@ const sortFilename = (a, b) => {
   return 0;
 };
 
-const sortRecent = (a, b) => {
-  if (a._v > b._v) return -1;
-  if (a._v < b._v) return 1;
-  return 0;
-};
+// const sortRecent = (a, b) => {
+//   if (a._v > b._v) return -1;
+//   if (a._v < b._v) return 1;
+//   return 0;
+// };
 
 const matchAsset = assetA => assetB => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
@@ -64,6 +63,7 @@ const notMatchAsset = assetA => assetB => {
   return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
 };
 
+/*
 const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
   const backgroundLookup = backgrounds.reduce((memo, background) => {
     return {
@@ -91,6 +91,7 @@ const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
     return scene;
   };
 };
+*/
 
 export default function project(state = initialState.project, action) {
   switch (action.type) {
@@ -303,13 +304,13 @@ export default function project(state = initialState.project, action) {
           })
         })
       };
-    case REMOVE_SCENE:
-      return {
-        ...state,
-        scenes: state.scenes.filter(scene => {
-          return scene.id !== action.sceneId;
-        })
-      };
+    // case REMOVE_SCENE:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.filter(scene => {
+    //       return scene.id !== action.sceneId;
+    //     })
+    //   };
     case ADD_ACTOR: {
       const script =
         action.defaults &&
@@ -487,21 +488,21 @@ export default function project(state = initialState.project, action) {
           };
         })
       };
-    case REMOVE_ACTOR:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: scene.actors.filter(actor => {
-              return action.id !== actor.id;
-            })
-          };
-        })
-      };
+    // case REMOVE_ACTOR:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: scene.actors.filter(actor => {
+    //           return action.id !== actor.id;
+    //         })
+    //       };
+    //     })
+    //   };
     case REMOVE_ACTOR_AT:
       return {
         ...state,
@@ -632,21 +633,21 @@ export default function project(state = initialState.project, action) {
         })
       };
     }
-    case REMOVE_TRIGGER:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: scene.triggers.filter(trigger => {
-              return action.id !== trigger.id;
-            })
-          };
-        })
-      };
+    // case REMOVE_TRIGGER:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.filter(trigger => {
+    //           return action.id !== trigger.id;
+    //         })
+    //       };
+    //     })
+    //   };
     case REMOVE_TRIGGER_AT: {
       return {
         ...state,
@@ -835,86 +836,86 @@ export default function project(state = initialState.project, action) {
         }
       };
     }
-    case EDIT_PLAYER_START_AT:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          startSceneId: action.sceneId,
-          startX: action.x,
-          startY: action.y
-        }
-      };
-    case EDIT_SCENE_EVENT_DESTINATION_POSITION: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            script: patchEvents(scene.script, action.eventId, {
-              sceneId: action.destSceneId,
-              x: action.x,
-              y: action.y
-            })
-          };
-        })
-      };
-    }
-    case EDIT_ACTOR_EVENT_DESTINATION_POSITION: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: scene.actors.map(actor => {
-              if (actor.id !== action.id) {
-                return actor;
-              }
-              return {
-                ...actor,
-                script: patchEvents(actor.script, action.eventId, {
-                  sceneId: action.destSceneId,
-                  x: action.x,
-                  y: action.y
-                })
-              };
-            })
-          };
-        })
-      };
-    }
-    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: scene.triggers.map(trigger => {
-              if (trigger.id !== action.id) {
-                return trigger;
-              }
-              return {
-                ...trigger,
-                script: patchEvents(trigger.script, action.eventId, {
-                  sceneId: action.destSceneId,
-                  x: action.x,
-                  y: action.y
-                })
-              };
-            })
-          };
-        })
-      };
-    }
+    // case EDIT_PLAYER_START_AT:
+    //   return {
+    //     ...state,
+    //     settings: {
+    //       ...state.settings,
+    //       startSceneId: action.sceneId,
+    //       startX: action.x,
+    //       startY: action.y
+    //     }
+    //   };
+    // case EDIT_SCENE_EVENT_DESTINATION_POSITION: {
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         script: patchEvents(scene.script, action.eventId, {
+    //           sceneId: action.destSceneId,
+    //           x: action.x,
+    //           y: action.y
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
+    // case EDIT_ACTOR_EVENT_DESTINATION_POSITION: {
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: scene.actors.map(actor => {
+    //           if (actor.id !== action.id) {
+    //             return actor;
+    //           }
+    //           return {
+    //             ...actor,
+    //             script: patchEvents(actor.script, action.eventId, {
+    //               sceneId: action.destSceneId,
+    //               x: action.x,
+    //               y: action.y
+    //             })
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
+    // case EDIT_TRIGGER_EVENT_DESTINATION_POSITION: {
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.map(trigger => {
+    //           if (trigger.id !== action.id) {
+    //             return trigger;
+    //           }
+    //           return {
+    //             ...trigger,
+    //             script: patchEvents(trigger.script, action.eventId, {
+    //               sceneId: action.destSceneId,
+    //               x: action.x,
+    //               y: action.y
+    //             })
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
     default:
       return state;
   }

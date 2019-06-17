@@ -266,26 +266,38 @@ export const actorHover = (sceneId, id, x, y) => {
 
 export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
   const state = getState();
-  const { dragging, scene, entityId } = state.editor;
+  const { dragging, scene, eventId, entityId, type: editorType } = state.editor;
   if (dragging === DRAG_PLAYER) {
-    // moveTrigger(editPlayerStartAt(id, tX, tY));
+    dispatch(editPlayerStartAt(sceneId, x, y));
   } else if (dragging === DRAG_DESTINATION) {
-    /*
-    dispatch(editDestinationPosition(
-      destinationDragging,
-      sceneId,
-      editorType,
-      entityId,
-      id,
-      tX,
-      tY
-    ));
-    */
+    dispatch(
+      editDestinationPosition(
+        eventId,
+        scene,
+        editorType,
+        entityId,
+        sceneId,
+        x,
+        y
+      )
+    );
   } else if (dragging === DRAG_ACTOR) {
     dispatch(moveActor(scene, entityId, sceneId, x, y));
   } else if (dragging === DRAG_TRIGGER) {
     console.log("MOVE TRIGGER?", scene, entityId, sceneId, x, y);
     dispatch(moveTrigger(scene, entityId, sceneId, x, y));
+  }
+};
+
+export const removeSelectedEntity = () => (dispatch, getState) => {
+  const state = getState();
+  const { scene, entityId, type: editorType } = state.editor;
+  if (editorType === "scenes") {
+    dispatch(removeScene(scene));
+  } else if (editorType === "triggers") {
+    dispatch(removeTrigger(scene, entityId));
+  } else if (editorType === "actors") {
+    dispatch(removeActor(scene, entityId));
   }
 };
 

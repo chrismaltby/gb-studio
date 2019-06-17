@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import cx from "classnames";
 import { connect } from "react-redux";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
 import { walkEvents } from "../../lib/helpers/eventSystem";
 import { SceneShape, SettingsShape } from "../../reducers/stateShape";
+import * as actions from "../../actions";
 import {
   getScenes,
   getScenesLookup,
@@ -61,9 +63,33 @@ const calculateTransitionCoords = ({
 };
 
 class Connections extends Component {
-  onDragPlayerStart = e => {};
+  onDragPlayerStart = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    const { dragPlayerStart } = this.props;
+    dragPlayerStart();
+    window.addEventListener("mouseup", this.onDragPlayerStop);
+  };
 
-  onDragDestinationStart = e => {};
+  onDragPlayerStop = e => {
+    const { dragPlayerStop } = this.props;
+    dragPlayerStop();
+    window.removeEventListener("mouseup", this.onDragPlayerStop);
+  };
+
+  onDragDestinationStart = (eventId, sceneId, selectionType, id) => e => {
+    e.stopPropagation();
+    e.preventDefault();
+    const { dragDestinationStart } = this.props;
+    dragDestinationStart(eventId, sceneId, selectionType, id);
+    window.addEventListener("mouseup", this.onDragDestinationStop);
+  };
+
+  onDragDestinationStop = e => {
+    const { dragDestinationStop } = this.props;
+    dragDestinationStop();
+    window.removeEventListener("mouseup", this.onDragDestinationStop);
+  };
 
   renderConnection = ({ x1, y1, x2, y2, qx, qy, eventId }) => (
     <g key={eventId}>
@@ -77,8 +103,9 @@ class Connections extends Component {
     </g>
   );
 
-  renderMarker = ({ x, y, fill, direction, onMouseDown }) => (
+  renderMarker = ({ x, y, fill, direction, onMouseDown, eventId }) => (
     <g
+      key={eventId}
       className="Connections__PlayerStart"
       title="Game Starting Position"
       onMouseDown={onMouseDown}
@@ -139,7 +166,8 @@ class Connections extends Component {
       scenes,
       scenesLookup,
       actorsLookup,
-      triggersLookup
+      triggersLookup,
+      dragging
     } = this.props;
 
     const connections = scenes.reduce((memo, scene) => {
@@ -218,7 +246,9 @@ class Connections extends Component {
 
     return (
       <svg
-        className="Connections"
+        className={cx("Connections", {
+          "Connections--Dragging": dragging
+        })}
         width={width}
         height={height}
         style={{
@@ -233,7 +263,13 @@ class Connections extends Component {
               y: y2,
               fill: "#00bcd4",
               direction,
-              onMouseDown: this.onDragDestinationStart
+              eventId,
+              onMouseDown: this.onDragDestinationStart(
+                eventId,
+                sceneId,
+                type,
+                entityId
+              )
             })
         )}
         {startScene &&
@@ -261,6 +297,7 @@ function mapStateToProps(state) {
     startDirection
   } = state.entities.present.result.settings;
   const startScene = scenesLookup[startSceneId];
+  const { dragging } = state.editor;
   return {
     scenes,
     scenesLookup,
@@ -269,11 +306,22 @@ function mapStateToProps(state) {
     startScene,
     startX,
     startY,
-    startDirection
+    startDirection,
+    dragging: !!dragging
   };
 }
 
-export default connect(mapStateToProps)(Connections);
+const mapDispatchToProps = {
+  dragPlayerStart: actions.dragPlayerStart,
+  dragPlayerStop: actions.dragPlayerStop,
+  dragDestinationStart: actions.dragDestinationStart,
+  dragDestinationStop: actions.dragDestinationStop
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Connections);
 
 /*
 const scriptMapTransition = script => {

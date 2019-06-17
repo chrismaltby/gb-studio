@@ -10,3 +10,8 @@
 .Connections__Destination {
   pointer-events: all;
 }
+
+.Connections--Dragging .Connections__PlayerStart,
+.Connections--Dragging .Connections__Destination {
+  pointer-events: none;
+}

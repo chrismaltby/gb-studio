@@ -11,15 +11,21 @@ import {
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
+  REMOVE_SCENE,
   EDIT_ACTOR,
   MOVE_ACTOR,
+  REMOVE_ACTOR,
   MOVE_TRIGGER,
-  EDIT_TRIGGER
+  EDIT_TRIGGER,
+  REMOVE_TRIGGER,
+  EDIT_PLAYER_START_AT,
+  EDIT_SCENE_EVENT_DESTINATION_POSITION,
+  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
+  EDIT_ACTOR_EVENT_DESTINATION_POSITION
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { stat } from "fs";
 
 const addEntity = (state, type, data) => {
   return {
@@ -56,6 +62,7 @@ const editEntity = (state, type, id, data) => {
 };
 
 const removeEntity = (state, type, id) => {
+  console.log("REMOVE ", id, "FROM", state.result[type], state.result);
   return {
     ...state,
     entities: {
@@ -65,10 +72,17 @@ const removeEntity = (state, type, id) => {
         [id]: null
       }
     },
-    result: {
-      ...state.result,
-      [type]: [].filter(entity => entity.id !== data.id)
-    }
+    result: Object.assign(
+      {},
+      state.result,
+      state.result[type] && {
+        [type]: state.result[type].filter(entityId => entityId !== id)
+      }
+    )
+    // result: {
+    //   ...state.result,
+    //   [type]: state.result[type].filter(entityId => entityId !== id)
+    // }
   };
 };
 
@@ -331,6 +345,10 @@ const editScene = (state, action) => {
   );
 };
 
+const removeScene = (state, action) => {
+  return removeEntity(state, "scenes", action.sceneId);
+};
+
 const moveActor = (state, action) => {
   const newScene = state.entities.scenes[action.newSceneId];
 
@@ -427,10 +445,79 @@ const editActor = (state, action) => {
   return editEntity(state, "actors", actor.id, patch);
 };
 
+const removeActor = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+
+  // Remove from scene
+  const nextState = editEntity(state, "scenes", action.sceneId, {
+    actors: scene.actors.filter(actorId => {
+      return actorId !== action.id;
+    })
+  });
+
+  return removeEntity(nextState, "actors", action.id);
+};
+
 const editTrigger = (state, action) => {
   const trigger = state.entities.triggers[action.id];
   const patch = { ...action.values };
   return editEntity(state, "triggers", trigger.id, patch);
+};
+
+const removeTrigger = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+
+  // Remove from scene
+  const nextState = editEntity(state, "scenes", action.sceneId, {
+    triggers: scene.triggers.filter(triggerId => {
+      return triggerId !== action.id;
+    })
+  });
+
+  return removeEntity(nextState, "triggers", action.id);
+};
+
+const editPlayerStartAt = (state, action) => {
+  return editProjectSettings(state, {
+    values: {
+      startSceneId: action.sceneId,
+      startX: action.x,
+      startY: action.y
+    }
+  });
+};
+
+const editSceneEventDestinationPosition = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  return editEntity(state, "scenes", action.sceneId, {
+    script: patchEvents(scene.script, action.eventId, {
+      sceneId: action.destSceneId,
+      x: action.x,
+      y: action.y
+    })
+  });
+};
+
+const editActorEventDestinationPosition = (state, action) => {
+  const actor = state.entities.actors[action.id];
+  return editEntity(state, "actors", action.id, {
+    script: patchEvents(actor.script, action.eventId, {
+      sceneId: action.destSceneId,
+      x: action.x,
+      y: action.y
+    })
+  });
+};
+
+const editTriggerEventDestinationPosition = (state, action) => {
+  const trigger = state.entities.triggers[action.id];
+  return editEntity(state, "triggers", action.id, {
+    script: patchEvents(trigger.script, action.eventId, {
+      sceneId: action.destSceneId,
+      x: action.x,
+      y: action.y
+    })
+  });
 };
 
 export default function project(state = initialState.entities, action) {
@@ -453,14 +540,28 @@ export default function project(state = initialState.entities, action) {
       return moveScene(state, action);
     case EDIT_SCENE:
       return editScene(state, action);
+    case REMOVE_SCENE:
+      return removeScene(state, action);
     case EDIT_ACTOR:
       return editActor(state, action);
     case MOVE_ACTOR:
       return moveActor(state, action);
+    case REMOVE_ACTOR:
+      return removeActor(state, action);
     case EDIT_TRIGGER:
       return editTrigger(state, action);
     case MOVE_TRIGGER:
       return moveTrigger(state, action);
+    case REMOVE_TRIGGER:
+      return removeTrigger(state, action);
+    case EDIT_PLAYER_START_AT:
+      return editPlayerStartAt(state, action);
+    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
+      return editSceneEventDestinationPosition(state, action);
+    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
+      return editActorEventDestinationPosition(state, action);
+    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
+      return editTriggerEventDestinationPosition(state, action);
     default:
       return state;
   }

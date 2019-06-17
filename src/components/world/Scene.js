@@ -95,7 +95,7 @@ class Scene extends Component {
       moveSelectedEntity,
       sceneHover
     } = this.props;
-    const { creating, downX, downY } = this.state;
+    const { creating, downX, downY, hover } = this.state;
 
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
@@ -257,10 +257,8 @@ class Scene extends Component {
   };
 
   onMouseLeave = e => {
-    // this.setStatus({});
-    // this.setState({
-    //   hover: false
-    // });
+    const { sceneHover } = this.props;
+    sceneHover("");
   };
 
   onStartDrag = e => {
@@ -348,8 +346,8 @@ class Scene extends Component {
       id,
       index,
       scene,
-      sprites,
-      tool,
+      // sprites,
+      // tool,
       // editorType,
       // entityId,
       // sceneId,
@@ -495,7 +493,7 @@ class Scene extends Component {
 
 Scene.propTypes = {
   index: PropTypes.number.isRequired,
-  sprites: PropTypes.arrayOf(SpriteShape).isRequired,
+  // sprites: PropTypes.arrayOf(SpriteShape).isRequired,
   projectRoot: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   event: EventShape,

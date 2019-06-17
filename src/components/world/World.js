@@ -5,18 +5,6 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
-import {
-  DRAG_PLAYER,
-  DRAG_DESTINATION,
-  DRAG_ACTOR,
-  DRAG_TRIGGER
-} from "../../reducers/editorReducer";
-import {
-  SceneShape,
-  SettingsShape,
-  ActorShape,
-  TriggerShape
-} from "../../reducers/stateShape";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import {
   getMaxSceneRight,
@@ -42,7 +30,7 @@ class World extends Component {
   componentDidMount() {
     // window.addEventListener("copy", this.onCopy);
     // window.addEventListener("paste", this.onPaste);
-    // window.addEventListener("keydown", this.onKeyDown);
+    window.addEventListener("keydown", this.onKeyDown);
     // window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
     // window.addEventListener("mousewheel", this.onMouseWheel);
@@ -163,38 +151,34 @@ class World extends Component {
   };
 
   onKeyDown = e => {
+    console.log("KEYDOWN a");
     if (e.target.nodeName !== "BODY") {
       return;
     }
+    console.log("KEYDOWN b");
+
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    const { focused } = this.state;
-    if (e.key === "Backspace" && focused) {
-      // actions.removeSelectedEntity();
-      // const {
-      //   sceneId,
-      //   entityId,
-      //   editorType,
-      //   removeScene,
-      //   removeActor,
-      //   removeTrigger
-      // } = this.props;
-      // if (editorType === "scenes") {
-      //   removeScene(sceneId);
-      // } else if (editorType === "triggers") {
-      //   removeTrigger(sceneId, entityId);
-      // } else if (editorType === "actors") {
-      //   removeActor(sceneId, entityId);
-      // }
+    console.log("KEYDOWN c");
+    const { removeSelectedEntity } = this.props;
+    console.log("KEYDOWN d");
+
+    // const { focused } = this.state;
+    console.log("KEYDOWN e");
+    if (e.key === "Backspace") {
+      console.log("KEYDOWN f");
+
+      removeSelectedEntity();
     }
+    console.log("KEYDOWN g");
   };
 
   onClick = e => {
     // If clicked on child of world then it is focused
-    this.setState({
-      focused: this.scrollRef.current.contains(e.target)
-    });
+    // this.setState({
+    //   focused: this.scrollRef.current.contains(e.target)
+    // });
   };
 
   onMouseUp = e => {
@@ -298,16 +282,11 @@ class World extends Component {
       scenes,
       scrollWidth,
       scrollHeight,
-      settings,
       tool,
       showConnections,
       zoomRatio,
       sidebarWidth,
       selectWorld,
-      // sceneId,
-      sceneDragging,
-      sceneDragX,
-      sceneDragY,
       loaded
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
@@ -315,8 +294,6 @@ class World extends Component {
     console.log("render: World");
 
     const worldStyle = { right: sidebarWidth };
-
-    // console.log({ scrollWidth, scrollHeight });
 
     return (
       <div
@@ -346,14 +323,7 @@ class World extends Component {
             <Connections
               width={scrollWidth}
               height={scrollHeight}
-              scenes={scenes}
-              settings={settings}
               zoomRatio={zoomRatio}
-              dragScene={""}
-              dragX={sceneDragX}
-              dragY={sceneDragY}
-              onDragPlayerStart={this.dragPlayerStart}
-              onDragDestinationStart={this.dragDestinationStart}
             />
           )}
 
@@ -382,8 +352,6 @@ World.propTypes = {
   // sceneId: PropTypes.string,
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   // scene: SceneShape,
-  sceneDragX: PropTypes.number,
-  sceneDragY: PropTypes.number,
   // settings: SettingsShape.isRequired,
   zoomRatio: PropTypes.number.isRequired,
   // clipboardType: PropTypes.string,
@@ -395,7 +363,6 @@ World.propTypes = {
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
   // dragging: PropTypes.string.isRequired,
-  sceneDragging: PropTypes.bool.isRequired,
   addScene: PropTypes.func.isRequired,
   setTool: PropTypes.func.isRequired,
   selectWorld: PropTypes.func.isRequired,
@@ -420,30 +387,10 @@ World.propTypes = {
 };
 
 World.defaultProps = {
-  // editorType: "",
-  // entityId: "",
-  // sceneId: "",
-  // scene: null,
-  sceneDragX: 0,
-  sceneDragY: 0,
-  // clipboardType: "",
-  // clipboardActor: {},
-  // clipboardTrigger: {},
-  // clipboardScene: {},
   prefab: null
 };
 
 function mapStateToProps(state) {
-  const {
-    type: editorType,
-    entityId,
-    scene: sceneId,
-    sceneDragging,
-    sceneDragX,
-    sceneDragY
-  } = state.editor;
-  // const scenes = state.project.present.scenes || [];
-  // const scene = scenes.find(s => s.id === sceneId);
   const loaded = state.document.loaded;
   const scenes = state.entities.present.result.scenes;
   const {
@@ -458,26 +405,13 @@ function mapStateToProps(state) {
   const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state) + 60);
 
   return {
-    // editorType,
-    // entityId,
-    // sceneId,
     scenes,
     scrollWidth,
     scrollHeight,
-    // scene,
-    sceneDragging,
-    sceneDragX,
-    sceneDragY,
     tool: state.tools.selected,
     prefab: state.tools.prefab,
-    // editor: state.editor,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections,
-    // dragging: state.editor.dragging,
-    // clipboardScene: state.clipboard.scene,
-    // clipboardActor: state.clipboard.actor,
-    // clipboardTrigger: state.clipboard.trigger,
-    // clipboardType: state.clipboard.last,
     sidebarWidth,
     loaded
   };
@@ -487,9 +421,7 @@ const mapDispatchToProps = {
   addScene: actions.addScene,
   setTool: actions.setTool,
   selectWorld: actions.selectWorld,
-  removeScene: actions.removeScene,
-  removeTrigger: actions.removeTrigger,
-  removeActor: actions.removeActor,
+  removeSelectedEntity: actions.removeSelectedEntity,
   dragPlayerStart: actions.dragPlayerStart,
   dragPlayerStop: actions.dragPlayerStop,
   dragDestinationStart: actions.dragDestinationStart,

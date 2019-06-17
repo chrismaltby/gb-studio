@@ -426,38 +426,28 @@ const ActionMiniDnD = DropTarget(
 );
 
 class ScriptEditor extends Component {
-  debouncedOnChange = debounce(newValue => {
-    const { onChange } = this.props;
-    onChange(newValue);
-  }, 500);
-
-  constructor(props) {
-    super(props);
-    console.log("MAKE SCRIPT EDITOR");
-    this.state = {
-      value: props.value
-    };
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
-    const { clipboardEvent } = this.props;
-    const { value } = this.state;
+    // const { value } = this.state;
     console.log("SHOULD UPDATE SCRIPT EDITOR");
 
-    rerenderCheck("ScriptEditor", this.props, this.state, nextProps, nextState);
+    rerenderCheck("ScriptEditor", this.props, {}, nextProps, {});
 
-    return (
-      nextState.value !== value || nextProps.clipboardEvent !== clipboardEvent
-    );
+    // return (
+    //   nextState.value !== value || nextProps.clipboardEvent !== clipboardEvent
+    // );
+    return true;
   }
 
   onChange = newValue => {
-    this.setState({ value: newValue });
-    this.debouncedOnChange(newValue);
+    const { onChange } = this.props;
+    onChange(newValue);
+    // this.setState({ value: newValue });
+    // this.debouncedOnChange(newValue);
+    // this.onChange(new)
   };
 
   moveActions = (a, b) => {
-    const { value: root } = this.state;
+    const { value: root } = this.props;
     if (a === b) {
       return;
     }
@@ -473,7 +463,7 @@ class ScriptEditor extends Component {
       actorIds,
       spriteSheetIds
     } = this.props;
-    const { value: root } = this.state;
+    const { value: root } = this.props;
     const eventFields = events[command].fields;
     const defaultArgs = eventFields
       ? eventFields.reduce(
@@ -544,13 +534,13 @@ class ScriptEditor extends Component {
   };
 
   onRemove = id => () => {
-    const { value } = this.state;
+    const { value } = this.props;
     const input = filterEvents(value, id);
     this.onChange(input);
   };
 
   onEdit = (id, patch) => {
-    const { value } = this.state;
+    const { value } = this.props;
     const input = patchEvents(value, id, patch);
     this.onChange(input);
   };
@@ -562,13 +552,13 @@ class ScriptEditor extends Component {
 
   onCopyScript = () => {
     const { copyEvent } = this.props;
-    const { value } = this.state;
+    const { value } = this.props;
     console.log("COPY EVENT", value);
     copyEvent(value);
   };
 
   onPaste = (id, event, before) => {
-    const { value } = this.state;
+    const { value } = this.props;
     const newEvent = Array.isArray(event)
       ? event.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(event);
@@ -608,7 +598,7 @@ class ScriptEditor extends Component {
 
   onPasteScript = before => () => {
     const { clipboardEvent } = this.props;
-    const { value } = this.state;
+    const { value } = this.props;
     const newEvent = Array.isArray(clipboardEvent)
       ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(clipboardEvent);
@@ -633,7 +623,7 @@ class ScriptEditor extends Component {
 
   render() {
     const { type, title, clipboardEvent } = this.props;
-    const { value } = this.state;
+    const { value } = this.props;
     console.log("render: ScriptEditor.js");
     return (
       <div>

@@ -161,7 +161,7 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_DESTINATION_START: {
       return {
         ...state,
-        destinationDragging: action.eventId,
+        eventId: action.eventId,
         dragging: DRAG_DESTINATION,
         type: action.selectionType,
         entityId: action.id,
@@ -171,7 +171,7 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_DESTINATION_STOP: {
       return {
         ...state,
-        destinationDragging: null,
+        eventId: null,
         dragging: ""
       };
     }
