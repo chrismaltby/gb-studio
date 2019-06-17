@@ -31,9 +31,8 @@ class World extends Component {
     // window.addEventListener("copy", this.onCopy);
     // window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
-    // window.addEventListener("click", this.onClick);
     window.addEventListener("mouseup", this.onMouseUp);
-    // window.addEventListener("mousewheel", this.onMouseWheel);
+    window.addEventListener("mousewheel", this.onMouseWheel);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -161,13 +160,6 @@ class World extends Component {
     if (e.key === "Backspace") {
       removeSelectedEntity();
     }
-  };
-
-  onClick = e => {
-    // If clicked on child of world then it is focused
-    // this.setState({
-    //   focused: this.scrollRef.current.contains(e.target)
-    // });
   };
 
   onMouseUp = e => {
