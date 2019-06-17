@@ -244,8 +244,8 @@ const addScene = (state, action) => {
 const moveScene = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   return editEntity(state, "scenes", action.sceneId, {
-    x: Math.max(MIN_SCENE_X, scene.x + action.moveX),
-    y: Math.max(MIN_SCENE_Y, scene.y + action.moveY)
+    x: Math.max(MIN_SCENE_X, action.x),
+    y: Math.max(MIN_SCENE_Y, action.y)
   });
 };
 
@@ -471,6 +471,8 @@ export default function project(state = initialState.entities, action) {
 export const getScenesLookup = state => state.entities.present.entities.scenes;
 export const getSceneIds = state => state.entities.present.result.scenes;
 export const getActorsLookup = state => state.entities.present.entities.actors;
+export const getTriggersLookup = state =>
+  state.entities.present.entities.triggers;
 export const getBackgroundsLookup = state =>
   state.entities.present.entities.backgrounds;
 export const getBackgroundIds = state =>
@@ -549,4 +551,9 @@ export const getBackgrounds = createSelector(
 export const getSpriteSheets = createSelector(
   [getSpriteSheetIds, getSpriteSheetsLookup],
   (spriteSheetIds, spriteSheets) => spriteSheetIds.map(id => spriteSheets[id])
+);
+
+export const getScenes = createSelector(
+  [getSceneIds, getScenesLookup],
+  (sceneIds, scenes) => sceneIds.map(id => scenes[id])
 );

@@ -98,8 +98,9 @@ Sidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const { sidebarWidth } = state.entities.present.result.settings;
   return {
-    width: state.project.present.settings.sidebarWidth
+    width: sidebarWidth
   };
 }
 

@@ -5,7 +5,6 @@
   bottom: 0px;
   display: flex;
   flex-direction: row;
-  background: red;
 }
 
 .Sidebar__DragHandle {

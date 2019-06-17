@@ -228,8 +228,8 @@ export const selectScene = sceneId => {
   return { type: types.SELECT_SCENE, sceneId };
 };
 
-export const moveScene = (sceneId, moveX, moveY) => {
-  return { type: types.MOVE_SCENE, sceneId, moveX, moveY };
+export const moveScene = (sceneId, x, y) => {
+  return { type: types.MOVE_SCENE, sceneId, x, y };
 };
 
 export const dragScene = (moveX, moveY) => {

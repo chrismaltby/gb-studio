@@ -342,7 +342,7 @@ class World extends Component {
             <Scene key={sceneId} id={sceneId} index={index} />
           ))}
 
-          {false && showConnections && (
+          {showConnections && (
             <Connections
               width={scrollWidth}
               height={scrollHeight}

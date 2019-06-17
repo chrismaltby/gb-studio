@@ -18,7 +18,6 @@ import {
 } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { DRAG_ACTOR } from "../../reducers/editorReducer";
 import SceneCursor from "./SceneCursor";
 import { getSceneFrameCount } from "../../reducers/entitiesReducer";
 
@@ -197,9 +196,9 @@ class Scene extends Component {
       prefab
     } = this.props;
 
-    // console.log("MOUSE DOWN SCENE");
+    console.log("MOUSE DOWN SCENE");
 
-    // selectScene(id);
+    selectScene(id);
 
     /*
     const { hoverX, hoverY } = this.state;
@@ -259,66 +258,69 @@ class Scene extends Component {
 
   onMouseLeave = e => {
     // this.setStatus({});
-    this.setState({
-      hover: false
-    });
+    // this.setState({
+    //   hover: false
+    // });
   };
 
   onStartDrag = e => {
     const { id, selectScene, dragSceneStart } = this.props;
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
-    this.setState({
-      dragging: true,
-      dragX: 0,
-      dragY: 0
-    });
+    // this.setState({
+    //   dragging: true,
+    //   dragX: 0,
+    //   dragY: 0
+    // });
     selectScene(id);
-    dragSceneStart();
+    this.dragging = true;
+    // dragSceneStart();
   };
 
   onMoveDrag = e => {
-    const { zoomRatio } = this.props;
-    const { dragging, dragX, dragY } = this.state;
-    if (dragging) {
+    const { zoomRatio, moveScene, id, scene } = this.props;
+    const { x, y } = scene;
+    // const { dragging, dragX, dragY } = this.state;
+    if (this.dragging) {
       const dragDeltaX = (e.pageX - this.lastPageX) / zoomRatio;
       const dragDeltaY = (e.pageY - this.lastPageY) / zoomRatio;
 
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      this.dragScene(dragX, dragY);
+      moveScene(id, x + dragDeltaX, y + dragDeltaY);
 
-      this.setState({
-        dragX: dragX + dragDeltaX,
-        dragY: dragY + dragDeltaY
-      });
+      // this.setState({
+      //   dragX: dragX + dragDeltaX,
+      //   dragY: dragY + dragDeltaY
+      // });
     }
   };
 
-  // eslint-disable-next-line react/sort-comp
-  dragScene = throttle((dragX, dragY) => {
-    const { dragScene } = this.props;
-    return dragScene(dragX, dragY);
-  }, 50);
+  // // eslint-disable-next-line react/sort-comp
+  // dragScene = throttle((dragX, dragY) => {
+  //   const { dragScene } = this.props;
+  //   return dragScene(dragX, dragY);
+  // }, 50);
 
   onEndDrag = e => {
-    const { id, tool, moveScene, dragSceneStop, setTool } = this.props;
-    const { dragging, creating, dragX, dragY } = this.state;
-    if (dragging) {
-      moveScene(id, dragX, dragY);
-      dragSceneStop();
-    } else if (creating && (tool === "actors" || tool === "triggers")) {
-      setTool("select");
-    }
-    if (dragging || creating) {
-      this.setState({
-        dragging: false,
-        creating: false,
-        dragX: 0,
-        dragY: 0
-      });
-    }
+    this.dragging = false;
+    // const { id, tool, moveScene, dragSceneStop, setTool } = this.props;
+    // const { dragging, creating, dragX, dragY } = this.state;
+    // if (dragging) {
+    //   moveScene(id, dragX, dragY);
+    //   dragSceneStop();
+    // } else if (creating && (tool === "actors" || tool === "triggers")) {
+    //   setTool("select");
+    // }
+    // if (dragging || creating) {
+    //   this.setState({
+    //     dragging: false,
+    //     creating: false,
+    //     dragX: 0,
+    //     dragY: 0
+    //   });
+    // }
   };
 
   triggerAt = (x, y) => {
@@ -388,7 +390,7 @@ class Scene extends Component {
         <div
           className="Scene__Image"
           onMouseMove={this.onMouseMove}
-          _onMouseDown={this.onMouseDown}
+          onMouseDown={this.onMouseDown}
           onMouseLeave={this.onMouseLeave}
           style={{
             width: width * TILE_SIZE,
