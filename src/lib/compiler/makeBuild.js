@@ -22,17 +22,14 @@ const setROMTitle = async (filename, title) => {
   await fs.writeFile(filename, await patchROM(romData));
 };
 
-const replaceStringInFile = async (filename, regex, replacement) => {
-  fs.readFile(filename, 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    var result = data.replace(regex, replacement);
+const hexToDecimal = (str) => {
+    return parseInt("0x" + str);
+}
 
-    fs.writeFile(filename, result, 'utf8', function (err) {
-       if (err) return console.log(err);
-    });
-  });
+const convertHexTo15BitString = (hex) => {
+  return  Math.round(hexToDecimal(hex.substring(0,2)) / 8) + ', ' +
+          Math.round(hexToDecimal(hex.substring(2,4)) / 8) + ', ' +
+          Math.round(hexToDecimal(hex.substring(4)) / 8);
 }
 
 const patchROM = romData => {
@@ -92,11 +89,20 @@ const makeBuild = ({
     env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
 
     // Apply changes for custom colors (if needed)
-    if (data.CustomColorsEnabled) {
+    fs.readFile(`${buildRoot}/include/game.h`, 'utf8', function (err, filedata) {
+      var result;
 
-    } else {
-      replaceStringInFile(`${buildRoot}/include/game.h`, /#define CUSTOM_COLORS/g, '');
-    }
+      if (data.CustomColorsEnabled) {
+        result =  filedata.replace(/28, 31, 26/g, convertHexTo15BitString(data.CustomColors_White))
+                          .replace(/17, 24, 14/g, convertHexTo15BitString(data.CustomColors_LightGreen))
+                          .replace(/6, 13, 10/g, convertHexTo15BitString(data.CustomColors_DarkGreen))
+                          .replace(/1, 3, 4/g, convertHexTo15BitString(data.CustomColors_Black));
+      } else {
+        result =  filedata.replace(/#define CUSTOM_COLORS/g, '');
+      }
+
+      fs.writeFile(`${buildRoot}/include/game.h`, result, 'utf8');
+    });    
 
     const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);

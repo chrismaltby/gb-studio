@@ -31,10 +31,14 @@ Textarea.defaultProps = {
   borderless: false
 };
 
-export const FormField = ({ halfWidth, children }) => (
+export const FormField = ({ halfWidth, thirdWidth, quarterWidth, children }) => (
   <div
     className={cx("FormField", {
       "FormField--HalfWidth": halfWidth
+    }, {
+      "FormField--ThirdWidth": thirdWidth
+    }, {
+      "FormField--QuarterWidth": quarterWidth
     })}
   >
     {children}
@@ -43,11 +47,15 @@ export const FormField = ({ halfWidth, children }) => (
 
 FormField.propTypes = {
   halfWidth: PropTypes.bool,
+  thirdWidth: PropTypes.bool,
+  quarterWidth: PropTypes.bool,
   children: PropTypes.node
 };
 
 FormField.defaultProps = {
   halfWidth: false,
+  thirdWidth: false,
+  quarterWidth: false,
   children: null
 };
 

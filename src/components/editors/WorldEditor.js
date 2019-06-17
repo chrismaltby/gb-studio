@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
+import CustomPalettePicker from "../forms/CustomPalettePicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import { FormField, ToggleableFormField, ToggleableCheckBoxField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -88,7 +89,9 @@ class WorldEditor extends Component {
               open={!!project.CustomColorsEnabled || project.CustomColorsEnabled}
               onToggle={this.onEditProject("CustomColorsEnabled")}
             >
-              (Color buttons go here)
+              
+              <CustomPalettePicker />
+
             </ToggleableCheckBoxField>
 
           </div>
