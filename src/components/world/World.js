@@ -151,27 +151,16 @@ class World extends Component {
   };
 
   onKeyDown = e => {
-    console.log("KEYDOWN a");
     if (e.target.nodeName !== "BODY") {
       return;
     }
-    console.log("KEYDOWN b");
-
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    console.log("KEYDOWN c");
     const { removeSelectedEntity } = this.props;
-    console.log("KEYDOWN d");
-
-    // const { focused } = this.state;
-    console.log("KEYDOWN e");
     if (e.key === "Backspace") {
-      console.log("KEYDOWN f");
-
       removeSelectedEntity();
     }
-    console.log("KEYDOWN g");
   };
 
   onClick = e => {
