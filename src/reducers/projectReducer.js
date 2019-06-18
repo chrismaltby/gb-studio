@@ -13,7 +13,7 @@ import {
   // EDIT_SCENE,
   PASTE_SCENE,
   // REMOVE_SCENE,
-  ADD_ACTOR,
+  // ADD_ACTOR,
   // MOVE_ACTOR,
   // EDIT_ACTOR,
   PASTE_ACTOR,
@@ -24,7 +24,7 @@ import {
   // ADD_TRIGGER,
   // REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
-  RESIZE_TRIGGER,
+  // RESIZE_TRIGGER,
   // EDIT_TRIGGER,
   PASTE_TRIGGER,
   // MOVE_TRIGGER,
@@ -669,30 +669,30 @@ export default function project(state = initialState.project, action) {
         })
       };
     }
-    case RESIZE_TRIGGER:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: scene.triggers.map(trigger => {
-              if (trigger.id !== action.id) {
-                return trigger;
-              }
-              return {
-                ...trigger,
-                x: Math.min(action.x, action.startX),
-                y: Math.min(action.y, action.startY),
-                width: Math.abs(action.x - action.startX) + 1,
-                height: Math.abs(action.y - action.startY) + 1
-              };
-            })
-          };
-        })
-      };
+    // case RESIZE_TRIGGER:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.map(trigger => {
+    //           if (trigger.id !== action.id) {
+    //             return trigger;
+    //           }
+    //           return {
+    //             ...trigger,
+    //             x: Math.min(action.x, action.startX),
+    //             y: Math.min(action.y, action.startY),
+    //             width: Math.abs(action.x - action.startX) + 1,
+    //             height: Math.abs(action.y - action.startY) + 1
+    //           };
+    //         })
+    //       };
+    //     })
+    //   };
     // case EDIT_TRIGGER:
     //   return {
     //     ...state,

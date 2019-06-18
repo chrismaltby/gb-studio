@@ -2,43 +2,55 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { PlusIcon } from "../library/Icons";
+import { PlusIcon, ResizeIcon } from "../library/Icons";
 
 class SceneCursor extends Component {
-  // componentDidMount() {
-  //   window.addEventListener("mousedown", this.onMouseDown);
-  // }
-
-  // componentWillUnmount() {
-  //   window.removeEventListener("mousedown", this.onMouseDown);
-  // }
+  constructor() {
+    super();
+    this.state = {
+      resize: false
+    };
+  }
 
   onMouseDown = e => {
     const { x, y, tool, setTool, addActor, addTrigger, sceneId } = this.props;
 
     e.stopPropagation();
     e.preventDefault();
-    console.log("ON CLICK CURSOR", tool);
 
     if (tool === "actors") {
-      console.log("ADD ACTOR");
       addActor(sceneId, x, y);
       setTool("select");
     } else if (tool === "triggers") {
-      console.log("ADD TRIGGER");
       addTrigger(sceneId, x, y);
+      this.startX = x;
+      this.startY = y;
+      this.setState({ resize: true });
+      window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
+    }
+  };
+
+  onMouseMove = e => {
+    const { x, y, sceneId, entityId, resizeTrigger } = this.props;
+    if (this.currentX !== x || this.currentY !== y) {
+      resizeTrigger(sceneId, entityId, this.startX, this.startY, x, y);
+      this.currentX = x;
+      this.currentY = y;
     }
   };
 
   onMouseUp = e => {
     const { setTool } = this.props;
     setTool("select");
+    this.setState({ resize: false });
+    window.removeEventListener("mousemove", this.onMouseMove);
     window.removeEventListener("mouseup", this.onMouseUp);
   };
 
   render() {
     const { x, y, tool } = this.props;
+    const { resize } = this.state;
     return (
       <div
         className={cx("SceneCursor", {
@@ -53,7 +65,7 @@ class SceneCursor extends Component {
       >
         {(tool === "actors" || tool === "triggers") && (
           <div className="SceneCursor__AddBubble">
-            <PlusIcon />
+            {resize ? <ResizeIcon /> : <PlusIcon />}
           </div>
         )}
       </div>
@@ -70,11 +82,14 @@ SceneCursor.propTypes = {
 function mapStateToProps(state, props) {
   const { selected: tool, prefab } = state.tools;
   const { x, y } = state.editor.hover;
+  const { type: editorType, entityId } = state.editor;
   return {
     x,
     y,
     tool,
-    prefab
+    prefab,
+    editorType,
+    entityId
   };
 }
 

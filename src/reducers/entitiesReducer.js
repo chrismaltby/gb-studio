@@ -23,12 +23,12 @@ import {
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
-  ADD_TRIGGER
+  ADD_TRIGGER,
+  RESIZE_TRIGGER
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { MAX_TRIGGERS } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -448,6 +448,15 @@ const moveTrigger = (state, action) => {
   });
 };
 
+const resizeTrigger = (state, action) => {
+  return editEntity(state, "triggers", action.id, {
+    x: Math.min(action.x, action.startX),
+    y: Math.min(action.y, action.startY),
+    width: Math.abs(action.x - action.startX) + 1,
+    height: Math.abs(action.y - action.startY) + 1
+  });
+};
+
 const editActor = (state, action) => {
   const actor = state.entities.actors[action.id];
   const patch = { ...action.values };
@@ -627,6 +636,8 @@ export default function project(state = initialState.entities, action) {
       return editTrigger(state, action);
     case MOVE_TRIGGER:
       return moveTrigger(state, action);
+    case RESIZE_TRIGGER:
+      return resizeTrigger(state, action);
     case REMOVE_TRIGGER:
       return removeTrigger(state, action);
     case EDIT_PLAYER_START_AT:
