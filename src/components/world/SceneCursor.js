@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { PlusIcon, ResizeIcon } from "../library/Icons";
+import { PlusIcon, ResizeIcon, CloseIcon } from "../library/Icons";
 
 class SceneCursor extends Component {
   constructor() {
@@ -13,7 +13,19 @@ class SceneCursor extends Component {
   }
 
   onMouseDown = e => {
-    const { x, y, tool, setTool, addActor, addTrigger, sceneId } = this.props;
+    const {
+      x,
+      y,
+      tool,
+      setTool,
+      addActor,
+      addTrigger,
+      sceneId,
+      showCollisions,
+      removeCollisionTile,
+      removeActorAt,
+      removeTriggerAt
+    } = this.props;
 
     e.stopPropagation();
     e.preventDefault();
@@ -28,6 +40,12 @@ class SceneCursor extends Component {
       this.setState({ resize: true });
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
+    } else if (tool === "eraser") {
+      if (showCollisions) {
+        removeCollisionTile(sceneId, x, y);
+      }
+      removeActorAt(sceneId, x, y);
+      removeTriggerAt(sceneId, x, y);
     }
   };
 
@@ -55,7 +73,8 @@ class SceneCursor extends Component {
       <div
         className={cx("SceneCursor", {
           "SceneCursor--AddActor": tool === "actors",
-          "SceneCursor--AddTrigger": tool === "triggers"
+          "SceneCursor--AddTrigger": tool === "triggers",
+          "SceneCursor--Eraser": tool === "eraser"
         })}
         onMouseDown={this.onMouseDown}
         style={{
@@ -63,9 +82,11 @@ class SceneCursor extends Component {
           left: x * 8
         }}
       >
-        {(tool === "actors" || tool === "triggers") && (
+        {(tool === "actors" || tool === "triggers" || tool === "eraser") && (
           <div className="SceneCursor__AddBubble">
-            {resize ? <ResizeIcon /> : <PlusIcon />}
+            {tool === "actors" && <PlusIcon />}
+            {tool === "triggers" && (resize ? <ResizeIcon /> : <PlusIcon />)}
+            {tool === "eraser" && <CloseIcon />}
           </div>
         )}
       </div>
@@ -83,13 +104,15 @@ function mapStateToProps(state, props) {
   const { selected: tool, prefab } = state.tools;
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId } = state.editor;
+  const showCollisions = state.entities.present.result.settings.showCollisions;
   return {
     x,
     y,
     tool,
     prefab,
     editorType,
-    entityId
+    entityId,
+    showCollisions
   };
 }
 

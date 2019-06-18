@@ -20,6 +20,12 @@
   pointer-events: all;
 }
 
+.SceneCursor--Eraser {
+  background-color: rgba(255, 0, 0, 0.8);
+  outline: 1px solid rgba(255, 0, 0, 1);
+  pointer-events: all;
+}
+
 .SceneCursor__AddBubble {
   position: absolute;
   width: 12px;
