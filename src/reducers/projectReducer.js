@@ -17,12 +17,12 @@ import {
   // MOVE_ACTOR,
   // EDIT_ACTOR,
   PASTE_ACTOR,
-  REMOVE_ACTOR,
+  // REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
   ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
-  ADD_TRIGGER,
-  REMOVE_TRIGGER,
+  // ADD_TRIGGER,
+  // REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
   RESIZE_TRIGGER,
   // EDIT_TRIGGER,
@@ -311,42 +311,42 @@ export default function project(state = initialState.project, action) {
     //       return scene.id !== action.sceneId;
     //     })
     //   };
-    case ADD_ACTOR: {
-      const script =
-        action.defaults &&
-        action.defaults.script &&
-        action.defaults.script.map(regenerateEventIds);
-      const newActor = Object.assign(
-        {
-          spriteSheetId: state.spriteSheets[0] && state.spriteSheets[0].id,
-          movementType: "static",
-          direction: "down",
-          moveSpeed: "1",
-          animSpeed: "3"
-        },
-        action.defaults || {},
-        script && {
-          script
-        },
-        {
-          id: action.id,
-          x: action.x,
-          y: action.y
-        }
-      );
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: [].concat(newActor, scene.actors).slice(-MAX_ACTORS)
-          };
-        })
-      };
-    }
+    // case ADD_ACTOR: {
+    //   const script =
+    //     action.defaults &&
+    //     action.defaults.script &&
+    //     action.defaults.script.map(regenerateEventIds);
+    //   const newActor = Object.assign(
+    //     {
+    //       spriteSheetId: state.spriteSheets[0] && state.spriteSheets[0].id,
+    //       movementType: "static",
+    //       direction: "down",
+    //       moveSpeed: "1",
+    //       animSpeed: "3"
+    //     },
+    //     action.defaults || {},
+    //     script && {
+    //       script
+    //     },
+    //     {
+    //       id: action.id,
+    //       x: action.x,
+    //       y: action.y
+    //     }
+    //   );
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: [].concat(newActor, scene.actors).slice(-MAX_ACTORS)
+    //       };
+    //     })
+    //   };
+    // }
     // case MOVE_ACTOR: {
     //   const moveScene = state.scenes.find(s => s.id === action.newSceneId);
     //   const sceneImage = state.backgrounds.find(
@@ -599,40 +599,40 @@ export default function project(state = initialState.project, action) {
         })
       };
     }
-    case ADD_TRIGGER: {
-      const script =
-        action.defaults &&
-        action.defaults.script &&
-        action.defaults.script.map(regenerateEventIds);
-      const newTrigger = Object.assign(
-        {
-          trigger: "walk"
-        },
-        action.defaults || {},
-        script && {
-          script
-        },
-        {
-          id: action.id,
-          x: action.x,
-          y: action.y,
-          width: 1,
-          height: 1
-        }
-      );
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: [].concat(newTrigger, scene.triggers).slice(-MAX_TRIGGERS)
-          };
-        })
-      };
-    }
+    // case ADD_TRIGGER: {
+    //   const script =
+    //     action.defaults &&
+    //     action.defaults.script &&
+    //     action.defaults.script.map(regenerateEventIds);
+    //   const newTrigger = Object.assign(
+    //     {
+    //       trigger: "walk"
+    //     },
+    //     action.defaults || {},
+    //     script && {
+    //       script
+    //     },
+    //     {
+    //       id: action.id,
+    //       x: action.x,
+    //       y: action.y,
+    //       width: 1,
+    //       height: 1
+    //     }
+    //   );
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: [].concat(newTrigger, scene.triggers).slice(-MAX_TRIGGERS)
+    //       };
+    //     })
+    //   };
+    // }
     // case REMOVE_TRIGGER:
     //   return {
     //     ...state,

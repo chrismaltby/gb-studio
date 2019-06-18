@@ -691,10 +691,6 @@ ScriptEditor.propTypes = {
   sceneIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   actorIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   spriteSheetIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  clipboardEvent: PropTypes.oneOfType([
-    EventShape,
-    PropTypes.arrayOf(EventShape)
-  ]),
   selectScriptEvent: PropTypes.func.isRequired,
   copyEvent: PropTypes.func.isRequired
 };
@@ -717,7 +713,7 @@ function mapStateToProps(state) {
     actorIds: entities.scenes[state.editor.scene].actors,
     musicIds: result.music,
     spriteSheetIds: result.spriteSheets,
-    clipboardEvent: state.clipboard.event
+    clipboardEvent: null
   };
 }
 

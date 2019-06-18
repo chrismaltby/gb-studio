@@ -12,6 +12,7 @@ import {
   MOVE_SCENE,
   EDIT_SCENE,
   REMOVE_SCENE,
+  ADD_ACTOR,
   EDIT_ACTOR,
   MOVE_ACTOR,
   REMOVE_ACTOR,
@@ -21,11 +22,13 @@ import {
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_ACTOR_EVENT_DESTINATION_POSITION
+  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
+  ADD_TRIGGER
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
+import { MAX_TRIGGERS } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -37,10 +40,13 @@ const addEntity = (state, type, data) => {
         [data.id]: data
       }
     },
-    result: {
-      ...state.result,
-      [type]: [].concat(state.result[type], data.id)
-    }
+    result: Object.assign(
+      {},
+      state.result,
+      state.result[type] && {
+        [type]: [].concat(state.result[type], data.id)
+      }
+    )
   };
 };
 
@@ -349,6 +355,40 @@ const removeScene = (state, action) => {
   return removeEntity(state, "scenes", action.sceneId);
 };
 
+const addActor = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  const spriteSheetId = state.result.spriteSheets[0];
+  const script =
+    action.defaults &&
+    action.defaults.script &&
+    action.defaults.script.map(regenerateEventIds);
+  const newActor = Object.assign(
+    {
+      spriteSheetId,
+      movementType: "static",
+      direction: "down",
+      moveSpeed: "1",
+      animSpeed: "3"
+    },
+    action.defaults || {},
+    script && {
+      script
+    },
+    {
+      id: action.id,
+      x: action.x,
+      y: action.y
+    }
+  );
+
+  // Add to scene
+  const nextState = editEntity(state, "scenes", action.sceneId, {
+    actors: [].concat(scene.actors, action.id)
+  });
+
+  return addEntity(nextState, "actors", newActor);
+};
+
 const moveActor = (state, action) => {
   const newScene = state.entities.scenes[action.newSceneId];
 
@@ -458,6 +498,37 @@ const removeActor = (state, action) => {
   return removeEntity(nextState, "actors", action.id);
 };
 
+const addTrigger = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  const script =
+    action.defaults &&
+    action.defaults.script &&
+    action.defaults.script.map(regenerateEventIds);
+  const newTrigger = Object.assign(
+    {
+      trigger: "walk"
+    },
+    action.defaults || {},
+    script && {
+      script
+    },
+    {
+      id: action.id,
+      x: action.x,
+      y: action.y,
+      width: 1,
+      height: 1
+    }
+  );
+
+  // Add to scene
+  const nextState = editEntity(state, "scenes", action.sceneId, {
+    triggers: [].concat(scene.triggers, action.id)
+  });
+
+  return addEntity(nextState, "triggers", newTrigger);
+};
+
 const editTrigger = (state, action) => {
   const trigger = state.entities.triggers[action.id];
   const patch = { ...action.values };
@@ -542,12 +613,16 @@ export default function project(state = initialState.entities, action) {
       return editScene(state, action);
     case REMOVE_SCENE:
       return removeScene(state, action);
+    case ADD_ACTOR:
+      return addActor(state, action);
     case EDIT_ACTOR:
       return editActor(state, action);
     case MOVE_ACTOR:
       return moveActor(state, action);
     case REMOVE_ACTOR:
       return removeActor(state, action);
+    case ADD_TRIGGER:
+      return addTrigger(state, action);
     case EDIT_TRIGGER:
       return editTrigger(state, action);
     case MOVE_TRIGGER:

@@ -37,9 +37,7 @@ class Scene extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0,
-      dragX: 0,
-      dragY: 0
+      hoverY: 0
     };
   }
 
@@ -193,7 +191,8 @@ class Scene extends Component {
       addTrigger,
       removeActorAt,
       removeTriggerAt,
-      prefab
+      prefab,
+      selected
     } = this.props;
 
     console.log("MOUSE DOWN SCENE");
@@ -262,17 +261,13 @@ class Scene extends Component {
   };
 
   onStartDrag = e => {
-    const { id, selectScene, dragSceneStart } = this.props;
+    const { id, selectScene } = this.props;
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
-    // this.setState({
-    //   dragging: true,
-    //   dragX: 0,
-    //   dragY: 0
-    // });
+
     selectScene(id);
+
     this.dragging = true;
-    // dragSceneStart();
   };
 
   onMoveDrag = e => {
@@ -366,15 +361,13 @@ class Scene extends Component {
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
-    const { hover, hoverX, hoverY, dragX, dragY } = this.state;
-
     return (
       <div
         ref={this.containerRef}
         className={cx("Scene", { "Scene--Selected": selected })}
         style={{
-          top: y + dragY,
-          left: x + dragX
+          top: y,
+          left: x
         }}
       >
         <div
@@ -419,20 +412,6 @@ class Scene extends Component {
           {actors.map(actorId => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
-          {/* {tool === "actors" && hover && (
-            <div className="Scene__Ghost">
-              <Actor x={hoverX} y={hoverY} />
-            </div>
-          )} */}
-          {/* {hover && (
-            <div
-              className="Scene__Hover"
-              style={{
-                top: hoverY * 8,
-                left: hoverX * 8
-              }}
-            />
-          )} */}
           {hovered && <SceneCursor sceneId={id} />}
           {event && (
             <div className="Scene__EventHelper">
@@ -514,6 +493,8 @@ Scene.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
+  hovered: PropTypes.bool.isRequired,
+  frameCount: PropTypes.number.isRequired,
   zoomRatio: PropTypes.number.isRequired,
   showCollisions: PropTypes.bool.isRequired,
   moveScene: PropTypes.func.isRequired,
@@ -527,9 +508,6 @@ Scene.propTypes = {
   selectScene: PropTypes.func.isRequired,
   setTool: PropTypes.func.isRequired,
   setStatus: PropTypes.func.isRequired,
-  dragScene: PropTypes.func.isRequired,
-  dragSceneStart: PropTypes.func.isRequired,
-  dragSceneStop: PropTypes.func.isRequired,
   editPlayerStartAt: PropTypes.func.isRequired,
   dragActorStart: PropTypes.func.isRequired,
   dragTriggerStart: PropTypes.func.isRequired,
@@ -569,7 +547,7 @@ function mapStateToProps(state, props) {
     // entityId,
     // sceneId,
     projectRoot: state.document && state.document.root,
-    tool: state.tools.selected,
+    tool: "select",
     prefab: state.tools.prefab,
     // editor: state.editor,
     event,

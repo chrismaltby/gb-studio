@@ -63,18 +63,6 @@
   opacity: 1;
 }
 
-.Scene__Hover {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  outline: 1px solid red;
-  pointer-events: none;
-}
-
-.Scene__Ghost {
-  opacity: 0.5;
-}
-
 .Scene__Collisions {
   position: absolute;
   top: 0;

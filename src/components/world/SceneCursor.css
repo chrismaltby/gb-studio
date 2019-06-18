@@ -11,11 +11,13 @@
   width: 16px;
   background-color: rgba(255, 0, 255, 0.3);
   outline: 1px solid rgba(255, 0, 255, 0.4);
+  pointer-events: all;
 }
 
 .SceneCursor--AddTrigger {
   background-color: rgba(255, 120, 0, 0.5);
   outline: 1px solid rgba(255, 120, 0, 1);
+  pointer-events: all;
 }
 
 .SceneCursor__AddBubble {

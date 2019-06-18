@@ -7,7 +7,6 @@ import navigation from "./navigationReducer";
 import document from "./documentReducer";
 import console from "./consoleReducer";
 import music from "./musicReducer";
-import clipboard from "./clipboardReducer";
 import entities from "./entitiesReducer";
 import settings from "./settingsReducer";
 import {
@@ -45,7 +44,6 @@ const rootReducer = combineReducers({
   navigation,
   console,
   music,
-  clipboard,
   entities: undoable(entities, {
     limit: 50,
     filter: (_action, currentState, previousState) => {

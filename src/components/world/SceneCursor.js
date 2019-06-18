@@ -5,6 +5,38 @@ import { connect } from "react-redux";
 import { PlusIcon } from "../library/Icons";
 
 class SceneCursor extends Component {
+  // componentDidMount() {
+  //   window.addEventListener("mousedown", this.onMouseDown);
+  // }
+
+  // componentWillUnmount() {
+  //   window.removeEventListener("mousedown", this.onMouseDown);
+  // }
+
+  onMouseDown = e => {
+    const { x, y, tool, setTool, addActor, addTrigger, sceneId } = this.props;
+
+    e.stopPropagation();
+    e.preventDefault();
+    console.log("ON CLICK CURSOR", tool);
+
+    if (tool === "actors") {
+      console.log("ADD ACTOR");
+      addActor(sceneId, x, y);
+      setTool("select");
+    } else if (tool === "triggers") {
+      console.log("ADD TRIGGER");
+      addTrigger(sceneId, x, y);
+      window.addEventListener("mouseup", this.onMouseUp);
+    }
+  };
+
+  onMouseUp = e => {
+    const { setTool } = this.props;
+    setTool("select");
+    window.removeEventListener("mouseup", this.onMouseUp);
+  };
+
   render() {
     const { x, y, tool } = this.props;
     return (
@@ -46,4 +78,32 @@ function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps)(SceneCursor);
+const mapDispatchToProps = {
+  moveScene: actions.moveScene,
+  addActor: actions.addActor,
+  moveActor: actions.moveActor,
+  removeActorAt: actions.removeActorAt,
+  addCollisionTile: actions.addCollisionTile,
+  removeCollisionTile: actions.removeCollisionTile,
+  addTrigger: actions.addTrigger,
+  removeTriggerAt: actions.removeTriggerAt,
+  resizeTrigger: actions.resizeTrigger,
+  moveTrigger: actions.moveTrigger,
+  selectScene: actions.selectScene,
+  setTool: actions.setTool,
+  setStatus: actions.setStatus,
+  dragScene: actions.dragScene,
+  dragSceneStart: actions.dragSceneStart,
+  dragSceneStop: actions.dragSceneStop,
+  editPlayerStartAt: actions.editPlayerStartAt,
+  editDestinationPosition: actions.editDestinationPosition,
+  dragActorStart: actions.dragActorStart,
+  dragTriggerStart: actions.dragTriggerStart,
+  moveSelectedEntity: actions.moveSelectedEntity,
+  sceneHover: actions.sceneHover
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SceneCursor);

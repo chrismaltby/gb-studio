@@ -23,7 +23,7 @@ class ActorEditor extends Component {
   constructor() {
     super();
     this.state = {
-      pasteActor: null
+      clipboardActor: null
     };
   }
 
@@ -42,7 +42,8 @@ class ActorEditor extends Component {
   };
 
   onPaste = e => {
-    const { clipboardActor, sceneId, pasteActor } = this.props;
+    const { sceneId, pasteActor } = this.props;
+    const { clipboardActor } = this.state;
     pasteActor(sceneId, clipboardActor);
   };
 
@@ -55,18 +56,18 @@ class ActorEditor extends Component {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "actor") {
-        this.setState({ pasteActor: clipboardData });
+        this.setState({ clipboardActor: clipboardData });
       } else {
-        this.setState({ pasteActor: null });
+        this.setState({ clipboardActor: null });
       }
     } catch (e) {
-      this.setState({ pasteActor: null });
+      this.setState({ clipboardActor: null });
     }
   };
 
   render() {
     const { index, actor, scene, spriteSheet } = this.props;
-    const { pasteActor } = this.state;
+    const { clipboardActor } = this.state;
 
     if (!actor) {
       return <div />;
@@ -110,7 +111,7 @@ class ActorEditor extends Component {
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_ACTOR")}
                 </MenuItem>
-                {pasteActor && (
+                {clipboardActor && (
                   <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_ACTOR")}
                   </MenuItem>
@@ -349,8 +350,7 @@ function mapStateToProps(state, props) {
     index,
     actor,
     scene,
-    spriteSheet,
-    clipboardActor: state.clipboard.actor
+    spriteSheet
   };
 }
 

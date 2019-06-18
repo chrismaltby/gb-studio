@@ -15,13 +15,18 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import {
-  SceneShape,
-  ActorShape,
-  TriggerShape
-} from "../../reducers/stateShape";
+import { SceneShape } from "../../reducers/stateShape";
 
 class SceneEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      clipboardActor: null,
+      clipboardScene: null,
+      clipboardTrigger: null
+    };
+  }
+
   onEdit = key => e => {
     const { editScene, scene } = this.props;
     editScene(scene.id, {
@@ -35,18 +40,18 @@ class SceneEditor extends Component {
   };
 
   onPaste = e => {
-    const { pasteScene, clipboardScene } = this.props;
-    pasteScene(clipboardScene);
+    // const { pasteScene, clipboardScene } = this.props;
+    // pasteScene(clipboardScene);
   };
 
   onPasteActor = e => {
-    const { pasteActor, scene, clipboardActor } = this.props;
-    pasteActor(scene.id, clipboardActor);
+    // const { pasteActor, scene, clipboardActor } = this.props;
+    // pasteActor(scene.id, clipboardActor);
   };
 
   onPasteTrigger = e => {
-    const { pasteTrigger, scene, clipboardTrigger } = this.props;
-    pasteTrigger(scene.id, clipboardTrigger);
+    //   const { pasteTrigger, scene, clipboardTrigger } = this.props;
+    //   pasteTrigger(scene.id, clipboardTrigger);
   };
 
   onRemove = e => {
@@ -55,17 +60,13 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const {
-      scene,
-      sceneIndex,
-      clipboardScene,
-      clipboardActor,
-      clipboardTrigger
-    } = this.props;
+    const { scene, sceneIndex } = this.props;
 
     if (!scene) {
       return <div />;
     }
+
+    const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
 
     return (
       <Sidebar>
@@ -206,9 +207,6 @@ class SceneEditor extends Component {
 SceneEditor.propTypes = {
   scene: SceneShape,
   sceneIndex: PropTypes.number.isRequired,
-  clipboardScene: SceneShape,
-  clipboardActor: ActorShape,
-  clipboardTrigger: TriggerShape,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
   selectActor: PropTypes.func.isRequired,
@@ -220,25 +218,15 @@ SceneEditor.propTypes = {
 };
 
 SceneEditor.defaultProps = {
-  scene: null,
-  clipboardScene: null,
-  clipboardActor: null,
-  clipboardTrigger: null
+  scene: null
 };
 
 function mapStateToProps(state, props) {
-  // const hasScenes = state.project.present && state.project.present.scenes;
-  // const sceneIndex = hasScenes
-  //   ? state.project.present.scenes.findIndex(scene => scene.id === props.id)
-  //   : -1;
   const scene = state.entities.present.entities.scenes[props.id];
   const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
   return {
     sceneIndex,
-    scene,
-    clipboardScene: state.clipboard.scene,
-    clipboardActor: state.clipboard.actor,
-    clipboardTrigger: state.clipboard.trigger
+    scene
   };
 }
 

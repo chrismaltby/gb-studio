@@ -13,6 +13,13 @@ import { SceneIcon } from "../library/Icons";
 import { TriggerShape, SceneShape } from "../../reducers/stateShape";
 
 class TriggerEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      clipboardTrigger: null
+    };
+  }
+
   onEdit = key => e => {
     const { editTrigger, sceneId, trigger } = this.props;
     editTrigger(sceneId, trigger.id, {
@@ -26,7 +33,8 @@ class TriggerEditor extends Component {
   };
 
   onPaste = e => {
-    const { pasteTrigger, sceneId, clipboardTrigger } = this.props;
+    const { pasteTrigger, sceneId } = this.props;
+    const { clipboardTrigger } = this.state;
     pasteTrigger(sceneId, clipboardTrigger);
   };
 
@@ -36,11 +44,13 @@ class TriggerEditor extends Component {
   };
 
   render() {
-    const { index, trigger, scene, clipboardTrigger, selectScene } = this.props;
+    const { index, trigger, scene, selectScene } = this.props;
 
     if (!trigger) {
       return <div />;
     }
+
+    const { clipboardTrigger } = this.state;
 
     return (
       <Sidebar>
@@ -182,7 +192,6 @@ TriggerEditor.propTypes = {
   trigger: TriggerShape,
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
-  clipboardTrigger: TriggerShape,
   editTrigger: PropTypes.func.isRequired,
   removeTrigger: PropTypes.func.isRequired,
   copyTrigger: PropTypes.func.isRequired,
@@ -192,22 +201,17 @@ TriggerEditor.propTypes = {
 
 TriggerEditor.defaultProps = {
   trigger: null,
-  scene: null,
-  clipboardTrigger: null
+  scene: null
 };
 
 function mapStateToProps(state, props) {
   const trigger = state.entities.present.entities.triggers[props.id];
   const scene = state.entities.present.entities.scenes[props.sceneId];
-  const spriteSheet =
-    state.entities.present.entities.spriteSheets[trigger.spriteSheetId];
   const index = scene.triggers.indexOf(props.id);
   return {
     index,
     trigger,
-    scene,
-    spriteSheet,
-    clipboardTrigger: state.clipboard.trigger
+    scene
   };
 }
 
