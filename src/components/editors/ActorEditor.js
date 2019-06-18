@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
+import { clipboard } from "electron";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
@@ -19,6 +20,13 @@ import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 
 class ActorEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      pasteActor: null
+    };
+  }
+
   onEdit = key => e => {
     const { editActor, sceneId, actor } = this.props;
     editActor(sceneId, actor.id, {
@@ -43,10 +51,22 @@ class ActorEditor extends Component {
     removeActor(sceneId, actor.id);
   };
 
-  render() {
-    const { index, actor, scene, spriteSheet, clipboardActor } = this.props;
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "actor") {
+        this.setState({ pasteActor: clipboardData });
+      } else {
+        this.setState({ pasteActor: null });
+      }
+    } catch (e) {
+      this.setState({ pasteActor: null });
+    }
+  };
 
-    // console.log("render: ActorEditor");
+  render() {
+    const { index, actor, scene, spriteSheet } = this.props;
+    const { pasteActor } = this.state;
 
     if (!actor) {
       return <div />;
@@ -81,11 +101,16 @@ class ActorEditor extends Component {
           <SidebarHeading
             title={l10n("ACTOR")}
             buttons={
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_ACTOR")}
                 </MenuItem>
-                {clipboardActor && (
+                {pasteActor && (
                   <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_ACTOR")}
                   </MenuItem>
@@ -300,7 +325,6 @@ ActorEditor.propTypes = {
   actor: ActorShape,
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
-  clipboardActor: ActorShape,
   spriteSheet: SpriteShape,
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
@@ -312,8 +336,7 @@ ActorEditor.propTypes = {
 ActorEditor.defaultProps = {
   actor: null,
   scene: null,
-  spriteSheet: null,
-  clipboardActor: null
+  spriteSheet: null
 };
 
 function mapStateToProps(state, props) {
