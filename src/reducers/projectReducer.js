@@ -28,14 +28,14 @@ import {
   // EDIT_TRIGGER,
   PASTE_TRIGGER,
   // MOVE_TRIGGER,
-  RENAME_VARIABLE,
+  RENAME_VARIABLE
   // EDIT_PROJECT,
   // EDIT_PROJECT_SETTINGS,
   // EDIT_PLAYER_START_AT,
   // EDIT_SCENE_EVENT_DESTINATION_POSITION,
   // EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
   // EDIT_ACTOR_EVENT_DESTINATION_POSITION,
-  SIDEBAR_RESIZE
+  // SIDEBAR_RESIZE
 } from "../actions/actionTypes";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
 import { regenerateEventIds } from "../lib/helpers/eventSystem";
@@ -827,15 +827,15 @@ export default function project(state = initialState.project, action) {
     //       ...action.values
     //     }
     //   };
-    case SIDEBAR_RESIZE: {
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          sidebarWidth: Math.min(740, Math.max(200, action.width))
-        }
-      };
-    }
+    // case SIDEBAR_RESIZE: {
+    //   return {
+    //     ...state,
+    //     settings: {
+    //       ...state.settings,
+    //       sidebarWidth: Math.min(740, Math.max(200, action.width))
+    //     }
+    //   };
+    // }
     // case EDIT_PLAYER_START_AT:
     //   return {
     //     ...state,

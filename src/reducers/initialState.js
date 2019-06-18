@@ -31,7 +31,6 @@ export default {
     sceneDragX: 0,
     sceneDragY: 0,
     uiVersion: 0,
-    sidebarWidth: 300,
     hover: {
       sceneId: "",
       actorId: "",
@@ -71,10 +70,13 @@ export default {
     result: {
       settings: {
         showCollisions: true,
-        showConnections: true,
-        sidebarWidth: 300
+        showConnections: true
       },
       scenes: []
     }
+  },
+  settings: {
+    worldSidebarWidth: 300,
+    filesSidebarWidth: 300
   }
 };

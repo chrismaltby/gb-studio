@@ -269,10 +269,8 @@ World.defaultProps = {
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
   const scenes = state.entities.present.result.scenes;
-  const {
-    sidebarWidth,
-    showConnections
-  } = state.entities.present.result.settings;
+  const { showConnections } = state.entities.present.result.settings;
+  const { worldSidebarWidth: sidebarWidth } = state.settings;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;

@@ -9,6 +9,7 @@ import console from "./consoleReducer";
 import music from "./musicReducer";
 import clipboard from "./clipboardReducer";
 import entities from "./entitiesReducer";
+import settings from "./settingsReducer";
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_SUCCESS
@@ -62,7 +63,8 @@ const rootReducer = combineReducers({
       PROJECT_LOAD_SUCCESS,
       PROJECT_SAVE_SUCCESS
     ]
-  })
+  }),
+  settings
 });
 
 export default rootReducer;

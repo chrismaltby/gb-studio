@@ -30,9 +30,16 @@ const asyncAction = async (
   }
 };
 
-export const resizeSidebar = width => {
+export const resizeWorldSidebar = width => {
   return {
-    type: types.SIDEBAR_RESIZE,
+    type: types.SIDEBAR_WORLD_RESIZE,
+    width
+  };
+};
+
+export const resizeFilesSidebar = width => {
+  return {
+    type: types.SIDEBAR_FILES_RESIZE,
     width
   };
 };

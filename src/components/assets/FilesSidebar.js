@@ -45,10 +45,10 @@ class FilesSidebar extends Component {
   };
 
   onMouseMove = event => {
-    const { resizeSidebar } = this.props;
+    const { resizeFilesSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeSidebar(window.innerWidth - event.pageX);
+      resizeFilesSidebar(window.innerWidth - event.pageX);
     }
   };
 
@@ -119,7 +119,7 @@ class FilesSidebar extends Component {
 }
 
 FilesSidebar.propTypes = {
-  resizeSidebar: PropTypes.func.isRequired,
+  resizeFilesSidebar: PropTypes.func.isRequired,
   setNavigationId: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
   width: PropTypes.number,
@@ -144,14 +144,15 @@ FilesSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const { filesSidebarWidth: width } = state.settings;
   return {
-    width: state.project.present.settings.sidebarWidth
+    width
   };
 }
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizeSidebar: actions.resizeSidebar
+  resizeFilesSidebar: actions.resizeFilesSidebar
 };
 
 export default connect(

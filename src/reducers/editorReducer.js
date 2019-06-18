@@ -34,8 +34,7 @@ import {
   REMOVE_TRIGGER_AT,
   MOVE_TRIGGER,
   EDIT_PLAYER_START_AT,
-  EDIT_UI,
-  SIDEBAR_RESIZE
+  EDIT_UI
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -55,12 +54,6 @@ export default function editor(state = initialState.editor, action) {
             zoom: action.data.settings.zoom
           }
       );
-    }
-    case SIDEBAR_RESIZE: {
-      return {
-        ...state,
-        sidebarWidth: Math.max(200, action.width)
-      };
     }
     case MOVE_SCENE: {
       return {

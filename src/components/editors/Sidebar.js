@@ -57,10 +57,10 @@ class Sidebar extends Component {
   };
 
   onMouseMove = event => {
-    const { resizeSidebar } = this.props;
+    const { resizeWorldSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeSidebar(window.innerWidth - event.pageX);
+      resizeWorldSidebar(window.innerWidth - event.pageX);
     }
   };
 
@@ -89,7 +89,7 @@ class Sidebar extends Component {
 
 Sidebar.propTypes = {
   width: PropTypes.number.isRequired,
-  resizeSidebar: PropTypes.func.isRequired,
+  resizeWorldSidebar: PropTypes.func.isRequired,
   children: PropTypes.node
 };
 
@@ -98,14 +98,14 @@ Sidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { sidebarWidth } = state.entities.present.result.settings;
+  const { worldSidebarWidth: width } = state.settings;
   return {
-    width: sidebarWidth
+    width
   };
 }
 
 const mapDispatchToProps = {
-  resizeSidebar: actions.resizeSidebar
+  resizeWorldSidebar: actions.resizeWorldSidebar
 };
 
 export default connect(
