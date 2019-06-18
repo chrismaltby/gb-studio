@@ -1,4 +1,5 @@
 import { ipcRenderer, clipboard } from "electron";
+import settings from "electron-settings";
 import open from "open";
 import {
   OPEN_HELP,
@@ -7,9 +8,10 @@ import {
   COPY_ACTOR,
   COPY_TRIGGER,
   COPY_SCENE,
-  COPY_EVENT
+  COPY_EVENT,
+  SIDEBAR_WORLD_RESIZE,
+  SIDEBAR_FILES_RESIZE
 } from "../actions/actionTypes";
-import { removeEventIds } from "../lib/helpers/eventSystem";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {
@@ -18,6 +20,10 @@ export default store => next => action => {
     open(action.path);
   } else if (action.type === PROJECT_LOAD_SUCCESS) {
     ipcRenderer.send("project-loaded", action.data);
+  } else if (action.type === SIDEBAR_WORLD_RESIZE) {
+    settings.set("worldSidebarWidth", action.width);
+  } else if (action.type === SIDEBAR_FILES_RESIZE) {
+    settings.set("filesSidebarWidth", action.width);
   } else if (action.type === COPY_ACTOR) {
     clipboard.writeText(
       JSON.stringify(

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { ActionCreators } from "redux-undo";
 import { ipcRenderer } from "electron";
+import settings from "electron-settings";
 import * as actions from "../actions";
 import configureStore from "../store/configureStore";
 import watchProject from "../lib/project/watchProject";
@@ -95,6 +96,16 @@ ipcRenderer.on("plugin-run", (event, pluginId) => {
     plugins.menu[pluginId].run(store, actions);
   }
 });
+
+const worldSidebarWidth = settings.get("worldSidebarWidth");
+const filesSidebarWidth = settings.get("filesSidebarWidth");
+
+if (worldSidebarWidth) {
+  store.dispatch(actions.resizeWorldSidebar(worldSidebarWidth));
+}
+if (filesSidebarWidth) {
+  store.dispatch(actions.resizeFilesSidebar(filesSidebarWidth));
+}
 
 let modified = true;
 store.subscribe(() => {
