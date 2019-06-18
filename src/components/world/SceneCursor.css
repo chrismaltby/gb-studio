@@ -2,8 +2,42 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  /* outline: 1px solid red; */
-  outline: 1px solid rgba(127, 127, 127, 0.9);
-  background: rgba(127, 127, 127, 0.2);
+  outline: 1px solid rgba(201, 44, 97, 1);
+  background: rgba(201, 44, 97, 0.4);
   pointer-events: none;
+}
+
+.SceneCursor--AddActor {
+  width: 16px;
+  background-color: rgba(255, 0, 255, 0.3);
+  outline: 1px solid rgba(255, 0, 255, 0.4);
+}
+
+.SceneCursor--AddTrigger {
+  background-color: rgba(255, 120, 0, 0.5);
+  outline: 1px solid rgba(255, 120, 0, 1);
+}
+
+.SceneCursor__AddBubble {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 8px;
+  font-weight: bold;
+  background: var(--highlight-color);
+  border-radius: 8px;
+  line-height: 12px;
+  text-align: middle;
+  top: -12px;
+  left: -14px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.SceneCursor__AddBubble svg {
+  fill: #fff;
+  width: 8px;
 }

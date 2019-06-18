@@ -103,22 +103,9 @@ class Connections extends Component {
     </g>
   );
 
-  renderMarker = ({ x, y, fill, direction, onMouseDown, eventId }) => (
-    <g
-      key={eventId}
-      className="Connections__PlayerStart"
-      title="Game Starting Position"
-      onMouseDown={onMouseDown}
-    >
-      <rect
-        x={x - 4}
-        y={y - 4}
-        rx={4}
-        ry={4}
-        width={16}
-        height={8}
-        style={{ fill }}
-      />
+  renderMarker = ({ x, y, direction, onMouseDown, eventId, className }) => (
+    <g key={eventId} className={className} onMouseDown={onMouseDown}>
+      <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
           points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
@@ -261,9 +248,9 @@ class Connections extends Component {
             this.renderMarker({
               x: x2,
               y: y2,
-              fill: "#00bcd4",
               direction,
               eventId,
+              className: "Connections__Destination",
               onMouseDown: this.onDragDestinationStart(
                 eventId,
                 sceneId,
@@ -276,7 +263,7 @@ class Connections extends Component {
           this.renderMarker({
             x: startX2,
             y: startY2,
-            fill: "#ff5722",
+            className: "Connections__PlayerStart",
             direction: startDirection,
             onMouseDown: this.onDragPlayerStart
           })}

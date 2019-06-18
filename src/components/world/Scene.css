@@ -40,7 +40,7 @@
 .Scene__Image {
   position: relative;
   background-color: #fff;
-  border: 1px solid var(--sidebar-edge-color);
+  outline: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
   overflow: hidden;
 }
@@ -51,7 +51,7 @@
 }
 
 .Scene--Selected .Scene__Image {
-  box-shadow: 0 0 0px 2px var(--highlight-color);
+  box-shadow: 0 0 0px 3px var(--highlight-color);
 }
 
 .Scene--Selected .Scene__Name {
