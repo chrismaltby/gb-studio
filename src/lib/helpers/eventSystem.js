@@ -169,6 +169,21 @@ const appendEvent = (data, id, newData) => {
   }, []);
 };
 
+const removeEventIds = event => {
+  return Object.assign(
+    {},
+    event,
+    {
+      id: undefined
+    },
+    event.children && {
+      children: mapValues(event.children, childEvents =>
+        childEvents.map(removeEventIds)
+      )
+    }
+  );
+};
+
 const regenerateEventIds = event => {
   return Object.assign(
     {},
@@ -235,6 +250,7 @@ export {
   prependEvent,
   appendEvent,
   regenerateEventIds,
+  removeEventIds,
   filterEvents,
   findEvent,
   eventHasArg
