@@ -61,13 +61,6 @@ const buildProject = async (
       .replace(/___AUTHOR___/g, author)
       .replace(/<body>/g, customColor);
 
-      /*alert("is enabled = " + data.CustomColorsEnabled);
-      if (data.CustomColorsEnabled) {
-        //const repl = "<body style='background-color:#" + data.CustomColors_Black + "'>";
-        html.replace("<body>", "test");
-        //html.replace(/\<body\>/g, "\<body style='background-color:#" + data.CustomColors_Black + "'\>")
-      }*/
-
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }
 };

@@ -106,11 +106,6 @@ class CustomPalettePicker extends Component {
   }
 
   decimalToHexString(number) {
-    //if (number < 0)
-    //{
-    //  number = 0xFFFFFFFF + number + 1;
-    //}
-
     var ret = number.toString(16).toUpperCase();
     return ret.length == 1 ? "0" + ret : ret;
   }
@@ -128,8 +123,6 @@ class CustomPalettePicker extends Component {
       CustomColors_DarkGreen: this.state.darkGreenHex,
       CustomColors_Black: this.state.blackHex,
     });
-
-    this.setState({}); // ensure it is saved
   }
 
   setCurrentColor(r, g, b) {
@@ -365,5 +358,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(CustomPalettePicker);
-
-//export default CustomPalettePicker;
