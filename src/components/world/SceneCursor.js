@@ -4,7 +4,10 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon } from "../library/Icons";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { getSpriteSheetIds } from "../../reducers/entitiesReducer";
+import {
+  getSpriteSheetIds,
+  getScenesLookup
+} from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 
 class SceneCursor extends Component {
@@ -24,7 +27,9 @@ class SceneCursor extends Component {
       addActor,
       addTrigger,
       sceneId,
+      scene,
       showCollisions,
+      addCollisionTile,
       removeCollisionTile,
       removeActorAt,
       removeTriggerAt
@@ -43,6 +48,20 @@ class SceneCursor extends Component {
       this.setState({ resize: true });
       window.addEventListener("mousemove", this.onResizeTrigger);
       window.addEventListener("mouseup", this.onResizeTriggerStop);
+    } else if (tool === "collisions" && showCollisions) {
+      const collisionIndex = scene.width * y + x;
+      const collisionByteIndex = collisionIndex >> 3;
+      const collisionByteOffset = collisionIndex & 7;
+      const collisionByteMask = 1 << collisionByteOffset;
+      if (scene.collisions[collisionByteIndex] & collisionByteMask) {
+        removeCollisionTile(sceneId, x, y);
+        this.remove = true;
+      } else {
+        addCollisionTile(sceneId, x, y);
+        this.remove = false;
+      }
+      window.addEventListener("mousemove", this.onCollisionsMove);
+      window.addEventListener("mouseup", this.onCollisionsStop);
     } else if (tool === "eraser") {
       if (showCollisions) {
         removeCollisionTile(sceneId, x, y);
@@ -69,6 +88,33 @@ class SceneCursor extends Component {
     this.setState({ resize: false });
     window.removeEventListener("mousemove", this.onResizeTrigger);
     window.removeEventListener("mouseup", this.onResizeTriggerStop);
+  };
+
+  onCollisionsMove = e => {
+    const {
+      x,
+      y,
+      sceneId,
+      showCollisions,
+      addCollisionTile,
+      removeCollisionTile
+    } = this.props;
+    if (this.currentX !== x || this.currentY !== y) {
+      if (showCollisions) {
+        if (this.remove) {
+          removeCollisionTile(sceneId, x, y);
+        } else {
+          addCollisionTile(sceneId, x, y);
+        }
+      }
+      this.currentX = x;
+      this.currentY = y;
+    }
+  };
+
+  onCollisionsStop = e => {
+    window.removeEventListener("mousemove", this.onCollisionsMove);
+    window.removeEventListener("mouseup", this.onCollisionsStop);
   };
 
   onEraserMove = e => {
@@ -98,7 +144,8 @@ class SceneCursor extends Component {
         className={cx("SceneCursor", {
           "SceneCursor--AddActor": tool === "actors",
           "SceneCursor--AddTrigger": tool === "triggers",
-          "SceneCursor--Eraser": tool === "eraser"
+          "SceneCursor--Eraser": tool === "eraser",
+          "SceneCursor--Collisions": tool === "collisions"
         })}
         onMouseDown={this.onMouseDown}
         style={{
@@ -145,6 +192,8 @@ function mapStateToProps(state, props) {
   const showCollisions = state.entities.present.result.settings.showCollisions;
   const spriteSheetIds = getSpriteSheetIds(state);
   const spriteSheetId = spriteSheetIds[0];
+  const scenesLookup = getScenesLookup(state);
+  const scene = scenesLookup[props.sceneId];
   return {
     x,
     y,
@@ -153,7 +202,8 @@ function mapStateToProps(state, props) {
     editorType,
     entityId,
     showCollisions,
-    spriteSheetId
+    spriteSheetId,
+    scene
   };
 }
 

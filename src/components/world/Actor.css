@@ -2,8 +2,8 @@
   position: absolute;
   width: 16px;
   height: 8px;
-  background-color: rgba(255, 0, 255, 0.3);
-  outline: 1px solid rgba(255, 0, 255, 0.4);
+  background-color: rgba(255, 89, 233, 0.5);
+  outline: 1px solid rgba(140, 0, 177, 0.5);
 }
 
 .Actor canvas {
@@ -12,6 +12,6 @@
 }
 
 .Actor--Selected {
-  background-color: rgba(255, 0, 255, 0.8);
-  outline: 1px solid rgba(255, 0, 255, 1);
+  background-color: rgb(255, 89, 233);
+  outline: 1px solid rgb(140, 0, 177);
 }

@@ -4,25 +4,33 @@
   height: 8px;
   outline: 1px solid rgba(201, 44, 97, 1);
   background: rgba(201, 44, 97, 0.4);
-  pointer-events: none;
 }
 
 .SceneCursor--AddActor {
   width: 16px;
-  background-color: rgba(255, 0, 255, 0.3);
-  outline: 1px solid rgba(255, 0, 255, 0.4);
+  background-color: rgba(255, 89, 233, 0.5);
+  outline: 1px solid rgba(140, 0, 177, 0.5);
   pointer-events: all;
+  z-index: 100;
 }
 
 .SceneCursor--AddTrigger {
   background-color: rgba(255, 120, 0, 0.5);
   outline: 1px solid rgba(255, 120, 0, 1);
   pointer-events: all;
+  z-index: 100;
 }
 
 .SceneCursor--Eraser {
   background-color: rgba(255, 0, 0, 0.8);
   outline: 1px solid rgba(255, 0, 0, 1);
+  pointer-events: all;
+  z-index: 100;
+}
+
+.SceneCursor--Collisions {
+  background-color: rgba(250, 100, 100, 0.8);
+  outline: 1px solid rgba(250, 100, 100, 1);
   pointer-events: all;
 }
 

@@ -72,7 +72,6 @@ const editEntity = (state, type, id, data) => {
 };
 
 const removeEntity = (state, type, id) => {
-  console.log("REMOVE ", id, "FROM", state.result[type], state.result);
   return {
     ...state,
     entities: {
@@ -425,8 +424,6 @@ const moveTrigger = (state, action) => {
   const newScene = state.entities.scenes[action.newSceneId];
   const trigger = state.entities.triggers[action.id];
 
-  console.log("MOVE TRIGGER!!!!!!!!!");
-
   let nextState = state;
 
   // If changed scene
@@ -614,46 +611,31 @@ const removeTriggerAt = (state, action) => {
 };
 
 const addCollisionTile = (state, action) => {
-  /*
-  return {
-    ...state,
-    scenes: state.scenes.map(scene => {
-      if (scene.id !== action.sceneId) {
-        return scene;
-      }
+  const scene = state.entities.scenes[action.sceneId];
+  const background = state.entities.backgrounds[scene.backgroundId];
 
-      const background =
-        scene.backgroundId &&
-        state.backgrounds.find(b => b.id === scene.backgroundId);
-      if (!background) {
-        return scene;
-      }
+  if (!background) {
+    return state;
+  }
 
-      const collisionsSize = Math.ceil(
-        (background.width * background.height) / 8
-      );
-      const collisions = scene.collisions.slice(0, collisionsSize);
+  const collisionsSize = Math.ceil((background.width * background.height) / 8);
+  const collisions = scene.collisions.slice(0, collisionsSize);
 
-      if (collisions.length < collisionsSize) {
-        for (let i = collisions.length; i < collisionsSize; i++) {
-          collisions[i] = 0;
-        }
-      }
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
 
-      const collisionIndex = background.width * action.y + action.x;
-      const collisionByteIndex = collisionIndex >> 3;
-      const collisionByteOffset = collisionIndex & 7;
-      const collisionByteMask = 1 << collisionByteOffset;
-      collisions[collisionByteIndex] |= collisionByteMask;
+  const collisionIndex = background.width * action.y + action.x;
+  const collisionByteIndex = collisionIndex >> 3;
+  const collisionByteOffset = collisionIndex & 7;
+  const collisionByteMask = 1 << collisionByteOffset;
+  collisions[collisionByteIndex] |= collisionByteMask;
 
-      return {
-        ...scene,
-        collisions
-      };
-    })
-  };
-*/
-  return state;
+  return editEntity(state, "scenes", scene.id, {
+    collisions
+  });
 };
 
 const removeCollisionTile = (state, action) => {
@@ -838,7 +820,6 @@ export const getSceneUniqueSpriteSheets = createSelector(
   [getSceneActorIds, getActorsLookup, getSpriteSheetsLookup],
   (actorIds, actors, spriteSheets) =>
     actorIds.reduce((memo, actorId) => {
-      // console.log({ spriteSheets, actorIds, actors, actor: actors[actorId] });
       const spriteSheet = spriteSheets[actors[actorId].spriteSheetId];
       if (memo.indexOf(spriteSheet) === -1) {
         memo.push(spriteSheet);
