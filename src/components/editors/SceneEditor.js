@@ -2,20 +2,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import cx from "classnames";
 import * as actions from "../../actions";
-import { TriggerIcon } from "../library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { SceneShape } from "../../reducers/stateShape";
+import SceneNavigation from "./SceneNavigation";
 
 class SceneEditor extends Component {
   constructor() {
@@ -149,46 +146,7 @@ class SceneEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          {(scene.actors.length > 0 || scene.triggers.length > 0) && (
-            <div>
-              <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-              <ul>
-                {scene.actors.map((actorId, index) => (
-                  <li
-                    key={actorId}
-                    onClick={() => {
-                      const { selectActor } = this.props;
-                      selectActor(scene.id, actorId);
-                    }}
-                    className={cx({ Navigation__Error: index >= MAX_ACTORS })}
-                  >
-                    <div className="EditorSidebar__Icon">
-                      {/* <SpriteSheetCanvas
-                        spriteSheetId={actor.spriteSheetId}
-                        direction={actor.direction}
-                      /> */}
-                    </div>
-                    {actorId || `Actor ${index + 1}`}
-                  </li>
-                ))}
-                {scene.triggers.map((triggerId, index) => (
-                  <li
-                    key={triggerId}
-                    onClick={() => {
-                      const { selectTrigger } = this.props;
-                      selectTrigger(scene.id, triggerId);
-                    }}
-                    className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
-                  >
-                    <div className="EditorSidebar__Icon">
-                      <TriggerIcon />
-                    </div>
-                    {triggerId || `Trigger ${index + 1}`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <SceneNavigation sceneId={scene.id} />
         </SidebarColumn>
 
         <SidebarColumn>
@@ -209,12 +167,7 @@ SceneEditor.propTypes = {
   sceneIndex: PropTypes.number.isRequired,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
-  selectActor: PropTypes.func.isRequired,
-  selectTrigger: PropTypes.func.isRequired,
-  copyScene: PropTypes.func.isRequired,
-  pasteScene: PropTypes.func.isRequired,
-  pasteActor: PropTypes.func.isRequired,
-  pasteTrigger: PropTypes.func.isRequired
+  copyScene: PropTypes.func.isRequired
 };
 
 SceneEditor.defaultProps = {
@@ -235,10 +188,7 @@ const mapDispatchToProps = {
   removeScene: actions.removeScene,
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
-  copyScene: actions.copyScene,
-  pasteScene: actions.pasteScene,
-  pasteActor: actions.pasteActor,
-  pasteTrigger: actions.pasteTrigger
+  copyScene: actions.copyScene
 };
 
 export default connect(
