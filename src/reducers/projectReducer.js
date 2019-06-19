@@ -18,12 +18,12 @@ import {
   // EDIT_ACTOR,
   PASTE_ACTOR,
   // REMOVE_ACTOR,
-  REMOVE_ACTOR_AT,
-  ADD_COLLISION_TILE,
-  REMOVE_COLLISION_TILE,
+  // REMOVE_ACTOR_AT,
+  // ADD_COLLISION_TILE,
+  // REMOVE_COLLISION_TILE,
   // ADD_TRIGGER,
   // REMOVE_TRIGGER,
-  REMOVE_TRIGGER_AT,
+  // REMOVE_TRIGGER_AT,
   // RESIZE_TRIGGER,
   // EDIT_TRIGGER,
   PASTE_TRIGGER,
@@ -503,102 +503,102 @@ export default function project(state = initialState.project, action) {
     //       };
     //     })
     //   };
-    case REMOVE_ACTOR_AT:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: scene.actors.filter(actor => {
-              return !(
-                (actor.x === action.x || actor.x === action.x - 1) &&
-                (actor.y === action.y || actor.y === action.y + 1)
-              );
-            })
-          };
-        })
-      };
-    case ADD_COLLISION_TILE: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
+    // case REMOVE_ACTOR_AT:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: scene.actors.filter(actor => {
+    //           return !(
+    //             (actor.x === action.x || actor.x === action.x - 1) &&
+    //             (actor.y === action.y || actor.y === action.y + 1)
+    //           );
+    //         })
+    //       };
+    //     })
+    //   };
+    // case ADD_COLLISION_TILE: {
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
 
-          const background =
-            scene.backgroundId &&
-            state.backgrounds.find(b => b.id === scene.backgroundId);
-          if (!background) {
-            return scene;
-          }
+    //       const background =
+    //         scene.backgroundId &&
+    //         state.backgrounds.find(b => b.id === scene.backgroundId);
+    //       if (!background) {
+    //         return scene;
+    //       }
 
-          const collisionsSize = Math.ceil(
-            (background.width * background.height) / 8
-          );
-          const collisions = scene.collisions.slice(0, collisionsSize);
+    //       const collisionsSize = Math.ceil(
+    //         (background.width * background.height) / 8
+    //       );
+    //       const collisions = scene.collisions.slice(0, collisionsSize);
 
-          if (collisions.length < collisionsSize) {
-            for (let i = collisions.length; i < collisionsSize; i++) {
-              collisions[i] = 0;
-            }
-          }
+    //       if (collisions.length < collisionsSize) {
+    //         for (let i = collisions.length; i < collisionsSize; i++) {
+    //           collisions[i] = 0;
+    //         }
+    //       }
 
-          const collisionIndex = background.width * action.y + action.x;
-          const collisionByteIndex = collisionIndex >> 3;
-          const collisionByteOffset = collisionIndex & 7;
-          const collisionByteMask = 1 << collisionByteOffset;
-          collisions[collisionByteIndex] |= collisionByteMask;
+    //       const collisionIndex = background.width * action.y + action.x;
+    //       const collisionByteIndex = collisionIndex >> 3;
+    //       const collisionByteOffset = collisionIndex & 7;
+    //       const collisionByteMask = 1 << collisionByteOffset;
+    //       collisions[collisionByteIndex] |= collisionByteMask;
 
-          return {
-            ...scene,
-            collisions
-          };
-        })
-      };
-    }
-    case REMOVE_COLLISION_TILE: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
+    //       return {
+    //         ...scene,
+    //         collisions
+    //       };
+    //     })
+    //   };
+    // }
+    // case REMOVE_COLLISION_TILE: {
+    // return {
+    //   ...state,
+    //   scenes: state.scenes.map(scene => {
+    //     if (scene.id !== action.sceneId) {
+    //       return scene;
+    //     }
 
-          const background =
-            scene.backgroundId &&
-            state.backgrounds.find(b => b.id === scene.backgroundId);
-          if (!background) {
-            return scene;
-          }
+    //     const background =
+    //       scene.backgroundId &&
+    //       state.backgrounds.find(b => b.id === scene.backgroundId);
+    //     if (!background) {
+    //       return scene;
+    //     }
 
-          const collisionsSize = Math.ceil(
-            (background.width * background.height) / 8
-          );
-          const collisions = scene.collisions.slice(0, collisionsSize);
+    //     const collisionsSize = Math.ceil(
+    //       (background.width * background.height) / 8
+    //     );
+    //     const collisions = scene.collisions.slice(0, collisionsSize);
 
-          if (collisions.length < collisionsSize) {
-            for (let i = collisions.length; i < collisionsSize; i++) {
-              collisions[i] = 0;
-            }
-          }
+    //     if (collisions.length < collisionsSize) {
+    //       for (let i = collisions.length; i < collisionsSize; i++) {
+    //         collisions[i] = 0;
+    //       }
+    //     }
 
-          const collisionIndex = background.width * action.y + action.x;
-          const collisionByteIndex = collisionIndex >> 3;
-          const collisionByteOffset = collisionIndex & 7;
-          const collisionByteMask = 1 << collisionByteOffset;
-          collisions[collisionByteIndex] &= ~collisionByteMask;
+    //     const collisionIndex = background.width * action.y + action.x;
+    //     const collisionByteIndex = collisionIndex >> 3;
+    //     const collisionByteOffset = collisionIndex & 7;
+    //     const collisionByteMask = 1 << collisionByteOffset;
+    //     collisions[collisionByteIndex] &= ~collisionByteMask;
 
-          return {
-            ...scene,
-            collisions
-          };
-        })
-      };
-    }
+    //     return {
+    //       ...scene,
+    //       collisions
+    //     };
+    //   })
+    // };
+    // }
     // case ADD_TRIGGER: {
     //   const script =
     //     action.defaults &&
@@ -648,27 +648,27 @@ export default function project(state = initialState.project, action) {
     //       };
     //     })
     //   };
-    case REMOVE_TRIGGER_AT: {
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: scene.triggers.filter(trigger => {
-              return (
-                action.x < trigger.x ||
-                action.x >= trigger.x + trigger.width ||
-                action.y < trigger.y ||
-                action.y >= trigger.y + trigger.height
-              );
-            })
-          };
-        })
-      };
-    }
+    // case REMOVE_TRIGGER_AT: {
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: scene.triggers.filter(trigger => {
+    //           return (
+    //             action.x < trigger.x ||
+    //             action.x >= trigger.x + trigger.width ||
+    //             action.y < trigger.y ||
+    //             action.y >= trigger.y + trigger.height
+    //           );
+    //         })
+    //       };
+    //     })
+    //   };
+    // }
     // case RESIZE_TRIGGER:
     //   return {
     //     ...state,

@@ -49,3 +49,9 @@
   fill: #fff;
   width: 8px;
 }
+
+.SceneCursor__Sprite {
+  position: absolute;
+  top: -8px;
+  left: 0px;
+}

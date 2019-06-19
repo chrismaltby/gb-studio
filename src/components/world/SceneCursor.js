@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon } from "../library/Icons";
+import SpriteSheetCanvas from "./SpriteSheetCanvas";
+import { getSpriteSheetIds } from "../../reducers/entitiesReducer";
+import * as actions from "../../actions";
 
 class SceneCursor extends Component {
   constructor() {
@@ -38,18 +41,20 @@ class SceneCursor extends Component {
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
-      window.addEventListener("mousemove", this.onMouseMove);
-      window.addEventListener("mouseup", this.onMouseUp);
+      window.addEventListener("mousemove", this.onResizeTrigger);
+      window.addEventListener("mouseup", this.onResizeTriggerStop);
     } else if (tool === "eraser") {
       if (showCollisions) {
         removeCollisionTile(sceneId, x, y);
       }
       removeActorAt(sceneId, x, y);
       removeTriggerAt(sceneId, x, y);
+      window.addEventListener("mousemove", this.onEraserMove);
+      window.addEventListener("mouseup", this.onEraserStop);
     }
   };
 
-  onMouseMove = e => {
+  onResizeTrigger = e => {
     const { x, y, sceneId, entityId, resizeTrigger } = this.props;
     if (this.currentX !== x || this.currentY !== y) {
       resizeTrigger(sceneId, entityId, this.startX, this.startY, x, y);
@@ -58,17 +63,36 @@ class SceneCursor extends Component {
     }
   };
 
-  onMouseUp = e => {
+  onResizeTriggerStop = e => {
     const { setTool } = this.props;
     setTool("select");
     this.setState({ resize: false });
-    window.removeEventListener("mousemove", this.onMouseMove);
-    window.removeEventListener("mouseup", this.onMouseUp);
+    window.removeEventListener("mousemove", this.onResizeTrigger);
+    window.removeEventListener("mouseup", this.onResizeTriggerStop);
+  };
+
+  onEraserMove = e => {
+    const { x, y, sceneId, showCollisions, removeCollisionTile } = this.props;
+    if (this.currentX !== x || this.currentY !== y) {
+      if (showCollisions) {
+        removeCollisionTile(sceneId, x, y);
+      }
+      this.currentX = x;
+      this.currentY = y;
+    }
+  };
+
+  onEraserStop = e => {
+    window.removeEventListener("mousemove", this.onEraserMove);
+    window.removeEventListener("mouseup", this.onEraserStop);
   };
 
   render() {
-    const { x, y, tool } = this.props;
+    const { x, y, tool, spriteSheetId, enabled } = this.props;
     const { resize } = this.state;
+    if (!enabled) {
+      return <div />;
+    }
     return (
       <div
         className={cx("SceneCursor", {
@@ -89,6 +113,11 @@ class SceneCursor extends Component {
             {tool === "eraser" && <CloseIcon />}
           </div>
         )}
+        {tool === "actors" && (
+          <div className="SceneCursor__Sprite">
+            <SpriteSheetCanvas spriteSheetId={spriteSheetId} />
+          </div>
+        )}
       </div>
     );
   }
@@ -97,7 +126,16 @@ class SceneCursor extends Component {
 SceneCursor.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
-  tool: PropTypes.string.isRequired
+  sceneId: PropTypes.string.isRequired,
+  showCollisions: PropTypes.bool.isRequired,
+  tool: PropTypes.string.isRequired,
+  setTool: PropTypes.func.isRequired,
+  addActor: PropTypes.func.isRequired,
+  addTrigger: PropTypes.func.isRequired,
+  addCollisionTile: PropTypes.func.isRequired,
+  removeActorAt: PropTypes.func.isRequired,
+  removeTriggerAt: PropTypes.func.isRequired,
+  removeCollisionTile: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state, props) {
@@ -105,6 +143,8 @@ function mapStateToProps(state, props) {
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
+  const spriteSheetIds = getSpriteSheetIds(state);
+  const spriteSheetId = spriteSheetIds[0];
   return {
     x,
     y,
@@ -112,7 +152,8 @@ function mapStateToProps(state, props) {
     prefab,
     editorType,
     entityId,
-    showCollisions
+    showCollisions,
+    spriteSheetId
   };
 }
 

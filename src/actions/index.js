@@ -291,7 +291,6 @@ export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
   } else if (dragging === DRAG_ACTOR) {
     dispatch(moveActor(scene, entityId, sceneId, x, y));
   } else if (dragging === DRAG_TRIGGER) {
-    console.log("MOVE TRIGGER?", scene, entityId, sceneId, x, y);
     dispatch(moveTrigger(scene, entityId, sceneId, x, y));
   }
 };

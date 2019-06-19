@@ -16,9 +16,13 @@ import {
   EDIT_ACTOR,
   MOVE_ACTOR,
   REMOVE_ACTOR,
+  REMOVE_ACTOR_AT,
   MOVE_TRIGGER,
   EDIT_TRIGGER,
   REMOVE_TRIGGER,
+  REMOVE_TRIGGER_AT,
+  ADD_COLLISION_TILE,
+  REMOVE_COLLISION_TILE,
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
@@ -507,6 +511,31 @@ const removeActor = (state, action) => {
   return removeEntity(nextState, "actors", action.id);
 };
 
+const removeActorAt = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+
+  const removeActorId = scene.actors.find(actorId => {
+    const actor = state.entities.actors[actorId];
+    return (
+      (actor.x === action.x || actor.x === action.x - 1) &&
+      (actor.y === action.y || actor.y === action.y + 1)
+    );
+  });
+
+  if (removeActorId) {
+    // Remove from scene
+    const nextState = editEntity(state, "scenes", action.sceneId, {
+      actors: scene.actors.filter(actorId => {
+        return actorId !== removeActorId;
+      })
+    });
+
+    return removeEntity(nextState, "actors", removeActorId);
+  }
+
+  return state;
+};
+
 const addTrigger = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const script =
@@ -555,6 +584,104 @@ const removeTrigger = (state, action) => {
   });
 
   return removeEntity(nextState, "triggers", action.id);
+};
+
+const removeTriggerAt = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+
+  const removeTriggerId = scene.triggers.find(triggerId => {
+    const trigger = state.entities.triggers[triggerId];
+    return (
+      action.x >= trigger.x &&
+      action.x < trigger.x + trigger.width &&
+      action.y >= trigger.y &&
+      action.y < trigger.y + trigger.height
+    );
+  });
+
+  if (removeTriggerId) {
+    // Remove from scene
+    const nextState = editEntity(state, "scenes", action.sceneId, {
+      triggers: scene.triggers.filter(triggerId => {
+        return triggerId !== removeTriggerId;
+      })
+    });
+
+    return removeEntity(nextState, "triggers", removeTriggerId);
+  }
+
+  return state;
+};
+
+const addCollisionTile = (state, action) => {
+  /*
+  return {
+    ...state,
+    scenes: state.scenes.map(scene => {
+      if (scene.id !== action.sceneId) {
+        return scene;
+      }
+
+      const background =
+        scene.backgroundId &&
+        state.backgrounds.find(b => b.id === scene.backgroundId);
+      if (!background) {
+        return scene;
+      }
+
+      const collisionsSize = Math.ceil(
+        (background.width * background.height) / 8
+      );
+      const collisions = scene.collisions.slice(0, collisionsSize);
+
+      if (collisions.length < collisionsSize) {
+        for (let i = collisions.length; i < collisionsSize; i++) {
+          collisions[i] = 0;
+        }
+      }
+
+      const collisionIndex = background.width * action.y + action.x;
+      const collisionByteIndex = collisionIndex >> 3;
+      const collisionByteOffset = collisionIndex & 7;
+      const collisionByteMask = 1 << collisionByteOffset;
+      collisions[collisionByteIndex] |= collisionByteMask;
+
+      return {
+        ...scene,
+        collisions
+      };
+    })
+  };
+*/
+  return state;
+};
+
+const removeCollisionTile = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  const background = state.entities.backgrounds[scene.backgroundId];
+
+  if (!background) {
+    return state;
+  }
+
+  const collisionsSize = Math.ceil((background.width * background.height) / 8);
+  const collisions = scene.collisions.slice(0, collisionsSize);
+
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
+
+  const collisionIndex = background.width * action.y + action.x;
+  const collisionByteIndex = collisionIndex >> 3;
+  const collisionByteOffset = collisionIndex & 7;
+  const collisionByteMask = 1 << collisionByteOffset;
+  collisions[collisionByteIndex] &= ~collisionByteMask;
+
+  return editEntity(state, "scenes", scene.id, {
+    collisions
+  });
 };
 
 const editPlayerStartAt = (state, action) => {
@@ -630,6 +757,8 @@ export default function project(state = initialState.entities, action) {
       return moveActor(state, action);
     case REMOVE_ACTOR:
       return removeActor(state, action);
+    case REMOVE_ACTOR_AT:
+      return removeActorAt(state, action);
     case ADD_TRIGGER:
       return addTrigger(state, action);
     case EDIT_TRIGGER:
@@ -640,6 +769,12 @@ export default function project(state = initialState.entities, action) {
       return resizeTrigger(state, action);
     case REMOVE_TRIGGER:
       return removeTrigger(state, action);
+    case REMOVE_TRIGGER_AT:
+      return removeTriggerAt(state, action);
+    case ADD_COLLISION_TILE:
+      return addCollisionTile(state, action);
+    case REMOVE_COLLISION_TILE:
+      return removeCollisionTile(state, action);
     case EDIT_PLAYER_START_AT:
       return editPlayerStartAt(state, action);
     case EDIT_SCENE_EVENT_DESTINATION_POSITION:

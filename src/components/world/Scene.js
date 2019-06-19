@@ -412,7 +412,8 @@ class Scene extends Component {
           {actors.map(actorId => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
-          {hovered && <SceneCursor sceneId={id} />}
+          <SceneCursor sceneId={id} enabled={hovered} />
+
           {event && (
             <div className="Scene__EventHelper">
               <EventHelper event={event} scene={scene} />
