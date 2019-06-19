@@ -242,6 +242,11 @@ textarea {
   font-size: 11px;
 }
 
+.FormField .ReactSelect__input {
+  color: var(--input-text-color);
+  font-size: 11px;
+}
+
 .FormField .ReactSelect__control--is-focused {
   border: 1px solid transparent !important;
   box-shadow: 0 0 0px 2px var(--highlight-color);
