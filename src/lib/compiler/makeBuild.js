@@ -104,6 +104,17 @@ const makeBuild = ({
       fs.writeFile(`${buildRoot}/include/game.h`, result, 'utf8');
     });    
 
+    // Modify Linux / OSX makefile as needed
+    if (process.platform != "win32" && data.CustomColorsEnabled == false)
+    {
+      fs.readFile(`${buildRoot}/makefile`, 'utf8', function (err, filedata) {
+
+        const result = filedata.replace("-Wl-yp0x143=0x80", "");
+
+        fs.writeFile(`${buildRoot}/makefile`, result, 'utf8');
+      });
+    }
+
     const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
