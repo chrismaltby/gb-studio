@@ -10,8 +10,9 @@ class Trigger extends Component {
     // console.log("MOUSE DOWN TRIGGER");
     e.stopPropagation();
     e.preventDefault();
-    const { id, sceneId, dragTriggerStart } = this.props;
+    const { id, sceneId, dragTriggerStart, setTool } = this.props;
     dragTriggerStart(sceneId, id);
+    setTool("select");
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
@@ -66,7 +67,8 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   dragTriggerStart: actions.dragTriggerStart,
-  dragTriggerStop: actions.dragTriggerStop
+  dragTriggerStop: actions.dragTriggerStop,
+  setTool: actions.setTool
 };
 
 export default connect(

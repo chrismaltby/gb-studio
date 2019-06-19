@@ -10,13 +10,6 @@ export default {
     saving: false,
     modified: false
   },
-  project: {
-    settings: {
-      showCollisions: true,
-      showConnections: true,
-      sidebarWidth: 300
-    }
-  },
   world: {},
   editor: {
     type: "world",

@@ -153,37 +153,37 @@ class SceneEditor extends Component {
             <div>
               <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
               <ul>
-                {scene.actors.map((actor, index) => (
+                {scene.actors.map((actorId, index) => (
                   <li
-                    key={actor.id}
+                    key={actorId}
                     onClick={() => {
                       const { selectActor } = this.props;
-                      selectActor(scene.id, actor.id);
+                      selectActor(scene.id, actorId);
                     }}
                     className={cx({ Navigation__Error: index >= MAX_ACTORS })}
                   >
                     <div className="EditorSidebar__Icon">
-                      <SpriteSheetCanvas
+                      {/* <SpriteSheetCanvas
                         spriteSheetId={actor.spriteSheetId}
                         direction={actor.direction}
-                      />
+                      /> */}
                     </div>
-                    {actor.name || `Actor ${index + 1}`}
+                    {actorId || `Actor ${index + 1}`}
                   </li>
                 ))}
-                {scene.triggers.map((trigger, index) => (
+                {scene.triggers.map((triggerId, index) => (
                   <li
-                    key={trigger.id}
+                    key={triggerId}
                     onClick={() => {
                       const { selectTrigger } = this.props;
-                      selectTrigger(scene.id, trigger.id);
+                      selectTrigger(scene.id, triggerId);
                     }}
                     className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
                   >
                     <div className="EditorSidebar__Icon">
                       <TriggerIcon />
                     </div>
-                    {trigger.name || `Trigger ${index + 1}`}
+                    {triggerId || `Trigger ${index + 1}`}
                   </li>
                 ))}
               </ul>

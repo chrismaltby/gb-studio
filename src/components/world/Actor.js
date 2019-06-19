@@ -11,8 +11,9 @@ class Actor extends Component {
     // console.log("MOUSE DOWN ACTOR", this.props.id);
     e.stopPropagation();
     e.preventDefault();
-    const { id, sceneId, dragActorStart } = this.props;
+    const { id, sceneId, dragActorStart, setTool } = this.props;
     dragActorStart(sceneId, id);
+    setTool("select");
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
@@ -71,7 +72,8 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   dragActorStart: actions.dragActorStart,
-  dragActorStop: actions.dragActorStop
+  dragActorStop: actions.dragActorStop,
+  setTool: actions.setTool
 };
 
 export default connect(
