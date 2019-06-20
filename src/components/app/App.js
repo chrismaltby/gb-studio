@@ -5,7 +5,7 @@ import cx from "classnames";
 import AppToolbar from "../../containers/AppToolbar";
 import BackgroundsPage from "../../containers/pages/BackgroundsPage";
 import SpritesPage from "../../containers/pages/SpritesPage";
-import ScriptPage from "../../containers/pages/ScriptPage";
+import DialoguePage from "../../containers/pages/DialoguePage";
 import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
 import UIPage from "../../containers/pages/UIPage";
@@ -50,7 +50,7 @@ class App extends Component {
           {section === "sprites" && <SpritesPage />}
           {section === "ui" && <UIPage />}
           {section === "music" && <MusicPage />}
-          {section === "script" && <ScriptPage />}
+          {section === "dialogue" && <DialoguePage />}
           {section === "build" && <BuildPage />}
         </div>
       </div>
@@ -65,7 +65,7 @@ App.propTypes = {
     "sprites",
     "ui",
     "music",
-    "script",
+    "dialogue",
     "build"
   ]).isRequired
 };

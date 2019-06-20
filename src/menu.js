@@ -178,10 +178,10 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
-          label: l10n("MENU_SCRIPT_REVIEW"),
+          label: l10n("MENU_DIALOGUE_REVIEW"),
           accelerator: "CommandOrControl+6",
           click: () => {
-            notifyListeners("section", "script");
+            notifyListeners("section", "dialogue");
           }
         },
         {

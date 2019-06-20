@@ -13,7 +13,7 @@
   "NAV_BACKGROUNDS": "Backgrounds",
   "NAV_UI_ELEMENTS": "UI Elements",
   "NAV_MUSIC": "Music",
-  "NAV_SCRIPT_REVIEW": "Script Review",
+  "NAV_DIALOGUE_REVIEW": "Dialogue Review",
   "NAV_BUILD_AND_RUN": "Build & Run",
 
   "// 3": "Toolbar --------------------------------------------------",
@@ -246,7 +246,7 @@
   "MENU_BACKGROUNDS": "Backgrounds",
   "MENU_UI_ELEMENTS": "UI Elements",
   "MENU_MUSIC": "Music",
-  "MENU_SCRIPT_REVIEW": "Script Review",
+  "MENU_DIALOGUE_REVIEW": "Dialogue Review",
   "MENU_BUILD_AND_RUN": "Build && Run",
   "MENU_THEME": "Theme",
   "MENU_THEME_DEFAULT": "System Default",
@@ -320,13 +320,13 @@
   "SPLASH_CLEAR_RECENT": "Clear Recent",
   "SPLASH_NO_RECENT_PROJECTS": "No projects have been opened recently.",
 
-  "// 14": "Script Review ------------------------------------------------",
+  "// 14": "Dialogue Review ------------------------------------------------",
 
-  "SCRIPT_REVIEW": "Script Review",
-  "SCRIPT_LINE": "Line",
-  "SCRIPT_LINES": "Lines",
-  "SCRIPT_WORD": "Word",
-  "SCRIPT_WORDS": "Words",
+  "DIALOGUE_REVIEW": "Dialogue Review",
+  "DIALOGUE_LINE": "Line",
+  "DIALOGUE_LINES": "Lines",
+  "DIALOGUE_WORD": "Word",
+  "DIALOGUE_WORDS": "Words",
 
   "// 15": "Dialogs ------------------------------------------------------",
 
