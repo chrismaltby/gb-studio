@@ -80,81 +80,83 @@ const plugins = {
   }, {})
 };
 
-ipcRenderer.send("set-menu-plugins", plugins.menu);
+if (ipcRenderer) {
+  ipcRenderer.send("set-menu-plugins", plugins.menu);
 
-chokidar
-  .watch(`${projectRoot}/plugins/*/events/event*.js`, {
-    ignoreInitial: true,
-    persistent: true
-  })
-  .on("add", path => {
-    const plugin = loadPlugin(path);
-    if (!plugin) {
-      return;
-    }
-    plugins.events[plugin.id] = plugin;
-    pluginEmitter.emit("add-event", plugin);
-  })
-  .on("change", path => {
-    const plugin = loadPlugin(path);
-    const oldPluginId = pluginEventFilepaths[path];
-    if (!plugin || oldPluginId !== plugin.id) {
-      pluginEventFilepaths[path] = oldPluginId;
-      delete plugins.events[oldPluginId];
-      pluginEmitter.emit("remove-event", { id: oldPluginId });
-    }
-    if (!plugin) {
-      return;
-    }
-    plugins.events[plugin.id] = plugin;
-    pluginEventFilepaths[path] = plugin.id;
-    pluginEmitter.emit("update-event", plugin);
-  })
-  .on("unlink", path => {
-    const pluginId = pluginEventFilepaths[path];
-    delete plugins.events[pluginId];
-    delete pluginEventFilepaths[path];
-    pluginEmitter.emit("remove-event", { id: pluginId });
-  });
+  chokidar
+    .watch(`${projectRoot}/plugins/*/events/event*.js`, {
+      ignoreInitial: true,
+      persistent: true
+    })
+    .on("add", path => {
+      const plugin = loadPlugin(path);
+      if (!plugin) {
+        return;
+      }
+      plugins.events[plugin.id] = plugin;
+      pluginEmitter.emit("add-event", plugin);
+    })
+    .on("change", path => {
+      const plugin = loadPlugin(path);
+      const oldPluginId = pluginEventFilepaths[path];
+      if (!plugin || oldPluginId !== plugin.id) {
+        pluginEventFilepaths[path] = oldPluginId;
+        delete plugins.events[oldPluginId];
+        pluginEmitter.emit("remove-event", { id: oldPluginId });
+      }
+      if (!plugin) {
+        return;
+      }
+      plugins.events[plugin.id] = plugin;
+      pluginEventFilepaths[path] = plugin.id;
+      pluginEmitter.emit("update-event", plugin);
+    })
+    .on("unlink", path => {
+      const pluginId = pluginEventFilepaths[path];
+      delete plugins.events[pluginId];
+      delete pluginEventFilepaths[path];
+      pluginEmitter.emit("remove-event", { id: pluginId });
+    });
 
-chokidar
-  .watch(`${projectRoot}/plugins/*/menu/menu*.js`, {
-    ignoreInitial: true,
-    persistent: true
-  })
-  .on("add", path => {
-    const plugin = loadPlugin(path);
-    if (!plugin) {
-      return;
-    }
-    plugins.menu[plugin.id] = plugin;
-    pluginEmitter.emit("add-menu", plugin);
-    ipcRenderer.send("set-menu-plugins", plugins.menu);
-  })
-  .on("change", path => {
-    const plugin = loadPlugin(path);
-    const oldPluginId = pluginMenuFilepaths[path];
-    if (!plugin || oldPluginId !== plugin.id) {
-      pluginMenuFilepaths[path] = oldPluginId;
-      delete plugins.menu[oldPluginId];
-      pluginEmitter.emit("remove-menu", { id: oldPluginId });
-    }
-    if (!plugin) {
+  chokidar
+    .watch(`${projectRoot}/plugins/*/menu/menu*.js`, {
+      ignoreInitial: true,
+      persistent: true
+    })
+    .on("add", path => {
+      const plugin = loadPlugin(path);
+      if (!plugin) {
+        return;
+      }
+      plugins.menu[plugin.id] = plugin;
+      pluginEmitter.emit("add-menu", plugin);
       ipcRenderer.send("set-menu-plugins", plugins.menu);
-      return;
-    }
-    plugins.menu[plugin.id] = plugin;
-    pluginMenuFilepaths[path] = plugin.id;
-    pluginEmitter.emit("update-menu", plugin);
-    ipcRenderer.send("set-menu-plugins", plugins.menu);
-  })
-  .on("unlink", path => {
-    const pluginId = pluginMenuFilepaths[path];
-    delete plugins.menu[pluginId];
-    delete pluginMenuFilepaths[path];
-    pluginEmitter.emit("remove-menu", { id: pluginId });
-    ipcRenderer.send("set-menu-plugins", plugins.menu);
-  });
+    })
+    .on("change", path => {
+      const plugin = loadPlugin(path);
+      const oldPluginId = pluginMenuFilepaths[path];
+      if (!plugin || oldPluginId !== plugin.id) {
+        pluginMenuFilepaths[path] = oldPluginId;
+        delete plugins.menu[oldPluginId];
+        pluginEmitter.emit("remove-menu", { id: oldPluginId });
+      }
+      if (!plugin) {
+        ipcRenderer.send("set-menu-plugins", plugins.menu);
+        return;
+      }
+      plugins.menu[plugin.id] = plugin;
+      pluginMenuFilepaths[path] = plugin.id;
+      pluginEmitter.emit("update-menu", plugin);
+      ipcRenderer.send("set-menu-plugins", plugins.menu);
+    })
+    .on("unlink", path => {
+      const pluginId = pluginMenuFilepaths[path];
+      delete plugins.menu[pluginId];
+      delete pluginMenuFilepaths[path];
+      pluginEmitter.emit("remove-menu", { id: pluginId });
+      ipcRenderer.send("set-menu-plugins", plugins.menu);
+    });
+}
 
 export default plugins;
 export { pluginEmitter };
