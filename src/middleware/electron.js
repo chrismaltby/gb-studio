@@ -1,4 +1,4 @@
-import { ipcRenderer, clipboard } from "electron";
+import { ipcRenderer, clipboard, remote } from "electron";
 import settings from "electron-settings";
 import open from "open";
 import {
@@ -10,7 +10,8 @@ import {
   COPY_SCENE,
   COPY_EVENT,
   SIDEBAR_WORLD_RESIZE,
-  SIDEBAR_FILES_RESIZE
+  SIDEBAR_FILES_RESIZE,
+  PROJECT_LOAD_FAILURE
 } from "../actions/actionTypes";
 
 export default store => next => action => {
@@ -73,6 +74,9 @@ export default store => next => action => {
         4
       )
     );
+  } else if (action.type === PROJECT_LOAD_FAILURE) {
+    const window = remote.getCurrentWindow();
+    window.close();
   }
 
   return next(action);

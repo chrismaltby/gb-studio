@@ -60,7 +60,7 @@ class ActorEditor extends Component {
       } else {
         this.setState({ clipboardActor: null });
       }
-    } catch (e) {
+    } catch (err) {
       this.setState({ clipboardActor: null });
     }
   };

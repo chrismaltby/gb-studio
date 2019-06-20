@@ -194,7 +194,7 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     modified: state.document && state.document.modified,
-    name: state.project.present && state.project.present.name,
+    name: state.entities.present.result.name,
     section,
     zoom,
     showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,

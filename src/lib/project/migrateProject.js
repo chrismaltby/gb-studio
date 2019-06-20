@@ -3,12 +3,14 @@ import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 
 const indexById = indexBy("id");
 
+export const LATEST_PROJECT_VERSION = "1.2.0";
+
 const migrateProject = project => {
   let data = { ...project };
-  let version = project._version || "1";
+  let version = project._version || "1.0.0";
 
-  // Migrate from 1 to 1.1.0
-  if (version === "1") {
+  // Migrate from 1.0.0 to 1.1.0
+  if (version === "1.0.0") {
     data = migrateFrom1To110Scenes(data);
     data = migrateFrom1To110Actors(data);
     data = migrateFrom1To110Collisions(data);

@@ -1,4 +1,4 @@
-import { normalize, schema } from "normalizr";
+import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
 import {
@@ -130,8 +130,16 @@ const projectSchema = {
   variables: [variablesSchema]
 };
 
+export const normalizeProject = project => {
+  return normalize(project, projectSchema);
+};
+
+export const denormalizeProject = project => {
+  return denormalize(project.result, projectSchema, project.entities);
+};
+
 const loadProject = (state, action) => {
-  const data = normalize(action.data, projectSchema);
+  const data = normalizeProject(action.data);
   const indexes = {
     // sceneIdForActor: Object.values(data.entities.scenes).reduce(
     //   (memo, scene) => {

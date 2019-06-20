@@ -12,6 +12,7 @@ import {
   CMD_STD_ERR
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
+import { denormalizeProject } from "../reducers/entitiesReducer";
 
 const buildUUID = uuid();
 
@@ -24,7 +25,7 @@ export default store => next => async action => {
     try {
       const state = store.getState();
       const projectRoot = state.document && state.document.root;
-      const project = state.project.present;
+      const project = denormalizeProject(state.entities.present);
       const outputRoot = Path.normalize(
         `${remote.app.getPath("temp")}/${buildUUID}`
       );

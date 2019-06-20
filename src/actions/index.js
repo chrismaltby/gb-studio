@@ -11,6 +11,8 @@ import {
   DRAG_TRIGGER,
   DRAG_ACTOR
 } from "../reducers/editorReducer";
+import { denormalizeProject } from "../reducers/entitiesReducer";
+import migrateWarning from "../lib/project/migrateWarning";
 
 const asyncAction = async (
   dispatch,
@@ -51,6 +53,10 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
+      const shouldOpenProject = await migrateWarning(path);
+      if (!shouldOpenProject) {
+        throw new Error("Cancelled opening project");
+      }
       const data = await loadProjectData(path);
       return {
         data,
@@ -192,13 +198,10 @@ export const saveProject = () => async (dispatch, getState) => {
     types.PROJECT_SAVE_SUCCESS,
     types.PROJECT_SAVE_FAILURE,
     async () => {
-      await saveProjectData(state.document.path, {
-        ...state.project.present,
-        settings: {
-          ...state.project.present.settings,
-          zoom: state.editor.zoom
-        }
-      });
+      await saveProjectData(
+        state.document.path,
+        denormalizeProject(state.entities.present)
+      );
     }
   );
 };

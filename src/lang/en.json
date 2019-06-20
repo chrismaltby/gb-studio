@@ -344,5 +344,11 @@
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
   "DIALOG_UP_TO_DATE": "You’re up-to-date!",
   "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} is currently the newest version available.",
-  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Unable to check latest version at the moment"
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Unable to check latest version at the moment",
+  "DIALOG_PROJECT_NEED_MIGRATION": "GB Studio Project Requires Migrating",
+  "DIALOG_MIGRATION_DESCRIPTION": "Your project was created with version {currentVersion} and needs to be migrated to version {version}. This may prevent your project being opened in older versions of GB Studio.\n\nIt is recommended to back up your project before continuing.",
+  "DIALOG_MIGRATE": "Migrate to {version}",
+  "DIALOG_FUTURE": "GB Studio Project Not Supported",
+  "DIALOG_FUTURE_DESCRIPTION": "This project file was created with version {currentVersion} which is newer than this version of GB Studio supports. Maximum supported is {version}.\n\nYou may need to update GB Studio.",
+  "DIALOG_OPEN_ANYWAY": "Open Anyway"
 }
