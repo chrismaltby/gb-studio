@@ -204,7 +204,7 @@ ScriptEventInput.defaultProps = {
 class ScriptEventField extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("ScriptEventField", this.props, {}, nextProps, {});
-    return !areEqualShallow(this.props, nextProps);
+    return true;
   }
 
   onChange = (newValue, valueIndex) => {
