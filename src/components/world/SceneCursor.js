@@ -3,11 +3,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon } from "../library/Icons";
-import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import {
-  getSpriteSheetIds,
-  getScenesLookup
-} from "../../reducers/entitiesReducer";
+import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
 
@@ -162,7 +158,7 @@ class SceneCursor extends Component {
   };
 
   render() {
-    const { x, y, tool, spriteSheetId, enabled } = this.props;
+    const { x, y, tool, enabled } = this.props;
     const { resize } = this.state;
     if (!enabled) {
       return <div />;
@@ -192,11 +188,6 @@ class SceneCursor extends Component {
             {tool === "collisions" && <BrickIcon />}
           </div>
         )}
-        {tool === "actors" && (
-          <div className="SceneCursor__Sprite">
-            <SpriteSheetCanvas spriteSheetId={spriteSheetId} />
-          </div>
-        )}
       </div>
     );
   }
@@ -212,7 +203,6 @@ SceneCursor.propTypes = {
   showCollisions: PropTypes.bool.isRequired,
   enabled: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
-  spriteSheetId: PropTypes.string.isRequired,
   setTool: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   addActor: PropTypes.func.isRequired,
@@ -235,8 +225,6 @@ function mapStateToProps(state, props) {
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
-  const spriteSheetIds = getSpriteSheetIds(state);
-  const spriteSheetId = spriteSheetIds[0];
   const scenesLookup = getScenesLookup(state);
   const scene = scenesLookup[props.sceneId];
   return {
@@ -247,7 +235,6 @@ function mapStateToProps(state, props) {
     editorType,
     entityId,
     showCollisions,
-    spriteSheetId,
     scene
   };
 }
