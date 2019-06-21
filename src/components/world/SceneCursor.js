@@ -102,7 +102,7 @@ class SceneCursor extends Component {
 
   onResizeTrigger = e => {
     const { x, y, sceneId, entityId, resizeTrigger } = this.props;
-    if (this.currentX !== x || this.currentY !== y) {
+    if (entityId && (this.currentX !== x || this.currentY !== y)) {
       resizeTrigger(sceneId, entityId, this.startX, this.startY, x, y);
       this.currentX = x;
       this.currentY = y;
@@ -204,6 +204,7 @@ class SceneCursor extends Component {
 SceneCursor.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  entityId: PropTypes.string,
   sceneId: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   showCollisions: PropTypes.bool.isRequired,
@@ -220,6 +221,10 @@ SceneCursor.propTypes = {
   removeActorAt: PropTypes.func.isRequired,
   removeTriggerAt: PropTypes.func.isRequired,
   removeCollisionTile: PropTypes.func.isRequired
+};
+
+SceneCursor.defaultProps = {
+  entityId: null
 };
 
 function mapStateToProps(state, props) {

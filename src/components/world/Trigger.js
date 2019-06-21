@@ -2,12 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { TriggerShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
 
 class Trigger extends Component {
   onMouseDown = e => {
-    // console.log("MOUSE DOWN TRIGGER");
     e.stopPropagation();
     e.preventDefault();
     const { id, sceneId, dragTriggerStart, setTool } = this.props;
@@ -17,16 +15,13 @@ class Trigger extends Component {
   };
 
   onMouseUp = e => {
-    console.log("UP");
     const { dragTriggerStop } = this.props;
     dragTriggerStop();
     window.removeEventListener("mouseup", this.onMouseUp);
   };
 
   render() {
-    const { trigger, selected } = this.props;
-    const { x, y, width, height } = trigger;
-    // console.log("render: Trigger");
+    const { x, y, width, height, selected } = this.props;
     return (
       <div
         className={cx("Trigger", { "Trigger--Selected": selected })}
@@ -43,24 +38,35 @@ class Trigger extends Component {
 }
 
 Trigger.propTypes = {
-  trigger: TriggerShape,
-  selected: PropTypes.bool
+  id: PropTypes.string.isRequired,
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  selected: PropTypes.bool,
+  sceneId: PropTypes.string.isRequired,
+  setTool: PropTypes.func.isRequired,
+  dragTriggerStart: PropTypes.func.isRequired,
+  dragTriggerStop: PropTypes.func.isRequired
 };
 
 Trigger.defaultProps = {
-  trigger: {},
   selected: false
 };
 
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
   const trigger = state.entities.present.entities.triggers[props.id];
+  const { x, y, width, height } = trigger;
   const selected =
     editorType === "triggers" &&
     sceneId === props.sceneId &&
     entityId === props.id;
   return {
-    trigger,
+    x,
+    y,
+    width,
+    height,
     selected
   };
 }

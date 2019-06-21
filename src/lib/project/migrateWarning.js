@@ -16,11 +16,6 @@ export const needsUpdate = currentVersion => {
 
 export const fromFuture = currentVersion => {
   if (semver.valid(currentVersion) && semver.valid(LATEST_PROJECT_VERSION)) {
-    console.log({
-      currentVersion,
-      LATEST_PROJECT_VERSION,
-      gt: semver.gt(currentVersion, LATEST_PROJECT_VERSION)
-    });
     return semver.gt(currentVersion, LATEST_PROJECT_VERSION);
   }
   return false;
@@ -35,7 +30,6 @@ export default async projectPath => {
 
   return new Promise((resolve, reject) => {
     if (fromFuture(currentVersion)) {
-      console.log("IS FROM FUTURE");
       const dialogOptions = {
         type: "info",
         buttons: [
@@ -52,24 +46,22 @@ export default async projectPath => {
           version: LATEST_PROJECT_VERSION
         })
       };
-      return dialog.showMessageBox(
-        dialogOptions,
-        (buttonIndex, checkboxChecked) => {
-          console.log("buttonIndex", buttonIndex);
-          if (buttonIndex === 0) {
-            open("https://www.gbstudio.dev/download/");
-            return reject();
-          }
-          if (buttonIndex === 2) {
-            return reject();
-          }
-          return resolve(true);
+      dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
+        if (buttonIndex === 0) {
+          open("https://www.gbstudio.dev/download/");
+          return reject();
         }
-      );
+        if (buttonIndex === 2) {
+          return reject();
+        }
+        return resolve(true);
+      });
+      return;
     }
 
     if (!needsUpdate(currentVersion)) {
-      return resolve(true);
+      resolve(true);
+      return;
     }
 
     const dialogOptions = {

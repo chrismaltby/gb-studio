@@ -26,26 +26,7 @@ import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
-function areEqualShallow(a, b) {
-  for (let key in a) {
-    if (!(key in b) || a[key] !== b[key]) {
-      return false;
-    }
-  }
-  for (let key in b) {
-    if (!(key in a)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 class ScriptEventInput extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("ScriptEventInput", this.props, {}, nextProps, {});
-    return !areEqualShallow(this.props, nextProps);
-  }
-
   onChange = e => {
     const { onChange, field, value, index } = this.props;
     const { type, updateFn } = field;
@@ -208,6 +189,17 @@ class ScriptEventInput extends Component {
     return <div />;
   }
 }
+
+ScriptEventInput.propTypes = {
+  index: PropTypes.number.isRequired,
+  field: PropTypes.shape().isRequired,
+  value: PropTypes.shape(),
+  onChange: PropTypes.func.isRequired
+};
+
+ScriptEventInput.defaultProps = {
+  value: {}
+};
 
 class ScriptEventField extends Component {
   shouldComponentUpdate(nextProps, nextState) {

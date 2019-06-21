@@ -5,24 +5,22 @@ import { connect } from "react-redux";
 import { TriggerIcon } from "../library/Icons";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
-import { SceneShape } from "../../reducers/stateShape";
+import {
+  SceneShape,
+  ActorShape,
+  TriggerShape
+} from "../../reducers/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import l10n from "../../lib/helpers/l10n";
 import * as actions from "../../actions";
 import {
   getActorsLookup,
-  getSpriteSheetsLookup,
   getTriggersLookup
 } from "../../reducers/entitiesReducer";
 
 class SceneNavigation extends Component {
   render() {
-    const {
-      scene,
-      actorsLookup,
-      triggersLookup,
-      spriteSheetsLookup
-    } = this.props;
+    const { scene, actorsLookup, triggersLookup } = this.props;
 
     return (
       (scene.actors.length > 0 || scene.triggers.length > 0) && (
@@ -71,6 +69,8 @@ class SceneNavigation extends Component {
 
 SceneNavigation.propTypes = {
   scene: SceneShape.isRequired,
+  actorsLookup: PropTypes.objectOf(ActorShape).isRequired,
+  triggersLookup: PropTypes.objectOf(TriggerShape).isRequired,
   selectActor: PropTypes.func.isRequired,
   selectTrigger: PropTypes.func.isRequired
 };
@@ -79,8 +79,7 @@ function mapStateToProps(state, props) {
   const scene = state.entities.present.entities.scenes[props.sceneId];
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
-  const spriteSheetsLookup = getSpriteSheetsLookup(state);
-  return { scene, actorsLookup, triggersLookup, spriteSheetsLookup };
+  return { scene, actorsLookup, triggersLookup };
 }
 
 const mapDispatchToProps = {

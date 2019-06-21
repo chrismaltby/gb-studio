@@ -55,6 +55,7 @@ class DialoguePage extends Component {
                   return eventMemo + words.length;
                 }
               }
+              return eventMemo;
             }, 0)
           );
         }
@@ -63,6 +64,7 @@ class DialoguePage extends Component {
           if (words) {
             return memo + words.length;
           }
+          return memo;
         }
       }
       return memo;
