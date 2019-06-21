@@ -551,10 +551,9 @@ class ScriptEditor extends Component {
   };
 
   onCopyScript = () => {
-    const { copyEvent } = this.props;
+    const { copyScript } = this.props;
     const { value } = this.props;
-    console.log("COPY EVENT", value);
-    copyEvent(value);
+    copyScript(value);
   };
 
   onPaste = (id, event, before) => {
@@ -719,7 +718,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
-  copyEvent: actions.copyEvent
+  copyEvent: actions.copyEvent,
+  copyScript: actions.copyScript
 };
 
 export default connect(

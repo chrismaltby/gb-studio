@@ -481,6 +481,10 @@ export const copyEvent = event => {
   return { type: types.COPY_EVENT, event };
 };
 
+export const copyScript = script => {
+  return { type: types.COPY_SCRIPT, script };
+};
+
 export const copyActor = actor => {
   return { type: types.COPY_ACTOR, actor };
 };

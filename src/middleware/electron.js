@@ -9,6 +9,7 @@ import {
   COPY_TRIGGER,
   COPY_SCENE,
   COPY_EVENT,
+  COPY_SCRIPT,
   SIDEBAR_WORLD_RESIZE,
   SIDEBAR_FILES_RESIZE,
   PROJECT_LOAD_FAILURE
@@ -69,6 +70,17 @@ export default store => next => action => {
         {
           ...action.event,
           __type: "event"
+        },
+        null,
+        4
+      )
+    );
+  } else if (action.type === COPY_SCRIPT) {
+    clipboard.writeText(
+      JSON.stringify(
+        {
+          script: action.script,
+          __type: "script"
         },
         null,
         4

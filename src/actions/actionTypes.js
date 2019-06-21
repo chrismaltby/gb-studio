@@ -106,6 +106,7 @@ export const PAUSE_MUSIC = "PAUSE_MUSIC";
 export const EDIT_UI = "EDIT_UI";
 
 export const COPY_EVENT = "COPY_EVENT";
+export const COPY_SCRIPT = "COPY_SCRIPT";
 export const COPY_ACTOR = "COPY_ACTOR";
 export const COPY_TRIGGER = "COPY_TRIGGER";
 export const COPY_SCENE = "COPY_SCENE";
