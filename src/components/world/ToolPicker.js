@@ -85,7 +85,7 @@ class ToolPicker extends Component {
           onClick={this.openAdd}
           className={cx("ToolPicker__Item", {
             "ToolPicker__Item--Selected":
-              ["actors", "triggers", "map"].indexOf(selected) > -1
+              ["actors", "triggers", "scene"].indexOf(selected) > -1
           })}
           title={`${l10n("TOOL_ADD_LABEL")}`}
         >
