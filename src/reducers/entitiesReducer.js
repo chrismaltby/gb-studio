@@ -88,10 +88,6 @@ const removeEntity = (state, type, id) => {
         [type]: state.result[type].filter(entityId => entityId !== id)
       }
     )
-    // result: {
-    //   ...state.result,
-    //   [type]: state.result[type].filter(entityId => entityId !== id)
-    // }
   };
 };
 
@@ -106,21 +102,17 @@ const notMatchAsset = assetA => assetB => {
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
-// const eventSchema = new schema.Entity("event");
+// Schema ----------------------------------------------------------------------
+
 const backgroundSchema = new schema.Entity("backgrounds");
 const musicSchema = new schema.Entity("music");
-const actorSchema = new schema.Entity("actors", {
-  // script: [eventSchema]
-});
-const triggerSchema = new schema.Entity("triggers", {
-  // script: [eventSchema]
-});
+const actorSchema = new schema.Entity("actors");
+const triggerSchema = new schema.Entity("triggers");
 const spriteSheetsSchema = new schema.Entity("spriteSheets");
 const variablesSchema = new schema.Entity("variables");
 const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema]
-  // script: [eventSchema]
 });
 const projectSchema = {
   scenes: [sceneSchema],
@@ -130,28 +122,18 @@ const projectSchema = {
   variables: [variablesSchema]
 };
 
-export const normalizeProject = project => {
-  return normalize(project, projectSchema);
+export const normalizeProject = projectData => {
+  return normalize(projectData, projectSchema);
 };
 
-export const denormalizeProject = project => {
-  return denormalize(project.result, projectSchema, project.entities);
+export const denormalizeProject = projectData => {
+  return denormalize(projectData.result, projectSchema, projectData.entities);
 };
+
+// Mutations -------------------------------------------------------------------
 
 const loadProject = (state, action) => {
   const data = normalizeProject(action.data);
-  const indexes = {
-    // sceneIdForActor: Object.values(data.entities.scenes).reduce(
-    //   (memo, scene) => {
-    //     for (let i = 0; i < scene.actors.length; i++) {
-    //       // eslint-disable-next-line no-param-reassign
-    //       memo[scene.actors[i]] = scene.id;
-    //     }
-    //     return memo;
-    //   },
-    //   {}
-    // )
-  };
   return deepmerge(state, data);
 };
 
@@ -273,7 +255,6 @@ const addScene = (state, action) => {
 };
 
 const moveScene = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
   return editEntity(state, "scenes", action.sceneId, {
     x: Math.max(MIN_SCENE_X, action.x),
     y: Math.max(MIN_SCENE_Y, action.y)
@@ -291,8 +272,6 @@ const editScene = (state, action) => {
   // the correct size
   let newState = state;
   let newCollisions;
-  let newActors;
-  let newTriggers;
   let newBackground;
 
   if (action.values.backgroundId) {
@@ -717,67 +696,6 @@ const editTriggerEventDestinationPosition = (state, action) => {
   });
 };
 
-export default function project(state = initialState.entities, action) {
-  switch (action.type) {
-    case PROJECT_LOAD_SUCCESS:
-      return loadProject(state, action);
-    case EDIT_PROJECT:
-      return editProject(state, action);
-    case EDIT_PROJECT_SETTINGS:
-      return editProjectSettings(state, action);
-    case SPRITE_LOAD_SUCCESS:
-      return loadSprite(state, action);
-    case SPRITE_REMOVE:
-      return removeSprite(state, action);
-    case BACKGROUND_LOAD_SUCCESS:
-      return loadBackground(state, action);
-    case ADD_SCENE:
-      return addScene(state, action);
-    case MOVE_SCENE:
-      return moveScene(state, action);
-    case EDIT_SCENE:
-      return editScene(state, action);
-    case REMOVE_SCENE:
-      return removeScene(state, action);
-    case ADD_ACTOR:
-      return addActor(state, action);
-    case EDIT_ACTOR:
-      return editActor(state, action);
-    case MOVE_ACTOR:
-      return moveActor(state, action);
-    case REMOVE_ACTOR:
-      return removeActor(state, action);
-    case REMOVE_ACTOR_AT:
-      return removeActorAt(state, action);
-    case ADD_TRIGGER:
-      return addTrigger(state, action);
-    case EDIT_TRIGGER:
-      return editTrigger(state, action);
-    case MOVE_TRIGGER:
-      return moveTrigger(state, action);
-    case RESIZE_TRIGGER:
-      return resizeTrigger(state, action);
-    case REMOVE_TRIGGER:
-      return removeTrigger(state, action);
-    case REMOVE_TRIGGER_AT:
-      return removeTriggerAt(state, action);
-    case ADD_COLLISION_TILE:
-      return addCollisionTile(state, action);
-    case REMOVE_COLLISION_TILE:
-      return removeCollisionTile(state, action);
-    case EDIT_PLAYER_START_AT:
-      return editPlayerStartAt(state, action);
-    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
-      return editSceneEventDestinationPosition(state, action);
-    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
-      return editActorEventDestinationPosition(state, action);
-    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
-      return editTriggerEventDestinationPosition(state, action);
-    default:
-      return state;
-  }
-}
-
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -868,3 +786,66 @@ export const getScenes = createSelector(
   [getSceneIds, getScenesLookup],
   (sceneIds, scenes) => sceneIds.map(id => scenes[id])
 );
+
+// Reducer ---------------------------------------------------------------------
+
+export default function project(state = initialState.entities, action) {
+  switch (action.type) {
+    case PROJECT_LOAD_SUCCESS:
+      return loadProject(state, action);
+    case EDIT_PROJECT:
+      return editProject(state, action);
+    case EDIT_PROJECT_SETTINGS:
+      return editProjectSettings(state, action);
+    case SPRITE_LOAD_SUCCESS:
+      return loadSprite(state, action);
+    case SPRITE_REMOVE:
+      return removeSprite(state, action);
+    case BACKGROUND_LOAD_SUCCESS:
+      return loadBackground(state, action);
+    case ADD_SCENE:
+      return addScene(state, action);
+    case MOVE_SCENE:
+      return moveScene(state, action);
+    case EDIT_SCENE:
+      return editScene(state, action);
+    case REMOVE_SCENE:
+      return removeScene(state, action);
+    case ADD_ACTOR:
+      return addActor(state, action);
+    case EDIT_ACTOR:
+      return editActor(state, action);
+    case MOVE_ACTOR:
+      return moveActor(state, action);
+    case REMOVE_ACTOR:
+      return removeActor(state, action);
+    case REMOVE_ACTOR_AT:
+      return removeActorAt(state, action);
+    case ADD_TRIGGER:
+      return addTrigger(state, action);
+    case EDIT_TRIGGER:
+      return editTrigger(state, action);
+    case MOVE_TRIGGER:
+      return moveTrigger(state, action);
+    case RESIZE_TRIGGER:
+      return resizeTrigger(state, action);
+    case REMOVE_TRIGGER:
+      return removeTrigger(state, action);
+    case REMOVE_TRIGGER_AT:
+      return removeTriggerAt(state, action);
+    case ADD_COLLISION_TILE:
+      return addCollisionTile(state, action);
+    case REMOVE_COLLISION_TILE:
+      return removeCollisionTile(state, action);
+    case EDIT_PLAYER_START_AT:
+      return editPlayerStartAt(state, action);
+    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
+      return editSceneEventDestinationPosition(state, action);
+    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
+      return editActorEventDestinationPosition(state, action);
+    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
+      return editTriggerEventDestinationPosition(state, action);
+    default:
+      return state;
+  }
+}
