@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import ScriptEditor from "../script/ScriptEditor";
@@ -33,14 +34,27 @@ class TriggerEditor extends Component {
   };
 
   onPaste = e => {
-    const { pasteTrigger, sceneId } = this.props;
+    const { setTriggerPrefab } = this.props;
     const { clipboardTrigger } = this.state;
-    pasteTrigger(sceneId, clipboardTrigger);
+    setTriggerPrefab(clipboardTrigger);
   };
 
   onRemove = e => {
     const { removeTrigger, sceneId, trigger } = this.props;
     removeTrigger(sceneId, trigger.id);
+  };
+
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "trigger") {
+        this.setState({ clipboardTrigger: clipboardData });
+      } else {
+        this.setState({ clipboardTrigger: null });
+      }
+    } catch (err) {
+      this.setState({ clipboardTrigger: null });
+    }
   };
 
   render() {
@@ -58,7 +72,12 @@ class TriggerEditor extends Component {
           <SidebarHeading
             title={l10n("TRIGGER")}
             buttons={
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
@@ -219,7 +238,7 @@ const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
-  pasteTrigger: actions.pasteTrigger,
+  setTriggerPrefab: actions.setTriggerPrefab,
   selectScene: actions.selectScene
 };
 

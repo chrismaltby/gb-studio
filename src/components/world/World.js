@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
@@ -28,8 +29,8 @@ class World extends Component {
   }
 
   componentDidMount() {
-    // window.addEventListener("copy", this.onCopy);
-    // window.addEventListener("paste", this.onPaste);
+    window.addEventListener("copy", this.onCopy);
+    window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("mouseup", this.onMouseUp);
     window.addEventListener("mousewheel", this.onMouseWheel);
@@ -88,7 +89,8 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-    // copySelectedEntity();
+    const { copySelectedEntity } = this.props;
+    copySelectedEntity();
   };
 
   onPaste = e => {
@@ -96,7 +98,13 @@ class World extends Component {
       return;
     }
     e.preventDefault();
-    // pasteClipoardEntity();
+    try {
+      const { pasteClipboardEntity } = this.props;
+      const clipboardData = JSON.parse(clipboard.readText());
+      pasteClipboardEntity(clipboardData);
+    } catch (err) {
+      // Clipboard isn't pastable, just ignore it
+    }
   };
 
   onKeyDown = e => {
@@ -176,6 +184,7 @@ class World extends Component {
     const { hoverX, hoverY } = this.state;
     addScene(hoverX, hoverY, prefab);
     setTool("select");
+    this.setState({ hover: false });
   };
 
   render() {
@@ -259,7 +268,9 @@ World.propTypes = {
   removeSelectedEntity: PropTypes.func.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
-  loaded: PropTypes.bool.isRequired
+  loaded: PropTypes.bool.isRequired,
+  copySelectedEntity: PropTypes.func.isRequired,
+  pasteClipboardEntity: PropTypes.func.isRequired
 };
 
 World.defaultProps = {
@@ -309,7 +320,9 @@ const mapDispatchToProps = {
   pasteActor: actions.pasteActor,
   pasteTrigger: actions.pasteTrigger,
   zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut
+  zoomOut: actions.zoomOut,
+  copySelectedEntity: actions.copySelectedEntity,
+  pasteClipboardEntity: actions.pasteClipboardEntity
 };
 
 export default connect(

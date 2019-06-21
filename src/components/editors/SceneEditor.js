@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import BackgroundSelect from "../forms/BackgroundSelect";
@@ -37,18 +38,58 @@ class SceneEditor extends Component {
   };
 
   onPaste = e => {
-    // const { pasteScene, clipboardScene } = this.props;
-    // pasteScene(clipboardScene);
+    const { setScenePrefab } = this.props;
+    const { clipboardScene } = this.state;
+    setScenePrefab(clipboardScene);
   };
 
   onPasteActor = e => {
-    // const { pasteActor, scene, clipboardActor } = this.props;
-    // pasteActor(scene.id, clipboardActor);
+    const { setActorPrefab } = this.props;
+    const { clipboardActor } = this.state;
+    setActorPrefab(clipboardActor);
   };
 
   onPasteTrigger = e => {
-    //   const { pasteTrigger, scene, clipboardTrigger } = this.props;
-    //   pasteTrigger(scene.id, clipboardTrigger);
+    const { setTriggerPrefab } = this.props;
+    const { clipboardTrigger } = this.state;
+    setTriggerPrefab(clipboardTrigger);
+  };
+
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "actor") {
+        this.setState({
+          clipboardActor: clipboardData,
+          clipboardTrigger: null,
+          clipboardScene: null
+        });
+      } else if (clipboardData.__type === "trigger") {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: clipboardData,
+          clipboardScene: null
+        });
+      } else if (clipboardData.__type === "scene") {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: null,
+          clipboardScene: clipboardData
+        });
+      } else {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: null,
+          clipboardScene: null
+        });
+      }
+    } catch (err) {
+      this.setState({
+        clipboardActor: null,
+        clipboardTrigger: null,
+        clipboardScene: null
+      });
+    }
   };
 
   onRemove = e => {
@@ -71,7 +112,12 @@ class SceneEditor extends Component {
           <SidebarHeading
             title={l10n("SCENE")}
             buttons={
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_SCENE")}
                 </MenuItem>
@@ -167,7 +213,10 @@ SceneEditor.propTypes = {
   sceneIndex: PropTypes.number.isRequired,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
-  copyScene: PropTypes.func.isRequired
+  copyScene: PropTypes.func.isRequired,
+  setScenePrefab: PropTypes.func.isRequired,
+  setActorPrefab: PropTypes.func.isRequired,
+  setTriggerPrefab: PropTypes.func.isRequired
 };
 
 SceneEditor.defaultProps = {
@@ -188,7 +237,10 @@ const mapDispatchToProps = {
   removeScene: actions.removeScene,
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
-  copyScene: actions.copyScene
+  copyScene: actions.copyScene,
+  setScenePrefab: actions.setScenePrefab,
+  setActorPrefab: actions.setActorPrefab,
+  setTriggerPrefab: actions.setTriggerPrefab
 };
 
 export default connect(

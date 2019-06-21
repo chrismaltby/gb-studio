@@ -52,6 +52,7 @@ class SceneCursor extends Component {
       addTrigger,
       sceneId,
       scene,
+      prefab,
       selectScene,
       showCollisions,
       addCollisionTile,
@@ -64,10 +65,10 @@ class SceneCursor extends Component {
     e.preventDefault();
 
     if (tool === "actors") {
-      addActor(sceneId, x, y);
+      addActor(sceneId, x, y, prefab);
       setTool("select");
     } else if (tool === "triggers") {
-      addTrigger(sceneId, x, y);
+      addTrigger(sceneId, x, y, prefab);
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -205,6 +206,7 @@ SceneCursor.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
+  prefab: PropTypes.shape(),
   sceneId: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   showCollisions: PropTypes.bool.isRequired,
@@ -224,7 +226,8 @@ SceneCursor.propTypes = {
 };
 
 SceneCursor.defaultProps = {
-  entityId: null
+  entityId: null,
+  prefab: {}
 };
 
 function mapStateToProps(state, props) {

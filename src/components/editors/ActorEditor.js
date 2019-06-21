@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
-import { clipboard } from "electron";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import MovementTypeSelect from "../forms/MovementTypeSelect";
@@ -42,9 +42,9 @@ class ActorEditor extends Component {
   };
 
   onPaste = e => {
-    const { sceneId, pasteActor } = this.props;
+    const { setActorPrefab } = this.props;
     const { clipboardActor } = this.state;
-    pasteActor(sceneId, clipboardActor);
+    setActorPrefab(clipboardActor);
   };
 
   onRemove = e => {
@@ -330,7 +330,7 @@ ActorEditor.propTypes = {
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
-  pasteActor: PropTypes.func.isRequired,
+  setActorPrefab: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired
 };
 
@@ -358,7 +358,7 @@ const mapDispatchToProps = {
   editActor: actions.editActor,
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
-  pasteActor: actions.pasteActor,
+  setActorPrefab: actions.setActorPrefab,
   selectScene: actions.selectScene
 };
 

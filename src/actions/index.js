@@ -489,20 +489,30 @@ export const copyTrigger = trigger => {
   return { type: types.COPY_TRIGGER, trigger };
 };
 
-export const pasteActor = (sceneId, actor) => {
-  return { type: types.PASTE_ACTOR, sceneId, actor, id: uuid() };
-};
-
-export const pasteTrigger = (sceneId, trigger) => {
-  return { type: types.PASTE_TRIGGER, sceneId, trigger, id: uuid() };
-};
-
-export const pasteScene = scene => {
-  return { type: types.PASTE_SCENE, scene, id: uuid() };
-};
-
 export const copyScene = scene => {
   return { type: types.COPY_SCENE, scene };
+};
+
+export const copySelectedEntity = () => (dispatch, getState) => {
+  const state = getState();
+  const { scene: sceneId, entityId, type: editorType } = state.editor;
+  if (editorType === "scenes") {
+    dispatch(copyScene(state.entities.present.entities.scenes[sceneId]));
+  } else if (editorType === "actors") {
+    dispatch(copyActor(state.entities.present.entities.actors[entityId]));
+  } else if (editorType === "triggers") {
+    dispatch(copyTrigger(state.entities.present.entities.triggers[entityId]));
+  }
+};
+
+export const pasteClipboardEntity = clipboardData => dispatch => {
+  if (clipboardData.__type === "scene") {
+    dispatch(setScenePrefab(clipboardData));
+  } else if (clipboardData.__type === "actor") {
+    dispatch(setActorPrefab(clipboardData));
+  } else if (clipboardData.__type === "trigger") {
+    dispatch(setTriggerPrefab(clipboardData));
+  }
 };
 
 export const zoomIn = (section, delta) => {

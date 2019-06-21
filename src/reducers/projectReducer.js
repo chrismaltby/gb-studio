@@ -1,4 +1,3 @@
-import uuid from "uuid/v4";
 import initialState from "./initialState";
 import {
   // PROJECT_LOAD_SUCCESS,
@@ -11,12 +10,12 @@ import {
   // ADD_SCENE,
   // MOVE_SCENE,
   // EDIT_SCENE,
-  PASTE_SCENE,
+  // PASTE_SCENE,
   // REMOVE_SCENE,
   // ADD_ACTOR,
   // MOVE_ACTOR,
   // EDIT_ACTOR,
-  PASTE_ACTOR,
+  // PASTE_ACTOR,
   // REMOVE_ACTOR,
   // REMOVE_ACTOR_AT,
   // ADD_COLLISION_TILE,
@@ -26,7 +25,7 @@ import {
   // REMOVE_TRIGGER_AT,
   // RESIZE_TRIGGER,
   // EDIT_TRIGGER,
-  PASTE_TRIGGER,
+  // PASTE_TRIGGER,
   // MOVE_TRIGGER,
   RENAME_VARIABLE
   // EDIT_PROJECT,
@@ -37,11 +36,6 @@ import {
   // EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   // SIDEBAR_RESIZE
 } from "../actions/actionTypes";
-import { MAX_ACTORS, MAX_TRIGGERS } from "../consts";
-import { regenerateEventIds } from "../lib/helpers/eventSystem";
-
-const MIN_SCENE_X = 60;
-const MIN_SCENE_Y = 30;
 
 const sortFilename = (a, b) => {
   if (a.filename > b.filename) return 1;
@@ -280,30 +274,30 @@ export default function project(state = initialState.project, action) {
     //       );
     //     })
     //   };
-    case PASTE_SCENE:
-      return {
-        ...state,
-        scenes: [].concat(state.scenes, {
-          ...action.scene,
-          id: action.id,
-          x: MIN_SCENE_X,
-          y: MIN_SCENE_Y,
-          actors: action.scene.actors.map(actor => {
-            return {
-              ...actor,
-              id: uuid(),
-              script: actor.script && actor.script.map(regenerateEventIds)
-            };
-          }),
-          triggers: action.scene.triggers.map(trigger => {
-            return {
-              ...trigger,
-              id: uuid(),
-              script: trigger.script && trigger.script.map(regenerateEventIds)
-            };
-          })
-        })
-      };
+    // case PASTE_SCENE:
+    //   return {
+    //     ...state,
+    //     scenes: [].concat(state.scenes, {
+    //       ...action.scene,
+    //       id: action.id,
+    //       x: MIN_SCENE_X,
+    //       y: MIN_SCENE_Y,
+    //       actors: action.scene.actors.map(actor => {
+    //         return {
+    //           ...actor,
+    //           id: uuid(),
+    //           script: actor.script && actor.script.map(regenerateEventIds)
+    //         };
+    //       }),
+    //       triggers: action.scene.triggers.map(trigger => {
+    //         return {
+    //           ...trigger,
+    //           id: uuid(),
+    //           script: trigger.script && trigger.script.map(regenerateEventIds)
+    //         };
+    //       })
+    //     })
+    //   };
     // case REMOVE_SCENE:
     //   return {
     //     ...state,
@@ -464,30 +458,30 @@ export default function project(state = initialState.project, action) {
     //         })
     //       };
     //     })
+    // //   };
+    // case PASTE_ACTOR:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         actors: []
+    //           .concat(scene.actors, {
+    //             ...action.actor,
+    //             id: action.id,
+    //             x: 1,
+    //             y: 1,
+    //             script:
+    //               action.actor.script &&
+    //               action.actor.script.map(regenerateEventIds)
+    //           })
+    //           .slice(0, MAX_ACTORS)
+    //       };
+    //     })
     //   };
-    case PASTE_ACTOR:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            actors: []
-              .concat(scene.actors, {
-                ...action.actor,
-                id: action.id,
-                x: 1,
-                y: 1,
-                script:
-                  action.actor.script &&
-                  action.actor.script.map(regenerateEventIds)
-              })
-              .slice(0, MAX_ACTORS)
-          };
-        })
-      };
     // case REMOVE_ACTOR:
     //   return {
     //     ...state,
@@ -714,29 +708,29 @@ export default function project(state = initialState.project, action) {
     //       };
     //     })
     //   };
-    case PASTE_TRIGGER:
-      return {
-        ...state,
-        scenes: state.scenes.map(scene => {
-          if (scene.id !== action.sceneId) {
-            return scene;
-          }
-          return {
-            ...scene,
-            triggers: []
-              .concat(scene.triggers, {
-                ...action.trigger,
-                id: action.id,
-                x: 1,
-                y: 1,
-                script:
-                  action.trigger.script &&
-                  action.trigger.script.map(regenerateEventIds)
-              })
-              .slice(0, MAX_TRIGGERS)
-          };
-        })
-      };
+    // case PASTE_TRIGGER:
+    //   return {
+    //     ...state,
+    //     scenes: state.scenes.map(scene => {
+    //       if (scene.id !== action.sceneId) {
+    //         return scene;
+    //       }
+    //       return {
+    //         ...scene,
+    //         triggers: []
+    //           .concat(scene.triggers, {
+    //             ...action.trigger,
+    //             id: action.id,
+    //             x: 1,
+    //             y: 1,
+    //             script:
+    //               action.trigger.script &&
+    //               action.trigger.script.map(regenerateEventIds)
+    //           })
+    //           .slice(0, MAX_TRIGGERS)
+    //       };
+    //     })
+    //   };
     // case MOVE_TRIGGER: {
     //   const moveScene = state.scenes.find(s => s.id === action.newSceneId);
     //   const sceneImage = state.backgrounds.find(

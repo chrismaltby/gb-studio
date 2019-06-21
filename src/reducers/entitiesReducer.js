@@ -1,3 +1,4 @@
+import uuid from "uuid/v4";
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
@@ -223,13 +224,62 @@ const fixSceneCollisions = state => {
 };
 
 const addScene = (state, action) => {
-  const script =
-    action.defaults &&
-    action.defaults.script &&
-    action.defaults.script.map(regenerateEventIds);
-
+  const defaults = action.defaults || {};
+  const script = defaults.script && defaults.script.map(regenerateEventIds);
   const backgroundId = state.result.backgrounds[0];
   const background = state.entities.backgrounds[backgroundId];
+  const defaultActors = defaults.actors || [];
+  const defaultTriggers = defaults.triggers || [];
+  const newActorIds = [];
+  const newTriggerIds = [];
+
+  let nextState = state;
+
+  // Copy default/prefab actors to new scene
+  for (let i = 0; i < defaultActors.length; i++) {
+    const actorData = defaultActors[i];
+    const actorId = uuid();
+    const actorScript =
+      actorData.script && actorData.script.map(regenerateEventIds);
+    newActorIds.push(actorId);
+    nextState = addEntity(
+      nextState,
+      "actors",
+      Object.assign(
+        {},
+        actorData,
+        actorScript && {
+          script: actorScript
+        },
+        {
+          id: actorId
+        }
+      )
+    );
+  }
+
+  // Copy default/prefab triggers to new scene
+  for (let i = 0; i < defaultTriggers.length; i++) {
+    const triggerData = defaultTriggers[i];
+    const triggerId = uuid();
+    const triggerScript =
+      triggerData.script && triggerData.script.map(regenerateEventIds);
+    newTriggerIds.push(triggerId);
+    nextState = addEntity(
+      nextState,
+      "triggers",
+      Object.assign(
+        {},
+        triggerData,
+        triggerScript && {
+          script: triggerScript
+        },
+        {
+          id: triggerId
+        }
+      )
+    );
+  }
 
   const newScene = Object.assign(
     {
@@ -237,21 +287,19 @@ const addScene = (state, action) => {
       backgroundId,
       width: background.width,
       height: background.height,
-      actors: [],
-      triggers: [],
       collisions: []
     },
     action.defaults || {},
-    script && {
-      script
-    },
+    script && { script },
     {
       id: action.id,
       x: Math.max(MIN_SCENE_X, action.x),
-      y: Math.max(MIN_SCENE_Y, action.y)
+      y: Math.max(MIN_SCENE_Y, action.y),
+      actors: newActorIds,
+      triggers: newTriggerIds
     }
   );
-  return addEntity(state, "scenes", newScene);
+  return addEntity(nextState, "scenes", newScene);
 };
 
 const moveScene = (state, action) => {
