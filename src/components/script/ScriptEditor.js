@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
@@ -76,7 +77,8 @@ class ActionMini extends Component {
   constructor() {
     super();
     this.state = {
-      rename: false
+      rename: false,
+      clipboardEvent: null
     };
   }
 
@@ -109,7 +111,8 @@ class ActionMini extends Component {
   };
 
   onPasteValues = e => {
-    const { id, clipboardEvent, onEdit, action } = this.props;
+    const { id, onEdit, action } = this.props;
+    const { clipboardEvent } = this.state;
     if (!clipboardEvent || Array.isArray(clipboardEvent)) {
       // Can't paste values if copied entire script, or not copied anything
       return;
@@ -131,7 +134,8 @@ class ActionMini extends Component {
   };
 
   onPasteEvent = before => e => {
-    const { id, clipboardEvent, onPaste } = this.props;
+    const { id, onPaste } = this.props;
+    const { clipboardEvent } = this.state;
     onPaste(id, clipboardEvent, before);
   };
 
@@ -145,6 +149,21 @@ class ActionMini extends Component {
     onEdit(id, {
       __label: e.currentTarget.value
     });
+  };
+
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "event") {
+        this.setState({ clipboardEvent: clipboardData });
+      } else if (clipboardData.__type === "script") {
+        this.setState({ clipboardEvent: clipboardData.script });
+      } else {
+        this.setState({ clipboardEvent: null });
+      }
+    } catch (err) {
+      this.setState({ clipboardEvent: null });
+    }
   };
 
   render() {
@@ -164,10 +183,9 @@ class ActionMini extends Component {
       onCopy,
       onPaste,
       onMouseEnter,
-      onMouseLeave,
-      clipboardEvent
+      onMouseLeave
     } = this.props;
-    const { rename } = this.state;
+    const { rename, clipboardEvent } = this.state;
     const { command } = action;
 
     if (command === EVENT_END) {
@@ -233,7 +251,12 @@ class ActionMini extends Component {
             )}
 
             <div className="ActionMini__Dropdown">
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.toggleRename}>
                   {l10n("MENU_RENAME_EVENT")}
                 </MenuItem>
@@ -398,15 +421,7 @@ ActionMini.propTypes = {
   onMouseEnter: PropTypes.func.isRequired,
   connectDragSource: PropTypes.func.isRequired,
   connectDragPreview: PropTypes.func.isRequired,
-  connectDropTarget: PropTypes.func.isRequired,
-  clipboardEvent: PropTypes.oneOfType([
-    EventShape,
-    PropTypes.arrayOf(EventShape)
-  ])
-};
-
-ActionMini.defaultProps = {
-  clipboardEvent: null
+  connectDropTarget: PropTypes.func.isRequired
 };
 
 const ActionMiniDnD = DropTarget(
@@ -426,6 +441,13 @@ const ActionMiniDnD = DropTarget(
 );
 
 class ScriptEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      clipboardEvent: null
+    };
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     // const { value } = this.state;
     console.log("SHOULD UPDATE SCRIPT EDITOR");
@@ -577,7 +599,7 @@ class ScriptEditor extends Component {
   };
 
   onReplaceScript = e => {
-    const { clipboardEvent } = this.props;
+    const { clipboardEvent } = this.state;
     if (clipboardEvent) {
       this.onChange(
         []
@@ -596,7 +618,7 @@ class ScriptEditor extends Component {
   };
 
   onPasteScript = before => () => {
-    const { clipboardEvent } = this.props;
+    const { clipboardEvent } = this.state;
     const { value } = this.props;
     const newEvent = Array.isArray(clipboardEvent)
       ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
@@ -620,16 +642,36 @@ class ScriptEditor extends Component {
     // selegctScriptEvent("");
   };
 
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "event") {
+        this.setState({ clipboardEvent: clipboardData });
+      } else if (clipboardData.__type === "script") {
+        this.setState({ clipboardEvent: clipboardData.script });
+      } else {
+        this.setState({ clipboardEvent: null });
+      }
+    } catch (err) {
+      this.setState({ clipboardEvent: null });
+    }
+  };
+
   render() {
-    const { type, title, clipboardEvent } = this.props;
-    const { value } = this.props;
+    const { type, title, value } = this.props;
+    const { clipboardEvent } = this.state;
     console.log("render: ScriptEditor.js");
     return (
       <div>
         <SidebarHeading
           title={title}
           buttons={
-            <DropdownButton small transparent right>
+            <DropdownButton
+              small
+              transparent
+              right
+              onMouseDown={this.readClipboard}
+            >
               <MenuItem onClick={this.onCopyScript}>
                 {l10n("MENU_COPY_SCRIPT")}
               </MenuItem>
