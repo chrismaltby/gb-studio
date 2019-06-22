@@ -6,7 +6,7 @@ import {
   // BACKGROUND_LOAD_SUCCESS,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
-  MUSIC_REMOVE,
+  MUSIC_REMOVE
   // ADD_SCENE,
   // MOVE_SCENE,
   // EDIT_SCENE,
@@ -27,7 +27,7 @@ import {
   // EDIT_TRIGGER,
   // PASTE_TRIGGER,
   // MOVE_TRIGGER,
-  RENAME_VARIABLE
+  // RENAME_VARIABLE
   // EDIT_PROJECT,
   // EDIT_PROJECT_SETTINGS,
   // EDIT_PLAYER_START_AT,
@@ -792,22 +792,22 @@ export default function project(state = initialState.project, action) {
     //     })
     //   };
     // }
-    case RENAME_VARIABLE: {
-      return {
-        ...state,
-        variables: [].concat(
-          state.variables.filter(variable => {
-            return variable.id !== action.variableId;
-          }),
-          action.name
-            ? {
-                id: action.variableId,
-                name: action.name
-              }
-            : []
-        )
-      };
-    }
+    // case RENAME_VARIABLE: {
+    //   return {
+    //     ...state,
+    //     variables: [].concat(
+    //       state.variables.filter(variable => {
+    //         return variable.id !== action.variableId;
+    //       }),
+    //       action.name
+    //         ? {
+    //             id: action.variableId,
+    //             name: action.name
+    //           }
+    //         : []
+    //     )
+    //   };
+    // }
     // case EDIT_PROJECT:
     //   return {
     //     ...state,

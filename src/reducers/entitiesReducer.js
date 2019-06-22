@@ -29,7 +29,8 @@ import {
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   ADD_TRIGGER,
-  RESIZE_TRIGGER
+  RESIZE_TRIGGER,
+  RENAME_VARIABLE
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
@@ -744,6 +745,22 @@ const editTriggerEventDestinationPosition = (state, action) => {
   });
 };
 
+const renameVariable = (state, action) => {
+  if (action.name) {
+    const currentVariable = state.entities.variables[action.variableId];
+    if (currentVariable) {
+      return editEntity(state, "variables", action.variableId, {
+        name: action.name
+      });
+    }
+    return addEntity(state, "variables", {
+      id: action.variableId,
+      name: action.name
+    });
+  }
+  return removeEntity(state, "variables", action.variableId);
+};
+
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -893,6 +910,8 @@ export default function project(state = initialState.entities, action) {
       return editActorEventDestinationPosition(state, action);
     case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
       return editTriggerEventDestinationPosition(state, action);
+    case RENAME_VARIABLE:
+      return renameVariable(state, action);
     default:
       return state;
   }
