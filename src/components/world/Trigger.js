@@ -63,10 +63,10 @@ function mapStateToProps(state, props) {
     sceneId === props.sceneId &&
     entityId === props.id;
   return {
-    x,
-    y,
-    width,
-    height,
+    x: x || 0,
+    y: y || 0,
+    width: width || 1,
+    height: height || 1,
     selected
   };
 }
