@@ -1,47 +1,10 @@
 import initialState from "./initialState";
-import {
-  // PROJECT_LOAD_SUCCESS,
-  // SPRITE_LOAD_SUCCESS,
-  // SPRITE_REMOVE,
-  // BACKGROUND_LOAD_SUCCESS,
-  BACKGROUND_REMOVE,
-  MUSIC_LOAD_SUCCESS,
-  MUSIC_REMOVE
-  // ADD_SCENE,
-  // MOVE_SCENE,
-  // EDIT_SCENE,
-  // PASTE_SCENE,
-  // REMOVE_SCENE,
-  // ADD_ACTOR,
-  // MOVE_ACTOR,
-  // EDIT_ACTOR,
-  // PASTE_ACTOR,
-  // REMOVE_ACTOR,
-  // REMOVE_ACTOR_AT,
-  // ADD_COLLISION_TILE,
-  // REMOVE_COLLISION_TILE,
-  // ADD_TRIGGER,
-  // REMOVE_TRIGGER,
-  // REMOVE_TRIGGER_AT,
-  // RESIZE_TRIGGER,
-  // EDIT_TRIGGER,
-  // PASTE_TRIGGER,
-  // MOVE_TRIGGER,
-  // RENAME_VARIABLE
-  // EDIT_PROJECT,
-  // EDIT_PROJECT_SETTINGS,
-  // EDIT_PLAYER_START_AT,
-  // EDIT_SCENE_EVENT_DESTINATION_POSITION,
-  // EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  // EDIT_ACTOR_EVENT_DESTINATION_POSITION,
-  // SIDEBAR_RESIZE
-} from "../actions/actionTypes";
 
-const sortFilename = (a, b) => {
-  if (a.filename > b.filename) return 1;
-  if (a.filename < b.filename) return -1;
-  return 0;
-};
+// const sortFilename = (a, b) => {
+//   if (a.filename > b.filename) return 1;
+//   if (a.filename < b.filename) return -1;
+//   return 0;
+// };
 
 // const sortRecent = (a, b) => {
 //   if (a._v > b._v) return -1;
@@ -49,13 +12,13 @@ const sortFilename = (a, b) => {
 //   return 0;
 // };
 
-const matchAsset = assetA => assetB => {
-  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
-};
+// const matchAsset = assetA => assetB => {
+//   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
+// };
 
-const notMatchAsset = assetA => assetB => {
-  return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
-};
+// const notMatchAsset = assetA => assetB => {
+//   return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
+// };
 
 /*
 const sceneClearCollisionsIfDimensionsChanged = backgrounds => {
@@ -115,11 +78,11 @@ export default function project(state = initialState.project, action) {
     //       .sort(sortFilename)
     //   };
     // }
-    case BACKGROUND_REMOVE:
-      return {
-        ...state,
-        backgrounds: state.backgrounds.filter(notMatchAsset(action.data))
-      };
+    // case BACKGROUND_REMOVE:
+    //   return {
+    //     ...state,
+    //     backgrounds: state.backgrounds.filter(notMatchAsset(action.data))
+    //   };
     // case BACKGROUND_LOAD_SUCCESS: {
     //   const currentBackground = state.backgrounds.find(matchAsset(action.data));
     //   return {
@@ -135,23 +98,23 @@ export default function project(state = initialState.project, action) {
     //       .sort(sortFilename)
     //   };
     // }
-    case MUSIC_REMOVE:
-      return {
-        ...state,
-        music: state.music.filter(notMatchAsset(action.data))
-      };
-    case MUSIC_LOAD_SUCCESS: {
-      const currentMusic = state.music.find(matchAsset(action.data));
-      return {
-        ...state,
-        music: []
-          .concat(state.music.filter(notMatchAsset(action.data)), {
-            ...action.data,
-            id: currentMusic ? currentMusic.id : action.data.id
-          })
-          .sort(sortFilename)
-      };
-    }
+    // case MUSIC_REMOVE:
+    //   return {
+    //     ...state,
+    //     music: state.music.filter(notMatchAsset(action.data))
+    //   };
+    // case MUSIC_LOAD_SUCCESS: {
+    //   const currentMusic = state.music.find(matchAsset(action.data));
+    //   return {
+    //     ...state,
+    //     music: []
+    //       .concat(state.music.filter(notMatchAsset(action.data)), {
+    //         ...action.data,
+    //         id: currentMusic ? currentMusic.id : action.data.id
+    //       })
+    //       .sort(sortFilename)
+    //   };
+    // }
     // case ADD_SCENE: {
     //   const script =
     //     action.defaults &&

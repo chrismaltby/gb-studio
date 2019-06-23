@@ -30,7 +30,10 @@ import {
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   ADD_TRIGGER,
   RESIZE_TRIGGER,
-  RENAME_VARIABLE
+  RENAME_VARIABLE,
+  BACKGROUND_REMOVE,
+  MUSIC_LOAD_SUCCESS,
+  MUSIC_REMOVE
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
@@ -93,8 +96,27 @@ const removeEntity = (state, type, id) => {
   };
 };
 
+const sortEntities = (state, type, sortFn) => {
+  return {
+    ...state,
+    result: {
+      ...state.result,
+      [type]: [].concat(state.result[type]).sort((a, b) => {
+        return sortFn(state.entities[type][a], state.entities[type][b]);
+      })
+    }
+  };
+};
+
 const matchAsset = assetA => assetB => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
+};
+
+const sortByFilename = (a, b) => {
+  console.log("sortByFilename", a, b);
+  if (a.filename > b.filename) return 1;
+  if (a.filename < b.filename) return -1;
+  return 0;
 };
 
 // const notMatchAsset = assetA => assetB => {
@@ -163,29 +185,39 @@ const editProjectSettings = (state, action) => {
 };
 
 const loadSprite = (state, action) => {
-  const existingAsset = Object.values(state.entities.spriteSheets).find(
-    matchAsset(action.data)
-  );
+  const existingAsset = state.result.spriteSheets
+    .map(spriteSheetId => {
+      return state.entities.spriteSheets[spriteSheetId];
+    })
+    .find(matchAsset(action.data));
   if (existingAsset) {
     return editEntity(state, "spriteSheets", existingAsset.id, {
       ...action.data,
       id: existingAsset.id
     });
   }
-  return addEntity(state, "spriteSheets", action.data);
+  return sortEntities(
+    addEntity(state, "spriteSheets", action.data),
+    "spriteSheets",
+    sortByFilename
+  );
 };
 
 const removeSprite = (state, action) => {
-  const existingAsset = Object.values(state.entities.spriteSheets).find(
-    matchAsset(action.data)
-  );
+  const existingAsset = state.result.spriteSheets
+    .map(spriteSheetId => {
+      return state.entities.spriteSheets[spriteSheetId];
+    })
+    .find(matchAsset(action.data));
   return removeEntity(state, "spriteSheets", existingAsset.id);
 };
 
 const loadBackground = (state, action) => {
-  const existingAsset = Object.values(state.entities.backgrounds).find(
-    matchAsset(action.data)
-  );
+  const existingAsset = state.result.backgrounds
+    .map(backgroundId => {
+      return state.entities.backgrounds[backgroundId];
+    })
+    .find(matchAsset(action.data));
   if (existingAsset) {
     return fixSceneCollisions(
       editEntity(state, "backgrounds", existingAsset.id, {
@@ -194,7 +226,48 @@ const loadBackground = (state, action) => {
       })
     );
   }
-  return addEntity(state, "backgrounds", action.data);
+  return sortEntities(
+    addEntity(state, "backgrounds", action.data),
+    "backgrounds",
+    sortByFilename
+  );
+};
+
+const removeBackground = (state, action) => {
+  const existingAsset = state.result.backgrounds
+    .map(backgroundId => {
+      return state.entities.backgrounds[backgroundId];
+    })
+    .find(matchAsset(action.data));
+  return removeEntity(state, "backgrounds", existingAsset.id);
+};
+
+const loadMusic = (state, action) => {
+  const existingAsset = state.result.music
+    .map(trackId => {
+      return state.entities.music[trackId];
+    })
+    .find(matchAsset(action.data));
+  if (existingAsset) {
+    return editEntity(state, "music", existingAsset.id, {
+      ...action.data,
+      id: existingAsset.id
+    });
+  }
+  return sortEntities(
+    addEntity(state, "music", action.data),
+    "music",
+    sortByFilename
+  );
+};
+
+const removeMusic = (state, action) => {
+  const existingAsset = state.result.music
+    .map(trackId => {
+      return state.entities.music[trackId];
+    })
+    .find(matchAsset(action.data));
+  return removeEntity(state, "music", existingAsset.id);
 };
 
 const fixSceneCollisions = state => {
@@ -868,6 +941,12 @@ export default function project(state = initialState.entities, action) {
       return removeSprite(state, action);
     case BACKGROUND_LOAD_SUCCESS:
       return loadBackground(state, action);
+    case BACKGROUND_REMOVE:
+      return removeBackground(state, action);
+    case MUSIC_LOAD_SUCCESS:
+      return loadMusic(state, action);
+    case MUSIC_REMOVE:
+      return removeMusic(state, action);
     case ADD_SCENE:
       return addScene(state, action);
     case MOVE_SCENE:
