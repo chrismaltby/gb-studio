@@ -33,7 +33,8 @@ import {
   RENAME_VARIABLE,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
-  MUSIC_REMOVE
+  MUSIC_REMOVE,
+  SCROLL_WORLD
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
@@ -113,7 +114,6 @@ const matchAsset = assetA => assetB => {
 };
 
 const sortByFilename = (a, b) => {
-  console.log("sortByFilename", a, b);
   if (a.filename > b.filename) return 1;
   if (a.filename < b.filename) return -1;
   return 0;
@@ -834,6 +834,20 @@ const renameVariable = (state, action) => {
   return removeEntity(state, "variables", action.variableId);
 };
 
+const scrollWorld = (state, action) => {
+  return {
+    ...state,
+    result: {
+      ...state.result,
+      settings: {
+        ...state.result.settings,
+        worldScrollX: action.x,
+        worldScrollY: action.y
+      }
+    }
+  };
+};
+
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -991,6 +1005,8 @@ export default function project(state = initialState.entities, action) {
       return editTriggerEventDestinationPosition(state, action);
     case RENAME_VARIABLE:
       return renameVariable(state, action);
+    case SCROLL_WORLD:
+      return scrollWorld(state, action);
     default:
       return state;
   }

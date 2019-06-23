@@ -39,10 +39,16 @@ class World extends Component {
       const { zoomRatio } = this.props;
       viewContents.style.transform = `scale(${zoomRatio})`;
     }
+
+    const { scrollX, scrollY } = this.props;
+    const scroll = this.scrollRef.current;
+    if (scroll) {
+      scroll.scrollTo(scrollX, scrollY);
+    }
   }
 
   componentDidUpdate(prevProps) {
-    const { zoomRatio } = this.props;
+    const { zoomRatio, scrollX, scrollY, loaded } = this.props;
     if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
@@ -64,6 +70,11 @@ class World extends Component {
         top: newScrollY,
         left: newScrollX
       });
+    }
+
+    const scroll = this.scrollRef.current;
+    if (scroll && loaded && !prevProps.loaded) {
+      scroll.scrollTo(scrollX, scrollY);
     }
   }
 
@@ -171,6 +182,11 @@ class World extends Component {
     this.mouseOver = false;
   };
 
+  onScroll = e => {
+    const { scrollWorld } = this.props;
+    scrollWorld(e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
+  };
+
   onAddScene = e => {
     const { addScene, setTool, prefab } = this.props;
     const { hoverX, hoverY } = this.state;
@@ -204,6 +220,7 @@ class World extends Component {
         onMouseOver={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         onMouseDown={this.startWorldDragIfAltOrMiddleClick}
+        onScroll={this.onScroll}
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
@@ -246,6 +263,8 @@ class World extends Component {
 World.propTypes = {
   scrollWidth: PropTypes.number.isRequired,
   scrollHeight: PropTypes.number.isRequired,
+  scrollX: PropTypes.number.isRequired,
+  scrollY: PropTypes.number.isRequired,
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   zoomRatio: PropTypes.number.isRequired,
   prefab: PropTypes.shape({}),
@@ -260,7 +279,8 @@ World.propTypes = {
   zoomOut: PropTypes.func.isRequired,
   loaded: PropTypes.bool.isRequired,
   copySelectedEntity: PropTypes.func.isRequired,
-  pasteClipboardEntity: PropTypes.func.isRequired
+  pasteClipboardEntity: PropTypes.func.isRequired,
+  scrollWorld: PropTypes.func.isRequired
 };
 
 World.defaultProps = {
@@ -270,7 +290,11 @@ World.defaultProps = {
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
   const scenes = state.entities.present.result.scenes;
-  const { showConnections } = state.entities.present.result.settings;
+  const {
+    showConnections,
+    worldScrollX: scrollX,
+    worldScrollY: scrollY
+  } = state.entities.present.result.settings;
   const { worldSidebarWidth: sidebarWidth } = state.settings;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
@@ -283,6 +307,8 @@ function mapStateToProps(state) {
     scenes,
     scrollWidth,
     scrollHeight,
+    scrollX,
+    scrollY,
     tool: state.tools.selected,
     prefab: state.tools.prefab,
     zoomRatio: (state.editor.zoom || 100) / 100,
@@ -312,7 +338,8 @@ const mapDispatchToProps = {
   zoomIn: actions.zoomIn,
   zoomOut: actions.zoomOut,
   copySelectedEntity: actions.copySelectedEntity,
-  pasteClipboardEntity: actions.pasteClipboardEntity
+  pasteClipboardEntity: actions.pasteClipboardEntity,
+  scrollWorld: actions.scrollWorld
 };
 
 export default connect(

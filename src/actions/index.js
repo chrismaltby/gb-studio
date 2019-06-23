@@ -46,6 +46,14 @@ export const resizeFilesSidebar = width => {
   };
 };
 
+export const scrollWorld = (x, y) => {
+  return {
+    type: types.SCROLL_WORLD,
+    x,
+    y
+  };
+};
+
 export const loadProject = path => async dispatch => {
   return asyncAction(
     dispatch,
@@ -198,10 +206,9 @@ export const saveProject = () => async (dispatch, getState) => {
     types.PROJECT_SAVE_SUCCESS,
     types.PROJECT_SAVE_FAILURE,
     async () => {
-      await saveProjectData(
-        state.document.path,
-        denormalizeProject(state.entities.present)
-      );
+      const data = denormalizeProject(state.entities.present);
+      data.settings.zoom = state.editor.zoom;
+      await saveProjectData(state.document.path, data);
     }
   );
 };

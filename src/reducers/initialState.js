@@ -63,7 +63,10 @@ export default {
     result: {
       settings: {
         showCollisions: true,
-        showConnections: true
+        showConnections: true,
+        worldScrollX: 0,
+        worldScrollY: 0,
+        zoom: 100
       },
       scenes: []
     }
