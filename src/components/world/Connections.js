@@ -311,7 +311,7 @@ function mapStateToProps(state) {
     startY,
     startDirection
   } = state.entities.present.result.settings;
-  const startScene = scenesLookup[startSceneId];
+  const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;
   return {
     scenes,
