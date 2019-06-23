@@ -5,7 +5,6 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import cx from "classnames";
 import uuid from "uuid/v4";
-import { debounce } from "lodash";
 import { DragSource, DropTarget } from "react-dnd";
 import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
@@ -25,13 +24,7 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading } from "../editors/Sidebar";
-import {
-  EventShape,
-  VariableShape,
-  MusicShape,
-  SceneShape,
-  SpriteShape
-} from "../../reducers/stateShape";
+import { EventShape } from "../../reducers/stateShape";
 import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
@@ -463,9 +456,6 @@ class ScriptEditor extends Component {
   onChange = newValue => {
     const { onChange } = this.props;
     onChange(newValue);
-    // this.setState({ value: newValue });
-    // this.debouncedOnChange(newValue);
-    // this.onChange(new)
   };
 
   moveActions = (a, b) => {
@@ -660,6 +650,7 @@ class ScriptEditor extends Component {
   render() {
     const { type, title, value } = this.props;
     const { clipboardEvent } = this.state;
+
     console.log("render: ScriptEditor.js");
     return (
       <div>
@@ -742,11 +733,10 @@ ScriptEditor.defaultProps = {
       id: uuid(),
       command: EVENT_END
     }
-  ],
-  clipboardEvent: null
+  ]
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;
   return {
     variableIds: result.variables,
@@ -754,7 +744,7 @@ function mapStateToProps(state) {
     actorIds: entities.scenes[state.editor.scene].actors,
     musicIds: result.music,
     spriteSheetIds: result.spriteSheets,
-    clipboardEvent: null
+    value: props.value && props.value.length > 0 ? props.value : undefined
   };
 }
 

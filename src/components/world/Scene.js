@@ -7,7 +7,7 @@ import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { findSceneEvent } from "../../lib/helpers/eventSystem";
+import { normalizedFindSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
@@ -17,7 +17,11 @@ import {
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import SceneCursor from "./SceneCursor";
-import { getSceneFrameCount } from "../../reducers/entitiesReducer";
+import {
+  getSceneFrameCount,
+  getActorsLookup,
+  getTriggersLookup
+} from "../../reducers/entitiesReducer";
 
 window.React = React;
 window.Component = Component;
@@ -267,12 +271,19 @@ Scene.defaultProps = {
 function mapStateToProps(state, props) {
   const { scene: sceneId, dragging: editorDragging } = state.editor;
   const scene = state.entities.present.entities.scenes[props.id];
+  const actorsLookup = getActorsLookup(state);
+  const triggersLookup = getTriggersLookup(state);
   const image = state.entities.present.entities.backgrounds[scene.backgroundId];
   const { settings } = state.entities.present.result;
   const event =
     (state.editor.eventId &&
       state.editor.scene === props.id &&
-      findSceneEvent(scene, state.editor.eventId)) ||
+      normalizedFindSceneEvent(
+        scene,
+        actorsLookup,
+        triggersLookup,
+        state.editor.eventId
+      )) ||
     null;
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;

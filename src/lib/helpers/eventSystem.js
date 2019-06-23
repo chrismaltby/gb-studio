@@ -85,6 +85,56 @@ const walkSceneEvents = (scene, callback) => {
   });
 };
 
+const normalizedWalkSceneEvents = (
+  scene,
+  actorsLookup,
+  triggersLookup,
+  callback
+) => {
+  walkEvents(scene.script, callback);
+  scene.actors.forEach(actorId => {
+    walkEvents(actorsLookup[actorId].script, callback);
+  });
+  scene.triggers.forEach(triggerId => {
+    walkEvents(triggersLookup[triggerId].script, callback);
+  });
+};
+
+const normalizedFindSceneEvent = (
+  scene,
+  actorsLookup,
+  triggersLookup,
+  callback
+) => {
+  let event = null;
+  let fn = callback;
+  if (typeof fn === "string") {
+    const id = fn;
+    fn = walkEvent => {
+      return walkEvent.id === id;
+    };
+  }
+  try {
+    normalizedWalkSceneEvents(
+      scene,
+      actorsLookup,
+      triggersLookup,
+      walkEvent => {
+        if (fn(walkEvent)) {
+          event = walkEvent;
+          throw new Error("FOUND_EVENT");
+        }
+      }
+    );
+  } catch (err) {
+    if (event) {
+      return event;
+    }
+    throw err;
+  }
+  return event;
+};
+
 const findSceneEvent = (scene, callback) => {
   let event = null;
   let fn = callback;
@@ -246,6 +296,8 @@ export {
   walkScenesEvents,
   walkSceneEvents,
   findSceneEvent,
+  normalizedWalkSceneEvents,
+  normalizedFindSceneEvent,
   patchEvents,
   prependEvent,
   appendEvent,
