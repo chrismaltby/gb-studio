@@ -40,7 +40,7 @@ class VariableSelect extends Component {
     const options = allVariables.map((variable, index) => {
       return {
         value: String(index),
-        label: this.variableName(index)
+        label: this.variableLabel(index)
       };
     });
 
