@@ -634,12 +634,12 @@ class ScriptEditor extends Component {
 
   onEnter = id => {
     const { selectScriptEvent } = this.props;
-    // selectScriptEvent(id);
+    selectScriptEvent(id);
   };
 
   onLeave = id => {
     const { selectScriptEvent } = this.props;
-    // selegctScriptEvent("");
+    selectScriptEvent("");
   };
 
   readClipboard = e => {
