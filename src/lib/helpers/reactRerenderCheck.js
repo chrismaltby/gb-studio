@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const shallowCheck = (old, next) =>
   Object.keys(old).filter(key => old[key] !== next[key]);
 

@@ -26,7 +26,6 @@ import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading } from "../editors/Sidebar";
 import { EventShape } from "../../reducers/stateShape";
 import events from "../../lib/events";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const ItemTypes = {
   CARD: "card"
@@ -442,15 +441,11 @@ class ScriptEditor extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // const { value } = this.state;
-    console.log("SHOULD UPDATE SCRIPT EDITOR");
-
-    rerenderCheck("ScriptEditor", this.props, {}, nextProps, {});
-
-    // return (
-    //   nextState.value !== value || nextProps.clipboardEvent !== clipboardEvent
-    // );
-    return true;
+    const { value } = this.props;
+    const { clipboardEvent } = this.state;
+    return (
+      nextProps.value !== value || nextState.clipboardEvent !== clipboardEvent
+    );
   }
 
   onChange = newValue => {
@@ -651,7 +646,6 @@ class ScriptEditor extends Component {
     const { type, title, value } = this.props;
     const { clipboardEvent } = this.state;
 
-    console.log("render: ScriptEditor.js");
     return (
       <div>
         <SidebarHeading
@@ -724,7 +718,8 @@ ScriptEditor.propTypes = {
   actorIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   spriteSheetIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectScriptEvent: PropTypes.func.isRequired,
-  copyEvent: PropTypes.func.isRequired
+  copyEvent: PropTypes.func.isRequired,
+  copyScript: PropTypes.func.isRequired
 };
 
 ScriptEditor.defaultProps = {

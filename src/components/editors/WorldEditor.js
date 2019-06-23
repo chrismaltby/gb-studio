@@ -12,7 +12,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
+import { ProjectShape } from "../../reducers/stateShape";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {

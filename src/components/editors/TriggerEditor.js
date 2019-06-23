@@ -214,7 +214,7 @@ TriggerEditor.propTypes = {
   editTrigger: PropTypes.func.isRequired,
   removeTrigger: PropTypes.func.isRequired,
   copyTrigger: PropTypes.func.isRequired,
-  pasteTrigger: PropTypes.func.isRequired,
+  setTriggerPrefab: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired
 };
 

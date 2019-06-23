@@ -205,12 +205,18 @@ export class SelectRenamable extends Component {
 }
 
 SelectRenamable.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.shape(),
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   editDefaultValue: PropTypes.string,
   editPlaceholder: PropTypes.string,
   onRename: PropTypes.func.isRequired
 };
 
 SelectRenamable.defaultProps = {
+  id: undefined,
+  value: undefined,
   editDefaultValue: "",
   editPlaceholder: ""
 };

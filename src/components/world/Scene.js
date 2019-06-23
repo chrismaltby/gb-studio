@@ -15,7 +15,6 @@ import {
   BackgroundShape
 } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import SceneCursor from "./SceneCursor";
 import {
   getSceneFrameCount,
@@ -35,22 +34,11 @@ class Scene extends Component {
   constructor() {
     super();
     this.containerRef = React.createRef();
-    console.log("constructor: Scene");
-    this.state = {
-      hover: false,
-      hoverX: 0,
-      hoverY: 0
-    };
   }
 
   componentDidMount() {
     window.addEventListener("mousemove", this.onMoveDrag);
     window.addEventListener("mouseup", this.onEndDrag);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("Scene", this.props, this.state, nextProps, nextState);
-    return true;
   }
 
   componentWillUnmount() {
@@ -136,8 +124,6 @@ class Scene extends Component {
       hovered,
       frameCount
     } = this.props;
-
-    console.log("render: Scene.js");
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 

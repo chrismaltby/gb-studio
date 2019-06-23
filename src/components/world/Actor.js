@@ -8,17 +8,15 @@ import * as actions from "../../actions";
 
 class Actor extends Component {
   onMouseDown = e => {
-    // console.log("MOUSE DOWN ACTOR", this.props.id);
     e.stopPropagation();
     e.preventDefault();
-    const { id, sceneId, dragActorStart, setTool } = this.props;
-    dragActorStart(sceneId, id);
+    const { actor, sceneId, dragActorStart, setTool } = this.props;
+    dragActorStart(sceneId, actor.id);
     setTool("select");
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
   onMouseUp = e => {
-    console.log("UP");
     const { dragActorStop } = this.props;
     dragActorStop();
     window.removeEventListener("mouseup", this.onMouseUp);
@@ -27,7 +25,6 @@ class Actor extends Component {
   render() {
     const { actor, selected } = this.props;
     const { x, y, spriteSheetId, direction, movementType, frame } = actor;
-    console.log("render: Actor");
     return (
       <div
         className={cx("Actor", { "Actor--Selected": selected })}
@@ -49,7 +46,11 @@ class Actor extends Component {
 
 Actor.propTypes = {
   actor: ActorShape,
-  selected: PropTypes.bool
+  sceneId: PropTypes.string.isRequired,
+  selected: PropTypes.bool,
+  dragActorStart: PropTypes.func.isRequired,
+  dragActorStop: PropTypes.func.isRequired,
+  setTool: PropTypes.func.isRequired
 };
 
 Actor.defaultProps = {

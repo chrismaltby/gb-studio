@@ -3,10 +3,7 @@ import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
 import { SceneShape, BackgroundShape } from "../../reducers/stateShape";
-import { indexBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-
-const indexById = indexBy("id");
 
 const DropdownIndicator = ({
   scenesLookup,

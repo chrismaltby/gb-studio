@@ -6,7 +6,6 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import {
   getMaxSceneRight,
   getMaxSceneBottom
@@ -20,8 +19,7 @@ class World extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0,
-      focused: false
+      hoverY: 0
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
@@ -43,13 +41,7 @@ class World extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("World", this.props, this.state, nextProps, nextState);
-    return true;
-  }
-
   componentDidUpdate(prevProps) {
-    console.log("DID UPDATE", prevProps, this.props);
     const { zoomRatio } = this.props;
     if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
@@ -200,8 +192,6 @@ class World extends Component {
       loaded
     } = this.props;
     const { hover, hoverX, hoverY } = this.state;
-
-    console.log("render: World");
 
     const worldStyle = { right: sidebarWidth };
 

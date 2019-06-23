@@ -97,9 +97,9 @@ const matchAsset = assetA => assetB => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
 };
 
-const notMatchAsset = assetA => assetB => {
-  return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
-};
+// const notMatchAsset = assetA => assetB => {
+//   return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
+// };
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;

@@ -86,8 +86,6 @@ class BackgroundSelect extends Component {
         return memo;
       }, []);
 
-    console.log({ options });
-
     return (
       <Select
         id={id}

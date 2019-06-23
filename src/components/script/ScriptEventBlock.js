@@ -46,6 +46,7 @@ class ScriptEventInput extends Component {
 
   render() {
     const { type, id, value, args, field } = this.props;
+
     if (type === "textarea") {
       return (
         <textarea
@@ -130,7 +131,6 @@ class ScriptEventInput extends Component {
       return <VariableSelect id={id} value={value} onChange={this.onChange} />;
     }
     if (type === "direction") {
-      console.log("DirectionPicker", id);
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
     }
     if (type === "input") {
@@ -191,14 +191,26 @@ class ScriptEventInput extends Component {
 }
 
 ScriptEventInput.propTypes = {
-  index: PropTypes.number.isRequired,
+  index: PropTypes.number,
+  id: PropTypes.string,
+  type: PropTypes.string,
   field: PropTypes.shape().isRequired,
-  value: PropTypes.shape(),
+  args: PropTypes.shape(),
+  value: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.arrayOf(PropTypes.string)
+  ]),
   onChange: PropTypes.func.isRequired
 };
 
 ScriptEventInput.defaultProps = {
-  value: {}
+  id: undefined,
+  index: 0,
+  value: "",
+  args: {},
+  type: ""
 };
 
 class ScriptEventField extends Component {
@@ -303,6 +315,24 @@ class ScriptEventField extends Component {
     );
   }
 }
+
+ScriptEventField.propTypes = {
+  eventId: PropTypes.string.isRequired,
+  field: PropTypes.shape().isRequired,
+  args: PropTypes.shape(),
+  value: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.arrayOf(PropTypes.string)
+  ]),
+  onChange: PropTypes.func.isRequired
+};
+
+ScriptEventField.defaultProps = {
+  value: "",
+  args: {}
+};
 
 class ScriptEventBlock extends Component {
   shouldComponentUpdate(nextProps, nextState) {

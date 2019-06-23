@@ -12,10 +12,6 @@ const allVariables = Array.from(Array(512).keys()).map(n =>
 );
 
 class VariableSelect extends Component {
-  constructor() {
-    super();
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("VariableSelect", this.props, {}, nextProps, {});
     return true;
@@ -40,7 +36,7 @@ class VariableSelect extends Component {
 
   render() {
     const { id, value, onChange } = this.props;
-    console.log("Render Variable Select");
+
     const options = allVariables.map((variable, index) => {
       return {
         value: String(index),
