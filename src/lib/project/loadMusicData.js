@@ -1,17 +1,18 @@
 import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
+import Path from "path";
 
 const globAsync = promisify(glob);
 
 const loadMusicData = projectRoot => async filename => {
-  const relativePath = filename.replace(projectRoot, "");
-  const plugin = relativePath.startsWith("/plugin")
-    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+  const relativePath = Path.relative(projectRoot, filename);
+  const plugin = relativePath.startsWith("plugins")
+    ? relativePath.split(Path.sep)[1]
     : undefined;
   const file = plugin
-    ? relativePath.replace(`/plugins/${plugin}/music/`, "")
-    : relativePath.replace("/assets/music/", "");
+    ? Path.relative(`plugins/${plugin}/music/`, relativePath)
+    : Path.relative("assets/music/", relativePath);
   return {
     id: uuidv4(),
     plugin,

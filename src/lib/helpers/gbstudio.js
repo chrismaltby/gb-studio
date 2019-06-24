@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import Path from "path";
+
 export const spriteTypeFromNumFrames = numFrames => {
   if (numFrames === 6) {
     return "actor_animated";
@@ -58,7 +60,8 @@ export const zoomForSection = (section, editor) => {
 };
 
 export const assetFilename = (projectRoot, assetType, asset) => {
-  return asset.plugin
-    ? `${projectRoot}/plugins/${asset.plugin}/${assetType}/${asset.filename}`
-    : `${projectRoot}/assets/${assetType}/${asset.filename}`;
+  return (asset.plugin
+    ? Path.join(projectRoot, "plugins", asset.plugin, assetType, asset.filename)
+    : Path.join(projectRoot, "assets", assetType, asset.filename)
+  ).replace(/\\/g, "/");
 };

@@ -1,5 +1,5 @@
 import chokidar from "chokidar";
-import path from "path";
+import Path from "path";
 
 const watchProject = async (
   projectPath,
@@ -18,7 +18,7 @@ const watchProject = async (
     onRemoveMusic = () => {}
   }
 ) => {
-  const projectRoot = path.dirname(projectPath);
+  const projectRoot = Path.dirname(projectPath);
   const spritesRoot = `${projectRoot}/assets/sprites`;
   const backgroundsRoot = `${projectRoot}/assets/backgrounds`;
   const musicRoot = `${projectRoot}/assets/music`;
@@ -26,7 +26,7 @@ const watchProject = async (
   const pluginsRoot = `${projectRoot}/plugins`;
 
   const pluginSubfolder = filename => {
-    return path.relative(pluginsRoot, filename).split("/")[1];
+    return Path.relative(pluginsRoot, filename).split(Path.sep)[1];
   };
 
   const spriteWatcher = chokidar
