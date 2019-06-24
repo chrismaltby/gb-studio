@@ -57,8 +57,6 @@ class SceneCursor extends Component {
       removeTriggerAt
     } = this.props;
 
-    e.stopPropagation();
-    e.preventDefault();
 
     if (tool === "actors") {
       addActor(sceneId, x, y, prefab);
