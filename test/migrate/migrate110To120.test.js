@@ -152,25 +152,6 @@ test("should migrate conditional events from 1.1.0 to 1.2.0", () => {
           }
         }
       ]
-    },
-    // Keep old true/false paths to allow project to still be opened in 1.1.0
-    true: [
-      {
-        id: "def",
-        command: "EVENT_TEXT",
-        args: {
-          text: "Hello"
-        }
-      }
-    ],
-    false: [
-      {
-        id: "xyz",
-        command: "EVENT_TEXT",
-        args: {
-          text: "World"
-        }
-      }
-    ]
+    }
   });
 });

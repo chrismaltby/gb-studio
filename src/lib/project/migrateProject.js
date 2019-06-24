@@ -193,7 +193,9 @@ export const migrateFrom110To120Event = event => {
         newEvent.false && {
           false: mapEvents(newEvent.false, migrateFrom110To120Event)
         }
-      )
+      ),
+      true: undefined,
+      false: undefined
     };
   }
   return newEvent;
