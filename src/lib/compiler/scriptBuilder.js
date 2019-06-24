@@ -732,6 +732,42 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(END));
   };
+
+  // Helpers
+
+  getSprite = (name, plugin = "") => {
+    const { sprites } = this.options;
+    const searchName = name.toUpperCase();
+    const searchPlugin = plugin.toUpperCase();
+    const sprite = sprites.find(s => {
+      return (
+        (searchName === s.name.toUpperCase() ||
+          searchName === s.filename.toUpperCase()) &&
+        (!plugin || searchPlugin === s.plugin.toUpperCase())
+      );
+    });
+    if (sprite) {
+      return sprite.id;
+    }
+    throw new Error(`Sprite ${name} not found`);
+  };
+
+  getActor = name => {
+    if (name === "player") {
+      return name;
+    }
+    const { scene } = this.options;
+    const searchName = name.toUpperCase();
+    const actor = scene.actors.find(
+      (a, i) =>
+        (a.name && searchName === a.name.toUpperCase()) ||
+        searchName === `ACTOR ${i + 1}`
+    );
+    if (actor) {
+      return actor.id;
+    }
+    throw new Error(`Actor ${name} not found`);
+  };
 }
 
 export default ScriptBuilder;

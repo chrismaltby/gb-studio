@@ -11,12 +11,13 @@ import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
-import compileEntityEvents, { CMD_LOOKUP } from "./compileEntityEvents";
+import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
   EVENT_CHOICE,
-  EVENT_SET_INPUT_SCRIPT
+  EVENT_SET_INPUT_SCRIPT,
+  EVENT_END
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import {
@@ -712,7 +713,7 @@ export const precompileScenes = (
         return (
           trigger.script &&
           trigger.script.length >= 1 &&
-          trigger.script[0].command !== CMD_LOOKUP.END
+          trigger.script[0].command !== EVENT_END
         );
       }),
       actorsData: [],
