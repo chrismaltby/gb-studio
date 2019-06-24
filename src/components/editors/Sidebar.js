@@ -65,13 +65,14 @@ class Sidebar extends Component {
   };
 
   render() {
-    const { width, children } = this.props;
+    const { width, children, ...props } = this.props;
     return (
       <div
         className={cx("Sidebar", {
           "Sidebar--Open": true,
           "Sidebar--TwoColumn": width >= 500
         })}
+        {...props}
       >
         <div
           ref={this.dragHandler}

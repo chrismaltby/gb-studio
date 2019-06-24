@@ -237,6 +237,10 @@ export const setNavigationId = id => {
   return { type: types.SET_NAVIGATION_ID, id };
 };
 
+export const selectSidebar = () => {
+  return { type: types.SELECT_SIDEBAR };
+};
+
 export const addScene = (x, y, defaults) => {
   return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
 };

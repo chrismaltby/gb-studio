@@ -13,6 +13,7 @@ export default {
   world: {},
   editor: {
     type: "world",
+    worldFocus: false,
     scene: "",
     index: 0,
     zoom: 100,

@@ -58,7 +58,7 @@ class TriggerEditor extends Component {
   };
 
   render() {
-    const { index, trigger, scene, selectScene } = this.props;
+    const { index, trigger, scene, selectScene, selectSidebar } = this.props;
 
     if (!trigger) {
       return <div />;
@@ -67,7 +67,7 @@ class TriggerEditor extends Component {
     const { clipboardTrigger } = this.state;
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("TRIGGER")}
@@ -215,7 +215,8 @@ TriggerEditor.propTypes = {
   removeTrigger: PropTypes.func.isRequired,
   copyTrigger: PropTypes.func.isRequired,
   setTriggerPrefab: PropTypes.func.isRequired,
-  selectScene: PropTypes.func.isRequired
+  selectScene: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 TriggerEditor.defaultProps = {
@@ -239,7 +240,8 @@ const mapDispatchToProps = {
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
   setTriggerPrefab: actions.setTriggerPrefab,
-  selectScene: actions.selectScene
+  selectScene: actions.selectScene,
+  selectSidebar: actions.selectSidebar
 };
 
 export default connect(

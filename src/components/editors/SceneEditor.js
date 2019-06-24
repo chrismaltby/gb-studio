@@ -98,7 +98,7 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const { scene, sceneIndex } = this.props;
+    const { scene, sceneIndex, selectSidebar } = this.props;
 
     if (!scene) {
       return <div />;
@@ -107,7 +107,7 @@ class SceneEditor extends Component {
     const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("SCENE")}
@@ -216,7 +216,8 @@ SceneEditor.propTypes = {
   copyScene: PropTypes.func.isRequired,
   setScenePrefab: PropTypes.func.isRequired,
   setActorPrefab: PropTypes.func.isRequired,
-  setTriggerPrefab: PropTypes.func.isRequired
+  setTriggerPrefab: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 SceneEditor.defaultProps = {
@@ -240,7 +241,8 @@ const mapDispatchToProps = {
   copyScene: actions.copyScene,
   setScenePrefab: actions.setScenePrefab,
   setActorPrefab: actions.setActorPrefab,
-  setTriggerPrefab: actions.setTriggerPrefab
+  setTriggerPrefab: actions.setTriggerPrefab,
+  selectSidebar: actions.selectSidebar
 };
 
 export default connect(

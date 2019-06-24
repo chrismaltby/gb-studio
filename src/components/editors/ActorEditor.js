@@ -66,7 +66,7 @@ class ActorEditor extends Component {
   };
 
   render() {
-    const { index, actor, scene, spriteSheet } = this.props;
+    const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
     const { clipboardActor } = this.state;
 
     if (!actor) {
@@ -97,7 +97,7 @@ class ActorEditor extends Component {
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
@@ -331,7 +331,8 @@ ActorEditor.propTypes = {
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
   setActorPrefab: PropTypes.func.isRequired,
-  selectScene: PropTypes.func.isRequired
+  selectScene: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 ActorEditor.defaultProps = {
@@ -359,7 +360,8 @@ const mapDispatchToProps = {
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
   setActorPrefab: actions.setActorPrefab,
-  selectScene: actions.selectScene
+  selectScene: actions.selectScene,
+  selectSidebar: actions.selectSidebar
 };
 
 export default connect(

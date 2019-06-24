@@ -10,8 +10,7 @@ import {
   getMaxSceneRight,
   getMaxSceneBottom
 } from "../../reducers/entitiesReducer";
-
-const MIDDLE_MOUSE = 2;
+import { MIDDLE_MOUSE } from "../../consts";
 
 class World extends Component {
   constructor(props) {
@@ -117,8 +116,8 @@ class World extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    const { removeSelectedEntity } = this.props;
-    if (e.key === "Backspace") {
+    const { removeSelectedEntity, focus } = this.props;
+    if (focus && e.key === "Backspace") {
       removeSelectedEntity();
     }
   };
@@ -267,6 +266,7 @@ World.propTypes = {
   scrollY: PropTypes.number.isRequired,
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   zoomRatio: PropTypes.number.isRequired,
+  focus: PropTypes.bool.isRequired,
   prefab: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
@@ -303,6 +303,8 @@ function mapStateToProps(state) {
   const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state) + 20);
   const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state) + 60);
 
+  const focus = state.editor.worldFocus;
+
   return {
     scenes,
     scrollWidth,
@@ -314,7 +316,8 @@ function mapStateToProps(state) {
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections,
     sidebarWidth,
-    loaded
+    loaded,
+    focus
   };
 }
 

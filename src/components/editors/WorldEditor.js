@@ -30,7 +30,7 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project } = this.props;
+    const { project, selectSidebar } = this.props;
 
     if (!project || !project.scenes) {
       return <div />;
@@ -48,7 +48,7 @@ class WorldEditor extends Component {
     } = settings;
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading title={l10n("PROJECT")} />
 
@@ -192,7 +192,8 @@ class WorldEditor extends Component {
 WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
   editProject: PropTypes.func.isRequired,
-  editProjectSettings: PropTypes.func.isRequired
+  editProjectSettings: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state, props) {
@@ -203,6 +204,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
+  selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
   editProjectSettings: actions.editProjectSettings
 };

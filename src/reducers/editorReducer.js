@@ -1,6 +1,7 @@
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
+  SET_SECTION,
   SELECT_SCENE,
   ADD_TRIGGER,
   SELECT_TRIGGER,
@@ -34,7 +35,10 @@ import {
   REMOVE_TRIGGER_AT,
   MOVE_TRIGGER,
   EDIT_PLAYER_START_AT,
-  EDIT_UI
+  EDIT_UI,
+  SELECT_SIDEBAR,
+  ADD_COLLISION_TILE,
+  REMOVE_COLLISION_TILE
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -49,31 +53,49 @@ export default function editor(state = initialState.editor, action) {
       return Object.assign(
         {},
         state,
+        {
+          worldFocus: false
+        },
         action.data.settings &&
           action.data.settings.zoom && {
             zoom: action.data.settings.zoom
           }
       );
     }
+    case SET_SECTION: {
+      return {
+        ...state,
+        worldFocus: false
+      };
+    }
+    case SELECT_SIDEBAR: {
+      return {
+        ...state,
+        worldFocus: false
+      };
+    }
     case MOVE_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case SELECT_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case ADD_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.id
+        scene: action.id,
+        worldFocus: true
       };
     }
     case ADD_TRIGGER: {
@@ -81,7 +103,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "triggers",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case SELECT_TRIGGER: {
@@ -89,7 +112,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "triggers",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case ADD_ACTOR: {
@@ -97,7 +121,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "actors",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case SELECT_ACTOR: {
@@ -141,7 +166,8 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         playerDragging: true,
-        dragging: DRAG_PLAYER
+        dragging: DRAG_PLAYER,
+        worldFocus: true
       };
     }
     case DRAG_PLAYER_STOP: {
@@ -158,7 +184,8 @@ export default function editor(state = initialState.editor, action) {
         dragging: DRAG_DESTINATION,
         type: action.selectionType,
         entityId: action.id,
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case DRAG_DESTINATION_STOP: {
@@ -175,7 +202,8 @@ export default function editor(state = initialState.editor, action) {
         actorDragging: true,
         dragging: DRAG_ACTOR,
         entityId: action.id,
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case DRAG_ACTOR_STOP: {
@@ -227,7 +255,8 @@ export default function editor(state = initialState.editor, action) {
       if (state.scene !== action.newSceneId) {
         return {
           ...state,
-          scene: action.newSceneId
+          scene: action.newSceneId,
+          worldFocus: true
         };
       }
       return state;
@@ -248,7 +277,17 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         scene: "",
-        type: "world"
+        type: "world",
+        worldFocus: true
+      };
+    }
+    case ADD_COLLISION_TILE:
+    case REMOVE_COLLISION_TILE: {
+      return {
+        ...state,
+        type: "scenes",
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case EDIT_UI: {
