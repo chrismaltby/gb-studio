@@ -65,14 +65,14 @@ class Sidebar extends Component {
   };
 
   render() {
-    const { width, children, ...props } = this.props;
+    const { width, children, onMouseDown } = this.props;
     return (
       <div
         className={cx("Sidebar", {
           "Sidebar--Open": true,
           "Sidebar--TwoColumn": width >= 500
         })}
-        {...props}
+        onMouseDown={onMouseDown}
       >
         <div
           ref={this.dragHandler}
@@ -91,11 +91,13 @@ class Sidebar extends Component {
 Sidebar.propTypes = {
   width: PropTypes.number.isRequired,
   resizeWorldSidebar: PropTypes.func.isRequired,
-  children: PropTypes.node
+  children: PropTypes.node,
+  onMouseDown: PropTypes.func
 };
 
 Sidebar.defaultProps = {
-  children: null
+  children: null,
+  onMouseDown: undefined
 };
 
 function mapStateToProps(state) {
