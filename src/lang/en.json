@@ -182,6 +182,8 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop Forever",
   "EVENT_GROUP": "Event Group",
+  "EVENT_DEFINE_LABEL": "Label: Define",
+  "EVENT_GOTO_LABEL": "Label: Goto",
   "EVENT_TEXT": "Text: Display Dialogue",
   "EVENT_CAMERA_MOVE_TO": "Camera: Move To",
   "EVENT_CAMERA_LOCK": "Camera: Lock To Player",
