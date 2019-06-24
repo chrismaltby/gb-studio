@@ -216,9 +216,12 @@ textarea {
   box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
-.FormField .ace_editor {
+.FormField .GBScriptEditor {
   margin: -10px;
   width: auto;
+}
+
+.FormField .ace_editor {
 }
 
 .FormField .ReactSelectContainer input:focus {

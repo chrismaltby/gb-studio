@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import AceEditor from "react-ace";
 import ScriptBuilder from "../../lib/compiler/scriptBuilder";
+import { NodeVM } from "vm2";
+import { debounce } from "lodash";
 
 import "brace/ext/language_tools";
 import "brace/theme/tomorrow";
@@ -9,6 +11,11 @@ import "brace/mode/javascript";
 import "brace/ext/searchbox";
 
 const sb = new ScriptBuilder();
+
+const vm = new NodeVM({
+  timeout: 1000,
+  sandbox: {}
+});
 
 const wordList = Object.keys(sb)
   .filter(key => {
@@ -34,44 +41,85 @@ const staticWordCompleter = {
 };
 
 class GBScriptEditor extends Component {
+  compile = debounce(inputCode => {
+    try {
+      const scriptBuilder = new ScriptBuilder([], {
+        strings: [],
+        variables: [],
+        compileEvents: () => {}
+      });
+
+      const code = `module.exports = function(helpers){
+      Object.keys(helpers).forEach((key) => {
+        this[key] = helpers[key];
+      });
+      ${inputCode}
+      return helpers;
+    }`;
+      const helpers = {
+        ...scriptBuilder
+      };
+      const handler = vm.run(code);
+      handler(helpers);
+      this.setState({
+        errors: ""
+      });
+    } catch (e) {
+      console.error(e);
+      this.setState({
+        errors: e.toString()
+      });
+    }
+  }, 1000);
+
   constructor() {
     super();
     this.aceEditor = React.createRef();
+    this.state = {
+      errors: ""
+    };
   }
 
   componentDidMount() {
     this.aceEditor.current.editor.completers = [staticWordCompleter];
   }
 
+  onChange = e => {
+    const { onChange } = this.props;
+    this.compile(e);
+    onChange(e);
+  };
+
   render() {
-    const { value, onChange } = this.props;
+    const { value } = this.props;
+    const { errors } = this.state;
 
     return (
-      <AceEditor
-        ref={this.aceEditor}
-        mode="javascript"
-        theme="tomorrow"
-        className="GBScriptEditor"
-        onChange={onChange}
-        fontSize={10}
-        name="UNIQUE_ID_OF_DIV"
-        highlightActiveLine
-        editorProps={{
-          $blockScrolling: true
-        }}
-        value={value}
-        setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: false,
-          showLineNumbers: true,
-          tabSize: 2,
-          useWorker: false
-        }}
-        minLines={10}
-        maxLines={Infinity}
-        width="auto"
-      />
+      <div className="GBScriptEditor">
+        {errors && <div className="GBScriptEditor__Error">{errors}</div>}
+        <AceEditor
+          ref={this.aceEditor}
+          mode="javascript"
+          theme="tomorrow"
+          onChange={this.onChange}
+          fontSize={10}
+          highlightActiveLine
+          editorProps={{
+            $blockScrolling: true
+          }}
+          value={value}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableSnippets: false,
+            showLineNumbers: true,
+            tabSize: 2,
+            useWorker: false
+          }}
+          minLines={10}
+          maxLines={Infinity}
+          width="auto"
+        />
+      </div>
     );
   }
 }

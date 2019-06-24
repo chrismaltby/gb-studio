@@ -64,7 +64,7 @@
   width: 1px;
   background: #555651;
 }
-.App .GBScriptEditor {
+.App .GBScriptEditor .ace_editor {
   background-color: #1f2323;
   color: #f8f8f2;
 }
