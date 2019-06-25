@@ -90,6 +90,7 @@ class ScriptEventInput extends Component {
     if (type === "checkbox") {
       return [
         <input
+          key="0"
           id={id}
           type="checkbox"
           className="Checkbox"
@@ -199,8 +200,10 @@ ScriptEventInput.propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
+    PropTypes.bool,
     PropTypes.arrayOf(PropTypes.number),
-    PropTypes.arrayOf(PropTypes.string)
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.arrayOf(PropTypes.bool)
   ]),
   onChange: PropTypes.func.isRequired
 };
@@ -323,8 +326,10 @@ ScriptEventField.propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
+    PropTypes.bool,
     PropTypes.arrayOf(PropTypes.number),
-    PropTypes.arrayOf(PropTypes.string)
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.arrayOf(PropTypes.bool)
   ]),
   onChange: PropTypes.func.isRequired
 };
