@@ -2,8 +2,8 @@ import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
-import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 import Path from "path";
+import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 
 const FRAME_SIZE = 16;
 
