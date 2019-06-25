@@ -1,14 +1,14 @@
-import { remote } from "electron";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
+import getTmp from "../helpers/getTmp";
 
 const ensureBuildTools = async () => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
     process.arch
   }`;
 
-  const tmpPath = remote.app.getPath("temp");
+  const tmpPath = getTmp();
   const tmpBuildToolsPath = `${tmpPath}/_gbs`;
 
   // Symlink build tools so that path doesn't contain any spaces

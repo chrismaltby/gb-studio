@@ -13,6 +13,7 @@ import {
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
+import getTmp from "../lib/helpers/getTmp";
 
 const buildUUID = uuid();
 
@@ -26,15 +27,13 @@ export default store => next => async action => {
       const state = store.getState();
       const projectRoot = state.document && state.document.root;
       const project = denormalizeProject(state.entities.present);
-      const outputRoot = Path.normalize(
-        `${remote.app.getPath("temp")}/${buildUUID}`
-      );
+      const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
 
       await buildProject(project, {
         projectRoot,
         buildType,
         outputRoot,
-        tmpPath: remote.app.getPath("temp"),
+        tmpPath: getTmp(),
         progress: message => {
           if (
             message !== "'" &&

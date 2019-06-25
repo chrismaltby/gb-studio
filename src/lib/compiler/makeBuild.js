@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
+import getTmp from "../helpers/getTmp";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -60,7 +61,7 @@ const makeBuild = ({
       process.arch
     }`;
 
-    const tmpPath = remote.app.getPath("temp");
+    const tmpPath = getTmp();
     const tmpBuildToolsPath = `${tmpPath}/_gbs`;
 
     // Symlink build tools so that path doesn't contain any spaces
@@ -77,6 +78,8 @@ const makeBuild = ({
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
     env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
+    env.TMP = getTmp();
+    env.TEMP = getTmp();
 
     const makeBat = await buildMakeBat(buildRoot, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
