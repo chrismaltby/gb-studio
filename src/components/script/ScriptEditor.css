@@ -357,6 +357,11 @@
   display: none;
 }
 
+.ActionMini--Commented .ScriptEventBlock {
+  opacity: 0.3;
+  z-index: 1;
+}
+
 .ActionMini--Dragging:before {
   display: none;
 }

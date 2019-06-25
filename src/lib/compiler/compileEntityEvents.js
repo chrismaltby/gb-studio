@@ -50,6 +50,11 @@ const compileEntityEvents = (input = [], options = {}) => {
 
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
+    if (input[i].args && input[i].args.__comment) {
+      // Skip commented events
+      // eslint-disable-next-line no-continue
+      continue;
+    }
     if (events[command]) {
       try {
         events[command].compile(
