@@ -81,6 +81,13 @@ class ActionMini extends Component {
     });
   };
 
+  toggleComment = () => {
+    const { id, action, onEdit } = this.props;
+    onEdit(id, {
+      __comment: !action.args.__comment
+    });
+  };
+
   toggleElseOpen = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
@@ -195,6 +202,7 @@ class ActionMini extends Component {
 
     const open = action.args && !action.args.__collapse;
     const elseOpen = action.args && !action.args.__collapseElse;
+    const commented = action.args && action.args.__comment;
 
     const eventName =
       (action.args.__label ? `${action.args.__label}: ` : "") +
@@ -209,7 +217,8 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": childKeys.length > 0
+            "ActionMini--Conditional": childKeys.length > 0,
+            "ActionMini--Commented": commented
           })}
         >
           <div
@@ -227,6 +236,7 @@ class ActionMini extends Component {
                 <TriangleIcon />{" "}
                 {action.args.__label ? (
                   <span>
+                    {commented ? "// " : ""}
                     {action.args.__label}
                     <small>
                       {l10n(command) ||
@@ -235,7 +245,7 @@ class ActionMini extends Component {
                     </small>
                   </span>
                 ) : (
-                  l10n(command) ||
+                  (commented ? "// " : "") + l10n(command) ||
                   (events[command] && events[command].name) ||
                   command
                 )}
@@ -251,6 +261,11 @@ class ActionMini extends Component {
               >
                 <MenuItem onClick={this.toggleRename}>
                   {l10n("MENU_RENAME_EVENT")}
+                </MenuItem>
+                <MenuItem onClick={this.toggleComment}>
+                  {commented
+                    ? l10n("MENU_REENABLE_EVENT")
+                    : l10n("MENU_DISABLE_EVENT")}
                 </MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={onCopy(action)}>
@@ -357,7 +372,7 @@ class ActionMini extends Component {
                     })}
                     onClick={this.toggleElseOpen}
                   >
-                    <TriangleIcon /> Else
+                    <TriangleIcon /> {commented ? "// " : ""} Else
                   </div>,
                   elseOpen && (
                     <div
