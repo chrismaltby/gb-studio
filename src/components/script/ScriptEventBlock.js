@@ -210,7 +210,7 @@ ScriptEventInput.propTypes = {
 
 ScriptEventInput.defaultProps = {
   id: undefined,
-  index: 0,
+  index: undefined,
   value: "",
   args: {},
   type: ""
