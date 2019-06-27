@@ -30,7 +30,8 @@ class ScriptEventInput extends Component {
   onChange = e => {
     const { onChange, field, value, index } = this.props;
     const { type, updateFn } = field;
-    let newValue = e.currentTarget ? castEventValue(e) : e;
+    let el = e.currentTarget;
+    let newValue = el ? castEventValue(e) : e;
     if (type === "direction" && newValue === value) {
       // Toggle direction
       newValue = "";
@@ -42,6 +43,13 @@ class ScriptEventInput extends Component {
       newValue = updateFn(newValue);
     }
     onChange(newValue, index);
+    if (el && el.selectionStart) {
+      let cursorPosition = el.selectionStart;
+      this.forceUpdate(() => {
+        el.selectionStart = cursorPosition;
+        el.selectionEnd = cursorPosition;
+      });
+    }
   };
 
   render() {
