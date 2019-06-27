@@ -26,12 +26,37 @@ import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
+class TextArea extends Component {
+  onChange = e => {
+    const { onChange } = this.props;
+    const el = e.currentTarget;
+    const cursorPosition = el.selectionStart;
+    onChange(e);
+    this.forceUpdate(() => {
+      el.selectionStart = cursorPosition;
+      el.selectionEnd = cursorPosition;
+    });
+  }
+
+  render() {
+    const { id, value, rows, placeholder } = this.props;
+    return (
+      <textarea
+            id={id}
+            value={value || ""}
+            rows={rows || textNumLines(value)}
+            placeholder={placeholder}
+            onChange={this.onChange}
+          />
+    );
+  }
+}
+
 class ScriptEventInput extends Component {
   onChange = e => {
     const { onChange, field, value, index } = this.props;
     const { type, updateFn } = field;
-    let el = e.currentTarget;
-    let newValue = el ? castEventValue(e) : e;
+    let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value) {
       // Toggle direction
       newValue = "";
@@ -43,13 +68,6 @@ class ScriptEventInput extends Component {
       newValue = updateFn(newValue);
     }
     onChange(newValue, index);
-    if (el && el.selectionStart) {
-      let cursorPosition = el.selectionStart;
-      this.forceUpdate(() => {
-        el.selectionStart = cursorPosition;
-        el.selectionEnd = cursorPosition;
-      });
-    }
   };
 
   render() {
@@ -57,10 +75,10 @@ class ScriptEventInput extends Component {
 
     if (type === "textarea") {
       return (
-        <textarea
+        <TextArea
           id={id}
-          value={value || ""}
-          rows={field.rows || textNumLines(value)}
+          value={value}
+          rows={field.rows}
           placeholder={field.placeholder}
           onChange={this.onChange}
         />
