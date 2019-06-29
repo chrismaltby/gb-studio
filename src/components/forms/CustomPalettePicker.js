@@ -114,44 +114,33 @@ class CustomPalettePicker extends Component {
     return parseInt("0x" + str);
   }
 
-  saveToSettings() {
-    // Apply changes to settings
-    const { editProject } = this.props;
-    editProject({
-      CustomColors_White: this.state.whiteHex,
-      CustomColors_LightGreen: this.state.lightGreenHex,
-      CustomColors_DarkGreen: this.state.darkGreenHex,
-      CustomColors_Black: this.state.blackHex,
-    });
-  }
-
   setCurrentColor(r, g, b) {
+    const { editProject } = this.props;
+
+    const hexString = this.decimalToHexString(r * 8) + 
+                      this.decimalToHexString(g * 8) + 
+                      this.decimalToHexString(b * 8);
+
     if (this.state.selectedPalette == 0)
-    {
-      this.setState({whiteHex:  this.decimalToHexString(r * 8) + 
-                                this.decimalToHexString(g * 8) + 
-                                this.decimalToHexString(b * 8)});
+    {    
+      this.setState({ whiteHex: hexString });
+      editProject({ CustomColors_White: hexString });
     } 
     else if (this.state.selectedPalette == 1)
     {
-      this.setState({lightGreenHex: this.decimalToHexString(r * 8) + 
-                                    this.decimalToHexString(g * 8) + 
-                                    this.decimalToHexString(b * 8)});
+      this.setState({ lightGreenHex: hexString });
+      editProject({ CustomColors_LightGreen: hexString });
     }
     else if (this.state.selectedPalette == 2)
     {
-      this.setState({darkGreenHex:  this.decimalToHexString(r * 8) + 
-                                    this.decimalToHexString(g * 8) + 
-                                    this.decimalToHexString(b * 8)});
+      this.setState({ darkGreenHex: hexString });
+      editProject({ CustomColors_DarkGreen: hexString });
     }
     else if (this.state.selectedPalette == 3)
     {
-      this.setState({blackHex:  this.decimalToHexString(r * 8) + 
-                                this.decimalToHexString(g * 8) + 
-                                this.decimalToHexString(b * 8)});
+      this.setState({ blackHex: hexString });
+      editProject({ CustomColors_Black: hexString });
     }
-
-    this.saveToSettings();
   }
 
   hexChange = e => {
