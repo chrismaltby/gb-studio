@@ -108,7 +108,10 @@ const makeBuild = ({
       await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
     }
 
-    const makeBat = await buildMakeBat(buildRoot, settings.customColorsEnabled, { CART_TYPE: env.CART_TYPE });
+    const makeBat = await buildMakeBat(buildRoot, {
+      CART_TYPE: env.CART_TYPE,
+      customColorsEnabled: settings.customColorsEnabled
+    });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
     const command = process.platform === "win32" ? "make.bat" : "make";

@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import Path from "path";
 
-export default async (buildRoot, customColorsEnabled, { CART_TYPE }) => {
+export default async (buildRoot, { CART_TYPE, customColorsEnabled }) => {
   const cmds = [];
   const buildFiles = [];
   const objFiles = [];
