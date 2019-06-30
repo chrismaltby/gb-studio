@@ -52,7 +52,7 @@ export default async (buildRoot, customColorsEnabled, { CART_TYPE }) => {
     objFiles.push(objFile);
   }
 
-  if (customColorsEnabled == true) {
+  if (customColorsEnabled) {
     cmds.push(`${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
   } else {
     cmds.push(`${CC} ${CFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
