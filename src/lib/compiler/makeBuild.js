@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
+import { hexDec } from "../helpers/8bit";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -22,15 +23,12 @@ const setROMTitle = async (filename, title) => {
   await fs.writeFile(filename, await patchROM(romData));
 };
 
-const hexToDecimal = (str) => {
-    return parseInt("0x" + str);
-}
-
-const convertHexTo15BitString = (hex) => {
-  return  Math.round(hexToDecimal(hex.substring(0,2)) / 8) + ', ' +
-          Math.round(hexToDecimal(hex.substring(2,4)) / 8) + ', ' +
-          Math.round(hexToDecimal(hex.substring(4)) / 8);
-}
+const convertHexTo15BitRGB = hex => {
+  const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+  const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+  const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+  return `RGB(${r}, ${g}, ${b})`;
+};
 
 const patchROM = romData => {
   let checksum = 0;
@@ -93,10 +91,10 @@ const makeBuild = ({
       var result;
 
       if (data.CustomColorsEnabled) {
-        result =  filedata.replace(/28, 31, 26/g, convertHexTo15BitString(data.CustomColors_White))
-                          .replace(/17, 24, 14/g, convertHexTo15BitString(data.CustomColors_LightGreen))
-                          .replace(/6, 13, 10/g, convertHexTo15BitString(data.CustomColors_DarkGreen))
-                          .replace(/1, 3, 4/g, convertHexTo15BitString(data.CustomColors_Black));
+        result =  filedata.replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(data.CustomColors_White))
+                          .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(data.CustomColors_LightGreen))
+                          .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(data.CustomColors_DarkGreen))
+                          .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(data.CustomColors_Black));
       } else {
         result =  filedata.replace(/#define CUSTOM_COLORS/g, '');
       }
