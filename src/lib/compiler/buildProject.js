@@ -52,7 +52,7 @@ const buildProject = async (
     const sanitize = s => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
-    const customColor = data.CustomColorsEnabled ? "<body style='background-color:#" + data.CustomColors_Black + "'>" : "<body>";
+    const customColor = data.settings.customColorsEnabled ? "<body style='background-color:#" + data.settings.customColorsBlack + "'>" : "<body>";
     const html = (await fs.readFile(
       `${outputRoot}/build/web/index.html`,
       "utf8"

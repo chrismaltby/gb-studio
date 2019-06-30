@@ -86,14 +86,11 @@ class WorldEditor extends Component {
 
             <ToggleableCheckBoxField
               label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
-              open={!!project.CustomColorsEnabled || project.CustomColorsEnabled}
-              onToggle={this.onEditProject("CustomColorsEnabled")}
+              open={settings.customColorsEnabled}
+              onToggle={this.onEditSetting("customColorsEnabled")}
             >
-              
               <CustomPalettePicker />
-
             </ToggleableCheckBoxField>
-
           </div>
         </SidebarColumn>
 
