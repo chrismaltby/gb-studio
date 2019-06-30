@@ -63,6 +63,7 @@ const makeBuild = ({
 } = {}) => {
   return new Promise(async (resolve, reject) => {
     const env = Object.create(process.env);
+    const { settings } = data;
 
     const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
       process.arch
@@ -84,30 +85,30 @@ const makeBuild = ({
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
-    env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
+    env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
 
     // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
-    if(data.CustomColorsEnabled) {
+    if(settings.customColorsEnabled) {
       gameHeader = gameHeader
-        .replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(data.CustomColors_White))
-        .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(data.CustomColors_LightGreen))
-        .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(data.CustomColors_DarkGreen))
-        .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(data.CustomColors_Black));
+        .replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(settings.customColorsWhite))
+        .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(settings.customColorsLight))
+        .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(settings.customColorsDark))
+        .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(settings.customColorsBlack));
     } else {
       gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
     }
     await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
     // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors not enabled
-    if (process.platform !== "win32" && !data.CustomColorsEnabled)
+    if (process.platform !== "win32" && !settings.customColorsEnabled)
     {
       let makeFile = await fs.readFile(`${buildRoot}/Makefile`, "utf8");
       makeFile = makeFile.replace("-Wl-yp0x143=0x80", "");
       await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
     }
 
-    const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
+    const makeBat = await buildMakeBat(buildRoot, settings.customColorsEnabled, { CART_TYPE: env.CART_TYPE });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 
     const command = process.platform === "win32" ? "make.bat" : "make";

@@ -12,26 +12,20 @@ class CustomPalettePicker extends Component {
     super(props);
 
     const { project } = this.props;
+    const { settings } = project;
 
     this.state = {
       selectedPalette: -1,
       currentR: 0,
       currentG: 0,
       currentB: 0,
-      whiteHex: project.CustomColors_White || "E0F8D0",
-      lightGreenHex: project.CustomColors_LightGreen || "88C070",
-      darkGreenHex: project.CustomColors_DarkGreen || "306850",
-      blackHex: project.CustomColors_Black || "081820",
+      whiteHex: settings.customColorsWhite || "E0F8D0",
+      lightHex: settings.customColorsLight || "88C070",
+      darkHex: settings.customColorsDark || "306850",
+      blackHex: settings.customColorsBlack || "081820",
       currentCustomHex: ""
     };
   }
-
-  onEditProject = key => e => {
-    const { editProject } = this.props;
-    editProject({
-      [key]: castEventValue(e)
-    });
-  };
 
   paletteSelect = e => {    
     if (e.target.id == "customColor_0")
@@ -55,7 +49,7 @@ class CustomPalettePicker extends Component {
       else
       {
         this.setState({selectedPalette: 1});
-        this.applyHexToState(this.state.lightGreenHex);
+        this.applyHexToState(this.state.lightHex);
       }
     }
     else if (e.target.id == "customColor_2")
@@ -67,7 +61,7 @@ class CustomPalettePicker extends Component {
       else 
       {
         this.setState({selectedPalette: 2});
-        this.applyHexToState(this.state.darkGreenHex);
+        this.applyHexToState(this.state.darkHex);
       }
     }
     else if (e.target.id == "customColor_3")
@@ -115,7 +109,7 @@ class CustomPalettePicker extends Component {
   }
 
   setCurrentColor(r, g, b) {
-    const { editProject } = this.props;
+    const { editProjectSettings } = this.props;
 
     const hexString = this.decimalToHexString(r * 8) + 
                       this.decimalToHexString(g * 8) + 
@@ -124,22 +118,22 @@ class CustomPalettePicker extends Component {
     if (this.state.selectedPalette == 0)
     {    
       this.setState({ whiteHex: hexString });
-      editProject({ CustomColors_White: hexString });
+      editProjectSettings({ customColorsWhite: hexString });
     } 
     else if (this.state.selectedPalette == 1)
     {
-      this.setState({ lightGreenHex: hexString });
-      editProject({ CustomColors_LightGreen: hexString });
+      this.setState({ lightHex: hexString });
+      editProjectSettings({ customColorsLight: hexString });
     }
     else if (this.state.selectedPalette == 2)
     {
-      this.setState({ darkGreenHex: hexString });
-      editProject({ CustomColors_DarkGreen: hexString });
+      this.setState({ darkHex: hexString });
+      editProjectSettings({ customColorsDark: hexString });
     }
     else if (this.state.selectedPalette == 3)
     {
       this.setState({ blackHex: hexString });
-      editProject({ CustomColors_Black: hexString });
+      editProjectSettings({ customColorsBlack: hexString });
     }
   }
 
@@ -222,13 +216,13 @@ class CustomPalettePicker extends Component {
           </label>
           <label htmlFor="customColor_1" title={l10n('FIELD_COLOR2_NAME')}>
             <input id="customColor_1" type="checkbox" onChange={this.paletteSelect.bind()} checked={this.state.selectedPalette == 1} />
-            <div className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle" style={{backgroundImage: `linear-gradient(#86c06c 48.9%, var(--input-border-color) 49.5%, #${this.state.lightGreenHex} 50%)`}}>
+            <div className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle" style={{backgroundImage: `linear-gradient(#86c06c 48.9%, var(--input-border-color) 49.5%, #${this.state.lightHex} 50%)`}}>
               &nbsp;
             </div>
           </label>
           <label htmlFor="customColor_2" title={l10n('FIELD_COLOR3_NAME')}>
             <input id="customColor_2" type="checkbox" onChange={this.paletteSelect.bind()} checked={this.state.selectedPalette == 2} />
-            <div className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle" style={{backgroundImage: `linear-gradient(#306850 48.9%, var(--input-border-color) 49.5%, #${this.state.darkGreenHex} 50%)`}}>
+            <div className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle" style={{backgroundImage: `linear-gradient(#306850 48.9%, var(--input-border-color) 49.5%, #${this.state.darkHex} 50%)`}}>
               &nbsp;
             </div>
           </label>
@@ -340,7 +334,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editProject: actions.editProject
+  editProjectSettings: actions.editProjectSettings
 };
 
 export default connect(
