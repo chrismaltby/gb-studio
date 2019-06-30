@@ -142,20 +142,24 @@ class CustomPalettePicker extends Component {
   }
 
   colorChange = e => {
-    if (e.target.id == "colorR")
+    const min = 0;
+    const max = 31;
+    const value = Math.max(min, Math.min(max, e.currentTarget.value))
+    
+    if (e.target.id === "colorR")
     {
-      this.setState({currentR: e.target.value});
-      this.setCurrentColor(e.target.value, this.state.currentG, this.state.currentB);
+      this.setState({currentR: value || ""});
+      this.setCurrentColor(value, this.state.currentG, this.state.currentB);
     } 
-    else if (e.target.id == "colorG")
+    else if (e.target.id === "colorG")
     {
-      this.setState({currentG: e.target.value});
-      this.setCurrentColor(this.state.currentR, e.target.value, this.state.currentB);
+      this.setState({currentG: value || ""});
+      this.setCurrentColor(this.state.currentR, value, this.state.currentB);
     }
-    else if (e.target.id == "colorB")
+    else if (e.target.id === "colorB")
     {
-      this.setState({currentB: e.target.value});
-      this.setCurrentColor(this.state.currentR, this.state.currentG, e.target.value);
+      this.setState({currentB: value || ""});
+      this.setCurrentColor(this.state.currentR, this.state.currentG, value);
     }
   }
 
