@@ -117,41 +117,34 @@ ToggleableFormField.defaultProps = {
 };
 
 export class ToggleableCheckBoxField extends Component {
-  constructor() {
-    super();
-    this.state = {
-      open: false
-    };
-  }
-
-  toggleOpen = () => {
-    const { onToggle } = this.props;
-    onToggle(!this.state.open);
-
-    this.setState({ open: !this.state.open });
-  };
 
   componentWillMount () {
     this.id = `toggle_${Math.random().toString().replace(/0\./, '')}`;
   }
+
+  toggleOpen = () => {
+    const { onToggle, open } = this.props;
+    onToggle(!open);
+  };
 
   render() {
     const {
       halfWidth,
       label,
       children,
-      open: propsOpen
+      open
     } = this.props;
-    const { open: stateOpen } = this.state;
-    const open = stateOpen || propsOpen;
     return (
       <div
         className={cx("FormField", "FormField--Toggleable", {
           "FormField--HalfWidth": halfWidth
         })}
       >
-        <input type="checkbox" onChange={this.toggleOpen} checked={open} id={this.id} style={{width:16,opacity:100,float:"left",position:"static"}}/>
-        <label htmlFor={this.id}>{label}</label>
+        <label htmlFor={this.id}>
+          <input id={this.id} type="checkbox" onChange={this.toggleOpen} checked={open} />
+          <div className="FormCheckbox" />
+          {label}
+        </label>
         <div>
           {open && children}
         </div>
@@ -164,7 +157,8 @@ ToggleableCheckBoxField.propTypes = {
   halfWidth: PropTypes.bool,
   children: PropTypes.node,
   label: PropTypes.node,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  onToggle: PropTypes.func.isRequired
 };
 
 ToggleableCheckBoxField.defaultProps = {
