@@ -13,7 +13,11 @@ export default {
     settings: {
       showCollisions: true,
       showConnections: true,
-      sidebarWidth: 300
+      sidebarWidth: 300,
+      customColorsWhite: "E0F8D0",
+      customColorsLight: "88C070",
+      customColorsDark: "306850",
+      customColorsBlack: "081820"
     }
   },
   world: {},
