@@ -86,6 +86,7 @@ const makeBuild = ({
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
     env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
 
+    // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
     if(data.CustomColorsEnabled) {
       gameHeader = gameHeader
@@ -98,12 +99,12 @@ const makeBuild = ({
     }
     await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
-    // Modify Linux / OSX makefile as needed
+    // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors not enabled
     if (process.platform !== "win32" && !data.CustomColorsEnabled)
     {
-      let makeFile = await fs.readFile(`${buildRoot}/makefile`, "utf8");
+      let makeFile = await fs.readFile(`${buildRoot}/Makefile`, "utf8");
       makeFile = makeFile.replace("-Wl-yp0x143=0x80", "");
-      await fs.writeFile(`${buildRoot}/makefile`, makeFile, "utf8");
+      await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
     }
 
     const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
