@@ -86,31 +86,24 @@ const makeBuild = ({
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
     env.CART_TYPE = parseInt(data.settings.cartType || "1B", 16);
 
-    // Apply changes for custom colors (if needed)
-    fs.readFile(`${buildRoot}/include/game.h`, 'utf8', function (err, filedata) {
-      var result;
-
-      if (data.CustomColorsEnabled) {
-        result =  filedata.replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(data.CustomColors_White))
-                          .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(data.CustomColors_LightGreen))
-                          .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(data.CustomColors_DarkGreen))
-                          .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(data.CustomColors_Black));
-      } else {
-        result =  filedata.replace(/#define CUSTOM_COLORS/g, '');
-      }
-
-      fs.writeFile(`${buildRoot}/include/game.h`, result, 'utf8');
-    });    
+    let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
+    if(data.CustomColorsEnabled) {
+      gameHeader = gameHeader
+        .replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(data.CustomColors_White))
+        .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(data.CustomColors_LightGreen))
+        .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(data.CustomColors_DarkGreen))
+        .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(data.CustomColors_Black));
+    } else {
+      gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
+    }
+    await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
     // Modify Linux / OSX makefile as needed
-    if (process.platform != "win32" && data.CustomColorsEnabled == false)
+    if (process.platform !== "win32" && !data.CustomColorsEnabled)
     {
-      fs.readFile(`${buildRoot}/makefile`, 'utf8', function (err, filedata) {
-
-        const result = filedata.replace("-Wl-yp0x143=0x80", "");
-
-        fs.writeFile(`${buildRoot}/makefile`, result, 'utf8');
-      });
+      let makeFile = await fs.readFile(`${buildRoot}/makefile`, "utf8");
+      makeFile = makeFile.replace("-Wl-yp0x143=0x80", "");
+      await fs.writeFile(`${buildRoot}/makefile`, makeFile, "utf8");
     }
 
     const makeBat = await buildMakeBat(buildRoot, data.CustomColorsEnabled, { CART_TYPE: env.CART_TYPE });
