@@ -404,7 +404,10 @@ const precompile = async (
     projectData.spriteSheets,
     projectData.scenes,
     projectData.settings.playerSpriteSheetId,
-    projectRoot
+    projectRoot,
+    {
+      warnings
+    }
   );
 
   progress(EVENT_MSG_PRE_MUSIC);
@@ -539,6 +542,16 @@ export const precompileBackgrounds = async (
     usedTilesets.push(backgroundData.tilesets[tileKey]);
   });
   const usedBackgroundsWithData = usedBackgrounds.map(background => {
+    if (
+      background.imageWidth / 8 !== background.width ||
+      background.imageHeight / 8 !== background.height
+    ) {
+      warnings(
+        `Background '${
+          background.filename
+        }' has invalid dimensions and may not appear correctly. Width and height must be multiples of 8px and no larger than 256px.`
+      );
+    }
     return {
       ...background,
       tilesetIndex:
@@ -589,7 +602,8 @@ export const precompileSprites = async (
   spriteSheets,
   scenes,
   playerSpriteSheetId,
-  projectRoot
+  projectRoot,
+  { warnings } = {}
 ) => {
   const usedSprites = spriteSheets.filter(
     spriteSheet =>
@@ -610,7 +624,15 @@ export const precompileSprites = async (
         assetFilename(projectRoot, "sprites", spriteSheet)
       );
       const size = data.length;
-      const frames = size / 64;
+      const frames = Math.ceil(size / 64);
+      if (Math.ceil(size / 64) !== Math.floor(size / 64)) {
+        warnings(
+          `Sprite '${
+            spriteSheet.filename
+          }' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
+        );
+      }
+
       return {
         ...spriteSheet,
         data,
@@ -751,7 +773,7 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
     actors.map((actor, actorIndex) => {
       const sprite = sprites.find(s => s.id === actor.spriteSheetId);
       if (!sprite) return [];
-      const spriteFrames = sprite.size / 64;
+      const spriteFrames = sprite.frames;
       const actorFrames = actorFramesPerDir(actor.movementType, spriteFrames);
       const initialFrame =
         moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
