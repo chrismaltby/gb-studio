@@ -5,7 +5,7 @@ import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { divisibleBy8 } from "../../lib/helpers/8bit";
-import { zoomForSection } from "../../lib/helpers/gbstudio";
+import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 
 class ImageViewer extends Component {
   componentDidMount() {
@@ -63,9 +63,11 @@ class ImageViewer extends Component {
             >
               <img
                 alt=""
-                src={`${projectRoot}/assets/${folder}/${
-                  file.filename
-                }?v=${file._v || 0}`}
+                src={`${assetFilename(
+                  projectRoot,
+                  folder,
+                  file
+                )}?_v=${file._v || 0}`}
               />
             </div>
           )}
@@ -116,12 +118,13 @@ function mapStateToProps(state) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);
+  const { filesSidebarWidth: sidebarWidth } = state.settings;
   return {
     projectRoot: state.document && state.document.root,
     folder,
     section,
     zoom: (zoom || 100) / 100,
-    sidebarWidth: state.project.present.settings.sidebarWidth
+    sidebarWidth
   };
 }
 

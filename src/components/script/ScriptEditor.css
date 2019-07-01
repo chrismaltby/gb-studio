@@ -11,6 +11,12 @@
   user-select: none;
 }
 
+.ActionMini__Rename {
+  border-bottom: 1px solid var(--sidebar-border-color);
+  box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
 .ActionMini__Content {
   font-size: 12px;
   border-bottom: 1px solid var(--sidebar-border-color);
@@ -349,6 +355,11 @@
 
 .ActionMini--Over svg {
   display: none;
+}
+
+.ActionMini--Commented .ScriptEventBlock {
+  opacity: 0.3;
+  z-index: 1;
 }
 
 .ActionMini--Dragging:before {

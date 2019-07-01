@@ -1,10 +1,13 @@
 .Menu {
   position: absolute;
+  color: var(--main-text-color);
   background-color: var(--menu-bg-color);
   border-radius: 4px;
   padding: 4px 0;
   overflow: auto;
-  box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2); */
+  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
+    0 4px 11px hsla(0, 0%, 0%, 0.1);
   min-width: 60px;
   z-index: 1001;
   font-size: 13px;

@@ -6,6 +6,9 @@ import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
+import { groupBy } from "../../lib/helpers/array";
+
+const groupByPlugin = groupBy("plugin");
 
 class FilesSidebar extends Component {
   constructor(props) {
@@ -42,10 +45,10 @@ class FilesSidebar extends Component {
   };
 
   onMouseMove = event => {
-    const { resizeSidebar } = this.props;
+    const { resizeFilesSidebar } = this.props;
     const { dragging } = this.state;
     if (dragging) {
-      resizeSidebar(window.innerWidth - event.pageX);
+      resizeFilesSidebar(window.innerWidth - event.pageX);
     }
   };
 
@@ -54,15 +57,25 @@ class FilesSidebar extends Component {
     onSearch(e.currentTarget.value);
   };
 
+  renderFile = file => {
+    const { selectedFile, setNavigationId } = this.props;
+    return (
+      <div
+        key={file.id}
+        onClick={() => setNavigationId(file.id)}
+        className={cx("FilesSidebar__ListItem", {
+          "FilesSidebar__ListItem--Active": file.id === selectedFile.id
+        })}
+      >
+        {file.name}
+      </div>
+    );
+  };
+
   render() {
-    const {
-      files,
-      selectedFile,
-      setNavigationId,
-      onAdd,
-      query,
-      width
-    } = this.props;
+    const { files, onAdd, query, width } = this.props;
+
+    const groupedFiles = groupByPlugin(files);
 
     return (
       <div className="FilesSidebarWrapper">
@@ -86,17 +99,19 @@ class FilesSidebar extends Component {
               </Button>
             )}
           </div>
-          {files.map((file, index) => (
-            <div
-              key={file.id}
-              onClick={() => setNavigationId(file.id)}
-              className={cx("FilesSidebar__ListItem", {
-                "FilesSidebar__ListItem--Active": file.id === selectedFile.id
-              })}
-            >
-              {file.name}
-            </div>
-          ))}
+          {Object.keys(groupedFiles)
+            .sort()
+            .map(plugin => {
+              if (!plugin) {
+                return groupedFiles[plugin].map(this.renderFile);
+              }
+              return (
+                <div className="FilesSidebar__Group" key={plugin}>
+                  <div className="FilesSidebar__GroupHeading">{plugin}</div>
+                  {groupedFiles[plugin].map(this.renderFile)}
+                </div>
+              );
+            })}
         </div>
       </div>
     );
@@ -104,7 +119,7 @@ class FilesSidebar extends Component {
 }
 
 FilesSidebar.propTypes = {
-  resizeSidebar: PropTypes.func.isRequired,
+  resizeFilesSidebar: PropTypes.func.isRequired,
   setNavigationId: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
   width: PropTypes.number,
@@ -129,14 +144,15 @@ FilesSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const { filesSidebarWidth: width } = state.settings;
   return {
-    width: state.project.present.settings.sidebarWidth
+    width
   };
 }
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizeSidebar: actions.resizeSidebar
+  resizeFilesSidebar: actions.resizeFilesSidebar
 };
 
 export default connect(

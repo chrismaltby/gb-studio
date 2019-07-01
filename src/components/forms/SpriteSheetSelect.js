@@ -1,58 +1,123 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Select, { components } from "react-select";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import l10n from "../../lib/helpers/l10n";
 import { SpriteShape } from "../../reducers/stateShape";
+import { groupBy } from "../../lib/helpers/array";
+import { getSpriteSheets } from "../../reducers/entitiesReducer";
+
+const groupByPlugin = groupBy("plugin");
 
 const type = t => s => s.type === t;
 
+const buildOptions = (memo, plugin, spriteSheets) => {
+  memo.push({
+    label:
+      l10n("FIELD_SPRITE_ANIMATED_ACTORS") + (plugin ? ` - ${plugin}` : ""),
+    options: spriteSheets.filter(type("actor_animated")).map(spriteSheet => {
+      return {
+        value: spriteSheet.id,
+        label: spriteSheet.name
+      };
+    })
+  });
+  memo.push({
+    label: l10n("FIELD_SPRITE_ACTORS") + (plugin ? ` - ${plugin}` : ""),
+    options: spriteSheets.filter(type("actor")).map(spriteSheet => {
+      return {
+        value: spriteSheet.id,
+        label: spriteSheet.name
+      };
+    })
+  });
+  memo.push({
+    label: l10n("FIELD_SPRITES") + (plugin ? ` - ${plugin}` : ""),
+    options: spriteSheets
+      .filter(s => s.type !== "actor_animated" && s.type !== "actor")
+      .map(spriteSheet => {
+        return {
+          value: spriteSheet.id,
+          label:
+            spriteSheet.name +
+            (spriteSheet.numFrames > 1
+              ? ` (${spriteSheet.numFrames} ${l10n("FIELD_SPRITE_FRAMES")})`
+              : ``)
+        };
+      })
+  });
+};
+
 class SpriteSheetSelect extends Component {
-  render() {
-    const { spriteSheets, id, value, onChange, direction, frame } = this.props;
-    const current = spriteSheets.find(s => s.id === value);
+  shouldComponentUpdate(nextProps) {
+    const { value, direction, frame, spriteSheets } = this.props;
     return (
-      <div className="SpriteSheetSelect">
-        <select id={id} value={value} onChange={onChange}>
-          {!current && <option value="" />}
-          <optgroup label={l10n("FIELD_SPRITE_ANIMATED_ACTORS")}>
-            {spriteSheets.filter(type("actor_animated")).map(spriteSheet => (
-              <option key={spriteSheet.id} value={spriteSheet.id}>
-                {spriteSheet.name}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label={l10n("FIELD_SPRITE_ACTORS")}>
-            {spriteSheets.filter(type("actor")).map(spriteSheet => (
-              <option key={spriteSheet.id} value={spriteSheet.id}>
-                {spriteSheet.name}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label={l10n("FIELD_SPRITES")}>
-            {spriteSheets
-              .filter(s => s.type !== "actor_animated" && s.type !== "actor")
-              .map(spriteSheet => (
-                <option key={spriteSheet.id} value={spriteSheet.id}>
-                  {spriteSheet.name}
-                  {spriteSheet.numFrames > 1 &&
-                    ` (${spriteSheet.numFrames} ${l10n(
-                      "FIELD_SPRITE_FRAMES"
-                    )})`}
-                </option>
-              ))}
-          </optgroup>
-        </select>
-        <div className="SpriteSheetSelect__Preview">
-          {value && (
-            <SpriteSheetCanvas
-              spriteSheetId={value}
-              direction={direction}
-              frame={frame}
-            />
-          )}
+      nextProps.value !== value ||
+      nextProps.direction !== direction ||
+      nextProps.frame !== frame ||
+      spriteSheets !== nextProps.spriteSheets
+    );
+  }
+
+  renderDropdownIndicator = props => {
+    const { value, direction, frame } = this.props;
+    return (
+      <components.DropdownIndicator {...props}>
+        <SpriteSheetCanvas
+          spriteSheetId={value}
+          direction={direction}
+          frame={frame}
+        />
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { direction, frame } = this.props;
+    const { label, value } = props;
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <SpriteSheetCanvas
+            spriteSheetId={value}
+            direction={direction}
+            frame={frame}
+          />
         </div>
-      </div>
+      </components.Option>
+    );
+  };
+
+  render() {
+    const { spriteSheets, id, value, onChange } = this.props;
+
+    const current = spriteSheets.find(s => s.id === value);
+    const groupedSpriteSheets = groupByPlugin(spriteSheets);
+
+    const options = Object.keys(groupedSpriteSheets)
+      .sort()
+      .reduce((memo, plugin) => {
+        buildOptions(memo, plugin, groupedSpriteSheets[plugin]);
+        return memo;
+      }, []);
+
+    return (
+      <Select
+        id={id}
+        className="ReactSelectContainer"
+        classNamePrefix="ReactSelect"
+        options={options}
+        value={{ label: current ? current.name : "", value }}
+        onChange={data => {
+          onChange(data.value);
+        }}
+        components={{
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
+        }}
+      />
     );
   }
 }
@@ -74,9 +139,9 @@ SpriteSheetSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const spriteSheets = getSpriteSheets(state);
   return {
-    spriteSheets:
-      (state.project.present && state.project.present.spriteSheets) || []
+    spriteSheets
   };
 }
 

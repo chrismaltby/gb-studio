@@ -5,6 +5,7 @@ import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
 import { hexDec } from "../helpers/8bit";
+import getTmp from "../helpers/getTmp";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -69,7 +70,7 @@ const makeBuild = ({
       process.arch
     }`;
 
-    const tmpPath = remote.app.getPath("temp");
+    const tmpPath = getTmp();
     const tmpBuildToolsPath = `${tmpPath}/_gbs`;
 
     // Symlink build tools so that path doesn't contain any spaces
@@ -85,8 +86,11 @@ const makeBuild = ({
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
-    env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
 
+    env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
+    env.TMP = getTmp();
+    env.TEMP = getTmp();
+    
     // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
     if(settings.customColorsEnabled) {

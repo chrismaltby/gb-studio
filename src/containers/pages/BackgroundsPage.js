@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
 import * as actions from "../../actions";
+import { getBackgrounds } from "../../reducers/entitiesReducer";
 
 class ImagesPage extends Component {
   constructor(props) {
@@ -65,10 +66,7 @@ ImagesPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files =
-    state.project.present && state.project.present.backgrounds
-      ? state.project.present.backgrounds
-      : [];
+  const files = getBackgrounds(state);
   return {
     files,
     id

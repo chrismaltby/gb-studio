@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import MovementTypeSelect from "../forms/MovementTypeSelect";
@@ -19,6 +20,13 @@ import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 
 class ActorEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      clipboardActor: null
+    };
+  }
+
   onEdit = key => e => {
     const { editActor, sceneId, actor } = this.props;
     editActor(sceneId, actor.id, {
@@ -26,14 +34,17 @@ class ActorEditor extends Component {
     });
   };
 
+  onEditScript = this.onEdit("script");
+
   onCopy = e => {
     const { copyActor, actor } = this.props;
     copyActor(actor);
   };
 
   onPaste = e => {
-    const { clipboardActor, sceneId, pasteActor } = this.props;
-    pasteActor(sceneId, clipboardActor);
+    const { setActorPrefab } = this.props;
+    const { clipboardActor } = this.state;
+    setActorPrefab(clipboardActor);
   };
 
   onRemove = e => {
@@ -41,8 +52,22 @@ class ActorEditor extends Component {
     removeActor(sceneId, actor.id);
   };
 
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "actor") {
+        this.setState({ clipboardActor: clipboardData });
+      } else {
+        this.setState({ clipboardActor: null });
+      }
+    } catch (err) {
+      this.setState({ clipboardActor: null });
+    }
+  };
+
   render() {
-    const { index, actor, scene, spriteSheet, clipboardActor } = this.props;
+    const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
+    const { clipboardActor } = this.state;
 
     if (!actor) {
       return <div />;
@@ -72,12 +97,17 @@ class ActorEditor extends Component {
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
             buttons={
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_ACTOR")}
                 </MenuItem>
@@ -283,7 +313,7 @@ class ActorEditor extends Component {
             value={actor.script}
             type="actor"
             title={l10n("SIDEBAR_ACTOR_SCRIPT")}
-            onChange={this.onEdit("script")}
+            onChange={this.onEditScript}
           />
         </SidebarColumn>
       </Sidebar>
@@ -296,38 +326,32 @@ ActorEditor.propTypes = {
   actor: ActorShape,
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
-  clipboardActor: ActorShape,
   spriteSheet: SpriteShape,
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
-  pasteActor: PropTypes.func.isRequired,
-  selectScene: PropTypes.func.isRequired
+  setActorPrefab: PropTypes.func.isRequired,
+  selectScene: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 ActorEditor.defaultProps = {
   actor: null,
   scene: null,
-  spriteSheet: null,
-  clipboardActor: null
+  spriteSheet: null
 };
 
 function mapStateToProps(state, props) {
-  const { project } = state;
-  const scene =
-    project.present.scenes &&
-    project.present.scenes.find(s => s.id === props.sceneId);
-  const actor = scene && scene.actors.find(a => a.id === props.id);
-  const index = scene && scene.actors.indexOf(actor);
+  const actor = state.entities.present.entities.actors[props.id];
+  const scene = state.entities.present.entities.scenes[props.sceneId];
   const spriteSheet =
-    actor &&
-    project.present.spriteSheets.find(s => s.id === actor.spriteSheetId);
+    state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+  const index = scene.actors.indexOf(props.id);
   return {
     index,
     actor,
     scene,
-    spriteSheet,
-    clipboardActor: state.clipboard.actor
+    spriteSheet
   };
 }
 
@@ -335,8 +359,9 @@ const mapDispatchToProps = {
   editActor: actions.editActor,
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
-  pasteActor: actions.pasteActor,
-  selectScene: actions.selectScene
+  setActorPrefab: actions.setActorPrefab,
+  selectScene: actions.selectScene,
+  selectSidebar: actions.selectSidebar
 };
 
 export default connect(

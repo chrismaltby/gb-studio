@@ -5,6 +5,9 @@
   text-align: center;
   border-radius: 4px;
   transition: background 0.3s ease-in-out;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000;
 }
 
 .Scene:hover {
@@ -40,7 +43,7 @@
 .Scene__Image {
   position: relative;
   background-color: #fff;
-  border: 1px solid var(--sidebar-edge-color);
+  outline: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
   overflow: hidden;
 }
@@ -51,7 +54,7 @@
 }
 
 .Scene--Selected .Scene__Image {
-  box-shadow: 0 0 0px 2px var(--highlight-color);
+  box-shadow: 0 0 0px 3px var(--highlight-color);
 }
 
 .Scene--Selected .Scene__Name {
@@ -61,33 +64,6 @@
 .Scene--Selected .Scene__Info,
 .Scene:hover .Scene__Info {
   opacity: 1;
-}
-
-.Scene__Hover {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  outline: 1px solid red;
-}
-
-.Scene__Trigger {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: rgba(255, 120, 0, 0.5);
-  outline: 1px solid rgba(255, 120, 0, 1);
-}
-
-.Scene__Trigger--Selected {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: rgba(255, 199, 40, 0.8);
-  outline: 1px solid rgba(255, 120, 0, 1);
-}
-
-.Scene__Ghost {
-  opacity: 0.5;
 }
 
 .Scene__Collisions {

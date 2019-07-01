@@ -5,7 +5,6 @@
   bottom: 0px;
   display: flex;
   flex-direction: row;
-  background: red;
 }
 
 .Sidebar__DragHandle {
@@ -51,16 +50,16 @@
   width: 50%;
 }
 
-.Sidebar__Content input[type="checkbox"] {
+/* .Sidebar__Content input[type="checkbox"] {
   height: auto;
-}
+} */
 
-.Sidebar__Content input:focus,
+/* .Sidebar__Content input:focus,
 .Sidebar__Content textarea:focus,
 .Sidebar__Content select:focus {
   outline: none;
   box-shadow: 0px 0px 0px 1px #03a9f4;
-}
+} */
 
 .Sidebar__Content__Save {
   position: absolute;
@@ -134,6 +133,10 @@
 
 .Sidebar--TwoColumn .Sidebar__Content .SidebarColumn:first-child {
   border-left: 0;
+}
+
+.Sidebar--TwoColumn .Sidebar__Content .SidebarColumn:last-child {
+  margin-top: -1px;
 }
 
 .SidebarHeading {

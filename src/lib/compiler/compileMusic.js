@@ -1,6 +1,7 @@
 import childProcess from "child_process";
 import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
+import { assetFilename } from "../helpers/gbstudio";
 
 const filterLogs = str => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -45,9 +46,9 @@ const compileTrack = async (
       ? `"${buildToolsPath}\\mod2gbt\\mod2gbt.exe"`
       : "mod2gbt";
 
-  const modPath = `"${projectRoot}/assets/music/${track.filename}"`;
+  const modPath = assetFilename(projectRoot, "music", track);
   const outputFile = process.platform === "win32" ? "output.c" : "music.c";
-  const args = [modPath, track.dataName, "-c", track.bank];
+  const args = [`"${modPath}"`, track.dataName, "-c", track.bank];
 
   const options = {
     cwd: buildRoot,

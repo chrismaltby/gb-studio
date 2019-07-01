@@ -1,3 +1,5 @@
+import { assetFilename } from "../helpers/gbstudio";
+
 const ggbgfx = require("./ggbgfx");
 
 const MAX_SIZE = 9999999999;
@@ -16,7 +18,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   for (let i = 0; i < imgs.length; i++) {
     const img = imgs[i];
     const tilesetLookup = await ggbgfx.imageToTilesetLookup(
-      `${projectPath}/assets/backgrounds/${img.filename}`
+      assetFilename(projectPath, "backgrounds", img)
     );
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
@@ -96,7 +98,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
   for (let i = 0; i < imgs.length; i++) {
     const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
-      `${projectPath}/assets/backgrounds/${imgs[i].filename}`,
+      assetFilename(projectPath, "backgrounds", imgs[i]),
       `${tmpPath}/tileset_${tilesetIndexes[i]}.png`
     );
     output.tilemaps[imgs[i].id] = tilemap;

@@ -10,3 +10,26 @@
 .Connections__Destination {
   pointer-events: all;
 }
+
+.Connections--Dragging .Connections__PlayerStart,
+.Connections--Dragging .Connections__Destination {
+  pointer-events: none;
+}
+
+.Connections__PlayerStart rect {
+  fill: rgb(255, 87, 34);
+}
+
+.Connections__Destination rect {
+  fill: rgb(0, 188, 212);
+}
+
+.Connections__PlayerStart:hover rect {
+  stroke: rgb(255, 87, 34);
+  stroke-width: 2px;
+}
+
+.Connections__Destination:hover rect {
+  stroke: rgb(0, 188, 212);
+  stroke-width: 2px;
+}

@@ -1,27 +1,30 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { clipboard } from "electron";
 import { connect } from "react-redux";
-import cx from "classnames";
 import * as actions from "../../actions";
-import { TriggerIcon } from "../library/Icons";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
-import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import { MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import {
-  SceneShape,
-  ActorShape,
-  TriggerShape
-} from "../../reducers/stateShape";
+import { SceneShape } from "../../reducers/stateShape";
+import SceneNavigation from "./SceneNavigation";
 
 class SceneEditor extends Component {
+  constructor() {
+    super();
+    this.state = {
+      clipboardActor: null,
+      clipboardScene: null,
+      clipboardTrigger: null
+    };
+  }
+
   onEdit = key => e => {
     const { editScene, scene } = this.props;
     editScene(scene.id, {
@@ -35,18 +38,58 @@ class SceneEditor extends Component {
   };
 
   onPaste = e => {
-    const { pasteScene, clipboardScene } = this.props;
-    pasteScene(clipboardScene);
+    const { setScenePrefab } = this.props;
+    const { clipboardScene } = this.state;
+    setScenePrefab(clipboardScene);
   };
 
   onPasteActor = e => {
-    const { pasteActor, scene, clipboardActor } = this.props;
-    pasteActor(scene.id, clipboardActor);
+    const { setActorPrefab } = this.props;
+    const { clipboardActor } = this.state;
+    setActorPrefab(clipboardActor);
   };
 
   onPasteTrigger = e => {
-    const { pasteTrigger, scene, clipboardTrigger } = this.props;
-    pasteTrigger(scene.id, clipboardTrigger);
+    const { setTriggerPrefab } = this.props;
+    const { clipboardTrigger } = this.state;
+    setTriggerPrefab(clipboardTrigger);
+  };
+
+  readClipboard = e => {
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__type === "actor") {
+        this.setState({
+          clipboardActor: clipboardData,
+          clipboardTrigger: null,
+          clipboardScene: null
+        });
+      } else if (clipboardData.__type === "trigger") {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: clipboardData,
+          clipboardScene: null
+        });
+      } else if (clipboardData.__type === "scene") {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: null,
+          clipboardScene: clipboardData
+        });
+      } else {
+        this.setState({
+          clipboardActor: null,
+          clipboardTrigger: null,
+          clipboardScene: null
+        });
+      }
+    } catch (err) {
+      this.setState({
+        clipboardActor: null,
+        clipboardTrigger: null,
+        clipboardScene: null
+      });
+    }
   };
 
   onRemove = e => {
@@ -55,25 +98,26 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const {
-      scene,
-      sceneIndex,
-      clipboardScene,
-      clipboardActor,
-      clipboardTrigger
-    } = this.props;
+    const { scene, sceneIndex, selectSidebar } = this.props;
 
     if (!scene) {
       return <div />;
     }
 
+    const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
+
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("SCENE")}
             buttons={
-              <DropdownButton small transparent right>
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_SCENE")}
                 </MenuItem>
@@ -148,46 +192,7 @@ class SceneEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          {(scene.actors.length > 0 || scene.triggers.length > 0) && (
-            <div>
-              <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-              <ul>
-                {scene.actors.map((actor, index) => (
-                  <li
-                    key={actor.id}
-                    onClick={() => {
-                      const { selectActor } = this.props;
-                      selectActor(scene.id, actor.id);
-                    }}
-                    className={cx({ Navigation__Error: index >= MAX_ACTORS })}
-                  >
-                    <div className="EditorSidebar__Icon">
-                      <SpriteSheetCanvas
-                        spriteSheetId={actor.spriteSheetId}
-                        direction={actor.direction}
-                      />
-                    </div>
-                    {actor.name || `Actor ${index + 1}`}
-                  </li>
-                ))}
-                {scene.triggers.map((trigger, index) => (
-                  <li
-                    key={trigger.id}
-                    onClick={() => {
-                      const { selectTrigger } = this.props;
-                      selectTrigger(scene.id, trigger.id);
-                    }}
-                    className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
-                  >
-                    <div className="EditorSidebar__Icon">
-                      <TriggerIcon />
-                    </div>
-                    {trigger.name || `Trigger ${index + 1}`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <SceneNavigation sceneId={scene.id} />
         </SidebarColumn>
 
         <SidebarColumn>
@@ -206,37 +211,25 @@ class SceneEditor extends Component {
 SceneEditor.propTypes = {
   scene: SceneShape,
   sceneIndex: PropTypes.number.isRequired,
-  clipboardScene: SceneShape,
-  clipboardActor: ActorShape,
-  clipboardTrigger: TriggerShape,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
-  selectActor: PropTypes.func.isRequired,
-  selectTrigger: PropTypes.func.isRequired,
   copyScene: PropTypes.func.isRequired,
-  pasteScene: PropTypes.func.isRequired,
-  pasteActor: PropTypes.func.isRequired,
-  pasteTrigger: PropTypes.func.isRequired
+  setScenePrefab: PropTypes.func.isRequired,
+  setActorPrefab: PropTypes.func.isRequired,
+  setTriggerPrefab: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 SceneEditor.defaultProps = {
-  scene: null,
-  clipboardScene: null,
-  clipboardActor: null,
-  clipboardTrigger: null
+  scene: null
 };
 
 function mapStateToProps(state, props) {
-  const hasScenes = state.project.present && state.project.present.scenes;
-  const sceneIndex = hasScenes
-    ? state.project.present.scenes.findIndex(scene => scene.id === props.id)
-    : -1;
+  const scene = state.entities.present.entities.scenes[props.id];
+  const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
   return {
     sceneIndex,
-    scene: sceneIndex !== -1 && state.project.present.scenes[sceneIndex],
-    clipboardScene: state.clipboard.scene,
-    clipboardActor: state.clipboard.actor,
-    clipboardTrigger: state.clipboard.trigger
+    scene
   };
 }
 
@@ -246,9 +239,10 @@ const mapDispatchToProps = {
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
   copyScene: actions.copyScene,
-  pasteScene: actions.pasteScene,
-  pasteActor: actions.pasteActor,
-  pasteTrigger: actions.pasteTrigger
+  setScenePrefab: actions.setScenePrefab,
+  setActorPrefab: actions.setActorPrefab,
+  setTriggerPrefab: actions.setTriggerPrefab,
+  selectSidebar: actions.selectSidebar
 };
 
 export default connect(

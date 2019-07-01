@@ -1,17 +1,24 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Select, { components } from "react-select";
 import * as actions from "../../actions";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import Button from "../library/Button";
 import { MusicShape } from "../../reducers/stateShape";
+import { groupBy } from "../../lib/helpers/array";
+import { assetFilename } from "../../lib/helpers/gbstudio";
+import { getMusic } from "../../reducers/entitiesReducer";
+
+const groupByPlugin = groupBy("plugin");
 
 class MusicSelect extends Component {
-  onPlay = () => {
+  onPlay = id => {
     const { projectRoot, music, value, playMusic } = this.props;
-    const file = music.find(track => track.id === value) || music[0];
+    const playId = id || value;
+    const file = music.find(track => track.id === playId) || music[0];
     if (file) {
-      const filename = `${projectRoot}/assets/music/${file.filename}`;
+      const filename = assetFilename(projectRoot, "music", file);
       playMusic(filename);
     }
   };
@@ -21,35 +28,107 @@ class MusicSelect extends Component {
     pauseMusic();
   };
 
-  render() {
-    const { music, playing, id, value, onChange } = this.props;
-    const current = music.find(m => m.id === value);
+  renderDropdownIndicator = props => {
+    const { playing } = this.props;
     return (
-      <div className="MusicSelect">
-        <select id={id} value={value} onChange={onChange}>
-          {!current && <option value="" />}
-          {music.map(track => (
-            <option key={track.id} value={track.id}>
-              {track.name}
-            </option>
-          ))}
-        </select>
-        <div className="MusicSelect__Preview">
-          {value && current && (
-            <div>
-              {playing ? (
-                <Button small transparent onClick={this.onPause}>
-                  <PauseIcon />
-                </Button>
-              ) : (
-                <Button small transparent onClick={this.onPlay}>
-                  <PlayIcon />
-                </Button>
-              )}
-            </div>
-          )}
+      <components.DropdownIndicator {...props}>
+        {playing ? (
+          <Button
+            small
+            transparent
+            onMouseDown={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPause();
+            }}
+          >
+            <PauseIcon />
+          </Button>
+        ) : (
+          <Button
+            small
+            transparent
+            onMouseDown={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPlay();
+            }}
+          >
+            <PlayIcon />
+          </Button>
+        )}
+      </components.DropdownIndicator>
+    );
+  };
+
+  renderOption = props => {
+    const { value, label } = props;
+    return (
+      <components.Option {...props}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flexGrow: 1 }}>{label}</div>
+          <Button
+            small
+            transparent
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.onPlay(value);
+            }}
+          >
+            <PlayIcon />
+          </Button>
         </div>
-      </div>
+      </components.Option>
+    );
+  };
+
+  render() {
+    const { music, id, value, onChange } = this.props;
+    const current = music.find(m => m.id === value);
+    const groupedMusic = groupByPlugin(music);
+    const options = Object.keys(groupedMusic)
+      .sort()
+      .reduce((memo, plugin) => {
+        if (!plugin) {
+          return [].concat(
+            memo,
+            groupedMusic[plugin].map(track => {
+              return {
+                label: track.name,
+                value: track.id
+              };
+            })
+          );
+        }
+        memo.push({
+          label: plugin,
+          options: groupedMusic[plugin].map(track => {
+            return {
+              label: track.name,
+              value: track.id
+            };
+          })
+        });
+        return memo;
+      }, []);
+
+    return (
+      <Select
+        id={id}
+        className="ReactSelectContainer"
+        classNamePrefix="ReactSelect"
+        options={options}
+        value={{ label: current ? current.name : "", value }}
+        onChange={data => {
+          this.onPause();
+          onChange(data.value);
+        }}
+        components={{
+          DropdownIndicator: this.renderDropdownIndicator,
+          Option: this.renderOption
+        }}
+      />
     );
   }
 }
@@ -72,8 +151,8 @@ MusicSelect.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    music: (state.project.present && state.project.present.music) || [],
-    projectRoot: state.document && state.document.root,
+    music: getMusic(state),
+    projectRoot: state.document.root,
     playing: state.music.playing
   };
 }

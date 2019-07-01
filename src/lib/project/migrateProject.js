@@ -1,17 +1,24 @@
 import { indexBy } from "../helpers/array";
+import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 
 const indexById = indexBy("id");
 
+export const LATEST_PROJECT_VERSION = "1.2.0";
+
 const migrateProject = project => {
   let data = { ...project };
-  let version = project._version || "1";
+  let version = project._version || "1.0.0";
 
-  // Migrate from 1 to 1.1.0
-  if (version === "1") {
+  // Migrate from 1.0.0 to 1.1.0
+  if (version === "1.0.0") {
     data = migrateFrom1To110Scenes(data);
     data = migrateFrom1To110Actors(data);
     data = migrateFrom1To110Collisions(data);
     version = "1.1.0";
+  }
+  if (version === "1.1.0") {
+    data = migrateFrom110To120Events(data);
+    version = "1.2.0";
   }
 
   data._version = version;
@@ -119,6 +126,85 @@ const migrateFrom1To110Scenes = data => {
       }
       return scene;
     })
+  };
+};
+
+/*
+ * Version 1.2.0 allows events to have multiple named child paths rather
+ * than just true/false allowing custom events to be created with more
+ * than two conditional paths. Also all old math events have been deprectated
+ * since 1.1.0 and will now be migrated to using the variable math event.
+ */
+export const migrateFrom110To120Event = event => {
+  let newEvent = event;
+  const operationLookup = {
+    EVENT_MATH_ADD: "add",
+    EVENT_MATH_SUB: "sub",
+    EVENT_MATH_MUL: "mul",
+    EVENT_MATH_DIV: "div",
+    EVENT_MATH_MOD: "mod",
+    EVENT_MATH_ADD_VALUE: "add",
+    EVENT_MATH_SUB_VALUE: "sub",
+    EVENT_MATH_MUL_VALUE: "mul",
+    EVENT_MATH_DIV_VALUE: "div",
+    EVENT_MATH_MOD_VALUE: "mod",
+    EVENT_COPY_VALUE: "set",
+    EVENT_SET_RANDOM_VALUE: "set"
+  };
+  const otherLookup = {
+    EVENT_MATH_ADD: "val",
+    EVENT_MATH_SUB: "val",
+    EVENT_MATH_MUL: "val",
+    EVENT_MATH_DIV: "val",
+    EVENT_MATH_MOD: "val",
+    EVENT_MATH_ADD_VALUE: "var",
+    EVENT_MATH_SUB_VALUE: "var",
+    EVENT_MATH_MUL_VALUE: "var",
+    EVENT_MATH_DIV_VALUE: "var",
+    EVENT_MATH_MOD_VALUE: "var",
+    EVENT_COPY_VALUE: "var",
+    EVENT_SET_RANDOM_VALUE: "rnd"
+  };
+  const oldMathEvents = Object.keys(operationLookup);
+  if (oldMathEvents.indexOf(newEvent.command) > -1) {
+    newEvent = {
+      id: newEvent.id,
+      command: "EVENT_VARIABLE_MATH",
+      args: {
+        vectorX: newEvent.args.variable || newEvent.args.vectorX,
+        operation: operationLookup[newEvent.command],
+        other: otherLookup[newEvent.command],
+        vectorY: newEvent.args.variable || newEvent.args.vectorY,
+        value: newEvent.args.value || 0,
+        minValue: 0,
+        maxValue:
+          newEvent.args.maxValue !== undefined ? newEvent.args.maxValue : 255
+      }
+    };
+  }
+  if (newEvent.true || newEvent.false) {
+    return {
+      ...newEvent,
+      children: Object.assign(
+        {},
+        newEvent.true && {
+          true: mapEvents(newEvent.true, migrateFrom110To120Event)
+        },
+        newEvent.false && {
+          false: mapEvents(newEvent.false, migrateFrom110To120Event)
+        }
+      ),
+      true: undefined,
+      false: undefined
+    };
+  }
+  return newEvent;
+};
+
+const migrateFrom110To120Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom110To120Event)
   };
 };
 

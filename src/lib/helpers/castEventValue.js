@@ -7,11 +7,20 @@ export default event => {
       value = Math.round(value);
     }
     if (value && typeof el.min !== "undefined" && value < el.min) {
-      value = parseFloat(el.min);
+      const min = parseFloat(el.min);
+      if (!Number.isNaN(min)) {
+        value = min;
+      }
     }
+
     if (value && typeof el.max !== "undefined" && value > el.max) {
-      value = parseFloat(el.max);
+      // console.log(el.max, typeof el.max);
+      const max = parseFloat(el.max);
+      if (!Number.isNaN(max)) {
+        value = max;
+      }
     }
+
     if (Number.isNaN(value)) {
       value = null;
     }

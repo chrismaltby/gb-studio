@@ -5,6 +5,7 @@ import * as actions from "../../actions";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
+import { assetFilename } from "../../lib/helpers/gbstudio";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -23,7 +24,7 @@ class MusicViewer extends Component {
   onPlay = () => {
     const { projectRoot, file, playMusic } = this.props;
     if (file) {
-      const filename = `${projectRoot}/assets/music/${file.filename}`;
+      const filename = assetFilename(projectRoot, "music", file);
       playMusic(filename);
     }
   };
@@ -93,10 +94,11 @@ MusicViewer.defaultProps = {
 };
 
 function mapStateToProps(state) {
+  const { filesSidebarWidth: sidebarWidth } = state.settings;
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,
-    sidebarWidth: state.project.present.settings.sidebarWidth
+    sidebarWidth
   };
 }
 

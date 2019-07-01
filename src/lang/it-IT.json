@@ -221,6 +221,7 @@
   "EVENT_REMOVE_INPUT_SCRIPT": "Input Joypad: Rimuovi Script",
   "EVENT_ACTOR_SET_FRAME": "Attore: Imposta Frame di Animazione",
   "EVENT_VARIABLE_MATH": "Variabile: Funzioni Matematiche",
+  "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Attore: Imposta il Frame di Animazione Utilizzando una Variabile",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -326,9 +327,13 @@
 
   "// 15": "Dialogs ------------------------------------------------------",
 
+  "DIALOG_SAVE_CHANGES": "Vuoi salvare le modifiche fatte a \"{name}\"?",
+  "DIALOG_SAVE_WARNING": "Le tue modifiche verranno perse se non vengono salvate.",
   "DIALOG_DOWNLOAD": "Download",
   "DIALOG_SKIP_VERSION": "Salta questa versione",
   "DIALOG_REMIND_LATER": "Ricordamelo più tardi",
+  "DIALOG_SAVE": "Salva",
+  "DIALOG_DONT_SAVE": "Non Salvare",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Annulla",
   "DIALOG_UPDATE_AVAILABLE": "Aggiornamento disponibile",

@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
+import Select from "react-select";
 import l10n from "../../lib/helpers/l10n";
 
 export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
@@ -208,7 +209,14 @@ export class SelectRenamable extends Component {
   };
 
   render() {
-    const { editPlaceholder, editDefaultValue, onRename, ...rest } = this.props;
+    const {
+      editPlaceholder,
+      editDefaultValue,
+      id,
+      value,
+      onChange,
+      options
+    } = this.props;
     const { edit, editValue } = this.state;
 
     return (
@@ -225,7 +233,14 @@ export class SelectRenamable extends Component {
             onBlur={this.onSave}
           />
         ) : (
-          <select {...rest} />
+          <Select
+            id={id}
+            className="ReactSelectContainer"
+            classNamePrefix="ReactSelect"
+            value={value}
+            onChange={onChange}
+            options={options}
+          />
         )}
         {edit ? (
           <div
@@ -250,12 +265,18 @@ export class SelectRenamable extends Component {
 }
 
 SelectRenamable.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.shape(),
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   editDefaultValue: PropTypes.string,
   editPlaceholder: PropTypes.string,
   onRename: PropTypes.func.isRequired
 };
 
 SelectRenamable.defaultProps = {
+  id: undefined,
+  value: undefined,
   editDefaultValue: "",
   editPlaceholder: ""
 };

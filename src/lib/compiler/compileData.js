@@ -11,12 +11,13 @@ import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import { hi, lo, decHex16, decHex } from "../helpers/8bit";
-import compileEntityEvents, { CMD_LOOKUP } from "./compileEntityEvents";
+import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
   EVENT_CHOICE,
-  EVENT_SET_INPUT_SCRIPT
+  EVENT_SET_INPUT_SCRIPT,
+  EVENT_END
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS } from "../../consts";
 import {
@@ -31,6 +32,7 @@ import {
   actorFramesPerDir
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
+import { assetFilename } from "../helpers/gbstudio";
 
 const indexById = indexBy("id");
 
@@ -80,23 +82,8 @@ const compile = async (
     bankOffset
   });
 
-  // Strings
-  const stringPtrs = precompiled.strings.map(string => {
-    const ascii = [];
-    // Number of lines in string
-    ascii.push(textNumLines(string));
-    for (let i = 0; i < string.length; i++) {
-      const char = string.charCodeAt(i);
-      if (char < 256) {
-        ascii.push(string.charCodeAt(i));
-      }
-    }
-    ascii.push(0);
-    return banked.push(ascii);
-  });
-
   // Add event data
-  const eventPtrs = precompiled.sceneData.map(scene => {
+  const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const subScripts = {};
     const bankEntitySubScripts = entityType => (entity, entityIndex) => {
       walkEventsDepthFirst(entity.script, cmd => {
@@ -104,6 +91,7 @@ const compile = async (
           subScripts[cmd.id] = banked.push(
             compileEntityEvents(cmd.true, {
               scene,
+              sceneIndex,
               scenes: precompiled.sceneData,
               music: precompiled.usedMusic,
               sprites: precompiled.usedSprites,
@@ -112,7 +100,10 @@ const compile = async (
               variables: precompiled.variables,
               subScripts,
               entityType,
-              entityIndex
+              entityIndex,
+              entity,
+              banked,
+              warnings
             })
           );
         }
@@ -127,6 +118,7 @@ const compile = async (
       return banked.push(
         compileEntityEvents(entity.script, {
           scene,
+          sceneIndex,
           scenes: precompiled.sceneData,
           music: precompiled.usedMusic,
           sprites: precompiled.usedSprites,
@@ -135,7 +127,10 @@ const compile = async (
           variables: precompiled.variables,
           subScripts,
           entityType,
-          entityIndex
+          entityIndex,
+          entity,
+          banked,
+          warnings
         })
       );
     };
@@ -144,6 +139,21 @@ const compile = async (
       actors: scene.actors.map(bankEntityEvents("actor")),
       triggers: scene.triggers.map(bankEntityEvents("trigger"))
     };
+  });
+
+  // Strings
+  const stringPtrs = precompiled.strings.map(string => {
+    const ascii = [];
+    // Number of lines in string
+    ascii.push(textNumLines(string));
+    for (let i = 0; i < string.length; i++) {
+      const char = string.charCodeAt(i);
+      if (char < 256) {
+        ascii.push(string.charCodeAt(i));
+      }
+    }
+    ascii.push(0);
+    return banked.push(ascii);
   });
 
   // Add tileset data
@@ -597,7 +607,7 @@ export const precompileSprites = async (
   const spriteData = await Promise.all(
     usedSprites.map(async spriteSheet => {
       const data = await ggbgfx.imageToSpriteIntArray(
-        `${projectRoot}/assets/sprites/${spriteSheet.filename}`
+        assetFilename(projectRoot, "sprites", spriteSheet)
       );
       const size = data.length;
       const frames = size / 64;
@@ -703,7 +713,7 @@ export const precompileScenes = (
         return (
           trigger.script &&
           trigger.script.length >= 1 &&
-          trigger.script[0].command !== CMD_LOOKUP.END
+          trigger.script[0].command !== EVENT_END
         );
       }),
       actorsData: [],

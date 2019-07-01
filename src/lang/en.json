@@ -13,7 +13,7 @@
   "NAV_BACKGROUNDS": "Backgrounds",
   "NAV_UI_ELEMENTS": "UI Elements",
   "NAV_MUSIC": "Music",
-  "NAV_SCRIPT_REVIEW": "Script Review",
+  "NAV_DIALOGUE_REVIEW": "Dialogue Review",
   "NAV_BUILD_AND_RUN": "Build & Run",
 
   "// 3": "Toolbar --------------------------------------------------",
@@ -192,6 +192,8 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop Forever",
   "EVENT_GROUP": "Event Group",
+  "EVENT_DEFINE_LABEL": "Label: Define",
+  "EVENT_GOTO_LABEL": "Label: Goto",
   "EVENT_TEXT": "Text: Display Dialogue",
   "EVENT_CAMERA_MOVE_TO": "Camera: Move To",
   "EVENT_CAMERA_LOCK": "Camera: Lock To Player",
@@ -232,6 +234,8 @@
   "EVENT_ACTOR_SET_FRAME": "Actor: Set Animation Frame",
   "EVENT_VARIABLE_MATH": "Variable: Math Functions",
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Set Animation Frame Using Variable",
+  "EVENT_CODE": "Code: Custom Script",
+  "EVENT_NOTES": "Notes",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -254,7 +258,7 @@
   "MENU_BACKGROUNDS": "Backgrounds",
   "MENU_UI_ELEMENTS": "UI Elements",
   "MENU_MUSIC": "Music",
-  "MENU_SCRIPT_REVIEW": "Script Review",
+  "MENU_DIALOGUE_REVIEW": "Dialogue Review",
   "MENU_BUILD_AND_RUN": "Build && Run",
   "MENU_THEME": "Theme",
   "MENU_THEME_DEFAULT": "System Default",
@@ -273,6 +277,8 @@
   "MENU_CART_TYPE": "Cartridge Type",
   "MENU_COPY_EVENT": "Copy Event",
   "MENU_RENAME_EVENT": "Rename Event",
+  "MENU_DISABLE_EVENT": "Disable Event",
+  "MENU_REENABLE_EVENT": "Reenable Event",
   "MENU_PASTE_VALUES": "Paste Values",
   "MENU_PASTE_EVENT_BEFORE": "Paste Event Before",
   "MENU_PASTE_EVENT": "Paste Event",
@@ -294,6 +300,7 @@
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
+  "MENU_PLUGINS": "Plugins",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -327,13 +334,13 @@
   "SPLASH_CLEAR_RECENT": "Clear Recent",
   "SPLASH_NO_RECENT_PROJECTS": "No projects have been opened recently.",
 
-  "// 14": "Script Review ------------------------------------------------",
+  "// 14": "Dialogue Review ------------------------------------------------",
 
-  "SCRIPT_REVIEW": "Script Review",
-  "SCRIPT_LINE": "Line",
-  "SCRIPT_LINES": "Lines",
-  "SCRIPT_WORD": "Word",
-  "SCRIPT_WORDS": "Words",
+  "DIALOGUE_REVIEW": "Dialogue Review",
+  "DIALOGUE_LINE": "Line",
+  "DIALOGUE_LINES": "Lines",
+  "DIALOGUE_WORD": "Word",
+  "DIALOGUE_WORDS": "Words",
 
   "// 15": "Dialogs ------------------------------------------------------",
 
@@ -351,5 +358,11 @@
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
   "DIALOG_UP_TO_DATE": "You’re up-to-date!",
   "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} is currently the newest version available.",
-  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Unable to check latest version at the moment"
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "Unable to check latest version at the moment",
+  "DIALOG_PROJECT_NEED_MIGRATION": "GB Studio Project Requires Migrating",
+  "DIALOG_MIGRATION_DESCRIPTION": "Your project was created with version {currentVersion} and needs to be migrated to version {version}. This may prevent your project being opened in older versions of GB Studio.\n\nIt is recommended to back up your project before continuing.",
+  "DIALOG_MIGRATE": "Migrate to {version}",
+  "DIALOG_FUTURE": "GB Studio Project Not Supported",
+  "DIALOG_FUTURE_DESCRIPTION": "This project file was created with version {currentVersion} which is newer than this version of GB Studio supports. Maximum supported is {version}.\n\nYou may need to update GB Studio.",
+  "DIALOG_OPEN_ANYWAY": "Open Anyway"
 }

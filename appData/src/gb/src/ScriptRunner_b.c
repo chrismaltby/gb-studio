@@ -396,7 +396,7 @@ void Script_HideSprites_b()
  */
 void Script_ActorShow_b()
 {
-  actors[script_cmd_args[0]].enabled = TRUE;
+  actors[script_actor].enabled = TRUE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -408,7 +408,7 @@ void Script_ActorShow_b()
  */
 void Script_ActorHide_b()
 {
-  actors[script_cmd_args[0]].enabled = FALSE;
+  actors[script_actor].enabled = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -423,7 +423,7 @@ void Script_ActorHide_b()
 void Script_ActorSetEmote_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  SceneSetEmote(script_cmd_args[0], script_cmd_args[1]);
+  SceneSetEmote(script_actor, script_cmd_args[0]);
   script_action_complete = FALSE;
 }
 
@@ -735,10 +735,10 @@ void Script_ActorPush_b()
 void Script_IfActorPos_b()
 {
   if (
-      ((script_cmd_args[1] << 3) + 8 == actors[script_cmd_args[0]].pos.x) &&
-      ((script_cmd_args[2] << 3) + 8 == actors[script_cmd_args[0]].pos.y))
+      ((script_cmd_args[0] << 3) + 8 == actors[script_actor].pos.x) &&
+      ((script_cmd_args[1] << 3) + 8 == actors[script_actor].pos.y))
   { // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[3] * 256) + script_cmd_args[4];
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
   else
   { // False path, skip to next command
@@ -1388,6 +1388,7 @@ void Script_ActorInvoke_b()
 void Script_StackPush_b()
 {
   script_stack[script_stack_ptr] = script_ptr;
+  script_start_stack[script_stack_ptr] = script_start_ptr; 
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
   script_stack_ptr++;
 }
@@ -1401,6 +1402,7 @@ void Script_StackPop_b()
 {
   script_stack_ptr--;
   script_ptr = script_stack[script_stack_ptr];
+  script_start_ptr = script_start_stack[script_stack_ptr];
   script_continue = TRUE;
 }
 

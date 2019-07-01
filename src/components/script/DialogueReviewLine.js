@@ -6,16 +6,13 @@ import trimlines, { textNumLines } from "../../lib/helpers/trimlines";
 import l10n from "../../lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
 
-const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
+const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => (
   <div>
-    {Array.isArray(scriptLine.line.args.text) ? (
-      scriptLine.line.args.text.map((text, textIndex) => (
+    {Array.isArray(dialogueLine.line.args.text) ? (
+      dialogueLine.line.args.text.map((text, textIndex) => (
         <div key={textIndex}>
           <p style={{ color: "#999" }}>
-            {scriptLine.actor.name
-              ? scriptLine.actor.name
-              : `Actor ${scriptLine.actorIndex + 1}`}{" "}
-            — {scriptLine.scene.name}{" "}
+            {dialogueLine.entityName} — {dialogueLine.sceneName}{" "}
             {(text || "")
               .split("\n")
               .map(
@@ -33,7 +30,7 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
             placeholder={l10n("FIELD_TEXT_PLACEHOLDER")}
             onChange={e => {
               onChange(
-                scriptLine.line.args.text.map((value, valueIndex) => {
+                dialogueLine.line.args.text.map((value, valueIndex) => {
                   if (valueIndex === textIndex) {
                     return trimlines(e.currentTarget.value);
                   }
@@ -47,11 +44,8 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
     ) : (
       <div>
         <p style={{ color: "#999" }}>
-          {scriptLine.actor.name
-            ? scriptLine.actor.name
-            : `Actor ${scriptLine.actorIndex + 1}`}{" "}
-          — {scriptLine.scene.name}{" "}
-          {(scriptLine.line.args.text || "")
+          {dialogueLine.entityName} — {dialogueLine.sceneName}{" "}
+          {(dialogueLine.line.args.text || "")
             .split("\n")
             .map(
               (line, index, lines) => `${line.length}/${index === 2 ? 16 : 18}`
@@ -62,8 +56,8 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
           fixedSize
           large
           borderless
-          rows={textNumLines(scriptLine.line.args.text)}
-          value={scriptLine.line.args.text}
+          rows={textNumLines(dialogueLine.line.args.text)}
+          value={dialogueLine.line.args.text}
           placeholder={l10n("FIELD_TEXT_PLACEHOLDER")}
           onChange={e => {
             onChange(trimlines(e.currentTarget.value));
@@ -74,14 +68,15 @@ const ScriptReviewLine = ({ scriptLine, onChange, ...props }) => (
   </div>
 );
 
-ScriptReviewLine.propTypes = {
-  scriptLine: PropTypes.shape({
+DialogueReviewLine.propTypes = {
+  dialogueLine: PropTypes.shape({
     scene: SceneShape,
     actor: ActorShape,
-    actorIndex: PropTypes.number,
+    entityName: PropTypes.string,
+    entityIndex: PropTypes.number,
     line: EventShape
   }).isRequired,
   onChange: PropTypes.func.isRequired
 };
 
-export default ScriptReviewLine;
+export default DialogueReviewLine;

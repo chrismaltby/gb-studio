@@ -4,19 +4,26 @@ import rootReducer from "../reducers/rootReducer";
 import electronMiddleware from "../middleware/electron";
 import buildGameMiddleware from "../middleware/buildGame";
 import musicMiddleware from "../middleware/music";
+import loggerMiddleware from "../middleware/logger";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const DEBUG = false;
+
+let middleware = [
+  thunk,
+  electronMiddleware,
+  buildGameMiddleware,
+  musicMiddleware
+];
+
+if (process.env.NODE_ENV !== "production" && DEBUG) {
+  middleware = [...middleware, loggerMiddleware];
+}
 
 export default function configureStore() {
   return createStore(
     rootReducer,
-    composeEnhancers(
-      applyMiddleware(
-        thunk,
-        electronMiddleware,
-        buildGameMiddleware,
-        musicMiddleware
-      )
-    )
+    composeEnhancers(applyMiddleware(...middleware))
   );
 }

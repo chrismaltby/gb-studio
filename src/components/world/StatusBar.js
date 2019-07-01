@@ -52,7 +52,15 @@ StatusBar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  return state.navigation.status;
+  const { sceneId, actorId, x, y } = state.editor.hover;
+  const scene = state.entities.present.entities.scenes[sceneId];
+  const actor = state.entities.present.entities.actors[actorId];
+  return {
+    sceneName: scene && scene.name,
+    actor: actor && actor.name,
+    x,
+    y
+  };
 }
 
 export default connect(mapStateToProps)(StatusBar);

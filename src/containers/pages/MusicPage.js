@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import MusicViewer from "../../components/assets/MusicViewer";
 import * as actions from "../../actions";
+import { getMusic } from "../../reducers/entitiesReducer";
 
 class MusicPage extends Component {
   constructor(props) {
@@ -65,10 +66,7 @@ MusicPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files =
-    state.project.present && state.project.present.music
-      ? state.project.present.music
-      : [];
+  const files = getMusic(state);
   return {
     files,
     id

@@ -1,8 +1,21 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
+import cx from "classnames";
+import { connect } from "react-redux";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
 import { walkEvents } from "../../lib/helpers/eventSystem";
-import { SceneShape, SettingsShape } from "../../reducers/stateShape";
+import {
+  SceneShape,
+  ActorShape,
+  TriggerShape
+} from "../../reducers/stateShape";
+import * as actions from "../../actions";
+import {
+  getScenes,
+  getScenesLookup,
+  getTriggersLookup,
+  getActorsLookup
+} from "../../reducers/entitiesReducer";
 
 const scriptMapTransition = script => {
   const sceneTransitions = [];
@@ -19,9 +32,6 @@ const calculateTransitionCoords = ({
   event,
   scene,
   destScene,
-  dragScene,
-  dragX,
-  dragY,
   entityIndex,
   entityId,
   entityX = 0,
@@ -29,10 +39,10 @@ const calculateTransitionCoords = ({
   entityWidth = 0,
   entityHeight = 0
 }) => {
-  const startX = scene.x + (dragScene === scene.id ? dragX : 0);
-  const startY = scene.y + (dragScene === scene.id ? dragY : 0);
-  const destX = destScene.x + (dragScene === destScene.id ? dragX : 0);
-  const destY = destScene.y + (dragScene === destScene.id ? dragY : 0);
+  const startX = scene.x;
+  const startY = scene.y;
+  const destX = destScene.x;
+  const destY = destScene.y;
 
   const x1 = startX + (entityX + entityWidth / 2) * 8;
   const x2 = destX + (event.args.x || 0) * 8 + 5;
@@ -56,25 +66,108 @@ const calculateTransitionCoords = ({
   };
 };
 
-const Connections = React.memo(
-  ({
-    width,
-    height,
-    scenes,
-    settings,
-    zoomRatio,
-    dragScene,
-    dragX,
-    dragY,
-    onDragPlayerStart,
-    onDragDestinationStart
-  }) => {
+class Connections extends Component {
+  onDragPlayerStart = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    const { dragPlayerStart } = this.props;
+    dragPlayerStart();
+    window.addEventListener("mouseup", this.onDragPlayerStop);
+  };
+
+  onDragPlayerStop = e => {
+    const { dragPlayerStop } = this.props;
+    dragPlayerStop();
+    window.removeEventListener("mouseup", this.onDragPlayerStop);
+  };
+
+  onDragDestinationStart = (eventId, sceneId, selectionType, id) => e => {
+    e.stopPropagation();
+    e.preventDefault();
+    const { dragDestinationStart } = this.props;
+    dragDestinationStart(eventId, sceneId, selectionType, id);
+    window.addEventListener("mouseup", this.onDragDestinationStop);
+  };
+
+  onDragDestinationStop = e => {
+    const { dragDestinationStop } = this.props;
+    dragDestinationStop();
+    window.removeEventListener("mouseup", this.onDragDestinationStop);
+  };
+
+  renderConnection = ({ x1, y1, x2, y2, qx, qy, eventId }) => (
+    <g key={eventId}>
+      <path
+        d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
+        e="M10 80 Q 95 10 180 80"
+        stroke="#00bcd4"
+        fill="transparent"
+        strokeDasharray="3"
+      />
+    </g>
+  );
+
+  renderMarker = ({ x, y, direction, onMouseDown, eventId, className }) => (
+    <g key={eventId} className={className} onMouseDown={onMouseDown}>
+      <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
+      {direction === "up" && (
+        <polygon
+          points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
+          style={{
+            fill: "#fbe9e7"
+          }}
+        />
+      )}
+      {direction === "down" && (
+        <polygon
+          points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
+          style={{
+            fill: "#fbe9e7"
+          }}
+        />
+      )}
+      {direction === "left" && (
+        <polygon
+          points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
+          style={{
+            fill: "#fbe9e7"
+          }}
+        />
+      )}
+      {direction === "right" && (
+        <polygon
+          points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
+          style={{
+            fill: "#fbe9e7"
+          }}
+        />
+      )}
+    </g>
+  );
+
+  render() {
+    const {
+      width,
+      height,
+      startScene,
+      startX,
+      startY,
+      startDirection,
+      zoomRatio,
+      scenes,
+      scenesLookup,
+      actorsLookup,
+      triggersLookup,
+      dragging
+    } = this.props;
+
     const connections = scenes.reduce((memo, scene) => {
       // Actor Transitions
-      scene.actors.forEach((entity, entityIndex) => {
+      scene.actors.forEach((entityId, entityIndex) => {
+        const entity = actorsLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          const destScene = scenes.find(m => m.id === event.args.sceneId);
+          const destScene = scenesLookup[event.args.sceneId];
           if (destScene) {
             memo.push(
               calculateTransitionCoords({
@@ -82,9 +175,6 @@ const Connections = React.memo(
                 event,
                 scene,
                 destScene,
-                dragScene,
-                dragX,
-                dragY,
                 entityIndex,
                 entityId: entity.id,
                 entityX: entity.x,
@@ -98,10 +188,11 @@ const Connections = React.memo(
       });
 
       // Trigger Transitions
-      scene.triggers.forEach((entity, entityIndex) => {
+      scene.triggers.forEach((entityId, entityIndex) => {
+        const entity = triggersLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          const destScene = scenes.find(m => m.id === event.args.sceneId);
+          const destScene = scenesLookup[event.args.sceneId];
           if (destScene) {
             memo.push(
               calculateTransitionCoords({
@@ -109,9 +200,6 @@ const Connections = React.memo(
                 event,
                 scene,
                 destScene,
-                dragScene,
-                dragX,
-                dragY,
                 entityIndex,
                 entityId: entity.id,
                 entityX: entity.x,
@@ -127,17 +215,14 @@ const Connections = React.memo(
       // Scene Event Transitions
       const sceneTransitionEvents = scriptMapTransition(scene.script || []);
       sceneTransitionEvents.forEach(event => {
-        const destScene = scenes.find(m => m.id === event.args.sceneId);
+        const destScene = scenesLookup[event.args.sceneId];
         if (destScene) {
           memo.push(
             calculateTransitionCoords({
               type: "scenes",
               event,
               scene,
-              destScene,
-              dragScene,
-              dragX,
-              dragY
+              destScene
             })
           );
         }
@@ -145,172 +230,110 @@ const Connections = React.memo(
       return memo;
     }, []);
 
-    const startScene =
-      scenes.find(scene => scene.id === settings.startSceneId) || scenes[0];
-    const startX2 =
-      startScene &&
-      startScene.x +
-        (settings.startX || 0) * 8 +
-        5 +
-        (dragScene === startScene.id ? dragX : 0);
-    const startY2 =
-      startScene &&
-      20 +
-        startScene.y +
-        (settings.startY || 0) * 8 +
-        5 +
-        (dragScene === startScene.id ? dragY : 0);
-    const startDirection = startScene && settings.startDirection;
+    const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
+    const startY2 = startScene && 20 + startScene.y + (startY || 0) * 8 + 5;
 
     return (
       <svg
-        className="Connections"
+        className={cx("Connections", {
+          "Connections--Dragging": dragging
+        })}
         width={width}
         height={height}
         style={{
           strokeWidth: 2 / zoomRatio
         }}
       >
-        {connections.map(({ x1, y1, x2, y2, qx, qy, eventId }) => (
-          <g key={eventId}>
-            <path
-              d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
-              e="M10 80 Q 95 10 180 80"
-              stroke="#00bcd4"
-              fill="transparent"
-              strokeDasharray="3"
-            />
-          </g>
-        ))}
+        {connections.map(this.renderConnection)}
         {connections.map(
-          ({ x2, y2, direction, eventId, sceneId, type, entityId }) => (
-            <g
-              key={eventId}
-              className="Connections__Destination"
-              onMouseDown={() =>
-                onDragDestinationStart(eventId, sceneId, type, entityId)
-              }
-            >
-              <rect
-                x={x2 - 4}
-                y={y2 - 4}
-                rx={4}
-                ry={4}
-                width={16}
-                height={8}
-                style={{
-                  fill: "#00bcd4"
-                }}
-              />
-              {direction === "up" && (
-                <polygon
-                  points={`${x2},${y2 + 2} ${x2 + 4},${y2 - 3} ${x2 + 8},${y2 +
-                    2}`}
-                  style={{
-                    fill: "#006064"
-                  }}
-                />
-              )}
-              {direction === "down" && (
-                <polygon
-                  points={`${x2},${y2 - 2} ${x2 + 4},${y2 + 3} ${x2 + 8},${y2 -
-                    2}`}
-                  style={{
-                    fill: "#006064"
-                  }}
-                />
-              )}
-              {direction === "left" && (
-                <polygon
-                  points={`${x2},${y2} ${x2 + 6},${y2 - 3} ${x2 + 6},${y2 + 3}`}
-                  style={{
-                    fill: "#006064"
-                  }}
-                />
-              )}
-              {direction === "right" && (
-                <polygon
-                  points={`${x2 + 8},${y2} ${x2 + 2},${y2 - 3} ${x2 + 2},${y2 +
-                    3}`}
-                  style={{
-                    fill: "#006064"
-                  }}
-                />
-              )}
-            </g>
-          )
+          ({ x2, y2, direction, eventId, sceneId, type, entityId }) =>
+            this.renderMarker({
+              x: x2,
+              y: y2,
+              direction,
+              eventId,
+              className: "Connections__Destination",
+              onMouseDown: this.onDragDestinationStart(
+                eventId,
+                sceneId,
+                type,
+                entityId
+              )
+            })
         )}
-        {startScene && (
-          <g
-            className="Connections__PlayerStart"
-            title="Game Starting Position"
-            onMouseDown={onDragPlayerStart}
-          >
-            <rect
-              x={startX2 - 4}
-              y={startY2 - 4}
-              rx={4}
-              ry={4}
-              width={16}
-              height={8}
-              style={{
-                fill: "#ff5722"
-              }}
-            />
-            {startDirection === "up" && (
-              <polygon
-                points={`${startX2},${startY2 + 2} ${startX2 + 4},${startY2 -
-                  3} ${startX2 + 8},${startY2 + 2}`}
-                style={{
-                  fill: "#fbe9e7"
-                }}
-              />
-            )}
-            {startDirection === "down" && (
-              <polygon
-                points={`${startX2},${startY2 - 2} ${startX2 + 4},${startY2 +
-                  3} ${startX2 + 8},${startY2 - 2}`}
-                style={{
-                  fill: "#fbe9e7"
-                }}
-              />
-            )}
-            {startDirection === "left" && (
-              <polygon
-                points={`${startX2},${startY2} ${startX2 + 6},${startY2 -
-                  3} ${startX2 + 6},${startY2 + 3}`}
-                style={{
-                  fill: "#fbe9e7"
-                }}
-              />
-            )}
-            {startDirection === "right" && (
-              <polygon
-                points={`${startX2 + 8},${startY2} ${startX2 + 2},${startY2 -
-                  3} ${startX2 + 2},${startY2 + 3}`}
-                style={{
-                  fill: "#fbe9e7"
-                }}
-              />
-            )}
-          </g>
-        )}
+        {startScene &&
+          this.renderMarker({
+            x: startX2,
+            y: startY2,
+            className: "Connections__PlayerStart",
+            direction: startDirection,
+            onMouseDown: this.onDragPlayerStart
+          })}
       </svg>
     );
   }
-);
+}
 
 Connections.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   scenes: PropTypes.arrayOf(SceneShape).isRequired,
-  settings: SettingsShape.isRequired,
+  scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
+  actorsLookup: PropTypes.objectOf(ActorShape).isRequired,
+  triggersLookup: PropTypes.objectOf(TriggerShape).isRequired,
+  startScene: SceneShape,
+  startX: PropTypes.number,
+  startY: PropTypes.number,
+  startDirection: PropTypes.string,
+  dragging: PropTypes.bool.isRequired,
   zoomRatio: PropTypes.number.isRequired,
-  dragScene: PropTypes.string.isRequired,
-  dragX: PropTypes.number.isRequired,
-  dragY: PropTypes.number.isRequired,
-  onDragPlayerStart: PropTypes.func.isRequired,
-  onDragDestinationStart: PropTypes.func.isRequired
+  dragPlayerStart: PropTypes.func.isRequired,
+  dragPlayerStop: PropTypes.func.isRequired,
+  dragDestinationStart: PropTypes.func.isRequired,
+  dragDestinationStop: PropTypes.func.isRequired
 };
 
-export default Connections;
+Connections.defaultProps = {
+  startScene: null,
+  startX: 0,
+  startY: 0,
+  startDirection: "down"
+};
+
+function mapStateToProps(state) {
+  const scenes = getScenes(state);
+  const scenesLookup = getScenesLookup(state);
+  const actorsLookup = getActorsLookup(state);
+  const triggersLookup = getTriggersLookup(state);
+  const {
+    startSceneId,
+    startX,
+    startY,
+    startDirection
+  } = state.entities.present.result.settings;
+  const startScene = scenesLookup[startSceneId] || scenes[0];
+  const { dragging } = state.editor;
+  return {
+    scenes,
+    scenesLookup,
+    actorsLookup,
+    triggersLookup,
+    startScene,
+    startX,
+    startY,
+    startDirection,
+    dragging: !!dragging
+  };
+}
+
+const mapDispatchToProps = {
+  dragPlayerStart: actions.dragPlayerStart,
+  dragPlayerStop: actions.dragPlayerStop,
+  dragDestinationStart: actions.dragDestinationStart,
+  dragDestinationStop: actions.dragDestinationStop
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Connections);

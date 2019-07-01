@@ -13,7 +13,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
+import { ProjectShape } from "../../reducers/stateShape";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -31,16 +31,25 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, settings } = this.props;
+    const { project, selectSidebar } = this.props;
 
     if (!project || !project.scenes) {
       return <div />;
     }
 
-    const scenes = project.scenes;
+    const { name, author, notes, scenes, settings } = project;
+    const {
+      startSceneId,
+      playerSpriteSheetId,
+      startDirection,
+      startAnimSpeed,
+      startMoveSpeed,
+      startX,
+      startY
+    } = settings;
 
     return (
-      <Sidebar>
+      <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading title={l10n("PROJECT")} />
 
@@ -50,7 +59,7 @@ class WorldEditor extends Component {
                 {l10n("FIELD_NAME")}
                 <input
                   id="projectName"
-                  value={project.name || ""}
+                  value={name || ""}
                   placeholder="Project Name"
                   onChange={this.onEditProject("name")}
                 />
@@ -62,7 +71,7 @@ class WorldEditor extends Component {
                 {l10n("FIELD_AUTHOR")}
                 <input
                   id="projectAuthor"
-                  value={project.author || ""}
+                  value={author || ""}
                   placeholder="Author"
                   onChange={this.onEditProject("author")}
                 />
@@ -73,11 +82,11 @@ class WorldEditor extends Component {
               htmlFor="projectNotes"
               closedLabel={l10n("FIELD_ADD_NOTES")}
               label={l10n("FIELD_NOTES")}
-              open={!!project.notes}
+              open={!!notes}
             >
               <textarea
                 id="projectNotes"
-                value={project.notes || ""}
+                value={notes || ""}
                 placeholder={l10n("FIELD_NOTES")}
                 onChange={this.onEditProject("notes")}
                 rows={3}
@@ -102,7 +111,7 @@ class WorldEditor extends Component {
               <FormField>
                 <SceneSelect
                   id="startScene"
-                  value={settings.startSceneId || ""}
+                  value={startSceneId || ""}
                   onChange={this.onEditSetting("startSceneId")}
                 />
               </FormField>
@@ -112,8 +121,8 @@ class WorldEditor extends Component {
                   {l10n("FIELD_PLAYER_SPRITE_SHEET")}
                   <SpriteSheetSelect
                     id="playerSprite"
-                    value={settings.playerSpriteSheetId}
-                    direction={settings.startDirection}
+                    value={playerSpriteSheetId}
+                    direction={startDirection}
                     onChange={this.onEditSetting("playerSpriteSheetId")}
                   />
                 </label>
@@ -125,7 +134,7 @@ class WorldEditor extends Component {
                   <input
                     id="startX"
                     type="number"
-                    value={settings.startX}
+                    value={startX}
                     min={0}
                     max={30}
                     placeholder={0}
@@ -140,7 +149,7 @@ class WorldEditor extends Component {
                   <input
                     id="startY"
                     type="number"
-                    value={settings.startY}
+                    value={startY}
                     min={0}
                     max={31}
                     placeholder={0}
@@ -154,7 +163,7 @@ class WorldEditor extends Component {
                   {l10n("FIELD_DIRECTION")}
                   <DirectionPicker
                     id="startDirection"
-                    value={settings.startDirection || 0}
+                    value={startDirection || 0}
                     onChange={this.onEditSetting("startDirection")}
                   />
                 </label>
@@ -165,7 +174,7 @@ class WorldEditor extends Component {
                   {l10n("FIELD_MOVEMENT_SPEED")}
                   <MovementSpeedSelect
                     id="startMoveSpeed"
-                    value={settings.startMoveSpeed}
+                    value={startMoveSpeed}
                     onChange={this.onEditSetting("startMoveSpeed")}
                   />
                 </label>
@@ -176,7 +185,7 @@ class WorldEditor extends Component {
                   {l10n("FIELD_ANIMATION_SPEED")}
                   <AnimationSpeedSelect
                     id="startAnimSpeed"
-                    value={settings.startAnimSpeed}
+                    value={startAnimSpeed}
                     onChange={this.onEditSetting("startAnimSpeed")}
                   />
                 </label>
@@ -191,19 +200,20 @@ class WorldEditor extends Component {
 
 WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
-  settings: SettingsShape.isRequired,
   editProject: PropTypes.func.isRequired,
-  editProjectSettings: PropTypes.func.isRequired
+  editProjectSettings: PropTypes.func.isRequired,
+  selectSidebar: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state, props) {
+  const project = state.entities.present.result;
   return {
-    project: state.project.present,
-    settings: (state.project.present && state.project.present.settings) || {}
+    project
   };
 }
 
 const mapDispatchToProps = {
+  selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
   editProjectSettings: actions.editProjectSettings
 };

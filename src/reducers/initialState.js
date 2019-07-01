@@ -1,6 +1,7 @@
 export default {
   tools: {
-    selected: "select"
+    selected: "select",
+    prefab: null
   },
   document: {
     path: "",
@@ -9,20 +10,10 @@ export default {
     saving: false,
     modified: false
   },
-  project: {
-    settings: {
-      showCollisions: true,
-      showConnections: true,
-      sidebarWidth: 300,
-      customColorsWhite: "E0F8D0",
-      customColorsLight: "88C070",
-      customColorsDark: "306850",
-      customColorsBlack: "081820"
-    }
-  },
   world: {},
   editor: {
     type: "world",
+    worldFocus: false,
     scene: "",
     index: 0,
     zoom: 100,
@@ -34,7 +25,12 @@ export default {
     sceneDragX: 0,
     sceneDragY: 0,
     uiVersion: 0,
-    sidebarWidth: 300
+    hover: {
+      sceneId: "",
+      actorId: "",
+      x: 0,
+      y: 0
+    }
   },
   navigation: {
     section: "world",
@@ -54,5 +50,34 @@ export default {
     trigger: null,
     scene: null,
     last: null
+  },
+  entities: {
+    entities: {
+      actors: {},
+      backgrounds: {},
+      music: {},
+      scenes: {},
+      spriteSheets: {},
+      triggers: {},
+      variables: {}
+    },
+    result: {
+      settings: {
+        showCollisions: true,
+        showConnections: true,
+        worldScrollX: 0,
+        worldScrollY: 0,
+        zoom: 100,
+        customColorsWhite: "E0F8D0",
+        customColorsLight: "88C070",
+        customColorsDark: "306850",
+        customColorsBlack: "081820"          
+      },
+      scenes: []
+    }
+  },
+  settings: {
+    worldSidebarWidth: 300,
+    filesSidebarWidth: 300
   }
 };

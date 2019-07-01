@@ -5,6 +5,14 @@ import saveProjectData from "../lib/project/saveProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
+import {
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_TRIGGER,
+  DRAG_ACTOR
+} from "../reducers/editorReducer";
+import { denormalizeProject } from "../reducers/entitiesReducer";
+import migrateWarning from "../lib/project/migrateWarning";
 
 const asyncAction = async (
   dispatch,
@@ -24,10 +32,25 @@ const asyncAction = async (
   }
 };
 
-export const resizeSidebar = width => {
+export const resizeWorldSidebar = width => {
   return {
-    type: types.SIDEBAR_RESIZE,
+    type: types.SIDEBAR_WORLD_RESIZE,
     width
+  };
+};
+
+export const resizeFilesSidebar = width => {
+  return {
+    type: types.SIDEBAR_FILES_RESIZE,
+    width
+  };
+};
+
+export const scrollWorld = (x, y) => {
+  return {
+    type: types.SCROLL_WORLD,
+    x,
+    y
   };
 };
 
@@ -38,6 +61,10 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
+      const shouldOpenProject = await migrateWarning(path);
+      if (!shouldOpenProject) {
+        throw new Error("Cancelled opening project");
+      }
       const data = await loadProjectData(path);
       return {
         data,
@@ -56,9 +83,7 @@ export const loadSprite = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadSpriteData(
-        `${projectRoot}/assets/sprites/${filename}`
-      );
+      const data = await loadSpriteData(projectRoot)(filename);
       return {
         data
       };
@@ -66,11 +91,23 @@ export const loadSprite = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeSprite = filename => {
-  return {
+export const removeSprite = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/sprites/`, "")
+    : relativePath.replace("/assets/sprites/", "");
+  return dispatch({
     type: types.SPRITE_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const loadBackground = filename => async (dispatch, getState) => {
@@ -82,9 +119,7 @@ export const loadBackground = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadBackgroundData(
-        `${projectRoot}/assets/backgrounds/${filename}`
-      );
+      const data = await loadBackgroundData(projectRoot)(filename);
       return {
         data
       };
@@ -92,11 +127,23 @@ export const loadBackground = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeBackground = filename => {
-  return {
+export const removeBackground = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/backgrounds/`, "")
+    : relativePath.replace("/assets/backgrounds/", "");
+  return dispatch({
     type: types.BACKGROUND_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const loadMusic = filename => async (dispatch, getState) => {
@@ -108,9 +155,7 @@ export const loadMusic = filename => async (dispatch, getState) => {
     async () => {
       const state = getState();
       const projectRoot = state.document && state.document.root;
-      const data = await loadMusicData(
-        `${projectRoot}/assets/music/${filename}`
-      );
+      const data = await loadMusicData(projectRoot)(filename);
       return {
         data
       };
@@ -118,11 +163,23 @@ export const loadMusic = filename => async (dispatch, getState) => {
   );
 };
 
-export const removeMusic = filename => {
-  return {
+export const removeMusic = filename => async (dispatch, getState) => {
+  const state = getState();
+  const projectRoot = state.document && state.document.root;
+  const relativePath = filename.replace(projectRoot, "");
+  const plugin = relativePath.startsWith("/plugin")
+    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
+    : undefined;
+  const file = plugin
+    ? relativePath.replace(`/plugins/${plugin}/music/`, "")
+    : relativePath.replace("/assets/music/", "");
+  return dispatch({
     type: types.MUSIC_REMOVE,
-    filename
-  };
+    data: {
+      filename: file,
+      plugin
+    }
+  });
 };
 
 export const playMusic = filename => {
@@ -149,19 +206,27 @@ export const saveProject = () => async (dispatch, getState) => {
     types.PROJECT_SAVE_SUCCESS,
     types.PROJECT_SAVE_FAILURE,
     async () => {
-      await saveProjectData(state.document.path, {
-        ...state.project.present,
-        settings: {
-          ...state.project.present.settings,
-          zoom: state.editor.zoom
-        }
-      });
+      const data = denormalizeProject(state.entities.present);
+      data.settings.zoom = state.editor.zoom;
+      await saveProjectData(state.document.path, data);
     }
   );
 };
 
 export const setTool = tool => {
   return { type: types.SET_TOOL, tool };
+};
+
+export const setActorPrefab = actor => {
+  return { type: types.SET_ACTOR_PREFAB, actor };
+};
+
+export const setTriggerPrefab = trigger => {
+  return { type: types.SET_TRIGGER_PREFAB, trigger };
+};
+
+export const setScenePrefab = scene => {
+  return { type: types.SET_SCENE_PREFAB, scene };
 };
 
 export const setSection = section => {
@@ -172,16 +237,20 @@ export const setNavigationId = id => {
   return { type: types.SET_NAVIGATION_ID, id };
 };
 
-export const addScene = (x, y) => {
-  return { type: types.ADD_SCENE, x, y, id: uuid() };
+export const selectSidebar = () => {
+  return { type: types.SELECT_SIDEBAR };
+};
+
+export const addScene = (x, y, defaults) => {
+  return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
 };
 
 export const selectScene = sceneId => {
   return { type: types.SELECT_SCENE, sceneId };
 };
 
-export const moveScene = (sceneId, moveX, moveY) => {
-  return { type: types.MOVE_SCENE, sceneId, moveX, moveY };
+export const moveScene = (sceneId, x, y) => {
+  return { type: types.MOVE_SCENE, sceneId, x, y };
 };
 
 export const dragScene = (moveX, moveY) => {
@@ -204,8 +273,52 @@ export const removeScene = sceneId => {
   return { type: types.REMOVE_SCENE, sceneId };
 };
 
-export const addActor = (sceneId, x, y) => {
-  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid() };
+export const addActor = (sceneId, x, y, defaults) => {
+  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
+};
+
+export const sceneHover = (sceneId, x, y) => {
+  return { type: types.SCENE_HOVER, sceneId, x, y };
+};
+
+export const actorHover = (sceneId, id, x, y) => {
+  return { type: types.ACTOR_HOVER, sceneId, id, x, y };
+};
+
+export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
+  const state = getState();
+  const { dragging, scene, eventId, entityId, type: editorType } = state.editor;
+  if (dragging === DRAG_PLAYER) {
+    dispatch(editPlayerStartAt(sceneId, x, y));
+  } else if (dragging === DRAG_DESTINATION) {
+    dispatch(
+      editDestinationPosition(
+        eventId,
+        scene,
+        editorType,
+        entityId,
+        sceneId,
+        x,
+        y
+      )
+    );
+  } else if (dragging === DRAG_ACTOR) {
+    dispatch(moveActor(scene, entityId, sceneId, x, y));
+  } else if (dragging === DRAG_TRIGGER) {
+    dispatch(moveTrigger(scene, entityId, sceneId, x, y));
+  }
+};
+
+export const removeSelectedEntity = () => (dispatch, getState) => {
+  const state = getState();
+  const { scene, entityId, type: editorType } = state.editor;
+  if (editorType === "scenes") {
+    dispatch(removeScene(scene));
+  } else if (editorType === "triggers") {
+    dispatch(removeTrigger(scene, entityId));
+  } else if (editorType === "actors") {
+    dispatch(removeActor(scene, entityId));
+  }
 };
 
 export const moveActor = (sceneId, id, newSceneId, x, y) => {
@@ -240,8 +353,8 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
-export const addTrigger = (sceneId, x, y) => {
-  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid() };
+export const addTrigger = (sceneId, x, y, defaults) => {
+  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid(), defaults };
 };
 
 export const removeTrigger = (sceneId, id) => {
@@ -304,16 +417,16 @@ export const dragPlayerStop = () => {
   return { type: types.DRAG_PLAYER_STOP };
 };
 
-export const dragActorStart = (sceneId, id, index) => {
-  return { type: types.DRAG_ACTOR_START, sceneId, index, id };
+export const dragActorStart = (sceneId, id) => {
+  return { type: types.DRAG_ACTOR_START, sceneId, id };
 };
 
 export const dragActorStop = () => {
   return { type: types.DRAG_ACTOR_STOP };
 };
 
-export const dragTriggerStart = (sceneId, id, index) => {
-  return { type: types.DRAG_TRIGGER_START, sceneId, index, id };
+export const dragTriggerStart = (sceneId, id) => {
+  return { type: types.DRAG_TRIGGER_START, sceneId, id };
 };
 
 export const dragTriggerStop = () => {
@@ -379,6 +492,10 @@ export const copyEvent = event => {
   return { type: types.COPY_EVENT, event };
 };
 
+export const copyScript = script => {
+  return { type: types.COPY_SCRIPT, script };
+};
+
 export const copyActor = actor => {
   return { type: types.COPY_ACTOR, actor };
 };
@@ -387,20 +504,30 @@ export const copyTrigger = trigger => {
   return { type: types.COPY_TRIGGER, trigger };
 };
 
-export const pasteActor = (sceneId, actor) => {
-  return { type: types.PASTE_ACTOR, sceneId, actor, id: uuid() };
-};
-
-export const pasteTrigger = (sceneId, trigger) => {
-  return { type: types.PASTE_TRIGGER, sceneId, trigger, id: uuid() };
-};
-
-export const pasteScene = scene => {
-  return { type: types.PASTE_SCENE, scene, id: uuid() };
-};
-
 export const copyScene = scene => {
   return { type: types.COPY_SCENE, scene };
+};
+
+export const copySelectedEntity = () => (dispatch, getState) => {
+  const state = getState();
+  const { scene: sceneId, entityId, type: editorType } = state.editor;
+  if (editorType === "scenes") {
+    dispatch(copyScene(state.entities.present.entities.scenes[sceneId]));
+  } else if (editorType === "actors") {
+    dispatch(copyActor(state.entities.present.entities.actors[entityId]));
+  } else if (editorType === "triggers") {
+    dispatch(copyTrigger(state.entities.present.entities.triggers[entityId]));
+  }
+};
+
+export const pasteClipboardEntity = clipboardData => dispatch => {
+  if (clipboardData.__type === "scene") {
+    dispatch(setScenePrefab(clipboardData));
+  } else if (clipboardData.__type === "actor") {
+    dispatch(setActorPrefab(clipboardData));
+  } else if (clipboardData.__type === "trigger") {
+    dispatch(setTriggerPrefab(clipboardData));
+  }
 };
 
 export const zoomIn = (section, delta) => {

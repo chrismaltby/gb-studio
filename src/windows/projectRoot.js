@@ -3,12 +3,14 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { ActionCreators } from "redux-undo";
 import { ipcRenderer } from "electron";
+import settings from "electron-settings";
 import * as actions from "../actions";
 import configureStore from "../store/configureStore";
 import watchProject from "../lib/project/watchProject";
 import App from "../components/app/App";
 import "../lib/electron/handleFullScreen";
 import AppContainerDnD from "../components/app/AppContainerDnD";
+import plugins from "../lib/plugins/plugins";
 import "../lib/helpers/handleTheme";
 
 const store = configureStore();
@@ -88,6 +90,22 @@ ipcRenderer.on("build", async (event, buildType) => {
     })
   );
 });
+
+ipcRenderer.on("plugin-run", (event, pluginId) => {
+  if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
+    plugins.menu[pluginId].run(store, actions);
+  }
+});
+
+const worldSidebarWidth = settings.get("worldSidebarWidth");
+const filesSidebarWidth = settings.get("filesSidebarWidth");
+
+if (worldSidebarWidth) {
+  store.dispatch(actions.resizeWorldSidebar(worldSidebarWidth));
+}
+if (filesSidebarWidth) {
+  store.dispatch(actions.resizeFilesSidebar(filesSidebarWidth));
+}
 
 let modified = true;
 store.subscribe(() => {

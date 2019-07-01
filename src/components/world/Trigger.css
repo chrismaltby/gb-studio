@@ -1,0 +1,15 @@
+.Trigger {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 120, 0, 0.5);
+  outline: 1px solid rgba(255, 120, 0, 1);
+}
+
+.Trigger--Selected {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 199, 40, 0.9);
+  outline: 1px solid rgba(255, 120, 0, 1);
+}

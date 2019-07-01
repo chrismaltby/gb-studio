@@ -5,9 +5,25 @@ import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
-import { indexBy } from "../helpers/array";
+import { indexByFn } from "../helpers/array";
 
-const indexByFilename = indexBy("filename");
+const elemKey = elem => {
+  return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
+};
+
+const indexByFilename = indexByFn(elemKey);
+
+const sortByName = (a, b) => {
+  const aName = a.name.toUpperCase();
+  const bName = b.name.toUpperCase();
+  if (aName < bName) {
+    return -1;
+  }
+  if (aName > bName) {
+    return 1;
+  }
+  return 0;
+};
 
 const loadProject = async projectPath => {
   const json = migrateProject(await fs.readJson(projectPath));
@@ -23,44 +39,50 @@ const loadProject = async projectPath => {
   // Merge stored backgrounds data with file system data
   const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
 
-  const fixedBackgroundIds = backgrounds.map(background => {
-    const oldBackground = oldBackgroundByFilename[background.filename];
-    if (oldBackground) {
-      return {
-        ...background,
-        id: oldBackground.id
-      };
-    }
-    return background;
-  });
+  const fixedBackgroundIds = backgrounds
+    .map(background => {
+      const oldBackground = oldBackgroundByFilename[elemKey(background)];
+      if (oldBackground) {
+        return {
+          ...background,
+          id: oldBackground.id
+        };
+      }
+      return background;
+    })
+    .sort(sortByName);
 
   // Merge stored sprite data with file system data
   const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
 
-  const fixedSpriteIds = sprites.map(sprite => {
-    const oldSprite = oldSpriteByFilename[sprite.filename];
-    if (oldSprite) {
-      return {
-        ...sprite,
-        id: oldSprite.id
-      };
-    }
-    return sprite;
-  });
+  const fixedSpriteIds = sprites
+    .map(sprite => {
+      const oldSprite = oldSpriteByFilename[elemKey(sprite)];
+      if (oldSprite) {
+        return {
+          ...sprite,
+          id: oldSprite.id
+        };
+      }
+      return sprite;
+    })
+    .sort(sortByName);
 
   // Merge stored music data with file system data
   const oldMusicByFilename = indexByFilename(json.music || []);
 
-  const fixedMusicIds = music.map(track => {
-    const oldTrack = oldMusicByFilename[track.filename];
-    if (oldTrack) {
-      return {
-        ...track,
-        id: oldTrack.id
-      };
-    }
-    return track;
-  });
+  const fixedMusicIds = music
+    .map(track => {
+      const oldTrack = oldMusicByFilename[elemKey(track)];
+      if (oldTrack) {
+        return {
+          ...track,
+          id: oldTrack.id
+        };
+      }
+      return track;
+    })
+    .sort(sortByName);
 
   const addMissingEntityId = entity => {
     if (!entity.id) {

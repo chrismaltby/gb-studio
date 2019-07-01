@@ -29,7 +29,7 @@ const sectionNames = {
   backgrounds: l10n("NAV_BACKGROUNDS"),
   ui: l10n("NAV_UI_ELEMENTS"),
   music: l10n("NAV_MUSIC"),
-  script: l10n("NAV_SCRIPT_REVIEW"),
+  dialogue: l10n("NAV_DIALOGUE_REVIEW"),
   build: l10n("NAV_BUILD_AND_RUN")
 };
 
@@ -194,7 +194,7 @@ function mapStateToProps(state) {
   return {
     projectRoot: state.document && state.document.root,
     modified: state.document && state.document.modified,
-    name: state.project.present && state.project.present.name,
+    name: state.entities.present.result.name,
     section,
     zoom,
     showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,

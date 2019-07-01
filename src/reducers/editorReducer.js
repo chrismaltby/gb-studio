@@ -1,6 +1,7 @@
 import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
+  SET_SECTION,
   SELECT_SCENE,
   ADD_TRIGGER,
   SELECT_TRIGGER,
@@ -20,6 +21,8 @@ import {
   DRAG_ACTOR_STOP,
   DRAG_TRIGGER_START,
   DRAG_TRIGGER_STOP,
+  SCENE_HOVER,
+  ACTOR_HOVER,
   SELECT_WORLD,
   ZOOM_IN,
   ZOOM_OUT,
@@ -33,7 +36,9 @@ import {
   MOVE_TRIGGER,
   EDIT_PLAYER_START_AT,
   EDIT_UI,
-  SIDEBAR_RESIZE
+  SELECT_SIDEBAR,
+  ADD_COLLISION_TILE,
+  REMOVE_COLLISION_TILE
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -48,37 +53,49 @@ export default function editor(state = initialState.editor, action) {
       return Object.assign(
         {},
         state,
+        {
+          worldFocus: false
+        },
         action.data.settings &&
           action.data.settings.zoom && {
             zoom: action.data.settings.zoom
           }
       );
     }
-    case SIDEBAR_RESIZE: {
+    case SET_SECTION: {
       return {
         ...state,
-        sidebarWidth: Math.max(200, action.width)
+        worldFocus: false
+      };
+    }
+    case SELECT_SIDEBAR: {
+      return {
+        ...state,
+        worldFocus: false
       };
     }
     case MOVE_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case SELECT_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case ADD_SCENE: {
       return {
         ...state,
         type: "scenes",
-        scene: action.id
+        scene: action.id,
+        worldFocus: true
       };
     }
     case ADD_TRIGGER: {
@@ -86,7 +103,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "triggers",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case SELECT_TRIGGER: {
@@ -94,7 +112,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "triggers",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case ADD_ACTOR: {
@@ -102,7 +121,8 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "actors",
         scene: action.sceneId,
-        entityId: action.id
+        entityId: action.id,
+        worldFocus: true
       };
     }
     case SELECT_ACTOR: {
@@ -146,7 +166,8 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         playerDragging: true,
-        dragging: DRAG_PLAYER
+        dragging: DRAG_PLAYER,
+        worldFocus: true
       };
     }
     case DRAG_PLAYER_STOP: {
@@ -159,17 +180,19 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_DESTINATION_START: {
       return {
         ...state,
-        destinationDragging: action.eventId,
+        eventId: action.eventId,
         dragging: DRAG_DESTINATION,
         type: action.selectionType,
         entityId: action.id,
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case DRAG_DESTINATION_STOP: {
       return {
         ...state,
-        destinationDragging: null
+        eventId: null,
+        dragging: ""
       };
     }
     case DRAG_ACTOR_START: {
@@ -179,13 +202,15 @@ export default function editor(state = initialState.editor, action) {
         actorDragging: true,
         dragging: DRAG_ACTOR,
         entityId: action.id,
-        scene: action.sceneId
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case DRAG_ACTOR_STOP: {
       return {
         ...state,
-        actorDragging: null
+        actorDragging: null,
+        dragging: ""
       };
     }
     case DRAG_TRIGGER_START: {
@@ -201,14 +226,40 @@ export default function editor(state = initialState.editor, action) {
     case DRAG_TRIGGER_STOP: {
       return {
         ...state,
-        triggerDragging: null
+        triggerDragging: null,
+        dragging: ""
+      };
+    }
+    case SCENE_HOVER: {
+      return {
+        ...state,
+        hover: {
+          sceneId: action.sceneId,
+          x: action.x,
+          y: action.y
+        }
+      };
+    }
+    case ACTOR_HOVER: {
+      return {
+        ...state,
+        hover: {
+          sceneId: action.sceneId,
+          actorId: action.id,
+          x: action.x,
+          y: action.y
+        }
       };
     }
     case MOVE_ACTOR: {
-      return {
-        ...state,
-        scene: action.newSceneId
-      };
+      if (state.scene !== action.newSceneId) {
+        return {
+          ...state,
+          scene: action.newSceneId,
+          worldFocus: true
+        };
+      }
+      return state;
     }
     case MOVE_TRIGGER: {
       return {
@@ -226,7 +277,17 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         scene: "",
-        type: "world"
+        type: "world",
+        worldFocus: true
+      };
+    }
+    case ADD_COLLISION_TILE:
+    case REMOVE_COLLISION_TILE: {
+      return {
+        ...state,
+        type: "scenes",
+        scene: action.sceneId,
+        worldFocus: true
       };
     }
     case EDIT_UI: {
