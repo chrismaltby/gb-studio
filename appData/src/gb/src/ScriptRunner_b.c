@@ -319,6 +319,7 @@ void Script_LoadScene_b()
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
   stage_next_type = SCENE;
+  scene_loaded = FALSE;
   script_action_complete = FALSE;
 
   FadeSetSpeed(script_cmd_args[5]);
@@ -843,6 +844,7 @@ void Script_LoadData_b()
 
     // Switch to next scene
     stage_next_type = SCENE;
+    scene_loaded = FALSE;
     FadeSetSpeed(2);
     FadeOut();
 
@@ -1388,7 +1390,7 @@ void Script_ActorInvoke_b()
 void Script_StackPush_b()
 {
   script_stack[script_stack_ptr] = script_ptr;
-  script_start_stack[script_stack_ptr] = script_start_ptr; 
+  script_start_stack[script_stack_ptr] = script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
   script_stack_ptr++;
 }
@@ -1453,6 +1455,7 @@ void Script_ScenePopState_b()
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
     stage_next_type = SCENE;
+    scene_loaded = FALSE;
     script_action_complete = FALSE;
     FadeSetSpeed(script_cmd_args[0]);
     FadeOut();
@@ -1499,6 +1502,7 @@ void Script_ScenePopAllState_b()
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
     stage_next_type = SCENE;
+    scene_loaded = FALSE;
     script_action_complete = FALSE;
     FadeSetSpeed(script_cmd_args[0]);
     FadeOut();

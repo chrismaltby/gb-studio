@@ -235,7 +235,7 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
-  if (last_fn == Script_AwaitInput_b && ((joy & await_input) != 0))
+  if (last_fn == Script_AwaitInput_b && SceneAwaitInputPressed())
   {
     return TRUE;
   }

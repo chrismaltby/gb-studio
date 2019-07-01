@@ -47,12 +47,14 @@ extern UBYTE scene_height;
 extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
 extern BANK_PTR input_script_ptrs[NUM_INPUTS];
+extern UBYTE scene_loaded;
 
 void SceneInit();
 void SceneUpdate();
 void SceneSetEmote(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting();
 UBYTE SceneCameraAtDest();
+UBYTE SceneAwaitInputPressed();
 void SceneRenderActor(UBYTE i);
 
 #endif

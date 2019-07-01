@@ -30,6 +30,8 @@ UBYTE collision_tiles_len, col_bank;
 BANK_PTR events_ptr;
 BANK_PTR bank_ptr;
 UBYTE check_triggers;
+UBYTE scene_loaded;
+UBYTE scene_input_ready;
 // End of Scene Init Globals
 
 UBYTE scene_num_actors;
@@ -79,6 +81,9 @@ void SceneHandleTransition();
 void SceneInit_b1()
 {
   DISPLAY_OFF;
+
+  scene_loaded = FALSE;
+  scene_input_ready = FALSE;
 
   SpritesReset();
   UIInit();
@@ -295,6 +300,7 @@ void SceneInit_b9()
 
   time = 0;
   last_joy = 0;
+  scene_loaded = TRUE;
 
   SHOW_SPRITES;
   DISPLAY_ON;
@@ -724,6 +730,18 @@ static void SceneHandleInput()
   UBYTE next_tx, next_ty, input_index, input_joy;
   UBYTE npc;
 
+  // If scene hasn't finished loading prevent input
+  if (!scene_loaded || !scene_input_ready)
+  {
+    // If scene has loaded wait for all buttons
+    // to be released before allowing new input
+    if (scene_loaded)
+    {
+      scene_input_ready = (joy & 240) == 0;
+    }
+    return;
+  }
+
   // If menu open - check if A pressed to close
   UIOnInteract();
 
@@ -1054,4 +1072,15 @@ UBYTE SceneIsEmoting_b()
 UBYTE SceneCameraAtDest_b()
 {
   return SCX_REG == camera_dest.x && SCY_REG == camera_dest.y;
+}
+
+UBYTE SceneAwaitInputPressed_b()
+{
+  // If scene hasn't finished loading prevent input
+  if (!scene_loaded || !scene_input_ready || !ACTOR_ON_TILE(0) || fade_running)
+  {
+    return FALSE;
+  }
+
+  return ((joy & await_input) != 0);
 }
