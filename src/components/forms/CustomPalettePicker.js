@@ -332,8 +332,9 @@ CustomPalettePicker.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
+  const project = state.entities.present.result;
   return {
-    project: state.project.present
+    project
   };
 }
 
