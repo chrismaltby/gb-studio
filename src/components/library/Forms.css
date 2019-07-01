@@ -45,6 +45,14 @@ textarea {
   width: 50%;
 }
 
+.FormField--ThirdWidth {
+  width: 33%;
+}
+
+.FormField--QuarterWidth {
+  width: 25%;
+}
+
 .FormField--ToggleableClosed label {
   float: left;
   text-decoration: underline;

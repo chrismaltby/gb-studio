@@ -52,12 +52,15 @@ const buildProject = async (
     const sanitize = s => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
+    const customColor = data.settings.customColorsEnabled ? "<body style='background-color:#" + data.settings.customColorsBlack + "'>" : "<body>";
     const html = (await fs.readFile(
       `${outputRoot}/build/web/index.html`,
       "utf8"
     ))
       .replace(/___PROJECT_NAME___/g, projectName)
-      .replace(/___AUTHOR___/g, author);
+      .replace(/___AUTHOR___/g, author)
+      .replace(/<body>/g, customColor);
+
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }
 };

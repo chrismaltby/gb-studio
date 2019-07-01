@@ -67,7 +67,11 @@ export default {
         showConnections: true,
         worldScrollX: 0,
         worldScrollY: 0,
-        zoom: 100
+        zoom: 100,
+        customColorsWhite: "E0F8D0",
+        customColorsLight: "88C070",
+        customColorsDark: "306850",
+        customColorsBlack: "081820"          
       },
       scenes: []
     }

@@ -32,10 +32,14 @@ Textarea.defaultProps = {
   borderless: false
 };
 
-export const FormField = ({ halfWidth, children }) => (
+export const FormField = ({ halfWidth, thirdWidth, quarterWidth, children }) => (
   <div
     className={cx("FormField", {
       "FormField--HalfWidth": halfWidth
+    }, {
+      "FormField--ThirdWidth": thirdWidth
+    }, {
+      "FormField--QuarterWidth": quarterWidth
     })}
   >
     {children}
@@ -44,11 +48,15 @@ export const FormField = ({ halfWidth, children }) => (
 
 FormField.propTypes = {
   halfWidth: PropTypes.bool,
+  thirdWidth: PropTypes.bool,
+  quarterWidth: PropTypes.bool,
   children: PropTypes.node
 };
 
 FormField.defaultProps = {
   halfWidth: false,
+  thirdWidth: false,
+  quarterWidth: false,
   children: null
 };
 
@@ -106,6 +114,58 @@ ToggleableFormField.defaultProps = {
   htmlFor: "",
   label: null,
   closedLabel: null,
+  open: false
+};
+
+export class ToggleableCheckBoxField extends Component {
+
+  componentWillMount () {
+    this.id = `toggle_${Math.random().toString().replace(/0\./, '')}`;
+  }
+
+  toggleOpen = () => {
+    const { onToggle, open } = this.props;
+    onToggle(!open);
+  };
+
+  render() {
+    const {
+      halfWidth,
+      label,
+      children,
+      open
+    } = this.props;
+    return (
+      <div
+        className={cx("FormField", "FormField--Toggleable", {
+          "FormField--HalfWidth": halfWidth
+        })}
+      >
+        <label htmlFor={this.id}>
+          <input id={this.id} type="checkbox" onChange={this.toggleOpen} checked={open} />
+          <div className="FormCheckbox" />
+          {label}
+        </label>
+        <div>
+          {open && children}
+        </div>
+      </div>
+    );
+  }
+}
+
+ToggleableCheckBoxField.propTypes = {
+  halfWidth: PropTypes.bool,
+  children: PropTypes.node,
+  label: PropTypes.node,
+  open: PropTypes.bool,
+  onToggle: PropTypes.func.isRequired
+};
+
+ToggleableCheckBoxField.defaultProps = {
+  halfWidth: false,
+  children: null,
+  label: null,
   open: false
 };
 

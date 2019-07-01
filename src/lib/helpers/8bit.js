@@ -18,6 +18,8 @@ export const decHex16 = dec =>
     .padStart(4, "0")
     .toUpperCase()}`;
 
+export const hexDec = hex => parseInt(hex, 16);
+
 export const hi = longNum => wrap16Bit(longNum) >> 8;
 
 export const lo = longNum => wrap16Bit(longNum) % 256;

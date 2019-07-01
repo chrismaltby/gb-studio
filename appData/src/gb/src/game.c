@@ -35,8 +35,18 @@ int main()
   STAT_REG = 0x45;
 
   // Set palettes
-  BGP_REG = 0xE4U;
-  OBP0_REG = 0xD2U;
+  #ifdef CUSTOM_COLORS
+  if (_cpu == CGB_TYPE)
+  {
+    set_bkg_palette(0, 1, custom_bg_pal);
+    set_sprite_palette(0, 1, custom_spr1_pal);
+  }
+  else
+  #endif
+  {
+    BGP_REG = 0xE4U;
+    OBP0_REG = 0xD2U;
+  }  
 
   // Position Window Layer
   WY_REG = MAXWNDPOSY - 7;
