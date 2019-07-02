@@ -436,6 +436,8 @@ test("should precompile image data", async () => {
       name: "test_img",
       width: 20,
       height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
       filename: "test_img.png"
     },
     {
@@ -443,6 +445,8 @@ test("should precompile image data", async () => {
       name: "test_img2",
       width: 20,
       height: 18,
+      imageWidth: 160,
+      imageHeight: 144,
       filename: "test_img2.png"
     }
   ];
