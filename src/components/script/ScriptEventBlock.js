@@ -2,6 +2,8 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import cx from "classnames";
+import { TriangleIcon } from "../library/Icons";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -36,18 +38,18 @@ class TextArea extends Component {
       el.selectionStart = cursorPosition;
       el.selectionEnd = cursorPosition;
     });
-  }
+  };
 
   render() {
     const { id, value, rows, placeholder } = this.props;
     return (
       <textarea
-            id={id}
-            value={value || ""}
-            rows={rows || textNumLines(value)}
-            placeholder={placeholder}
-            onChange={this.onChange}
-          />
+        id={id}
+        value={value || ""}
+        rows={rows || textNumLines(value)}
+        placeholder={placeholder}
+        onChange={this.onChange}
+      />
     );
   }
 }
@@ -290,11 +292,22 @@ class ScriptEventField extends Component {
 
   render() {
     const { eventId, field, value, args } = this.props;
-
+    if (field.type === "collapsable") {
+      return (
+        <div
+          className={cx("ActionMini__Else", {
+            "ActionMini__Else--Open": !value
+          })}
+          onClick={() => this.onChange(!value)}
+        >
+          <TriangleIcon /> {field.label}
+        </div>
+      );
+    }
     return (
       <FormField halfWidth={field.width === "50%"}>
         <label htmlFor={genKey(eventId, field.key)}>
-          {field.type !== "checkbox" && field.label}
+          {field.type !== "checkbox" && field.type !== "group" && field.label}
           {field.multiple ? (
             value.map((_, valueIndex) => {
               const fieldId = genKey(eventId, field.key, valueIndex);
@@ -371,39 +384,54 @@ class ScriptEventBlock extends Component {
     return true;
   }
 
+  renderFields = fields => {
+    const { id, value, renderEvents, onChange } = this.props;
+    return fields.map((field, index) => {
+      if (field.showIfKey) {
+        if (field.showIfValue && value[field.showIfKey] !== field.showIfValue) {
+          return null;
+        }
+        if (!field.showIfValue && value[field.showIfKey] === false) {
+          return null;
+        }
+      } else if (field.showIfNotKey) {
+        if (
+          field.showIfValue &&
+          value[field.showIfNotKey] === field.showIfValue
+        ) {
+          return null;
+        }
+        if (!field.showIfValue && value[field.showIfNotKey] === true) {
+          return null;
+        }
+      }
+
+      if (field.type === "events") {
+        return renderEvents(field.key);
+      }
+
+      const fieldValue = field.multiple
+        ? [].concat([], value[field.key])
+        : value[field.key];
+
+      return (
+        <ScriptEventField
+          key={genKey(id, field.key)}
+          eventId={id}
+          field={field}
+          value={fieldValue}
+          args={value}
+          onChange={onChange}
+        />
+      );
+    });
+  };
+
   render() {
-    const { command, id, value, onChange } = this.props;
+    const { command, id, value, renderEvents, onChange } = this.props;
     const fields = (events[command] && events[command].fields) || [];
 
-    return (
-      <div className="ScriptEventBlock">
-        {fields.map((field, index) => {
-          if (field.showIfKey) {
-            if (value[field.showIfKey] !== field.showIfValue) {
-              return null;
-            }
-          }
-          if (field.type === "events") {
-            return null;
-          }
-
-          const fieldValue = field.multiple
-            ? [].concat([], value[field.key])
-            : value[field.key];
-
-          return (
-            <ScriptEventField
-              key={genKey(id, field.key)}
-              eventId={id}
-              field={field}
-              value={fieldValue}
-              args={value}
-              onChange={onChange}
-            />
-          );
-        })}
-      </div>
-    );
+    return <div className="ScriptEventBlock">{this.renderFields(fields)}</div>;
   }
 }
 

@@ -327,10 +327,43 @@ class ActionMini extends Component {
                   command={command}
                   value={action.args}
                   onChange={this.onEdit}
+                  renderEvents={key => (
+                    <div className="ActionMini__Children">
+                      {(
+                        action.children[key] || [
+                          {
+                            id: uuid(),
+                            command: EVENT_END
+                          }
+                        ]
+                      ).map(childAction => (
+                        <ActionMiniDnD
+                          key={childAction.id}
+                          id={childAction.id}
+                          type={type}
+                          path={`${id}_true_${childAction.id}`}
+                          action={childAction}
+                          moveActions={moveActions}
+                          onAdd={onAdd}
+                          onRemove={onRemove}
+                          onEdit={onEdit}
+                          onCopy={onCopy}
+                          onPaste={onPaste}
+                          onMouseEnter={onMouseEnter}
+                          onMouseLeave={onMouseLeave}
+                          clipboardEvent={clipboardEvent}
+                        />
+                      ))}
+                      <div
+                        className="ActionMini__ChildrenBorder"
+                        title={eventName}
+                      />
+                    </div>
+                  )}
                 />
               )}
 
-            {open &&
+            {/* {open &&
               childKeys.length > 0 &&
               connectDropTarget(
                 <div className="ActionMini__Children">
@@ -357,9 +390,9 @@ class ActionMini extends Component {
                     title={eventName}
                   />
                 </div>
-              )}
+              )} */}
 
-            {childKeys.length > 1 &&
+            {/* {childKeys.length > 1 &&
               childKeys.map((key, index) => {
                 if (index === 0) {
                   return [];
@@ -404,7 +437,7 @@ class ActionMini extends Component {
                     </div>
                   )
                 ];
-              })}
+              })} */}
           </div>
         </div>
       )
@@ -716,6 +749,8 @@ class ScriptEditor extends Component {
               clipboardEvent={clipboardEvent}
             />
           ))}
+
+          <pre>{JSON.stringify(value, null, 2)}</pre>
         </div>
       </div>
     );

@@ -11,7 +11,14 @@ export const fields = [
     type: "events"
   },
   {
+    key: "__collapseElse",
+    label: "Else",
+    type: "collapsable",
+    defaultValue: false
+  },
+  {
     key: "false",
+    showIfNotKey: "__collapseElse",
     type: "events"
   }
 ];
