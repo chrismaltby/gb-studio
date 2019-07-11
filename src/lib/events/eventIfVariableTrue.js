@@ -20,7 +20,12 @@ export const fields = [
   },
   {
     key: "false",
-    showIfNotKey: "__collapseElse",
+    conditions: [
+      {
+        key: "__collapseElse",
+        ne: true
+      }
+    ],
     type: "events"
   }
 ];

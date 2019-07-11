@@ -387,21 +387,21 @@ class ScriptEventBlock extends Component {
   renderFields = fields => {
     const { id, value, renderEvents, onChange } = this.props;
     return fields.map((field, index) => {
-      if (field.showIfKey) {
-        if (field.showIfValue && value[field.showIfKey] !== field.showIfValue) {
-          return null;
-        }
-        if (!field.showIfValue && value[field.showIfKey] === false) {
-          return null;
-        }
-      } else if (field.showIfNotKey) {
-        if (
-          field.showIfValue &&
-          value[field.showIfNotKey] === field.showIfValue
-        ) {
-          return null;
-        }
-        if (!field.showIfValue && value[field.showIfNotKey] === true) {
+      // Determine if field conditions are met and hide if not
+      if (field.conditions) {
+        const showField = field.conditions.reduce((memo, condition) => {
+          const keyValue = value[condition.key];
+          return (
+            memo &&
+            (!condition.eq || keyValue === condition.eq) &&
+            (!condition.ne || keyValue !== condition.ne) &&
+            (!condition.gt || keyValue > condition.gt) &&
+            (!condition.gte || keyValue >= condition.gte) &&
+            (!condition.lt || keyValue > condition.lt) &&
+            (!condition.lte || keyValue >= condition.lte)
+          );
+        }, true);
+        if (!showField) {
           return null;
         }
       }
