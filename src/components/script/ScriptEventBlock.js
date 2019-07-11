@@ -292,6 +292,12 @@ class ScriptEventField extends Component {
 
   render() {
     const { eventId, field, value, args } = this.props;
+
+    let label = field.label;
+    if (label) {
+      label = label.replace(/\$\$([^$]*)\$\$/g, (match, key) => args[key] || 0);
+    }
+
     if (field.type === "collapsable") {
       return (
         <div
@@ -300,14 +306,14 @@ class ScriptEventField extends Component {
           })}
           onClick={() => this.onChange(!value)}
         >
-          <TriangleIcon /> {field.label}
+          <TriangleIcon /> {label}
         </div>
       );
     }
     return (
       <FormField halfWidth={field.width === "50%"}>
         <label htmlFor={genKey(eventId, field.key)}>
-          {field.type !== "checkbox" && field.type !== "group" && field.label}
+          {field.type !== "checkbox" && field.type !== "group" && label}
           {field.multiple ? (
             value.map((_, valueIndex) => {
               const fieldId = genKey(eventId, field.key, valueIndex);
@@ -351,7 +357,7 @@ class ScriptEventField extends Component {
               onChange={this.onChange}
             />
           )}
-          {field.type === "checkbox" && field.label}
+          {field.type === "checkbox" && label}
         </label>
       </FormField>
     );
@@ -430,7 +436,6 @@ class ScriptEventBlock extends Component {
   render() {
     const { command, id, value, renderEvents, onChange } = this.props;
     const fields = (events[command] && events[command].fields) || [];
-
     return <div className="ScriptEventBlock">{this.renderFields(fields)}</div>;
   }
 }
@@ -439,7 +444,8 @@ ScriptEventBlock.propTypes = {
   id: PropTypes.string.isRequired,
   command: PropTypes.string.isRequired,
   value: PropTypes.shape({}),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  renderEvents: PropTypes.func.isRequired
 };
 
 ScriptEventBlock.defaultProps = {
