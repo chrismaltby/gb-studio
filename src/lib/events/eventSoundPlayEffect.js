@@ -12,8 +12,12 @@ export const fields = [
     key: "pitch",
     type: "number",
     label: l10n("FIELD_PITCH"),
-    showIfKey: "type",
-    showIfValue: "beep",
+    conditions: [
+      {
+        key: "type",
+        eq: "beep"
+      }
+    ],
     min: 1,
     max: 8,
     step: 1,
@@ -23,8 +27,12 @@ export const fields = [
     key: "frequency",
     type: "number",
     label: l10n("FIELD_FREQUENCY"),
-    showIfKey: "type",
-    showIfValue: "tone",
+    conditions: [
+      {
+        key: "type",
+        eq: "tone"
+      }
+    ],
     min: 0,
     max: 20000,
     step: 1,

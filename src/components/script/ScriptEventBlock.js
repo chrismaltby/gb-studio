@@ -407,11 +407,24 @@ class ScriptEventBlock extends Component {
     return (
       <div className="ScriptEventBlock">
         {fields.map((field, index) => {
-          if (field.showIfKey) {
-            if (value[field.showIfKey] !== field.showIfValue) {
+          if (field.conditions) {
+            const showField = field.conditions.reduce((memo, condition) => {
+              const keyValue = value[condition.key];
+              return (
+                memo &&
+                (!condition.eq || keyValue === condition.eq) &&
+                (!condition.ne || keyValue !== condition.ne) &&
+                (!condition.gt || keyValue > condition.gt) &&
+                (!condition.gte || keyValue >= condition.gte) &&
+                (!condition.lt || keyValue > condition.lt) &&
+                (!condition.lte || keyValue >= condition.lte)
+              );
+            }, true);
+            if (!showField) {
               return null;
             }
           }
+
           if (field.type === "events") {
             return null;
           }

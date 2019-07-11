@@ -12,6 +12,12 @@ export const fields = [
   },
   {
     key: "false",
+    conditions: [
+      {
+        key: "__collapseElse",
+        ne: true
+      }
+    ],
     type: "events"
   }
 ];
