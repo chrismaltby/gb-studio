@@ -316,52 +316,47 @@ class ActionMini extends Component {
               </div>
             )}
 
-            {open &&
-              events[command] &&
-              events[command].fields &&
-              events[command].fields.filter(
-                field => childKeys.indexOf(field.key) === -1
-              ).length > 0 && (
-                <ScriptEventBlock
-                  id={action.id}
-                  command={command}
-                  value={action.args}
-                  onChange={this.onEdit}
-                  renderEvents={key => (
-                    <div className="ActionMini__Children">
-                      {(
-                        action.children[key] || [
-                          {
-                            id: uuid(),
-                            command: EVENT_END
-                          }
-                        ]
-                      ).map(childAction => (
-                        <ActionMiniDnD
-                          key={childAction.id}
-                          id={childAction.id}
-                          type={type}
-                          path={`${id}_true_${childAction.id}`}
-                          action={childAction}
-                          moveActions={moveActions}
-                          onAdd={onAdd}
-                          onRemove={onRemove}
-                          onEdit={onEdit}
-                          onCopy={onCopy}
-                          onPaste={onPaste}
-                          onMouseEnter={onMouseEnter}
-                          onMouseLeave={onMouseLeave}
-                          clipboardEvent={clipboardEvent}
-                        />
-                      ))}
-                      <div
-                        className="ActionMini__ChildrenBorder"
-                        title={eventName}
+            {open && events[command] && events[command].fields && (
+              <ScriptEventBlock
+                id={action.id}
+                command={command}
+                value={action.args}
+                onChange={this.onEdit}
+                renderEvents={key => (
+                  <div className="ActionMini__Children">
+                    {(
+                      action.children[key] || [
+                        {
+                          id: uuid(),
+                          command: EVENT_END
+                        }
+                      ]
+                    ).map(childAction => (
+                      <ActionMiniDnD
+                        key={childAction.id}
+                        id={childAction.id}
+                        type={type}
+                        path={`${id}_true_${childAction.id}`}
+                        action={childAction}
+                        moveActions={moveActions}
+                        onAdd={onAdd}
+                        onRemove={onRemove}
+                        onEdit={onEdit}
+                        onCopy={onCopy}
+                        onPaste={onPaste}
+                        onMouseEnter={onMouseEnter}
+                        onMouseLeave={onMouseLeave}
+                        clipboardEvent={clipboardEvent}
                       />
-                    </div>
-                  )}
-                />
-              )}
+                    ))}
+                    <div
+                      className="ActionMini__ChildrenBorder"
+                      title={eventName}
+                    />
+                  </div>
+                )}
+              />
+            )}
 
             {/* {open &&
               childKeys.length > 0 &&
