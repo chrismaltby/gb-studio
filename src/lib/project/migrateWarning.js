@@ -26,7 +26,10 @@ export default async projectPath => {
   const l10n = require("../helpers/l10n").default;
 
   const project = await fs.readJson(projectPath);
-  const currentVersion = project._version || "1.0.0";
+  let currentVersion = project._version || "1.0.0";
+  if (currentVersion === "1") {
+    currentVersion = "1.0.0";
+  }
 
   return new Promise((resolve, reject) => {
     if (fromFuture(currentVersion)) {
