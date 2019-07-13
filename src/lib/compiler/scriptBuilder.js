@@ -649,13 +649,15 @@ class ScriptBuilder {
     const camY = Math.min(y, scene.height - 18);
     output.push(camX);
     output.push(camY);
-    const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+    // Direct speed in binary, first bits 0000 to 1111 are "&" compared with binary time
+    // Speed 0 = 0 instant, Speed 1 = 32 0x20 move every frame, Speed 2 = 33 0x21
+    const speedFlag = (speed > 0 ? (32 + (1 << (speed - 1)) - 1) : 0);
     output.push(speedFlag);
   };
 
   cameraLock = (speed = 0) => {
     const output = this.output;
-    const speedFlag = ((1 << speed) - 1) | (speed > 0 ? 32 : 0);
+    const speedFlag = (speed > 0 ? (32 + (1 << (speed - 1)) - 1) : 0);
     output.push(cmd(CAMERA_LOCK));
     output.push(speedFlag);
   };
