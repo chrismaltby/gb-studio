@@ -155,3 +155,90 @@ test("should migrate conditional events from 1.1.0 to 1.2.0", () => {
     }
   });
 });
+
+test("should migrate camera speed values from 1.1.0 to 1.2.0", () => {
+  const oldEvent0 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "0"
+    }
+  };
+  const oldEvent1 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "1"
+    }
+  };
+  const oldEvent2 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "2"
+    }
+  };
+  const oldEvent3 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "3"
+    }
+  };
+  const oldEvent4 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "4"
+    }
+  };
+  const oldEvent5 = {
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "5"
+    }
+  };
+  expect(migrateFrom110To120Event(oldEvent0)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "0"
+    }
+  });
+  expect(migrateFrom110To120Event(oldEvent1)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "2"
+    }
+  });
+  expect(migrateFrom110To120Event(oldEvent2)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "3"
+    }
+  });
+  expect(migrateFrom110To120Event(oldEvent3)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "4"
+    }
+  });
+  expect(migrateFrom110To120Event(oldEvent4)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "5"
+    }
+  });
+  expect(migrateFrom110To120Event(oldEvent5)).toEqual({
+    id: "abc",
+    command: "EVENT_CAMERA_MOVE_TO",
+    args: {
+      speed: "5"
+    }
+  });
+});
