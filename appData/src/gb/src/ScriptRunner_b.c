@@ -240,7 +240,7 @@ void Script_CameraLock_b()
   UBYTE cam_x, cam_y;
 
   camera_settings = script_cmd_args[0] & ~CAMERA_LOCK_FLAG;
-
+  camera_speed = (UBYTE)script_cmd_args[0] & CAMERA_SPEED_MASK;
   cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, MUL_8(scene_width) - SCREEN_WIDTH_HALF);
   camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
   cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, MUL_8(scene_height) - SCREEN_HEIGHT_HALF);
