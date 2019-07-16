@@ -90,31 +90,19 @@ export const fields = [].concat(
 export const compile = (input, helpers) => {
   const { caseVariableValue } = helpers;
 
-  caseVariableValue(
-    input.variable,
-    Array(input.choices)
-      .fill()
-      .reduce((memo, _, i) => {
-        console.log("input", i, input, `value${i}`, input[`value${i}`]);
-        const value = input[`value${i}`];
-        const key = Number.isInteger(parseInt(value, 10)) ? value : i;
-        if (!memo[key]) {
-          return {
-            ...memo,
-            [key]: input[`true${i}`]
-          };
-        }
-        return memo;
-      }, {}),
-    input.false
-  );
+  const choiceLookup = Array(input.choices)
+    .fill()
+    .reduce((memo, _, i) => {
+      const value = input[`value${i}`];
+      const key = Number.isInteger(parseInt(value, 10)) ? value : i;
+      if (!memo[key]) {
+        return {
+          ...memo,
+          [key]: input[`true${i}`]
+        };
+      }
+      return memo;
+    }, {});
 
-  // for(var i =0)
-  // ifVariableValue(input.variable, "==", input.value0, input.true0);
-
-  // console.log(input);
-
-  // const { textChoice } = helpers;
-  // const { variable, trueText, falseText } = input;
-  // textChoice(variable, { trueText, falseText });
+  caseVariableValue(input.variable, choiceLookup, input.false);
 };

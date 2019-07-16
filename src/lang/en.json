@@ -145,6 +145,8 @@
   "FIELD_COLOR2_NAME": "Light Green",
   "FIELD_COLOR3_NAME": "Dark Green",
   "FIELD_COLOR4_NAME": "Really Dark Green",
+  "FIELD_CASE": "Case",
+  "FIELD_WHEN": "When",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -237,8 +239,7 @@
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Set Animation Frame Using Variable",
   "EVENT_CODE": "Code: Custom Script",
   "EVENT_NOTES": "Notes",
-  "EVENT_SWITCH": "Switch",
-  "FIELD_CASE": "Case",
+  "EVENT_CASE": "Case Variable Value",
 
   "// 10": "Menu -----------------------------------------------------",
 

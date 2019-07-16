@@ -66,13 +66,16 @@
 
 .ActionMini--Conditional .ActionMini__Content .ActionMini__Else {
   background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional .ActionMini__Content .FormField + .ActionMini__Else {
   margin-top: 10px;
 }
 
 .ActionMini--Conditional
   .ActionMini__Content
   .ActionMini__Children
-  ~ .ActionMini__Else {
+  + .ActionMini__Else {
   margin-top: 0;
 }
 
