@@ -19,13 +19,17 @@
 #define BUBBLE_ANIMATION_FRAMES 15
 #define BUBBLE_TOTAL_FRAMES 60
 
+// bits 1111xxxx for masking cam speed data
 #define CAMERA_SPEED_MASK 0xF
-#define CAMERA_SPEED_1 0x0F
-#define CAMERA_SPEED_2 0x07
-#define CAMERA_SPEED_3 0x03
-#define CAMERA_SPEED_4 0x01
-#define CAMERA_SPEED_5 0x00
+/* Only calculated in scriptBuilder.js
+#define CAMERA_SPEED_1 0x0F // 1111, only true every 16 frames
+#define CAMERA_SPEED_2 0x07 // 1110, move every 8 frames
+#define CAMERA_SPEED_3 0x03 // 1100, move every 4 frames
+#define CAMERA_SPEED_4 0x01 // 1000, move every 'even' time
+#define CAMERA_SPEED_5 0x00 // 0000, always true */
+
 #define CAMERA_LOCK_FLAG 0x10
+// bit xxxx0100 for transition, low bits are speed
 #define CAMERA_TRANSITION_FLAG 0x20
 
 extern UINT8 scene_bank;

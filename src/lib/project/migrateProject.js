@@ -8,6 +8,9 @@ export const LATEST_PROJECT_VERSION = "1.2.0";
 const migrateProject = project => {
   let data = { ...project };
   let version = project._version || "1.0.0";
+  if (version === "1") {
+    version = "1.0.0";
+  }
 
   // Migrate from 1.0.0 to 1.1.0
   if (version === "1.0.0") {
@@ -137,6 +140,7 @@ const migrateFrom1To110Scenes = data => {
  */
 export const migrateFrom110To120Event = event => {
   let newEvent = event;
+  // Migrate math events
   const operationLookup = {
     EVENT_MATH_ADD: "add",
     EVENT_MATH_SUB: "sub",
@@ -182,6 +186,25 @@ export const migrateFrom110To120Event = event => {
       }
     };
   }
+  // Migrate camera speed values
+  if (
+    newEvent.args &&
+    (newEvent.command === "EVENT_CAMERA_MOVE_TO" ||
+      newEvent.command === "EVENT_CAMERA_LOCK")
+  ) {
+    const speedMap = {
+      "0": "0",
+      "1": "2",
+      "2": "3",
+      "3": "4",
+      "4": "5",
+      "5": "5"
+    };
+    if (speedMap[newEvent.args.speed]) {
+      newEvent.args.speed = speedMap[newEvent.args.speed];
+    }
+  }
+  // Migrate conditionals
   if (newEvent.true || newEvent.false) {
     return {
       ...newEvent,
