@@ -323,7 +323,7 @@ class ActionMini extends Component {
                 value={action.args}
                 onChange={this.onEdit}
                 renderEvents={key => (
-                  <div className="ActionMini__Children">
+                  <div className="ActionMini__Children" key={key}>
                     {(
                       action.children[key] || [
                         {
