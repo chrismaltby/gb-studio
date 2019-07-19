@@ -744,8 +744,6 @@ class ScriptEditor extends Component {
               clipboardEvent={clipboardEvent}
             />
           ))}
-
-          <pre>{JSON.stringify(value, null, 2)}</pre>
         </div>
       </div>
     );
