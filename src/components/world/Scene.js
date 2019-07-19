@@ -71,11 +71,6 @@ class Scene extends Component {
     }
   };
 
-  onMouseDown = e => {
-    const { id, selectScene } = this.props;
-    selectScene(id);
-  };
-
   onMouseLeave = e => {
     const { sceneHover } = this.props;
     sceneHover("");
@@ -142,7 +137,6 @@ class Scene extends Component {
         <div
           className="Scene__Image"
           onMouseMove={this.onMouseMove}
-          onMouseDown={this.onMouseDown}
           onMouseLeave={this.onMouseLeave}
           style={{
             width: width * TILE_SIZE,
