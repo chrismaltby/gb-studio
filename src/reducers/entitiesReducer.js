@@ -298,12 +298,25 @@ const fixSceneCollisions = state => {
 };
 
 const addScene = (state, action) => {
+  console.log("ADD SCENE");
   const defaults = action.defaults || {};
-  const script = defaults.script && defaults.script.map(regenerateEventIds);
-  const backgroundId = state.result.backgrounds[0];
-  const background = state.entities.backgrounds[backgroundId];
   const defaultActors = defaults.actors || [];
   const defaultTriggers = defaults.triggers || [];
+
+  const actorNewIdLookup = defaults.actors.reduce((memo, actor) => {
+    return { ...memo, [actor.id]: uuid() };
+  }, {});
+
+  console.log(actorNewIdLookup);
+
+  const script =
+    defaults.script &&
+    mapEvents(defaults.script.map(regenerateEventIds), () => {
+      // Fix actorIds here - maybe need to get schema for event command type and find correct fields to map
+    });
+  const backgroundId = state.result.backgrounds[0];
+  const background = state.entities.backgrounds[backgroundId];
+
   const newActorIds = [];
   const newTriggerIds = [];
 

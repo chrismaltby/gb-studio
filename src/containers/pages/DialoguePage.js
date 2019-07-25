@@ -85,19 +85,21 @@ class DialoguePage extends Component {
           </p>
         </PageHeader>
         <PageContent>
-          {dialogueLines.map(dialogueLine => (
-            <DialogueReviewLine
-              key={dialogueLine.line.id}
-              dialogueLine={dialogueLine}
-              onChange={this.onChange(
-                dialogueLine.entityType,
-                dialogueLine.sceneId,
-                dialogueLine.entity.id,
-                dialogueLine.entity.script,
-                dialogueLine.line.id
-              )}
-            />
-          ))}
+          <section>
+            {dialogueLines.map(dialogueLine => (
+              <DialogueReviewLine
+                key={dialogueLine.line.id}
+                dialogueLine={dialogueLine}
+                onChange={this.onChange(
+                  dialogueLine.entityType,
+                  dialogueLine.sceneId,
+                  dialogueLine.entity.id,
+                  dialogueLine.entity.script,
+                  dialogueLine.line.id
+                )}
+              />
+            ))}
+          </section>
         </PageContent>
       </div>
     );

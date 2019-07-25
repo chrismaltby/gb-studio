@@ -52,14 +52,20 @@ const buildProject = async (
     const sanitize = s => String(s || "").replace(/["<>]/g, "");
     const projectName = sanitize(data.name);
     const author = sanitize(data.author);
-    const customColor = data.settings.customColorsEnabled ? "<body style='background-color:#" + data.settings.customColorsBlack + "'>" : "<body>";
+    const colorsHead = data.settings.customColorsEnabled
+      ? `<style type="text/css"> body { background-color:#${
+          data.settings.customColorsBlack
+        }; }</style>`
+      : "";
+    const customHead = data.settings.customHead || "";
     const html = (await fs.readFile(
       `${outputRoot}/build/web/index.html`,
       "utf8"
     ))
       .replace(/___PROJECT_NAME___/g, projectName)
       .replace(/___AUTHOR___/g, author)
-      .replace(/<body>/g, customColor);
+      .replace(/___COLORS_HEAD___/g, colorsHead)
+      .replace(/___PROJECT_HEAD___/g, customHead);
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }

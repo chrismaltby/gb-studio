@@ -191,6 +191,13 @@ const buildMenu = async (plugins = []) => {
             notifyListeners("section", "build");
           }
         },
+        {
+          label: l10n("MENU_SETTINGS"),
+          accelerator: "CommandOrControl+8",
+          click: () => {
+            notifyListeners("section", "settings");
+          }
+        },
         { type: "separator" },
         {
           label: l10n("MENU_THEME"),

@@ -1,0 +1,32 @@
+.CustomControlsPicker {
+  position: relative;
+}
+
+.CustomControlsPicker__Columns {
+  display: flex;
+  flex-direction: row;
+}
+
+.CustomControlsPicker__Column {
+  width: 20%;
+  margin-right: 20px;
+}
+
+.CustomControlsPicker__Column:last-child {
+  margin-left: 20px;
+  flex-grow: 1;
+}
+
+.CustomControlsPicker__Input--Focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+}
+
+.CustomControlsPicker__HiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}

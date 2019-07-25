@@ -15,6 +15,7 @@
   "NAV_MUSIC": "Music",
   "NAV_DIALOGUE_REVIEW": "Dialogue Review",
   "NAV_BUILD_AND_RUN": "Build & Run",
+  "NAV_SETTINGS": "Settings",
 
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "modified",
@@ -260,6 +261,7 @@
   "MENU_MUSIC": "Music",
   "MENU_DIALOGUE_REVIEW": "Dialogue Review",
   "MENU_BUILD_AND_RUN": "Build && Run",
+  "MENU_SETTINGS": "Settings",
   "MENU_THEME": "Theme",
   "MENU_THEME_DEFAULT": "System Default",
   "MENU_THEME_LIGHT": "Light",
@@ -364,5 +366,15 @@
   "DIALOG_MIGRATE": "Migrate to {version}",
   "DIALOG_FUTURE": "GB Studio Project Not Supported",
   "DIALOG_FUTURE_DESCRIPTION": "This project file was created with version {currentVersion} which is newer than this version of GB Studio supports. Maximum supported is {version}.\n\nYou may need to update GB Studio.",
-  "DIALOG_OPEN_ANYWAY": "Open Anyway"
+  "DIALOG_OPEN_ANYWAY": "Open Anyway",
+
+  "// 16": "Settings ----------------------------------------------------",
+
+  "SETTINGS": "Settings",
+  "SETTINGS_SCENES": "Scenes",
+  "SETTINGS_SCENE": "Scene",
+  "SETTINGS_ACTORS": "Actors",
+  "SETTINGS_ACTOR": "Actor",
+  "SETTINGS_CART_TYPE": "Cartridge Type",
+  "SETTINGS_CONTROLS": "Controls"
 }

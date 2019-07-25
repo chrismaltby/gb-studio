@@ -10,6 +10,7 @@ import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
 import UIPage from "../../containers/pages/UIPage";
 import MusicPage from "../../containers/pages/MusicPage";
+import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
 
 class App extends Component {
@@ -52,6 +53,7 @@ class App extends Component {
           {section === "music" && <MusicPage />}
           {section === "dialogue" && <DialoguePage />}
           {section === "build" && <BuildPage />}
+          {section === "settings" && <SettingsPage />}
         </div>
       </div>
     );
@@ -66,7 +68,8 @@ App.propTypes = {
     "ui",
     "music",
     "dialogue",
-    "build"
+    "build",
+    "settings"
   ]).isRequired
 };
 

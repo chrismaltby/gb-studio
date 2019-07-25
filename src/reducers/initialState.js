@@ -33,7 +33,7 @@ export default {
     }
   },
   navigation: {
-    section: "world",
+    section: "settings",
     status: {}
   },
   music: {
@@ -71,7 +71,7 @@ export default {
         customColorsWhite: "E0F8D0",
         customColorsLight: "88C070",
         customColorsDark: "306850",
-        customColorsBlack: "081820"          
+        customColorsBlack: "081820"
       },
       scenes: []
     }
