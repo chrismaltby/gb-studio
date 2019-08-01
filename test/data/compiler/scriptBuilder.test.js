@@ -645,7 +645,7 @@ test("Should set camera move speed flag", () => {
     }
   });
   sb.cameraMoveTo(5, 6, 2);
-  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 35]);
+  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 33]);
 });
 
 test("Should be able to lock camera to player position", () => {
@@ -659,7 +659,7 @@ test("Should be able to lock camera with speed flag", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.cameraLock(3);
-  expect(output).toEqual([cmd(CAMERA_LOCK), 39]);
+  expect(output).toEqual([cmd(CAMERA_LOCK), 35]);
 });
 
 test("Should be able to shake camera for a number of frames", () => {
