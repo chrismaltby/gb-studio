@@ -145,6 +145,9 @@
   "FIELD_COLOR2_NAME": "Light Green",
   "FIELD_COLOR3_NAME": "Dark Green",
   "FIELD_COLOR4_NAME": "Really Dark Green",
+  "FIELD_RESTORE_DEFAULT": "Restore Default",
+  "FIELD_ORIGINAL": "Original",
+  "FIELD_CUSTOM": "Custom",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -376,5 +379,7 @@
   "SETTINGS_ACTORS": "Actors",
   "SETTINGS_ACTOR": "Actor",
   "SETTINGS_CART_TYPE": "Cartridge Type",
-  "SETTINGS_CONTROLS": "Controls"
+  "SETTINGS_CONTROLS": "Controls",
+  "SETTINGS_COLORS": "Colors",
+  "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)"
 }

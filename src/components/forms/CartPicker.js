@@ -60,7 +60,9 @@ class CustomControlsPicker extends Component {
           ))}
         </div>
         <div style={{ marginTop: 30 }}>
-          <Button onClick={this.onRestoreDefault}>Restore Default</Button>
+          <Button onClick={this.onRestoreDefault}>
+            {l10n("FIELD_RESTORE_DEFAULT")}
+          </Button>
         </div>
       </div>
     );

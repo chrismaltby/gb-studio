@@ -74,12 +74,7 @@ class SettingsPage extends Component {
         </PageHeader>
         <PageContent>
           <section>
-            <h2>Controls</h2>
-            <CustomControlsPicker />
-          </section>
-
-          <section>
-            <h2>Colors</h2>
+            <h2>{l10n("SETTINGS_COLORS")}</h2>
 
             <ToggleableCheckBoxField
               label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
@@ -91,12 +86,17 @@ class SettingsPage extends Component {
           </section>
 
           <section>
+            <h2>{l10n("SETTINGS_CONTROLS")}</h2>
+            <CustomControlsPicker />
+          </section>
+
+          <section>
             <h2>{l10n("SETTINGS_CART_TYPE")}</h2>
             <CartPicker />
           </section>
 
           <section>
-            <h2>Custom Header (Web Build)</h2>
+            <h2>{l10n("SETTINGS_CUSTOM_HEADER")}</h2>
             <FormField>
               <label htmlFor="customHead">
                 {l10n("FIELD_CUSTOM_HEAD")}

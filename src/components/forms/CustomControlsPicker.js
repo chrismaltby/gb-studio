@@ -213,7 +213,9 @@ class CustomControlsPicker extends Component {
           onBlur={this.onBlur}
         />
         <div style={{ marginTop: 30 }}>
-          <Button onClick={this.onRestoreDefault}>Restore Default</Button>
+          <Button onClick={this.onRestoreDefault}>
+            {l10n("FIELD_RESTORE_DEFAULT")}
+          </Button>
         </div>
       </div>
     );

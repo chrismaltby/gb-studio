@@ -182,9 +182,9 @@ class CustomPalettePicker extends Component {
           <div className="CustomPalettePicker__Column">
             <div className="CustomPalettePicker__Colors">
               <div className="CustomPalettePicker__Legend">
-                Original
+                {l10n("FIELD_ORIGINAL")}
                 <br />
-                Custom
+                {l10n("FIELD_CUSTOM")}
               </div>
 
               <label htmlFor="customColor_0" title={l10n("FIELD_COLOR1_NAME")}>
@@ -341,7 +341,9 @@ class CustomPalettePicker extends Component {
           </div>
         </div>
         <div style={{ marginTop: 30 }}>
-          <Button onClick={this.onRestoreDefault}>Restore Default</Button>
+          <Button onClick={this.onRestoreDefault}>
+            {l10n("FIELD_RESTORE_DEFAULT")}
+          </Button>
         </div>
       </div>
     );
