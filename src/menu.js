@@ -94,48 +94,6 @@ const buildMenu = async (plugins = []) => {
               }
             }
           ]
-        },
-        { type: "separator" },
-        {
-          label: l10n("MENU_CART_TYPE"),
-          submenu: [
-            {
-              id: "cart1B",
-              label: "MBC5+RAM+BATTERY",
-              type: "radio",
-              checked: true,
-              click() {
-                notifyListeners("updateSetting", "cartType", "1B");
-              }
-            },
-            {
-              id: "cart03",
-              label: "MBC1+RAM+BATTERY",
-              type: "radio",
-              checked: false,
-              click() {
-                notifyListeners("updateSetting", "cartType", "03");
-              }
-            },
-            {
-              id: "cart1A",
-              label: "MBC5+RAM",
-              type: "radio",
-              checked: false,
-              click() {
-                notifyListeners("updateSetting", "cartType", "1A");
-              }
-            },
-            {
-              id: "cart02",
-              label: "MBC1+RAM",
-              type: "radio",
-              checked: false,
-              click() {
-                notifyListeners("updateSetting", "cartType", "02");
-              }
-            }
-          ]
         }
       ]
     },

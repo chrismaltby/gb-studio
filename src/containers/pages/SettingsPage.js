@@ -14,6 +14,7 @@ import * as actions from "../../actions";
 import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
+import CartPicker from "../../components/forms/CartPicker";
 
 class SettingsPage extends Component {
   onEditSetting = key => e => {
@@ -37,23 +38,12 @@ class SettingsPage extends Component {
       return <div />;
     }
 
-    const { name, author, notes, scenes } = project;
-    const {
-      customColorsEnabled,
-      customHead,
-      startSceneId,
-      playerSpriteSheetId,
-      startDirection,
-      startAnimSpeed,
-      startMoveSpeed,
-      startX,
-      startY
-    } = settings;
+    const { scenes } = project;
+    const { customColorsEnabled, customHead } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
       const scene = scenesLookup[sceneId];
-      console.log(scene);
       return memo + scene.actors.length;
     }, 0);
 
@@ -84,44 +74,10 @@ class SettingsPage extends Component {
         </PageHeader>
         <PageContent>
           <section>
-            <h2>Project</h2>
-            <FormField>
-              <label htmlFor="projectName">
-                {l10n("FIELD_NAME")}
-                <input
-                  id="projectName"
-                  value={name || ""}
-                  placeholder="Project Name"
-                  onChange={this.onEditProject("name")}
-                />
-              </label>
-            </FormField>
-            <FormField>
-              <label htmlFor="projectAuthor">
-                {l10n("FIELD_AUTHOR")}
-                <input
-                  id="projectAuthor"
-                  value={author || ""}
-                  placeholder="Author"
-                  onChange={this.onEditProject("author")}
-                />
-              </label>
-            </FormField>
-            <ToggleableFormField
-              htmlFor="projectNotes"
-              closedLabel={l10n("FIELD_ADD_NOTES")}
-              label={l10n("FIELD_NOTES")}
-              open={!!notes}
-            >
-              <textarea
-                id="projectNotes"
-                value={notes || ""}
-                placeholder={l10n("FIELD_NOTES")}
-                onChange={this.onEditProject("notes")}
-                rows={3}
-              />
-            </ToggleableFormField>
+            <h2>Controls</h2>
+            <CustomControlsPicker />
           </section>
+
           <section>
             <h2>Colors</h2>
 
@@ -136,16 +92,11 @@ class SettingsPage extends Component {
 
           <section>
             <h2>{l10n("SETTINGS_CART_TYPE")}</h2>
-          </section>
-
-          <section>
-            <h2>Controls</h2>
-            <CustomControlsPicker />
+            <CartPicker />
           </section>
 
           <section>
             <h2>Custom Header (Web Build)</h2>
-
             <FormField>
               <label htmlFor="customHead">
                 {l10n("FIELD_CUSTOM_HEAD")}

@@ -5,15 +5,15 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
-import CustomPalettePicker from "../forms/CustomPalettePicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { FormField, ToggleableFormField, ToggleableCheckBoxField } from "../library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape } from "../../reducers/stateShape";
+import Button from "../library/Button";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -92,14 +92,6 @@ class WorldEditor extends Component {
                 rows={3}
               />
             </ToggleableFormField>
-
-            <ToggleableCheckBoxField
-              label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
-              open={settings.customColorsEnabled}
-              onToggle={this.onEditSetting("customColorsEnabled")}
-            >
-              <CustomPalettePicker />
-            </ToggleableCheckBoxField>
           </div>
         </SidebarColumn>
 

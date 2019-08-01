@@ -58,6 +58,16 @@ const buildProject = async (
         }; }</style>`
       : "";
     const customHead = data.settings.customHead || "";
+    const customControls = JSON.stringify({
+      up: data.settings.customControlsUp,
+      down: data.settings.customControlsDown,
+      left: data.settings.customControlsLeft,
+      right: data.settings.customControlsRight,
+      a: data.settings.customControlsA,
+      b: data.settings.customControlsB,
+      start: data.settings.customControlsStart,
+      select: data.settings.customControlsSelect
+    });
     const html = (await fs.readFile(
       `${outputRoot}/build/web/index.html`,
       "utf8"
@@ -65,7 +75,8 @@ const buildProject = async (
       .replace(/___PROJECT_NAME___/g, projectName)
       .replace(/___AUTHOR___/g, author)
       .replace(/___COLORS_HEAD___/g, colorsHead)
-      .replace(/___PROJECT_HEAD___/g, customHead);
+      .replace(/___PROJECT_HEAD___/g, customHead)
+      .replace(/___CUSTOM_CONTROLS___/g, customControls);
 
     await fs.writeFile(`${outputRoot}/build/web/index.html`, html);
   }

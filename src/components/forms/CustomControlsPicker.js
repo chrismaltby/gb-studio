@@ -6,49 +6,61 @@ import l10n from "../../lib/helpers/l10n";
 import * as actions from "../../actions";
 import GBControlsPreview from "../library/GBControlsPreview";
 import { FormField } from "../library/Forms";
+import Button from "../library/Button";
 
 const directions = [
   {
     key: "up",
-    label: "Up",
-    settingKey: "customControlsUp",
-    defaultValue: ["ArrowUp", "w"]
+    label: "Up"
   },
   {
     key: "down",
-    label: "Down",
-    settingKey: "customControlsDown",
-    defaultValue: ["ArrowDown", "s"]
+    label: "Down"
   },
   {
     key: "left",
-    label: "Left",
-    settingKey: "customControlsLeft",
-    defaultValue: ["ArrowLeft", "a"]
+    label: "Left"
   },
   {
     key: "right",
-    label: "Right",
-    settingKey: "customControlsRights",
-    defaultValue: ["ArrowRight", "d"]
+    label: "Right"
   }
 ];
+
 const buttons = [
-  { key: "a", label: "A", settingKey: "customControlsA", defaultValue: ["z"] },
-  { key: "b", label: "B", settingKey: "customControlsB", defaultValue: ["x"] },
+  { key: "a", label: "A" },
+  { key: "b", label: "B" },
   {
     key: "start",
-    label: "Start",
-    settingKey: "customControlsStart",
-    defaultValue: ["Enter"]
+    label: "Start"
   },
   {
     key: "select",
-    label: "Select",
-    settingKey: "customControlsSelect",
-    defaultValue: ["Shift"]
+    label: "Select"
   }
 ];
+
+const keyMap = {
+  up: "customControlsUp",
+  down: "customControlsDown",
+  left: "customControlsLeft",
+  right: "customControlsRight",
+  a: "customControlsA",
+  b: "customControlsB",
+  start: "customControlsStart",
+  select: "customControlsSelect"
+};
+
+const defaultValues = {
+  customControlsUp: ["ArrowUp", "w"],
+  customControlsDown: ["ArrowDown", "s"],
+  customControlsLeft: ["ArrowLeft", "a"],
+  customControlsRight: ["ArrowRight", "d"],
+  customControlsA: ["Alt", "z", "j"],
+  customControlsB: ["Control", "k", "x"],
+  customControlsStart: ["Enter"],
+  customControlsSelect: ["Shift"]
+};
 
 class CustomControlsPicker extends Component {
   constructor() {
@@ -60,23 +72,58 @@ class CustomControlsPicker extends Component {
   }
 
   onKeyDown = e => {
+    const { settings, editProjectSettings } = this.props;
     const { input } = this.state;
     if (input) {
       e.preventDefault();
-      console.log("SET INPUT", input, e.key);
+      const inputKey = keyMap[input];
+      const currentValue = Array.isArray(settings[inputKey])
+        ? settings[inputKey]
+        : defaultValues[inputKey];
+
       this.setState({ input: "" });
       this.inputRef.current.blur();
+
+      if (e.key === "Backspace") {
+        editProjectSettings({
+          [inputKey]: []
+        });
+      } else {
+        const patch = Object.values(keyMap).reduce((memo, otherInputKey) => {
+          if (inputKey !== otherInputKey) {
+            const otherValue = Array.isArray(settings[otherInputKey])
+              ? settings[otherInputKey]
+              : defaultValues[otherInputKey];
+            if (otherValue.indexOf(e.key) > -1) {
+              return {
+                ...memo,
+                [otherInputKey]: otherValue.filter(k => k !== e.key)
+              };
+            }
+            return memo;
+          }
+          if (currentValue.indexOf(e.key) > -1) {
+            return {
+              ...memo,
+              [inputKey]: currentValue.filter(k => k !== e.key)
+            };
+          }
+          return {
+            ...memo,
+            [inputKey]: [].concat(currentValue, e.key)
+          };
+        }, {});
+        editProjectSettings(patch);
+      }
     }
   };
 
   onSelectInput = input => {
-    // console.log({ input });
     this.setState({ input });
     this.inputRef.current.focus();
   };
 
   onFocus = input => e => {
-    // e.currentTarget.blur();
     this.setState({ input });
     this.inputRef.current.focus();
   };
@@ -85,7 +132,19 @@ class CustomControlsPicker extends Component {
     this.setState({ input: "" });
   };
 
-  onChange = input => value => {};
+  noop = () => {};
+
+  onRestoreDefault = () => {
+    const { editProjectSettings } = this.props;
+    editProjectSettings(
+      Object.keys(defaultValues).reduce((memo, key) => {
+        return {
+          ...memo,
+          [key]: undefined
+        };
+      }, {})
+    );
+  };
 
   render() {
     const { settings } = this.props;
@@ -101,14 +160,16 @@ class CustomControlsPicker extends Component {
                   <input
                     id="directionUp"
                     value={(
-                      settings[direction.settingKey] || direction.defaultValue
+                      settings[keyMap[direction.key]] ||
+                      defaultValues[keyMap[direction.key]] ||
+                      []
                     ).join(", ")}
+                    onChange={this.noop}
                     placeholder=""
                     className={cx("CustomControlsPicker__Input", {
                       "CustomControlsPicker__Input--Focus":
                         direction.key === input
                     })}
-                    onChange={this.onChange(direction.key)}
                     onFocus={this.onFocus(direction.key)}
                   />
                 </label>
@@ -123,13 +184,15 @@ class CustomControlsPicker extends Component {
                   <input
                     id="buttonUp"
                     value={(
-                      settings[button.settingKey] || button.defaultValue
+                      settings[keyMap[button.key]] ||
+                      defaultValues[keyMap[button.key]] ||
+                      []
                     ).join(", ")}
+                    onChange={this.noop}
                     placeholder=""
                     className={cx("CustomControlsPicker__Input", {
                       "CustomControlsPicker__Input--Focus": button.key === input
                     })}
-                    onChange={this.onChange(button.key)}
                     onFocus={this.onFocus(button.key)}
                   />
                 </label>
@@ -149,13 +212,31 @@ class CustomControlsPicker extends Component {
           onKeyDown={this.onKeyDown}
           onBlur={this.onBlur}
         />
-        <button>Restore Defaults</button>
+        <div style={{ marginTop: 30 }}>
+          <Button onClick={this.onRestoreDefault}>Restore Default</Button>
+        </div>
       </div>
     );
   }
 }
 
-function mapStateToProps(state, props) {
+const CustomControlPropType = PropTypes.arrayOf(PropTypes.string);
+
+CustomControlsPicker.propTypes = {
+  settings: PropTypes.shape({
+    customControlsUp: CustomControlPropType,
+    customControlsDown: CustomControlPropType,
+    customControlsLeft: CustomControlPropType,
+    customControlsRight: CustomControlPropType,
+    customControlsA: CustomControlPropType,
+    customControlsB: CustomControlPropType,
+    customControlsStart: CustomControlPropType,
+    customControlsSelect: CustomControlPropType
+  }).isRequired,
+  editProjectSettings: PropTypes.func.isRequired
+};
+
+function mapStateToProps(state) {
   const project = state.entities.present.result;
   const { settings } = project;
   return {

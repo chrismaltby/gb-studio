@@ -33,7 +33,7 @@ export default {
     }
   },
   navigation: {
-    section: "settings",
+    section: "world",
     status: {}
   },
   music: {

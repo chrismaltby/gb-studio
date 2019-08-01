@@ -3,7 +3,7 @@
   border-radius: 8px;
   border-bottom-right-radius: 60px;
   height: 210px;
-  width: 390px;
+  width: 360px;
   position: relative;
 }
 
@@ -73,12 +73,12 @@
 }
 
 .GBControlsPreview__Button--b {
-  left: 250px;
+  left: 220px;
   top: 70px;
 }
 
 .GBControlsPreview__Button--a {
-  left: 320px;
+  left: 290px;
   top: 50px;
 }
 
@@ -130,5 +130,5 @@
 .GBControlsPreview__Button--Selected,
 .GBControlsPreview__DPadButton--Selected {
   z-index: 10;
-  box-shadow: 0 0 0px 4px var(--highlight-color);
+  box-shadow: 0 0 0px 3px var(--highlight-color);
 }

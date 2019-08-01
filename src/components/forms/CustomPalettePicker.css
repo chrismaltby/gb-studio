@@ -1,6 +1,18 @@
 .CustomPalettePicker {
   width: 100%;
+}
+
+.CustomPalettePicker__Columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 20px;
+  grid-row-gap: 0px;
+}
+
+.CustomPalettePicker__Colors {
   display: flex;
+  margin-bottom: 12px;
 }
 
 .CustomPalettePicker label,
@@ -22,20 +34,11 @@
 }
 
 .CustomPalettePicker label input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  left: 0;
-  top: 0;
-  padding: 0;
-  margin: 0;
-  opacity: 0;
 }
 
 .CustomPalettePicker__Legend {
   flex: 1;
-  line-height: 30px;
-  text-align: right;
+  line-height: 49px;
   margin-top: 5px;
   margin-right: 5px;
 }
@@ -50,7 +53,7 @@
   border-right: 0;
   border-left: 0;
   color: var(--button-text-color);
-  line-height: 60px;
+  line-height: 98px;
   font-size: 30px;
 }
 
