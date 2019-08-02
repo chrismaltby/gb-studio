@@ -2,6 +2,7 @@ import uuid from "uuid/v4";
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
+import { mapValues } from "lodash";
 import {
   PROJECT_LOAD_SUCCESS,
   SPRITE_LOAD_SUCCESS,
@@ -37,7 +38,11 @@ import {
   SCROLL_WORLD
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
-import { patchEvents, regenerateEventIds } from "../lib/helpers/eventSystem";
+import {
+  patchEvents,
+  regenerateEventIds,
+  mapEvents
+} from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 
 const addEntity = (state, type, data) => {
@@ -299,11 +304,34 @@ const fixSceneCollisions = state => {
 
 const addScene = (state, action) => {
   const defaults = action.defaults || {};
-  const script = defaults.script && defaults.script.map(regenerateEventIds);
-  const backgroundId = state.result.backgrounds[0];
-  const background = state.entities.backgrounds[backgroundId];
   const defaultActors = defaults.actors || [];
   const defaultTriggers = defaults.triggers || [];
+
+  const actorNewIdLookup = defaults.actors.reduce((memo, actor) => {
+    return { ...memo, [actor.id]: uuid() };
+  }, {});
+  const triggerNewIdLookup = defaults.triggers.reduce((memo, actor) => {
+    return { ...memo, [actor.id]: uuid() };
+  }, {});
+  const newIdsLookup = Object.assign({}, actorNewIdLookup, triggerNewIdLookup);
+
+  const fixScript = script =>
+    script &&
+    mapEvents(script.map(regenerateEventIds), event => {
+      return {
+        ...event,
+        args: mapValues(event.args, arg => {
+          if (newIdsLookup[arg]) {
+            return newIdsLookup[arg];
+          }
+          return arg;
+        })
+      };
+    });
+
+  const script = fixScript(defaults.script);
+  const backgroundId = state.result.backgrounds[0];
+  const background = state.entities.backgrounds[backgroundId];
 
   const newActorIds = [];
   const newTriggerIds = [];
@@ -313,9 +341,8 @@ const addScene = (state, action) => {
   // Copy default/prefab actors to new scene
   for (let i = 0; i < defaultActors.length; i++) {
     const actorData = defaultActors[i];
-    const actorId = uuid();
-    const actorScript =
-      actorData.script && actorData.script.map(regenerateEventIds);
+    const actorId = actorNewIdLookup[actorData.id];
+    const actorScript = fixScript(actorData.script);
     newActorIds.push(actorId);
     nextState = addEntity(
       nextState,
@@ -336,9 +363,8 @@ const addScene = (state, action) => {
   // Copy default/prefab triggers to new scene
   for (let i = 0; i < defaultTriggers.length; i++) {
     const triggerData = defaultTriggers[i];
-    const triggerId = uuid();
-    const triggerScript =
-      triggerData.script && triggerData.script.map(regenerateEventIds);
+    const triggerId = triggerNewIdLookup[triggerData.id];
+    const triggerScript = fixScript(triggerData.script);
     newTriggerIds.push(triggerId);
     nextState = addEntity(
       nextState,

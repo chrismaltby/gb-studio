@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix for issue with cursor position moving while editing dialogue [@MattTuttle](https://github.com/MattTuttle)
 - Add support for GameBoy Color palettes [@fydo](https://github.com/fydo)
 - Add Settings section grouping project settings together and adding settings for custom keyboard controls and custom HTML header
+- Fix issue where copy / pasting scenes would break actor connections in scripts
 
 ## [1.1.0]
 
