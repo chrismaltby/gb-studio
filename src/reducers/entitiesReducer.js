@@ -307,10 +307,10 @@ const addScene = (state, action) => {
   const defaultActors = defaults.actors || [];
   const defaultTriggers = defaults.triggers || [];
 
-  const actorNewIdLookup = defaults.actors.reduce((memo, actor) => {
+  const actorNewIdLookup = defaultActors.reduce((memo, actor) => {
     return { ...memo, [actor.id]: uuid() };
   }, {});
-  const triggerNewIdLookup = defaults.triggers.reduce((memo, actor) => {
+  const triggerNewIdLookup = defaultTriggers.reduce((memo, actor) => {
     return { ...memo, [actor.id]: uuid() };
   }, {});
   const newIdsLookup = Object.assign({}, actorNewIdLookup, triggerNewIdLookup);
