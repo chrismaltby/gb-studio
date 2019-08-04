@@ -534,7 +534,7 @@ void Script_MusicStop_b()
  */
 void Script_ResetVariables_b()
 {
-  UBYTE i;
+  UWORD i;
   for (i = 0; i != NUM_VARIABLES; ++i)
   {
     script_variables[i] = FALSE;
