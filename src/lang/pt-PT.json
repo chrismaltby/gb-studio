@@ -15,6 +15,7 @@
   "NAV_MUSIC": "Música",
   "NAV_DIALOGUE_REVIEW": "Revisão de Diálogo",
   "NAV_BUILD_AND_RUN": "Compilar e Executar",
+  "NAV_SETTINGS": "Configurações",
 
   "// 3": "Barra de Ferramentas --------------------------------------------------",
   "TOOLBAR_MODIFIED": "modificado",
@@ -144,6 +145,9 @@
   "FIELD_COLOR2_NAME": "Verde claro",
   "FIELD_COLOR3_NAME": "Verde escuro",
   "FIELD_COLOR4_NAME": "Verde mais escuro",
+  "FIELD_RESTORE_DEFAULT": "Restaurar predefinição",
+  "FIELD_ORIGINAL": "Original",
+  "FIELD_CUSTOM": "Customizado",
 
   "// 7": "Visualizar Activos ---------------------------------------------",
   "ASSET_SEARCH": "Procurar...",
@@ -260,6 +264,7 @@
   "MENU_MUSIC": "Música",
   "MENU_DIALOGUE_REVIEW": "Revisão de Diálogo",
   "MENU_BUILD_AND_RUN": "Compilar e Executar",
+  "MENU_SETTINGS": "Configurações",
   "MENU_THEME": "Tema",
   "MENU_THEME_DEFAULT": "Predefinição de Sistema",
   "MENU_THEME_LIGHT": "Branco",
@@ -364,5 +369,17 @@
   "DIALOG_MIGRATE": "Migrar para {version}",
   "DIALOG_FUTURE": "Projecto de GB Studio não suportado.",
   "DIALOG_FUTURE_DESCRIPTION": "Este projecto foi criado com a versão {currentVersion}, mais recente à que o GB Studio suporta. Projecto compatível apenas até versão {version}. \n\nPoderá ser necessário actualizar o GB Studio.",
-  "DIALOG_OPEN_ANYWAY": "Ignorar e Abrir"
+  "DIALOG_OPEN_ANYWAY": "Ignorar e Abrir",
+
+  "// 16": "Configurações ----------------------------------------------------",
+
+  "SETTINGS": "Configurações",
+  "SETTINGS_SCENES": "Mapas",
+  "SETTINGS_SCENE": "Mapa",
+  "SETTINGS_ACTORS": "Actores",
+  "SETTINGS_ACTOR": "Actor",
+  "SETTINGS_CART_TYPE": "Tipo de Disquete",
+  "SETTINGS_CONTROLS": "Controlos de comando",
+  "SETTINGS_COLORS": "Cores",
+  "SETTINGS_CUSTOM_HEADER": "Cabeçalho customizado (ao exportar para Web)"
 }
