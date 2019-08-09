@@ -51,7 +51,7 @@
   "FIELD_NOTES": "Notizen",
   "FIELD_ADD_NOTES": "Notizen hinzufügen",
   "FIELD_TYPE": "Typ",
-  "FIELD_ACTOR_INVOKE": "Führt den folgenden Darsteller-Skript aus",
+  "FIELD_ACTOR_INVOKE": "Führt das folgende Darsteller-Skript aus",
   "FIELD_BACKGROUND": "Hintergrund",
   "FIELD_SPRITE_SHEET": "Sprite-Sheet",
   "FIELD_PLAYER_SPRITE_SHEET": "Spieler Sprite-Sheet",
