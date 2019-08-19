@@ -197,7 +197,11 @@ export const pauseMusic = () => {
 
 export const saveProject = () => async (dispatch, getState) => {
   const state = getState();
-  if (!state.document.loaded || state.document.saving) {
+  if (
+    !state.document.loaded ||
+    state.document.saving ||
+    !state.document.modified
+  ) {
     return;
   }
   await asyncAction(
