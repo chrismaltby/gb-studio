@@ -3,7 +3,7 @@ import { writeFileWithBackupAsync } from "../../../src/lib/helpers/fs/writeFileW
 
 test("Should write file correctly on first save", async () => {
   const data = "Testing Backup 123";
-  const path = `${__dirname}/tmp_data.txt`;
+  const path = `${__dirname}/tmp_data_bak_1.txt`;
   await writeFileWithBackupAsync(path, data);
   const savedData = await readFile(path, "utf8");
   expect(savedData).toBe(data);
@@ -11,9 +11,9 @@ test("Should write file correctly on first save", async () => {
 });
 
 test("Should store backup of previous store in .bak file", async () => {
-  const data = "Testing Backup 123";
+  const data = "Testing Backup 456";
   const updatedData = "Testing Backup UPDATED";
-  const path = `${__dirname}/tmp_data.txt`;
+  const path = `${__dirname}/tmp_data_bak_2.txt`;
   await writeFileWithBackupAsync(path, data);
   const savedData = await readFile(path, "utf8");
   expect(savedData).toBe(data);
@@ -27,8 +27,8 @@ test("Should store backup of previous store in .bak file", async () => {
 });
 
 test("Should write file with backup using callbacks", done => {
-  const data = "Testing Backup 123";
-  const path = `${__dirname}/tmp_data.txt`;
+  const data = "Testing Backup 789";
+  const path = `${__dirname}/tmp_data_bak_3.txt`;
   writeFileWithBackupAsync(path, data, writeError => {
     expect(writeError).toBeFalsy();
     readFile(path, "utf8", (readError, savedData) => {

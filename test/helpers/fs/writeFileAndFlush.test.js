@@ -6,7 +6,7 @@ import {
 
 test("Should write file correctly using callbacks", done => {
   const data = "Testing 123";
-  const path = `${__dirname}/tmp_data.txt`;
+  const path = `${__dirname}/tmp_data1.txt`;
   writeFileAndFlush(path, data, writeError => {
     expect(writeError).toBeFalsy();
     readFile(path, "utf8", (readError, savedData) => {
@@ -21,8 +21,8 @@ test("Should write file correctly using callbacks", done => {
 });
 
 test("Should write file correctly using promises", async () => {
-  const data = "Testing 123";
-  const path = `${__dirname}/tmp_data.txt`;
+  const data = "Testing 456";
+  const path = `${__dirname}/tmp_data2.txt`;
   await writeFileAndFlushAsync(path, data);
   const savedData = await readFile(path, "utf8");
   expect(savedData).toBe(data);
@@ -30,8 +30,8 @@ test("Should write file correctly using promises", async () => {
 });
 
 test("Should allow setting file encoding", async () => {
-  const data = "Testing 123";
-  const path = `${__dirname}/tmp_data.txt`;
+  const data = "Testing 789";
+  const path = `${__dirname}/tmp_data3.txt`;
   await writeFileAndFlushAsync(path, data, "utf8");
   const savedData = await readFile(path, "utf8");
   expect(savedData).toBe(data);
