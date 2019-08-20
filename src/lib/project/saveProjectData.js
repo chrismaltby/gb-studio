@@ -1,7 +1,7 @@
-import fs from "fs-extra";
+import { writeFileWithBackupAsync } from "../helpers/fs/writeFileWithBackup";
 
 const saveProjectData = async (projectPath, project) => {
-  fs.writeFileSync(projectPath, JSON.stringify(project, null, 4));
+  await writeFileWithBackupAsync(projectPath, JSON.stringify(project, null, 4));
 };
 
 export default saveProjectData;
