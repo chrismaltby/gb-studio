@@ -71,7 +71,9 @@ import {
   IF_SAVED_DATA,
   AWAIT_INPUT,
   REMOVE_INPUT_SCRIPT,
-  SET_INPUT_SCRIPT
+  SET_INPUT_SCRIPT,
+  VARIABLE_ADD_FLAGS,
+  VARIABLE_CLEAR_FLAGS
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -501,6 +503,20 @@ test("Should be able to reset all variables to false", () => {
   const sb = new ScriptBuilder(output, { variables: ["0"] });
   sb.variablesReset();
   expect(output).toEqual([cmd(RESET_VARIABLES)]);
+});
+
+test("Should be able to add flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableAddFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_ADD_FLAGS), 0, 0, 129]);
+});
+
+test("Should be able to clear flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableClearFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_CLEAR_FLAGS), 0, 0, 129]);
 });
 
 test("Should be able to show a white overlay", () => {
