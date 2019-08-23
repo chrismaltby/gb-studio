@@ -71,7 +71,9 @@ import {
   NEXT_FRAME,
   JUMP,
   SET_INPUT_SCRIPT,
-  REMOVE_INPUT_SCRIPT
+  REMOVE_INPUT_SCRIPT,
+  VARIABLE_ADD_FLAGS,
+  VARIABLE_CLEAR_FLAGS
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -417,6 +419,26 @@ class ScriptBuilder {
   variablesReset = () => {
     const output = this.output;
     output.push(cmd(RESET_VARIABLES));
+  };
+
+  variableAddFlags = (setVariable, flags) => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(setVariable, variables);
+    output.push(cmd(VARIABLE_ADD_FLAGS));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(flags); 
+  };
+
+  variableClearFlags = (setVariable, flags) => {
+    const output = this.output;
+    const { variables } = this.options;
+    const variableIndex = getVariableIndex(setVariable, variables);
+    output.push(cmd(VARIABLE_CLEAR_FLAGS));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(flags); 
   };
 
   // Scenes

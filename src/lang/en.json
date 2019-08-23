@@ -148,6 +148,14 @@
   "FIELD_RESTORE_DEFAULT": "Restore Default",
   "FIELD_ORIGINAL": "Original",
   "FIELD_CUSTOM": "Custom",
+  "FIELD_FLAG_1": "Flag 1",
+  "FIELD_FLAG_2": "Flag 2",
+  "FIELD_FLAG_3": "Flag 3",
+  "FIELD_FLAG_4": "Flag 4",
+  "FIELD_FLAG_5": "Flag 5",
+  "FIELD_FLAG_6": "Flag 6",
+  "FIELD_FLAG_7": "Flag 7",
+  "FIELD_FLAG_8": "Flag 8",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -240,6 +248,10 @@
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Set Animation Frame Using Variable",
   "EVENT_CODE": "Code: Custom Script",
   "EVENT_NOTES": "Notes",
+  "EVENT_SET_FLAGS": "Variable: Set Flags",
+  "EVENT_ADD_FLAGS": "Variable: Add Flags",
+  "EVENT_CLEAR_FLAGS": "Variable: Clear Flags",
+  "EVENT_IF_FLAGS_COMPARE": "If Variable Has Flag",
 
   "// 10": "Menu -----------------------------------------------------",
 

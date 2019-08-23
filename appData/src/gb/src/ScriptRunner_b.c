@@ -1646,3 +1646,37 @@ void Script_TextMulti_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+/*
+ * Command: VariableAddFlags
+ * ----------------------------
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_VariableAddFlags_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a | b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: VariableClearFlags
+ * ----------------------------
+ *   arg0: High 8 bits for flag index
+ *   arg1: Low 8 bits for flag index
+ *   arg2: Value
+ */
+void Script_VariableClearFlags_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  UBYTE a = script_variables[ptr];
+  UBYTE b = script_cmd_args[2];
+  script_variables[ptr] = a & ~b;
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
