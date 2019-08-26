@@ -105,7 +105,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_TextMulti_b, 1},          // 0x50
     {Script_ActorSetFrameToVal_b, 2}, // 0x51
     {Script_VariableAddFlags_b, 3},   // 0x52
-    {Script_VariableClearFlags_b, 3}  // 0x53
+    {Script_VariableClearFlags_b, 3}, // 0x53
+    {Script_SoundPlayBeep_b, 2},      // 0x54
 };
 
 UBYTE ScriptLastFnComplete();

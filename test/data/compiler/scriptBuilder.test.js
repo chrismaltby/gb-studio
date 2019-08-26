@@ -73,7 +73,8 @@ import {
   REMOVE_INPUT_SCRIPT,
   SET_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
-  VARIABLE_CLEAR_FLAGS
+  VARIABLE_CLEAR_FLAGS,
+  SOUND_PLAY_BEEP
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -974,6 +975,13 @@ test("Should be able to stop music", () => {
   });
   sb.musicStop();
   expect(output).toEqual([cmd(MUSIC_STOP)]);
+});
+
+test("Should be able to play a beep sound", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayBeep(0x321);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 0x03, 0x21]);
 });
 
 test("Should be able to fade in", () => {

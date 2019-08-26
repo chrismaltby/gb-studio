@@ -73,7 +73,8 @@ import {
   SET_INPUT_SCRIPT,
   REMOVE_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
-  VARIABLE_CLEAR_FLAGS
+  VARIABLE_CLEAR_FLAGS,
+  SOUND_PLAY_BEEP
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -721,6 +722,15 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(MUSIC_STOP));
   };
+
+  // Sound
+
+  soundPlayBeep = (tone = 1024) => {
+    const output = this.output;
+    output.push(cmd(SOUND_PLAY_BEEP));
+    output.push(hi(tone));
+    output.push(lo(tone));
+  }
 
   // Data
 

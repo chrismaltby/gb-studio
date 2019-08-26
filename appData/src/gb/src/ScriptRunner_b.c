@@ -1680,3 +1680,30 @@ void Script_VariableClearFlags_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+
+/*
+ * Command: SoundPlayBeep
+ * ----------------------------
+ */
+void Script_SoundPlayBeep_b()
+{
+  UWORD tone = (script_cmd_args[0] * 256) + script_cmd_args[1];
+
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play tone on channel 1
+  NR11_REG = (0x00 << 6) | 0x01;
+  NR12_REG = (0x0F << 4) | 0x00;
+  NR13_REG = (tone & 0x00FF);
+  NR14_REG = 0x80 | 0x40 | ((tone & 0x0700) >> 8);
+  
+  // delay 0.5s
+  script_action_complete = FALSE;
+  wait_time = 30;
+
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+
