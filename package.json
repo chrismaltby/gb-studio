@@ -122,7 +122,7 @@
     "redux-undo": "^0.6.1",
     "reselect": "^4.0.0",
     "rimraf": "^2.6.3",
-    "semver": "^6.0.0",
+    "semver": "^6.3.0",
     "uuid": "^3.3.2",
     "vm2": "^3.8.1"
   },
@@ -137,6 +137,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "cross-env": "^5.2.0",
+    "electron": "^6.0.4",
     "electron-forge": "^5.2.4",
     "electron-prebuilt-compile": "4.0.0",
     "eslint": "^5.16.0",
