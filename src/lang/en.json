@@ -157,6 +157,8 @@
   "FIELD_FLAG_7": "Flag 7",
   "FIELD_FLAG_8": "Flag 8",
   "FIELD_TONE": "Tone",
+  "FIELD_PITCH": "Pitch",
+  "FIELD_SOUND_PLAY_CRASH": "Play crash symbol sound",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -253,7 +255,9 @@
   "EVENT_ADD_FLAGS": "Variable: Add Flags",
   "EVENT_CLEAR_FLAGS": "Variable: Clear Flags",
   "EVENT_IF_FLAGS_COMPARE": "If Variable Has Flag",
+  "EVENT_SOUND_PLAY_TONE": "Sound: Play Tone",
   "EVENT_SOUND_PLAY_BEEP": "Sound: Play Beep",
+  "EVENT_SOUND_PLAY_CRASH": "Sound: Play Crash",
 
   "// 10": "Menu -----------------------------------------------------",
 

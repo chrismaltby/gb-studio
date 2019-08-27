@@ -4,19 +4,19 @@ export const id = "EVENT_SOUND_PLAY_BEEP";
 
 export const fields = [
   {
-    key: "tone",
+    key: "pitch",
     type: "number",
-    label: l10n("FIELD_TONE"),
+    label: l10n("FIELD_PITCH"),
     min: 0,
-    max: 2047,
+    max: 7,
     step: 1,
-    defaultValue: 1024
+    defaultValue: 4
   }
 ];
 
 
 export const compile = (input, helpers) => {
   const { soundPlayBeep } = helpers;
-  let tone = (typeof input.tone === "number") ? input.tone : 1024;
-  soundPlayBeep(tone);
+  let pitch = (typeof input.pitch === "number") ? input.pitch : 4;
+  soundPlayBeep(pitch);
 };

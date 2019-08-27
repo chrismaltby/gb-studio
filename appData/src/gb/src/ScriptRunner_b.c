@@ -1683,10 +1683,10 @@ void Script_VariableClearFlags_b()
 
 
 /*
- * Command: SoundPlayBeep
+ * Command: SoundPlayTone
  * ----------------------------
  */
-void Script_SoundPlayBeep_b()
+void Script_SoundPlayTone_b()
 {
   UWORD tone = (script_cmd_args[0] * 256) + script_cmd_args[1];
 
@@ -1694,16 +1694,75 @@ void Script_SoundPlayBeep_b()
   NR52_REG = 0x80;
 
   // play tone on channel 1
+  NR10_REG = 0x00;
   NR11_REG = (0x00 << 6) | 0x01;
   NR12_REG = (0x0F << 4) | 0x00;
   NR13_REG = (tone & 0x00FF);
   NR14_REG = 0x80 | 0x40 | ((tone & 0x0700) >> 8);
-  
-  // delay 0.5s
-  script_action_complete = FALSE;
-  wait_time = 30;
 
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 1
+  NR51_REG |= 0x11;
+  
+  // delay 0.25s
+  script_action_complete = FALSE;
+  wait_time = 15;
   script_ptr += 1 + script_cmd_args_len;
 }
 
 
+/*
+ * Command: SoundPlayBeep
+ * ----------------------------
+ */
+void Script_SoundPlayBeep_b()
+{
+  UBYTE pitch = script_cmd_args[0];
+
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play crash sound on channel 4
+  NR41_REG = 0x01;
+  NR42_REG = (0x0F << 4);
+  NR43_REG = 0x10 | 0x08 | pitch;
+  NR44_REG = 0x80 | 0x40;
+
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 4
+  NR51_REG |= 0x88;
+  
+  // no delay
+  script_continue = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: SoundPlayCrash
+ * ----------------------------
+ */
+void Script_SoundPlayCrash_b()
+{
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play crash sound on channel 4
+  NR41_REG = 0x01;
+  NR42_REG = (0x0F << 4) | 0x02;
+  NR43_REG = 0x13;
+  NR44_REG = 0x80;
+
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 4
+  NR51_REG |= 0x88;
+  
+  // no delay
+  script_continue = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}

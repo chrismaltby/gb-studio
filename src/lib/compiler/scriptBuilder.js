@@ -74,7 +74,9 @@ import {
   REMOVE_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
-  SOUND_PLAY_BEEP
+  SOUND_PLAY_TONE,
+  SOUND_PLAY_BEEP,
+  SOUND_PLAY_CRASH
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -725,11 +727,22 @@ class ScriptBuilder {
 
   // Sound
 
-  soundPlayBeep = (tone = 1024) => {
+  soundPlayTone = (tone = 1024) => {
     const output = this.output;
-    output.push(cmd(SOUND_PLAY_BEEP));
+    output.push(cmd(SOUND_PLAY_TONE));
     output.push(hi(tone));
     output.push(lo(tone));
+  }
+
+  soundPlayBeep = (pitch = 4) => {
+    const output = this.output;
+    output.push(cmd(SOUND_PLAY_BEEP));
+    output.push(pitch & 0x07);
+  }
+
+  soundPlayCrash = () => {
+    const output = this.output;
+    output.push(cmd(SOUND_PLAY_CRASH));
   }
 
   // Data
