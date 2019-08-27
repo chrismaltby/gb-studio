@@ -1,6 +1,6 @@
 import { compile } from "../../src/lib/events/eventSoundPlayBeep";
 
-test("Should play beep sound with tone 1024 if tone not set", () => {
+test("Should play beep with pitch 4 if not set", () => {
   const mockSoundPlayBeep = jest.fn();
 
   compile(
@@ -9,20 +9,20 @@ test("Should play beep sound with tone 1024 if tone not set", () => {
       soundPlayBeep: mockSoundPlayBeep
     }
   );
-  expect(mockSoundPlayBeep).toBeCalledWith(1024);
+  expect(mockSoundPlayBeep).toBeCalledWith(4);
 });
 
 
-test("Should be able to play beep sound with tone 1000", () => {
+test("Should be able to play beep with pitch 7", () => {
   const mockSoundPlayBeep = jest.fn();
 
   compile(
     {
-      tone: 1000
+      pitch: 7
     },
     {
       soundPlayBeep: mockSoundPlayBeep
     }
   );
-  expect(mockSoundPlayBeep).toBeCalledWith(1000);
+  expect(mockSoundPlayBeep).toBeCalledWith(7);
 });

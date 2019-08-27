@@ -74,7 +74,9 @@ import {
   SET_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
-  SOUND_PLAY_BEEP
+  SOUND_PLAY_TONE,
+  SOUND_PLAY_BEEP,
+  SOUND_PLAY_CRASH
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -977,11 +979,27 @@ test("Should be able to stop music", () => {
   expect(output).toEqual([cmd(MUSIC_STOP)]);
 });
 
+
+test("Should be able to play a tone sound", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayTone(0x321);
+  expect(output).toEqual([cmd(SOUND_PLAY_TONE), 0x03, 0x21]);
+});
+
+
 test("Should be able to play a beep sound", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.soundPlayBeep(0x321);
-  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 0x03, 0x21]);
+  sb.soundPlayBeep(3);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 3]);
+});
+
+test("Should be able to play a crash sound", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayCrash();
+  expect(output).toEqual([cmd(SOUND_PLAY_CRASH)]);
 });
 
 test("Should be able to fade in", () => {
