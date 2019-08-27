@@ -186,18 +186,6 @@ class ActionMini extends Component {
     } = this.props;
     const { rename, clipboardEvent } = this.state;
     const { command } = action;
-
-    /*if (command === EVENT_COMMENT) {
-      
-        <div
-          className={cx("ActionMini", {
-            "EventComment": true
-          })}
-        >
-          
-        </div>
-      
-    }*/
     
     if (command === EVENT_END) {
       return connectDropTarget(
