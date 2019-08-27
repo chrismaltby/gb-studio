@@ -182,6 +182,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Reajustar Todas Las Variables a 'Falso'",
   "EVENT_LOOP": "Repetir Infinitamente",
   "EVENT_GROUP": "Grupo de Eventos",
+  "EVENT_COMMENT": "Comentario",
   "EVENT_TEXT": "Texto: Desplegar Diálogo",
   "EVENT_CAMERA_MOVE_TO": "Cámara: Mover Hacia",
   "EVENT_CAMERA_LOCK": "Cámara: Fijar al Jugador",

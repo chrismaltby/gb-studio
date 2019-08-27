@@ -192,6 +192,7 @@
   "EVENT_RESET_VARIABLES": "Variabile: Reimposta Tutte le Variabili a 'False'",
   "EVENT_LOOP": "Ciclo Infinito",
   "EVENT_GROUP": "Gruppo di Eventi",
+  "EVENT_COMMENT": "Commento",
   "EVENT_DEFINE_LABEL": "Etichetta: Definisci",
   "EVENT_GOTO_LABEL": "Etichetta: Goto",
   "EVENT_TEXT": "Testo: Mostra Dialogo",

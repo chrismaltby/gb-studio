@@ -196,6 +196,7 @@
   "EVENT_RESET_VARIABLES": "Variável: Redefinir Todas As Variáveis Para 'Falso'",
   "EVENT_LOOP": "Repetir Infinitamente",
   "EVENT_GROUP": "Grupo De Eventos",
+  "EVENT_COMMENT": "Comente",
   "EVENT_DEFINE_LABEL": "Rótulo: Definir",
   "EVENT_GOTO_LABEL": "Rótulo: Ir para",
   "EVENT_TEXT": "Texto: Exibir Caixa de Diálogo",
