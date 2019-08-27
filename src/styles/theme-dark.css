@@ -54,6 +54,8 @@
   --conditional-level2: #bf360c;
   --conditional-level3: #1b5e20;
   --conditional-level4: #311b92;
+  
+  --comment-event-color: rgb(107, 187, 110);
 }
 
 .App .GBScriptEditor .ace_gutter {

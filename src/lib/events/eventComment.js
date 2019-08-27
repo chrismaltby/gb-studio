@@ -4,7 +4,7 @@ import l10n from "../helpers/l10n";
 export const id = "EVENT_COMMENT";
 
 export const fields = [
-  /*{
+  {
     key: "text",
     type: "textarea",
     maxPerLine: 50,
@@ -12,10 +12,6 @@ export const fields = [
     updateFn: trimlines,
     multiple: false,
     defaultValue: ""
-  },*/
-  {
-    key: "true",
-    type: "events"
   }
 ];
 
