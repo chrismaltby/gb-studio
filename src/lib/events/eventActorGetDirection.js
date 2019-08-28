@@ -1,4 +1,5 @@
 import l10n from "../helpers/l10n";
+import { DIR_LOOKUP } from "../compiler/helpers.js";
 
 export const id = "EVENT_ACTOR_GET_DIRECTION";
 
@@ -17,27 +18,31 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { actorSetActive, ifActorDirection } = helpers;
+  const { actorSetActive, ifActorDirection, variableSetToValue } = helpers;
   actorSetActive(input.actorId);
   ifActorDirection(
-    "up", 
+    "down", 
     function() { 
-        return input.direction = "up";
+      variableSetToValue(input.direction, 1);
+      return;
     }, 
     function() { 
       ifActorDirection(
-        "down", 
+        "left", 
         function() { 
-            return input.direction = "down";
+          variableSetToValue(input.direction, 2);
+          return;
         }, 
         function() { 
           ifActorDirection(
-            "left", 
+            "right", 
             function() { 
-                return input.direction = "left";
+              variableSetToValue(input.direction, 4);
+              return;
             }, 
             function() { 
-              return input.direction = "right";
+              variableSetToValue(input.direction, 8);
+              return;
             }
           )
         }

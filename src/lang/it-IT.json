@@ -200,6 +200,7 @@
   "EVENT_FADE_IN": "Schermo: Dissolvenza (In)",
   "EVENT_FADE_OUT": "Schermo: Dissolvenza (Out)",
   "EVENT_ACTOR_SET_DIRECTION": "Attore: Imposta Direzione",
+  "EVENT_ACTOR_SET_DIRECTION_TO_VALUE": "Actor: Set Direction Using Variable",
   "EVENT_ACTOR_SET_POSITION": "Attore: Imposta Posizione",
   "EVENT_ACTOR_SET_POSITION_RELATIVE": "Attore: Imposta Posizione Relativa",
   "EVENT_ACTOR_GET_POSITION": "Attore: Salva Posizione in Variabile",
