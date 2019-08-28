@@ -12,7 +12,6 @@ export const fields = [
   {
     key: "direction",
     type: "variable",
-    //label: l10n("FIELD_X"),
     defaultValue: "LAST_VARIABLE"
   }
 ];
