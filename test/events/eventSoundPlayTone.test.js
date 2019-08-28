@@ -1,6 +1,6 @@
 import { compile } from "../../src/lib/events/eventSoundPlayTone";
 
-test("Should play sound with tone 1024 if tone not set", () => {
+test("Should play tone at 200hz for 0.5 seconds if tone not set", () => {
   const mockSoundPlayTone = jest.fn();
 
   compile(
@@ -9,20 +9,21 @@ test("Should play sound with tone 1024 if tone not set", () => {
       soundPlayTone: mockSoundPlayTone
     }
   );
-  expect(mockSoundPlayTone).toBeCalledWith(1024);
+  expect(mockSoundPlayTone).toBeCalledWith(200, 0.5);
 });
 
 
-test("Should be able to play sound with tone 1000", () => {
+test("Should be able to play sound with tone 400hz for 1 second", () => {
   const mockSoundPlayTone = jest.fn();
 
   compile(
     {
-      tone: 1000
+      tone: 400,
+      duration: 1.0
     },
     {
       soundPlayTone: mockSoundPlayTone
     }
   );
-  expect(mockSoundPlayTone).toBeCalledWith(1000);
+  expect(mockSoundPlayTone).toBeCalledWith(400, 1);
 });

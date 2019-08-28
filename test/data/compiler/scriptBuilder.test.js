@@ -75,6 +75,7 @@ import {
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
   SOUND_PLAY_TONE,
+  SOUND_STOP_TONE,
   SOUND_PLAY_BEEP,
   SOUND_PLAY_CRASH
 } from "../../../src/lib/events/scriptCommands";
@@ -980,19 +981,26 @@ test("Should be able to stop music", () => {
 });
 
 
-test("Should be able to play a tone sound", () => {
+test("Should be able to play a tone of 128hz for 1 second", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.soundPlayTone(0x321);
-  expect(output).toEqual([cmd(SOUND_PLAY_TONE), 0x03, 0x21]);
+  sb.soundPlayTone(128, 1.0);
+  expect(output).toEqual([cmd(SOUND_PLAY_TONE), 0x04, 0x00, cmd(WAIT), 60, cmd(SOUND_STOP_TONE)]);
 });
 
 
-test("Should be able to play a beep sound", () => {
+test("Should be able to play a beep sound with pitch 8", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.soundPlayBeep(3);
-  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 3]);
+  sb.soundPlayBeep(8);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 7]);
+});
+
+test("Should be able to play a beep sound with pitch 1", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayBeep(1);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 0]);
 });
 
 test("Should be able to play a crash sound", () => {

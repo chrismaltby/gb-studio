@@ -7,8 +7,8 @@ export const fields = [
     key: "pitch",
     type: "number",
     label: l10n("FIELD_PITCH"),
-    min: 0,
-    max: 7,
+    min: 1,
+    max: 8,
     step: 1,
     defaultValue: 4
   }

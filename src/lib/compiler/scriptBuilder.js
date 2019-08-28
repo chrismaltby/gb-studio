@@ -75,6 +75,7 @@ import {
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
   SOUND_PLAY_TONE,
+  SOUND_STOP_TONE,
   SOUND_PLAY_BEEP,
   SOUND_PLAY_CRASH
 } from "../events/scriptCommands";
@@ -727,15 +728,49 @@ class ScriptBuilder {
 
   // Sound
 
-  soundPlayTone = (tone = 1024) => {
+  soundPlayTone = (freq = 200, duration = 0.5) => {
     const output = this.output;
+
+    let period = 2048 - (131072/freq) + 0.5 | 0;
+    if (period >= 2048) {
+      period = 2047;
+    }
+    if (period < 0) {
+      period = 0;
+    }
+
+    let frames = 60 * duration + 0.5 | 0;
+    if (frames >= 256) {
+      frames = 255;
+    }
+    if (frames <= 0) {
+      frames = 1;
+    }
+
+    // start playing tone
     output.push(cmd(SOUND_PLAY_TONE));
-    output.push(hi(tone));
-    output.push(lo(tone));
+    output.push(hi(period));
+    output.push(lo(period));
+
+    // wait for some time
+    output.push(cmd(WAIT));
+    output.push(frames);
+
+    // stop playing tone
+    output.push(cmd(SOUND_STOP_TONE));
   }
 
   soundPlayBeep = (pitch = 4) => {
     const output = this.output;
+
+    pitch = pitch - 1;
+    if (pitch < 0) {
+      pitch = 0;
+    }
+    if (pitch >= 8) {
+      pitch = 7;
+    }
+
     output.push(cmd(SOUND_PLAY_BEEP));
     output.push(pitch & 0x07);
   }

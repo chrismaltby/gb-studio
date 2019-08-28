@@ -111,6 +111,7 @@ void Script_ActorSetFrameToVal_b();
 void Script_VariableAddFlags_b();
 void Script_VariableClearFlags_b();
 void Script_SoundPlayTone_b();
+void Script_SoundStopTone_b();
 void Script_SoundPlayBeep_b();
 void Script_SoundPlayCrash_b();
 
