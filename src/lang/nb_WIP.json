@@ -97,6 +97,7 @@
   "EVENT_FADE_IN": "Ton Inn",
   "EVENT_FADE_OUT": "Ton Ut",
   "EVENT_ACTOR_SET_DIRECTION": "Objekt Sett Retning",
+  "EVENT_ACTOR_SET_DIRECTION_TO_VALUE": "Actor: Set Direction Using Variable",
   "EVENT_ACTOR_SET_POSITION": "Objekt Sett Posisjon",
   "EVENT_ACTOR_MOVE_TO": "Objekt Flytt Til",
   "EVENT_ACTOR_PUSH": "Dytt Objekt",
