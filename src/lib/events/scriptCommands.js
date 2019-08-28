@@ -82,6 +82,9 @@ export const TEXT_MULTI = "TEXT_MULTI";
 export const ACTOR_SET_FRAME_TO_VALUE = "ACTOR_SET_FRAME_TO_VALUE";
 export const VARIABLE_ADD_FLAGS = "VARIABLE_ADD_FLAGS";
 export const VARIABLE_CLEAR_FLAGS = "VARIABLE_CLEAR_FLAGS";
+export const SET_TIMER_SCRIPT = "SET_TIMER_SCRIPT";
+export const TIMER_RESTART = "TIMER_RESTART";
+export const TIMER_DISABLE = "TIMER_DISABLE";
 
 export const scriptCommands = [
   END,
@@ -167,7 +170,10 @@ export const scriptCommands = [
   TEXT_MULTI,
   ACTOR_SET_FRAME_TO_VALUE,
   VARIABLE_ADD_FLAGS,
-  VARIABLE_CLEAR_FLAGS
+  VARIABLE_CLEAR_FLAGS,
+  SET_TIMER_SCRIPT,
+  TIMER_RESTART,
+  TIMER_DISABLE
 ];
 
 export const commandIndex = key => {

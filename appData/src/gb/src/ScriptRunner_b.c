@@ -1680,3 +1680,48 @@ void Script_VariableClearFlags_b()
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
+
+
+/*
+ * Command: SetTimerScript
+ * ----------------------------
+ * Attach script to timer
+ */
+void Script_SetTimerScript_b()
+{
+  timer_script_duration = script_cmd_args[0];
+  timer_script_time = script_cmd_args[0];
+  timer_script_ptr.bank = script_cmd_args[1];
+  timer_script_ptr.offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
+
+  script_action_complete = TRUE;
+  script_ptr += 1 + script_cmd_args_len;
+}
+
+/*
+ * Command: ResetTimer
+ * ----------------------------
+ * Reset the countdown timer
+ */
+void Script_ResetTimer_b()
+{
+
+  timer_script_time = timer_script_duration;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: RemoveTimerScript
+ * ----------------------------
+ * Disable timer script
+ */
+void Script_RemoveTimerScript_b()
+{
+  timer_script_duration = 0;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
