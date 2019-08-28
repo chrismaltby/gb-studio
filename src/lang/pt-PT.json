@@ -196,6 +196,7 @@
   "EVENT_RESET_VARIABLES": "Variável: Definir TODAS as Variáveis como 'Falsas'",
   "EVENT_LOOP": "Repetir Continuamente",
   "EVENT_GROUP": "Grupo de Eventos",
+  "EVENT_COMMENT": "Comente",
   "EVENT_DEFINE_LABEL": "Marcador: Definir",
   "EVENT_GOTO_LABEL": "Marcador: Ir Para",
   "EVENT_TEXT": "Diálogo: Inserir caixa de diálogo ou texto",

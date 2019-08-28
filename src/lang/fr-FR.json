@@ -191,6 +191,7 @@
   "EVENT_RESET_VARIABLES": "Variable : réinitialiser toutes les variables avec 'Faux'",
   "EVENT_LOOP": "Boucler sans fin",
   "EVENT_GROUP": "Groupe d'événements",
+  "EVENT_COMMENT": "Commentaire",
   "EVENT_TEXT": "Texte : afficher le dialogue",
   "EVENT_CAMERA_MOVE_TO": "Caméra : déplacer vers",
   "EVENT_CAMERA_LOCK": "Caméra : verrouiller le lecteur",
