@@ -156,6 +156,7 @@
   "FIELD_FLAG_6": "Flag 6",
   "FIELD_FLAG_7": "Flag 7",
   "FIELD_FLAG_8": "Flag 8",
+  "FIELD_TEXT_AVATAR": "Avatar",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

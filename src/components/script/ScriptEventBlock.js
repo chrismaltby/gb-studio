@@ -65,7 +65,7 @@ class ScriptEventInput extends Component {
       newValue = newValue.value;
     }
     if (updateFn) {
-      newValue = updateFn(newValue);
+      newValue = updateFn(newValue, field);
     }
     onChange(newValue, index);
   };
@@ -151,7 +151,7 @@ class ScriptEventInput extends Component {
     }
     if (type === "sprite") {
       return (
-        <SpriteSheetSelect id={id} value={value} onChange={this.onChange} />
+        <SpriteSheetSelect id={id} value={value} filter={field.filter} optional={field.optional} onChange={this.onChange} />
       );
     }
     if (type === "variable") {

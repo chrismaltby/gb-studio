@@ -105,7 +105,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_TextMulti_b, 1},          // 0x50
     {Script_ActorSetFrameToVal_b, 2}, // 0x51
     {Script_VariableAddFlags_b, 3},   // 0x52
-    {Script_VariableClearFlags_b, 3}  // 0x53
+    {Script_VariableClearFlags_b, 3}, // 0x53
+    {Script_TextWithAvatar_b, 3}      // 0x54
 };
 
 UBYTE ScriptLastFnComplete();
@@ -251,6 +252,11 @@ UBYTE ScriptLastFnComplete()
   if (last_fn == Script_CameraLock_b && SceneCameraAtDest())
   {
     camera_settings = CAMERA_LOCK_FLAG;
+    return TRUE;
+  }
+
+  if (last_fn == Script_TextWithAvatar_b && UIIsClosed())
+  {
     return TRUE;
   }
 

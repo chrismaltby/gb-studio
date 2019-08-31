@@ -42,5 +42,6 @@ void UIOnInteract();
 UBYTE UIAtDest();
 void UISetColor(UBYTE color);
 void UISetTextSpeed(UBYTE in, UBYTE out);
+void UIShowAvatar(UBYTE avatar_index);
 
 #endif

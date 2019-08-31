@@ -33,6 +33,8 @@ UBYTE choice_enabled = 0;
 UBYTE choice_index = 0;
 UWORD choice_flag;
 
+UBYTE avatar_enabled = 0;
+
 const unsigned char ui_cursor_tiles[1] = {0xCB};
 const unsigned char ui_bg_tiles[1] = {0xC4};
 
@@ -157,6 +159,36 @@ void UIShowText(UWORD line)
   text_count = 0;
 }
 
+void UIShowAvatar(UBYTE avatar_index) {
+  BANK_PTR avatar_bank_ptr;
+  UWORD avatar_ptr;
+  UBYTE avatar_len;
+  UBYTE tile1, tile2, tile3, tile4;
+
+  unsigned char *tmp_avatar_ptr[100];
+
+  ReadBankedBankPtr(DATA_PTRS_BANK, &avatar_bank_ptr, &avatar_bank_ptrs[avatar_index]);
+  avatar_ptr = ((UWORD)bank_data_ptrs[avatar_bank_ptr.bank]) + avatar_bank_ptr.offset;
+  avatar_len = MUL_4(ReadBankedUBYTE(avatar_bank_ptr.bank, avatar_ptr));
+
+  PUSH_BANK(avatar_bank_ptr.bank);
+  memcpy(tmp_avatar_ptr, avatar_ptr + 1, avatar_len * 16);
+  POP_BANK
+  SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START, avatar_len, tmp_avatar_ptr);
+
+  tile1 = TEXT_BUFFER_START;
+  tile2 = TEXT_BUFFER_START + 1;
+  tile3 = TEXT_BUFFER_START + 2;
+  tile4 = TEXT_BUFFER_START + 3;
+
+  set_win_tiles(1, 1, 1, 1, &tile1);
+  set_win_tiles(2, 1, 1, 1, &tile2);
+  set_win_tiles(1, 2, 1, 1, &tile3);
+  set_win_tiles(2, 2, 1, 1, &tile4);
+
+  avatar_enabled = TRUE;
+}
+
 void UIShowChoice(UWORD flag_index, UWORD line)
 {
   choice_index = 0;
@@ -234,10 +266,10 @@ void UIDrawTextBufferChar()
 
     if (text_lines[text_count] != '\b')
     {
-      i = text_x + (18 * text_y);
+      i = text_count + avatar_enabled * 4;
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
-      tile = TEXT_BUFFER_START + text_x + (text_y * 18);
-      set_win_tiles(text_x + 1 + choice_enabled, text_y + 1, 1, 1, &tile);
+      tile = TEXT_BUFFER_START + i;
+      set_win_tiles(text_x + 1 + choice_enabled + avatar_enabled * 2, text_y + 1, 1, 1, &tile);
     }
 
     if (text_lines[text_count] == '\b')
@@ -312,6 +344,7 @@ void UIOnInteract()
         script_variables[choice_flag] = !choice_index;
         choice_enabled = FALSE;
       }
+      avatar_enabled = FALSE;
       UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
     }
   }
@@ -336,6 +369,7 @@ void UIOnInteract()
       text_lines[0] = '\0';
       script_variables[choice_flag] = FALSE;
       choice_enabled = FALSE;
+      avatar_enabled = FALSE;
       UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
     }
   }

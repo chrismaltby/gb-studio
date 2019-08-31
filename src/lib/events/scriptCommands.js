@@ -82,6 +82,7 @@ export const TEXT_MULTI = "TEXT_MULTI";
 export const ACTOR_SET_FRAME_TO_VALUE = "ACTOR_SET_FRAME_TO_VALUE";
 export const VARIABLE_ADD_FLAGS = "VARIABLE_ADD_FLAGS";
 export const VARIABLE_CLEAR_FLAGS = "VARIABLE_CLEAR_FLAGS";
+export const TEXT_WITH_AVATAR = "TEXT_WITH_AVATAR";
 
 export const scriptCommands = [
   END,
@@ -167,7 +168,8 @@ export const scriptCommands = [
   TEXT_MULTI,
   ACTOR_SET_FRAME_TO_VALUE,
   VARIABLE_ADD_FLAGS,
-  VARIABLE_CLEAR_FLAGS
+  VARIABLE_CLEAR_FLAGS,
+  TEXT_WITH_AVATAR
 ];
 
 export const commandIndex = key => {

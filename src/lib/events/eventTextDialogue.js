@@ -9,9 +9,17 @@ export const fields = [
     type: "textarea",
     maxPerLine: 18,
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
-    updateFn: trimlines,
+    updateFn: (string, field) => trimlines(string, field.maxPerLine),
     multiple: true,
     defaultValue: ""
+  },
+  {
+    key: "avatarId",
+    type: "sprite",
+    label: l10n("FIELD_TEXT_AVATAR"),
+    defaultValue: "",
+    optional: true,
+    filter: (sprite) => sprite.numFrames == 1
   }
 ];
 
@@ -37,7 +45,7 @@ export const compile = (input, helpers) => {
         textRestoreCloseSpeed();
       }
 
-      textDialogue(rowText);
+      textDialogue(rowText, input.avatarId);
 
       // After first box, make open instant
       if (j === 0) {
@@ -49,6 +57,6 @@ export const compile = (input, helpers) => {
       }
     }
   } else {
-    textDialogue(input.text);
+    textDialogue(input.text, input.avatarId);
   }
 };
