@@ -148,6 +148,14 @@
   "FIELD_RESTORE_DEFAULT": "Restaurar predefinição",
   "FIELD_ORIGINAL": "Original",
   "FIELD_CUSTOM": "Customizado",
+  "FIELD_FLAG_1": "Marcador 1",
+  "FIELD_FLAG_2": "Marcador 2",
+  "FIELD_FLAG_3": "Marcador 3",
+  "FIELD_FLAG_4": "Marcador 4",
+  "FIELD_FLAG_5": "Marcador 5",
+  "FIELD_FLAG_6": "Marcador 6",
+  "FIELD_FLAG_7": "Marcador 7",
+  "FIELD_FLAG_8": "Marcador 8",
 
   "// 7": "Visualizar Activos ---------------------------------------------",
   "ASSET_SEARCH": "Procurar...",
@@ -240,6 +248,10 @@
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Definir Fotograma através de Variável",
   "EVENT_CODE": "Código: Script Personalizado",
   "EVENT_NOTES": "Notas",
+  "EVENT_SET_FLAGS": "Variável: Definir Marcadores",
+  "EVENT_ADD_FLAGS": "Variável: Adicionar Marcadores",
+  "EVENT_CLEAR_FLAGS": "Variável: Eliminar Marcadores",
+  "EVENT_IF_FLAGS_COMPARE": "Se Variável tem Marcador",
 
   "// 10": "Menu -----------------------------------------------------",
 
