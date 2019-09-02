@@ -76,7 +76,7 @@ import {
   VARIABLE_CLEAR_FLAGS,
   SET_TIMER_SCRIPT,
   TIMER_RESTART,
-  TIMER_DISABLE
+  TIMER_DISABLE,
 } from "../events/scriptCommands";
 import {
   getActorIndex,

@@ -696,6 +696,7 @@ void SceneUpdateTimer_b()
         return;
       }
 
+      last_joy = last_joy & 0xF0;
       ScriptStart(&timer_script_ptr);
 
       // Reset the countdown timer
