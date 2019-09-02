@@ -1683,10 +1683,10 @@ void Script_VariableClearFlags_b()
 
 
 /*
- * Command: SoundPlayTone
+ * Command: SoundStartTone
  * ----------------------------
  */
-void Script_SoundPlayTone_b()
+void Script_SoundStartTone_b()
 {
   UWORD tone = (script_cmd_args[0] * 256) + script_cmd_args[1];
 

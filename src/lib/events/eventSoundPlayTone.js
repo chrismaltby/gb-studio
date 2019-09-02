@@ -25,8 +25,27 @@ export const fields = [
 
 
 export const compile = (input, helpers) => {
-  const { soundPlayTone } = helpers;
-  let tone = (typeof input.tone === "number") ? input.tone : 200;
+  const { soundStartTone, soundStopTone, wait } = helpers;
+  let freq = (typeof input.tone === "number") ? input.tone : 200;
   let duration = (typeof input.duration === "number") ? input.duration : 0.5;
-  soundPlayTone(tone, duration);
+
+  let period = 2048 - (131072/freq) + 0.5 | 0;
+  if (period >= 2048) {
+    period = 2047;
+  }
+  if (period < 0) {
+    period = 0;
+  }
+
+  let frames = 60 * duration + 0.5 | 0;
+  if (frames >= 256) {
+    frames = 255;
+  }
+  if (frames <= 0) {
+    frames = 1;
+  }
+
+  soundStartTone(period);
+  wait(frames);
+  soundStopTone();
 };

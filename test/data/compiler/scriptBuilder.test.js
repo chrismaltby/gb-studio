@@ -74,7 +74,7 @@ import {
   SET_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
-  SOUND_PLAY_TONE,
+  SOUND_START_TONE,
   SOUND_STOP_TONE,
   SOUND_PLAY_BEEP,
   SOUND_PLAY_CRASH
@@ -981,11 +981,18 @@ test("Should be able to stop music", () => {
 });
 
 
-test("Should be able to play a tone of 128hz for 1 second", () => {
+test("Should be able to start a tone with period 1000", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.soundPlayTone(128, 1.0);
-  expect(output).toEqual([cmd(SOUND_PLAY_TONE), 0x04, 0x00, cmd(WAIT), 60, cmd(SOUND_STOP_TONE)]);
+  sb.soundStartTone(1000);
+  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232]);
+});
+
+test("Should be able to stop a tone", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundStopTone();
+  expect(output).toEqual([cmd(SOUND_STOP_TONE)]);
 });
 
 
