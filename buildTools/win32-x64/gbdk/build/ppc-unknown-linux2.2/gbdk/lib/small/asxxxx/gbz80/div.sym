@@ -1,0 +1,45 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  0 .chkde                             009A R
+  1 .dcnt                              0002 R
+  0 .div16                             0088 GR
+  0 .div8                              0080 GR
+  0 .divide                            00D0 R
+  0 .divu16                            00C5 GR
+  0 .divu8                             00C2 GR
+  0 .dodiv                             00A4 R
+  0 .dorem                             00B5 R
+  0 .drop                              00F0 R
+  0 .dvloop                            00D8 R
+  0 .mod16                             0088 GR
+  0 .mod8                              0080 GR
+  0 .modu16                            00C5 GR
+  0 .modu8                             00C2 GR
+  0 .nodrop                            00F2 R
+  1 .squot                             0001 R
+  1 .srem                              0000 R
+  0 __divschar_rrx_hds                 0007 GR
+  0 __divschar_rrx_s                   0000 GR
+  0 __divsint_rrx_hds                  0026 GR
+  0 __divsint_rrx_s                    001A GR
+  0 __divuchar_rrx_hds                 0047 GR
+  0 __divuchar_rrx_s                   0040 GR
+  0 __divuint_rrx_hds                  0066 GR
+  0 __divuint_rrx_s                    005A GR
+  0 __modschar_rrx_hds                 0015 GR
+  0 __modschar_rrx_s                   000E GR
+  0 __modsint_rrx_hds                  003A GR
+  0 __modsint_rrx_s                    002E GR
+  0 __moduchar_rrx_hds                 0055 GR
+  0 __moduchar_rrx_s                   004E GR
+  0 __moduint_rrx_hds                  007A GR
+  0 __moduint_rrx_s                    006E GR
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size  102   flags 0
+   1 _BSS                               size    3   flags 0

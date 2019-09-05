@@ -1,0 +1,141 @@
+DS80C390 flat mode support
+
+2/4/2000 Kevin Vigor (e-mail: kevin at vigor.nu)
+
+I have hacked the 8051 assembler to support the 24 bit flat address mode of
+the DS80C390 processor. This mode allows the chip to directly address up to
+4 Meg of RAM. Details can be found at Dallas' web site: www.dalsemi.com.
+
+1: Assembler changes.
+
+24 bit mode is entered via a new assembler directive, .flat24. This directive
+takes a mandatory argument, which is either the string "on" or the string
+"off". ".flat24 on" enables 24-bit mode, and ".flat24 off" puts the assembler
+into standard 8051 mode.
+
+Note that any .included files within a ".flat24 on" segment of the code will
+be compiled in 24-bit mode.
+
+In 24-bit mode, 8 instructions have altered behavior. Of these, 5 modify
+the instruction encoding, while 3 differ only in behavior. These
+instructions are discussed in the DS80C390 User's Guide, but a summary is
+included here:
+
+ACALL and AJMP now take a 19 bit offset instead of the 8051's 11 bit offset. 
+An extra address byte is added to the encoded instruction.
+
+LCALL and LJMP now take a 24 bit target address instead of the 8051's 16 bit
+address. An extra address byte is added to the encoded instruction.
+
+MOV DPTR, #immed now takes a 24 bit immediate value instead of the 8051's 16
+bit address. An extra data byte is added to the encoded instruction.
+
+INC DPTR now increments the entire 24 bit DPTR. The encoding is not changed.
+
+RET and RETI restore the full 24 bit PC from the stack. The encoding is not
+changed.
+
+2: Linker changes.
+
+The linker supports (through a variety of evil hacks) 19 bit ACALL/AJMP
+relocations and 24 bit LCALL/LJMP/DPTR relocations. These changes should be
+invisible to the user.
+
+The linker can now also generated extended linear address records in the
+Intel hex output format. This is necessary for any areas located above the
+64K mark. This is enabled by the "-r" linker flag, and is disabled by
+default (but the linker will throw a warning if an extended address is
+encountered without the -r flag being enabled).
+
+Note that for various reasons, areas may still not be larger than 64K.
+However, they may be located anywhere in the 4 Meg address space via the
+assembler .org directive (for ABS areas) or the linker "-b" option.
+
+3: Examples
+
+Note that this example uses ABS areas to make the layout obvious. This code
+won't do anything useful at all, but demonstrates the instruction encoding
+in .flat24 mode vs 8051 mode.
+
+; test1.asm
+.area CODE (ABS)
+.org 0
+
+; SFRs not known to the assembler yet...
+$TA = 0x00C7
+$ACON = 0x009D
+
+; Set the chip to 24 bit flat mode via the DS "timed access" procedure.
+mov $TA, #0xAA
+mov $TA, #0x55
+mov $ACON, #0x06		; 10 bit stack & 24 bit flat addressing.
+
+.flat24 on		; Enable 24-bit mode. The AM1 bit had better be
+			; on...
+
+mov dptr, #myData	; Valid on the '390: myData is in the FARDATA
+			; area at 0x300001.
+			; Generates: 90 30 00 01
+acall _junkNear		; Within 11 bit range, but still must generate
+			; 19 bit address for '390 flat mode.
+			; Generates: 11 04 00			
+ajmp _junkFar		; Within 16 bit range.
+			; Generates 01 08 00
+acall _junkReallyFar	; Within 19 bit range.
+			; Generates 91 00 00
+lcall _junkReallyReallyFar	; Within 24 bit range.
+			; Generates 12 08 00 00
+
+; Set the chip to 8051 mode via the DS "timed access" procedure.
+mov $TA, #0x0AA
+mov $TA, #0x055
+mov $ACON, #0x00	; 8 bit stack & 16 bit flat addressing.
+
+.flat24 off		; Now we're an 8051 again. The AM1 bit had better be
+			; off...
+
+;mov dptr, #myData	; Can't do that: myData is too far away.
+acall _junkNear		; Within 11 bit range.
+			; Generates 91 00
+ljmp _junkFar		; Within 16 bit range; can't AJMP, but can LJMP
+			; Generates 02 08 00
+ret
+
+.area CODE2 (ABS)
+.org 0x400
+; This is within the 11 bit ACALL/AJMP range of the 8051.
+_junkNear:
+ret
+
+.area CODE3 (ABS)
+.org 0x800
+; This is within the 390's 19 bit ACALL/AJMP range, and inside the stock
+; 8051's 16 bit LCALL range.
+_junkFar:
+ret
+
+.area CODE4 (ABS)
+; This is within the 390's 19 bit ACALL/AJMP range and outside the
+; 8051's LCALL range.
+; Note that to link an image with an area beyond 64K (like this one),
+; the '-r' flag must be provided to the linker, and Intel Hex output format
+; must be used.
+.org 0x40000
+_junkReallyFar:
+ret
+
+.area CODE5 (ABS)
+; This is outside anybody's ACALL/AJMP range.
+.org 0x80000
+_junkReallyReallyFar:
+ret
+
+.area FARDATA (ABS)
+.org 0x300000
+; This is way, way up there.
+.byte 0x01
+myData:
+.byte 0x02
+
+; test1.asm ends.
+

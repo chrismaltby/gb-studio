@@ -1,0 +1,23 @@
+PRJDIR = ../..
+
+# !include $(PRJDIR)/Makefile.common
+
+OBJ = gen.obj genarith.obj ralloc.obj main.obj glue.obj pcode.obj pcodepeep.obj
+LIB = port.lib
+
+!include ..\..\Bcc.inc
+CFLAGS  = -I.. -I. -I..\.. -I..\..\support -D__FUNCTION__=__FILE__
+
+all: $(LIB)
+
+main.obj: main.c peeph.rul
+
+$(LIB): peeph.rul $(OBJ)
+	del $(LIB)
+        tlib /a $(LIB) +gen.obj +genarith.obj +ralloc.obj +main.obj +glue.obj
+        tlib /a $(LIB) +pcode.obj +pcodepeep.obj
+
+peeph.rul: peeph.def
+        gawk -f ../SDCCpeeph.awk peeph.def > peeph.rul
+
+# include clean.mk

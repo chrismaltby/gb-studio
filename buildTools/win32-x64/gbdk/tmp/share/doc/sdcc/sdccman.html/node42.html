@@ -1,0 +1,297 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.4 Interfacing with Assembly Routines</TITLE>
+<META NAME="description" CONTENT="4.4 Interfacing with Assembly Routines">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node43.html">
+<LINK REL="previous" HREF="node41.html">
+<LINK REL="up" HREF="node38.html">
+<LINK REL="next" HREF="node43.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html894"
+ HREF="node43.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html888"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html882"
+ HREF="node41.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html890"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html892"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html895"
+ HREF="node43.html">4.5 External Stack</A>
+<B> Up:</B> <A NAME="tex2html889"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html883"
+ HREF="node41.html">4.3 &lt;pending: this is</A>
+ &nbsp <B>  <A NAME="tex2html891"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html893"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html896"
+ HREF="node42.html#SECTION00054100000000000000">4.4.1 Global Registers used for Parameter Passing</A>
+<LI><A NAME="tex2html897"
+ HREF="node42.html#SECTION00054200000000000000">4.4.2 Assembler Routine(non-reentrant)</A>
+<LI><A NAME="tex2html898"
+ HREF="node42.html#SECTION00054300000000000000">4.4.3 Assembler Routine(reentrant)</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00054000000000000000">
+4.4 Interfacing with Assembly Routines</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00054100000000000000">
+4.4.1 Global Registers used for Parameter Passing</A>
+</H3>
+
+<P>
+The compiler always uses the global registers <I>DPL,DPH,B</I> and
+<I>ACC</I> to pass the first parameter to a routine. The second parameter
+onwards is either allocated on the stack (for reentrant routines or
+if -stack-auto is used) or in the internal / external ram (depending
+on the memory model). 
+
+<P>
+
+<H3><A NAME="SECTION00054200000000000000">
+4.4.2 Assembler Routine(non-reentrant)</A>
+</H3>
+
+<P>
+In the following example the function cfunc calls an assembler routine
+asm_func, which takes two parameters.
+<BR>
+
+<BR>
+<TT>extern int asm_func(unsigned char, unsigned char);</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>int c_func (unsigned char i, unsigned char j)</TT>&nbsp;
+<BR>
+<TT>{</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;return asm_func(i,j);</TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>int main()</TT>&nbsp;
+<BR>
+<TT>{</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;return c_func(10,9);</TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+The corresponding assembler function is:
+<BR>
+
+<BR>
+<TT>.globl _asm_func_PARM_2 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.globl _asm_func </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.area OSEG </TT>&nbsp;
+<BR>
+<TT>_asm_func_PARM_2:</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.ds      1 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.area CSEG </TT>&nbsp;
+<BR>
+<TT>_asm_func: </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mov     a,dpl </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add     a,_asm_func_PARM_2 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mov     dpl,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mov     dpl,#0x00 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ret</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+Note here that the return values are placed in 'dpl' - One byte return
+value, 'dpl' LSB &amp; 'dph' MSB for two byte values. 'dpl', 'dph' and
+'b' for three byte values (generic pointers) and 'dpl','dph','b' &amp;
+'acc' for four byte values.
+
+<P>
+The parameter naming convention is _&lt;function_name&gt;_PARM_&lt;n&gt;,
+where n is the parameter number starting from 1, and counting from
+the left. The first parameter is passed in ``dpl'' for One bye
+parameter, ``dptr'' if two bytes, ``b,dptr'' for three bytes
+and ``acc,b,dptr'' for four bytes, the varible name for the second
+parameter will be _&lt;function_name&gt;_PARM_2.
+<BR>
+
+<BR>
+Assemble the assembler routine with the following command:
+<BR>
+
+<BR>
+<I><B>asx8051 -losg asmfunc.asm</B></I>
+<BR>
+<BR>
+Then compile and link the assembler routine to the C source file with
+the following command:
+<BR>
+
+<BR>
+<I><B>sdcc cfunc.c asmfunc.rel</B></I>
+
+<P>
+
+<H3><A NAME="SECTION00054300000000000000">
+4.4.3 Assembler Routine(reentrant)</A>
+</H3>
+
+<P>
+In this case the second parameter onwards will be passed on the stack,
+the parameters are pushed from right to left i.e. after the call the
+left most parameter will be on the top of the stack. Here is an example:
+<BR>
+
+<BR>
+<TT>extern int asm_func(unsigned char, unsigned char);</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>int c_func (unsigned char i, unsigned char j) reentrant </TT>&nbsp;
+<BR>
+<TT>{ </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;return asm_func(i,j); </TT>&nbsp;
+<BR>
+<TT>} </TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>int main() </TT>&nbsp;
+<BR>
+<TT>{ </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;return c_func(10,9); </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>
+
+<BR>
+The corresponding assembler routine is:
+<BR>
+
+<BR>
+<TT>.globl _asm_func </TT>&nbsp;
+<BR>
+<TT>_asm_func: </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;push  _bp </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  _bp,sp </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  r2,dpl</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  a,_bp </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;clr  c </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;add  a,#0xfd </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  r0,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;add  a,#0xfc</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  r1,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  a,@r0 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;add  a,r2</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  dpl,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  dph,#0x00 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;mov  sp,_bp </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;pop  _bp </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;ret</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+The compiling and linking procedure remains the same, however note
+the extra entry &amp; exit linkage required for the assembler code, _bp
+is the stack frame pointer and is used to compute the offset into
+the stack for parameters and local variables.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html894"
+ HREF="node43.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html888"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html882"
+ HREF="node41.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html890"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html892"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html895"
+ HREF="node43.html">4.5 External Stack</A>
+<B> Up:</B> <A NAME="tex2html889"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html883"
+ HREF="node41.html">4.3 &lt;pending: this is</A>
+ &nbsp <B>  <A NAME="tex2html891"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html893"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

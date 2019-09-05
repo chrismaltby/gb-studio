@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.3 Testing out the SDCC Compiler</TITLE>
+<META NAME="description" CONTENT="2.3 Testing out the SDCC Compiler">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node14.html">
+<LINK REL="previous" HREF="node12.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node14.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html398"
+ HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html392"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html386"
+ HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html394"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html396"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html399"
+ HREF="node14.html">2.4 Install Trouble-shooting</A>
+<B> Up:</B> <A NAME="tex2html393"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html387"
+ HREF="node12.html">2.2 Windows Installation</A>
+ &nbsp <B>  <A NAME="tex2html395"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html397"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00033000000000000000">
+2.3 Testing out the SDCC Compiler</A>
+</H2>
+
+<P>
+The first thing you should do after installing your SDCC compiler
+is to see if it runs. Type <I><B>&#34;sdcc -version&#34;</B></I>
+at the prompt, and the program should run and tell you the version.
+If it doesn't run, or gives a message about not finding sdcc program,
+then you need to check over your installation. Make sure that the
+sdcc bin directory is in your executable search path defined by the
+PATH environment setting (see the Trouble-shooting section for suggestions).
+Make sure that the sdcc program is in the bin folder, if not perhaps
+something did not install correctly.
+<BR>
+
+<BR>
+SDCC binaries are commonly installed in a directory arrangement like
+this:
+<BR>
+
+<BR>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">/usr/local/bin</TD>
+<TD ALIGN="LEFT">Holds executables(sdcc, s51, aslink, ...)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">/usr/local/share/sdcc/lib</TD>
+<TD ALIGN="LEFT">Holds common C libraries</TD>
+</TR>
+<TR><TD ALIGN="LEFT">/usr/local/share/sdcc/include</TD>
+<TD ALIGN="LEFT">Holds common C header files</TD>
+</TR>
+</TABLE>
+<BR>
+
+<BR>
+Make sure the compiler works on a very simple example. Type in the
+following test.c program using your favorite editor:
+<BR>
+<BR>
+<TT>int test(int t) {</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;return t+3;</TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+<BR>
+Compile this using the following command: <I><B>&#34;sdcc
+-c test.c&#34;.</B></I> If all goes well, the compiler will generate
+a test.asm and test.rel file. Congratulations, you've just compiled
+your first program with SDCC. We used the -c option to tell SDCC not
+to link the generated code, just to keep things simple for this step.
+<BR>
+
+<BR>
+The next step is to try it with the linker. Type in <I><B>&#34;sdcc
+test.c</B></I>&#34;. If all goes well the compiler will link with the
+libraries and produce a test.ihx output file. If this step fails (no
+test.ihx, and the linker generates warnings), then the problem is
+most likely that sdcc cannot find the /usr/local/share/sdcc/lib directory
+(see the Install trouble-shooting section for suggestions).
+<BR>
+
+<BR>
+The final test is to ensure sdcc can use the standard header files
+and libraries. Edit test.c and change it to the following:
+<BR>
+
+<BR>
+#include &lt;string.h&gt;
+<BR>
+main() {
+<BR>
+<TT>char str1[10];</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;strcpy(str1, &#34;testing&#34;);</TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+Compile this by typing <I><B>&#34;sdcc test.c&#34;</B></I>.
+This should generate a test.ihx output file, and it should give no
+warnings such as not finding the string.h file. If it cannot find
+the string.h file, then the problem is that sdcc cannot find the /usr/local/share/sdcc/include
+directory (see the Install trouble-shooting section for suggestions).
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html398"
+ HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html392"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html386"
+ HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html394"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html396"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html399"
+ HREF="node14.html">2.4 Install Trouble-shooting</A>
+<B> Up:</B> <A NAME="tex2html393"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html387"
+ HREF="node12.html">2.2 Windows Installation</A>
+ &nbsp <B>  <A NAME="tex2html395"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html397"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

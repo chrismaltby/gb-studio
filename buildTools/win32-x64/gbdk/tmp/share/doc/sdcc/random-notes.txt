@@ -1,0 +1,382 @@
+Random notes
+------------
+A random set of notes about sdcc and how it works.
+
+Michael on the register allocation stage:
+-----------------------------------------
+Lets trace how the register allocator in the mcs51 port works.
+
+Some concepts:
+eBBlock
+	A basic block.  I cant remeber the conditions, but a basic block
+is one that is easy to optimise and analyse.  I guess this means that it has
+a nice set of assignments and a reasonably straight flow.
+iCode
+	Intermediate code.  Provides the interface between the parser + optimiser
+and the code generator by providing an abstract machine with infinite registers
+which the parser can generate for and the back end can turn into real code.
+iTemps
+	An iTemp is a temporary register used in iCode.  These will eventually
+be either replaced, allocated into a register, or placed onto the stack by the
+backend.
+Live range
+     The live range of an iTemp is the part of the code that the iTemp is used
+over.  Generally the live range of an iTemp is from its first assignment to its
+last use.
+
+Input to mcs51_assignRegisters is an array of basic blocks.  Assign
+registers is normally called at the end of a function.
+
+In pseudo code,
+1.  For each basic block, pack the registers in the block.
+    In this case register packing consists of:
+       Remove any unneded iTemps that are just used in assignments.
+       Mark anything that can be rematerialised as rematerialisable.
+	   There is no way I spelt that correctly.  Something is rematerialisable
+	   if it can be generated easily and is constant, and hence dosnt need
+	   to be cached away in an iTemp.  An example is the address of something.
+       Packs iTemps that are only used once into normally unavailble registers.
+    Register packing removes unneeded iTemps.
+2.  Determine what number and type of regsiters are needed for each
+    live range.
+    It does
+       If the iTemp lives for zero time, dont bother assigning
+       If its not an iTemp, skip for now.
+       If its a conditional (determined in the register packing), skip as it will
+       be stored in carry.
+       If the iTemp is already packed from 1.c, skip
+       If the iTemp is remat and some other magic, skip.
+       Else set the number and type of registers based on the size of the iTemp.
+3.  Assign registers for each segment.
+    For each iCode, do
+	If it is a IPOP (pop of an iTemp at the end of a block), reset the LR.
+	De-assign the live ranges of the iTemps that expire here.
+	    For each iTemp, do
+	        If this iTemp is still alive, skip
+		If this iTemp is spilt on the stack, free the location and continue.
+		If there are no registers assigned (?), continue.
+		Some magic using IFX and IPOP
+		If the iTemp has no registers, continue.
+		If the result of this iCode doesnt yet have registers, allocate them now.  Weird.
+		Deallocate the registers used.
+	Skip instructions that dont need registers (IFX, JUMPTABLE, POINTER_SET)
+	Only assign registers to the result of this iCode.
+	If the iCode has registers, or has been spilt, continue.
+	If this will cause a spill as it needs more registers than are free, then
+	    Find those that can be spilt.
+	    Spill this if its easy.
+	    Spill this if its the least used.
+	Allocate registers to the result iTemp	   
+	If any registers in the result are shared with the operand, make them line up.
+4.  Create the register mask for each segment.
+    For each iCode, do
+	Set the used register bit vector from the used registers.
+	Mark these registers as used in the higher function.  This lets the generator
+	decide which registers need to be saved when calling or being called by a function.
+	Hmm.  It seems to re-setup the used register bit vector.
+5.  Redo the stack offsets.
+6.  Turn the basic blocks into an intermediate code chain.
+        Takes the array of basic blocks and pulls them out into one iCode chain.
+7.  Optimise the labels in the iCode chain.
+	Skipped if the label optimisations are turned off.
+	Remove any gotos that go to the next line.
+	Simplify any chained gotos
+	Remove unreferenced labels
+	Remove unreferenced code.
+7.  Generate the mcs51 code from the iCode chain.
+8.  Deallocate everything (registers and stack locations).
+
+Sandeep:
+--------
+=======
+Sandeep:
+--------
+The Register Allocation story.
+
+Before I get into this there are a few important fields
+on the iCode & oprtand data structures that need to be
+addressed.
+
+iCode.
+-----
+	->key  -  is an unique number assigned to this
+                  iCode when this icode is allocated.
+
+        ->seq  - sequence number of the iCode given in
+	         acesnding order of execution.
+
+operand.
+-------
+	->key  - unique number for an operand when operand
+                 is allocated.
+
+OP_LIVEFROM(op) - sequence number of the iCode where it was
+                  first defined. Computed in SDCClrange.c
+
+OP_LIVETO(op)   - sequence number of the iCode where it is
+                  last used. Computed in SDCClrange.c
+
+
+                 
+
+Sandeep:
+--------
+Adding memory maps for AVR, setup default map for
+local & global variables in port.h will be initialised
+by the _<port>_finaliseOptions() [good functions]..some
+kludges remain because of the "overlay" segment for 8051.
+
+The memory segment stuff will have to be made more flexible.
+Currently there does not seem to be a 1-to-1 correspondence 
+between storage class & memory map. (should there be??).
+
+Also Added check for memory map in SDCCmem.c allocLocal
+and allocglobal for "eeprom" memory space (AVR).
+
+
+
+Michael:
+--------
+Tracing parmBytes and function calls.
+
+Bug:
+void printf(const char *format);
+
+void puts(const char *s)
+{
+	printf(s);
+}
+
+Generates the pseudo-code:
+	  hl = s
+	  push hl
+	  call printf
+	  pop l (not hl - so parmBytes is too small)
+
+parmBytes for a function call seems to be setup in geniCodeCall in
+SDCCicode.c.
+
+geniCodeCall:
+* Takes care of calls with side effects (?)
+* Generates the icode to push the parameters (this also computes the 
+  resulting stack size)
+* Generates a CALL or PCALL depending on if its a function or pointer to.
+* Computes the result
+* Adds the code for the call to the chain.
+
+My bug is probably in geniCodeParms - it's probably computing the
+size of pointers wrong.
+
+geniCodeParms:
+* A 'parm' node causes this to be run on the tree branches.
+* It switches on the stack mode and sendto mode, and adds the
+  instructions required to push or put.
+* A push adds the result of 'getSize' to the stack size.
+
+So the bug is probably in getSize.  's' is not an aggregate, so the
+bug is in getSize().
+
+It seems that IS_SPEC() is being set, deferencing *s so that it's size
+is sizeof(char) == 1.  It's either a SPECIFIER or a DECLARATOR - seems that
+were the wrong way around.  This is set in SDCCsymt.c, SDCCval.c, and the 
+yacc file. SDCCsymt.c and SDCCval.c havnt really changed in 5 days - must
+be SDCC.y.  Nope, no changes.  diff against 5 days ago shows only intersting
+changes are in SDCCicode.  Same with -14 days.
+
+Michael
+-------
+Next bug is global function parameters not being pushed correctly. i.e
+
+unsigned int counter;
+
+void print(void)
+{
+	printf("Counter is %u\n", counter);
+}
+generates:
+_print::
+	ld hl,#_counter
+	push hl
+	ld hl,#str_1
+	push hl
+	call printf
+	fix, ret
+
+which is more like:
+	printf("Counter is %u\n", &counter);
+	
+First looking in SDCCicode.c for the stuff that generates function calls:
+Probably a bug in geniCodeParams.
+Nope, a bug in my stuff :)
+
+Michael
+-------
+Comparing the dhrystone code vs Hitech C v7.50
+
+cp:
+	ld	hl,__r
+	ld	(_Next_Ptr_Glob),hl
+vs:
+	ld	hl,#__r
+	ld	iy,#_Next_Ptr_Glob
+	ld	0(iy),l
+	ld	1(iy),h
+
+cp:
+	ld	a,#<__r
+	add	a,#0x27
+	ld	iy,#_Ptr_Glob
+	ld	0(iy),a
+	ld	a,#>__r
+	adc	a,#0x00
+	ld	1(iy),a
+vs:
+	ld	hl,__r+027h
+	ld	(_Ptr_Glob),hl
+
+cp:
+	ld	iy,#_Next_Ptr_Glob
+	ld	a,0(iy)
+	ld	(hl),a
+	inc	hl
+	ld	a,1(iy)
+	ld	(hl),a
+
+vs:
+	ld	bc,(_Next_Ptr_Glob)
+	ld	hl,(_Ptr_Glob)
+	ld	(hl),c
+	inc	hl
+	ld	(hl),b
+
+
+cp:
+	ld	bc,(_Ptr_Glob)
+	ld	l,c
+	ld	h,b
+	inc	hl
+	inc	hl
+	ld	(hl),#0x00
+	inc	hl
+	ld	(hl),#0x00
+vs:
+	ld	iy,(_Ptr_Glob)
+	ld	(iy+2),0
+	ld	(iy+3),0
+
+
+strcpy is inlined as:
+u12:
+	ld	a,(hl)
+	ldi
+	or	a
+	jp	nz,u12
+
+cp:
+	ld	a,#<_Arr_2_Glob
+	add	a,#0x2E
+	ld	-80(ix),a
+	ld	a,#>_Arr_2_Glob
+	adc	a,#0x03
+	ld	-79(ix),a
+;	genAssign (pointer)
+;	AOP_STK for _main_sloc1_1_0
+	ld	l,-80(ix)
+	ld	h,-79(ix)
+	ld	(hl),#0x0A
+	inc	hl
+	ld	(hl),#0x00
+vs:
+	ld	hl,0Ah
+	ld	(_Arr_2_Glob+032Eh),hl
+
+cp:
+	ld	a,-72(ix)
+	or	a,a
+	jp	nz,00126$
+	ld	a,-71(ix)
+	and	a,#0x03
+; Rule 4: Changed jp order
+	jp	z,00127$
+00126$:
+	jp	00102$
+00127$:
+
+vs:        
+	ld	(ix+-7),c
+	ld	(ix+-6),b
+	ld	a,c
+	ld	l,a
+	ld	a,b
+	and	03h
+	ld	h,a
+	ld	a,l
+	or	h
+	jp	nz,l12
+
+cp:
+	ld	a,-82(ix)
+	or	a,-81(ix)
+	sub	a,#0x01
+	ld	a,#0x00
+	rla
+	ld	iy,#_Bool_Glob
+	ld	0(iy),a
+	ld	1(iy),#0x00
+
+vs:
+	ld	a,l
+	or	h
+	ld	hl,01h
+	jp	z,u42
+	dec	hl
+u42:
+	ld	(_Bool_Glob),hl
+
+;C:\TEMP\DHRY.C: 173: Int_3_Loc = 5 * Int_1_Loc - Int_2_Loc;
+is turned into:
+	ld	l,(ix+-13)
+	ld	h,(ix+-12)
+	ld	d,h
+	ld	e,l
+	add	hl,hl
+	add	hl,hl
+	add	hl,de
+   
+Comapring two types of cmpeq:
+	ld	a,c		; 4
+	cp	a,#0xFB         ; 7
+	jp	nz,00119$	; 10
+	ld	a,b		; 4
+	cp	a,#0xFF		; 7
+; Rule 5: Changed jump logic
+	jp	z,00101$	; 10
+00119$:
+        ; 21 to 42
+
+vs:
+        ld      hl,#val		; 10
+        or      a		; 4
+        sbc     hl,bc		; 15 
+        jp      z,...		; 10
+        ; Always 39 - worse
+
+Comaring break even point for shift:
+	ld	a,#0x03+1	; 7
+	jp	00114$		; 10
+00113$:
+	sra	b		; 8
+	rr	c		; 8
+00114$:
+	dec	a		; 4
+	jp	nz,00113$	; 10
+
+        ; Bytes: 2+3+1+1+1+3 = 11
+        ; t-states = 17+n*30
+vs
+        sra     b
+        rr      c ...
+        ; Bytes: 2*n
+        ; t-states = 16*n         
+
+        Ah, pick 4

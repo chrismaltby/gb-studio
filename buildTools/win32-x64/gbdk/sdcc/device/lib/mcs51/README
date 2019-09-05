@@ -1,0 +1,4 @@
+sdcc/device/lib/mcs51
+-------------------
+
+mcs51 specific routines.

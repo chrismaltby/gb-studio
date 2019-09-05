@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>UCSIM: Command Reference</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Command reference</h1>
+
+
+<p>The simulator can be controlled with a simple monitor program which
+uses the command console to read commands and print out results. After
+starting the program you see a prompt on the command console and you
+can write in commands after the prompt:
+
+<a name="help_example"><pre>
+<a href="cmd.html#g">g</a> [start [stop]]   Go
+<a href="cmd.html#stop">stop</a>               Stop
+<a href="cmd.html#pc">pc [address]</a>       Get/set content of PC
+<a href="cmd.html#s">s [step]</a>           Step
+<a href="cmd.html#n">n [step]</a>           Next
+<a href="cmd.html#bse">bse wi|ri|wx|rx|ws|rs|rc f|d addr [hit]</a>
+                   Set EVENT Breakpoint
+<a href="cmd.html#bde">bde wi|ri|wx|rx|ws|rs|rc addr</a>
+                   Delete EVENT Breakpoint
+<a href="cmd.html#ba">ba</a>                 Delete all breakpoints
+<a href="cmd.html#dis">dis [start [offset [lines]]]</a>
+                   Disassemble code
+<a href="cmd.html#dp">dp</a>                 Dump ports
+<a href="cmd.html#ds">ds [addr...]</a>       Dump SFR
+<a href="cmd.html#db">db addr...</a>         Dump bit
+<a href="cmd.html#si">si addr data...</a>    Set Internal RAM
+<a href="cmd.html#sx">sx addr data...</a>    Set External RAM
+<a href="cmd.html#sc">sc addr data...</a>    Set code (ROM)
+<a href="cmd.html#ss">ss addr data...</a>    Set SFR area
+<a href="cmd.html#sb">sb addr data...</a>    Set bit
+<a href="cmd.html#sp">sp port data</a>       Set port pins
+<a href="cmd.html#fi">fi start stop data</a> Fill IRAM area with `data'
+<a href="cmd.html#fx">fx start stop data</a> Fill XRAM area with `data'
+<a href="cmd.html#fs">fs start stop data</a> Fill SFR area with `data'
+<a href="cmd.html#fc">fc start stop data</a> Fill ROM area with `data'
+<a href="cmd.html#wi">wi,Wi string</a>       Search for `string' in IRAM (Wi case sensitive)
+<a href="cmd.html#wx">wx,Wx string</a>       Search for `string' in XRAM (Wx case sensitive)
+<a href="cmd.html#wc">wc,Wc string</a>       Search for `string' in ROM (Wc case sensitive)
+<a href="cmd.html#sopt">sopt opt value</a>     Set value of option
+<a href="cmd.html#gopt">gopt [opt]</a>         Get value of option(s)
+<a href="cmd.html#show">show c|w</a>           Show licensing information
+----
+Set of new commands:
+<a href="cmd.html#conf">conf</a>               Configuration<img src="new.gif">
+<a href="cmd.html#state">state</a>              State of simulator<img src="new.gif">
+<a href="cmd.html#file">file,load "FILE"</a>   Load FILE into ROM<img src="new.gif">
+<a href="cmd.html#dl">download,dl</a>        Download (intel hex) data
+<a href="cmd.html#info">info</a>               Information<img src="new.gif">
+get                Get
+set                Set
+<a href="cmd.html#timer">timer a|d|g|r|s|v id [value]</a>
+                   Timer add|del|get|run|stop|value<img src="new.gif">
+<a href="cmd.html#run">run</a>                Go<img src="new.gif">
+step               Step
+<a href="cmd.html#reset">reset</a>              Reset
+dump i|x|r|s [start [stop]]
+                   Dump memory
+<a href="cmd.html#di">di [start [stop]]</a>  Dump Internal RAM
+<a href="cmd.html#dx">dx [start [stop]]</a>  Dump External RAM
+<a href="cmd.html#dch">dch [start [stop]]</a> Dump code in hex form
+<a href="cmd.html#dc">dc [start [stop]]</a>  Dump code in disass form
+<a href="cmd.html#break">break addr [hit]</a>   Set fix breakpoint<img src="new.gif">
+<a href="cmd.html#tbreak">tbreak addr [hit]</a>  Set temporary breakpoint<img src="new.gif">
+<a href="cmd.html#clear">clear [addr...]</a>    Clear fix breakpoint<img src="new.gif">
+<a href="cmd.html#h">help,?</a>             Help about commands
+<a href="cmd.html#q">quit</a>               Quit
+<a href="cmd.html#kill">kill</a>               Shut down the simulator
+</pre></a>
+
+In <a href="cmd.html">command reference</a> you can find more
+information about breakpoints and execution of the simulated program.
+
+
+<hr>
+
+</body>
+</html>

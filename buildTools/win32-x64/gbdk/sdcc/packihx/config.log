@@ -1,0 +1,54 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+config.site:13: default build_alias set to x86_64-w64-mingw32
+configure:531: checking for gcc
+configure:644: checking whether the C compiler (gcc  ) works
+configure:660: gcc -o conftest    conftest.c  1>&5
+configure:657:1: warning: return type defaults to 'int' [-Wimplicit-int]
+  657 | main(){return(0);}
+      | ^~~~
+configure:686: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:691: checking whether we are using GNU C
+configure:719: checking whether gcc accepts -g
+configure:757: checking size of char
+configure:777: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:768:1: warning: return type defaults to 'int' [-Wimplicit-int]
+  768 | main()
+      | ^~~~
+configure: In function 'main':
+configure:771:11: warning: implicit declaration of function 'exit' [-Wimplicit-function-declaration]
+  771 |   if (!f) exit(1);
+      |           ^~~~
+configure:771:11: warning: incompatible implicit declaration of built-in function 'exit'
+configure:768:1: note: include '<stdlib.h>' or provide a declaration of 'exit'
+  767 | #include <sys/types.h>
+  +++ |+#include <stdlib.h>
+  768 | main()
+configure:773:3: warning: incompatible implicit declaration of built-in function 'exit'
+  773 |   exit(0);
+      |   ^~~~
+configure:773:3: note: include '<stdlib.h>' or provide a declaration of 'exit'
+configure:797: checking size of short
+configure:837: checking size of int
+configure:877: checking size of long
+configure:917: checking size of long long
+configure:937: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:928:1: warning: return type defaults to 'int' [-Wimplicit-int]
+  928 | main()
+      | ^~~~
+configure: In function 'main':
+configure:931:11: warning: implicit declaration of function 'exit' [-Wimplicit-function-declaration]
+  931 |   if (!f) exit(1);
+      |           ^~~~
+configure:931:11: warning: incompatible implicit declaration of built-in function 'exit'
+configure:928:1: note: include '<stdlib.h>' or provide a declaration of 'exit'
+  927 | #include <sys/types.h>
+  +++ |+#include <stdlib.h>
+  928 | main()
+configure:933:3: warning: incompatible implicit declaration of built-in function 'exit'
+  933 |   exit(0);
+      |   ^~~~
+configure:933:3: note: include '<stdlib.h>' or provide a declaration of 'exit'
+configure:983: checking type name for byte
+configure:987: checking type name for word

@@ -1,0 +1,435 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.2 Command Line Options</TITLE>
+<META NAME="description" CONTENT="3.2 Command Line Options">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node22.html">
+<LINK REL="previous" HREF="node20.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node22.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html557"
+ HREF="node22.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html551"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html545"
+ HREF="node20.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html553"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html555"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html558"
+ HREF="node22.html">3.3 MCS51/DS390 Storage Class</A>
+<B> Up:</B> <A NAME="tex2html552"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html546"
+ HREF="node20.html">3.1 Compiling</A>
+ &nbsp <B>  <A NAME="tex2html554"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html556"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html559"
+ HREF="node21.html#SECTION00042100000000000000">3.2.1 Processor Selection Options</A>
+<LI><A NAME="tex2html560"
+ HREF="node21.html#SECTION00042200000000000000">3.2.2 Preprocessor Options</A>
+<LI><A NAME="tex2html561"
+ HREF="node21.html#SECTION00042300000000000000">3.2.3 Linker Options</A>
+<LI><A NAME="tex2html562"
+ HREF="node21.html#SECTION00042400000000000000">3.2.4 MCS51 Options</A>
+<LI><A NAME="tex2html563"
+ HREF="node21.html#SECTION00042500000000000000">3.2.5 DS390 Options</A>
+<LI><A NAME="tex2html564"
+ HREF="node21.html#SECTION00042600000000000000">3.2.6 Optimization Options</A>
+<LI><A NAME="tex2html565"
+ HREF="node21.html#SECTION00042700000000000000">3.2.7 Other Options</A>
+<LI><A NAME="tex2html566"
+ HREF="node21.html#SECTION00042800000000000000">3.2.8 Intermediate Dump Options</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00042000000000000000">
+3.2 Command Line Options</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00042100000000000000">
+3.2.1 Processor Selection Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-mmcs51</B>]Generate code for the MCS51 (8051) family of processors.
+This is the default processor target.</LI>
+<LI>[<B>-mds390</B>]Generate code for the DS80C390 processor.</LI>
+<LI>[<B>-mz80</B>]Generate code for the Z80 family of processors.</LI>
+<LI>[<B>-mgbz80</B>]Generate code for the GameBoy Z80 processor.</LI>
+<LI>[<B>-mavr</B>]Generate code for the Atmel AVR processor(In development,
+not complete).</LI>
+<LI>[<B>-mpic14</B>]Generate code for the PIC 14-bit processors(In development,
+not complete).</LI>
+<LI>[<B>-mtlcs900h</B>]Generate code for the Toshiba TLCS-900H processor(In
+development, not complete).</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042200000000000000">
+3.2.2 Preprocessor Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-I&lt;path&gt;</B>]The additional location where the pre processor
+will look for &lt;..h&gt; or ``..h'' files.</LI>
+<LI>[<B>-D&lt;macro[=value]&gt;</B>]Command line definition of macros.
+Passed to the pre processor.</LI>
+<LI>[<B>-M</B>]Tell the preprocessor to output a rule suitable for make
+describing the dependencies of each object file. For each source file,
+the preprocessor outputs one make-rule whose target is the object
+file name for that source file and whose dependencies are all the
+files `#include'd in it. This rule may be a single line or may be
+continued with `&#92;'-newline if it is long. The list
+of rules is printed on standard output instead of the preprocessed
+C program. `-M' implies `-E'.</LI>
+<LI>[<B>-C</B>]Tell the preprocessor not to discard comments. Used with
+the `-E' option.</LI>
+<LI>[<B>-MM</B>]Like `-M' but the output mentions only the user header
+files included with `#include ``file&#34;'. System header
+files included with `#include &lt;file&gt;' are omitted.</LI>
+<LI>[<B>-Aquestion(answer)</B>]Assert the answer answer for question,
+in case it is tested with a preprocessor conditional such as `#if
+#question(answer)'. `-A-' disables the standard assertions that normally
+describe the target machine.</LI>
+<LI>[<B>-Aquestion</B>](answer) Assert the answer answer for question,
+in case it is tested with a preprocessor conditional such as `#if
+#question(answer)'. `-A-' disables the standard assertions that normally
+describe the target machine.</LI>
+<LI>[<B>-Umacro</B>]Undefine macro macro. `-U' options are evaluated
+after all `-D' options, but before any `-include' and `-imacros' options.</LI>
+<LI>[<B>-dM</B>]Tell the preprocessor to output only a list of the macro
+definitions that are in effect at the end of preprocessing. Used with
+the `-E' option.</LI>
+<LI>[<B>-dD</B>]Tell the preprocessor to pass all macro definitions
+into the output, in their proper sequence in the rest of the output.</LI>
+<LI>[<B>-dN</B>]Like `-dD' except that the macro arguments and contents
+are omitted. Only `#define name' is included in the output.</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042300000000000000">
+3.2.3 Linker Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-L&nbsp;-lib-path</B>]&lt;absolute path to additional libraries&gt; This
+option is passed to the linkage editor's additional libraries search
+path. The path name must be absolute. Additional library files may
+be specified in the command line. See section Compiling programs for
+more details.</LI>
+<LI>[<B>-xram-loc</B>&lt;Value&gt;]The start location of the external ram,
+default value is 0. The value entered can be in Hexadecimal or Decimal
+format, e.g.: -xram-loc 0x8000 or -xram-loc 32768.</LI>
+<LI>[<B>-code-loc</B>&lt;Value&gt;]The start location of the code segment,
+default value 0. Note when this option is used the interrupt vector
+table is also relocated to the given address. The value entered can
+be in Hexadecimal or Decimal format, e.g.: -code-loc 0x8000 or -code-loc
+32768.</LI>
+<LI>[<B>-stack-loc</B>&lt;Value&gt;]The initial value of the stack pointer.
+The default value of the stack pointer is 0x07 if only register bank
+0 is used, if other register banks are used then the stack pointer
+is initialized to the location above the highest register bank used.
+eg. if register banks 1 &amp; 2 are used the stack pointer will default
+to location 0x18. The value entered can be in Hexadecimal or Decimal
+format, eg. -stack-loc 0x20 or -stack-loc 32. If all four register
+banks are used the stack will be placed after the data segment (equivalent
+to -stack-after-data)</LI>
+<LI>[<B>-stack-after-data</B>]This option will cause the stack to be
+located in the internal ram after the data segment.</LI>
+<LI>[<B>-data-loc</B>&lt;Value&gt;]The start location of the internal ram
+data segment, the default value is 0x30.The value entered can be in
+Hexadecimal or Decimal format, eg. -data-loc 0x20 or -data-loc 32.</LI>
+<LI>[<B>-idata-loc</B>&lt;Value&gt;]The start location of the indirectly
+addressable internal ram, default value is 0x80. The value entered
+can be in Hexadecimal or Decimal format, eg. -idata-loc 0x88 or -idata-loc
+136.</LI>
+<LI>[<B>-out-fmt-ihx</B>]The linker output (final object code) is in
+Intel Hex format. (This is the default option).</LI>
+<LI>[<B>-out-fmt-s19</B>]The linker output (final object code) is in
+Motorola S19 format.</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042400000000000000">
+3.2.4 MCS51 Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-model-large</B>]Generate code for Large model programs see
+section Memory Models for more details. If this option is used all
+source files in the project should be compiled with this option. In
+addition the standard library routines are compiled with small model,
+they will need to be recompiled.</LI>
+<LI>[<B>-model-small</B>]Generate code for Small Model programs see
+section Memory Models for more details. This is the default model.</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042500000000000000">
+3.2.5 DS390 Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-model-flat24</B>]Generate 24-bit flat mode code. This is the
+one and only that the ds390 code generator supports right now and
+is default when using <I>-mds390</I>. See section Memory Models for
+more details.</LI>
+<LI>[<B>-stack-10bit</B>]Generate code for the 10 bit stack mode of
+the Dallas DS80C390 part. This is the one and only that the ds390
+code generator supports right now and is default when using <I>-mds390</I>.
+In this mode, the stack is located in the lower 1K of the internal
+RAM, which is mapped to 0x400000. Note that the support is incomplete,
+since it still uses a single byte as the stack pointer. This means
+that only the lower 256 bytes of the potential 1K stack space will
+actually be used. However, this does allow you to reclaim the precious
+256 bytes of low RAM for use for the DATA and IDATA segments. The
+compiler will not generate any code to put the processor into 10 bit
+stack mode. It is important to ensure that the processor is in this
+mode before calling any re-entrant functions compiled with this option.
+In principle, this should work with the <I>-stack-auto</I> option,
+but that has not been tested. It is incompatible with the <I>-xstack</I>
+option. It also only makes sense if the processor is in 24 bit contiguous
+addressing mode (see the <I>-model-flat24 option</I>).</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042600000000000000">
+3.2.6 Optimization Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-nogcse</B>]Will not do global subexpression elimination, this
+option may be used when the compiler creates undesirably large stack/data
+spaces to store compiler temporaries. A warning message will be generated
+when this happens and the compiler will indicate the number of extra
+bytes it allocated. It recommended that this option NOT be used, #pragma&nbsp;NOGCSE
+can be used to turn off global subexpression elimination for a given
+function only.</LI>
+<LI>[<B>-noinvariant</B>]Will not do loop invariant optimizations,
+this may be turned off for reasons explained for the previous option.
+For more details of loop optimizations performed see section Loop
+Invariants.It recommended that this option NOT be used, #pragma&nbsp;NOINVARIANT
+can be used to turn off invariant optimizations for a given function
+only.</LI>
+<LI>[<B>-noinduction</B>]Will not do loop induction optimizations,
+see section strength reduction for more details.It is recommended
+that this option is NOT used, #pragma&nbsp;NOINDUCTION can be used to
+turn off induction optimizations for a given function only.</LI>
+<LI>[<B>-nojtbound</B>] Will not generate boundary condition check
+when switch statements are implemented using jump-tables. See section
+Switch Statements for more details. It is recommended that this option
+is NOT used, #pragma&nbsp;NOJTBOUND can be used to turn off boundary
+checking for jump tables for a given function only.</LI>
+<LI>[<B>-noloopreverse</B>]Will not do loop reversal optimization.</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042700000000000000">
+3.2.7 Other Options</A>
+</H3>
+
+<P>
+
+<UL>
+<LI>[<B>-c&nbsp;-compile-only</B>]will compile and assemble the source,
+but will not call the linkage editor.</LI>
+<LI>[<B>-E</B>]Run only the C preprocessor. Preprocess all the C source
+files specified and output the results to standard output.</LI>
+<LI>[<B>-stack-auto</B>]All functions in the source file will be compiled
+as <I>reentrant</I>, i.e. the parameters and local variables will
+be allocated on the stack. see section Parameters and Local Variables
+for more details. If this option is used all source files in the project
+should be compiled with this option. </LI>
+<LI>[<B>-xstack</B>]Uses a pseudo stack in the first 256 bytes in the
+external ram for allocating variables and passing parameters. See
+section on external stack for more details.</LI>
+<LI>[<B>-callee-saves</B>]<B>function1[,function2][,function3]....</B>
+The compiler by default uses a caller saves convention for register
+saving across function calls, however this can cause unneccessary
+register pushing &amp; popping when calling small functions from larger
+functions. This option can be used to switch the register saving convention
+for the function names specified. The compiler will not save registers
+when calling these functions, no extra code will be generated at the
+entry &amp; exit for these functions to save &amp; restore the registers
+used by these functions, this can SUBSTANTIALLY reduce code &amp; improve
+run time performance of the generated code. In the future the compiler
+(with interprocedural analysis) will be able to determine the appropriate
+scheme to use for each function call. DO NOT use this option for built-in
+functions such as _muluint..., if this option is used for a library
+function the appropriate library function needs to be recompiled with
+the same option. If the project consists of multiple source files
+then all the source file should be compiled with the same -callee-saves
+option string. Also see #pragma&nbsp;CALLEE-SAVES.</LI>
+<LI>[<B>-debug</B>]When this option is used the compiler will generate
+debug information, that can be used with the SDCDB. The debug information
+is collected in a file with .cdb extension. For more information see
+documentation for SDCDB.</LI>
+<LI>[<B><I>-regextend</I></B>] <I>This option is obsolete and isn't
+supported anymore.</I></LI>
+<LI>[<B><I>-noregparms</I></B>]<I>This option is obsolete and isn't
+supported anymore.</I></LI>
+<LI>[<B>-peep-file</B>&lt;filename&gt;]This option can be used to use additional
+rules to be used by the peep hole optimizer. See section Peep Hole
+optimizations for details on how to write these rules.</LI>
+<LI>[<B>-S</B>]Stop after the stage of compilation proper; do not assemble.
+The output is an assembler code file for the input file specified.</LI>
+<LI>[<B>-Wa_asmOption[,asmOption]</B>...]Pass the asmOption to
+the assembler.</LI>
+<LI>[<B>-Wl_linkOption[,linkOption]</B>...]Pass the linkOption
+to the linker.</LI>
+<LI>[<B>-int-long-reent</B>] Integer (16 bit) and long (32 bit) libraries
+have been compiled as reentrant. Note by default these libraries are
+compiled as non-reentrant. See section Installation for more details.</LI>
+<LI>[<B>-cyclomatic</B>]This option will cause the compiler to generate
+an information message for each function in the source file. The message
+contains some <I>important</I> information about the function. The
+number of edges and nodes the compiler detected in the control flow
+graph of the function, and most importantly the <I>cyclomatic complexity</I>
+see section on Cyclomatic Complexity for more details.</LI>
+<LI>[<B>-float-reent</B>] Floating point library is compiled as reentrant.See
+section Installation for more details.</LI>
+<LI>[<B>-nooverlay</B>] The compiler will not overlay parameters and
+local variables of any function, see section Parameters and local
+variables for more details.</LI>
+<LI>[<B>-main-return</B>]This option can be used when the code generated
+is called by a monitor program. The compiler will generate a 'ret'
+upon return from the 'main' function. The default option is to lock
+up i.e. generate a 'ljmp '.</LI>
+<LI>[<B>-no-peep</B>] Disable peep-hole optimization.</LI>
+<LI>[<B>-peep-asm</B>] Pass the inline assembler code through the peep
+hole optimizer. This can cause unexpected changes to inline assembler
+code, please go through the peephole optimizer rules defined in the
+source file tree '&lt;target&gt;/peeph.def' before using this option.</LI>
+<LI>[<B>-iram-size</B>&lt;Value&gt;]Causes the linker to check if the interal
+ram usage is within limits of the given value.</LI>
+<LI>[<B>-nostdincl</B>]This will prevent the compiler from passing
+on the default include path to the preprocessor.</LI>
+<LI>[<B>-nostdlib</B>]This will prevent the compiler from passing on
+the default library path to the linker.</LI>
+<LI>[<B>-verbose</B>]Shows the various actions the compiler is performing.</LI>
+<LI>[<B>-V</B>]Shows the actual commands the compiler is executing.</LI>
+</UL>
+<P>
+
+<H3><A NAME="SECTION00042800000000000000">
+3.2.8 Intermediate Dump Options</A>
+</H3>
+
+<P>
+The following options are provided for the purpose of retargetting
+and debugging the compiler. These provided a means to dump the intermediate
+code (iCode) generated by the compiler in human readable form at various
+stages of the compilation process. 
+
+<P>
+
+<UL>
+<LI>[<B>-dumpraw</B>]This option will cause the compiler to dump the
+intermediate code into a file of named <I>&lt;source filename&gt;.dumpraw</I>
+just after the intermediate code has been generated for a function,
+i.e. before any optimizations are done. The basic blocks at this stage
+ordered in the depth first number, so they may not be in sequence
+of execution.</LI>
+<LI>[<B>-dumpgcse</B>]Will create a dump of iCode's, after global subexpression
+elimination, into a file named <I>&lt;source filename&gt;.dumpgcse.</I></LI>
+<LI>[<B>-dumpdeadcode</B>]Will create a dump of iCode's, after deadcode
+elimination, into a file named <I>&lt;source filename&gt;.dumpdeadcode.</I></LI>
+<LI>[<B>-dumploop</B>]Will create a dump of iCode's, after loop optimizations,
+into a file named <I>&lt;source filename&gt;.dumploop.</I></LI>
+<LI>[<B>-dumprange</B>]Will create a dump of iCode's, after live range
+analysis, into a file named <I>&lt;source filename&gt;.dumprange.</I></LI>
+<LI>[<B>-dumlrange</B>]Will dump the life ranges for all symbols.</LI>
+<LI>[<B>-dumpregassign</B>]Will create a dump of iCode's, after register
+assignment, into a file named <I>&lt;source filename&gt;.dumprassgn.</I></LI>
+<LI>[<B>-dumplrange</B>]Will create a dump of the live ranges of iTemp's</LI>
+<LI>[<B>-dumpall</B>]Will cause all the above mentioned dumps to be
+created.</LI>
+</UL>
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html557"
+ HREF="node22.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html551"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html545"
+ HREF="node20.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html553"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html555"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html558"
+ HREF="node22.html">3.3 MCS51/DS390 Storage Class</A>
+<B> Up:</B> <A NAME="tex2html552"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html546"
+ HREF="node20.html">3.1 Compiling</A>
+ &nbsp <B>  <A NAME="tex2html554"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html556"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

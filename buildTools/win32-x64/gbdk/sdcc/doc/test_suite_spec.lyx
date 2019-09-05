@@ -1,0 +1,543 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\begin_preamble
+\usepackage{url}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Proposed Test Suite Design
+\layout Author
+
+Michael Hope (michaelh@juju.net.nz)
+\layout Date
+
+
+\latex latex 
+
+\backslash 
+today{}
+\layout Abstract
+
+This article describes the goals, requirements, and suggested specification
+ for a test suite for the output of the Small Device C Compiler (sdcc).
+ Also included is a short list of existing works.
+ 
+\layout Section
+
+Goals
+\layout Standard
+
+The main goals of a test suite for sdcc are 
+\layout Enumerate
+
+To allow developers to run regression tests to check that core changes do
+ not break any of the many ports.
+ 
+\layout Enumerate
+
+To verify the core.
+ 
+\layout Enumerate
+
+To allow developers to verify individual ports.
+ 
+\layout Enumerate
+
+To allow developers to test port changes.
+ 
+\layout Standard
+
+This design only covers the generated code.
+ It does not cover a test/unit test framework for the sdcc application itself,
+ which may be useful.
+\layout Standard
+
+One side effect of (1) is that it requires that the individual ports pass
+ the tests originally.
+ This may be too hard.
+ See the section on Exceptions below.
+\layout Section
+
+Requirements
+\layout Subsection
+
+Coverage
+\layout Standard
+
+The suite is intended to cover language features only.
+ Hardware specific libraries are explicitly not covered.
+\layout Subsection
+
+Permutations
+\layout Standard
+
+The ports often generate different code for handling different types (Byte,
+ Word, DWord, and the signed forms).
+ Meta information could be used to permute the different test cases across
+ the different types.
+\layout Subsection
+
+Exceptions
+\layout Standard
+
+The different ports are all at different levels of development.
+ Test cases must be able to be disabled on a per port basis.
+ Permutations also must be able to be disabled on a port level for unsupported
+ cases.
+ Disabling, as opposed to enabling, on a per port basis seems more maintainable.
+\layout Subsection
+
+Running
+\layout Standard
+
+The tests must be able to run unaided.
+ The test suite must run on all platforms that sdcc runs on.
+ A good minimum may be a subset of Unix command set and common tools, provided
+ by default on a Unix host and provided through cygwin on a Windows host.
+\layout Standard
+
+The tests suits should be able to be sub-divided, so that the failing or
+ interesting tests may be run separately.
+\layout Subsection
+
+Artifcats
+\layout Standard
+
+The test code within the test cases should not generate artifacts.
+ An artifact occurs when the test code itself interferes with the test and
+ generates an erroneous result.
+\layout Subsection
+
+Emulators
+\layout Standard
+
+sdcc is a cross compiling compiler.
+ As such, an emulator is needed for each port to run the tests.
+\layout Section
+
+Existing works
+\layout Subsection
+
+DejaGnu
+\layout Standard
+
+DejaGnu is a toolkit written in Expect designed to test an interactive program.
+ It provides a way of specifying an interface to the program, and given
+ that interface a way of stimulating the program and interpreting the results.
+ It was originally written by Cygnus Solutions for running against development
+ boards.
+ I believe the gcc test suite is written against DejaGnu, perhaps partly
+ to test the Cygnus ports of gcc on target systems.
+\layout Subsection
+
+gcc test suite
+\layout Standard
+
+I don't know much about the gcc test suite.
+ It was recently removed from the gcc distribution due to issues with copyright
+ ownership.
+ The code I saw from older distributions seemed more concerned with esoteric
+ features of the language.
+\layout Subsection
+
+xUnit
+\layout Standard
+
+The xUnit family, in particular JUnit, is a library of in test assertions,
+ test wrappers, and test suite wrappers designed mainly for unit testing.
+ PENDING: More.
+\layout Subsection
+
+CoreLinux++ Assertion framework
+\layout Standard
+
+While not a test suite system, the assertion framework is an interesting
+ model for the types of assertions that could be used.
+ They include pre-condition, post-condition, invariants, conditional assertions,
+ unconditional assertions, and methods for checking conditions.
+\layout Section
+
+Specification
+\layout Standard
+
+This specification borrows from the JUnit style of unit testing and the
+ CoreLinux++ style of assertions.
+ The emphasis is on maintainability and ease of writing the test cases.
+\layout Subsection
+
+Terms
+\layout Standard
+
+PENDING: Align these terms with the rest of the world.
+\layout Itemize
+
+An 
+\emph on 
+assertion
+\emph default 
+ is a statement of how things should be.
+ PENDING: Better description, an example.
+ 
+\layout Itemize
+
+A 
+\emph on 
+test point
+\emph default 
+ is the smallest unit of a test suite, and consists of a single assertion
+ that passes if the test passes.
+ 
+\layout Itemize
+
+A 
+\emph on 
+test case
+\emph default 
+ is a set of test points that test a certain feature.
+ 
+\layout Itemize
+
+A 
+\emph on 
+test suite
+\emph default 
+ is a set of test cases that test a certain set of features.
+ 
+\layout Subsection
+
+Test cases
+\layout Standard
+
+Test cases shall be contained in their own C file, along with the meta data
+ on the test.
+ Test cases shall be contained within functions whose names start with 'test'
+ and which are descriptive of the test case.
+ Any function that starts with 'test' will be automatically run in the test
+ suite.
+\layout Standard
+
+To make the automatic code generation easier, the C code shall have this
+ format 
+\layout Itemize
+
+Test functions shall start with 'test' to allow automatic detection.
+ 
+\layout Itemize
+
+Test functions shall follow the K&R intention style for ease of detection.
+ i.e.
+ the function name shall start in the left column on a new line below the
+ return specification.
+ 
+\layout Subsection
+
+Assertions
+\layout Standard
+
+All assertions shall log the line number, function name, and test case file
+ when they fail.
+ Most assertions can have a more descriptive message attached to them.
+ Assertions will be implemented through macros to get at the line information.
+ This may cause trouble with artifacts.
+\layout Standard
+
+The following definitions use C++ style default arguments where optional
+ messages may be inserted.
+ All assertions use double opening and closing brackets in the macros to
+ allow them to be compiled out without any side effects.
+ While this is not required for a test suite, they are there in case any
+ of this code is incorporated into the main product.
+\layout Standard
+
+Borrowing from JUnit, the assertions shall include 
+\layout Itemize
+
+FAIL((String msg = 
+\begin_inset Quotes eld
+\end_inset 
+
+Failed
+\begin_inset Quotes erd
+\end_inset 
+
+)).
+ Used when execution should not get here.
+ 
+\layout Itemize
+
+ASSERT((Boolean cond, String msg = 
+\begin_inset Quotes eld
+\end_inset 
+
+Assertion failed
+\begin_inset Quotes erd
+\end_inset 
+
+).
+ Fails if cond is false.
+ Parent to REQUIRE and ENSURE.
+ 
+\layout Standard
+
+JUnit also includes may sub-cases of ASSERT, such as assertNotNull, assertEquals
+, and assertSame.
+\layout Standard
+
+CoreLinux++ includes the extra assertions 
+\layout Itemize
+
+REQUIRE((Boolean cond, String msg = 
+\begin_inset Quotes eld
+\end_inset 
+
+Precondition failed
+\begin_inset Quotes erd
+\end_inset 
+
+).
+ Checks preconditions.
+ 
+\layout Itemize
+
+ENSURE((Boolean cond, String msg = 
+\begin_inset Quotes eld
+\end_inset 
+
+Postcondition failed
+\begin_inset Quotes erd
+\end_inset 
+
+).
+ Checks post conditions.
+ 
+\layout Itemize
+
+CHECK((Boolean cond, String msg = 
+\begin_inset Quotes eld
+\end_inset 
+
+Check failed
+\begin_inset Quotes erd
+\end_inset 
+
+)).
+ Used to call a function and to check that the return value is as expected.
+ i.e.
+ CHECK((fread(in, buf, 10) != -1)).
+ Very similar to ASSERT, but the function still gets called in a release
+ build.
+ 
+\layout Itemize
+
+FORALL and EXISTS.
+ Used to check conditions within part of the code.
+ For example, can be used to check that a list is still sorted inside each
+ loop of a sort routine.
+ 
+\layout Standard
+
+All of FAIL, ASSERT, REQUIRE, ENSURE, and CHECK shall be available.
+\layout Subsection
+
+Meta data
+\layout Standard
+
+PENDING: It's not really meta data.
+\layout Standard
+
+Meta data includes permutation information, exception information, and permutati
+on exceptions.
+\layout Standard
+
+Meta data shall be global to the file.
+ Meta data names consist of the lower case alphanumerics.
+ Test case specific meta data (fields) shall be stored in a comment block
+ at the start of the file.
+ This is only due to style.
+\layout Standard
+
+A field definition shall consist of 
+\layout Itemize
+
+The field name 
+\layout Itemize
+
+A colon.
+ 
+\layout Itemize
+
+A comma separated list of values.
+ 
+\layout Standard
+
+The values shall be stripped of leading and trailing white space.
+\layout Standard
+
+Permutation exceptions are by port only.
+ Exceptions to a field are specified by a modified field definition.
+ An exception definition consists of
+\layout Itemize
+
+The field name.
+ 
+\layout Itemize
+
+An opening square bracket.
+ 
+\layout Itemize
+
+A comma separated list of ports the exception applies for.
+ 
+\layout Itemize
+
+A closing square bracket.
+ 
+\layout Itemize
+
+A colon.
+ 
+\layout Itemize
+
+The values to use for this field for these ports.
+ 
+\layout Standard
+
+An instance of the test case shall be generated for each permutation of
+ the test case specific meta data fields.
+\layout Standard
+
+The runtime meta fields are 
+\layout Itemize
+
+port - The port this test is running on.
+ 
+\layout Itemize
+
+testcase - The name of this test case.
+ 
+\layout Itemize
+
+function - The name of the current function.
+ 
+\layout Standard
+
+Most of the runtime fields are not very usable.
+ They are there for completeness.
+\layout Standard
+
+Meta fields may be accessed inside the test case by enclosing them in curly
+ brackets.
+ The curly brackets will be interpreted anywhere inside the test case, including
+ inside quoted strings.
+ Field names that are not recognised will be passed through including the
+ brackets.
+ Note that it is therefore impossible to use some strings within the test
+ case.
+\layout Standard
+
+Test case function names should include the permuted fields in the name
+ to reduce name collisions.
+\layout Subsection
+
+An example
+\layout Standard
+
+I don't know how to do pre-formatted text in LaTeX.
+ Sigh.
+\layout Standard
+
+The following code generates a simple increment test for all combinations
+ of the storage classes and all combinations of the data sizes.
+ This is a bad example as the optimiser will often remove most of this code.
+\layout Standard
+
+
+\family typewriter 
+/** Test for increment.
+ 
+\layout Standard
+
+
+\family typewriter 
+type: char, int, long
+\layout Standard
+
+
+\family typewriter 
+Z80 port does not fully support longs (4 byte)
+\layout Standard
+
+
+\family typewriter 
+type[z80]: char, int
+\layout Standard
+
+
+\family typewriter 
+class: 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+, register, static */
+\layout Standard
+
+
+\family typewriter 
+static void
+\layout Standard
+
+
+\family typewriter 
+testInc{class}{types}(void)
+\layout Standard
+
+
+\family typewriter 
+{
+\layout Standard
+
+
+\family typewriter 
+{class} {type} i = 0; 
+\layout Standard
+
+
+\family typewriter 
+i = i + 1;
+\layout Standard
+
+
+\family typewriter 
+ASSERT((i == 1));
+\layout Standard
+
+
+\family typewriter 
+}
+\the_end

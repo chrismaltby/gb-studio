@@ -1,0 +1,102 @@
+# Makefile for kano-networks talker
+
+SHELL		= /bin/sh
+CXX		= @CXX@
+CXXCPP		= @CXXCPP@
+INSTALL		= @INSTALL@
+CP		= /bin/cp
+
+PRJDIR		= ../..
+
+DEFS            = $(subs -DHAVE_CONFIG_H,,@DEFS@)
+CPPFLAGS        = @CPPFLAGS@ -I. -I$(PRJDIR)
+#		  -I$(PRJDIR)/cmd.src -I$(PRJDIR)/sim.src
+CFLAGS          = @CFLAGS@ -Wall
+CXXFLAGS        = @CXXFLAGS@ -Wall
+M_OR_MM         = @M_OR_MM@
+
+LIBS		= @CURSES_LIBS@ @LIBS@
+
+curses_ok	= @curses_ok@
+
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+bindir          = @bindir@
+libdir          = @libdir@
+datadir         = @datadir@
+includedir      = @includedir@
+mandir          = @mandir@
+man1dir         = $(mandir)/man1
+man2dir         = $(mandir)/man2
+infodir         = @infodir@
+srcdir          = @srcdir@
+
+OBJECTS		= main.o fileio.o frontend.o posix_signal.o
+
+
+# Compiling entire program or any subproject
+# ------------------------------------------
+all: serio.src
+
+ifeq ($(curses_ok),yes)
+serio.src: checkconf serialview
+else
+serio.src: checkconf
+endif
+
+
+# Compiling and installing everything and runing test
+# ---------------------------------------------------
+install: all installdirs
+	$(INSTALL) -s serialview $(bindir)
+
+
+# Deleting all the installed files
+# --------------------------------
+uninstall:
+	rm -f $(bindir)/serialview
+
+
+# Performing self-test
+# --------------------
+check:
+
+
+# Performing installation test
+# ----------------------------
+installcheck:
+
+
+# Creating installation directories
+# ---------------------------------
+installdirs:
+	test -d $(bindir) || $(INSTALL) -d $(bindir)
+
+
+# Creating dependencies
+# ---------------------
+dep: Makefile.dep
+
+Makefile.dep: *.cc *.h *.hh
+	$(CXXCPP) $(CPPFLAGS) $(M_OR_MM) *.cc >Makefile.dep
+
+include Makefile.dep
+include clean.mk
+
+
+# My rules
+# --------
+serialview: $(OBJECTS)
+	$(CXX) -o $@ $(OBJECTS) $(LIBS)
+
+.cc.o:
+	$(CXX) $(CXXFLAGS)  $(CPPFLAGS) -c $< -o $@
+
+# Remaking configuration
+# ----------------------
+checkconf:
+	@if [ -f $(PRJDIR)/devel ]; then\
+	  $(MAKE) -f conf.mk srcdir="$(srcdir)" PRJDIR="$(PRJDIR)" freshconf;\
+	fi
+
+# End of gui.src/serio.src/Makefile.in

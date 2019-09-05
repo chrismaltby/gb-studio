@@ -1,0 +1,18 @@
+PRJDIR		= ..
+
+OBJECTS         = packihx.obj
+
+TARGET          = $(PRJDIR)/bin/packihx.exe
+
+# Compiling entire program or any subproject
+# ------------------------------------------
+all: $(TARGET)
+
+
+# My rules
+# --------
+$(TARGET): $(OBJECTS)
+        bcc32 -e$(TARGET) $(OBJECTS)
+
+!include ..\Bcc.inc
+

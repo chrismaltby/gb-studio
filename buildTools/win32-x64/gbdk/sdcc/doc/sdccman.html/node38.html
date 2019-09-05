@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4. SDCC Technical Data</TITLE>
+<META NAME="description" CONTENT="4. SDCC Technical Data">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node46.html">
+<LINK REL="previous" HREF="node19.html">
+<LINK REL="up" HREF="sdccman.html">
+<LINK REL="next" HREF="node39.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html806"
+ HREF="node39.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html800"
+ HREF="sdccman.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html794"
+ HREF="node37.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html802"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html804"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html807"
+ HREF="node39.html">4.1 Optimizations</A>
+<B> Up:</B> <A NAME="tex2html801"
+ HREF="sdccman.html">SDCC Compiler User Guide</A>
+<B> Previous:</B> <A NAME="tex2html795"
+ HREF="node37.html">3.18 Defines Created by</A>
+ &nbsp <B>  <A NAME="tex2html803"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html805"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00050000000000000000">
+4. SDCC Technical Data</A>
+</H1>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html808"
+ HREF="node39.html">4.1 Optimizations</A>
+<UL>
+<LI><A NAME="tex2html809"
+ HREF="node39.html#SECTION00051100000000000000">4.1.1 Sub-expression Elimination</A>
+<LI><A NAME="tex2html810"
+ HREF="node39.html#SECTION00051200000000000000">4.1.2 Dead-Code Elimination</A>
+<LI><A NAME="tex2html811"
+ HREF="node39.html#SECTION00051300000000000000">4.1.3 Copy-Propagation</A>
+<LI><A NAME="tex2html812"
+ HREF="node39.html#SECTION00051400000000000000">4.1.4 Loop Optimizations</A>
+<LI><A NAME="tex2html813"
+ HREF="node39.html#SECTION00051500000000000000">4.1.5 Loop Reversing</A>
+<LI><A NAME="tex2html814"
+ HREF="node39.html#SECTION00051600000000000000">4.1.6 Algebraic Simplifications</A>
+<LI><A NAME="tex2html815"
+ HREF="node39.html#SECTION00051700000000000000">4.1.7 'switch' Statements</A>
+<LI><A NAME="tex2html816"
+ HREF="node39.html#SECTION00051800000000000000">4.1.8 Bit-shifting Operations.</A>
+<LI><A NAME="tex2html817"
+ HREF="node39.html#SECTION00051900000000000000">4.1.9 Bit-rotation</A>
+<LI><A NAME="tex2html818"
+ HREF="node39.html#SECTION000511000000000000000">4.1.10 Highest Order Bit</A>
+<LI><A NAME="tex2html819"
+ HREF="node39.html#SECTION000511100000000000000">4.1.11 Peep-hole Optimizer</A>
+</UL>
+<LI><A NAME="tex2html820"
+ HREF="node40.html">4.2 Pragmas</A>
+<LI><A NAME="tex2html821"
+ HREF="node41.html">4.3 <I>&lt;pending: this is messy and incomplete&gt;</I> Library Routines</A>
+<LI><A NAME="tex2html822"
+ HREF="node42.html">4.4 Interfacing with Assembly Routines</A>
+<UL>
+<LI><A NAME="tex2html823"
+ HREF="node42.html#SECTION00054100000000000000">4.4.1 Global Registers used for Parameter Passing</A>
+<LI><A NAME="tex2html824"
+ HREF="node42.html#SECTION00054200000000000000">4.4.2 Assembler Routine(non-reentrant)</A>
+<LI><A NAME="tex2html825"
+ HREF="node42.html#SECTION00054300000000000000">4.4.3 Assembler Routine(reentrant)</A>
+</UL>
+<LI><A NAME="tex2html826"
+ HREF="node43.html">4.5 External Stack</A>
+<LI><A NAME="tex2html827"
+ HREF="node44.html">4.6 ANSI-Compliance</A>
+<LI><A NAME="tex2html828"
+ HREF="node45.html">4.7 Cyclomatic Complexity</A>
+</UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

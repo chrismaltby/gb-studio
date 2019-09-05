@@ -1,0 +1,25 @@
+<a name="bl"><h3>bl</h3></a>
+
+List breakpoints. This command prints out information about every
+fetch and then event breakpoints.
+
+<pre>
+> <font color="#118811">bl</font>
+F 1(1) 000160 c2 CLR   P1.0
+D 2(2) 000180 02 LJMP  022a
+F 1(1) 000006 wi
+> </pre>
+
+First character on the list shows permanency of the
+breakpoint. <b>F</b> means fix and <b>D</b> means dynamic. Second item
+on the list is the hit number associated to breakpoint. After that
+between the parentheses there is the actual value of the hit
+counter. If hit counter reaches zero, breakpoint is activated and hit
+counter is preset with value of hit number. Next item is the
+address. Next items are different for fetch and event breakpoints.
+
+<p>Fetch breakpoints list hexadecimal code of instruction at
+breakpoint's address and then dissassembled instruction.
+
+<p>Event breakpoints list identification of the event's type.
+

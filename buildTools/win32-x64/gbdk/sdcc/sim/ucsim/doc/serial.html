@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>UCSIM: Serial Interafces</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Using serial interfaces</h1>
+
+<h3>Connecting a terminal</h3>
+
+You can easily connect a terminal to the serial interface of the
+simulated microcontroller. This terminal is just a file so it can be
+anything which is represented as a file. It can be a real serial line
+of the computer:
+
+<pre>
+<font color="blue">$</font> s51 -s/dev/ttyS1
+</pre>
+
+Of course you must use the actual device name of your operating
+system. Device name <tt>ttyS1</tt> above is used in Linux
+systems. Your system can use other names.
+
+<p>You can use a terminal of your system. It can be a virtual console
+if your system provides such as Linux does for example. On X Windows
+you can use <b>xterm</b> windows as terminals, one for running the
+simulator and one as a terminal on CPU's serial line. Here is a sample
+how to do this:
+
+<ol><li>Prepare the terminal window which will be connected to the
+serial line:
+
+<p><ul><li>Check the device name which represents the terminal:
+
+<pre>
+<font color="blue">$</font> tty
+<font color="green">/dev/ttyp1</font>
+</pre>
+
+<li>Disconnect the shell from the terminal. Usualy I use the
+<b>tail</b> command and any existing text file:
+
+<pre>
+<font color="blue">$</font> tail -f $HOME/.profile
+</pre>
+
+</ul>
+
+<li>Run the simulator in the other window:
+
+<pre>
+<font color="blue">$</font> s51 -s/dev/ttyp1 program.hex
+</pre>
+
+Use the output of the <b>tty</b> command above as the parameter of the
+<tt>-s</tt> option.
+
+</ol>
+
+Every character sent out by the simulated program
+appears in the "terminal" window and every charater you type in there
+will be received by the simulated controller's serial line.
+
+
+<h3>Connecting two instances of simulator</h3>
+
+Executing two instances of the simulator, serial lines of two
+simulators (micros) can be connected together so they can talk to
+each other over their serial interface. It is because you can specify
+separate files for serial input and output. For example you run two
+simulators "1" and "2", here is the sample how to connect them:
+
+<p><img src="serial1.gif">
+
+<ol><li>Make two FIFOs to represent physical wires in serial cable
+connecting two micros:
+
+<pre>
+<font color="blue">$</font> mkfifo 1-2 2-1 <font color="magenta"># 1-2: 1->2  and 2-1: 2->1</font>
+</pre>
+
+<li>Start two simulators and specify the FIFOs as input and output of
+serial interface:
+
+<pre>
+<font color="blue">term1 $</font> <font color="magenta"># start sim "1"</font>
+<font color="blue">term1 $</font> s51 -Sin=2-1,out=1-2 program_1_.hex
+<font color="blue">term2 $</font> <font color="magenta"># start sim "2"</font>
+<font color="blue">term2 $</font> s51 -Sout=2-1,in=1-2 program_2_.hex
+</pre>
+
+Because opening a pipe blocks the program until other direction is
+opened, the order of arguments above is <b>important</b>!
+
+<p>
+
+<li>Debug programs as usual.
+
+</ol>
+
+Using the most usefull unix commands <b>cat</b> and <b>tee</b> and
+just some more FIFOs you can monitor serial communication, here is a
+sample:
+
+<p><img src="serial2.gif">
+
+<ol><li>Make some FIFOs to use between simulators and tee "monitors":
+
+<pre>
+<font color="blue">$</font> mkfifo 1_tee tee_2 2_tee tee_2
+</pre>
+
+<li>Run monitoring programs (in two xterms for example):
+
+<pre>
+<font color="blue">xterm1 $</font> cat 1_tee|tee /dev/tty >tee_2 # monitor 1->2
+<font color="blue">xterm2 $</font> cat 2_tee|tee /dev/tty >tee_1 # monitor 2->1
+</pre>
+
+<li>Now you can start simulators (on two other terminals:)
+
+<pre>
+<font color="blue">xterm3 $</font> s51 -Sin=tee_1,out=1_tee program_1_.hex
+<font color="blue">xterm4 $</font> s51 -Sin=tee_2,out=2_tee program_2_.hex
+</pre>
+
+<li>Start your apps and listen what they are talking about.
+
+</ol>
+
+<hr>
+
+</body>
+</html>

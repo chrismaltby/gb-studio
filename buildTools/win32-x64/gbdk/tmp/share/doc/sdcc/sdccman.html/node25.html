@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.6 Overlaying</TITLE>
+<META NAME="description" CONTENT="3.6 Overlaying">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node26.html">
+<LINK REL="previous" HREF="node24.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node26.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html626"
+ HREF="node26.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html620"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html614"
+ HREF="node24.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html622"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html624"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html627"
+ HREF="node26.html">3.7 Interrupt Service Routines</A>
+<B> Up:</B> <A NAME="tex2html621"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html615"
+ HREF="node24.html">3.5 Parameters &amp; Local</A>
+ &nbsp <B>  <A NAME="tex2html623"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html625"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00046000000000000000">
+3.6 Overlaying</A>
+</H2>
+
+<P>
+For non-reentrant functions SDCC will try to reduce internal ram space
+usage by overlaying parameters and local variables of a function (if
+possible). Parameters and local variables of a function will be allocated
+to an overlayable segment if the function has <I>no other function
+calls and the function is non-reentrant and the memory model is small.</I>
+If an explicit storage class is specified for a local variable, it
+will NOT be overlayed.
+
+<P>
+Note that the compiler (not the linkage editor) makes the decision
+for overlaying the data items. Functions that are called from an interrupt
+service routine should be preceded by a #pragma&nbsp;NOOVERLAY if they
+are not reentrant.
+
+<P>
+Also note that the compiler does not do any processing of inline assembler
+code, so the compiler might incorrectly assign local variables and
+parameters of a function into the overlay segment if the inline assembler
+code calls other c-functions that might use the overlay. In that case
+the #pragma&nbsp;NOOVERLAY should be used.
+
+<P>
+Parameters and Local variables of functions that contain 16 or 32
+bit multiplication or division will NOT be overlayed since these are
+implemented using external functions, e.g.:
+<BR>
+
+<BR>
+<TT>#pragma SAVE </TT>&nbsp;
+<BR>
+<TT>#pragma NOOVERLAY </TT>&nbsp;
+<BR>
+<TT>void set_error(unsigned char errcd) </TT>&nbsp;
+<BR>
+<TT>{</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;P3 = errcd;</TT>&nbsp;
+<BR>
+<TT>} </TT>&nbsp;
+<BR>
+<TT>#pragma RESTORE </TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>void some_isr () interrupt 2 using 1 </TT>&nbsp;
+<BR>
+<TT>{</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;...</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;set_error(10);</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;... </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+In the above example the parameter <I>errcd</I> for the function <I>set_error</I>
+would be assigned to the overlayable segment if the #pragma&nbsp;NOOVERLAY
+was not present, this could cause unpredictable runtime behavior when
+called from an ISR. The #pragma&nbsp;NOOVERLAY ensures that the parameters
+and local variables for the function are NOT overlayed.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html626"
+ HREF="node26.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html620"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html614"
+ HREF="node24.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html622"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html624"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html627"
+ HREF="node26.html">3.7 Interrupt Service Routines</A>
+<B> Up:</B> <A NAME="tex2html621"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html615"
+ HREF="node24.html">3.5 Parameters &amp; Local</A>
+ &nbsp <B>  <A NAME="tex2html623"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html625"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

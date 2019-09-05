@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>7. SDCDB - Source Level Debugger</TITLE>
+<META NAME="description" CONTENT="7. SDCDB - Source Level Debugger">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node56.html">
+<LINK REL="previous" HREF="node48.html">
+<LINK REL="up" HREF="sdccman.html">
+<LINK REL="next" HREF="node50.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html992"
+ HREF="node50.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html986"
+ HREF="sdccman.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html980"
+ HREF="node48.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html988"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html990"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html993"
+ HREF="node50.html">7.1 Compiling for Debugging</A>
+<B> Up:</B> <A NAME="tex2html987"
+ HREF="sdccman.html">SDCC Compiler User Guide</A>
+<B> Previous:</B> <A NAME="tex2html981"
+ HREF="node48.html">6. Retargetting for other</A>
+ &nbsp <B>  <A NAME="tex2html989"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html991"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00080000000000000000">
+7. SDCDB - Source Level Debugger</A>
+</H1>
+
+<P>
+SDCC is distributed with a source level debugger. The debugger uses
+a command line interface, the command repertoire of the debugger has
+been kept as close to gdb (the GNU debugger) as possible. The configuration
+and build process is part of the standard compiler installation, which
+also builds and installs the debugger in the target directory specified
+during configuration. The debugger allows you debug BOTH at the C
+source and at the ASM source level.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html994"
+ HREF="node50.html">7.1 Compiling for Debugging</A>
+<LI><A NAME="tex2html995"
+ HREF="node51.html">7.2 How the Debugger Works</A>
+<LI><A NAME="tex2html996"
+ HREF="node52.html">7.3 Starting the Debugger</A>
+<LI><A NAME="tex2html997"
+ HREF="node53.html">7.4 Command Line Options.</A>
+<LI><A NAME="tex2html998"
+ HREF="node54.html">7.5 Debugger Commands.</A>
+<UL>
+<LI><A NAME="tex2html999"
+ HREF="node54.html#SECTION00085100000000000000">7.5.1 break [line | file:line | function | file:function]</A>
+<LI><A NAME="tex2html1000"
+ HREF="node54.html#SECTION00085200000000000000">7.5.2 clear [line | file:line | function | file:function ]</A>
+<LI><A NAME="tex2html1001"
+ HREF="node54.html#SECTION00085300000000000000">7.5.3 continue</A>
+<LI><A NAME="tex2html1002"
+ HREF="node54.html#SECTION00085400000000000000">7.5.4 finish</A>
+<LI><A NAME="tex2html1003"
+ HREF="node54.html#SECTION00085500000000000000">7.5.5 delete [n]</A>
+<LI><A NAME="tex2html1004"
+ HREF="node54.html#SECTION00085600000000000000">7.5.6 info [break | stack | frame | registers ]</A>
+<LI><A NAME="tex2html1005"
+ HREF="node54.html#SECTION00085700000000000000">7.5.7 step</A>
+<LI><A NAME="tex2html1006"
+ HREF="node54.html#SECTION00085800000000000000">7.5.8 next</A>
+<LI><A NAME="tex2html1007"
+ HREF="node54.html#SECTION00085900000000000000">7.5.9 run</A>
+<LI><A NAME="tex2html1008"
+ HREF="node54.html#SECTION000851000000000000000">7.5.10 ptype variable </A>
+<LI><A NAME="tex2html1009"
+ HREF="node54.html#SECTION000851100000000000000">7.5.11 print variable</A>
+<LI><A NAME="tex2html1010"
+ HREF="node54.html#SECTION000851200000000000000">7.5.12 file filename</A>
+<LI><A NAME="tex2html1011"
+ HREF="node54.html#SECTION000851300000000000000">7.5.13 frame</A>
+<LI><A NAME="tex2html1012"
+ HREF="node54.html#SECTION000851400000000000000">7.5.14 set srcmode</A>
+<LI><A NAME="tex2html1013"
+ HREF="node54.html#SECTION000851500000000000000">7.5.15 ! simulator command</A>
+<LI><A NAME="tex2html1014"
+ HREF="node54.html#SECTION000851600000000000000">7.5.16 quit.</A>
+</UL>
+<LI><A NAME="tex2html1015"
+ HREF="node55.html">7.6 Interfacing with XEmacs.</A>
+</UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

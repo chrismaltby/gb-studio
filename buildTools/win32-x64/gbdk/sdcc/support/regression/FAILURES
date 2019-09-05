@@ -1,0 +1,7 @@
+ASSERT(result == (char)((char)-1560000000 << 1));
+
+Complains:
+gen/z80/shifts/shifts_attr_volatile_storage_none_type_char_vals_-1560000000.c(61):warning *** constant is out of range  compare operation 
+
+despite the cast.
+

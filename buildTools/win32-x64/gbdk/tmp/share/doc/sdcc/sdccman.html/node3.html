@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>1.1 About SDCC</TITLE>
+<META NAME="description" CONTENT="1.1 About SDCC">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html236"
+ HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html230"
+ HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html224"
+ HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html232"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html234"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html237"
+ HREF="node4.html">1.2 Open Source</A>
+<B> Up:</B> <A NAME="tex2html231"
+ HREF="node2.html">1. Introduction</A>
+<B> Previous:</B> <A NAME="tex2html225"
+ HREF="node2.html">1. Introduction</A>
+ &nbsp <B>  <A NAME="tex2html233"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html235"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00021000000000000000">
+1.1 About SDCC</A>
+</H2>
+
+<P>
+ 
+<B>SDCC</B> is a Freeware, retargettable, optimizing ANSI-C compiler
+by <B>Sandeep Dutta</B> designed for 8 bit Microprocessors. The
+current version targets Intel MCS51 based Microprocessors(8051,8052,
+etc), Zilog Z80 based MCUs, and the Dallas DS80C390 variant. It can
+be retargetted for other microprocessors, support for PIC, AVR and
+186 is under development. The entire source code for the compiler
+is distributed under GPL. SDCC uses ASXXXX &amp; ASLINK, a Freeware,
+retargettable assembler &amp; linker. SDCC has extensive language extensions
+suitable for utilizing various microcontrollers and underlying hardware
+effectively. 
+<BR>
+
+<BR>
+In addition to the MCU specific optimizations SDCC also does a host
+of standard optimizations like:
+
+<P>
+
+<UL>
+<LI>global sub expression elimination, </LI>
+<LI>loop optimizations (loop invariant, strength reduction of induction
+variables and loop reversing), </LI>
+<LI>constant folding &amp; propagation, </LI>
+<LI>copy propagation, </LI>
+<LI>dead code elimination </LI>
+<LI>jumptables for <I>switch</I> statements.</LI>
+</UL>
+For the back-end SDCC uses a global register allocation scheme which
+should be well suited for other 8 bit MCUs. 
+<BR>
+
+<BR>
+The peep hole optimizer uses a rule based substitution mechanism which
+is MCU independent. 
+<BR>
+
+<BR>
+Supported data-types are:
+
+<P>
+
+<UL>
+<LI>char (8 bits, 1 byte), </LI>
+<LI>short and int (16 bits, 2 bytes), </LI>
+<LI>long (32 bit, 4 bytes)</LI>
+<LI>float (4 byte IEEE). </LI>
+</UL>
+The compiler also allows <I>inline assembler code</I> to be embedded
+anywhere in a function. In addition, routines developed in assembly
+can also be called.
+<BR>
+
+<BR>
+SDCC also provides an option (-cyclomatic) to report the relative
+complexity of a function. These functions can then be further optimized,
+or hand coded in assembly if needed. 
+<BR>
+
+<BR>
+SDCC also comes with a companion source level debugger SDCDB, the
+debugger currently uses ucSim a freeware simulator for 8051 and other
+micro-controllers. 
+<BR>
+
+<BR>
+The latest version can be downloaded from  http://sdcc.sourceforge.net/<B>.</B>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html236"
+ HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html230"
+ HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html224"
+ HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html232"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html234"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html237"
+ HREF="node4.html">1.2 Open Source</A>
+<B> Up:</B> <A NAME="tex2html231"
+ HREF="node2.html">1. Introduction</A>
+<B> Previous:</B> <A NAME="tex2html225"
+ HREF="node2.html">1. Introduction</A>
+ &nbsp <B>  <A NAME="tex2html233"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html235"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

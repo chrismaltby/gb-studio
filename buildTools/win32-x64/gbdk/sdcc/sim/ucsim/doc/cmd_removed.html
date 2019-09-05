@@ -1,0 +1,690 @@
+<html>
+<head>
+<title>Removed commands of uCsim</title>
+</head>
+
+<body bgcolor="white">
+
+<h2>Removed commands of uCsim</h2>
+
+<font color="gray">
+
+
+<a name="bse"><h3>bse wi|ri|wx|rx|ws|rs|rc f|d addr [hit]</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_bp.html#break">break</a> or <a
+href="cmd_bp.html#tbreak">tbreak</a> instead!!</font>
+
+<p>Set event breakpoint. First parameter specifies type of event. See <a
+href="#breakpoints">general description of event breakpoints</a> above
+about meaning of event identifiers. Second parameter specify if the
+breakpoint will be fix (<b>f</b>) or dynamic (<b>d</b>). Third
+parameter specifies address. Remember that this is not an instruction
+address, it is address of the memory cell where specified event should
+occur.
+
+<p>Forth parameter is optional and it specifies the hit number. It is
+1 by default.
+
+<pre>
+$ <font color="#118811">s51 remoansi.hex</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+58659 bytes read from remoansi.hex
+> <font color="#118811">dis</font>
+   00d47e 22       RET
+   000000 02 01 60 LJMP  0160
+   000160 c2 90    CLR   P1.0
+   000162 c2 97    CLR   P1.7
+   000164 d2 b5    SETB  P3.5
+   000166 d2 b4    SETB  P3.4
+   000168 75 81 22 MOV   SP,#22
+   00016b 75 d0 00 MOV   PSW,#00
+   00016e 7e 00    MOV   R6,#00
+   000170 7f 00    MOV   R7,#00
+   000172 79 04    MOV   R1,#04
+   000174 12 0d b8 LCALL 0db8
+   000177 0f       INC   R7
+   000178 d9 fa    DJNZ  R1,0174
+   00017a 75 0b 00 MOV   0b,#00
+   00017d 75 0c 00 MOV   0c,#00
+   000180 02 02 2a LJMP  022a
+   000183 78 22    MOV   R0,#22
+   000185 76 00    MOV   @R0,#00
+   000187 d8 fc    DJNZ  R0,0185
+> <font color="#118811">bse wi f 6</font>
+> <font color="#118811">g</font>
+4
+   000170 7f 00    MOV   R7,#00
+> </pre>
+
+
+<a name="bde"><h3>bde wi|ri|wx|rx|ws|rs|rc addr</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_bp.html#delete">delete</a> instead!!</font>
+
+<p>Delete event breakpoint. First parameter must be given to specify type
+of event. Second parameter is address of memory cell which the
+breakpoint is associated to. Continuing example given above:
+
+<pre>
+> <font color="#118811">bl</font>
+D 2(2) 000180 02 LJMP  022a
+F 1(1) 000006 wi
+> <font color="#118811">bde ri 6</font>
+No ri breakpoint at 000006
+> <font color="#118811">bde wi 6</font>
+> <font color="#118811">bl</font>
+D 2(2) 000180 02 LJMP  022a
+> </pre>
+
+
+<a name="ba"><h3>ba</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_bp.html#delete">delete</a> instead!!</font>
+
+<p>Delete all breakpoints. This command deletes all fetch as well as
+event breakpoints. Be carefull because it does not ask you to confirm
+your intention.
+
+<pre>
+> <font color="#118811">bl</font>
+F 1(1) 000160 c2 CLR   P1.0
+D 2(2) 000180 02 LJMP  022a
+F 1(1) 000006 wi
+> <font color="#118811">ba</font>
+> <font color="#118811">bl</font>
+> </pre>
+
+
+<a name="dp"><h3>dp</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#info_hw">info hardware</a> instead!!</font>
+
+<p>Dump out ports. This command shows actual value of ports.
+
+<pre>
+$ <font color="#118811">s51 remoansi.hex</font> 
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+58659 bytes read from remoansi.hex
+> <font color="#118811">sopt stopit 1</font>
+> <font color="#118811">g</font>
+5
+ * 000023 02 01 1c LJMP  011c
+> <font color="#118811">dp</font>
+P0    11111111 0xff 255 .    P1    11111110 0xfe 254 .
+Pin0  11111111 0xff 255 .    Pin1  11111111 0xff 255 .
+Port0 11111111 0xff 255 .    Port1 11111110 0xfe 254 .
+
+P2    11111111 0xff 255 .    P3    11111111 0xff 255 .
+Pin2  11111111 0xff 255 .    Pin3  11111111 0xff 255 .
+Port2 11111111 0xff 255 .    Port3 11111111 0xff 255 .
+> </pre>
+
+First lines on the list (labeled with Px) are value of SFRs which are
+internal latch registers. Second lines (labeled with Pinx) are outputs
+of external devices connected to port pins of the
+microcontroller. These values can be set by you using <a
+href="#sp"><b>sp</b></a> command. Third lines (labeled with Portx)
+show actual values can be measured on pins of the device. These values
+are calculated with following pseudo formula:
+
+<p><tt>Portx= Px AND Pinx</tt>
+
+<p>All three values are displayed in binary, hexadecimal, decimal form
+and then the ASCII character of the value is shown.
+
+
+<a name="ds"><h3>ds [addr...]</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_dump.html#dump">dump</a> instead!!</font>
+
+Print out SFR. This command can be used to get value of all or some
+SFRs. If you do not specify any parameter the <b>ds</b> command simply
+dumps out full SFR area 16 bytes per line.
+
+<pre>
+$ <font color="#118811">s51 remoansi.hex</font> 
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+58659 bytes read from remoansi.hex
+> <font color="#118811">sopt stopit 1</font>
+> <font color="#118811">g</font>
+5
+ * 000023 02 01 1c LJMP  011c
+> <font color="#118811">ds</font>
+000080 ff 2a ba 16 00 00 00 00 55 a1 d7 fe 50 fd 00 00 .*......U...P...
+000090 fe 00 00 00 00 00 00 00 7e 00 00 00 00 00 00 00 ........~.......
+0000a0 ff 00 00 00 00 00 00 00 97 00 00 00 00 00 00 00 ................
+0000b0 ff 00 00 00 00 00 00 00 15 00 00 00 00 00 00 00 ................
+0000c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0000d0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0000e0 0a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0000f0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+> <font color="#118811">ds p1 0x87</font>
+    P1 fe 254 .
+000087 00   0 .
+> <font color="#118811">ds p2 ip scon</font>
+    P2 ff 255 .
+    IP 15  21 .
+  SCON 7e 126 ~
+> </pre>
+
+If you specify one or more parameter the <b>ds</b> command prints out
+value of registers specified by parameters. Parameter can be an
+address or a symbolic name of the register. Note that the simulator
+implements a register at all address in the address space which is not
+true in real microcontroller where reading of an unimplemented
+register gets undefined value. Value of the registers printed out in
+hexadecimal, decimal, and ASCII form.
+
+<p>Note that different type of controllers can implement different
+registers:
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">ds rcap2l</font>
+> <font color="#118811">q</font>
+$ <font color="#118811">s51 -t 52</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">ds rcap2l</font>
+RCAP2L 00   0 .
+> </pre>
+
+
+<a name="db"><h3>db addr...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_dump.html#dump">dump</a> instead!!</font>
+
+Dump bits. This command can be used to get value of bits. At least one
+parameter must be given. Bit address can be specified in three
+forms. First of all name of the bit can be used if it has any. Direct
+bit address is accepted too and it can be specified by address of IRAM
+or SFR which contains the bit and bit number within the byte separated
+by a dot. If the requested bit is in an SFR the address of the
+register can be specified by its name.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">db it1 0x20.3 0x43 p2.5</font>
+000088    IT1 0
+000020   20.3 0
+000028   28.3 0
+0000a0   P2.5 1
+> </pre>
+
+Value of bits are printed out one per line. The list starts direct
+address of the bit followed by bit name or address of the memory cell
+or SFR which contains the displayed bit and bit number within the byte
+separated by a dot. At last the value of the bit is shown. Displaying
+a port bit you get value of SFR latch:
+
+<pre>
+> <font color="#118811">sp 1 0x0f</font>
+> <font color="#118811">ss p1 0x55</font>
+000090 55                                              U
+> <font color="#118811">dp</font>
+P0    11111111 0xff 255 .    P1    01010101 0x55  85 U
+Pin0  11111111 0xff 255 .    Pin1  00001111 0x0f  15 .
+Port0 11111111 0xff 255 .    Port1 00000101 0x05   5 .
+
+P2    11111111 0xff 255 .    P3    11111111 0xff 255 .
+Pin2  11111111 0xff 255 .    Pin3  11111111 0xff 255 .
+Port2 11111111 0xff 255 .    Port3 11111111 0xff 255 .
+> <font color="#118811">db p1.2 p1.3 p1.4 p1.5 p1.6</font>
+000090   P1.2 1
+000090   P1.3 0
+000090   P1.4 1
+000090   P1.5 0
+000090   P1.6 1
+> </pre>
+
+
+<a name="g"><h3>g [start [stop]]</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_exec.html#run">run</a> instead!!</font>
+
+<p>Go, start execution. Parameters are optional. First parameter
+specifies start address of the execution. By default execution starts
+at address specified by actual value of the PC. This can be overridden
+by first parameter. If second parameter is specified it places a
+dynamic breakpoint at specified address which stops the execution. If
+stop address is not given the simulator stops if it reaches a
+breakpoint, or the CPU accepts an interrupt and <b>stopit</b> option
+is TRUE, or fatal error occures or <a href="#stop">stop</a> command is
+used. Note that first instruction is executed without effect of
+breakpoints. It means that if there is a breakpoint at start address
+then it will not be hit.
+
+<pre>
+$ <font color="#118811">s51 remoansi.hex</font>
+ucsim 0.2.24, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+55755 bytes read from remoansi.hex
+> <font color="#118811">b 0x187</font>
+> <font color="#118811">sopt stopit y</font>
+> <font color="#118811">g</font>
+Simulation started, PC=0x000000
+Stop at 000187: (4) Breakpoint
+F 000187
+> </pre>
+
+After execution is started the <tt>Simulaton started</tt> message
+appears with value of PC where the execution started and the simulator
+is ready to accept other commands while the simulation is running in
+background.
+
+<!--If execution stops the simulator first writes out a number which is
+the reason of the stop (this is a diagnostic feature, it will be
+improved in future versions). Reason can be:
+
+<dl><dt>0
+
+<dd>There is no reason to stop. This number should never appear.
+
+<dt>1
+
+<dd>Serious error for example unknown instruction code which is
+impossible to execute.
+
+<dt>2
+
+<dd>Invalid address used in an instruction. For example indirect
+address is bigger then 127 in 51 type of controller. Execution can be
+continued but result will be undefined.
+
+<dt>3
+
+<dd>Stack overflow. Execution can be continued but result will be
+undefined.
+
+<dt>4
+
+<dd>Breakpoint has been reached.
+
+<dt>5
+
+<dd>Interrupt accepted. It only stops the execution if <b>stopit</b>
+option is set to TRUE. See <a href="#sopt">sopt</a> command.
+
+</dl>
+
+After this diagnostic message the simulator prints out intruction at
+the PC in disassembled form. See <a href="#dis"><b>dis</b></a>
+commands for description of disassembled form.
+-->
+
+
+<a name="wi"><h3>wi,Wi string</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#where">where,Where</a> instead!!</font>
+
+<p>Searching for specified string in internal RAM area. String is
+interpreted from first non-space sharacter until end of the command
+including spaces. <b>wi</b> command makes case insensitive search and
+<b>Wi</b> can be used to make case sensitive search. Result is a hexa
+dump of memory areas that match with specified string. Most of C-style
+escape sequences can be used in the string: <tt>\f</tt>, <tt>\n</tt>,
+<tt>\r</tt>, <tt>\t</tt>, <tt>\v</tt>, <tt>\a</tt>, <tt>\b</tt>,
+<tt>\0</tt>, and <tt>\0xxx</tt> where <tt>xxx</tt> is an octadecimal
+number of the code of the character.
+
+<pre>
+$ <font color="#118811">s51 remoansi.hex</font>
+ucsim 0.2.24, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+58659 bytes read from remoansi.hex
+> <font color="#118811">g</font>
+Simulation started, PC=0x000000
+
+Stop at 00019c: (7) User stopped
+F 00019c
+> <font color="#118811">si 20 Dani DAni</font>
+000014 44 61 6e 69 44 41 6e 69                         DaniDAni
+> <font color="#118811">wi dani</font>
+000014 44 61 6e 69             Dani
+000018 44 41 6e 69             DAni
+> <font color="#118811">Wi Dani</font>
+000014 44 61 6e 69             Dani
+> <font color="#118811">wi dani\0</font>
+000018 44 41 6e 69 00          DAni.
+> </pre>
+
+
+<a name="wx"><h3>wx,Wx string</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#where">where,Where</a> instead!!</font>
+
+<p>Search commands. These commands are similar to <a href="#wi"><b>wi,
+Wi</b></a> commands the only difference is that <b>wx,Wx</b> are used
+to search for a string in external memory.
+
+
+<a name="wc"><h3>wc,Wc string</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#where">where,Where</a> instead!!</font>
+
+<p>Search commands. These commands are similar to <a href="#wi"><b>wi,
+Wi</b></a> commands the only difference is that <b>wx,Wx</b> are used
+to search for a string in code memory area.
+
+
+<a name="gopt"><h3>gopt [opt]</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#get_option">get_option</a> instead!!</font>
+
+<p>Get actual value of option(s). Some options can be set by <a
+href="#sopt"><b>sopt</b></a> to modify behavior of the
+simulator. Using <b>gopt</b> you can get actual value of these
+options. If you use this command without parameter you get list of all
+options known by the program. In this way you can figure out which
+options can be used.
+
+<pre>
+$ <font color="#118811">s51 -V</font>
+ucsim 0.2.24, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">gopt</font>
+verbose TRUE Verbose flag.
+stopit FALSE Stop if interrupt accepted.
+debug FALSE Debug flag.
+> <font color="#118811">gopt stopit</font>
+stopit FALSE Stop if interrupt accepted.
+> </pre>
+
+This version of the simulator knows about three options. First element
+of the list is name of the option (<b>verbose</b>, <b>debug</b> and
+<b>stopit</b>). This name can be used to identify the option in
+<b>gopt</b> and <a href="#sopt"><b>sopt</b></a> command. Second
+element of the list is the value of the option. In this case type of
+both options is boolean, their value can be TRUE or FALSE. Third
+element is a short description of the option.
+
+<dl><dt><b>verbose</b> <dd>?
+
+<dt><b>debug</b> <dd>Debug flag can be set by <b>-V</b> option of the
+program to TRUE otherwise its default value is FALSE. If it is TRUE,
+the simulator prints out short messages about important events.
+
+<dt><b>stopit</b> <dd>Setting this option to TRUE (default value is
+FALSE) forces execution to stop every time when CPU accepts an
+interrupt. You do not have to use breakpoints to inspect interrupts.
+
+</dl>
+
+
+<a name="sopt"><h3>sopt opt value</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_option">set_option</a> instead!!</font>
+
+<p>Set option value. Options described at previous command (<a
+href="#gopt"><b>gopt</b></a>) can be set using this command. First
+parameter must be an option name and second the new
+value. Interpretation of the value depends on type of the
+option. Value for a boolean type of option interpreted as follows: if
+first character of the value is one of <tt>1</tt>, <tt>t</tt>,
+<tt>T</tt>, <tt>y</tt>, <tt>Y</tt> then value will be TRUE otherwise
+it will be FALSE.
+
+<pre>
+$ <font color="#118811">s51 -V</font>
+ucsim 0.2.24, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">gopt</font>
+verbose TRUE Verbose flag.
+stopit FALSE Stop if interrupt accepted.
+debug FALSE Debug messages appears on this console.
+> <font color="#118811">sopt debug t</font>
+> <font color="#118811">gopt</font>
+verbose TRUE Verbose flag.
+stopit FALSE Stop if interrupt accepted.
+debug TRUE Debug messages appears on this console.
+> </pre>
+
+
+<a name="si"><h3>si addr data...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_memory">set memory</a> instead!!</font>
+
+<p>Write data into internal RAM area. First parameter specifies start
+address of memory area to set and other parameters are data to set.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">si 10 dani\040hej-ho</font>
+00000a 64 61 6e 69 20 68 65 6a 2d 68 6f                dani hej-ho
+> </pre>
+
+Result of the command is a memory dump of area which has been modified
+by the command. If there is syntax error in a data parameter then
+remaining parameters are dropped out.
+
+<pre>
+> <font color="#118811">si 20 1 2 0xi 3 4</font>
+Bad data 0xi
+000014 01 02                                           ..
+> </pre>
+
+
+<a name="sx"><h3>sx addr data...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_memory">set memory</a> instead!!</font>
+
+<p>This command is similar to <a href="#si"><b>si</b></a> command
+described above but it is used to modify external RAM.
+
+
+<a name="sc"><h3>sc addr data...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_memory">set memory</a> instead!!</font>
+
+<p>This command is similar to <a href="#si"><b>si</b></a> command
+described above but it is used to modify code memory area (ROM).
+
+
+<a name="ss"><h3>ss addr data...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_memory">set memory</a> instead!!</font>
+
+<p>This command is similar to <a href="#si"><b>si</b></a> command
+described above but it is used to modify SFR. Other difference is that
+first parameter (<b>start</b> address) can be specified by name of SFR
+not by address only.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">ss p1 0</font>
+000090 00                                              .
+> </pre>
+
+
+<a name="sb"><h3>sb addr data...</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_bit">set bit</a> instead!!</font>
+
+<p>Modify bit(s). First parameter is address of first bit to modify. See
+description of <a href="#db"><b>db</b></a> command how bit address can
+be specified. If first character of data parameter is <tt>0</tt> it
+means <i>zero</i> otherwise it means <i>one</i>.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">sb 0x23.5 1</font>
+> <font color="#118811">db 0x23.5</font>
+000023   23.5 1
+> <font color="#118811">sb p3.3 0</font>
+> <font color="#118811">dp</font>
+P0    11111111 0xff 255 .    P1    11111111 0xff 255 .
+Pin0  11111111 0xff 255 .    Pin1  11111111 0xff 255 .
+Port0 11111111 0xff 255 .    Port1 11111111 0xff 255 .
+
+P2    11111111 0xff 255 .    P3    11110111 0xf7 247 .
+Pin2  11111111 0xff 255 .    Pin3  11111111 0xff 255 .
+Port2 11111111 0xff 255 .    Port3 11110111 0xf7 247 .
+> <font color="#118811">sb tr1 0</font>
+> <font color="#118811">db tr1</font>
+000088    TR1 0
+> <font color="#118811">sb tr1 1</font>
+> <font color="#118811">db tr1</font>
+000088    TR1 1
+> </pre>
+
+</font>
+
+
+<a name="sp"><h3>sp port data</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#set_port">set port</a> instead!!</font>
+
+<p>This command can be used to sep up output values of external circuits
+connected to port pins. If a port bit is used as output to drive
+external circuits, do not set corresponding pin bit to zero because
+read back value of the port can be false. First parameter must be
+number of the port between 0 and 3.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">dp</font>
+P0    11111111 0xff 255 .    P1    11111111 0xff 255 .
+Pin0  11111111 0xff 255 .    Pin1  11111111 0xff 255 .
+Port0 11111111 0xff 255 .    Port1 11111111 0xff 255 .
+
+P2    11111111 0xff 255 .    P3    11111111 0xff 255 .
+Pin2  11111111 0xff 255 .    Pin3  11111111 0xff 255 .
+Port2 11111111 0xff 255 .    Port3 11111111 0xff 255 .
+> <font color="#118811">ss p1 0x55</font>
+000090 55                                              U
+> <font color="#118811">sp 1 0x0f</font>
+> <font color="#118811">dp</font>
+P0    11111111 0xff 255 .    P1    01010101 0x55  85 U
+Pin0  11111111 0xff 255 .    Pin1  00001111 0x0f  15 .
+Port0 11111111 0xff 255 .    Port1 00000101 0x05   5 .
+
+P2    11111111 0xff 255 .    P3    11111111 0xff 255 .
+Pin2  11111111 0xff 255 .    Pin3  11111111 0xff 255 .
+Port2 11111111 0xff 255 .    Port3 11111111 0xff 255 .
+> </pre>
+
+
+<a name="fi"><h3>fi start stop data</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#fill">fill</a> instead!!</font>
+
+<p>Fill command. It can be used to fill up an area of internal RAM with a
+specified data.
+
+<pre>
+$ <font color="#118811">s51</font>
+ucsim 0.2.12, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+> <font color="#118811">fi 11 0x34 44</font>
+> <font color="#118811">di</font>
+000000 00 00 00 00 00 00 00 00 ........
+000008 00 00 00 2c 2c 2c 2c 2c ...,,,,,
+000010 2c 2c 2c 2c 2c 2c 2c 2c ,,,,,,,,
+000018 2c 2c 2c 2c 2c 2c 2c 2c ,,,,,,,,
+000020 2c 2c 2c 2c 2c 2c 2c 2c ,,,,,,,,
+000028 2c 2c 2c 2c 2c 2c 2c 2c ,,,,,,,,
+000030 2c 2c 2c 2c 2c 00 00 00 ,,,,,...
+000038 00 00 00 00 00 00 00 00 ........
+000040 00 00 00 00 00 00 00 00 ........
+000048 00 00 00 00 00 00 00 00 ........
+> </pre>
+
+
+<a name="fx"><h3>fx start stop data</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#fill">fill</a> instead!!</font>
+
+<p>Fill command. It works similar to <a href="#fi"><b>fi</b></a> but it
+puts data into external RAM instead of internal RAM.
+
+
+<a name="fs"><h3>fs start stop data</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#fill">fill</a> instead!!</font>
+
+<p>Fill command. It works similar to <a href="#fi"><b>fi</b></a> but it
+puts data into SFR instead of internal RAM.
+
+
+<a name="fc"><h3>fc start stop data</h3></a>
+
+<font color="#ff2211">Removed 0.2.38, use <a
+href="cmd_general.html#fill">fill</a> instead!!</font>
+
+<p>Fill command. It works similar to <a href="#fi"><b>fi</b></a> but it
+puts data into code memory (ROM) instead of internal RAM.
+
+
+</font>
+
+<hr>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+v0.1 (980707)
+-------------
+* Initial release
+
+v0.15 (980827)
+--------------
+* Added INCBIN, INCLUDE and DF support
+  It's not very robust at the moment...
+
+v0.16 (981213)
+--------------
+* Added INCIHX support
+
+v0.17 (981220)
+--------------
+* Made a few changes to the state table to make both
+
+	A = B+C		; With whitespace at the front
+	.include "fish"	; Ditto
+	.even
+
+and
+A = B+C			; No whitespace
+.include "fish"
+.even
+	valid.  There could be some trouble with Pascal's
+'.label:' style, and the '.include' style, and also with the
+'A =' style and the macro definition style.  Macros can not
+start with a '.' due to these changes.
+
+v0.21 (981230)
+--------------
+* Added style support.  Current styles are jas and asgb
+* Fixed up text support.  Can now have "" and '' strings
+* Fixed up the whitespace eater for opcode arguments. The line:
+	Fish Cat Bob-Fred
+  was becoming
+	Fish CatBob-Fred
+  It now becomes (with a post-appended space between normal text)
+	Fish Cat Bob -Fred
+* Lots of other fixes.
+
+v0.22 (990102)
+--------------
+* Added ' to the SOPCODE_ARGS loopback to handle af,af'
+

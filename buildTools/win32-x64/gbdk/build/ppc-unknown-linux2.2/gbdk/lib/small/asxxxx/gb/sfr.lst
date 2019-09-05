@@ -1,0 +1,167 @@
+                              1 	.area	_SFR (ABS)
+                              2 
+   FF00                       3 	.org	0xFF00
+   FF00                       4 _P1_REG::	; Joystick: 1.1.P15.P14.P13.P12.P11.P10 */ 
+   FF00                       5 	.ds	1
+   FF01                       6 	.org	0xFF01
+   FF01                       7 _SB_REG::	; Serial IO data buffer */
+   FF01                       8 	.ds	1
+   FF02                       9 	.org	0xFF02
+   FF02                      10 _SC_REG::	; Serial IO control register */
+   FF02                      11 	.ds	1
+   FF04                      12 	.org	0xFF04
+   FF04                      13 _DIV_REG::	; Divider register */
+   FF04                      14 	.ds	1
+   FF05                      15 	.org	0xFF05
+   FF05                      16 _TIMA_REG::	; Timer counter */
+   FF05                      17 	.ds	1
+   FF06                      18 	.org	0xFF06
+   FF06                      19 _TMA_REG::	; Timer modulo */
+   FF06                      20 	.ds	1
+   FF07                      21 	.org	0xFF07
+   FF07                      22 _TAC_REG::	; Timer control */
+   FF07                      23 	.ds	1
+   FF0F                      24 	.org	0xFF0F
+   FF0F                      25 _IF_REG::	; Interrupt flags: 0.0.0.JOY.SIO.TIM.LCD.VBL */ 
+   FF0F                      26 	.ds	1
+   FF10                      27 	.org	0xFF10
+   FF10                      28 _NR10_REG::	; Sound register */
+   FF10                      29 	.ds	1
+   FF11                      30 	.org	0xFF11
+   FF11                      31 _NR11_REG::	; Sound register */
+   FF11                      32 	.ds	1
+   FF12                      33 	.org	0xFF12
+   FF12                      34 _NR12_REG::	; Sound register */
+   FF12                      35 	.ds	1
+   FF13                      36 	.org	0xFF13
+   FF13                      37 _NR13_REG::	; Sound register */
+   FF13                      38 	.ds	1
+   FF14                      39 	.org	0xFF14
+   FF14                      40 _NR14_REG::	; Sound register */
+   FF14                      41 	.ds	1
+   FF16                      42 	.org	0xFF16
+   FF16                      43 _NR21_REG::	; Sound register */
+   FF16                      44 	.ds	1
+   FF17                      45 	.org	0xFF17
+   FF17                      46 _NR22_REG::	; Sound register */
+   FF17                      47 	.ds	1
+   FF18                      48 	.org	0xFF18
+   FF18                      49 _NR23_REG::	; Sound register */
+   FF18                      50 	.ds	1
+   FF19                      51 	.org	0xFF19
+   FF19                      52 _NR24_REG::	; Sound register */
+   FF19                      53 	.ds	1
+   FF1A                      54 	.org	0xFF1A
+   FF1A                      55 _NR30_REG::	; Sound register */
+   FF1A                      56 	.ds	1
+   FF1B                      57 	.org	0xFF1B
+   FF1B                      58 _NR31_REG::	; Sound register */
+   FF1B                      59 	.ds	1
+   FF1C                      60 	.org	0xFF1C
+   FF1C                      61 _NR32_REG::	; Sound register */
+   FF1C                      62 	.ds	1
+   FF1D                      63 	.org	0xFF1D
+   FF1D                      64 _NR33_REG::	; Sound register */
+   FF1D                      65 	.ds	1
+   FF1E                      66 	.org	0xFF1E
+   FF1E                      67 _NR34_REG::	; Sound register */
+   FF1E                      68 	.ds	1
+   FF20                      69 	.org	0xFF20
+   FF20                      70 _NR41_REG::	; Sound register */
+   FF20                      71 	.ds	1
+   FF21                      72 	.org	0xFF21
+   FF21                      73 _NR42_REG::	; Sound register */
+   FF21                      74 	.ds	1
+   FF22                      75 	.org	0xFF22
+   FF22                      76 _NR43_REG::	; Sound register */
+   FF22                      77 	.ds	1
+   FF23                      78 	.org	0xFF23
+   FF23                      79 _NR44_REG::	; Sound register */
+   FF23                      80 	.ds	1
+   FF24                      81 	.org	0xFF24
+   FF24                      82 _NR50_REG::	; Sound register */
+   FF24                      83 	.ds	1
+   FF25                      84 	.org	0xFF25
+   FF25                      85 _NR51_REG::	; Sound register */
+   FF25                      86 	.ds	1
+   FF26                      87 	.org	0xFF26
+   FF26                      88 _NR52_REG::	; Sound register */
+   FF26                      89 	.ds	1
+   FF40                      90 	.org	0xFF40
+   FF40                      91 _LCDC_REG::	; LCD control */
+   FF40                      92 	.ds	1
+   FF41                      93 	.org	0xFF41
+   FF41                      94 _STAT_REG::	; LCD status */
+   FF41                      95 	.ds	1
+   FF42                      96 	.org	0xFF42
+   FF42                      97 _SCY_REG::	; Scroll Y */
+   FF42                      98 	.ds	1
+   FF43                      99 	.org	0xFF43
+   FF43                     100 _SCX_REG::	; Scroll X */
+   FF43                     101 	.ds	1
+   FF44                     102 	.org	0xFF44
+   FF44                     103 _LY_REG::	; LCDC Y-coordinate */
+   FF44                     104 	.ds	1
+   FF45                     105 	.org	0xFF45
+   FF45                     106 _LYC_REG::	; LY compare */
+   FF45                     107 	.ds	1
+   FF46                     108 	.org	0xFF46
+   FF46                     109 _DMA_REG::	; DMA transfer */
+   FF46                     110 	.ds	1
+   FF47                     111 	.org	0xFF47
+   FF47                     112 _BGP_REG::	; BG palette data */
+   FF47                     113 	.ds	1
+   FF48                     114 	.org	0xFF48
+   FF48                     115 _OBP0_REG::	; OBJ palette 0 data */
+   FF48                     116 	.ds	1
+   FF49                     117 	.org	0xFF49
+   FF49                     118 _OBP1_REG::	; OBJ palette 1 data */
+   FF49                     119 	.ds	1
+   FF4A                     120 	.org	0xFF4A
+   FF4A                     121 _WY_REG::	; Window Y coordinate */
+   FF4A                     122 	.ds	1
+   FF4B                     123 	.org	0xFF4B
+   FF4B                     124 _WX_REG::	; Window X coordinate */
+   FF4B                     125 	.ds	1
+   FF4D                     126 	.org	0xFF4D
+   FF4D                     127 _KEY1_REG::	; CPU speed */
+   FF4D                     128 	.ds	1
+   FF4F                     129 	.org	0xFF4F
+   FF4F                     130 _VBK_REG::	; VRAM bank */
+   FF4F                     131 	.ds	1
+   FF51                     132 	.org	0xFF51
+   FF51                     133 _HDMA1_REG::	; DMA control 1 */
+   FF51                     134 	.ds	1
+   FF52                     135 	.org	0xFF52
+   FF52                     136 _HDMA2_REG::	; DMA control 2 */
+   FF52                     137 	.ds	1
+   FF53                     138 	.org	0xFF53
+   FF53                     139 _HDMA3_REG::	; DMA control 3 */
+   FF53                     140 	.ds	1
+   FF54                     141 	.org	0xFF54
+   FF54                     142 _HDMA4_REG::	; DMA control 4 */
+   FF54                     143 	.ds	1
+   FF55                     144 	.org	0xFF55
+   FF55                     145 _HDMA5_REG::	; DMA control 5 */
+   FF55                     146 	.ds	1
+   FF56                     147 	.org	0xFF56
+   FF56                     148 _RP_REG::	; IR port */
+   FF56                     149 	.ds	1
+   FF68                     150 	.org	0xFF68
+   FF68                     151 _BCPS_REG::	; BG color palette specification */ 
+   FF68                     152 	.ds	1
+   FF69                     153 	.org	0xFF69
+   FF69                     154 _BCPD_REG::	; BG color palette data */
+   FF69                     155 	.ds	1
+   FF6A                     156 	.org	0xFF6A
+   FF6A                     157 _OCPS_REG::	; OBJ color palette specification */ 
+   FF6A                     158 	.ds	1
+   FF6B                     159 	.org	0xFF6B
+   FF6B                     160 _OCPD_REG::	; OBJ color palette data 
+   FF6B                     161 	.ds	1
+   FF70                     162 	.org	0xFF70
+   FF70                     163 _SVBK_REG::	; WRAM bank */
+   FF70                     164 	.ds	1
+   FFFF                     165 	.org	0xFFFF
+   FFFF                     166 _IE_REG::	; Interrupt enable */ 
+   FFFF                     167 	.ds	1

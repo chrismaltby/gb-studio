@@ -1,0 +1,59 @@
+CC=gcc
+LEX=flex
+YACC=bison
+INCROOT=.
+CFLAGS=-ggdb -O2 -I $(INCROOT)
+TARGETS=$(SDCCDIR)/bin/aslink
+ALLOBJECTS= lkmain.o lkhead.o lkarea.o lkdata.o\
+             lkeval.o lklex.o lksym.o lkrloc.o\
+             lklibr.o lklist.o lkihx.o lks19.o\
+             lkstore.o lknoice.o 
+all:: $(TARGETS)
+
+clean::
+	rm -f $(TARGETS) $(ALLOBJECTS)
+
+lkmain.o : lkmain.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkmain.o lkmain.c
+
+lkhead.o : lkhead.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkhead.o lkhead.c
+
+lkarea.o : lkarea.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkarea.o lkarea.c
+
+lkdata.o : lkdata.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkdata.o lkdata.c
+
+lkeval.o : lkeval.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkeval.o lkeval.c
+
+lklex.o  : lklex.c  aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lklex.o lklex.c
+
+lksym.o  : lksym.c  aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lksym.o lksym.c
+
+lkrloc.o : lkrloc.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkrloc.o lkrloc.c
+
+lklibr.o : lklibr.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lklibr.o lklibr.c
+
+lklist.o : lklist.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lklist.o lklist.c
+
+lkihx.o  : lkihx.c  aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkihx.o lkihx.c
+
+lks19.o  : lks19.c  aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lks19.o lks19.c
+
+lkstore.o : lkstore.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lkstore.o lkstore.c
+
+lknoice.o : lknoice.c aslink.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o lknoice.o lknoice.c
+
+$(TARGETS): $(ALLOBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALLOBJECTS) 

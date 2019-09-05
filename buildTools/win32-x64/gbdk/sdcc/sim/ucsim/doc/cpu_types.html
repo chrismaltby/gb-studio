@@ -1,0 +1,184 @@
+<html>
+<head>
+<title>UCSIM: CPU types</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Select type of CPU</h1>
+
+The simulator supports following type of microprocessors from MCS51
+family:
+
+<p><a href="#51">8051/8031</a>
+
+<br><a href="#52">8052/8032</a>
+
+<br><a href="#51r">8051R</a>
+
+<br><a href="#89c51r">89C51R</a>
+
+<br><a href="#251">80251</a>
+
+
+<a name="51"><h3>8051/8031</h3></a>
+
+You can select this type of microcontroller using one of the following
+parameter for -t option:
+
+<ul><li>51 (HMOS type)
+
+<li>8051 (HMOS type)
+
+<li>8751 (HMOS type)
+
+<li>C51 (CMOS type)
+
+<li>80C51 (CMOS type)
+
+<li>87C51 (CMOS type)
+
+<li>31 (HMOS type)
+
+<li>8031 (HMOS type)
+
+<li>C31 (CMOS type)
+
+<li>80C31 (CMOS type)
+
+</ul>
+
+It includes core 51 features:
+
+<ul><li>64k external RAM
+
+<li>64k ROM
+
+<li>128 byte internal RAM
+
+<li>2 timers (timer #0, timer #1)
+
+<li>Serial interface
+
+<li>4 8-bit quazi bi-directional ports
+
+</ul>
+
+CMOS types also include:
+
+<ul><li>Idle mode
+
+<li>Power down mode
+
+</ul>
+
+
+<a name="52"><h3>8052/8032</h3></a>
+
+You can select this type of microcontroller using one of the following
+parameter for -t option:
+
+<ul><li>52 (HMOS type)
+
+<li>8052 (HMOS type)
+
+<li>8752 (HMOS type)
+
+<li>C52 (CMOS type)
+
+<li>80C52 (CMOS type)
+
+<li>87C52 (CMOS type)
+
+<li>32 (HMOS type)
+
+<li>8032 (HMOS type)
+
+<li>C32 (CMOS type)
+
+<li>80C32 (CMOS type)
+
+</ul>
+
+It includes same features as <a href="#51">8051/8031</a>
+microcontrollers and additionaly:
+
+<ul><li>3 timers (timer #0, timer #1, timer #2)
+
+<li>256 bytes of internal RAM
+
+</ul>
+
+
+<a name="51r"><h3>8051R</h3></a>
+
+You can select this type of microcontroller using one of the following
+parameter for -t option (all are CMOS types):
+
+<ul><li>51R
+
+<li>51RA
+
+<li>51RB
+
+<li>51RC
+
+<li>C51RA
+
+<li>C51RB
+
+<li>C51RC
+
+</ul>
+
+It includes all features that <a href="#52">8052/8032</a> does and
+additionaly:
+
+<ul><li>Extended interrupt priority system (4 priority levels)
+
+<li>Extended serial line interface (automatic address recognition)
+
+<li>Watchdog timer
+
+</ul>
+
+
+<a name="89c51r"><h3>89C51R</h3></a>
+
+You can select this type of microcontroller using <tt>89C51R</tt>
+parameter for -t option (this CPU is always CMOS). This is a Philips
+clone, excluding duplicated DPTR it is similar to 8051XR from Intel.
+
+<p>It includes all features that <a href="#51r">8051R</a> does and
+additionaly:
+
+<ul><li>PCA (Programmable Counter Array): 5 16-bit counter, one of
+them can act as watchdog timer.
+
+<li>Duplicated DPTR.
+
+</ul>
+
+
+<a name="251"><h3>80251</h3></a>
+
+You can select this type of microcontroller using one of the following
+parameter for -t option (all are CMOS types):
+
+<ul><li>251
+
+<li>C251
+
+</ul>
+
+<p>It includes all features that <a href="#89c51r">89C51R</a> does
+and additionaly:
+
+<ul><li>Nothing implemented yet.
+
+</ul>
+
+<hr>
+
+</body>
+</html>

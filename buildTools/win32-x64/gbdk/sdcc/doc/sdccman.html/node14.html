@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.4 Install Trouble-shooting</TITLE>
+<META NAME="description" CONTENT="2.4 Install Trouble-shooting">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node15.html">
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node15.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html412"
+ HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html406"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html400"
+ HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html408"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html410"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html413"
+ HREF="node15.html">2.5 Additional Information for</A>
+<B> Up:</B> <A NAME="tex2html407"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html401"
+ HREF="node13.html">2.3 Testing out the</A>
+ &nbsp <B>  <A NAME="tex2html409"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html411"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html414"
+ HREF="node14.html#SECTION00034100000000000000">2.4.1 SDCC cannot find libraries or header files.</A>
+<LI><A NAME="tex2html415"
+ HREF="node14.html#SECTION00034200000000000000">2.4.2 SDCC does not compile correctly.</A>
+<LI><A NAME="tex2html416"
+ HREF="node14.html#SECTION00034300000000000000">2.4.3 What the ''./configure'' does</A>
+<LI><A NAME="tex2html417"
+ HREF="node14.html#SECTION00034400000000000000">2.4.4 What the ''make'' does.</A>
+<LI><A NAME="tex2html418"
+ HREF="node14.html#SECTION00034500000000000000">2.4.5 What the ''make install'' command does.</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00034000000000000000">
+2.4 Install Trouble-shooting</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00034100000000000000">
+2.4.1 SDCC cannot find libraries or header files.</A>
+</H3>
+
+<P>
+The default installation assumes the libraries and header files are
+located at ``/usr/local/share/sdcc/lib'' and ``/usr/local/share/sdcc/include''.
+An alternative is to specify these locations as compiler options like
+this: <I><B>&#34;sdcc&nbsp;-L&nbsp;/usr/local/sdcc/lib/small&nbsp;-I&nbsp;/usr/local/sdcc/include&nbsp;test.c&#34;</B></I>.
+
+<P>
+
+<H3><A NAME="SECTION00034200000000000000">
+2.4.2 SDCC does not compile correctly.</A>
+</H3>
+
+<P>
+A thing to try is starting from scratch by unpacking the .tgz source
+package again in an empty directory. Confure it again and build like:
+<BR>
+
+<BR>
+<I><B>make 2SPMamp;&gt;1 | tee make.log</B></I>
+<BR>
+
+<BR>
+After this you can review the make.log file to locate the problem.
+Or a relevant part of this be attached to an email that could be helpful
+when requesting help from the mailing list.
+
+<P>
+
+<H3><A NAME="SECTION00034300000000000000">
+2.4.3 What the ''./configure'' does</A>
+</H3>
+
+<P>
+The ''./configure'' command is a script that analyzes your system
+and performs some configuration to ensure the source package compiles
+on your system. It will take a few minutes to run, and will compile
+a few tests to determine what compiler features are installed.
+
+<P>
+
+<H3><A NAME="SECTION00034400000000000000">
+2.4.4 What the ''make'' does.</A>
+</H3>
+
+<P>
+This runs the GNU make tool, which automatically compiles all the
+source packages into the final installed binary executables.
+
+<P>
+
+<H3><A NAME="SECTION00034500000000000000">
+2.4.5 What the ''make install'' command does.</A>
+</H3>
+
+<P>
+This will install the compiler, other executables and libraries in
+to the appropriate system directories. The default is to copy the
+executables to /usr/local/bin and the libraries and header files to
+/usr/local/share/sdcc/lib and /usr/local/share/sdcc/include.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html412"
+ HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html406"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html400"
+ HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html408"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html410"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html413"
+ HREF="node15.html">2.5 Additional Information for</A>
+<B> Up:</B> <A NAME="tex2html407"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html401"
+ HREF="node13.html">2.3 Testing out the</A>
+ &nbsp <B>  <A NAME="tex2html409"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html411"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

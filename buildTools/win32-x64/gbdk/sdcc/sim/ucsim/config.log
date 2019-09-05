@@ -1,0 +1,461 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+config.site:13: default build_alias set to x86_64-w64-mingw32
+configure:532: checking for mawk
+configure:563: checking version of the package
+configure:603: checking for c++
+configure:635: checking whether the C++ compiler (g++  ) works
+configure:651: g++ -o conftest    conftest.C  1>&5
+configure:677: checking whether the C++ compiler (g++  ) is a cross-compiler
+configure:682: checking whether we are using GNU C++
+configure:710: checking whether g++ accepts -g
+configure:742: checking how to run the C++ preprocessor
+configure:760: g++ -E  conftest.C >/dev/null 2>conftest.out
+configure:815: checking for a BSD compatible install
+configure:870: checking for ranlib
+configure:908: checking for strip
+configure:944: checking for ANSI C header files
+configure:1054: checking for getopt.h
+configure:1094: checking for unistd.h
+configure:1132: checking for sys/socket.h
+configure:1194: checking for dlfcn.h
+configure:1204: g++ -E  conftest.C >/dev/null 2>conftest.out
+configure:1200:10: fatal error: dlfcn.h: No such file or directory
+ 1200 | #include <dlfcn.h>
+      |          ^~~~~~~~~
+compilation terminated.
+configure: failed program was:
+#line 1199 "configure"
+#include "confdefs.h"
+#include <dlfcn.h>
+configure:1230: checking for dirent.h that defines DIR
+configure:1268: checking for opendir in -ldir
+configure:1360: checking which header file defines FD_ macros
+configure:1400:10: fatal error: sys/select.h: No such file or directory
+ 1400 | #include <sys/select.h>
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+configure:1476: checking for socket in -lsocket
+configure:1498: g++ -o conftest    conftest.C -lsocket   1>&5
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lsocket
+collect2.exe: error: ld returned 1 exit status
+configure: failed program was:
+#line 1484 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char socket();
+
+int main() {
+socket()
+; return 0; }
+configure:1526: checking for xdr_short in -lnsl
+configure:1548: g++ -o conftest    conftest.C -lnsl   1>&5
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lnsl
+collect2.exe: error: ld returned 1 exit status
+configure: failed program was:
+#line 1534 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char xdr_short();
+
+int main() {
+xdr_short()
+; return 0; }
+configure:1576: checking for dlopen in -ldl
+configure:1598: g++ -o conftest    conftest.C -ldl   1>&5
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -ldl
+collect2.exe: error: ld returned 1 exit status
+configure: failed program was:
+#line 1584 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dlopen();
+
+int main() {
+dlopen()
+; return 0; }
+configure:1624: checking for panel_above in -lpanel
+configure:1646: g++ -o conftest    conftest.C -lpanel -lcurses  1>&5
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lpanel
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lcurses
+collect2.exe: error: ld returned 1 exit status
+configure: failed program was:
+#line 1632 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char panel_above();
+
+int main() {
+panel_above()
+; return 0; }
+configure:1669: checking for nl in -lcurses
+configure:1691: g++ -o conftest    conftest.C -lcurses   1>&5
+D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lcurses
+collect2.exe: error: ld returned 1 exit status
+configure: failed program was:
+#line 1677 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char nl();
+
+int main() {
+nl()
+; return 0; }
+configure:1722: checking for vprintf
+configure:1753: g++ -o conftest    conftest.C  1>&5
+configure:1737:6: warning: declaration of 'char vprintf()' conflicts with built-in declaration 'int vprintf(const char*, char*)' [-Wbuiltin-declaration-mismatch]
+ 1737 | char vprintf();
+      |      ^~~~~~~
+configure:1835: checking for vsnprintf
+configure:1866: g++ -o conftest    conftest.C  1>&5
+configure:1850:6: warning: declaration of 'char vsnprintf()' conflicts with built-in declaration 'int vsnprintf(char*, long long unsigned int, const char*, char*)' [-Wbuiltin-declaration-mismatch]
+ 1850 | char $ac_func();
+      |      ^~~~~~~~~
+configure:1835: checking for vasprintf
+configure:1866: g++ -o conftest    conftest.C  1>&5
+configure:1893: checking for strlen
+configure:1893: checking for strcpy
+configure:1893: checking for strcat
+configure:1893: checking for strstr
+configure:1893: checking for strcmp
+configure:1893: checking for strerror
+configure:1893: checking for strtok
+configure:1893: checking for strdup
+configure:1951: checking for strchr
+configure:1951: checking for memcpy
+configure:2009: checking for fgets
+configure:2067: checking for yylex
+configure:2124: checking whether scanf knows %a
+configure:2156: g++ -o conftest    conftest.C  1>&5
+configure:2139:1: error: '::main' must return 'int'
+ 2139 | void main(void)
+      | ^~~~
+configure: failed program was:
+#line 2133 "configure"
+#include "confdefs.h"
+#ifdef __cplusplus
+extern "C" void exit(int);
+#endif
+
+#include <stdio.h>
+void main(void)
+{
+  FILE *f;
+  char *a;
+  int  i;
+  if ((f= fopen("conftest.data", "r")) == NULL)
+    exit(1);
+  i= fscanf(f, " %a[a-z] ", &a);
+  fclose(f);
+  if (i == 0)
+    exit(2);
+  if (i == 1)
+    exit(0);
+  exit(3);
+}
+configure:2180: checking whether getcwd is GNUish
+configure:2202: g++ -o conftest    conftest.C  1>&5
+configure:2194:1: error: '::main' must return 'int'
+ 2194 | void main(void)
+      | ^~~~
+configure: failed program was:
+#line 2188 "configure"
+#include "confdefs.h"
+#ifdef __cplusplus
+extern "C" void exit(int);
+#endif
+
+#include <unistd.h>
+void main(void)
+{
+  if ((getcwd(NULL, 0)) == NULL)
+    exit(1);
+  exit(0);
+}
+configure:2229: checking for type of length pointer parameter of accept
+configure:2246: g++ -c   -DACCEPT_SOCKLEN_T=int conftest.C 1>&5
+configure:2240:10: fatal error: sys/socket.h: No such file or directory
+ 2240 | #include <sys/socket.h>
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+configure: failed program was:
+#line 2238 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+struct sockaddr a; int len; accept (0, &a, &len);
+; return 0; }
+configure:2246: g++ -c   -DACCEPT_SOCKLEN_T=size_t conftest.C 1>&5
+configure:2240:10: fatal error: sys/socket.h: No such file or directory
+ 2240 | #include <sys/socket.h>
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+configure: failed program was:
+#line 2238 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+struct sockaddr a; size_t len; accept (0, &a, &len);
+; return 0; }
+configure:2246: g++ -c   -DACCEPT_SOCKLEN_T=socklen_t conftest.C 1>&5
+configure:2240:10: fatal error: sys/socket.h: No such file or directory
+ 2240 | #include <sys/socket.h>
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+configure: failed program was:
+#line 2238 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+struct sockaddr a; socklen_t len; accept (0, &a, &len);
+; return 0; }
+configure:2293: checking whether byte ordering is bigendian
+configure:2311: g++ -c   conftest.C 1>&5
+configure:2326: g++ -c   conftest.C 1>&5
+configure: In function 'int main()':
+configure:2321:6: error: 'big' was not declared in this scope
+ 2321 |  not big endian
+      |      ^~~
+configure: failed program was:
+#line 2315 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/param.h>
+int main() {
+
+#if BYTE_ORDER != BIG_ENDIAN
+ not big endian
+#endif
+; return 0; }
+configure:2386: checking whether preprocessor accepts -MM or -M
+Using built-in specs.
+COLLECT_GCC=D:\msys64\mingw64\bin\g++.exe
+Target: x86_64-w64-mingw32
+Configured with: ../gcc-9.2.0/configure --prefix=/mingw64 --with-local-prefix=/mingw64/local --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include --libexecdir=/mingw64/lib --enable-bootstrap --with-arch=x86-64 --with-tune=generic --enable-languages=c,lto,c++,fortran,ada,objc,obj-c++ --enable-shared --enable-static --enable-libatomic --enable-threads=posix --enable-graphite --enable-fully-dynamic-string --enable-libstdcxx-filesystem-ts=yes --enable-libstdcxx-time=yes --disable-libstdcxx-pch --disable-libstdcxx-debug --disable-isl-version-check --enable-lto --enable-libgomp --disable-multilib --enable-checking=release --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --enable-plugin --with-libiconv --with-system-zlib --with-gmp=/mingw64 --with-mpfr=/mingw64 --with-mpc=/mingw64 --with-isl=/mingw64 --with-pkgversion='Rev2, Built by MSYS2 project' --with-bugurl=https://sourceforge.net/projects/msys2 --with-gnu-as --with-gnu-ld
+Thread model: posix
+gcc version 9.2.0 (Rev2, Built by MSYS2 project) 
+COLLECT_GCC_OPTIONS='-E' '-v' '-MM' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/cc1plus.exe -E -quiet -v -iprefix D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/ -MM -D_REENTRANT _test_.c -mtune=generic -march=x86-64
+_test_.o: _test_.c
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/include"
+ignoring nonexistent directory "/mingw64/include"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/x86_64-w64-mingw32/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+COMPILER_PATH=D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/;D:/msys64/mingw64/bin/../lib/gcc/;D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/
+LIBRARY_PATH=D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/;D:/msys64/mingw64/bin/../lib/gcc/;D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/lib/../lib/;D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../lib/;D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/lib/;D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../
+COLLECT_GCC_OPTIONS='-E' '-v' '-MM' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+configure:2409: checking whether g++ accepts -ggdb
+Using built-in specs.
+COLLECT_GCC=D:\msys64\mingw64\bin\g++.exe
+Target: x86_64-w64-mingw32
+Configured with: ../gcc-9.2.0/configure --prefix=/mingw64 --with-local-prefix=/mingw64/local --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include --libexecdir=/mingw64/lib --enable-bootstrap --with-arch=x86-64 --with-tune=generic --enable-languages=c,lto,c++,fortran,ada,objc,obj-c++ --enable-shared --enable-static --enable-libatomic --enable-threads=posix --enable-graphite --enable-fully-dynamic-string --enable-libstdcxx-filesystem-ts=yes --enable-libstdcxx-time=yes --disable-libstdcxx-pch --disable-libstdcxx-debug --disable-isl-version-check --enable-lto --enable-libgomp --disable-multilib --enable-checking=release --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --enable-plugin --with-libiconv --with-system-zlib --with-gmp=/mingw64 --with-mpfr=/mingw64 --with-mpc=/mingw64 --with-isl=/mingw64 --with-pkgversion='Rev2, Built by MSYS2 project' --with-bugurl=https://sourceforge.net/projects/msys2 --with-gnu-as --with-gnu-ld
+Thread model: posix
+gcc version 9.2.0 (Rev2, Built by MSYS2 project) 
+COLLECT_GCC_OPTIONS='-v' '-ggdb' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/cc1plus.exe -quiet -v -iprefix D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/ -D_REENTRANT _test_.c -quiet -dumpbase _test_.c -mtune=generic -march=x86-64 -auxbase _test_ -ggdb -version -o D:\msys64\tmp\ccfU43fu.s
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/include"
+ignoring nonexistent directory "/mingw64/include"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/x86_64-w64-mingw32/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: e57125b4942a3976aa4ac8f64fb6fda3
+_test_.c:2:1: error: '::main' must return 'int'
+    2 | void main(void) {}
+      | ^~~~
+configure:2438: checking whether g++ accepts -pipe
+Using built-in specs.
+COLLECT_GCC=D:\msys64\mingw64\bin\g++.exe
+Target: x86_64-w64-mingw32
+Configured with: ../gcc-9.2.0/configure --prefix=/mingw64 --with-local-prefix=/mingw64/local --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include --libexecdir=/mingw64/lib --enable-bootstrap --with-arch=x86-64 --with-tune=generic --enable-languages=c,lto,c++,fortran,ada,objc,obj-c++ --enable-shared --enable-static --enable-libatomic --enable-threads=posix --enable-graphite --enable-fully-dynamic-string --enable-libstdcxx-filesystem-ts=yes --enable-libstdcxx-time=yes --disable-libstdcxx-pch --disable-libstdcxx-debug --disable-isl-version-check --enable-lto --enable-libgomp --disable-multilib --enable-checking=release --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --enable-plugin --with-libiconv --with-system-zlib --with-gmp=/mingw64 --with-mpfr=/mingw64 --with-mpc=/mingw64 --with-isl=/mingw64 --with-pkgversion='Rev2, Built by MSYS2 project' --with-bugurl=https://sourceforge.net/projects/msys2 --with-gnu-as --with-gnu-ld
+Thread model: posix
+gcc version 9.2.0 (Rev2, Built by MSYS2 project) 
+COLLECT_GCC_OPTIONS='-v' '-pipe' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/cc1plus.exe -quiet -v -iprefix D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/ -D_REENTRANT _test_.c -quiet -dumpbase _test_.c -mtune=generic -march=x86-64 -auxbase _test_ -version -o - |
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -o _test_.o
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/include"
+ignoring nonexistent directory "/mingw64/include"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/x86_64-w64-mingw32/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: e57125b4942a3976aa4ac8f64fb6fda3
+_test_.c:2:1: error: '::main' must return 'int'
+    2 | void main(void) {}
+      | ^~~~
+GNU assembler version 2.32 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.32
+configure:2465: checking whether g++ accepts -fPIC
+Using built-in specs.
+COLLECT_GCC=D:\msys64\mingw64\bin\g++.exe
+Target: x86_64-w64-mingw32
+Configured with: ../gcc-9.2.0/configure --prefix=/mingw64 --with-local-prefix=/mingw64/local --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include --libexecdir=/mingw64/lib --enable-bootstrap --with-arch=x86-64 --with-tune=generic --enable-languages=c,lto,c++,fortran,ada,objc,obj-c++ --enable-shared --enable-static --enable-libatomic --enable-threads=posix --enable-graphite --enable-fully-dynamic-string --enable-libstdcxx-filesystem-ts=yes --enable-libstdcxx-time=yes --disable-libstdcxx-pch --disable-libstdcxx-debug --disable-isl-version-check --enable-lto --enable-libgomp --disable-multilib --enable-checking=release --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --enable-plugin --with-libiconv --with-system-zlib --with-gmp=/mingw64 --with-mpfr=/mingw64 --with-mpc=/mingw64 --with-isl=/mingw64 --with-pkgversion='Rev2, Built by MSYS2 project' --with-bugurl=https://sourceforge.net/projects/msys2 --with-gnu-as --with-gnu-ld
+Thread model: posix
+gcc version 9.2.0 (Rev2, Built by MSYS2 project) 
+COLLECT_GCC_OPTIONS='-v' '-fPIC' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/cc1plus.exe -quiet -v -iprefix D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/ -D_REENTRANT _test_.c -quiet -dumpbase _test_.c -mtune=generic -march=x86-64 -auxbase _test_ -version -fPIC -o D:\msys64\tmp\ccTYn8HW.s
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/include"
+ignoring nonexistent directory "/mingw64/include"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/x86_64-w64-mingw32/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: e57125b4942a3976aa4ac8f64fb6fda3
+_test_.c:2:1: error: '::main' must return 'int'
+    2 | void main(void) {}
+      | ^~~~
+configure:2489: checking whether g++ accepts -fpic
+Using built-in specs.
+COLLECT_GCC=D:\msys64\mingw64\bin\g++.exe
+Target: x86_64-w64-mingw32
+Configured with: ../gcc-9.2.0/configure --prefix=/mingw64 --with-local-prefix=/mingw64/local --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include --libexecdir=/mingw64/lib --enable-bootstrap --with-arch=x86-64 --with-tune=generic --enable-languages=c,lto,c++,fortran,ada,objc,obj-c++ --enable-shared --enable-static --enable-libatomic --enable-threads=posix --enable-graphite --enable-fully-dynamic-string --enable-libstdcxx-filesystem-ts=yes --enable-libstdcxx-time=yes --disable-libstdcxx-pch --disable-libstdcxx-debug --disable-isl-version-check --enable-lto --enable-libgomp --disable-multilib --enable-checking=release --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --enable-plugin --with-libiconv --with-system-zlib --with-gmp=/mingw64 --with-mpfr=/mingw64 --with-mpc=/mingw64 --with-isl=/mingw64 --with-pkgversion='Rev2, Built by MSYS2 project' --with-bugurl=https://sourceforge.net/projects/msys2 --with-gnu-as --with-gnu-ld
+Thread model: posix
+gcc version 9.2.0 (Rev2, Built by MSYS2 project) 
+COLLECT_GCC_OPTIONS='-v' '-fpic' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/cc1plus.exe -quiet -v -iprefix D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/ -D_REENTRANT _test_.c -quiet -dumpbase _test_.c -mtune=generic -march=x86-64 -auxbase _test_ -version -fpic -o D:\msys64\tmp\ccDwToZa.s
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/include"
+ignoring nonexistent directory "/mingw64/include"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"
+ignoring duplicate directory "D:/msys64/mingw64/lib/gcc/../../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"
+ignoring nonexistent directory "C:/building/msys64/mingw64/x86_64-w64-mingw32/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/x86_64-w64-mingw32
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include/c++/9.2.0/backward
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed
+ D:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include
+End of search list.
+GNU C++14 (Rev2, Built by MSYS2 project) version 9.2.0 (x86_64-w64-mingw32)
+	compiled by GNU C version 9.2.0, GMP version 6.1.2, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.21-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: e57125b4942a3976aa4ac8f64fb6fda3
+_test_.c:2:1: error: '::main' must return 'int'
+    2 | void main(void) {}
+      | ^~~~
+configure:2531: checking return type of signal handlers
+configure:2572: checking size of char
+configure:2615: checking size of short
+configure:2658: checking size of int
+configure:2701: checking size of long
+configure:2744: checking size of long long
+configure:2813: checking type name for byte
+configure:2817: checking type name for word
+configure:2821: checking type name for dword

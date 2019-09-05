@@ -1,0 +1,82 @@
+#!/bin/sh
+
+# Functions
+
+debug()
+{
+  if [ "$DEBUG" = "yes" ]; then
+    echo $*
+  fi
+}
+
+
+# Parsing options
+
+DEBUG=no
+STARTYEAR=`date +%Y`
+YEAR=`date +%y`
+FILES=""
+
+while [ "$1" != "" ]; do
+case $1 in
+  "-s")
+    shift
+    STARTYEAR=$1
+    ;;
+  "-V")
+    DEBUG=yes
+    ;;
+  *)
+    if [ "$FILES" = "" ]; then
+      FILES=$1
+    else
+      FILES="${FILES} ${1}"
+    fi
+    ;;
+esac
+shift
+done
+
+debug "STARTYEAR= ${STARTYEAR}"
+debug "FILES= ${FILES}"
+
+
+
+# Doing the job
+
+putit()
+{
+  sed -n '/^\/\*@1@\*\//,$p' $1 >${1}.tmp
+  if [ -f '(c).1' ]; then
+    (sed 's/@@F@@/'${1}'/g
+          s/@@S@@/'${STARTYEAR}'/g
+          s/@@Y@@/'${YEAR}'/g' '(c).1'
+     cat ${1}.tmp) >$1
+  else
+    (cat <<EOF
+/*
+ * Simulator of MCS51 ${1}
+ *
+ * Copyright (c) Drotos Daniel, Talker Bt.  ${STARTYEAR},${YEAR}
+ *
+ */
+EOF
+     cat ${1}.tmp) >$1
+  fi
+  rm -f ${1}.tmp
+}
+
+for FILE in ${FILES}; do
+  debug "Checking ${FILE}..."
+  if grep '^/\*@1@\*/' $FILE >/dev/null; then
+    # can do
+    debug "/*@1@*/ marker found in ${FILE}"
+    putit $FILE
+  else
+    # can not
+    debug "/*@1@*/ marker not found in ${FILE}"
+  fi
+done
+
+
+# End of putcopyright

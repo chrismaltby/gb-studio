@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cat 2_tee|tee /dev/tty >tee_1
+
+# End of monitor2-1

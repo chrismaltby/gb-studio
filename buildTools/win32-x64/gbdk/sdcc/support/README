@@ -1,0 +1,5 @@
+sdcc/support
+------------
+
+This directory contains support programs and libraries that may
+not be provided by your system.

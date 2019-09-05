@@ -1,0 +1,9 @@
+sdcc/device/lib/z80
+-------------------
+
+Z80 specific routines.
+
+Notes:
+* Cost of ld r,(ix+n):	19
+* Cost of ld r,(hl); inc hl: 7+6 = 13 and you don't have to pop ix
+        

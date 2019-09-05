@@ -1,0 +1,5 @@
+sdcc/as
+-------
+
+Both the z80 and mcs51 assemblers are derrived from the same tree.  One
+day they may be re-combined.

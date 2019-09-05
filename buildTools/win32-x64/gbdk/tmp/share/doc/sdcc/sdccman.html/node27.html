@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.8 Critical Functions</TITLE>
+<META NAME="description" CONTENT="3.8 Critical Functions">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node28.html">
+<LINK REL="previous" HREF="node26.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node28.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html654"
+ HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html648"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html642"
+ HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html650"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html652"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html655"
+ HREF="node28.html">3.9 Naked Functions</A>
+<B> Up:</B> <A NAME="tex2html649"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html643"
+ HREF="node26.html">3.7 Interrupt Service Routines</A>
+ &nbsp <B>  <A NAME="tex2html651"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html653"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00048000000000000000">
+3.8 Critical Functions</A>
+</H2>
+
+<P>
+A special keyword may be associated with a function declaring it as
+<I>critical</I>. SDCC will generate code to disable all interrupts
+upon entry to a critical function and enable them back before returning.
+Note that nesting critical functions may cause unpredictable results.
+<BR>
+
+<BR>
+<TT>int foo () critical </TT>&nbsp;
+<BR>
+<TT>{ </TT>&nbsp;
+<BR>
+<TT>... </TT>&nbsp;
+<BR>
+<TT>... </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>
+
+<BR>
+The critical attribute maybe used with other attributes like <I>reentrant.</I>
+
+<P>
+<BR><HR>
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

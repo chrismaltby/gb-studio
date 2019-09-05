@@ -1,0 +1,5 @@
+#!/bin/sh
+
+s51 -Sin=tee_2,out=2_tee "$@"
+
+# End of start2

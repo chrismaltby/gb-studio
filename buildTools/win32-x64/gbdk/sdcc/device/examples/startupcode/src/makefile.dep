@@ -1,0 +1,13 @@
+startup_code.rel: startup_code.c ../inc/startup_code.h \
+  ../inc/..\inc\hardware_description.h ../inc/..\inc\c515a.h \
+  /usr/local/share/include/stdarg.h /usr/local/share/include/stdio.h \
+  /usr/local/share/include/stdlib.h /usr/local/share/include/string.h \
+  /usr/local/share/include/ctype.h /usr/local/share/include/assert.h \
+  /usr/local/share/include/limits.h /usr/local/share/include/malloc.h \
+  ../inc/..\inc\cpu_c515a.h
+cpu_c515a.rel: cpu_c515a.c ../inc/hardware_description.h \
+  ../inc/..\inc\c515a.h /usr/local/share/include/stdarg.h \
+  /usr/local/share/include/stdio.h /usr/local/share/include/stdlib.h \
+  /usr/local/share/include/string.h /usr/local/share/include/ctype.h \
+  /usr/local/share/include/assert.h /usr/local/share/include/limits.h \
+  /usr/local/share/include/malloc.h ../inc/..\inc\cpu_c515a.h

@@ -1,0 +1,21 @@
+# SDCC test script for the PIC Port
+# 
+USAGE="Usage: `basename $0` GPSIM_SCRIPT OUTPUT"
+
+if [ $# -lt 2 ] ; then
+  echo "$USAGE"
+  exit 1
+fi
+
+
+GPSIM_SCRIPT=$1
+LOGFILE=$2
+touch $2
+echo "Test $GPSIM_SCRIPT" >> $LOGFILE
+gpsim --cli -c $GPSIM_SCRIPT $2> test
+grep "success " test | grep "= 0x0"
+if [ $? -eq 0 ] ; then
+  echo "PASSED" >> $LOGFILE
+else
+  echo "FAILED" >> $LOGFILE
+fi

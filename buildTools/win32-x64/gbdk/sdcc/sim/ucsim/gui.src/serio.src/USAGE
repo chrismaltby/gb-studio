@@ -1,0 +1,9 @@
+*note: tested on:
+Solaris 7 using gcc version 2.95.1 19990816 (release)
+with ncurses
+should work with curses although not guranteed
+
+Start serialview
+Start the s51 simulator with the following command line options:
+-S out=/tmp/out,in=/tmp/in
+or whatever pipes you wish to use

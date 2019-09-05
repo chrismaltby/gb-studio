@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>UCSIM: Code Analyzer</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Code analyzer</h1>
+
+This feature is included into both DOS and UNIX versions. Code
+analyzer analyzes the code of the simulated program and tries to
+figure out which address contains valid instruction. Analyzer starts
+analyzing of the code with address 0 which always must contain an
+instruction because reset of the device sets zero into program
+counter. So, analyzer marks address 0 that it contains an
+instruction. Then it marks the address of the next instruction and so
+on. If the analyzer finds a <i>jump</i> instruction it continues with
+destination address of the <i>jump</i> instruction. If it finds a
+<i>call</i> instruction, it recursively analyzes destination address
+as well as next instruction follows the <i>call</i> one. Analyzator
+stops if it finds an address which is already marked or if it finds a
+<i>return</i> instruction or an indirect <i>jump</i> which is
+impossible to follow. All these mean that it is impossible to discover
+all instructions of the program.
+
+<p>This problem is solved in very simple way in UNIX version. If the
+execution reaches an umarked address, the analyzer is called to
+analyze the code starting at actual address pointed by the PC. This
+method is not included into DOS version but this re-analyzation can be
+requested by pressing Ctrl-F7 at any time.
+
+<hr>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+Macro system design
+$Id: macro-sys-design.txt,v 1.1 2001/09/23 18:25:45 michaelh Exp $
+
+The purposes of the macro system are:
+1.  Provide a way to target other assemblers than asxxxx, such as the
+GB IAR or rgbds assemblers.
+2.  Provide a way to target multiple similar processors at a relatively
+simple level from one backend, such as the gbz80 and z80.
+3.  Provide a way to dynamically build a command line for any spawned
+processes.
+4.  Provide a way for the backend to convientely access volatile global data
+such as the source file name or current function name.  This is mainly
+to get around assembler limitations.
+
+Examples are:
+1.  Different assemblers use different forms for immediate values.
+ Compare:
+            ld a,#0x00
+            ld a,$00
+            ld a,#$00
+    Different assemblers use different forms for certain constructs.
+ Compare:
+            .ds 2
+            DS  2
+            DEFS 2
+
+2.  Some concepts, such as prolog and epilogue can be combined.  
+ Compare:
+            push        ix
+            ld          ix,#0
+            add         ix,sp
+
+            ld          hl,0(sp)
+
+3.  Various paths such as include or library paths may change at run
+time.
+
+4.  Need to use the function name in a temporary variable name as the
+assembler doesn't support temporary local labels
+ Compare:
+            1$:
+            _func_0001:
+
+Types of data:
+1.  Static for a given starting set of parameters, such as target
+assembler or path
+
+          {zero}        -> #0, $0, 0x00
+          {sdccinclude} -> c:/sdcc/include, /usr/share/sdcc/include
+
+2.  Static for a given starting set of parameters, but include
+arguments inside them
+
+          {immeda}       -> #0x%02X, $%02X
+          {areaa}        -> .area %s, SECTION "%s"
+
+3.  Volatile throughout the run time with no parameters
+
+          {currfuncv}    -> _func
+
+4.  Volatile with arguments
+          {templabeldef} -> {currfuncv}_%d:
+
+Rules:
+1.  Macros are surrounded by curly braces {}.  
+2.  Curly braces cannot appear in any data.
+3.  Macros will be recursively expanded.  The expansion cannot be
+cyclic.
+4.  Macros used as values to arguments will be recursively expanded.
+Any macros used as argument values cannot require arguments.  If they
+do the arguments will not be evaluated.
+
+Problems:
+1.  There is no type checking or usage checking due to things being
+evaluated at run time.  This could be verified by using a separate
+perl script to statically evaluate the strings.
+
+-- Michael
+

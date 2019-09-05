@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.3 MCS51/DS390 Storage Class Language Extensions</TITLE>
+<META NAME="description" CONTENT="3.3 MCS51/DS390 Storage Class Language Extensions">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node23.html">
+<LINK REL="previous" HREF="node21.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node23.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html579"
+ HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html573"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html567"
+ HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html575"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html577"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html580"
+ HREF="node23.html">3.4 Pointers</A>
+<B> Up:</B> <A NAME="tex2html574"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html568"
+ HREF="node21.html">3.2 Command Line Options</A>
+ &nbsp <B>  <A NAME="tex2html576"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html578"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html581"
+ HREF="node22.html#SECTION00043100000000000000">3.3.1 xdata</A>
+<LI><A NAME="tex2html582"
+ HREF="node22.html#SECTION00043200000000000000">3.3.2 data</A>
+<LI><A NAME="tex2html583"
+ HREF="node22.html#SECTION00043300000000000000">3.3.3 idata</A>
+<LI><A NAME="tex2html584"
+ HREF="node22.html#SECTION00043400000000000000">3.3.4 bit</A>
+<LI><A NAME="tex2html585"
+ HREF="node22.html#SECTION00043500000000000000">3.3.5 sfr / sbit</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00043000000000000000">
+3.3 MCS51/DS390 Storage Class Language Extensions</A>
+</H2>
+
+<P>
+In addition to the ANSI storage classes SDCC allows the following
+MCS51 specific storage classes.
+
+<P>
+
+<H3><A NAME="SECTION00043100000000000000">
+3.3.1 xdata</A>
+</H3>
+
+<P>
+Variables declared with this storage class will be placed in the extern
+RAM. This is the <B>default</B> storage class for Large Memory model,
+e.g.:
+<BR>
+
+<BR>
+<TT>xdata unsigned char xduc;</TT>
+
+<P>
+
+<H3><A NAME="SECTION00043200000000000000">
+3.3.2 data</A>
+</H3>
+
+<P>
+This is the <B>default</B> storage class for Small Memory model.
+Variables declared with this storage class will be allocated in the
+internal RAM, e.g.:
+<BR>
+
+<BR>
+<TT>data int iramdata;</TT>
+
+<P>
+
+<H3><A NAME="SECTION00043300000000000000">
+3.3.3 idata</A>
+</H3>
+
+<P>
+Variables declared with this storage class will be allocated into
+the indirectly addressable portion of the internal ram of a 8051,
+e.g.:
+<BR>
+
+<BR>
+<TT>idata int idi;</TT>
+
+<P>
+
+<H3><A NAME="SECTION00043400000000000000">
+3.3.4 bit</A>
+</H3>
+
+<P>
+This is a data-type and a storage class specifier. When a variable
+is declared as a bit, it is allocated into the bit addressable memory
+of 8051, e.g.:
+<BR>
+
+<BR>
+<TT>bit iFlag;</TT>
+
+<P>
+
+<H3><A NAME="SECTION00043500000000000000">
+3.3.5 sfr / sbit</A>
+</H3>
+
+<P>
+Like the bit keyword, <I>sfr / sbit</I> signifies both a data-type
+and storage class, they are used to describe the special function
+registers and special bit variables of a 8051, eg:
+<BR>
+
+<BR>
+<TT>sfr at 0x80 P0; /* special function register P0 at location
+0x80 */</TT>&nbsp;
+<BR>
+<TT>sbit at 0xd7 CY; /* CY (Carry Flag) */</TT>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html579"
+ HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html573"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html567"
+ HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html575"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html577"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html580"
+ HREF="node23.html">3.4 Pointers</A>
+<B> Up:</B> <A NAME="tex2html574"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html568"
+ HREF="node21.html">3.2 Command Line Options</A>
+ &nbsp <B>  <A NAME="tex2html576"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html578"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,27 @@
+BRCS k		1111 00kk kkkk k000 =BRBS 0,k =BRLO k
+BRLO k		1111 00kk kkkk k000 =BRBS 0,k =BRCS k
+BREQ k		1111 00kk kkkk k001 =BRBS 1,k
+BRMI k		1111 00kk kkkk k010 =BRBS 2,k
+BRVS k		1111 00kk kkkk k011 =BRBS 3,k
+BRLT k		1111 00kk kkkk k100 =BRBS 4,k
+BRHS k		1111 00kk kkkk k101 =BRBS 5,k
+BRTS k		1111 00kk kkkk k110 =BRBS 6,k
+BRIE k		1111 00kk kkkk k111 =BRBS 7,k
+BRBS s,k	1111 00kk kkkk ksss
+
+BRCC k		1111 01kk kkkk k000 =BRBC 0,k
+BRHS k		1111 01kk kkkk k000 =BRBC 0,k
+BRNE k		1111 01kk kkkk k001 =BRBC 1,k
+BRPL k		1111 01kk kkkk k010 =BRBC 2,k
+BRVC k		1111 01kk kkkk k011 =BRBC 3,k
+BRGE k		1111 01kk kkkk k100 =BRBC 4,k
+BRHC k		1111 01kk kkkk k101 =BRBC 5,k
+BRTC k		1111 01kk kkkk k110 =BRBC 6,k
+BRID k		1111 01kk kkkk k111 =BRBC 7,k
+BRBC s,k	1111 01kk kkkk ksss
+
+BLD Rd,b	1111 100d dddd 0bbb
+BST Rd,b	1111 101d dddd 0bbb
+
+SBRC Rr,b	1111 110r rrrr 0bbb
+SBRS Rr,b	1111 111r rrrr 0bbb

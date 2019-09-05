@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3. Using SDCC</TITLE>
+<META NAME="description" CONTENT="3. Using SDCC">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node38.html">
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="sdccman.html">
+<LINK REL="next" HREF="node20.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html492"
+ HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html486"
+ HREF="sdccman.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html480"
+ HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html488"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html490"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html493"
+ HREF="node20.html">3.1 Compiling</A>
+<B> Up:</B> <A NAME="tex2html487"
+ HREF="sdccman.html">SDCC Compiler User Guide</A>
+<B> Previous:</B> <A NAME="tex2html481"
+ HREF="node18.html">2.8 Components of SDCC</A>
+ &nbsp <B>  <A NAME="tex2html489"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html491"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00040000000000000000">
+3. Using SDCC</A>
+</H1>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html494"
+ HREF="node20.html">3.1 Compiling</A>
+<UL>
+<LI><A NAME="tex2html495"
+ HREF="node20.html#SECTION00041100000000000000">3.1.1 Single Source File Projects</A>
+<LI><A NAME="tex2html496"
+ HREF="node20.html#SECTION00041200000000000000">3.1.2 Projects with Multiple Source Files</A>
+<LI><A NAME="tex2html497"
+ HREF="node20.html#SECTION00041300000000000000">3.1.3 Projects with Additional Libraries</A>
+</UL>
+<LI><A NAME="tex2html498"
+ HREF="node21.html">3.2 Command Line Options</A>
+<UL>
+<LI><A NAME="tex2html499"
+ HREF="node21.html#SECTION00042100000000000000">3.2.1 Processor Selection Options</A>
+<LI><A NAME="tex2html500"
+ HREF="node21.html#SECTION00042200000000000000">3.2.2 Preprocessor Options</A>
+<LI><A NAME="tex2html501"
+ HREF="node21.html#SECTION00042300000000000000">3.2.3 Linker Options</A>
+<LI><A NAME="tex2html502"
+ HREF="node21.html#SECTION00042400000000000000">3.2.4 MCS51 Options</A>
+<LI><A NAME="tex2html503"
+ HREF="node21.html#SECTION00042500000000000000">3.2.5 DS390 Options</A>
+<LI><A NAME="tex2html504"
+ HREF="node21.html#SECTION00042600000000000000">3.2.6 Optimization Options</A>
+<LI><A NAME="tex2html505"
+ HREF="node21.html#SECTION00042700000000000000">3.2.7 Other Options</A>
+<LI><A NAME="tex2html506"
+ HREF="node21.html#SECTION00042800000000000000">3.2.8 Intermediate Dump Options</A>
+</UL>
+<LI><A NAME="tex2html507"
+ HREF="node22.html">3.3 MCS51/DS390 Storage Class Language Extensions</A>
+<UL>
+<LI><A NAME="tex2html508"
+ HREF="node22.html#SECTION00043100000000000000">3.3.1 xdata</A>
+<LI><A NAME="tex2html509"
+ HREF="node22.html#SECTION00043200000000000000">3.3.2 data</A>
+<LI><A NAME="tex2html510"
+ HREF="node22.html#SECTION00043300000000000000">3.3.3 idata</A>
+<LI><A NAME="tex2html511"
+ HREF="node22.html#SECTION00043400000000000000">3.3.4 bit</A>
+<LI><A NAME="tex2html512"
+ HREF="node22.html#SECTION00043500000000000000">3.3.5 sfr / sbit</A>
+</UL>
+<LI><A NAME="tex2html513"
+ HREF="node23.html">3.4 Pointers</A>
+<LI><A NAME="tex2html514"
+ HREF="node24.html">3.5 Parameters &amp; Local Variables</A>
+<LI><A NAME="tex2html515"
+ HREF="node25.html">3.6 Overlaying</A>
+<LI><A NAME="tex2html516"
+ HREF="node26.html">3.7 Interrupt Service Routines</A>
+<LI><A NAME="tex2html517"
+ HREF="node27.html">3.8 Critical Functions</A>
+<LI><A NAME="tex2html518"
+ HREF="node28.html">3.9 Naked Functions</A>
+<LI><A NAME="tex2html519"
+ HREF="node29.html">3.10 Functions using private banks</A>
+<LI><A NAME="tex2html520"
+ HREF="node30.html">3.11 Absolute Addressing</A>
+<LI><A NAME="tex2html521"
+ HREF="node31.html">3.12 Startup Code</A>
+<LI><A NAME="tex2html522"
+ HREF="node32.html">3.13 Inline Assembler Code</A>
+<LI><A NAME="tex2html523"
+ HREF="node33.html">3.14 int(16 bit) and long (32 bit) Support</A>
+<LI><A NAME="tex2html524"
+ HREF="node34.html">3.15 Floating Point Support</A>
+<LI><A NAME="tex2html525"
+ HREF="node35.html">3.16 MCS51 Memory Models</A>
+<LI><A NAME="tex2html526"
+ HREF="node36.html">3.17 DS390 Memory Models</A>
+<LI><A NAME="tex2html527"
+ HREF="node37.html">3.18 Defines Created by the Compiler</A>
+</UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

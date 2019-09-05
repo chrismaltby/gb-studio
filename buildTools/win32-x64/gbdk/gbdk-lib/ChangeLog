@@ -1,0 +1,6 @@
+2001-11-03  Michael Hope  <michaelh@juju.net.nz>
+
+	* examples/gb/gb-dtmf/gb-dtmf.c (main): Changed printf to %u as the arg was a int.
+
+	* examples/gb/ram_fn.c (print_counter): Made ANSI compliant.
+

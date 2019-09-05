@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>5.1 Notes on MCS51 memory layout</TITLE>
+<META NAME="description" CONTENT="5.1 Notes on MCS51 memory layout">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="previous" HREF="node46.html">
+<LINK REL="up" HREF="node46.html">
+<LINK REL="next" HREF="node48.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html964"
+ HREF="node48.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html958"
+ HREF="node46.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html954"
+ HREF="node46.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html960"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html962"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html965"
+ HREF="node48.html">6. Retargetting for other</A>
+<B> Up:</B> <A NAME="tex2html959"
+ HREF="node46.html">5. TIPS</A>
+<B> Previous:</B> <A NAME="tex2html955"
+ HREF="node46.html">5. TIPS</A>
+ &nbsp <B>  <A NAME="tex2html961"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html963"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00061000000000000000">
+5.1 Notes on MCS51 memory layout</A>
+</H2>
+
+<P>
+The 8051 family of micro controller have a minimum of 128 bytes of
+internal memory which is structured as follows
+<BR>
+
+<BR>
+- Bytes 00-1F - 32 bytes to hold up to 4 banks of the registers R7
+to R7 
+<BR>
+- Bytes 20-2F - 16 bytes to hold 128 bit variables and 
+<BR>
+- Bytes 30-7F - 60 bytes for general purpose use.
+<BR>
+
+<BR>
+Normally the SDCC compiler will only utilise the first bank of registers,
+but it is possible to specify that other banks of registers should
+be used in interrupt routines. By default, the compiler will place
+the stack after the last bank of used registers, i.e. if the first
+2 banks of registers are used, it will position the base of the internal
+stack at address 16 (0X10). This implies that as the stack grows,
+it will use up the remaining register banks, and the 16 bytes used
+by the 128 bit variables, and 60 bytes for general purpose use.
+
+<P>
+By default, the compiler uses the 60 general purpose bytes to hold
+&#34;near data&#34;. The compiler/optimiser may also declare
+some Local Variables in this area to hold local data. 
+
+<P>
+If any of the 128 bit variables are used, or near data is being used
+then care needs to be taken to ensure that the stack does not grow
+so much that it starts to over write either your bit variables or
+&#34;near data&#34;. There is no runtime checking to prevent
+this from happening.
+
+<P>
+The amount of stack being used is affected by the use of the &#34;internal
+stack&#34; to save registers before a subroutine call is made
+(-stack-auto will declare parameters and local variables on the stack)
+and the number of nested subroutines.
+
+<P>
+If you detect that the stack is over writing you data, then the following
+can be done. -xstack will cause an external stack to be used for
+saving registers and (if -stack-auto is being used) storing parameters
+and local variables. However this will produce more code which will
+be slower to execute. 
+
+<P>
+ 
+-stack-loc will allow you specify the start of the stack, i.e. you
+could start it after any data in the general purpose area. However
+this may waste the memory not used by the register banks and if the
+size of the &#34;near data&#34; increases, it may creep
+into the bottom of the stack.
+
+<P>
+ 
+-stack-after-data, similar to the -stack-loc, but it automatically
+places the stack after the end of the &#34;near data&#34;.
+Again this could waste any spare register space.
+
+<P>
+ 
+-data-loc allows you to specify the start address of the near data.
+This could be used to move the &#34;near data&#34; further
+away from the stack giving it more room to grow. This will only work
+if no bit variables are being used and the stack can grow to use the
+bit variable space.
+<BR>
+
+<BR>
+Conclusion.
+<BR>
+
+<BR>
+If you find that the stack is over writing your bit variables or &#34;near
+data&#34; then the approach which best utilised the internal
+memory is to position the &#34;near data&#34; after the
+last bank of used registers or, if you use bit variables, after the
+last bit variable by using the -data-loc, e.g. if two register banks
+are being used and no bit variables, -data-loc 16, and use the -stack-after-data
+option.
+
+<P>
+If bit variables are being used, another method would be to try and
+squeeze the data area in the unused register banks if it will fit,
+and start the stack after the last bit variable.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html964"
+ HREF="node48.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html958"
+ HREF="node46.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html954"
+ HREF="node46.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html960"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html962"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html965"
+ HREF="node48.html">6. Retargetting for other</A>
+<B> Up:</B> <A NAME="tex2html959"
+ HREF="node46.html">5. TIPS</A>
+<B> Previous:</B> <A NAME="tex2html955"
+ HREF="node46.html">5. TIPS</A>
+ &nbsp <B>  <A NAME="tex2html961"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html963"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,79 @@
+#
+# uCsim doc/Makefile
+#
+# (c) Drotos Daniel, Talker Bt. 1997
+#
+
+STARTYEAR	= 1997
+
+SHELL		= /bin/sh
+INSTALL		= @INSTALL@
+
+PRJDIR		= ..
+
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+bindir          = @bindir@
+libdir          = @libdir@
+datadir         = @datadir@
+includedir      = @includedir@
+mandir          = @mandir@
+man1dir         = $(mandir)/man1
+man2dir         = $(mandir)/man2
+infodir         = @infodir@
+srcdir          = @srcdir@
+docdir		= $(prefix)/doc/ucsim
+
+
+# Compiling entire program or any subproject
+# ------------------------------------------
+all: doc
+
+doc: checkconf
+
+# Compiling and installing everything and runing test
+# ---------------------------------------------------
+install: all installdirs
+	cp *.html $(docdir)
+	cp *.gif $(docdir)
+	cp *.jpg $(docdir)
+	cp *.fig $(docdir)
+
+
+# Deleting all the installed files
+# --------------------------------
+uninstall:
+	rm -f $(docdir)/*
+
+
+# Performing self-test
+# --------------------
+check:
+
+
+# Performing installation test
+# ----------------------------
+installcheck:
+
+
+# Creating installation directories
+# ---------------------------------
+installdirs:
+	test -d $(docdir) || $(INSTALL) -d $(docdir)
+
+
+# Creating dependencies
+# ---------------------
+include clean.mk
+
+# My rules
+# --------
+
+# Remaking configuration
+# ----------------------
+checkconf:
+	@if [ -f $(PRJDIR)/devel ]; then\
+	  $(MAKE) -f conf.mk srcdir="$(srcdir)" PRJDIR="$(PRJDIR)" freshconf;\
+	fi
+
+# End of s51.src/Makefile.in

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.2 Pragmas</TITLE>
+<META NAME="description" CONTENT="4.2 Pragmas">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node41.html">
+<LINK REL="previous" HREF="node39.html">
+<LINK REL="up" HREF="node38.html">
+<LINK REL="next" HREF="node41.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html866"
+ HREF="node41.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html860"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html854"
+ HREF="node39.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html862"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html864"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html867"
+ HREF="node41.html">4.3 &lt;pending: this is</A>
+<B> Up:</B> <A NAME="tex2html861"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html855"
+ HREF="node39.html">4.1 Optimizations</A>
+ &nbsp <B>  <A NAME="tex2html863"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html865"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00052000000000000000">
+4.2 Pragmas</A>
+</H2>
+
+<P>
+SDCC supports the following #pragma directives. This directives are
+applicable only at a function level.
+
+<P>
+
+<UL>
+<LI>SAVE - this will save all the current options.</LI>
+<LI>RESTORE - will restore the saved options from the last save. Note
+that SAVES &amp; RESTOREs cannot be nested. SDCC uses the same buffer
+to save the options each time a SAVE is called.</LI>
+<LI>NOGCSE - will stop global subexpression elimination.</LI>
+<LI>NOINDUCTION - will stop loop induction optimizations.</LI>
+<LI>NOJTBOUND - will not generate code for boundary value checking, when
+switch statements are turned into jump-tables.</LI>
+<LI>NOOVERLAY - the compiler will not overlay the parameters and local
+variables of a function.</LI>
+<LI>NOLOOPREVERSE - Will not do loop reversal optimization</LI>
+<LI>EXCLUDE NONE | {acc[,b[,dpl[,dph]]] - The exclude pragma
+disables generation of pair of push/pop instruction in ISR function
+(using interrupt keyword). The directive should be placed immediately
+before the ISR function definition and it affects ALL ISR functions
+following it. To enable the normal register saving for ISR functions
+use #pragma&nbsp;EXCLUDE&nbsp;none.</LI>
+<LI>CALLEE-SAVES function1[,function2[,function3...]] - The compiler
+by default uses a caller saves convention for register saving across
+function calls, however this can cause unneccessary register pushing
+&amp; popping when calling small functions from larger functions. This
+option can be used to switch the register saving convention for the
+function names specified. The compiler will not save registers when
+calling these functions, extra code will be generated at the entry
+&amp; exit for these functions to save &amp; restore the registers used
+by these functions, this can SUBSTANTIALLY reduce code &amp; improve
+run time performance of the generated code. In future the compiler
+(with interprocedural analysis) will be able to determine the appropriate
+scheme to use for each function call. If -callee-saves command line
+option is used, the function names specified in #pragma&nbsp;CALLEE-SAVES
+is appended to the list of functions specified inthe command line.</LI>
+</UL>
+The pragma's are intended to be used to turn-off certain optimizations
+which might cause the compiler to generate extra stack / data space
+to store compiler generated temporary variables. This usually happens
+in large functions. Pragma directives should be used as shown in the
+following example, they are used to control options &amp; optimizations
+for a given function; pragmas should be placed before and/or after
+a function, placing pragma's inside a function body could have unpredictable
+results.
+<BR>
+
+<BR>
+<TT>#pragma SAVE /* save the current settings */ </TT>&nbsp;
+<BR>
+<TT>#pragma NOGCSE /* turnoff global subexpression elimination
+*/ </TT>&nbsp;
+<BR>
+<TT>#pragma NOINDUCTION /* turn off induction optimizations
+*/ </TT>&nbsp;
+<BR>
+<TT>int foo () </TT>&nbsp;
+<BR>
+<TT>{ </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; ... </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; /* large code */ </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; ... </TT>&nbsp;
+<BR>
+<TT>} </TT>&nbsp;
+<BR>
+<TT>#pragma RESTORE /* turn the optimizations back on */</TT>
+<BR>
+
+<BR>
+The compiler will generate a warning message when extra space is allocated.
+It is strongly recommended that the SAVE and RESTORE pragma's be used
+when changing options for a function.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html866"
+ HREF="node41.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html860"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html854"
+ HREF="node39.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html862"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html864"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html867"
+ HREF="node41.html">4.3 &lt;pending: this is</A>
+<B> Up:</B> <A NAME="tex2html861"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html855"
+ HREF="node39.html">4.1 Optimizations</A>
+ &nbsp <B>  <A NAME="tex2html863"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html865"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

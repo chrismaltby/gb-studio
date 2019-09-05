@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>2.5 Additional Information for Windows Users</TITLE>
+<META NAME="description" CONTENT="2.5 Additional Information for Windows Users">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node16.html">
+<LINK REL="previous" HREF="node14.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node16.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html431"
+ HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html425"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html419"
+ HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html427"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html429"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html432"
+ HREF="node16.html">2.6 SDCC on Other</A>
+<B> Up:</B> <A NAME="tex2html426"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html420"
+ HREF="node14.html">2.4 Install Trouble-shooting</A>
+ &nbsp <B>  <A NAME="tex2html428"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html430"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html433"
+ HREF="node15.html#SECTION00035100000000000000">2.5.1 Getting started with Cygwin</A>
+<LI><A NAME="tex2html434"
+ HREF="node15.html#SECTION00035200000000000000">2.5.2 Running SDCC as Native Compiled Executables</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00035000000000000000">
+2.5 Additional Information for Windows Users</A>
+</H2>
+
+<P>
+ 
+<I>&lt;pending: is this up to date?&gt;</I>
+<BR>
+<BR>
+The standard method of installing on a Unix system involves compiling
+the source package. This is easily done under Unix, but under Windows
+it can be a more difficult process. The Cygwin is a large package
+to download, and the compilation runs considerably slower under Windows
+due to the overhead of the Cygwin tool set. An alternative is to install
+a pre-compiled Windows binary package. There are various trade-offs
+between each of these methods. 
+
+<P>
+The Cygwin package allows a Windows user to run a Unix command line
+interface (bash shell) and also implements a Unix like file system
+on top of Windows. Included are many of the famous GNU software development
+tools which can augment the SDCC compiler.This is great if you have
+some experience with Unix command line tools and file system conventions,
+if not you may find it easier to start by installing a binary Windows
+package. The binary packages work with the Windows file system conventions.
+
+<P>
+
+<H3><A NAME="SECTION00035100000000000000">
+2.5.1 Getting started with Cygwin</A>
+</H3>
+
+<P>
+SDCC is typically distributed as a tarred/gzipped file (.tgz). This
+is a packed file similar to a .zip file. Cygwin includes the tools
+you will need to unpack the SDCC distribution (tar and gzip). To unpack
+it, simply follow the instructions under the Linux/Unix install section.
+Before you do this you need to learn how to start a cygwin shell and
+some of the basic commands used to move files, change directory, run
+commands and so on. The change directory command is <I><B>``cd''</B></I>,
+the move command is <I><B>``mv''</B></I>. To print the current
+working directory, type <I><B>``pwd''</B></I>. To make a directory,
+use <I><B>``mkdir''</B></I>.
+
+<P>
+There are some basic differences between Unix and Windows file systems
+you should understand. When you type in directory paths, Unix and
+the Cygwin bash prompt uses forward slashes '/' between directories
+while Windows traditionally uses '&#92;' backward slashes.
+So when you work at the Cygwin bash prompt, you will need to use the
+forward '/' slashes. Unix does not have a concept of drive letters,
+such as ``c:``, instead all files systems attach and appear
+as directories.
+
+<P>
+
+<H3><A NAME="SECTION00035200000000000000">
+2.5.2 Running SDCC as Native Compiled Executables</A>
+</H3>
+
+<P>
+If you use the pre-compiled binaries, the install directories for
+the libraries and header files may need to be specified on the sdcc
+command line like this: <I><B>&#34;sdcc -L c:&#92;usr&#92;local&#92;sdcc&#92;lib&#92;small
+-I c:&#92;usr&#92;local&#92;sdcc&#92;include
+test.c&#34;</B></I> if you are running outside of a Unix bash shell.
+
+<P>
+If you have successfully installed and compiled SDCC with the Cygwin
+package, it is possible to compile into native .exe files by using
+the additional makefiles included for this purpose. For example, with
+the Borland 32-bit compiler you would run <I><B>&#34;make
+-f Makefile.bcc&#34;</B></I>. A command line version of the Borland
+32-bit compiler can be downloaded from the Inprise web site.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html431"
+ HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html425"
+ HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html419"
+ HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html427"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html429"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html432"
+ HREF="node16.html">2.6 SDCC on Other</A>
+<B> Up:</B> <A NAME="tex2html426"
+ HREF="node10.html">2. Installation</A>
+<B> Previous:</B> <A NAME="tex2html420"
+ HREF="node14.html">2.4 Install Trouble-shooting</A>
+ &nbsp <B>  <A NAME="tex2html428"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html430"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

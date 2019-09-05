@@ -1,0 +1,115 @@
+<html>
+<head>
+<title>UCSIM: Multiple Consoles</title>
+</head>
+
+<body bgcolor="white">
+
+<h1>Using multiple consoles</h1>
+
+<h3>Why?</h3>
+
+Using more than one console can be useful if you want to issue a
+command during the simulated program is executed.
+
+
+<h3>How?</h3>
+
+<p>To get multiple consoles you have to execute the simulator in the
+<i>background</i> like daemons run in UNIX systems. The simulator
+then will listen and wait for network connection requests and provide
+console functions for network connections.
+
+<p>To run <i>uCsim</i> in the background you have to use <a
+href="invoke.html#Zoption">-Z</a> option for the simulator:
+
+<pre>
+<font color="blue">pigmy$</font> s51 -Z 5555 foo.hex
+</pre>
+
+In this case s51 runs in forground in your command interpreters point
+of view. Of course you can run the program really in the background:
+
+<pre>
+<font color="blue">pigmy$</font> s51 -Z 5555 foo.hex &
+</pre>
+
+The parameter of the <a href="invoke.html#Zoption">-Z</a> option is a
+port number. This can be number of any unused port of your machine. If
+the specified port is already occupied then following message appears:
+
+<pre>
+<font color="blue">pigmy$</font> s51 -Z 5555
+<font color="red">bind: Address already in use</font>
+</pre>
+
+In this case you have to use an other number.
+
+<p>Let's suppose you have found a free port number and the simulator
+listens on it. Now go to somewhere else, at least to an other window
+and connect to the simulator:
+
+<pre>
+<font color="blue">other_machine$</font> telnet pigmy 5555
+</pre>
+
+First parameter to the telnet command is the name of the machine where
+the simulator is running on. It can be <tt>localhost</tt> if you are
+on the same machine or the fully qualified host name if you are at the
+other end of the world. Second parameter is the number of the port
+where the simulator is listening. It must be the same number which was
+specified as parameter of the <a href="invoke.html#Zoption">-Z</a>
+option when the simulator was started (see above).
+
+<p>Connecting to the simulator you get a command console:
+
+<pre>
+<font color="blue">pigmy$</font> telnet pigmy 5555
+<font color="green">Trying 127.0.0.1...
+Connected to pigmy.talker.bt.
+Escape character is '^]'.
+ucsim 0.2.21, Copyright (C) 1997 Daniel Drotos, Talker Bt.
+ucsim comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.
+&gt;
+</font> 
+</pre>
+
+
+<h3>What to do with it?</h3>
+
+Obviously you can telnet into the simulator as many times as many
+command consoles you want. You can start the execution using one
+console and while the program is executed you can, for example, modify
+ports on the other console.
+
+
+<h3>Stop</h3>
+
+Using <a href="cmd.html#q">quit (q)</a> command you can not stop the
+simulator. It just stops the actual console and the simulator
+continues to listen for incoming network connections.
+
+<p>To stop the simulator completely you have to use <a
+href="cmd.html#kill">kill</a> command. Note that if you stop the
+simulator then all the active network connections (all other consoles)
+will stop.
+
+
+<h3>Tricks</h3>
+
+You can get a console on the terminal where you started the
+simulator. To do this you must explicitly ask the simulator to open a
+console on the standard input/output. You can do this using <a
+href="invoke.html#coption">-c</a> option and specify the actual
+terminal as parameter for it:
+
+<pre>
+<font color="blue">pigmy$</font> s51 -Z 5555 foo.hex -c /dev/tty
+</pre>
+
+<hr>
+
+</body>
+</html>

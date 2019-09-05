@@ -1,0 +1,23 @@
+FNAME=$1
+
+awk -v FNAME=$FNAME 'BEGIN {
+  cfname= FNAME ".c";
+  i= 1;
+  while (getline csrc[i] <cfname)
+    i++;
+}
+
+$2 == ";" &&
+$3 ^ cfname &&
+NF == 4 {
+  print;
+  print csrc[$4];
+  next;
+}
+
+{
+  print;
+}' ${FNAME}.lst >${FNAME}.ls
+
+# End of lst2ls
+

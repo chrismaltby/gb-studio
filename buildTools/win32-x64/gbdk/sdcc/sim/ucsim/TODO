@@ -1,0 +1,14 @@
+prompt command to set diff prompt for any console
+Tue Aug 17 1999
+
+timer val id value
+Tue Aug 17 1999
+Done: Tue Aug 17 1999
+
+stop should report stop address on `go' console
+Tue Aug 17 1999
+Done: Tue Aug 17 1999
+
+dis command prints out short lists repeatedly. It should remember addresses
+printed out and stop if an already used address comes.
+Thu Sep 30 1999

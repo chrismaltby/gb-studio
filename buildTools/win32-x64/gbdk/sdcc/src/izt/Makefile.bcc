@@ -1,0 +1,23 @@
+PRJDIR = ../..
+
+# !include $(PRJDIR)/Makefile.common
+
+OBJ = i186.obj ralloc.obj gen.obj tlcs900h.obj gen_generic.obj aop.obj util.obj
+LIB = port.lib
+
+!include ..\..\Bcc.inc
+CFLAGS  = -I.. -I. -I..\.. -I..\..\support
+
+all: $(LIB)
+
+i186.obj: i186.c i186_mappings.i
+
+$(LIB): $(OBJ)
+	del $(LIB)
+        tlib /a $(LIB) +i186.obj +ralloc.obj +gen.obj +tlcs900h.obj
+        tlib /a $(LIB) +gen_generic.obj +aop.obj +util.obj
+	
+.def.rul:
+        gawk -f ../SDCCpeeph.awk $< > $@
+
+# include clean.mk

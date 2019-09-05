@@ -1,0 +1,67 @@
+%{
+/* Command-line: gperf -L KR-C -F ', 0, 0' -p -j1 -i 1 -g -o -t -N is_reserved_word -k1,3,$ c-parse.gperf  */ 
+%}
+struct reserved_words { const char *name; int token; bool is_special; };
+%%
+auto,		AUTO,		0
+break,		BREAK,		0
+case,		CASE,		0
+char,		CHAR,		0
+const,		CONST,		0
+continue,	CONTINUE,	0
+default,	DEFAULT,	0
+do,		DO,		0
+double,		FLOAT,		0
+else,		ELSE,		0
+enum,		ENUM,		0
+extern,		EXTERN,		0
+float,		FLOAT,		0
+for,		FOR,		0
+goto,		GOTO,		0
+if,		IF,		0
+int,		INT,		0
+interrupt,	INTERRUPT,	0
+long,		LONG,		0
+register,	REGISTER,	0
+return,		RETURN,		0
+short,		SHORT,		0
+signed,		SIGNED,		0
+sizeof,		SIZEOF,		0
+static,		STATIC,		0
+struct,		STRUCT,		0
+switch,		SWITCH,		0
+typedef,	TYPEDEF,	0
+union,		UNION,		0
+unsigned,	UNSIGNED,	0
+void,		VOID,		0
+volatile,	VOLATILE,	0
+while,		WHILE,		0
+_code,		_CODE,		1
+_eeprom,	_EEPROM,	1
+_flash,		_CODE,		1
+_generic,	_GENERIC,	1
+_near,		_NEAR,		1
+_sram,		_XDATA,		1
+_xdata,		_XDATA,		1
+_pdata,		_PDATA,		1
+_idata,		_IDATA,		1
+at,		AT,		1
+bit,		BIT,		1
+critical,	CRITICAL,	1
+data,		DATA,		1
+far,		XDATA,		1
+eeprom,		EEPROM,		1
+flash,		CODE,		1
+idata,		IDATA,		1
+nonbanked,	NONBANKED,	1
+banked,		BANKED,		1
+near,		DATA,		1
+pdata,		PDATA,		1
+reentrant,	REENTRANT,	1
+sfr,		SFR,		1
+sbit,		SBIT,		1
+sram,		XDATA,		1
+using,		USING,		1
+code,		CODE,		1
+xdata,		XDATA,		1
+_data,	      	_NEAR,		1

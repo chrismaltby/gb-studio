@@ -1,0 +1,1701 @@
+//replace restart {
+//        pop  %1
+//        push %1
+//} by {
+//        ; Peephole 1     removed pop %1 push %1 (not push pop)
+//}
+
+//replace restart {
+//        pop  %1
+//        mov  %2,%3
+//        push %1
+//} by {
+//        ; Peephole 2     removed pop %1 push %1 (not push pop)
+//        mov  %2,%3 
+//}
+
+//
+// added by Jean Louis VERN for
+// his shift stuff
+replace restart {
+        xch  a,%1
+        xch  a,%1
+} by {
+        ; Peephole 2.a   removed redundant xch xch
+}
+
+replace restart {
+// saving 2 byte
+        mov  %1,#0x00
+        mov  a,#0x00
+} by {
+        ; Peephole 3.a   changed mov to clr
+        clr  a
+        mov  %1,a
+}
+
+replace restart {
+// saving 1 byte
+        mov  %1,#0x00
+        clr  a
+} by {
+        ; Peephole 3.b   changed mov to clr
+        clr  a
+        mov  %1,a
+}
+
+replace restart {
+// saving 1 byte, loosing 1 cycle but maybe allowing peephole 3.b to start
+        mov  %1,#0x00
+        mov  %2,#0x00
+        mov  a,%3
+} by {
+        ; Peephole 3.c   changed mov to clr
+        clr  a
+        mov  %1,a
+        mov  %2,a
+        mov  a,%3
+}
+
+
+
+replace {
+        mov  %1,a
+        mov  dptr,#%2
+        mov  a,%1
+        movx @dptr,a
+} by {
+        ; Peephole 100   removed redundant mov
+        mov  %1,a
+        mov  dptr,#%2
+        movx @dptr,a
+}
+
+replace {
+	mov  a,acc
+} by {
+	;  Peephole 100.a   removed redundant mov
+}
+
+replace {
+        mov  a,%1
+        movx @dptr,a
+        inc  dptr
+        mov  a,%1
+        movx @dptr,a
+} by {
+        ; Peephole 101   removed redundant mov
+        mov  a,%1
+        movx @dptr,a
+        inc  dptr
+        movx @dptr,a
+}
+
+replace {
+        mov  %1,%2
+        ljmp %3
+%4:
+        mov  %1,%5
+%3:
+        mov  dpl,%1
+%7:
+        mov  sp,bp
+        pop  bp
+} by {
+        ; Peephole 102   removed redundant mov
+        mov  dpl,%2
+        ljmp %3
+%4:
+        mov  dpl,%5
+%3:
+%7:
+        mov  sp,bp
+        pop  bp
+}
+
+replace {
+        mov  %1,%2
+        ljmp %3
+%4:
+        mov  a%1,%5
+%3:
+        mov  dpl,%1
+%7:
+        mov  sp,bp
+        pop  bp
+} by {
+        ; Peephole 103   removed redundant mov
+        mov  dpl,%2
+        ljmp %3
+%4:
+        mov  dpl,%5
+%3:
+%7:
+        mov  sp,bp
+        pop  bp
+}
+
+replace {
+        mov  a,bp
+        clr  c
+        add  a,#0x01
+        mov  r%1,a
+} by {
+        ; Peephole 104   optimized increment (acc not set to r%1, flags undefined)
+        mov  r%1,bp
+        inc  r%1
+}
+
+replace {
+        mov  %1,a
+        mov  a,%1
+} by {
+        ; Peephole 105   removed redundant mov
+        mov  %1,a
+}
+
+replace {
+        mov  %1,a
+        clr  c
+        mov  a,%1
+} by {
+        ; Peephole 106   removed redundant mov 
+        mov  %1,a
+        clr  c
+}
+
+replace {
+        ljmp %1
+%1:
+} by {
+        ; Peephole 107   removed redundant ljmp
+%1:
+}
+
+replace {
+        jc   %1
+        ljmp %5
+%1:
+} by {
+        ; Peephole 108   removed ljmp by inverse jump logic
+        jnc  %5
+%1:
+} if labelInRange
+
+replace {
+        jz   %1
+        ljmp %5
+%1:
+} by {
+        ; Peephole 109   removed ljmp by inverse jump logic
+        jnz  %5
+%1:
+} if labelInRange
+
+replace {
+        jnz  %1
+        ljmp %5
+%1:
+} by {
+        ; Peephole 110   removed ljmp by inverse jump logic
+        jz  %5
+%1:
+} if labelInRange
+
+replace {
+        jb   %1,%2
+        ljmp %5
+%2:
+} by {
+        ; Peephole 111   removed ljmp by inverse jump logic
+        jnb  %1,%5
+%2:
+} if labelInRange
+
+replace {
+        jnb  %1,%2
+        ljmp %5
+%2:
+} by {
+       ; Peephole 112   removed ljmp by inverse jump logic
+        jb   %1,%5
+%2:
+} if labelInRange
+
+replace {
+        ljmp %5
+%1:
+} by {
+        ; Peephole 132   changed ljmp to sjmp
+        sjmp %5
+%1:
+} if labelInRange
+
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cpl  a
+%3:
+        rrc  a
+        mov  %4,c
+} by {
+        ; Peephole 113   optimized misc sequence
+        clr  %4
+        cjne %1,%2,%3
+        setb %4
+%3:
+}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cpl  a
+%3:
+        rrc  a
+        mov  %4,c
+} by {
+        ; Peephole 114   optimized misc sequence
+        clr  %4
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        setb %4
+%3:
+}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cpl  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 115   jump optimization 
+        cjne %1,%2,%3
+        sjmp %4
+%3:
+}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cpl  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 116   jump optimization
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        sjmp %4
+%3:
+}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        cpl  a
+%3:
+        jnz %4
+} by {
+        ; Peephole 117   jump optimization
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        sjmp %4
+%3:
+}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        cjne %13,%14,%3
+        cpl  a
+%3:
+        jnz %4
+} by {
+        ; Peephole 118   jump optimization
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        cjne %13,%14,%3
+        sjmp %4
+%3:
+}
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        clr  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 119   jump optimization
+        cjne %1,%2,%4
+%3:
+}
+
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        clr  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 120   jump optimization
+        cjne %1,%2,%4
+        cjne %10,%11,%4
+%3:
+}
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        clr  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 121   jump optimization
+        cjne %1,%2,%4
+        cjne %10,%11,%4
+        cjne %12,%13,%4
+%3:
+}
+
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        cjne %14,%15,%3
+        clr  a
+%3:
+        jnz  %4
+} by {
+        ; Peephole 122   jump optimization
+        cjne %1,%2,%4
+        cjne %10,%11,%4
+        cjne %12,%13,%4
+        cjne %14,%15,%4
+%3:
+}
+
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        clr  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 123   jump optimization
+        cjne %1,%2,%3
+        smp  %4
+%3:
+}
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        clr  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 124   jump optimization
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        smp  %4
+%3:
+}
+
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        clr  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 125   jump optimization
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        sjmp %4
+%3:
+}
+
+replace {
+        mov  a,#0x01
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        cjne %14,%15,%3
+        clr  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 126   jump optimization
+        cjne %1,%2,%3
+        cjne %10,%11,%3
+        cjne %12,%13,%3
+        cjne %14,%15,%3
+        sjmp %4
+%3:
+}
+
+replace {
+        push psw
+        mov  psw,%1
+        push bp
+        mov  bp,%2
+%3:
+        mov  %2,bp
+        pop  bp
+        pop  psw
+        ret
+} by {
+        ; Peephole 127   removed misc sequence
+        ret
+}
+
+replace {
+        clr  a
+        rlc  a
+        jz   %1
+} by {
+        ; Peephole 128   jump optimization
+        jnc  %1
+}
+
+replace {
+        clr  a
+        rlc  a
+        jnz  %1
+} by {
+        ; Peephole 129   jump optimization
+        jc   %1
+}
+
+replace { 
+        mov  r%1,@r%2
+} by {
+        ; Peephole 130   changed target address mode r%1 to ar%1
+        mov  ar%1,@r%2
+}
+
+replace { 
+        mov  a,%1
+        subb a,#0x01
+        mov  %2,a
+        mov  %1,%2
+} by {
+        ; Peephole 131   optimized decrement (not caring for c)
+        dec  %1         
+        mov  %2,%1      
+}
+
+replace {
+        mov  r%1,%2
+        mov  ar%3,@r%1
+        inc  r%3
+        mov  r%4,%2
+        mov  @r%4,ar%3
+} by {
+        ; Peephole 133   removed redundant moves
+        mov  r%1,%2
+        inc  @r%1
+        mov  ar%3,@r%1
+}
+
+replace {
+        mov  r%1,%2
+        mov  ar%3,@r%1
+        dec  r%3
+        mov  r%4,%2
+        mov  @r%4,ar%3
+} by {
+        ; Peephole 134   removed redundant moves
+        mov  r%1,%2
+        dec  @r%1
+        mov  ar%3,@r%1
+}
+
+replace {
+        mov  r%1,a
+        mov  a,r%2
+        orl  a,r%1
+} by {
+        ; Peephole 135   removed redundant mov
+        mov  r%1,a
+        orl  a,r%2
+}
+
+replace {
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+	mov  dpx,%4
+        mov  a,%1
+} by {
+        ; Peephole 136a   removed redundant moves
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+	mov  dpx,%4
+} if 24bitMode
+
+replace {
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+        mov  a,%1
+} by {
+        ; Peephole 136   removed redundant moves
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+}
+
+replace {
+        mov  b,#0x00
+        mov  a,%1
+        cjne %2,%3,%4
+        mov  b,#0x01
+%4:
+        mov  a,b
+        jz   %5
+} by {
+        ; Peephole 137   optimized misc jump sequence
+        mov  a,%1
+        cjne %2,%3,%5
+%4:
+}
+
+replace {
+        mov  b,#0x00
+        mov  a,%1
+        cjne %2,%3,%4
+        mov  b,#0x01
+%4:
+        mov  a,b
+        jnz  %5
+} by {
+        ; Peephole 138   optimized misc jump sequence
+        mov  a,%1
+        cjne %2,%3,%4
+        sjmp %5
+%4:
+}
+
+replace {
+        mov  r%1,a
+        anl  ar%1,%2
+        mov  a,r%1
+} by {
+        ; Peephole 139   removed redundant mov
+        anl  a,%2
+        mov  r%1,a
+}
+
+replace {
+        mov  r%1,a
+        orl  ar%1,%2
+        mov  a,r%1
+} by {
+        ; Peephole 140   removed redundant mov
+        orl  a,%2
+        mov  r%1,a }
+
+replace {
+        mov  r%1,a
+        xrl  ar%1,%2
+        mov  a,r%1
+} by {
+        ; Peephole 141   removed redundant mov
+        xrl  a,%2
+        mov  r%1,a
+}
+
+replace {
+        mov  r%1,a
+        mov  r%2,ar%1
+        mov  ar%1,@r%2
+} by {
+        ; Peephole 142   removed redundant moves
+        mov  r%2,a
+        mov  ar%1,@r%2
+}
+
+replace {
+        rlc  a
+        mov  acc.0,c
+} by {
+        ; Peephole 143   converted rlc to rl
+        rl   a
+}
+
+replace {
+        rrc  a
+        mov  acc.7,c
+} by {
+        ; Peephole 144   converted rrc to rc
+        rr   a
+}
+
+replace {
+        clr  c
+        addc a,%1
+} by {
+        ; Peephole 145   changed to add without carry  
+        add  a,%1
+}
+
+replace {
+        clr  c
+        mov  a,%1
+        addc a,%2
+} by {
+        ; Peephole 146   changed to add without carry
+        mov  a,%1
+        add  a,%2
+}
+
+replace {
+        orl  r%1,a
+} by {
+        ; Peephole 147   changed target address mode r%1 to ar%1
+        orl  ar%1,a
+}
+
+replace {
+        anl  r%1,a
+} by {
+        ; Peephole 148   changed target address mode r%1 to ar%1
+        anl  ar%1,a
+}
+
+replace {
+        xrl  r%1,a
+} by {
+        ; Peephole 149   changed target address mode r%1 to ar%1
+        xrl  ar%1,a
+}
+
+replace {
+        mov  %1,dpl
+        mov  dpl,%1
+%9:
+        ret
+} by {
+        ; Peephole 150   removed misc moves via dpl before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  dpl,%1
+        mov  dph,%2
+%9:
+        ret
+} by {
+        ; Peephole 151   removed misc moves via dph, dpl before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  dpl,%1
+%9:
+        ret
+} by {
+        ; Peephole 152   removed misc moves via dph, dpl before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  dpl,%1
+        mov  dph,%2
+        mov  b,%3
+%9:
+        ret
+} by {
+        ; Peephole 153   removed misc moves via dph, dpl, b before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  dpl,%1
+%9:
+        ret
+} by {
+        ; Peephole 154   removed misc moves via dph, dpl, b before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  dpl,%1
+        mov  dph,%2
+%9:
+        ret
+} by {
+        ; Peephole 155   removed misc moves via dph, dpl, b before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  %4,a
+        mov  dpl,%1
+        mov  dph,%2
+        mov  b,%3
+        mov  a,%4
+%9:
+        ret
+} by {
+        ; Peephole 156   removed misc moves via dph, dpl, b, a before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  %4,a
+        mov  dpl,%1
+        mov  dph,%2
+%9:
+        ret
+} by {
+        ; Peephole 157   removed misc moves via dph, dpl, b, a before return
+%9:
+        ret
+}
+
+replace {
+        mov  %1,dpl
+        mov  %2,dph
+        mov  %3,b
+        mov  %4,a
+        mov  dpl,%1
+%9:
+        ret } by {
+        ; Peephole 158   removed misc moves via dph, dpl, b, a before return
+%9:
+        ret }
+
+replace {
+        mov  %1,#%2
+        xrl  %1,#0x80
+} by {
+        ; Peephole 159   avoided xrl during execution
+        mov  %1,#(%2 ^ 0x80)
+}
+
+replace {
+        jnc  %1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 160   removed sjmp by inverse jump logic
+        jc   %2
+%1:}
+
+replace {
+        jc   %1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 161   removed sjmp by inverse jump logic
+        jnc  %2
+%1:}
+
+replace {
+        jnz  %1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 162   removed sjmp by inverse jump logic
+        jz   %2
+%1:}
+
+replace {
+        jz   %1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 163   removed sjmp by inverse jump logic
+        jnz  %2
+%1:}
+
+replace {
+        jnb  %3,%1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 164   removed sjmp by inverse jump logic
+        jb   %3,%2
+%1:
+}
+
+replace {
+        jb   %3,%1
+        sjmp %2
+%1:
+} by {
+        ; Peephole 165   removed sjmp by inverse jump logic
+        jnb  %3,%2
+%1:
+}
+
+replace {
+        mov  %1,%2
+        mov  %3,%1
+        mov  %2,%1
+} by {
+        ; Peephole 166   removed redundant mov
+        mov  %1,%2
+        mov  %3,%1 }
+
+replace {
+        mov  c,%1
+        cpl  c
+        mov  %1,c
+} by {
+        ; Peephole 167   removed redundant bit moves (c not set to %1)
+        cpl  %1 }
+
+replace {
+        jnb  %1,%2
+        sjmp %3
+%2:} by {
+        ; Peephole 168   jump optimization
+        jb   %1,%3
+%2:}
+
+replace {
+        jb   %1,%2
+        sjmp %3
+%2:} by {
+        ; Peephole 169   jump optimization
+        jnb  %1,%3
+%2:}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cpl  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 170   jump optimization
+        cjne %1,%2,%4
+%3:}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cpl  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 171   jump optimization
+        cjne %1,%2,%4
+        cjne %9,%10,%4
+%3:}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        cpl  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 172   jump optimization
+        cjne %1,%2,%4
+        cjne %9,%10,%4
+        cjne %11,%12,%4
+%3:}
+
+replace {
+        clr  a
+        cjne %1,%2,%3
+        cjne %9,%10,%3
+        cjne %11,%12,%3
+        cjne %13,%14,%3
+        cpl  a
+%3:
+        jz   %4
+} by {
+        ; Peephole 173   jump optimization
+        cjne %1,%2,%4
+        cjne %9,%10,%4
+        cjne %11,%12,%4
+        cjne %13,%14,%4
+%3:}
+
+replace {
+        mov  r%1,%2
+        clr  c
+        mov  a,r%1
+        subb a,#0x01
+        mov  %2,a
+} by {
+        ; Peephole 174   optimized decrement (acc not set to %2, flags undefined)
+        mov  r%1,%2
+        dec  %2
+}
+
+
+replace {
+        mov  r%1,%2
+        mov  a,r%1
+        add  a,#0x01
+        mov  %2,a
+} by {
+        ; Peephole 175   optimized increment (acc not set to %2, flags undefined)
+        mov  r%1,%2
+        inc  %2
+}
+
+replace {
+        mov  %1,@r%2
+        inc  %1
+        mov  @r%2,%1
+} by {
+        ; Peephole 176   optimized increment, removed redundant mov
+        inc  @r%2
+        mov  %1,@r%2
+}
+
+replace {
+        mov  %1,%2
+        mov  %2,%1
+} by {
+        ; Peephole 177   removed redundant mov
+        mov  %1,%2
+}
+
+replace {
+        mov  a,%1
+        mov  b,a
+        mov  a,%2
+} by {
+        ; Peephole 178   removed redundant mov
+        mov  b,%1
+        mov  a,%2
+}
+
+// rules 179-182 provided by : Frieder <fe@lake.iup.uni-heidelberg.de>
+// saving 2 byte, 1 cycle
+replace {
+        mov  b,#0x00
+        mov  a,#0x00
+} by {
+        ; Peephole 179   changed mov to clr
+        clr  a
+        mov  b,a
+}
+
+// saving 1 byte, 0 cycles
+replace {
+        mov  a,#0x00
+} by {
+        ; Peephole 180   changed mov to clr
+        clr  a
+}
+
+replace {
+        mov  dpl,#0x00
+        mov  dph,#0x00
+ 	mov  dpx,#0x00
+} by {
+        ; Peephole 181a   used 24 bit load of dptr
+        mov  dptr,#0x0000
+} if 24bitMode
+
+// saving 3 byte, 2 cycles, return(NULL) profits here
+replace {
+        mov  dpl,#0x00
+        mov  dph,#0x00
+} by {
+        ; Peephole 181   used 16 bit load of dptr
+        mov  dptr,#0x0000
+}
+
+// saves 2 bytes, ?? cycles.
+replace {
+        mov  dpl,#%1
+        mov  dph,#(%1 >> 8)
+	mov  dpx,#(%1 >> 16)
+} by {
+        ; Peephole 182a   used 24 bit load of dptr
+        mov  dptr,#%1
+} if 24bitMode
+
+// saving 3 byte, 2 cycles, return(float_constant) profits here
+replace {
+        mov  dpl,#%1
+        mov  dph,#%2
+} by {
+        ; Peephole 182   used 16 bit load of dptr
+        mov  dptr,#(((%2)<<8) + %1)
+}
+
+replace {
+        anl  %1,#%2
+        anl  %1,#%3
+} by {
+        ; Peephole 183   avoided anl during execution
+        anl  %1,#(%2 & %3)
+}
+
+replace {
+        mov  %1,a
+        cpl  a
+        mov  %1,a
+} by {
+        ; Peephole 184   removed redundant mov
+        cpl  a
+        mov  %1,a
+}
+
+replace {
+// acc being incremented might cause problems
+        mov  %1,a
+        inc  %1
+} by {
+        ; Peephole 185   changed order of increment (acc incremented also!)
+        inc  a
+        mov  %1,a
+}
+
+replace {
+        add  a,#%1
+        mov  dpl,a
+        clr  a
+        addc a,#(%1 >> 8)
+        mov  dph,a
+        clr  a
+        movc a,@a+dptr
+	mov  %2,a
+	inc  dptr
+	clr  a
+	movc a,@a+dptr
+	mov  %3,a
+	inc  dptr
+	clr  a
+	movc a,@a+dptr
+	mov  %4,a
+	inc  dptr
+	clr  a	
+} by {
+        ; Peephole 186.a   optimized movc sequence
+        mov  dptr,#%1
+	mov  b,acc
+        movc a,@a+dptr
+	mov  %2,a
+	mov  acc,b
+	inc  dptr	
+	movc a,@a+dptr
+	mov  %3,a
+	mov  acc,b
+	inc  dptr
+	mov  %4,a
+	mov  acc,b
+	inc  dptr
+}
+
+replace {
+        add  a,#%1
+        mov  dpl,a
+        clr  a
+        addc a,#(%1 >> 8)
+        mov  dph,a
+        clr  a
+        movc a,@a+dptr
+	mov  %2,a
+	inc  dptr
+	clr  a
+	movc a,@a+dptr
+	mov  %3,a
+	inc  dptr
+	clr  a
+} by {
+        ; Peephole 186.b   optimized movc sequence
+        mov  dptr,#%1
+	mov  b,acc
+        movc a,@a+dptr
+	mov  %2,a
+	mov  acc,b
+	inc  dptr	
+	movc a,@a+dptr
+	mov  %3,a
+	mov  acc,b
+	inc  dptr	
+}
+
+replace {
+        add  a,#%1
+        mov  dpl,a
+        clr  a
+        addc a,#(%1 >> 8)
+        mov  dph,a
+        clr  a
+        movc a,@a+dptr
+	mov  %2,a
+	inc  dptr
+	clr  a
+} by {
+        ; Peephole 186.c   optimized movc sequence
+        mov  dptr,#%1
+	mov  b,acc
+        movc a,@a+dptr
+	mov  %2,a
+	mov  acc,b
+	inc  dptr
+}
+
+replace {
+        add  a,#%1
+        mov  dpl,a
+        clr  a
+        addc a,#(%1 >> 8)
+        mov  dph,a
+        clr  a
+        movc a,@a+dptr
+} by {
+        ; Peephole 186   optimized movc sequence
+        mov  dptr,#%1
+        movc a,@a+dptr
+}
+
+replace {
+        mov  r%1,%2
+        anl  ar%1,#%3
+        mov  a,r%1
+} by {
+        ; Peephole 187   used a instead of ar%1 for anl
+        mov  a,%2
+        anl  a,#%3
+        mov  r%1,a
+}
+
+replace {
+        mov  %1,a
+        mov  dptr,%2
+        movc a,@a+dptr
+        mov  %1,a
+} by {
+        ; Peephole 188   removed redundant mov
+        mov  dptr,%2
+        movc a,@a+dptr
+        mov  %1,a
+}
+
+replace {
+        anl  a,#0x0f
+        mov  %1,a
+        mov  a,#0x0f
+        anl  a,%1
+} by {
+        ; Peephole 189   removed redundant mov and anl
+        anl  a,#0x0f
+        mov  %1,a
+}
+
+// rules 190 & 191 need to be in order
+replace {
+        mov  a,%1
+        lcall __gptrput
+        mov  a,%1
+} by {
+        ; Peephole 190   removed redundant mov
+        mov  a,%1
+        lcall __gptrput
+}
+
+replace {
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+        mov  b,%4
+        mov  a,%1
+} by {
+        ; Peephole 191   removed redundant mov
+        mov  %1,a
+        mov  dpl,%2
+        mov  dph,%3
+        mov  b,%4
+}
+
+replace {
+        mov  r%1,a
+        mov  @r%2,ar%1
+} by {
+        ; Peephole 192   used a instead of ar%1 as source
+        mov  r%1,a
+        mov  @r%2,a
+}
+
+replace {
+        jnz  %3
+        mov  a,%4
+        jnz  %3
+        mov  a,%9
+        jnz  %3
+        mov  a,%12
+        cjne %13,%14,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 193.a optimized misc jump sequence
+        jnz  %8
+        mov  a,%4
+        jnz  %8
+        mov  a,%9
+        jnz  %8
+        mov  a,%12
+        cjne %13,%14,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        mov  a,%4
+        cjne %5,%6,%3
+        mov  a,%9
+        cjne %10,%11,%3
+        mov  a,%12
+        cjne %13,%14,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 193   optimized misc jump sequence
+        cjne %1,%2,%8
+        mov  a,%4
+        cjne %5,%6,%8
+        mov  a,%9
+        cjne %10,%11,%8
+        mov  a,%12
+        cjne %13,%14,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        cjne %5,%6,%3
+        cjne %10,%11,%3
+        cjne %13,%14,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 194   optimized misc jump sequence
+        cjne %1,%2,%8
+        cjne %5,%6,%8
+        cjne %10,%11,%8
+        cjne %13,%14,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        jnz  %3
+        mov  a,%4
+        jnz  %3
+        mov  a,%9
+        cjne %10,%11,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 195.a optimized misc jump sequence
+        jnz  %8
+        mov  a,%4
+        jnz  %8
+        mov  a,%9
+        cjne %10,%11,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        mov  a,%4
+        cjne %5,%6,%3
+        mov  a,%9
+        cjne %10,%11,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 195   optimized misc jump sequence
+        cjne %1,%2,%8
+        mov  a,%4
+        cjne %5,%6,%8
+        mov  a,%9
+        cjne %10,%11,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        cjne %5,%6,%3
+        cjne %10,%11,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 196   optimized misc jump sequence
+        cjne %1,%2,%8
+        cjne %5,%6,%8
+        cjne %10,%11,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        jnz  %3
+        mov  a,%4
+        cjne %5,%6,%3
+        sjmp %7
+%3:
+        sjmp %8 
+} by {
+        ; Peephole 197.a optimized misc jump sequence
+        jnz  %8
+        mov  a,%4
+        cjne %5,%6,%8
+        sjmp %7
+%3:     
+}
+
+replace {
+        cjne %1,%2,%3
+        mov  a,%4
+        cjne %5,%6,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 197   optimized misc jump sequence
+        cjne %1,%2,%8
+        mov  a,%4
+        cjne %5,%6,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        cjne %5,%6,%3
+        sjmp %7
+%3:
+        sjmp %8
+} by {
+        ; Peephole 198   optimized misc jump sequence
+        cjne %1,%2,%8
+        cjne %5,%6,%8
+        sjmp %7
+%3:
+}
+
+replace {
+        cjne %1,%2,%3
+        sjmp %4
+%3:
+        sjmp %5
+} by {
+        ; Peephole 199   optimized misc jump sequence
+        cjne %1,%2,%5
+        sjmp %4
+%3:
+}
+
+replace {
+        sjmp %1
+%1:
+} by {
+        ; Peephole 200   removed redundant sjmp
+%1:
+}
+
+replace {
+        sjmp %1
+%2:
+%1:
+} by {
+        ; Peephole 201   removed redundant sjmp
+%2:
+%1:
+}
+
+replace {
+        push  acc
+        mov   dptr,%1
+        pop   acc
+} by {
+        ; Peephole 202   removed redundant push pop
+        mov   dptr,%1
+}
+
+replace {
+        mov  r%1,_spx
+        lcall %2
+        mov  r%1,_spx
+} by {
+        ; Peephole 203   removed mov  r%1,_spx
+        lcall %2
+}
+
+replace {
+        mov  %1,a
+        add  a,acc
+        mov  %1,a
+} by {
+        ; Peephole 204   removed redundant mov
+        add  a,acc
+        mov  %1,a
+}
+
+replace {
+        djnz %1,%2
+        sjmp  %3
+%2:
+        sjmp  %4
+%3:
+} by {
+        ; Peephole 205   optimized misc jump sequence
+        djnz %1,%4
+%2:
+%3:
+}
+
+replace {
+        mov  %1,%1
+} by {
+        ; Peephole 206   removed redundant mov %1,%1
+}
+
+replace {
+        mov  a,_bp
+        add  a,#0x00
+        mov  %1,a
+} by {
+        ; Peephole 207   removed zero add (acc not set to %1, flags undefined)
+        mov  %1,_bp
+}
+
+replace {
+        push  acc
+        mov   r%1,_bp
+        pop   acc
+} by {
+        ; Peephole 208   removed redundant push pop
+        mov   r%1,_bp
+}
+
+replace {
+        mov  a,_bp
+        add  a,#0x00
+        inc  a
+        mov  %1,a
+} by {
+        ; Peephole 209   optimized increment (acc not set to %1, flags undefined)
+        mov  %1,_bp
+        inc  %1
+}
+
+replace {
+        mov  dptr,#((((%1 >> 16)) <<16) + (((%1 >> 8)) <<8) + %1)
+} by {
+        ; Peephole 210a   simplified expression
+        mov  dptr,#%1
+} if 24bitMode
+
+replace {
+        mov  dptr,#((((%1 >> 8)) <<8) + %1)
+} by {
+        ; Peephole 210   simplified expression
+        mov  dptr,#%1
+}
+
+replace {
+        push %1
+        pop  %1
+} by {
+        ; Peephole 211   removed redundant push %1 pop %1  
+} 
+
+replace {
+	mov  a,_bp
+	add  a,#0x01
+	mov  r%1,a
+} by {
+	; Peephole 212  reduced add sequence to inc
+	mov  r%1,_bp
+	inc  r%1
+}
+
+replace {
+	mov  %1,#(( %2 >> 8 ) ^ 0x80)
+} by {	
+	mov  %1,#(%2 >> 8)
+	xrl  %1,#0x80
+}
+
+replace {
+	mov  %1,#(( %2 + %3 >> 8 ) ^ 0x80)
+} by {	
+	mov  %1,#((%2 + %3) >> 8)
+	xrl  %1,#0x80
+}
+
+replace  {
+	mov  %1,a
+	mov  a,%2
+	add  a,%1
+} by {
+	; Peephole 214 reduced some extra movs
+	mov  %1,a
+	add  a,%2	
+} if operandsNotSame
+
+replace {
+	mov  %1,a
+	add  a,%2
+	mov  %1,a
+} by {
+	; Peephole 215 removed some movs
+	add  a,%2
+	mov  %1,a
+} if operandsNotSame
+
+replace {
+	mov   r%1,%2
+	clr   a
+	inc   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+} by {
+	; Peephole 216 simplified clear (2bytes)
+	mov   r%1,%2
+	clr   a
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+}
+
+replace {
+	mov   r%1,%2
+	clr   a
+	inc   r%1
+	inc   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+} by {
+	; Peephole 217 simplified clear (3bytes)
+	mov   r%1,%2
+	clr   a
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+}
+
+replace {
+	mov   r%1,%2
+	clr   a
+	inc   r%1
+	inc   r%1
+	inc   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+	dec   r%1
+	mov   @r%1,a
+} by {
+	; Peephole 218 simplified clear (4bytes)
+	mov   r%1,%2
+	clr   a
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+	inc   r%1
+	mov   @r%1,a
+}
+
+replace {
+	clr   a
+	movx  @dptr,a
+	mov   dptr,%1
+	clr   a
+	movx  @dptr,a
+} by {
+	; Peephole 219 removed redundant clear
+	clr   a
+	movx  @dptr,a
+	mov   dptr,%1
+	movx  @dptr,a
+}
+
+replace {
+	clr   a
+	movx  @dptr,a
+	mov   dptr,%1
+	movx  @dptr,a
+	mov   dptr,%2
+	clr   a
+	movx  @dptr,a
+} by {
+	; Peephole 219a removed redundant clear
+	clr   a
+	movx  @dptr,a
+	mov   dptr,%1
+	movx  @dptr,a
+	mov   dptr,%2
+	movx  @dptr,a
+}

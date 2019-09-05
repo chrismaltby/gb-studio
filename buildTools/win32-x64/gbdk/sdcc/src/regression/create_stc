@@ -1,0 +1,16 @@
+# Create gpsim script file
+# 
+
+USAGE="Usage: `basename $0` COD_FILE GPSIM_SCRIPT"
+
+if [ $# -lt 2 ] ; then
+  echo "$USAGE"
+  exit 1
+fi
+
+
+echo "load s $1" > $2
+echo "break e _done" >> $2
+echo "run" >> $2
+echo "x _success" >> $2
+echo "abort_gpsim_now" >> $2

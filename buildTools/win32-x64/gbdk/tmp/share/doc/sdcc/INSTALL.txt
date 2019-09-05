@@ -1,0 +1,40 @@
+SDCC Binary Kit Install Help
+----------------------------
+$Id: INSTALL.txt,v 1.2 2001/07/26 01:16:49 michaelh Exp $
+
+For Linux users:
+sdcc is designed to install into /usr/local, and currently needs to be
+recompiled to install into any other location.  To install:
+
+* Extract the binary kit to a temporary directory.  This will create a
+new directory called 'sdcc' in the temporary directory.
+    cd ~
+    mkdir tmp
+    cd tmp
+    tar xzf path/to/binary/kit/sdcc.tar.gz
+
+* Change to the sdcc directory and copy all files to /usr/local
+    cd sdcc
+    cp -r * /usr/local
+
+This will install sdcc into /usr/local/bin/sdcc, support files into
+/usr/local/share/sdcc, and documentation into
+/usr/local/share/doc/sdcc.
+
+You can test the install by entering:
+    /usr/local/bin/sdcc -v
+
+This should return sdcc's version number.
+ 
+
+For Windows 9X/NT/2000 users:
+sdcc is designed to install into c:\sdcc and currently needs to be
+recompiled to install into any other location.  To install:
+
+* Open sdcc-2.3.0-i586-mingw32-msvc.zip in WinZip
+* Extract all files to c:\, making sure to check 'Use folder names'
+
+You can test the install by opening a DOS box and entering:
+    c:\sdcc\bin\sdcc -v
+
+This should return sdcc's version number.

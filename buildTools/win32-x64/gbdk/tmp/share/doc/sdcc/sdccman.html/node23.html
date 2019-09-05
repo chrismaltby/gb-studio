@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.4 Pointers</TITLE>
+<META NAME="description" CONTENT="3.4 Pointers">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node24.html">
+<LINK REL="previous" HREF="node22.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node24.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html598"
+ HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html592"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html586"
+ HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html594"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html596"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html599"
+ HREF="node24.html">3.5 Parameters &amp; Local</A>
+<B> Up:</B> <A NAME="tex2html593"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html587"
+ HREF="node22.html">3.3 MCS51/DS390 Storage Class</A>
+ &nbsp <B>  <A NAME="tex2html595"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html597"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00044000000000000000">
+3.4 Pointers</A>
+</H2>
+
+<P>
+SDCC allows (via language extensions) pointers to explicitly point
+to any of the memory spaces of the 8051. In addition to the explicit
+pointers, the compiler also allows a <I>_generic</I> class of pointers
+which can be used to point to any of the memory spaces.
+<BR>
+
+<BR>
+Pointer declaration examples:
+<BR>
+
+<BR>
+<TT>/* pointer physically in xternal ram pointing to object
+in internal ram */ </TT>&nbsp;
+<BR>
+<TT>data unsigned char * xdata p;</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>/* pointer physically in code rom pointing to data in xdata
+space */ </TT>&nbsp;
+<BR>
+<TT>xdata unsigned char * code p;</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>/* pointer physically in code space pointing to data in
+code space */ </TT>&nbsp;
+<BR>
+<TT>code unsigned char * code p;</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>/* the folowing is a generic pointer physically located
+in xdata space */</TT>&nbsp;
+<BR>
+<TT>char * xdata p;</TT>
+<BR>
+
+<BR>
+Well you get the idea. 
+<BR>
+
+<BR>
+<I>For compatibility with the previous version of the compiler,
+the following syntax for pointer declaration is still supported but
+will disappear int the near future. </I>
+<BR>
+<BR>
+<TT><I>unsigned char _xdata *ucxdp; /* pointer to data
+in external ram */ </I></TT>&nbsp;
+<BR>
+<TT><I>unsigned char _data &nbsp;*ucdp ; /* pointer to data
+in internal ram */ </I></TT>&nbsp;
+<BR>
+<TT><I>unsigned char _code &nbsp;*uccp ; /* pointer to data
+in R/O code space */</I></TT>&nbsp;
+<BR>
+<TT><I>unsigned char _idata *uccp; &nbsp;/* pointer to upper
+128 bytes of ram */</I></TT>
+<BR>
+
+<BR>
+All unqualified pointers are treated as 3-byte (4-byte for the ds390)
+<I>generic</I> pointers. These type of pointers can also to be explicitly
+declared.
+<BR>
+
+<BR>
+<TT>unsigned char _generic *ucgp;</TT>
+<BR>
+
+<BR>
+The highest order byte of the <I>generic</I> pointers contains the
+data space information. Assembler support routines are called whenever
+data is stored or retrieved using <I>generic</I> pointers. These are
+useful for developing reusable library routines. Explicitly specifying
+the pointer type will generate the most efficient code. Pointers declared
+using a mixture of OLD and NEW style could have unpredictable results.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html598"
+ HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html592"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html586"
+ HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html594"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html596"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html599"
+ HREF="node24.html">3.5 Parameters &amp; Local</A>
+<B> Up:</B> <A NAME="tex2html593"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html587"
+ HREF="node22.html">3.3 MCS51/DS390 Storage Class</A>
+ &nbsp <B>  <A NAME="tex2html595"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html597"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

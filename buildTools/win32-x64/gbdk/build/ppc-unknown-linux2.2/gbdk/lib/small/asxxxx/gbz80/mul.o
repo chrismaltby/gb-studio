@@ -1,0 +1,23 @@
+XL
+H 1 areas 8 global symbols
+A _CODE size 48 flags 0
+S __mulsint_rrx_s Def0020
+S __muluint_rrx_s Def0020
+S __mulsint_rrx_hds Def002C
+S __muluint_rrx_hds Def002C
+S __mulschar_rrx_s Def0000
+S __muluchar_rrx_s Def0013
+S __mulschar_rrx_hds Def0007
+S __muluchar_rrx_hds Def002C
+T 00 00 21 02 00 39 5E 23 6E 4D 7D 17 9F 47 7B 17
+R 00 00 00 00
+T 0E 00 9F 57 C3 2E 00 21 02 00 39 5E 23 4E AF 57
+R 00 00 00 00 00 05 00 00
+T 1C 00 47 C3 2E 00 21 02 00 39 5E 23 56 23 7E 23
+R 00 00 00 00 00 04 00 00
+T 2A 00 66 6F 44 4D 21 00 00 78 06 10 B7 C2 3B 00
+R 00 00 00 00 00 0E 00 00
+T 38 00 06 08 79 29 CB 11 17 30 01 19 05 20 F6 5D
+R 00 00 00 00
+T 46 00 54 C9
+R 00 00 00 00

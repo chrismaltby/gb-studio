@@ -1,0 +1,108 @@
+maccer - macro preprocessor for the ASxxxx series of assemblers
+-----------------------------------------------------------------
+         especially for asz80 used in the GBDK
+
+Copyright Michael Hope 1998.
+
+At the moment this code is distributed under the GPL until something
+better comes along:
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+Use doc++ to extract the comments from maccer.c
+
+Roadmap
+-------
+README 		- this file
+test-1.S 	- Demonstration of the current capabilities of maccer
+maccer.c	- Source code to maccer
+Makefile	- The makefile for the project
+ChangeLog	- list of changes between versions
+
+maccer is a very simple two pass macro preprocessor that currently 
+allows you to define macros and nest them.  Two pass means that the
+macros may appear at any place in the file, and nesting means that
+you can call macros from within macros.  It also allows you to
+include the contents of binary files into the output - great for
+raw data.
+
+Useage
+------
+Simple enough :)
+	'maccer' to read from stdin and write to stdout
+	'maccer -o <output file> <input file>' to read from input file, and
+	to write to output file
+	Then pass the generated code through asz80.
+
+	The format of the data outputted by the DF, INCBIN, and INCIHX
+	directives can be set by adding '-ttype', where type is the output
+	style type.  The current styles are:
+		asgb	- original and default.  
+			  Hex numbers: 0x5A.  
+			  Data blocks: .db
+		jas	- SGCC assembler
+			  Hex numbers: $5A.  
+			  Data blocks: dc.b
+
+Commands
+--------
+	Note: Strings can use "" or ''
+	DF	-1.234	
+		- insert a fp number in the GBDK format
+	INCLUDE "filename"
+		- include file filename in
+		- accidently allows include nesting
+abc123	MACRO	arg1,arg2
+	ld	arg1,#arg2
+	ENDM
+		- define macro abc123 with arguments arg1,arg2
+		- "	abc hl,5 will gen ld hl,#5"
+		- nested macros are possible
+		- Macro names can only contain 'A-Z', 'a-z', '0-9', and '_'
+		- You can try others but I wont guarntee that they'll always
+		  work
+	INCBIN	"filename"
+		- include binary file filename
+		- turns it into an array of .db x,y,z...
+	INCIHX	"filename"
+		- includes a Intel .ihx file as binary
+		- DOES NOT translate addresses or use the checksum
+Disclaimer
+----------
+This program has not been stress tested.  Any bug reports preferably
+with fixes will be greatly appreciated.
+
+Plans for the future
+--------------------
+* Add a 'REPEAT' block eg
+
+	REPEAT	5
+	ld	a,(hl)
+	ld	(de),a
+	inc	de
+	inc	hl
+	END
+
+would expand into a piece of code that copies 5 bytes.
+
+* Think of a decent name for it :)
+
+-- Michael Hope
+	michaelh@earthling.net
+	www.pcmedia.co.nz/~michaelh/
+
+	1/20 Dublin Street
+	Christchurch
+	New Zealand

@@ -1,0 +1,59 @@
+CC=gcc
+LEX=flex
+YACC=bison
+INCROOT=.
+CFLAGS=-ggdb -O2 -I $(INCROOT)
+TARGETS=$(SDCCDIR)/bin/asx8051
+ALLOBJECTS= asmain.o aslex.o assym.o assubr.o asnoice.o \
+            asexpr.o asdata.o aslist.o asout.o asstore.o \
+            i51ext.o i51pst.o i51mch.o i51adr.o    
+
+all:: $(TARGETS)
+
+clean::
+	rm -f $(TARGETS) $(ALLOBJECTS)
+
+asmain.o  : asmain.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asmain.o asmain.c
+
+aslex.o   : aslex.c  asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o aslex.o aslex.c
+
+assym.o   : assym.c  asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o assym.o assym.c
+
+assubr.o  : assubr.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o assubr.o assubr.c
+
+asexpr.o  : asexpr.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asexpr.o asexpr.c
+
+asdata.o  : asdata.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asdata.o asdata.c
+
+aslist.o  : aslist.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o aslist.o aslist.c
+
+asout.o   : asout.c  asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asout.o asout.c
+
+asnoice.o : asnoice.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asnoice.o asnoice.c
+
+asstore.o : asstore.c asm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o asstore.o asstore.c
+
+i51ext.o  : i51ext.c asm.h i8051.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o i51ext.o i51ext.c
+
+i51pst.o  : i51pst.c asm.h i8051.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o i51pst.o i51pst.c
+
+i51mch.o  : i51mch.c asm.h i8051.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o i51mch.o i51mch.c
+
+i51adr.o  : i51adr.c asm.h i8051.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o i51adr.o i51adr.c
+
+$(TARGETS): $(ALLOBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALLOBJECTS) 

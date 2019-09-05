@@ -1,0 +1,903 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>4.1 Optimizations</TITLE>
+<META NAME="description" CONTENT="4.1 Optimizations">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node40.html">
+<LINK REL="previous" HREF="node38.html">
+<LINK REL="up" HREF="node38.html">
+<LINK REL="next" HREF="node40.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html841"
+ HREF="node40.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html835"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html829"
+ HREF="node38.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html837"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html839"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html842"
+ HREF="node40.html">4.2 Pragmas</A>
+<B> Up:</B> <A NAME="tex2html836"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html830"
+ HREF="node38.html">4. SDCC Technical Data</A>
+ &nbsp <B>  <A NAME="tex2html838"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html840"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html843"
+ HREF="node39.html#SECTION00051100000000000000">4.1.1 Sub-expression Elimination</A>
+<LI><A NAME="tex2html844"
+ HREF="node39.html#SECTION00051200000000000000">4.1.2 Dead-Code Elimination</A>
+<LI><A NAME="tex2html845"
+ HREF="node39.html#SECTION00051300000000000000">4.1.3 Copy-Propagation</A>
+<LI><A NAME="tex2html846"
+ HREF="node39.html#SECTION00051400000000000000">4.1.4 Loop Optimizations</A>
+<LI><A NAME="tex2html847"
+ HREF="node39.html#SECTION00051500000000000000">4.1.5 Loop Reversing</A>
+<LI><A NAME="tex2html848"
+ HREF="node39.html#SECTION00051600000000000000">4.1.6 Algebraic Simplifications</A>
+<LI><A NAME="tex2html849"
+ HREF="node39.html#SECTION00051700000000000000">4.1.7 'switch' Statements</A>
+<LI><A NAME="tex2html850"
+ HREF="node39.html#SECTION00051800000000000000">4.1.8 Bit-shifting Operations.</A>
+<LI><A NAME="tex2html851"
+ HREF="node39.html#SECTION00051900000000000000">4.1.9 Bit-rotation</A>
+<LI><A NAME="tex2html852"
+ HREF="node39.html#SECTION000511000000000000000">4.1.10 Highest Order Bit</A>
+<LI><A NAME="tex2html853"
+ HREF="node39.html#SECTION000511100000000000000">4.1.11 Peep-hole Optimizer</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00051000000000000000">
+4.1 Optimizations</A>
+</H2>
+
+<P>
+SDCC performs a host of standard optimizations in addition to some
+MCU specific optimizations. 
+
+<P>
+
+<H3><A NAME="SECTION00051100000000000000">
+4.1.1 Sub-expression Elimination</A>
+</H3>
+
+<P>
+The compiler does local and global common subexpression elimination,
+e.g.: 
+<BR>
+
+<BR>
+<TT>i = x + y + 1; </TT>&nbsp;
+<BR>
+<TT>j = x + y;</TT>
+<BR>
+
+<BR>
+will be translated to
+<BR>
+
+<BR>
+<TT>iTemp = x + y </TT>&nbsp;
+<BR>
+<TT>i = iTemp + 1 </TT>&nbsp;
+<BR>
+<TT>j = iTemp</TT>&nbsp;
+<BR>
+
+<BR>
+Some subexpressions are not as obvious as the above example, e.g.:
+<BR>
+
+<BR>
+<TT>a-&gt;b[i].c = 10; </TT>&nbsp;
+<BR>
+<TT>a-&gt;b[i].d = 11;</TT>
+<BR>
+
+<BR>
+In this case the address arithmetic a-&gt;b[i] will be computed only
+once; the equivalent code in C would be.
+<BR>
+
+<BR>
+<TT>iTemp = a-&gt;b[i]; </TT>&nbsp;
+<BR>
+<TT>iTemp.c = 10; </TT>&nbsp;
+<BR>
+<TT>iTemp.d = 11;</TT>
+<BR>
+
+<BR>
+The compiler will try to keep these temporary variables in registers.
+
+<P>
+
+<H3><A NAME="SECTION00051200000000000000">
+4.1.2 Dead-Code Elimination</A>
+</H3>
+
+<P>
+ 
+<TT>int global; </TT>&nbsp;
+<BR>
+<TT>void f () { </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;int i; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;i = 1; &nbsp;/* dead store */ </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;global = 1;&nbsp;/* dead store */ </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;global = 2; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;return; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;global = 3;&nbsp;/* unreachable */ </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+will be changed to
+<BR>
+
+<BR>
+<TT>int global; void f () </TT>&nbsp;
+<BR>
+<TT>{</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;global = 2; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;return; </TT>&nbsp;
+<BR>
+<TT>}</TT>
+
+<P>
+
+<H3><A NAME="SECTION00051300000000000000">
+4.1.3 Copy-Propagation</A>
+</H3>
+
+<P>
+ 
+<TT>int f() { </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;int i, j; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;i = 10; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;j = i; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;return j; </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+will be changed to 
+<BR>
+
+<BR>
+<TT>int f() { </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; int i,j; </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; i = 10; </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; j = 10; </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; return 10; </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+Note: the dead stores created by this copy propagation will be eliminated
+by dead-code elimination.
+
+<P>
+
+<H3><A NAME="SECTION00051400000000000000">
+4.1.4 Loop Optimizations</A>
+</H3>
+
+<P>
+Two types of loop optimizations are done by SDCC loop invariant lifting
+and strength reduction of loop induction variables. In addition to
+the strength reduction the optimizer marks the induction variables
+and the register allocator tries to keep the induction variables in
+registers for the duration of the loop. Because of this preference
+of the register allocator, loop induction optimization causes an increase
+in register pressure, which may cause unwanted spilling of other temporary
+variables into the stack / data space. The compiler will generate
+a warning message when it is forced to allocate extra space either
+on the stack or data space. If this extra space allocation is undesirable
+then induction optimization can be eliminated either for the entire
+source file (with -noinduction option) or for a given function only
+using #pragma&nbsp;NOINDUCTION.
+<BR>
+
+<BR>
+Loop Invariant:
+<BR>
+
+<BR>
+<TT>for (i = 0 ; i &lt; 100 ; i ++) </TT>&nbsp;
+<BR>
+ <TT>&nbsp; &nbsp;f += k + l;</TT>
+<BR>
+
+<BR>
+changed to
+<BR>
+
+<BR>
+<TT>itemp = k + l; </TT>&nbsp;
+<BR>
+<TT>for (i = 0; i &lt; 100; i++) </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;f += itemp;</TT>
+<BR>
+
+<BR>
+As mentioned previously some loop invariants are not as apparent,
+all static address computations are also moved out of the loop.
+<BR>
+
+<BR>
+Strength Reduction, this optimization substitutes an expression by
+a cheaper expression:
+<BR>
+
+<BR>
+<TT>for (i=0;i &lt; 100; i++)</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;ar[i*5] = i*3;</TT>
+<BR>
+
+<BR>
+changed to
+<BR>
+
+<BR>
+<TT>itemp1 = 0; </TT>&nbsp;
+<BR>
+<TT>itemp2 = 0; </TT>&nbsp;
+<BR>
+<TT>for (i=0;i&lt; 100;i++) { </TT>&nbsp;
+<BR>
+ <TT>&nbsp; &nbsp;ar[itemp1] = itemp2; </TT>&nbsp;
+<BR>
+ <TT>&nbsp; &nbsp;itemp1 += 5; </TT>&nbsp;
+<BR>
+ <TT>&nbsp; &nbsp;itemp2 += 3; </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+The more expensive multiplication is changed to a less expensive addition.
+
+<P>
+
+<H3><A NAME="SECTION00051500000000000000">
+4.1.5 Loop Reversing</A>
+</H3>
+
+<P>
+This optimization is done to reduce the overhead of checking loop
+boundaries for every iteration. Some simple loops can be reversed
+and implemented using a ``decrement and jump if not zero'' instruction.
+SDCC checks for the following criterion to determine if a loop is
+reversible (note: more sophisticated compilers use data-dependency
+analysis to make this determination, SDCC uses a more simple minded
+analysis).
+
+<P>
+
+<UL>
+<LI>The 'for' loop is of the form 
+<BR>
+
+<BR>
+<TT>for (&lt;symbol&gt; = &lt;expression&gt; ; &lt;sym&gt; [&lt; | &lt;=] &lt;expression&gt;
+; [&lt;sym&gt;++ | &lt;sym&gt; += 1])</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&lt;for body&gt;</TT></LI>
+<LI>The &lt;for body&gt; does not contain ``continue'' or 'break''.</LI>
+<LI>All goto's are contained within the loop.</LI>
+<LI>No function calls within the loop.</LI>
+<LI>The loop control variable &lt;sym&gt; is not assigned any value within the
+loop</LI>
+<LI>The loop control variable does NOT participate in any arithmetic operation
+within the loop.</LI>
+<LI>There are NO switch statements in the loop.</LI>
+</UL>
+Note djnz instruction can be used for 8-bit values <I>only</I>, therefore
+it is advantageous to declare loop control symbols as <I>char</I>.
+Ofcourse this may not be possible on all situations.
+
+<P>
+
+<H3><A NAME="SECTION00051600000000000000">
+4.1.6 Algebraic Simplifications</A>
+</H3>
+
+<P>
+SDCC does numerous algebraic simplifications, the following is a small
+sub-set of these optimizations.
+<BR>
+
+<BR>
+<TT>i = j + 0 ; /* changed to */ i = j; </TT>&nbsp;
+<BR>
+<TT>i /= 2; /* changed to */ i &gt;&gt;= 1; </TT>&nbsp;
+<BR>
+<TT>i = j - j ; /* changed to */ i = 0; </TT>&nbsp;
+<BR>
+<TT>i = j / 1 ; /* changed to */ i = j;</TT>
+<BR>
+
+<BR>
+Note the subexpressions given above are generally introduced by macro
+expansions or as a result of copy/constant propagation.
+
+<P>
+
+<H3><A NAME="SECTION00051700000000000000">
+4.1.7 'switch' Statements</A>
+</H3>
+
+<P>
+SDCC changes switch statements to jump tables when the following conditions
+are true. 
+
+<P>
+
+<UL>
+<LI>The case labels are in numerical sequence, the labels need not be
+in order, and the starting number need not be one or zero.
+<BR>
+
+<BR>
+<TT>switch(i) {&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;switch (i)
+{ </TT>&nbsp;
+<BR>
+<TT>case 4:... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 1: ... </TT>&nbsp;
+<BR>
+<TT>case 5:... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 2: ... </TT>&nbsp;
+<BR>
+<TT>case 3:... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 3: ... </TT>&nbsp;
+<BR>
+<TT>case 6:... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;case 4: ... </TT>&nbsp;
+<BR>
+<TT>}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+Both the above switch statements will be implemented using a jump-table.</LI>
+<LI>The number of case labels is at least three, since it takes two conditional
+statements to handle the boundary conditions.</LI>
+<LI>The number of case labels is less than 84, since each label takes
+3 bytes and a jump-table can be utmost 256 bytes long. </LI>
+</UL>
+Switch statements which have gaps in the numeric sequence or those
+that have more that 84 case labels can be split into more than one
+switch statement for efficient code generation, e.g.:
+<BR>
+
+<BR>
+<TT>switch (i) { </TT>&nbsp;
+<BR>
+<TT>case 1: ... </TT>&nbsp;
+<BR>
+<TT>case 2: ... </TT>&nbsp;
+<BR>
+<TT>case 3: ... </TT>&nbsp;
+<BR>
+<TT>case 4: ... </TT>&nbsp;
+<BR>
+<TT>case 9: ... </TT>&nbsp;
+<BR>
+<TT>case 10: ... </TT>&nbsp;
+<BR>
+<TT>case 11: ... </TT>&nbsp;
+<BR>
+<TT>case 12: ... </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+If the above switch statement is broken down into two switch statements
+<BR>
+
+<BR>
+<TT>switch (i) { </TT>&nbsp;
+<BR>
+<TT>case 1: ... </TT>&nbsp;
+<BR>
+<TT>case 2: ... </TT>&nbsp;
+<BR>
+<TT>case 3: ... </TT>&nbsp;
+<BR>
+<TT>case 4: ... </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+and&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>switch (i) { </TT>&nbsp;
+<BR>
+<TT>case 9: &nbsp;... </TT>&nbsp;
+<BR>
+<TT>case 10: ... </TT>&nbsp;
+<BR>
+<TT>case 11: ... </TT>&nbsp;
+<BR>
+<TT>case 12:&nbsp;... </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+then both the switch statements will be implemented using jump-tables
+whereas the unmodified switch statement will not be.
+
+<P>
+
+<H3><A NAME="SECTION00051800000000000000">
+4.1.8 Bit-shifting Operations.</A>
+</H3>
+
+<P>
+Bit shifting is one of the most frequently used operation in embedded
+programming. SDCC tries to implement bit-shift operations in the most
+efficient way possible, e.g.:
+<BR>&nbsp;
+<BR>
+<TT>unsigned char i;</TT>&nbsp;
+<BR>
+<TT>... </TT>&nbsp;
+<BR>
+<TT>i&gt;&gt;= 4; </TT>&nbsp;
+<BR>
+<TT>...</TT>&nbsp;
+<BR>
+
+<BR>
+generates the following code:
+<BR>&nbsp;
+<BR>
+<TT>mov a,_i </TT>&nbsp;
+<BR>
+<TT>swap a </TT>&nbsp;
+<BR>
+<TT>anl a,#0x0f </TT>&nbsp;
+<BR>
+<TT>mov _i,a</TT>
+<BR>
+
+<BR>
+In general SDCC will never setup a loop if the shift count is known.
+Another example:
+<BR>
+
+<BR>
+<TT>unsigned int i; </TT>&nbsp;
+<BR>
+<TT>... </TT>&nbsp;
+<BR>
+<TT>i &gt;&gt;= 9; </TT>&nbsp;
+<BR>
+<TT>...</TT>
+<BR>
+
+<BR>
+will generate:
+<BR>
+
+<BR>
+<TT>mov a,(_i + 1) </TT>&nbsp;
+<BR>
+<TT>mov (_i + 1),#0x00 </TT>&nbsp;
+<BR>
+<TT>clr c </TT>&nbsp;
+<BR>
+<TT>rrc a </TT>&nbsp;
+<BR>
+<TT>mov _i,a</TT>
+<BR>
+
+<BR>
+Note that SDCC stores numbers in little-endian format (i.e. lowest
+order first).
+
+<P>
+
+<H3><A NAME="SECTION00051900000000000000">
+4.1.9 Bit-rotation</A>
+</H3>
+
+<P>
+A special case of the bit-shift operation is bit rotation, SDCC recognizes
+the following expression to be a left bit-rotation:
+<BR>
+
+<BR>
+<TT>unsigned char i; </TT>&nbsp;
+<BR>
+<TT>... </TT>&nbsp;
+<BR>
+<TT>i = ((i &lt;&lt; 1) | (i &gt;&gt;
+7));</TT> 
+<BR>
+...
+<BR>
+
+<BR>
+will generate the following code:
+<BR>
+
+<BR>
+<TT>mov a,_i </TT>&nbsp;
+<BR>
+<TT>rl a </TT>&nbsp;
+<BR>
+<TT>mov _i,a</TT>
+<BR>
+
+<BR>
+SDCC uses pattern matching on the parse tree to determine this operation.Variations
+of this case will also be recognized as bit-rotation, i.e.: 
+<BR>
+
+<BR>
+<TT>i = ((i &gt;&gt; 7) | (i &lt;&lt;
+1)); /* left-bit rotation */</TT>
+
+<P>
+
+<H3><A NAME="SECTION000511000000000000000">
+4.1.10 Highest Order Bit</A>
+</H3>
+
+<P>
+It is frequently required to obtain the highest order bit of an integral
+type (long, int, short or char types). SDCC recognizes the following
+expression to yield the highest order bit and generates optimized
+code for it, e.g.:
+<BR>
+
+<BR>
+ <TT>unsigned int gint; </TT>&nbsp;
+<BR>&nbsp;
+<BR>
+<TT>foo () { </TT>&nbsp;
+<BR>
+<TT>unsigned char hob; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;... </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;hob = (gint &gt;&gt; 15) &amp; 1; </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;.. </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+will generate the following code:
+<BR>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 61
+;&nbsp; hob.c 7 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp; 000A E5*01&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 62&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+mov&nbsp; a,(_gint + 1) </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp; 000C 33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 63&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rlc&nbsp; a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp; 000D E4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+clr&nbsp; a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp; 000E 13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 65&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rrc&nbsp; a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp; 000F F5*02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 66&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+mov&nbsp; _foo_hob_1_1,a</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+Variations of this case however will <I>not</I> be recognized. It
+is a standard C expression, so I heartily recommend this be the only
+way to get the highest order bit, (it is portable). Of course it will
+be recognized even if it is embedded in other expressions, e.g.:
+<BR>
+
+<BR>
+<TT>xyz = gint + ((gint &gt;&gt; 15) &amp; 1);</TT>
+<BR>
+
+<BR>
+will still be recognized.
+
+<P>
+
+<H3><A NAME="SECTION000511100000000000000">
+4.1.11 Peep-hole Optimizer</A>
+</H3>
+
+<P>
+The compiler uses a rule based, pattern matching and re-writing mechanism
+for peep-hole optimization. It is inspired by <I>copt</I> a peep-hole
+optimizer by Christopher W. Fraser (cwfraser@microsoft.com). A default
+set of rules are compiled into the compiler, additional rules may
+be added with the <I>-peep-file &lt;filename&gt;</I> option. The rule language
+is best illustrated with examples.
+<BR>
+
+<BR>
+<TT>replace { </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;mov %1,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;mov a,%1</TT>&nbsp;
+<BR>
+<TT>} by {</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;mov %1,a</TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+The above rule will change the following assembly sequence:
+<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;mov r1,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;mov a,r1</TT>
+<BR>
+
+<BR>
+to
+<BR>
+
+<BR>
+<TT>mov r1,a</TT>
+<BR>
+
+<BR>
+Note: All occurrences of a <I>%n</I> (pattern variable) must denote
+the same string. With the above rule, the assembly sequence:
+<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;mov r1,a </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;mov a,r2</TT>
+<BR>
+
+<BR>
+will remain unmodified.
+<BR>
+
+<BR>
+Other special case optimizations may be added by the user (via <I>-peep-file
+option</I>). E.g. some variants of the 8051 MCU allow only <TT>ajmp</TT>
+and <TT>acall</TT>. The following two rules will change all <TT>ljmp</TT>
+and <TT>lcall</TT> to <TT>ajmp</TT> and <TT>acall</TT>
+<BR>
+
+<BR>
+<TT>replace { lcall %1 } by { acall %1 } </TT>&nbsp;
+<BR>
+<TT>replace { ljmp %1 } by { ajmp %1 }</TT>
+<BR>
+
+<BR>
+The <I>inline-assembler code</I> is also passed through the peep hole
+optimizer, thus the peephole optimizer can also be used as an assembly
+level macro expander. The rules themselves are MCU dependent whereas
+the rule language infra-structure is MCU independent. Peephole optimization
+rules for other MCU can be easily programmed using the rule language.
+<BR>
+
+<BR>
+The syntax for a rule is as follows:
+<BR>
+
+<BR>
+<TT>rule := replace [ restart ] '{' &lt;assembly sequence&gt; '&#92;n'
+</TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '}' by '{' '&#92;n'
+</TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;assembly
+sequence&gt; '&#92;n' </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '}' [if &lt;functionName&gt;
+] '&#92;n' </TT>&nbsp;
+<BR>
+
+<BR>
+&lt;assembly sequence&gt; := assembly instruction (each instruction including
+labels must be on a separate line).
+<BR>
+
+<BR>
+The optimizer will apply to the rules one by one from the top in the
+sequence of their appearance, it will terminate when all rules are
+exhausted. If the 'restart' option is specified, then the optimizer
+will start matching the rules again from the top, this option for
+a rule is expensive (performance), it is intended to be used in situations
+where a transformation will trigger the same rule again. A good example
+of this the following rule:
+<BR>
+
+<BR>
+<TT>replace restart { </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;pop %1 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;push %1 } by { </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;; nop </TT>&nbsp;
+<BR>
+<TT>}</TT>
+<BR>
+
+<BR>
+Note that the replace pattern cannot be a blank, but can be a comment
+line. Without the 'restart' option only the inner most 'pop' 'push'
+pair would be eliminated, i.e.:
+<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;pop ar1 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;pop ar2 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;push ar2 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;push ar1</TT>
+<BR>
+
+<BR>
+would result in:
+<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;pop ar1 </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;; nop </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;push ar1</TT>
+<BR>
+
+<BR>
+<I>with</I> the restart option the rule will be applied again to the
+resulting code and then all the pop-push pairs will be eliminated
+to yield:
+<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;; nop </TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;; nop</TT>
+<BR>
+
+<BR>
+A conditional function can be attached to a rule. Attaching rules
+are somewhat more involved, let me illustrate this with an example.
+<BR>
+
+<BR>
+<TT>replace { </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; &nbsp;ljmp %5 </TT>&nbsp;
+<BR>
+<TT>%2:</TT>&nbsp;
+<BR>
+<TT>} by { </TT>&nbsp;
+<BR>
+<TT>&nbsp; &nbsp; &nbsp;sjmp %5 </TT>&nbsp;
+<BR>
+<TT>%2:</TT>&nbsp;
+<BR>
+<TT>} if labelInRange</TT>
+<BR>
+
+<BR>
+The optimizer does a look-up of a function name table defined in function
+<I>callFuncByName</I> in the source file SDCCpeeph.c, with the name
+<I>labelInRange</I>. If it finds a corresponding entry the function
+is called. Note there can be no parameters specified for these functions,
+in this case the use of <I>%5</I> is crucial, since the function
+<I>labelInRange</I> expects to find the label in that particular variable
+(the hash table containing the variable bindings is passed as a parameter).
+If you want to code more such functions, take a close look at the
+function labelInRange and the calling mechanism in source file SDCCpeeph.c.
+I know this whole thing is a little kludgey, but maybe some day we
+will have some better means. If you are looking at this file, you
+will also see the default rules that are compiled into the compiler,
+you can add your own rules in the default set there if you get tired
+of specifying the -peep-file option.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html841"
+ HREF="node40.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html835"
+ HREF="node38.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html829"
+ HREF="node38.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html837"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html839"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html842"
+ HREF="node40.html">4.2 Pragmas</A>
+<B> Up:</B> <A NAME="tex2html836"
+ HREF="node38.html">4. SDCC Technical Data</A>
+<B> Previous:</B> <A NAME="tex2html830"
+ HREF="node38.html">4. SDCC Technical Data</A>
+ &nbsp <B>  <A NAME="tex2html838"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html840"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

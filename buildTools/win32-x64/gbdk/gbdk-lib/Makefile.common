@@ -1,0 +1,39 @@
+# Common settings
+ifndef ASM
+ASM = 	asxxxx
+endif
+
+ifndef MODEL
+MODEL =	small
+endif
+
+ifndef PORTS
+PORTS = gbz80 z80
+endif
+ifndef PLATFORMS
+PLATFORMS = gb consolez80 rrgb
+endif
+
+ifndef SDCCLIB
+SDCCLIB = /home/michaelh/projects/sdcc
+endif
+
+SCC = 	$(SDCCLIB)/bin/sdcc
+GBCC = 	$(SDCCLIB)/bin/lcc
+
+AS_Z80 = $(SDCCLIB)/bin/as-z80
+ifeq ($(RGBDS),1)
+AS_GBZ80 = rgbasm
+else
+AS_GBZ80 = $(SDCCLIB)/bin/as-gbz80
+endif
+
+CLEANSPEC = *.o *.cdb *.sym *.lst *~ *.asm
+
+CFLAGS = -I$(TOPDIR)/include --model-$(MODEL)
+CFLAGS += -m$(PORT) -DGBDK=1
+CC = 	$(SCC)
+BUILD = $(TOPDIR)/build/$(MODEL)/$(ASM)/$(THIS)
+LIB = 	$(BUILD)/$(THIS).lib
+
+OBJ = $(CSRC:%.c=$(BUILD)/%.o) $(ASSRC:%.s=$(BUILD)/%.o)

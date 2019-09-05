@@ -1,0 +1,8 @@
+sdcc/link
+---------
+
+In gbdk the linker and assembler were split into seperate packages.
+
+For now I'm keeping that split, and leaving the mcs51 version as is.
+
+-- Michael

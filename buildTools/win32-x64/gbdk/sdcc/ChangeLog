@@ -1,0 +1,468 @@
+2001-11-04  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/peeph-gbz80.def: Removed a bad sub optimisation.
+
+2001-11-03  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/tests/bug-477927.c: Added.
+
+	* src/z80/peeph.def: Added minor rules.
+
+	* src/z80/gen.c (genPlusIncr): Added an extra plusinc rule.
+
+	* src/z80/peeph.def: Added jump optimisation modification.
+
+2001-11-01  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/SDCCmain.c (linkEdit): Added runtime path detection to the mcs51 port.
+
+2001-10-30  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/tests/funptrs.c: Added.
+
+2001-10-29  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/ralloc.c (packRegsForHLUse): Fixed up bad spill due to pushing one byte via HL.
+
+2001-10-28  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/gen.c (genArrayInit): Made it work for on stack arrays.
+
+	* src/z80/main.c (gbz80_port =): Added rle support to the gbz80 port.
+
+	* src/z80/gen.c (genMinus): Fixed for where the result is one byte.
+	(movLeft2ResultLong): Created.
+
+	* src/z80/ralloc.c (packRegsForHLUse): Added a couple of simple cases for the GB.
+	(joinPushes): Added.  Joins two char pushes into a word push.
+
+2001-10-27  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/cpp2/Makefile.in (install): Added creation of dest dir.
+
+	* support/makebin/Makefile (install): Added creation of dest dir.
+
+2001-10-24 Karl Bongers <karl@turbobit.com>
+
+	* configure.in, configure, Makefile, support/cpp: Removed cpp folder, since we have new cpp2 preprocessor code.
+
+2001-10-21  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/ralloc.c: Turned off faulty pack for one use.
+
+	* src/z80/peeph-gbz80.def: Removed redundent restart options.
+
+	* src/z80/gen.c (genMult): Added native mul for constants on the z80 and gbz80.
+
+2001-10-21  Bernhard Held  <bernhard@bernhardheld.de>
+
+	* support/regression/Makefile: Improved clean
+
+	* support/regression/ports/gbz80/spec.mk: Added clean
+
+	* support/regression/ports/host/spec.mk: Added clean
+
+	* support/regression/ports/z80/spec.mk: Added clean
+
+	* support/regression/ports/mcs51/spec.mk: Added clean, little improvements
+
+	* support/regression/ports/mcs51/timeout.c: little improvements
+
+2001-10-17  Michael Hope  <michaelh@juju.net.nz>
+
+	* device/lib/malloc.c (MEMHEADER): Fixed against new pedantic pointers.
+
+	* support/regression/fwk/include/testfwk.h: Fixed up to use function pts correctly.
+
+	* support/regression/generate-cases.py: Fixed up to use function pts correctly.
+
+2001-10-16  Bernhard Held  <bernhard@bernhardheld.de>
+
+	* support/regression/port/mcs51/spec.mk: add timeout for uCsim
+
+	* support/regression/port/mcs51/timeout.c: add timeout for uCsim
+
+2001-10-13  Michael Hope  <michaelh@juju.net.nz>
+	* src/z80/gen.c (emitCall): Fixed up missing spill of HL when used to assign the result value.
+
+	* src/z80/ralloc.c: Turned off pack for one use as it's quite broken.
+
+	* src/SDCCmain.c (linkEdit): Added support for passing a legacy command line through the processor.
+
+	* src/mcs51/main.c (_linkCmd): Added bin path to command.
+
+	* src/SDCCmain.c (initValues): Added support for when it it called just to link.
+
+	* as/mcs51/lklibr.c (libfil;): Turned off 'library file' message.
+
+	* src/SDCCval.c (constVal): Fixed usage of 'L' modifier problems on ppc.
+
+	* support/regression/tests/longor.c: Added.
+
+2001-10-11  Bernhard Held  <bernhard@bernhardheld.de>
+
+	* as/mcs51/asdata.c: replaced FILENAME_MAX with PATH_MAX
+
+	* as/mcs51/aslink.h: define PATH_MAX
+
+	* as/mcs51/asm.h: define PATH_MAX
+
+	* as/mcs51/asmain.c: replaced FILENAME_MAX with PATH_MAX
+
+	* as/mcs51/asnoice.c: replaced FILENAME_MAX with PATH_MAX
+
+	* as/mcs51/lklex.c: replaced FILENAME_MAX with PATH_MAX
+
+	* as/mcs51/lkmain.c: replaced FILENAME_MAX with PATH_MAX
+
+	* src/SDCCglobl.h: define PATH_MAX
+
+	* src/SDCCmacro.c: replaced FILENAME_MAX with PATH_MAX
+
+	* src/SDCCmain.c: replaced FILENAME_MAX with PATH_MAX
+
+2001-10-11  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/gen.c (gencjneshort): Fixed
+
+	* src/z80/ralloc.c (packRegsForHLUse): Added pack into HL for cast then ipush.
+
+2001-10-09  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/tests/bug-469671.c: Added.
+
+	* src/z80/gen.c (shiftIntoPair): Fixed up warning.
+
+2001-10-08  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/SDCCmain.c: Added --fommit-frame-pointer option and implemented in the z80 port.
+
+	* src/z80/gen.c (genPlus): Fixed to work with extended stack.  Also fixed genMinus, genCmp.  genUMinus is still left.
+
+2001-10-08  Bernhar Held  <bernhard@bernhardheld.de>
+
+	* src/SDCCmain.c (preProcess): added define SDCC_NOOVERLAY
+
+	* src/device/lib/_mulint.c  : removed hint: nooverlay bug
+
+	* src/device/lib/_mullong.c : removed hint: nooverlay bug
+
+	* src/device/lib/_divuint.c : removed hint: nooverlay bug
+
+	* src/device/lib/_divulong.c: removed hint: nooverlay bug
+
+	* src/device/lib/_moduint.c : removed hint: nooverlay bug
+
+	* src/device/lib/_modulong.c: removed hint: nooverlay bug
+
+2001-10-07  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/gen.c (setupPair): Added 'extended stack' support for the z80.  Can now have local variables or parameters of more than 127 bytes in size.  Increadibly slow, but it will work.  Currently anything involving the carry flag.
+
+	* support/Util/NewAlloc.c (freeTrace): Changed free for the gc case to not free at all.  Fixes runtime segfault.
+
+	* support/regression/tests/scott-compare3.c (c_abcd): Fixed up casts.
+
+2001-10-07    <johan@FRIJA>
+
+	* device/lib/gets.c (gets): fixed the return value.
+
+2001-10-06  Michael Hope  <michaelh@juju.net.nz>
+	* src/SDCCmain.c (WRITE_SEG_LOC): Fixed up to use Safe_strdup.
+
+	* src/SDCCpeeph.c (peepHole): Fixed all leaks.  Added trace support for freeing lines.  Optimised restart logic to re-run instead of restart.  Now compiles dscan.c on ~60MB instead of ~200MB.
+
+	* support/Util/NewAlloc.c: Added ability to use libgc instead of malloc.  Added Safe_free and Safe_strdup.  Added trace support where you can log allocations and free all at once.
+
+	* src/z80/gen.c (genZ80Code): Added de-allocation via trace support.
+
+	* src/pic/gen.c: Removed Safe_strdup.
+
+	* configure.in: Added option to enable libgc support.
+
+	* src/SDCCbitv.c (bitVectnBitsOn): Optimised.
+	(bitVectUnion): Optimised.
+	(bitVectIntersect): Optimised.
+	(bitVectBitsInCommon): Optimised.
+	(bitVectCplAnd): Optimised.
+
+	* support/makebin/makebin.c (usage): Removed getopt as mingw32 doesn't have it.  Sigh.
+
+2001-10-03 Bernhard Held <bernhard@bernhardheld.de>
+
+	* src/SDCCmain.c: distinguish between assembler debug and plain options
+
+	* src/avr/main.c:   remove standard assembler options
+
+	* src/ds390/main.c: remove standard assembler options
+
+	* src/mcs51/main.c: remove standard assembler options
+
+	* src/port.h: removed "PENDING" comment
+
+2001-10-03 Bernhard Held <bernhard@bernhardheld.de>
+
+	* src/device/lib/_mulint.c  : new, with assember functions
+
+	* src/device/lib/_mullong.c : new, with assember functions
+
+	* src/device/lib/_divuint.c : with assember functions
+
+	* src/device/lib/_divsint.c : with assember functions
+
+	* src/device/lib/_divulong.c: with assember functions
+
+	* src/device/lib/_divslong.c: with assember functions
+
+	* src/device/lib/_moduint.c : with assember functions
+
+	* src/device/lib/_modsint.c : with assember functions
+
+	* src/device/lib/_modulong.c: with assember functions
+
+	* src/device/lib/_modslong.c: with assember functions
+
+	* src/device/lib/libint.lib:  replaced _muluint.c  and _mulsint.c  by _mulint.c
+
+	* src/device/lib/liblong.lib: replaced _mululong.c and _mulslong.c by _mullong.c
+
+	* src/device/lib/Makefile.in: replaced _muluint.c  and _mulsint.c  by _mulint.c
+	                              replaced _mululong.c and _mulslong.c by _mullong.c
+
+2001-10-03 Bernhard Held <bernhard@bernhardheld.de>
+
+	* src/SDCCsymt.c: sequence of specifiers in pintTypeChain() corrected
+
+2001-10-01 Bernhard Held <bernhard@bernhardheld.de>
+
+	* src/SDCCglue.c: test, if win32api is available for MINGW
+
+2001-10-01 Bernhard Held <bernhard@bernhardheld.de>
+
+	* src/SDCCsymt.c: no more _modifier in printTypeChain()
+	* support/regression/tests/driverstruct.c: REENTRANT for mcs51
+	* support/regression/ports/gbz80/spec.mk: removed GENERIC
+	* support/regression/ports/host/spec.mk: removed GENERIC
+	* support/regression/ports/mcs51/spec.mk: removed GENERIC
+	* support/regression/ports/z80/spec.mk: removed GENERIC
+
+2001-10-01  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/fwk/lib/testfwk.c (__printf): Removed GENERIC.
+
+	* support/regression/tests/bug-467035.c: Created.
+
+2001-10-01    <johan@FRIJA>
+
+	* src/SDCC.y: fixed bug #466586 part 1
+
+2001-10-01  Johan Knol <johan.knol@iduna.nl>
+
+	* SDCCicode.c: z80 has no generic pointers
+	* removed -s from strip in all Makefile(.in)'s. It is not needed, but Solaris chocks on it.
+	
+2001-09-30  Michael Hope  <michaelh@juju.net.nz>
+
+	* sim/ucsim/cmd.src/Makefile.in ($(PRJDIR)/libcmd.a): Changed all ar references to $(AR) for Solaris.
+
+2001-09-29  Michael Hope  <michaelh@juju.net.nz>
+
+	* Makefile (sdcc-libs): Added makebin to the list of standard targets.
+
+	* support/regression/ports/z80/spec.mk: Updated to use env for sdcc bin dir for automatic regression.
+
+2001-09-25  Michael Hope  <michaelh@juju.net.nz>
+
+	* configure.in: Fixed up so that ucsim is only configured once.
+
+	* support/cpp2/configure.in: Fixed to use the program transform to append the .exe for the win32 build.
+
+	* src/SDCCutil.c (getPrefixFromBinPath): Fixed up to work with win32 in all of its glory.
+	(getPathDifference): As above.
+
+	* src/SDCCmain.c (preProcess): Changed to use a temporary file in a proper temp directory.  Fixed case where pre-processing only.
+
+	* src/SDCCglue.c (tempfilename): Added function for pre-processor.
+
+2001-09-23  Michael Hope  <michaelh@juju.net.nz>
+	* .version: Updated to 2.3.1
+
+	* src/z80/main.c (z80_port =): Added macro based linker and assembler command line support.
+	Added copyright header.
+
+	* src/SDCCmain.c: Shifted various functions into SDCCutil.c
+	(assemble): Added support for macro based assembler commands.
+	(linkEdit): Added support for macro based linker commands.
+	(preProcess): Changed the pre-processor to use macros.
+	(_setPaths): Added functionality to autodetect the include, lib and bin dir paths.
+	(_discoverPaths): Added support for overriding the install directory using the SDCCDIR env variable.
+
+	* device/lib/z80/crt0.s: Added module name for debugging.
+
+2001-09-20  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/SDCCmain.c (printVersionInfo): Added the build date to the version info.
+
+	* src/SDCChasht.c (hTabDeleteByKey): Fixed delete as it would delete the last item from a bucket even if it wasn't the real one.
+
+	* src/SDCCglue.c: Moved gc_strdup to SDCCutil.c
+
+	* src/Makefile.in: Added SDCCmacro and SDCCutil
+
+2001-09-19  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/SDCCmain.c (printVersionInfo): Added the build date to the version info.
+
+2001-09-16    <johan@FRIJA>
+
+	* support/Util/SDCCerr.c: fixed up the error/warning/info database. I only changed the E_ W_ I_ prefix to what SDCCerr.c says it is.
+
+2001-09-15    <johan@FRIJA>
+
+	* src/mcs51/ralloc.c: (findAssignToSym): fixed bug #460662 part 1
+	* src/ds390/ralloc.c (findAssignToSym): fixed bug #460662 part 1
+
+2001-09-11    <johan@FRIJA>
+
+	* src/SDCCval.c (valDiv Mod Minus Plus Shift): keep litteral expressions as small as possible (bug #460010)
+
+2001-09-10  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/tests/bug-460444.c: Added test case.
+
+	* src/z80/gen.c (genOr): bug 460444: if (a ^ lit) was broken for &, |, and ^.
+	(genCast): Added justification for all of the asserts.
+
+2001-09-10  Bernhard Held <bernhard@bernhardheld.de>
+
+	* support/regression/support.c: _xdata replaced by xdata
+
+	* support/regression/spec.mk: removed _generic
+
+2001-09-09  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/pic/ralloc.c (debugLogRegType): Removed some old types to get it to compile.
+
+	* src/z80/gen.c (shiftR2Left2Result): Improved the case when v = v >> n for small values of n to use less code space and time.
+	(genrshTwo): Fixed v = v >> n where v is a negative int and n is > 8: bug 460010.
+
+	* src/z80/peeph.def: Added a rule to optimise shift then compare.
+
+	* support/regression/tests/bug-460000.c (testShiftByParam): Added test case.
+
+	* support/regression/tests/bug-460010.c: Added test case.
+
+	* support/regression/Makefile (test-host): Removed a silly 'clean' target when testing against gcc.
+
+2001-09-09  Bernhard Held <bernhard@bernhardheld.de>
+
+	* support/regression/Makefile: inter-port-clean adjusted for mcs51
+
+	* support/regression/testfwk.c: removed workaround for bug #436344
+
+	* support/regression/tests/bp.c: use less memory with mcs51
+
+	* support/regression/tests/bug-441448.c: use less memory
+
+	* support/regression/tests/ports/mcs51/spec.mk: cleanup, use --stack-after-data
+
+	* support/regression/collate-results.py: typo
+
+2001-09-08  Michael Hope  <michaelh@juju.net.nz>
+
+	* support/regression/tests/fetchoverlap.c: Added new test case.
+
+	* support/regression/tests/bp.c: Added new test case.
+
+	* support/regression/tests/bug-448984.c: Added new test case.
+
+	* support/regression/tests/pow2shifts.c: Added new test case.
+
+	* src/z80/gen.c: Turned off the noise it normally generates for the release.
+	(genlshTwo): Fixed right shift for count > 8.
+
+	* src/z80/ralloc.c: Disabled most of the ACC packing rules as they weren't getting hit and weren't at all safe.
+
+2001-09-08    <johan@FRIJA>
+
+	* src/SDCCicode.c (geniCodeCall): a CPOINTER can be used as a function
+
+2001-09-07    <johan@FRIJA>
+
+	* src/SDCCicode.c (newiCodeCondition): fixed bug #456235 (1.77)
+
+	* src/SDCCglue.c (emitRegularMap): only delete a symbol when it is a symbol
+
+2001-09-06    <johan@FRIJA>
+
+	* src/SDCC.y: this could be a fix for bug #458744 (1.37)
+	* bernhard noted me at this: "() equals to (void)" (1.38)
+
+2001-09-05    <johan@FRIJA>
+
+	* src/SDCCglue.c (emitRegularMap): a fix for bug #458099/2
+
+2001-09-04    <johan@FRIJA>
+
+	* src/SDCCsymt.c (checkSClass): a fix for bug #458099/1
+
+
+2001-09-04  Paul Stoffregen  <paul@pjrc.com>
+
+	* pragma noinduction broke memcpy on mcs51 large model.  Moved it inside z80 optimization
+
+2001-09-03  Michael Hope  <michaelh@juju.net.nz>
+
+	* link/z80/aslink.h: Fixed path for PATH_MAX
+
+2001-09-02  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/gen.c (fetchLitPair): Changed so that it properly caches direct space references.
+
+	* support/regression/tests/addsub.c: Added cases to cover all the +, - combinations.
+
+	* support/regression/tests/uminus.c: Added a test for the unary minus operator.
+
+	* src/z80/gen.c (genUminus): Fixed add, sub, and uminus on the gbz80 port for longs.  Had to shift some functions about to do it.
+
+2001-09-01  Michael Hope  <michaelh@juju.net.nz>
+
+	* src/z80/gen.c: Fixed up generator to pass the regresion tests, specifically fixing loads for longs, genCmp, and turned on the map file.
+	(genCmp): Fixed up genCmp for the GB with longs.
+
+	* device/lib/gbz80/Makefile: Fixed up all the libraries to pass the regression tests.
+
+	* support/regression/ports/host/spec.mk: Updated to compile with the new type specifiers.
+
+	* device/lib/Makefile.in (Z80SOURCES): Removed old _mululong, _mulslong, and unneeded _mulint.
+
+	* device/lib/_mullong.c (_mulslong): Changed to actually return a value :)
+
+2001-08-30  Paul Stoffregen  <paul@pjrc.com>
+
+	* added peepholes 223 to 231 to mcs51 port.  These improve code when using large model.
+
+2001-08-30  Michael Hope  <michaelh@juju.net.nz>
+
+	* device/lib/gbz80/crt0.s (init): Fixed up support for the gbz80 such that it will at least run (and fail badly) the regression tests.
+
+	* src/z80/gen.c (genPlus): Changed bad long add for gb to a fall through.
+
+2001-08-29  Michael Hope  <michaelh@juju.net.nz>
+
+	* link/z80/aslink.h: Fixed long file name support.  Is now based off PATH_MAX instead of a constant.
+
+	* src/z80/gen.c: Fixed add and sub for the case where left or right are in static space.
+
+2001-08-30 Bernhard Held   <bernhard@bernhardheld.de>
+
+  * sim/ucsim/configure:    little improvement of Cygwin-detection	
+  * sim/ucsim/configure.in: little improvement of Cygwin-detection	
+  * sim/ucsim/cmd.src/newcmdcl.h: include <sys/types.h> to define fd_set automated build
+  * support/regression/tests/bug-221100.c: small changes for mcs51
+  * support/regression/tests/bug-221168.c: small changes for mcs51
+  * support/regression/tests/bug-227710.c: small changes for mcs51
+  * support/regression/tests/staticinit.c: small changes for mcs51
+  * as/mcs51/aslink.h: accept everything as symbol name in rel-files, bug fix ID 452601
+  * as/mcs51/lklex.c:  accept everything as symbol name in rel-files, bug fix ID 452601
+  * as/mcs51/lksym.c:  accept everything as symbol name in rel-files, bug fix ID 452601

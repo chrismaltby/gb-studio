@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>1.4 Compatibility with previous versions</TITLE>
+<META NAME="description" CONTENT="1.4 Compatibility with previous versions">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html278"
+ HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html272"
+ HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html266"
+ HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html274"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html276"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html279"
+ HREF="node7.html">1.5 System Requirements</A>
+<B> Up:</B> <A NAME="tex2html273"
+ HREF="node2.html">1. Introduction</A>
+<B> Previous:</B> <A NAME="tex2html267"
+ HREF="node5.html">1.3 Typographic conventions</A>
+ &nbsp <B>  <A NAME="tex2html275"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html277"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00024000000000000000">
+1.4 Compatibility with previous versions</A>
+</H2>
+
+<P>
+This version has numerous bug fixes compared with the previous version.
+But we also introduced some incompatibilities with older versions.
+Not just for the fun of it, but to make the compiler more stable,
+efficient and ANSI compliant. 
+<BR>
+
+<P>
+
+<UL>
+<LI>short is now equivalent to int (16 bits), it used to be equivalent
+to char (8 bits)</LI>
+<LI>the default directory where include, library and documention files
+are stored is no in /usr/local/share</LI>
+<LI>char type parameters to vararg functions are casted to int unless
+explicitly casted, e.g.: 
+<BR>
+<TT>&nbsp;&nbsp;char a=3;</TT>&nbsp;
+<BR>
+<TT>&nbsp;&nbsp;printf (&#34;%d %c&#92;n&#34;,
+a, (char)a);</TT>
+<BR>
+will push a as an int and as a char resp.</LI>
+<LI>option -regextend has been removed</LI>
+<LI>option -noreparms has been removed</LI>
+</UL>
+<I>&lt;pending: more incompatibilities?&gt;</I>
+
+<P>
+<BR><HR>
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 99.1 release (March 30, 1999)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>3.7 Interrupt Service Routines</TITLE>
+<META NAME="description" CONTENT="3.7 Interrupt Service Routines">
+<META NAME="keywords" CONTENT="sdccman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v99.1 release">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="sdccman.css">
+
+<LINK REL="next" HREF="node27.html">
+<LINK REL="previous" HREF="node25.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node27.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html640"
+ HREF="node27.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html634"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html628"
+ HREF="node25.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html636"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html638"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html641"
+ HREF="node27.html">3.8 Critical Functions</A>
+<B> Up:</B> <A NAME="tex2html635"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html629"
+ HREF="node25.html">3.6 Overlaying</A>
+ &nbsp <B>  <A NAME="tex2html637"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html639"
+ HREF="node61.html">Index</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00047000000000000000">
+3.7 Interrupt Service Routines</A>
+</H2>
+
+<P>
+SDCC allows interrupt service routines to be coded in C, with some
+extended keywords.
+<BR>
+
+<BR>
+<TT>void timer_isr (void) interrupt 2 using 1 </TT>&nbsp;
+<BR>
+<TT>{ </TT>&nbsp;
+<BR>
+<TT>.. </TT>&nbsp;
+<BR>
+<TT>}</TT>&nbsp;
+<BR>&nbsp;
+<BR>
+The number following the <I>interrupt</I> keyword is the interrupt
+number this routine will service. The compiler will insert a call
+to this routine in the interrupt vector table for the interrupt number
+specified. The <I>using</I> keyword is used to tell the compiler to
+use the specified register bank (8051 specific) when generating code
+for this function. Note that when some function is called from an
+interrupt service routine it should be preceded by a #pragma&nbsp;NOOVERLAY
+if it is not reentrant. A special note here, int (16 bit) and long
+(32 bit) integer division, multiplication &amp; modulus operations are
+implemented using external support routines developed in ANSI-C, if
+an interrupt service routine needs to do any of these operations then
+the support routines (as mentioned in a following section) will have
+to be recompiled using the <I>-stack-auto</I> option and the source
+file will need to be compiled using the <I>-int-long-ren</I>t compiler
+option.
+
+<P>
+If you have multiple source files in your project, interrupt service
+routines can be present in any of them, but a prototype of the isr
+MUST be present or included in the file that contains the function
+<I>main</I>.
+
+<P>
+Interrupt Numbers and the corresponding address &amp; descriptions for
+the Standard 8051 are listed below. SDCC will automatically adjust
+the interrupt vector table to the maximum interrupt number specified.
+<BR>
+
+<P>
+ 
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Interrupt #</TD>
+<TD ALIGN="CENTER">Description</TD>
+<TD ALIGN="CENTER">Vector Address</TD>
+</TR>
+<TR><TD ALIGN="CENTER">0</TD>
+<TD ALIGN="CENTER">External 0</TD>
+<TD ALIGN="CENTER">0x0003</TD>
+</TR>
+<TR><TD ALIGN="CENTER">1</TD>
+<TD ALIGN="CENTER">Timer 0</TD>
+<TD ALIGN="CENTER">0x000B</TD>
+</TR>
+<TR><TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">External 1</TD>
+<TD ALIGN="CENTER">0x0013</TD>
+</TR>
+<TR><TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">Timer 1</TD>
+<TD ALIGN="CENTER">0x001B</TD>
+</TR>
+<TR><TD ALIGN="CENTER">4</TD>
+<TD ALIGN="CENTER">Serial</TD>
+<TD ALIGN="CENTER">0x0023</TD>
+</TR>
+</TABLE>
+<BR>
+
+<BR>
+If the interrupt service routine is defined without <I>using</I> a
+register bank or with register bank 0 (using 0), the compiler will
+save the registers used by itself on the stack upon entry and restore
+them at exit, however if such an interrupt service routine calls another
+function then the entire register bank will be saved on the stack.
+This scheme may be advantageous for small interrupt service routines
+which have low register usage.
+
+<P>
+If the interrupt service routine is defined to be using a specific
+register bank then only <I>a, b &amp; dptr</I> are save and restored,
+if such an interrupt service routine calls another function (using
+another register bank) then the entire register bank of the called
+function will be saved on the stack. This scheme is recommended for
+larger interrupt service routines.
+
+<P>
+Calling other functions from an interrupt service routine is not recommended,
+avoid it if possible.
+<BR>
+
+<BR>
+Also see the _naked modifier.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html640"
+ HREF="node27.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html634"
+ HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html628"
+ HREF="node25.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html636"
+ HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html638"
+ HREF="node61.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html641"
+ HREF="node27.html">3.8 Critical Functions</A>
+<B> Up:</B> <A NAME="tex2html635"
+ HREF="node19.html">3. Using SDCC</A>
+<B> Previous:</B> <A NAME="tex2html629"
+ HREF="node25.html">3.6 Overlaying</A>
+ &nbsp <B>  <A NAME="tex2html637"
+ HREF="node1.html">Contents</A></B> 
+ &nbsp <B>  <A NAME="tex2html639"
+ HREF="node61.html">Index</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Johan Knol</I>
+<BR><I>2001-07-13</I>
+</ADDRESS>
+</BODY>
+</HTML>
