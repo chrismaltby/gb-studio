@@ -1,1 +1,0 @@
-MODELS		= small large

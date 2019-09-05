@@ -1,5 +1,0 @@
-sdcc/device
------------
-
-This directory contains all device only files i.e. a basic C library,
-headers, and set of examples.
