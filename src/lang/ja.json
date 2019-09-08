@@ -196,6 +196,7 @@
   "EVENT_RESET_VARIABLES": "変数: 全ての変数を'False'にリセットする",
   "EVENT_LOOP": "ずっと繰り返す",
   "EVENT_GROUP": "イベントグループ",
+  "EVENT_COMMENT": "コメント",
   "EVENT_DEFINE_LABEL": "ラベル: 定義",
   "EVENT_GOTO_LABEL": "ラベル: ジャンプ",
   "EVENT_TEXT": "テキスト: 表示ダイアログ",

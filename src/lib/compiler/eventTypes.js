@@ -33,6 +33,7 @@ export const EVENT_CHOICE = "EVENT_CHOICE";
 export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 export const EVENT_LOOP = "EVENT_LOOP";
 export const EVENT_GROUP = "EVENT_GROUP";
+export const EVENT_COMMENT = "EVENT_COMMENT";
 
 // Background Scripts
 export const EVENT_SET_INPUT_SCRIPT = "EVENT_SET_INPUT_SCRIPT";
@@ -130,6 +131,7 @@ export const EventFields = {
     }
   ],
   [EVENT_GROUP]: [],
+  [EVENT_COMMENT]: [],
   [EVENT_SET_INPUT_SCRIPT]: [
     {
       key: "input",

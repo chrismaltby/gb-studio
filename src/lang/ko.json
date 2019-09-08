@@ -192,6 +192,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop Forever",
   "EVENT_GROUP": "Event Group",
+  "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
   "EVENT_GOTO_LABEL": "Label: Goto",
   "EVENT_TEXT": "Text: Display Dialogue",

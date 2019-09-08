@@ -10,7 +10,7 @@ import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
-import { EVENT_END } from "../../lib/compiler/eventTypes";
+import { EVENT_END, EVENT_COMMENT } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
@@ -186,7 +186,7 @@ class ActionMini extends Component {
     } = this.props;
     const { rename, clipboardEvent } = this.state;
     const { command } = action;
-
+    
     if (command === EVENT_END) {
       return connectDropTarget(
         <div
@@ -210,6 +210,7 @@ class ActionMini extends Component {
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
     const childKeys = action.children ? Object.keys(action.children) : [];
+    const isComment = command === EVENT_COMMENT;
 
     return connectDropTarget(
       connectDragPreview(
@@ -229,7 +230,8 @@ class ActionMini extends Component {
             {connectDragSource(
               <div
                 className={cx("ActionMini__Command", {
-                  "ActionMini__Command--Open": open
+                  "ActionMini__Command--Open": open,
+                  "EventComment": isComment
                 })}
                 onClick={this.toggleOpen}
               >
