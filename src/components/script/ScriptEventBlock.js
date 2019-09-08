@@ -54,7 +54,7 @@ class TextArea extends Component {
 
 class ScriptEventInput extends Component {
   onChange = e => {
-    const { onChange, field, value, index } = this.props;
+    const { onChange, field, value, index, args } = this.props;
     const { type, updateFn } = field;
     let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value) {
@@ -65,7 +65,7 @@ class ScriptEventInput extends Component {
       newValue = newValue.value;
     }
     if (updateFn) {
-      newValue = updateFn(newValue, field);
+      newValue = updateFn(newValue, field, args);
     }
     onChange(newValue, index);
   };
@@ -260,11 +260,12 @@ class ScriptEventField extends Component {
           }
           return newValue;
         })
-      });
+      }, field.postUpdate);
+      
     }
     return onChange({
       [key]: newValue
-    });
+    }, field.postUpdate);
   };
 
   onAddValue = valueIndex => e => {
@@ -277,7 +278,7 @@ class ScriptEventField extends Component {
         field.defaultValue,
         value.slice(valueIndex + 1)
       )
-    });
+    }, field.postUpdate);
   };
 
   onRemoveValue = valueIndex => e => {
@@ -285,7 +286,7 @@ class ScriptEventField extends Component {
     const { key } = field;
     return onChange({
       [key]: value.filter((_v, i) => i !== valueIndex)
-    });
+    }, field.postUpdate);
   };
 
   render() {

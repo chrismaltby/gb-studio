@@ -7,9 +7,11 @@ export const fields = [
   {
     key: "text",
     type: "textarea",
-    maxPerLine: 18,
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
-    updateFn: (string, field) => trimlines(string, field.maxPerLine),
+    updateFn: (string, field, args) => {
+      const maxPerLine = args.avatarId ? 16 : 18;
+      return trimlines(string, maxPerLine);
+    },
     multiple: true,
     defaultValue: ""
   },
@@ -19,7 +21,16 @@ export const fields = [
     label: l10n("FIELD_TEXT_AVATAR"),
     defaultValue: "",
     optional: true,
-    filter: (sprite) => sprite.numFrames == 1
+    filter: sprite => sprite.numFrames === 1,
+    postUpdate: (args) => {
+      const maxPerLine = args.avatarId ? 16 : 18;
+      return {
+        ...args,
+        text: Array.isArray(args.text)
+          ? args.text.map(string => trimlines(string, maxPerLine))
+          : trimlines(args.text, maxPerLine)
+      };
+    }
   }
 ];
 
