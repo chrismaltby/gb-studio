@@ -17,10 +17,7 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const {
-    actorSetActive,
-    ifVariableValue
-  } = helpers;
+  const { actorSetActive, ifVariableValue } = helpers;
 
   actorSetActive(input.actorId);
 
@@ -28,40 +25,36 @@ export const compile = (input, helpers) => {
     input.variable,
     "==",
     1,
-    function () {
+    () => {
       changeDirection("down", input, helpers);
-      return;
     },
-    function () {
+    () => {
       ifVariableValue(
         input.variable,
         "==",
         2,
-        function () {
+        () => {
           changeDirection("left", input, helpers);
-          return;
         },
-        function () {
+        () => {
           ifVariableValue(
             input.variable,
             "==",
             4,
-            function () {
+            () => {
               changeDirection("right", input, helpers);
-              return;
             },
-            function () {
+            () => {
               changeDirection("up", input, helpers);
-              return;
             }
-          )
+          );
         }
-      )
+      );
     }
-  )
+  );
 };
 
-function changeDirection (direction, input, helpers) {
+function changeDirection(direction, input, helpers) {
   const {
     actorSetDirection,
     actorSetFrame,
