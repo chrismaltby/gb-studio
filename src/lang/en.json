@@ -284,6 +284,7 @@
   "MENU_THEME_LIGHT": "Light",
   "MENU_THEME_DARK": "Dark",
   "MENU_LANGUAGE": "Language",
+  "MENU_LANGUAGE_DEFAULT": "System Default",
   "MENU_SHOW_COLLISIONS": "Show Collisions",
   "MENU_SHOW_CONNECTIONS": "Show Connections",
   "MENU_ZOOM_RESET": "Actual Size",
@@ -384,6 +385,8 @@
   "DIALOG_FUTURE": "GB Studio Project Not Supported",
   "DIALOG_FUTURE_DESCRIPTION": "This project file was created with version {currentVersion} which is newer than this version of GB Studio supports. Maximum supported is {version}.\n\nYou may need to update GB Studio.",
   "DIALOG_OPEN_ANYWAY": "Open Anyway",
+  "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio needs to restart before language changes can take effect",
+  "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Please save your project and restart the application.",
 
   "// 16": "Settings ----------------------------------------------------",
 

@@ -9,7 +9,9 @@ let menu;
 const buildMenu = async (plugins = []) => {
   // L10N requires app ready to get locale
   // eslint-disable-next-line global-require
-  const l10n = require("./lib/helpers/l10n").default;
+  const l10nHelpers = require("./lib/helpers/l10n");
+  const l10n = l10nHelpers.default;
+  const locales = l10nHelpers.locales;
 
   const template = [
     {
@@ -189,6 +191,34 @@ const buildMenu = async (plugins = []) => {
               }
             }
           ]
+        },
+        {
+          label: l10n("MENU_LANGUAGE"),
+          submenu: [].concat(
+            [
+              {
+                id: "localeDefault",
+                label: l10n("MENU_LANGUAGE_DEFAULT"),
+                type: "checkbox",
+                checked: settings.get("locale") === undefined,
+                click() {
+                  notifyListeners("updateSetting", "locale", undefined);
+                }
+              },
+              { type: "separator" }
+            ],
+            locales.map(locale => {
+              return {
+                id: `locale-${locale}`,
+                label: locale,
+                type: "checkbox",
+                checked: settings.get("locale") === locale,
+                click() {
+                  notifyListeners("updateSetting", "locale", locale);
+                }
+              };
+            })
+          )
         },
         { type: "separator" },
         {
