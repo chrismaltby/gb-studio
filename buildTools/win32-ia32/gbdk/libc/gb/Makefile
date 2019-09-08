@@ -2,27 +2,32 @@
 
 TOPDIR = ../..
 
-include $(TOPDIR)/Makefile.common
-
 THIS = gb
-OBJ =	cgb.o cpy_data.o drawing.o f_ibm_sh.o \
-	f_italic.o f_min.o f_spect.o get_bk_t.o get_data.o \
-	get_prop.o get_spr.o get_wi_t.o get_xy_t.o global.o \
-	hiramcpy.o ibmfixed.o init_tt.o input.o mv_bkg.o \
-	mv_spr.o mv_win.o pad.o sample.o \
-	scroll_b.o scroll_s.o scroll_w.o serial.o set_bk_t.o \
-	set_data.o set_prop.o set_spr.o set_wi_t.o set_xy_t.o \
-	sgb.o font.o delay.o \
-	gprint.o gprintf.o gprintn.o gprintln.o digits.o \
-	rand.o arand.o 
+PORT = gbz80
+
+CSRC = digits.c gprint.c gprintf.c gprintln.c gprintn.c
+
+ASSRC =	cgb.s cpy_data.s drawing.s f_ibm_sh.s \
+	f_italic.s f_min.s f_spect.s get_bk_t.s get_data.s \
+	get_prop.s get_spr.s get_wi_t.s get_xy_t.s global.s \
+	hiramcpy.s ibmfixed.s init_tt.s input.s mv_bkg.s \
+	mv_spr.s mv_win.s pad.s sample.s \
+	scroll_b.s scroll_s.s scroll_w.s serial.s set_bk_t.s \
+	set_data.s set_prop.s set_spr.s set_wi_t.s set_xy_t.s \
+	sgb.s font.s delay.s \
+	rand.s arand.s \
+	crt0.s
+
 ifeq ($(ASM),asxxxx)
-OBJ +=	sfr.o
+ASSRC +=	sfr.s
 endif
 ifeq ($(ASM),rgbds)
-OBJ +=	stubs.o
+ASSRC +=	stubs.s
 endif
 
-CRT0 =	crt0.o
+CRT0 =	crt0.s
+
+include $(TOPDIR)/Makefile.common
 
 AS = $(AS_GBZ80)
 

@@ -1,0 +1,44 @@
+                              1         .area   _HOME
+                              2         
+                              3         ;; Special RLE decoder used for initing global data
+   0000                       4 __initrleblock::
+                              5         ;; Pull the destination address out
+   0000 4D                    6         ld      c,l
+   0001 44                    7         ld      b,h
+                              8         
+                              9         ;; Pop the return address
+   0002 E1                   10         pop     hl
+   0003                      11 1$:
+                             12         ;; Fetch the run
+   0003 5E                   13         ld      e,(hl)
+   0004 23                   14         inc     hl
+                             15         ;; Negative means a run
+   0005 CB 7B                16         bit     7,e
+   0007 CAr15s00             17         jp      z,2$
+                             18         ;; Code for expanding a run
+   000A 7E                   19         ld      a,(hl)
+   000B 23                   20         inc     hl
+   000C                      21 3$:
+   000C 02                   22         ld      (bc),a
+   000D 03                   23         inc     bc
+   000E 1C                   24         inc     e
+   000F C2r0Cs00             25         jp      nz,3$
+   0012 C3r03s00             26         jp      1$
+   0015                      27 2$:
+                             28         ;; Zero means end of a block
+   0015 AF                   29         xor     a
+   0016 B3                   30         or      e
+   0017 CAr25s00             31         jp      z,4$
+                             32         ;; Code for expanding a block
+   001A                      33 5$:     
+   001A 7E                   34         ld      a,(hl)        
+   001B 23                   35         inc     hl
+   001C 02                   36         ld      (bc),a
+   001D 03                   37         inc     bc
+   001E 1D                   38         dec     e
+   001F C2r1As00             39         jp      nz,5$
+   0022 C3r03s00             40         jp      1$
+   0025                      41 4$:     
+                             42         ;; Push the return address back onto the stack
+   0025 E5                   43         push    hl
+   0026 C9                   44         ret

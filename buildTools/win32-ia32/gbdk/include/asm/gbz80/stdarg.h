@@ -9,8 +9,8 @@
    the correct order.
  */
 
-typedef char * va_list;
-#define va_start(list, last)	list = (char *)&last + sizeof(last)
+typedef unsigned char * va_list;
+#define va_start(list, last)	list = (unsigned char *)&last + sizeof(last)
 #define va_arg(list, type)	*((type *)((list += sizeof(type)) - sizeof(type)))
 
 #define va_end(list)
