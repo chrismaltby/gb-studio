@@ -1,21 +1,0 @@
-ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
-
-Symbol Table
-
-  0 ___abs_end                         001E R
-  0 ___abs_start                       0000 R
-  0 _abs                               0000 GR
-
-ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
-
-Area Table
-
-   0 _CODE                              size   1E   flags 0
-   1 _DATA                              size    0   flags 0
-   2 _OVERLAY                           size    0   flags 0
-   3 _ISEG                              size    0   flags 0
-   4 _BSEG                              size    0   flags 0
-   5 _XSEG                              size    0   flags 0
-   6 _GSINIT                            size    0   flags 0
-   7 _GSFINAL                           size    0   flags 0
-   8 _HOME                              size    0   flags 0
