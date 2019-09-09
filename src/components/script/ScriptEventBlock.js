@@ -14,7 +14,7 @@ import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import ActorSelect from "../forms/ActorSelect";
 import EmoteSelect from "../forms/EmoteSelect";
-import { FormField } from "../library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -292,53 +292,68 @@ class ScriptEventField extends Component {
   render() {
     const { eventId, field, value, args } = this.props;
 
+    const inputField = field.multiple ? (
+      value.map((_, valueIndex) => {
+        const fieldId = genKey(eventId, field.key, valueIndex);
+        return (
+          <span key={fieldId} className="ScriptEventBlock__InputRow">
+            <ScriptEventInput
+              id={fieldId}
+              type={field.type}
+              field={field}
+              index={valueIndex}
+              value={value[valueIndex]}
+              args={args}
+              onChange={this.onChange}
+            />
+            <div className="ScriptEventBlock__BtnRow">
+              {valueIndex !== 0 && (
+                <div
+                  className="ScriptEventBlock__Btn"
+                  onClick={this.onRemoveValue(valueIndex)}
+                >
+                  -
+                </div>
+              )}
+              <div
+                className="ScriptEventBlock__Btn"
+                onClick={this.onAddValue(valueIndex)}
+              >
+                +
+              </div>
+            </div>
+          </span>
+        );
+      })
+    ) : (
+      <ScriptEventInput
+        id={genKey(eventId, field.key)}
+        type={field.type}
+        field={field}
+        value={value}
+        args={args}
+        onChange={this.onChange}
+      />
+    );
+
+    if (field.toggleLabel) {
+      return (
+        <ToggleableFormField
+          htmlFor={genKey(eventId, field.key)}
+          closedLabel={field.toggleLabel}
+          label={field.label}
+          open={!!value}
+        >
+          {inputField}
+        </ToggleableFormField>
+      );
+    }
+
     return (
       <FormField halfWidth={field.width === "50%"}>
         <label htmlFor={genKey(eventId, field.key)}>
           {field.type !== "checkbox" && field.label}
-          {field.multiple ? (
-            value.map((_, valueIndex) => {
-              const fieldId = genKey(eventId, field.key, valueIndex);
-              return (
-                <span key={fieldId} className="ScriptEventBlock__InputRow">
-                  <ScriptEventInput
-                    id={fieldId}
-                    type={field.type}
-                    field={field}
-                    index={valueIndex}
-                    value={value[valueIndex]}
-                    args={args}
-                    onChange={this.onChange}
-                  />
-                  <div className="ScriptEventBlock__BtnRow">
-                    {valueIndex !== 0 && (
-                      <div
-                        className="ScriptEventBlock__Btn"
-                        onClick={this.onRemoveValue(valueIndex)}
-                      >
-                        -
-                      </div>
-                    )}
-                    <div
-                      className="ScriptEventBlock__Btn"
-                      onClick={this.onAddValue(valueIndex)}
-                    >
-                      +
-                    </div>
-                  </div>
-                </span>
-              );
-            })
-          ) : (
-            <ScriptEventInput
-              id={genKey(eventId, field.key)}
-              type={field.type}
-              field={field}
-              value={value}
-              args={args}
-              onChange={this.onChange}
-            />
-          )}
+          {inputField}
           {field.type === "checkbox" && field.label}
         </label>
       </FormField>
