@@ -1,0 +1,19 @@
+XL
+H 9 areas 1 global symbols
+M isupper
+A _CODE size 1D flags 0
+S _isupper Def0000
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+T 00 00 F8 06 7E EE 80 FE C1 DA 1A 00 1E DA 7E EE
+R 00 00 00 00 00 0A 00 00
+T 0E 00 80 57 7B 9A DA 1A 00 1E 01 C3 1C 00 1E 00
+R 00 00 00 00 00 07 00 00 00 0C 00 00
+T 1C 00 C9
+R 00 00 00 00

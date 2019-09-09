@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m
+CC	= ../../../bin/lcc -Wa-l -Wl-m -v
 
 CFLAGS	= -DGBDK_2_COMPAT
 

@@ -1,5 +1,4 @@
-	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
-        
+	.NEAR_CALLS = 0
 	;; Changed by astorgb.pl to 1
 	__RGBDS__	= 0
 

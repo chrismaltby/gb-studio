@@ -18,10 +18,16 @@
 UBYTE accu[80];
 UBYTE accua[80];
 
+UWORD seed;
+
 void main(void)
 {
-  UBYTE r, s, t = 0, u = 0;
-  UWORD seed;
+  UBYTE r, s, t, u;
+
+  for(r = 0; r != 80; r++) {
+    accu[r] = 0;
+    accua[r] = 0;
+  }
 
   /* We use the DIV register to get a random initial seed */
   puts("Getting seed");

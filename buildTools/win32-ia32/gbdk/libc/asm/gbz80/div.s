@@ -1,174 +1,133 @@
 	;; Originally from GBDK by Pascal Felber.
-	.area	_CODE
 
-__divschar_rrx_s::       
-        ld      hl,#2+1
-        add     hl,sp
-        
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
-        
-        ;; Fall through
-__divschar_rrx_hds::
-        ld      c,l
-        
-        call    .div8
-
-	ld	e,c
-        ld      d,b
-        	
+	;; BANKED: checked
+	.area	_BASE
+	;; Stubs
+__modslong::
+__divslong::
+__mulslong::
 	ret
 	
-__modschar_rrx_s::       
-        ld      hl,#2+1
-        add     hl,sp
-        
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
-        
-        ;; Fall through
-__modschar_rrx_hds::
-        ld      c,l
+__divschar::
+	push	bc
+	lda	hl,4(sp)
+	
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
+	call	.div8
 
-       	call	.div8
+	ld	e,c
+	pop	bc
+	ret
+	
+__modschar::
+	push	bc
+	lda	hl,4(sp)
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
+	call	.div8
 
-        ;; Already in DE
-        
+	;;  Result in e
+	pop	bc
 	ret
 
-__divsint_rrx_s::        
-        ld      hl,#2+3
-        add     hl,sp
-        
-        ld      d,(hl)
-        dec     hl
-        ld      e,(hl)
-        dec     hl
-        ld      a,(hl)
-        dec     hl
-        ld      l,(hl)
-        ld      h,a
-        
-        ;; Fall through
-__divsint_rrx_hds::
-	ld	b,h
-	ld	c,l
-
+__divsint::
+	push	bc
+	lda	hl,4(sp)
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.div16
 
 	ld	e,c
 	ld	d,b
-	
+
+	pop	bc
 	ret
 	
-__modsint_rrx_s::
-        ld      hl,#2+3
-        add     hl,sp
-        
-        ld      d,(hl)
-        dec     hl
-        ld      e,(hl)
-        dec     hl
-        ld      a,(hl)
-        dec     hl
-        ld      l,(hl)
-        ld      h,a
+__modsint::
+	push	bc
+	lda	hl,4(sp)
 
-        ;; Fall through
-__modsint_rrx_hds::
-	ld	b,h
-	ld	c,l
-
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.div16
 
-        ;; Already in DE
-	
+	;; Result in de
+	pop	bc
 	ret
 
 	;; Unsigned
-__divuchar_rrx_s::       
-        ld      hl,#2+1
-        add     hl,sp
-        
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
-        
-        ;; Fall through
-__divuchar_rrx_hds::
-        ld      c,l
+__divuchar::	
+	push	bc
+	lda	hl,4(sp)
+	
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
 	call	.divu8
 
 	ld	e,c
-        ld      d,b
-        
+	
+	pop	bc
 	ret
 	
-__moduchar_rrx_s::       
-        ld      hl,#2+1
-        add     hl,sp
-        
-        ld      e,(hl)
-        dec     hl
-        ld      l,(hl)
-        
-        ;; Fall through
-__moduchar_rrx_hds::
-        ld      c,l
+__moduchar::
+	push	bc
+	lda	hl,4(sp)
+	
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
 	call	.divu8
 
-        ;; Already in DE
+	;; Result in e
+	pop	bc
+	ret
 
-        ret
-
-__divuint_rrx_s::                
-        ld      hl,#2+3
-        add     hl,sp
-        
-        ld      d,(hl)
-        dec     hl
-        ld      e,(hl)
-        dec     hl
-        ld      a,(hl)
-        dec     hl
-        ld      l,(hl)
-        ld      h,a
-
-        ;; Fall through
-__divuint_rrx_hds::
-	ld	b,h
-	ld	c,l
+__divuint::
+	push	bc
+	lda	hl,4(sp)
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.divu16
 
 	ld	e,c
 	ld	d,b
 	
+	pop	bc
 	ret
 	
-__moduint_rrx_s::                
-        ld      hl,#2+3
-        add     hl,sp
-        
-        ld      d,(hl)
-        dec     hl
-        ld      e,(hl)
-        dec     hl
-        ld      a,(hl)
-        dec     hl
-        ld      l,(hl)
-        ld      h,a
-        ;; Fall through
-        
-__moduint_rrx_hds::
-	ld	b,h
-	ld	c,l
-
+__moduint::
+	push	bc
+	lda	hl,4(sp)
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.divu16
 
-        ;; Already in DE
-	
+	;; Result in de
+	pop	bc
 	ret
 	
 .div8::
@@ -204,9 +163,9 @@ __moduint_rrx_hds::
 	;;  if signs are different
 	;; Remainder has same sign as dividend
 	LD	A,B		; Get high byte of dividend
-	LD	(.srem),A	; Save as sign of remainder
+	PUSH	AF		; Save as sign of remainder (.srem)
 	XOR	D		; Xor with high byte of divisor
-	LD	(.squot),A	; Save sign of quotient
+	PUSH	AF		; Save sign of quotient (.squot)
 	;; Take absolute value of divisor
 	BIT	7,D
 	JR	Z,.chkde	; Jump if divisor is positive
@@ -229,9 +188,12 @@ __moduint_rrx_hds::
 	;; Divide absolute values
 .dodiv:
 	CALL	.divu16
-	RET	C		; Exit if divide by zero
+	JR	NC,1$		; Exit if divide by zero
+	LDA	SP,4(SP)	; Clean up the stack
+	RET
+1$:	
 	;; Negate quotient if it is negative
-	LD	A,(.squot)
+	POP	AF
 	AND	#0x80
 	JR	Z,.dorem	; Jump if quotient is positive
 	SUB	A		; Substract quotient from 0
@@ -242,7 +204,7 @@ __moduint_rrx_hds::
 	LD	B,A
 .dorem:
 	;; Negate remainder if it is negative
-	LD	A,(.srem)
+	POP	AF
 	AND	#0x80
 	RET	Z		; Return if remainder is positive
 	SUB	A		; Substract remainder from 0

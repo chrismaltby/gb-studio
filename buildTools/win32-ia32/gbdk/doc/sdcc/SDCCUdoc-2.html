@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Installation </TITLE>
+ <LINK HREF="SDCCUdoc-3.html" REL=next>
+ <LINK HREF="SDCCUdoc-1.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-3.html">Next</A>
+<A HREF="SDCCUdoc-1.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="Installation"></A> <A NAME="s2">2. Installation </A> </H2>
+
+<P>What you need before you start installation of SDCC ? A C Compiler, not
+just any C Compiler, gcc to be exact, you can get adventurous and try another
+compiler , I HAVEN'T tried it. GCC is free , and is available for almost all
+major platforms, if you are using linux you probably already have it, if you
+are using Windows 95/NT go to www.cygnus.com and download CYGWIN32 you will
+need the full development version of their tool (full.exe), follow their instructions
+for installation (this is also free and is very easy to install), Windows 95/NT
+users be aware that the compiler runs substantially slower on the Windows platform,
+I am not sure why.
+<P>After you have installed gcc you are ready to build the compiler (sorry
+no binary distributions yet). SDCC is native to Linux but can be ported to
+any platform on which GCC is available . Extract the source file package (.zip
+or .tar.gz) into some directory , which we shall refer to as SDCCDIR from now
+on.
+<H2><A NAME="Components"></A> <A NAME="ss2.1">2.1 Components of SDCC</A>
+ </H2>
+
+<H3>gc ( a conservative garbage collector) </H3>
+
+<P>SDCC relies on this component to do all the memory management, this excellent
+package is copyrighted by Jans J Boehm(boehm@sgi.com) and Alan J Demers but
+can be used with minimum restrictions. The GC source will be extracted into
+the directory SDCCDIR/gc. 
+<H3>cpp ( C-Preprocessor) </H3>
+
+<P>The preprocessor is extracted into the directory SDCCDIR/cpp, it is a modified
+version of the GNU preprocessor.
+<H3>asxxxx &amp; aslink ( The assembler and Linkage Editor) </H3>
+
+<P>This is retargettable assembler &amp; linkage editor, it was developed
+by Alan Baldwin, John Hartman created the version for 8051, and I (Sandeep)
+have some enhancements and bug fixes for it to work properly with the SDCC.
+This component is extracted into the directory SDCCDIR/asxxxx.
+<H3>SDCC - The compiler. </H3>
+
+<P>This is the actual compiler, it uses gc and invokes the assembler and linkage
+editor. All files with the prefix SDCC are part of the compiler and is extracted
+into the the directory SDCCDIR.
+<H3>S51 - Simulator </H3>
+
+<P>Version 2.1.8 onwards contains s51 a freeware , opensource simulator developed
+by Daniel Drotos &lt;drdani@mazsola.iit.uni-miskolc.hu&gt;. The executable
+is built as part of build process, for more information visit Daniel's website
+at &lt;http://mazsola.iit.uni-miskolc.hu/~drdani/embedded/s51/&gt;.
+<H3>SDCDB - Source level Debugger. </H3>
+
+<P>SDCDB is the companion source level debugger . The current version of the
+debugger uses Daniel's Simulator S51, but can be easily changed to use other
+simulators.
+<H2><A NAME="ss2.2">2.2 Installation for Version &lt;= 2.1.7</A>
+ </H2>
+
+<P>After the package is extracted (Windows 95/NT users start CYGWIN shell),
+change to the directory where you extracted the package and give the command.
+<P>
+<PRE>
+./sdccbuild.sh
+ 
+</PRE>
+<P>This is a bash shell script, it will compile all the above mentioned components
+and install the executables into the directory SDCCDIR/bin make sure you add
+this directory to your PATH environment variable. This script will also compile
+all the support routines ( library routines ) using SDCC. The support routines
+are all developed in C and need to be compiled.
+<H2><A NAME="ss2.3">2.3 Installation for Version &gt;= 2.1.8a</A>
+ </H2>
+
+<P>The distribution method from Version 2.1.8a has been changed to be conforment
+with the "autoconf" utility. The source is now distributed as <B>sdcc-&lt;version
+number&gt;.tar.gz format</B> , instead of the older .zip format. The steps for
+installation are as follows.
+<H3>Unpack the sources. </H3>
+
+<P>This is usually done by the following command "<B>gunzip -c sdcc-&lt;version
+number&gt;.tar.gz | tar -xv -</B>"
+<H3>Change to the main source directory (usually sdcc or sdcc-&lt;version number&gt;) </H3>
+
+<H3>Issue command to configure your system </H3>
+
+<P>The configure command has several options the most commonly used option
+is --prefix=&lt;directory name&gt;, where &lt;directory name&gt; is the final
+location for the sdcc executables and libraries, (default location is /usr/local).
+The installation process will create the following directory structure under
+the &lt;directory name&gt; specified.
+<P>
+<PRE>
+bin/ - binary exectables (add to PATH environment variable) 
+share/ 
+      sdcc51inc/
+ - include header files 
+      sdcc51lib/ - 
+             small/ - Object &amp;
+ Library files for small model library 
+             large/ - Object &amp; library
+ files for large model library
+ 
+</PRE>
+<P>The command 
+<P><B>'./configure --prefix=/usr/local" </B>
+<P>will create configure the compiler to be installed in directory /usr/local/bin.
+<H3>make </H3>
+
+<P>After configuration step issue the command 
+<P><B>"make"</B>
+<P>This will compile the compiler
+<H3>"make install" </H3>
+
+<P>Will install the compiler and libraries in the appropriate directories.
+<H3>Special Notes for Windows Users. Provided by Michael Jamet[ mjamet@computer.org] </H3>
+
+<P> 
+<P>  How to install SDCC from source on a Windows 95 or Windows NT 4 system
+<P>
+<P> 
+<P>  This document describes how to install SDCC on a Win 95 or Win NT 4 system.
+<P>
+<P>  These instructions probably work for Win 98 as well, but have not been
+<P>
+<P>  tested on that platform. 
+<P> 
+<P>  There are lots of little differences between UNIX and the Win32 Cygnus
+<P>
+<P>  environment which make porting more difficult than it should be.  If
+<P>
+<P>  you want the details, please contact me.  Otherwise just follow these
+<P>
+<P>  instructions. 
+<P> 
+<P>  1. Install the Cygnus Software 
+<P>  Go to http://sourceware.cygnus.com/cygwin.  Cygnus provides a UNIX like
+<P>
+<P>  environment for Win 32 systems.  Download &quot;full.exe&quot; and
+install.  You 
+<P>  MUST install it on your C drive.  &quot;full.exe&quot; contains a shell
+AND many 
+<P>  common UNIX utilities. 
+<P> 
+<P>  2. Download and Extract the Latest SDCC 
+<P>  The latest version can be found at 
+<P>   www.geocities.com/ResearchTriange/Forum/1353. 
+<P>  It can be uncompressed with winzip. 
+<P> 
+<P>  3.  Start a Cygnus Shell 
+<P>  There should be an entry in the Start Menu for Cygnus.  Invoke the shell.
+<P>
+<P>  This gives you a UNIX like environment.  FROM THIS POINT ON, DIRECTORIES
+<P>
+<P>  MUST BE SPECIFIED WITH FORWARD SLASHES (/) NOT THE DOS STYLE BACK 
+<P>  SLASHES (\) BECAUSE THIS IS WHAT UNIX EXPECTS.  - 
+<P>   ex. &quot;\winnt&quot; would be &quot;/winnt&quot; under the
+shell. 
+<P> 
+<P>  4. Change Directory to Where SDCC was extracted (referred to as INSTALLDIR)
+<P>
+<P> 
+<P>  ex. cd /sdcc218Da.  If you extracted to a drive OTHER THAN C, the drive
+<P>
+<P>  must be specified as part of the path. For example, if you extracted
+to 
+<P>  your &quot;g drive&quot;, type the following: &quot;cd //g/mydir&quot;. 
+You must use &quot;//&quot; 
+<P>  to specify the drive. 
+<P> 
+<P>  5. Make Dirs Which are Automatically Made During the UNIX Installation
+<P>
+<P>  From the INSTALLDIR, 
+<P> 
+<P>   mkdir -p bin   (not a typo, just &quot;bin&quot;) 
+<P>   mkdir -p /bin 
+<P>   mkdir -p /usr/local/bin 
+<P>   mkdir -p /usr/local/share 
+<P>   mkdir -p /usr/local/share/sdcc51lib 
+<P>   mkdir -p /usr/local/share/sdcc51inc 
+<P>   mkdir -p /tmp 
+<P> 
+<P>  (When a path from the root directory is specified WITHOUT a drive, the
+<P>
+<P>  drive defaults to c.  For example /michael/newuser =&gt; c:\michael\newuser)
+<P>
+<P> 
+<P>  6.  Add Programs to /bin Expected by the Installation Process 
+<P>   - Look at your path: echo $PATH 
+<P>     One of the fields is the diretory with the CYGNUS programs. 
+<P>    ex. /CYGNUS/CYGWIN~1/H-I586/BIN 
+<P> 
+<P>   - cd to the directory found above.  You may have to fiddle with the
+<P>
+<P>     case (upper or lower) here because the PATH is SHOWN as all upper
+<P>
+<P>     case, but is actually mixed.  To help you along, you may type 
+<P>     a letter or 2 followed by the escape key.  The shell will fill 
+<P>     out the remaining letters IF THEY describe a unique directory. 
+<P>     If you have problems here, cd one directory and type &quot;ls&quot;. 
+&quot;ls&quot; 
+<P>     is the equivalent of &quot;dir/w&quot;. 
+<P> 
+<P>   - Copy the following: 
+<P>    cp sh.exe /bin 
+<P>    cp pwd.exe /bin 
+<P>    cp echo.exe /bin 
+<P> 
+<P>  7. Go back to the INSTALLDIR 
+<P>   cd INSTALLDIR 
+<P>  ex. cd //d/sdcc218Da 
+<P> 
+<P>  8. Run the configure Program 
+<P>   ./configure 
+<P>  The &quot;./&quot; is important because your current directory is NOT
+in your path. 
+<P>  Under DOS, your current directory was implicitly always the first entry
+<P>
+<P>  in your path. 
+<P> 
+<P>  9. Run make 
+<P>   make 
+<P> 
+<P>  This process takes quite some time under Win 32. 
+<P> 
+<P>  10. Install the Newly Built Software 
+<P>   make install 
+<P> 
+<P>  This will partially install the software into the /usr/local directories
+<P>
+<P>  created in step 5.  What it actually doing is copying the .c, .h and
+<P>
+<P>  library files to directories under /usr/local/share. 
+<P> 
+<P>  It will NOT be able to install the actual programs (binaries) because
+<P>
+<P>  it does not know programs on Win32 systems have &quot;.exe&quot; extensions.
+<P>
+<P>  For example, it tries to install sdcc instead of sdcc.exe. 
+<P> 
+<P>  After the automated part is finished, you must manually copy the binaries:
+<P>
+<P>   cd bin  (This is the bin directory in your INSTALLDIR) 
+<P>   cp * /usr/local/bin 
+<P> 
+<P>  11. Make sure /usr/local/bin is in Your PATH 
+<P>  You may add c:\usr\local\bin to your path however your
+Win32 system allows.  For 
+<P>  example you may add it to the PATH statement in autoexec.bat. 
+<P> 
+<P>  Good luck.  If you have any questions send them to me or post them 
+<P>  to the list. 
+<HR>
+<A HREF="SDCCUdoc-3.html">Next</A>
+<A HREF="SDCCUdoc-1.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc2">Contents</A>
+</BODY>
+</HTML>

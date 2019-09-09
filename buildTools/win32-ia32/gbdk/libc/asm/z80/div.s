@@ -1,28 +1,38 @@
 	;; Originally from GBDK by Pascal Felber.
 	.area	_CODE
 
-__divschar::
-        push    bc
-        ld      c,l
-        
-        call    .div8
+__divschar::	
+	push	de
+	push	bc
+	ld	hl,#6
+	add	hl,sp
+
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
+	call	.div8
 
 	ld	l,c
-        ld      h,b
-        	
+	
 	pop	bc
+	pop	de
 	ret
 	
 __modschar::
-        push    bc
-        ld      c,l
+	push	de
+	push	bc
+	ld	hl,#6
+	add	hl,sp
 
-       	call	.div8
+	ld	c,(hl)
+	inc	hl
+	ld	e,(hl)
+	call	.div8
 
 	ld	l,e
-        ld      h,d
-        	
+	
 	pop	bc
+	pop	de
 	ret
 
 __divsint::
@@ -39,16 +49,25 @@ __divsint::
 	ret
 	
 __modsint::
+	push	de
 	push	bc
-	ld	b,h
-	ld	c,l
+	ld	hl,#6
+	add	hl,sp
 
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
 	call	.div16
 
 	ld	l,e
 	ld	h,d
 	
 	pop	bc
+	pop	de
 	ret
 
 	;; Unsigned
@@ -64,8 +83,7 @@ __divuchar::
 	call	.divu8
 
 	ld	l,c
-        ld      h,b
-        	
+	
 	pop	ix
 	pop	bc
 	pop	de
@@ -83,8 +101,7 @@ __moduchar::
 	call	.divu8
 
 	ld	l,e
-        ld      h,d
-        	
+	
 	pop	ix
 	pop	bc
 	pop	de

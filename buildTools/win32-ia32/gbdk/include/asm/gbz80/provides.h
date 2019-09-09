@@ -1,4 +1,3 @@
-#define USE_C_MEMCPY	1
-#define USE_C_STRCPY	1
-#define USE_C_STRCMP	1
-
+#undef USE_C_MEMCPY
+#undef USE_C_STRCPY
+#undef USE_C_STRCMP

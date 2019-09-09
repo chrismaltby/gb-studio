@@ -1,4 +1,4 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m
+CC	= ../../../bin/lcc -Wa-l -Wl-m -DUSE_SFR_FOR_REG
 
 BINS	= dscan.gb
 

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: Language Extensions</TITLE>
+ <LINK HREF="SDCCUdoc-6.html" REL=next>
+ <LINK HREF="SDCCUdoc-4.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc5" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-6.html">Next</A>
+<A HREF="SDCCUdoc-4.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc5">Contents</A>
+<HR>
+<H2><A NAME="Language Extension"></A> <A NAME="s5">5. Language Extensions</A> </H2>
+
+<H2><A NAME="Storage Classes"></A> <A NAME="ss5.1">5.1 Storage Classes.</A>
+ </H2>
+
+<P>In addition to the ANSI storage classes SDCC allows the following 8051
+specific storage classes.
+<H3><A NAME="xdata"></A> xdata. </H3>
+
+<P>Variables declared with this storage class will be placed in the extern
+RAM. This is the <B>default</B> storage class for Large Memory model .
+<P>eg. xdata unsigned char xduc;
+<H3><A NAME="data"></A> data </H3>
+
+<P>This is the <B>default</B> storage class for Small Memory model. Variables declared
+with this storage class will be allocated in the internal RAM.
+<P>eg. data int iramdata;
+<H3><A NAME="idata"></A> idata </H3>
+
+<P>Variables declared with this storage class will be allocated into the indirectly
+addressable portion of the internal ram of a 8051 .
+<P>eg.idata int idi;
+<H3><A NAME="bit"></A> bit </H3>
+
+<P>This is a data-type and a storage class specifier. When a variable is declared
+as a bit , it is allocated into the bit addressable memory of 8051.
+<P>eg.bit iFlag;
+<H3><A NAME="sfr / sbit"></A> sfr / sbit </H3>
+
+<P>Like the bit keyword, sfr / sbit signifies both a data-type and storage
+class, they are used to describe the special function registers and special
+bit variables of a 8051. 
+<P>eg. 
+<P>sfr at 0x80 P0; /* special function register P0 at location 0x80 */
+<P>sbit at 0xd7 CY; /* CY (Carry Flag) */
+<HR>
+<A HREF="SDCCUdoc-6.html">Next</A>
+<A HREF="SDCCUdoc-4.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc5">Contents</A>
+</BODY>
+</HTML>

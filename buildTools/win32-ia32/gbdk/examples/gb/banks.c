@@ -30,8 +30,6 @@ void main(void)
   puts("Program Start...");
 
   ENABLE_RAM_MBC1;
-  SWITCH_4_32_MODE_MBC1;
-
   var_internal = 1;
   SWITCH_RAM_MBC1(0);
   var_0 = 2;

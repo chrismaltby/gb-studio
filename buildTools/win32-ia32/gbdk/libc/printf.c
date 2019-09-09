@@ -6,8 +6,9 @@
 #include <stdarg.h>
 #pragma bank=BASE
 
-static void _printn(unsigned u, unsigned base, char issigned, 
-                    volatile void (*emitter)(char, void *), void *pData)
+typedef void EMIT(char c, void *pData) NONBANKED;
+
+static void _printn(unsigned u, unsigned base, char issigned, EMIT *emitter, void *pData)
 {
     const char *_hex = "0123456789ABCDEF";
     if (issigned && ((int)u < 0)) {
@@ -19,10 +20,7 @@ static void _printn(unsigned u, unsigned base, char issigned,
     (*emitter)(_hex[u%base], pData);
 }
 
-/* PENDING: HACK: A bug in 2.96a pulls emitter into registers and then
-   destroys them.  Marking it as volatile stops this.
-*/
-static void _printf(const char *format, volatile void (*emitter)(char, void *), void *pData, va_list va)
+static void _printf(const char *format, EMIT *emitter, void *pData, va_list va)
 {
     while (*format) {
 	if (*format == '%') {
@@ -101,5 +99,4 @@ void sprintf(char *into, const char *format, ...) NONBANKED
     va_start(va, format);
 
     _printf(format, _sprintf_emitter, &si, va);
-    _sprintf_emitter('\0', &si);
 }

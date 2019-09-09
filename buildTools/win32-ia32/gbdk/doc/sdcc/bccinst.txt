@@ -1,0 +1,20 @@
+Building SDCC with Borland C++ under Windows
+
+1: Build SDCC under Cygwin as documented in cygwininst.txt (this is
+necessary in order to run all the necessary configuration steps).
+
+2: If necessary, modify support\gc\BCC_Makefile to point to your Borland
+C++ installation.
+
+3: From the sdcc directory, run the command "make -f Makefile.bcc". This
+should regenerate all the .exe files in the bin directory except for
+sdcdb.exe (which currently doesn't build under Borland C++).
+
+4: If you modify any source files and need to rebuild, be aware that the
+dependancies may not be correctly calculated. The safest option is to
+delete all .obj files and run the build again. From a Cygwin BASH
+prompt, this can easily be done with the commmand:
+
+ 'find . -name "*.obj" -print | xargs rm'
+
+from the sdcc directory.

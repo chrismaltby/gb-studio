@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>SDCC Compiler User Guide: TIPS</TITLE>
+ <LINK HREF="SDCCUdoc-26.html" REL=next>
+ <LINK HREF="SDCCUdoc-24.html" REL=previous>
+ <LINK HREF="SDCCUdoc.html#toc25" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="SDCCUdoc-26.html">Next</A>
+<A HREF="SDCCUdoc-24.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc25">Contents</A>
+<HR>
+<H2><A NAME="Tips"></A> <A NAME="s25">25. TIPS</A> </H2>
+
+<P>Here are a few guide-lines that will help the compiler generate more efficient
+code, some of the tips are specific to this compiler others are generally good
+programming practice.
+<P>
+<UL>
+<LI>Use the smallest data type to represent your data-value. If it is known
+in advance that the value is going to be less than 256 then use a 'short' or
+'char' instead of an 'int'.</LI>
+<LI>Use unsigned when it is known in advance that the value is not going to
+be negative. This helps especially if you are doing division or multiplication.</LI>
+<LI>NEVER jump into a LOOP.</LI>
+<LI>Declare the variables to be local whenever possible, especially loop control
+variables (induction).</LI>
+<LI>Since the compiler does not do implicit integral promotion, the programmer
+should do an explicit cast when integral promotion is required.</LI>
+<LI>Reducing the size of division , multiplication &amp; modulus operations
+can reduce code size substantially. Take the following code for example.
+<PRE>
+foobar( unsigned int p1, unsigned char ch)
+{
+    unsigned char ch1
+ = p1 % ch ;
+    ....    
+}
+  
+</PRE>
+
+<P>For the modulus operation the variable ch will be promoted to unsigned
+int first then the modulus operation will be performed (this will lead to a
+call to a support routine). If the code is changed to 
+
+<P>
+<PRE>
+foobar( unsigned int p1, unsigned char ch)
+{
+    unsigned char ch1
+ = (unsigned char)p1 % ch ;
+    ....    
+}
+  
+</PRE>
+<P>It would substantially reduce the code generated (future versions of the
+compiler will be smart enough to detect such optimization oppurtunities).
+</LI>
+</UL>
+<P><B>Notes from an USER ( Trefor@magera.freeserve.co.uk )</B>
+<P>The 8051 family of micro controller have a minimum of 128 bytes of internal
+memory which is structured as follows
+<P>- Bytes 00-1F - 32 bytes to hold up to 4 banks of the registers R7 to R7
+<P>
+<P>- Bytes 20-2F - 16 bytes to hold 128 bit variables and 
+<P>- Bytes 30-7F - 60 bytes for general purpose use.
+<P>Normally the SDCC compiler will only utilise the first bank of registers,
+but it is possible to specify that other banks of registers should be used
+in interrupt routines. By default, the compiler will place the stack after
+the last bank of used registers, i.e. if the first 2 banks of registers are
+used, it will position the base of the internal stack at address 16 (0X10).
+This implies that as the stack grows, it will use up the remaining register
+banks, and the 16 bytes used by the 128 bit variables, and 60 bytes for general
+purpose use.
+<P>By default, the compiler uses the 60 general purpose bytes to hold &quot;near
+data&quot;. The compiler/optimiser may also declare some Local Variables in
+this area to hold local data. 
+<P>If any of the 128 bit variables are used, or near data is being used then
+care needs to be taken to ensure that the stack does not grow so much that
+it starts to over write either your bit variables or &quot;near data&quot;.
+There is no runtime checking to prevent this from happening.
+<P>The amount of stack being used is affected by the use of the &quot;internal
+stack&quot; to save registers before a subroutine call is made, - --stack-auto
+will declare parameters and local variables on the stack - the number of nested
+subroutines.
+<P>If you detect that the stack is over writing you data, then the following
+can be done. --xstack will cause an external stack to be used for saving registers
+and (if --stack-auto is being used) storing parameters and local variables.
+However this will produce more and code which will be slower to execute. 
+<P>--stack-loc will allow you specify the start of the stack, i.e. you could
+start it after any data in the general purpose area. However this may waste
+the memory not used by the register banks and if the size of the &quot;near
+data&quot; increases, it may creep into the bottom of the stack.
+<P>--stack-after-data, similar to the --stack-loc, but it automatically places
+the stack after the end of the &quot;near data&quot;. Again this could waste
+any spare register space.
+<P>--data-loc allows you to specify the start address of the near data. This
+could be used to move the &quot;near data&quot; further away from the stack
+giving it more room to grow. This will only work if no bit variables are being
+used and the stack can grow to use the bit variable space.
+<P>Conclusion.
+<P>If you find that the stack is over writing your bit variables or &quot;near
+data&quot; then the approach which best utilised the internal memory is to
+position the &quot;near data&quot; after the last bank of used registers
+or, if you use bit variables, after the last bit variable by using the --data-loc,
+e.g. if two register banks are being used and no data variables, --data-loc
+16, and - use the --stack-after-data option.
+<P>If bit variables are being used, another method would be to try and squeeze
+the data area in the unused register banks if it will fit, and start the stack
+after the last bit variable.
+<HR>
+<A HREF="SDCCUdoc-26.html">Next</A>
+<A HREF="SDCCUdoc-24.html">Previous</A>
+<A HREF="SDCCUdoc.html#toc25">Contents</A>
+</BODY>
+</HTML>

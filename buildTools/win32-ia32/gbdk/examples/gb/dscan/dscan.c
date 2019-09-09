@@ -430,7 +430,7 @@ void player()
 /* bombs */
 void bombs()
 {
-   UBYTE i;
+   volatile UBYTE i;
 
    for( i=0; i<MAX_TT; i++ ) {
     if( tf[i] != 0 ) {
