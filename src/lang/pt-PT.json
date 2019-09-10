@@ -386,7 +386,7 @@
   "DIALOG_FUTURE_DESCRIPTION": "Este projecto foi criado com a versão {currentVersion}, mais recente à que o GB Studio suporta. Projecto compatível apenas até versão {version}. \n\nPoderá ser necessário actualizar o GB Studio.",
   "DIALOG_OPEN_ANYWAY": "Ignorar e Abrir",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "O GB Studio precisará de reiniciar para aplicar modificações",
-  "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Pr favor, guarde o seu projecto e reinicie o GB Studio.",
+  "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Por favor, guarde o seu projecto e reinicie o GB Studio.",
 
   "// 16": "Configurações ----------------------------------------------------",
 
