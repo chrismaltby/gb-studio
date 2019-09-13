@@ -73,7 +73,8 @@ import {
   SET_INPUT_SCRIPT,
   REMOVE_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
-  VARIABLE_CLEAR_FLAGS
+  VARIABLE_CLEAR_FLAGS,
+  TEXT_WITH_AVATAR
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -247,17 +248,25 @@ class ScriptBuilder {
 
   // Text
 
-  textDialogue = (text = " ") => {
+  textDialogue = (text = " ", avatarId) => {
     const output = this.output;
-    const { strings } = this.options;
+    const { strings, avatars } = this.options;
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
       stringIndex = strings.length - 1;
     }
-    output.push(cmd(TEXT));
-    output.push(hi(stringIndex));
-    output.push(lo(stringIndex));
+    if (avatarId) {
+      const avatarIndex = getSpriteIndex(avatarId, avatars);
+      output.push(cmd(TEXT_WITH_AVATAR));
+      output.push(hi(stringIndex));
+      output.push(lo(stringIndex));
+      output.push(avatarIndex);
+    } else {
+      output.push(cmd(TEXT));
+      output.push(hi(stringIndex));
+      output.push(lo(stringIndex));  
+    }
   };
 
   textChoice = (setVariable, args) => {

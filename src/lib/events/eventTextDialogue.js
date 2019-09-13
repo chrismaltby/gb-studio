@@ -7,11 +7,31 @@ export const fields = [
   {
     key: "text",
     type: "textarea",
-    maxPerLine: 18,
     placeholder: l10n("FIELD_TEXT_PLACEHOLDER"),
-    updateFn: trimlines,
+    updateFn: (string, field, args) => {
+      const maxPerLine = args.avatarId ? 16 : 18;
+      return trimlines(string, maxPerLine);
+    },
     multiple: true,
     defaultValue: ""
+  },
+  {
+    key: "avatarId",
+    type: "sprite",
+    toggleLabel: l10n("FIELD_ADD_TEXT_AVATAR"),
+    label: l10n("FIELD_TEXT_AVATAR"),
+    defaultValue: "",
+    optional: true,
+    filter: sprite => sprite.numFrames === 1,
+    postUpdate: (args) => {
+      const maxPerLine = args.avatarId ? 16 : 18;
+      return {
+        ...args,
+        text: Array.isArray(args.text)
+          ? args.text.map(string => trimlines(string, maxPerLine))
+          : trimlines(args.text, maxPerLine)
+      };
+    }
   }
 ];
 
@@ -37,7 +57,7 @@ export const compile = (input, helpers) => {
         textRestoreCloseSpeed();
       }
 
-      textDialogue(rowText);
+      textDialogue(rowText, input.avatarId);
 
       // After first box, make open instant
       if (j === 0) {
@@ -49,6 +69,6 @@ export const compile = (input, helpers) => {
       }
     }
   } else {
-    textDialogue(input.text);
+    textDialogue(input.text, input.avatarId);
   }
 };

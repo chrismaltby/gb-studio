@@ -5,13 +5,14 @@ test("Should be able to display text", () => {
 
   compile(
     {
-      text: "Hello World"
+      text: "Hello World",
+      avatarId: "1"
     },
     {
       textDialogue: mockTextDialogue
     }
   );
-  expect(mockTextDialogue).toBeCalledWith("Hello World");
+  expect(mockTextDialogue).toBeCalledWith("Hello World", "1");
 });
 
 test("Should be able to display multiple text boxes", () => {
@@ -23,7 +24,8 @@ test("Should be able to display multiple text boxes", () => {
 
   compile(
     {
-      text: ["Hello World", "Goodbye World"]
+      text: ["Hello World", "Goodbye World"],
+      avatarId: "1"
     },
     {
       textDialogue: mockTextDialogue,
@@ -38,6 +40,6 @@ test("Should be able to display multiple text boxes", () => {
   expect(mockTextSetOpenInstant).toHaveBeenCalledAfter(mockTextDialogue);
   expect(mockTextRestoreOpenSpeed).toHaveBeenCalledAfter(mockTextDialogue);
   expect(mockTextDialogue.mock.calls.length).toBe(2);
-  expect(mockTextDialogue).toBeCalledWith("Hello World");
-  expect(mockTextDialogue).toBeCalledWith("Goodbye World");
+  expect(mockTextDialogue).toBeCalledWith("Hello World", "1");
+  expect(mockTextDialogue).toBeCalledWith("Goodbye World", "1");
 });
