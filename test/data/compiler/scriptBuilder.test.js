@@ -71,7 +71,10 @@ import {
   IF_SAVED_DATA,
   AWAIT_INPUT,
   REMOVE_INPUT_SCRIPT,
-  SET_INPUT_SCRIPT
+  SET_INPUT_SCRIPT,
+  VARIABLE_ADD_FLAGS,
+  VARIABLE_CLEAR_FLAGS,
+  TEXT_WITH_AVATAR
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -359,6 +362,16 @@ test("Should default to empty display text", () => {
   expect(strings).toEqual([" "]);
 });
 
+test("Should be able to display text with avatar", () => {
+  const output = [];
+  const strings = ["First Text"];
+  const avatars = [ { id: "avatar-1" }, { id: "avatar-2" }];
+  const sb = new ScriptBuilder(output, { strings, avatars });
+  sb.textDialogue("First Text", "avatar-2");
+  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), 0, 0, 1]);
+  expect(strings).toEqual(["First Text"]);
+});
+
 test("Should be able to display choice", () => {
   const output = [];
   const strings = ["Hello World"];
@@ -503,6 +516,20 @@ test("Should be able to reset all variables to false", () => {
   expect(output).toEqual([cmd(RESET_VARIABLES)]);
 });
 
+test("Should be able to add flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableAddFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_ADD_FLAGS), 0, 0, 129]);
+});
+
+test("Should be able to clear flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableClearFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_CLEAR_FLAGS), 0, 0, 129]);
+});
+
 test("Should be able to show a white overlay", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
@@ -645,7 +672,7 @@ test("Should set camera move speed flag", () => {
     }
   });
   sb.cameraMoveTo(5, 6, 2);
-  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 35]);
+  expect(output).toEqual([cmd(CAMERA_MOVE_TO), 5, 6, 33]);
 });
 
 test("Should be able to lock camera to player position", () => {
@@ -659,7 +686,7 @@ test("Should be able to lock camera with speed flag", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.cameraLock(3);
-  expect(output).toEqual([cmd(CAMERA_LOCK), 39]);
+  expect(output).toEqual([cmd(CAMERA_LOCK), 35]);
 });
 
 test("Should be able to shake camera for a number of frames", () => {

@@ -1,0 +1,33 @@
+.CustomControlsPicker {
+  position: relative;
+}
+
+.CustomControlsPicker__Columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 20px;
+  grid-row-gap: 0px;
+}
+
+.CustomControlsPicker__Column {
+  min-width: 120px;
+}
+
+.CustomControlsPicker__Column:last-child {
+  grid-column: span 2;
+}
+
+.FormField .CustomControlsPicker__Input--Focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+}
+
+.CustomControlsPicker__HiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}

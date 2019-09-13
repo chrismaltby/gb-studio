@@ -91,17 +91,18 @@ class SpriteSheetSelect extends Component {
   };
 
   render() {
-    const { spriteSheets, id, value, onChange } = this.props;
+    const { spriteSheets, id, value, filter, optional, onChange } = this.props;
 
     const current = spriteSheets.find(s => s.id === value);
-    const groupedSpriteSheets = groupByPlugin(spriteSheets);
+    const filteredSpriteSheets = spriteSheets.filter(filter || (() => true))
+    const groupedSpriteSheets = groupByPlugin(filteredSpriteSheets);
 
     const options = Object.keys(groupedSpriteSheets)
       .sort()
       .reduce((memo, plugin) => {
         buildOptions(memo, plugin, groupedSpriteSheets[plugin]);
         return memo;
-      }, []);
+      }, optional ? [{ value: "", label : "None" }] : []);
 
     return (
       <Select
@@ -109,7 +110,7 @@ class SpriteSheetSelect extends Component {
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
         options={options}
-        value={{ label: current ? current.name : "", value }}
+        value={{ label: current ? current.name : "None", value }}
         onChange={data => {
           onChange(data.value);
         }}

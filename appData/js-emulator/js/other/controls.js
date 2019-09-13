@@ -1,23 +1,28 @@
-const JS_KEY_UP = 38;
-const JS_KEY_LEFT = 37;
-const JS_KEY_RIGHT = 39;
-const JS_KEY_DOWN = 40;
-const JS_KEY_ENTER = 13;
 const JS_KEY_ALT = 18;
 const JS_KEY_CTRL = 17;
-const JS_KEY_SHIFT = 16;
-
-const JS_KEY_W = 87;
-const JS_KEY_A = 65;
-const JS_KEY_S = 83;
-const JS_KEY_D = 68;
-const JS_KEY_J = 74;
-const JS_KEY_K = 75;
-
-const JS_KEY_Z = 90;
-const JS_KEY_X = 88;
 
 const DEADZONE = 0.1;
+
+var defaultKeys = {
+  up: ["ArrowUp", "w"],
+  down: ["ArrowDown", "s"],
+  left: ["ArrowLeft", "a"],
+  right: ["ArrowRight", "d"],
+  a: ["Alt", "z", "j"],
+  b: ["Control", "k", "x"],
+  start: ["Enter"],
+  select: ["Shift"]
+};
+
+// Build keybindings object using
+// value from customControls if defined or defaultKeys if not
+var keyBindings = {};
+for (var key in defaultKeys) {
+  var keys = customControls[key] ? customControls[key] : defaultKeys[key];
+  for (var i = 0; i < keys.length; i++) {
+    keyBindings[keys[i]] = key;
+  }
+}
 
 var isTouchEnabled = "ontouchstart" in document.documentElement;
 
@@ -124,30 +129,8 @@ function bindKeyboard() {
     ) {
       return;
     }
-    if (e.keyCode === JS_KEY_LEFT || e.keyCode === JS_KEY_A) {
-      GameBoyKeyDown("left");
-    } else if (e.keyCode === JS_KEY_RIGHT || e.keyCode === JS_KEY_D) {
-      GameBoyKeyDown("right");
-    } else if (e.keyCode === JS_KEY_UP || e.keyCode === JS_KEY_W) {
-      GameBoyKeyDown("up");
-    } else if (e.keyCode === JS_KEY_DOWN || e.keyCode === JS_KEY_S) {
-      GameBoyKeyDown("down");
-    } else if (e.keyCode === JS_KEY_ENTER) {
-      GameBoyKeyDown("start");
-    } else if (
-      e.keyCode === JS_KEY_ALT ||
-      e.keyCode === JS_KEY_Z ||
-      e.keyCode === JS_KEY_J
-    ) {
-      GameBoyKeyDown("a");
-    } else if (
-      e.keyCode === JS_KEY_CTRL ||
-      e.keyCode === JS_KEY_K ||
-      e.keyCode === JS_KEY_X
-    ) {
-      GameBoyKeyDown("b");
-    } else if (e.keyCode === JS_KEY_SHIFT) {
-      GameBoyKeyDown("select");
+    if (keyBindings[e.key]) {
+      GameBoyKeyDown(keyBindings[e.key]);
     }
     e.preventDefault();
   };
@@ -162,30 +145,8 @@ function bindKeyboard() {
         }
       );
     }
-    if (e.keyCode === JS_KEY_LEFT || e.keyCode === JS_KEY_A) {
-      GameBoyKeyUp("left");
-    } else if (e.keyCode === JS_KEY_RIGHT || e.keyCode === JS_KEY_D) {
-      GameBoyKeyUp("right");
-    } else if (e.keyCode === JS_KEY_UP || e.keyCode === JS_KEY_W) {
-      GameBoyKeyUp("up");
-    } else if (e.keyCode === JS_KEY_DOWN || e.keyCode === JS_KEY_S) {
-      GameBoyKeyUp("down");
-    } else if (e.keyCode === JS_KEY_ENTER) {
-      GameBoyKeyUp("start");
-    } else if (
-      e.keyCode === JS_KEY_ALT ||
-      e.keyCode === JS_KEY_Z ||
-      e.keyCode === JS_KEY_J
-    ) {
-      GameBoyKeyUp("a");
-    } else if (
-      e.keyCode === JS_KEY_CTRL ||
-      e.keyCode === JS_KEY_K ||
-      e.keyCode === JS_KEY_X
-    ) {
-      GameBoyKeyUp("b");
-    } else if (e.keyCode === JS_KEY_SHIFT) {
-      GameBoyKeyUp("select");
+    if (keyBindings[e.key]) {
+      GameBoyKeyUp(keyBindings[e.key]);
     }
     e.preventDefault();
   };

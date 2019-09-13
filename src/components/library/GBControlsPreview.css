@@ -1,0 +1,134 @@
+.GBControlsPreview {
+  background: var(--sidebar-border-color);
+  border-radius: 8px;
+  border-bottom-right-radius: 60px;
+  height: 210px;
+  width: 360px;
+  position: relative;
+}
+
+.GBControlsPreview__DPad {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  /* background: #000; */
+}
+
+.GBControlsPreview__DPad:after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: var(--button-top-color);
+  left: 40px;
+  top: 40px;
+}
+
+.GBControlsPreview__DPadButton {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: var(--button-top-color);
+}
+
+.GBControlsPreview__DPadButton:hover {
+  background: var(--button-bottom-color);
+}
+
+.GBControlsPreview__DPadButton--up {
+  left: 40px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.GBControlsPreview__DPadButton--left {
+  top: 40px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.GBControlsPreview__DPadButton--right {
+  top: 40px;
+  left: 80px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.GBControlsPreview__DPadButton--down {
+  top: 80px;
+  left: 40px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.GBControlsPreview__Button--a,
+.GBControlsPreview__Button--b {
+  width: 50px;
+  height: 50px;
+  background: var(--button-top-color);
+  border-radius: 50px;
+  position: absolute;
+}
+
+.GBControlsPreview__Button--b {
+  left: 220px;
+  top: 70px;
+}
+
+.GBControlsPreview__Button--a {
+  left: 290px;
+  top: 50px;
+}
+
+.GBControlsPreview__Button--a .GBControlsPreview__ButtonLabel,
+.GBControlsPreview__Button--b .GBControlsPreview__ButtonLabel {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--button-text-color);
+  position: absolute;
+}
+
+.GBControlsPreview__Button--start,
+.GBControlsPreview__Button--select {
+  width: 60px;
+  height: 20px;
+  background: var(--button-top-color);
+  border-radius: 50px;
+  position: absolute;
+}
+
+.GBControlsPreview__Button--select {
+  left: 120px;
+  top: 160px;
+}
+
+.GBControlsPreview__Button--start {
+  left: 200px;
+  top: 160px;
+}
+
+.GBControlsPreview__Button--start .GBControlsPreview__ButtonLabel,
+.GBControlsPreview__Button--select .GBControlsPreview__ButtonLabel {
+  width: 60px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--button-text-color);
+  position: absolute;
+}
+
+.GBControlsPreview__Button:hover {
+  background: var(--button-bottom-color);
+}
+
+.GBControlsPreview__Button--Selected,
+.GBControlsPreview__DPadButton--Selected {
+  z-index: 10;
+  box-shadow: 0 0 0px 3px var(--highlight-color);
+}

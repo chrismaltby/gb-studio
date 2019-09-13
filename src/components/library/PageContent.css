@@ -3,3 +3,20 @@
   background: var(--sidebar-bg-color);
   flex-grow: 1;
 }
+
+.PageContent .FormField {
+  padding-left: 0;
+}
+
+.PageContent section {
+  margin: 0px auto;
+  padding-bottom: 40px;
+
+  margin-bottom: 40px;
+  max-width: 1000px;
+  border-bottom: 1px solid var(--sidebar-border-color);
+}
+
+.PageContent section h2 {
+  margin-top: 0px;
+}
