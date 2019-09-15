@@ -55,6 +55,8 @@ const patchROM = romData => {
   return romData;
 };
 
+let firstBuild = true;
+
 const makeBuild = ({
   buildType = "rom",
   buildRoot = "/tmp",
@@ -80,9 +82,11 @@ const makeBuild = ({
       await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
     } catch (e) {
       await copy(buildToolsPath, tmpBuildToolsPath, {
-        overwrite: false
+        overwrite: firstBuild
       });
     }
+    
+    firstBuild = false;
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;

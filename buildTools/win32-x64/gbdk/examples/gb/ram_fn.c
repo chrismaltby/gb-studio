@@ -4,25 +4,30 @@
 
 UWORD counter;
 
-void inc()
+void inc(void)
 {
   counter++;
 }
 
-void print_counter()
+void print_counter(void)
 {
     printf(" Counter is %u\n", counter);
 }
 
-void main()
+typedef void (*FUNPTR)(void);
+
+void main(void)
 {
   extern UBYTE __inc_end, __inc_start;
   /* Declare extern functions */
   void inc_ram() NONBANKED;
   void inc_hiram() NONBANKED;
   /* Declare pointer-to-function variables */
-  void (*inc_ram_var)(void) NONBANKED = 0xD000;
-  void (*inc_hiram_var)(void) NONBANKED = 0xFFA0;
+  /* With sdcc 2.3.1, you cannot cast a constant to a function pointer
+     without going through a typedef.
+  */
+  FUNPTR inc_ram_var = (FUNPTR)0xD000;
+  FUNPTR inc_hiram_var = (FUNPTR)0xFFA0;
 
   puts("Program Start...");
   counter = 0;

@@ -1,0 +1,792 @@
+                              1 	.include	"global.s"
+                    0001      1 	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
+                              2         
+                              3 	;; Changed by astorgb.pl to 1
+                    0000      4 	__RGBDS__	= 0
+                              5 
+                              6 	
+                              7 	;;  Screen dimensions 
+                    0013      8 	.MAXCURSPOSX	= 0x13	; In tiles
+                    0011      9 	.MAXCURSPOSY	= 0x11
+                             10 
+                    0080     11 	.START		= 0x80
+                    0040     12 	.SELECT		= 0x40
+                    0020     13 	.B		= 0x20
+                    0010     14 	.A		= 0x10
+                    0008     15 	.DOWN		= 0x08
+                    0004     16 	.UP		= 0x04
+                    0002     17 	.LEFT		= 0x02
+                    0001     18 	.RIGHT		= 0x01
+                             19 
+                    00A0     20 	.SCREENWIDTH	= 0xA0
+                    0090     21 	.SCREENHEIGHT	= 0x90
+                    0007     22 	.MINWNDPOSX	= 0x07
+                    0000     23 	.MINWNDPOSY	= 0x00
+                    00A6     24 	.MAXWNDPOSX	= 0xA6
+                    008F     25 	.MAXWNDPOSY	= 0x8F
+                             26 
+                    0001     27 	.VBL_IFLAG	= 0x01
+                    0002     28 	.LCD_IFLAG	= 0x02
+                    0004     29 	.TIM_IFLAG	= 0x04
+                    0008     30 	.SIO_IFLAG	= 0x08
+                    0010     31 	.JOY_IFLAG	= 0x10
+                             32  
+                    0000     33 	.P1		= 0x00	; Joystick: 1.1.P15.P14.P13.P12.P11.P10
+                    0001     34 	.SB		= 0x01	; Serial IO data buffer
+                    0002     35 	.SC		= 0x02	; Serial IO control register
+                    0004     36 	.DIV		= 0x04	; Divider register
+                    0005     37 	.TIMA		= 0x05	; Timer counter
+                    0006     38 	.TMA		= 0x06	; Timer modulo
+                    0007     39 	.TAC		= 0x07	; Timer control
+                    000F     40 	.IF		= 0x0F	; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
+                    0010     41 	.NR10		= 0x10	; Sound register
+                    0011     42 	.NR11		= 0x11	; Sound register
+                    0012     43 	.NR12		= 0x12	; Sound register
+                    0013     44 	.NR13		= 0x13	; Sound register
+                    0014     45 	.NR14		= 0x14	; Sound register
+                    0016     46 	.NR21		= 0x16	; Sound register
+                    0017     47 	.NR22		= 0x17	; Sound register
+                    0018     48 	.NR23		= 0x18	; Sound register
+                    0019     49 	.NR24		= 0x19	; Sound register
+                    001A     50 	.NR30		= 0x1A	; Sound register
+                    001B     51 	.NR31		= 0x1B	; Sound register
+                    001C     52 	.NR32		= 0x1C	; Sound register
+                    001D     53 	.NR33		= 0x1D	; Sound register
+                    001E     54 	.NR34		= 0x1E	; Sound register
+                    0020     55 	.NR41		= 0x20	; Sound register
+                    0021     56 	.NR42		= 0x21	; Sound register
+                    0022     57 	.NR43		= 0x22	; Sound register
+                    0023     58 	.NR44		= 0x23	; Sound register
+                    0024     59 	.NR50		= 0x24	; Sound register
+                    0025     60 	.NR51		= 0x25	; Sound register
+                    0026     61 	.NR52		= 0x26	; Sound register
+                    0040     62 	.LCDC		= 0x40	; LCD control
+                    0041     63 	.STAT		= 0x41	; LCD status
+                    0042     64 	.SCY		= 0x42	; Scroll Y
+                    0043     65 	.SCX		= 0x43	; Scroll X
+                    0044     66 	.LY		= 0x44	; LCDC Y-coordinate
+                    0045     67 	.LYC		= 0x45	; LY compare
+                    0046     68 	.DMA		= 0x46	; DMA transfer
+                    0047     69 	.BGP		= 0x47	; BG palette data
+                    0048     70 	.OBP0		= 0x48	; OBJ palette 0 data
+                    0049     71 	.OBP1		= 0x49	; OBJ palette 1 data
+                    004A     72 	.WY		= 0x4A	; Window Y coordinate
+                    004B     73 	.WX		= 0x4B	; Window X coordinate
+                    004D     74 	.KEY1		= 0x4D	; CPU speed
+                    004F     75 	.VBK		= 0x4F	; VRAM bank
+                    0051     76 	.HDMA1		= 0x51	; DMA control 1
+                    0052     77 	.HDMA2		= 0x52	; DMA control 2
+                    0053     78 	.HDMA3		= 0x53	; DMA control 3
+                    0054     79 	.HDMA4		= 0x54	; DMA control 4
+                    0055     80 	.HDMA5		= 0x55	; DMA control 5
+                    0056     81 	.RP		= 0x56	; IR port
+                    0068     82 	.BCPS		= 0x68	; BG color palette specification
+                    0069     83 	.BCPD		= 0x69	; BG color palette data
+                    006A     84 	.OCPS		= 0x6A	; OBJ color palette specification
+                    006B     85 	.OCPD		= 0x6B	; OBJ color palette data
+                    0070     86 	.SVBK		= 0x70	; WRAM bank
+                    00FF     87 	.IE		= 0xFF	; Interrupt enable
+                             88 
+                    0001     89 	.G_MODE		= 0x01	; Graphic mode
+                    0002     90 	.T_MODE		= 0x02	; Text mode (bit 2)
+                    0002     91 	.T_MODE_OUT	= 0x02	; Text mode output only
+                    0003     92 	.T_MODE_INOUT	= 0x03	; Text mode with input
+                    0004     93 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
+                    0008     94 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
+                             95 
+                    2000     96 	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
+                             97 	
+                             98 	;; Status codes for IO
+                    0000     99 	.IO_IDLE	= 0x00
+                    0001    100 	.IO_SENDING	= 0x01
+                    0002    101 	.IO_RECEIVING	= 0x02
+                    0004    102 	.IO_ERROR	= 0x04
+                            103 
+                            104 	;; Type of IO data
+                    0066    105 	.DT_IDLE	= 0x66
+                    0055    106 	.DT_RECEIVING	= 0x55
+                            107 
+                            108 	;; Table of routines for modes
+                    01E0    109 	.MODE_TABLE	= 0x01E0
+                            110 
+                            111 	;; C related
+                            112 	;; Overheap of a banked call.  Used for parameters
+                            113 	;;  = ret + real ret + bank
+                            114 
+                    0001    115 	.if .NEAR_CALLS
+                    0002    116 	.BANKOV		= 2
+                            117 
+                            118 	.else
+                            119 	.BANKOV		= 6
+                            120 
+                            121 	.endif
+                            122 	
+                            123 	.globl	banked_call
+                            124 	.globl	banked_ret
+                            125 	
+                            126 	;; Global variables
+                            127 	.globl	.mode
+                            128 
+                            129 	.globl	__cpu
+                            130 
+                            131 	.globl	__io_out
+                            132 	.globl	__io_in
+                            133 	.globl	__io_status
+                            134 
+                            135 	;; Global routines
+                            136 	.globl	.set_mode
+                            137 
+                            138 	.globl	.reset
+                            139 
+                            140 	.globl	.display_off
+                            141 
+                            142 	.globl	.wait_vbl_done
+                            143 
+                            144 	;; Interrupt routines 
+                            145 	.globl	.add_VBL
+                            146 	.globl	.add_LCD
+                            147 	.globl	.add_TIM
+                            148 	.globl	.add_SIO
+                            149 	.globl	.add_JOY
+                            150 
+                            151 	;; Symbols defined at link time
+                            152 	.globl	.STACK
+                            153 	.globl	.OAM
+                            154 	.globl	.refresh_OAM
+                            155 
+                            156 	;; Initialization routine   
+                            157 	.globl	.init
+                            158 
+                            159 	;; Main user routine	
+                            160 	.globl	_main
+                              2 
+                              3 	;; Note that while gets uses a pointer, the pointer had better
+                              4 	;; be in non-banked RAM else bad things will happen.
+                              5 	;; BANKED:	checked, imperfect
+                              6 	
+                              7 	.globl	.copy_vram
+                              8 	.globl	.set_xy_wtt
+                              9 	.globl	.mv_sprite
+                             10 	.globl	.set_sprite_prop
+                             11 	.globl	.set_sprite_tile
+                             12 	.globl	.jpad
+                             13 	.globl	.padup
+                             14 
+                    0002     15 	.MINMSPOSX	= 0x02	; In tiles
+                    000A     16 	.MINMSPOSY	= 0x0A
+                    0011     17 	.MAXMSPOSX	= 0x11
+                    000F     18 	.MAXMSPOSY	= 0x0F
+                    0002     19 	.INIMSPOSX	= .MINMSPOSX
+                    000A     20 	.INIMSPOSY	= .MINMSPOSY
+                             21 
+                    0008     22 	.KBDWINPOSY	= 0x08	; In tiles
+                    1006     23 	.KBDSIZE	= 0x1006
+                             24 
+                    000C     25 	.MSOFFSETX	= 0x0C	; In pixels
+                    0014     26 	.MSOFFSETY	= 0x14
+                             27 
+                    0800     28 	.MINACCEL	= 0x0800
+                    0100     29 	.MAXACCEL	= 0x0100
+                             30 
+                    000A     31 	.CR	= 0x0A		; Unix
+                             32 ;	.CR	= 0x0D		; Dos
+                             33 
+                             34 	.globl	.tmode_out	; From 'output.s'
+                             35 	.globl	.put_char
+                             36 	.globl	.del_char
+                             37 	.globl	.cury
+                             38 
+                             39 	.area	_HEADER (ABS)
+                             40 
+   01EC                      41 	.org	.MODE_TABLE+4*.T_MODE_INOUT
+   01EC C3r00s00             42 	JP	.tmode_inout
+                             43 
+                             44 	.module Terminal
+                             45 
+                             46 	.area	_BSS
+                             47 
+   0000                      48 .msx:				; Mouse position
+   0000                      49 	.ds	0x01
+   0001                      50 .msy:
+   0001                      51 	.ds	0x01
+   0002                      52 .msacc:				; Mouse acceleration
+   0002                      53 	.ds	0x02
+   0004                      54 .msstate:			; Mouse state
+   0004                      55 	.ds	0x01
+   0005                      56 .mschanged:			; Did the mouse move?
+   0005                      57 	.ds	0x01
+   0006                      58 .string_len:			; Used length of input buffer
+   0006                      59 	.ds	0x01
+                             60 
+                             61 	.area	_BASE
+                             62 
+                             63 	;; Enter text mode with input
+   0000                      64 .tmode_inout::
+   0000 F3                   65 	DI			; Disable interrupts
+                             66 
+                             67 	;; Turn the screen off
+   0001 F0 40                68 	LDH	A,(.LCDC)
+   0003 CB 7F                69 	BIT	7,A
+   0005 28 03                70 	JR	Z,1$
+                             71 
+                             72 	;; Turn the screen off
+   0007 CDr00s00             73 	CALL	.display_off
+   000A                      74 1$:
+                             75 
+   000A FAr00s00             76 	LD	A,(.mode)
+   000D E6 02                77 	AND	#.T_MODE
+   000F CCr00s00             78 	CALL	Z,.tmode_out
+                             79 
+   0012 01r66s00             80 	LD	BC,#.tp1	; Move pointer
+   0015 21 00 80             81 	LD	HL,#0x8000
+   0018 11 10 00             82 	LD	DE,#.endtp1-.tp1
+   001B CDr00s00             83 	CALL	.copy_vram
+                             84 
+   001E 3E 00                85 	LD	A,#<.MINACCEL	; Acceleration
+   0020 EAr02s00             86 	LD	(.msacc),A
+   0023 3E 08                87 	LD	A,#>.MINACCEL
+   0025 EAr03s00             88 	LD	(.msacc+1),A
+                             89 
+                             90 	;; Initialize window
+   0028 01r76s00             91 	LD	BC,#.frame_tiles
+   002B 11 00 00             92 	LD	DE,#0x0000	; Place image at (0x00,0x00) tiles
+   002E 21 0A 14             93 	LD	HL,#0x140A	; Image size is 0x14 x 0x0A tiles
+   0031 CDr00s00             94 	CALL	.set_xy_wtt
+   0034 01r3Es01             95 	LD	BC,#.kbdtable
+   0037 11 02 02             96 	LD	DE,#0x0202	; Place image at (0x02,0x02) tiles
+   003A 21 06 10             97 	LD	HL,#.KBDSIZE	; Image size is 0x10 x 0x06 tiles
+   003D CDr00s00             98 	CALL	.set_xy_wtt
+   0040 AF                   99 	XOR	A
+   0041 3E 07               100 	LD	A,#.MINWNDPOSX
+   0043 E0 4B               101 	LDH	(.WX),A
+   0045 3E 8F               102 	LD	A,#.MAXWNDPOSY	; Hide window
+   0047 E0 4A               103 	LDH	(.WY),A
+                            104 
+                            105 	;; Initialize sprite
+   0049 0E 00               106 	LD	C,#0x00		; Sprite 0x00
+   004B 16 00               107 	LD	D,#0x00		; Default sprite properties
+   004D CDr00s00            108 	CALL	.set_sprite_prop
+   0050 0E 00               109 	LD	C,#0x00		; Sprite 0x00
+   0052 16 00               110 	LD	D,#0x00		; Tile 0x00
+   0054 CDr00s00            111 	CALL	.set_sprite_tile
+   0057 3E 2C               112 	LD	A,#0b00101100
+   0059 E0 48               113 	LDH	(.OBP0),A
+                            114 
+                            115 	;; Turn the screen on
+   005B 3E C1               116 	LD	A,#0b11000001	; LCD		= On
+                            117 				; WindowBank	= 0x9C00
+                            118 				; Window	= Off
+                            119 				; BG Chr	= 0x8800
+                            120 				; BG Bank	= 0x9800
+                            121 				; OBJ		= 8x8
+                            122 				; OBJ		= Off
+                            123 				; BG		= On
+   005D E0 40               124 	LDH	(.LCDC),A
+                            125 
+   005F 3E 03               126 	LD	A,#.T_MODE_INOUT
+   0061 EAr00s00            127 	LD	(.mode),A
+                            128 
+   0064 FB                  129 	EI			; Enable interrupts
+                            130 
+   0065 C9                  131 	RET
+                            132 
+                            133 	.area	_CODE
+                            134 	;; Prompt the user for a char and return it in A
+   0000                     135 .get_char:
+   0000 C5                  136 	PUSH	BC
+   0001 D5                  137 	PUSH	DE
+   0002 E5                  138 	PUSH	HL
+   0003 CDrE6s00            139 	CALL	.show_kbd
+   0006 CDr6Ds01            140 	CALL	.show_mouse
+   0009                     141 1$:
+   0009 CDr88s01            142 	CALL	.track_mouse
+   000C CDr27s02            143 	CALL	.update_mouse
+   000F CDr00s00            144 	CALL	.jpad
+   0012 57                  145 	LD	D,A
+   0013 E6 10               146 	AND	#.A		; Is A pressed ?
+   0015 CAr09s00            147 	JP	Z,1$
+                            148 
+   0018 FAr01s00            149 	LD	A,(.msy)	; Look for char under the mouse
+   001B D6 0A               150 	SUB	#.MINMSPOSY
+   001D 28 07               151 	JR	Z,12$
+   001F 5F                  152 	LD	E,A
+   0020 AF                  153 	XOR	A
+   0021                     154 11$:
+   0021 C6 10               155 	ADD	#.MAXMSPOSX-.MINMSPOSX+1
+   0023 1D                  156 	DEC	E
+   0024 20 FB               157 	JR	NZ,11$
+   0026                     158 12$:
+   0026 5F                  159 	LD	E,A
+   0027 FAr00s00            160 	LD	A,(.msx)
+   002A D6 02               161 	SUB	#.MINMSPOSX
+   002C 83                  162 	ADD	E
+   002D 21r3Es01            163 	LD	HL,#.kbdtable
+   0030 06 00               164 	LD	B,#0x00
+   0032 4F                  165 	LD	C,A
+   0033 09                  166 	ADD	HL,BC
+   0034 46                  167 	LD	B,(HL)
+                            168 
+   0035 CDr81s01            169 	CALL	.hide_mouse
+   0038 CDr05s01            170 	CALL	.hide_kbd
+   003B 78                  171 	LD	A,B
+                            172 
+   003C E1                  173 	POP	HL
+   003D D1                  174 	POP	DE
+   003E C1                  175 	POP	BC
+   003F C9                  176 	RET
+                            177 
+                            178 	;; Prompt the user for a string and store it in (HL)
+   0040                     179 .get_string:
+   0040 C5                  180 	PUSH	BC
+   0041 D5                  181 	PUSH	DE
+   0042 E5                  182 	PUSH	HL
+   0043 CDrE6s00            183 	CALL	.show_kbd
+   0046 CDr24s01            184 	CALL	.show_bkg
+   0049 CDr6Ds01            185 	CALL	.show_mouse
+   004C AF                  186 	XOR	A
+   004D EAr06s00            187 	LD	(.string_len),A
+   0050                     188 1$:
+   0050 CDr88s01            189 	CALL	.track_mouse
+   0053 CDr27s02            190 	CALL	.update_mouse
+   0056 CDr00s00            191 	CALL	.jpad
+   0059 57                  192 	LD	D,A
+   005A E6 10               193 	AND	#.A		; Is A pressed ?
+   005C C2r87s00            194 	JP	NZ,10$
+   005F 7A                  195 	LD	A,D
+   0060 E6 20               196 	AND	#.B		; Is B pressed ?
+   0062 C2rBAs00            197 	JP	NZ,20$
+   0065 7A                  198 	LD	A,D
+   0066 E6 40               199 	AND	#.SELECT	; Is SELECT pressed ?
+   0068 C2rCEs00            200 	JP	NZ,30$
+   006B 7A                  201 	LD	A,D
+   006C E6 80               202 	AND	#.START		; Is START pressed ?
+   006E 28 E0               203 	JR	Z,1$
+   0070 CDr00s00            204 	CALL	.padup		; Wait for button to be depressed
+                            205 
+   0073 3E 0A               206 	LD	A,#.CR
+   0075 CDr00s00            207 	CALL	.put_char
+   0078 36 00               208 	LD	(HL),#0x00
+   007A CDr81s01            209 	CALL	.hide_mouse
+   007D CDr54s01            210 	CALL	.hide_bkg
+   0080 CDr05s01            211 	CALL	.hide_kbd
+   0083 E1                  212 	POP	HL
+   0084 D1                  213 	POP	DE
+   0085 C1                  214 	POP	BC
+   0086 C9                  215 	RET
+                            216 
+   0087                     217 10$:
+                            218 	;; Insert a character at cursor position
+   0087 FAr06s00            219 	LD	A,(.string_len) ; Check buffer length
+                            220 ;	CP	#.BUFLEN-1	; Keep 1 char for EOS
+                            221 ;	JR	Z,13$
+   008A 3C                  222 	INC	A
+   008B EAr06s00            223 	LD	(.string_len),A ; Update it
+   008E FAr01s00            224 	LD	A,(.msy)	; Look for char under the mouse
+   0091 D6 0A               225 	SUB	#.MINMSPOSY
+   0093 28 07               226 	JR	Z,12$
+   0095 5F                  227 	LD	E,A
+   0096 AF                  228 	XOR	A
+   0097                     229 11$:
+   0097 C6 10               230 	ADD	#.MAXMSPOSX-.MINMSPOSX+1
+   0099 1D                  231 	DEC	E
+   009A 20 FB               232 	JR	NZ,11$
+   009C                     233 12$:
+   009C 5F                  234 	LD	E,A
+   009D FAr00s00            235 	LD	A,(.msx)
+   00A0 D6 02               236 	SUB	#.MINMSPOSX
+   00A2 83                  237 	ADD	E
+   00A3 E5                  238 	PUSH	HL
+   00A4 21r3Es01            239 	LD	HL,#.kbdtable
+   00A7 06 00               240 	LD	B,#0x00
+   00A9 4F                  241 	LD	C,A
+   00AA 09                  242 	ADD	HL,BC
+   00AB 7E                  243 	LD	A,(HL)
+   00AC E1                  244 	POP	HL
+   00AD 22                  245 	LD	(HL+),A		; Add it into input buffer
+   00AE CDr00s00            246 	CALL	.put_char	; Print it
+   00B1 CDr24s01            247 	CALL	.show_bkg	; Ensure the text is not hidden
+   00B4                     248 13$:
+   00B4 CDr00s00            249 	CALL	.padup		; Wait for button to be depressed
+   00B7 C3r50s00            250 	JP	1$
+                            251 
+   00BA                     252 20$:
+                            253 	;; Delete a character at cursor position
+   00BA FAr06s00            254 	LD	A,(.string_len) ; Is there any char in the buffer ?
+   00BD B7                  255 	OR	A
+   00BE 28 08               256 	JR	Z,21$
+   00C0 3D                  257 	DEC	A		; Yes
+   00C1 EAr06s00            258 	LD	(.string_len),A ; Update buffer length
+   00C4 2B                  259 	DEC	HL
+   00C5 CDr00s00            260 	CALL	.del_char
+   00C8                     261 21$:
+   00C8 CDr00s00            262 	CALL	.padup		; Wait for button to be depressed
+   00CB C3r50s00            263 	JP	1$
+                            264 
+   00CE                     265 30$:
+   00CE CDr81s01            266 	CALL	.hide_mouse
+   00D1 CDr54s01            267 	CALL	.hide_bkg
+   00D4 CDr05s01            268 	CALL	.hide_kbd
+   00D7 CDr00s00            269 	CALL	.padup		; Wait for button to be depressed
+   00DA CDrE6s00            270 	CALL	.show_kbd
+   00DD CDr24s01            271 	CALL	.show_bkg
+   00E0 CDr6Ds01            272 	CALL	.show_mouse
+   00E3 C3r50s00            273 	JP	1$
+                            274 
+   00E6                     275 .show_kbd:
+   00E6 C5                  276 	PUSH	BC
+   00E7 D5                  277 	PUSH	DE
+   00E8 F0 40               278 	LDH	A,(.LCDC)
+   00EA F6 20               279 	OR	#0b00100000	; Window = On
+   00EC E0 40               280 	LDH	(.LCDC),A
+   00EE 3E 8F               281 	LD	A,#.MAXWNDPOSY	; Show window
+   00F0                     282 1$:
+   00F0 CB 47               283 	BIT	0,A		; Wait for VBL every 2 pixels (slow down)
+   00F2 20 05               284 	JR	NZ,2$
+   00F4 47                  285 	LD	B,A
+   00F5 CDr00s00            286 	CALL	.wait_vbl_done
+   00F8 78                  287 	LD	A,B
+   00F9                     288 2$:
+   00F9 E0 4A               289 	LDH	(.WY),A
+   00FB FE 40               290 	CP	#.KBDWINPOSY*0x08
+   00FD 28 03               291 	JR	Z,99$
+   00FF 3D                  292 	DEC	A
+   0100 18 EE               293 	JR	1$
+   0102                     294 99$:
+   0102 D1                  295 	POP	DE
+   0103 C1                  296 	POP	BC
+   0104 C9                  297 	RET
+                            298 
+   0105                     299 .hide_kbd:
+   0105 C5                  300 	PUSH	BC
+   0106 D5                  301 	PUSH	DE
+   0107 3E 41               302 	LD	A,#.KBDWINPOSY*0x08+1
+   0109                     303 1$:				; Hide window
+   0109 CB 47               304 	BIT	0,A		; Wait for VBL every 2 pixels (slow down)
+   010B 28 05               305 	JR	Z,2$
+   010D 47                  306 	LD	B,A
+   010E CDr00s00            307 	CALL	.wait_vbl_done
+   0111 78                  308 	LD	A,B
+   0112                     309 2$:
+   0112 E0 4A               310 	LDH	(.WY),A
+   0114 FE 8F               311 	CP	#.MAXWNDPOSY
+   0116 28 03               312 	JR	Z,3$
+   0118 3C                  313 	INC	A
+   0119 18 EE               314 	JR	1$
+   011B                     315 3$:
+   011B F0 40               316 	LDH	A,(.LCDC)
+   011D E6 DF               317 	AND	#0b11011111	; Window = Off
+   011F E0 40               318 	LDH	(.LCDC),A
+   0121 D1                  319 	POP	DE
+   0122 C1                  320 	POP	BC
+   0123 C9                  321 	RET
+                            322 
+   0124                     323 .show_bkg:
+   0124 C5                  324 	PUSH	BC
+   0125 D5                  325 	PUSH	DE
+   0126 F0 42               326 	LDH	A,(.SCY)
+   0128 57                  327 	LD	D,A
+   0129 FAr00s00            328 	LD	A,(.cury)
+   012C D6 07               329 	SUB	#.KBDWINPOSY-1
+   012E 38 21               330 	JR	C,99$
+   0130 28 1F               331 	JR	Z,99$
+   0132 CB 27               332 	SLA	A		; A = A * 8
+   0134 CB 27               333 	SLA	A
+   0136 CB 27               334 	SLA	A
+   0138 92                  335 	SUB	D
+   0139 38 16               336 	JR	C,99$
+   013B 28 14               337 	JR	Z,99$
+   013D 4F                  338 	LD	C,A
+   013E F0 42               339 	LDH	A,(.SCY)
+   0140                     340 1$:
+   0140 CB 47               341 	BIT	0,A		; Wait for VBL every 2 pixels (slow down)
+   0142 28 05               342 	JR	Z,2$
+   0144 47                  343 	LD	B,A
+   0145 CDr00s00            344 	CALL	.wait_vbl_done
+   0148 78                  345 	LD	A,B
+   0149                     346 2$:
+   0149 3C                  347 	INC	A
+   014A E0 42               348 	LDH	(.SCY),A
+   014C 0D                  349 	DEC	C
+   014D 28 02               350 	JR	Z,99$
+   014F 18 EF               351 	JR	1$
+   0151                     352 99$:
+   0151 D1                  353 	POP	DE
+   0152 C1                  354 	POP	BC
+   0153 C9                  355 	RET
+                            356 
+   0154                     357 .hide_bkg:
+   0154 F0 42               358 	LDH	A,(.SCY)
+   0156 B7                  359 	OR	A
+   0157 C8                  360 	RET	Z
+   0158 C5                  361 	PUSH	BC
+   0159 D5                  362 	PUSH	DE
+   015A                     363 1$:
+   015A CB 47               364 	BIT	0,A		; Wait for VBL every 2 pixels (slow down)
+   015C 28 05               365 	JR	Z,2$
+   015E 47                  366 	LD	B,A
+   015F CDr00s00            367 	CALL	.wait_vbl_done
+   0162 78                  368 	LD	A,B
+   0163                     369 2$:
+   0163 3D                  370 	DEC	A
+   0164 E0 42               371 	LDH	(.SCY),A
+   0166 28 02               372 	JR	Z,99$
+   0168 18 F0               373 	JR	1$
+   016A                     374 99$:
+   016A D1                  375 	POP	DE
+   016B C1                  376 	POP	BC
+   016C C9                  377 	RET
+                            378 
+   016D                     379 .show_mouse:
+   016D 3E 02               380 	LD	A,#.INIMSPOSX
+   016F EAr00s00            381 	LD	(.msx),A
+   0172 3E 0A               382 	LD	A,#.INIMSPOSY
+   0174 EAr01s00            383 	LD	(.msy),A
+   0177 CDr2Cs02            384 	CALL	.set_mouse
+   017A F0 40               385 	LDH	A,(.LCDC)
+   017C F6 02               386 	OR	#0b00000010	; OBJ = On
+   017E E0 40               387 	LDH	(.LCDC),A
+   0180 C9                  388 	RET
+                            389 
+   0181                     390 .hide_mouse:
+   0181 F0 40               391 	LDH	A,(.LCDC)
+   0183 E6 FD               392 	AND	#0b11111101	; OBJ = Off
+   0185 E0 40               393 	LDH	(.LCDC),A
+   0187 C9                  394 	RET
+                            395 
+   0188                     396 .track_mouse:
+   0188 C5                  397 	PUSH	BC
+   0189 D5                  398 	PUSH	DE
+   018A E5                  399 	PUSH	HL
+   018B AF                  400 	XOR	A
+   018C EAr05s00            401 	LD	(.mschanged),A	; Default to no change
+   018F CDr00s00            402 	CALL	.jpad
+   0192 57                  403 	LD	D,A
+                            404 
+   0193 21r04s00            405 	LD	HL,#.msstate
+   0196 E6 0F               406 	AND	#.UP+.DOWN+.LEFT+.RIGHT
+   0198 20 05               407 	JR	NZ,1$
+   019A 36 00               408 	LD	(HL),#0x00	; Reset state
+   019C C3r23s02            409 	JP	99$
+   019F                     410 1$:
+   019F 7E                  411 	LD	A,(HL)
+   01A0 36 01               412 	LD	(HL),#0x01	; Set state
+   01A2 B7                  413 	OR	A		; Was it 0 ?
+   01A3 21r02s00            414 	LD	HL,#.msacc	; Acceleration
+   01A6 20 07               415 	JR	NZ,2$
+                            416 				; Yes
+   01A8 36 00               417 	LD	(HL),#<.MINACCEL
+   01AA 23                  418 	INC	HL
+   01AB 36 08               419 	LD	(HL),#>.MINACCEL
+   01AD 18 13               420 	JR	4$		; Update position
+   01AF                     421 2$:
+   01AF 4E                  422 	LD	C,(HL)
+   01B0 23                  423 	INC	HL
+   01B1 46                  424 	LD	B,(HL)
+   01B2 0B                  425 	DEC	BC
+   01B3 78                  426 	LD	A,B
+   01B4 B1                  427 	OR	C
+   01B5 28 06               428 	JR	Z,3$
+   01B7 70                  429 	LD	(HL),B
+   01B8 2B                  430 	DEC	HL
+   01B9 71                  431 	LD	(HL),C
+   01BA C3r23s02            432 	JP	99$
+   01BD                     433 3$:				; Set new acceleration to maximum
+   01BD 36 01               434 	LD	(HL),#>.MAXACCEL
+   01BF 2B                  435 	DEC	HL
+   01C0 36 00               436 	LD	(HL),#<.MAXACCEL
+   01C2                     437 4$:				; Update position
+   01C2 3E 01               438 	LD	A,#0x01
+   01C4 EAr05s00            439 	LD	(.mschanged),A
+   01C7 7A                  440 	LD	A,D
+   01C8 E6 04               441 	AND	#.UP		; Is UP pressed ?
+   01CA 28 12               442 	JR	Z,6$
+   01CC FAr01s00            443 	LD	A,(.msy)
+   01CF FE 0A               444 	CP	#.MINMSPOSY
+   01D1 28 06               445 	JR	Z,5$
+   01D3 3D                  446 	DEC	A
+   01D4 EAr01s00            447 	LD	(.msy),A
+   01D7 18 05               448 	JR	6$
+   01D9                     449 5$:
+   01D9 3E 0F               450 	LD	A,#.MAXMSPOSY
+   01DB EAr01s00            451 	LD	(.msy),A
+   01DE                     452 6$:
+   01DE 7A                  453 	LD	A,D
+   01DF E6 08               454 	AND	#.DOWN		; Is DOWN pressed ?
+   01E1 28 12               455 	JR	Z,8$
+   01E3 FAr01s00            456 	LD	A,(.msy)
+   01E6 FE 0F               457 	CP	#.MAXMSPOSY
+   01E8 28 06               458 	JR	Z,7$
+   01EA 3C                  459 	INC	A
+   01EB EAr01s00            460 	LD	(.msy),A
+   01EE 18 05               461 	JR	8$
+   01F0                     462 7$:
+   01F0 3E 0A               463 	LD	A,#.MINMSPOSY
+   01F2 EAr01s00            464 	LD	(.msy),A
+   01F5                     465 8$:
+   01F5 7A                  466 	LD	A,D
+   01F6 E6 02               467 	AND	#.LEFT		; Is LEFT pressed ?
+   01F8 28 12               468 	JR	Z,10$
+   01FA FAr00s00            469 	LD	A,(.msx)
+   01FD FE 02               470 	CP	#.MINMSPOSX
+   01FF 28 06               471 	JR	Z,9$
+   0201 3D                  472 	DEC	A
+   0202 EAr00s00            473 	LD	(.msx),A
+   0205 18 05               474 	JR	10$
+   0207                     475 9$:
+   0207 3E 11               476 	LD	A,#.MAXMSPOSX
+   0209 EAr00s00            477 	LD	(.msx),A
+   020C                     478 10$:
+   020C 7A                  479 	LD	A,D
+   020D E6 01               480 	AND	#.RIGHT		; Is RIGHT pressed ?
+   020F 28 12               481 	JR	Z,99$
+   0211 FAr00s00            482 	LD	A,(.msx)
+   0214 FE 11               483 	CP	#.MAXMSPOSX
+   0216 28 06               484 	JR	Z,11$
+   0218 3C                  485 	INC	A
+   0219 EAr00s00            486 	LD	(.msx),A
+   021C 18 05               487 	JR	99$
+   021E                     488 11$:
+   021E 3E 02               489 	LD	A,#.MINMSPOSX
+   0220 EAr00s00            490 	LD	(.msx),A
+   0223                     491 99$:
+   0223 E1                  492 	POP	HL
+   0224 D1                  493 	POP	DE
+   0225 C1                  494 	POP	BC
+   0226 C9                  495 	RET
+                            496 
+   0227                     497 .update_mouse:
+   0227 FAr05s00            498 	LD	A,(.mschanged)	; Did it change ?
+   022A B7                  499 	OR	A
+   022B C8                  500 	RET	Z		; No
+   022C                     501 .set_mouse:
+   022C C5                  502 	PUSH	BC
+   022D D5                  503 	PUSH	DE
+   022E E5                  504 	PUSH	HL
+   022F 0E 00               505 	LD	C,#0x00		; Sprite 0x00
+   0231 FAr00s00            506 	LD	A,(.msx)
+   0234 CB 27               507 	SLA	A		; A = A * 8
+   0236 CB 27               508 	SLA	A
+   0238 CB 27               509 	SLA	A
+   023A C6 0C               510 	ADD	#.MSOFFSETX
+   023C 57                  511 	LD	D,A
+   023D FAr01s00            512 	LD	A,(.msy)
+   0240 CB 27               513 	SLA	A		; A = A * 8
+   0242 CB 27               514 	SLA	A
+   0244 CB 27               515 	SLA	A
+   0246 C6 14               516 	ADD	#.MSOFFSETY
+   0248 5F                  517 	LD	E,A
+   0249 CDr00s00            518 	CALL	.mv_sprite
+   024C E1                  519 	POP	HL
+   024D D1                  520 	POP	DE
+   024E C1                  521 	POP	BC
+   024F C9                  522 	RET
+                            523 
+   0250                     524 _getchar::			; Banked
+   0250 FAr00s00            525 	LD	A,(.mode)
+   0253 FE 03               526 	CP	#.T_MODE_INOUT
+   0255 28 05               527 	JR	Z,1$
+   0257 C5                  528 	PUSH	BC
+   0258 CDr00s00            529 	CALL	.tmode_inout
+   025B C1                  530 	POP	BC
+   025C                     531 1$:
+   025C CDr00s00            532 	CALL	.get_char
+   025F 5F                  533 	LD	E,A
+   0260 C9                  534 	RET
+                            535 
+   0261                     536 _gets::				; Banked
+   0261 FAr00s00            537 	LD	A,(.mode)
+   0264 FE 03               538 	CP	#.T_MODE_INOUT
+   0266 28 05               539 	JR	Z,1$
+   0268 C5                  540 	PUSH	BC
+   0269 CDr00s00            541 	CALL	.tmode_inout
+   026C C1                  542 	POP	BC
+   026D                     543 1$:
+   026D F8 02               544 	LDA	HL,.BANKOV(SP)	; Skip return address
+   026F 2A                  545 	LD	A,(HL+)
+   0270 66                  546 	LD	H,(HL)		; HL = s
+   0271 6F                  547 	LD	L,A
+   0272 E5                  548 	PUSH	HL
+   0273 CDr40s00            549 	CALL	.get_string
+   0276 D1                  550 	POP	DE
+   0277 C9                  551 	RET
+                            552 
+                            553 	;; PENDING: this is unfortunate.  Refed from .tmode_inout
+                            554 	.area	_BASE
+   0066                     555 .tp1:
+                            556 
+   0066                     557 .pointers:
+                            558 
+                            559 	; Tile 0x00
+   0066 FF FF FE 82 FC 84   560 	.byte	0xFF,0xFF,0xFE,0x82,0xFC,0x84,0xFC,0x84,0xFE,0x82,0xFF,0xB1,0xCF,0xC9,0x87,0x87
+        FC 84 FE 82 FF B1
+        CF C9 87 87
+                            561 
+   0076                     562 .endtp1:
+                            563 
+   0076                     564 .frame_tiles:
+   0076 1C 0E 0E 0E 0E 0E   565 	.byte	0x1C,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x1D
+        0E 0E 0E 0E 0E 0E
+        0E 0E 0E 0E 0E 0E
+        0E 1D
+   008A 0F 20 20 20 20 20   566 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   009E 0F 20 20 20 20 20   567 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   00B2 0F 20 20 20 20 20   568 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   00C6 0F 20 20 20 20 20   569 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   00DA 0F 20 20 20 20 20   570 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   00EE 0F 20 20 20 20 20   571 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   0102 0F 20 20 20 20 20   572 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   0116 0F 20 20 20 20 20   573 	.byte	0x0F,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x0F
+        20 20 20 20 20 20
+        20 20 20 20 20 20
+        20 0F
+   012A 1E 0E 0E 0E 0E 0E   574 	.byte	0x1E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0x1F
+        0E 0E 0E 0E 0E 0E
+        0E 0E 0E 0E 0E 0E
+        0E 1F
+                            575 
+   013E                     576 .kbdtable:
+                            577 	;; This is unfortunate.  astorgb and rgbasm cant interpert:
+                            578 	;;	.ascii	" !\"#$%&'()*+,-./"
+                            579 	;; so we have to use the hex form here.
+   013E 20 21 22 23 24 25   580 	.db	0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27
+        26 27
+   0146 28 29 2A 2B 2C 2D   581 	.db	0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x2E,0x2F
+        2E 2F
+   014E 30 31 32 33 34 35   582 	.ascii	"0123456789:"
+        36 37 38 39 3A
+                            583 	;; astorgb recognises the embedded ; as a comment :)
+   0159 3B                  584 	.db	0x3B		
+   015A 3C 3D 3E 3F         585 	.ascii	"<=>?"
+   015E 40 41 42 43 44 45   586 	.ascii	"@ABCDEFGHIJKLMNO"
+        46 47 48 49 4A 4B
+        4C 4D 4E 4F
+   016E 50 51 52 53 54 55   587 	.ascii	"PQRSTUVWXYZ[\\]^_"
+        56 57 58 59 5A 5B
+        5C 5D 5E 5F
+   017E 60 61 62 63 64 65   588 	.ascii	"`abcdefghijklmno"
+        66 67 68 69 6A 6B
+        6C 6D 6E 6F
+   018E 70 71 72 73 74 75   589 	.ascii	"pqrstuvwxyz\{\|\}~ "
+        76 77 78 79 7A 7B
+        7C 7D 7E 20

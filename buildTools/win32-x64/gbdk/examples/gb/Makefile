@@ -1,4 +1,4 @@
-CC	= ../../bin/lcc -Wa-l -Wl-m -Wl-j -DUSE_SFR_FOR_REG
+CC	= ../../bin/lcc -Wa-l -Wl-m -Wl-j
 
 BINS	= galaxy.gb \
 	space.gb \
