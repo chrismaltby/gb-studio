@@ -106,6 +106,9 @@ const makeBuild = ({
     } else {
       gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
     }
+    if(!settings.gbcFastCPUEnabled) {
+      gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
+    }
     await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
     // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors not enabled

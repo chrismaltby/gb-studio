@@ -2,6 +2,7 @@
 #define GAME_H
 
 #define CUSTOM_COLORS
+#define FAST_CPU
 
 #include <gb/gb.h>
 
