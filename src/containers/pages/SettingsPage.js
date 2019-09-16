@@ -39,7 +39,7 @@ class SettingsPage extends Component {
     }
 
     const { scenes } = project;
-    const { customColorsEnabled, customHead } = settings;
+    const { customColorsEnabled, customHead, gbcFastCPUEnabled } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
@@ -83,6 +83,15 @@ class SettingsPage extends Component {
             >
               <CustomPalettePicker />
             </ToggleableCheckBoxField>
+          </section>
+
+          <section>
+            <h2>{l10n("SETTINGS_CPU")}</h2>
+            <ToggleableCheckBoxField
+              label={l10n("FIELD_GBC_FAST_CPU")}
+              open={gbcFastCPUEnabled}
+              onToggle={this.onEditSetting("gbcFastCPUEnabled")}
+            ></ToggleableCheckBoxField>
           </section>
 
           <section>
