@@ -6,10 +6,6 @@
 
 #include <gb/gb.h>
 
-#ifdef CUSTOM_COLORS
-	#include <gb/cgb.h>
-#endif
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>

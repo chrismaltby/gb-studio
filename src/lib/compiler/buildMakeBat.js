@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import Path from "path";
 
-export default async (buildRoot, { CART_TYPE, customColorsEnabled }) => {
+export default async (buildRoot, { CART_TYPE, customColorsEnabled, gbcFastCPUEnabled }) => {
   const cmds = [];
   const buildFiles = [];
   const objFiles = [];
@@ -52,7 +52,7 @@ export default async (buildRoot, { CART_TYPE, customColorsEnabled }) => {
     objFiles.push(objFile);
   }
 
-  if (customColorsEnabled) {
+  if (customColorsEnabled || gbcFastCPUEnabled) {
     cmds.push(`${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
   } else {
     cmds.push(`${CC} ${CFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
