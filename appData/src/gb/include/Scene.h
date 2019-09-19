@@ -51,6 +51,9 @@ extern UBYTE scene_height;
 extern UBYTE actor_move_settings;
 extern POS actor_move_dest;
 extern BANK_PTR input_script_ptrs[NUM_INPUTS];
+extern UBYTE timer_script_duration;
+extern UBYTE timer_script_time;
+extern BANK_PTR timer_script_ptr;
 extern UBYTE scene_loaded;
 
 void SceneInit();

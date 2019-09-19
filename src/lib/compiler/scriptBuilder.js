@@ -74,6 +74,9 @@ import {
   REMOVE_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
+  SET_TIMER_SCRIPT,
+  TIMER_RESTART,
+  TIMER_DISABLE,
   TEXT_WITH_AVATAR
 } from "../events/scriptCommands";
 import {
@@ -764,6 +767,50 @@ class ScriptBuilder {
   scriptEnd = () => {
     const output = this.output;
     output.push(cmd(END));
+  };
+
+  // Timer Script
+
+  timerScriptSet = (duration = 10.0, script) => {
+    const output = this.output;
+    const { compileEvents, banked } = this.options;
+
+    // convert the duration from seconds to timer ticks
+    const TIMER_CYCLES = 16;
+    let durationTicks = (60 * duration / TIMER_CYCLES + 0.5) | 0;
+    if (durationTicks <= 0) {
+      durationTicks = 1;
+    }
+    if (durationTicks >= 256) {
+      durationTicks = 255;
+    }
+
+    // compile event script
+    const subScript = [];
+    if (typeof script === "function") {
+      this.output = subScript;
+      script();
+      this.output = output;
+    } else {
+      compileEvents(script, subScript, false);
+    }
+    const bankPtr = banked.push(subScript);
+
+    output.push(cmd(SET_TIMER_SCRIPT));
+    output.push(durationTicks);
+    output.push(bankPtr.bank);
+    output.push(hi(bankPtr.offset));
+    output.push(lo(bankPtr.offset));
+  };
+
+  timerRestart = () => {
+    const output = this.output;
+    output.push(cmd(TIMER_RESTART));
+  };
+
+  timerDisable = () => {
+    const output = this.output;
+    output.push(cmd(TIMER_DISABLE));
   };
 
   // Helpers

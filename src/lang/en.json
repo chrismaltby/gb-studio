@@ -156,6 +156,10 @@
   "FIELD_FLAG_6": "Flag 6",
   "FIELD_FLAG_7": "Flag 7",
   "FIELD_FLAG_8": "Flag 8",
+  "FIELD_SET_TIMER": "Set repeating timer script",
+  "FIELD_TIMER_DURATION": "Countdown time in seconds",
+  "FIELD_TIMER_RESTART": "Restart the countdown timer",
+  "FIELD_TIMER_DISABLE": "Disable the timer script",
   "FIELD_TEXT_AVATAR": "Avatar",
   "FIELD_ADD_TEXT_AVATAR": "Add Avatar",
 
@@ -256,6 +260,9 @@
   "EVENT_ADD_FLAGS": "Variable: Add Flags",
   "EVENT_CLEAR_FLAGS": "Variable: Clear Flags",
   "EVENT_IF_FLAGS_COMPARE": "If Variable Has Flag",
+  "EVENT_SET_TIMER_SCRIPT": "Timer: Set timer script",
+  "EVENT_TIMER_RESTART": "Timer: Restart timer",
+  "EVENT_TIMER_DISABLE": "Timer: Disable timer script",
 
   "// 10": "Menu -----------------------------------------------------",
 
