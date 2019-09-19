@@ -89,7 +89,7 @@ const CMD_LOOKUP = {
   ACTOR_SET_FLIP: 0x4f,
   TEXT_MULTI: 0x50,
   ACTOR_SET_FRAME_TO_VALUE: 0x51,
-  TEXT_WITH_AVATAR: 0x54,
+  TEXT_WITH_AVATAR: 0x57
 };
 
 test("should precompile empty events", () => {
