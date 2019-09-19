@@ -138,8 +138,14 @@ class ActionMini extends Component {
     onPaste(id, clipboardEvent, before);
   };
 
-  onEdit = newValue => {
-    const { onEdit, id } = this.props;
+  onEdit = (newValue, postUpdate) => {
+    const { onEdit, action, id } = this.props;
+    if(postUpdate) {
+      return onEdit(id, postUpdate({
+        ...action.args,
+        ...newValue
+      }));
+    }
     onEdit(id, newValue);
   };
 

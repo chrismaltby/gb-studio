@@ -108,7 +108,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_VariableClearFlags_b, 3}, // 0x53
     {Script_SetTimerScript_b, 4},     // 0x54
     {Script_ResetTimer_b, 0},         // 0x55
-    {Script_RemoveTimerScript_b, 0}   // 0x56
+    {Script_RemoveTimerScript_b, 0},  // 0x56
+    {Script_TextWithAvatar_b, 3}      // 0x57
 };
 
 UBYTE ScriptLastFnComplete();
@@ -254,6 +255,11 @@ UBYTE ScriptLastFnComplete()
   if (last_fn == Script_CameraLock_b && SceneCameraAtDest())
   {
     camera_settings = CAMERA_LOCK_FLAG;
+    return TRUE;
+  }
+
+  if (last_fn == Script_TextWithAvatar_b && UIIsClosed())
+  {
     return TRUE;
   }
 

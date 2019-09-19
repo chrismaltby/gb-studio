@@ -1681,7 +1681,6 @@ void Script_VariableClearFlags_b()
   script_continue = TRUE;
 }
 
-
 /*
  * Command: SetTimerScript
  * ----------------------------
@@ -1723,5 +1722,22 @@ void Script_RemoveTimerScript_b()
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
+}
+
+/*
+ * Command: Text with Avatar
+ * ----------------------------
+ * Display a line of dialogue with a 16x16 avatar on the left
+ *
+ *   arg0: High 8 bits for string index
+ *   arg1: Low 8 bits for string index
+ *   arg2: Spritesheet to use as the dialogue avatar
+ */
+void Script_TextWithAvatar_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  UIShowAvatar(script_cmd_args[2]);
+  script_action_complete = FALSE;
 }
 

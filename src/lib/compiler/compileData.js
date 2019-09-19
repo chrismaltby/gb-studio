@@ -48,6 +48,7 @@ export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
+export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
@@ -95,6 +96,7 @@ const compile = async (
               scenes: precompiled.sceneData,
               music: precompiled.usedMusic,
               sprites: precompiled.usedSprites,
+              avatars: precompiled.usedAvatars,
               backgrounds: precompiled.usedBackgrounds,
               strings: precompiled.strings,
               variables: precompiled.variables,
@@ -122,6 +124,7 @@ const compile = async (
           scenes: precompiled.sceneData,
           music: precompiled.usedMusic,
           sprites: precompiled.usedSprites,
+          avatars: precompiled.usedAvatars,
           backgrounds: precompiled.usedBackgrounds,
           strings: precompiled.strings,
           variables: precompiled.variables,
@@ -178,12 +181,17 @@ const compile = async (
   const frameImagePtr = banked.push(precompiled.frameTiles);
   const cursorImagePtr = banked.push(precompiled.cursorTiles);
   const emotesSpritePtr = banked.push(precompiled.emotesSprite);
-
+  
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map(sprite => {
     return banked.push([].concat(sprite.frames, sprite.data));
   });
 
+  // Add avatar data
+  const avatarPtrs = precompiled.usedAvatars.map(avatar => {
+    return banked.push([].concat(avatar.frames, avatar.data));
+  });
+  
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
@@ -253,7 +261,8 @@ const compile = async (
     background_bank_ptrs: fixEmptyDataPtrs(backgroundPtrs),
     sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
     scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
-    string_bank_ptrs: fixEmptyDataPtrs(stringPtrs)
+    string_bank_ptrs: fixEmptyDataPtrs(stringPtrs),
+    avatar_bank_ptrs: fixEmptyDataPtrs(avatarPtrs)
   };
 
   const bankHeader = banked.exportCHeader(bankOffset);
@@ -410,6 +419,16 @@ const precompile = async (
     }
   );
 
+  progress(EVENT_MSG_PRE_AVATARS);
+  const { usedAvatars } = await precompileAvatars(
+    projectData.spriteSheets,
+    projectData.scenes,
+    projectRoot,
+    {
+      warnings
+    }
+  );
+
   progress(EVENT_MSG_PRE_MUSIC);
   const { usedMusic } = await precompileMusic(
     projectData.scenes,
@@ -442,7 +461,8 @@ const precompile = async (
     fontTiles,
     frameTiles,
     cursorTiles,
-    emotesSprite
+    emotesSprite,
+    usedAvatars
   };
 };
 
@@ -646,6 +666,52 @@ export const precompileSprites = async (
     spriteLookup
   };
 };
+
+export const precompileAvatars = async (
+  spriteSheets,
+  scenes,
+  projectRoot,
+  { warnings } = {}
+) => {
+  const usedAvatars = spriteSheets.filter(
+    spriteSheet =>
+      scenes.find(
+        scene =>
+          findSceneEvent(scene, event => {
+            return event.args && event.args.avatarId === spriteSheet.id;
+          })
+      )
+  );
+
+  const avatarLookup = indexById(usedAvatars);
+  const avatarData = await Promise.all(
+    usedAvatars.map(async spriteSheet => {
+      const data = await ggbgfx.imageToTilesDataIntArray(
+        assetFilename(projectRoot, "sprites", spriteSheet)
+      );
+      const size = data.length;
+      const frames = Math.ceil(size / 64);
+      if (Math.ceil(size / 64) !== Math.floor(size / 64)) {
+        warnings(
+          `Sprite '${
+            spriteSheet.filename
+          }' has invalid dimensions and may not appear correctly. Must be 16px tall and a multiple of 16px wide.`
+        );
+      }
+
+      return {
+        ...spriteSheet,
+        data,
+        size,
+        frames
+      };
+    })
+  );
+  return {
+    usedAvatars: avatarData,
+    avatarLookup
+  };
+}
 
 export const precompileMusic = (scenes, music) => {
   const usedMusicIds = [];

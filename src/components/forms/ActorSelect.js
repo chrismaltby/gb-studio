@@ -117,8 +117,8 @@ ActorSelect.defaultProps = {
   id: "",
   value: "",
   playerSpriteSheetId: "",
-  frame: null,
-  direction: null
+  frame: undefined,
+  direction: undefined
 };
 
 function mapStateToProps(state) {

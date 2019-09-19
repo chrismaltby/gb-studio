@@ -1074,6 +1074,12 @@ UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
     }
     tx_b = DIV_8(ACTOR_X(ptr));
     ty_b = DIV_8(ACTOR_Y(ptr));
+    if (ty_b == 0)
+    {
+      // If actor at posY=256 (really 0 since 8bit) convert to correct tile
+      // since DIV_8 will give tile as 0 rather than 32
+      ty_b = 32;
+    }
     if ((ty_a == ty_b || ty_a == ty_b - 1) &&
         (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
     {

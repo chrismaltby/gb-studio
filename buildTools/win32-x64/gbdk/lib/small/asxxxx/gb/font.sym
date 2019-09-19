@@ -1,0 +1,185 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+    .A                              =  0010 
+    .B                              =  0020 
+    .BANKOV                         =  0002 
+    .BCPD                           =  0069 
+    .BCPS                           =  0068 
+    .BGP                            =  0047 
+    .CR                             =  000A 
+    .DIV                            =  0004 
+    .DMA                            =  0046 
+    .DOWN                           =  0008 
+    .DT_IDLE                        =  0066 
+    .DT_RECEIVING                   =  0055 
+    .G_MODE                         =  0001 
+    .HDMA1                          =  0051 
+    .HDMA2                          =  0052 
+    .HDMA3                          =  0053 
+    .HDMA4                          =  0054 
+    .HDMA5                          =  0055 
+    .IE                             =  00FF 
+    .IF                             =  000F 
+    .IO_ERROR                       =  0004 
+    .IO_IDLE                        =  0000 
+    .IO_RECEIVING                   =  0002 
+    .IO_SENDING                     =  0001 
+    .JOY_IFLAG                      =  0010 
+    .KEY1                           =  004D 
+    .LCDC                           =  0040 
+    .LCD_IFLAG                      =  0002 
+    .LEFT                           =  0002 
+    .LY                             =  0044 
+    .LYC                            =  0045 
+    .MAXCURSPOSX                    =  0013 
+    .MAXCURSPOSY                    =  0011 
+    .MAXWNDPOSX                     =  00A6 
+    .MAXWNDPOSY                     =  008F 
+    .MAX_FONTS                      =  0006 
+    .MBC1_ROM_PAGE                  =  2000 
+    .MINWNDPOSX                     =  0007 
+    .MINWNDPOSY                     =  0000 
+    .MODE_TABLE                     =  01E0 
+    .M_NO_INTERP                    =  0008 
+    .M_NO_SCROLL                    =  0004 
+    .NEAR_CALLS                     =  0001 
+    .NR10                           =  0010 
+    .NR11                           =  0011 
+    .NR12                           =  0012 
+    .NR13                           =  0013 
+    .NR14                           =  0014 
+    .NR21                           =  0016 
+    .NR22                           =  0017 
+    .NR23                           =  0018 
+    .NR24                           =  0019 
+    .NR30                           =  001A 
+    .NR31                           =  001B 
+    .NR32                           =  001C 
+    .NR33                           =  001D 
+    .NR34                           =  001E 
+    .NR41                           =  0020 
+    .NR42                           =  0021 
+    .NR43                           =  0022 
+    .NR44                           =  0023 
+    .NR50                           =  0024 
+    .NR51                           =  0025 
+    .NR52                           =  0026 
+    .OAM                               **** GX
+    .OBP0                           =  0048 
+    .OBP1                           =  0049 
+    .OCPD                           =  006B 
+    .OCPS                           =  006A 
+    .P1                             =  0000 
+    .RIGHT                          =  0001 
+    .RP                             =  0056 
+    .SB                             =  0001 
+    .SC                             =  0002 
+    .SCREENHEIGHT                   =  0090 
+    .SCREENWIDTH                    =  00A0 
+    .SCX                            =  0043 
+    .SCY                            =  0042 
+    .SELECT                         =  0040 
+    .SIO_IFLAG                      =  0008 
+    .SPACE                          =  0000 
+    .STACK                             **** GX
+    .START                          =  0080 
+    .STAT                           =  0041 
+    .SVBK                           =  0070 
+    .TAC                            =  0007 
+    .TIMA                           =  0005 
+    .TIM_IFLAG                      =  0004 
+    .TMA                            =  0006 
+    .T_MODE                         =  0002 
+    .T_MODE_INOUT                   =  0003 
+    .T_MODE_OUT                     =  0002 
+    .UP                             =  0004 
+    .VBK                            =  004F 
+    .VBL_IFLAG                      =  0001 
+    .WX                             =  004B 
+    .WY                             =  004A 
+    .add_JOY                           **** GX
+    .add_LCD                           **** GX
+    .add_SIO                           **** GX
+    .add_TIM                           **** GX
+    .add_VBL                           **** GX
+  3 .adv_curs                          0229 GR
+    .bg_colour                         **** GX
+  3 .cls                               01E2 GR
+  3 .cr_curs                           0214 GR
+  2 .curx                              0016 GR
+  2 .cury                              0017 GR
+  3 .del_char                          0148 GR
+    .display_off                       **** GX
+    .fg_colour                         **** GX
+    .init                              **** GX
+    .int_0x40                          **** GX
+    .int_0x48                          **** GX
+    .lcd                               **** GX
+    .mode                              **** GX
+  3 .out_char                          0141 GR
+  3 .put_char                          0128 GR
+    .refresh_OAM                       **** GX
+    .remove_int                        **** GX
+    .reset                             **** GX
+  3 .rew_curs                          01FD R
+  3 .scroll                            0257 R
+  3 .set_char                          0151 R
+    .set_mode                          **** GX
+  3 .tmode                             0285 GR
+  3 .tmode_out                         02AE GR
+    .vbl                               **** GX
+    .wait_vbl_done                     **** GX
+    FONT_128ENCODING                =  0001 
+    FONT_256ENCODING                =  0000 
+    FONT_BCOMPRESSED                =  0002 
+    FONT_NOENCODING                 =  0002 
+    __RGBDS__                       =  0000 
+    __cpu                              **** GX
+    __io_in                            **** GX
+    __io_out                           **** GX
+    __io_status                        **** GX
+  3 _cls                               01E2 GR
+  3 _font_init                         01C0 GR
+  3 _font_load                         01A3 GR
+    _font_load_ibm_fixed               **** GX
+  3 _font_set                          01B1 GR
+  0 _gotoxy                            0012 GR
+    _main                              **** GX
+  0 _posx                              001D GR
+  0 _posy                              002E GR
+  0 _putchar                           0000 GR
+  0 _setchar                           0009 GR
+    banked_call                        **** GX
+    banked_ret                         **** GX
+  3 font_copy_compressed               0036 GR
+  3 font_copy_compressed_bg_grey1      0052 R
+  3 font_copy_compressed_bg_grey2      0058 R
+  3 font_copy_compressed_grey1         0065 R
+  3 font_copy_compressed_grey2         006C R
+  3 font_copy_compressed_loop          0041 R
+  3 font_copy_current                  00D3 GR
+  3 font_copy_current_copy             00FF R
+  3 font_copy_uncompressed             0000 GR
+  2 font_current                       0000 GR
+  2 font_first_free_tile               0003 GR
+  3 font_load                          008B GR
+  3 font_load_exit                     00CA R
+  3 font_load_find_slot                0094 R
+  3 font_load_found                    00A6 R
+  3 font_set                           011B GR
+  2 font_table                         0004 GR
+  3 set_char_no_encoding               017D R
+    sfont_handle_first_tile         =  0000 
+    sfont_handle_font               =  0001 
+    sfont_handle_sizeof             =  0003 
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size   3F   flags 0
+   1 _HEADER                            size  1EB   flags C
+   2 _BSS                               size   18   flags 0
+   3 _BASE                              size  2BE   flags 0

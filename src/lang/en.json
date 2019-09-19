@@ -160,7 +160,8 @@
   "FIELD_TIMER_DURATION": "Countdown time in seconds",
   "FIELD_TIMER_RESTART": "Restart the countdown timer",
   "FIELD_TIMER_DISABLE": "Disable the timer script",
-
+  "FIELD_TEXT_AVATAR": "Avatar",
+  "FIELD_ADD_TEXT_AVATAR": "Add Avatar",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -217,9 +218,11 @@
   "EVENT_FADE_IN": "Screen: Fade In",
   "EVENT_FADE_OUT": "Screen: Fade Out",
   "EVENT_ACTOR_SET_DIRECTION": "Actor: Set Direction",
+  "EVENT_ACTOR_SET_DIRECTION_TO_VALUE": "Actor: Set Direction Using Variable",
   "EVENT_ACTOR_SET_POSITION": "Actor: Set Position",
   "EVENT_ACTOR_SET_POSITION_RELATIVE": "Actor: Set Relative Position",
   "EVENT_ACTOR_GET_POSITION": "Actor: Store Position In Variables",
+  "EVENT_ACTOR_GET_DIRECTION": "Actor: Store Direction In Variable",
   "EVENT_ACTOR_SET_POSITION_TO_VALUE": "Actor: Set Position Using Variables",
   "EVENT_ACTOR_MOVE_TO": "Actor: Move To",
   "EVENT_ACTOR_MOVE_RELATIVE": "Actor: Move Relative",
@@ -290,6 +293,7 @@
   "MENU_THEME_LIGHT": "Light",
   "MENU_THEME_DARK": "Dark",
   "MENU_LANGUAGE": "Language",
+  "MENU_LANGUAGE_DEFAULT": "System Default",
   "MENU_SHOW_COLLISIONS": "Show Collisions",
   "MENU_SHOW_CONNECTIONS": "Show Connections",
   "MENU_ZOOM_RESET": "Actual Size",
@@ -390,6 +394,8 @@
   "DIALOG_FUTURE": "GB Studio Project Not Supported",
   "DIALOG_FUTURE_DESCRIPTION": "This project file was created with version {currentVersion} which is newer than this version of GB Studio supports. Maximum supported is {version}.\n\nYou may need to update GB Studio.",
   "DIALOG_OPEN_ANYWAY": "Open Anyway",
+  "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio needs to restart before language changes can take effect",
+  "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Please save your project and restart the application.",
 
   "// 16": "Settings ----------------------------------------------------",
 

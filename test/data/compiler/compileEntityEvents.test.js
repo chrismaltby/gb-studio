@@ -88,7 +88,8 @@ const CMD_LOOKUP = {
   ACTOR_SET_FRAME: 0x4e,
   ACTOR_SET_FLIP: 0x4f,
   TEXT_MULTI: 0x50,
-  ACTOR_SET_FRAME_TO_VALUE: 0x51
+  ACTOR_SET_FRAME_TO_VALUE: 0x51,
+  TEXT_WITH_AVATAR: 0x54,
 };
 
 test("should precompile empty events", () => {
@@ -159,6 +160,60 @@ test("should output text command string pointers", () => {
     CMD_LOOKUP.TEXT,
     1,
     4,
+    CMD_LOOKUP.END
+  ]);
+});
+
+test("should output text with avatar command", () => {
+  const input = [
+    {
+      command: EVENT_TEXT,
+      args: {
+        text: "HELLO WORLD",
+        avatarId: 2
+      }
+    }
+  ];
+  const strings = ["HELLO WORLD"];
+  const avatars = [1, 2, 3];
+  const output = compileEntityEvents(input, { strings, avatars });
+  expect(output).toEqual([CMD_LOOKUP.TEXT_WITH_AVATAR, 0, 0, 0, CMD_LOOKUP.END]);
+});
+
+
+test("should output text wit avatar command string pointers", () => {
+  const input = [
+    {
+      command: EVENT_TEXT,
+      args: {
+        text: "TEST_10",
+        avatarId: 1,
+      }
+    },
+    {
+      command: EVENT_TEXT,
+      args: {
+        text: "TEST_260",
+        avatarId: 1,
+      }
+    }
+  ];
+  let strings = [];
+  for (let i = 0; i < 300; i++) {
+    strings.push("TEST_" + i);
+  }
+  strings.push("HELLO WORLD");
+  let avatars = [];
+  const output = compileEntityEvents(input, { strings, avatars });
+  expect(output).toEqual([
+    CMD_LOOKUP.TEXT_WITH_AVATAR,
+    0,
+    10,
+    0,
+    CMD_LOOKUP.TEXT_WITH_AVATAR,
+    1,
+    4,
+    0,
     CMD_LOOKUP.END
   ]);
 });

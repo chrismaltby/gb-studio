@@ -32,6 +32,8 @@ init:
 	jp	_exit
 
 	;; Ordering of segments for the linker.
+	.area	_HOME
+	.area	_BASE
 	.area	_CODE
 	.area	_DATA
 

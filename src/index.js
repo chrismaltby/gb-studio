@@ -10,6 +10,7 @@ import Path from "path";
 import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
+import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
 
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
@@ -397,6 +398,13 @@ menu.on("updateSetting", (setting, value) => {
     menu.ref().getMenuItemById("themeDark").checked = value === "dark";
     splashWindow && splashWindow.webContents.send("update-theme", value);
     mainWindow && mainWindow.webContents.send("update-theme", value);
+  } else if (setting === "locale") {
+    const locales = require("./lib/helpers/l10n").locales;
+    menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
+    for (let locale of locales) {
+      menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
+    }
+    switchLanguageDialog();
   } else {
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }
