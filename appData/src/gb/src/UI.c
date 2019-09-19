@@ -22,6 +22,7 @@ UBYTE text_x;
 UBYTE text_y;
 UBYTE text_drawn;
 UBYTE text_count;
+UBYTE text_tile_count;
 UBYTE text_wait;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
@@ -157,6 +158,7 @@ void UIShowText(UWORD line)
   text_x = 0;
   text_y = 0;
   text_count = 0;
+  text_tile_count = 0;
 }
 
 void UIShowAvatar(UBYTE avatar_index) {
@@ -207,6 +209,7 @@ void UISetTextBuffer(unsigned char *text)
   text_x = 0;
   text_y = 0;
   text_count = 0;
+  text_tile_count = 0;
 }
 
 void UIDrawTextBuffer()
@@ -264,12 +267,13 @@ void UIDrawTextBufferChar()
       text_y++;
     }
 
-    if (text_lines[text_count] != '\b')
+    if (text_lines[text_count] != '\b' && text_lines[text_count] != '\n')
     {
-      i = text_count + avatar_enabled * 4;
+      i = text_tile_count + avatar_enabled * 4;
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
       set_win_tiles(text_x + 1 + choice_enabled + avatar_enabled * 2, text_y + 1, 1, 1, &tile);
+      text_tile_count++;
     }
 
     if (text_lines[text_count] == '\b')
@@ -366,6 +370,7 @@ void UIOnInteract()
     else if (JOY(J_B))
     {
       text_count = 0;
+      text_tile_count = 0;
       text_lines[0] = '\0';
       script_variables[choice_flag] = FALSE;
       choice_enabled = FALSE;
