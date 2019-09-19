@@ -141,6 +141,13 @@ ch1_just_set_volume$:
 	
 	and	a,#0x0F
 	swap	a
+
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+0)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+0),a
 
 	jr	refresh_channel1_regs$
@@ -198,6 +205,13 @@ ch1_has_frequency$:
 	and	a,#0x0F ; a = volume
 	
 	swap	a
+
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+0)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+0),a
 
 	jr	refresh_channel1_regs$
@@ -359,7 +373,7 @@ gbt_ch1_jump_table$:
 	.DW	gbt_ch1_pan$
 	.DW	gbt_ch1_arpeggio$
 	.DW	gbt_ch1_cut_note$
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch1_volume_envelope$	; for when i can comple mod2gbt!
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -408,6 +422,15 @@ gbt_ch1_arpeggio$:
 gbt_ch1_cut_note$:
 	ld	(gbt_cut_note_tick+0),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch1_volume_envelope$:
+	ld	b,a				; store envelope for later
+	ld	a,(gbt_vol+0)
+	and	a,#0xF0			; a = volume, remove any envelope
+	or	a,b				; add envelope bits to volume
+	ld	(gbt_vol+0),a
+	xor	a,a ; ret 1
 	ret
 
 ; -----------------------------------------------------------------------
@@ -476,6 +499,13 @@ ch2_just_set_volume$:
 	
 	and	a,#0x0F
 	swap	a
+	
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+1)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+1),a
 
 	jr	refresh_channel2_regs$
@@ -533,6 +563,13 @@ ch2_has_frequency$:
 	and	a,#0x0F ; a = volume
 	
 	swap	a
+	
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+1)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+1),a
 
 	jr	refresh_channel2_regs$
@@ -692,7 +729,7 @@ gbt_ch2_jump_table$:
 	.DW	gbt_ch2_pan$
 	.DW	gbt_ch2_arpeggio$
 	.DW	gbt_ch2_cut_note$
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch2_volume_envelope$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -741,6 +778,15 @@ gbt_ch2_arpeggio$:
 gbt_ch2_cut_note$:
 	ld	(gbt_cut_note_tick+1),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch2_volume_envelope$:
+	ld	b,a				; store envelope for later
+	ld	a,(gbt_vol+1)
+	and	a,#0xF0			; a = volume, remove any envelope
+	or	a,b				; add envelope bits to volume
+	ld	(gbt_vol+1),a
+	xor	a,a ; ret 1
 	ret
 
 ; -----------------------------------------------------------------------
@@ -1169,6 +1215,13 @@ ch4_just_set_volume$:
 	
 	and	a,#0x0F
 	swap	a
+	
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+3)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+3),a
 
 	jr	refresh_channel4_regs$
@@ -1209,6 +1262,13 @@ ch4_has_instrument$:
 	and	a,#0x0F ; a = volume
 	
 	swap	a
+
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+3)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+3),a
 
 	jr	refresh_channel4_regs$
@@ -1291,7 +1351,7 @@ gbt_ch4_jump_table$:
 	.DW	gbt_ch4_pan$
 	.DW	gbt_ch1234_nop ; gbt_ch4_arpeggio
 	.DW	gbt_ch4_cut_note$
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch4_volume_envelope$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -1314,6 +1374,15 @@ gbt_ch4_pan$:
 gbt_ch4_cut_note$:
 	ld	(gbt_cut_note_tick+3),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch4_volume_envelope$:
+	ld	b,a				; store envelope for later
+	ld	a,(gbt_vol+3)
+	and	a,#0xF0			; a = volume, remove any envelope
+	or	a,b				; add envelope bits to volume
+	ld	(gbt_vol+3),a
+	xor	a,a ; ret 1
 	ret
 
 ; -----------------------------------------------------------------------

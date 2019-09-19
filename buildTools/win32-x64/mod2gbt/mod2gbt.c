@@ -260,6 +260,40 @@ int EFFECT_MOD_TO_GB(u8 pattern_number, u8 step_number, u8 channel,
             *converted_params = effectparams;
             return 1;
         }
+         case 0xA: // Volume Slide (Volume envelope)
+        {
+            u8 Increase = 0;    // 0 is Decrease, 1 is Increase,    bits 1---
+            u8 Period = 0;      // Higher is slow so swap around,   bits -111
+            if(effectparams > 0xF)  // Volume envelope Up!
+            {
+                        printf("Volume envelope Up! %d, step %d, channel %d: %01X%02X\n",
+                           pattern_number,step_number,channel,effectnum,effectparams);
+                Increase = 1;
+                Period = ((effectparams & 0xF0) >> 5); // Needs inverting
+            }
+            else    // Volume envelope Down!
+            {
+                        printf("Volume envelope Down! %d, step %d, channel %d: %01X%02X\n",
+                           pattern_number,step_number,channel,effectnum,effectparams);
+                Increase = 0;
+                Period = ((effectparams & 0xF) >> 1); // Needs inverting, has 0-15 as 0-7
+            }
+            switch(Period)  // inverts Period
+                {
+                    default:
+                    case 0: Period = 0x0; break; // Disable
+                    case 1: Period = 0x7; break; // Slow
+                    case 2: Period = 0x6; break;
+                    case 3: Period = 0x5; break;
+                    case 4: Period = 0x4; break;
+                    case 5: Period = 0x3; break;
+                    case 6: Period = 0x2; break;
+                    case 7: Period = 0x1; break; // fastest
+                }
+            *converted_num = 5;
+            *converted_params = ( (Increase << 3) | Period );
+            return 1;
+        }
         case 0xB: // Jump
         {
             *converted_num = 8;
