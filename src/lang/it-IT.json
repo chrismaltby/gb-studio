@@ -15,6 +15,7 @@
   "NAV_MUSIC": "Musica",
   "NAV_SCRIPT_REVIEW": "Revisione Script",
   "NAV_BUILD_AND_RUN": "Compila ed Esegui",
+  "NAV_SETTINGS": "Impostazioni",
 
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "modificato",
@@ -144,6 +145,9 @@
   "FIELD_COLOR2_NAME": "Verde Chiaro",
   "FIELD_COLOR3_NAME": "Verde Scuro",
   "FIELD_COLOR4_NAME": "Verde Molto Scuro",
+  "FIELD_RESTORE_DEFAULT": "Reimposta Predefinito",
+  "FIELD_ORIGINAL": "Originale",
+  "FIELD_CUSTOM": "Personalizzato",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Cerca...",
@@ -258,8 +262,9 @@
   "MENU_BACKGROUNDS": "Background",
   "MENU_UI_ELEMENTS": "Elementi di UI",
   "MENU_MUSIC": "Musica",
-  "MENU_SCRIPT_REVIEW": "Revisiona Script",
+  "MENU_DIALOGUE_REVIEW": "Revisiona Dialogo",
   "MENU_BUILD_AND_RUN": "Compila ed Esegui",
+  "MENU_SETTINGS": "Impostazioni",
   "MENU_THEME": "Tema",
   "MENU_THEME_DEFAULT": "Default di Sistema",
   "MENU_THEME_LIGHT": "Chiaro",
@@ -364,5 +369,17 @@
   "DIALOG_MIGRATE": "Aggiorna a {version}",
   "DIALOG_FUTURE": "Progetto GB Studio Non Supportato",
   "DIALOG_FUTURE_DESCRIPTION": "Questo progetto è stato creato con la versione {currentVersion} che è superiore alla versione supportata da GB Studio. La versione più recente supportata è la {version}.\n\nSi consiglia di aggiornare GB Studio.",
-  "DIALOG_OPEN_ANYWAY": "Apri Comunque"
+  "DIALOG_OPEN_ANYWAY": "Apri Comunque",
+
+  "// 16": "Settings ----------------------------------------------------",
+
+  "SETTINGS": "Impostazione",
+  "SETTINGS_SCENES": "Scene",
+  "SETTINGS_SCENE": "Scena",
+  "SETTINGS_ACTORS": "Attori",
+  "SETTINGS_ACTOR": "Attore",
+  "SETTINGS_CART_TYPE": "Tipo di Cartuccia",
+  "SETTINGS_CONTROLS": "Controlli",
+  "SETTINGS_COLORS": "Colori",
+  "SETTINGS_CUSTOM_HEADER": "Intestazione Personalizzata (Web Build)"
 }
