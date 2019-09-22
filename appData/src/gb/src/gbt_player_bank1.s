@@ -150,7 +150,8 @@ ch1_just_set_volume$:
 
 	ld	(gbt_vol+0),a
 
-	jr	refresh_channel1_regs$
+	ld	(#.NR12),a ;just update volume register
+	ret	;jr	refresh_channel1_regs$
 	
 ch1_instr_effects$:
 
@@ -169,7 +170,7 @@ ch1_instr_effects$:
 	
 	call	gbt_channel_1_set_effect
 	
-	jr	refresh_channel1_regs$
+	ret ;jr	refresh_channel1_regs$
 	
 ch1_has_frequency$:
 
@@ -430,7 +431,8 @@ gbt_ch1_volume_envelope$:
 	and	a,#0xF0			; a = volume, remove any envelope
 	or	a,b				; add envelope bits to volume
 	ld	(gbt_vol+0),a
-	xor	a,a ; ret 1
+	ld	(#.NR12),a
+	xor	a,a ; ret 0
 	ret
 
 ; -----------------------------------------------------------------------
@@ -508,7 +510,8 @@ ch2_just_set_volume$:
 
 	ld	(gbt_vol+1),a
 
-	jr	refresh_channel2_regs$
+	ld	(#.NR22),a ;just update volume register
+	ret ;jr	refresh_channel2_regs$
 	
 ch2_instr_effects$:
 
@@ -527,7 +530,7 @@ ch2_instr_effects$:
 	
 	call	gbt_channel_2_set_effect
 	
-	jr	refresh_channel2_regs$
+	ret ;jr	refresh_channel2_regs$
 	
 ch2_has_frequency$:
 
@@ -786,7 +789,7 @@ gbt_ch2_volume_envelope$:
 	and	a,#0xF0			; a = volume, remove any envelope
 	or	a,b				; add envelope bits to volume
 	ld	(gbt_vol+1),a
-	xor	a,a ; ret 1
+	xor	a,a ; ret 0
 	ret
 
 ; -----------------------------------------------------------------------
@@ -1382,7 +1385,8 @@ gbt_ch4_volume_envelope$:
 	and	a,#0xF0			; a = volume, remove any envelope
 	or	a,b				; add envelope bits to volume
 	ld	(gbt_vol+3),a
-	xor	a,a ; ret 1
+	ld	(#.NR12),a
+	xor	a,a ; ret 0
 	ret
 
 ; -----------------------------------------------------------------------

@@ -47,8 +47,8 @@ const compileTrack = async (
       : "mod2gbt";
 
   const modPath = assetFilename(projectRoot, "music", track);
-  const outputFile = process.platform === "win32" ? "output.c" : "music.c";
-  const args = [`"${modPath}"`, track.dataName, "-c", track.bank];
+  const outputFile = "output.c"; //process.platform === "win32" ? "output.c" : "music.c";
+  const args = [`"${modPath}"`, track.dataName, track.bank];
 
   const options = {
     cwd: buildRoot,

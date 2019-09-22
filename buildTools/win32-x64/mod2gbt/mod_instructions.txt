@@ -20,6 +20,10 @@ You can use notes from C3 to B8.
 
 0xy - Arpeggio. Only channels 1, 2 and 3.
 
+Ann - Volume envelope. Only channels 1, 2 and 4. 
+	  A0F = fade out note fast. AF0 = fade in note fast. A02 = fade out slow.
+	  A00 & new song = Reset envelope. Output divided by 2, 2-F = 1-7
+
 Bnn - Jump to pattern in order nn (in hexadecimal).
 
 Cnn - Sets the volume to nn (in hexadecimal). Valid values from 00h to 40h.
