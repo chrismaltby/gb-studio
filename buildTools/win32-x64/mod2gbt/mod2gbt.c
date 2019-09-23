@@ -299,10 +299,10 @@ int effect_mod_to_gb(u8 pattern_number, u8 step_number, u8 channel,
             *converted_params = effectparams;
             return 1;
         }
-        case 0x1: u8 negate = 0;    // Ch1 Pitch Slide UP
-        case 0x2: u8 negate = 1;    // Ch1 Pitch Slide DOWN
+        case 0x1:     // Ch1 Pitch Slide UP
         {
             //u8 negate = 0;      // 0 is Decrease, 1 is Increase,    bits -TTT NSSS
+            u8 negate = 0;
             u8 sweep_time = 0;  // Higher is slower, 0 off, 1 is fast
             u8 shift = 0;       // 
             sweep_time = ((effectparams & 0x7) );
@@ -335,10 +335,47 @@ int effect_mod_to_gb(u8 pattern_number, u8 step_number, u8 channel,
             *converted_params = ( (sweep_time << 4 ) | (negate << 3) | shift );
             return 1;
         }
-        case 0x3:   // Ch1 Pitch Slide Manual
+        case 0x2:     // Ch1 Pitch Slide DOWN
+        {
+            //u8 negate = 0;      // 0 is Decrease, 1 is Increase,    bits -TTT NSSS
+            //u8 negate = 0;
+            u8 negate = 1;
+            u8 sweep_time = 0;  // Higher is slower, 0 off, 1 is fast
+            u8 shift = 0;       // 
+            sweep_time = ((effectparams & 0x7) );
+            shift = ((effectparams & 0x70) >> 4);
+            switch(sweep_time)  // Remap sweep time period
+            {
+                default:
+                case 0: sweep_time = 0x0; break; // Disable
+                case 1: sweep_time = 0x7; break; // Slow
+                case 2: sweep_time = 0x6; break;
+                case 3: sweep_time = 0x5; break;
+                case 4: sweep_time = 0x4; break;
+                case 5: sweep_time = 0x3; break;
+                case 6: sweep_time = 0x2; break;
+                case 7: sweep_time = 0x1; break; // Fast
+            }
+            switch(shift)  // Remap shift
+            {
+                default:
+                case 0: shift = 0x0; break; // Disable
+                case 1: shift = 0x7; break; // Slow
+                case 2: shift = 0x6; break;
+                case 3: shift = 0x5; break;
+                case 4: shift = 0x4; break;
+                case 5: shift = 0x3; break;
+                case 6: shift = 0x2; break;
+                case 7: shift = 0x1; break; // Fast
+            }
+            *converted_num = 4;
+            *converted_params = ( (sweep_time << 4 ) | (negate << 3) | shift );
+            return 1;
+        }
+        case 0x3:   // Ch1 Poke NR10 Pitch Slide Manualy
         {
             *converted_num = 4;
-            *converted_params = (effectparams & 0x70);
+            *converted_params = (effectparams & 0xFF);
             return 1;
         }
         case 0xA:   // Volume Slide (Volume envelope)

@@ -244,8 +244,8 @@ refresh_channel1_regs$:
 
 channel1_refresh_registers:
 	
-	xor	a,a
-	ld	(#.NR10),a
+	;xor	a,a
+	;ld	(#.NR10),a
 	ld	a,(gbt_instr+0)
 	ld	(#.NR11),a
 	ld	a,(gbt_vol+0)
@@ -375,7 +375,7 @@ gbt_ch1_jump_table$:
 	.DW	gbt_ch1_arpeggio$
 	.DW	gbt_ch1_cut_note$
 	.DW	gbt_ch1_volume_envelope$	; for when i can comple mod2gbt!
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch1_sweep$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -435,6 +435,10 @@ gbt_ch1_volume_envelope$:
 	xor	a,a ; ret 0
 	ret
 
+gbt_ch1_sweep$:
+	ld (#.NR10),a
+	xor	a,a ; ret 0
+	ret
 ; -----------------------------------------------------------------------
 ; ------------------------------ Channel 2 ------------------------------
 ; -----------------------------------------------------------------------
