@@ -103,12 +103,15 @@ const loadProject = async projectPath => {
     };
   });
 
+  const fixedProcedures = (json.procedures || []).map(addMissingEntityId);
+
   return {
     ...json,
     backgrounds: fixedBackgroundIds,
     spriteSheets: fixedSpriteIds,
     music: fixedMusicIds,
-    scenes: fixedScenes
+    scenes: fixedScenes,
+    procedures: fixedProcedures
   };
 };
 

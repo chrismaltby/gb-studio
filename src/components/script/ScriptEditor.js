@@ -212,7 +212,7 @@ class ActionMini extends Component {
 
     const eventName =
       (action.args.__label ? `${action.args.__label}: ` : "") +
-      (l10n(command) || (events[command] && events[command].name) || command);
+      (action.args.__name || l10n(command) || (events[command] && events[command].name) || command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
     const childKeys = action.children ? Object.keys(action.children) : [];
@@ -245,15 +245,18 @@ class ActionMini extends Component {
                     {commented ? "// " : ""}
                     {action.args.__label}
                     <small>
-                      {l10n(command) ||
+                      {action.args.__name || l10n(command) ||
                         (events[command] && events[command].name) ||
                         command}
                     </small>
                   </span>
                 ) : (
-                  (commented ? "// " : "") + l10n(command) ||
-                  (events[command] && events[command].name) ||
-                  command
+                  <span>
+                    {commented ? "// " : ""} 
+                    {action.args.__name || l10n(command) || 
+                      (events[command] && events[command].name) || 
+                      command}
+                  </span>
                 )}
               </div>
             )}
@@ -757,7 +760,7 @@ function mapStateToProps(state, props) {
   return {
     variableIds: result.variables,
     sceneIds: result.scenes,
-    actorIds: entities.scenes[state.editor.scene].actors,
+    actorIds: entities.scenes[state.editor.scene] ? entities.scenes[state.editor.scene].actors : [],
     musicIds: result.music,
     spriteSheetIds: result.spriteSheets,
     value: props.value && props.value.length > 0 ? props.value : undefined

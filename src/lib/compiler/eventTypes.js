@@ -109,6 +109,9 @@ export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 
+// Call Procedure
+export const EVENT_CALL_PROCEDURE = "EVENT_CALL_PROCEDURE";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsDeprecated = [
   EVENT_MATH_ADD,

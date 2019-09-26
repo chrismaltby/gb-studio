@@ -2,15 +2,18 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import Highlighter from "react-highlight-words";
+import { connect } from "react-redux";
 import Button from "../library/Button";
 import {
   EventsOnlyForActors,
   EventsDeprecated,
-  EVENT_TEXT
+  EVENT_TEXT,
+  EVENT_CALL_PROCEDURE
 } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
+import { ProcedureShape } from "../../reducers/stateShape";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -42,12 +45,13 @@ class AddCommandButton extends Component {
   onAdd = action => () => {
     const { onAdd } = this.props;
     clearTimeout(this.timeout);
-    onAdd(action);
     const fullList = this.fullList();
+    const index = fullList.findIndex(event => event.key === action);
+    onAdd(fullList[index].id, fullList[index].args);
     this.setState({
       open: false,
       query: "",
-      selectedIndex: fullList.findIndex(event => event.id === action)
+      selectedIndex: index
     });
   };
 
@@ -80,7 +84,7 @@ class AddCommandButton extends Component {
     const actionsList = this.filteredList();
     if (e.key === "Enter") {
       if (actionsList[selectedIndex]) {
-        this.onAdd(actionsList[selectedIndex].id)();
+        this.onAdd(actionsList[selectedIndex].key)();
       } else if (query.length > 0) {
         this.onAddText();
       }
@@ -116,8 +120,28 @@ class AddCommandButton extends Component {
   };
 
   fullList = () => {
-    const { type } = this.props;
-    return Object.keys(events)
+    const { type, procedures } = this.props;
+    
+    const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
+    const callProcedureEvents = Object.values(procedures).map((procedure, index) => {
+      if (!procedure) return {};
+      const name = procedure.name;
+      const searchName = `${name.toUpperCase()} EVENT_CALL_PROCEDURE`;
+      return {
+        ...templateEventCallProcedure,
+        args: { 
+          script: procedure.script,
+          procedure: procedure.id,
+          __name: procedure.name
+        },
+        name,
+        searchName,
+        key: `EVENT_CALL_PROCEDURE_${index}`
+      }
+    });
+
+    return [
+      ...Object.keys(events)
       .filter(key => {
         return (
           EventsDeprecated.indexOf(key) === -1 &&
@@ -130,14 +154,19 @@ class AddCommandButton extends Component {
         return {
           ...events[key],
           name,
-          searchName
+          searchName,
+          key
         };
-      });
+      }),
+      ...callProcedureEvents
+    ]
   };
 
   filteredList = () => {
     const { query } = this.state;
     const fullList = this.fullList();
+
+    console.log(fullList.length);
 
     if (!query) {
       return fullList;
@@ -190,12 +219,12 @@ class AddCommandButton extends Component {
             <div className="AddCommandButton__List">
               {actionsList.map((action, actionIndex) => (
                 <div
-                  key={action.id}
+                  key={action.key}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
                       selectedIndex === actionIndex
                   })}
-                  onClick={this.onAdd(action.id)}
+                  onClick={this.onAdd(action.key)}
                   onMouseEnter={this.onHover(actionIndex)}
                 >
                   <Highlighter
@@ -232,7 +261,15 @@ class AddCommandButton extends Component {
 
 AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  procedures: PropTypes.objectOf(ProcedureShape).isRequired
 };
 
-export default AddCommandButton;
+function mapStateToProps(state) {
+  const procedures = state.entities.present.entities.procedures || {};
+  return {
+    procedures
+  }
+};
+
+export default connect(mapStateToProps)(AddCommandButton);

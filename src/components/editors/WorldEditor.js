@@ -14,6 +14,7 @@ import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
+import ProcedureNavigation from "./ProcedureNavigation";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -31,9 +32,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar } = this.props;
+    const { project, selectSidebar, addProcedure } = this.props;
 
-    if (!project || !project.scenes) {
+    if (!project || !project.scenes || !project.procedures) {
       return <div />;
     }
 
@@ -93,9 +94,7 @@ class WorldEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-        </SidebarColumn>
 
-        <SidebarColumn>
           {scenes.length > 0 && (
             <div>
               <SidebarHeading title={l10n("SIDEBAR_STARTING_SCENE")} />
@@ -185,6 +184,21 @@ class WorldEditor extends Component {
             </div>
           )}
         </SidebarColumn>
+
+        <SidebarColumn>
+          <ProcedureNavigation />
+          <div style={{  padding: "10px" }}>
+            <Button 
+              style={{ width: "100%" }}
+              onClick={() => {
+                addProcedure();
+              }}
+            >
+              Add Procedure
+            </Button>
+          </div>
+        </SidebarColumn>
+
       </Sidebar>
     );
   }
@@ -194,10 +208,11 @@ WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
   editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired
+  selectSidebar: PropTypes.func.isRequired,
+  addProcedure: PropTypes.func.isRequired,
 };
 
-function mapStateToProps(state, props) {
+function mapStateToProps(state) {
   const project = state.entities.present.result;
   return {
     project
@@ -207,7 +222,8 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: actions.editProjectSettings,
+  addProcedure: actions.addProcedure
 };
 
 export default connect(

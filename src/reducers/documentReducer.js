@@ -27,10 +27,13 @@ import {
   EDIT_WORLD,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
+  EDIT_PROCEDURE,
+  REMOVE_PROCEDURE,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_PLAYER_START_AT
+  EDIT_PLAYER_START_AT,
+  ADD_PROCEDURE
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -85,6 +88,9 @@ export default function modified(state = initialState.document, action) {
     case EDIT_WORLD:
     case EDIT_PROJECT:
     case EDIT_PROJECT_SETTINGS:
+    case ADD_PROCEDURE:
+    case EDIT_PROCEDURE:
+    case REMOVE_PROCEDURE:
     case EDIT_SCENE_EVENT_DESTINATION_POSITION:
     case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
     case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:

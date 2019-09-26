@@ -10,6 +10,7 @@ import {
   SPRITE_REMOVE,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
+  EDIT_PROCEDURE,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -35,15 +36,19 @@ import {
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
-  SCROLL_WORLD
+  SCROLL_WORLD,
+  ADD_PROCEDURE,
+  REMOVE_PROCEDURE
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
   patchEvents,
   regenerateEventIds,
-  mapEvents
+  mapEvents,
+  walkEvents
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
+import { EVENT_CALL_PROCEDURE } from "../lib/compiler/eventTypes";
 
 const addEntity = (state, type, data) => {
   return {
@@ -143,12 +148,14 @@ const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema]
 });
+const proceduresSchema = new schema.Entity("procedures");
 const projectSchema = {
   scenes: [sceneSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   spriteSheets: [spriteSheetsSchema],
-  variables: [variablesSchema]
+  variables: [variablesSchema],
+  procedures: [proceduresSchema]
 };
 
 export const normalizeProject = projectData => {
@@ -493,6 +500,113 @@ const editScene = (state, action) => {
 const removeScene = (state, action) => {
   return removeEntity(state, "scenes", action.sceneId);
 };
+
+const addProcedure = (state, action) => {
+  const newProcedure = Object.assign(
+    {
+      id: action.id,
+      name: 'Procedure Name',
+      variables: {},
+      actors: {},
+      script: {}
+    }
+  );
+  return addEntity(state, "procedures", newProcedure);
+};
+
+const editProcedure = (state, action) => {
+  const patch = { ...action.values };
+  let newState = state;
+
+  if (patch.script) {
+    const variables = {};
+    const actors = {};
+
+    const oldVariables = newState.entities.procedures[action.id].variables;
+    const oldActors = newState.entities.procedures[action.id].actors;
+
+    walkEvents(patch.script, (e) => {
+      const args = e.args;
+
+      if (!args) return;
+
+      if (args.actorId && args.actorId !== "player") {
+        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.actorId));
+        actors[args.actorId] = {
+          id: args.actorId,
+          name: oldActors[args.actorId] ? oldActors[args.actorId].name : `Actor ${letter}`
+        };
+      }
+      if (args.variable) {
+        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.variable));
+        variables[args.variable] = {
+          id: args.variable,
+          name: oldVariables[args.variable] ? oldVariables[args.variable].name : `Variable ${letter}`
+        };
+      }
+      if (args.vectorX) {
+        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.vectorX)).toUpperCase();
+        variables[args.vectorX] = {
+          id: args.vectorX,
+          name: oldVariables[args.vectorX] ? oldVariables[args.vectorX].name : `Variable ${letter}`
+        };
+      }
+      if (args.vectorY) {
+        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.vectorY)).toUpperCase();
+        variables[args.vectorY] = {
+          id: args.vectorY,
+          name: oldVariables[args.vectorY] ? oldVariables[args.vectorY].name : `Variable ${letter}`
+        };
+      }
+    });
+
+    patch.variables = {...variables};
+    patch.actors = {...actors};
+
+    newState = updateEntitiesProcedureScript(newState, "scenes", action.id, newState.entities.scenes, patch.script);
+    newState = updateEntitiesProcedureScript(newState, "actors", action.id, newState.entities.actors, patch.script);
+    newState = updateEntitiesProcedureScript(newState, "triggers", action.id, newState.entities.triggers, patch.script);
+  }
+
+  return editEntity(newState, "procedures", action.id, patch);
+};
+
+const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
+  let newState = state;
+  Object.values(entities).map(entity => {
+    const newScript = [];
+    for (let i = 0; i < entity.script.length; i++) {
+      const event = entity.script[i];
+      if (event.command === EVENT_CALL_PROCEDURE) {
+        if (event.args.procedure === id) {
+          console.log(event);
+          newScript[i] = { 
+            ...event,
+            args: {
+              ...event.args,
+              script: [ ...script ]
+            }
+          };
+        } else {
+          newScript[i] = event;
+        }
+      } else {
+        newScript[i] = event;
+      }
+    }
+    const patchEntity = { 
+      ...entity, 
+      script: newScript
+    };
+    console.log("PATCH SCENE", patchEntity);
+    newState = editEntity(newState, type, entity.id, patchEntity)
+  });  
+  return newState;
+}
+
+const removeProcedure = (state, action) => {
+  return removeEntity(state, "procedures", action.procedureId);
+}
 
 const addActor = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
@@ -976,6 +1090,10 @@ export default function project(state = initialState.entities, action) {
       return editProject(state, action);
     case EDIT_PROJECT_SETTINGS:
       return editProjectSettings(state, action);
+    case EDIT_PROCEDURE:
+      return editProcedure(state, action);
+    case REMOVE_PROCEDURE:
+      return removeProcedure(state, action);
     case SPRITE_LOAD_SUCCESS:
       return loadSprite(state, action);
     case SPRITE_REMOVE:
@@ -988,6 +1106,8 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
+    case ADD_PROCEDURE:
+      return addProcedure(state, action);
     case ADD_SCENE:
       return addScene(state, action);
     case MOVE_SCENE:

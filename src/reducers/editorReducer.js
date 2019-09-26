@@ -38,7 +38,10 @@ import {
   EDIT_UI,
   SELECT_SIDEBAR,
   ADD_COLLISION_TILE,
-  REMOVE_COLLISION_TILE
+  REMOVE_COLLISION_TILE,
+  SELECT_PROCEDURE,
+  ADD_PROCEDURE,
+  REMOVE_PROCEDURE
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -138,6 +141,21 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         eventId: action.eventId
+      };
+    }
+    case SELECT_PROCEDURE: {
+      return {
+        ...state,
+        type: "procedures",
+        scene: "",
+        entityId: action.id
+      }
+    }
+    case ADD_PROCEDURE: {
+      return {
+        ...state,
+        type: "procedures",
+        entityId: action.id
       };
     }
     case DRAG_SCENE_START: {
@@ -271,6 +289,7 @@ export default function editor(state = initialState.editor, action) {
     case REMOVE_SCENE:
     case REMOVE_ACTOR:
     case REMOVE_TRIGGER:
+    case REMOVE_PROCEDURE:
     case REMOVE_ACTOR_AT:
     case REMOVE_TRIGGER_AT:
     case EDIT_PLAYER_START_AT:

@@ -5,6 +5,7 @@ import TriggerEditor from "./TriggerEditor";
 import ActorEditor from "./ActorEditor";
 import SceneEditor from "./SceneEditor";
 import WorldEditor from "./WorldEditor";
+import ProcedureEditor from "./ProcedureEditor";
 
 class EditorSidebar extends Component {
   render() {
@@ -20,6 +21,9 @@ class EditorSidebar extends Component {
     }
     if (type === "world") {
       return <WorldEditor />;
+    }
+    if (type === "procedures") {
+      return <ProcedureEditor key="entityId" id={entityId} />
     }
     return <div />;
   }

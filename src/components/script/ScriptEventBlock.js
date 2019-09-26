@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -23,6 +24,7 @@ import { textNumLines } from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
 import GBScriptEditor from "../library/GBScriptEditor";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import { ProcedureShape } from "../../reducers/stateShape";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -213,6 +215,9 @@ class ScriptEventInput extends Component {
     if (type === "music") {
       return <MusicSelect id={id} value={value} onChange={this.onChange} />;
     }
+    if (type === "script") {
+      return <span>{JSON.stringify(value)}</span>
+    }
     return <div />;
   }
 }
@@ -387,9 +392,40 @@ class ScriptEventBlock extends Component {
     return true;
   }
 
+  getFields() {
+    const { command, value, procedures } = this.props;
+    const eventCommands = (events[command] && events[command].fields) || [];
+    if (value.procedure && procedures[value.procedure]) {
+      const procedure = procedures[value.procedure];
+      const usedVariables = Object.values(procedure.variables).map(v => {
+        return {
+          label: `${v.name} - ${v.id}`,
+          defaultValue: "LAST_VARIABLE",
+          key: `$variable[${v.id}]$`,
+          type: "variable"
+        };
+      }) || [];
+      const usedActors = Object.values(procedure.actors).map((a) => {
+        return {
+          label: `${a.name} - ${a.id}`,
+          defaultValue: "player",
+          key: `$actor[${a.id}]$`,
+          type: "actor"
+        };
+      }) || [];
+
+      return [].concat(
+        eventCommands,
+        usedVariables,
+        usedActors
+      );
+    } 
+    return eventCommands;
+  }
+  
   render() {
-    const { command, id, value, onChange } = this.props;
-    const fields = (events[command] && events[command].fields) || [];
+    const { id, value, onChange } = this.props;
+    const fields = this.getFields()
 
     return (
       <div className="ScriptEventBlock">
@@ -399,7 +435,7 @@ class ScriptEventBlock extends Component {
               return null;
             }
           }
-          if (field.type === "events") {
+          if (field.type === "events" || field.type === "script" || field.type === "hidden") {
             return null;
           }
 
@@ -427,11 +463,20 @@ ScriptEventBlock.propTypes = {
   id: PropTypes.string.isRequired,
   command: PropTypes.string.isRequired,
   value: PropTypes.shape({}),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  procedures: PropTypes.objectOf(ProcedureShape)
 };
 
 ScriptEventBlock.defaultProps = {
-  value: {}
+  value: {},
+  procedures: []
 };
 
-export default ScriptEventBlock;
+function mapStateToProps(state) {
+  const procedures = state.entities.present.entities.procedures || {};
+  return {
+    procedures
+  }
+};
+
+export default connect(mapStateToProps)(ScriptEventBlock);

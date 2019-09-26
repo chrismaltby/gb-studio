@@ -59,7 +59,8 @@ export default {
       scenes: {},
       spriteSheets: {},
       triggers: {},
-      variables: {}
+      variables: {},
+      procedures: {},
     },
     result: {
       settings: {

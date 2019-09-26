@@ -397,6 +397,14 @@ export const selectWorld = () => {
   return { type: types.SELECT_WORLD };
 };
 
+export const selectProcedure = (id) => {
+  return { type: types.SELECT_PROCEDURE, id };
+};
+
+export const addProcedure = () => {
+  return { type: types.ADD_PROCEDURE, id: uuid() };
+};
+
 export const editWorld = values => {
   return { type: types.EDIT_WORLD, values };
 };
@@ -407,6 +415,14 @@ export const editProject = values => {
 
 export const editProjectSettings = values => {
   return { type: types.EDIT_PROJECT_SETTINGS, values };
+};
+
+export const editProcedure = (id, values) => {
+  return { type: types.EDIT_PROCEDURE, id, values };
+};
+
+export const removeProcedure = procedureId => {
+  return { type: types.REMOVE_PROCEDURE, procedureId };
 };
 
 export const editPlayerStartAt = (sceneId, x, y) => {
