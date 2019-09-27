@@ -574,12 +574,12 @@ const editProcedure = (state, action) => {
 const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
   let newState = state;
   Object.values(entities).map(entity => {
+    if (!entity || !entity.script) return;
     const newScript = [];
     for (let i = 0; i < entity.script.length; i++) {
       const event = entity.script[i];
       if (event.command === EVENT_CALL_PROCEDURE) {
         if (event.args.procedure === id) {
-          console.log(event);
           newScript[i] = { 
             ...event,
             args: {
@@ -598,7 +598,6 @@ const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
       ...entity, 
       script: newScript
     };
-    console.log("PATCH SCENE", patchEntity);
     newState = editEntity(newState, type, entity.id, patchEntity)
   });  
   return newState;
