@@ -132,7 +132,7 @@ ProcedureActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const actors = state.entities.present.entities.procedures[state.editor.entityId].actors;
+  const actors = Object.values(state.entities.present.entities.procedures[state.editor.entityId].actors || {});
   const settings = state.entities.present.result.settings;
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {

@@ -33,6 +33,5 @@ export const compile = (input, helpers) => {
       e.args.vectorY = input[`$variable[${e.args.vectorY}]$`];
     }
   });
-  console.log(script);
   compileEntityEvents(script, { ...helpers, branch: true });
 };

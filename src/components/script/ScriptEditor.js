@@ -758,9 +758,9 @@ ScriptEditor.defaultProps = {
 function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;
   return {
-    variableIds: result.variables,
+    variableIds: props.variables || result.variables,
     sceneIds: result.scenes,
-    actorIds: entities.scenes[state.editor.scene] ? entities.scenes[state.editor.scene].actors : [],
+    actorIds: props.actors || entities.scenes[state.editor.scene].actors,
     musicIds: result.music,
     spriteSheetIds: result.spriteSheets,
     value: props.value && props.value.length > 0 ? props.value : undefined

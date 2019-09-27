@@ -166,8 +166,6 @@ class AddCommandButton extends Component {
     const { query } = this.state;
     const fullList = this.fullList();
 
-    console.log(fullList.length);
-
     if (!query) {
       return fullList;
     }

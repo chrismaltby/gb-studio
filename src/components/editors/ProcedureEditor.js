@@ -51,7 +51,7 @@ class ProcedureEditor extends Component {
     });
   };
 
-  onRemove = key => e => {
+  onRemove = () => () => {
     const { removeProcedure, procedure } = this.props;
     removeProcedure(procedure.id);
   }
@@ -102,10 +102,9 @@ class ProcedureEditor extends Component {
             {Object.values(procedure.variables)
               .map((variable, i) => {
                 return (
-                  <FormField>
+                  <FormField key={variable.id}>
                     <input
                       id={`variable[${i}]`}
-                      key={variable.id}
                       value={variable.name}
                       placeholder="Variable Name"
                       onChange={this.onEditVariableName(variable.id)}
@@ -122,10 +121,9 @@ class ProcedureEditor extends Component {
             {Object.values(procedure.actors)
               .map((actor, i) => {
                 return (
-                  <FormField>
+                  <FormField key={actor.id}>
                     <input
                       id={`actor[${i}]`}
-                      key={actor.id}
                       value={actor.name}
                       placeholder="Actor Name"
                       onChange={this.onEditActorName(actor.id)}
@@ -141,6 +139,8 @@ class ProcedureEditor extends Component {
             value={procedure.script}
             title="Procedure Script"
             type="procedure"
+            variables={Object.keys(procedure.variables)}
+            actors={Object.keys(procedure.actors)}
             onChange={this.onEdit("script")}
           />
         </SidebarColumn>
