@@ -289,7 +289,12 @@ var Effects = {
 		representation: "C",
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0) {
-				registers.volume.channelVolume = Math.max(0.0, Math.min(param / 64.0, 1.0));
+				if ( channel === 2 ) {
+					registers.volume.channelVolume = Math.max(0.0, Math.min(Math.round(param / 16.0) / 4.0, 1.0));
+				} else {
+					registers.volume.channelVolume = Math.max(0.0, Math.min(Math.round(param / 4.0) / 16.0, 1.0));
+				}
+				registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
 			}
 		}
 	},

@@ -15,6 +15,7 @@ var Helpers    = require("./helpers");
  * Author:  		Maarten Janssen
  * Date:    		2014-05-12
  * Last updated:	2015-07-22
+ * Modified for GameBoy Tracker compatibility.
  */
 var ModModule = function(fileData) {
 	Module.call(this);
@@ -131,15 +132,28 @@ var ModModule = function(fileData) {
 				}
 
 				pattern.instrument[r][c] = (byte1 & 0xF0) | ((byte3 & 0xF0) / 16);
+				// GBT Clamp instument ranges.
+				if ( pattern.instrument[r][c] !== 0 ) {
+					if (c === 2) { // Wave
+						pattern.instrument[r][c] = ((pattern.instrument[r][c] - 8 & 7) + 8 );
+					}
+					else if (c === 3) { // Noise
+						pattern.instrument[r][c] = ((pattern.instrument[r][c] - 16 & 15) + 16 );
+					}
+					else { // Pulse
+						pattern.instrument[r][c] = ((pattern.instrument[r][c] - 1 & 3) + 1 );
+					}
+					//console.log(r + ' chan ' + c + ' inst ' + pattern.instrument[r][c]);
+				}
 				pattern.volume[r][c]     = -1;
 
 				pattern.effectParam[r][c] = byte4;
 				if ((byte3 & 0x0F) == 0 && byte4 != 0) {
 					pattern.effect[r][c] = Effects.ARPEGGIO;
 				} else if ((byte3 & 0x0F) == 1) {
-					pattern.effect[r][c] = Effects.NONE;//Effects.PORTA_UP;
+					pattern.effect[r][c] = Effects.PORTA_UP;
 				} else if ((byte3 & 0x0F) == 2) {
-					pattern.effect[r][c] = Effects.NONE;//Effects.PORTA_DOWN;
+					pattern.effect[r][c] = Effects.PORTA_DOWN;
 				} else if ((byte3 & 0x0F) == 3) {
 					pattern.effect[r][c] = Effects.NONE;//Effects.TONE_PORTA;
 				} else if ((byte3 & 0x0F) == 4) {

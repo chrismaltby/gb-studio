@@ -511,6 +511,12 @@ void convert_channel1(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum > 4)
+        {
+            printf("\nWarning: Channel 1 must use Pulse waves 1-4, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
 
     if (note_index > (6 * 12 - 1)) // Not valid note -> check if any effect
     {
@@ -614,6 +620,13 @@ void convert_channel2(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum > 4)
+        {
+            printf("\nWarning: Channel 2 must use Pulse waves 1-4, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+                    
+        }
 
     if (note_index > (6 * 12 - 1)) // Not valid note -> check if any effect
     {
@@ -764,6 +777,12 @@ void convert_channel3(u8 pattern_number, u8 step_number, u8 note_index,
     else // New note
     {
         u8 instrument = (samplenum - 8) & 15; // Only 0-7 implemented
+        if (samplenum > 16 | samplenum < 8)
+        {
+            printf("\nWarning: Channel 3 must use Waves 8-15, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
 
         u8 converted_num, converted_params;
         if (effectnum == 0xC)
@@ -877,6 +896,12 @@ void convert_channel4(u8 pattern_number, u8 step_number, u8 note_index,
     else // New note (not a real note...)
     {
         u8 instrument = (samplenum - 16) & 0x1F; // Only 0 - 0xF implemented
+        if (samplenum < 16)
+        {
+            printf("\nWarning: Channel 4 must use Noises 16-31, "
+                    "but found Instument %d at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
 
         u8 converted_num, converted_params;
         if (effectnum == 0xC)
