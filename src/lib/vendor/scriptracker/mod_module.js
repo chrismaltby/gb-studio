@@ -240,13 +240,152 @@ var ModModule = function(fileData) {
 
 	// Load sample data.
 	var filePos = patternCount * patternLength + 1084;
+	
 	for (var i = 0; i < this.instruments.length; i ++) {
-		this.instruments[i].samples[0].loadSample(fileData.subarray(filePos, filePos + this.instruments[i].samples[0].sampleLength), this.signedSample);
-		this.instruments[i].samples[0].sample[0] = 0;
-		this.instruments[i].samples[0].sample[1] = 0;
+		if (i > 14) {
+			this.instruments[i].samples[0].loadSample(fileData.subarray(filePos, filePos + this.instruments[i].samples[0].sampleLength), this.signedSample);
+		}
+		//this.instruments[i].samples[0].sample[0] = 0; // Was causing bad sample data, disabled.
+		//console.log(this.instruments[i].samples[0]); // Log sample for hard storage.
 
 		filePos += this.instruments[i].samples[0].sampleLength;
 	}
+	// Hard store samples for GBT
+	this.instruments[0].samples[0] =	{
+		"sampleIndex": 0,	"name": "Chans. 1&2 - 25% Duty\u0000",
+		"sampleLength": 32,   "loopStart": 0,   "loopLength": 32,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,	"panning": 0.5,	"basePeriod": 0,	"fineTune": 32,
+		"sample": [
+		  0.142,  0.803,  0.661,  0.709,  0.591,  0.638,  0.543,  0.638,  0.26,  -0.398,  -0.305,  -0.328,  -0.281,  -0.305,  -0.281,  -0.281,  -0.258,  -0.258,  -0.234,  -0.234,  -0.211,  -0.211,  -0.187,  -0.187,  -0.187,  -0.187,  -0.164,  -0.164,  -0.141,  -0.164,  -0.117,  -0.187
+		]
+	  };
+	  this.instruments[1].samples[0] =	{
+		"sampleIndex": 0,	"name": "Chans. 1&2 - 50% Duty\u0000",
+		"sampleLength": 32,   "loopStart": 0,   "loopLength": 32,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,	"panning": 0.5,	"basePeriod": 0,	"fineTune": 32,
+		"sample": [
+		  -0.414,  0.646,  0.669,  0.646,  0.622,  0.614,  0.606,  0.591,  0.575,  0.567,  0.567,  0.583,  0.567,  0.559,  0.559,  0.528,  0.512,  -0.617,  -0.617,  -0.586,  -0.555,  -0.539,  -0.531,  -0.523,  -0.5,  -0.484,  -0.453,  -0.437,  -0.43,  -0.414,  -0.398,  -0.391
+		]
+	  };
+	  this.instruments[2].samples[0] =	{
+		"sampleIndex": 0,	"name": "Chans. 1&2 - 75% Duty\u0000",
+		"sampleLength": 32,   "loopStart": 0,   "loopLength": 32,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,	"panning": 0.5,	"basePeriod": 0,	"fineTune": 16,
+		"sample": [
+		  0.402,  0.283,  0.307,  0.26,  0.283,  0.26,  0.26,  0.236,  0.236,  0.213,  0.213,  0.189,  0.189,  0.165,  0.165,  0.142,  0.165,  0.142,  0.142,  0.118,  0.142,  0.094,  0.165,  -0.164,  -0.82,  -0.68,  -0.727,  -0.609,  -0.656,  -0.562,  -0.656,  -0.281
+		]
+	  };
+	  this.instruments[3].samples[0] =	{
+		"sampleIndex": 0,	"name": "Chans.1&2 - 12.5% Duty",
+		"sampleLength": 32,   "loopStart": 0,   "loopLength": 32,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,	"panning": 0.5,	"basePeriod": 0,	"fineTune": 16,
+		"sample": [
+		  0.378,  0.898,  0.661,  0.827,  0.213,  -0.258,  -0.164,  -0.187,  -0.164,  -0.164,  -0.141,  -0.164,  -0.141,  -0.141,  -0.117,  -0.141,  -0.117,  -0.117,  -0.117,  -0.117,  -0.094,  -0.094,  -0.094,  -0.094,  -0.094,  -0.094,  -0.07,  -0.094,  -0.07,  -0.094,  -0.047,  -0.141
+		]
+	  };
+	  for (var i = 4; i < 7; i ++)	{
+		this.instruments[i].samples[0] = {
+			"sampleIndex": 0,   "name": "[UNUSED]",
+			"sampleLength": 0,   "loopStart": 0,   "loopLength": 2,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+			"volume": 1,   "panning": 0.5,   "basePeriod": 0,   "fineTune": 0,   "sample": []
+		};
+	  }
+	  this.instruments[7].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 1",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.142,  0.165,  0.213,  0.213,  0.047,  0.024,  0.071,  0.071,  -0.094,  -0.094,  -0.141,  -0.164,  -0.305,  -0.305,  -0.375,  -0.398,  -0.422,  -0.398,  0.236,  0.307,  0.213,  0.213,  0.142,  0.142,  0.283,  0.307,  0.331,  0.307,  -0.117,  -0.164,  -0.445,  -0.492,  -0.398,  -0.375,  0.142,  0.236,  0.236,  0.26,  0.118,  0.094,  -0.398,  -0.469,  -0.281,  -0.258,  0.047,  0.118,  -0.211,  -0.258,  0.118,  0.189,  -0.094,  -0.141,  0.283,  0.354,  0.024,  -0.047,  0.213,  0.26,  0.094,  0.047,  0.283,  0.354,  -0.305,  -0.445
+		]
+	  };
+	  this.instruments[8].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 2",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0,  0.024,  -0.07,  -0.094,  0.047,  0.094,  -0.094,  -0.164,  0.071,  0.165,  -0.117,  -0.234,  0.094,  0.236,  -0.141,  -0.305,  0.118,  0.307,  -0.164,  -0.375,  0.142,  0.378,  -0.187,  -0.445,  0.165,  0.449,  -0.187,  -0.539,  0.189,  0.496,  0.378,  0.472,  -0.211,  -0.562,  0.118,  0.425,  -0.187,  -0.492,  0.071,  0.378,  -0.141,  -0.422,  0.047,  0.307,  -0.117,  -0.328,  0.047,  0.236,  -0.094,  -0.258,  0.024,  0.165,  -0.07,  -0.187,  0,  0.094,  -0.047,  -0.117,  -0.023,  0.024,  -0.023,  -0.047,  -0.023,  -0.047
+		]
+	  };
+	  this.instruments[9].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 3",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.378,  0.614,  0.425,  0.402,  0.402,  0.449,  0.307,  0.26,  0.307,  0.307,  0.189,  0.165,  0.189,  0.213,  0.118,  0.071,  0.118,  0.142,  0.024,  0,  0.047,  0.071,  -0.023,  -0.07,  -0.023,  0,  -0.094,  -0.117,  -0.07,  -0.047,  -0.117,  -0.164,  -0.117,  -0.094,  -0.023,  0.047,  -0.094,  -0.164,  -0.07,  0,  -0.141,  -0.211,  -0.094,  -0.047,  -0.164,  -0.234,  -0.141,  -0.07,  -0.211,  -0.281,  -0.164,  -0.117,  -0.234,  -0.305,  -0.187,  -0.141,  -0.234,  -0.328,  -0.211,  -0.164,  -0.258,  -0.352,  -0.187,  -0.234
+		]
+	  };
+	  this.instruments[10].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 4",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.236,  0.52,  0.449,  0.496,  0.472,  0.52,  0.402,  0.402,  0.331,  0.307,  0.236,  0.213,  0.165,  0.142,  0.094,  0.071,  0.047,  0,  0.047,  0.071,  0.047,  0.071,  0.024,  0,  -0.047,  -0.07,  -0.094,  -0.117,  -0.094,  -0.117,  -0.094,  -0.094,  -0.07,  -0.023,  -0.047,  -0.023,  -0.047,  -0.023,  -0.07,  -0.094,  -0.117,  -0.141,  -0.164,  -0.187,  -0.164,  -0.164,  -0.117,  -0.094,  -0.117,  -0.141,  -0.164,  -0.187,  -0.211,  -0.234,  -0.234,  -0.281,  -0.281,  -0.328,  -0.305,  -0.375,  -0.258,  -0.281,  -0.187,  -0.234
+		]
+	  };
+	  this.instruments[11].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 5",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.402,  0.26,  0.26,  0.189,  0.165,  0.118,  0.094,  0.071,  0.024,  0.047,  0.071,  0.094,  0.142,  0.142,  0.189,  0.189,  0.236,  0.213,  0.283,  0.213,  0.189,  0.118,  0.118,  0.047,  0.071,  -0.164,  -0.516,  -0.445,  -0.516,  -0.469,  -0.539,  -0.469,  -0.586,  -0.281,  0.118,  0.094,  0.142,  0.142,  0.189,  0.189,  0.236,  0.213,  0.26,  0.26,  0.307,  0.236,  0.213,  0.165,  0.142,  0.094,  0.071,  0.024,  0,  -0.023,  -0.023,  -0.234,  -0.68,  -0.539,  -0.539,  -0.445,  -0.445,  -0.352,  -0.375,  -0.117
+		]
+	  };
+	  this.instruments[12].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 6",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.378,  0.661,  0.543,  0.567,  0.472,  0.449,  0.402,  0.425,  0.331,  0.307,  0.283,  0.283,  0.236,  0.213,  0.189,  0.189,  0.142,  0.118,  0.094,  0.118,  0.047,  0.024,  0.024,  0.047,  0,  -0.023,  -0.023,  -0.023,  -0.07,  -0.094,  -0.07,  -0.07,  -0.117,  -0.141,  -0.117,  -0.117,  -0.141,  -0.164,  -0.164,  -0.141,  -0.187,  -0.211,  -0.187,  -0.187,  -0.211,  -0.234,  -0.211,  -0.211,  -0.234,  -0.258,  -0.234,  -0.234,  -0.234,  -0.281,  -0.234,  -0.234,  -0.258,  -0.281,  -0.258,  -0.258,  -0.258,  -0.328,  -0.234,  -0.328
+		]
+	  };
+	  this.instruments[13].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 7",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0.425, 0.732, 0.591, 0.638, 0.567, 0.567, 0.52, 0.52, 0.472, 0.472, 0.425, 0.425, 0.402, 0.402, 0.354, 0.354, 0.331, 0.331, 0.307, 0.307, 0.283, 0.283, 0.236, 0.26, 0.213, 0.236, 0.189, 0.213, 0.165, 0.213, 0.142, 0.236, -0.398, -0.75, -0.609, -0.656, -0.586, -0.586, -0.539, -0.539, -0.492, -0.492, -0.445, -0.445, -0.422, -0.422, -0.375, -0.375, -0.352, -0.352, -0.328, -0.328, -0.281, -0.305, -0.258, -0.281, -0.234, -0.258, -0.211, -0.234, -0.187, -0.234, -0.164, -0.258
+		]
+	  };
+	  this.instruments[14].samples[0] =	{
+		"sampleIndex": 0,
+		"name": "Channel 3 - Waveform 8",
+		"sampleLength": 64,   "loopStart": 0,   "loopLength": 64,   "loopType": 1,   "sampleBits": 0,   "compression": 0,
+		"volume": 1,
+		"panning": 0.5,
+		"basePeriod": 0,
+		"fineTune": 16,
+		"sample": [
+		  0, 0.024, 0.094, 0.142, 0.189, 0.236, 0.283, 0.354, 0.331, 0.378, 0.354, 0.402, 0.378, 0.425, 0.378, 0.378, 0.378, 0.402, 0.378, 0.378, 0.331, 0.354, 0.283, 0.26, 0.213, 0.236, 0.189, 0.165, 0.118, 0.094, 0.047, 0.024, -0.047, -0.094, -0.141, -0.211, -0.234, -0.305, -0.305, -0.352, -0.328, -0.375, -0.375, -0.398, -0.398, -0.422, -0.398, -0.398, -0.375, -0.422, -0.375, -0.375, -0.352, -0.352, -0.305, -0.258, -0.234, -0.258, -0.187, -0.164, -0.117, -0.094, -0.07, -0.023
+		]
+	  };
 };
 ModModule.prototype = Object.create(Module.prototype);
 

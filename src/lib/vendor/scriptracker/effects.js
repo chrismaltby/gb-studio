@@ -418,7 +418,23 @@ var Effects = {
 		representation: "E",
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0) {
-				registers.panning.pan = (param & 0x0F) / 15.0;
+				// registers.panning.pan = (param & 0x0F) / 15.0; // Replaced with MOD2GBT Code
+				switch (param & 0x0F)
+                {
+                    case 0: case 1: case 2: case 3:
+                        registers.panning.pan = 0;
+                        break;
+
+                    default:
+                    case 4: case 5: case 6: case 7:
+                    case 8: case 9: case 10: case 11:
+                        registers.panning.pan = 0.5;
+                        break;
+
+                    case 12: case 13: case 14: case 15:
+                        registers.panning.pan = 1;
+                        break;
+                }
 			}
 		}
 	},
@@ -494,6 +510,12 @@ var Effects = {
 			if (tick === 0) {
 				if (param <= 32) {
 					Effects.SET_SPEED.handler (registers, param, tick, channel, player);
+					switch (param) { // Compensate for GBT Speed Conversion
+						case 1:	case 2: case 3: case 4: Effects.SET_TEMPO.handler (registers, 149, tick, channel, player);
+						case 5: Effects.SET_TEMPO.handler (registers, 124, tick, channel, player);
+						case 6: Effects.SET_TEMPO.handler (registers, 128, tick, channel, player);
+						default: Effects.SET_TEMPO.handler (registers, 125, tick, channel, player);
+					}
 				} else {
 					Effects.SET_TEMPO.handler (registers, param, tick, channel, player);
 				}

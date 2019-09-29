@@ -32,7 +32,7 @@ var ScripTracker = function() {
   this.sampleStepping = 0; // Base sample step based on 125 / 6.
   this.isPlaying = false; // Is the player currently playing?
 
-  this.masterVolume = .8; // The master volume multiplier.
+  this.masterVolume = .6; // The master volume multiplier.
   this.masterVolSlide = 0; // Master volume delta per tick.
   this.breakPattern = -1; // Pattern break row to restart next order.
   this.orderJump = -1; // Order jump index of next order.
@@ -44,7 +44,7 @@ var ScripTracker = function() {
   this.audioContext = null; // AudioContext for output.
   this.audioSource = null; // Source object for audio.
   this.audioScriptNode = null; // Audio processing object.
-  this.bufferSize = 1024; // Size of the audio buffer.
+  this.bufferSize = 4096; // Size of the audio buffer.
 
   this.eventHandlers = {
     SONG_LOADED: [],
@@ -234,10 +234,10 @@ ScripTracker.prototype.processTick = function() {
           registers.envelopePos = 0; // Reset volume envelope.
           registers.noteReleased = false; // Reset decay.
 
-          // Set channel panning (for MOD use predefined panning).
-          if (this.module.type !== "mod" && registers.sample.sample) {
-            registers.panning.pan = registers.sample.sample.panning;
-          }
+          // Set channel panning (for MOD use predefined panning). Removed for GBT. 
+          // if (this.module.type !== "mod" && registers.sample.sample) {
+          //   registers.panning.pan = registers.sample.sample.panning;
+          // }
 
           // Remove sample if it has no data.
           if (
@@ -450,7 +450,7 @@ ScripTracker.prototype.resetPlayback = function() {
     this.channelRegisters[c].reset();
   }
 
-  this.masterVolume = 0.8;
+  this.masterVolume = 0.6;
   this.masterVolSlide = 0;
   this.breakPattern = -1;
   this.orderJump = -1;
@@ -531,10 +531,10 @@ ScripTracker.prototype.loadRaw = function(data, fileExt) {
   for (var i = 0; i < this.module.channels; i++) {
     this.channelRegisters.push(new Channel());
 
-    // TODO: This should be part of the MOD loader I guess.
-    if (this.module.type == "mod") {
-      this.channelRegisters[i].panning.pan = i % 2 == 0 ? 0.7 : 0.3;
-    }
+    // TODO: This should be part of the MOD loader I guess. Removed for GBT.
+    // if (this.module.type == "mod") {
+    //  this.channelRegisters[i].panning.pan = i % 2 == 0 ? 0.7 : 0.3;
+    // }
   }
 
   this.resetPlayback();
