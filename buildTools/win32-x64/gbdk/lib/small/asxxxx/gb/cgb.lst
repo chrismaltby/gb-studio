@@ -1,0 +1,414 @@
+                              1 	.include "global.s"
+                    0001      1 	.NEAR_CALLS = 1         ; <near_calls> - tag so that sed can change this
+                              2         
+                              3 	;; Changed by astorgb.pl to 1
+                    0000      4 	__RGBDS__	= 0
+                              5 
+                              6 	
+                              7 	;;  Screen dimensions 
+                    0013      8 	.MAXCURSPOSX	= 0x13	; In tiles
+                    0011      9 	.MAXCURSPOSY	= 0x11
+                             10 
+                    0080     11 	.START		= 0x80
+                    0040     12 	.SELECT		= 0x40
+                    0020     13 	.B		= 0x20
+                    0010     14 	.A		= 0x10
+                    0008     15 	.DOWN		= 0x08
+                    0004     16 	.UP		= 0x04
+                    0002     17 	.LEFT		= 0x02
+                    0001     18 	.RIGHT		= 0x01
+                             19 
+                    00A0     20 	.SCREENWIDTH	= 0xA0
+                    0090     21 	.SCREENHEIGHT	= 0x90
+                    0007     22 	.MINWNDPOSX	= 0x07
+                    0000     23 	.MINWNDPOSY	= 0x00
+                    00A6     24 	.MAXWNDPOSX	= 0xA6
+                    008F     25 	.MAXWNDPOSY	= 0x8F
+                             26 
+                    0001     27 	.VBL_IFLAG	= 0x01
+                    0002     28 	.LCD_IFLAG	= 0x02
+                    0004     29 	.TIM_IFLAG	= 0x04
+                    0008     30 	.SIO_IFLAG	= 0x08
+                    0010     31 	.JOY_IFLAG	= 0x10
+                             32  
+                    0000     33 	.P1		= 0x00	; Joystick: 1.1.P15.P14.P13.P12.P11.P10
+                    0001     34 	.SB		= 0x01	; Serial IO data buffer
+                    0002     35 	.SC		= 0x02	; Serial IO control register
+                    0004     36 	.DIV		= 0x04	; Divider register
+                    0005     37 	.TIMA		= 0x05	; Timer counter
+                    0006     38 	.TMA		= 0x06	; Timer modulo
+                    0007     39 	.TAC		= 0x07	; Timer control
+                    000F     40 	.IF		= 0x0F	; Interrupt flags: 0.0.0.JST.SIO.TIM.LCD.VBL
+                    0010     41 	.NR10		= 0x10	; Sound register
+                    0011     42 	.NR11		= 0x11	; Sound register
+                    0012     43 	.NR12		= 0x12	; Sound register
+                    0013     44 	.NR13		= 0x13	; Sound register
+                    0014     45 	.NR14		= 0x14	; Sound register
+                    0016     46 	.NR21		= 0x16	; Sound register
+                    0017     47 	.NR22		= 0x17	; Sound register
+                    0018     48 	.NR23		= 0x18	; Sound register
+                    0019     49 	.NR24		= 0x19	; Sound register
+                    001A     50 	.NR30		= 0x1A	; Sound register
+                    001B     51 	.NR31		= 0x1B	; Sound register
+                    001C     52 	.NR32		= 0x1C	; Sound register
+                    001D     53 	.NR33		= 0x1D	; Sound register
+                    001E     54 	.NR34		= 0x1E	; Sound register
+                    0020     55 	.NR41		= 0x20	; Sound register
+                    0021     56 	.NR42		= 0x21	; Sound register
+                    0022     57 	.NR43		= 0x22	; Sound register
+                    0023     58 	.NR44		= 0x23	; Sound register
+                    0024     59 	.NR50		= 0x24	; Sound register
+                    0025     60 	.NR51		= 0x25	; Sound register
+                    0026     61 	.NR52		= 0x26	; Sound register
+                    0040     62 	.LCDC		= 0x40	; LCD control
+                    0041     63 	.STAT		= 0x41	; LCD status
+                    0042     64 	.SCY		= 0x42	; Scroll Y
+                    0043     65 	.SCX		= 0x43	; Scroll X
+                    0044     66 	.LY		= 0x44	; LCDC Y-coordinate
+                    0045     67 	.LYC		= 0x45	; LY compare
+                    0046     68 	.DMA		= 0x46	; DMA transfer
+                    0047     69 	.BGP		= 0x47	; BG palette data
+                    0048     70 	.OBP0		= 0x48	; OBJ palette 0 data
+                    0049     71 	.OBP1		= 0x49	; OBJ palette 1 data
+                    004A     72 	.WY		= 0x4A	; Window Y coordinate
+                    004B     73 	.WX		= 0x4B	; Window X coordinate
+                    004D     74 	.KEY1		= 0x4D	; CPU speed
+                    004F     75 	.VBK		= 0x4F	; VRAM bank
+                    0051     76 	.HDMA1		= 0x51	; DMA control 1
+                    0052     77 	.HDMA2		= 0x52	; DMA control 2
+                    0053     78 	.HDMA3		= 0x53	; DMA control 3
+                    0054     79 	.HDMA4		= 0x54	; DMA control 4
+                    0055     80 	.HDMA5		= 0x55	; DMA control 5
+                    0056     81 	.RP		= 0x56	; IR port
+                    0068     82 	.BCPS		= 0x68	; BG color palette specification
+                    0069     83 	.BCPD		= 0x69	; BG color palette data
+                    006A     84 	.OCPS		= 0x6A	; OBJ color palette specification
+                    006B     85 	.OCPD		= 0x6B	; OBJ color palette data
+                    0070     86 	.SVBK		= 0x70	; WRAM bank
+                    00FF     87 	.IE		= 0xFF	; Interrupt enable
+                             88 
+                    0001     89 	.G_MODE		= 0x01	; Graphic mode
+                    0002     90 	.T_MODE		= 0x02	; Text mode (bit 2)
+                    0002     91 	.T_MODE_OUT	= 0x02	; Text mode output only
+                    0003     92 	.T_MODE_INOUT	= 0x03	; Text mode with input
+                    0004     93 	.M_NO_SCROLL	= 0x04	; Disables scrolling of the screen in text mode
+                    0008     94 	.M_NO_INTERP	= 0x08	; Disables special character interpretation
+                             95 
+                    2000     96 	.MBC1_ROM_PAGE	= 0x2000 ; Address to write to for MBC1 switching
+                             97 	
+                             98 	;; Status codes for IO
+                    0000     99 	.IO_IDLE	= 0x00
+                    0001    100 	.IO_SENDING	= 0x01
+                    0002    101 	.IO_RECEIVING	= 0x02
+                    0004    102 	.IO_ERROR	= 0x04
+                            103 
+                            104 	;; Type of IO data
+                    0066    105 	.DT_IDLE	= 0x66
+                    0055    106 	.DT_RECEIVING	= 0x55
+                            107 
+                            108 	;; Table of routines for modes
+                    01E0    109 	.MODE_TABLE	= 0x01E0
+                            110 
+                            111 	;; C related
+                            112 	;; Overheap of a banked call.  Used for parameters
+                            113 	;;  = ret + real ret + bank
+                            114 
+                    0001    115 	.if .NEAR_CALLS
+                    0002    116 	.BANKOV		= 2
+                            117 
+                            118 	.else
+                            119 	.BANKOV		= 6
+                            120 
+                            121 	.endif
+                            122 	
+                            123 	.globl	banked_call
+                            124 	.globl	banked_ret
+                            125 	
+                            126 	;; Global variables
+                            127 	.globl	.mode
+                            128 
+                            129 	.globl	__cpu
+                            130 
+                            131 	.globl	__io_out
+                            132 	.globl	__io_in
+                            133 	.globl	__io_status
+                            134 
+                            135 	;; Global routines
+                            136 	.globl	.set_mode
+                            137 
+                            138 	.globl	.reset
+                            139 
+                            140 	.globl	.display_off
+                            141 
+                            142 	.globl	.wait_vbl_done
+                            143 
+                            144 	;; Interrupt routines 
+                            145 	.globl	.add_VBL
+                            146 	.globl	.add_LCD
+                            147 	.globl	.add_TIM
+                            148 	.globl	.add_SIO
+                            149 	.globl	.add_JOY
+                            150 
+                            151 	;; Symbols defined at link time
+                            152 	.globl	.STACK
+                            153 	.globl	.OAM
+                            154 	.globl	.refresh_OAM
+                            155 
+                            156 	;; Initialization routine   
+                            157 	.globl	.init
+                            158 
+                            159 	;; Main user routine	
+                            160 	.globl	_main
+                              2 
+                              3 	.title	"CGB support"
+                              4 	.module	CGB
+                              5 
+                              6 	;; BANKED: checked, imperfect
+                              7 	.area	_BASE
+                              8 
+   0000                       9 _set_bkg_palette::		; Non-banked
+   0000 C5                   10 	PUSH	BC
+   0001 D5                   11 	PUSH	DE
+                             12 
+   0002 F8 09                13 	LDA	HL,9(SP)	; Skip return address and registers
+   0004 46                   14 	LD	B,(HL)		; BC = rgb_data
+   0005 2B                   15 	DEC	HL
+   0006 4E                   16 	LD	C,(HL)
+   0007 2B                   17 	DEC	HL
+   0008 56                   18 	LD	D,(HL)		; D = nb_palettes
+   0009 2B                   19 	DEC	HL
+   000A 5E                   20 	LD	E,(HL)		; E = first_palette
+                             21 
+   000B 7A                   22 	LD	A,D		; A = nb_palettes
+   000C 83                   23 	ADD	E
+   000D 87                   24 	ADD	A		; A *= 8
+   000E 87                   25 	ADD	A
+   000F 87                   26 	ADD	A
+   0010 57                   27 	LD	D,A
+                             28 
+   0011 7B                   29         LD      A,E		; E = first_palette
+   0012 87                   30 	ADD	A		; A *= 8
+   0013 87                   31 	ADD	A
+   0014 87                   32 	ADD	A
+   0015 5F                   33 	LD	E,A		; A = first BCPS data
+   0016                      34 1$:
+   0016 F0 41                35 	LDH	A,(.STAT)
+   0018 E6 02                36 	AND	#0x02
+   001A 20 FA                37 	JR	NZ,1$
+                             38 
+   001C 7B                   39 	LD	A,E
+   001D E0 68                40 	LDH	(.BCPS),A
+   001F 0A                   41 	LD	A,(BC)
+   0020 E0 69                42 	LDH	(.BCPD),A
+   0022 03                   43 	INC	BC		; next rgb_data
+   0023 1C                   44 	INC	E		; next BCPS
+   0024 7B                   45 	LD	A,E
+   0025 BA                   46 	CP	A,D
+   0026 20 EE                47 	JR	NZ,1$
+                             48 
+   0028 D1                   49 	POP	DE
+   0029 C1                   50 	POP	BC
+   002A C9                   51 	RET
+                             52 
+   002B                      53 _set_sprite_palette::		; Non-banked
+   002B C5                   54 	PUSH	BC
+   002C D5                   55 	PUSH	DE
+                             56 
+   002D F8 09                57 	LDA	HL,9(SP)	; Skip return address and registers
+   002F 46                   58 	LD	B,(HL)		; BC = rgb_data
+   0030 2B                   59 	DEC	HL
+   0031 4E                   60 	LD	C,(HL)
+   0032 2B                   61 	DEC	HL
+   0033 56                   62 	LD	D,(HL)		; D = nb_palettes
+   0034 2B                   63 	DEC	HL
+   0035 5E                   64 	LD	E,(HL)		; E = first_palette
+                             65 
+   0036 7A                   66 	LD	A,D		; A = nb_palettes
+   0037 83                   67 	ADD	E
+   0038 87                   68 	ADD	A		; A *= 8
+   0039 87                   69 	ADD	A
+   003A 87                   70 	ADD	A
+   003B 57                   71 	LD	D,A
+                             72 
+   003C 7B                   73         LD      A,E		; E = first_palette
+   003D 87                   74 	ADD	A		; A *= 8
+   003E 87                   75 	ADD	A
+   003F 87                   76 	ADD	A
+   0040 5F                   77 	LD	E,A		; A = first BCPS data
+   0041                      78 1$:
+   0041 F0 41                79 	LDH	A,(.STAT)
+   0043 E6 02                80 	AND	#0x02
+   0045 20 FA                81 	JR	NZ,1$
+                             82 
+   0047 7B                   83 	LD	A,E
+   0048 E0 6A                84 	LDH	(.OCPS),A
+   004A 0A                   85 	LD	A,(BC)
+   004B E0 6B                86 	LDH	(.OCPD),A
+   004D 03                   87 	INC	BC		; next rgb_data
+   004E 1C                   88 	INC	E		; next BCPS
+   004F 7B                   89 	LD	A,E
+   0050 BA                   90 	CP	A,D
+   0051 20 EE                91 	JR	NZ,1$
+                             92 
+   0053 D1                   93 	POP	DE
+   0054 C1                   94 	POP	BC
+   0055 C9                   95 	RET
+                             96 
+                             97 	.area	_CODE
+   0000                      98 _set_bkg_palette_entry::	; Banked
+   0000 C5                   99 	PUSH	BC
+   0001 D5                  100 	PUSH	DE
+                            101 
+   0002 F8 09               102 	LDA	HL,.BANKOV+4+3(SP); Skip return address and registers
+   0004 46                  103 	LD	B,(HL)		; BC = rgb_data
+   0005 2B                  104 	DEC	HL
+   0006 4E                  105 	LD	C,(HL)
+   0007 2B                  106 	DEC	HL
+   0008 56                  107 	LD	D,(HL)		; D = pal_entry
+   0009 2B                  108 	DEC	HL
+   000A 5E                  109 	LD	E,(HL)		; E = first_palette
+                            110 
+   000B 7B                  111         LD      A,E		; E = first_palette
+   000C 87                  112 	ADD	A		; A *= 8
+   000D 87                  113 	ADD	A
+   000E 87                  114 	ADD	A
+   000F 82                  115 	ADD	D		; A += 2 * pal_entry
+   0010 82                  116 	ADD	D
+   0011 5F                  117 	LD	E,A		; A = first BCPS data
+                            118 
+   0012                     119 1$:
+   0012 F0 41               120 	LDH	A,(.STAT)
+   0014 E6 02               121 	AND	#0x02
+   0016 20 FA               122 	JR	NZ,1$
+                            123 
+   0018 7B                  124 	LD	A,E
+   0019 E0 68               125 	LDH	(.BCPS),A
+   001B 79                  126 	LD	A,C
+   001C E0 69               127 	LDH	(.BCPD),A
+   001E 1C                  128 	INC	E		; next BCPS
+                            129 
+   001F 7B                  130 	LD	A,E
+   0020 E0 68               131 	LDH	(.BCPS),A
+   0022 78                  132 	LD	A,B
+   0023 E0 69               133 	LDH	(.BCPD),A
+                            134 
+   0025 D1                  135 	POP	DE
+   0026 C1                  136 	POP	BC
+   0027 C9                  137 	RET
+                            138 
+   0028                     139 _set_sprite_palette_entry::
+   0028 C5                  140 	PUSH	BC
+   0029 D5                  141 	PUSH	DE
+                            142 
+   002A F8 09               143 	LDA	HL,.BANKOV+4+3(SP); Skip return address and registers
+   002C 46                  144 	LD	B,(HL)		; BC = rgb_data
+   002D 2B                  145 	DEC	HL
+   002E 4E                  146 	LD	C,(HL)
+   002F 2B                  147 	DEC	HL
+   0030 56                  148 	LD	D,(HL)		; D = pal_entry
+   0031 2B                  149 	DEC	HL
+   0032 5E                  150 	LD	E,(HL)		; E = first_palette
+                            151 
+   0033 7B                  152         LD      A,E		; E = first_palette
+   0034 87                  153 	ADD	A		; A *= 8
+   0035 87                  154 	ADD	A
+   0036 87                  155 	ADD	A
+   0037 82                  156 	ADD	D		; A += 2 * pal_entry
+   0038 82                  157 	ADD	D
+   0039 5F                  158 	LD	E,A		; A = first BCPS data
+                            159 
+   003A                     160 1$:
+   003A F0 41               161 	LDH	A,(.STAT)
+   003C E6 02               162 	AND	#0x02
+   003E 20 FA               163 	JR	NZ,1$
+                            164 
+   0040 7B                  165 	LD	A,E
+   0041 E0 6A               166 	LDH	(.OCPS),A
+   0043 79                  167 	LD	A,C
+   0044 E0 6B               168 	LDH	(.OCPD),A
+   0046 1C                  169 	INC	E		; next BCPS
+                            170 
+   0047 7B                  171 	LD	A,E
+   0048 E0 6A               172 	LDH	(.OCPS),A
+   004A 78                  173 	LD	A,B
+   004B E0 6B               174 	LDH	(.OCPD),A
+                            175 
+   004D D1                  176 	POP	DE
+   004E C1                  177 	POP	BC
+   004F C9                  178 	RET
+                            179 
+                            180 	.area	_CODE
+   0050                     181 _cpu_slow::			; Banked
+   0050 F0 4D               182 	LDH	A,(.KEY1)
+   0052 E6 80               183 	AND	#0x80		; Is GBC in double speed mode?
+   0054 C8                  184 	RET	Z		; No, already in single speed
+                            185 
+   0055                     186 shift_speed:
+   0055 F0 FF               187 	LDH	A,(.IE)
+   0057 F5                  188 	PUSH	AF
+                            189 
+   0058 AF                  190 	XOR	A		; A = 0
+   0059 E0 FF               191 	LDH	(.IE),A		; Disable interrupts
+   005B E0 0F               192 	LDH	(.IF),A
+                            193 
+   005D 3E 30               194 	LD	A,#0x30
+   005F E0 00               195 	LDH	(.P1),A
+                            196 
+   0061 3E 01               197 	LD	A,#0x01
+   0063 E0 4D               198 	LDH	(.KEY1),A
+                            199 
+   0065 10 00               200 	STOP
+                            201 
+   0067 F1                  202 	POP	AF
+   0068 E0 FF               203 	LDH	(.IE),A
+                            204 
+   006A C9                  205 	RET
+                            206 
+   006B                     207 _cpu_fast::			; Banked
+   006B F0 4D               208 	LDH	A,(.KEY1)
+   006D E6 80               209 	AND	#0x80		; Is GBC in double speed mode?
+   006F C0                  210 	RET	NZ		; Yes, exit
+   0070 18 E3               211         JR	shift_speed
+                            212 
+                            213 
+   0072                     214 _cgb_compatibility::		; Banked
+                            215 
+   0072 3E 80               216 	LD	A,#0x80
+   0074 E0 68               217 	LDH	(.BCPS),A	; Set default bkg palette
+   0076 3E FF               218 	LD	A,#0xff		; White
+   0078 E0 69               219 	LDH	(.BCPD),A
+   007A 3E 7F               220 	LD	A,#0x7f
+   007C E0 69               221 	LDH	(.BCPD),A
+   007E 3E B5               222 	LD	A,#0xb5		; Light gray
+   0080 E0 69               223 	LDH	(.BCPD),A
+   0082 3E 56               224 	LD	A,#0x56
+   0084 E0 69               225 	LDH	(.BCPD),A
+   0086 3E 4A               226 	LD	A,#0x4a		; Dark gray
+   0088 E0 69               227 	LDH	(.BCPD),A
+   008A 3E 29               228 	LD	A,#0x29
+   008C E0 69               229 	LDH	(.BCPD),A
+   008E 3E 00               230 	LD	A,#0x00		; Black
+   0090 E0 69               231 	LDH	(.BCPD),A
+   0092 3E 00               232 	LD	A,#0x00
+   0094 E0 69               233 	LDH	(.BCPD),A
+                            234 
+   0096 3E 80               235 	LD	A,#0x80
+   0098 E0 6A               236 	LDH	(.OCPS),A	; Set default sprite palette
+   009A 3E FF               237 	LD	A,#0xff		; White
+   009C E0 6B               238 	LDH	(.OCPD),A
+   009E 3E 7F               239 	LD	A,#0x7f
+   00A0 E0 6B               240 	LDH	(.OCPD),A
+   00A2 3E B5               241 	LD	A,#0xb5		; Light gray
+   00A4 E0 6B               242 	LDH	(.OCPD),A
+   00A6 3E 56               243 	LD	A,#0x56
+   00A8 E0 6B               244 	LDH	(.OCPD),A
+   00AA 3E 4A               245 	LD	A,#0x4a		; Dark gray
+   00AC E0 6B               246 	LDH	(.OCPD),A
+   00AE 3E 29               247 	LD	A,#0x29
+   00B0 E0 6B               248 	LDH	(.OCPD),A
+   00B2 3E 00               249 	LD	A,#0x00		; Black
+   00B4 E0 6B               250 	LDH	(.OCPD),A
+   00B6 3E 00               251 	LD	A,#0x00
+   00B8 E0 6B               252 	LDH	(.OCPD),A
+                            253 
+   00BA C9                  254 	RET

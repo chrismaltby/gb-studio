@@ -114,5 +114,9 @@ void Script_SoundStartTone_b();
 void Script_SoundStopTone_b();
 void Script_SoundPlayBeep_b();
 void Script_SoundPlayCrash_b();
+void Script_SetTimerScript_b();
+void Script_ResetTimer_b();
+void Script_RemoveTimerScript_b();
+void Script_TextWithAvatar_b();
 
 #endif

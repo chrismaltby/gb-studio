@@ -2,10 +2,19 @@
 /* eslint-disable global-require */
 /* eslint-disable no-console */
 import electron from "electron";
+import glob from "glob";
+import Path from "path";
+import settings from "electron-settings";
 import en from "../../lang/en";
 
+export const locales = glob
+  .sync(`${__dirname}/../../lang/*.json`)
+  .map(path => Path.basename(path, ".json"));
+
 const app = electron.app || (electron.remote && electron.remote.app);
-const appLocale = app ? app.getLocale() : "en";
+const settingsLocale = app && settings.get("locale");
+const systemLocale = app ? app.getLocale() : "en";
+const appLocale = settingsLocale || systemLocale;
 
 export const languageOverrides = locale => {
   if (locale && locale !== "en") {

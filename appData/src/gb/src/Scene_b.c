@@ -73,6 +73,7 @@ void SceneUpdateActorMovement_b(UBYTE i);
 void SceneSetEmote_b(UBYTE actor, UBYTE type);
 void SceneHandleWait();
 void SceneHandleTransition();
+void SceneUpdateTimer_b();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialise
@@ -302,6 +303,9 @@ void SceneInit_b9()
   last_joy = 0;
   scene_loaded = TRUE;
 
+  // Disable timer script
+  timer_script_duration = 0;
+
   SHOW_SPRITES;
   DISPLAY_ON;
 }
@@ -315,6 +319,7 @@ void SceneUpdate_b()
   SceneUpdateCameraShake_b();
   SceneUpdateCamera_b();
   SceneRender();
+  SceneUpdateTimer_b();
   SceneHandleInput();
   ScriptRunnerUpdate();
   SceneUpdateActors_b();
@@ -658,6 +663,54 @@ void SceneUpdateActorMovement_b(UBYTE i)
     check_triggers = TRUE;
   }
   actors[i].moving = TRUE;
+}
+
+void SceneUpdateTimer_b()
+{
+  // Don't update timer when scene is loading
+  if (!scene_loaded || !scene_input_ready)
+  {
+    return;
+  }
+
+  // Don't update timer while script is running
+  if (script_ptr != 0 || emote_timer != 0 || fade_running)
+  {
+    return;
+  }
+
+  // Don't update timer when UI is open
+  if (!UIIsClosed())
+  {
+     return;
+  }
+
+  // Check if timer is enabled
+  if (timer_script_duration != 0)
+  {
+    if (timer_script_time == 0)
+    {
+      // Don't start script when actor is between tiles
+      if (!ACTOR_ON_TILE(0))
+      {
+        return;
+      }
+
+      last_joy = last_joy & 0xF0;
+      ScriptStart(&timer_script_ptr);
+
+      // Reset the countdown timer
+      timer_script_time = timer_script_duration;
+    }
+    else
+    {
+      // Timer tick every 16 frames
+      if ((time & 0x0F) == 0x00)
+      {
+        --timer_script_time;  
+      }
+    }
+  }
 }
 
 void SceneHandleTriggers_b()
@@ -1021,6 +1074,12 @@ UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
     }
     tx_b = DIV_8(ACTOR_X(ptr));
     ty_b = DIV_8(ACTOR_Y(ptr));
+    if (ty_b == 0)
+    {
+      // If actor at posY=256 (really 0 since 8bit) convert to correct tile
+      // since DIV_8 will give tile as 0 rather than 32
+      ty_b = 32;
+    }
     if ((ty_a == ty_b || ty_a == ty_b - 1) &&
         (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b))
     {

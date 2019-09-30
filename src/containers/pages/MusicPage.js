@@ -34,7 +34,7 @@ class MusicPage extends Component {
 
     return (
       <div>
-        <MusicViewer file={file} />
+        {file && <MusicViewer file={file} />}
         <FilesSidebar
           files={filesList}
           selectedFile={file}
