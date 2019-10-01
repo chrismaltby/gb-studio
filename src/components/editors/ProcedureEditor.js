@@ -57,7 +57,7 @@ class ProcedureEditor extends Component {
   }
     
   render() {
-    const { procedure, selectSidebar } = this.props;
+    const { index, procedure, selectSidebar } = this.props;
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -84,7 +84,7 @@ class ProcedureEditor extends Component {
                 <input
                   id="projectName"
                   value={procedure.name || ""}
-                  placeholder="Procedure Name"
+                  placeholder={`Procedure ${index + 1}`}
                   onChange={this.onEdit("name")}
                 />
               </label>
@@ -154,6 +154,7 @@ ProcedureEditor.propTypes = {
   editProcedure: PropTypes.func.isRequired,
   removeProcedure: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
+  index: PropTypes.number.isRequired
 };
 
 ProcedureEditor.defaultProps = {
@@ -163,8 +164,10 @@ ProcedureEditor.defaultProps = {
 function mapStateToProps(state, props) {
   const procedures = state.entities.present.entities.procedures;
   const procedure = procedures[props.id];
+  const index = Object.keys(procedures).indexOf(props.id);
   return {
-    procedure
+    procedure,
+    index
   };
 }
 
