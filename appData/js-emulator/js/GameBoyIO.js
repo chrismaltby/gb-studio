@@ -2,7 +2,7 @@
 var gameboy = null;						//GameBoyCore object.
 var gbRunInterval = null;				//GameBoyCore Timer
 var settings = [						//Some settings.
-	window.location.href.indexOf("audio=true") > -1, //Turn on sound.
+	true,								//Turn on sound. Removed //window.location.href.indexOf("audio=true") > -1,
 	true,								//Boot with boot ROM first?
 	false,								//Give priority to GameBoy mode
 	1,									//Volume level set.
