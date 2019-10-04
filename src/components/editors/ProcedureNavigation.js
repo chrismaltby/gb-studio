@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { ProcedureShape } from "../../reducers/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import * as actions from "../../actions";
+import l10n from "../../lib/helpers/l10n";
 
 class ProcedureNavigation extends Component {
   render() {
@@ -14,7 +15,7 @@ class ProcedureNavigation extends Component {
     return (
       (proceduresArr.length > 0) && (
         <div>
-          <SidebarHeading title="Procedures" />
+          <SidebarHeading title={l10n("SIDEBAR_CUSTOM_EVENTS")} />
           <ul>
             {proceduresArr.map((procedure, index) => (
               procedure && (
@@ -24,7 +25,7 @@ class ProcedureNavigation extends Component {
                     selectProcedure(procedure.id);
                   }}
                 >
-                  {procedure.name || `Procedure ${index + 1}`}
+                  {procedure.name || `Custom Event ${index + 1}`}
                 </li>
               )
             ))}

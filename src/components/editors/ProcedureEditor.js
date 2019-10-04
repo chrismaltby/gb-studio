@@ -64,7 +64,7 @@ class ProcedureEditor extends Component {
         <SidebarColumn>
           <div>
             <SidebarHeading
-              title="Procedure"
+              title={l10n("CUSTOM_EVENT")}
               buttons={
                 <DropdownButton
                   small
@@ -73,7 +73,7 @@ class ProcedureEditor extends Component {
                   onMouseDown={this.readClipboard}
                 >
                   <MenuItem onClick={this.onRemove()}>
-                    {l10n("MENU_DELETE_SCRIPT")}
+                    {l10n("MENU_DELETE_CUSTOM_EVENT")}
                   </MenuItem>
                 </DropdownButton>
               }
@@ -84,7 +84,7 @@ class ProcedureEditor extends Component {
                 <input
                   id="projectName"
                   value={procedure.name || ""}
-                  placeholder={`Procedure ${index + 1}`}
+                  placeholder={`Custom Event ${index + 1}`}
                   onChange={this.onEdit("name")}
                 />
               </label>
@@ -92,7 +92,7 @@ class ProcedureEditor extends Component {
           </div>
           <div>
             <SidebarHeading
-              title="Parameters"
+              title={l10n("SIDEBAR_PARAMETERS")}
             />
             <FormField>
               <label>
@@ -137,7 +137,7 @@ class ProcedureEditor extends Component {
         <SidebarColumn>
           <ScriptEditor
             value={procedure.script}
-            title="Procedure Script"
+            title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
             type="procedure"
             variables={Object.keys(procedure.variables)}
             actors={Object.keys(procedure.actors)}

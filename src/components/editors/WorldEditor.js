@@ -194,7 +194,7 @@ class WorldEditor extends Component {
                 addProcedure();
               }}
             >
-              Add Procedure
+              {l10n("SIDEBAR_ADD_CUSTOM_EVENT")}
             </Button>
           </div>
         </SidebarColumn>

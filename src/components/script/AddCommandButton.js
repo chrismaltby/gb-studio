@@ -127,8 +127,8 @@ class AddCommandButton extends Component {
       const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
       callProcedureEvents = Object.values(procedures).map((procedure, index) => {
         if (!procedure) return {};
-        const name = procedure.name || `Procedure ${index + 1}`;
-        const searchName = `${name.toUpperCase()} EVENT_CALL_PROCEDURE`;
+        const name = `Custom Event: ${procedure.name || `Custom Event ${index + 1}`}`;
+        const searchName = `${name.toUpperCase()}`;
         return {
           ...templateEventCallProcedure,
           args: { 
