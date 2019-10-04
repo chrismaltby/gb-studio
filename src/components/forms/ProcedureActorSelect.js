@@ -67,11 +67,12 @@ class ProcedureActorSelect extends Component {
         value: "player",
         label: "Player"
       },
-      allProcedureActors.map((a, index) => {
+      allProcedureActors.map((actor, index) => {
+        const namedActor = actors.find(a => a.id === actor.id);
         return {
-          value: String(a.id),
-          label: actors[index] ? actors[index].name : a.name || `Actor ${index + 1}`,
-          spriteSheetId: a.spriteSheetId
+          value: String(actor.id),
+          label: namedActor ? namedActor.name : actor.name || `Actor ${index + 1}`,
+          spriteSheetId: actor.spriteSheetId
         };
       })
     );
@@ -85,7 +86,7 @@ class ProcedureActorSelect extends Component {
       spriteSheetId: playerSpriteSheetId,
       movementType: "player"
     };
-    const current = allProcedureActors.find(a => a.id === value) || defaultValue;
+    const current = actors.find(a => a.id === value) || defaultValue;
     const currentIndex = allProcedureActors.indexOf(current);
     const options = this.getOptions()
 
@@ -97,7 +98,7 @@ class ProcedureActorSelect extends Component {
         options={options}
         value={
           current && {
-            label: actors[currentIndex] ? actors[currentIndex].name : current.name || `Actor ${currentIndex + 1}`,
+            label: current.name || `Actor ${currentIndex + 1}`,
             value
           }
         }
@@ -132,7 +133,8 @@ ProcedureActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const actors = Object.values(state.entities.present.entities.procedures[state.editor.entityId].actors || {});
+  const procedureId = state.editor.entityId;
+  const actors = Object.values(state.entities.present.entities.procedures[procedureId].actors);
   const settings = state.entities.present.result.settings;
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {
