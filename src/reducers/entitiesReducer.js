@@ -505,7 +505,6 @@ const addProcedure = (state, action) => {
   const newProcedure = Object.assign(
     {
       id: action.id,
-      name: 'Procedure Name',
       variables: {},
       actors: {},
       script: {}
