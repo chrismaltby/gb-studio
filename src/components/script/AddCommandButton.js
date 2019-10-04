@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import Button from "../library/Button";
 import {
   EventsOnlyForActors,
-  EventsDeprecated,
+  EventsHidden,
   EVENT_TEXT,
   EVENT_CALL_PROCEDURE
 } from "../../lib/compiler/eventTypes";
@@ -122,29 +122,32 @@ class AddCommandButton extends Component {
   fullList = () => {
     const { type, procedures } = this.props;
     
-    const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
-    const callProcedureEvents = Object.values(procedures).map((procedure, index) => {
-      if (!procedure) return {};
-      const name = procedure.name || `Procedure ${index + 1}`;
-      const searchName = `${name.toUpperCase()} EVENT_CALL_PROCEDURE`;
-      return {
-        ...templateEventCallProcedure,
-        args: { 
-          script: procedure.script,
-          procedure: procedure.id,
-          __name: name
-        },
-        name,
-        searchName,
-        key: `EVENT_CALL_PROCEDURE_${index}`
-      }
-    });
+    let callProcedureEvents = [];
+    if (type !== "procedure") { 
+      const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
+      callProcedureEvents = Object.values(procedures).map((procedure, index) => {
+        if (!procedure) return {};
+        const name = procedure.name || `Procedure ${index + 1}`;
+        const searchName = `${name.toUpperCase()} EVENT_CALL_PROCEDURE`;
+        return {
+          ...templateEventCallProcedure,
+          args: { 
+            script: procedure.script,
+            procedure: procedure.id,
+            __name: name
+          },
+          name,
+          searchName,
+          key: `EVENT_CALL_PROCEDURE_${index}`
+        }
+      });
+    }
 
     return [
       ...Object.keys(events)
       .filter(key => {
         return (
-          EventsDeprecated.indexOf(key) === -1 &&
+          EventsHidden.indexOf(key) === -1 &&
           (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
         );
       })

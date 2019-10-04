@@ -113,7 +113,7 @@ export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 export const EVENT_CALL_PROCEDURE = "EVENT_CALL_PROCEDURE";
 
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
-export const EventsDeprecated = [
+export const EventsHidden = [
   EVENT_MATH_ADD,
   EVENT_MATH_SUB,
   EVENT_MATH_MUL,
@@ -125,7 +125,8 @@ export const EventsDeprecated = [
   EVENT_MATH_SUB_VALUE,
   EVENT_MATH_MUL_VALUE,
   EVENT_MATH_DIV_VALUE,
-  EVENT_MATH_MOD_VALUE
+  EVENT_MATH_MOD_VALUE,
+  EVENT_CALL_PROCEDURE
 ];
 
 export const EventFields = {
