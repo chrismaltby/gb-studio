@@ -130,8 +130,8 @@ FilesSidebar.propTypes = {
     })
   ).isRequired,
   selectedFile: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
+    id: PropTypes.string,
+    name: PropTypes.string
   }),
   onAdd: PropTypes.func,
   query: PropTypes.string.isRequired
@@ -139,7 +139,10 @@ FilesSidebar.propTypes = {
 
 FilesSidebar.defaultProps = {
   width: 300,
-  selectedFile: {},
+  selectedFile: {
+    id: "",
+    name: ""
+  },
   onAdd: undefined
 };
 

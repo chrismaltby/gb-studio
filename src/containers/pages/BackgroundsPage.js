@@ -34,7 +34,7 @@ class ImagesPage extends Component {
 
     return (
       <div>
-        <ImageViewer file={file} />
+        {file && <ImageViewer file={file} />}
         <FilesSidebar
           files={filesList}
           selectedFile={file}

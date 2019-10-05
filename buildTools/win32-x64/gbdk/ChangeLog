@@ -1,3 +1,9 @@
+gbdk3-2.96
+	* Many changes.  Code generated is now much more reliable and
+	passes all of sdcc's regression suite.  Added support for large
+	sets of local variables (>127 bytes).  Added full 32 bit long
+	support.  Still no floating pt support.
+
 gbdk3-2.95-3
 	* Stopped lcc with sdcc from leaking .cdb files all across
 	  /tmp.

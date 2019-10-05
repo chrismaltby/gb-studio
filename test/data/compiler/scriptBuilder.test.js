@@ -71,7 +71,13 @@ import {
   IF_SAVED_DATA,
   AWAIT_INPUT,
   REMOVE_INPUT_SCRIPT,
-  SET_INPUT_SCRIPT
+  SET_INPUT_SCRIPT,
+  VARIABLE_ADD_FLAGS,
+  VARIABLE_CLEAR_FLAGS,
+  SET_TIMER_SCRIPT,
+  TIMER_RESTART,
+  TIMER_DISABLE,
+  TEXT_WITH_AVATAR
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -359,6 +365,16 @@ test("Should default to empty display text", () => {
   expect(strings).toEqual([" "]);
 });
 
+test("Should be able to display text with avatar", () => {
+  const output = [];
+  const strings = ["First Text"];
+  const avatars = [ { id: "avatar-1" }, { id: "avatar-2" }];
+  const sb = new ScriptBuilder(output, { strings, avatars });
+  sb.textDialogue("First Text", "avatar-2");
+  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), 0, 0, 1]);
+  expect(strings).toEqual(["First Text"]);
+});
+
 test("Should be able to display choice", () => {
   const output = [];
   const strings = ["Hello World"];
@@ -501,6 +517,20 @@ test("Should be able to reset all variables to false", () => {
   const sb = new ScriptBuilder(output, { variables: ["0"] });
   sb.variablesReset();
   expect(output).toEqual([cmd(RESET_VARIABLES)]);
+});
+
+test("Should be able to add flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableAddFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_ADD_FLAGS), 0, 0, 129]);
+});
+
+test("Should be able to clear flags to a variable", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, { variables: ["0"] });
+  sb.variableClearFlags("0", 129);
+  expect(output).toEqual([cmd(VARIABLE_CLEAR_FLAGS), 0, 0, 129]);
 });
 
 test("Should be able to show a white overlay", () => {
@@ -906,6 +936,60 @@ test("Should be able to remove input script", () => {
   const sb = new ScriptBuilder(output);
   sb.inputScriptRemove(["b"]);
   expect(output).toEqual([cmd(REMOVE_INPUT_SCRIPT), inputDec(["b"])]);
+});
+
+test("Should be able to add timer script", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: (input, subScript) => {
+      subScript.push(99);
+    },
+    banked: {
+      push: () => {
+        return {
+          bank: 99,
+          offset: 200
+        };
+      }
+    }
+  });
+  sb.timerScriptSet(16.0, []);
+  expect(output).toEqual([cmd(SET_TIMER_SCRIPT), 60, 99, 0, 200]);
+});
+
+test("Should be able to add timer script as function", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    compileEvents: (input, subScript) => {
+      subScript.push(99);
+    },
+    banked: {
+      push: () => {
+        return {
+          bank: 99,
+          offset: 200
+        };
+      }
+    }
+  });
+  sb.timerScriptSet(16.0, () => {
+    sb.spritesHide();
+  });
+  expect(output).toEqual([cmd(SET_TIMER_SCRIPT), 60, 99, 0, 200]);
+});
+
+test("Should be able to remove timer script", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.timerDisable();
+  expect(output).toEqual([cmd(TIMER_DISABLE)]);
+});
+
+test("Should be able to restart countdown timer", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.timerRestart();
+  expect(output).toEqual([cmd(TIMER_RESTART)]);
 });
 
 test("Should be able to play music", () => {

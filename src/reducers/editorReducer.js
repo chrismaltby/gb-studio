@@ -65,7 +65,8 @@ export default function editor(state = initialState.editor, action) {
     case SET_SECTION: {
       return {
         ...state,
-        worldFocus: false
+        worldFocus: false,
+        eventId: null
       };
     }
     case SELECT_SIDEBAR: {
