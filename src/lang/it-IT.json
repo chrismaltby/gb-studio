@@ -246,7 +246,7 @@
   "EVENT_SAVE_DATA": "Dati di Gioco: Salva",
   "EVENT_CLEAR_DATA": "Dati di Gioco: Ripulisci",
   "EVENT_IF_SAVED_DATA": "Se i Dati di Gioco sono Stati Salvati",
-  "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Attore: Omposta Velocità di Movimento",
+  "EVENT_ACTOR_SET_MOVEMENT_SPEED": "Attore: Imposta Velocità di Movimento",
   "EVENT_ACTOR_SET_ANIMATION_SPEED": "Attore: Imposta Velocità di Animazione",
   "EVENT_TEXT_SET_ANIMATION_SPEED": "Testo: Imposta Velocità di Animazione",
   "EVENT_SET_INPUT_SCRIPT": "Input Joypad: Aggiungi Script a Pulsante",
