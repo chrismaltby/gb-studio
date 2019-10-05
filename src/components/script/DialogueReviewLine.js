@@ -14,14 +14,12 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
         dialogueLine.line.args.text.map((text, textIndex) => (
           <div key={textIndex}>
             <p style={{ color: "#999" }}>
-              {dialogueLine.entityName} — {dialogueLine.sceneName}{" "}
+              {dialogueLine.entityName} — {dialogueLine.sceneName} [
               {(text || "")
                 .split("\n")
-                .map(
-                  (line, index, lines) =>
-                    `${line.length}/${index === 2 ? 16 : maxPerLine}`
-                )
+                .map((line, index, lines) => `${line.length}`)
                 .join(", ")}
+              ]
             </p>
             <Textarea
               fixedSize
@@ -46,14 +44,12 @@ const DialogueReviewLine = ({ dialogueLine, onChange, ...props }) => {
       ) : (
         <div>
           <p style={{ color: "#999" }}>
-            {dialogueLine.entityName} — {dialogueLine.sceneName}{" "}
+            {dialogueLine.entityName} — {dialogueLine.sceneName} [
             {(dialogueLine.line.args.text || "")
               .split("\n")
-              .map(
-                (line, index, lines) =>
-                  `${line.length}/${index === 2 ? 16 : maxPerLine}`
-              )
+              .map((line, index, lines) => `${line.length}`)
               .join(", ")}
+            ]
           </p>
           <Textarea
             fixedSize
