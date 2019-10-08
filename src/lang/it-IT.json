@@ -14,7 +14,7 @@
   "NAV_UI_ELEMENTS": "Elementi di UI",
   "NAV_MUSIC": "Musica",
   "NAV_DIALOGUE_REVIEW": "Revisione Dialogo",
-  "NAV_BUILD_AND_RUN": "Compila ed Esegui",
+  "NAV_BUILD_AND_RUN": "Compila ed esegui",
   "NAV_SETTINGS": "Impostazioni",
 
   "// 3": "Toolbar --------------------------------------------------",
@@ -22,7 +22,7 @@
   "TOOLBAR_ZOOM_IN": "Zoom In",
   "TOOLBAR_ZOOM_OUT": "Zoom Out",
   "TOOLBAR_ZOOM_RESET": "Reset Zoom",
-  "TOOLBAR_OPEN_PROJECT_FOLDER": "Apri Cartella di Progetto",
+  "TOOLBAR_OPEN_PROJECT_FOLDER": "Apri cartella di Progetto",
   "TOOLBAR_EXPORT_AS": "Esporta come...",
   "TOOLBAR_EXPORT_ROM": "Esporta ROM",
   "TOOLBAR_EXPORT_WEB": "Esporta per il Web",
@@ -355,11 +355,11 @@
   "SPLASH_PROJECT_NAME": "Nome progetto",
   "SPLASH_DEFAULT_PROJECT_NAME": "Senza titolo",
   "SPLASH_PROJECT_TEMPLATE": "Template",
-  "SPLASH_SAMPLE_PROJECT": "Progetto di Esempio",
-  "SPLASH_BLANK_PROJECT": "Progetto Vuoto",
+  "SPLASH_SAMPLE_PROJECT": "Progetto di esempio",
+  "SPLASH_BLANK_PROJECT": "Progetto vuoto",
   "SPLASH_PATH": "Percorso",
   "SPLASH_CREATE": "Crea",
-  "SPLASH_CREATING": "In Creazione",
+  "SPLASH_CREATING": "In creazione",
   "SPLASH_CLEAR_RECENT": "Rimuovi recenti",
   "SPLASH_NO_RECENT_PROJECTS": "Nessun progetto è stato aperto di recente.",
 
@@ -391,7 +391,7 @@
   "DIALOG_PROJECT_NEED_MIGRATION": "Il Progetto GB Studio Necessita di Essere Aggiornato",
   "DIALOG_MIGRATION_DESCRIPTION": "Il tuo progetto è stato creato con la versione {currentVersion} e deve essere aggiornatoalla versione {version}. Questo potrebbe impedire che venga aperto con versioni più vecchie di GB Studio.\n\nSi raccomanda di creare un backup prima di procedere.",
   "DIALOG_MIGRATE": "Aggiorna a {version}",
-  "DIALOG_FUTURE": "Progetto GB Studio Non Supportato",
+  "DIALOG_FUTURE": "Progetto GB Studio non supportato",
   "DIALOG_FUTURE_DESCRIPTION": "Questo progetto è stato creato con la versione {currentVersion} che è superiore alla versione supportata da GB Studio. La versione più recente supportata è la {version}.\n\nSi consiglia di aggiornare GB Studio.",
   "DIALOG_OPEN_ANYWAY": "Apri Comunque",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio deve essere rilanciato perché le modifiche al linguaggio possano avere effetto",
@@ -407,5 +407,5 @@
   "SETTINGS_CART_TYPE": "Tipo di Cartuccia",
   "SETTINGS_CONTROLS": "Controlli",
   "SETTINGS_COLORS": "Colori",
-  "SETTINGS_CUSTOM_HEADER": "Intestazione Personalizzata (Web Build)"
+  "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)"
 }
