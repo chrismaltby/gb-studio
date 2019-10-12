@@ -106,6 +106,11 @@ export const BUILD_GAME = "BUILD_GAME";
 export const PLAY_MUSIC = "PLAY_MUSIC";
 export const PAUSE_MUSIC = "PAUSE_MUSIC";
 
+export const PLAY_SOUNDFX_BEEP = "PLAY_SOUNDFX_BEEP";
+export const PLAY_SOUNDFX_TONE = "PLAY_SOUNDFX_TONE";
+export const PLAY_SOUNDFX_CRASH = "PLAY_SOUNDFX_CRASH";
+export const PAUSE_SOUNDFX = "PAUSE_SOUNDFX";
+
 export const EDIT_UI = "EDIT_UI";
 
 export const COPY_EVENT = "COPY_EVENT";

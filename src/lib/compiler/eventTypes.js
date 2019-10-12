@@ -109,6 +109,9 @@ export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 
+// Sound
+export const EVENT_SOUND_PLAY_BEEP = "EVENT_SOUND_PLAY_BEEP";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsDeprecated = [
   EVENT_MATH_ADD,
