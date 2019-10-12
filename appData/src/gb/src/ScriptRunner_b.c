@@ -1682,6 +1682,101 @@ void Script_VariableClearFlags_b()
 }
 
 /*
+ * Command: SoundStartTone
+ * ----------------------------
+ */
+void Script_SoundStartTone_b()
+{
+  UWORD tone = (script_cmd_args[0] * 256) + script_cmd_args[1];
+
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play tone on channel 1
+  NR10_REG = 0x00;
+  NR11_REG = (0x00 << 6) | 0x01;
+  NR12_REG = (0x0F << 4) | 0x00;
+  NR13_REG = (tone & 0x00FF);
+  NR14_REG = 0x80 | ((tone & 0x0700) >> 8);
+
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 1
+  NR51_REG |= 0x11;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: SoundStopTone
+ * ----------------------------
+ */
+void Script_SoundStopTone_b()
+{
+  // stop tone on channel 1
+  NR12_REG = 0x00;
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: SoundPlayBeep
+ * ----------------------------
+ */
+void Script_SoundPlayBeep_b()
+{
+  UBYTE pitch = script_cmd_args[0];
+
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play beep sound on channel 4
+  NR41_REG = 0x01;
+  NR42_REG = (0x0F << 4);
+  NR43_REG = 0x20 | 0x08 | pitch;
+  NR44_REG = 0x80 | 0x40;
+
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 4
+  NR51_REG |= 0x88;
+
+  // no delay
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
+ * Command: SoundPlayCrash
+ * ----------------------------
+ */
+void Script_SoundPlayCrash_b()
+{
+  // enable sound
+  NR52_REG = 0x80;
+
+  // play crash sound on channel 4
+  NR41_REG = 0x01;
+  NR42_REG = (0x0F << 4) | 0x02;
+  NR43_REG = 0x13;
+  NR44_REG = 0x80;
+
+  // enable volume
+  NR50_REG = 0x77;
+
+  // enable channel 4
+  NR51_REG |= 0x88;
+
+  // no delay
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}
+
+/*
  * Command: SetTimerScript
  * ----------------------------
  * Attach script to timer
@@ -1706,7 +1801,6 @@ void Script_ResetTimer_b()
 {
 
   timer_script_time = timer_script_duration;
-
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1719,7 +1813,6 @@ void Script_ResetTimer_b()
 void Script_RemoveTimerScript_b()
 {
   timer_script_duration = 0;
-
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1740,4 +1833,3 @@ void Script_TextWithAvatar_b()
   UIShowAvatar(script_cmd_args[2]);
   script_action_complete = FALSE;
 }
-
