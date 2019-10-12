@@ -195,6 +195,33 @@ export const pauseMusic = () => {
   };
 };
 
+export const playSoundFxBeep = pitch => {
+  return {
+    type: types.PLAY_SOUNDFX_BEEP,
+    pitch
+  };
+};
+
+export const playSoundFxTone = (frequency, duration) => {
+  return {
+    type: types.PLAY_SOUNDFX_TONE,
+    frequency,
+    duration
+  };
+};
+
+export const playSoundFxCrash = () => {
+  return {
+    type: types.PLAY_SOUNDFX_CRASH
+  };
+};
+
+export const pauseSoundFx = () => {
+  return {
+    type: types.PAUSE_SOUNDFX
+  };
+};
+
 export const saveProject = () => async (dispatch, getState) => {
   const state = getState();
   if (

@@ -130,8 +130,9 @@
                     "script": [
                         {
                             "id": "0287c8ec-7932-43b2-8cdc-2f13524938fe",
-                            "command": "EVENT_SOUND_PLAY_BEEP",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
+                                "type": "beep",
                                 "pitch": 8
                             }
                         },
@@ -144,8 +145,9 @@
                         },
                         {
                             "id": "3ed8f6cf-0084-44af-a034-6b3c02efc796",
-                            "command": "EVENT_SOUND_PLAY_BEEP",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
+                                "type": "beep",
                                 "pitch": 8
                             }
                         },
@@ -175,25 +177,28 @@
                         },
                         {
                             "id": "acb698c1-6119-4b0c-9c39-3e75049f2295",
-                            "command": "EVENT_SOUND_PLAY_TONE",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
-                                "tone": 440,
+                                "type": "tone",
+                                "frequency": 440,
                                 "duration": 1
                             }
                         },
                         {
                             "id": "c63840e7-a315-400b-bb77-9648da2ee57d",
-                            "command": "EVENT_SOUND_PLAY_TONE",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
-                                "tone": 523,
+                                "type": "tone",
+                                "frequency": 523,
                                 "duration": 0.5
                             }
                         },
                         {
                             "id": "3e8ed391-195f-4ec5-9ea0-04907d5716c8",
-                            "command": "EVENT_SOUND_PLAY_TONE",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
-                                "tone": 392,
+                                "type": "tone",
+                                "frequency": 392,
                                 "duration": 1
                             }
                         },
@@ -217,8 +222,9 @@
                     "script": [
                         {
                             "id": "071561e2-1936-41b6-8ec6-b5977191066f",
-                            "command": "EVENT_SOUND_PLAY_BEEP",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
+                                "type": "beep",
                                 "pitch": 1
                             }
                         },
@@ -231,8 +237,9 @@
                         },
                         {
                             "id": "1582d28a-a72b-4768-9911-06b1cf5c5e1f",
-                            "command": "EVENT_SOUND_PLAY_BEEP",
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
                             "args": {
+                                "type": "beep",
                                 "pitch": 3
                             }
                         },
@@ -255,8 +262,10 @@
                     "script": [
                         {
                             "id": "94af531f-5261-462d-a70d-d79b1c64aa6e",
-                            "command": "EVENT_SOUND_PLAY_CRASH",
-                            "args": {}
+                            "command": "EVENT_SOUND_PLAY_EFFECT",
+                            "args": {
+                                "type": "crash"
+                            }
                         },
                         {
                             "id": "05c4c7a9-a401-447d-97f2-25d75017c99e",
