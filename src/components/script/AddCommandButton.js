@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import Highlighter from "react-highlight-words";
+import ScrollIntoViewIfNeeded from 'react-scroll-into-view-if-needed';
 import Button from "../library/Button";
 import {
   EventsOnlyForActors,
@@ -189,7 +190,12 @@ class AddCommandButton extends Component {
             </div>
             <div className="AddCommandButton__List">
               {actionsList.map((action, actionIndex) => (
-                <div
+                <ScrollIntoViewIfNeeded
+                  active={selectedIndex === actionIndex}
+                  options={{
+                    behavior: 'instant',
+                    block: 'nearest'
+                  }}
                   key={action.id}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
@@ -204,7 +210,7 @@ class AddCommandButton extends Component {
                     autoEscape
                     textToHighlight={action.name}
                   />
-                </div>
+                </ScrollIntoViewIfNeeded>
               ))}
               {actionsList.length === 0 && (
                 <div
