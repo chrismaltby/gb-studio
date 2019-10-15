@@ -74,6 +74,10 @@ import {
   SET_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
+  SOUND_START_TONE,
+  SOUND_STOP_TONE,
+  SOUND_PLAY_BEEP,
+  SOUND_PLAY_CRASH,
   SET_TIMER_SCRIPT,
   TIMER_RESTART,
   TIMER_DISABLE,
@@ -368,7 +372,7 @@ test("Should default to empty display text", () => {
 test("Should be able to display text with avatar", () => {
   const output = [];
   const strings = ["First Text"];
-  const avatars = [ { id: "avatar-1" }, { id: "avatar-2" }];
+  const avatars = [{ id: "avatar-1" }, { id: "avatar-2" }];
   const sb = new ScriptBuilder(output, { strings, avatars });
   sb.textDialogue("First Text", "avatar-2");
   expect(output).toEqual([cmd(TEXT_WITH_AVATAR), 0, 0, 1]);
@@ -1042,6 +1046,41 @@ test("Should be able to stop music", () => {
   });
   sb.musicStop();
   expect(output).toEqual([cmd(MUSIC_STOP)]);
+});
+
+test("Should be able to start a tone with period 1000", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundStartTone(1000);
+  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232]);
+});
+
+test("Should be able to stop a tone", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundStopTone();
+  expect(output).toEqual([cmd(SOUND_STOP_TONE)]);
+});
+
+test("Should be able to play a beep sound with pitch 8", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayBeep(8);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 7]);
+});
+
+test("Should be able to play a beep sound with pitch 1", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayBeep(1);
+  expect(output).toEqual([cmd(SOUND_PLAY_BEEP), 0]);
+});
+
+test("Should be able to play a crash sound", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output);
+  sb.soundPlayCrash();
+  expect(output).toEqual([cmd(SOUND_PLAY_CRASH)]);
 });
 
 test("Should be able to fade in", () => {

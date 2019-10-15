@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import Highlighter from "react-highlight-words";
 import { connect } from "react-redux";
+import ScrollIntoViewIfNeeded from "react-scroll-into-view-if-needed";
 import Button from "../library/Button";
 import {
   EventsOnlyForActors,
@@ -121,48 +122,51 @@ class AddCommandButton extends Component {
 
   fullList = () => {
     const { type, procedures } = this.props;
-    
+
     let callProcedureEvents = [];
-    if (type !== "procedure") { 
+    if (type !== "procedure") {
       const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
-      callProcedureEvents = Object.values(procedures).map((procedure, index) => {
-        if (!procedure) return {};
-        const name = `Custom Event: ${procedure.name || `Custom Event ${index + 1}`}`;
-        const searchName = `${name.toUpperCase()}`;
-        return {
-          ...templateEventCallProcedure,
-          args: { 
-            script: procedure.script,
-            procedure: procedure.id,
-            __name: name
-          },
-          name,
-          searchName,
-          key: `EVENT_CALL_PROCEDURE_${index}`
+      callProcedureEvents = Object.values(procedures).map(
+        (procedure, index) => {
+          if (!procedure) return {};
+          const name = `Custom Event: ${procedure.name ||
+            `Custom Event ${index + 1}`}`;
+          const searchName = `${name.toUpperCase()}`;
+          return {
+            ...templateEventCallProcedure,
+            args: {
+              script: procedure.script,
+              procedure: procedure.id,
+              __name: name
+            },
+            name,
+            searchName,
+            key: `EVENT_CALL_PROCEDURE_${index}`
+          };
         }
-      });
+      );
     }
 
     return [
       ...Object.keys(events)
-      .filter(key => {
-        return (
-          EventsHidden.indexOf(key) === -1 &&
-          (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
-        );
-      })
-      .map(key => {
-        const name = l10n(key) || events[key].name || key;
-        const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
-        return {
-          ...events[key],
-          name,
-          searchName,
-          key
-        };
-      }),
+        .filter(key => {
+          return (
+            EventsHidden.indexOf(key) === -1 &&
+            (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
+          );
+        })
+        .map(key => {
+          const name = l10n(key) || events[key].name || key;
+          const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
+          return {
+            ...events[key],
+            name,
+            searchName,
+            key
+          };
+        }),
       ...callProcedureEvents
-    ]
+    ];
   };
 
   filteredList = () => {
@@ -219,7 +223,12 @@ class AddCommandButton extends Component {
             </div>
             <div className="AddCommandButton__List">
               {actionsList.map((action, actionIndex) => (
-                <div
+                <ScrollIntoViewIfNeeded
+                  active={selectedIndex === actionIndex}
+                  options={{
+                    behavior: "instant",
+                    block: "nearest"
+                  }}
                   key={action.key}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
@@ -234,7 +243,7 @@ class AddCommandButton extends Component {
                     autoEscape
                     textToHighlight={action.name}
                   />
-                </div>
+                </ScrollIntoViewIfNeeded>
               ))}
               {actionsList.length === 0 && (
                 <div
@@ -270,7 +279,7 @@ function mapStateToProps(state) {
   const procedures = state.entities.present.entities.procedures || {};
   return {
     procedures
-  }
-};
+  };
+}
 
 export default connect(mapStateToProps)(AddCommandButton);

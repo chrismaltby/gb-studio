@@ -18,6 +18,7 @@ import EmoteSelect from "../forms/EmoteSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
 import MusicSelect from "../forms/MusicSelect";
+import SoundEffectSelect from "../forms/SoundEffectSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import { textNumLines } from "../../lib/helpers/trimlines";
@@ -106,7 +107,7 @@ class ScriptEventInput extends Component {
         <input
           id={id}
           type="number"
-          value={value || ""}
+          value={value !== undefined && value !== null ? value : ""}
           min={field.min}
           max={field.max}
           step={field.step}
@@ -217,6 +218,18 @@ class ScriptEventInput extends Component {
     }
     if (type === "script") {
       return <span>{JSON.stringify(value)}</span>
+    }
+    if (type === "soundEffect") {
+      return (
+        <SoundEffectSelect
+          id={id}
+          value={value}
+          onChange={this.onChange}
+          duration={args.duration}
+          pitch={args.pitch}
+          frequency={args.frequency}
+        />
+      );
     }
     return <div />;
   }
