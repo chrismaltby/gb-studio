@@ -238,7 +238,8 @@ export default function editor(state = initialState.editor, action) {
           sceneId: action.sceneId,
           x: action.x,
           y: action.y
-        }
+        },
+        eventId: ""
       };
     }
     case ACTOR_HOVER: {
