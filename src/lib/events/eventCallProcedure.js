@@ -5,7 +5,7 @@ export const id = "EVENT_CALL_PROCEDURE";
 
 export const fields = [
   {
-    type: "script",
+    type: "events",
     key: "script",
     defaultValue: []
   },
@@ -13,7 +13,7 @@ export const fields = [
     type: "hidden",
     key: "procedure"
   }
-]
+];
 
 export const compile = (input, helpers) => {
   const script = JSON.parse(JSON.stringify(input.script));

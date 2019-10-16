@@ -10,6 +10,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { ProcedureShape } from "../../reducers/stateShape";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
+import { getProcedures, getProceduresLookup } from "../../reducers/entitiesReducer";
 
 class ProcedureEditor extends Component {
   constructor() {
@@ -162,9 +163,10 @@ ProcedureEditor.defaultProps = {
 }
 
 function mapStateToProps(state, props) {
-  const procedures = state.entities.present.entities.procedures;
-  const procedure = procedures[props.id];
-  const index = Object.keys(procedures).indexOf(props.id);
+  const procedures = getProcedures(state);
+  const proceduresLookup = getProceduresLookup(state);
+  const procedure = proceduresLookup[props.id];
+  const index = procedures.findIndex((p) => p.id === props.id);
   return {
     procedure,
     index

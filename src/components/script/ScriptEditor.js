@@ -10,7 +10,7 @@ import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
 import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
-import { EVENT_END } from "../../lib/compiler/eventTypes";
+import { EVENT_END, EVENT_CALL_PROCEDURE } from "../../lib/compiler/eventTypes";
 import {
   patchEvents,
   prependEvent,
@@ -223,7 +223,7 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": childKeys.length > 0,
+            "ActionMini--Conditional": childKeys.length > 0 && command !== EVENT_CALL_PROCEDURE,
             "ActionMini--Commented": commented
           })}
         >
@@ -341,6 +341,7 @@ class ActionMini extends Component {
 
             {open &&
               childKeys.length > 0 &&
+              command !== EVENT_CALL_PROCEDURE &&
               connectDropTarget(
                 <div className="ActionMini__Children">
                   {action.children[childKeys[0]].map(childAction => (
@@ -486,7 +487,7 @@ class ScriptEditor extends Component {
     this.onChange(input);
   };
 
-  onAdd = id => (command, defaults = {}) => {
+  onAdd = id => (command, defaults = {}, defaultChildren = {}) => {
     const {
       variableIds,
       musicIds,
@@ -536,14 +537,17 @@ class ScriptEditor extends Component {
 
     const childFields = eventFields.filter(field => field.type === "events");
     const children = childFields.reduce((memo, field) => {
+      const childScript = defaultChildren[field.key]
+        ? defaultChildren[field.key]
+        : [
+            {
+              id: uuid(),
+              command: EVENT_END
+            }
+          ];
       return {
         ...memo,
-        [field.key]: [
-          {
-            id: uuid(),
-            command: EVENT_END
-          }
-        ]
+        [field.key]: childScript
       };
     }, {});
 
@@ -746,14 +750,15 @@ ScriptEditor.propTypes = {
   copyScript: PropTypes.func.isRequired
 };
 
-ScriptEditor.defaultProps = {
-  value: [
-    {
+ScriptEditor.defaultProps = Object.create({}, {
+  value: {
+    enumerable: true,
+    get: () => [{
       id: uuid(),
       command: EVENT_END
-    }
-  ]
-};
+    }]
+  }
+});
 
 function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;

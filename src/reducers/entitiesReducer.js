@@ -506,8 +506,10 @@ const addProcedure = (state, action) => {
     {
       id: action.id,
       variables: {},
-      actors: {},
-      script: {}
+      actors: {}
+    },
+    action.script && {
+      script: action.script
     }
   );
   return addEntity(state, "procedures", newProcedure);
@@ -567,38 +569,59 @@ const editProcedure = (state, action) => {
     newState = updateEntitiesProcedureScript(newState, "triggers", action.id, newState.entities.triggers, patch.script);
   }
 
+  if (patch.name) {
+    newState = updateEntitiesProcedureName(newState, "scenes", action.id, newState.entities.scenes, patch.name);
+    newState = updateEntitiesProcedureName(newState, "actors", action.id, newState.entities.actors, patch.name);
+    newState = updateEntitiesProcedureName(newState, "triggers", action.id, newState.entities.triggers, patch.name);
+  }
+
   return editEntity(newState, "procedures", action.id, patch);
 };
 
-const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
+const updateEntitiesProcedureName = (state, type, id, entities, name) => {
   let newState = state;
-  Object.values(entities).map(entity => {
-    if (!entity || !entity.script) return;
-    const newScript = [];
-    for (let i = 0; i < entity.script.length; i++) {
-      const event = entity.script[i];
-      if (event.command === EVENT_CALL_PROCEDURE) {
-        if (event.args.procedure === id) {
-          newScript[i] = { 
-            ...event,
-            args: {
-              ...event.args,
-              script: [ ...script ]
-            }
-          };
-        } else {
-          newScript[i] = event;
-        }
-      } else {
-        newScript[i] = event;
-      }
-    }
+
+  Object.values(entities).forEach(entity => {
+    if(!entity.script) { return; }
     const patchEntity = { 
       ...entity, 
-      script: newScript
-    };
+      script: mapEvents(entity.script, (event) => {
+        if (event.command !== EVENT_CALL_PROCEDURE) { return event; }
+        if (event.args.procedure !== id) { return event; }
+        return {
+          ...event,
+          args: {
+            ...event.args,
+            __name: name
+          }
+        };
+      })
+    };    
     newState = editEntity(newState, type, entity.id, patchEntity)
-  });  
+  });
+
+  return newState;
+}
+
+const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
+  let newState = state;
+  Object.values(entities).forEach(entity => {
+    if(!entity.script) { return; }
+    const patchEntity = { 
+      ...entity, 
+      script: mapEvents(entity.script, (event) => {
+        if (event.command !== EVENT_CALL_PROCEDURE) { return event; }
+        if (event.args.procedure !== id) { return event; }
+        return {
+          ...event,
+          children: {
+            script: [ ...script ]
+          }
+        };
+      })
+    };  
+    newState = editEntity(newState, type, entity.id, patchEntity)
+  });
   return newState;
 }
 
@@ -994,6 +1017,10 @@ export const getSceneIds = state => state.entities.present.result.scenes;
 export const getActorsLookup = state => state.entities.present.entities.actors;
 export const getTriggersLookup = state =>
   state.entities.present.entities.triggers;
+export const getProceduresLookup = state =>
+  state.entities.present.entities.procedures;
+export const getProcedureIds = state =>
+  state.entities.present.result.procedures;  
 export const getBackgroundsLookup = state =>
   state.entities.present.entities.backgrounds;
 export const getBackgroundIds = state =>
@@ -1076,6 +1103,11 @@ export const getSpriteSheets = createSelector(
 export const getScenes = createSelector(
   [getSceneIds, getScenesLookup],
   (sceneIds, scenes) => sceneIds.map(id => scenes[id])
+);
+
+export const getProcedures = createSelector(
+  [getProcedureIds, getProceduresLookup],
+  (procedureIds, procedures) => procedureIds.map(id => procedures[id])
 );
 
 // Reducer ---------------------------------------------------------------------

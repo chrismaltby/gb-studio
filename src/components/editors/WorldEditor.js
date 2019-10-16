@@ -186,19 +186,21 @@ class WorldEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          <ProcedureNavigation />
-          <div style={{  padding: "10px" }}>
-            <Button 
-              style={{ width: "100%" }}
-              onClick={() => {
-                addProcedure();
-              }}
-            >
-              {l10n("SIDEBAR_ADD_CUSTOM_EVENT")}
-            </Button>
+          <div>
+            <SidebarHeading title={l10n("SIDEBAR_CUSTOM_EVENTS")} />
+            <ProcedureNavigation />
+            <div style={{ padding: "10px" }}>
+              <Button
+                style={{ width: "100%" }}
+                onClick={() => {
+                  addProcedure();
+                }}
+              >
+                {l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
+              </Button>
+            </div>
           </div>
         </SidebarColumn>
-
       </Sidebar>
     );
   }
@@ -209,7 +211,7 @@ WorldEditor.propTypes = {
   editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
-  addProcedure: PropTypes.func.isRequired,
+  addProcedure: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {

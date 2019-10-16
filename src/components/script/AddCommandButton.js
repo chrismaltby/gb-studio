@@ -15,6 +15,7 @@ import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
 import { ProcedureShape } from "../../reducers/stateShape";
+import { getProcedures } from "../../reducers/entitiesReducer";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -48,7 +49,7 @@ class AddCommandButton extends Component {
     clearTimeout(this.timeout);
     const fullList = this.fullList();
     const index = fullList.findIndex(event => event.key === action);
-    onAdd(fullList[index].id, fullList[index].args);
+    onAdd(fullList[index].id, fullList[index].args, fullList[index].children);
     this.setState({
       open: false,
       query: "",
@@ -126,18 +127,20 @@ class AddCommandButton extends Component {
     let callProcedureEvents = [];
     if (type !== "procedure") {
       const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
-      callProcedureEvents = Object.values(procedures).map(
+      callProcedureEvents = procedures.map(
         (procedure, index) => {
           if (!procedure) return {};
-          const name = `Custom Event: ${procedure.name ||
-            `Custom Event ${index + 1}`}`;
+          const procedureName = procedure.name || `${l10n("CUSTOM_EVENT")} ${index + 1}`;
+          const name = `${l10n("CUSTOM_EVENT")}: ${procedureName}`;
           const searchName = `${name.toUpperCase()}`;
           return {
             ...templateEventCallProcedure,
             args: {
-              script: procedure.script,
               procedure: procedure.id,
-              __name: name
+              __name: procedureName
+            },
+            children: {
+              script: procedure.script
             },
             name,
             searchName,
@@ -272,11 +275,11 @@ class AddCommandButton extends Component {
 AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
-  procedures: PropTypes.objectOf(ProcedureShape).isRequired
+  procedures: PropTypes.arrayOf(ProcedureShape).isRequired
 };
 
 function mapStateToProps(state) {
-  const procedures = state.entities.present.entities.procedures || {};
+  const procedures = getProcedures(state);
   return {
     procedures
   };
