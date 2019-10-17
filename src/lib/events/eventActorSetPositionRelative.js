@@ -12,8 +12,8 @@ export const fields = [
     key: "x",
     label: l10n("FIELD_X"),
     type: "number",
-    min: -16,
-    max: 16,
+    min: -31,
+    max: 31,
     width: "50%",
     defaultValue: 0
   },
@@ -21,8 +21,8 @@ export const fields = [
     key: "y",
     label: l10n("FIELD_Y"),
     type: "number",
-    min: -16,
-    max: 16,
+    min: -31,
+    max: 31,
     width: "50%",
     defaultValue: 0
   }
