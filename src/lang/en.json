@@ -170,6 +170,10 @@
   "FIELD_EFFECT_BEEP": "Beep",
   "FIELD_EFFECT_TONE": "Tone",
   "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_SET_TO_VALUE_IF": "Set to '{value}' if",
+  "FIELD_ITEM": "Item {value}",
+  "FIELD_LAYOUT_MENU": "Menu",
+  "FIELD_LAYOUT_DIALOGUE": "Dialogue",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -275,6 +279,7 @@
   "EVENT_SET_TIMER_SCRIPT": "Timer: Set timer script",
   "EVENT_TIMER_RESTART": "Timer: Restart timer",
   "EVENT_TIMER_DISABLE": "Timer: Disable timer script",
+  "EVENT_MENU": "Text: Display Menu",
 
   "// 10": "Menu -----------------------------------------------------",
 

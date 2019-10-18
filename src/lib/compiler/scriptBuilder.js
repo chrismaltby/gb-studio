@@ -81,7 +81,8 @@ import {
   SET_TIMER_SCRIPT,
   TIMER_RESTART,
   TIMER_DISABLE,
-  TEXT_WITH_AVATAR
+  TEXT_WITH_AVATAR,
+  MENU
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -292,6 +293,25 @@ class ScriptBuilder {
     output.push(hi(stringIndex));
     output.push(lo(stringIndex));
   };
+
+  textMenu = (setVariable, options, useCancel = false, layout = "menu") => {
+    const output = this.output;
+    const { strings, variables } = this.options;
+    const menuText = options.join("\n");
+    let stringIndex = strings.indexOf(menuText);
+    if (stringIndex === -1) {
+      strings.push(menuText);
+      stringIndex = strings.length - 1;
+    }
+    const variableIndex = getVariableIndex(setVariable, variables);
+    output.push(cmd(MENU));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(hi(stringIndex));
+    output.push(lo(stringIndex));
+    output.push(useCancel ? 1 : 0);
+    output.push(layout === "menu" ? 1 : 0);
+  }
 
   textSetOpenInstant = () => {
     const output = this.output;

@@ -43,5 +43,7 @@ UBYTE UIAtDest();
 void UISetColor(UBYTE color);
 void UISetTextSpeed(UBYTE in, UBYTE out);
 void UIShowAvatar(UBYTE avatar_index);
+void UIShowMenu(UWORD flag_index, UWORD line, UBYTE use_cancel, UBYTE layout);
+void UIDrawMenuCursor();
 
 #endif

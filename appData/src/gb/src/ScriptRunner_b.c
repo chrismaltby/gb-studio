@@ -637,6 +637,18 @@ void Script_Choice_b()
 }
 
 /*
+ * Command: Menu
+ * ----------------------------
+ * Display multiple choice menu
+ */
+void Script_TextMenu_b()
+{
+  script_ptr += 1 + script_cmd_args_len;
+  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4], script_cmd_args[5]);
+  script_action_complete = FALSE;
+}
+
+/*
  * Command: PlayerSetSprite
  * ----------------------------
  * Change sprite used by player

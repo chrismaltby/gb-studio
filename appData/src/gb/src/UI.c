@@ -29,12 +29,15 @@ UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
 UBYTE tmp_text_in_speed = 1;
 UBYTE tmp_text_out_speed = 1;
-
-UBYTE choice_enabled = 0;
-UBYTE choice_index = 0;
-UWORD choice_flag;
+UBYTE text_num_lines = 0;
 
 UBYTE avatar_enabled = 0;
+UBYTE menu_enabled = FALSE;
+BYTE menu_index = 0;
+UWORD menu_flag;
+UBYTE menu_num_options = 2;
+UBYTE menu_use_cancel = TRUE;
+UBYTE menu_layout = FALSE;
 
 const unsigned char ui_cursor_tiles[1] = {0xCB};
 const unsigned char ui_bg_tiles[1] = {0xC4};
@@ -97,7 +100,7 @@ void UIShowText(UWORD line)
   BANK_PTR bank_ptr;
   UWORD ptr;
   unsigned char value_string[6];
-  UBYTE i, j, k, height;
+  UBYTE i, j, k;
   UBYTE value, var_index;
 
   strcpy(tmp_text_lines, "");
@@ -109,8 +112,16 @@ void UIShowText(UWORD line)
   strcat(tmp_text_lines, ptr);
   POP_BANK;
 
-  height = tmp_text_lines[0];
-  UIDrawDialogueFrame(height);
+  text_num_lines = tmp_text_lines[0];
+  if (menu_layout)
+  {
+    UIDrawFrame(0, 0, 8, text_num_lines);
+  }
+  else 
+  {
+    text_num_lines = MIN(text_num_lines, 4);
+    UIDrawDialogueFrame(text_num_lines);
+  }
 
   for (i = 1, k = 0; i < 81; i++)
   {
@@ -152,8 +163,16 @@ void UIShowText(UWORD line)
     ++k;
   }
 
-  UISetPos(0, MENU_CLOSED_Y);
-  UIMoveTo(0, MENU_CLOSED_Y - ((height + 2) << 3), text_in_speed);
+  if (menu_layout)
+  {
+    UISetPos(88, MENU_CLOSED_Y);
+    UIMoveTo(88, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
+  }
+  else 
+  {
+    UISetPos(0, MENU_CLOSED_Y);
+    UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
+  }
   text_drawn = FALSE;
   text_x = 0;
   text_y = 0;
@@ -193,12 +212,20 @@ void UIShowAvatar(UBYTE avatar_index) {
 
 void UIShowChoice(UWORD flag_index, UWORD line)
 {
-  choice_index = 0;
-  choice_flag = flag_index;
-  choice_enabled = TRUE;
+  UIShowMenu(flag_index, line, 1, 0);
+}
+
+void UIShowMenu(UWORD flag_index, UWORD line, UBYTE use_cancel, UBYTE layout)
+{
+  menu_index = 0;
+  menu_flag = flag_index;
+  menu_enabled = TRUE;
+  menu_use_cancel = use_cancel;
+  menu_layout = layout;
+  text_draw_speed = 0;
   UIShowText(line);
-  set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
-  set_win_tiles(1, 2, 1, 1, ui_bg_tiles);
+  menu_num_options = tmp_text_lines[0];
+  UIDrawMenuCursor();
 }
 
 void UISetTextBuffer(unsigned char *text)
@@ -272,7 +299,7 @@ void UIDrawTextBufferChar()
       i = text_tile_count + avatar_enabled * 4;
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
-      set_win_tiles(text_x + 1 + choice_enabled + avatar_enabled * 2, text_y + 1, 1, 1, &tile);
+      set_win_tiles(text_x + 1 + avatar_enabled * 2 + menu_enabled + (text_y >= text_num_lines ? 9 : 0), (text_y % text_num_lines) + 1, 1, 1, &tile);
       text_tile_count++;
     }
 
@@ -335,6 +362,15 @@ UBYTE UIIsClosed()
   return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y;
 }
 
+void UIDrawMenuCursor() 
+{
+  UBYTE i;
+  for (i = 0; i < menu_num_options; i++) 
+  {
+    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1, menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
+  }
+}
+
 void UIOnInteract()
 {
   if (JOY_PRESSED(J_A))
@@ -343,39 +379,61 @@ void UIOnInteract()
     {
       text_count = 0;
       text_lines[0] = '\0';
-      if (choice_enabled)
+      text_tile_count = 0;
+      text_num_lines = 3;
+      if (menu_enabled)
       {
-        script_variables[choice_flag] = !choice_index;
-        choice_enabled = FALSE;
+        if (menu_use_cancel && menu_index + 1 == menu_num_options) 
+        {
+          script_variables[menu_flag] = 0;
+        }
+        else
+        {
+          script_variables[menu_flag] = menu_index + 1;
+        }
+        menu_enabled = FALSE;
+        UIMoveTo(menu_layout ? 88 : 0, MENU_CLOSED_Y, text_out_speed);
+        menu_layout = 0;
       }
-      avatar_enabled = FALSE;
-      UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
+      else
+      {
+        avatar_enabled = FALSE;
+        UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
+      }
     }
   }
-  else if (choice_enabled)
+  else if (menu_enabled)
   {
-    if (JOY(J_UP))
+    if (JOY_PRESSED(J_UP))
     {
-      set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
-      set_win_tiles(1, 2, 1, 1, ui_bg_tiles);
-      // set_win_tiles(1, 1, 1, 1, ui_cursor_tiles);
-      choice_index = 0;
-    }
-    else if (JOY(J_DOWN))
+      menu_index = MAX(menu_index - 1, 0);
+      UIDrawMenuCursor();
+   }
+    else if (JOY_PRESSED(J_DOWN))
     {
-      set_win_tiles(1, 1, 1, 1, ui_bg_tiles);
-      set_win_tiles(1, 2, 1, 1, ui_cursor_tiles);
-      choice_index = 1;
-    }
-    else if (JOY(J_B))
+      menu_index = MIN(menu_index + 1, menu_num_options - 1);
+      UIDrawMenuCursor();
+   }
+    else if (JOY_PRESSED(J_LEFT))
+    {
+      menu_index = MAX(menu_index - 4, 0);
+      UIDrawMenuCursor();
+   }
+    else if (JOY_PRESSED(J_RIGHT))
+    {
+      menu_index = MIN(menu_index + 4, menu_num_options - 1);
+      UIDrawMenuCursor();
+   }
+    else if (JOY_PRESSED(J_B))
     {
       text_count = 0;
-      text_tile_count = 0;
       text_lines[0] = '\0';
-      script_variables[choice_flag] = FALSE;
-      choice_enabled = FALSE;
-      avatar_enabled = FALSE;
-      UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
+      text_tile_count = 0;
+      text_num_lines = 3;
+      script_variables[menu_flag] = 0;
+      menu_enabled = FALSE;
+      UIMoveTo(menu_layout ? 88 : 0, MENU_CLOSED_Y, text_out_speed);
+      menu_layout = 0;
     }
   }
 }
