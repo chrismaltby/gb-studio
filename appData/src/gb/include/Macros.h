@@ -54,6 +54,7 @@
 #define ACTOR_MOVING(ptr) (*((ptr) + 12))
 #define ACTOR_MOVE_SPEED(ptr) (*((ptr) + 13))
 #define ACTOR_ANIM_SPEED(ptr) (*((ptr) + 14))
+#define ACTOR_COLLISIONS_ENABLED(ptr) (*((ptr) + 15))
 
 #define IS_NEG(a) ((UBYTE)(a)&0x80)
 

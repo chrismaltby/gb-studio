@@ -69,6 +69,7 @@ typedef struct _ACTORSPRITE
     UBYTE moving;
     UBYTE move_speed;
     UBYTE anim_speed;
+    UBYTE collisionsEnabled;
     SPRITE_TYPE sprite_type;
     UWORD script_ptr;
     BANK_PTR events_ptr;

@@ -57,7 +57,7 @@ UBYTE last_joy;
 
 static void SceneHandleInput();
 void SceneRender();
-UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a);
+UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a, UBYTE inc_noclip);
 UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a);
 UBYTE SceneTriggerAt_b(UBYTE tx_a, UBYTE ty_a);
 void SceneUpdateActors_b();
@@ -638,7 +638,7 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
   // Check for npc collisions
-  npc = SceneNpcAt_b(i, next_tx, next_ty);
+  npc = SceneNpcAt_b(i, next_tx, next_ty, FALSE);
   if (npc != scene_num_actors)
   {
     actors[i].moving = FALSE;
@@ -840,7 +840,7 @@ static void SceneHandleInput()
     actors[0].moving = FALSE;
     next_tx = DIV_8(actors[0].pos.x) + actors[0].dir.x;
     next_ty = DIV_8(actors[0].pos.y) + actors[0].dir.y;
-    npc = SceneNpcAt_b(0, next_tx, next_ty);
+    npc = SceneNpcAt_b(0, next_tx, next_ty, TRUE);
     if (npc != scene_num_actors)
     {
       actors[0].moving = FALSE;
@@ -1060,7 +1060,7 @@ UBYTE ScenePlayerAt_b(UBYTE tx_a, UBYTE ty_a)
   }
 }
 
-UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
+UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a, UBYTE inc_noclip)
 {
   UBYTE i, tx_b, ty_b, jump;
   UBYTE *ptr;
@@ -1070,7 +1070,7 @@ UBYTE SceneNpcAt_b(UBYTE index, UBYTE tx_a, UBYTE ty_a)
 
   for (i = 0; i != scene_num_actors; i++)
   {
-    if (i == index || !ACTOR_ENABLED(ptr))
+    if (i == index || !ACTOR_ENABLED(ptr) || (!inc_noclip && !ACTOR_COLLISIONS_ENABLED(ptr)))
     {
       ptr += jump;
       continue;
