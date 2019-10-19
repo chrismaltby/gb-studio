@@ -197,6 +197,12 @@ function bindKeyboard() {
   };
 }
 
+function bindClick() {
+  window.addEventListener("click", function(e) {
+    initSound();
+  })
+}
+
 if (isTouchEnabled) {
   bindButton(btnA, "a");
   bindButton(btnB, "b");
@@ -207,7 +213,7 @@ if (isTouchEnabled) {
   controller.style.display = "none";
 }
 bindKeyboard();
-
+bindClick();
 
 // HTML Gamepad API Support
 
