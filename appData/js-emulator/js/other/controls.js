@@ -355,7 +355,6 @@ function initGamePad()
 {
     // When a gamepad connects, start polling it for input
     window.addEventListener("gamepadconnected", (event) => {
-        initSound();
         gamepadStart( navigator.getGamepads()[event.gamepad.index] );
     });
 
