@@ -11,12 +11,19 @@ export const fields = [].concat(
     },
     {
       key: "items",
-      label: "Number of items",
+      label: "Number of options",
       type: "number",
       min: 2,
       max: 8,
+      width: "50%",
       defaultValue: 2
-    }
+    },
+    {
+      type: "checkbox",
+      label: "Last option is cancel",
+      key: "cancelOnLastOption",
+      width: "50%"
+    },
   ],
   Array(8)
     .fill()
@@ -41,7 +48,6 @@ export const fields = [].concat(
         type: "text",
         maxLength: 6,
         defaultValue: "",
-        width: "50%",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
           {
@@ -49,7 +55,7 @@ export const fields = [].concat(
             eq: value
           },
           {
-            key: "useCancel",
+            key: "cancelOnLastOption",
             ne: true
           }
         ]
@@ -59,7 +65,6 @@ export const fields = [].concat(
         type: "text",
         maxLength: 6,
         defaultValue: "",
-        width: "50%",
         placeholder: l10n("FIELD_ITEM", { value: 0 }),
         conditions: [
           {
@@ -67,7 +72,7 @@ export const fields = [].concat(
             eq: value
           },
           {
-            key: "useCancel",
+            key: "cancelOnLastOption",
             eq: true
           }
         ]
@@ -76,9 +81,9 @@ export const fields = [].concat(
     }, []),
     {
       type: "checkbox",
-      label: "Use as cancel option",
-      key: "useCancel",
-      width: "50%"
+      label: "Set to '0' if 'B' is pressed",
+      key: "cancelOnB",
+      defaultValue: true
     },
     {
       key: "layout",
@@ -94,5 +99,5 @@ export const fields = [].concat(
 
 export const compile = (input, helpers) => {
   const { textMenu } = helpers;
-  textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.useCancel, input.layout);
+  textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.cancelOnLastOption, input.cancelOnB, input.layout);
 };

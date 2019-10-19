@@ -105,8 +105,9 @@
                                     "option6": "Item 6",
                                     "option7": "More >",
                                     "option8": "Cancel",
-                                    "useCancel": true,
-                                    "layout": "dialogue"
+                                    "cancelOnLastOption": true,
+                                    "layout": "dialogue",
+                                    "cancelOnB": true
                                 }
                             },
                             {
@@ -127,13 +128,13 @@
                                                 "items": 3,
                                                 "option1": "Item71",
                                                 "option2": "Item72",
-                                                "option3": "Close",
+                                                "option3": "Item73",
                                                 "option4": "",
                                                 "option5": "",
                                                 "option6": "",
                                                 "option7": "",
                                                 "option8": "",
-                                                "useCancel": true
+                                                "cancelOnLastOption": false
                                             }
                                         },
                                         {
@@ -224,7 +225,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "placeholder.png",
-            "_v": 1571357363414
+            "_v": 1571492358048
         }
     ],
     "spriteSheets": [
@@ -234,7 +235,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "actor.png",
-            "_v": 1571357363415
+            "_v": 1571492358048
         },
         {
             "id": "581d34d0-9591-4e6e-a609-1d94f203b0cd",
@@ -242,7 +243,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "actor_animated.png",
-            "_v": 1571357363414
+            "_v": 1571492358048
         },
         {
             "id": "daf95270-e30d-423b-9ee7-990ae29f57f6",
@@ -250,7 +251,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "static.png",
-            "_v": 1571357363415
+            "_v": 1571492358048
         }
     ],
     "music": [
@@ -258,7 +259,7 @@
             "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
             "name": "template",
             "filename": "template.mod",
-            "_v": 1571357363399
+            "_v": 1571492358024
         }
     ]
 }

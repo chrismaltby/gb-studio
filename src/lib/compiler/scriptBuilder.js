@@ -294,7 +294,7 @@ class ScriptBuilder {
     output.push(lo(stringIndex));
   };
 
-  textMenu = (setVariable, options, useCancel = false, layout = "menu") => {
+  textMenu = (setVariable, options, cancelOnLastOption = false, cancelOnB = false, layout = "menu") => {
     const output = this.output;
     const { strings, variables } = this.options;
     const menuText = options.join("\n");
@@ -309,8 +309,8 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
     output.push(hi(stringIndex));
     output.push(lo(stringIndex));
-    output.push(useCancel ? 1 : 0);
     output.push(layout === "menu" ? 1 : 0);
+    output.push((cancelOnLastOption ? 1 : 0) | (cancelOnB ? 2 : 0));
   }
 
   textSetOpenInstant = () => {

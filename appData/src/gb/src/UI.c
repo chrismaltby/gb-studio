@@ -36,7 +36,8 @@ UBYTE menu_enabled = FALSE;
 BYTE menu_index = 0;
 UWORD menu_flag;
 UBYTE menu_num_options = 2;
-UBYTE menu_use_cancel = TRUE;
+UBYTE menu_cancel_on_last_option = TRUE;
+UBYTE menu_cancel_on_b = TRUE;
 UBYTE menu_layout = FALSE;
 
 const unsigned char ui_cursor_tiles[1] = {0xCB};
@@ -212,15 +213,16 @@ void UIShowAvatar(UBYTE avatar_index) {
 
 void UIShowChoice(UWORD flag_index, UWORD line)
 {
-  UIShowMenu(flag_index, line, 1, 0);
+  UIShowMenu(flag_index, line, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
 }
 
-void UIShowMenu(UWORD flag_index, UWORD line, UBYTE use_cancel, UBYTE layout)
+void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
 {
   menu_index = 0;
   menu_flag = flag_index;
   menu_enabled = TRUE;
-  menu_use_cancel = use_cancel;
+  menu_cancel_on_last_option = cancel_config & MENU_CANCEL_ON_LAST_OPTION;
+  menu_cancel_on_b = cancel_config & MENU_CANCEL_ON_B_PRESSED;
   menu_layout = layout;
   text_draw_speed = 0;
   UIShowText(line);
@@ -383,7 +385,7 @@ void UIOnInteract()
       text_num_lines = 3;
       if (menu_enabled)
       {
-        if (menu_use_cancel && menu_index + 1 == menu_num_options) 
+        if (menu_cancel_on_last_option && menu_index + 1 == menu_num_options) 
         {
           script_variables[menu_flag] = 0;
         }
@@ -423,8 +425,8 @@ void UIOnInteract()
     {
       menu_index = MIN(menu_index + 4, menu_num_options - 1);
       UIDrawMenuCursor();
-   }
-    else if (JOY_PRESSED(J_B))
+    }
+    else if (menu_cancel_on_b && JOY_PRESSED(J_B))
     {
       text_count = 0;
       text_lines[0] = '\0';
