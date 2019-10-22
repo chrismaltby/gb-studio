@@ -11,7 +11,7 @@ export const fields = [].concat(
     },
     {
       key: "items",
-      label: "Number of options",
+      label: l10n("FIELD_NUMBER_OF_OPTIONS"),
       type: "number",
       min: 2,
       max: 8,
@@ -20,7 +20,7 @@ export const fields = [].concat(
     },
     {
       type: "checkbox",
-      label: "Last option is cancel",
+      label: l10n("FIELD_LAST_OPTION_CANCELS"),
       key: "cancelOnLastOption",
       width: "50%"
     },
@@ -81,14 +81,14 @@ export const fields = [].concat(
     }, []),
     {
       type: "checkbox",
-      label: "Set to '0' if 'B' is pressed",
+      label: l10n("FIELD_CANCEL_IF_B"),
       key: "cancelOnB",
       defaultValue: true
     },
     {
       key: "layout",
       type: "select",
-      label: "Layout",
+      label: l10n("FIELD_LAYOUT"),
       options: [
         ["dialogue", l10n("FIELD_LAYOUT_DIALOGUE")],
         ["menu", l10n("FIELD_LAYOUT_MENU")]
