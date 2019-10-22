@@ -113,17 +113,6 @@ void UIShowText(UWORD line)
   strcat(tmp_text_lines, ptr);
   POP_BANK;
 
-  text_num_lines = tmp_text_lines[0];
-  if (menu_layout)
-  {
-    UIDrawFrame(0, 0, 8, text_num_lines);
-  }
-  else 
-  {
-    text_num_lines = MIN(text_num_lines, 4);
-    UIDrawDialogueFrame(text_num_lines);
-  }
-
   for (i = 1, k = 0; i < 81; i++)
   {
     // Replace variable references in text
@@ -166,11 +155,15 @@ void UIShowText(UWORD line)
 
   if (menu_layout)
   {
-    UISetPos(88, MENU_CLOSED_Y);
-    UIMoveTo(88, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
+    text_num_lines = tmp_text_lines[0];
+    UIDrawFrame(0, 0, 8, text_num_lines);
+    UISetPos(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y);
+    UIMoveTo(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
   else 
   {
+    text_num_lines = MIN(tmp_text_lines[0], 4);
+    UIDrawDialogueFrame(text_num_lines);
     UISetPos(0, MENU_CLOSED_Y);
     UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
@@ -181,7 +174,8 @@ void UIShowText(UWORD line)
   text_tile_count = 0;
 }
 
-void UIShowAvatar(UBYTE avatar_index) {
+void UIShowAvatar(UBYTE avatar_index) 
+{
   BANK_PTR avatar_bank_ptr;
   UWORD avatar_ptr;
   UBYTE avatar_len;
@@ -373,16 +367,26 @@ void UIDrawMenuCursor()
   }
 }
 
+void UICloseDialogue()
+{
+  UIMoveTo(menu_layout ? MENU_LAYOUT_INITIAL_X : 0, MENU_CLOSED_Y, text_out_speed);
+
+  // Reset variables
+  text_count = 0;
+  text_lines[0] = '\0';
+  text_tile_count = 0;
+  text_num_lines = 3;
+  menu_enabled = FALSE;
+  menu_layout = 0;
+  avatar_enabled = FALSE;
+}
+
 void UIOnInteract()
 {
   if (JOY_PRESSED(J_A))
   {
     if (text_drawn && text_count != 0)
     {
-      text_count = 0;
-      text_lines[0] = '\0';
-      text_tile_count = 0;
-      text_num_lines = 3;
       if (menu_enabled)
       {
         if (menu_cancel_on_last_option && menu_index + 1 == menu_num_options) 
@@ -393,14 +397,11 @@ void UIOnInteract()
         {
           script_variables[menu_flag] = menu_index + 1;
         }
-        menu_enabled = FALSE;
-        UIMoveTo(menu_layout ? 88 : 0, MENU_CLOSED_Y, text_out_speed);
-        menu_layout = 0;
+        UICloseDialogue();
       }
       else
       {
-        avatar_enabled = FALSE;
-        UIMoveTo(0, MENU_CLOSED_Y, text_out_speed);
+        UICloseDialogue();
       }
     }
   }
@@ -410,17 +411,17 @@ void UIOnInteract()
     {
       menu_index = MAX(menu_index - 1, 0);
       UIDrawMenuCursor();
-   }
+    }
     else if (JOY_PRESSED(J_DOWN))
     {
       menu_index = MIN(menu_index + 1, menu_num_options - 1);
       UIDrawMenuCursor();
-   }
+    }
     else if (JOY_PRESSED(J_LEFT))
     {
       menu_index = MAX(menu_index - 4, 0);
       UIDrawMenuCursor();
-   }
+    }
     else if (JOY_PRESSED(J_RIGHT))
     {
       menu_index = MIN(menu_index + 4, menu_num_options - 1);
@@ -428,14 +429,8 @@ void UIOnInteract()
     }
     else if (menu_cancel_on_b && JOY_PRESSED(J_B))
     {
-      text_count = 0;
-      text_lines[0] = '\0';
-      text_tile_count = 0;
-      text_num_lines = 3;
       script_variables[menu_flag] = 0;
-      menu_enabled = FALSE;
-      UIMoveTo(menu_layout ? 88 : 0, MENU_CLOSED_Y, text_out_speed);
-      menu_layout = 0;
+      UICloseDialogue();
     }
   }
 }
