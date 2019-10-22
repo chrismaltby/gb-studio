@@ -84,70 +84,8 @@ class CustomPalettePicker extends Component {
     };
   }
 
-  paletteSelect = e => {
-    if (e.target.id == "customColor_0") {
-      if (this.state.selectedPalette == 0) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 0 });
-        this.applyHexToState(this.state.whiteHex);
-      }
-    } else if (e.target.id == "customColor_1") {
-      if (this.state.selectedPalette == 1) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 1 });
-        this.applyHexToState(this.state.lightHex);
-      }
-    } else if (e.target.id == "customColor_2") {
-      if (this.state.selectedPalette == 2) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 2 });
-        this.applyHexToState(this.state.darkHex);
-      }
-    } else if (e.target.id == "customColor_3") {
-      if (this.state.selectedPalette == 3) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 3 });
-        this.applyHexToState(this.state.blackHex);
-      }
-    }
-  };
-
-  applyHexToState(hex) {
-    var r = this.hexToDecimal(hex.substring(0, 2)) / 8;
-    var g = this.hexToDecimal(hex.substring(2, 4)) / 8;
-    var b = this.hexToDecimal(hex.substring(4)) / 8;
-
-    if (r > 31) r = 31;
-    if (g > 31) g = 31;
-    if (b > 31) b = 31;
-
-    this.setState({
-      currentR: Math.floor(r),
-      currentG: Math.floor(g),
-      currentB: Math.floor(b)
-    });
-
-    return {
-      r: r,
-      g: g,
-      b: b
-    };
-  }
-
-  decimalToHexString(number) {
-    var ret = number.toString(16).toUpperCase();
-    return ret.length == 1 ? "0" + ret : ret;
-  }
-
-  hexToDecimal(str) {
-    return parseInt("0x" + str);
-  }
-
   setCurrentColor(r, g, b) {
+    const { selectedPalette } = this.state;
     const { editProjectSettings } = this.props;
 
     const hexString =
@@ -155,48 +93,84 @@ class CustomPalettePicker extends Component {
       this.decimalToHexString(g * 8) +
       this.decimalToHexString(b * 8);
 
-    if (this.state.selectedPalette == 0) {
+    if (selectedPalette === 0) {
       this.setState({ whiteHex: hexString });
       editProjectSettings({ customColorsWhite: hexString });
-    } else if (this.state.selectedPalette == 1) {
+    } else if (selectedPalette === 1) {
       this.setState({ lightHex: hexString });
       editProjectSettings({ customColorsLight: hexString });
-    } else if (this.state.selectedPalette == 2) {
+    } else if (selectedPalette === 2) {
       this.setState({ darkHex: hexString });
       editProjectSettings({ customColorsDark: hexString });
-    } else if (this.state.selectedPalette == 3) {
+    } else if (selectedPalette === 3) {
       this.setState({ blackHex: hexString });
       editProjectSettings({ customColorsBlack: hexString });
     }
   }
+
+  paletteSelect = e => {
+    const { selectedPalette, whiteHex, lightHex, darkHex, blackHex } = this.state;
+
+    if (e.target.id === "customColor_0") {
+      if (selectedPalette === 0) {
+        this.setState({ selectedPalette: -1 });
+      } else {
+        this.setState({ selectedPalette: 0 });
+        this.applyHexToState(whiteHex);
+      }
+    } else if (e.target.id === "customColor_1") {
+      if (selectedPalette === 1) {
+        this.setState({ selectedPalette: -1 });
+      } else {
+        this.setState({ selectedPalette: 1 });
+        this.applyHexToState(lightHex);
+      }
+    } else if (e.target.id === "customColor_2") {
+      if (selectedPalette === 2) {
+        this.setState({ selectedPalette: -1 });
+      } else {
+        this.setState({ selectedPalette: 2 });
+        this.applyHexToState(darkHex);
+      }
+    } else if (e.target.id === "customColor_3") {
+      if (selectedPalette === 3) {
+        this.setState({ selectedPalette: -1 });
+      } else {
+        this.setState({ selectedPalette: 3 });
+        this.applyHexToState(blackHex);
+      }
+    }
+  };
 
   hexChange = e => {
     this.setState({ currentCustomHex: e.target.value });
   };
 
   colorChange = e => {
+    const { currentG, currentR, currentB } = this.state;
     const min = 0;
     const max = 31;
     const value = Math.max(min, Math.min(max, e.currentTarget.value));
 
     if (e.target.id === "colorR") {
       this.setState({ currentR: value || "" });
-      this.setCurrentColor(value, this.state.currentG, this.state.currentB);
+      this.setCurrentColor(value, currentG, currentB);
     } else if (e.target.id === "colorG") {
       this.setState({ currentG: value || "" });
-      this.setCurrentColor(this.state.currentR, value, this.state.currentB);
+      this.setCurrentColor(currentR, value, currentB);
     } else if (e.target.id === "colorB") {
       this.setState({ currentB: value || "" });
-      this.setCurrentColor(this.state.currentR, this.state.currentG, value);
+      this.setCurrentColor(currentR, currentG, value);
     }
   };
 
-  handleHexConvertClick = e => {
-    var hex = this.state.currentCustomHex.replace("#", "");
+  handleHexConvertClick = () => {
+    const { currentCustomHex } = this.state;
+    const hex = currentCustomHex.replace("#", "");
 
     if (hex.length == 6) {
       hex = GBCHexToClosestHex(hex);
-      var result = this.applyHexToState(hex);
+      const result = this.applyHexToState(hex);
       this.setCurrentColor(result.r, result.g, result.b);
       this.setState({ currentCustomHex: "" });
     } else {
@@ -204,23 +178,25 @@ class CustomPalettePicker extends Component {
     }
   };
 
-  handleDefaultPaletteClick = e => {
-    var result;
+  handleDefaultPaletteClick = () => {
+    const { selectedPalette} = this.state;
+    let result;
 
-    if (this.state.selectedPalette == 0) {
+    if (selectedPalette == 0) {
       result = this.applyHexToState(DEFAULT_WHITE); // White
-    } else if (this.state.selectedPalette == 1) {
+    } else if (selectedPalette == 1) {
       result = this.applyHexToState(DEFAULT_LIGHT); // Light Green
-    } else if (this.state.selectedPalette == 2) {
+    } else if (selectedPalette == 2) {
       result = this.applyHexToState(DEFAULT_DARK); // Dark Green
-    } else if (this.state.selectedPalette == 3) {
+    } else if (selectedPalette == 3) {
       result = this.applyHexToState(DEFAULT_BLACK); // Black
     }
 
     this.setCurrentColor(result.r, result.g, result.b);
   };
 
-  onRestoreDefault = e => {
+  onRestoreDefault = () => {
+    // this.handleDefaultPaletteClick();
     const { editProjectSettings } = this.props;
     this.setState(
       {
@@ -245,8 +221,40 @@ class CustomPalettePicker extends Component {
     );
   };
 
+  decimalToHexString = number => {
+    const ret = number.toString(16).toUpperCase();
+    return ret.length === 1 ? `0${  ret}` : ret;
+  }
+
+  hexToDecimal = str => {
+    return parseInt(`0x${  str}`);
+  }
+
+  applyHexToState(hex) {
+    let r = this.hexToDecimal(hex.substring(0, 2)) / 8;
+    let g = this.hexToDecimal(hex.substring(2, 4)) / 8;
+    let b = this.hexToDecimal(hex.substring(4)) / 8;
+
+    if (r > 31) r = 31;
+    if (g > 31) g = 31;
+    if (b > 31) b = 31;
+
+    this.setState({
+      currentR: Math.floor(r),
+      currentG: Math.floor(g),
+      currentB: Math.floor(b)
+    });
+
+    return {
+      r,
+      g,
+      b
+    };
+  };
+
   render() {
     const { settings } = this.props;
+    const { currentR, currentG, currentB, currentCustomHex, selectedPalette } = this.state;
 
     return (
       <div className="CustomPalettePicker">
@@ -263,8 +271,8 @@ class CustomPalettePicker extends Component {
                 <input
                   id="customColor_0"
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 0}
+                  onChange={this.paletteSelect}
+                  checked={selectedPalette === 0}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
@@ -283,8 +291,8 @@ class CustomPalettePicker extends Component {
                 <input
                   id="customColor_1"
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 1}
+                  onChange={this.paletteSelect}
+                  checked={selectedPalette === 1}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
@@ -303,8 +311,8 @@ class CustomPalettePicker extends Component {
                 <input
                   id="customColor_2"
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 2}
+                  onChange={this.paletteSelect}
+                  checked={selectedPalette === 2}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
@@ -323,8 +331,8 @@ class CustomPalettePicker extends Component {
                 <input
                   id="customColor_3"
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 3}
+                  onChange={this.paletteSelect}
+                  checked={selectedPalette === 3}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
@@ -345,7 +353,7 @@ class CustomPalettePicker extends Component {
           <div
             id="CustomPaletteEdit"
             className="CustomPalettePicker__Column"
-            style={this.state.selectedPalette == -1 ? { display: "none" } : {}}
+            style={selectedPalette === -1 ? { display: "none" } : {}}
           >
             <FormField thirdWidth>
               <label htmlFor="colorR">
@@ -354,7 +362,7 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorR"
                   type="number"
-                  value={this.state.currentR}
+                  value={currentR}
                   min={0}
                   max={31}
                   placeholder={0}
@@ -370,7 +378,7 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorG"
                   type="number"
-                  value={this.state.currentG}
+                  value={currentG}
                   min={0}
                   max={31}
                   placeholder={0}
@@ -386,7 +394,7 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorB"
                   type="number"
-                  value={this.state.currentB}
+                  value={currentB}
                   min={0}
                   max={31}
                   placeholder={0}
@@ -402,7 +410,7 @@ class CustomPalettePicker extends Component {
                   type="text"
                   maxLength="7"
                   placeholder="#000000"
-                  value={this.state.currentCustomHex}
+                  value={currentCustomHex}
                   onChange={this.hexChange.bind()}
                 />
               </label>
@@ -411,6 +419,7 @@ class CustomPalettePicker extends Component {
             <FormField halfWidth>
               <button
                 id="btnConvertHex"
+                type="button"
                 className="Button"
                 style={{ width: "100%" }}
                 onClick={this.handleHexConvertClick}
@@ -440,11 +449,7 @@ CustomPalettePicker.propTypes = {
   editProjectSettings: PropTypes.func.isRequired
 };
 
-CustomPalettePicker.defaultProps = {
-  id: undefined
-};
-
-function mapStateToProps(state, props) {
+function mapStateToProps(state) {
   const project = state.entities.present.result;
   const { settings } = project;
   return {
