@@ -80,16 +80,28 @@ class ProcedureEditor extends Component {
               }
             />
             <FormField>
-              <label htmlFor="projectName">
+              <label htmlFor="procedureName">
                 {l10n("FIELD_NAME")}
                 <input
-                  id="projectName"
+                  id="procedureName"
                   value={procedure.name || ""}
                   placeholder={`Custom Event ${index + 1}`}
                   onChange={this.onEdit("name")}
                 />
               </label>
             </FormField>
+            <FormField>
+              <label htmlFor="procedureDescription">
+                {l10n("FIELD_DESCRIPTION")}
+                <textarea
+                  id="procedureDescription"
+                  rows={3}
+                  value={procedure.description || ""}
+                  placeholder={l10n("FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER")}
+                  onChange={this.onEdit("description")}
+                />
+              </label>
+            </FormField>            
           </div>
           <div>
             <SidebarHeading

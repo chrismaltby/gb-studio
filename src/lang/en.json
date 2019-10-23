@@ -52,6 +52,7 @@
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
+  "FIELD_DESCRIPTION": "Description",
   "FIELD_AUTHOR": "Author",
   "FIELD_NOTES": "Notes",
   "FIELD_ADD_NOTES": "Add Notes",
@@ -175,6 +176,7 @@
   "FIELD_EFFECT_BEEP": "Beep",
   "FIELD_EFFECT_TONE": "Tone",
   "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Describe the purpose of this custom event",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

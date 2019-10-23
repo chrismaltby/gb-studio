@@ -410,6 +410,9 @@ class ScriptEventBlock extends Component {
     const eventCommands = (events[command] && events[command].fields) || [];
     if (value.procedure && procedures[value.procedure]) {
       const procedure = procedures[value.procedure];
+      const description = procedure.description ? [{
+        label: procedure.description.split('\n').map((text) => <div>{text||(<div>&nbsp;</div>)}</div>)
+      }] : [];
       const usedVariables = Object.values(procedure.variables).map(v => {
         return {
           label: `${v.name} - ${v.id}`,
@@ -428,6 +431,7 @@ class ScriptEventBlock extends Component {
       }) || [];
 
       return [].concat(
+        description,
         eventCommands,
         usedVariables,
         usedActors
