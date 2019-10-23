@@ -70,10 +70,10 @@ function deleteValue(key) {
 // Allow Audio context to be created in places which require
 // user input first. Hook this up to keyboard and touch inputs
 function initSound() {
-  if (!soundReady && GameBoyEmulatorInitialized()) {
+  if (!soundReady && !settings[0] && GameBoyEmulatorInitialized()) {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     window.audioContext = new AudioContext();
-    if (window.audioContext && window.audioContext.state === "running") {
+    if (window.audioContext) {
       // Create empty buffer
       var buffer = window.audioContext.createBuffer(1, 1, 22050);
       var source = window.audioContext.createBufferSource();
@@ -88,15 +88,17 @@ function initSound() {
       } else if (source.noteOn) {
         source.noteOn(0);
       }
-      settings[0] = true;
-      gameboy.initSound();
-      soundReady = true;
+      window.audioContext.resume().then(() => {
+        settings[0] = true;
+        gameboy.initSound();
+        soundReady = true;
+      });
     }
   }
 }
 
 var soundInitTimer = setInterval(function() {
-  if(GameBoyEmulatorInitialized()) {
+  if (GameBoyEmulatorInitialized()) {
     initSound();
     clearTimeout(soundInitTimer);
   }
