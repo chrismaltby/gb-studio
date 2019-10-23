@@ -239,7 +239,7 @@ export default function editor(state = initialState.editor, action) {
           x: action.x,
           y: action.y
         },
-        eventId: ""
+        eventId: state.dragging === "" ? "" : state.eventId
       };
     }
     case ACTOR_HOVER: {
