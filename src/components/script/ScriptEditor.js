@@ -171,6 +171,13 @@ class ActionMini extends Component {
     }
   };
 
+  editProcedure = e => {
+    const { onSelectProcedure, action } = this.props;
+    if(action.args.procedure) {
+      onSelectProcedure(action.args.procedure);
+    }
+  }
+
   render() {
     const {
       id,
@@ -268,6 +275,12 @@ class ActionMini extends Component {
                 right
                 onMouseDown={this.readClipboard}
               >
+                {command === EVENT_CALL_PROCEDURE && [
+                  <MenuItem key="0" onClick={this.editProcedure}>
+                    {l10n("MENU_EDIT_CUSTOM_EVENT")}
+                  </MenuItem>,
+                  <MenuDivider key="1" />
+                ]}
                 <MenuItem onClick={this.toggleRename}>
                   {l10n("MENU_RENAME_EVENT")}
                 </MenuItem>
@@ -433,12 +446,13 @@ ActionMini.propTypes = {
   onRemove: PropTypes.func.isRequired,
   onCopy: PropTypes.func.isRequired,
   onPaste: PropTypes.func.isRequired,
+  onSelectProcedure: PropTypes.func.isRequired,
   moveActions: PropTypes.func.isRequired,
   onMouseLeave: PropTypes.func.isRequired,
   onMouseEnter: PropTypes.func.isRequired,
   connectDragSource: PropTypes.func.isRequired,
   connectDragPreview: PropTypes.func.isRequired,
-  connectDropTarget: PropTypes.func.isRequired
+  connectDropTarget: PropTypes.func.isRequired,
 };
 
 const ActionMiniDnD = DropTarget(
@@ -655,6 +669,11 @@ class ScriptEditor extends Component {
     selectScriptEvent("");
   };
 
+  onSelectProcedure = id => {
+    const { selectProcedure } = this.props;
+    selectProcedure(id);
+  }
+
   readClipboard = e => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
@@ -724,6 +743,7 @@ class ScriptEditor extends Component {
               onEdit={this.onEdit}
               onCopy={this.onCopy}
               onPaste={this.onPaste}
+              onSelectProcedure={this.onSelectProcedure}
               onMouseEnter={this.onEnter}
               onMouseLeave={this.onLeave}
               clipboardEvent={clipboardEvent}
@@ -747,7 +767,8 @@ ScriptEditor.propTypes = {
   spriteSheetIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectScriptEvent: PropTypes.func.isRequired,
   copyEvent: PropTypes.func.isRequired,
-  copyScript: PropTypes.func.isRequired
+  copyScript: PropTypes.func.isRequired,
+  selectProcedure: PropTypes.func.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create({}, {
@@ -775,7 +796,8 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
-  copyScript: actions.copyScript
+  copyScript: actions.copyScript,
+  selectProcedure: actions.selectProcedure
 };
 
 export default connect(

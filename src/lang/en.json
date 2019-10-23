@@ -346,6 +346,7 @@
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
   "MENU_DELETE_CUSTOM_EVENT": "Delete Custom Event",
+  "MENU_EDIT_CUSTOM_EVENT": "Edit Custom Event",
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
   "MENU_PLUGINS": "Plugins",
 
