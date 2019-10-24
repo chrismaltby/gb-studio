@@ -294,7 +294,7 @@ class ScriptBuilder {
     output.push(lo(stringIndex));
   };
 
-  textMenu = (setVariable, options, cancelOnLastOption = false, cancelOnB = false, layout = "menu") => {
+  textMenu = (setVariable, options, layout = "menu", cancelOnLastOption = false, cancelOnB = false) => {
     const output = this.output;
     const { strings, variables } = this.options;
     const menuText = options.join("\n");

@@ -99,5 +99,5 @@ export const fields = [].concat(
 
 export const compile = (input, helpers) => {
   const { textMenu } = helpers;
-  textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.cancelOnLastOption, input.cancelOnB, input.layout);
+  textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.layout, input.cancelOnLastOption, input.cancelOnB);
 };
