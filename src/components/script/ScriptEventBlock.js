@@ -216,9 +216,6 @@ class ScriptEventInput extends Component {
     if (type === "music") {
       return <MusicSelect id={id} value={value} onChange={this.onChange} />;
     }
-    if (type === "script") {
-      return <span>{JSON.stringify(value)}</span>
-    }
     if (type === "soundEffect") {
       return (
         <SoundEffectSelect
@@ -415,7 +412,7 @@ class ScriptEventBlock extends Component {
       }] : [];
       const usedVariables = Object.values(procedure.variables).map(v => {
         return {
-          label: `${v.name} - ${v.id}`,
+          label: `${v.name}`,
           defaultValue: "LAST_VARIABLE",
           key: `$variable[${v.id}]$`,
           type: "variable"
@@ -423,7 +420,7 @@ class ScriptEventBlock extends Component {
       }) || [];
       const usedActors = Object.values(procedure.actors).map((a) => {
         return {
-          label: `${a.name} - ${a.id}`,
+          label: `${a.name}`,
           defaultValue: "player",
           key: `$actor[${a.id}]$`,
           type: "actor"
