@@ -221,6 +221,20 @@ export const migrateFrom110To120Event = event => {
       false: undefined
     };
   }
+  // Migrate visibility conditions to support multiple ones
+  if (newEvent.showIfKey || newEvent.showIfValue) {
+    return {
+      ...newEvent,
+      conditions: [
+        {
+          key: newEvent.showIfKey,
+          eq: newEvent.showIfValue
+        }
+      ],
+      showIfKey: undefined,
+      showIfValue: undefined
+    }
+  }
   return newEvent;
 };
 

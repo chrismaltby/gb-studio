@@ -242,3 +242,17 @@ test("should migrate camera speed values from 1.1.0 to 1.2.0", () => {
     }
   });
 });
+test("should migrate field visbility conditions from 1.1.0 to 1.2.0", () => {
+  const oldEvent = {
+    showIfKey: "foo",
+    showIfValue: "bar"
+  };
+  expect(migrateFrom110To120Event(oldEvent)).toEqual({
+    conditions: [
+      {
+        key: "foo",
+        eq: "bar"
+      }
+    ]
+  });
+});
