@@ -31,6 +31,17 @@ class SettingsPage extends Component {
     });
   };
 
+  onBackgroundPaletteChange = e => {
+    const { editProjectSettings } = this.props;
+    console.log('CHANGE', e)
+    editProjectSettings({
+      customColorsWhite: e[0],
+      customColorsLight: e[1],
+      customColorsDark: e[2],
+      customColorsBlack: e[3]
+    });
+  };
+
   render() {
     const { project, settings, scenesLookup } = this.props;
 
@@ -39,13 +50,15 @@ class SettingsPage extends Component {
     }
 
     const { scenes } = project;
-    const { customColorsEnabled, customHead, gbcFastCPUEnabled } = settings;
+    const { customColorsEnabled, customHead, gbcFastCPUEnabled, customColorsWhite, customColorsLight, customColorsDark, customColorsBlack } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
       const scene = scenesLookup[sceneId];
       return memo + scene.actors.length;
     }, 0);
+    const customPalette = [customColorsWhite, customColorsLight, customColorsDark, customColorsBlack];
+    console.log('RENDER', customPalette)
 
     return (
       <div
@@ -88,7 +101,11 @@ class SettingsPage extends Component {
               open={customColorsEnabled}
               onToggle={this.onEditSetting("customColorsEnabled")}
             >
-              <CustomPalettePicker />
+              <CustomPalettePicker 
+                id="background_pal"
+                palette={customPalette}
+                onPaletteChange={this.onBackgroundPaletteChange}
+              />
             </ToggleableCheckBoxField>
           </section>
 
