@@ -8,6 +8,8 @@ import console from "./consoleReducer";
 import music from "./musicReducer";
 import entities from "./entitiesReducer";
 import settings from "./settingsReducer";
+import error from "./errorReducer";
+
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_SUCCESS
@@ -42,7 +44,8 @@ const rootReducer = combineReducers({
       PROJECT_SAVE_SUCCESS
     ]
   }),
-  settings
+  settings,
+  error
 });
 
 export default rootReducer;

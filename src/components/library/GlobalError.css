@@ -1,0 +1,37 @@
+.GlobalError {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;    
+    padding: 30px;
+    overflow: auto;
+}
+
+.GlobalError__Icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    background: rgba(0,0,0,0.5);
+}
+
+.GlobalError__Buttons .Button {
+    margin: 20px 10px;
+}
+
+.GlobalError__StackTrace {
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+    height: 280px;
+    margin-top: 20px;
+    max-width: 860px;
+}
+
+.GlobalError h1,
+.GlobalError h2,
+.GlobalError p,
+.GlobalError__StackTrace {
+    user-select: text;
+}
