@@ -96,18 +96,21 @@ const makeBuild = ({
     env.TMP = getTmp();
     env.TEMP = getTmp();
     
-    // Modify game.h to overide color palette
-    let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
-    if (settings.customColorsEnabled) {
-      gameHeader = gameHeader
+    // Modify CustomColors.h to overide color palette
+    let customColorsHeader = await fs.readFile(`${buildRoot}/include/CustomColors.h`, "utf8");
+    if(settings.customColorsEnabled) {
+      customColorsHeader = customColorsHeader
         .replace(/RGB\(29, 31, 28\)/g, convertHexTo15BitRGB(settings.customColorsWhite))
         .replace(/RGB\(22, 30, 17\)/g, convertHexTo15BitRGB(settings.customColorsLight))
         .replace(/RGB\(10, 19, 15\)/g, convertHexTo15BitRGB(settings.customColorsDark))
         .replace(/RGB\(4, 5, 10\)/g, convertHexTo15BitRGB(settings.customColorsBlack));
     }
     if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
-      gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
+      customColorsHeader = customColorsHeader.replace(/#define CUSTOM_COLORS/g, '');
     }
+    await fs.writeFile(`${buildRoot}/include/CustomColors.h`, customColorsHeader, "utf8");
+
+    let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
     if (!settings.gbcFastCPUEnabled) {
       gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
     }

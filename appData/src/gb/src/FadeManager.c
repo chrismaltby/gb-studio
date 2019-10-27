@@ -18,31 +18,8 @@ void ApplyPaletteChange(UBYTE index)
 {
   #ifdef CUSTOM_COLORS
   if (_cpu == CGB_TYPE) {
-    if (index == 0 || index == 1)
-    {
-      set_bkg_palette(0, 1, custom_bg_pal_fade_step4);
-      set_sprite_palette(0, 1, custom_spr1_pal_fade_step4);
-    } 
-    else if (index == 2)
-    {
-      set_bkg_palette(0, 1, custom_bg_pal_fade_step3);
-      set_sprite_palette(0, 1, custom_spr1_pal_fade_step3);
-    }
-    else if (index == 3)
-    {
-      set_bkg_palette(0, 1, custom_bg_pal_fade_step2);
-      set_sprite_palette(0, 1, custom_spr1_pal_fade_step2);
-    }
-    else if (index == 4)
-    {
-      set_bkg_palette(0, 1, custom_bg_pal_fade_step1);
-      set_sprite_palette(0, 1, custom_spr1_pal_fade_step1);
-    }
-    else if (index == 5)
-    {
-      set_bkg_palette(0, 1, custom_bg_pal);
-      set_sprite_palette(0, 1, custom_spr1_pal);
-    }
+    set_bkg_palette(0, 1, custom_bg_pal_fade_steps[index]);
+    set_sprite_palette(0, 1, custom_spr1_pal_fade_steps[index]);
   } 
   else 
   #endif
