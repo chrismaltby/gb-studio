@@ -6,6 +6,7 @@
   height: 100%;
   padding: 30px;
   overflow: auto;
+  box-sizing: border-box;
   -webkit-app-region: drag;
 }
 
@@ -35,9 +36,10 @@
   background: #fff;
   padding: 30px;
   border-radius: 4px;
-  height: 280px;
+  height: 270px;
   margin-top: 20px;
   max-width: 860px;
+  overflow: auto;
 }
 
 .GlobalError h1,
