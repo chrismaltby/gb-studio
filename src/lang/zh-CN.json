@@ -181,6 +181,7 @@
   "EVENT_RESET_VARIABLES": "重置全部变量为“False”",
   "EVENT_LOOP": "无限循环",
   "EVENT_GROUP": "事件群组",
+  "EVENT_COMMENT": "評論",
   "EVENT_TEXT": "显示对话文本",
   "EVENT_CAMERA_MOVE_TO": "镜头移动至",
   "EVENT_CAMERA_LOCK": "镜头锁定于玩家",
