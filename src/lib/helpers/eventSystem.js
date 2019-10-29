@@ -11,9 +11,10 @@ const mapValues = (obj, fn) =>
 const mapEvents = (events = [], callback) => {
   return events.map(event => {
     if (event.children) {
+      const newEvent = callback(event);
       return {
-        ...callback(event),
-        children: mapValues(event.children, childEvents =>
+        ...newEvent,
+        children: mapValues(newEvent.children || event.children, childEvents =>
           mapEvents(childEvents, callback)
         )
       };
