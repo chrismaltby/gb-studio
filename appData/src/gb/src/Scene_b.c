@@ -414,7 +414,10 @@ void SceneUpdateActors_b()
   // Handle script move
   if (actor_move_settings & ACTOR_MOVE_ENABLED && ACTOR_ON_TILE(script_actor))
   {
-    if (actors[script_actor].pos.x == actor_move_dest.x && actors[script_actor].pos.y == actor_move_dest.y)
+    if (actors[script_actor].pos.x == actor_move_dest.x &&
+        ((actors[script_actor].pos.y == actor_move_dest.y) ||
+         // If destination is bottom edge check if wrapped around scene
+         (actors[script_actor].pos.y == 0 && actor_move_dest.y == ACTOR_MAX_Y)))
     {
       actor_move_settings &= ~ACTOR_MOVE_ENABLED;
       script_action_complete = TRUE;

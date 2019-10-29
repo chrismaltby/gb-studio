@@ -88,11 +88,20 @@ function initSound() {
       } else if (source.noteOn) {
         source.noteOn(0);
       }
+      window.audioContext.resume().then(() => {
+        settings[0] = true;
+        gameboy.initSound();
+        soundReady = true;
+      });
     }
-    settings[0] = true;
-    gameboy.initSound();
-    soundReady = true;
   }
 }
+
+var soundInitTimer = setInterval(function() {
+  if (GameBoyEmulatorInitialized()) {
+    initSound();
+    clearTimeout(soundInitTimer);
+  }
+}, 16);
 
 window.addEventListener("DOMContentLoaded", windowingInitialize);

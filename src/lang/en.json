@@ -225,6 +225,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop Forever",
   "EVENT_GROUP": "Event Group",
+  "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
   "EVENT_GOTO_LABEL": "Label: Goto",
   "EVENT_TEXT": "Text: Display Dialogue",
@@ -432,5 +433,12 @@
   "SETTINGS_CART_TYPE": "Cartridge Type",
   "SETTINGS_CONTROLS": "Controls",
   "SETTINGS_COLORS": "Colors",
-  "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)"
+  "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)",
+
+  "// 17 ": "Error ------------------------------------------------------",
+
+  "ERROR_TITLE": "GB Studio encountered an error",
+  "ERROR_WHAT_CAN_I_DO": "What can I do?",
+  "ERROR_VIEW_STACK_TRACE": "View Stack Trace",
+  "ERROR_CLOSE": "Close"
 }

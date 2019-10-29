@@ -196,6 +196,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Alle Variablen Auf 'Falsch' Zurücksetzen",
   "EVENT_LOOP": "Endlos-Schleife",
   "EVENT_GROUP": "Ereignisgruppe",
+  "EVENT_COMMENT": "Kommentar",
   "EVENT_DEFINE_LABEL": "Label: Label Definieren",
   "EVENT_GOTO_LABEL": "Label: Springe Zu Label",
   "EVENT_TEXT": "Text: Dialog Anzeigen",

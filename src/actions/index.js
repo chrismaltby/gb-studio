@@ -32,6 +32,17 @@ const asyncAction = async (
   }
 };
 
+export const setGlobalError = (message, filename, line, col, stackTrace) => {
+  return {
+    type: types.SET_GLOBAL_ERROR,
+    message,
+    filename,
+    line,
+    col,
+    stackTrace
+  };
+};
+
 export const resizeWorldSidebar = width => {
   return {
     type: types.SIDEBAR_WORLD_RESIZE,
@@ -61,7 +72,12 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
-      const shouldOpenProject = await migrateWarning(path);
+      let shouldOpenProject = false;
+      try {
+        shouldOpenProject = await migrateWarning(path);
+      } catch (error) {
+        dispatch(setGlobalError(error.message, error.filename, error.lineno, error.colno, error.stack));      
+      }
       if (!shouldOpenProject) {
         throw new Error("Cancelled opening project");
       }

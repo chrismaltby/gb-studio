@@ -80,5 +80,12 @@ export default {
   settings: {
     worldSidebarWidth: 300,
     filesSidebarWidth: 300
+  },
+  error: {
+    visible: false,
+    message: "",
+    filename: "",
+    line: 0,
+    col: 0
   }
 };

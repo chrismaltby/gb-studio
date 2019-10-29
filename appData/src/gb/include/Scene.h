@@ -32,6 +32,11 @@
 // bit xxxx0100 for transition, low bits are speed
 #define CAMERA_TRANSITION_FLAG 0x20
 
+#define ACTOR_MIN_X 8
+#define ACTOR_MAX_X 248
+#define ACTOR_MIN_Y 16
+#define ACTOR_MAX_Y 255
+
 extern UINT8 scene_bank;
 extern POS map_next_pos;
 extern VEC2D map_next_dir;

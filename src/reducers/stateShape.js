@@ -68,3 +68,12 @@ export const ProjectShape = PropTypes.shape({
   backgrounds: PropTypes.arrayOf(PropTypes.string),
   procedures: PropTypes.arrayOf(PropTypes.string),
 });
+
+export const ErrorShape = PropTypes.shape({
+  visible: PropTypes.boolean,
+  message: PropTypes.string,
+  filename: PropTypes.string,
+  stackTrace: PropTypes.string,
+  line: PropTypes.number,
+  col: PropTypes.number
+});

@@ -192,6 +192,7 @@
   "EVENT_RESET_VARIABLES": "Zmienna: Zresetuj wszystkie zmienne do 'Fałsz'",
   "EVENT_LOOP": "Nieskończona pętla",
   "EVENT_GROUP": "Zdarzenie grupowe",
+  "EVENT_COMMENT": "Komentarz",
   "EVENT_DEFINE_LABEL": "Etykieta: Zdefiniuj",
   "EVENT_GOTO_LABEL": "Etykieta: Idź do",
   "EVENT_TEXT": "Tekst: Wyświetl dialog",

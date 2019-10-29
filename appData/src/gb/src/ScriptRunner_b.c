@@ -1017,10 +1017,24 @@ void Script_ActorMoveRel_b()
     if (script_cmd_args[1] == 1)
     {
       actor_move_dest.x = actor_move_dest.x - (script_cmd_args[0] << 3);
+      // If destination wrapped past left edge set to min X
+      if (actor_move_dest.x > actors[script_actor].pos.x)
+      {
+        actor_move_dest.x = ACTOR_MIN_X;
+      }
+      else if (actor_move_dest.x < ACTOR_MIN_X)
+      {
+        actor_move_dest.x = ACTOR_MIN_X;
+      }
     }
     else
     {
       actor_move_dest.x = actor_move_dest.x + (script_cmd_args[0] << 3);
+      // If destination wrapped past right edge set to max X
+      if (actor_move_dest.x < actors[script_actor].pos.x)
+      {
+        actor_move_dest.x = ACTOR_MAX_X;
+      }
     }
   }
 
@@ -1031,10 +1045,24 @@ void Script_ActorMoveRel_b()
     if (script_cmd_args[3] == 1)
     {
       actor_move_dest.y = actor_move_dest.y - (script_cmd_args[2] << 3);
+      // If destination wrapped past top edge set to min Y
+      if (actor_move_dest.y > actors[script_actor].pos.y)
+      {
+        actor_move_dest.y = ACTOR_MIN_Y;
+      }
+      else if (actor_move_dest.y < ACTOR_MIN_Y)
+      {
+        actor_move_dest.y = ACTOR_MIN_Y;
+      }
     }
     else
     {
       actor_move_dest.y = actor_move_dest.y + (script_cmd_args[2] << 3);
+      // If destination wrapped past bottom edge set to max Y
+      if (actor_move_dest.y < actors[script_actor].pos.y)
+      {
+        actor_move_dest.y = ACTOR_MAX_Y;
+      }
     }
   }
 

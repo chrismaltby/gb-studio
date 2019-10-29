@@ -38,6 +38,13 @@ window.undo = () => {
   store.dispatch(ActionCreators.undo());
 };
 
+window.addEventListener("error", (error) => {
+  error.stopPropagation();
+  error.preventDefault();
+  store.dispatch(actions.setGlobalError(error.message, error.filename, error.lineno, error.colno, error.error.stack));
+  return false;
+});
+
 ipcRenderer.on("save-project", () => {
   store.dispatch(actions.saveProject());
 });
