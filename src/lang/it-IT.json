@@ -218,6 +218,7 @@
   "EVENT_RESET_VARIABLES": "Variabile: Reimposta tutte le Variabili a 'False'",
   "EVENT_LOOP": "Ciclo infinito",
   "EVENT_GROUP": "Gruppo di Eventi",
+  "EVENT_COMMENT": "Commento",
   "EVENT_DEFINE_LABEL": "Etichetta: Definisci",
   "EVENT_GOTO_LABEL": "Etichetta: Vai a",
   "EVENT_TEXT": "Testo: Mostra Dialogo",
@@ -419,5 +420,12 @@
   "SETTINGS_CART_TYPE": "Tipo di Cartuccia",
   "SETTINGS_CONTROLS": "Controlli",
   "SETTINGS_COLORS": "Colori",
-  "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)"
+  "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)",
+
+  "// 17 ": "Error ------------------------------------------------------",
+
+  "ERROR_TITLE": "GB Studio ha riscontrato un errore",
+  "ERROR_WHAT_CAN_I_DO": "Cosa posso fare?",
+  "ERROR_VIEW_STACK_TRACE": "Visualizza lo Stack Trace",
+  "ERROR_CLOSE": "Chiudi"
 }
