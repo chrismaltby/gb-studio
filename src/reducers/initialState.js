@@ -61,7 +61,8 @@ export default {
       spriteSheets: {},
       triggers: {},
       variables: {},
-      customEvents: {}
+      customEvents: {},
+      palettes: {}
     },
     result: {
       settings: {

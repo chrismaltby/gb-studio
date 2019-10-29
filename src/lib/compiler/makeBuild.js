@@ -67,7 +67,7 @@ const makeBuild = ({
 } = {}) => {
   return new Promise(async (resolve, reject) => {
     const env = Object.create(process.env);
-    const { settings } = data;
+    const { settings, palettes } = data;
 
     const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
       process.arch
@@ -99,12 +99,35 @@ const makeBuild = ({
     // Modify CustomColors.h to overide color palette
     let customColorsHeader = await fs.readFile(`${buildRoot}/include/CustomColors.h`, "utf8");
     if(settings.customColorsEnabled) {
+      const bgPalette = palettes[0];
+      const sprPalette = palettes[1];
       customColorsHeader = customColorsHeader
-        .replace(/RGB\(29, 31, 28\)/g, convertHexTo15BitRGB(settings.customColorsWhite))
-        .replace(/RGB\(22, 30, 17\)/g, convertHexTo15BitRGB(settings.customColorsLight))
-        .replace(/RGB\(10, 19, 15\)/g, convertHexTo15BitRGB(settings.customColorsDark))
-        .replace(/RGB\(4, 5, 10\)/g, convertHexTo15BitRGB(settings.customColorsBlack));
-    }
+        .replace(
+          /BG_DMG_WHITE RGB\(29, 31, 28\)/g, 
+          `BG_DMG_WHITE  ${convertHexTo15BitRGB(bgPalette.colors[0])}`)
+        .replace(
+          /BG_DMG_LIGHTGREEN RGB\(22, 30, 17\)/g, 
+          `BG_DMG_LIGHTGREEN ${convertHexTo15BitRGB(bgPalette.colors[1])}`)
+        .replace(
+          /BG_DMG_DARKGREEN RGB\(10, 19, 15\)/g, 
+          `BG_DMG_DARKGREEN ${convertHexTo15BitRGB(bgPalette.colors[2])}`)
+        .replace(
+          /BG_DMG_BLACK RGB\(4, 5, 10\)/g, 
+          `BG_DMG_BLACK ${convertHexTo15BitRGB(bgPalette.colors[3])}`)
+
+        .replace(
+          /SPR_DMG_WHITE RGB\(29, 31, 28\)/g, 
+          `SPR_DMG_WHITE  ${convertHexTo15BitRGB(sprPalette.colors[0])}`)
+        .replace(
+          /SPR_DMG_LIGHTGREEN RGB\(22, 30, 17\)/g, 
+          `SPR_DMG_LIGHTGREEN ${convertHexTo15BitRGB(sprPalette.colors[1])}`)
+        .replace(
+          /SPR_DMG_DARKGREEN RGB\(10, 19, 15\)/g, 
+          `SPR_DMG_DARKGREEN ${convertHexTo15BitRGB(sprPalette.colors[2])}`)
+        .replace(
+          /SPR_DMG_BLACK RGB\(4, 5, 10\)/g, 
+          `SPR_DMG_BLACK ${convertHexTo15BitRGB(sprPalette.colors[3])}`);
+    }     
     if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
       customColorsHeader = customColorsHeader.replace(/#define CUSTOM_COLORS/g, '');
     }

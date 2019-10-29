@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import Button from "../library/Button";
 import Solver from "3x3-equation-solver";
+import { getPalettesLookup } from "../../reducers/entitiesReducer";
+import { PaletteShape } from "../../reducers/stateShape";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -74,17 +78,17 @@ class CustomPalettePicker extends Component {
       currentR: 0,
       currentG: 0,
       currentB: 0,
-      whiteHex: palette[0] || DEFAULT_WHITE,
-      lightHex: palette[1] || DEFAULT_LIGHT,
-      darkHex: palette[2] || DEFAULT_DARK,
-      blackHex: palette[3] || DEFAULT_BLACK,
+      whiteHex: palette.colors[0] || DEFAULT_WHITE,
+      lightHex: palette.colors[1] || DEFAULT_LIGHT,
+      darkHex: palette.colors[2] || DEFAULT_DARK,
+      blackHex: palette.colors[3] || DEFAULT_BLACK,
       currentCustomHex: ""
     };
   }
 
   setCurrentColor(r, g, b) {
     const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
-    const { onPaletteChange } = this.props;
+    const { editPalette, paletteId } = this.props;
 
     const hexString =
       this.decimalToHexString(r * 8) +
@@ -93,16 +97,24 @@ class CustomPalettePicker extends Component {
 
     if (selectedColor === 0) {
       this.setState({ whiteHex: hexString });
-      onPaletteChange([hexString, lightHex, darkHex, blackHex]);
+      editPalette(paletteId, {
+        colors: [hexString, lightHex, darkHex, blackHex]
+      })
     } else if (selectedColor === 1) {
       this.setState({ lightHex: hexString });
-      onPaletteChange([whiteHex, hexString, darkHex, blackHex]);
+      editPalette(paletteId, {
+        colors: [whiteHex, hexString, darkHex, blackHex]
+      })
     } else if (selectedColor === 2) {
       this.setState({ darkHex: hexString });
-      onPaletteChange([whiteHex, lightHex, hexString, blackHex]);
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, hexString, blackHex]
+      })
     } else if (selectedColor === 3) {
       this.setState({ blackHex: hexString });
-      onPaletteChange([whiteHex, lightHex, darkHex, hexString]);
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, darkHex, hexString]
+      })
     }
   }
 
@@ -178,7 +190,7 @@ class CustomPalettePicker extends Component {
   };
 
   onRestoreDefault = () => {
-    const { onPaletteChange } = this.props;
+    const { editPalette, paletteId } = this.props;
     this.setState(
       {
         selectedPalette: -1,
@@ -192,12 +204,14 @@ class CustomPalettePicker extends Component {
         currentCustomHex: ""        
       },
       () => {
-        onPaletteChange([
-          DEFAULT_WHITE, 
-          DEFAULT_LIGHT, 
-          DEFAULT_DARK, 
-          DEFAULT_BLACK]
-        );
+        editPalette(paletteId, {
+          colors: [
+            DEFAULT_WHITE, 
+            DEFAULT_LIGHT, 
+            DEFAULT_DARK, 
+            DEFAULT_BLACK
+          ]
+        });
       }
     );
   };
@@ -258,7 +272,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette[0])} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[0])} 50%)`
                   }}
                 >
                   &nbsp;
@@ -274,7 +288,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette[1])
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[1])
                     } 50%)`
                   }}
                 >
@@ -291,7 +305,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette[2])} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[2])} 50%)`
                   }}
                 >
                   &nbsp;
@@ -307,7 +321,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette[3])} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[3])} 50%)`
                   }}
                 >
                   &nbsp;
@@ -408,8 +422,30 @@ class CustomPalettePicker extends Component {
 
 CustomPalettePicker.propTypes = {
   id: PropTypes.string.isRequired,
-  palette: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onPaletteChange: PropTypes.func.isRequired
+  palette: PaletteShape,
+  editPalette: PropTypes.func.isRequired
 };
 
-export default CustomPalettePicker;
+CustomPalettePicker.defaultProps = {
+  palette: {
+    id: "",
+    colors: []
+  }
+};
+
+function mapStateToProps(state, props) {
+  const { paletteId } = props;
+  const palette = getPalettesLookup(state)[paletteId];
+  return {
+    palette
+  };
+}
+
+const mapDispatchToProps = {
+  editPalette: actions.editPalette
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CustomPalettePicker);

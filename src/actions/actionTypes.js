@@ -79,6 +79,8 @@ export const REMOVE_COLLISION_TILE = "REMOVE_COLLISION_TILE";
 
 export const RENAME_VARIABLE = "RENAME_VARIABLE";
 
+export const EDIT_PALETTE = "EDIT_PALETTE";
+
 export const SET_STATUS = "SET_STATUS";
 
 export const SELECT_WORLD = "SELECT_WORLD";

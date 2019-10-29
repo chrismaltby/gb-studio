@@ -33,7 +33,8 @@ import {
   EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
   EDIT_PLAYER_START_AT,
-  ADD_CUSTOM_EVENT
+  ADD_CUSTOM_EVENT,
+  EDIT_PALETTE
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -85,6 +86,7 @@ export default function modified(state = initialState.document, action) {
     case REMOVE_TRIGGER_AT:
     case EDIT_TRIGGER:
     case RENAME_VARIABLE:
+    case EDIT_PALETTE:
     case EDIT_WORLD:
     case EDIT_PROJECT:
     case EDIT_PROJECT_SETTINGS:

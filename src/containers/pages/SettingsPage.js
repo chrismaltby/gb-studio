@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
 import {
   FormField,
-  ToggleableFormField,
   ToggleableCheckBoxField
 } from "../../components/library/Forms";
 import l10n from "../../lib/helpers/l10n";
@@ -12,9 +11,10 @@ import PageContent from "../../components/library/PageContent";
 import castEventValue from "../../lib/helpers/castEventValue";
 import * as actions from "../../actions";
 import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
-import { getScenesLookup } from "../../reducers/entitiesReducer";
+import { getScenesLookup, getPalettesIds } from "../../reducers/entitiesReducer";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
+import { ProjectShape, SettingsShape, SceneShape } from "../../reducers/stateShape";
 
 class SettingsPage extends Component {
   onEditSetting = key => e => {
@@ -31,34 +31,21 @@ class SettingsPage extends Component {
     });
   };
 
-  onBackgroundPaletteChange = e => {
-    const { editProjectSettings } = this.props;
-    console.log('CHANGE', e)
-    editProjectSettings({
-      customColorsWhite: e[0],
-      customColorsLight: e[1],
-      customColorsDark: e[2],
-      customColorsBlack: e[3]
-    });
-  };
-
   render() {
-    const { project, settings, scenesLookup } = this.props;
+    const { project, settings, scenesLookup, paletteIds } = this.props;
 
     if (!project || !project.scenes) {
       return <div />;
     }
 
     const { scenes } = project;
-    const { customColorsEnabled, customHead, gbcFastCPUEnabled, customColorsWhite, customColorsLight, customColorsDark, customColorsBlack } = settings;
+    const { customColorsEnabled, customHead, gbcFastCPUEnabled } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
       const scene = scenesLookup[sceneId];
       return memo + scene.actors.length;
     }, 0);
-    const customPalette = [customColorsWhite, customColorsLight, customColorsDark, customColorsBlack];
-    console.log('RENDER', customPalette)
 
     return (
       <div
@@ -103,9 +90,14 @@ class SettingsPage extends Component {
             >
               <CustomPalettePicker 
                 id="background_pal"
-                palette={customPalette}
-                onPaletteChange={this.onBackgroundPaletteChange}
+                paletteId={paletteIds[0]}
               />
+
+              <CustomPalettePicker 
+                id="sprites_pal"
+                paletteId={paletteIds[1]}
+              />
+
             </ToggleableCheckBoxField>
           </section>
 
@@ -157,15 +149,26 @@ class SettingsPage extends Component {
   }
 }
 
+SettingsPage.propTypes = {
+  project: ProjectShape.isRequired,
+  settings: SettingsShape.isRequired,
+  scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
+  paletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  editProject: PropTypes.func.isRequired,
+  editProjectSettings: PropTypes.func.isRequired
+};
+
 function mapStateToProps(state) {
   const project = state.entities.present.result;
   const settings = project ? project.settings : {};
   const scenesLookup = getScenesLookup(state);
+  const paletteIds = getPalettesIds(state);
 
   return {
     project,
     settings,
-    scenesLookup
+    scenesLookup,
+    paletteIds
   };
 }
 
