@@ -103,7 +103,7 @@ const loadProject = async projectPath => {
     };
   });
 
-  const fixedProcedures = (json.procedures || []).map(addMissingEntityId);
+  const fixedCustomEvents = (json.customEvents || []).map(addMissingEntityId);
 
   return {
     ...json,
@@ -111,7 +111,7 @@ const loadProject = async projectPath => {
     spriteSheets: fixedSpriteIds,
     music: fixedMusicIds,
     scenes: fixedScenes,
-    procedures: fixedProcedures
+    customEvents: fixedCustomEvents
   };
 };
 

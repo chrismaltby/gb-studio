@@ -7,20 +7,20 @@ import { VariableShape } from "../../reducers/stateShape";
 
 const allVariables = Array.from(Array(10).keys());
 
-class ProcedureVariableSelect extends Component {
+class CustomEventVariableSelect extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("ProcedureVariableSelect", this.props, {}, nextProps, {});
+    rerenderCheck("CustomEventVariableSelect", this.props, {}, nextProps, {});
     return true;
   }
 
   variableName = index => {
     const { variables } = this.props;
-    const letter = String.fromCharCode('A'.charCodeAt(0) + index);
+    const letter = String.fromCharCode("A".charCodeAt(0) + index);
     return variables[index] ? variables[index].name : `Variable ${letter}`;
   };
 
   variableLabel = index => {
-    const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(index));
+    const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(index));
     return `${letter} : ${this.variableName(index)}`;
   };
 
@@ -49,26 +49,25 @@ class ProcedureVariableSelect extends Component {
   }
 }
 
-ProcedureVariableSelect.propTypes = {
+CustomEventVariableSelect.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  variables: PropTypes.objectOf(VariableShape).isRequired,
+  variables: PropTypes.objectOf(VariableShape).isRequired
 };
 
-ProcedureVariableSelect.defaultProps = {
+CustomEventVariableSelect.defaultProps = {
   id: undefined,
   value: "0"
 };
 
 function mapStateToProps(state) {
   const entityId = state.editor.entityId;
-  const variables = state.entities.present.entities.procedures[entityId].variables;
+  const variables =
+    state.entities.present.entities.customEvents[entityId].variables;
   return {
     variables
   };
 }
 
-export default connect(
-  mapStateToProps
-)(ProcedureVariableSelect);
+export default connect(mapStateToProps)(CustomEventVariableSelect);

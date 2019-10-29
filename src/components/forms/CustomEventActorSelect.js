@@ -6,16 +6,14 @@ import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../reducers/stateShape";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
-const allProcedureActors = Array.from(Array(10).keys()).map(i => 
-  ({ 
-    id : String(i),
-    name: `Actor ${String.fromCharCode('A'.charCodeAt(0) + i)}`
-  })
-);
+const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
+  id: String(i),
+  name: `Actor ${String.fromCharCode("A".charCodeAt(0) + i)}`
+}));
 
-class ProcedureActorSelect extends Component {
+class CustomEventActorSelect extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("ProcedureActorSelect", this.props, {}, nextProps, {});
+    rerenderCheck("CustomEventActorSelect", this.props, {}, nextProps, {});
     return true;
   }
 
@@ -30,7 +28,8 @@ class ProcedureActorSelect extends Component {
 
   renderDropdownIndicator = props => {
     const { value, direction, frame } = this.props;
-    const actor = allProcedureActors.find(a => a.id === value) || this.defaultValue();
+    const actor =
+      allCustomEventActors.find(a => a.id === value) || this.defaultValue();
     if (!actor || (actor && !actor.spriteSheetId)) {
       return <components.DropdownIndicator {...props} />;
     }
@@ -45,7 +44,8 @@ class ProcedureActorSelect extends Component {
   renderOption = props => {
     const { direction, frame } = this.props;
     const { label, value } = props;
-    const actor = allProcedureActors.find(a => a.id === value) || this.defaultValue();
+    const actor =
+      allCustomEventActors.find(a => a.id === value) || this.defaultValue();
     if (!actor || (actor && !actor.spriteSheetId)) {
       return <components.Option {...props} />;
     }
@@ -67,11 +67,13 @@ class ProcedureActorSelect extends Component {
         value: "player",
         label: "Player"
       },
-      allProcedureActors.map((actor, index) => {
+      allCustomEventActors.map((actor, index) => {
         const namedActor = actors.find(a => a.id === actor.id);
         return {
           value: String(actor.id),
-          label: namedActor ? namedActor.name : actor.name || `Actor ${index + 1}`,
+          label: namedActor
+            ? namedActor.name
+            : actor.name || `Actor ${index + 1}`,
           spriteSheetId: actor.spriteSheetId
         };
       })
@@ -87,8 +89,8 @@ class ProcedureActorSelect extends Component {
       movementType: "player"
     };
     const current = actors.find(a => a.id === value) || defaultValue;
-    const currentIndex = allProcedureActors.indexOf(current);
-    const options = this.getOptions()
+    const currentIndex = allCustomEventActors.indexOf(current);
+    const options = this.getOptions();
 
     return (
       <Select
@@ -114,7 +116,7 @@ class ProcedureActorSelect extends Component {
   }
 }
 
-ProcedureActorSelect.propTypes = {
+CustomEventActorSelect.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
@@ -124,7 +126,7 @@ ProcedureActorSelect.propTypes = {
   frame: PropTypes.number
 };
 
-ProcedureActorSelect.defaultProps = {
+CustomEventActorSelect.defaultProps = {
   id: "",
   value: "",
   playerSpriteSheetId: "",
@@ -133,8 +135,10 @@ ProcedureActorSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const procedureId = state.editor.entityId;
-  const actors = Object.values(state.entities.present.entities.procedures[procedureId].actors);
+  const customEventId = state.editor.entityId;
+  const actors = Object.values(
+    state.entities.present.entities.customEvents[customEventId].actors
+  );
   const settings = state.entities.present.result.settings;
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   return {
@@ -143,4 +147,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(ProcedureActorSelect);
+export default connect(mapStateToProps)(CustomEventActorSelect);

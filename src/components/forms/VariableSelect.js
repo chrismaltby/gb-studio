@@ -1,22 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import ProcedureVariableSelect from "./ProcedureVariableSelect";
+import CustomEventVariableSelect from "./CustomEventVariableSelect";
 import GlobalVariableSelect from "./GlobalVariableSelect";
 
 class VariableSelect extends Component {
   render() {
     const { scope } = this.props;
 
-    if (scope === "procedure") {
-      return (
-        <ProcedureVariableSelect {...this.props} />
-      )
-    } 
-      return (
-        <GlobalVariableSelect {...this.props} />
-      )
-    ;
+    if (scope === "customEvent") {
+      return <CustomEventVariableSelect {...this.props} />;
+    }
+    return <GlobalVariableSelect {...this.props} />;
   }
 }
 
@@ -33,17 +28,14 @@ VariableSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  if (state.editor.type === "procedures") {
+  if (state.editor.type === "customEvents") {
     return {
-      scope: "procedure"
+      scope: "customEvent"
     };
-  } 
+  }
   return {
     scope: "global"
   };
-  
 }
 
-export default connect(
-  mapStateToProps
-)(VariableSelect);
+export default connect(mapStateToProps)(VariableSelect);

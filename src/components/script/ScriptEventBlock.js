@@ -25,7 +25,7 @@ import { textNumLines } from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
 import GBScriptEditor from "../library/GBScriptEditor";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { ProcedureShape } from "../../reducers/stateShape";
+import { CustomEventShape } from "../../reducers/stateShape";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -39,18 +39,18 @@ class TextArea extends Component {
       el.selectionStart = cursorPosition;
       el.selectionEnd = cursorPosition;
     });
-  }
+  };
 
   render() {
     const { id, value, rows, placeholder } = this.props;
     return (
       <textarea
-            id={id}
-            value={value || ""}
-            rows={rows || textNumLines(value)}
-            placeholder={placeholder}
-            onChange={this.onChange}
-          />
+        id={id}
+        value={value || ""}
+        rows={rows || textNumLines(value)}
+        placeholder={placeholder}
+        onChange={this.onChange}
+      />
     );
   }
 }
@@ -154,7 +154,13 @@ class ScriptEventInput extends Component {
     }
     if (type === "sprite") {
       return (
-        <SpriteSheetSelect id={id} value={value} filter={field.filter} optional={field.optional} onChange={this.onChange} />
+        <SpriteSheetSelect
+          id={id}
+          value={value}
+          filter={field.filter}
+          optional={field.optional}
+          onChange={this.onChange}
+        />
       );
     }
     if (type === "variable") {
@@ -268,40 +274,51 @@ class ScriptEventField extends Component {
     const { key } = field;
 
     if (Array.isArray(value) && valueIndex !== undefined) {
-      return onChange({
-        [key]: value.map((v, i) => {
-          if (i !== valueIndex) {
-            return v;
-          }
-          return newValue;
-        })
-      }, field.postUpdate);
-      
+      return onChange(
+        {
+          [key]: value.map((v, i) => {
+            if (i !== valueIndex) {
+              return v;
+            }
+            return newValue;
+          })
+        },
+        field.postUpdate
+      );
     }
-    return onChange({
-      [key]: newValue
-    }, field.postUpdate);
+    return onChange(
+      {
+        [key]: newValue
+      },
+      field.postUpdate
+    );
   };
 
   onAddValue = valueIndex => e => {
     const { onChange, field, value } = this.props;
     const { key } = field;
-    return onChange({
-      [key]: [].concat(
-        [],
-        value.slice(0, valueIndex + 1),
-        field.defaultValue,
-        value.slice(valueIndex + 1)
-      )
-    }, field.postUpdate);
+    return onChange(
+      {
+        [key]: [].concat(
+          [],
+          value.slice(0, valueIndex + 1),
+          field.defaultValue,
+          value.slice(valueIndex + 1)
+        )
+      },
+      field.postUpdate
+    );
   };
 
   onRemoveValue = valueIndex => e => {
     const { onChange, field, value } = this.props;
     const { key } = field;
-    return onChange({
-      [key]: value.filter((_v, i) => i !== valueIndex)
-    }, field.postUpdate);
+    return onChange(
+      {
+        [key]: value.filter((_v, i) => i !== valueIndex)
+      },
+      field.postUpdate
+    );
   };
 
   render() {
@@ -403,43 +420,46 @@ class ScriptEventBlock extends Component {
   }
 
   getFields() {
-    const { command, value, procedures } = this.props;
+    const { command, value, customEvents } = this.props;
     const eventCommands = (events[command] && events[command].fields) || [];
-    if (value.procedure && procedures[value.procedure]) {
-      const procedure = procedures[value.procedure];
-      const description = procedure.description ? [{
-        label: procedure.description.split('\n').map((text) => <div>{text||(<div>&nbsp;</div>)}</div>)
-      }] : [];
-      const usedVariables = Object.values(procedure.variables).map(v => {
-        return {
-          label: `${v.name}`,
-          defaultValue: "LAST_VARIABLE",
-          key: `$variable[${v.id}]$`,
-          type: "variable"
-        };
-      }) || [];
-      const usedActors = Object.values(procedure.actors).map((a) => {
-        return {
-          label: `${a.name}`,
-          defaultValue: "player",
-          key: `$actor[${a.id}]$`,
-          type: "actor"
-        };
-      }) || [];
+    if (value.customEventId && customEvents[value.customEventId]) {
+      const customEvent = customEvents[value.customEventId];
+      const description = customEvent.description
+        ? [
+            {
+              label: customEvent.description
+                .split("\n")
+                .map(text => <div>{text || <div>&nbsp;</div>}</div>)
+            }
+          ]
+        : [];
+      const usedVariables =
+        Object.values(customEvent.variables).map(v => {
+          return {
+            label: `${v.name}`,
+            defaultValue: "LAST_VARIABLE",
+            key: `$variable[${v.id}]$`,
+            type: "variable"
+          };
+        }) || [];
+      const usedActors =
+        Object.values(customEvent.actors).map(a => {
+          return {
+            label: `${a.name}`,
+            defaultValue: "player",
+            key: `$actor[${a.id}]$`,
+            type: "actor"
+          };
+        }) || [];
 
-      return [].concat(
-        description,
-        eventCommands,
-        usedVariables,
-        usedActors
-      );
-    } 
+      return [].concat(description, eventCommands, usedVariables, usedActors);
+    }
     return eventCommands;
   }
-  
+
   render() {
     const { id, value, onChange } = this.props;
-    const fields = this.getFields()
+    const fields = this.getFields();
 
     return (
       <div className="ScriptEventBlock">
@@ -449,7 +469,11 @@ class ScriptEventBlock extends Component {
               return null;
             }
           }
-          if (field.type === "events" || field.type === "script" || field.type === "hidden") {
+          if (
+            field.type === "events" ||
+            field.type === "script" ||
+            field.type === "hidden"
+          ) {
             return null;
           }
 
@@ -476,21 +500,23 @@ class ScriptEventBlock extends Component {
 ScriptEventBlock.propTypes = {
   id: PropTypes.string.isRequired,
   command: PropTypes.string.isRequired,
-  value: PropTypes.shape({}),
+  value: PropTypes.shape({
+    customEventId: PropTypes.string
+  }),
   onChange: PropTypes.func.isRequired,
-  procedures: PropTypes.objectOf(ProcedureShape)
+  customEvents: PropTypes.objectOf(CustomEventShape)
 };
 
 ScriptEventBlock.defaultProps = {
   value: {},
-  procedures: []
+  customEvents: []
 };
 
 function mapStateToProps(state) {
-  const procedures = state.entities.present.entities.procedures || {};
+  const customEvents = state.entities.present.entities.customEvents || {};
   return {
-    procedures
-  }
-};
+    customEvents
+  };
+}
 
 export default connect(mapStateToProps)(ScriptEventBlock);

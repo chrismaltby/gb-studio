@@ -12,7 +12,7 @@ import { FormField } from "../library/Forms";
 import ScriptEventBlock from "./ScriptEventBlock";
 import {
   EVENT_END,
-  EVENT_CALL_PROCEDURE,
+  EVENT_CALL_CUSTOM_EVENT,
   EVENT_COMMENT
 } from "../../lib/compiler/eventTypes";
 import {
@@ -144,11 +144,14 @@ class ActionMini extends Component {
 
   onEdit = (newValue, postUpdate) => {
     const { onEdit, action, id } = this.props;
-    if(postUpdate) {
-      return onEdit(id, postUpdate({
-        ...action.args,
-        ...newValue
-      }));
+    if (postUpdate) {
+      return onEdit(
+        id,
+        postUpdate({
+          ...action.args,
+          ...newValue
+        })
+      );
     }
     onEdit(id, newValue);
   };
@@ -175,12 +178,12 @@ class ActionMini extends Component {
     }
   };
 
-  editProcedure = e => {
-    const { onSelectProcedure, action } = this.props;
-    if(action.args.procedure) {
-      onSelectProcedure(action.args.procedure);
+  editCustomEvent = e => {
+    const { onSelectCustomEvent, action } = this.props;
+    if (action.args.customEventId) {
+      onSelectCustomEvent(action.args.customEventId);
     }
-  }
+  };
 
   render() {
     const {
@@ -223,7 +226,10 @@ class ActionMini extends Component {
 
     const eventName =
       (action.args.__label ? `${action.args.__label}: ` : "") +
-      (action.args.__name || l10n(command) || (events[command] && events[command].name) || command);
+      (action.args.__name ||
+        l10n(command) ||
+        (events[command] && events[command].name) ||
+        command);
     const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
 
     const childKeys = action.children ? Object.keys(action.children) : [];
@@ -235,7 +241,8 @@ class ActionMini extends Component {
           className={cx("ActionMini", {
             "ActionMini--Dragging": isDragging,
             "ActionMini--Over": isOverCurrent,
-            "ActionMini--Conditional": childKeys.length > 0 && command !== EVENT_CALL_PROCEDURE,
+            "ActionMini--Conditional":
+              childKeys.length > 0 && command !== EVENT_CALL_CUSTOM_EVENT,
             "ActionMini--Commented": commented
           })}
         >
@@ -248,7 +255,7 @@ class ActionMini extends Component {
               <div
                 className={cx("ActionMini__Command", {
                   "ActionMini__Command--Open": open,
-                  "EventComment": isComment
+                  EventComment: isComment
                 })}
                 onClick={this.toggleOpen}
               >
@@ -258,16 +265,18 @@ class ActionMini extends Component {
                     {commented ? "// " : ""}
                     {action.args.__label}
                     <small>
-                      {action.args.__name || l10n(command) ||
+                      {action.args.__name ||
+                        l10n(command) ||
                         (events[command] && events[command].name) ||
                         command}
                     </small>
                   </span>
                 ) : (
                   <span>
-                    {commented ? "// " : ""} 
-                    {action.args.__name || l10n(command) || 
-                      (events[command] && events[command].name) || 
+                    {commented ? "// " : ""}
+                    {action.args.__name ||
+                      l10n(command) ||
+                      (events[command] && events[command].name) ||
                       command}
                   </span>
                 )}
@@ -281,8 +290,8 @@ class ActionMini extends Component {
                 right
                 onMouseDown={this.readClipboard}
               >
-                {command === EVENT_CALL_PROCEDURE && [
-                  <MenuItem key="0" onClick={this.editProcedure}>
+                {command === EVENT_CALL_CUSTOM_EVENT && [
+                  <MenuItem key="0" onClick={this.editCustomEvent}>
                     {l10n("MENU_EDIT_CUSTOM_EVENT")}
                   </MenuItem>,
                   <MenuDivider key="1" />
@@ -360,7 +369,7 @@ class ActionMini extends Component {
 
             {open &&
               childKeys.length > 0 &&
-              command !== EVENT_CALL_PROCEDURE &&
+              command !== EVENT_CALL_CUSTOM_EVENT &&
               connectDropTarget(
                 <div className="ActionMini__Children">
                   {action.children[childKeys[0]].map(childAction => (
@@ -452,13 +461,13 @@ ActionMini.propTypes = {
   onRemove: PropTypes.func.isRequired,
   onCopy: PropTypes.func.isRequired,
   onPaste: PropTypes.func.isRequired,
-  onSelectProcedure: PropTypes.func.isRequired,
+  onSelectCustomEvent: PropTypes.func.isRequired,
   moveActions: PropTypes.func.isRequired,
   onMouseLeave: PropTypes.func.isRequired,
   onMouseEnter: PropTypes.func.isRequired,
   connectDragSource: PropTypes.func.isRequired,
   connectDragPreview: PropTypes.func.isRequired,
-  connectDropTarget: PropTypes.func.isRequired,
+  connectDropTarget: PropTypes.func.isRequired
 };
 
 const ActionMiniDnD = DropTarget(
@@ -675,10 +684,10 @@ class ScriptEditor extends Component {
     selectScriptEvent("");
   };
 
-  onSelectProcedure = id => {
-    const { selectProcedure } = this.props;
-    selectProcedure(id);
-  }
+  onSelectCustomEvent = id => {
+    const { selectCustomEvent } = this.props;
+    selectCustomEvent(id);
+  };
 
   readClipboard = e => {
     try {
@@ -749,7 +758,7 @@ class ScriptEditor extends Component {
               onEdit={this.onEdit}
               onCopy={this.onCopy}
               onPaste={this.onPaste}
-              onSelectProcedure={this.onSelectProcedure}
+              onSelectCustomEvent={this.onSelectCustomEvent}
               onMouseEnter={this.onEnter}
               onMouseLeave={this.onLeave}
               clipboardEvent={clipboardEvent}
@@ -774,18 +783,23 @@ ScriptEditor.propTypes = {
   selectScriptEvent: PropTypes.func.isRequired,
   copyEvent: PropTypes.func.isRequired,
   copyScript: PropTypes.func.isRequired,
-  selectProcedure: PropTypes.func.isRequired
+  selectCustomEvent: PropTypes.func.isRequired
 };
 
-ScriptEditor.defaultProps = Object.create({}, {
-  value: {
-    enumerable: true,
-    get: () => [{
-      id: uuid(),
-      command: EVENT_END
-    }]
+ScriptEditor.defaultProps = Object.create(
+  {},
+  {
+    value: {
+      enumerable: true,
+      get: () => [
+        {
+          id: uuid(),
+          command: EVENT_END
+        }
+      ]
+    }
   }
-});
+);
 
 function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;
@@ -803,7 +817,7 @@ const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
   copyScript: actions.copyScript,
-  selectProcedure: actions.selectProcedure
+  selectCustomEvent: actions.selectCustomEvent
 };
 
 export default connect(

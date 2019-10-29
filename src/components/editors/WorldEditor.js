@@ -14,7 +14,7 @@ import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
-import ProcedureNavigation from "./ProcedureNavigation";
+import CustomEventNavigation from "./CustomEventNavigation";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -32,9 +32,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar, addProcedure } = this.props;
+    const { project, selectSidebar, addCustomEvent } = this.props;
 
-    if (!project || !project.scenes || !project.procedures) {
+    if (!project || !project.scenes || !project.customEvents) {
       return <div />;
     }
 
@@ -188,12 +188,12 @@ class WorldEditor extends Component {
         <SidebarColumn>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_CUSTOM_EVENTS")} />
-            <ProcedureNavigation />
+            <CustomEventNavigation />
             <div style={{ padding: "10px" }}>
               <Button
                 style={{ width: "100%" }}
                 onClick={() => {
-                  addProcedure();
+                  addCustomEvent();
                 }}
               >
                 {l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
@@ -211,7 +211,7 @@ WorldEditor.propTypes = {
   editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
-  addProcedure: PropTypes.func.isRequired
+  addCustomEvent: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -225,7 +225,7 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
   editProjectSettings: actions.editProjectSettings,
-  addProcedure: actions.addProcedure
+  addCustomEvent: actions.addCustomEvent
 };
 
 export default connect(

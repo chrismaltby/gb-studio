@@ -9,13 +9,13 @@ import {
   EventsOnlyForActors,
   EventsHidden,
   EVENT_TEXT,
-  EVENT_CALL_PROCEDURE
+  EVENT_CALL_CUSTOM_EVENT
 } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
-import { ProcedureShape } from "../../reducers/stateShape";
-import { getProcedures } from "../../reducers/entitiesReducer";
+import { CustomEventShape } from "../../reducers/stateShape";
+import { getCustomEvents } from "../../reducers/entitiesReducer";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -122,32 +122,31 @@ class AddCommandButton extends Component {
   };
 
   fullList = () => {
-    const { type, procedures } = this.props;
+    const { type, customEvents } = this.props;
 
-    let callProcedureEvents = [];
-    if (type !== "procedure") {
-      const templateEventCallProcedure = events[EVENT_CALL_PROCEDURE];
-      callProcedureEvents = procedures.map(
-        (procedure, index) => {
-          if (!procedure) return {};
-          const procedureName = procedure.name || `${l10n("CUSTOM_EVENT")} ${index + 1}`;
-          const name = `${l10n("CUSTOM_EVENT")}: ${procedureName}`;
-          const searchName = `${name.toUpperCase()}`;
-          return {
-            ...templateEventCallProcedure,
-            args: {
-              procedure: procedure.id,
-              __name: procedureName
-            },
-            children: {
-              script: procedure.script
-            },
-            name,
-            searchName,
-            key: `EVENT_CALL_PROCEDURE_${index}`
-          };
-        }
-      );
+    let callCustomEventEvents = [];
+    if (type !== "customEvent") {
+      const templateEventCallCustomEvent = events[EVENT_CALL_CUSTOM_EVENT];
+      callCustomEventEvents = customEvents.map((customEvent, index) => {
+        if (!customEvent) return {};
+        const customEventName =
+          customEvent.name || `${l10n("CUSTOM_EVENT")} ${index + 1}`;
+        const name = `${l10n("CUSTOM_EVENT")}: ${customEventName}`;
+        const searchName = `${name.toUpperCase()}`;
+        return {
+          ...templateEventCallCustomEvent,
+          args: {
+            customEventId: customEvent.id,
+            __name: customEventName
+          },
+          children: {
+            script: customEvent.script
+          },
+          name,
+          searchName,
+          key: `EVENT_CALL_CUSTOM_EVENT_${index}`
+        };
+      });
     }
 
     return [
@@ -168,7 +167,7 @@ class AddCommandButton extends Component {
             key
           };
         }),
-      ...callProcedureEvents
+      ...callCustomEventEvents
     ];
   };
 
@@ -275,13 +274,13 @@ class AddCommandButton extends Component {
 AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
-  procedures: PropTypes.arrayOf(ProcedureShape).isRequired
+  customEvents: PropTypes.arrayOf(CustomEventShape).isRequired
 };
 
 function mapStateToProps(state) {
-  const procedures = getProcedures(state);
+  const customEvents = getCustomEvents(state);
   return {
-    procedures
+    customEvents
   };
 }
 

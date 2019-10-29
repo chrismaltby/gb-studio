@@ -76,7 +76,15 @@ export const loadProject = path => async dispatch => {
       try {
         shouldOpenProject = await migrateWarning(path);
       } catch (error) {
-        dispatch(setGlobalError(error.message, error.filename, error.lineno, error.colno, error.stack));      
+        dispatch(
+          setGlobalError(
+            error.message,
+            error.filename,
+            error.lineno,
+            error.colno,
+            error.stack
+          )
+        );
       }
       if (!shouldOpenProject) {
         throw new Error("Cancelled opening project");
@@ -440,12 +448,12 @@ export const selectWorld = () => {
   return { type: types.SELECT_WORLD };
 };
 
-export const selectProcedure = (id) => {
-  return { type: types.SELECT_PROCEDURE, id };
+export const selectCustomEvent = id => {
+  return { type: types.SELECT_CUSTOM_EVENT, id };
 };
 
-export const addProcedure = () => {
-  return { type: types.ADD_PROCEDURE, id: uuid() };
+export const addCustomEvent = () => {
+  return { type: types.ADD_CUSTOM_EVENT, id: uuid() };
 };
 
 export const editWorld = values => {
@@ -460,12 +468,12 @@ export const editProjectSettings = values => {
   return { type: types.EDIT_PROJECT_SETTINGS, values };
 };
 
-export const editProcedure = (id, values) => {
-  return { type: types.EDIT_PROCEDURE, id, values };
+export const editCustomEvent = (id, values) => {
+  return { type: types.EDIT_CUSTOM_EVENT, id, values };
 };
 
-export const removeProcedure = procedureId => {
-  return { type: types.REMOVE_PROCEDURE, procedureId };
+export const removeCustomEvent = customEventId => {
+  return { type: types.REMOVE_CUSTOM_EVENT, customEventId };
 };
 
 export const editPlayerStartAt = (sceneId, x, y) => {

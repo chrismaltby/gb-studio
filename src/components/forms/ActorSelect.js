@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import ProcedureActorSelect from "./ProcedureActorSelect";
+import CustomEventActorSelect from "./CustomEventActorSelect";
 import SceneActorSelect from "./SceneActorSelect";
 
 class ActorSelect extends Component {
@@ -13,14 +13,10 @@ class ActorSelect extends Component {
 
   render() {
     const { scope } = this.props;
-    if (scope === "procedure") {
-      return (
-        <ProcedureActorSelect {...this.props} />
-      )
-    } 
-      return (
-        <SceneActorSelect {...this.props} />
-      )
+    if (scope === "customEvent") {
+      return <CustomEventActorSelect {...this.props} />;
+    }
+    return <SceneActorSelect {...this.props} />;
   }
 }
 
@@ -37,14 +33,14 @@ ActorSelect.defaultProps = {
   id: "",
   value: "",
   frame: undefined,
-  direction: undefined,
+  direction: undefined
 };
 
 function mapStateToProps(state) {
-  if (state.editor.type === "procedures") {
+  if (state.editor.type === "customEvents") {
     return {
-      scope: "procedure"
-    }
+      scope: "customEvent"
+    };
   }
   return {
     scope: "scene"

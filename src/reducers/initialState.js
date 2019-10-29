@@ -60,7 +60,7 @@ export default {
       spriteSheets: {},
       triggers: {},
       variables: {},
-      procedures: {},
+      customEvents: {}
     },
     result: {
       settings: {

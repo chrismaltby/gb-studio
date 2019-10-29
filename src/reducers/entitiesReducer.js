@@ -10,7 +10,7 @@ import {
   SPRITE_REMOVE,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
-  EDIT_PROCEDURE,
+  EDIT_CUSTOM_EVENT,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -37,8 +37,8 @@ import {
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
   SCROLL_WORLD,
-  ADD_PROCEDURE,
-  REMOVE_PROCEDURE
+  ADD_CUSTOM_EVENT,
+  REMOVE_CUSTOM_EVENT
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
@@ -48,7 +48,7 @@ import {
   walkEvents
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { EVENT_CALL_PROCEDURE } from "../lib/compiler/eventTypes";
+import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 
 const addEntity = (state, type, data) => {
   return {
@@ -148,14 +148,14 @@ const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema]
 });
-const proceduresSchema = new schema.Entity("procedures");
+const customEventsSchema = new schema.Entity("customEvents");
 const projectSchema = {
   scenes: [sceneSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   spriteSheets: [spriteSheetsSchema],
   variables: [variablesSchema],
-  procedures: [proceduresSchema]
+  customEvents: [customEventsSchema]
 };
 
 export const normalizeProject = projectData => {
@@ -501,8 +501,8 @@ const removeScene = (state, action) => {
   return removeEntity(state, "scenes", action.sceneId);
 };
 
-const addProcedure = (state, action) => {
-  const newProcedure = Object.assign(
+const addCustomEvent = (state, action) => {
+  const newCustomEvent = Object.assign(
     {
       id: action.id,
       variables: {},
@@ -512,10 +512,10 @@ const addProcedure = (state, action) => {
       script: action.script
     }
   );
-  return addEntity(state, "procedures", newProcedure);
+  return addEntity(state, "customEvents", newCustomEvent);
 };
 
-const editProcedure = (state, action) => {
+const editCustomEvent = (state, action) => {
   const patch = { ...action.values };
   let newState = state;
 
@@ -523,71 +523,129 @@ const editProcedure = (state, action) => {
     const variables = {};
     const actors = {};
 
-    const oldVariables = newState.entities.procedures[action.id].variables;
-    const oldActors = newState.entities.procedures[action.id].actors;
+    const oldVariables = newState.entities.customEvents[action.id].variables;
+    const oldActors = newState.entities.customEvents[action.id].actors;
 
-    walkEvents(patch.script, (e) => {
+    walkEvents(patch.script, e => {
       const args = e.args;
 
       if (!args) return;
 
       if (args.actorId && args.actorId !== "player") {
-        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.actorId));
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.actorId)
+        );
         actors[args.actorId] = {
           id: args.actorId,
-          name: oldActors[args.actorId] ? oldActors[args.actorId].name : `Actor ${letter}`
+          name: oldActors[args.actorId]
+            ? oldActors[args.actorId].name
+            : `Actor ${letter}`
         };
       }
       if (args.variable) {
-        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.variable));
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.variable)
+        );
         variables[args.variable] = {
           id: args.variable,
-          name: oldVariables[args.variable] ? oldVariables[args.variable].name : `Variable ${letter}`
+          name: oldVariables[args.variable]
+            ? oldVariables[args.variable].name
+            : `Variable ${letter}`
         };
       }
       if (args.vectorX) {
-        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.vectorX)).toUpperCase();
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.vectorX)
+        ).toUpperCase();
         variables[args.vectorX] = {
           id: args.vectorX,
-          name: oldVariables[args.vectorX] ? oldVariables[args.vectorX].name : `Variable ${letter}`
+          name: oldVariables[args.vectorX]
+            ? oldVariables[args.vectorX].name
+            : `Variable ${letter}`
         };
       }
       if (args.vectorY) {
-        const letter = String.fromCharCode('A'.charCodeAt(0) + parseInt(args.vectorY)).toUpperCase();
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.vectorY)
+        ).toUpperCase();
         variables[args.vectorY] = {
           id: args.vectorY,
-          name: oldVariables[args.vectorY] ? oldVariables[args.vectorY].name : `Variable ${letter}`
+          name: oldVariables[args.vectorY]
+            ? oldVariables[args.vectorY].name
+            : `Variable ${letter}`
         };
       }
     });
 
-    patch.variables = {...variables};
-    patch.actors = {...actors};
+    patch.variables = { ...variables };
+    patch.actors = { ...actors };
 
-    newState = updateEntitiesProcedureScript(newState, "scenes", action.id, newState.entities.scenes, patch.script);
-    newState = updateEntitiesProcedureScript(newState, "actors", action.id, newState.entities.actors, patch.script);
-    newState = updateEntitiesProcedureScript(newState, "triggers", action.id, newState.entities.triggers, patch.script);
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "scenes",
+      action.id,
+      newState.entities.scenes,
+      patch.script
+    );
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "actors",
+      action.id,
+      newState.entities.actors,
+      patch.script
+    );
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "triggers",
+      action.id,
+      newState.entities.triggers,
+      patch.script
+    );
   }
 
   if (patch.name) {
-    newState = updateEntitiesProcedureName(newState, "scenes", action.id, newState.entities.scenes, patch.name);
-    newState = updateEntitiesProcedureName(newState, "actors", action.id, newState.entities.actors, patch.name);
-    newState = updateEntitiesProcedureName(newState, "triggers", action.id, newState.entities.triggers, patch.name);
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "scenes",
+      action.id,
+      newState.entities.scenes,
+      patch.name
+    );
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "actors",
+      action.id,
+      newState.entities.actors,
+      patch.name
+    );
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "triggers",
+      action.id,
+      newState.entities.triggers,
+      patch.name
+    );
   }
 
-  return editEntity(newState, "procedures", action.id, patch);
+  return editEntity(newState, "customEvents", action.id, patch);
 };
 
-const updateEntitiesProcedureName = (state, type, id, entities, name) => {
+const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
   let newState = state;
 
   Object.values(entities).forEach(entity => {
-    if(!entity.script) { return; }
-    const patchEntity = { 
-      ...entity, 
-      script: mapEvents(entity.script, (event) => {
-        if (event.command !== EVENT_CALL_PROCEDURE) { return event; }
-        if (event.args.procedure !== id) { return event; }
+    if (!entity.script) {
+      return;
+    }
+    const patchEntity = {
+      ...entity,
+      script: mapEvents(entity.script, event => {
+        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+          return event;
+        }
+        if (event.args.customEventId !== id) {
+          return event;
+        }
         return {
           ...event,
           args: {
@@ -596,38 +654,44 @@ const updateEntitiesProcedureName = (state, type, id, entities, name) => {
           }
         };
       })
-    };    
-    newState = editEntity(newState, type, entity.id, patchEntity)
+    };
+    newState = editEntity(newState, type, entity.id, patchEntity);
   });
 
   return newState;
-}
+};
 
-const updateEntitiesProcedureScript = (state, type, id, entities, script) => {
+const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
   let newState = state;
   Object.values(entities).forEach(entity => {
-    if(!entity.script) { return; }
-    const patchEntity = { 
-      ...entity, 
-      script: mapEvents(entity.script, (event) => {
-        if (event.command !== EVENT_CALL_PROCEDURE) { return event; }
-        if (event.args.procedure !== id) { return event; }
+    if (!entity.script) {
+      return;
+    }
+    const patchEntity = {
+      ...entity,
+      script: mapEvents(entity.script, event => {
+        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+          return event;
+        }
+        if (event.args.customEventId !== id) {
+          return event;
+        }
         return {
           ...event,
           children: {
-            script: [ ...script ]
+            script: [...script]
           }
         };
       })
-    };  
-    newState = editEntity(newState, type, entity.id, patchEntity)
+    };
+    newState = editEntity(newState, type, entity.id, patchEntity);
   });
   return newState;
-}
+};
 
-const removeProcedure = (state, action) => {
-  return removeEntity(state, "procedures", action.procedureId);
-}
+const removeCustomEvent = (state, action) => {
+  return removeEntity(state, "customEvents", action.customEventId);
+};
 
 const addActor = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
@@ -1017,10 +1081,10 @@ export const getSceneIds = state => state.entities.present.result.scenes;
 export const getActorsLookup = state => state.entities.present.entities.actors;
 export const getTriggersLookup = state =>
   state.entities.present.entities.triggers;
-export const getProceduresLookup = state =>
-  state.entities.present.entities.procedures;
-export const getProcedureIds = state =>
-  state.entities.present.result.procedures;  
+export const getCustomEventsLookup = state =>
+  state.entities.present.entities.customEvents;
+export const getCustomEventIds = state =>
+  state.entities.present.result.customEvents;
 export const getBackgroundsLookup = state =>
   state.entities.present.entities.backgrounds;
 export const getBackgroundIds = state =>
@@ -1105,9 +1169,9 @@ export const getScenes = createSelector(
   (sceneIds, scenes) => sceneIds.map(id => scenes[id])
 );
 
-export const getProcedures = createSelector(
-  [getProcedureIds, getProceduresLookup],
-  (procedureIds, procedures) => procedureIds.map(id => procedures[id])
+export const getCustomEvents = createSelector(
+  [getCustomEventIds, getCustomEventsLookup],
+  (customEventIds, customEvents) => customEventIds.map(id => customEvents[id])
 );
 
 // Reducer ---------------------------------------------------------------------
@@ -1120,10 +1184,10 @@ export default function project(state = initialState.entities, action) {
       return editProject(state, action);
     case EDIT_PROJECT_SETTINGS:
       return editProjectSettings(state, action);
-    case EDIT_PROCEDURE:
-      return editProcedure(state, action);
-    case REMOVE_PROCEDURE:
-      return removeProcedure(state, action);
+    case EDIT_CUSTOM_EVENT:
+      return editCustomEvent(state, action);
+    case REMOVE_CUSTOM_EVENT:
+      return removeCustomEvent(state, action);
     case SPRITE_LOAD_SUCCESS:
       return loadSprite(state, action);
     case SPRITE_REMOVE:
@@ -1136,8 +1200,8 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
-    case ADD_PROCEDURE:
-      return addProcedure(state, action);
+    case ADD_CUSTOM_EVENT:
+      return addCustomEvent(state, action);
     case ADD_SCENE:
       return addScene(state, action);
     case MOVE_SCENE:

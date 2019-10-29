@@ -1,7 +1,7 @@
 import { walkEvents } from "../helpers/eventSystem";
 import compileEntityEvents from "../compiler/compileEntityEvents";
 
-export const id = "EVENT_CALL_PROCEDURE";
+export const id = "EVENT_CALL_CUSTOM_EVENT";
 
 export const fields = [
   {
@@ -11,7 +11,7 @@ export const fields = [
   },
   {
     type: "hidden",
-    key: "procedure"
+    key: "customEventId"
   }
 ];
 
