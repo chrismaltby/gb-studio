@@ -65,22 +65,22 @@ class CustomEventEditor extends Component {
     return (
       <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
+          <SidebarHeading
+            title={l10n("CUSTOM_EVENT")}
+            buttons={
+              <DropdownButton
+                small
+                transparent
+                right
+                onMouseDown={this.readClipboard}
+              >
+                <MenuItem onClick={this.onRemove()}>
+                  {l10n("MENU_DELETE_CUSTOM_EVENT")}
+                </MenuItem>
+              </DropdownButton>
+            }
+          />
           <div>
-            <SidebarHeading
-              title={l10n("CUSTOM_EVENT")}
-              buttons={
-                <DropdownButton
-                  small
-                  transparent
-                  right
-                  onMouseDown={this.readClipboard}
-                >
-                  <MenuItem onClick={this.onRemove()}>
-                    {l10n("MENU_DELETE_CUSTOM_EVENT")}
-                  </MenuItem>
-                </DropdownButton>
-              }
-            />
             <FormField>
               <label htmlFor="customEventName">
                 {l10n("FIELD_NAME")}
