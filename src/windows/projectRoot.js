@@ -39,6 +39,9 @@ window.undo = () => {
 };
 
 window.addEventListener("error", (error) => {
+  if(error.message.indexOf("dead code elimination") > -1) {
+    return true;
+  }  
   error.stopPropagation();
   error.preventDefault();
   store.dispatch(actions.setGlobalError(error.message, error.filename, error.lineno, error.colno, error.error.stack));

@@ -6,6 +6,7 @@
   "TRIGGER": "Trigger",
   "SCENE": "Scene",
   "PROJECT": "Project",
+  "CUSTOM_EVENT": "Custom Event",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Game World",
@@ -43,10 +44,15 @@
   "SIDEBAR_SCENE_START_SCRIPT": "Scene Start Script",
   "SIDEBAR_ACTOR_SCRIPT": "Actor Script",
   "SIDEBAR_TRIGGER_SCRIPT": "Trigger Script",
+  "SIDEBAR_CUSTOM_EVENT_SCRIPT": "Custom Event Script",
   "SIDEBAR_ADD_EVENT": "Add Event",
+  "SIDEBAR_CUSTOM_EVENTS": "Custom Events",
+  "SIDEBAR_CREATE_CUSTOM_EVENT": "Create Custom Event",
+  "SIDEBAR_PARAMETERS": "Parameters",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
+  "FIELD_DESCRIPTION": "Description",
   "FIELD_AUTHOR": "Author",
   "FIELD_NOTES": "Notes",
   "FIELD_ADD_NOTES": "Add Notes",
@@ -170,6 +176,7 @@
   "FIELD_EFFECT_BEEP": "Beep",
   "FIELD_EFFECT_TONE": "Tone",
   "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Describe the purpose of this custom event",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -341,6 +348,8 @@
   "MENU_COPY_SCENE": "Copy Scene",
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
+  "MENU_DELETE_CUSTOM_EVENT": "Delete Custom Event",
+  "MENU_EDIT_CUSTOM_EVENT": "Edit Custom Event",
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
   "MENU_PLUGINS": "Plugins",
 
@@ -395,6 +404,7 @@
   "DIALOG_DONT_SAVE": "Don't Save",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancel",
+  "DIALOG_DELETE": "Delete",  
   "DIALOG_UPDATE_AVAILABLE": "Update available",
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} available. Would you like to update?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
@@ -409,6 +419,9 @@
   "DIALOG_OPEN_ANYWAY": "Open Anyway",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio needs to restart before language changes can take effect",
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Please save your project and restart the application.",
+  "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} uses of this event will also be removed.\n\nFound in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} use of this event will also be removed.\n\nFound in: {sceneNames}",
 
   "// 16": "Settings ----------------------------------------------------",
 
