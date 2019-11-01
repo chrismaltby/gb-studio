@@ -5,6 +5,29 @@ import Splash from "../components/app/Splash";
 import "../lib/electron/handleFullScreen";
 import "../lib/helpers/handleTheme";
 
+window.addEventListener("error", (error) => {
+  if(error.message.indexOf("dead code elimination") > -1) {
+    return true;
+  }
+  error.stopPropagation();
+  error.preventDefault();
+  document.body.innerHTML = `<div class="GlobalError">
+    <div class="GlobalError__Content">
+      <h2>${error.message}</h2>
+      <p>
+        ${error.filename}L:${error.lineno}C:${error.colno}
+      </p>     
+      <div class="GlobalError__StackTrace">
+        ${error.error && error.error.stack && error.error.stack.split("\n").map(line => (
+          `<div>${line}</div>`
+        )).join("")}
+      </div>
+    </div>       
+    </div>
+  </div>`
+  return false;
+});
+
 const render = () => {
   ReactDOM.render(
     <AppContainer>

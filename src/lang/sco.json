@@ -196,6 +196,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset Aw Variables Tae 'Fause'",
   "EVENT_LOOP": "Loop Foriver",
   "EVENT_GROUP": "Event Group",
+  "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
   "EVENT_GOTO_LABEL": "Label: Gitae",
   "EVENT_TEXT": "Text: Shaw Twa-Haundit Crack",

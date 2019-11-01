@@ -59,7 +59,8 @@ export default {
       scenes: {},
       spriteSheets: {},
       triggers: {},
-      variables: {}
+      variables: {},
+      customEvents: {}
     },
     result: {
       settings: {
@@ -79,5 +80,12 @@ export default {
   settings: {
     worldSidebarWidth: 300,
     filesSidebarWidth: 300
+  },
+  error: {
+    visible: false,
+    message: "",
+    filename: "",
+    line: 0,
+    col: 0
   }
 };
