@@ -297,7 +297,9 @@ class ScriptBuilder {
   textMenu = (setVariable, options, layout = "menu", cancelOnLastOption = false, cancelOnB = false) => {
     const output = this.output;
     const { strings, variables } = this.options;
-    const menuText = options.join("\n");
+    const menuText = options
+      .map((option, index) => option || `Item ${index + 1}`)
+      .join("\n");
     let stringIndex = strings.indexOf(menuText);
     if (stringIndex === -1) {
       strings.push(menuText);
