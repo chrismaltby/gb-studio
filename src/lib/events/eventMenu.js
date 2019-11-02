@@ -15,15 +15,8 @@ export const fields = [].concat(
       type: "number",
       min: 2,
       max: 8,
-      width: "50%",
       defaultValue: 2
-    },
-    {
-      type: "checkbox",
-      label: l10n("FIELD_LAST_OPTION_CANCELS"),
-      key: "cancelOnLastOption",
-      width: "50%"
-    },
+    }
   ],
   Array(8)
     .fill()
@@ -79,6 +72,11 @@ export const fields = [].concat(
       });
       return arr;
     }, []),
+    {
+      type: "checkbox",
+      label: l10n("FIELD_LAST_OPTION_CANCELS"),
+      key: "cancelOnLastOption",
+    }, 
     {
       type: "checkbox",
       label: l10n("FIELD_CANCEL_IF_B"),
