@@ -419,12 +419,20 @@ void UIOnInteract()
     }
     else if (JOY_PRESSED(J_LEFT))
     {
-      menu_index = MAX(menu_index - 4, 0);
+      if(menu_layout == 0) {
+        menu_index = MAX(menu_index - 4, 0);
+      } else {
+        menu_index = 0;
+      }      
       UIDrawMenuCursor();
     }
     else if (JOY_PRESSED(J_RIGHT))
     {
-      menu_index = MIN(menu_index + 4, menu_num_options - 1);
+      if(menu_layout == 0) {
+        menu_index = MIN(menu_index + 4, menu_num_options - 1);
+      } else {
+        menu_index = menu_num_options - 1;
+      }
       UIDrawMenuCursor();
     }
     else if (menu_cancel_on_b && JOY_PRESSED(J_B))
