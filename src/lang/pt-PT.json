@@ -438,7 +438,7 @@
   "// 17 ": "Erro ------------------------------------------------------",
 
   "ERROR_TITLE": "O GB Studio encontrou um erro.",
-  "ERROR_WHAT_CAN_I_DO": "O que posso fazer?",
-  "ERROR_VIEW_STACK_TRACE": "View Stack Trace",
+  "ERROR_WHAT_CAN_I_DO": "Como proceder?",
+  "ERROR_VIEW_STACK_TRACE": "Ver relatório de erro.",
   "ERROR_CLOSE": "Fechar"
 }
