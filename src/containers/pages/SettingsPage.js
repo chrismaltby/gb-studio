@@ -54,7 +54,8 @@ class SettingsPage extends Component {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          overflow: "auto"
+          overflow: "auto",
+          transform: "translate3d(0,0,0)"
         }}
       >
         <PageHeader>
