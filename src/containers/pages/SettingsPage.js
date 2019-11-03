@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -10,11 +11,12 @@ import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import castEventValue from "../../lib/helpers/castEventValue";
 import * as actions from "../../actions";
-import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
-import { getScenesLookup, getPalettesIds } from "../../reducers/entitiesReducer";
+import { getScenesLookup, getPaletteIds } from "../../reducers/entitiesReducer";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
 import { ProjectShape, SettingsShape, SceneShape } from "../../reducers/stateShape";
+import PaletteSelect from "../../components/forms/PaletteSelect";
+import Button from "../../components/library/Button";
 
 class SettingsPage extends Component {
   onEditSetting = key => e => {
@@ -32,7 +34,7 @@ class SettingsPage extends Component {
   };
 
   render() {
-    const { project, settings, scenesLookup, paletteIds } = this.props;
+    const { project, settings, scenesLookup, setSection } = this.props;
 
     if (!project || !project.scenes) {
       return <div />;
@@ -88,16 +90,34 @@ class SettingsPage extends Component {
               open={customColorsEnabled}
               onToggle={this.onEditSetting("customColorsEnabled")}
             >
-              <CustomPalettePicker 
-                id="background_pal"
-                paletteId={paletteIds[0]}
-              />
 
-              <CustomPalettePicker 
-                id="sprites_pal"
-                paletteId={paletteIds[1]}
-              />
+              <FormField halfWidth>
+                <label htmlFor="backgroundPalette">
+                  {"Background Palette"}
+                  <PaletteSelect
+                    id="backgroundPalette"
+                    value={settings.backgroundPaletteId}
+                    onChange={this.onEditSetting("backgroundPaletteId")}
+                  />
+                </label>
+              </FormField> 
 
+              <FormField halfWidth>
+                <label htmlFor="spritesPalette">
+                  {"Sprites Palette"}
+                  <PaletteSelect
+                    id="spritesPalette"
+                    value={settings.spritesPaletteId}
+                    onChange={this.onEditSetting("spritesPaletteId")}
+                  />
+                </label>
+              </FormField>
+
+              <div style={{ marginTop: 30 }}>
+                <Button onClick={() => setSection("palettes")}>
+                  Edit Palettes
+                </Button>
+              </div>
             </ToggleableCheckBoxField>
           </section>
 
@@ -153,16 +173,17 @@ SettingsPage.propTypes = {
   project: ProjectShape.isRequired,
   settings: SettingsShape.isRequired,
   scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
-  paletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   editProject: PropTypes.func.isRequired,
-  editProjectSettings: PropTypes.func.isRequired
+  editProjectSettings: PropTypes.func.isRequired,
+  setSection: PropTypes.func.isRequired
+
 };
 
 function mapStateToProps(state) {
   const project = state.entities.present.result;
   const settings = project ? project.settings : {};
   const scenesLookup = getScenesLookup(state);
-  const paletteIds = getPalettesIds(state);
+  const paletteIds = getPaletteIds(state);
 
   return {
     project,
@@ -174,7 +195,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: actions.editProjectSettings,
+  setSection: actions.setSection
 };
 
 export default connect(

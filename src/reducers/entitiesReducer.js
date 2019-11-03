@@ -40,7 +40,9 @@ import {
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
   RELOAD_ASSETS,
-  EDIT_PALETTE
+  ADD_PALETTE,
+  EDIT_PALETTE,
+  REMOVE_PALETTE
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
@@ -52,6 +54,7 @@ import {
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables } from "../lib/compiler/helpers";
+import { DEFAULT_PALETTE } from "../components/forms/PaletteSelect";
 
 const addEntity = (state, type, data) => {
   return {
@@ -1124,13 +1127,28 @@ const renameVariable = (state, action) => {
   return removeEntity(state, "variables", action.variableId);
 };
 
+const addPalette = (state, action) => {
+  const newPalette = Object.assign(
+    {
+      id: action.id,
+      name: `Palette ${state.result.palettes.length + 1}`,
+      colors: DEFAULT_PALETTE.colors
+    }
+  );
+  return addEntity(state, "palettes", newPalette);
+};
+
 const editPalette = (state, action) => {
   const palette = state.entities.palettes[action.paletteId];
   return editEntity(state, "palettes", action.paletteId, {
     ...palette, 
     ...action.colors
   })
-}
+};
+
+const removePalette = (state, action) => {
+  return removeEntity(state, "palettes", action.paletteId);
+};
 
 const scrollWorld = (state, action) => {
   return {
@@ -1193,7 +1211,7 @@ export const getSceneActorIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].actors;
 export const getPalettesLookup = state =>
   state.entities.present.entities.palettes;
-export const getPalettesIds = state =>
+export const getPaletteIds = state =>
   state.entities.present.result.palettes;
 
 export const getMaxSceneRight = createSelector(
@@ -1272,6 +1290,11 @@ export const getCustomEvents = createSelector(
   (customEventIds, customEvents) => customEventIds.map(id => customEvents[id])
 );
 
+export const getPalettes = createSelector(
+  [getPaletteIds, getPalettesLookup],
+  (paletteIds, palettes) => paletteIds.map(id => palettes[id])
+);
+
 // Reducer ---------------------------------------------------------------------
 
 export default function project(state = initialState.entities, action) {
@@ -1344,8 +1367,12 @@ export default function project(state = initialState.entities, action) {
       return editTriggerEventDestinationPosition(state, action);
     case RENAME_VARIABLE:
       return renameVariable(state, action);
+    case ADD_PALETTE:
+      return addPalette(state, action);
     case EDIT_PALETTE:
       return editPalette(state, action);
+    case REMOVE_PALETTE:
+      return removePalette(state, action);
     case SCROLL_WORLD:
       return scrollWorld(state, action);
     case RELOAD_ASSETS:

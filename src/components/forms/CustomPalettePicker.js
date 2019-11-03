@@ -410,7 +410,7 @@ class CustomPalettePicker extends Component {
           </div>
           }
         </div>
-        <div style={{ marginTop: 30 }}>
+        <div style={{ marginTop: 10 }}>
           <Button onClick={this.onRestoreDefault}>
             {l10n("FIELD_RESTORE_DEFAULT")}
           </Button>
@@ -423,6 +423,7 @@ class CustomPalettePicker extends Component {
 CustomPalettePicker.propTypes = {
   id: PropTypes.string.isRequired,
   palette: PaletteShape,
+  paletteId: PropTypes.string.isRequired, 
   editPalette: PropTypes.func.isRequired
 };
 

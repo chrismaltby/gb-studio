@@ -71,10 +71,6 @@ export default {
         worldScrollX: 0,
         worldScrollY: 0,
         zoom: 100,
-        customColorsWhite: "E8F8E0",
-        customColorsLight: "B0F088",
-        customColorsDark: "509878",
-        customColorsBlack: "202850"
       },
       scenes: []
     }

@@ -29,6 +29,7 @@ const sectionNames = {
   backgrounds: l10n("NAV_BACKGROUNDS"),
   ui: l10n("NAV_UI_ELEMENTS"),
   music: l10n("NAV_MUSIC"),
+  palettes: l10n("NAV_PALETTES"),
   dialogue: l10n("NAV_DIALOGUE_REVIEW"),
   build: l10n("NAV_BUILD_AND_RUN"),
   settings: l10n("NAV_SETTINGS")

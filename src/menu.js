@@ -146,6 +146,13 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
+          label: l10n("MENU_PALETTES"),
+          accelerator: "CommandOrControl+9",
+          click: () => {
+            notifyListeners("section", "palettes");
+          }
+        },
+        {
           label: l10n("MENU_DIALOGUE_REVIEW"),
           accelerator: "CommandOrControl+6",
           click: () => {

@@ -7,6 +7,7 @@ import buildMakeBat from "./buildMakeBat";
 import { hexDec } from "../helpers/8bit";
 import getTmp from "../helpers/getTmp";
 import { isMBC1 } from "./helpers"
+import { DEFAULT_PALETTE } from "../../components/forms/PaletteSelect";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -99,8 +100,9 @@ const makeBuild = ({
     // Modify CustomColors.h to overide color palette
     let customColorsHeader = await fs.readFile(`${buildRoot}/include/CustomColors.h`, "utf8");
     if(settings.customColorsEnabled) {
-      const bgPalette = palettes[0];
-      const sprPalette = palettes[1];
+      const bgPalette = palettes.find(p => p.id === settings.backgroundPaletteId) || DEFAULT_PALETTE;
+      const sprPalette = palettes.find(p => p.id === settings.spritesPaletteId) || DEFAULT_PALETTE;
+
       customColorsHeader = customColorsHeader
         .replace(
           /BG_DMG_WHITE RGB\(29, 31, 28\)/g, 

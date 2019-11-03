@@ -426,8 +426,16 @@ export const renameVariable = (variableId, name) => {
   return { type: types.RENAME_VARIABLE, variableId, name };
 };
 
+export const addPalette = () => {
+  return { type: types.ADD_PALETTE, id: uuid() };
+}
+
 export const editPalette = (paletteId, colors) => {
   return { type: types.EDIT_PALETTE, paletteId, colors}
+}
+
+export const removePalette = (paletteId) => {
+  return { type: types.REMOVE_PALETTE, paletteId}
 }
 
 export const setStatus = status => {
