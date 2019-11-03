@@ -18,10 +18,10 @@
 #define SCREEN_HEIGHT_HALF 72
 
 #ifdef CUSTOM_COLORS
-#define DMG_WHITE RGB(28, 31, 26)
-#define DMG_LIGHTGREEN RGB(17, 24, 14)
-#define DMG_DARKGREEN RGB(6, 13, 10)
-#define DMG_BLACK RGB(1, 3, 4)
+#define DMG_WHITE RGB(29, 31, 28)
+#define DMG_LIGHTGREEN RGB(22, 30, 17)
+#define DMG_DARKGREEN RGB(10, 19, 15)
+#define DMG_BLACK RGB(4, 5, 10)
 
 static const UINT16 custom_bg_pal[] = { 			DMG_WHITE, DMG_LIGHTGREEN, 	DMG_DARKGREEN, 	DMG_BLACK };
 static const UINT16 custom_bg_pal_fade_step1[] = { 	DMG_WHITE, DMG_LIGHTGREEN, 	DMG_DARKGREEN, 	DMG_DARKGREEN };
