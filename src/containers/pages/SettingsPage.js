@@ -75,7 +75,13 @@ class SettingsPage extends Component {
         </PageHeader>
         <PageContent>
           <section>
-            <h2>{l10n("SETTINGS_COLORS")}</h2>
+            <h2>{l10n("SETTINGS_GBC")}</h2>
+
+            <ToggleableCheckBoxField
+              label={l10n("FIELD_GBC_FAST_CPU")}
+              open={gbcFastCPUEnabled}
+              onToggle={this.onEditSetting("gbcFastCPUEnabled")}
+            ></ToggleableCheckBoxField>
 
             <ToggleableCheckBoxField
               label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
@@ -84,15 +90,6 @@ class SettingsPage extends Component {
             >
               <CustomPalettePicker />
             </ToggleableCheckBoxField>
-          </section>
-
-          <section>
-            <h2>{l10n("SETTINGS_CPU")}</h2>
-            <ToggleableCheckBoxField
-              label={l10n("FIELD_GBC_FAST_CPU")}
-              open={gbcFastCPUEnabled}
-              onToggle={this.onEditSetting("gbcFastCPUEnabled")}
-            ></ToggleableCheckBoxField>
           </section>
 
           <section>

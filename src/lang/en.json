@@ -135,7 +135,7 @@
   "FIELD_RANDOM": "Random",
   "FIELD_SET_TO": "Set To",
   "FIELD_ELSE": "Else",
-  "FIELD_EXPORT_CUSTOM_COLORS": "Export With Custom Palette",
+  "FIELD_EXPORT_CUSTOM_COLORS": "Use Custom Color Palette",
   "FIELD_CUSTOM_RED": "Red",
   "FIELD_CUSTOM_GREEN": "Green",
   "FIELD_CUSTOM_BLUE": "Blue",
@@ -148,7 +148,7 @@
   "FIELD_RESTORE_DEFAULT": "Restore Default",
   "FIELD_ORIGINAL": "Original",
   "FIELD_CUSTOM": "Custom",
-  "FIELD_GBC_FAST_CPU": "Use Double Speed mode (GBC Only)",
+  "FIELD_GBC_FAST_CPU": "Use Double Speed Mode (Improves CPU Performance)",
   "FIELD_FLAG_1": "Flag 1",
   "FIELD_FLAG_2": "Flag 2",
   "FIELD_FLAG_3": "Flag 3",
@@ -402,5 +402,6 @@
   "SETTINGS_CONTROLS": "Controls",
   "SETTINGS_COLORS": "Colors",
   "SETTINGS_CPU": "CPU",
+  "SETTINGS_GBC": "GB Color Options",
   "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)"
 }
