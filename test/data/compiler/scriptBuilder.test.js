@@ -81,7 +81,8 @@ import {
   SET_TIMER_SCRIPT,
   TIMER_RESTART,
   TIMER_DISABLE,
-  TEXT_WITH_AVATAR
+  TEXT_WITH_AVATAR,
+  MENU
 } from "../../../src/lib/events/scriptCommands";
 import {
   dirDec,
@@ -395,6 +396,52 @@ test("Should not store choice text multiple times", () => {
   sb.textChoice("2", { trueText: "One", falseText: "Two" });
   expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 0]);
   expect(strings).toEqual(["One\nTwo"]);
+});
+
+test("Should be able to display menu with default values", () => {
+  const output = [];
+  const strings = ["Hello World"];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
+  sb.textMenu("2", [ "item1", "item2", "item3" ]);
+  expect(output).toEqual([cmd(MENU), 0, 2, 0, 1, 1, 0]);
+  expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
+});
+
+test("Should be able to display menu with different config values", () => {
+  const output = [];
+  const strings = ["Hello World"];
+  const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
+
+  // cancelOnLastOption = false, cancelOnB = false, layout = "menu"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "menu", false, false);
+  // cancelOnLastOption = true, cancelOnB = false, layout = "menu"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "menu", true, false);
+  // cancelOnLastOption = false, cancelOnB = true, layout = "menu"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "menu", false, true);
+  // cancelOnLastOption = true, cancelOnB = true, layout = "menu"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "menu", true, true);
+
+  // cancelOnLastOption = false, cancelOnB = false, layout = "dialogue"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", false, false);
+  // cancelOnLastOption = true, cancelOnB = false, layout = "dialogue"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", true, false);
+  // cancelOnLastOption = false, cancelOnB = true, layout = "dialogue"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", false, true);
+  // cancelOnLastOption = true, cancelOnB = true, layout = "menu"
+  sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", true, true);
+
+  expect(output).toEqual([
+    cmd(MENU), 0, 2, 0, 1, 1, 0,
+    cmd(MENU), 0, 2, 0, 1, 1, 1,
+    cmd(MENU), 0, 2, 0, 1, 1, 2,
+    cmd(MENU), 0, 2, 0, 1, 1, 3,
+
+    cmd(MENU), 0, 2, 0, 1, 0, 0,
+    cmd(MENU), 0, 2, 0, 1, 0, 1,
+    cmd(MENU), 0, 2, 0, 1, 0, 2,
+    cmd(MENU), 0, 2, 0, 1, 0, 3,
+  ]);
+  expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
 });
 
 test("Should be able to set text box to open instantly", () => {

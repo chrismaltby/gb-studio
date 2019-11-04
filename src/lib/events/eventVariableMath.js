@@ -38,15 +38,23 @@ export const fields = [
   {
     key: "vectorY",
     type: "variable",
-    showIfKey: "other",
-    showIfValue: "var",
+    conditions: [
+      {
+        key: "other",
+        eq: "var"
+      }
+    ],
     defaultValue: "LAST_VARIABLE"
   },
   {
     key: "value",
     type: "number",
-    showIfKey: "other",
-    showIfValue: "val",
+    conditions: [
+      {
+        key: "other",
+        eq: "val"
+      }
+    ],
     min: 0,
     max: 255,
     defaultValue: "1"
@@ -54,8 +62,12 @@ export const fields = [
   {
     key: "minValue",
     type: "number",
-    showIfKey: "other",
-    showIfValue: "rnd",
+    conditions: [
+      {
+        key: "other",
+        eq: "rnd"
+      }
+    ],
     min: 0,
     max: 255,
     label: l10n("FIELD_MIN_VALUE"),
@@ -65,8 +77,12 @@ export const fields = [
   {
     key: "maxValue",
     type: "number",
-    showIfKey: "other",
-    showIfValue: "rnd",
+    conditions: [
+      {
+        key: "other",
+        eq: "rnd"
+      }
+    ],
     min: 0,
     max: 255,
     label: l10n("FIELD_MAX_VALUE"),
