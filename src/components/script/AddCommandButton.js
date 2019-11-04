@@ -2,15 +2,20 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import Highlighter from "react-highlight-words";
+import { connect } from "react-redux";
+import ScrollIntoViewIfNeeded from "react-scroll-into-view-if-needed";
 import Button from "../library/Button";
 import {
   EventsOnlyForActors,
-  EventsDeprecated,
-  EVENT_TEXT
+  EventsHidden,
+  EVENT_TEXT,
+  EVENT_CALL_CUSTOM_EVENT
 } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
+import { CustomEventShape } from "../../reducers/stateShape";
+import { getCustomEvents } from "../../reducers/entitiesReducer";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -42,12 +47,13 @@ class AddCommandButton extends Component {
   onAdd = action => () => {
     const { onAdd } = this.props;
     clearTimeout(this.timeout);
-    onAdd(action);
     const fullList = this.fullList();
+    const index = fullList.findIndex(event => event.key === action);
+    onAdd(fullList[index].id, fullList[index].args, fullList[index].children);
     this.setState({
       open: false,
       query: "",
-      selectedIndex: fullList.findIndex(event => event.id === action)
+      selectedIndex: index
     });
   };
 
@@ -80,7 +86,7 @@ class AddCommandButton extends Component {
     const actionsList = this.filteredList();
     if (e.key === "Enter") {
       if (actionsList[selectedIndex]) {
-        this.onAdd(actionsList[selectedIndex].id)();
+        this.onAdd(actionsList[selectedIndex].key)();
       } else if (query.length > 0) {
         this.onAddText();
       }
@@ -116,23 +122,53 @@ class AddCommandButton extends Component {
   };
 
   fullList = () => {
-    const { type } = this.props;
-    return Object.keys(events)
-      .filter(key => {
-        return (
-          EventsDeprecated.indexOf(key) === -1 &&
-          (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
-        );
-      })
-      .map(key => {
-        const name = l10n(key) || events[key].name || key;
-        const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
+    const { type, customEvents } = this.props;
+
+    let callCustomEventEvents = [];
+    if (type !== "customEvent") {
+      const templateEventCallCustomEvent = events[EVENT_CALL_CUSTOM_EVENT];
+      callCustomEventEvents = customEvents.map((customEvent, index) => {
+        if (!customEvent) return {};
+        const customEventName =
+          customEvent.name || `${l10n("CUSTOM_EVENT")} ${index + 1}`;
+        const name = `${l10n("CUSTOM_EVENT")}: ${customEventName}`;
+        const searchName = `${name.toUpperCase()}`;
         return {
-          ...events[key],
+          ...templateEventCallCustomEvent,
+          args: {
+            customEventId: customEvent.id,
+            __name: customEventName
+          },
+          children: {
+            script: customEvent.script
+          },
           name,
-          searchName
+          searchName,
+          key: `EVENT_CALL_CUSTOM_EVENT_${index}`
         };
       });
+    }
+
+    return [
+      ...Object.keys(events)
+        .filter(key => {
+          return (
+            EventsHidden.indexOf(key) === -1 &&
+            (type === "actor" || EventsOnlyForActors.indexOf(key) === -1)
+          );
+        })
+        .map(key => {
+          const name = l10n(key) || events[key].name || key;
+          const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
+          return {
+            ...events[key],
+            name,
+            searchName,
+            key
+          };
+        }),
+      ...callCustomEventEvents
+    ];
   };
 
   filteredList = () => {
@@ -189,13 +225,18 @@ class AddCommandButton extends Component {
             </div>
             <div className="AddCommandButton__List">
               {actionsList.map((action, actionIndex) => (
-                <div
-                  key={action.id}
+                <ScrollIntoViewIfNeeded
+                  active={selectedIndex === actionIndex}
+                  options={{
+                    behavior: "instant",
+                    block: "nearest"
+                  }}
+                  key={action.key}
                   className={cx("AddCommandButton__ListItem", {
                     "AddCommandButton__ListItem--Selected":
                       selectedIndex === actionIndex
                   })}
-                  onClick={this.onAdd(action.id)}
+                  onClick={this.onAdd(action.key)}
                   onMouseEnter={this.onHover(actionIndex)}
                 >
                   <Highlighter
@@ -204,7 +245,7 @@ class AddCommandButton extends Component {
                     autoEscape
                     textToHighlight={action.name}
                   />
-                </div>
+                </ScrollIntoViewIfNeeded>
               ))}
               {actionsList.length === 0 && (
                 <div
@@ -232,7 +273,15 @@ class AddCommandButton extends Component {
 
 AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  customEvents: PropTypes.arrayOf(CustomEventShape).isRequired
 };
 
-export default AddCommandButton;
+function mapStateToProps(state) {
+  const customEvents = getCustomEvents(state);
+  return {
+    customEvents
+  };
+}
+
+export default connect(mapStateToProps)(AddCommandButton);

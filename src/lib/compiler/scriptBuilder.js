@@ -74,6 +74,13 @@ import {
   REMOVE_INPUT_SCRIPT,
   VARIABLE_ADD_FLAGS,
   VARIABLE_CLEAR_FLAGS,
+  SOUND_START_TONE,
+  SOUND_STOP_TONE,
+  SOUND_PLAY_BEEP,
+  SOUND_PLAY_CRASH,
+  SET_TIMER_SCRIPT,
+  TIMER_RESTART,
+  TIMER_DISABLE,
   TEXT_WITH_AVATAR
 } from "../events/scriptCommands";
 import {
@@ -265,7 +272,7 @@ class ScriptBuilder {
     } else {
       output.push(cmd(TEXT));
       output.push(hi(stringIndex));
-      output.push(lo(stringIndex));  
+      output.push(lo(stringIndex));
     }
   };
 
@@ -437,7 +444,7 @@ class ScriptBuilder {
     output.push(cmd(VARIABLE_ADD_FLAGS));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
-    output.push(flags); 
+    output.push(flags);
   };
 
   variableClearFlags = (setVariable, flags) => {
@@ -447,7 +454,7 @@ class ScriptBuilder {
     output.push(cmd(VARIABLE_CLEAR_FLAGS));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
-    output.push(flags); 
+    output.push(flags);
   };
 
   // Scenes
@@ -682,13 +689,13 @@ class ScriptBuilder {
     output.push(camY);
     // Direct speed in binary, first bits 0000 to 1111 are "&" compared with binary time
     // Speed 0 = 0 instant, Speed 1 = 32 0x20 move every frame, Speed 2 = 33 0x21
-    const speedFlag = (speed > 0 ? (32 + (1 << (speed - 1)) - 1) : 0);
+    const speedFlag = speed > 0 ? 32 + (1 << (speed - 1)) - 1 : 0;
     output.push(speedFlag);
   };
 
   cameraLock = (speed = 0) => {
     const output = this.output;
-    const speedFlag = (speed > 0 ? (32 + (1 << (speed - 1)) - 1) : 0);
+    const speedFlag = speed > 0 ? 32 + (1 << (speed - 1)) - 1 : 0;
     output.push(cmd(CAMERA_LOCK));
     output.push(speedFlag);
   };
@@ -731,6 +738,42 @@ class ScriptBuilder {
     output.push(cmd(MUSIC_STOP));
   };
 
+  // Sound
+
+  soundStartTone = (period = 1600) => {
+    const output = this.output;
+
+    // start playing tone
+    output.push(cmd(SOUND_START_TONE));
+    output.push(hi(period));
+    output.push(lo(period));
+  };
+
+  soundStopTone = () => {
+    const output = this.output;
+    output.push(cmd(SOUND_STOP_TONE));
+  };
+
+  soundPlayBeep = (pitch = 4) => {
+    const output = this.output;
+
+    pitch = pitch - 1;
+    if (pitch < 0) {
+      pitch = 0;
+    }
+    if (pitch >= 8) {
+      pitch = 7;
+    }
+
+    output.push(cmd(SOUND_PLAY_BEEP));
+    output.push(pitch & 0x07);
+  };
+
+  soundPlayCrash = () => {
+    const output = this.output;
+    output.push(cmd(SOUND_PLAY_CRASH));
+  };
+
   // Data
 
   dataLoad = () => {
@@ -764,6 +807,50 @@ class ScriptBuilder {
   scriptEnd = () => {
     const output = this.output;
     output.push(cmd(END));
+  };
+
+  // Timer Script
+
+  timerScriptSet = (duration = 10.0, script) => {
+    const output = this.output;
+    const { compileEvents, banked } = this.options;
+
+    // convert the duration from seconds to timer ticks
+    const TIMER_CYCLES = 16;
+    let durationTicks = ((60 * duration) / TIMER_CYCLES + 0.5) | 0;
+    if (durationTicks <= 0) {
+      durationTicks = 1;
+    }
+    if (durationTicks >= 256) {
+      durationTicks = 255;
+    }
+
+    // compile event script
+    const subScript = [];
+    if (typeof script === "function") {
+      this.output = subScript;
+      script();
+      this.output = output;
+    } else {
+      compileEvents(script, subScript, false);
+    }
+    const bankPtr = banked.push(subScript);
+
+    output.push(cmd(SET_TIMER_SCRIPT));
+    output.push(durationTicks);
+    output.push(bankPtr.bank);
+    output.push(hi(bankPtr.offset));
+    output.push(lo(bankPtr.offset));
+  };
+
+  timerRestart = () => {
+    const output = this.output;
+    output.push(cmd(TIMER_RESTART));
+  };
+
+  timerDisable = () => {
+    const output = this.output;
+    output.push(cmd(TIMER_DISABLE));
   };
 
   // Helpers

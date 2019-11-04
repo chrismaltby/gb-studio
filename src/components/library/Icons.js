@@ -147,3 +147,151 @@ export const SceneIcon = () => (
     <path d="M24 5c0-2.761-2.238-5-5-5h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14z" />
   </svg>
 );
+
+export const SadIcon = () => (
+  <svg width="1096" height="974" viewBox="0 0 1096 974" version="1.1">
+    <defs>
+      <path
+        d="M50,0 L846,-1.42108547e-14 C873.614237,-1.92835078e-14 896,22.3857625 896,50 L896,574 C896,684.45695 806.45695,774 696,774 L50,774 C22.3857625,774 3.38176876e-15,751.614237 0,724 L0,50 C-3.38176876e-15,22.3857625 22.3857625,5.07265313e-15 50,0 Z"
+        id="path-1"
+      />
+      <filter
+        x="-0.6%"
+        y="-0.7%"
+        width="101.2%"
+        height="101.4%"
+        filterUnits="objectBoundingBox"
+        id="filter-2"
+      >
+        <feMorphology
+          radius="2"
+          operator="erode"
+          in="SourceAlpha"
+          result="shadowSpreadInner1"
+        />
+        <feGaussianBlur
+          stdDeviation="0.5"
+          in="shadowSpreadInner1"
+          result="shadowBlurInner1"
+        />
+        <feOffset
+          dx="0"
+          dy="-2"
+          in="shadowBlurInner1"
+          result="shadowOffsetInner1"
+        />
+        <feComposite
+          in="shadowOffsetInner1"
+          in2="SourceAlpha"
+          operator="arithmetic"
+          k2="-1"
+          k3="1"
+          result="shadowInnerInner1"
+        />
+        <feColorMatrix
+          values="0 0 0 0 0.415686275   0 0 0 0 0.415686275   0 0 0 0 0.415686275  0 0 0 0.5 0"
+          type="matrix"
+          in="shadowInnerInner1"
+          result="shadowMatrixInner1"
+        />
+        <feMorphology
+          radius="2"
+          operator="erode"
+          in="SourceAlpha"
+          result="shadowSpreadInner2"
+        />
+        <feGaussianBlur
+          stdDeviation="0.5"
+          in="shadowSpreadInner2"
+          result="shadowBlurInner2"
+        />
+        <feOffset
+          dx="0"
+          dy="8"
+          in="shadowBlurInner2"
+          result="shadowOffsetInner2"
+        />
+        <feComposite
+          in="shadowOffsetInner2"
+          in2="SourceAlpha"
+          operator="arithmetic"
+          k2="-1"
+          k3="1"
+          result="shadowInnerInner2"
+        />
+        <feColorMatrix
+          values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1  0 0 0 0.5 0"
+          type="matrix"
+          in="shadowInnerInner2"
+          result="shadowMatrixInner2"
+        />
+        <feMerge>
+          <feMergeNode in="shadowMatrixInner1" />
+          <feMergeNode in="shadowMatrixInner2" />
+        </feMerge>
+      </filter>
+    </defs>
+    <g
+      id="Artboard"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <g
+        id="Group"
+        transform="translate(100.000000, 100.000000)"
+        fillRule="nonzero"
+      >
+        <g id="Rectangle-2">
+          <use
+            fill="black"
+            fillOpacity="1"
+            filter="url(#filter-2)"
+            xlinkHref="#path-1"
+          />
+          <path
+            stroke="#979797"
+            strokeWidth="10"
+            d="M50,5 C25.1471863,5 5,25.1471863 5,50 L5,724 C5,748.852814 25.1471863,769 50,769 L696,769 C803.695526,769 891,681.695526 891,574 L891,50 C891,25.1471863 870.852814,5 846,5 L50,5 Z"
+            strokeLinejoin="square"
+          />
+        </g>
+        <path
+          d="M819,76.9627119 L896,76.9627119 L896,104.949153 L0,104.949153 L0,76.9627119 L77,76.9627119 L77,0 L105,0 L105,76.9627119 L791,76.9627119 L791,0 L819,0 L819,76.9627119 Z"
+          id="Combined-Shape"
+          fill="#979797"
+        />
+        <path
+          d="M114,193.908475 C100.192881,193.908475 89,205.101356 89,218.908475 L89,663.538983 C89,677.346102 100.192881,688.538983 114,688.538983 L662,688.538983 C742.081289,688.538983 807,623.620272 807,543.538983 L807,218.908475 C807,205.101356 795.807119,193.908475 782,193.908475 L114,193.908475 Z"
+          id="Rectangle"
+          stroke="#979797"
+          strokeWidth="10"
+          fill="#979797"
+        />
+      </g>
+      <rect
+        id="Rectangle"
+        stroke="#979797"
+        strokeWidth="10"
+        fill="#FFFFFF"
+        fillRule="nonzero"
+        x="339.5"
+        y="354.254237"
+        width="417.875"
+        height="373.938983"
+      />
+      <text
+        id=":-("
+        fontFamily="HelveticaNeue-Bold, Helvetica Neue"
+        fontSize="200"
+        fontWeight="bold"
+        fill="#979797"
+      >
+        <tspan x="450.4" y="596">
+          :-(
+        </tspan>
+      </text>
+    </g>
+  </svg>
+);

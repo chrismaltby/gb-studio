@@ -38,7 +38,10 @@ import {
   EDIT_UI,
   SELECT_SIDEBAR,
   ADD_COLLISION_TILE,
-  REMOVE_COLLISION_TILE
+  REMOVE_COLLISION_TILE,
+  SELECT_CUSTOM_EVENT,
+  ADD_CUSTOM_EVENT,
+  REMOVE_CUSTOM_EVENT
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -140,6 +143,21 @@ export default function editor(state = initialState.editor, action) {
         eventId: action.eventId
       };
     }
+    case SELECT_CUSTOM_EVENT: {
+      return {
+        ...state,
+        type: "customEvents",
+        scene: "",
+        entityId: action.id
+      };
+    }
+    case ADD_CUSTOM_EVENT: {
+      return {
+        ...state,
+        type: "customEvents",
+        entityId: action.id
+      };
+    }
     case DRAG_SCENE_START: {
       return {
         ...state,
@@ -238,7 +256,8 @@ export default function editor(state = initialState.editor, action) {
           sceneId: action.sceneId,
           x: action.x,
           y: action.y
-        }
+        },
+        eventId: state.dragging === "" ? "" : state.eventId
       };
     }
     case ACTOR_HOVER: {
@@ -271,6 +290,7 @@ export default function editor(state = initialState.editor, action) {
     case REMOVE_SCENE:
     case REMOVE_ACTOR:
     case REMOVE_TRIGGER:
+    case REMOVE_CUSTOM_EVENT:
     case REMOVE_ACTOR_AT:
     case REMOVE_TRIGGER_AT:
     case EDIT_PLAYER_START_AT:

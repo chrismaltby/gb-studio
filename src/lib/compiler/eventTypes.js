@@ -33,6 +33,7 @@ export const EVENT_CHOICE = "EVENT_CHOICE";
 export const EVENT_RESET_VARIABLES = "EVENT_RESET_VARIABLES";
 export const EVENT_LOOP = "EVENT_LOOP";
 export const EVENT_GROUP = "EVENT_GROUP";
+export const EVENT_COMMENT = "EVENT_COMMENT";
 
 // Background Scripts
 export const EVENT_SET_INPUT_SCRIPT = "EVENT_SET_INPUT_SCRIPT";
@@ -68,7 +69,8 @@ export const EVENT_AWAIT_INPUT = "EVENT_AWAIT_INPUT";
 export const EVENT_TEXT = "EVENT_TEXT";
 export const EVENT_TEXT_SET_ANIMATION_SPEED = "EVENT_TEXT_SET_ANIMATION_SPEED";
 export const EVENT_ACTOR_SET_DIRECTION = "EVENT_ACTOR_SET_DIRECTION";
-export const EVENT_ACTOR_SET_DIRECTION_TO_VALUE = "EVENT_ACTOR_SET_DIRECTION_TO_VALUE";
+export const EVENT_ACTOR_SET_DIRECTION_TO_VALUE =
+  "EVENT_ACTOR_SET_DIRECTION_TO_VALUE";
 export const EVENT_ACTOR_SET_POSITION = "EVENT_ACTOR_SET_POSITION";
 export const EVENT_ACTOR_SET_POSITION_RELATIVE =
   "EVENT_ACTOR_SET_POSITION_RELATIVE";
@@ -109,8 +111,14 @@ export const EVENT_OVERLAY_MOVE_TO = "EVENT_OVERLAY_MOVE_TO";
 export const EVENT_MUSIC_PLAY = "EVENT_MUSIC_PLAY";
 export const EVENT_MUSIC_STOP = "EVENT_MUSIC_STOP";
 
+// Sound
+export const EVENT_SOUND_PLAY_BEEP = "EVENT_SOUND_PLAY_BEEP";
+
+// Call CustomEvent
+export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
-export const EventsDeprecated = [
+export const EventsHidden = [
   EVENT_MATH_ADD,
   EVENT_MATH_SUB,
   EVENT_MATH_MUL,
@@ -122,7 +130,8 @@ export const EventsDeprecated = [
   EVENT_MATH_SUB_VALUE,
   EVENT_MATH_MUL_VALUE,
   EVENT_MATH_DIV_VALUE,
-  EVENT_MATH_MOD_VALUE
+  EVENT_MATH_MOD_VALUE,
+  EVENT_CALL_CUSTOM_EVENT
 ];
 
 export const EventFields = {
@@ -132,6 +141,7 @@ export const EventFields = {
     }
   ],
   [EVENT_GROUP]: [],
+  [EVENT_COMMENT]: [],
   [EVENT_SET_INPUT_SCRIPT]: [
     {
       key: "input",

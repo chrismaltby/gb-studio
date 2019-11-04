@@ -6,6 +6,7 @@
   "TRIGGER": "Trigger",
   "SCENE": "Scene",
   "PROJECT": "Project",
+  "CUSTOM_EVENT": "Custom Event",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Game World",
@@ -43,10 +44,15 @@
   "SIDEBAR_SCENE_START_SCRIPT": "Scene Start Script",
   "SIDEBAR_ACTOR_SCRIPT": "Actor Script",
   "SIDEBAR_TRIGGER_SCRIPT": "Trigger Script",
+  "SIDEBAR_CUSTOM_EVENT_SCRIPT": "Custom Event Script",
   "SIDEBAR_ADD_EVENT": "Add Event",
+  "SIDEBAR_CUSTOM_EVENTS": "Custom Events",
+  "SIDEBAR_CREATE_CUSTOM_EVENT": "Create Custom Event",
+  "SIDEBAR_PARAMETERS": "Parameters",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
+  "FIELD_DESCRIPTION": "Description",
   "FIELD_AUTHOR": "Author",
   "FIELD_NOTES": "Notes",
   "FIELD_ADD_NOTES": "Add Notes",
@@ -157,8 +163,21 @@
   "FIELD_FLAG_6": "Flag 6",
   "FIELD_FLAG_7": "Flag 7",
   "FIELD_FLAG_8": "Flag 8",
+  "FIELD_FREQUENCY": "Frequency in hz",
+  "FIELD_DURATION": "Duration in seconds",
+  "FIELD_PITCH": "Pitch",
+  "FIELD_SOUND_PLAY_CRASH": "Play crash symbol sound",
+  "FIELD_SET_TIMER": "Set repeating timer script",
+  "FIELD_TIMER_DURATION": "Countdown time in seconds",
+  "FIELD_TIMER_RESTART": "Restart the countdown timer",
+  "FIELD_TIMER_DISABLE": "Disable the timer script",
   "FIELD_TEXT_AVATAR": "Avatar",
   "FIELD_ADD_TEXT_AVATAR": "Add Avatar",
+  "FIELD_PLAY_EFFECT": "Play effect",
+  "FIELD_EFFECT_BEEP": "Beep",
+  "FIELD_EFFECT_TONE": "Tone",
+  "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Describe the purpose of this custom event",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -207,6 +226,7 @@
   "EVENT_RESET_VARIABLES": "Variable: Reset All Variables To 'False'",
   "EVENT_LOOP": "Loop Forever",
   "EVENT_GROUP": "Event Group",
+  "EVENT_COMMENT": "Comment",
   "EVENT_DEFINE_LABEL": "Label: Define",
   "EVENT_GOTO_LABEL": "Label: Goto",
   "EVENT_TEXT": "Text: Display Dialogue",
@@ -257,6 +277,13 @@
   "EVENT_ADD_FLAGS": "Variable: Add Flags",
   "EVENT_CLEAR_FLAGS": "Variable: Clear Flags",
   "EVENT_IF_FLAGS_COMPARE": "If Variable Has Flag",
+  "EVENT_SOUND_PLAY_TONE": "Sound: Play Tone",
+  "EVENT_SOUND_PLAY_BEEP": "Sound: Play Beep",
+  "EVENT_SOUND_PLAY_CRASH": "Sound: Play Crash",
+  "EVENT_SOUND_PLAY_EFFECT": "Sound: Play Effect",
+  "EVENT_SET_TIMER_SCRIPT": "Timer: Set timer script",
+  "EVENT_TIMER_RESTART": "Timer: Restart timer",
+  "EVENT_TIMER_DISABLE": "Timer: Disable timer script",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -322,6 +349,8 @@
   "MENU_COPY_SCENE": "Copy Scene",
   "MENU_PASTE_SCENE": "Paste Scene",
   "MENU_DELETE_SCENE": "Delete Scene",
+  "MENU_DELETE_CUSTOM_EVENT": "Delete Custom Event",
+  "MENU_EDIT_CUSTOM_EVENT": "Edit Custom Event",
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
   "MENU_PLUGINS": "Plugins",
 
@@ -376,6 +405,7 @@
   "DIALOG_DONT_SAVE": "Don't Save",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancel",
+  "DIALOG_DELETE": "Delete",
   "DIALOG_UPDATE_AVAILABLE": "Update available",
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} available. Would you like to update?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
@@ -390,6 +420,9 @@
   "DIALOG_OPEN_ANYWAY": "Open Anyway",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio needs to restart before language changes can take effect",
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Please save your project and restart the application.",
+  "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} uses of this event will also be removed.\n\nFound in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} use of this event will also be removed.\n\nFound in: {sceneNames}",
 
   "// 16": "Settings ----------------------------------------------------",
 
@@ -403,5 +436,12 @@
   "SETTINGS_COLORS": "Colors",
   "SETTINGS_CPU": "CPU",
   "SETTINGS_GBC": "GB Color Options",
-  "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)"
+  "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)",
+
+  "// 17 ": "Error ------------------------------------------------------",
+
+  "ERROR_TITLE": "GB Studio encountered an error",
+  "ERROR_WHAT_CAN_I_DO": "What can I do?",
+  "ERROR_VIEW_STACK_TRACE": "View Stack Trace",
+  "ERROR_CLOSE": "Close"
 }
