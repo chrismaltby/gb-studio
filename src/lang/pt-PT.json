@@ -6,6 +6,7 @@
   "TRIGGER": "Gatilho",
   "SCENE": "Mapa",
   "PROJECT": "Projecto",
+  "CUSTOM_EVENT": "Evento Customizado",
 
   "// 2": "Painel de Navegação ------------------------------------------------",
   "NAV_GAME_WORLD": "Área de Jogo",
@@ -43,10 +44,15 @@
   "SIDEBAR_SCENE_START_SCRIPT": "Script de Início de Mapa",
   "SIDEBAR_ACTOR_SCRIPT": "Script de Actor",
   "SIDEBAR_TRIGGER_SCRIPT": "Script de Gatilho",
+  "SIDEBAR_CUSTOM_EVENT_SCRIPT": "Script de Evento Customizado",
   "SIDEBAR_ADD_EVENT": "Adicionar Evento",
+  "SIDEBAR_CUSTOM_EVENTS": "Eventos Customizados",
+  "SIDEBAR_CREATE_CUSTOM_EVENT": "Criar Evento Customizado",
+  "SIDEBAR_PARAMETERS": "Parâmetros",
 
   "// 6": "Descrições ----------------------------------------------",
-  "FIELD_NAME": "Nome",
+  "FIELD_NAME": "Nome",  
+  "FIELD_DESCRIPTION": "Descrição",
   "FIELD_AUTHOR": "Autor",
   "FIELD_NOTES": "Notas",
   "FIELD_ADD_NOTES": "Adicionar notas",
@@ -156,6 +162,21 @@
   "FIELD_FLAG_6": "Marcador 6",
   "FIELD_FLAG_7": "Marcador 7",
   "FIELD_FLAG_8": "Marcador 8",
+  "FIELD_FREQUENCY": "Frequência em hz",
+  "FIELD_DURATION": "Duração em Segundos",
+  "FIELD_PITCH": "Pitch",
+  "FIELD_SOUND_PLAY_CRASH": "Reproduzir som de crash symbol ",
+  "FIELD_SET_TIMER": "Definir Script de Temporizador repetitivo",
+  "FIELD_TIMER_DURATION": "Contagem decrescente em segundos",
+  "FIELD_TIMER_RESTART": "Reiniciar Temporizador",
+  "FIELD_TIMER_DISABLE": "Desactivar Script de Temporizador",
+  "FIELD_TEXT_AVATAR": "Imagem de Diálogo",
+  "FIELD_ADD_TEXT_AVATAR": "Adicionar Imagem de Diálogo",
+  "FIELD_PLAY_EFFECT": "Reproduzir Efeito Sonoro",
+  "FIELD_EFFECT_BEEP": "Beep",
+  "FIELD_EFFECT_TONE": "Tom",
+  "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Descrever o Evento Customizado",
 
   "// 7": "Visualizar Activos ---------------------------------------------",
   "ASSET_SEARCH": "Procurar...",
@@ -255,6 +276,13 @@
   "EVENT_ADD_FLAGS": "Variável: Adicionar Marcadores",
   "EVENT_CLEAR_FLAGS": "Variável: Eliminar Marcadores",
   "EVENT_IF_FLAGS_COMPARE": "Se Variável tem Marcador",
+  "EVENT_SOUND_PLAY_TONE": "Som: Reproduzir Tom",
+  "EVENT_SOUND_PLAY_BEEP": "Som: Reproduzir Beep",
+  "EVENT_SOUND_PLAY_CRASH": "Som: Reproduzir Crash",
+  "EVENT_SOUND_PLAY_EFFECT": "Som: Reproduzir Efeito Sonoro",
+  "EVENT_SET_TIMER_SCRIPT": "Temporizador: Definir Script de Temporizador",
+  "EVENT_TIMER_RESTART": "Temporizador: Reiniciar temporizador",
+  "EVENT_TIMER_DISABLE": "Temporizador: Desactivar Script de Temporizador",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -320,7 +348,9 @@
   "MENU_COPY_SCENE": "Copiar Mapa",
   "MENU_PASTE_SCENE": "Colar Mapa",
   "MENU_DELETE_SCENE": "Apagar Mapa",
-  "MENU_CHECK_FOR_UPDATES": "Procurar Actualizações...",
+  "MENU_DELETE_CUSTOM_EVENT": "Eliminar Evento Customizado",
+  "MENU_EDIT_CUSTOM_EVENT": "Editar Evento Customizado",
+  "MENU_CHECK_FOR_UPDATES": "Verificar por atualizações...",
   "MENU_PLUGINS": "Plugins",
 
   "// 11": "Advertências -----------------------------------------------------",
@@ -374,6 +404,7 @@
   "DIALOG_DONT_SAVE": "Não Guardar",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancelar",
+  "DIALOG_DELETE": "Eliminar",  
   "DIALOG_UPDATE_AVAILABLE": "Actualização Disponível",
   "DIALOG_UPDATE_DESCRIPTION": "Nova versão de GB Studio {version} disponível. Deseja actualizar?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Não perguntar novamente",
@@ -388,7 +419,10 @@
   "DIALOG_OPEN_ANYWAY": "Ignorar e Abrir",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "O GB Studio precisará de reiniciar para aplicar modificações",
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Por favor, guarde o seu projecto e reinicie o GB Studio.",
-
+  "DIALOG_DELETE_CUSTOM_EVENT": "Eliminar o Evento Customizado \"{name}\"?",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} outros usos deste Evento serão também eliminados.\n\nEncontrados em: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} outro uso deste evento será também eliminado.\n\nEncontrado em: {sceneNames}",
+  
   "// 16": "Configurações ----------------------------------------------------",
 
   "SETTINGS": "Configurações",
@@ -399,5 +433,12 @@
   "SETTINGS_CART_TYPE": "Tipo de Disquete",
   "SETTINGS_CONTROLS": "Controlos de comando",
   "SETTINGS_COLORS": "Cores",
-  "SETTINGS_CUSTOM_HEADER": "Cabeçalho customizado (ao exportar para Web)"
+  "SETTINGS_CUSTOM_HEADER": "Cabeçalho customizado (ao exportar para Web)",
+
+  "// 17 ": "Erro ------------------------------------------------------",
+
+  "ERROR_TITLE": "O GB Studio encontrou um erro.",
+  "ERROR_WHAT_CAN_I_DO": "Como proceder?",
+  "ERROR_VIEW_STACK_TRACE": "Ver relatório de erro.",
+  "ERROR_CLOSE": "Fechar"
 }
