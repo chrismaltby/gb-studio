@@ -8,6 +8,11 @@ import * as actions from "../../actions";
 import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 
+const DEFAULT_WHITE = "E8F8E0";
+const DEFAULT_LIGHT = "B0F088";
+const DEFAULT_DARK = "509878";
+const DEFAULT_BLACK = "202850";
+
 class CustomPalettePicker extends Component {
   constructor(props) {
     super(props);
@@ -19,10 +24,10 @@ class CustomPalettePicker extends Component {
       currentR: 0,
       currentG: 0,
       currentB: 0,
-      whiteHex: settings.customColorsWhite || "E0F8D0",
-      lightHex: settings.customColorsLight || "88C070",
-      darkHex: settings.customColorsDark || "306850",
-      blackHex: settings.customColorsBlack || "081820",
+      whiteHex: settings.customColorsWhite || DEFAULT_WHITE,
+      lightHex: settings.customColorsLight || DEFAULT_LIGHT,
+      darkHex: settings.customColorsDark || DEFAULT_DARK,
+      blackHex: settings.customColorsBlack || DEFAULT_BLACK,
       currentCustomHex: ""
     };
   }
@@ -150,13 +155,13 @@ class CustomPalettePicker extends Component {
     var result;
 
     if (this.state.selectedPalette == 0) {
-      result = this.applyHexToState("E0F8D0"); // White
+      result = this.applyHexToState(DEFAULT_WHITE); // White
     } else if (this.state.selectedPalette == 1) {
-      result = this.applyHexToState("88C070"); // Light Green
+      result = this.applyHexToState(DEFAULT_LIGHT); // Light Green
     } else if (this.state.selectedPalette == 2) {
-      result = this.applyHexToState("306850"); // Dark Green
+      result = this.applyHexToState(DEFAULT_DARK); // Dark Green
     } else if (this.state.selectedPalette == 3) {
-      result = this.applyHexToState("081820"); // Black
+      result = this.applyHexToState(DEFAULT_BLACK); // Black
     }
 
     this.setCurrentColor(result.r, result.g, result.b);
@@ -166,10 +171,10 @@ class CustomPalettePicker extends Component {
     // this.handleDefaultPaletteClick();
     const { editProjectSettings } = this.props;
     editProjectSettings({
-      customColorsWhite: "E0F8D0",
-      customColorsLight: "88C070",
-      customColorsDark: "306850",
-      customColorsBlack: "081820"
+      customColorsWhite: DEFAULT_WHITE,
+      customColorsLight: DEFAULT_LIGHT,
+      customColorsDark: DEFAULT_DARK,
+      customColorsBlack: DEFAULT_BLACK
     });
   };
 
@@ -197,7 +202,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#e0f8cf 48.5%, var(--input-border-color) 49.5%, #${
+                    backgroundImage: `linear-gradient(#${DEFAULT_WHITE} 48.5%, var(--input-border-color) 49.5%, #${
                       settings.customColorsWhite
                     } 50%)`
                   }}
@@ -215,7 +220,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#86c06c 48.9%, var(--input-border-color) 49.5%, #${
+                    backgroundImage: `linear-gradient(#${DEFAULT_LIGHT} 48.9%, var(--input-border-color) 49.5%, #${
                       settings.customColorsLight
                     } 50%)`
                   }}
@@ -233,7 +238,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#306850 48.9%, var(--input-border-color) 49.5%, #${
+                    backgroundImage: `linear-gradient(#${DEFAULT_DARK} 48.9%, var(--input-border-color) 49.5%, #${
                       settings.customColorsDark
                     } 50%)`
                   }}
@@ -251,7 +256,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#071821 48.9%, var(--input-border-color) 49.5%, #${
+                    backgroundImage: `linear-gradient(#${DEFAULT_BLACK} 48.9%, var(--input-border-color) 49.5%, #${
                       settings.customColorsBlack
                     } 50%)`
                   }}

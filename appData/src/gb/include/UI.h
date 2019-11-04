@@ -9,6 +9,10 @@
 #define MENU_OPEN_Y 112
 #define MENU_CLOSED_Y (MAXWNDPOSY + 1)
 #define TEXT_BUFFER_START 0xCC
+#define MENU_LAYOUT_INITIAL_X 88
+
+#define MENU_CANCEL_ON_LAST_OPTION  0x01U
+#define MENU_CANCEL_ON_B_PRESSED    0x02U
 
 extern UINT8 ui_bank;
 extern unsigned char text_lines[80];
@@ -43,5 +47,7 @@ UBYTE UIAtDest();
 void UISetColor(UBYTE color);
 void UISetTextSpeed(UBYTE in, UBYTE out);
 void UIShowAvatar(UBYTE avatar_index);
+void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config);
+void UIDrawMenuCursor();
 
 #endif
