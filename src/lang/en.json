@@ -293,6 +293,8 @@
   "EVENT_TIMER_RESTART": "Timer: Restart timer",
   "EVENT_TIMER_DISABLE": "Timer: Disable timer script",
   "EVENT_MENU": "Text: Display Menu",
+  "EVENT_ACTOR_COLLISIONS_ENABLE": "Actor: Collisions Enable",
+  "EVENT_ACTOR_COLLISIONS_DISABLE": "Actor: Collisions Disable",
 
   "// 10": "Menu -----------------------------------------------------",
 

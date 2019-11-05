@@ -137,6 +137,7 @@ void SceneInit_b2()
     actors[i].sprite = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
     // LOG("ACTOR_SPRITE=%u\n", actors[i].sprite);
     actors[i].enabled = TRUE;
+    actors[i].collisionsEnabled = TRUE;
     actors[i].moving = FALSE;
     actors[i].sprite_type = FALSE; // WTF needed
     actors[i].sprite_type = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
@@ -200,6 +201,7 @@ void SceneInit_b3()
   // Init player
   actors[0].enabled = TRUE;
   actors[0].moving = FALSE;
+  actors[0].collisionsEnabled = TRUE;
   actors[0].pos.x = map_next_pos.x;
   actors[0].pos.y = map_next_pos.y;
   actors[0].dir.x = map_next_dir.x;
@@ -638,27 +640,30 @@ void SceneUpdateActorMovement_b(UBYTE i)
   next_ty = DIV_8(actors[i].pos.y) + actors[i].dir.y;
 
   // Check for npc collisions
-  npc = SceneNpcAt_b(i, next_tx, next_ty, FALSE);
-  if (npc != scene_num_actors)
+  if (actors[i].collisionsEnabled)
   {
-    actors[i].moving = FALSE;
-    return;
-  }
+    npc = SceneNpcAt_b(i, next_tx, next_ty, FALSE);
+    if (npc != scene_num_actors)
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on left tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
-  }
+    // Check collisions on left tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1);
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
 
-  // Check collisions on right tile
-  collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
-  if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
-  {
-    actors[i].moving = FALSE;
-    return;
+    // Check collisions on right tile
+    collision_index = ((UWORD)scene_width * (next_ty - 1)) + (next_tx - 1) + 1;
+    if (scene_col_tiles[collision_index >> 3] & (1 << (collision_index & 7)))
+    {
+      actors[i].moving = FALSE;
+      return;
+    }
   }
 
   if (i == 0)

@@ -415,6 +415,20 @@ void Script_ActorHide_b()
 }
 
 /*
+ * Command: ActorSetCollisions
+ * ----------------------------
+ * Set collisions enabled flag for actor.
+ *
+ *   arg0: Enabled
+ */
+void Script_ActorSetCollisions_b()
+{
+  actors[script_actor].collisionsEnabled = script_cmd_args[0];
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;  
+}
+
+/*
  * Command: ActorSetEmote
  * ----------------------------
  * Display emote bubble over actor.

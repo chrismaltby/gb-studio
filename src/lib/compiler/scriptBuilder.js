@@ -7,6 +7,7 @@ import {
   ACTOR_SET_FRAME_TO_VALUE,
   ACTOR_SET_FLIP,
   ACTOR_PUSH,
+  ACTOR_SET_COLLISIONS,
   TEXT,
   TEXT_MULTI,
   SET_TRUE,
@@ -230,6 +231,12 @@ class ScriptBuilder {
   actorHide = () => {
     const output = this.output;
     output.push(cmd(ACTOR_HIDE));
+  };
+
+  actorSetCollisions = enabled => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_COLLISIONS));
+    output.push(enabled ? 1 : 0);
   };
 
   // Player
