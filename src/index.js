@@ -184,6 +184,8 @@ const openHelp = async helpPage => {
     shell.openExternal("https://www.gbstudio.dev/docs/ui-elements/");
   } else if (helpPage === "music") {
     shell.openExternal("https://www.gbstudio.dev/docs/music/");
+  } else if (helpPage === "error") {
+    shell.openExternal("https://www.gbstudio.dev/docs/error/");
   }
 };
 

@@ -10,6 +10,7 @@ import {
   SPRITE_REMOVE,
   EDIT_PROJECT,
   EDIT_PROJECT_SETTINGS,
+  EDIT_CUSTOM_EVENT,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -35,15 +36,19 @@ import {
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
-  SCROLL_WORLD
+  SCROLL_WORLD,
+  ADD_CUSTOM_EVENT,
+  REMOVE_CUSTOM_EVENT
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
   patchEvents,
   regenerateEventIds,
-  mapEvents
+  mapEvents,
+  walkEvents
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
+import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 
 const addEntity = (state, type, data) => {
   return {
@@ -143,12 +148,14 @@ const sceneSchema = new schema.Entity("scenes", {
   actors: [actorSchema],
   triggers: [triggerSchema]
 });
+const customEventsSchema = new schema.Entity("customEvents");
 const projectSchema = {
   scenes: [sceneSchema],
   backgrounds: [backgroundSchema],
   music: [musicSchema],
   spriteSheets: [spriteSheetsSchema],
-  variables: [variablesSchema]
+  variables: [variablesSchema],
+  customEvents: [customEventsSchema]
 };
 
 export const normalizeProject = projectData => {
@@ -492,6 +499,198 @@ const editScene = (state, action) => {
 
 const removeScene = (state, action) => {
   return removeEntity(state, "scenes", action.sceneId);
+};
+
+const addCustomEvent = (state, action) => {
+  const newCustomEvent = Object.assign(
+    {
+      id: action.id,
+      variables: {},
+      actors: {}
+    },
+    action.script && {
+      script: action.script
+    }
+  );
+  return addEntity(state, "customEvents", newCustomEvent);
+};
+
+const editCustomEvent = (state, action) => {
+  const patch = { ...action.values };
+  let newState = state;
+
+  if (patch.script) {
+    const variables = {};
+    const actors = {};
+
+    const oldVariables = newState.entities.customEvents[action.id].variables;
+    const oldActors = newState.entities.customEvents[action.id].actors;
+
+    walkEvents(patch.script, e => {
+      const args = e.args;
+
+      if (!args) return;
+
+      if (args.actorId && args.actorId !== "player") {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.actorId)
+        );
+        actors[args.actorId] = {
+          id: args.actorId,
+          name: oldActors[args.actorId]
+            ? oldActors[args.actorId].name
+            : `Actor ${letter}`
+        };
+      }
+      if (args.variable) {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.variable)
+        );
+        variables[args.variable] = {
+          id: args.variable,
+          name: oldVariables[args.variable]
+            ? oldVariables[args.variable].name
+            : `Variable ${letter}`
+        };
+      }
+      if (args.vectorX) {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.vectorX)
+        ).toUpperCase();
+        variables[args.vectorX] = {
+          id: args.vectorX,
+          name: oldVariables[args.vectorX]
+            ? oldVariables[args.vectorX].name
+            : `Variable ${letter}`
+        };
+      }
+      if (args.vectorY) {
+        const letter = String.fromCharCode(
+          "A".charCodeAt(0) + parseInt(args.vectorY)
+        ).toUpperCase();
+        variables[args.vectorY] = {
+          id: args.vectorY,
+          name: oldVariables[args.vectorY]
+            ? oldVariables[args.vectorY].name
+            : `Variable ${letter}`
+        };
+      }
+    });
+
+    patch.variables = { ...variables };
+    patch.actors = { ...actors };
+
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "scenes",
+      action.id,
+      newState.entities.scenes,
+      patch.script
+    );
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "actors",
+      action.id,
+      newState.entities.actors,
+      patch.script
+    );
+    newState = updateEntitiesCustomEventScript(
+      newState,
+      "triggers",
+      action.id,
+      newState.entities.triggers,
+      patch.script
+    );
+  }
+
+  if (patch.name) {
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "scenes",
+      action.id,
+      newState.entities.scenes,
+      patch.name
+    );
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "actors",
+      action.id,
+      newState.entities.actors,
+      patch.name
+    );
+    newState = updateEntitiesCustomEventName(
+      newState,
+      "triggers",
+      action.id,
+      newState.entities.triggers,
+      patch.name
+    );
+  }
+
+  return editEntity(newState, "customEvents", action.id, patch);
+};
+
+const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
+  let newState = state;
+
+  Object.values(entities).forEach(entity => {
+    if (!entity.script) {
+      return;
+    }
+    const patchEntity = {
+      ...entity,
+      script: mapEvents(entity.script, event => {
+        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+          return event;
+        }
+        if (event.args.customEventId !== id) {
+          return event;
+        }
+        return {
+          ...event,
+          args: {
+            ...event.args,
+            __name: name
+          }
+        };
+      })
+    };
+    newState = editEntity(newState, type, entity.id, patchEntity);
+  });
+
+  return newState;
+};
+
+const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
+  let newState = state;
+  Object.values(entities).forEach(entity => {
+    if (!entity.script) {
+      return;
+    }
+    const patchEntity = {
+      ...entity,
+      script: mapEvents(entity.script, event => {
+        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+          return event;
+        }
+        if (event.args.customEventId !== id) {
+          return event;
+        }
+        return {
+          ...event,
+          children: {
+            script: [...script]
+          }
+        };
+      })
+    };
+    newState = editEntity(newState, type, entity.id, patchEntity);
+  });
+  return newState;
+};
+
+const removeCustomEvent = (state, action) => {
+  return removeEntity(state, "customEvents", action.customEventId);
 };
 
 const addActor = (state, action) => {
@@ -882,6 +1081,10 @@ export const getSceneIds = state => state.entities.present.result.scenes;
 export const getActorsLookup = state => state.entities.present.entities.actors;
 export const getTriggersLookup = state =>
   state.entities.present.entities.triggers;
+export const getCustomEventsLookup = state =>
+  state.entities.present.entities.customEvents;
+export const getCustomEventIds = state =>
+  state.entities.present.result.customEvents;
 export const getBackgroundsLookup = state =>
   state.entities.present.entities.backgrounds;
 export const getBackgroundIds = state =>
@@ -966,6 +1169,11 @@ export const getScenes = createSelector(
   (sceneIds, scenes) => sceneIds.map(id => scenes[id])
 );
 
+export const getCustomEvents = createSelector(
+  [getCustomEventIds, getCustomEventsLookup],
+  (customEventIds, customEvents) => customEventIds.map(id => customEvents[id])
+);
+
 // Reducer ---------------------------------------------------------------------
 
 export default function project(state = initialState.entities, action) {
@@ -976,6 +1184,10 @@ export default function project(state = initialState.entities, action) {
       return editProject(state, action);
     case EDIT_PROJECT_SETTINGS:
       return editProjectSettings(state, action);
+    case EDIT_CUSTOM_EVENT:
+      return editCustomEvent(state, action);
+    case REMOVE_CUSTOM_EVENT:
+      return removeCustomEvent(state, action);
     case SPRITE_LOAD_SUCCESS:
       return loadSprite(state, action);
     case SPRITE_REMOVE:
@@ -988,6 +1200,8 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
+    case ADD_CUSTOM_EVENT:
+      return addCustomEvent(state, action);
     case ADD_SCENE:
       return addScene(state, action);
     case MOVE_SCENE:

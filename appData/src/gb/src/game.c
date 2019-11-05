@@ -48,6 +48,13 @@ int main()
     OBP0_REG = 0xD2U;
   }  
 
+  #ifdef FAST_CPU
+  if (_cpu == CGB_TYPE)
+  {
+    cpu_fast();
+  }
+  #endif
+
   // Position Window Layer
   WY_REG = MAXWNDPOSY - 7;
   WY_REG = MAXWNDPOSY + 1;

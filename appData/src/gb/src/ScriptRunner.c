@@ -113,7 +113,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetTimerScript_b, 4},     // 0x58
     {Script_ResetTimer_b, 0},         // 0x59
     {Script_RemoveTimerScript_b, 0},  // 0x5A
-    {Script_TextWithAvatar_b, 3}      // 0x5B
+    {Script_TextWithAvatar_b, 3},     // 0x5B
+    {Script_TextMenu_b, 6}            // 0x5C
 };
 
 UBYTE ScriptLastFnComplete();
@@ -236,6 +237,11 @@ UBYTE ScriptLastFnComplete()
   }
 
   if (last_fn == Script_Choice_b && UIIsClosed())
+  {
+    return TRUE;
+  }
+
+  if (last_fn == Script_TextMenu_b && UIIsClosed())
   {
     return TRUE;
   }
