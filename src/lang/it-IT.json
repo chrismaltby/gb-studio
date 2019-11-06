@@ -79,7 +79,7 @@
   "FIELD_SLOWER": "Meno Veloce",
   "FIELD_SCENE_PUSH_STATE_DESCRIPTION": "Inserisci lo stato della scena nella pila.",
   "FIELD_SCENE_POP_STATE_DESCRIPTION": "Rimuovi lo stato della scena dalla pila.",
-  "FIELD_SCENE_POP_ALL_STATE_DESCRIPTION": "Rimuopvi tutti gli stati di scena dalla pila.",
+  "FIELD_SCENE_POP_ALL_STATE_DESCRIPTION": "Rimuovi tutti gli stati di scena dalla pila.",
   "FIELD_SCENE_RESET_STATE_DESCRIPTION": "Ripulisce la pila dagli stati di scena salvati.",
   "FIELD_SLIDE_UNTIL_COLLISION": "Slitta Fino alla Collisione",
   "FIELD_LOOP": "Loop",
