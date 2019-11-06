@@ -20,7 +20,7 @@ void push(WORD l)
     puts("Stack full");
 }
 
-WORD pop()
+WORD pop(void)
 {
   if(sp > 0)
     return stack[--sp];
@@ -29,7 +29,7 @@ WORD pop()
   return 0;
 }
 
-WORD top()
+WORD top(void)
 {
   if(sp > 0)
     return stack[sp-1];
@@ -38,7 +38,7 @@ WORD top()
   return 0;
 }
 
-BYTE read_op()
+BYTE read_op(void)
 {
     if(pos == 0) {
 	gets(s);
@@ -62,7 +62,7 @@ BYTE read_op()
     return NUMBER;
 }
 
-void main()
+void main(void)
 {
   BYTE type;
   WORD op2;
@@ -71,7 +71,7 @@ void main()
   sp = 0;
   pos = 0;
 
-  while((type = read_op(s)) != 0) {
+  while((type = read_op()) != 0) {
     switch(type) {
     case NUMBER:
       push(n);

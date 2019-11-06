@@ -5,15 +5,16 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
-import CustomPalettePicker from "../forms/CustomPalettePicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { FormField, ToggleableFormField, ToggleableCheckBoxField } from "../library/Forms";
+import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape } from "../../reducers/stateShape";
+import Button from "../library/Button";
+import CustomEventNavigation from "./CustomEventNavigation";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -31,9 +32,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar } = this.props;
+    const { project, selectSidebar, addCustomEvent } = this.props;
 
-    if (!project || !project.scenes) {
+    if (!project || !project.scenes || !project.customEvents) {
       return <div />;
     }
 
@@ -92,18 +93,8 @@ class WorldEditor extends Component {
                 rows={3}
               />
             </ToggleableFormField>
-
-            <ToggleableCheckBoxField
-              label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
-              open={settings.customColorsEnabled}
-              onToggle={this.onEditSetting("customColorsEnabled")}
-            >
-              <CustomPalettePicker />
-            </ToggleableCheckBoxField>
           </div>
-        </SidebarColumn>
 
-        <SidebarColumn>
           {scenes.length > 0 && (
             <div>
               <SidebarHeading title={l10n("SIDEBAR_STARTING_SCENE")} />
@@ -193,6 +184,23 @@ class WorldEditor extends Component {
             </div>
           )}
         </SidebarColumn>
+
+        <SidebarColumn>
+          <div>
+            <SidebarHeading title={l10n("SIDEBAR_CUSTOM_EVENTS")} />
+            <CustomEventNavigation />
+            <div style={{ padding: "10px" }}>
+              <Button
+                style={{ width: "100%" }}
+                onClick={() => {
+                  addCustomEvent();
+                }}
+              >
+                {l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
+              </Button>
+            </div>
+          </div>
+        </SidebarColumn>
       </Sidebar>
     );
   }
@@ -202,10 +210,11 @@ WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
   editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired
+  selectSidebar: PropTypes.func.isRequired,
+  addCustomEvent: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state, props) {
+function mapStateToProps(state) {
   const project = state.entities.present.result;
   return {
     project
@@ -215,7 +224,8 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: actions.editProjectSettings,
+  addCustomEvent: actions.addCustomEvent
 };
 
 export default connect(

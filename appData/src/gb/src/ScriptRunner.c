@@ -103,7 +103,18 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetFrame_b, 1},      // 0x4E
     {Script_ActorSetFlip_b, 1},       // 0x4F
     {Script_TextMulti_b, 1},          // 0x50
-    {Script_ActorSetFrameToVal_b, 2}  // 0x51
+    {Script_ActorSetFrameToVal_b, 2}, // 0x51
+    {Script_VariableAddFlags_b, 3},   // 0x52
+    {Script_VariableClearFlags_b, 3}, // 0x53
+    {Script_SoundStartTone_b, 2},     // 0x54
+    {Script_SoundStopTone_b, 0},      // 0x55
+    {Script_SoundPlayBeep_b, 1},      // 0x56
+    {Script_SoundPlayCrash_b, 0},     // 0x57
+    {Script_SetTimerScript_b, 4},     // 0x58
+    {Script_ResetTimer_b, 0},         // 0x59
+    {Script_RemoveTimerScript_b, 0},  // 0x5A
+    {Script_TextWithAvatar_b, 3},     // 0x5B
+    {Script_TextMenu_b, 6}            // 0x5C
 };
 
 UBYTE ScriptLastFnComplete();
@@ -230,6 +241,11 @@ UBYTE ScriptLastFnComplete()
     return TRUE;
   }
 
+  if (last_fn == Script_TextMenu_b && UIIsClosed())
+  {
+    return TRUE;
+  }
+
   if (last_fn == Script_OverlayMoveTo_b && UIAtDest())
   {
     return TRUE;
@@ -249,6 +265,11 @@ UBYTE ScriptLastFnComplete()
   if (last_fn == Script_CameraLock_b && SceneCameraAtDest())
   {
     camera_settings = CAMERA_LOCK_FLAG;
+    return TRUE;
+  }
+
+  if (last_fn == Script_TextWithAvatar_b && UIIsClosed())
+  {
     return TRUE;
   }
 

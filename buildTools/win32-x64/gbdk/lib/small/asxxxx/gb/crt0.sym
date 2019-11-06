@@ -1,0 +1,185 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+"Runtime"
+Symbol Table
+
+    .A                              =  0010 
+    .B                              =  0020 
+    .BANKOV                         =  0002 
+    .BCPD                           =  0069 
+    .BCPS                           =  0068 
+    .BGP                            =  0047 
+    .DIV                            =  0004 
+    .DMA                            =  0046 
+    .DOWN                           =  0008 
+    .DT_IDLE                        =  0066 
+    .DT_RECEIVING                   =  0055 
+    .G_MODE                         =  0001 
+    .HDMA1                          =  0051 
+    .HDMA2                          =  0052 
+    .HDMA3                          =  0053 
+    .HDMA4                          =  0054 
+    .HDMA5                          =  0055 
+    .IE                             =  00FF 
+    .IF                             =  000F 
+    .IO_ERROR                       =  0004 
+    .IO_IDLE                        =  0000 
+    .IO_RECEIVING                   =  0002 
+    .IO_SENDING                     =  0001 
+    .JOY_IFLAG                      =  0010 
+    .KEY1                           =  004D 
+    .LCDC                           =  0040 
+    .LCD_IFLAG                      =  0002 
+    .LEFT                           =  0002 
+    .LY                             =  0044 
+    .LYC                            =  0045 
+    .MAXCURSPOSX                    =  0013 
+    .MAXCURSPOSY                    =  0011 
+    .MAXWNDPOSX                     =  00A6 
+    .MAXWNDPOSY                     =  008F 
+    .MBC1_ROM_PAGE                  =  2000 
+    .MINWNDPOSX                     =  0007 
+    .MINWNDPOSY                     =  0000 
+    .MODE_TABLE                     =  01E0 
+    .M_NO_INTERP                    =  0008 
+    .M_NO_SCROLL                    =  0004 
+    .NEAR_CALLS                     =  0001 
+    .NR10                           =  0010 
+    .NR11                           =  0011 
+    .NR12                           =  0012 
+    .NR13                           =  0013 
+    .NR14                           =  0014 
+    .NR21                           =  0016 
+    .NR22                           =  0017 
+    .NR23                           =  0018 
+    .NR24                           =  0019 
+    .NR30                           =  001A 
+    .NR31                           =  001B 
+    .NR32                           =  001C 
+    .NR33                           =  001D 
+    .NR34                           =  001E 
+    .NR41                           =  0020 
+    .NR42                           =  0021 
+    .NR43                           =  0022 
+    .NR44                           =  0023 
+    .NR50                           =  0024 
+    .NR51                           =  0025 
+    .NR52                           =  0026 
+    .OAM                               **** GX
+    .OBP0                           =  0048 
+    .OBP1                           =  0049 
+    .OCPD                           =  006B 
+    .OCPS                           =  006A 
+    .P1                             =  0000 
+    .RIGHT                          =  0001 
+    .RP                             =  0056 
+    .SB                             =  0001 
+    .SC                             =  0002 
+    .SCREENHEIGHT                   =  0090 
+    .SCREENWIDTH                    =  00A0 
+    .SCX                            =  0043 
+    .SCY                            =  0042 
+    .SELECT                         =  0040 
+    .SIO_IFLAG                      =  0008 
+    .STACK                             **** GX
+    .START                          =  0080 
+    .STAT                           =  0041 
+    .SVBK                           =  0070 
+    .TAC                            =  0007 
+    .TIMA                           =  0005 
+    .TIM_IFLAG                      =  0004 
+    .TMA                            =  0006 
+    .T_MODE                         =  0002 
+    .T_MODE_INOUT                   =  0003 
+    .T_MODE_OUT                     =  0002 
+    .UP                             =  0004 
+    .VBK                            =  004F 
+    .VBL_IFLAG                      =  0001 
+    .WX                             =  004B 
+    .WY                             =  004A 
+  2 .add_JOY                           0046 GR
+  2 .add_LCD                           0034 GR
+  2 .add_SIO                           0040 GR
+  2 .add_TIM                           003A GR
+  2 .add_VBL                           002E GR
+  2 .add_int                           006C GR
+  1 .code_start                        0150 R
+  2 .display_off                       009F GR
+  2 .end_refresh_OAM                   00C0 R
+  1 .header                            0100 R
+    .init                              **** GX
+  1 .int                               0067 R
+  9 .int_0x40                          0009 GR
+  9 .int_0x48                          0019 GR
+  9 .int_0x50                          0029 GR
+  9 .int_0x58                          0039 GR
+  9 .int_0x60                          0049 GR
+  1 .int_JOY                           0060 R
+  1 .int_LCD                           0048 R
+  1 .int_SIO                           0058 R
+  1 .int_TIM                           0050 R
+  1 .int_VBL                           0040 R
+  9 .mode                              0001 GR
+    .refresh_OAM                       **** GX
+  2 .remove_JOY                        0028 GR
+  2 .remove_LCD                        0016 GR
+  2 .remove_SIO                        0022 GR
+  2 .remove_TIM                        001C GR
+  2 .remove_VBL                        0010 GR
+  2 .remove_int                        004C GR
+  2 .reset                             0101 GR
+  2 .serial_IO                         00C0 GR
+  2 .set_mode                          0000 GR
+  2 .start_refresh_OAM                 00B6 R
+  9 .sys_time                          0007 GR
+  2 .vbl                               0077 R
+  9 .vbl_done                          0005 GR
+  2 .wait_vbl_done                     0088 GR
+    __RGBDS__                       =  0000 
+  9 __cpu                              0000 GR
+  9 __current_bank                     0006 GR
+  9 __io_in                            0003 GR
+  9 __io_out                           0002 GR
+  9 __io_status                        0004 GR
+  2 __printTStates                     0189 GR
+  2 _add_JOY                           0175 GR
+  2 _add_LCD                           0154 GR
+  2 _add_SIO                           016A GR
+  2 _add_TIM                           015F GR
+  2 _add_VBL                           0149 GR
+  2 _clock                             0180 GR
+  2 _disable_interrupts                00FF GR
+  2 _display_off                       009F GR
+  2 _enable_interrupts                 00FD GR
+  1 _exit                              01D2 GR
+  2 _get_mode                          00F8 GR
+    _main                              **** GX
+  A _malloc_heap_start                 0000 GR
+  2 _mode                              00EF GR
+  2 _remove_JOY                        013E GR
+  2 _remove_LCD                        011D GR
+  2 _remove_SIO                        0133 GR
+  2 _remove_TIM                        0128 GR
+  2 _remove_VBL                        0112 GR
+  2 _reset                             0101 GR
+  2 _set_interrupts                    0107 GR
+  9 _sys_time                          0007 GR
+  2 _wait_vbl_done                     0088 GR
+  2 banked_call                        018A GR
+  2 banked_ret                         01A3 GR
+  5 gsinit                             0000 GR
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+"Runtime"
+Area Table
+
+   0 _CODE                              size    0   flags 0
+   1 _HEADER                            size  1E1   flags C
+   2 _HOME                              size  1AC   flags 0
+   3 _BASE                              size    0   flags 0
+   4 _LIT                               size    0   flags 0
+   5 _GSINIT                            size    0   flags 0
+   6 _GSINITTAIL                        size    1   flags 0
+   7 _GSFINAL                           size    0   flags 0
+   8 _DATA                              size    0   flags 0
+   9 _BSS                               size   59   flags 0
+   A _HEAP                              size    0   flags 0

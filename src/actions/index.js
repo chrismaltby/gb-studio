@@ -32,6 +32,17 @@ const asyncAction = async (
   }
 };
 
+export const setGlobalError = (message, filename, line, col, stackTrace) => {
+  return {
+    type: types.SET_GLOBAL_ERROR,
+    message,
+    filename,
+    line,
+    col,
+    stackTrace
+  };
+};
+
 export const resizeWorldSidebar = width => {
   return {
     type: types.SIDEBAR_WORLD_RESIZE,
@@ -61,7 +72,20 @@ export const loadProject = path => async dispatch => {
     types.PROJECT_LOAD_SUCCESS,
     types.PROJECT_LOAD_FAILURE,
     async () => {
-      const shouldOpenProject = await migrateWarning(path);
+      let shouldOpenProject = false;
+      try {
+        shouldOpenProject = await migrateWarning(path);
+      } catch (error) {
+        dispatch(
+          setGlobalError(
+            error.message,
+            error.filename,
+            error.lineno,
+            error.colno,
+            error.stack
+          )
+        );
+      }
       if (!shouldOpenProject) {
         throw new Error("Cancelled opening project");
       }
@@ -195,9 +219,40 @@ export const pauseMusic = () => {
   };
 };
 
+export const playSoundFxBeep = pitch => {
+  return {
+    type: types.PLAY_SOUNDFX_BEEP,
+    pitch
+  };
+};
+
+export const playSoundFxTone = (frequency, duration) => {
+  return {
+    type: types.PLAY_SOUNDFX_TONE,
+    frequency,
+    duration
+  };
+};
+
+export const playSoundFxCrash = () => {
+  return {
+    type: types.PLAY_SOUNDFX_CRASH
+  };
+};
+
+export const pauseSoundFx = () => {
+  return {
+    type: types.PAUSE_SOUNDFX
+  };
+};
+
 export const saveProject = () => async (dispatch, getState) => {
   const state = getState();
-  if (!state.document.loaded || state.document.saving) {
+  if (
+    !state.document.loaded ||
+    state.document.saving ||
+    !state.document.modified
+  ) {
     return;
   }
   await asyncAction(
@@ -393,6 +448,14 @@ export const selectWorld = () => {
   return { type: types.SELECT_WORLD };
 };
 
+export const selectCustomEvent = id => {
+  return { type: types.SELECT_CUSTOM_EVENT, id };
+};
+
+export const addCustomEvent = () => {
+  return { type: types.ADD_CUSTOM_EVENT, id: uuid() };
+};
+
 export const editWorld = values => {
   return { type: types.EDIT_WORLD, values };
 };
@@ -403,6 +466,14 @@ export const editProject = values => {
 
 export const editProjectSettings = values => {
   return { type: types.EDIT_PROJECT_SETTINGS, values };
+};
+
+export const editCustomEvent = (id, values) => {
+  return { type: types.EDIT_CUSTOM_EVENT, id, values };
+};
+
+export const removeCustomEvent = customEventId => {
+  return { type: types.REMOVE_CUSTOM_EVENT, customEventId };
 };
 
 export const editPlayerStartAt = (sceneId, x, y) => {

@@ -3,6 +3,8 @@
 @import url("./../components/forms/DirectionPicker.css");
 @import url("./../components/forms/CustomPalettePicker.css");
 @import url("./../components/forms/InputPicker.css");
+@import url("./../components/forms/CartPicker.css");
+@import url("./../components/forms/CustomControlsPicker.css");
 @import url("./../components/editors/Sidebar.css");
 @import url("./../components/editors/EditorSidebar.css");
 @import url("./../components/assets/FilesSidebar.css");
@@ -18,6 +20,7 @@
 @import url("./../components/world/EventHelper.css");
 @import url("./../components/world/World.css");
 @import url("./../components/world/WorldHelp.css");
+@import url("./../components/library/GlobalError.css");
 @import url("./../components/library/Toolbar.css");
 @import url("./../components/library/Menu.css");
 @import url("./../components/library/Forms.css");
@@ -25,6 +28,8 @@
 @import url("./../components/library/PageContent.css");
 @import url("./../components/library/Button.css");
 @import url("./../components/library/GBScriptEditor.css");
+@import url("./../components/library/GBControlsPreview.css");
+@import url("./../components/library/CartPreview.css");
 @import url("./../components/script/ScriptEventBlock.css");
 @import url("./../components/script/AddCommandButton.css");
 @import url("./../components/script/ScriptEditor.css");
@@ -33,6 +38,7 @@ html,
 body {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 body {

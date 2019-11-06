@@ -205,31 +205,11 @@ XAudioServer.prototype.initializeWebAudio = function () {
     }
 	XAudioJSWebAudioAudioNode.onaudioprocess = XAudioJSWebAudioEvent;
 	var gainNode = XAudioJSWebAudioContextHandle.createGain();
-	var scriptNode = XAudioJSWebAudioContextHandle.createScriptProcessor(4096, 1, 1);
-
-	scriptNode.onaudioprocess = function(audioProcessingEvent) {
-		var inputBuffer = audioProcessingEvent.inputBuffer;
-		var outputBuffer = audioProcessingEvent.outputBuffer;
-
-		// Loop through the output channels (in this case there is only one)
-		for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-		  var inputData = inputBuffer.getChannelData(channel);
-		  var outputData = outputBuffer.getChannelData(channel);
-	  
-		  // Loop through the 4096 samples
-		  for (var sample = 0; sample < inputBuffer.length; sample++) {
-			// make output equal to the same as the input
-			outputData[sample] = 0.5 + (inputData[sample] / 2);
-		  }
-		}
-	  }
-
-	XAudioJSWebAudioAudioNode.connect(scriptNode); //Connect the audio processing event to a handling function so we can manipulate output
-	scriptNode.connect(gainNode);
+	XAudioJSWebAudioAudioNode.connect(gainNode); //Connect the audio processing event to a handling function so we can manipulate output
 	//Connect the audio processing event to a handling function so we can manipulate output
 	gainNode.connect(XAudioJSWebAudioContextHandle.destination);
-	// Ramp up gain to avoid pop when initialised
-	gainNode.gain.value = 0.001;
+	// Ramp up gain to avoid pop when initialised, these can be relaxed/removed with the fixed dc offset in GameBoyCore.js no longer popping
+	gainNode.gain.value = 0.2;
 	gainNode.gain.exponentialRampToValueAtTime(
 	  1,
 	  XAudioJSWebAudioContextHandle.currentTime + 0.5
@@ -452,7 +432,7 @@ var XAudioJSMediaStreamWorker = null;
 var XAudioJSMediaStreamBuffer = [];
 var XAudioJSMediaStreamSampleRate = 44100;
 var XAudioJSMozAudioSampleRate = 44100;
-var XAudioJSSamplesPerCallback = 2048;			//Has to be between 2048 and 4096 (If over, then samples are ignored, if under then silence is added).
+var XAudioJSSamplesPerCallback = 4096;			//Has to be between 2048 and 4096 (If over, then samples are ignored, if under then silence is added, 4096 fixes chrome android).
 var XAudioJSFlashTransportEncoder = null;
 var XAudioJSMediaStreamLengthAliasCounter = 0;
 var XAudioJSBinaryString = [];

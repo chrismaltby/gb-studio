@@ -30,7 +30,8 @@ const sectionNames = {
   ui: l10n("NAV_UI_ELEMENTS"),
   music: l10n("NAV_MUSIC"),
   dialogue: l10n("NAV_DIALOGUE_REVIEW"),
-  build: l10n("NAV_BUILD_AND_RUN")
+  build: l10n("NAV_BUILD_AND_RUN"),
+  settings: l10n("NAV_SETTINGS")
 };
 
 class AppToolbar extends Component {

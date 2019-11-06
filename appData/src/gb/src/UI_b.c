@@ -104,50 +104,30 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
 {
   UBYTE i, j;
   set_win_tiles(x, y, 1, 1, ui_frame_tl_tiles);
-  set_win_tiles(x, y + height - 1, 1, 1, ui_frame_bl_tiles);
-  set_win_tiles(x + width - 1, y, 1, 1, ui_frame_tr_tiles);
-  set_win_tiles(x + width - 1, y + height - 1, 1, 1, ui_frame_br_tiles);
+  set_win_tiles(x, height + 1, 1, 1, ui_frame_bl_tiles);
+  set_win_tiles(x + width, 0, 1, 1, ui_frame_tr_tiles);
+  set_win_tiles(x + width, height + 1, 1, 1, ui_frame_br_tiles);
 
-  for (i = x + 1; i < (x + width - 1); i++)
+  for (j = 1; j != height + 1; j++)
   {
-    set_win_tiles(i, y, 1, 1, ui_frame_t_tiles);
-    set_win_tiles(i, y + height - 1, 1, 1, ui_frame_b_tiles);
-    for (j = y + 1; j < (y + height - 1); j++)
+    set_win_tiles(x, j, 1, 1, ui_frame_l_tiles);
+    set_win_tiles(x + width, j, 1, 1, ui_frame_r_tiles);
+    for (i = 1; i != width; ++i)
     {
       set_win_tiles(i, j, 1, 1, ui_frame_bg_tiles);
     }
   }
-  for (i = y + 1; i < (y + height - 1); i++)
+
+  for (i = 1; i != width; ++i)
   {
-    set_win_tiles(x, i, 1, 1, ui_frame_l_tiles);
-    set_win_tiles(x + width - 1, i, 1, 1, ui_frame_r_tiles);
+    set_win_tiles(i, 0, 1, 1, ui_frame_t_tiles);
+    set_win_tiles(i, height + 1, 1, 1, ui_frame_b_tiles);
   }
 }
 
 void UIDrawDialogueFrame_b(UBYTE h)
 {
-  UBYTE x, y;
-
-  set_win_tiles(0, 0, 1, 1, ui_frame_tl_tiles);
-  set_win_tiles(0, h + 1, 1, 1, ui_frame_bl_tiles);
-  set_win_tiles(19, 0, 1, 1, ui_frame_tr_tiles);
-  set_win_tiles(19, h + 1, 1, 1, ui_frame_br_tiles);
-
-  for (y = 1; y != h + 1; y++)
-  {
-    set_win_tiles(0, y, 1, 1, ui_frame_l_tiles);
-    set_win_tiles(19, y, 1, 1, ui_frame_r_tiles);
-    for (x = 1; x != 19; ++x)
-    {
-      set_win_tiles(x, y, 1, 1, ui_frame_bg_tiles);
-    }
-  }
-
-  for (x = 1; x != 19; ++x)
-  {
-    set_win_tiles(x, 0, 1, 1, ui_frame_t_tiles);
-    set_win_tiles(x, h + 1, 1, 1, ui_frame_b_tiles);
-  }
+  UIDrawFrame_b(0, 0, 19, h);
 }
 
 void UISetColor_b(UBYTE color)

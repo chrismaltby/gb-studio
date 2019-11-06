@@ -8,9 +8,16 @@
   height: 30px;
   line-height: 30px;
   padding: 5px 0;
+  margin: 0px auto;
   margin-bottom: 20px;
+  max-width: 1000px;
+}
+
+.PageHeader p {
+  margin: 10px auto;
+  max-width: 1000px;
 }
 
 .PageHeader p:last-child {
-  margin-bottom: 0;
+  margin-bottom: 0px;
 }

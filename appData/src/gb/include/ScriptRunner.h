@@ -108,5 +108,16 @@ void Script_ActorSetFrame_b();
 void Script_ActorSetFlip_b();
 void Script_TextMulti_b();
 void Script_ActorSetFrameToVal_b();
+void Script_VariableAddFlags_b();
+void Script_VariableClearFlags_b();
+void Script_SoundStartTone_b();
+void Script_SoundStopTone_b();
+void Script_SoundPlayBeep_b();
+void Script_SoundPlayCrash_b();
+void Script_SetTimerScript_b();
+void Script_ResetTimer_b();
+void Script_RemoveTimerScript_b();
+void Script_TextWithAvatar_b();
+void Script_TextMenu_b();
 
 #endif

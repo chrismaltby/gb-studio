@@ -8,28 +8,38 @@ const ActorCanvas = ({
   spriteSheetId,
   movementType,
   direction,
+  overrideDirection,
   frame,
   totalFrames
-}) => (
-  <SpriteSheetCanvas
-    spriteSheetId={spriteSheetId}
-    direction={movementType === "static" && !direction ? "down" : direction}
-    frame={
-      !direction ? (frame !== null ? frame || 0 : frame || 0) % totalFrames : 0
-    }
-  />
-);
+}) => {
+  let spriteFrame = frame || 0;
+  if (movementType !== "static") {
+    spriteFrame = frame % totalFrames;
+  } else if (overrideDirection) {
+    spriteFrame = 0;
+  }
+
+  return (
+    <SpriteSheetCanvas
+      spriteSheetId={spriteSheetId}
+      direction={direction}
+      frame={spriteFrame}
+    />
+  );
+};
 
 ActorCanvas.propTypes = {
   spriteSheetId: PropTypes.string.isRequired,
   movementType: PropTypes.string.isRequired,
   direction: PropTypes.string,
+  overrideDirection: PropTypes.string,
   frame: PropTypes.number,
   totalFrames: PropTypes.number
 };
 
 ActorCanvas.defaultProps = {
   direction: undefined,
+  overrideDirection: undefined,
   frame: undefined,
   totalFrames: 1
 };
@@ -40,11 +50,13 @@ function mapStateToProps(state, props) {
     state.entities.present.entities.spriteSheets[spriteSheetId];
   const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
   const totalFrames = framesPerDirection(movementType, spriteFrames);
+
   return {
     spriteSheetId,
     movementType,
-    direction: props.direction || direction,
-    frame: props.frame || frame,
+    direction: props.direction !== undefined ? props.direction : direction,
+    overrideDirection: props.direction,
+    frame: props.frame !== undefined ? props.frame % totalFrames : frame,
     totalFrames
   };
 }

@@ -55,6 +55,8 @@ const patchROM = romData => {
   return romData;
 };
 
+let firstBuild = true;
+
 const makeBuild = ({
   buildType = "rom",
   buildRoot = "/tmp",
@@ -80,9 +82,11 @@ const makeBuild = ({
       await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
     } catch (e) {
       await copy(buildToolsPath, tmpBuildToolsPath, {
-        overwrite: false
+        overwrite: firstBuild
       });
     }
+    
+    firstBuild = false;
 
     env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
@@ -93,19 +97,23 @@ const makeBuild = ({
     
     // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
-    if(settings.customColorsEnabled) {
+    if (settings.customColorsEnabled) {
       gameHeader = gameHeader
-        .replace(/RGB\(28, 31, 26\)/g, convertHexTo15BitRGB(settings.customColorsWhite))
-        .replace(/RGB\(17, 24, 14\)/g, convertHexTo15BitRGB(settings.customColorsLight))
-        .replace(/RGB\(6, 13, 10\)/g, convertHexTo15BitRGB(settings.customColorsDark))
-        .replace(/RGB\(1, 3, 4\)/g, convertHexTo15BitRGB(settings.customColorsBlack));
-    } else {
+        .replace(/RGB\(29, 31, 28\)/g, convertHexTo15BitRGB(settings.customColorsWhite))
+        .replace(/RGB\(22, 30, 17\)/g, convertHexTo15BitRGB(settings.customColorsLight))
+        .replace(/RGB\(10, 19, 15\)/g, convertHexTo15BitRGB(settings.customColorsDark))
+        .replace(/RGB\(4, 5, 10\)/g, convertHexTo15BitRGB(settings.customColorsBlack));
+    }
+    if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
       gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
+    }
+    if (!settings.gbcFastCPUEnabled) {
+      gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
     }
     await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
-    // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors not enabled
-    if (process.platform !== "win32" && !settings.customColorsEnabled)
+    // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors and fast CPU are not enabled
+    if (process.platform !== "win32" && !settings.customColorsEnabled && !settings.gbcFastCPUEnabled)
     {
       let makeFile = await fs.readFile(`${buildRoot}/Makefile`, "utf8");
       makeFile = makeFile.replace("-Wl-yp0x143=0x80", "");
@@ -114,7 +122,8 @@ const makeBuild = ({
 
     const makeBat = await buildMakeBat(buildRoot, {
       CART_TYPE: env.CART_TYPE,
-      customColorsEnabled: settings.customColorsEnabled
+      customColorsEnabled: settings.customColorsEnabled,
+      gbcFastCPUEnabled: settings.gbcFastCPUEnabled
     });
     await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 

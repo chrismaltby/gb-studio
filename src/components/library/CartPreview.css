@@ -1,0 +1,23 @@
+.CartPreview {
+  border-radius: 8px;
+  width: 100%;
+  height: 190px;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg-color);
+}
+
+.CartPreview--Selected {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 3px var(--highlight-color);
+}
+
+.CartPreview svg {
+  width: 100%;
+  height: 160px;
+}

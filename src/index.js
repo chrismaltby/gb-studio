@@ -10,6 +10,7 @@ import Path from "path";
 import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
+import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
 
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
@@ -183,6 +184,8 @@ const openHelp = async helpPage => {
     shell.openExternal("https://www.gbstudio.dev/docs/ui-elements/");
   } else if (helpPage === "music") {
     shell.openExternal("https://www.gbstudio.dev/docs/music/");
+  } else if (helpPage === "error") {
+    shell.openExternal("https://www.gbstudio.dev/docs/error/");
   }
 };
 
@@ -310,10 +313,9 @@ ipcMain.on("document-unmodified", () => {
 });
 
 ipcMain.on("project-loaded", (event, project) => {
-  const { showCollisions, showConnections, cartType = "1B" } = project.settings;
+  const { showCollisions, showConnections } = project.settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnections").checked = showConnections;
-  menu.ref().getMenuItemById(`cart${cartType}`).checked = true;
 });
 
 ipcMain.on("set-menu-plugins", (event, plugins) => {
@@ -398,6 +400,13 @@ menu.on("updateSetting", (setting, value) => {
     menu.ref().getMenuItemById("themeDark").checked = value === "dark";
     splashWindow && splashWindow.webContents.send("update-theme", value);
     mainWindow && mainWindow.webContents.send("update-theme", value);
+  } else if (setting === "locale") {
+    const locales = require("./lib/helpers/l10n").locales;
+    menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
+    for (let locale of locales) {
+      menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
+    }
+    switchLanguageDialog();
   } else {
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }

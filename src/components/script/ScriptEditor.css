@@ -458,3 +458,6 @@
 .EditorSidebar .ActionMini__Form .DirectionPicker__Button {
   margin-top: 0;
 }
+.EventComment {
+  background: var(--comment-event-color);
+}

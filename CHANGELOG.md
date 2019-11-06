@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Norwegian localisation. [@thomas-alrek](https://github.com/thomas-alrek)
+- CameraMoveTo speed fixes [@RichardULZ](https://github.com/RichardULZ)
+- Fix for issue with multiframe actors animating when moving [@RichardULZ](https://github.com/RichardULZ)
+- Fix for issue with cursor position moving while editing dialogue [@MattTuttle](https://github.com/MattTuttle)
+- Add support for GameBoy Color palettes [@fydo](https://github.com/fydo)
+- Add Settings section grouping project settings together and adding settings for custom keyboard controls and custom HTML header
+- Fix issue where copy / pasting scenes would break actor connections in scripts
+- Add support for bit flag variables in scripting. [@pau-tomas](https://github.com/pau-tomas) 
 
 ## [1.1.0]
 
