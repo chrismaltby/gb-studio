@@ -7,10 +7,12 @@ export const fields = [
   {
     type: "events",
     key: "script",
+    hide: true,
     defaultValue: []
   },
   {
-    type: "hidden",
+    type: "text",
+    hide: true,
     key: "customEventId"
   }
 ];

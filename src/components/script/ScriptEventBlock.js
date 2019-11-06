@@ -327,7 +327,7 @@ class ScriptEventField extends Component {
     const { eventId, field, value, args } = this.props;
 
     let label = field.label;
-    if (label) {
+    if (label && label.replace) {
       label = label.replace(/\$\$([^$]*)\$\$/g, (match, key) => args[key] || 0);
     }
 
@@ -464,6 +464,9 @@ class ScriptEventBlock extends Component {
   renderFields = fields => {
     const { id, value, renderEvents, onChange } = this.props;
     return fields.map((field, index) => {
+      if (field.hide) {
+        return null;
+      }
       // Determine if field conditions are met and hide if not
       if (field.conditions) {
         const showField = field.conditions.reduce((memo, condition) => {
@@ -506,7 +509,7 @@ class ScriptEventBlock extends Component {
 
   render() {
     const { command, id, value, renderEvents, onChange } = this.props;
-    const fields = (events[command] && events[command].fields) || [];
+    const fields = this.getFields();
     return <div className="ScriptEventBlock">{this.renderFields(fields)}</div>;
   }
 }
