@@ -40,6 +40,11 @@
   color: var(--script-command-text-color);
 }
 
+.ActionMini:nth-child(odd) .ActionMini__Command {
+  background: var(--script-command-bg2-color);
+  filter: brightness(110%);
+}
+
 .ActionMini__Command:hover {
   cursor: move;
 }
@@ -439,6 +444,6 @@
 .EditorSidebar .ActionMini__Form .DirectionPicker__Button {
   margin-top: 0;
 }
-.EventComment {
+.ActionMini .ActionMini__Command.EventComment {
   background: var(--comment-event-color);
 }

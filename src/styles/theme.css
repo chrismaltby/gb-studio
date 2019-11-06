@@ -44,6 +44,7 @@
 
   --script-command-text-color: #3b3a3b;
   --script-command-bg-color: #efefef;
+  --script-command-bg2-color: #cccccc;
   --script-editor-bg-color: #ffffff;
   --script-review-text-color: #999999;
 
@@ -55,5 +56,5 @@
   --conditional-level3: #c8e6c9;
   --conditional-level4: #d1c4e9;
 
-  --comment-event-color: #84E687;
+  --comment-event-color: #84e687;
 }
