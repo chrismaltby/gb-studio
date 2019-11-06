@@ -359,7 +359,7 @@ class ActionMini extends Component {
                 command={command}
                 value={action.args}
                 onChange={this.onEdit}
-                renderEvents={key => (
+                renderEvents={key => command !== EVENT_CALL_CUSTOM_EVENT && (
                   <div className="ActionMini__Children" key={key}>
                     {(
                       action.children[key] || [
