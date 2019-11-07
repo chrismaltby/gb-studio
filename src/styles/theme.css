@@ -44,7 +44,6 @@
 
   --script-command-text-color: #3b3a3b;
   --script-command-bg-color: #efefef;
-  --script-command-bg2-color: #cccccc;
   --script-editor-bg-color: #ffffff;
   --script-review-text-color: #999999;
 
@@ -56,5 +55,12 @@
   --conditional-level3: #c8e6c9;
   --conditional-level4: #d1c4e9;
 
-  --comment-event-color: #84e687;
+  --script-command-bg-color-alt: #dedede;
+  --conditional-level1-alt: #81d4fa;
+  --conditional-level2-alt: #ffab91;
+  --conditional-level3-alt: #a5d6a7;
+  --conditional-level4-alt: #b39ddb;
+
+  --comment-event-color: #dcedc8;
+  --comment-event-color-alt: #c5e1a5;
 }

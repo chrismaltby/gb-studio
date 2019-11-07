@@ -43,8 +43,7 @@
   --sidebar-edge-color: #000000;
 
   --script-command-text-color: #ffffff;
-  --script-command-bg-color: #384142;
-  --script-command-bg2-color: #212324;
+  --script-command-bg-color: #0a0e0e;
   --script-editor-bg-color: #1f2323;
   --script-review-text-color: #ffffff;
 
@@ -55,8 +54,15 @@
   --conditional-level2: #bf360c;
   --conditional-level3: #1b5e20;
   --conditional-level4: #311b92;
-  
-  --comment-event-color: rgb(107, 187, 110);
+
+  --script-command-bg-color-alt: #101515;
+  --conditional-level1-alt: #0277bd;
+  --conditional-level2-alt: #d84315;
+  --conditional-level3-alt: #2e7d32;
+  --conditional-level4-alt: #4527a0;
+
+  --comment-event-color: #8bc34a;
+  --comment-event-color-alt: #7cb342;
 }
 
 .App .GBScriptEditor .ace_gutter {
