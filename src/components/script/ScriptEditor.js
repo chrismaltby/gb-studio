@@ -221,19 +221,21 @@ class ActionMini extends Component {
     }
 
     const open = action.args && !action.args.__collapse;
-    const elseOpen = action.args && !action.args.__collapseElse;
+    const childKeys = action.children ? Object.keys(action.children) : [];
+    const isComment = command === EVENT_COMMENT;
     const commented = action.args && action.args.__comment;
 
     const eventName =
-      (action.args.__label ? `${action.args.__label}: ` : "") +
-      (action.args.__name ||
-        l10n(command) ||
-        (events[command] && events[command].name) ||
-        command);
-    const elseName = `${l10n("FIELD_ELSE")} - ${eventName}`;
+      action.args.__name ||
+      l10n(command) ||
+      (events[command] && events[command].name) ||
+      command;
 
-    const childKeys = action.children ? Object.keys(action.children) : [];
-    const isComment = command === EVENT_COMMENT;
+    const labelName = action.args.__label
+      ? action.args.__label
+      : isComment && action.args.text;
+
+    const hoverName = labelName || eventName;
 
     return connectDropTarget(
       connectDragPreview(
@@ -255,30 +257,19 @@ class ActionMini extends Component {
               <div
                 className={cx("ActionMini__Command", {
                   "ActionMini__Command--Open": open,
-                  EventComment: isComment
+                  EventComment: isComment || commented
                 })}
                 onClick={this.toggleOpen}
               >
                 <TriangleIcon />{" "}
-                {action.args.__label ? (
+                {commented || isComment ? <span>// </span> : ""}
+                {labelName ? (
                   <span>
-                    {commented ? "// " : ""}
-                    {action.args.__label}
-                    <small>
-                      {action.args.__name ||
-                        l10n(command) ||
-                        (events[command] && events[command].name) ||
-                        command}
-                    </small>
+                    {labelName}
+                    <small>{eventName}</small>
                   </span>
                 ) : (
-                  <span>
-                    {commented ? "// " : ""}
-                    {action.args.__name ||
-                      l10n(command) ||
-                      (events[command] && events[command].name) ||
-                      command}
-                  </span>
+                  <span>{eventName}</span>
                 )}
               </div>
             )}
@@ -388,7 +379,7 @@ class ActionMini extends Component {
                     ))}
                     <div
                       className="ActionMini__ChildrenBorder"
-                      title={eventName}
+                      title={hoverName}
                     />
                   </div>
                 )}
