@@ -536,6 +536,10 @@
   border-top: 1px solid var(--sidebar-border-color);
 }
 
+.ScriptEditor > .ActionMini--Add:first-child {
+  border-top: 0;
+}
+
 .ActionMini__Children > .ActionMini--Add:first-child {
   border-top: 1px solid var(--sidebar-border-color);
 }
