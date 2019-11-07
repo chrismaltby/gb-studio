@@ -1,6 +1,6 @@
 import l10n from "../helpers/l10n";
 
-export const id = "EVENT_CASE";
+export const id = "EVENT_SWITCH";
 
 export const fields = [].concat(
   [
@@ -11,11 +11,11 @@ export const fields = [].concat(
     },
     {
       key: "choices",
-      label: "Number of cases",
+      label: l10n("FIELD_NUMBER_OF_OPTIONS"),
       type: "number",
       min: 1,
       max: 16,
-      defaultValue: 1
+      defaultValue: 2
     }
   ],
   Array(16)
@@ -49,7 +49,7 @@ export const fields = [].concat(
         type: "number",
         min: 0,
         max: 255,
-        defaultValue: i
+        defaultValue: i + 1
       });
       arr.push({
         key: `true${i}`,

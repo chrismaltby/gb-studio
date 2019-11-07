@@ -202,7 +202,7 @@
   "BUILD_CLEAR": "Clear",
 
   "// 9": "Scripting Events -----------------------------------------",
-  "EVENT_SWITCH_SCENE": "Scene: Switch Scene",
+  "EVENT_SWITCH_SCENE": "Scene: Change Scene",
   "EVENT_WAIT": "Wait",
   "EVENT_CAMERA_SHAKE": "Camera: Shake",
   "EVENT_IF_TRUE": "If Variable Is 'True'",
@@ -284,7 +284,7 @@
   "EVENT_ACTOR_SET_FRAME_TO_VALUE": "Actor: Set Animation Frame Using Variable",
   "EVENT_CODE": "Code: Custom Script",
   "EVENT_NOTES": "Notes",
-  "EVENT_CASE": "Case Variable Value",
+  "EVENT_SWITCH": "Switch",
   "EVENT_SET_FLAGS": "Variable: Set Flags",
   "EVENT_ADD_FLAGS": "Variable: Add Flags",
   "EVENT_CLEAR_FLAGS": "Variable: Clear Flags",
