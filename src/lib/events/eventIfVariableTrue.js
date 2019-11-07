@@ -1,3 +1,5 @@
+import l10n from "../helpers/l10n";
+
 export const id = "EVENT_IF_TRUE";
 
 export const fields = [
@@ -9,6 +11,12 @@ export const fields = [
   {
     key: "true",
     type: "events"
+  },
+  {
+    key: "__collapseElse",
+    label: l10n("FIELD_ELSE"),
+    type: "collapsable",
+    defaultValue: false
   },
   {
     key: "false",

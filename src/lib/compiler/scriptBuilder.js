@@ -577,6 +577,83 @@ class ScriptBuilder {
     });
   };
 
+  caseVariableValue = (variable, cases = {}, falsePath = []) => {
+    const output = this.output;
+    const { variables, compileEvents } = this.options;
+    const variableIndex = getVariableIndex(variable, variables);
+    const caseKeys = Object.keys(cases);
+    const numCases = caseKeys.length;
+    const caseStartPtrs = [];
+    const caseBreakPtrs = [];
+
+    if (numCases === 0) {
+      // If no cases defined run default path
+      if (typeof falsePath === "function") {
+        falsePath();
+      } else if (falsePath) {
+        compileEvents(falsePath);
+      }
+    } else {
+      // Loop through cases and build IF_VALUE commands
+      for (let i = 0; i < numCases; i++) {
+        output.push(cmd(IF_VALUE));
+        output.push(hi(variableIndex));
+        output.push(lo(variableIndex));
+        output.push(operatorDec("=="));
+        output.push(caseKeys[i] || 0);
+        caseStartPtrs[i] = output.length;
+        output.push("PTR_PLACEHOLDER1");
+        output.push("PTR_PLACEHOLDER2");
+      }
+
+      // Default path
+      if (typeof falsePath === "function") {
+        falsePath();
+      } else if (falsePath) {
+        compileEvents(falsePath);
+      }
+
+      // Set placeholder for jump to end of case statement
+      output.push(cmd(JUMP));
+      const endPtrIndex = output.length;
+      output.push("PTR_PLACEHOLDER1");
+      output.push("PTR_PLACEHOLDER2");
+
+      // Loop through cases to build branches
+      for (let i = 0; i < numCases; i++) {
+        const truePointer = output.length;
+        const truePtrIndex = caseStartPtrs[i];
+        output[truePtrIndex] = truePointer >> 8;
+        output[truePtrIndex + 1] = truePointer & 0xff;
+
+        const truePath = cases[caseKeys[i]] || [];
+        if (typeof truePath === "function") {
+          truePath();
+        } else if (truePath) {
+          compileEvents(truePath);
+        }
+
+        // Store placeholders for breaks to end of case statement
+        output.push(cmd(JUMP));
+        caseBreakPtrs[i] = output.length;
+        output.push("PTR_PLACEHOLDER1");
+        output.push("PTR_PLACEHOLDER2");
+      }
+
+      // Fill default path break placeholder
+      const endIfPointer = output.length;
+      output[endPtrIndex] = endIfPointer >> 8;
+      output[endPtrIndex + 1] = endIfPointer & 0xff;
+
+      // Fill case paths break placeholders
+      for (let i = 0; i < numCases; i++) {
+        const breakPtrIndex = caseBreakPtrs[i];
+        output[breakPtrIndex] = endIfPointer >> 8;
+        output[breakPtrIndex + 1] = endIfPointer & 0xff;
+      }
+    }
+  };
+
   ifVariableCompare = (
     variableA,
     operator,

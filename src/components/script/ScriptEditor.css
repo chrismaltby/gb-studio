@@ -61,23 +61,35 @@
 
 /* Conditional Level 1 */
 
-.ActionMini--Conditional {
+.ActionMini--Conditional > .ActionMini__Content > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level1);
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level1);
 }
 
-.ActionMini--Conditional > .ActionMini__Content > .ActionMini__Else {
-  padding-left: 0px;
+.ActionMini--Conditional .ActionMini__Content .ActionMini__Else {
   background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional .ActionMini__Content .FormField + .ActionMini__Else {
+  margin-top: 10px;
+}
+
+.ActionMini--Conditional
+  .ActionMini__Content
+  .ActionMini__Children
+  + .ActionMini__Else {
+  margin-top: 0;
 }
 
 /* Conditional Level 2 */
 
-.ActionMini--Conditional .ActionMini--Conditional {
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level2);
 }
 
@@ -85,21 +97,23 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level2);
 }
 
 .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level2);
 }
 
 /* Conditional Level 3 */
 
-.ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level3);
 }
 
@@ -108,16 +122,14 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level3);
 }
 
 .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level3);
 }
 
@@ -126,7 +138,9 @@
 .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level4);
 }
 
@@ -136,7 +150,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level4);
 }
 
@@ -144,9 +157,8 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level4);
 }
 
@@ -156,7 +168,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level1);
 }
 
@@ -167,7 +181,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level1);
 }
 
@@ -176,9 +189,8 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level1);
 }
 
@@ -189,7 +201,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level2);
 }
 
@@ -201,7 +215,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level2);
 }
 
@@ -211,9 +224,8 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level2);
 }
 
@@ -225,7 +237,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level3);
 }
 
@@ -238,7 +252,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level3);
 }
 
@@ -249,9 +262,8 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level3);
 }
 
@@ -264,7 +276,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level4);
 }
 
@@ -278,7 +292,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level4);
 }
 
@@ -290,14 +303,17 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level4);
 }
 
 .ActionMini__Children > .ActionMini--Add:first-child {
   border-top: 1px solid var(--sidebar-border-color);
+}
+
+.ActionMini__Children > .ActionMini--Add {
+  border-bottom: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Dropdown {
@@ -314,6 +330,7 @@
   padding: 6px 10px;
   background: #efefef;
   color: var(--script-command-text-color);
+  margin-left: -10px;
 }
 
 .ActionMini__Else svg {
@@ -374,6 +391,8 @@
 .ActionMini__Children {
   position: relative;
   padding-top: 10px;
+  margin-left: 10px;
+  padding-bottom: 10px;
 }
 
 .ActionMini__ChildrenBorder {

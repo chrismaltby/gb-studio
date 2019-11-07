@@ -2,6 +2,8 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import cx from "classnames";
+import { TriangleIcon } from "../library/Icons";
 import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
@@ -324,69 +326,71 @@ class ScriptEventField extends Component {
   render() {
     const { eventId, field, value, args } = this.props;
 
-    const inputField = field.multiple ? (
-      value.map((_, valueIndex) => {
-        const fieldId = genKey(eventId, field.key, valueIndex);
-        return (
-          <span key={fieldId} className="ScriptEventBlock__InputRow">
-            <ScriptEventInput
-              id={fieldId}
-              type={field.type}
-              field={field}
-              index={valueIndex}
-              value={value[valueIndex]}
-              args={args}
-              onChange={this.onChange}
-            />
-            <div className="ScriptEventBlock__BtnRow">
-              {valueIndex !== 0 && (
-                <div
-                  className="ScriptEventBlock__Btn"
-                  onClick={this.onRemoveValue(valueIndex)}
-                >
-                  -
-                </div>
-              )}
-              <div
-                className="ScriptEventBlock__Btn"
-                onClick={this.onAddValue(valueIndex)}
-              >
-                +
-              </div>
-            </div>
-          </span>
-        );
-      })
-    ) : (
-      <ScriptEventInput
-        id={genKey(eventId, field.key)}
-        type={field.type}
-        field={field}
-        value={value}
-        args={args}
-        onChange={this.onChange}
-      />
-    );
-
-    if (field.toggleLabel) {
-      return (
-        <ToggleableFormField
-          htmlFor={genKey(eventId, field.key)}
-          closedLabel={field.toggleLabel}
-          label={field.label}
-          open={!!value}
-        >
-          {inputField}
-        </ToggleableFormField>
-      );
+    let label = field.label;
+    if (label && label.replace) {
+      label = label.replace(/\$\$([^$]*)\$\$/g, (match, key) => args[key] || 0);
     }
 
+    if (field.type === "collapsable") {
+      return (
+        <div
+          className={cx("ActionMini__Else", {
+            "ActionMini__Else--Open": !value
+          })}
+          onClick={() => this.onChange(!value)}
+        >
+          <TriangleIcon /> {label}
+        </div>
+      );
+    }
     return (
       <FormField halfWidth={field.width === "50%"}>
         <label htmlFor={genKey(eventId, field.key)}>
-          {field.type !== "checkbox" && field.label}
-          {inputField}
-          {field.type === "checkbox" && field.label}
+          {field.type !== "checkbox" && field.type !== "group" && label}
+          {field.multiple ? (
+            value.map((_, valueIndex) => {
+              const fieldId = genKey(eventId, field.key, valueIndex);
+              return (
+                <span key={fieldId} className="ScriptEventBlock__InputRow">
+                  <ScriptEventInput
+                    id={fieldId}
+                    type={field.type}
+                    field={field}
+                    index={valueIndex}
+                    value={value[valueIndex]}
+                    args={args}
+                    onChange={this.onChange}
+                  />
+                  <div className="ScriptEventBlock__BtnRow">
+                    {valueIndex !== 0 && (
+                      <div
+                        className="ScriptEventBlock__Btn"
+                        onClick={this.onRemoveValue(valueIndex)}
+                      >
+                        -
+                      </div>
+                    )}
+                    <div
+                      className="ScriptEventBlock__Btn"
+                      onClick={this.onAddValue(valueIndex)}
+                    >
+                      +
+                    </div>
+                  </div>
+                </span>
+              );
+            })
+          ) : (
+            <ScriptEventInput
+              id={genKey(eventId, field.key)}
+              type={field.type}
+              field={field}
+              value={value}
+              args={args}
+              onChange={this.onChange}
+            />
+          )}
+          {field.type === "checkbox" && label}
         </label>
       </FormField>
     );
@@ -457,55 +461,56 @@ class ScriptEventBlock extends Component {
     return eventCommands;
   }
 
-  render() {
-    const { id, value, onChange } = this.props;
-    const fields = this.getFields();
-
-    return (
-      <div className="ScriptEventBlock">
-        {fields.map((field, index) => {
-          if (field.conditions) {
-            const showField = field.conditions.reduce((memo, condition) => {
-              const keyValue = value[condition.key];
-              return (
-                memo &&
-                (!condition.eq || keyValue === condition.eq) &&
-                (!condition.ne || keyValue !== condition.ne) &&
-                (!condition.gt || keyValue > condition.gt) &&
-                (!condition.gte || keyValue >= condition.gte) &&
-                (!condition.lt || keyValue > condition.lt) &&
-                (!condition.lte || keyValue >= condition.lte)
-              );
-            }, true);
-            if (!showField) {
-              return null;
-            }
-          }
-          if (
-            field.type === "events" ||
-            field.type === "script" ||
-            field.type === "hidden"
-          ) {
-            return null;
-          }
-
-          const fieldValue = field.multiple
-            ? [].concat([], value[field.key])
-            : value[field.key];
-
+  renderFields = fields => {
+    const { id, value, renderEvents, onChange } = this.props;
+    return fields.map((field, index) => {
+      if (field.hide) {
+        return null;
+      }
+      // Determine if field conditions are met and hide if not
+      if (field.conditions) {
+        const showField = field.conditions.reduce((memo, condition) => {
+          const keyValue = value[condition.key];
           return (
-            <ScriptEventField
-              key={genKey(id, field.key)}
-              eventId={id}
-              field={field}
-              value={fieldValue}
-              args={value}
-              onChange={onChange}
-            />
+            memo &&
+            (!condition.eq || keyValue === condition.eq) &&
+            (!condition.ne || keyValue !== condition.ne) &&
+            (!condition.gt || keyValue > condition.gt) &&
+            (!condition.gte || keyValue >= condition.gte) &&
+            (!condition.lt || keyValue > condition.lt) &&
+            (!condition.lte || keyValue >= condition.lte)
           );
-        })}
-      </div>
-    );
+        }, true);
+        if (!showField) {
+          return null;
+        }
+      }
+
+      if (field.type === "events") {
+        return renderEvents(field.key);
+      }
+
+      const fieldValue = field.multiple
+        ? [].concat([], value[field.key])
+        : value[field.key];
+
+      return (
+        <ScriptEventField
+          key={genKey(id, field.key)}
+          eventId={id}
+          field={field}
+          value={fieldValue}
+          args={value}
+          onChange={onChange}
+        />
+      );
+    });
+  };
+
+  render() {
+    const { command, id, value, renderEvents, onChange } = this.props;
+    const fields = this.getFields();
+    return <div className="ScriptEventBlock">{this.renderFields(fields)}</div>;
   }
 }
 
@@ -516,6 +521,7 @@ ScriptEventBlock.propTypes = {
     customEventId: PropTypes.string
   }),
   onChange: PropTypes.func.isRequired,
+  renderEvents: PropTypes.func.isRequired,
   customEvents: PropTypes.objectOf(CustomEventShape)
 };
 
