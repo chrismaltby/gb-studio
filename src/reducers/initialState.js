@@ -59,7 +59,8 @@ export default {
       scenes: {},
       spriteSheets: {},
       triggers: {},
-      variables: {}
+      variables: {},
+      customEvents: {}
     },
     result: {
       settings: {
@@ -68,10 +69,10 @@ export default {
         worldScrollX: 0,
         worldScrollY: 0,
         zoom: 100,
-        customColorsWhite: "E0F8D0",
-        customColorsLight: "88C070",
-        customColorsDark: "306850",
-        customColorsBlack: "081820"
+        customColorsWhite: "E8F8E0",
+        customColorsLight: "B0F088",
+        customColorsDark: "509878",
+        customColorsBlack: "202850"
       },
       scenes: []
     }

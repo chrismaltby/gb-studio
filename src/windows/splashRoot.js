@@ -6,6 +6,9 @@ import "../lib/electron/handleFullScreen";
 import "../lib/helpers/handleTheme";
 
 window.addEventListener("error", (error) => {
+  if(error.message.indexOf("dead code elimination") > -1) {
+    return true;
+  }
   error.stopPropagation();
   error.preventDefault();
   document.body.innerHTML = `<div class="GlobalError">

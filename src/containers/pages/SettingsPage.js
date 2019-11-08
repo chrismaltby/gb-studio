@@ -39,7 +39,7 @@ class SettingsPage extends Component {
     }
 
     const { scenes } = project;
-    const { customColorsEnabled, customHead } = settings;
+    const { customColorsEnabled, customHead, gbcFastCPUEnabled } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
@@ -54,7 +54,8 @@ class SettingsPage extends Component {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          overflow: "auto"
+          overflow: "auto",
+          transform: "translate3d(0,0,0)"
         }}
       >
         <PageHeader>
@@ -74,7 +75,13 @@ class SettingsPage extends Component {
         </PageHeader>
         <PageContent>
           <section>
-            <h2>{l10n("SETTINGS_COLORS")}</h2>
+            <h2>{l10n("SETTINGS_GBC")}</h2>
+
+            <ToggleableCheckBoxField
+              label={l10n("FIELD_GBC_FAST_CPU")}
+              open={gbcFastCPUEnabled}
+              onToggle={this.onEditSetting("gbcFastCPUEnabled")}
+            ></ToggleableCheckBoxField>
 
             <ToggleableCheckBoxField
               label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}

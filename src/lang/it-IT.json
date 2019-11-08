@@ -6,6 +6,7 @@
   "TRIGGER": "Trigger",
   "SCENE": "Scena",
   "PROJECT": "Progetto",
+  "CUSTOM_EVENT": "Evento Personalizzato",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Mondo di Gioco",
@@ -43,10 +44,15 @@
   "SIDEBAR_SCENE_START_SCRIPT": "Script della Scena Iniziale",
   "SIDEBAR_ACTOR_SCRIPT": "Script di un Attore",
   "SIDEBAR_TRIGGER_SCRIPT": "Script per un Trigger",
+  "SIDEBAR_CUSTOM_EVENT_SCRIPT": "Script Evento Personalizzato",
   "SIDEBAR_ADD_EVENT": "Aggiungi Evento",
+  "SIDEBAR_CUSTOM_EVENTS": "Eventi personalizzati",
+  "SIDEBAR_CREATE_CUSTOM_EVENT": "Crea evento personalizzato",
+  "SIDEBAR_PARAMETERS": "Parametri",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nome",
+  "FIELD_DESCRIPTION": "Descrizione",
   "FIELD_AUTHOR": "Autore",
   "FIELD_NOTES": "Note",
   "FIELD_ADD_NOTES": "Aggiungi Note",
@@ -73,7 +79,7 @@
   "FIELD_SLOWER": "Meno Veloce",
   "FIELD_SCENE_PUSH_STATE_DESCRIPTION": "Inserisci lo stato della scena nella pila.",
   "FIELD_SCENE_POP_STATE_DESCRIPTION": "Rimuovi lo stato della scena dalla pila.",
-  "FIELD_SCENE_POP_ALL_STATE_DESCRIPTION": "Rimuopvi tutti gli stati di scena dalla pila.",
+  "FIELD_SCENE_POP_ALL_STATE_DESCRIPTION": "Rimuovi tutti gli stati di scena dalla pila.",
   "FIELD_SCENE_RESET_STATE_DESCRIPTION": "Ripulisce la pila dagli stati di scena salvati.",
   "FIELD_SLIDE_UNTIL_COLLISION": "Slitta Fino alla Collisione",
   "FIELD_LOOP": "Loop",
@@ -148,6 +154,7 @@
   "FIELD_RESTORE_DEFAULT": "Reimposta predefinito",
   "FIELD_ORIGINAL": "Originale",
   "FIELD_CUSTOM": "Personalizzato",
+  "FIELD_GBC_FAST_CPU": "Utilizza la modalità a velocità doppia (Migliora le performance della CPU)",
   "FIELD_FLAG_1": "Contrassegno 1",
   "FIELD_FLAG_2": "Contrassegno 2",
   "FIELD_FLAG_3": "Contrassegno 3",
@@ -170,6 +177,15 @@
   "FIELD_EFFECT_BEEP": "Beep",
   "FIELD_EFFECT_TONE": "Suono",
   "FIELD_EFFECT_CRASH": "Crash",
+  "FIELD_SET_TO_VALUE_IF": "Imposta a '{value}' se",
+  "FIELD_ITEM": "Oggetto {value}",
+  "FIELD_LAST_OPTION_CANCELS": "Ultima opzione imposta a '0'",
+  "FIELD_CANCEL_IF_B": "Imposta a '0' se 'B' è premuto",
+  "FIELD_NUMBER_OF_OPTIONS": "Numero di opzioni",
+  "FIELD_LAYOUT": "Layout",
+  "FIELD_LAYOUT_MENU": "Menu",
+  "FIELD_LAYOUT_DIALOGUE": "Dialogo",
+  "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Descrivi lo scopo di questo evento personalizzato",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Cerca...",
@@ -218,6 +234,7 @@
   "EVENT_RESET_VARIABLES": "Variabile: Reimposta tutte le Variabili a 'False'",
   "EVENT_LOOP": "Ciclo infinito",
   "EVENT_GROUP": "Gruppo di Eventi",
+  "EVENT_COMMENT": "Commento",
   "EVENT_DEFINE_LABEL": "Etichetta: Definisci",
   "EVENT_GOTO_LABEL": "Etichetta: Vai a",
   "EVENT_TEXT": "Testo: Mostra Dialogo",
@@ -275,6 +292,7 @@
   "EVENT_SET_TIMER_SCRIPT": "Timer: Imposta script Timer",
   "EVENT_TIMER_RESTART": "Timer: Fai ripartire il Timer",
   "EVENT_TIMER_DISABLE": "Timer: Disabilita script Timer",
+  "EVENT_MENU": "Testo: Mostra Menu",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -340,6 +358,8 @@
   "MENU_COPY_SCENE": "Copia Scena",
   "MENU_PASTE_SCENE": "Incolla Scena",
   "MENU_DELETE_SCENE": "Elimina Scena",
+  "MENU_DELETE_CUSTOM_EVENT": "Elimina Evento Personalizzato",
+  "MENU_EDIT_CUSTOM_EVENT": "Modifica Evento Personalizzato",
   "MENU_CHECK_FOR_UPDATES": "Controlla Aggiornamenti...",
   "MENU_PLUGINS": "Plugins",
 
@@ -394,6 +414,7 @@
   "DIALOG_DONT_SAVE": "Non salvare",
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Annulla",
+  "DIALOG_DELETE": "Elimina",
   "DIALOG_UPDATE_AVAILABLE": "Aggiornamento disponibile",
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} disponibile. Vuoi aggiornarlo?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Non chiedermelo più",
@@ -408,7 +429,10 @@
   "DIALOG_OPEN_ANYWAY": "Apri Comunque",
   "DIALOG_LANGUAGE_CHANGES_NEED_RESTART": "GB Studio deve essere rilanciato perché le modifiche al linguaggio possano avere effetto",
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Salva il tuo progetto e rilancia l'applicazione.",
-
+  "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
+  
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Impostazione",
@@ -419,5 +443,14 @@
   "SETTINGS_CART_TYPE": "Tipo di Cartuccia",
   "SETTINGS_CONTROLS": "Controlli",
   "SETTINGS_COLORS": "Colori",
-  "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)"
+  "SETTINGS_CPU": "CPU",
+  "SETTINGS_GBC": "Opzioni Colore GB Color",
+  "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)",
+
+  "// 17 ": "Error ------------------------------------------------------",
+
+  "ERROR_TITLE": "GB Studio ha riscontrato un errore",
+  "ERROR_WHAT_CAN_I_DO": "Cosa posso fare?",
+  "ERROR_VIEW_STACK_TRACE": "Visualizza lo Stack Trace",
+  "ERROR_CLOSE": "Chiudi"
 }

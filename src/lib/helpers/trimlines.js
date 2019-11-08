@@ -41,6 +41,6 @@ const trimlines = (string, maxCharsPerLine = CHARS_PER_LINE) => {
 };
 
 export const textNumLines = string =>
-  Math.min(LINE_MAX, Math.max(LINE_MIN, (string || "").split("\n").length));
+  Math.max(LINE_MIN, (string || "").split("\n").length);
 
 export default trimlines;

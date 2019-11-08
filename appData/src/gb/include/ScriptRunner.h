@@ -118,5 +118,6 @@ void Script_SetTimerScript_b();
 void Script_ResetTimer_b();
 void Script_RemoveTimerScript_b();
 void Script_TextWithAvatar_b();
+void Script_TextMenu_b();
 
 #endif

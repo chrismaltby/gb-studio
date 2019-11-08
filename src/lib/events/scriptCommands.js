@@ -90,6 +90,7 @@ export const SET_TIMER_SCRIPT = "SET_TIMER_SCRIPT";
 export const TIMER_RESTART = "TIMER_RESTART";
 export const TIMER_DISABLE = "TIMER_DISABLE";
 export const TEXT_WITH_AVATAR = "TEXT_WITH_AVATAR";
+export const MENU = "MENU";
 
 export const scriptCommands = [
   END,
@@ -183,7 +184,8 @@ export const scriptCommands = [
   SET_TIMER_SCRIPT,
   TIMER_RESTART,
   TIMER_DISABLE,
-  TEXT_WITH_AVATAR
+  TEXT_WITH_AVATAR,
+  MENU
 ];
 
 export const commandIndex = key => {
