@@ -114,8 +114,8 @@
 }
 
 .EditorSidebar__Icon svg {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   fill: var(--main-text-color);
   opacity: 0.7;
 }
