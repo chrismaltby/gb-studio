@@ -69,6 +69,10 @@ ipcRenderer.on("section", (event, section) => {
   store.dispatch(actions.setSection(section));
 });
 
+ipcRenderer.on("reloadAssets", (event) => {
+  store.dispatch(actions.reloadAssets());
+});
+
 ipcRenderer.on("updateSetting", (event, setting, value) => {
   store.dispatch(
     actions.editProjectSettings({

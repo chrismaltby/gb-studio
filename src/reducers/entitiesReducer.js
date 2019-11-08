@@ -38,7 +38,8 @@ import {
   MUSIC_REMOVE,
   SCROLL_WORLD,
   ADD_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT
+  REMOVE_CUSTOM_EVENT,
+  RELOAD_ASSETS
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
@@ -1074,6 +1075,28 @@ const scrollWorld = (state, action) => {
   };
 };
 
+const reloadAssets = (state, action) => {
+  const now = Date.now();
+  return {
+    ...state,
+    entities: {
+      ...state.entities,
+      backgrounds: mapValues(state.entities.backgrounds, e => ({
+        ...e,
+        _v: now
+      })),
+      spriteSheets: mapValues(state.entities.spriteSheets, e => ({
+        ...e,
+        _v: now
+      })),
+      music: mapValues(state.entities.music, e => ({
+        ...e,
+        _v: now
+      }))
+    }
+  };
+};
+
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -1248,6 +1271,8 @@ export default function project(state = initialState.entities, action) {
       return renameVariable(state, action);
     case SCROLL_WORLD:
       return scrollWorld(state, action);
+    case RELOAD_ASSETS:
+      return reloadAssets(state, action);
     default:
       return state;
   }

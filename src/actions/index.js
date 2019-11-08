@@ -625,6 +625,10 @@ export const openFolder = path => {
   return { type: types.OPEN_FOLDER, path };
 };
 
+export const reloadAssets = () => {
+  return { type: types.RELOAD_ASSETS };
+};
+
 export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
