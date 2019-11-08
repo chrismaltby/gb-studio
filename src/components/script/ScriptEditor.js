@@ -138,8 +138,10 @@ class ActionMini extends Component {
 
   onPasteEvent = before => e => {
     const { id, onPaste } = this.props;
-    const { clipboardEvent } = this.state;
-    onPaste(id, clipboardEvent, before);
+    const clipboardEvent = this.readClipboard();
+    if (clipboardEvent) {
+      onPaste(id, clipboardEvent, before);
+    }
   };
 
   onEdit = (newValue, postUpdate) => {
@@ -173,8 +175,10 @@ class ActionMini extends Component {
       } else {
         this.setState({ clipboardEvent: null });
       }
+      return clipboardData;
     } catch (err) {
       this.setState({ clipboardEvent: null });
+      return null;
     }
   };
 
@@ -215,7 +219,11 @@ class ActionMini extends Component {
             "ActionMini--Over": isOverCurrent
           })}
         >
-          <AddCommandButton onAdd={onAdd(id)} type={type} />
+          <AddCommandButton
+            onAdd={onAdd(id)}
+            onPaste={this.onPasteEvent(true)}
+            type={type}
+          />
         </div>
       );
     }
