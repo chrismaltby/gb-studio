@@ -72,13 +72,23 @@ export const fields = [].concat(
       key: "__collapseElse",
       label: l10n("FIELD_ELSE"),
       type: "collapsable",
-      defaultValue: false
+      defaultValue: false,
+      conditions: [
+        {
+          key: "__disableElse",
+          ne: true
+        }
+      ]
     },
     {
       key: "false",
       conditions: [
         {
           key: "__collapseElse",
+          ne: true
+        },
+        {
+          key: "__disableElse",
           ne: true
         }
       ],
@@ -89,6 +99,7 @@ export const fields = [].concat(
 
 export const compile = (input, helpers) => {
   const { caseVariableValue } = helpers;
+  const falsePath = input.__disableElse ? [] : input.false;
 
   const choiceLookup = Array(input.choices)
     .fill()
@@ -104,5 +115,5 @@ export const compile = (input, helpers) => {
       return memo;
     }, {});
 
-  caseVariableValue(input.variable, choiceLookup, input.false);
+  caseVariableValue(input.variable, choiceLookup, falsePath);
 };

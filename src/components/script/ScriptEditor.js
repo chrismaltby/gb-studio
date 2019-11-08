@@ -92,10 +92,10 @@ class ActionMini extends Component {
     });
   };
 
-  toggleElseOpen = () => {
+  toggleElse = () => {
     const { id, action, onEdit } = this.props;
     onEdit(id, {
-      __collapseElse: !action.args.__collapseElse
+      __disableElse: !action.args.__disableElse
     });
   };
 
@@ -224,6 +224,8 @@ class ActionMini extends Component {
     const childKeys = action.children ? Object.keys(action.children) : [];
     const isComment = command === EVENT_COMMENT;
     const commented = action.args && action.args.__comment;
+    const hasElse = action.children && action.children.false;
+    const disabledElse = action.args && action.args.__disableElse;
 
     const eventName =
       action.args.__name ||
@@ -295,6 +297,13 @@ class ActionMini extends Component {
                     ? l10n("MENU_REENABLE_EVENT")
                     : l10n("MENU_DISABLE_EVENT")}
                 </MenuItem>
+                {hasElse && (
+                  <MenuItem onClick={this.toggleElse}>
+                    {disabledElse
+                      ? l10n("MENU_REENABLE_ELSE")
+                      : l10n("MENU_DISABLE_ELSE")}
+                  </MenuItem>
+                )}
                 <MenuDivider />
                 <MenuItem onClick={onCopy(action)}>
                   {l10n("MENU_COPY_EVENT")}

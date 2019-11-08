@@ -21,13 +21,23 @@ export const fields = [
     key: "__collapseElse",
     label: l10n("FIELD_ELSE"),
     type: "collapsable",
-    defaultValue: false
+    defaultValue: false,
+    conditions: [
+      {
+        key: "__disableElse",
+        ne: true
+      }
+    ]
   },
   {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
+        ne: true
+      },
+      {
+        key: "__disableElse",
         ne: true
       }
     ],
@@ -37,6 +47,8 @@ export const fields = [
 
 export const compile = (input, helpers) => {
   const { actorSetActive, ifActorDirection } = helpers;
+  const truePath = input.true;
+  const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
-  ifActorDirection(input.direction, input.true, input.false);
+  ifActorDirection(input.direction, truePath, falsePath);
 };
