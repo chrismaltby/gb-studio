@@ -42,7 +42,16 @@ class ToolPicker extends Component {
       this.setTool("eraser")(e);
     } else if (e.key === "v") {
       this.setTool("select")(e);
+    } else if (e.key === "Escape") {
+      if (this.isAddSelected()) {
+        this.setTool("select")(e);
+      }
     }
+  };
+
+  isAddSelected = () => {
+    const { selected } = this.props;
+    return ["actors", "triggers", "scene"].indexOf(selected) > -1;
   };
 
   openAdd = () => {
@@ -84,8 +93,7 @@ class ToolPicker extends Component {
         <div
           onClick={this.openAdd}
           className={cx("ToolPicker__Item", {
-            "ToolPicker__Item--Selected":
-              ["actors", "triggers", "scene"].indexOf(selected) > -1
+            "ToolPicker__Item--Selected": this.isAddSelected()
           })}
           title={`${l10n("TOOL_ADD_LABEL")}`}
         >
