@@ -25,6 +25,11 @@ const watchProject = async (
   const uiRoot = `${projectRoot}/assets/ui`;
   const pluginsRoot = `${projectRoot}/plugins`;
 
+  const awaitWriteFinish = {
+    stabilityThreshold: 200,
+    pollInterval: 50
+  };
+
   const pluginSubfolder = filename => {
     return Path.relative(pluginsRoot, filename).split(Path.sep)[1];
   };
@@ -33,7 +38,8 @@ const watchProject = async (
     .watch(spritesRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
+      awaitWriteFinish
     })
     .on("add", onAddSprite)
     .on("change", onChangedSprite)
@@ -43,7 +49,8 @@ const watchProject = async (
     .watch(backgroundsRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
+      awaitWriteFinish
     })
     .on("add", onAddBackground)
     .on("change", onChangedBackground)
@@ -53,7 +60,8 @@ const watchProject = async (
     .watch(uiRoot, {
       ignored: /^.*\.(?!png$)[^.]+$/,
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
+      awaitWriteFinish
     })
     .on("add", onAddUI)
     .on("change", onChangedUI)
@@ -63,7 +71,8 @@ const watchProject = async (
     .watch(musicRoot, {
       ignored: /^.*\.(?!mod$)[^.]+$/,
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
+      awaitWriteFinish
     })
     .on("add", onAddMusic)
     .on("change", onChangedMusic)
@@ -73,7 +82,8 @@ const watchProject = async (
     .watch(pluginsRoot, {
       ignored: /^.*\.(?!(png|mod)$)[^.]+$/,
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
+      awaitWriteFinish
     })
     .on("add", filename => {
       const subfolder = pluginSubfolder(filename);
