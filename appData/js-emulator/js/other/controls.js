@@ -21,6 +21,8 @@ for (var key in defaultKeys) {
   var keys = customControls[key] ? customControls[key] : defaultKeys[key];
   for (var i = 0; i < keys.length; i++) {
     keyBindings[keys[i]] = key;
+    keyBindings[String(keys[i]).toLowerCase()] = key;
+    keyBindings[String(keys[i]).toUpperCase()] = key;
   }
 }
 
