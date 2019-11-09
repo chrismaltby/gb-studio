@@ -449,7 +449,7 @@ class ScriptEventBlock extends Component {
             {
               label: customEvent.description
                 .split("\n")
-                .map(text => <div>{text || <div>&nbsp;</div>}</div>)
+                .map((text, index) => <div key={index}>{text || <div>&nbsp;</div>}</div>)
             }
           ]
         : [];
