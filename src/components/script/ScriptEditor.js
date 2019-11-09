@@ -207,6 +207,7 @@ class ActionMini extends Component {
       onRemove,
       onCopy,
       onPaste,
+      onSelectCustomEvent,
       onMouseEnter,
       onMouseLeave
     } = this.props;
@@ -391,6 +392,7 @@ class ActionMini extends Component {
                         onEdit={onEdit}
                         onCopy={onCopy}
                         onPaste={onPaste}
+                        onSelectCustomEvent={onSelectCustomEvent}
                         onMouseEnter={onMouseEnter}
                         onMouseLeave={onMouseLeave}
                         clipboardEvent={clipboardEvent}
