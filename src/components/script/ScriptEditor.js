@@ -170,12 +170,14 @@ class ActionMini extends Component {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
         this.setState({ clipboardEvent: clipboardData });
-      } else if (clipboardData.__type === "script") {
-        this.setState({ clipboardEvent: clipboardData.script });
-      } else {
-        this.setState({ clipboardEvent: null });
+        return clipboardData;
       }
-      return clipboardData;
+      if (clipboardData.__type === "script") {
+        this.setState({ clipboardEvent: clipboardData.script });
+        return clipboardData.script;
+      }
+      this.setState({ clipboardEvent: null });
+      return null;
     } catch (err) {
       this.setState({ clipboardEvent: null });
       return null;
