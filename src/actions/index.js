@@ -13,6 +13,7 @@ import {
 } from "../reducers/editorReducer";
 import { denormalizeProject } from "../reducers/entitiesReducer";
 import migrateWarning from "../lib/project/migrateWarning";
+import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 
 const asyncAction = async (
   dispatch,
@@ -118,13 +119,8 @@ export const loadSprite = filename => async (dispatch, getState) => {
 export const removeSprite = filename => async (dispatch, getState) => {
   const state = getState();
   const projectRoot = state.document && state.document.root;
-  const relativePath = filename.replace(projectRoot, "");
-  const plugin = relativePath.startsWith("/plugin")
-    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
-    : undefined;
-  const file = plugin
-    ? relativePath.replace(`/plugins/${plugin}/sprites/`, "")
-    : relativePath.replace("/assets/sprites/", "");
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+
   return dispatch({
     type: types.SPRITE_REMOVE,
     data: {
@@ -154,13 +150,8 @@ export const loadBackground = filename => async (dispatch, getState) => {
 export const removeBackground = filename => async (dispatch, getState) => {
   const state = getState();
   const projectRoot = state.document && state.document.root;
-  const relativePath = filename.replace(projectRoot, "");
-  const plugin = relativePath.startsWith("/plugin")
-    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
-    : undefined;
-  const file = plugin
-    ? relativePath.replace(`/plugins/${plugin}/backgrounds/`, "")
-    : relativePath.replace("/assets/backgrounds/", "");
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
+
   return dispatch({
     type: types.BACKGROUND_REMOVE,
     data: {
@@ -190,13 +181,8 @@ export const loadMusic = filename => async (dispatch, getState) => {
 export const removeMusic = filename => async (dispatch, getState) => {
   const state = getState();
   const projectRoot = state.document && state.document.root;
-  const relativePath = filename.replace(projectRoot, "");
-  const plugin = relativePath.startsWith("/plugin")
-    ? relativePath.replace(/\/plugins\/([^/]*)\/.*/, "$1")
-    : undefined;
-  const file = plugin
-    ? relativePath.replace(`/plugins/${plugin}/music/`, "")
-    : relativePath.replace("/assets/music/", "");
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
+
   return dispatch({
     type: types.MUSIC_REMOVE,
     data: {
