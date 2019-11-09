@@ -14,6 +14,32 @@ static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
 //static const UBYTE obj_fade_to_black_vals[] = {0xF3, 0xF3, 0xE3, 0xE2, 0xD2, 0xD2};
 //static const UBYTE bgp_fade_to_black_vals[] = {0xFF, 0xFF, 0xFE, 0xF9, 0xE9, 0xE4};
 
+static UINT16 custom_bg_pal_fade_steps[][4] = {
+  { 0, 0, 0, 0 }, // 0
+  { 0, 0, 0, 0 }, // 1
+  { 0, 0, 0, 0 }, // 2
+  { 0, 0, 0, 0 }, // 3
+  { 0, 0, 0, 0 }, // 4
+  { 0, 0, 0, 0 } // 5
+};
+static UINT16 custom_spr1_pal_fade_steps[][4] = {
+  { 0, 0, 0, 0 }, // 0
+  { 0, 0, 0, 0 }, // 1
+  { 0, 0, 0, 0 }, // 2
+  { 0, 0, 0, 0 }, // 3
+  { 0, 0, 0, 0 }, // 4
+  { 0, 0, 0, 0 } // 5
+};
+
+static const UBYTE bg_fade_indexes[][4] = {
+  { 4, 4, 4, 4 }, // 0
+  { 4, 4, 4, 0 }, // 1
+  { 4, 4, 0, 1 }, // 2 
+  { 4, 0, 1, 2 }, // 3
+  { 0, 1, 2, 3 }, // 4
+  { 0, 1, 2, 3 }  // 5
+};
+
 void ApplyPaletteChange(UBYTE index)
 {
   #ifdef CUSTOM_COLORS
@@ -84,6 +110,26 @@ void FadeUpdate()
 void FadeSetSpeed(UBYTE speed)
 {
   fade_frames_per_step = fade_speeds[speed];
+}
+
+void FadeSetBackgroundPalette(UBYTE palette_index) {
+  #ifdef CUSTOM_COLORS
+  UBYTE i, j, fade_index;
+  UINT16 c;
+  for (i = 0; i < 6; i++)
+  {
+    for (j = 0; j < 4; j++)
+    {
+      fade_index = bg_fade_indexes[i][j];
+
+      c = fade_index == 4 ? RGB_WHITE : custom_pal[palette_index][fade_index];
+      custom_bg_pal_fade_steps[i][j] = c;
+      
+      c = fade_index == 4 ? RGB_WHITE : custom_spr1_pal[fade_index];      
+      custom_spr1_pal_fade_steps[i][j] = c;
+    }
+  }
+  #endif
 }
 
 UBYTE IsFading()

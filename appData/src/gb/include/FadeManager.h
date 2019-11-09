@@ -12,6 +12,7 @@ void FadeIn();
 void FadeOut();
 void FadeUpdate();
 void FadeSetSpeed(UBYTE speed);
+void FadeSetBackgroundPalette(UBYTE palette_index);
 UBYTE IsFading();
 
 extern UBYTE fade_running;

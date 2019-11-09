@@ -15,7 +15,7 @@ import {
 import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
-import { hi, lo, decHex16, decHex } from "../helpers/8bit";
+import { hi, lo, decHex16, decHex, hexDec } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
@@ -39,6 +39,7 @@ import {
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import { assetFilename } from "../helpers/gbstudio";
+import { DEFAULT_PALETTE } from "../../components/forms/PaletteSelect";
 
 const indexById = indexBy("id");
 
@@ -51,6 +52,7 @@ export const EVENT_END_DATA_COMPILE = "EVENT_END_DATA_COMPILE";
 
 export const EVENT_MSG_PRE_VARIABLES = "Preparing variables...";
 export const EVENT_MSG_PRE_STRINGS = "Preparing strings...";
+export const EVENT_MSG_PRE_PALETTES = "Preparing palettes..."; 
 export const EVENT_MSG_PRE_IMAGES = "Preparing images...";
 export const EVENT_MSG_PRE_UI_IMAGES = "Preparing ui...";
 export const EVENT_MSG_PRE_SPRITES = "Preparing sprites...";
@@ -258,6 +260,7 @@ const compile = async (
       [].concat(
         hi(scene.backgroundIndex),
         lo(scene.backgroundIndex),
+        scene.paletteIndex,
         scene.sprites.length,
         scene.sprites,
         scene.actors.length,
@@ -423,6 +426,35 @@ const compile = async (
     output[`bank_${bank}.c`] = bankDataBank;
   });
 
+  const convertHexTo15BitRGB = hex => {
+    const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+    const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+    const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+    return `RGB(${r}, ${g}, ${b})`;
+  };
+  
+  const colors = new Set(precompiled.usedPalettes.flatMap(
+    palette => (
+      palette.colors.map(color => (
+        `#define COLOR_${color.toUpperCase()} ${convertHexTo15BitRGB(color)}`
+      ))
+    )));
+
+  const spritePalette = projectData.palettes.find(
+    p => p.id === projectData.settings.spritesPaletteId) || DEFAULT_PALETTE;
+
+  output[`CustomColors.h`] = 
+    `#include <gb/cgb.h>\n\n` +
+    `${Array.from(colors).join('\n')}\n\n` +
+    `static const UINT16 custom_pal[][4] = {\n` +
+    `${precompiled.usedPalettes.map(
+        p => `  { ${p.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')} }`).join(",\n")
+      }\n` +
+    `};\n` +
+    `static const UINT16 custom_spr1_pal[] = {\n` +
+    ` ${spritePalette.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')}\n` +
+    `};\n`;
+
   return {
     files: output,
     music
@@ -442,6 +474,9 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
+
+  progress(EVENT_MSG_PRE_PALETTES);
+  const usedPalettes = precompilePalettes(projectData.palettes, projectData.scenes, projectData.settings);
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
@@ -500,6 +535,8 @@ const precompile = async (
     projectData.scenes,
     usedBackgrounds,
     usedSprites,
+    projectData.settings,
+    usedPalettes,
     {
       warnings
     }
@@ -522,7 +559,8 @@ const precompile = async (
     frameTiles,
     cursorTiles,
     emotesSprite,
-    usedAvatars
+    usedAvatars,
+    usedPalettes
   };
 };
 
@@ -583,6 +621,17 @@ export const precompileStrings = scenes => {
     return ["NOSTRINGS"];
   }
   return strings;
+};
+
+export const precompilePalettes = (palettes, scenes, settings) => {
+  const usedPalettes = palettes.filter(
+    palette => (
+      scenes.find(scene => scene.paletteId === palette.id) || 
+      settings.backgroundPaletteId === palette.id ||
+      settings.spritesPaletteId === palette.id
+    )
+  ).concat(DEFAULT_PALETTE);
+  return usedPalettes;
 };
 
 export const precompileBackgrounds = async (
@@ -801,6 +850,8 @@ export const precompileScenes = (
   scenes,
   usedBackgrounds,
   usedSprites,
+  settings,
+  usedPalettes,
   { warnings } = {}
 ) => {
   const scenesData = scenes.map((scene, sceneIndex) => {
@@ -814,6 +865,15 @@ export const precompileScenes = (
         } has missing or no background assigned.`
       );
     }
+
+    const paletteIndex = usedPalettes.findIndex(
+      palette => {
+        if (!scene.paletteId) {
+          return palette.id === settings.backgroundPaletteId;
+        } 
+        return palette.id === scene.paletteId;
+      }
+    );
 
     if (scene.actors.length > MAX_ACTORS) {
       warnings(
@@ -842,6 +902,7 @@ export const precompileScenes = (
     return {
       ...scene,
       backgroundIndex,
+      paletteIndex,
       actors,
       sprites: actors.reduce((memo, actor) => {
         const spriteIndex = usedSprites.findIndex(

@@ -32,6 +32,7 @@ BANK_PTR bank_ptr;
 UBYTE check_triggers;
 UBYTE scene_loaded;
 UBYTE scene_input_ready;
+UBYTE scene_bg_palette;
 // End of Scene Init Globals
 
 UBYTE scene_num_actors;
@@ -108,6 +109,10 @@ void SceneInit_b2()
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
   image_index = ReadBankedUWORD(bank_ptr.bank, scene_load_ptr);
+
+  scene_bg_palette = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
+  scene_load_ptr++;
+
   num_sprites = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
 
   // Load sprites
@@ -261,6 +266,8 @@ void SceneInit_b7()
   tileset_ptr = ((UWORD)bank_data_ptrs[tileset_bank_ptr.bank]) + tileset_bank_ptr.offset;
   tileset_size = ReadBankedUBYTE(tileset_bank_ptr.bank, tileset_ptr);
   SetBankedBkgData(tileset_bank_ptr.bank, 0, tileset_size, tileset_ptr + 1u);
+
+  set_bkg_palette(0, 1, custom_pal[scene_bg_palette]);
 }
 
 void SceneInit_b8()
@@ -299,6 +306,7 @@ void SceneInit_b9()
   check_triggers = TRUE;
   SceneHandleTriggers_b();
 
+  FadeSetBackgroundPalette(scene_bg_palette);
   FadeIn();
 
   time = 0;

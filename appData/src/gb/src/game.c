@@ -53,7 +53,7 @@ int main()
   #ifdef CUSTOM_COLORS
   if (_cpu == CGB_TYPE)
   {
-    set_bkg_palette(0, 1, custom_bg_pal);
+    set_bkg_palette(0, 1, custom_pal[0]);
     set_sprite_palette(0, 1, custom_spr1_pal);
   }
   else

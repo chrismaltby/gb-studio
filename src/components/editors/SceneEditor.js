@@ -5,6 +5,7 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import BackgroundSelect from "../forms/BackgroundSelect";
+import PaletteSelect, { DEFAULT_PALETTE } from "../forms/PaletteSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -99,7 +100,7 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const { scene, sceneIndex, selectSidebar } = this.props;
+    const { scene, sceneIndex, selectSidebar, defaultPaletteId, settings } = this.props;
 
     if (!scene) {
       return <WorldEditor />;
@@ -186,6 +187,20 @@ class SceneEditor extends Component {
               </label>
             </FormField>
 
+            {settings.customColorsEnabled && (
+            <ToggleableFormField
+              htmlFor="scenePalette"
+              closedLabel="Set Palette"
+              label="Palette"
+              open={!!scene.paletteId && scene.paletteId !== defaultPaletteId}
+            >
+              <PaletteSelect
+                id="scenePalette"
+                value={scene.paletteId || defaultPaletteId}
+                onChange={this.onEdit("paletteId")}
+              />
+            </ToggleableFormField>)}
+
             <ToggleableFormField
               htmlFor="sceneNotes"
               closedLabel={l10n("FIELD_ADD_NOTES")}
@@ -222,6 +237,7 @@ class SceneEditor extends Component {
 SceneEditor.propTypes = {
   scene: SceneShape,
   sceneIndex: PropTypes.number.isRequired,
+  defaultPaletteId: PropTypes.string.isRequired,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
   copyScene: PropTypes.func.isRequired,
@@ -238,9 +254,13 @@ SceneEditor.defaultProps = {
 function mapStateToProps(state, props) {
   const scene = state.entities.present.entities.scenes[props.id];
   const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
+  const settings = state.entities.present.result.settings;
+  const defaultPaletteId = settings.backgroundPaletteId || DEFAULT_PALETTE.id;
   return {
     sceneIndex,
-    scene
+    scene,
+    defaultPaletteId,
+    settings
   };
 }
 

@@ -75,8 +75,8 @@ class PaletteSelect extends Component {
     const currentIndex = palettes.indexOf(current);
     const options = [].concat(
       {
-        value: "default",
-        label: "Default (DMG)"
+        value: DEFAULT_PALETTE.id,
+        label: DEFAULT_PALETTE.name
       },
       palettes.map((p, index) => {
         return {
