@@ -432,7 +432,10 @@ const editScene = (state, action) => {
   let newBackground;
 
   if (action.values.backgroundId) {
-    const otherScene = Object.values(state.entities.scenes).find(s => {
+    const sceneIds = state.result.scenes;
+    const scenesLookup = state.entities.scenes;
+    const scenes = sceneIds.map(id => scenesLookup[id]);
+    const otherScene = scenes.find(s => {
       return s.backgroundId === action.values.backgroundId;
     });
     const background = state.entities.backgrounds[action.values.backgroundId];
