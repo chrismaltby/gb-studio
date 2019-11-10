@@ -558,6 +558,11 @@ void SceneUpdateActors_b()
         ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr) * ACTOR_MOVE_SPEED(ptr);
         ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
       }
+      // Handle Y wrapping
+      if (ACTOR_DY(ptr) == 1 && LT_8(ACTOR_Y(ptr)))
+      {
+        ACTOR_Y(ptr) = ACTOR_MAX_Y;
+      }
     }
   }
   else
@@ -579,6 +584,11 @@ void SceneUpdateActors_b()
         {
           ACTOR_X(ptr) = ACTOR_X(ptr) + ACTOR_DX(ptr) * ACTOR_MOVE_SPEED(ptr);
           ACTOR_Y(ptr) = ACTOR_Y(ptr) + ACTOR_DY(ptr) * ACTOR_MOVE_SPEED(ptr);
+        }
+        // Handle Y wrapping
+        if (ACTOR_DY(ptr) == 1 && LT_8(ACTOR_Y(ptr)))
+        {
+          ACTOR_Y(ptr) = ACTOR_MAX_Y;
         }
       }
       ptr += jump;
@@ -640,6 +650,34 @@ void SceneUpdateActorMovement_b(UBYTE i)
   // Check for npc collisions
   npc = SceneNpcAt_b(i, next_tx, next_ty);
   if (npc != scene_num_actors)
+  {
+    actors[i].moving = FALSE;
+    return;
+  }
+
+  // Stop at left edge
+  if (actors[i].dir.x == -1 && next_tx == 0)
+  {
+    actors[i].moving = FALSE;
+    return;
+  }
+
+  // Stop at right edge
+  if (actors[i].dir.x == 1 && next_tx == scene_width)
+  {
+    actors[i].moving = FALSE;
+    return;
+  }
+
+  // Stop at top edge
+  if (actors[i].dir.y == -1 && next_ty == 0)
+  {
+    actors[i].moving = FALSE;
+    return;
+  }
+
+  // Stop at bottom edge
+  if (actors[i].dir.y == 1 && (next_ty == (scene_height + 1) || actors[i].pos.y == ACTOR_MAX_Y))
   {
     actors[i].moving = FALSE;
     return;
@@ -720,12 +758,12 @@ void SceneHandleTriggers_b()
 {
   UBYTE trigger, trigger_tile_offset;
 
-  if (check_triggers && script_ptr == 0 && (ACTOR_ON_TILE(0) || actors[0].pos.y == 254))
+  if (check_triggers && script_ptr == 0 && (ACTOR_ON_TILE(0)))
   {
     check_triggers = FALSE;
 
     // If at bottom of map offset tile lookup by 1 (look at tile 32 rather than 31)
-    trigger_tile_offset = actors[0].pos.y == 254;
+    trigger_tile_offset = actors[0].pos.y == ACTOR_MAX_Y;
 
     trigger =
         SceneTriggerAt_b(DIV_8(actors[0].pos.x),

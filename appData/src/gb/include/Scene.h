@@ -35,7 +35,7 @@
 #define ACTOR_MIN_X 8
 #define ACTOR_MAX_X 248
 #define ACTOR_MIN_Y 16
-#define ACTOR_MAX_Y 255
+#define ACTOR_MAX_Y 254
 
 extern UINT8 scene_bank;
 extern POS map_next_pos;
