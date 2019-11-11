@@ -14,6 +14,7 @@ import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { SceneShape } from "../../reducers/stateShape";
 import SceneNavigation from "./SceneNavigation";
+import WorldEditor from "./WorldEditor";
 
 class SceneEditor extends Component {
   constructor() {
@@ -101,7 +102,7 @@ class SceneEditor extends Component {
     const { scene, sceneIndex, selectSidebar } = this.props;
 
     if (!scene) {
-      return <div />;
+      return <WorldEditor />;
     }
 
     const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;

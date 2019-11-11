@@ -1,8 +1,7 @@
 import fs from "fs-extra";
-import { remote } from "electron";
+import { remote, shell } from "electron";
 import settings from "electron-settings";
 import semver from "semver";
-import open from "open";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
 
 const { dialog } = remote;
@@ -51,7 +50,7 @@ export default async projectPath => {
       };
       dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
         if (buttonIndex === 0) {
-          open("https://www.gbstudio.dev/download/");
+          shell.openExternal("https://www.gbstudio.dev/download/");
           return reject();
         }
         if (buttonIndex === 2) {

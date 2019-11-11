@@ -376,6 +376,10 @@ menu.on("section", async section => {
   mainWindow && mainWindow.webContents.send("section", section);
 });
 
+menu.on("reloadAssets", () => {
+  mainWindow && mainWindow.webContents.send("reloadAssets");
+});
+
 menu.on("zoom", zoomType => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });

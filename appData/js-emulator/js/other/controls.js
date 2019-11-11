@@ -162,6 +162,15 @@ function bindDpad(el) {
   });
 }
 
+function bindTouchRestore() {
+  window.addEventListener("touchstart", function(e) {
+    if(!isTouchEnabled) {
+      controller.style.display = "block";
+      isTouchEnabled = true;
+    }
+  })
+}
+
 function bindKeyboard() {
   window.onkeydown = function(e) {
     initSound();
@@ -211,6 +220,7 @@ if (isTouchEnabled) {
   bindButton(btnStart, "start");
   bindButton(btnSelect, "select");
   bindDpad(dpad);
+  bindTouchRestore();
 } else {
   controller.style.display = "none";
 }

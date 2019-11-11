@@ -1,18 +1,13 @@
 import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
-import Path from "path";
+import parseAssetPath from "../helpers/path/parseAssetPath";
 
 const globAsync = promisify(glob);
 
 const loadMusicData = projectRoot => async filename => {
-  const relativePath = Path.relative(projectRoot, filename);
-  const plugin = relativePath.startsWith("plugins")
-    ? relativePath.split(Path.sep)[1]
-    : undefined;
-  const file = plugin
-    ? Path.relative(`plugins/${plugin}/music/`, relativePath)
-    : Path.relative("assets/music/", relativePath);
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
+
   return {
     id: uuidv4(),
     plugin,

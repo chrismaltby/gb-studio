@@ -18,6 +18,7 @@ import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
+import WorldEditor from "./WorldEditor";
 
 class ActorEditor extends Component {
   constructor() {
@@ -70,7 +71,7 @@ class ActorEditor extends Component {
     const { clipboardActor } = this.state;
 
     if (!actor) {
-      return <div />;
+      return <WorldEditor />;
     }
 
     const showDirectionInput =
@@ -345,7 +346,7 @@ function mapStateToProps(state, props) {
   const actor = state.entities.present.entities.actors[props.id];
   const scene = state.entities.present.entities.scenes[props.sceneId];
   const spriteSheet =
-    state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+    actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
   const index = scene.actors.indexOf(props.id);
   return {
     index,
