@@ -1,4 +1,4 @@
-import { ipcRenderer, shell } from "electron";
+import { ipcRenderer, remote } from "electron";
 import uuid from "uuid/v4";
 import Path from "path";
 import buildProject from "../lib/compiler/buildProject";
@@ -51,7 +51,7 @@ export default store => next => async action => {
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`
         );
-        shell.openItem(`${projectRoot}/build/${buildType}`);
+        remote.shell.openItem(`${projectRoot}/build/${buildType}`);
         dispatch({
           type: CMD_STD_OUT,
           text: "-"
@@ -70,7 +70,7 @@ export default store => next => async action => {
         });
       } else if (ejectBuild) {
         await copy(`${outputRoot}`, `${projectRoot}/eject`);
-        shell.openItem(`${projectRoot}/eject`);
+        remote.shell.openItem(`${projectRoot}/eject`);
       }
 
       dispatch({ type: CMD_COMPLETE });
