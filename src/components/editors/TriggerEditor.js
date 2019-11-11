@@ -12,6 +12,7 @@ import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { TriggerShape, SceneShape } from "../../reducers/stateShape";
+import WorldEditor from "./WorldEditor";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -61,7 +62,7 @@ class TriggerEditor extends Component {
     const { index, trigger, scene, selectScene, selectSidebar } = this.props;
 
     if (!trigger) {
-      return <div />;
+      return <WorldEditor />;
     }
 
     const { clipboardTrigger } = this.state;

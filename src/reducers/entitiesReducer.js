@@ -38,7 +38,8 @@ import {
   MUSIC_REMOVE,
   SCROLL_WORLD,
   ADD_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT
+  REMOVE_CUSTOM_EVENT,
+  RELOAD_ASSETS
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
@@ -431,7 +432,10 @@ const editScene = (state, action) => {
   let newBackground;
 
   if (action.values.backgroundId) {
-    const otherScene = Object.values(state.entities.scenes).find(s => {
+    const sceneIds = state.result.scenes;
+    const scenesLookup = state.entities.scenes;
+    const scenes = sceneIds.map(id => scenesLookup[id]);
+    const otherScene = scenes.find(s => {
       return s.backgroundId === action.values.backgroundId;
     });
     const background = state.entities.backgrounds[action.values.backgroundId];
@@ -1074,6 +1078,28 @@ const scrollWorld = (state, action) => {
   };
 };
 
+const reloadAssets = (state, action) => {
+  const now = Date.now();
+  return {
+    ...state,
+    entities: {
+      ...state.entities,
+      backgrounds: mapValues(state.entities.backgrounds, e => ({
+        ...e,
+        _v: now
+      })),
+      spriteSheets: mapValues(state.entities.spriteSheets, e => ({
+        ...e,
+        _v: now
+      })),
+      music: mapValues(state.entities.music, e => ({
+        ...e,
+        _v: now
+      }))
+    }
+  };
+};
+
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -1248,6 +1274,8 @@ export default function project(state = initialState.entities, action) {
       return renameVariable(state, action);
     case SCROLL_WORLD:
       return scrollWorld(state, action);
+    case RELOAD_ASSETS:
+      return reloadAssets(state, action);
     default:
       return state;
   }

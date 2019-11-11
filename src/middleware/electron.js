@@ -1,6 +1,5 @@
-import { ipcRenderer, clipboard, remote } from "electron";
+import { ipcRenderer, clipboard, remote, shell } from "electron";
 import settings from "electron-settings";
-import open from "open";
 import { uniq } from "lodash";
 import {
   OPEN_HELP,
@@ -33,7 +32,7 @@ export default store => next => action => {
   if (action.type === OPEN_HELP) {
     ipcRenderer.send("open-help", action.page);
   } else if (action.type === OPEN_FOLDER) {
-    open(action.path);
+    shell.openItem(action.path);
   } else if (action.type === PROJECT_LOAD_SUCCESS) {
     ipcRenderer.send("project-loaded", action.data);
   } else if (action.type === SIDEBAR_WORLD_RESIZE) {

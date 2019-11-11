@@ -14,6 +14,7 @@ import {
   getCustomEvents,
   getCustomEventsLookup
 } from "../../reducers/entitiesReducer";
+import WorldEditor from "./WorldEditor";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -61,6 +62,10 @@ class CustomEventEditor extends Component {
 
   render() {
     const { index, customEvent, selectSidebar } = this.props;
+
+    if (!customEvent) {
+      return <WorldEditor />;
+    }
 
     return (
       <Sidebar onMouseDown={selectSidebar}>

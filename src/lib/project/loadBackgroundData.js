@@ -2,7 +2,7 @@ import glob from "glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import sizeOf from "image-size";
-import Path from "path";
+import parseAssetPath from "../helpers/path/parseAssetPath";
 
 const TILE_SIZE = 8;
 
@@ -11,13 +11,8 @@ const sizeOfAsync = promisify(sizeOf);
 
 const loadBackgroundData = projectRoot => async filename => {
   const size = await sizeOfAsync(filename);
-  const relativePath = Path.relative(projectRoot, filename);
-  const plugin = relativePath.startsWith("plugins")
-    ? relativePath.split(Path.sep)[1]
-    : undefined;
-  const file = plugin
-    ? Path.relative(`plugins/${plugin}/backgrounds/`, relativePath)
-    : Path.relative("assets/backgrounds/", relativePath);
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
+
   return {
     id: uuid(),
     plugin,

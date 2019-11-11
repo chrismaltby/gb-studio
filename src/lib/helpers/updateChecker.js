@@ -1,7 +1,6 @@
-import { dialog } from "electron";
+import { dialog, shell } from "electron";
 import semver from "semver";
 import Octokit from "@octokit/rest";
-import open from "open";
 import settings from "electron-settings";
 import meta from "../../../package.json";
 
@@ -112,7 +111,7 @@ export const checkForUpdate = async force => {
           settings.set("dontCheckForUpdates", true);
         }
         if (buttonIndex === 0) {
-          open("https://www.gbstudio.dev/download/");
+          shell.openExternal("https://www.gbstudio.dev/download/");
         } else if (buttonIndex === 2) {
           // Ingore this version but notify for next
           settings.set("dontNotifyUpdatesForVersion", latestVersion);
