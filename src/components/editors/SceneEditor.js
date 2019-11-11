@@ -202,6 +202,7 @@ class SceneEditor extends Component {
             title={l10n("SIDEBAR_SCENE_START_SCRIPT")}
             type="scene"
             onChange={this.onEdit("script")}
+            entityId={scene.id}
           />
         </SidebarColumn>
       </Sidebar>
@@ -246,7 +247,4 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SceneEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);

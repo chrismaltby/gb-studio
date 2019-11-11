@@ -17,6 +17,7 @@ class VariableSelect extends Component {
 
 VariableSelect.propTypes = {
   id: PropTypes.string,
+  entityId: PropTypes.string.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   scope: PropTypes.string.isRequired

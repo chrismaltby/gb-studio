@@ -158,6 +158,7 @@ class CustomEventEditor extends Component {
             variables={Object.keys(customEvent.variables)}
             actors={Object.keys(customEvent.actors)}
             onChange={this.onEdit("script")}
+            entityId={customEvent.id}
           />
         </SidebarColumn>
       </Sidebar>

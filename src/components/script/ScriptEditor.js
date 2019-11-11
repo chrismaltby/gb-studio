@@ -194,6 +194,7 @@ class ActionMini extends Component {
   render() {
     const {
       id,
+      entityId,
       type,
       action,
       connectDragSource,
@@ -367,6 +368,7 @@ class ActionMini extends Component {
             {open && events[command] && events[command].fields && (
               <ScriptEventBlock
                 id={action.id}
+                entityId={entityId}
                 command={command}
                 value={action.args}
                 onChange={this.onEdit}
@@ -383,6 +385,7 @@ class ActionMini extends Component {
                       <ActionMiniDnD
                         key={childAction.id}
                         id={childAction.id}
+                        entityId={entityId}
                         type={type}
                         path={`${id}_true_${childAction.id}`}
                         action={childAction}
@@ -573,10 +576,7 @@ class ScriptEditor extends Component {
             if (field.defaultValue === "LAST_SCENE") {
               replaceValue = sceneIds[sceneIds.length - 1];
             } else if (field.defaultValue === "LAST_VARIABLE") {
-              replaceValue =
-                variableIds.length > 0
-                  ? variableIds[variableIds.length - 1]
-                  : "0";
+              replaceValue = "A";
             } else if (field.defaultValue === "LAST_MUSIC") {
               replaceValue = musicIds[0];
             } else if (field.defaultValue === "LAST_SPRITE") {
@@ -745,7 +745,7 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    const { type, title, value } = this.props;
+    const { type, title, value, entityId } = this.props;
     const { clipboardEvent } = this.state;
 
     return (
@@ -790,6 +790,7 @@ class ScriptEditor extends Component {
             <ActionMiniDnD
               key={action.id}
               id={action.id}
+              entityId={entityId}
               type={type}
               action={action}
               moveActions={this.moveActions}
@@ -823,7 +824,8 @@ ScriptEditor.propTypes = {
   selectScriptEvent: PropTypes.func.isRequired,
   copyEvent: PropTypes.func.isRequired,
   copyScript: PropTypes.func.isRequired,
-  selectCustomEvent: PropTypes.func.isRequired
+  selectCustomEvent: PropTypes.func.isRequired,
+  entityId: PropTypes.string.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create(
@@ -860,7 +862,4 @@ const mapDispatchToProps = {
   selectCustomEvent: actions.selectCustomEvent
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ScriptEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);

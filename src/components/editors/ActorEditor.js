@@ -315,6 +315,7 @@ class ActorEditor extends Component {
             type="actor"
             title={l10n("SIDEBAR_ACTOR_SCRIPT")}
             onChange={this.onEditScript}
+            entityId={actor.id}
           />
         </SidebarColumn>
       </Sidebar>
@@ -365,7 +366,4 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ActorEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

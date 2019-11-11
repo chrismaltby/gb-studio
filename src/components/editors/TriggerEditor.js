@@ -200,6 +200,7 @@ class TriggerEditor extends Component {
             title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
             type="trigger"
             onChange={this.onEdit("script")}
+            entityId={trigger.id}
           />
         </SidebarColumn>
       </Sidebar>
@@ -245,7 +246,4 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TriggerEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(TriggerEditor);

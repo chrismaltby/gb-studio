@@ -76,7 +76,7 @@ class ScriptEventInput extends Component {
   };
 
   render() {
-    const { type, id, value, args, field } = this.props;
+    const { type, id, value, args, field, entityId } = this.props;
 
     if (type === "textarea") {
       return (
@@ -166,7 +166,7 @@ class ScriptEventInput extends Component {
       );
     }
     if (type === "variable") {
-      return <VariableSelect id={id} value={value} onChange={this.onChange} />;
+      return <VariableSelect id={id} value={value} entityId={entityId} onChange={this.onChange} />;
     }
     if (type === "direction") {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
@@ -243,6 +243,7 @@ class ScriptEventInput extends Component {
 ScriptEventInput.propTypes = {
   index: PropTypes.number,
   id: PropTypes.string,
+  entityId: PropTypes.string.isRequired,
   type: PropTypes.string,
   field: PropTypes.shape().isRequired,
   args: PropTypes.shape(),
@@ -324,7 +325,7 @@ class ScriptEventField extends Component {
   };
 
   render() {
-    const { eventId, field, value, args } = this.props;
+    const { eventId, field, value, args, entityId } = this.props;
 
     let label = field.label;
     if (label && label.replace) {
@@ -351,6 +352,7 @@ class ScriptEventField extends Component {
           <span key={fieldId} className="ScriptEventBlock__InputRow">
             <ScriptEventInput
               id={fieldId}
+              entityId={entityId}
               type={field.type}
               field={field}
               index={valueIndex}
@@ -380,6 +382,7 @@ class ScriptEventField extends Component {
     ) : (
       <ScriptEventInput
         id={genKey(eventId, field.key)}
+        entityId={entityId}
         type={field.type}
         field={field}
         value={value}
@@ -415,6 +418,7 @@ class ScriptEventField extends Component {
 
 ScriptEventField.propTypes = {
   eventId: PropTypes.string.isRequired,
+  entityId: PropTypes.string.isRequired,
   field: PropTypes.shape().isRequired,
   args: PropTypes.shape(),
   value: PropTypes.oneOfType([
@@ -478,7 +482,7 @@ class ScriptEventBlock extends Component {
   }
 
   renderFields = fields => {
-    const { id, value, renderEvents, onChange } = this.props;
+    const { id, value, renderEvents, onChange, entityId } = this.props;
     return fields.map((field, index) => {
       if (field.hide) {
         return null;
@@ -514,6 +518,7 @@ class ScriptEventBlock extends Component {
         <ScriptEventField
           key={genKey(id, field.key)}
           eventId={id}
+          entityId={entityId}
           field={field}
           value={fieldValue}
           args={value}
@@ -524,7 +529,6 @@ class ScriptEventBlock extends Component {
   };
 
   render() {
-    const { command, id, value, renderEvents, onChange } = this.props;
     const fields = this.getFields();
     return <div className="ScriptEventBlock">{this.renderFields(fields)}</div>;
   }
@@ -532,6 +536,7 @@ class ScriptEventBlock extends Component {
 
 ScriptEventBlock.propTypes = {
   id: PropTypes.string.isRequired,
+  entityId: PropTypes.string.isRequired,
   command: PropTypes.string.isRequired,
   value: PropTypes.shape({
     customEventId: PropTypes.string
