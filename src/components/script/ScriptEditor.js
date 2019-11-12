@@ -565,7 +565,8 @@ class ScriptEditor extends Component {
       musicIds,
       sceneIds,
       actorIds,
-      spriteSheetIds
+      spriteSheetIds,
+      scope
     } = this.props;
     const { value: root } = this.props;
     const eventFields = events[command].fields;
@@ -576,7 +577,7 @@ class ScriptEditor extends Component {
             if (field.defaultValue === "LAST_SCENE") {
               replaceValue = sceneIds[sceneIds.length - 1];
             } else if (field.defaultValue === "LAST_VARIABLE") {
-              replaceValue = "L0";
+              replaceValue = scope === "customEvents" ? "0" : "L0";
             } else if (field.defaultValue === "LAST_MUSIC") {
               replaceValue = musicIds[0];
             } else if (field.defaultValue === "LAST_SPRITE") {
@@ -825,7 +826,8 @@ ScriptEditor.propTypes = {
   copyEvent: PropTypes.func.isRequired,
   copyScript: PropTypes.func.isRequired,
   selectCustomEvent: PropTypes.func.isRequired,
-  entityId: PropTypes.string.isRequired
+  entityId: PropTypes.string.isRequired,
+  scope: PropTypes.string.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create(
@@ -845,13 +847,15 @@ ScriptEditor.defaultProps = Object.create(
 
 function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;
+  const { type: scope } = state.editor;
   return {
     variableIds: props.variables || result.variables,
     sceneIds: result.scenes,
     actorIds: props.actors || entities.scenes[state.editor.scene].actors,
     musicIds: result.music,
     spriteSheetIds: result.spriteSheets,
-    value: props.value && props.value.length > 0 ? props.value : undefined
+    value: props.value && props.value.length > 0 ? props.value : undefined,
+    scope
   };
 }
 
@@ -862,4 +866,7 @@ const mapDispatchToProps = {
   selectCustomEvent: actions.selectCustomEvent
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ScriptEditor);
