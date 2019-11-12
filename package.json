@@ -24,62 +24,7 @@
   "author": "GB Studio",
   "license": "MIT",
   "config": {
-    "forge": {
-      "make_targets": {
-        "win32": [
-          "squirrel",
-          "zip"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "electronPackagerConfig": {
-        "name": "GB Studio",
-        "executableName": "gb-studio",
-        "packageManager": "yarn",
-        "icon": "src/assets/app/icon/app_icon",
-        "darwinDarkModeSupport": true,
-        "extendInfo": "src/assets/app/Info.plist",
-        "extraResource": [
-          "src/assets/app/icon/gbsproj.icns"
-        ],
-        "afterCopy": [
-          "./after-copy"
-        ],
-        "asar": true,
-        "ignore": [
-          "/.vscode($|/)",
-          "/coverage($|/)",
-          "/test($|/)",
-          "/appData($|/)",
-          "/buildTools($|/)"
-        ]
-      },
-      "electronWinstallerConfig": {
-        "name": "gb_studio",
-        "exe": "gb-studio.exe",
-        "loadingGif": "src/assets/app/install.gif"
-      },
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
-      "github_repository": {
-        "owner": "",
-        "name": ""
-      },
-      "electronInstallerDMG": {
-        "background": "src/assets/app/dmg/background.tiff",
-        "format": "ULFO"
-      },
-      "windowsStoreConfig": {
-        "packageName": "",
-        "name": "gbstudio"
-      }
-    }
+    "forge": "./forge.config.js"
   },
   "dependencies": {
     "@babel/core": "^7.4.5",
@@ -139,6 +84,7 @@
     "babel-preset-react": "^6.24.1",
     "cross-env": "^5.2.0",
     "electron-forge": "^5.2.4",
+    "electron-notarize": "^0.2.0",
     "electron-prebuilt-compile": "4.0.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
