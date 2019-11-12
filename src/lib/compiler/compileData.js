@@ -116,7 +116,13 @@ const compile = async (
     scene.actors.map(bankEntitySubScripts("actor"));
     scene.triggers.map(bankEntitySubScripts("trigger"));
 
-    const compileScript = (script, entityType, entity, entityIndex) => {
+    const compileScript = (
+      script,
+      entityType,
+      entity,
+      entityIndex,
+      alreadyCompiled
+    ) => {
       return compileEntityEvents(script, {
         scene,
         sceneIndex,
@@ -132,30 +138,39 @@ const compile = async (
         entityIndex,
         entity,
         banked,
-        warnings
+        warnings,
+        output: alreadyCompiled || []
       });
     };
 
     const bankSceneEvents = (scene, sceneIndex) => {
-      const compiledSceneScript = compileScript(
-        scene.script,
-        "scene",
-        scene,
-        sceneIndex
-      );
-      const compiledScript = scene.actors.reduce((memo, actor, actorIndex) => {
+      const compiledSceneScript = [];
+
+      // Compile start scripts for actors
+      scene.actors.forEach((actor, actorIndex) => {
         const actorStartScript = (actor.startScript || []).filter(
           event => event.command !== EVENT_END
         );
-        const compiledActorScript = compileScript(
+        compileScript(
           actorStartScript,
           "actor",
           actor,
-          actorIndex
-        ).slice(0, -1);
-        return [].concat(compiledActorScript, memo);
-      }, compiledSceneScript);
-      return banked.push(compiledScript);
+          actorIndex,
+          compiledSceneScript
+        );
+        compiledSceneScript.splice(-1);
+      });
+
+      // Compile scene start script
+      compileScript(
+        scene.script,
+        "scene",
+        scene,
+        sceneIndex,
+        compiledSceneScript
+      );
+
+      return banked.push(compiledSceneScript);
     };
 
     const bankEntityEvents = entityType => (entity, entityIndex) => {
