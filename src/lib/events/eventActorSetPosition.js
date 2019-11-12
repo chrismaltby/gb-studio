@@ -13,7 +13,7 @@ export const fields = [
     label: l10n("FIELD_X"),
     type: "number",
     min: 0,
-    max: 32,
+    max: 30,
     width: "50%",
     defaultValue: 0
   },
@@ -22,7 +22,7 @@ export const fields = [
     label: l10n("FIELD_Y"),
     type: "number",
     min: 0,
-    max: 32,
+    max: 31,
     width: "50%",
     defaultValue: 0
   }
