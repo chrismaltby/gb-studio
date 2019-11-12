@@ -197,9 +197,9 @@
 }
 
 .SidebarTabs__Tab--Active {
-  background: #fff;
+  background: var(--input-bg-color);
   opacity: 1;
-  outline: 1px solid #ccc;
+  outline: 1px solid var(--input-border-color);
 }
 
 .Sidebar--TwoColumn
