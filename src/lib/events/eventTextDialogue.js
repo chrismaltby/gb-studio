@@ -57,7 +57,7 @@ export const compile = (input, helpers) => {
         textRestoreCloseSpeed();
       }
 
-      textDialogue(rowText, input.avatarId);
+      textDialogue(rowText || " ", input.avatarId);
 
       // After first box, make open instant
       if (j === 0) {
@@ -69,6 +69,6 @@ export const compile = (input, helpers) => {
       }
     }
   } else {
-    textDialogue(input.text, input.avatarId);
+    textDialogue(input.text || " ", input.avatarId);
   }
 };
