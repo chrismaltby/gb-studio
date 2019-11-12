@@ -9,7 +9,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { TriggerShape, SceneShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
@@ -66,6 +66,15 @@ class TriggerEditor extends Component {
     }
 
     const { clipboardTrigger } = this.state;
+
+    const renderScriptHeader = ({ buttons }) => (
+      <SidebarTabs
+        values={{
+          trigger: l10n("SIDEBAR_ON_TRIGGER")
+        }}
+        buttons={buttons}
+      />
+    );
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -197,7 +206,8 @@ class TriggerEditor extends Component {
         <SidebarColumn>
           <ScriptEditor
             value={trigger.script}
-            title={l10n("SIDEBAR_TRIGGER_SCRIPT")}
+            title={l10n("SIDEBAR_ON_TRIGGER")}
+            renderHeader={renderScriptHeader}
             type="trigger"
             onChange={this.onEdit("script")}
             entityId={trigger.id}

@@ -116,29 +116,56 @@ const compile = async (
     scene.actors.map(bankEntitySubScripts("actor"));
     scene.triggers.map(bankEntitySubScripts("trigger"));
 
+    const compileScript = (script, entityType, entity, entityIndex) => {
+      return compileEntityEvents(script, {
+        scene,
+        sceneIndex,
+        scenes: precompiled.sceneData,
+        music: precompiled.usedMusic,
+        sprites: precompiled.usedSprites,
+        avatars: precompiled.usedAvatars,
+        backgrounds: precompiled.usedBackgrounds,
+        strings: precompiled.strings,
+        variables: precompiled.variables,
+        subScripts,
+        entityType,
+        entityIndex,
+        entity,
+        banked,
+        warnings
+      });
+    };
+
+    const bankSceneEvents = (scene, sceneIndex) => {
+      const compiledSceneScript = compileScript(
+        scene.script,
+        "scene",
+        scene,
+        sceneIndex
+      );
+      const compiledScript = scene.actors.reduce((memo, actor, actorIndex) => {
+        const actorStartScript = (actor.startScript || []).filter(
+          event => event.command !== EVENT_END
+        );
+        const compiledActorScript = compileScript(
+          actorStartScript,
+          "actor",
+          actor,
+          actorIndex
+        ).slice(0, -1);
+        return [].concat(compiledActorScript, memo);
+      }, compiledSceneScript);
+      return banked.push(compiledScript);
+    };
+
     const bankEntityEvents = entityType => (entity, entityIndex) => {
       return banked.push(
-        compileEntityEvents(entity.script, {
-          scene,
-          sceneIndex,
-          scenes: precompiled.sceneData,
-          music: precompiled.usedMusic,
-          sprites: precompiled.usedSprites,
-          avatars: precompiled.usedAvatars,
-          backgrounds: precompiled.usedBackgrounds,
-          strings: precompiled.strings,
-          variables: precompiled.variables,
-          subScripts,
-          entityType,
-          entityIndex,
-          entity,
-          banked,
-          warnings
-        })
+        compileScript(entity.script, entityType, entity, entityIndex)
       );
     };
+
     return {
-      start: bankEntityEvents("scene")(scene),
+      start: bankSceneEvents(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
       triggers: scene.triggers.map(bankEntityEvents("trigger"))
     };

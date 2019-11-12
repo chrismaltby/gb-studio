@@ -15,7 +15,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
-import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
@@ -24,9 +24,16 @@ class ActorEditor extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardActor: null
+      clipboardActor: null,
+      scriptMode: "interact"
     };
   }
+
+  onSetScriptMode = mode => {
+    this.setState({
+      scriptMode: mode
+    });
+  };
 
   onEdit = key => e => {
     const { editActor, sceneId, actor } = this.props;
@@ -36,6 +43,8 @@ class ActorEditor extends Component {
   };
 
   onEditScript = this.onEdit("script");
+
+  onEditStartScript = this.onEdit("startScript");
 
   onCopy = e => {
     const { copyActor, actor } = this.props;
@@ -68,7 +77,7 @@ class ActorEditor extends Component {
 
   render() {
     const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
-    const { clipboardActor } = this.state;
+    const { clipboardActor, scriptMode } = this.state;
 
     if (!actor) {
       return <WorldEditor />;
@@ -96,6 +105,18 @@ class ActorEditor extends Component {
         actor.movementType !== "static") ||
         (actor.animate &&
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
+
+    const renderScriptHeader = ({ buttons }) => (
+      <SidebarTabs
+        value={scriptMode}
+        values={{
+          interact: l10n("SIDEBAR_ON_INTERACT"),
+          start: l10n("SIDEBAR_ON_INIT")
+        }}
+        buttons={buttons}
+        onChange={this.onSetScriptMode}
+      />
+    );
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -310,13 +331,23 @@ class ActorEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          <ScriptEditor
-            value={actor.script}
-            type="actor"
-            title={l10n("SIDEBAR_ACTOR_SCRIPT")}
-            onChange={this.onEditScript}
-            entityId={actor.id}
-          />
+          {scriptMode === "start" ? (
+            <ScriptEditor
+              value={actor.startScript}
+              type="actor"
+              renderHeader={renderScriptHeader}
+              onChange={this.onEditStartScript}
+              entityId={actor.id}
+            />
+          ) : (
+            <ScriptEditor
+              value={actor.script}
+              type="actor"
+              renderHeader={renderScriptHeader}
+              onChange={this.onEditScript}
+              entityId={actor.id}
+            />
+          )}
         </SidebarColumn>
       </Sidebar>
     );

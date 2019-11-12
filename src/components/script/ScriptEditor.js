@@ -560,13 +560,7 @@ class ScriptEditor extends Component {
   };
 
   onAdd = id => (command, defaults = {}, defaultChildren = {}) => {
-    const {
-      musicIds,
-      sceneIds,
-      actorIds,
-      spriteSheetIds,
-      scope
-    } = this.props;
+    const { musicIds, sceneIds, actorIds, spriteSheetIds, scope } = this.props;
     const { value: root } = this.props;
     const eventFields = events[command].fields;
     const defaultArgs = eventFields
@@ -745,46 +739,46 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    const { type, title, value, entityId } = this.props;
+    const { type, title, value, entityId, renderHeader } = this.props;
     const { clipboardEvent } = this.state;
+
+    const buttons = (
+      <DropdownButton small transparent right onMouseDown={this.readClipboard}>
+        <MenuItem onClick={this.onCopyScript}>
+          {l10n("MENU_COPY_SCRIPT")}
+        </MenuItem>
+        {clipboardEvent && <MenuDivider />}
+        {clipboardEvent && (
+          <MenuItem onClick={this.onReplaceScript}>
+            {l10n("MENU_REPLACE_SCRIPT")}
+          </MenuItem>
+        )}
+        {clipboardEvent && value && value.length > 1 && (
+          <MenuItem onClick={this.onPasteScript(true)}>
+            {l10n("MENU_PASTE_SCRIPT_BEFORE")}
+          </MenuItem>
+        )}
+        {clipboardEvent && value && value.length > 1 && (
+          <MenuItem onClick={this.onPasteScript(false)}>
+            {l10n("MENU_PASTE_SCRIPT_AFTER")}
+          </MenuItem>
+        )}
+        <MenuDivider />
+        <MenuItem onClick={this.onRemoveScript}>
+          {l10n("MENU_DELETE_SCRIPT")}
+        </MenuItem>
+      </DropdownButton>
+    );
+
+    const heading = renderHeader ? (
+      renderHeader({ buttons })
+    ) : (
+      <SidebarHeading title={title} buttons={buttons} />
+    );
 
     return (
       <div>
-        <SidebarHeading
-          title={title}
-          buttons={
-            <DropdownButton
-              small
-              transparent
-              right
-              onMouseDown={this.readClipboard}
-            >
-              <MenuItem onClick={this.onCopyScript}>
-                {l10n("MENU_COPY_SCRIPT")}
-              </MenuItem>
-              {clipboardEvent && <MenuDivider />}
-              {clipboardEvent && (
-                <MenuItem onClick={this.onReplaceScript}>
-                  {l10n("MENU_REPLACE_SCRIPT")}
-                </MenuItem>
-              )}
-              {clipboardEvent && value && value.length > 1 && (
-                <MenuItem onClick={this.onPasteScript(true)}>
-                  {l10n("MENU_PASTE_SCRIPT_BEFORE")}
-                </MenuItem>
-              )}
-              {clipboardEvent && value && value.length > 1 && (
-                <MenuItem onClick={this.onPasteScript(false)}>
-                  {l10n("MENU_PASTE_SCRIPT_AFTER")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={this.onRemoveScript}>
-                {l10n("MENU_DELETE_SCRIPT")}
-              </MenuItem>
-            </DropdownButton>
-          }
-        />{" "}
+        {heading}
         <div className="ScriptEditor">
           {value.map(action => (
             <ActionMiniDnD
@@ -812,7 +806,7 @@ class ScriptEditor extends Component {
 }
 
 ScriptEditor.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   type: PropTypes.string.isRequired,
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
@@ -825,11 +819,14 @@ ScriptEditor.propTypes = {
   copyScript: PropTypes.func.isRequired,
   selectCustomEvent: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
-  scope: PropTypes.string.isRequired
+  scope: PropTypes.string.isRequired,
+  renderHeader: PropTypes.func
 };
 
 ScriptEditor.defaultProps = Object.create(
-  {},
+  {
+    title: ""
+  },
   {
     value: {
       enumerable: true,
@@ -863,7 +860,4 @@ const mapDispatchToProps = {
   selectCustomEvent: actions.selectCustomEvent
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ScriptEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);
