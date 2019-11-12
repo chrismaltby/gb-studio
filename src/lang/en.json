@@ -49,6 +49,9 @@
   "SIDEBAR_CUSTOM_EVENTS": "Custom Events",
   "SIDEBAR_CREATE_CUSTOM_EVENT": "Create Custom Event",
   "SIDEBAR_PARAMETERS": "Parameters",
+  "SIDEBAR_ON_INIT": "On Init",
+  "SIDEBAR_ON_TRIGGER": "On Trigger",
+  "SIDEBAR_ON_INTERACT": "On Interact",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",

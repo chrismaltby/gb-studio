@@ -4,6 +4,39 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import * as actions from "../../actions";
 
+const SidebarTabs = ({ values, value, onChange, buttons }) => (
+  <div className="SidebarTabs">
+    <div className="SidebarTabs__Container">
+      {Object.keys(values).map((key, index) => (
+        <div
+          key={key}
+          className={cx("SidebarTabs__Tab", {
+            "SidebarTabs__Tab--Active": value ? key === value : index === 0
+          })}
+          onClick={() => onChange(key)}
+        >
+          {values[key]}
+        </div>
+      ))}
+    </div>
+    <div className="SidebarTabs__FluidSpacer" />
+    {buttons}
+  </div>
+);
+
+SidebarTabs.propTypes = {
+  value: PropTypes.string,
+  values: PropTypes.objectOf(PropTypes.string).isRequired,
+  onChange: PropTypes.func,
+  buttons: PropTypes.node
+};
+
+SidebarTabs.defaultProps = {
+  buttons: null,
+  value: null,
+  onChange: () => {}
+};
+
 const SidebarHeading = ({ title, buttons }) => (
   <div className="SidebarHeading">
     {title}
@@ -111,9 +144,6 @@ const mapDispatchToProps = {
   resizeWorldSidebar: actions.resizeWorldSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Sidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
 
-export { SidebarColumn, SidebarHeading };
+export { SidebarColumn, SidebarHeading, SidebarTabs };

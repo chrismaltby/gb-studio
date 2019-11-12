@@ -11,7 +11,7 @@ export default function settings(state = initialState.settings, action) {
         ...state,
         worldSidebarWidth: Math.min(
           window.innerWidth - 70,
-          Math.max(200, action.width)
+          Math.max(300, action.width)
         )
       };
     case SIDEBAR_FILES_RESIZE: {
@@ -19,7 +19,7 @@ export default function settings(state = initialState.settings, action) {
         ...state,
         filesSidebarWidth: Math.min(
           window.innerWidth - 70,
-          Math.max(200, action.width)
+          Math.max(300, action.width)
         )
       };
     }

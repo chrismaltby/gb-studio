@@ -11,7 +11,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneShape } from "../../reducers/stateShape";
 import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
@@ -107,6 +107,15 @@ class SceneEditor extends Component {
 
     const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
 
+    const renderScriptHeader = ({ buttons }) => (
+      <SidebarTabs
+        values={{
+          init: l10n("SIDEBAR_ON_INIT")
+        }}
+        buttons={buttons}
+      />
+    );
+
     return (
       <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
@@ -199,7 +208,7 @@ class SceneEditor extends Component {
         <SidebarColumn>
           <ScriptEditor
             value={scene.script}
-            title={l10n("SIDEBAR_SCENE_START_SCRIPT")}
+            renderHeader={renderScriptHeader}
             type="scene"
             onChange={this.onEdit("script")}
           />
@@ -246,7 +255,4 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SceneEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);
