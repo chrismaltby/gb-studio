@@ -58,7 +58,7 @@ class GlobalVariableSelect extends Component {
 
     const options = [
       {
-        label: "Local",
+        label: l10n("FIELD_LOCAL"),
         options: localVariables.map((variable, index) => {
           return {
             value: variable,
@@ -67,7 +67,7 @@ class GlobalVariableSelect extends Component {
         })
       },
       {
-        label: "Global",
+        label: l10n("FIELD_GLOBAL"),
         options: allVariables.map((variable, index) => {
           return {
             value: String(index),
