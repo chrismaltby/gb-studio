@@ -561,7 +561,6 @@ class ScriptEditor extends Component {
 
   onAdd = id => (command, defaults = {}, defaultChildren = {}) => {
     const {
-      variableIds,
       musicIds,
       sceneIds,
       actorIds,
@@ -817,7 +816,6 @@ ScriptEditor.propTypes = {
   type: PropTypes.string.isRequired,
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
-  variableIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   musicIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   sceneIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   actorIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -849,7 +847,6 @@ function mapStateToProps(state, props) {
   const { result, entities } = state.entities.present;
   const { type: scope } = state.editor;
   return {
-    variableIds: props.variables || result.variables,
     sceneIds: result.scenes,
     actorIds: props.actors || entities.scenes[state.editor.scene].actors,
     musicIds: result.music,
