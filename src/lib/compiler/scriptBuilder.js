@@ -110,8 +110,10 @@ class ScriptBuilder {
 
   actorSetActive = id => {
     const output = this.output;
-    const { scene } = this.options;
-    const index = getActorIndex(id, scene);
+    const { scene, entity } = this.options;
+    const index = id === "$self$"
+      ? getActorIndex(entity.id, scene)
+      : getActorIndex(id, scene);
     output.push(cmd(ACTOR_SET_ACTIVE));
     output.push(index);
   };
