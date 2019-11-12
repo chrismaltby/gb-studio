@@ -468,29 +468,6 @@ const precompile = async (
 
 export const precompileVariables = scenes => {
   const variables = [];
-  for (let i = 0; i <= 99; i++) {
-    variables.push(String(i));
-  }
-  walkScenesEvents(scenes, cmd => {
-    if (eventHasArg(cmd, "variable")) {
-      const variable = cmd.args.variable || "0";
-      if (variables.indexOf(variable) === -1) {
-        variables.push(variable);
-      }
-    }
-    if (eventHasArg(cmd, "vectorX")) {
-      const x = cmd.args.vectorX || "0";
-      if (variables.indexOf(x) === -1) {
-        variables.push(x);
-      }
-    }
-    if (eventHasArg(cmd, "vectorY")) {
-      const y = cmd.args.vectorY || "0";
-      if (variables.indexOf(y) === -1) {
-        variables.push(y);
-      }
-    }
-  });
   variables.push("tmp1");
   variables.push("tmp2");
   return variables;

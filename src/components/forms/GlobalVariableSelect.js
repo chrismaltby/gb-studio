@@ -7,11 +7,11 @@ import l10n from "../../lib/helpers/l10n";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 
-const allVariables = [].concat(
-  Array.from(Array(512).keys()).map(n => String(n).padStart(3, "0"))
+const allVariables = Array.from(Array(512).keys()).map(n =>
+  String(n).padStart(3, "0")
 );
 
-const localVariables = ["A", "B", "C", "D"];
+const localVariables = ["L0", "L1", "L2", "L3"];
 
 class GlobalVariableSelect extends Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -40,31 +40,42 @@ class GlobalVariableSelect extends Component {
     const { variables, entityId } = this.props;
     return variables[`${entityId}__${code}`]
       ? variables[`${entityId}__${code}`].name
-      : `Local ${code}`;
+      : `Local ${code[1]}`;
   };
 
   variableLabel = index => {
-    const ptr = index < 100 ? `$${String(index).padStart(2, "0")}$ : ` : ``;
+    const ptr = `$${String(index).padStart(2, "0")}$ : `;
     return `${ptr}${this.variableName(index)}`;
+  };
+
+  localLabel = index => {
+    const ptr = `$${index}$ : `;
+    return `${ptr}${this.localName(index)}`;
   };
 
   render() {
     const { id, value, onChange } = this.props;
 
-    const options = [].concat(
-      localVariables.map((variable, index) => {
-        return {
-          value: variable,
-          label: this.localName(variable)
-        };
-      }),
-      allVariables.map((variable, index) => {
-        return {
-          value: String(index),
-          label: this.variableLabel(index)
-        };
-      })
-    );
+    const options = [
+      {
+        label: "Local",
+        options: localVariables.map((variable, index) => {
+          return {
+            value: variable,
+            label: this.localLabel(variable)
+          };
+        })
+      },
+      {
+        label: "Global",
+        options: allVariables.map((variable, index) => {
+          return {
+            value: String(index),
+            label: this.variableLabel(index)
+          };
+        })
+      }
+    ];
 
     const valueIsLocal = localVariables.indexOf(value) > -1;
 
@@ -72,20 +83,19 @@ class GlobalVariableSelect extends Component {
       <SelectRenamable
         editPlaceholder={l10n("FIELD_VARIABLE_NAME")}
         editDefaultValue={
-          valueIsLocal
-            ? this.localName(value)
-            : this.variableLabel(value || "0")
+          valueIsLocal ? this.localName(value) : this.variableName(value || "0")
         }
         onRename={this.onRename}
         id={id}
         value={{
           value,
           label: valueIsLocal
-            ? this.localName(value)
+            ? this.localLabel(value)
             : this.variableLabel(value)
         }}
         onChange={onChange}
         options={options}
+        grouped
       />
     );
   }

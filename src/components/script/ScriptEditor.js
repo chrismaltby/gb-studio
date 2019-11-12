@@ -576,7 +576,7 @@ class ScriptEditor extends Component {
             if (field.defaultValue === "LAST_SCENE") {
               replaceValue = sceneIds[sceneIds.length - 1];
             } else if (field.defaultValue === "LAST_VARIABLE") {
-              replaceValue = "A";
+              replaceValue = "L0";
             } else if (field.defaultValue === "LAST_MUSIC") {
               replaceValue = musicIds[0];
             } else if (field.defaultValue === "LAST_SPRITE") {

@@ -21,7 +21,7 @@ class CustomEventVariableSelect extends Component {
 
   variableLabel = index => {
     const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(index));
-    return `${letter} : ${this.variableName(index)}`;
+    return `$V${index}$ : ${this.variableName(index)}`;
   };
 
   render() {

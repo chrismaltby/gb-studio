@@ -117,6 +117,7 @@
     "react-redux": "^5.0.7",
     "react-scroll-into-view-if-needed": "^2.1.7",
     "react-select": "^3.0.4",
+    "react-select-async-paginate": "^0.3.10",
     "redux": "^4.0.0",
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",

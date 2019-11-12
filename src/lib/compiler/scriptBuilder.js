@@ -256,9 +256,29 @@ class ScriptBuilder {
 
   // Text
 
-  textDialogue = (text = " ", avatarId) => {
+  textDialogue = (inputText = " ", avatarId) => {
     const output = this.output;
-    const { strings, avatars } = this.options;
+    const { strings, avatars, variables, event } = this.options;
+    const getVariableSymbol = index => `$${String(index).padStart(2, "0")}$`;
+
+    const text = inputText
+      // Replace Global variables
+      .replace(/\$([0-9]+)\$/g, (match, globalVariable) => {
+        const index = this.getVariableIndex(globalVariable, variables);
+        return getVariableSymbol(index);
+      })
+      // Replace Local variables
+      .replace(/\$(L[0-9])\$/g, (match, localVariable) => {
+        const index = this.getVariableIndex(localVariable, variables);
+        return getVariableSymbol(index);
+      })
+      // Replace Custom Event variables
+      .replace(/\$V([0-9])\$/g, (match, customVariable) => {
+        const mappedVariable = event.args[`$variable[${customVariable}]$`];
+        const index = this.getVariableIndex(mappedVariable, variables);
+        return getVariableSymbol(index);
+      });
+
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -294,7 +314,13 @@ class ScriptBuilder {
     output.push(lo(stringIndex));
   };
 
-  textMenu = (setVariable, options, layout = "menu", cancelOnLastOption = false, cancelOnB = false) => {
+  textMenu = (
+    setVariable,
+    options,
+    layout = "menu",
+    cancelOnLastOption = false,
+    cancelOnB = false
+  ) => {
     const output = this.output;
     const { strings, variables } = this.options;
     const menuText = options
@@ -313,7 +339,7 @@ class ScriptBuilder {
     output.push(lo(stringIndex));
     output.push(layout === "menu" ? 1 : 0);
     output.push((cancelOnLastOption ? 1 : 0) | (cancelOnB ? 2 : 0));
-  }
+  };
 
   textSetOpenInstant = () => {
     const output = this.output;
@@ -350,7 +376,7 @@ class ScriptBuilder {
   // Variables
 
   getVariableIndex = (variable, variables) => {
-    if(["A","B","C","D"].indexOf(variable) > -1) {
+    if (["L0", "L1", "L2", "L3"].indexOf(variable) > -1) {
       const { entity } = this.options;
       return getVariableIndex(`${entity.id}__${variable}`, variables);
     }
