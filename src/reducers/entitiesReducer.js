@@ -638,7 +638,7 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
   let newState = state;
 
   Object.values(entities).forEach(entity => {
-    if (!entity.script) {
+    if (!entity || !entity.script) {
       return;
     }
     const patchEntity = {
@@ -668,7 +668,7 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
 const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
   let newState = state;
   Object.values(entities).forEach(entity => {
-    if (!entity.script) {
+    if (!entity || !entity.script) {
       return;
     }
     const patchEntity = {
