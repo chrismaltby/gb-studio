@@ -137,6 +137,8 @@ const combineMultipleChoiceText = args => {
   return `${trueText}\n${falseText}`;
 };
 
+const isMBC1 = cartType => cartType === "03" || cartType === "02";
+
 module.exports = {
   nameToCName,
   dirDec,
@@ -149,5 +151,6 @@ module.exports = {
   operatorDec,
   spriteTypeDec,
   actorFramesPerDir,
-  combineMultipleChoiceText
+  combineMultipleChoiceText,
+  isMBC1
 };

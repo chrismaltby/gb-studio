@@ -7,6 +7,7 @@
 #include "MusicManager.h"
 #include "FadeManager.h"
 #include "BankData.h"
+#include "BankManager.h"
 #include "UI.h"
 #include "Macros.h"
 #include "game.h"
@@ -769,7 +770,7 @@ void Script_SaveData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = TRUE; // Flag to determine if data has been stored
@@ -807,7 +808,7 @@ void Script_SaveData_b()
     RAMPtr[i] = script_variables[i];
   }
 
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -822,7 +823,7 @@ void Script_LoadData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   if (*RAMPtr == TRUE)
@@ -863,7 +864,7 @@ void Script_LoadData_b()
     script_action_complete = FALSE;
   }
 
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
 }
@@ -875,10 +876,10 @@ void Script_LoadData_b()
  */
 void Script_ClearData_b()
 {
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = FALSE;
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -896,11 +897,11 @@ void Script_IfSavedData_b()
 {
   UBYTE jump;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   if (jump)
   { // True path, jump to position specified by ptr

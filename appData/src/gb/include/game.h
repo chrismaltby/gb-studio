@@ -3,6 +3,9 @@
 
 #define CUSTOM_COLORS
 #define FAST_CPU
+#define SWITCH_ROM SWITCH_ROM_MBC5
+#define ENABLE_RAM ENABLE_RAM_MBC5
+#define DISABLE_RAM DISABLE_RAM_MBC5
 
 #include <gb/gb.h>
 

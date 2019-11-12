@@ -1,6 +1,11 @@
 import { copy } from "fs-extra";
 import uuid from "uuid/v4";
-import BankedData, { MIN_DATA_BANK, GB_MAX_BANK_SIZE } from "./bankedData";
+import BankedData, {
+  MIN_DATA_BANK,
+  GB_MAX_BANK_SIZE,
+  MBC1,
+  MBC5
+} from "./bankedData";
 import {
   walkScenesEvents,
   findSceneEvent,
@@ -29,7 +34,8 @@ import {
   moveSpeedDec,
   animSpeedDec,
   spriteTypeDec,
-  actorFramesPerDir
+  actorFramesPerDir,
+  isMBC1
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import { assetFilename } from "../helpers/gbstudio";
@@ -78,9 +84,12 @@ const compile = async (
     warnings
   });
 
+  const cartType = projectData.settings.cartType;
+
   const banked = new BankedData({
     bankSize,
-    bankOffset
+    bankOffset,
+    bankController: isMBC1(cartType) ? MBC1 : MBC5
   });
 
   // Add event data
@@ -285,10 +294,10 @@ const compile = async (
     startAnimSpeed = "3"
   } = projectData.settings;
 
-  const bankNums = [...Array(bankOffset + banked.data.length).keys()];
+  const bankNums = banked.exportUsedBankNumbers();
 
-  const bankDataPtrs = bankNums.map(bankNum => {
-    return bankNum >= bankOffset ? `&bank_${bankNum}_data` : 0;
+  const bankDataPtrs = bankNums.map((usedBank, num) => {
+    return usedBank ? `&bank_${num}_data` : 0;
   });
 
   const fixEmptyDataPtrs = ptrs => {
@@ -309,12 +318,18 @@ const compile = async (
 
   const bankHeader = banked.exportCHeader(bankOffset);
   const bankData = banked.exportCData(bankOffset);
-  const nextAvailableBank = bankData.length + bankOffset + 1;
+
+  const musicBanks = [];
+  for (let i = 0; i < NUM_MUSIC_BANKS; i++) {
+    banked.currentBank++;
+    musicBanks[i] = banked.getWriteBank();
+  }
 
   const music = precompiled.usedMusic.map((track, index) => {
+    const bank = musicBanks[index % musicBanks.length];
     return {
       ...track,
-      bank: nextAvailableBank + (index % NUM_MUSIC_BANKS)
+      bank
     };
   });
 
@@ -402,7 +417,8 @@ const compile = async (
   output[`banks.h`] = bankHeader;
 
   bankData.forEach((bankDataBank, index) => {
-    output[`bank_${bankOffset + index}.c`] = bankDataBank;
+    const bank = bankDataBank.match(/pragma bank=([0-9]+)/)[1];
+    output[`bank_${bank}.c`] = bankDataBank;
   });
 
   return {
