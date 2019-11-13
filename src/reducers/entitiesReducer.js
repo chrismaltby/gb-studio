@@ -525,6 +525,20 @@ const editCustomEvent = (state, action) => {
   let newState = state;
 
   if (patch.script) {
+    // Fix invalid variables in script
+    const fix = replaceInvalidCustomEventVariables;
+    patch.script = mapEvents(patch.script, event => {
+      return {
+        ...event,
+        args: event.args && {
+          ...event.args,
+          variable: event.args.variable && fix(event.args.variable),
+          vectorX: event.args.vectorX && fix(event.args.vectorX),
+          vectorY: event.args.vectorY && fix(event.args.vectorY)
+        }
+      };
+    });
+
     const variables = {};
     const actors = {};
 
@@ -548,10 +562,8 @@ const editCustomEvent = (state, action) => {
         };
       }
 
-      const fix = replaceInvalidCustomEventVariables;
-
       if (args.variable) {
-        const variable = fix(args.variable);
+        const variable = args.variable;
         const letter = String.fromCharCode(
           "A".charCodeAt(0) + parseInt(variable)
         );
@@ -563,7 +575,7 @@ const editCustomEvent = (state, action) => {
         };
       }
       if (args.vectorX) {
-        const variable = fix(args.vectorX);
+        const variable = args.vectorX;
         const letter = String.fromCharCode(
           "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();
@@ -575,7 +587,7 @@ const editCustomEvent = (state, action) => {
         };
       }
       if (args.vectorY) {
-        const variable = fix(args.vectorY);
+        const variable = args.vectorY;
         const letter = String.fromCharCode(
           "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();

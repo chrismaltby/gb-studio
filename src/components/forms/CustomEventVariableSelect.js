@@ -20,9 +20,6 @@ class CustomEventVariableSelect extends Component {
   render() {
     const { id, value, onChange } = this.props;
 
-    const intValue = parseInt(value.replace(/^L/, ""), 10);
-    const valueIndex = intValue < 10 ? intValue : 0;
-
     const options = allVariables.map((variable, index) => {
       return {
         value: String(index),
@@ -35,8 +32,8 @@ class CustomEventVariableSelect extends Component {
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
         value={{
-          value: valueIndex,
-          label: this.variableLabel(valueIndex)
+          value,
+          label: this.variableLabel(value)
         }}
         onChange={onChange}
         options={options}
