@@ -166,7 +166,14 @@ class ScriptEventInput extends Component {
       );
     }
     if (type === "variable") {
-      return <VariableSelect id={id} value={value} entityId={entityId} onChange={this.onChange} />;
+      return (
+        <VariableSelect
+          id={id}
+          value={value || "0"}
+          entityId={entityId}
+          onChange={this.onChange}
+        />
+      );
     }
     if (type === "direction") {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;

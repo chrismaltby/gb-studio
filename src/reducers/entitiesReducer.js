@@ -50,6 +50,7 @@ import {
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
+import { replaceInvalidCustomEventVariables } from "../lib/compiler/helpers";
 
 const addEntity = (state, type, data) => {
   return {
@@ -546,36 +547,42 @@ const editCustomEvent = (state, action) => {
             : `Actor ${letter}`
         };
       }
+
+      const fix = replaceInvalidCustomEventVariables;
+
       if (args.variable) {
+        const variable = fix(args.variable);
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.variable)
+          "A".charCodeAt(0) + parseInt(variable)
         );
-        variables[args.variable] = {
-          id: args.variable,
-          name: oldVariables[args.variable]
-            ? oldVariables[args.variable].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
       }
       if (args.vectorX) {
+        const variable = fix(args.vectorX);
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.vectorX)
+          "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();
-        variables[args.vectorX] = {
-          id: args.vectorX,
-          name: oldVariables[args.vectorX]
-            ? oldVariables[args.vectorX].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
       }
       if (args.vectorY) {
+        const variable = fix(args.vectorY);
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.vectorY)
+          "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();
-        variables[args.vectorY] = {
-          id: args.vectorY,
-          name: oldVariables[args.vectorY]
-            ? oldVariables[args.vectorY].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
       }

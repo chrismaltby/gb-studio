@@ -377,7 +377,7 @@ class ScriptBuilder {
 
   // Variables
 
-  getVariableIndex = (variable, variables) => {
+  getVariableIndex = (variable = "0", variables) => {
     if (["L0", "L1", "L2", "L3"].indexOf(variable) > -1) {
       const { entity } = this.options;
       return getVariableIndex(`${entity.id}__${variable}`, variables);
