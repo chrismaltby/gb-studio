@@ -253,6 +253,7 @@ const compile = async (
     const collisionsLength = Math.ceil(
       (sceneImage.width * sceneImage.height) / 8
     );
+    const spritePaletteIndexes = scene.sceneSpritePaletteIds.map(i => precompiled.usedPalettes.findIndex(p => p.id == i));
     const collisions = []
       .concat(scene.collisions, Array(collisionsLength).fill(0))
       .slice(0, collisionsLength);
@@ -261,13 +262,17 @@ const compile = async (
         hi(scene.backgroundIndex),
         lo(scene.backgroundIndex),
         scene.paletteIndex,
+        spritePaletteIndexes.length,
+        spritePaletteIndexes,
         scene.sprites.length,
         scene.sprites,
         scene.actors.length,
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
           sprites: precompiled.usedSprites,
-          scene
+          scene,
+          paletteIds: scene.sceneSpritePaletteIds,
+          settings: projectData.settings
         }),
         scene.triggers.length,
         compileTriggers(scene.triggers, {
@@ -351,6 +356,7 @@ const compile = async (
       "Player sprite hasn't been set, add it from the Game World."
     );
   }
+  const playerPaletteIndex = precompiled.usedPalettes.findIndex(p => p.id === projectData.settings.spritesPaletteId);
 
   const startDirectionX = dirToXDec(startDirection);
   const startDirectionY = dirToYDec(startDirection);
@@ -368,6 +374,7 @@ const compile = async (
       `#define START_SCENE_DIR_X ${startDirectionX}\n` +
       `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
       `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
+      `#define START_PLAYER_PALETTE ${playerPaletteIndex}\n` +
       `#define START_PLAYER_MOVE_SPEED ${moveSpeedDec(startMoveSpeed)}\n` +
       `#define START_PLAYER_ANIM_SPEED ${animSpeedDec(startAnimSpeed)}\n` +
       `#define FONT_BANK ${fontImagePtr.bank}\n` +
@@ -448,12 +455,14 @@ const compile = async (
     `${Array.from(colors).join('\n')}\n\n` +
     `static const UINT16 custom_pal[][4] = {\n` +
     `${precompiled.usedPalettes.map(
-        p => `  { ${p.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')} }`).join(",\n")
+        p => ` /* ${p.name} */ { ${p.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')} }`).join(",\n")
       }\n` +
     `};\n` +
     `static const UINT16 custom_spr1_pal[] = {\n` +
     ` ${spritePalette.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')}\n` +
     `};\n`;
+
+  console.log(output[`CustomColors.h`]);
 
   return {
     files: output,
@@ -624,13 +633,15 @@ export const precompileStrings = scenes => {
 };
 
 export const precompilePalettes = (palettes, scenes, settings) => {
-  const usedPalettes = palettes.filter(
+  const usedPalettes = [DEFAULT_PALETTE].concat(palettes.filter(
     palette => (
-      scenes.find(scene => scene.paletteId === palette.id) || 
+      scenes.find(scene => (scene.paletteId === palette.id || 
+        scene.actors.find(actor => actor.paletteId === palette.id))
+      ) ||
       settings.backgroundPaletteId === palette.id ||
       settings.spritesPaletteId === palette.id
     )
-  ).concat(DEFAULT_PALETTE);
+  ));
   return usedPalettes;
 };
 
@@ -875,6 +886,13 @@ export const precompileScenes = (
       }
     );
 
+    const sceneSpritePaletteIds = scene.actors.reduce((current, a) => {
+      if (!current.includes(a.paletteId)) {
+        current.push(a.paletteId);
+      }
+      return current;
+    }, []);
+
     if (scene.actors.length > MAX_ACTORS) {
       warnings(
         `Scene #${sceneIndex + 1} ${
@@ -903,6 +921,7 @@ export const precompileScenes = (
       ...scene,
       backgroundIndex,
       paletteIndex,
+      sceneSpritePaletteIds,
       actors,
       sprites: actors.reduce((memo, actor) => {
         const spriteIndex = usedSprites.findIndex(
@@ -929,7 +948,7 @@ export const precompileScenes = (
   return scenesData;
 };
 
-export const compileActors = (actors, { eventPtrs, sprites }) => {
+export const compileActors = (actors, { eventPtrs, sprites, paletteIds, settings }) => {
   // console.log("ACTOR", actor, eventsPtr);
   const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
@@ -961,9 +980,18 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
       const actorFrames = actorFramesPerDir(actor.movementType, spriteFrames);
       const initialFrame =
         moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
+      const paletteIndex = 1 + paletteIds.findIndex(
+        paletteId => {
+          if (!actor.paletteId) {
+            return paletteId === settings.spritesPaletteId;
+          } 
+          return paletteId === actor.paletteId;
+        }
+      );
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
         spriteTypeDec(actor.movementType, spriteFrames), // Sprite Type
+        paletteIndex, // Palette Index
         actorFrames, // Frames per direction
         (actor.animate ? 1 : 0) + (initialFrame << 1),
         actor.x, // X Pos

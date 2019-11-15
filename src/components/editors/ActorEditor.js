@@ -19,6 +19,7 @@ import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
+import PaletteSelect, { DEFAULT_PALETTE } from "../forms/PaletteSelect";
 
 class ActorEditor extends Component {
   constructor() {
@@ -76,7 +77,7 @@ class ActorEditor extends Component {
   };
 
   render() {
-    const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
+    const { index, actor, scene, spriteSheet, selectSidebar, defaultPaletteId, settings } = this.props;
     const { clipboardActor, scriptMode } = this.state;
 
     if (!actor) {
@@ -207,6 +208,20 @@ class ActorEditor extends Component {
                 />
               </label>
             </FormField>
+
+            {settings.customColorsEnabled && (
+            <ToggleableFormField
+              htmlFor="actorPalette"
+              closedLabel="Set Palette"
+              label="Palette"
+              open={!!actor.paletteId && actor.paletteId !== defaultPaletteId}
+            >
+              <PaletteSelect
+                id="actorPalette"
+                value={actor.paletteId || defaultPaletteId}
+                onChange={this.onEdit("paletteId")}
+              />
+            </ToggleableFormField>)}
 
             {spriteSheet &&
               spriteSheet.type !== "static" &&
@@ -359,6 +374,7 @@ ActorEditor.propTypes = {
   actor: ActorShape,
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
+  defaultPaletteId: PropTypes.string.isRequired,
   spriteSheet: SpriteShape,
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
@@ -380,11 +396,15 @@ function mapStateToProps(state, props) {
   const spriteSheet =
     actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
   const index = scene.actors.indexOf(props.id);
+  const settings = state.entities.present.result.settings;
+  const defaultPaletteId = settings.spritesPaletteId || DEFAULT_PALETTE.id;
   return {
     index,
     actor,
     scene,
-    spriteSheet
+    spriteSheet,
+    settings,
+    defaultPaletteId
   };
 }
 
