@@ -608,21 +608,21 @@ const editCustomEvent = (state, action) => {
       "scenes",
       action.id,
       newState.entities.scenes,
-      patch.script
+      patch
     );
     newState = updateEntitiesCustomEventScript(
       newState,
       "actors",
       action.id,
       newState.entities.actors,
-      patch.script
+      patch
     );
     newState = updateEntitiesCustomEventScript(
       newState,
       "triggers",
       action.id,
       newState.entities.triggers,
-      patch.script
+      patch
     );
   }
 
@@ -684,8 +684,11 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
   return newState;
 };
 
-const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
+const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
+  const { script, variables, actors } = patch;
   let newState = state;
+  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
+  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
   Object.values(entities).forEach(entity => {
     if (!entity || !entity.script) {
       return;
@@ -699,8 +702,18 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
         if (event.args.customEventId !== id) {
           return event;
         }
+        const newArgs = Object.assign({ ...event.args });
+        Object.keys(newArgs).forEach((k) => {
+          if (k.startsWith("$") && 
+            !usedVariables.find((v) => v === k) && 
+            !usedActors.find((a) => a === k)
+            ) {
+            delete newArgs[k];
+          }
+        });
         return {
           ...event,
+          args: newArgs,
           children: {
             script: [...script]
           }
