@@ -70,8 +70,8 @@ Channel.prototype.reset = function() {
 	this.sample.remain   = 0;
 	this.sample.reversed = false;
 	
-	this.volume.channelVolume = 0;
-	this.volume.sampleVolume  = 0;
+	this.volume.channelVolume = 1; //GBT sets full volume on song start
+	this.volume.sampleVolume  = 1; //GBT sets full volume on song start
 	this.volume.volumeSlide   = 0;
 	this.volume.envelope      = null;
 	
