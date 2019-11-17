@@ -32,7 +32,7 @@ var ScripTracker = function() {
   this.sampleStepping = 0; // Base sample step based on 125 / 6.
   this.isPlaying = false; // Is the player currently playing?
 
-  this.masterVolume = 1; // The master volume multiplier.
+  this.masterVolume = 0.6; // The master volume multiplier.
   this.masterVolSlide = 0; // Master volume delta per tick.
   this.breakPattern = -1; // Pattern break row to restart next order.
   this.orderJump = -1; // Order jump index of next order.
@@ -224,7 +224,7 @@ ScripTracker.prototype.processTick = function() {
           if (instrument.samples[sampleKey]) {
             registers.sample.sample = instrument.samples[sampleKey]; // Set sample based on current note.
             registers.sample.remain = registers.sample.sample.sampleLength; // Remaining length of this sample.
-            registers.volume.sampleVolume = registers.sample.sample.volume; // Set base sample volume.
+            //registers.volume.sampleVolume = registers.sample.sample.volume; // Set base sample volume. Disabled for GBT
           }
           registers.sample.position = 0; // Restart sample.
           registers.sample.restart = 0; // Reset sample restart position.
@@ -234,10 +234,10 @@ ScripTracker.prototype.processTick = function() {
           registers.envelopePos = 0; // Reset volume envelope.
           registers.noteReleased = false; // Reset decay.
 
-          // Set channel panning (for MOD use predefined panning).
-          if (this.module.type !== "mod" && registers.sample.sample) {
-            registers.panning.pan = registers.sample.sample.panning;
-          }
+          // Set channel panning (for MOD use predefined panning). Removed for GBT. 
+          // if (this.module.type !== "mod" && registers.sample.sample) {
+          //   registers.panning.pan = registers.sample.sample.panning;
+          // }
 
           // Remove sample if it has no data.
           if (
@@ -273,7 +273,7 @@ ScripTracker.prototype.processTick = function() {
             var freq = 8363 * Math.pow(2, (4608 - registers.period) / 768);
 
             registers.sample.position = registers.sample.restart; // Restart sample from restart position (can be changed by sample offset efect!).
-            registers.volume.sampleVolume = registers.sample.sample.volume; // Reset sample volume.
+            //registers.volume.sampleVolume = registers.sample.sample.volume; // Reset sample volume. Disabled for GBT
             registers.sample.remain =
               registers.sample.sample.sampleLength - registers.sample.restart; // Repeat length of this sample.
             registers.sample.step = freq / this.sampleStepping; // Samples per division.
@@ -301,8 +301,12 @@ ScripTracker.prototype.processTick = function() {
       if (volume >= 0 && volume <= 64) {
         // Change channel volume.
         registers.volume.channelVolume = volume / 64;
+        registers.volume.sampleVolume = registers.volume.channelVolume;
       } else if (note < 97 && instrIndex !== 0) {
-        registers.volume.channelVolume = registers.volume.sampleVolume;
+        if (registers.volume.channelVolumeSlide !== 0) {
+          registers.volume.channelVolume = registers.volume.sampleVolume; 
+          //Disabled for GBT, samples do not set volume unless using envelope.
+        }
       }
 
       if (effect !== Effects.NONE) {
@@ -315,6 +319,27 @@ ScripTracker.prototype.processTick = function() {
           effect,
           effectParam
         );
+      }
+
+      //Copy of Volume slide to process every tick, Compatability with GBT
+      if (registers.volume.channelVolumeSlide !== 0) {
+				if ((registers.volume.channelVolumeSlide & 0xF0) === 0xF0 && (registers.volume.channelVolumeSlide & 0x0F) !== 0x00) {
+					// Fine volume slide down only on tick 1.
+					if (tick === 1) {
+						var slide = (registers.volume.channelVolumeSlide & 0x0F) / 64.0;
+						registers.volume.channelVolume = Math.max(0.0, registers.volume.channelVolume - slide);
+					}
+				} else if ((registers.volume.channelVolumeSlide & 0x0F) === 0x0F && (registers.volume.channelVolumeSlide & 0xF0) !== 0x00) {
+					// Fine volume slide up.
+					if (tick === 1) {
+						var slide = ((registers.volume.channelVolumeSlide & 0xF0) >> 4) / 64.0;
+						registers.volume.channelVolume = Math.min(1.0, registers.volume.channelVolume + slide);
+					}
+				} else {
+					// Normal volume slide.
+					var slide = (((registers.volume.channelVolumeSlide & 0xF0) != 0) ? (registers.volume.channelVolumeSlide & 0xF0) >> 4 : -(registers.volume.channelVolumeSlide & 0x0F)) / 64.0;
+					registers.volume.channelVolume = Math.max(0.0, Math.min(registers.volume.channelVolume + slide, 1.0));
+				}
       }
     }
 
@@ -425,7 +450,7 @@ ScripTracker.prototype.resetPlayback = function() {
     this.channelRegisters[c].reset();
   }
 
-  this.masterVolume = 0.9;
+  this.masterVolume = 0.6;
   this.masterVolSlide = 0;
   this.breakPattern = -1;
   this.orderJump = -1;
@@ -506,10 +531,10 @@ ScripTracker.prototype.loadRaw = function(data, fileExt) {
   for (var i = 0; i < this.module.channels; i++) {
     this.channelRegisters.push(new Channel());
 
-    // TODO: This should be part of the MOD loader I guess.
-    if (this.module.type == "mod") {
-      this.channelRegisters[i].panning.pan = i % 2 == 0 ? 0.7 : 0.3;
-    }
+    // TODO: This should be part of the MOD loader I guess. Removed for GBT.
+    // if (this.module.type == "mod") {
+    //  this.channelRegisters[i].panning.pan = i % 2 == 0 ? 0.7 : 0.3;
+    // }
   }
 
   this.resetPlayback();
@@ -699,7 +724,7 @@ ScripTracker.prototype.getPatternRows = function() {
  */
 ScripTracker.prototype.getChannelVolume = function(channel) {
   return (
-    this.channelRegisters[channel].volume.sampleVolume *
+    //this.channelRegisters[channel].volume.sampleVolume * // Disabled for GBT
     this.channelRegisters[channel].volume.channelVolume *
     this.masterVolume
   );

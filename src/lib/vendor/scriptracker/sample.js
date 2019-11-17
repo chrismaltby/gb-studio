@@ -51,6 +51,7 @@ Sample.prototype.loadSample = function(sampleData, signed) {
 			} else {
 				val = (val8 / 128.0) - 1.0;
 			}
+			// val = ( Math.round(val*1000) / 1000 ); // keep number decimal place short when writing to log.
 		} else {
 			var val16 = Helpers.readWord(sampleData, i * 2);
 			i ++;
