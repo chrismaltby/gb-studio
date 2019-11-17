@@ -598,6 +598,24 @@ const editCustomEvent = (state, action) => {
             : `Variable ${letter}`
         };
       }
+      if (args.text) {
+        const text = Array.isArray(args.text) ? args.text.join() : args.text;
+        const variablePtrs = text.match(/\$V[0-9]\$/g);
+        if (variablePtrs) {
+          variablePtrs.forEach(variablePtr => {
+            const variable = variablePtr[2];
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(variable, 10)
+            ).toUpperCase();
+            variables[variable] = {
+              id: variable,
+              name: oldVariables[variable]
+                ? oldVariables[variable].name
+                : `Variable ${letter}`
+            };
+          });
+        }
+      }
     });
 
     patch.variables = { ...variables };
