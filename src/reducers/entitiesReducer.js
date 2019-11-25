@@ -38,7 +38,8 @@ import {
   MUSIC_REMOVE,
   SCROLL_WORLD,
   ADD_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT
+  REMOVE_CUSTOM_EVENT,
+  RELOAD_ASSETS
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
@@ -49,6 +50,7 @@ import {
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
+import { replaceInvalidCustomEventVariables } from "../lib/compiler/helpers";
 
 const addEntity = (state, type, data) => {
   return {
@@ -431,7 +433,10 @@ const editScene = (state, action) => {
   let newBackground;
 
   if (action.values.backgroundId) {
-    const otherScene = Object.values(state.entities.scenes).find(s => {
+    const sceneIds = state.result.scenes;
+    const scenesLookup = state.entities.scenes;
+    const scenes = sceneIds.map(id => scenesLookup[id]);
+    const otherScene = scenes.find(s => {
       return s.backgroundId === action.values.backgroundId;
     });
     const background = state.entities.backgrounds[action.values.backgroundId];
@@ -520,6 +525,20 @@ const editCustomEvent = (state, action) => {
   let newState = state;
 
   if (patch.script) {
+    // Fix invalid variables in script
+    const fix = replaceInvalidCustomEventVariables;
+    patch.script = mapEvents(patch.script, event => {
+      return {
+        ...event,
+        args: event.args && {
+          ...event.args,
+          variable: event.args.variable && fix(event.args.variable),
+          vectorX: event.args.vectorX && fix(event.args.vectorX),
+          vectorY: event.args.vectorY && fix(event.args.vectorY)
+        }
+      };
+    });
+
     const variables = {};
     const actors = {};
 
@@ -542,38 +561,60 @@ const editCustomEvent = (state, action) => {
             : `Actor ${letter}`
         };
       }
+
       if (args.variable) {
+        const variable = args.variable;
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.variable)
+          "A".charCodeAt(0) + parseInt(variable)
         );
-        variables[args.variable] = {
-          id: args.variable,
-          name: oldVariables[args.variable]
-            ? oldVariables[args.variable].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
       }
       if (args.vectorX) {
+        const variable = args.vectorX;
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.vectorX)
+          "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();
-        variables[args.vectorX] = {
-          id: args.vectorX,
-          name: oldVariables[args.vectorX]
-            ? oldVariables[args.vectorX].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
       }
       if (args.vectorY) {
+        const variable = args.vectorY;
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.vectorY)
+          "A".charCodeAt(0) + parseInt(variable, 10)
         ).toUpperCase();
-        variables[args.vectorY] = {
-          id: args.vectorY,
-          name: oldVariables[args.vectorY]
-            ? oldVariables[args.vectorY].name
+        variables[variable] = {
+          id: variable,
+          name: oldVariables[variable]
+            ? oldVariables[variable].name
             : `Variable ${letter}`
         };
+      }
+      if (args.text) {
+        const text = Array.isArray(args.text) ? args.text.join() : args.text;
+        const variablePtrs = text.match(/\$V[0-9]\$/g);
+        if (variablePtrs) {
+          variablePtrs.forEach(variablePtr => {
+            const variable = variablePtr[2];
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(variable, 10)
+            ).toUpperCase();
+            variables[variable] = {
+              id: variable,
+              name: oldVariables[variable]
+                ? oldVariables[variable].name
+                : `Variable ${letter}`
+            };
+          });
+        }
       }
     });
 
@@ -585,21 +626,21 @@ const editCustomEvent = (state, action) => {
       "scenes",
       action.id,
       newState.entities.scenes,
-      patch.script
+      patch
     );
     newState = updateEntitiesCustomEventScript(
       newState,
       "actors",
       action.id,
       newState.entities.actors,
-      patch.script
+      patch
     );
     newState = updateEntitiesCustomEventScript(
       newState,
       "triggers",
       action.id,
       newState.entities.triggers,
-      patch.script
+      patch
     );
   }
 
@@ -634,7 +675,7 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
   let newState = state;
 
   Object.values(entities).forEach(entity => {
-    if (!entity.script) {
+    if (!entity || !entity.script) {
       return;
     }
     const patchEntity = {
@@ -661,10 +702,13 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
   return newState;
 };
 
-const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
+const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
+  const { script, variables, actors } = patch;
   let newState = state;
+  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
+  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
   Object.values(entities).forEach(entity => {
-    if (!entity.script) {
+    if (!entity || !entity.script) {
       return;
     }
     const patchEntity = {
@@ -676,8 +720,18 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, script) => {
         if (event.args.customEventId !== id) {
           return event;
         }
+        const newArgs = Object.assign({ ...event.args });
+        Object.keys(newArgs).forEach((k) => {
+          if (k.startsWith("$") && 
+            !usedVariables.find((v) => v === k) && 
+            !usedActors.find((a) => a === k)
+            ) {
+            delete newArgs[k];
+          }
+        });
         return {
           ...event,
+          args: newArgs,
           children: {
             script: [...script]
           }
@@ -1074,6 +1128,28 @@ const scrollWorld = (state, action) => {
   };
 };
 
+const reloadAssets = (state, action) => {
+  const now = Date.now();
+  return {
+    ...state,
+    entities: {
+      ...state.entities,
+      backgrounds: mapValues(state.entities.backgrounds, e => ({
+        ...e,
+        _v: now
+      })),
+      spriteSheets: mapValues(state.entities.spriteSheets, e => ({
+        ...e,
+        _v: now
+      })),
+      music: mapValues(state.entities.music, e => ({
+        ...e,
+        _v: now
+      }))
+    }
+  };
+};
+
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -1248,6 +1324,8 @@ export default function project(state = initialState.entities, action) {
       return renameVariable(state, action);
     case SCROLL_WORLD:
       return scrollWorld(state, action);
+    case RELOAD_ASSETS:
+      return reloadAssets(state, action);
     default:
       return state;
   }

@@ -24,10 +24,28 @@ class AddCommandButton extends Component {
     this.state = {
       query: "",
       selectedIndex: 0,
-      open: false
+      open: false,
+      pasteMode: false
     };
     this.timeout = null;
   }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.detectPasteMode);
+    window.addEventListener("keyup", this.detectPasteMode);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.detectPasteMode);
+    window.removeEventListener("keyup", this.detectPasteMode);
+  }
+
+  detectPasteMode = e => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    this.setState({ pasteMode: e.altKey });
+  };
 
   onOpen = () => {
     this.setState({
@@ -204,12 +222,17 @@ class AddCommandButton extends Component {
   };
 
   render() {
-    const { query, open, selectedIndex } = this.state;
+    const { query, open, selectedIndex, pasteMode } = this.state;
+    const { onPaste } = this.props;
     const actionsList = this.filteredList();
 
     return (
       <div ref={this.button} className="AddCommandButton">
-        <Button onClick={this.onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
+        {pasteMode ? (
+          <Button onClick={onPaste}>{l10n("MENU_PASTE_EVENT")}</Button>
+        ) : (
+          <Button onClick={this.onOpen}>{l10n("SIDEBAR_ADD_EVENT")}</Button>
+        )}
         {open && (
           <div className={cx("AddCommandButton__Menu")}>
             <div className="AddCommandButton__Search">
@@ -273,6 +296,7 @@ class AddCommandButton extends Component {
 
 AddCommandButton.propTypes = {
   onAdd: PropTypes.func.isRequired,
+  onPaste: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
   customEvents: PropTypes.arrayOf(CustomEventShape).isRequired
 };

@@ -7,13 +7,19 @@ const GB_MAX_BANK_SIZE = 16384; // Calculated by adding bytes until address over
 const MIN_DATA_BANK = 6; // First 16 banks are reserved by game engine
 const MAX_BANKS = 512; // GBDK supports max of 512 banks
 
+const MBC1 = "MBC1";
+const MBC5 = "MBC5";
+const MBC1_DISALLOWED_BANKS = [0x20, 0x40, 0x60];
+
 class BankedData {
   constructor({
     bankSize = GB_MAX_BANK_SIZE,
-    bankOffset = MIN_DATA_BANK
+    bankOffset = MIN_DATA_BANK,
+    bankController = MBC5
   } = {}) {
     this.bankSize = bankSize;
     this.bankOffset = bankOffset;
+    this.bankController = bankController;
     this.data = [];
     this.currentBank = 0;
   }
@@ -25,10 +31,13 @@ class BankedData {
     if (newData.length > this.bankSize) {
       throw BANKED_DATA_TOO_LARGE;
     }
+
+    const writeBank = this.getWriteBank();
+
     if (!this.data[this.currentBank]) {
       // First bank
       const ptr = {
-        bank: this.currentBank + this.bankOffset,
+        bank: writeBank,
         offset: 0
       };
       this.data[this.currentBank] = newData;
@@ -37,15 +46,16 @@ class BankedData {
     if (this.data[this.currentBank].length + newData.length > this.bankSize) {
       // Current bank is over size, make a new one
       this.currentBank++;
+      const nextWriteBank = this.getWriteBank();
       const ptr = {
-        bank: this.currentBank + this.bankOffset,
+        bank: nextWriteBank,
         offset: 0
       };
       this.data[this.currentBank] = newData;
       return ptr;
     }
     const ptr = {
-      bank: this.currentBank + this.bankOffset,
+      bank: writeBank,
       offset: this.data[this.currentBank].length
     };
     // Bank has room, append contents
@@ -65,6 +75,17 @@ class BankedData {
 
   currentBankSize() {
     return (this.data[this.currentBank] || []).length;
+  }
+
+  getWriteBank() {
+    const bank = this.currentBank + this.bankOffset;
+    if (this.bankController === MBC1) {
+      if (MBC1_DISALLOWED_BANKS.indexOf(bank) > -1) {
+        this.currentBank++;
+        return this.getWriteBank();
+      }
+    }
+    return bank;
   }
 
   nextBank() {
@@ -87,13 +108,15 @@ class BankedData {
   }
 
   exportCData() {
-    return this.data.map((data, index) => {
-      const bank = index + this.bankOffset;
-      return `#pragma bank=${bank}\n\n${cIntArray(
-        `bank_${bank}_data`,
-        data
-      )}\n`;
-    });
+    return this.data
+      .map((data, index) => {
+        const bank = index + this.bankOffset;
+        return `#pragma bank=${bank}\n\n${cIntArray(
+          `bank_${bank}_data`,
+          data
+        )}\n`;
+      })
+      .filter(i => i);
   }
 
   exportCHeader() {
@@ -102,7 +125,14 @@ class BankedData {
         const bank = index + this.bankOffset;
         return cIntArrayExternDeclaration(`bank_${bank}_data`);
       })
+      .filter(i => i)
       .join("\n")}\n\n#endif\n`;
+  }
+
+  exportUsedBankNumbers() {
+    return [...Array(this.bankOffset + this.data.length).keys()].map(
+      bankNum => !!this.data[bankNum - this.bankOffset]
+    );
   }
 }
 
@@ -113,5 +143,7 @@ export {
   BANKED_COUNT_OVERFLOW,
   GB_MAX_BANK_SIZE,
   MIN_DATA_BANK,
-  MAX_BANKS
+  MAX_BANKS,
+  MBC1,
+  MBC5
 };

@@ -22,9 +22,15 @@ class SceneActorSelect extends Component {
     };
   };
 
+  actorName = actor => {
+    const { actors } = this.props;
+    return actor.name || `Actor ${actors.indexOf(actor) + 1}`;
+  }
+
   renderDropdownIndicator = props => {
-    const { actors, value, direction, frame } = this.props;
-    const actor = actors.find(a => a.id === value) || this.defaultValue();
+    const { actors, value, direction, frame, context } = this.props;
+    const actorId = value === "$self$" && context.type === "actors" ? context.entityId : value;
+    const actor = actors.find(a => a.id === actorId) || this.defaultValue();
     if (!actor) {
       return <components.DropdownIndicator {...props} />;
     }
@@ -37,9 +43,10 @@ class SceneActorSelect extends Component {
   };
 
   renderOption = props => {
-    const { actors, direction, frame } = this.props;
+    const { actors, direction, frame, context } = this.props;
     const { label, value } = props;
-    const actor = actors.find(a => a.id === value) || this.defaultValue();
+    const actorId = value === "$self$" && context.type === "actors" ? context.entityId : value;
+    const actor = actors.find(a => a.id === actorId) || this.defaultValue();
     if (!actor) {
       return <components.Option {...props} />;
     }
@@ -55,17 +62,40 @@ class SceneActorSelect extends Component {
   };
 
   render() {
-    const { actors, playerSpriteSheetId, id, value, onChange } = this.props;
+    const { actors, id, value, onChange, context } = this.props;
 
-    const defaultValue = {
-      name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
-    };
-    const current = actors.find(a => a.id === value) || defaultValue;
-    const currentIndex = actors.indexOf(current);
+    let current; 
+    let currentName;
+    let selfOption = [];
+    
+    if (context.type === "actors") {
+      const selfActor = actors.find(a => a.id === context.entityId);
+      const selfName = `Self (${this.actorName(selfActor)})`;
+      selfOption = [ 
+        { 
+          value: "$self$", 
+          label: selfName, 
+          spriteSheetId: selfActor.spriteSheetId
+        } 
+      ];
 
-    const options = [].concat(
+      if (value === "$self$") {
+        current = selfActor;
+        currentName = selfName;
+      } else {
+        current = actors.find(a => a.id === value) || this.defaultValue();
+        currentName = this.actorName(current);
+      }     
+    } else {
+      if (value === "$self$ ") {
+        current = this.defaultValue();
+      } else {
+        current = actors.find(a => a.id === value) || this.defaultValue();
+      }
+      currentName = this.actorName(current);
+    }
+    
+    const options = selfOption.concat(
       {
         value: "player",
         label: "Player"
@@ -86,8 +116,8 @@ class SceneActorSelect extends Component {
         classNamePrefix="ReactSelect"
         options={options}
         value={
-          current && {
-            label: current.name || `Actor ${currentIndex + 1}`,
+          {
+            label: currentName,
             value
           }
         }
@@ -110,7 +140,11 @@ SceneActorSelect.propTypes = {
   playerSpriteSheetId: PropTypes.string,
   actors: PropTypes.arrayOf(ActorShape).isRequired,
   direction: PropTypes.string,
-  frame: PropTypes.number
+  frame: PropTypes.number,
+  context: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    entityId: PropTypes.string.isRequired
+  }).isRequired
 };
 
 SceneActorSelect.defaultProps = {
@@ -125,9 +159,14 @@ function mapStateToProps(state) {
   const actors = getSceneActors(state, { id: state.editor.scene });
   const settings = state.entities.present.result.settings;
   const playerSpriteSheetId = settings.playerSpriteSheetId;
+  const context = {
+    type: state.editor.type,
+    entityId: state.editor.entityId
+  };
   return {
     actors,
-    playerSpriteSheetId
+    playerSpriteSheetId,
+    context
   };
 }
 

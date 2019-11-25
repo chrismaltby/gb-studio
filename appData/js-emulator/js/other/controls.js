@@ -4,12 +4,12 @@ const JS_KEY_CTRL = 17;
 const DEADZONE = 0.1;
 
 var defaultKeys = {
-  up: ["ArrowUp", "w"],
-  down: ["ArrowDown", "s"],
-  left: ["ArrowLeft", "a"],
-  right: ["ArrowRight", "d"],
-  a: ["Alt", "z", "j"],
-  b: ["Control", "k", "x"],
+  up: ["ArrowUp", "w", "W"],
+  down: ["ArrowDown", "s", "S"],
+  left: ["ArrowLeft", "a", "A"],
+  right: ["ArrowRight", "d", "D"],
+  a: ["Alt", "z", "j", "Z", "J"],
+  b: ["Control", "k", "x", "K", "X"],
   start: ["Enter"],
   select: ["Shift"]
 };
@@ -21,6 +21,8 @@ for (var key in defaultKeys) {
   var keys = customControls[key] ? customControls[key] : defaultKeys[key];
   for (var i = 0; i < keys.length; i++) {
     keyBindings[keys[i]] = key;
+    keyBindings[String(keys[i]).toLowerCase()] = key;
+    keyBindings[String(keys[i]).toUpperCase()] = key;
   }
 }
 
@@ -160,6 +162,15 @@ function bindDpad(el) {
   });
 }
 
+function bindTouchRestore() {
+  window.addEventListener("touchstart", function(e) {
+    if(!isTouchEnabled) {
+      controller.style.display = "block";
+      isTouchEnabled = true;
+    }
+  })
+}
+
 function bindKeyboard() {
   window.onkeydown = function(e) {
     initSound();
@@ -209,6 +220,7 @@ if (isTouchEnabled) {
   bindButton(btnStart, "start");
   bindButton(btnSelect, "select");
   bindDpad(dpad);
+  bindTouchRestore();
 } else {
   controller.style.display = "none";
 }

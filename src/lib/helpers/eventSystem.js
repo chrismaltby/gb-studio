@@ -36,7 +36,8 @@ const mapSceneEvents = (scene, callback) => {
     actors: scene.actors.map(actor => {
       return {
         ...actor,
-        script: mapEvents(actor.script, callback)
+        script: mapEvents(actor.script, callback),
+        startScript: mapEvents(actor.startScript, callback)
       };
     }),
     triggers: scene.triggers.map(trigger => {
@@ -80,6 +81,7 @@ const walkSceneEvents = (scene, callback) => {
   walkEvents(scene.script, callback);
   scene.actors.forEach(actor => {
     walkEvents(actor.script, callback);
+    walkEvents(actor.startScript, callback);
   });
   scene.triggers.forEach(trigger => {
     walkEvents(trigger.script, callback);

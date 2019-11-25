@@ -99,10 +99,10 @@ void UIDrawTextBkg(char *str, UBYTE x, UBYTE y)
 void UIShowText(UWORD line)
 {
   BANK_PTR bank_ptr;
-  UWORD ptr;
+  UWORD ptr, var_index;
   unsigned char value_string[6];
   UBYTE i, j, k;
-  UBYTE value, var_index;
+  UBYTE value;
 
   strcpy(tmp_text_lines, "");
 
@@ -116,9 +116,18 @@ void UIShowText(UWORD line)
   for (i = 1, k = 0; i < 81; i++)
   {
     // Replace variable references in text
-    if (tmp_text_lines[i] == '$' && tmp_text_lines[i + 3] == '$')
+    if (tmp_text_lines[i] == '$')
     {
-      var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
+      if(tmp_text_lines[i + 3] == '$') {
+        var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
+      } else if(tmp_text_lines[i + 4] == '$') {
+        var_index = (100 * (tmp_text_lines[i + 1] - '0')) + (10 * (tmp_text_lines[i + 2] - '0')) + (tmp_text_lines[i + 3] - '0');
+      } else {
+        text_lines[k] = tmp_text_lines[i];
+        ++k;
+        continue;
+      }
+
       value = script_variables[var_index];
       j = 0;
 
@@ -144,7 +153,11 @@ void UIShowText(UWORD line)
         k--;
       }
       // Jump though input past variable placeholder
-      i += 3;
+      if(var_index >= 100) {
+        i += 4;
+      } else {
+        i += 3;
+      }
     }
     else
     {

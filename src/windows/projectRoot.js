@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { ActionCreators } from "redux-undo";
 import { ipcRenderer } from "electron";
 import settings from "electron-settings";
+import { debounce } from "lodash";
 import * as actions from "../actions";
 import configureStore from "../store/configureStore";
 import watchProject from "../lib/project/watchProject";
@@ -69,6 +70,10 @@ ipcRenderer.on("section", (event, section) => {
   store.dispatch(actions.setSection(section));
 });
 
+ipcRenderer.on("reloadAssets", (event) => {
+  store.dispatch(actions.reloadAssets());
+});
+
 ipcRenderer.on("updateSetting", (event, setting, value) => {
   store.dispatch(
     actions.editProjectSettings({
@@ -116,6 +121,12 @@ if (worldSidebarWidth) {
 if (filesSidebarWidth) {
   store.dispatch(actions.resizeFilesSidebar(filesSidebarWidth));
 }
+
+window.addEventListener("resize", debounce(() => {
+  const state = store.getState();
+  store.dispatch(actions.resizeWorldSidebar(state.settings.worldSidebarWidth));
+  store.dispatch(actions.resizeFilesSidebar(state.settings.filesSidebarWidth));
+}, 500));
 
 let modified = true;
 store.subscribe(() => {

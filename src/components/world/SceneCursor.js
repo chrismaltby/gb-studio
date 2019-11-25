@@ -30,7 +30,7 @@ class SceneCursor extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.key === "p") {
+    if (e.code === "KeyP") {
       const { x, y, enabled, sceneId, editPlayerStartAt } = this.props;
       if (enabled) {
         editPlayerStartAt(sceneId, x, y);

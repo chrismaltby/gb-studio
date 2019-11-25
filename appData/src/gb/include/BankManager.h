@@ -1,6 +1,7 @@
 #ifndef BANK_MANAGER_H
 #define BANK_MANAGER_H
 
+#include "game.h"
 #include "Stack.h"
 
 #define N_PUSH_BANKS 10
@@ -12,6 +13,7 @@ void PopBank();
 
 #define PUSH_BANK(N) PushBank(N);
 #define POP_BANK PopBank();
-#define REFRESH_BANK SWITCH_ROM_MBC5(StackPeek(bank_stack))
+
+#define REFRESH_BANK SWITCH_ROM(StackPeek(bank_stack))
 
 #endif

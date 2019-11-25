@@ -7,6 +7,7 @@
 #include "MusicManager.h"
 #include "FadeManager.h"
 #include "BankData.h"
+#include "BankManager.h"
 #include "UI.h"
 #include "Macros.h"
 #include "game.h"
@@ -342,6 +343,10 @@ void Script_ActorSetPos_b()
   actors[script_actor].pos.x = (script_cmd_args[0] << 3) + 8;
   actors[script_actor].pos.y = 0; // @wtf-but-needed
   actors[script_actor].pos.y = (script_cmd_args[1] << 3) + 8;
+  if (script_cmd_args[1] == 31)
+  {
+    actors[script_actor].pos.y = ACTOR_MAX_Y;
+  }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -362,6 +367,10 @@ void Script_ActorMoveTo_b()
   actor_move_dest.x = (script_cmd_args[0] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
   actor_move_dest.y = (script_cmd_args[1] << 3) + 8;
+  if (script_cmd_args[1] == 31)
+  {
+    actor_move_dest.y = ACTOR_MAX_Y;
+  }
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }
@@ -696,7 +705,7 @@ void Script_ActorPush_b()
     }
     else if (actors[0].dir.x > 0)
     {
-      dest_x = 240;
+      dest_x = ACTOR_MAX_X;
     }
     else
     {
@@ -708,7 +717,7 @@ void Script_ActorPush_b()
     }
     else if (actors[0].dir.y > 0)
     {
-      dest_y = 240;
+      dest_y = ACTOR_MAX_Y;
     }
     else
     {
@@ -769,7 +778,7 @@ void Script_SaveData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = TRUE; // Flag to determine if data has been stored
@@ -807,7 +816,7 @@ void Script_SaveData_b()
     RAMPtr[i] = script_variables[i];
   }
 
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -822,7 +831,7 @@ void Script_LoadData_b()
 {
   UWORD i;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
   if (*RAMPtr == TRUE)
@@ -863,7 +872,7 @@ void Script_LoadData_b()
     script_action_complete = FALSE;
   }
 
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
 }
@@ -875,10 +884,10 @@ void Script_LoadData_b()
  */
 void Script_ClearData_b()
 {
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = FALSE;
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -896,11 +905,11 @@ void Script_IfSavedData_b()
 {
   UBYTE jump;
 
-  ENABLE_RAM_MBC5;
+  ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
-  DISABLE_RAM_MBC5;
+  DISABLE_RAM;
 
   if (jump)
   { // True path, jump to position specified by ptr
@@ -989,6 +998,10 @@ void Script_ActorSetPosToVal_b()
   actors[script_actor].pos.x = (script_variables[script_ptr_x] << 3) + 8;
   actors[script_actor].pos.y = 0; // @wtf-but-needed
   actors[script_actor].pos.y = (script_variables[script_ptr_y] << 3) + 8;
+  if (script_variables[script_ptr_y] == 31)
+  {
+    actors[script_actor].pos.y = ACTOR_MAX_Y;
+  }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
@@ -1006,6 +1019,10 @@ void Script_ActorMoveToVal_b()
   actor_move_dest.x = (script_variables[script_ptr_x] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
   actor_move_dest.y = (script_variables[script_ptr_y] << 3) + 8;
+  if (script_variables[script_ptr_y] == 31)
+  {
+    actor_move_dest.y = ACTOR_MAX_Y;
+  }
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
 }

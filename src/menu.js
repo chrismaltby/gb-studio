@@ -39,6 +39,14 @@ const buildMenu = async (plugins = []) => {
           }
         },
         { type: "separator" },
+        {
+          label: l10n("MENU_RELOAD_ASSETS"),
+          accelerator: "CommandOrControl+Shift+R",
+          click: () => {
+            notifyListeners("reloadAssets");
+          }
+        },
+        { type: "separator" },
         { role: "close" }
       ]
     },
@@ -384,6 +392,7 @@ const listeners = {
   redo: [],
   section: [],
   zoom: [],
+  reloadAssets: [],
   updateSetting: [],
   run: [],
   build: []

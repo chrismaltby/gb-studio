@@ -30,19 +30,28 @@ class ToolPicker extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    if (e.key === "t") {
+    if (e.code === "KeyT") {
       this.setTool("triggers")(e);
-    } else if (e.key === "a") {
+    } else if (e.code === "KeyA") {
       this.setTool("actors")(e);
-    } else if (e.key === "c") {
+    } else if (e.code === "KeyC") {
       this.setTool("collisions")(e);
-    } else if (e.key === "s") {
+    } else if (e.code === "KeyS") {
       this.setTool("scene")(e);
-    } else if (e.key === "e") {
+    } else if (e.code === "KeyE") {
       this.setTool("eraser")(e);
-    } else if (e.key === "v") {
+    } else if (e.code === "KeyV") {
       this.setTool("select")(e);
+    } else if (e.code === "Escape") {
+      if (this.isAddSelected()) {
+        this.setTool("select")(e);
+      }
     }
+  };
+
+  isAddSelected = () => {
+    const { selected } = this.props;
+    return ["actors", "triggers", "scene"].indexOf(selected) > -1;
   };
 
   openAdd = () => {
@@ -84,8 +93,7 @@ class ToolPicker extends Component {
         <div
           onClick={this.openAdd}
           className={cx("ToolPicker__Item", {
-            "ToolPicker__Item--Selected":
-              ["actors", "triggers", "scene"].indexOf(selected) > -1
+            "ToolPicker__Item--Selected": this.isAddSelected()
           })}
           title={`${l10n("TOOL_ADD_LABEL")}`}
         >
@@ -102,19 +110,19 @@ class ToolPicker extends Component {
                 onClick={this.setTool("actors")}
                 title={`${l10n("TOOL_ADD_ACTOR_LABEL")} (a)`}
               >
-                Actor
+                {l10n("ACTOR")}
               </MenuItem>
               <MenuItem
                 onClick={this.setTool("triggers")}
                 title={`${l10n("TOOL_ADD_TRIGGER_LABEL")} (t)`}
               >
-                Trigger
+                {l10n("TRIGGER")}
               </MenuItem>
               <MenuItem
                 onClick={this.setTool("scene")}
                 title={`${l10n("TOOL_ADD_SCENE_LABEL")} (s)`}
               >
-                Scene
+                {l10n("SCENE")}
               </MenuItem>
             </Menu>
           )}

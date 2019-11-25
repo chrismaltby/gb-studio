@@ -2,17 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select from "react-select";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 
 const allVariables = Array.from(Array(10).keys());
 
 class CustomEventVariableSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("CustomEventVariableSelect", this.props, {}, nextProps, {});
-    return true;
-  }
-
   variableName = index => {
     const { variables } = this.props;
     const letter = String.fromCharCode("A".charCodeAt(0) + index);
@@ -20,8 +14,7 @@ class CustomEventVariableSelect extends Component {
   };
 
   variableLabel = index => {
-    const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(index));
-    return `${letter} : ${this.variableName(index)}`;
+    return `$V${index}$ : ${this.variableName(index)}`;
   };
 
   render() {

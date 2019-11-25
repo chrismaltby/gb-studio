@@ -11,6 +11,8 @@ const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
 );
 
+const localVariables = ["L0", "L1", "L2", "L3"];
+
 class GlobalVariableSelect extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     rerenderCheck("GlobalVariableSelect", this.props, {}, nextProps, {});
@@ -18,8 +20,13 @@ class GlobalVariableSelect extends Component {
   }
 
   onRename = name => {
-    const { renameVariable, value } = this.props;
-    renameVariable(value || "0", name);
+    const { renameVariable, value, entityId } = this.props;
+    const valueIsLocal = localVariables.indexOf(value) > -1;
+    if (valueIsLocal) {
+      renameVariable(`${entityId}__${value}`, name);
+    } else {
+      renameVariable(value || "0", name);
+    }
   };
 
   variableName = index => {
@@ -29,33 +36,66 @@ class GlobalVariableSelect extends Component {
       : `Variable ${String(index).padStart(3, "0")}`;
   };
 
+  localName = code => {
+    const { variables, entityId } = this.props;
+    return variables[`${entityId}__${code}`]
+      ? variables[`${entityId}__${code}`].name
+      : `Local ${code[1]}`;
+  };
+
   variableLabel = index => {
-    const ptr = index < 100 ? `$${String(index).padStart(2, "0")}$ : ` : ``;
+    const ptr = `$${String(index).padStart(2, "0")}$ : `;
     return `${ptr}${this.variableName(index)}`;
+  };
+
+  localLabel = index => {
+    const ptr = `$${index}$ : `;
+    return `${ptr}${this.localName(index)}`;
   };
 
   render() {
     const { id, value, onChange } = this.props;
 
-    const options = allVariables.map((variable, index) => {
-      return {
-        value: String(index),
-        label: this.variableLabel(index)
-      };
-    });
+    const options = [
+      {
+        label: l10n("FIELD_LOCAL"),
+        options: localVariables.map((variable, index) => {
+          return {
+            value: variable,
+            label: this.localLabel(variable)
+          };
+        })
+      },
+      {
+        label: l10n("FIELD_GLOBAL"),
+        options: allVariables.map((variable, index) => {
+          return {
+            value: String(index),
+            label: this.variableLabel(index)
+          };
+        })
+      }
+    ];
+
+    const valueIsLocal = localVariables.indexOf(value) > -1;
 
     return (
       <SelectRenamable
         editPlaceholder={l10n("FIELD_VARIABLE_NAME")}
-        editDefaultValue={this.variableName(value || "0")}
+        editDefaultValue={
+          valueIsLocal ? this.localName(value) : this.variableName(value || "0")
+        }
         onRename={this.onRename}
         id={id}
         value={{
           value,
-          label: this.variableLabel(value)
+          label: valueIsLocal
+            ? this.localLabel(value)
+            : this.variableLabel(value)
         }}
         onChange={onChange}
         options={options}
+        grouped
       />
     );
   }
@@ -63,6 +103,7 @@ class GlobalVariableSelect extends Component {
 
 GlobalVariableSelect.propTypes = {
   id: PropTypes.string,
+  entityId: PropTypes.string.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   variables: PropTypes.objectOf(VariableShape).isRequired,

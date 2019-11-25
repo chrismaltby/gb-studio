@@ -55,5 +55,12 @@
   --conditional-level3: #c8e6c9;
   --conditional-level4: #d1c4e9;
 
-  --comment-event-color: #84E687;
+  --script-command-bg-color-alt: #dedede;
+  --conditional-level1-alt: #81d4fa;
+  --conditional-level2-alt: #ffab91;
+  --conditional-level3-alt: #a5d6a7;
+  --conditional-level4-alt: #b39ddb;
+
+  --comment-event-color: #dcedc8;
+  --comment-event-color-alt: #c5e1a5;
 }

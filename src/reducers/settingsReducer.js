@@ -9,12 +9,18 @@ export default function settings(state = initialState.settings, action) {
     case SIDEBAR_WORLD_RESIZE:
       return {
         ...state,
-        worldSidebarWidth: Math.min(750, Math.max(200, action.width))
+        worldSidebarWidth: Math.min(
+          window.innerWidth - 70,
+          Math.max(300, action.width)
+        )
       };
     case SIDEBAR_FILES_RESIZE: {
       return {
         ...state,
-        filesSidebarWidth: Math.min(750, Math.max(200, action.width))
+        filesSidebarWidth: Math.min(
+          window.innerWidth - 70,
+          Math.max(300, action.width)
+        )
       };
     }
     default:

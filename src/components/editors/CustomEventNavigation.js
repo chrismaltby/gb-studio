@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { CustomEventShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
 import { getCustomEvents } from "../../reducers/entitiesReducer";
+import { CodeIcon } from "../library/Icons";
 
 class CustomEventNavigation extends Component {
   render() {
@@ -21,6 +22,9 @@ class CustomEventNavigation extends Component {
                     selectCustomEvent(customEvent.id);
                   }}
                 >
+                  <div className="EditorSidebar__Icon">
+                    <CodeIcon />
+                  </div>
                   {customEvent.name || `Custom Event ${index + 1}`}
                 </li>
               )
