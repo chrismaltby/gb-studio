@@ -1,6 +1,6 @@
-	       gbdk-2.95 - http://gbdk.sourceforge.net/
-	       ----------------------------------------
-	    (C) 2000 Michael Hope <michaelh@earthling.net>
+               gbdk-2.96 - http://gbdk.sourceforge.net/
+               ----------------------------------------
+            (C) 2001 Michael Hope <michaelh@juju.net.nz>
 
        This is a early-release beta.  Please report any bugs :)
 
@@ -10,8 +10,9 @@ win32:
 * Unzip using WinZip or similar (which you've probably already done :)
     e.g use WinZip to extract to d:\gbstuff\gbdk
 * Add the 'bin' directory to your path if required.
-    e.g Add 'PATH=%PATH%;d:\gbstuff\gbdk\bin' to autoexec.bat
-* Restart if needed
+    e.g Add 'PATH=%PATH%;d:\gbstuff\gbdk\bin' to autoexec.bat, or
+  through the System control panel on Windows NT or 2000.
+* Restart if needed.
 * GBDK is ready to go - there is no need to compile the libraries or
   to set environment variables.  You may want to remove the
   GBDKDIR line from autoexec.bat that an older version of gbdk may
@@ -22,20 +23,26 @@ win32:
 
 Linux:
 * Very similar to win32
-* Extract the archive somewhere (normally /usr/lib/gbdk)
+* Extract the archive somewhere (normally /opt/gbdk)
 * Set GBDKDIR to where you installed with a trailing /
+    e.g. export GBDKDIR=/home/michaelh/gbdk/
 * Try compiling the examples as above
+
+Notes for this release:
+-----------------------
+2.96 is a special maintenance release which includes all of the bug
+fixes from a year of development of sdcc.  The code generated should
+now be more reliable, and all examples run correctly.  Banked
+functions, the 'sfr' keyword, and targeting assemblers other than
+asxxxx is unsupported in this release, but will be in the next.  All
+testing was done with xgnuboy on Linux/ppc - thanks to them for making
+a cross platform emulator.
 
 Special note:
 -------------
 I've reverted the WORD to 16 bit unsigned change that required
 -DGBDK_2_COMPAT=1.  You can use BYTE_IS_UNSIGNED if you, like me,
 really want WORD to be unsigned :)
-
-Another note:
--------------
-The gb-dtmf is currently (2.95) broken.  It's something to do with
-an uninitalised varible...
 
 Reporting problems and feature requests
 ---------------------------------------
@@ -58,13 +65,12 @@ extract, and type:
 
 make -f update.mak update
 
-The Linux binary is normally installed in /usr/lib/gbdk.  If you
+The Linux binary is normally installed in /opt/gbdk.  If you
 install somewhere else, set GBDKDIR to the appropriate path.
-
 eg.
-	export GBDKDIR=/usr/local/stuff/gbdk/
-   to autoexec.bat so that lcc can find everything.  Note the
-trailing slash.
+        export GBDKDIR=/opt/gbdk/
+
+Note the trailing slash.
 
 Documentation
 -------------
@@ -72,17 +78,17 @@ Latest version of this README:
     http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/~checkout~/gbdk-support/README?cvsroot=gbdk
 
 Library documentation:
-	http://gbdk.sourceforge.net/doc/html/index.html
+        http://gbdk.sourceforge.net/doc/html/index.html
 This was generated from include/*.h by doxygen
 
 General Gameboy information:
-	http://www.devrs.com/gb/
+        http://www.devrs.com/gb/
 
 GeeBee FAQ:
-	http://www.devrs.com/gb/files/faqs.html
+        http://www.devrs.com/gb/files/faqs.html
 
 GBSpec aka Pan doc
-	http://www.devrs.com/gb/files/gbspec.txt
+        http://www.devrs.com/gb/files/gbspec.txt
 
 Banked function support
 -----------------------
@@ -108,8 +114,8 @@ Banked function support
 * The model used sets whether 'normal' functions (without the banked,
   nonbanked, or static modifiers) are banked or not.  The currently supported
   options are:
-	--model-medium	Functions are by default banked
-	--model-small	Functions are by default nonbanked
+        --model-medium  Functions are by default banked
+        --model-small   Functions are by default nonbanked
   The default is model is small.  The compiler defines SDCC_MODEL_SMALL
   or SDCC_MODEL_MEDIUM depending on the current model.  Libraries for both
   models are provided in lib/small and lib/medium
@@ -130,10 +136,10 @@ Some notes:
     around this problem are:
 
       o Put heavily used functions or functions that take pointers
-	in HOME.  Then the pointer will remain valid.
+        in HOME.  Then the pointer will remain valid.
       o Calls within the same module (ie file) should be in the same
-	bank.  Id like to say will, which is true in asxxxx, but I
-	haven't confirmed it.
+        bank.  Id like to say will, which is true in asxxxx, but I
+        haven't confirmed it.
 
   * A banked call adds an extra 4 bytes to the stack and quite a few
     extra cycles to the call.  Don't use it for heavily used functions
@@ -195,12 +201,12 @@ currently:
 
   * Static initialised data like:
 
-	int data[] = { 1, 2, 3, 4 };
+        int data[] = { 1, 2, 3, 4 };
     currently isn't supported.  sdcc pulls some tricks with the way that
     sections are allocated to support the initialisation code which rgbds
     doesn't support.  In any case, static inited data is normally a bug -
     most people normally mean:
-	const int data[] = { ... };
+        const int data[] = { ... };
     This is especially the case with tile data etc on the gb.
 
 Some of the examples don't yet work.  For now you need a make utility like
@@ -223,23 +229,23 @@ Differences between this and gbdk-2.1.5
   variables for speed, but this causes trouble when accessing registers.
 
 * The basic types have changed.  The sizes are now:
-	char		8 bits
-	int		16 bits
-	long		32 bits
-	long long	Doesn't exist
+        char            8 bits
+        int             16 bits
+        long            32 bits
+        long long       Doesn't exist
 
 * Float support is there but unconnected.
 
 * gbdk has an alternitave set of typedefs for those who like me like
   their WORDs to be unsigned.  Define BYTE_IS_UNSIGNED=1 to use the new
   typedefs.
-	Before		With		Or		Size
-	BYTE		INT8				8 signed
-	UBYTE		BYTE		UINT8		8 unsigned
-	WORD		INT16				16 signed
-	UWORD		WORD		UINT16		16 unsigned
-	DWORD		INT32				32 signed
-	UDWORD		DWORD		UINT32		32 unsigned
+        Before          With            Or              Size
+        BYTE            INT8                            8 signed
+        UBYTE           BYTE            UINT8           8 unsigned
+        WORD            INT16                           16 signed
+        UWORD           WORD            UINT16          16 unsigned
+        DWORD           INT32                           32 signed
+        UDWORD          DWORD           UINT32          32 unsigned
 
 * There is now real initialised static data support.  You can now use
   BYTE abModifyMeLater[] = { 5, 6, 7, 8 };
@@ -267,4 +273,4 @@ GNU make
 ftp://agnes.dida.physik.uni-essen.de/home/janjaap/mingw32/newnew/
 
 -- Michael Hope
-   <michaelh@earthling.net>
+   <michaelh@juju.net.nz> <nz_michaelh@yahoo.com>

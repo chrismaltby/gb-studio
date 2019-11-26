@@ -258,6 +258,12 @@ extern UINT8 _io_out;
 #define DISABLE_RAM_MBC1 \
   *(unsigned char *)0x0000 = 0x00
 
+#define SWITCH_16_8_MODE_MBC1 \
+  *(unsigned char *)0x6000 = 0x00
+
+#define SWITCH_4_32_MODE_MBC1 \
+  *(unsigned char *)0x6000 = 0x01
+
 /* Note the order used here.  Writing the other way around
  * on a MBC1 always selects bank 0 (d'oh)
  */

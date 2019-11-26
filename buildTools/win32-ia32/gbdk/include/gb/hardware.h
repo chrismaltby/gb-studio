@@ -8,6 +8,7 @@
 #include <types.h>
 
 #if USE_SFR_FOR_REG
+#error SFR is unteseted and disabled in 2.96
 
 #define __REG	extern volatile sfr UINT8
 

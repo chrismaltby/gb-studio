@@ -5,7 +5,7 @@ ROM_BUILD_DIR = build/rom
 OBJ_DIR = obj
 SOURCE_DIR = src
 
-CFLAGS = -DUSE_SFR_FOR_REG -Wl-yo64 -Wl-ya4 -Wl-yp0x143=0x80
+CFLAGS = -Wl-yo64 -Wl-ya4 -Wl-yp0x143=0x80
 
 SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')
 SOURCES_ASM := $(shell find -L $(SOURCE_DIR) -name '*.s')

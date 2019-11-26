@@ -1,0 +1,71 @@
+XL
+H 1 areas 32 global symbols
+S __modsint_rrx_s Ref0000
+S __moduint_rrx_s Ref0000
+S __rlslong_rrx_s Ref0000
+S __divsint_rrx_s Ref0000
+S __rlulong_rrx_s Ref0000
+S __divuint_rrx_s Ref0000
+S __rrslong_rrx_s Ref0000
+S __rrulong_rrx_s Ref0000
+S __mulsint_rrx_s Ref0000
+S __muluint_rrx_s Ref0000
+S __modschar_rrx_s Ref0000
+S __moduchar_rrx_s Ref0000
+S __divschar_rrx_s Ref0000
+S __divuchar_rrx_s Ref0000
+S __modslong Ref0000
+S __modulong Ref0000
+S __divslong Ref0000
+S __divulong Ref0000
+S __mulschar_rrx_s Ref0000
+S __muluchar_rrx_s Ref0000
+S __mulslong Ref0000
+S __mululong Ref0000
+A _CODE size 72 flags 0
+S __rrslong_rrf_s Def0060
+S __rrulong_rrf_s Def005A
+S __mulsint_rrf_s Def0012
+S __muluint_rrf_s Def001E
+S __modschar_rrf_s Def0042
+S __moduchar_rrf_s Def0048
+S __divschar_rrf_s Def0030
+S __divuchar_rrf_s Def003C
+S __mulschar_rrf_s Def002A
+S __muluchar_rrf_s Def0036
+S __modslong_rrf_s Def0006
+S __modulong_rrf_s Def0009
+S __divslong_rrf_s Def000C
+S __divulong_rrf_s Def000F
+S __mulslong_rrf_s Def0000
+S __mululong_rrf_s Def0003
+S __modslong_rrx_s Def0006
+S __modulong_rrx_s Def0009
+S __divslong_rrx_s Def000C
+S __divulong_rrx_s Def000F
+S __modsint_rrf_s Def004E
+S __moduint_rrf_s Def0054
+S __rlslong_rrf_s Def006C
+S __divsint_rrf_s Def0018
+S __rlulong_rrf_s Def0066
+S __divuint_rrf_s Def0024
+S __mulslong_rrx_s Def0000
+S __mululong_rrx_s Def0003
+T 00 00 C3 00 00 C3 00 00 C3 00 00 C3
+R 00 00 00 00 02 03 14 00 02 06 15 00 02 09 0E 00
+T 0A 00 00 00 C3 00 00 C3 00 00 3E 05 CF C3
+R 00 00 00 00 02 02 0F 00 02 05 10 00 02 08 11 00
+T 16 00 00 00 3E 05 CF C3 00 00 3E 05 CF C3 00 00
+R 00 00 00 00 02 02 08 00 02 08 03 00 02 0E 09 00
+T 24 00 3E 05 CF C3 00 00 3E 05 CF C3 00 00 3E 05
+R 00 00 00 00 02 06 05 00 02 0C 12 00
+T 32 00 CF C3 00 00 3E 05 CF C3 00 00 3E 05 CF C3
+R 00 00 00 00 02 04 0C 00 02 0A 13 00
+T 40 00 00 00 3E 05 CF C3 00 00 3E 05 CF C3 00 00
+R 00 00 00 00 02 02 0D 00 02 08 0A 00 02 0E 0B 00
+T 4E 00 3E 05 CF C3 00 00 3E 05 CF C3 00 00 3E 05
+R 00 00 00 00 02 06 00 00 02 0C 01 00
+T 5C 00 CF C3 00 00 3E 05 CF C3 00 00 3E 05 CF C3
+R 00 00 00 00 02 04 07 00 02 0A 06 00
+T 6A 00 00 00 3E 05 CF C3 00 00
+R 00 00 00 00 02 02 04 00 02 08 02 00

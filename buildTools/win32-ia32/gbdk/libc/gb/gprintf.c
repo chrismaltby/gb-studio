@@ -24,7 +24,7 @@ INT8 gprintf(char *fmt, ...) NONBANKED
       }
       case 'u': {
 	  /* unsigned int */
-	  INT8 b = va_arg(ap, INT8);
+	  INT8 b = (INT8)va_arg(ap, int);
 	  gprintn(b, 10, UNSIGNED);
 	  break;
       }

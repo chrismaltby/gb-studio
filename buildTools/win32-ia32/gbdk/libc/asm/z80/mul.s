@@ -2,7 +2,23 @@
 	
 	.area	_CODE
 	
-__mulschar::	
+__mulschar::
+        ;; Need to sign extend before going in.
+        push    bc
+        ld      c,l
+        
+        ld      a,l
+        rla
+        sbc     a,a
+        ld      b,a
+
+        ld      a,e
+        rla
+        sbc     a,a
+        ld      d,a
+
+        jp      .mul16
+
 __muluchar::
 __mulsint::
 __muluint::
