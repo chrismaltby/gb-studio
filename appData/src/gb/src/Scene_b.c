@@ -89,8 +89,8 @@ void SceneInit_b1()
   SpritesReset();
   UIInit();
 
-  SCX_REG = 0;
-  SCY_REG = 0;
+  scroll_x = 0;
+  scroll_y = 0;
   WX_REG = MAXWNDPOSX;
   WY_REG = MAXWNDPOSY;
 
@@ -367,7 +367,7 @@ void SceneUpdateCamera_b()
     camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
   }
 
-  camera_moved = SCX_REG != camera_dest.x || SCY_REG != camera_dest.y;
+  camera_moved = scroll_x != camera_dest.x || scroll_y != camera_dest.y;
 
   if (camera_moved)
   {
@@ -376,29 +376,29 @@ void SceneUpdateCamera_b()
     {
       if ((time & camera_speed) == 0)
       {
-        if (SCX_REG > camera_dest.x)
+        if (scroll_x > camera_dest.x)
         {
-          SCX_REG--;
+          scroll_x--;
         }
-        else if (SCX_REG < camera_dest.x)
+        else if (scroll_x < camera_dest.x)
         {
-          SCX_REG++;
+          scroll_x++;
         }
-        if (SCY_REG > camera_dest.y)
+        if (scroll_y > camera_dest.y)
         {
-          SCY_REG--;
+          scroll_y--;
         }
-        else if (SCY_REG < camera_dest.y)
+        else if (scroll_y < camera_dest.y)
         {
-          SCY_REG++;
+          scroll_y++;
         }
       }
     }
     // Otherwise jump imediately to camera destination
     else
     {
-      SCX_REG = camera_dest.x;
-      SCY_REG = camera_dest.y;
+      scroll_x = camera_dest.x;
+      scroll_y = camera_dest.y;
     }
   }
 }
@@ -939,7 +939,7 @@ void SceneRenderCameraShake_b()
   // Handle Shake
   if (shake_time != 0)
   {
-    SCX_REG += shake_time & 0x5;
+    scroll_x += shake_time & 0x5;
   }
 }
 
@@ -978,8 +978,8 @@ void SceneRenderActors_b()
   for (i = 0; i != scene_num_actors; ++i)
   {
     s = MUL_2(i) + ACTOR_SPRITE_OFFSET;
-    x = ACTOR_X(ptr) - SCX_REG;
-    y = ACTOR_Y(ptr) - SCY_REG;
+    x = ACTOR_X(ptr) - scroll_x;
+    y = ACTOR_Y(ptr) - scroll_y;
 
     if (ACTOR_ENABLED(ptr) && (win_pos_y == MENU_CLOSED_Y || (y < win_pos_y + 16 || x < win_pos_x + 8)))
     {
@@ -1063,8 +1063,8 @@ void SceneRenderEmoteBubble_b()
     {
 
       // Set x and y above actor displaying emote
-      screen_x = actors[emote_actor].pos.x - SCX_REG;
-      screen_y = actors[emote_actor].pos.y - ACTOR_HEIGHT - SCY_REG;
+      screen_x = actors[emote_actor].pos.x - scroll_x;
+      screen_y = actors[emote_actor].pos.y - ACTOR_HEIGHT - scroll_y;
 
       // At start of animation bounce bubble in using stored offsets
       if (emote_timer < BUBBLE_ANIMATION_FRAMES)
@@ -1171,7 +1171,7 @@ UBYTE SceneIsEmoting_b()
 
 UBYTE SceneCameraAtDest_b()
 {
-  return SCX_REG == camera_dest.x && SCY_REG == camera_dest.y;
+  return scroll_x == camera_dest.x && scroll_y == camera_dest.y;
 }
 
 UBYTE SceneAwaitInputPressed_b()
