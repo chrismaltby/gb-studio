@@ -894,10 +894,11 @@ test("Should be able to define a label", () => {
   const sb = new ScriptBuilder(output, {
     compileEvents: () => {
       output.push(99);
-    }
+    },
+    labels: {}
   });
   sb.labelDefine("my_label");
-  expect(sb.labels.my_label).toBe(2);
+  expect(sb.options.labels.my_label).toBe(2);
 });
 
 test("Should be replace gotos with label ptrs if found", () => {
@@ -905,10 +906,11 @@ test("Should be replace gotos with label ptrs if found", () => {
   const sb = new ScriptBuilder(output, {
     compileEvents: () => {
       output.push(99);
-    }
+    },
+    labels: {}
   });
   sb.labelDefine("my_label");
-  expect(sb.labels.my_label).toBe(7);
+  expect(sb.options.labels.my_label).toBe(7);
   expect(output).toEqual([5, 6, cmd(JUMP), 0, 7, 7, 8]);
 });
 
@@ -917,7 +919,8 @@ test("Should be able to goto a label", () => {
   const sb = new ScriptBuilder(output, {
     compileEvents: () => {
       output.push(99);
-    }
+    },
+    labels: {}
   });
   sb.labelDefine("my_label");
   sb.labelGoto("my_label");
@@ -929,7 +932,8 @@ test("Should add goto playholder if not defined yet", () => {
   const sb = new ScriptBuilder(output, {
     compileEvents: () => {
       output.push(99);
-    }
+    },
+    labels: {}
   });
   sb.labelGoto("my_label");
   expect(output).toEqual([5, `goto: my_label`, 0, 0]);
