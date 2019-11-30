@@ -105,7 +105,6 @@ class ScriptBuilder {
   constructor(output, options) {
     this.output = output;
     this.options = options;
-    this.labels = {};
   }
 
   actorSetActive = id => {
@@ -750,9 +749,10 @@ class ScriptBuilder {
   // Goto
 
   labelDefine = name => {
+    const { labels } = this.options;
     const output = this.output;
     const ptr = output.length;
-    this.labels[name] = ptr;
+    labels[name] = ptr;
     for (let i = 0; i < output.length; i++) {
       if (output[i] === `goto: ${name}`) {
         output[i] = cmd(JUMP);
@@ -763,9 +763,10 @@ class ScriptBuilder {
   };
 
   labelGoto = name => {
+    const { labels } = this.options;
     const output = this.output;
-    if (this.labels[name] !== undefined) {
-      const ptr = this.labels[name];
+    if (labels[name] !== undefined) {
+      const ptr = labels[name];
       output.push(cmd(JUMP));
       output.push(ptr >> 8);
       output.push(ptr & 0xff);
