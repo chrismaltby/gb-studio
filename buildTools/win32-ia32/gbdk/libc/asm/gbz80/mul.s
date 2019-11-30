@@ -1,43 +1,71 @@
 	;; Originally from GBDK by Pascal Felber.
 	
-	;; BANKED: checked
-	.area	_BASE
-__mulschar::	
-__muluchar::
-	push	bc
-	lda	hl,4(sp)
-	ld	c,(hl)
-	inc	hl
-	ld	e,(hl)
-	call	.mulu8
+	.area	_CODE
 
-	ld	e,l
-	pop	bc
-	ret
+__mulschar_rrx_s::
+        ld      hl,#2
+        add     hl,sp
 
-__mulsint::
-__muluint::
-	push	bc
-	lda	hl,4(sp)
-	ld	c,(hl)
-	inc	hl
-	ld	b,(hl)
-	inc	hl
-	ld	e,(hl)
-	inc	hl
-	ld	d,(hl)
-	call	.mulu16
+        ld      e,(hl)
+        inc     hl
+        ld      l,(hl)                
 
-	ld	e,l
-	ld	d,h
-	pop	bc
-	ret	
-		
-.mul8:
-.mulu8:
-	LD	B,#0x00		; Sign extend is not necessary with mul
-	LD	D,B
-	; Fall through
+        ;; Fall through
+__mulschar_rrx_hds::
+        ;; Need to sign extend before going in.
+        ld      c,l
+        
+        ld      a,l
+        rla
+        sbc     a,a
+        ld      b,a
+
+        ld      a,e
+        rla
+        sbc     a,a
+        ld      d,a
+
+        jp      .mul16
+
+__muluchar_rrx_s::
+        ld      hl,#2
+        add     hl,sp
+
+        ld      e,(hl)
+
+        inc     hl
+        ld      c,(hl)                
+
+        ;; Clear the top
+        xor     a
+        ld      d,a
+        ld      b,a
+        
+        jp      .mulu16
+        
+__mulsint_rrx_s::
+__muluint_rrx_s::
+        ld      hl,#2
+        add     hl,sp
+        
+        ld      e,(hl)
+        inc     hl
+        ld      d,(hl)
+        inc     hl
+        ld      a,(hl)
+        inc     hl
+        ld      h,(hl)
+        ld      l,a
+
+        ;; Fall through
+        
+__muluchar_rrx_hds::
+__mulsint_rrx_hds::
+__muluint_rrx_hds::
+	;; Parameters:
+	;;	HL, DE (left, right irrelivent)
+	ld	b,h
+	ld	c,l
 	
 	;; 16-bit multiplication
 	;; 
@@ -49,26 +77,34 @@ __muluint::
 	;;   DE = less significant word of product
 	;;
 	;; Register used: AF,BC,DE,HL
-.mul16::	
-.mulu16::	
-	LD	HL,#0x00	; Product = 0
-	LD	A,#15		; Count = bit length - 1
-	;; Shift-and-add algorithm
-	;; If MSB of multiplier is 1, add multiplicand to partial product
-	;; Shift partial product, multiplier left 1 bit
-.mlp:
-	SLA	E		; Shift multiplier left 1 bit
-	RL	D
-	JR	NC,.mlp1	; Jump if MSB of multiplier = 0
-	ADD	HL,BC		; Add multiplicand to partial product
-.mlp1:
-	ADD	HL,HL		; Shift partial product left
-	DEC	A
-	JR	NZ,.mlp		; Continue until count = 0
-	;; Add multiplicand one last time if MSB of multiplier is 1
-	BIT	7,D		; Get MSB of multiplier
-	JR	Z,.mend		; Exit if MSB of multiplier is 0
-	ADD	HL,BC		; Add multiplicand to product
-.mend:
-	RET			; HL = result
+.mul16:
+.mulu16:
+        ld      hl,#0
+        ld      a,b
+        ; ld c,c
+        ld      b,#16
 
+        ;; Optimise for the case when this side has 8 bits of data or
+        ;; less.  This is often the case with support address calls.
+        or      a
+        jp      nz,1$
+        
+        ld      b,#8
+        ld      a,c
+1$:
+        ;; Taken from z88dk, which originally borrowed from the
+        ;; Spectrum rom.
+        add     hl,hl
+        rl      c
+        rla                     ;DLE 27/11/98
+        jr      nc,2$
+        add     hl,de
+2$:
+        dec     b
+        jr      nz,1$
+
+        ;; Return in DE
+        ld      e,l
+        ld      d,h
+        
+        ret

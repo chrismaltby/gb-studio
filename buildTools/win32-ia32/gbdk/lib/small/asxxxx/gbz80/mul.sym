@@ -1,0 +1,20 @@
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 1.
+
+Symbol Table
+
+  0 .mul16                             002E R
+  0 .mulu16                            002E R
+  0 __mulschar_rrx_hds                 0007 GR
+  0 __mulschar_rrx_s                   0000 GR
+  0 __mulsint_rrx_hds                  002C GR
+  0 __mulsint_rrx_s                    0020 GR
+  0 __muluchar_rrx_hds                 002C GR
+  0 __muluchar_rrx_s                   0013 GR
+  0 __muluint_rrx_hds                  002C GR
+  0 __muluint_rrx_s                    0020 GR
+
+ASxxxx Assembler V01.75  (GameBoy Z80-like CPU), page 2.
+
+Area Table
+
+   0 _CODE                              size   48   flags 0
