@@ -298,9 +298,9 @@
   "EVENT_SOUND_PLAY_BEEP": "Sound: Play Beep",
   "EVENT_SOUND_PLAY_CRASH": "Sound: Play Crash",
   "EVENT_SOUND_PLAY_EFFECT": "Sound: Play Effect",
-  "EVENT_SET_TIMER_SCRIPT": "Timer: Set timer script",
-  "EVENT_TIMER_RESTART": "Timer: Restart timer",
-  "EVENT_TIMER_DISABLE": "Timer: Disable timer script",
+  "EVENT_SET_TIMER_SCRIPT": "Timer: Set Timer Script",
+  "EVENT_TIMER_RESTART": "Timer: Restart Timer",
+  "EVENT_TIMER_DISABLE": "Timer: Disable Timer Script",
   "EVENT_MENU": "Text: Display Menu",
 
   "// 10": "Menu -----------------------------------------------------",
