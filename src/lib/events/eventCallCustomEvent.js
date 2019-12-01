@@ -7,10 +7,12 @@ export const fields = [
   {
     type: "events",
     key: "script",
+    hide: true,
     defaultValue: []
   },
   {
-    type: "hidden",
+    type: "text",
+    hide: true,
     key: "customEventId"
   }
 ];
@@ -23,6 +25,7 @@ export const compile = (input, helpers) => {
     if (e.args.actorId && e.args.actordId !== "player") {
       e.args.actorId = input[`$actor[${e.args.actorId}]$`];
     }
+
     if (e.args.variable) {
       e.args.variable = input[`$variable[${e.args.variable}]$`];
     }

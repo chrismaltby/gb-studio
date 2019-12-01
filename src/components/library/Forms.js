@@ -3,8 +3,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import Select from "react-select";
+import AsyncPaginate, {
+  reduceGroupedOptions
+} from "react-select-async-paginate";
 import l10n from "../../lib/helpers/l10n";
+
+reduceGroupedOptions([], []);
 
 export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
   <textarea
@@ -32,15 +36,25 @@ Textarea.defaultProps = {
   borderless: false
 };
 
-export const FormField = ({ halfWidth, thirdWidth, quarterWidth, children }) => (
+export const FormField = ({
+  halfWidth,
+  thirdWidth,
+  quarterWidth,
+  children
+}) => (
   <div
-    className={cx("FormField", {
-      "FormField--HalfWidth": halfWidth
-    }, {
-      "FormField--ThirdWidth": thirdWidth
-    }, {
-      "FormField--QuarterWidth": quarterWidth
-    })}
+    className={cx(
+      "FormField",
+      {
+        "FormField--HalfWidth": halfWidth
+      },
+      {
+        "FormField--ThirdWidth": thirdWidth
+      },
+      {
+        "FormField--QuarterWidth": quarterWidth
+      }
+    )}
   >
     {children}
   </div>
@@ -118,9 +132,10 @@ ToggleableFormField.defaultProps = {
 };
 
 export class ToggleableCheckBoxField extends Component {
-
-  componentWillMount () {
-    this.id = `toggle_${Math.random().toString().replace(/0\./, '')}`;
+  componentWillMount() {
+    this.id = `toggle_${Math.random()
+      .toString()
+      .replace(/0\./, "")}`;
   }
 
   toggleOpen = () => {
@@ -129,12 +144,7 @@ export class ToggleableCheckBoxField extends Component {
   };
 
   render() {
-    const {
-      halfWidth,
-      label,
-      children,
-      open
-    } = this.props;
+    const { halfWidth, label, children, open } = this.props;
     return (
       <div
         className={cx("FormField", "FormField--Toggleable", {
@@ -142,13 +152,16 @@ export class ToggleableCheckBoxField extends Component {
         })}
       >
         <label htmlFor={this.id}>
-          <input id={this.id} type="checkbox" onChange={this.toggleOpen} checked={open} />
+          <input
+            id={this.id}
+            type="checkbox"
+            onChange={this.toggleOpen}
+            checked={open}
+          />
           <div className="FormCheckbox" />
           {label}
         </label>
-        <div>
-          {open && children}
-        </div>
+        <div>{open && children}</div>
       </div>
     );
   }
@@ -208,6 +221,44 @@ export class SelectRenamable extends Component {
     e.target.select();
   };
 
+  loadOptions = (search, loadedOptions) => {
+    const { options, grouped } = this.props;
+    const searchLower = search.toLowerCase();
+    const PER_PAGE = 20;
+
+    if (grouped) {
+      const pageGroupedOptions = options.map((group, index) => {
+        const currentLength = loadedOptions[index]
+          ? loadedOptions[index].options.length
+          : 0;
+        return {
+          ...group,
+          options: group.options
+            .filter(({ label }) => label.toLowerCase().includes(searchLower))
+            .slice(currentLength, currentLength + PER_PAGE)
+        };
+      });
+
+      const pageGroupedTotal = pageGroupedOptions.reduce((memo, group) => {
+        return memo + group.options.length;
+      }, 0);
+
+      return {
+        options: pageGroupedOptions,
+        hasMore: pageGroupedTotal > 0
+      };
+    }
+
+    const pageOptions = options
+      .filter(({ label }) => label.toLowerCase().includes(searchLower))
+      .slice(loadedOptions.length, loadedOptions.length + PER_PAGE);
+    const pageTotal = pageOptions.length;
+    return {
+      options: pageOptions,
+      hasMore: pageTotal > 0
+    };
+  };
+
   render() {
     const {
       editPlaceholder,
@@ -215,7 +266,7 @@ export class SelectRenamable extends Component {
       id,
       value,
       onChange,
-      options
+      grouped
     } = this.props;
     const { edit, editValue } = this.state;
 
@@ -233,13 +284,14 @@ export class SelectRenamable extends Component {
             onBlur={this.onSave}
           />
         ) : (
-          <Select
+          <AsyncPaginate
             id={id}
             className="ReactSelectContainer"
             classNamePrefix="ReactSelect"
             value={value}
             onChange={onChange}
-            options={options}
+            loadOptions={this.loadOptions}
+            reduceOptions={grouped ? reduceGroupedOptions : undefined}
           />
         )}
         {edit ? (
@@ -271,12 +323,14 @@ SelectRenamable.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   editDefaultValue: PropTypes.string,
   editPlaceholder: PropTypes.string,
-  onRename: PropTypes.func.isRequired
+  onRename: PropTypes.func.isRequired,
+  grouped: PropTypes.bool
 };
 
 SelectRenamable.defaultProps = {
   id: undefined,
   value: undefined,
   editDefaultValue: "",
-  editPlaceholder: ""
+  editPlaceholder: "",
+  grouped: false
 };

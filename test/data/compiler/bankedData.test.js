@@ -3,7 +3,8 @@ import BankedData, {
   BANKED_DATA_TOO_LARGE,
   BANKED_COUNT_OVERFLOW,
   GB_MAX_BANK_SIZE,
-  MIN_DATA_BANK
+  MIN_DATA_BANK,
+  MBC1
 } from "../../../src/lib/compiler/bankedData";
 import {
   cIntArray,
@@ -157,4 +158,113 @@ test("should throw if unsupported number of rom banks are required", () => {
   const banked = new BankedData({ bankSize: 2, bankOffset: 1024 });
   banked.push([0]);
   expect(() => banked.romBanksNeeded()).toThrow(BANKED_COUNT_OVERFLOW);
+});
+
+test("should disallow bank 0x20 when using MBC1", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 30,
+    bankController: MBC1
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 30, offset: 0 });
+  expect(ptr2).toEqual({ bank: 31, offset: 0 });
+  expect(ptr3).toEqual({ bank: 33, offset: 0 });
+  expect(ptr4).toEqual({ bank: 34, offset: 0 });
+});
+
+test("should disallow bank 0x40 when using MBC1", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 62,
+    bankController: MBC1
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 62, offset: 0 });
+  expect(ptr2).toEqual({ bank: 63, offset: 0 });
+  expect(ptr3).toEqual({ bank: 65, offset: 0 });
+  expect(ptr4).toEqual({ bank: 66, offset: 0 });
+});
+
+test("should disallow bank 0x60 when using MBC1", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 94,
+    bankController: MBC1
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 94, offset: 0 });
+  expect(ptr2).toEqual({ bank: 95, offset: 0 });
+  expect(ptr3).toEqual({ bank: 97, offset: 0 });
+  expect(ptr4).toEqual({ bank: 98, offset: 0 });
+});
+
+test("should allow bank 0x20 when using MBC5", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 30
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 30, offset: 0 });
+  expect(ptr2).toEqual({ bank: 31, offset: 0 });
+  expect(ptr3).toEqual({ bank: 32, offset: 0 });
+  expect(ptr4).toEqual({ bank: 33, offset: 0 });
+});
+
+test("should allow bank 0x40 when using MBC5", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 62
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 62, offset: 0 });
+  expect(ptr2).toEqual({ bank: 63, offset: 0 });
+  expect(ptr3).toEqual({ bank: 64, offset: 0 });
+  expect(ptr4).toEqual({ bank: 65, offset: 0 });
+});
+
+test("should allow bank 0x60 when using MBC5", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 94
+  });
+  const ptr1 = banked.push([1, 2]);
+  const ptr2 = banked.push([1, 2]);
+  const ptr3 = banked.push([1, 2]);
+  const ptr4 = banked.push([1, 2]);
+  expect(ptr1).toEqual({ bank: 94, offset: 0 });
+  expect(ptr2).toEqual({ bank: 95, offset: 0 });
+  expect(ptr3).toEqual({ bank: 96, offset: 0 });
+  expect(ptr4).toEqual({ bank: 97, offset: 0 });
+});
+
+test("should not create data files for bank 0x20 when using MBC1", () => {
+  const banked = new BankedData({
+    bankSize: 2,
+    bankOffset: 30,
+    bankController: MBC1
+  });
+  banked.push([1, 2]);
+  banked.push([1, 2]);
+  banked.push([1, 2]);
+  banked.push([1, 2]);
+  const cData = banked.exportCData();
+  const cHeader = banked.exportCHeader();
+  expect(cData.length).toBe(4);
+  expect(cHeader).not.toContain("bank_32");
 });

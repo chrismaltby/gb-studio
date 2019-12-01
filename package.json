@@ -2,7 +2,7 @@
   "name": "gb-studio",
   "productName": "GB Studio",
   "homepage": "https://www.gbstudio.dev",
-  "version": "1.2.0-alpha.1",
+  "version": "1.2.0-rc.2",
   "description": "Visual retro game maker",
   "main": "src/index.js",
   "scripts": {
@@ -24,62 +24,7 @@
   "author": "GB Studio",
   "license": "MIT",
   "config": {
-    "forge": {
-      "make_targets": {
-        "win32": [
-          "squirrel",
-          "zip"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "electronPackagerConfig": {
-        "name": "GB Studio",
-        "executableName": "gb-studio",
-        "packageManager": "yarn",
-        "icon": "src/assets/app/icon/app_icon",
-        "darwinDarkModeSupport": true,
-        "extendInfo": "src/assets/app/Info.plist",
-        "extraResource": [
-          "src/assets/app/icon/gbsproj.icns"
-        ],
-        "afterCopy": [
-          "./after-copy"
-        ],
-        "asar": true,
-        "ignore": [
-          "/.vscode($|/)",
-          "/coverage($|/)",
-          "/test($|/)",
-          "/appData($|/)",
-          "/buildTools($|/)"
-        ]
-      },
-      "electronWinstallerConfig": {
-        "name": "gb_studio",
-        "exe": "gb-studio.exe",
-        "loadingGif": "src/assets/app/install.gif"
-      },
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
-      "github_repository": {
-        "owner": "",
-        "name": ""
-      },
-      "electronInstallerDMG": {
-        "background": "src/assets/app/dmg/background.tiff",
-        "format": "ULFO"
-      },
-      "windowsStoreConfig": {
-        "packageName": "",
-        "name": "gbstudio"
-      }
-    }
+    "forge": "./forge.config.js"
   },
   "dependencies": {
     "@babel/core": "^7.4.5",
@@ -89,7 +34,7 @@
     "@octokit/rest": "^16.25.4",
     "about-window": "^1.12.1",
     "brace": "^0.11.1",
-    "chokidar": "^2.1.2",
+    "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
     "deepmerge": "^3.1.0",
     "electron-compile": "^6.4.4",
@@ -105,7 +50,6 @@
     "image-size": "^0.7.1",
     "lodash": "^4.17.14",
     "normalizr": "^3.4.0",
-    "open": "^6.3.0",
     "prop-types": "^15.7.2",
     "react": "^16.3.2",
     "react-ace": "^7.0.1",
@@ -118,6 +62,7 @@
     "react-redux": "^5.0.7",
     "react-scroll-into-view-if-needed": "^2.1.7",
     "react-select": "^3.0.4",
+    "react-select-async-paginate": "^0.3.10",
     "redux": "^4.0.0",
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",
@@ -139,6 +84,7 @@
     "babel-preset-react": "^6.24.1",
     "cross-env": "^5.2.0",
     "electron-forge": "^5.2.4",
+    "electron-notarize": "^0.2.0",
     "electron-prebuilt-compile": "4.0.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",

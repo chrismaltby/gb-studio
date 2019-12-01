@@ -6,6 +6,7 @@ import copy from "../helpers/fsCopy";
 import buildMakeBat from "./buildMakeBat";
 import { hexDec } from "../helpers/8bit";
 import getTmp from "../helpers/getTmp";
+import { isMBC1 } from "./helpers"
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -109,6 +110,9 @@ const makeBuild = ({
     }
     if (!settings.gbcFastCPUEnabled) {
       gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
+    }
+    if(isMBC1(settings.cartType)) {
+      gameHeader = gameHeader.replace(/_MBC5/g, '_MBC1');
     }
     await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 

@@ -1,3 +1,5 @@
+import l10n from "../helpers/l10n";
+
 export const id = "EVENT_IF_ACTOR_DIRECTION";
 
 export const fields = [
@@ -16,10 +18,26 @@ export const fields = [
     type: "events"
   },
   {
+    key: "__collapseElse",
+    label: l10n("FIELD_ELSE"),
+    type: "collapsable",
+    defaultValue: false,
+    conditions: [
+      {
+        key: "__disableElse",
+        ne: true
+      }
+    ]
+  },
+  {
     key: "false",
     conditions: [
       {
         key: "__collapseElse",
+        ne: true
+      },
+      {
+        key: "__disableElse",
         ne: true
       }
     ],
@@ -29,6 +47,8 @@ export const fields = [
 
 export const compile = (input, helpers) => {
   const { actorSetActive, ifActorDirection } = helpers;
+  const truePath = input.true;
+  const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
-  ifActorDirection(input.direction, input.true, input.false);
+  ifActorDirection(input.direction, truePath, falsePath);
 };

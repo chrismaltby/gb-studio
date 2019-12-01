@@ -13,7 +13,9 @@
 #define JOY_CHANGED (joy != prev_joy)
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
-#define ACTOR_ON_TILE(i) (((actors[(i)].pos.x & 7) == 0) && ((actors[(i)].pos.y & 7) == 0))
+#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
+#define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0) || (actors[(i)].pos.y == 254))
+#define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
 
 #define IS_FRAME_128 ((time & 0x7F) == 0)
 #define IS_FRAME_64 ((time & 0x3F) == 0)
@@ -38,6 +40,8 @@
 #define DIV_8(a) ((a) >> 3)
 #define DIV_4(a) ((a) >> 2)
 #define DIV_2(a) ((a) >> 1)
+
+#define LT_8(a) (((a) >> 3) == 0)
 
 #define ACTOR_SPRITE(ptr) (*(ptr))
 #define ACTOR_X(ptr) (*((ptr) + 1))

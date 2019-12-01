@@ -2,7 +2,7 @@ import glob from "glob";
 import { promisify } from "util";
 import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
-import Path from "path";
+import parseAssetPath from "../helpers/path/parseAssetPath";
 import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
 
 const FRAME_SIZE = 16;
@@ -13,13 +13,8 @@ const sizeOfAsync = promisify(sizeOf);
 const loadSpriteData = projectRoot => async filename => {
   const size = await sizeOfAsync(filename);
   const numFrames = size.width / FRAME_SIZE;
-  const relativePath = Path.relative(projectRoot, filename);
-  const plugin = relativePath.startsWith("plugins")
-    ? relativePath.split(Path.sep)[1]
-    : undefined;
-  const file = plugin
-    ? Path.relative(`plugins/${plugin}/sprites/`, relativePath)
-    : Path.relative("assets/sprites/", relativePath);
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+
   return {
     id: uuidv4(),
     plugin,

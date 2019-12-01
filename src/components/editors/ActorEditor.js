@@ -15,17 +15,25 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
-import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
+import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
+import WorldEditor from "./WorldEditor";
 
 class ActorEditor extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardActor: null
+      clipboardActor: null,
+      scriptMode: "interact"
     };
   }
+
+  onSetScriptMode = mode => {
+    this.setState({
+      scriptMode: mode
+    });
+  };
 
   onEdit = key => e => {
     const { editActor, sceneId, actor } = this.props;
@@ -35,6 +43,8 @@ class ActorEditor extends Component {
   };
 
   onEditScript = this.onEdit("script");
+
+  onEditStartScript = this.onEdit("startScript");
 
   onCopy = e => {
     const { copyActor, actor } = this.props;
@@ -67,10 +77,10 @@ class ActorEditor extends Component {
 
   render() {
     const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
-    const { clipboardActor } = this.state;
+    const { clipboardActor, scriptMode } = this.state;
 
     if (!actor) {
-      return <div />;
+      return <WorldEditor />;
     }
 
     const showDirectionInput =
@@ -95,6 +105,18 @@ class ActorEditor extends Component {
         actor.movementType !== "static") ||
         (actor.animate &&
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
+
+    const renderScriptHeader = ({ buttons }) => (
+      <SidebarTabs
+        value={scriptMode}
+        values={{
+          interact: l10n("SIDEBAR_ON_INTERACT"),
+          start: l10n("SIDEBAR_ON_INIT")
+        }}
+        buttons={buttons}
+        onChange={this.onSetScriptMode}
+      />
+    );
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -309,12 +331,23 @@ class ActorEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          <ScriptEditor
-            value={actor.script}
-            type="actor"
-            title={l10n("SIDEBAR_ACTOR_SCRIPT")}
-            onChange={this.onEditScript}
-          />
+          {scriptMode === "start" ? (
+            <ScriptEditor
+              value={actor.startScript}
+              type="actor"
+              renderHeader={renderScriptHeader}
+              onChange={this.onEditStartScript}
+              entityId={actor.id}
+            />
+          ) : (
+            <ScriptEditor
+              value={actor.script}
+              type="actor"
+              renderHeader={renderScriptHeader}
+              onChange={this.onEditScript}
+              entityId={actor.id}
+            />
+          )}
         </SidebarColumn>
       </Sidebar>
     );
@@ -345,7 +378,7 @@ function mapStateToProps(state, props) {
   const actor = state.entities.present.entities.actors[props.id];
   const scene = state.entities.present.entities.scenes[props.sceneId];
   const spriteSheet =
-    state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+    actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
   const index = scene.actors.indexOf(props.id);
   return {
     index,
@@ -364,7 +397,4 @@ const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ActorEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

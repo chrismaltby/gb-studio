@@ -41,7 +41,8 @@ import {
   REMOVE_COLLISION_TILE,
   SELECT_CUSTOM_EVENT,
   ADD_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT
+  REMOVE_CUSTOM_EVENT,
+  RELOAD_ASSETS
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -311,6 +312,7 @@ export default function editor(state = initialState.editor, action) {
         worldFocus: true
       };
     }
+    case RELOAD_ASSETS:
     case EDIT_UI: {
       return {
         ...state,

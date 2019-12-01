@@ -19,7 +19,6 @@
 
 .ActionMini__Content {
   font-size: 12px;
-  border-bottom: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Children .ActionMini {
@@ -40,6 +39,10 @@
   color: var(--script-command-text-color);
 }
 
+.ActionMini:nth-child(odd) > .ActionMini__Content > .ActionMini__Command {
+  background: var(--script-command-bg-color-alt);
+}
+
 .ActionMini__Command:hover {
   cursor: move;
 }
@@ -56,23 +59,51 @@
 
 /* Conditional Level 1 */
 
-.ActionMini--Conditional {
+.ActionMini--Conditional > .ActionMini__Content > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level1);
 }
 
 .ActionMini--Conditional > .ActionMini__Content > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level1);
 }
 
-.ActionMini--Conditional > .ActionMini__Content > .ActionMini__Else {
-  padding-left: 0px;
+.ActionMini--Conditional .ActionMini__Content .ActionMini__Else {
   background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level1-alt);
+}
+
+.ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level1-alt);
+}
+
+.ActionMini--Conditional:nth-child(odd) .ActionMini__Content .ActionMini__Else {
+  background: var(--conditional-level1-alt);
+}
+
+.ActionMini--Conditional .ActionMini__Content .FormField + .ActionMini__Else {
+  margin-top: 10px;
+}
+
+.ActionMini--Conditional
+  .ActionMini__Content
+  .ActionMini__Children
+  + .ActionMini__Else {
+  margin-top: 0;
 }
 
 /* Conditional Level 2 */
 
-.ActionMini--Conditional .ActionMini--Conditional {
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level2);
 }
 
@@ -80,21 +111,44 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level2);
 }
 
 .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level2-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level2-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level2-alt);
 }
 
 /* Conditional Level 3 */
 
-.ActionMini--Conditional .ActionMini--Conditional .ActionMini--Conditional {
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level3);
 }
 
@@ -103,17 +157,39 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level3);
 }
 
 .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level3-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level3-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level3-alt);
 }
 
 /* Conditional Level 4 */
@@ -121,7 +197,9 @@
 .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level4);
 }
 
@@ -131,7 +209,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level4);
 }
 
@@ -139,10 +216,36 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level4-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level4-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level4-alt);
 }
 
 /* Conditional Level 5 */
@@ -151,7 +254,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level1);
 }
 
@@ -162,7 +267,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level1);
 }
 
@@ -171,10 +275,39 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level1);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level1-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level1-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level1-alt);
 }
 
 /* Conditional Level 6 */
@@ -184,7 +317,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level2);
 }
 
@@ -196,7 +331,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level2);
 }
 
@@ -206,10 +340,42 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level2);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level2-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level2-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level2-alt);
 }
 
 /* Conditional Level 7 */
@@ -220,7 +386,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level3);
 }
 
@@ -233,7 +401,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level3);
 }
 
@@ -244,10 +411,45 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level3);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level3-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level3-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level3-alt);
 }
 
 /* Conditional Level 8 */
@@ -259,7 +461,9 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  .ActionMini--Conditional {
+  .ActionMini--Conditional
+  > .ActionMini__Content
+  > .ScriptEventBlock {
   border-left: 10px solid var(--conditional-level4);
 }
 
@@ -273,7 +477,6 @@
   .ActionMini--Conditional
   > .ActionMini__Content
   > .ActionMini__Command {
-  padding-left: 0px;
   background: var(--conditional-level4);
 }
 
@@ -285,14 +488,64 @@
   .ActionMini--Conditional
   .ActionMini--Conditional
   .ActionMini--Conditional
-  > .ActionMini__Content
-  > .ActionMini__Else {
-  padding-left: 0px;
+  .ActionMini__Content
+  .ActionMini__Else {
   background: var(--conditional-level4);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ScriptEventBlock {
+  border-left: 10px solid var(--conditional-level4-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command {
+  background: var(--conditional-level4-alt);
+}
+
+.ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional
+  .ActionMini--Conditional:nth-child(odd)
+  .ActionMini__Content
+  .ActionMini__Else {
+  background: var(--conditional-level4-alt);
+}
+
+.ActionMini--Add {
+  border-top: 1px solid var(--sidebar-border-color);
+}
+
+.ScriptEditor > .ActionMini--Add:first-child {
+  border-top: 0;
 }
 
 .ActionMini__Children > .ActionMini--Add:first-child {
   border-top: 1px solid var(--sidebar-border-color);
+}
+
+.ActionMini__Children > .ActionMini--Add {
+  border-bottom: 1px solid var(--sidebar-border-color);
 }
 
 .ActionMini__Dropdown {
@@ -309,6 +562,7 @@
   padding: 6px 10px;
   background: #efefef;
   color: var(--script-command-text-color);
+  margin-left: -10px;
 }
 
 .ActionMini__Else svg {
@@ -369,6 +623,8 @@
 .ActionMini__Children {
   position: relative;
   padding-top: 10px;
+  margin-left: 10px;
+  padding-bottom: 10px;
 }
 
 .ActionMini__ChildrenBorder {
@@ -439,6 +695,11 @@
 .EditorSidebar .ActionMini__Form .DirectionPicker__Button {
   margin-top: 0;
 }
-.EventComment {
+.ActionMini .ActionMini__Command.EventComment {
   background: var(--comment-event-color);
+}
+.ActionMini:nth-child(odd)
+  > .ActionMini__Content
+  > .ActionMini__Command.EventComment {
+  background: var(--comment-event-color-alt);
 }
