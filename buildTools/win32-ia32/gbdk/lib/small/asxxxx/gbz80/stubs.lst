@@ -1,0 +1,129 @@
+                              1         ;; Stubs to match between function names
+                              2         .area _CODE
+                              3 
+                              4         .globl  __mulslong
+                              5         .globl  __mululong
+                              6         .globl  __modslong
+                              7         .globl  __modulong
+                              8         .globl  __divslong
+                              9         .globl  __divulong
+                             10         .globl	__divschar_rrx_s
+                             11         .globl	__divsint_rrx_s
+                             12         .globl	__divuchar_rrx_s
+                             13         .globl	__divuint_rrx_s
+                             14         .globl	__mulschar_rrx_s
+                             15         .globl	__mulsint_rrx_s
+                             16         .globl	__muluchar_rrx_s
+                             17         .globl	__muluint_rrx_s
+                             18         .globl  __moduchar_rrx_s
+                             19         .globl  __modschar_rrx_s
+                             20         .globl  __moduint_rrx_s
+                             21         .globl  __modsint_rrx_s
+                             22         .globl	__rrulong_rrx_s
+                             23         .globl	__rrslong_rrx_s
+                             24         .globl	__rlulong_rrx_s
+                             25         .globl	__rlslong_rrx_s
+                             26         
+   0000                      27 __mulslong_rrx_s::        
+   0000                      28 __mulslong_rrf_s::        
+   0000 C3r00s00             29         jp      __mulslong
+                             30 
+   0003                      31 __mululong_rrx_s::       
+   0003                      32 __mululong_rrf_s::       
+   0003 C3r00s00             33         jp      __mululong
+                             34         
+   0006                      35 __modslong_rrx_s::
+   0006                      36 __modslong_rrf_s::
+   0006 C3r00s00             37         jp      __modslong
+                             38         
+   0009                      39 __modulong_rrx_s::
+   0009                      40 __modulong_rrf_s::
+   0009 C3r00s00             41         jp      __modulong
+                             42         
+   000C                      43 __divslong_rrx_s::
+   000C                      44 __divslong_rrf_s::
+   000C C3r00s00             45         jp      __divslong
+                             46         
+   000F                      47 __divulong_rrx_s::
+   000F                      48 __divulong_rrf_s::
+   000F C3r00s00             49         jp      __divulong
+                             50 
+   0012                      51 __mulsint_rrf_s::       
+   0012 3E 05                52         ld      a,#5
+   0014 CF                   53         rst     0x08
+   0015 C3r00s00             54         jp	__mulsint_rrx_s
+                             55 
+   0018                      56 __divsint_rrf_s::       
+   0018 3E 05                57         ld      a,#5
+   001A CF                   58         rst     0x08
+   001B C3r00s00             59         jp	__divsint_rrx_s
+                             60 
+   001E                      61 __muluint_rrf_s::       
+   001E 3E 05                62         ld      a,#5
+   0020 CF                   63         rst     0x08
+   0021 C3r00s00             64         jp	__muluint_rrx_s
+                             65 
+   0024                      66 __divuint_rrf_s::       
+   0024 3E 05                67         ld      a,#5
+   0026 CF                   68         rst     0x08
+   0027 C3r00s00             69         jp	__divuint_rrx_s
+                             70 
+   002A                      71 __mulschar_rrf_s::       
+   002A 3E 05                72         ld      a,#5
+   002C CF                   73         rst     0x08
+   002D C3r00s00             74         jp	__mulschar_rrx_s
+                             75 
+   0030                      76 __divschar_rrf_s::       
+   0030 3E 05                77         ld      a,#5
+   0032 CF                   78         rst     0x08
+   0033 C3r00s00             79         jp	__divschar_rrx_s
+                             80 
+   0036                      81 __muluchar_rrf_s::       
+   0036 3E 05                82         ld      a,#5
+   0038 CF                   83         rst     0x08
+   0039 C3r00s00             84         jp	__muluchar_rrx_s
+                             85 
+   003C                      86 __divuchar_rrf_s::       
+   003C 3E 05                87         ld      a,#5
+   003E CF                   88         rst     0x08
+   003F C3r00s00             89         jp	__divuchar_rrx_s
+                             90 
+   0042                      91 __modschar_rrf_s::       
+   0042 3E 05                92         ld      a,#5
+   0044 CF                   93         rst     0x08
+   0045 C3r00s00             94         jp	__modschar_rrx_s
+                             95 
+   0048                      96 __moduchar_rrf_s::       
+   0048 3E 05                97         ld      a,#5
+   004A CF                   98         rst     0x08
+   004B C3r00s00             99         jp	__moduchar_rrx_s
+                            100 
+   004E                     101 __modsint_rrf_s::       
+   004E 3E 05               102         ld      a,#5
+   0050 CF                  103         rst     0x08
+   0051 C3r00s00            104         jp	__modsint_rrx_s
+                            105 
+   0054                     106 __moduint_rrf_s::       
+   0054 3E 05               107         ld      a,#5
+   0056 CF                  108         rst     0x08
+   0057 C3r00s00            109         jp	__moduint_rrx_s
+                            110 
+   005A                     111 __rrulong_rrf_s::       
+   005A 3E 05               112         ld      a,#5
+   005C CF                  113         rst     0x08
+   005D C3r00s00            114         jp	__rrulong_rrx_s
+                            115 
+   0060                     116 __rrslong_rrf_s::
+   0060 3E 05               117         ld      a,#5
+   0062 CF                  118         rst     0x08
+   0063 C3r00s00            119         jp	__rrslong_rrx_s
+                            120 
+   0066                     121 __rlulong_rrf_s::       
+   0066 3E 05               122         ld      a,#5
+   0068 CF                  123         rst     0x08
+   0069 C3r00s00            124         jp	__rlulong_rrx_s
+                            125 
+   006C                     126 __rlslong_rrf_s::       
+   006C 3E 05               127         ld      a,#5
+   006E CF                  128         rst     0x08
+   006F C3r00s00            129         jp	__rlslong_rrx_s

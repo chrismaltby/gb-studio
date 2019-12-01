@@ -1,0 +1,85 @@
+                              1         ;;
+   0000                       2 __rrulong_rrx_s::                
+   0000 21 02 00              3         ld      hl,#2
+   0003 39                    4         add     hl,sp
+                              5 
+   0004 5E                    6         ld      e,(hl)
+   0005 23                    7         inc     hl
+   0006 56                    8         ld      d,(hl)
+   0007 23                    9         inc     hl
+   0008 4E                   10         ld      c,(hl)
+   0009 23                   11         inc     hl
+   000A 46                   12         ld      b,(hl)
+   000B 23                   13         inc     hl
+   000C 7E                   14         ld      a,(hl)
+                             15 
+   000D 69                   16         ld      l,c
+   000E 60                   17         ld      h,b
+   000F                      18 1$:
+   000F B7                   19         or      a,a
+   0010 C8                   20         ret     z
+                             21 
+   0011 CB 1C                22         rr      h
+   0013 CB 1D                23         rr      l
+   0015 CB 1A                24         rr      d
+   0017 CB 1B                25         rr      e
+                             26 
+   0019 3D                   27         dec     a
+   001A C3r0Fs00             28         jp      1$
+                             29 
+   001D                      30 __rrslong_rrx_s::        
+   001D 21 02 00             31         ld      hl,#2
+   0020 39                   32         add     hl,sp
+                             33                 
+   0021 5E                   34         ld      e,(hl)
+   0022 23                   35         inc     hl
+   0023 56                   36         ld      d,(hl)
+   0024 23                   37         inc     hl
+   0025 4E                   38         ld      c,(hl)
+   0026 23                   39         inc     hl
+   0027 46                   40         ld      b,(hl)
+   0028 23                   41         inc     hl
+   0029 7E                   42         ld      a,(hl)
+                             43 
+   002A 69                   44         ld      l,c
+   002B 60                   45         ld      h,b
+   002C                      46 1$:
+   002C B7                   47         or      a,a
+   002D C8                   48         ret     z
+                             49 
+   002E CB 2C                50         sra     h
+   0030 CB 1D                51         rr      l
+   0032 CB 1A                52         rr      d
+   0034 CB 1B                53         rr      e
+                             54 
+   0036 3D                   55         dec     a
+   0037 C3r2Cs00             56         jp      1$
+                             57         
+   003A                      58 __rlslong_rrx_s::                
+   003A                      59 __rlulong_rrx_s::                
+   003A 21 02 00             60         ld      hl,#2
+   003D 39                   61         add     hl,sp
+                             62         
+   003E 5E                   63         ld      e,(hl)
+   003F 23                   64         inc     hl
+   0040 56                   65         ld      d,(hl)
+   0041 23                   66         inc     hl
+   0042 4E                   67         ld      c,(hl)
+   0043 23                   68         inc     hl
+   0044 46                   69         ld      b,(hl)
+   0045 23                   70         inc     hl
+   0046 7E                   71         ld      a,(hl)
+                             72 
+   0047 69                   73         ld      l,c
+   0048 60                   74         ld      h,b
+   0049                      75 1$:
+   0049 B7                   76         or      a,a
+   004A C8                   77         ret     z
+                             78 
+   004B CB 13                79         rl      e
+   004D CB 12                80         rl      d
+   004F CB 15                81         rl      l
+   0051 CB 14                82         rl      h
+                             83 
+   0053 3D                   84         dec     a        
+   0054 C3r49s00             85         jp      1$

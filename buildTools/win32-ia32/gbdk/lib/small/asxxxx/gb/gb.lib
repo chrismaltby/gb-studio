@@ -1,6 +1,7 @@
 arand.o
 cgb.o
 cpy_data.o
+crt0.o
 delay.o
 digits.o
 drawing.o
