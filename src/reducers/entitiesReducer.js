@@ -54,7 +54,7 @@ import {
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables } from "../lib/compiler/helpers";
-import { DEFAULT_PALETTE } from "../components/forms/PaletteSelect";
+import { DMG_PALETTE } from "../components/forms/PaletteSelect";
 
 const addEntity = (state, type, data) => {
   return {
@@ -1132,7 +1132,7 @@ const addPalette = (state, action) => {
     {
       id: action.id,
       name: `Palette ${state.result.palettes.length + 1}`,
-      colors: DEFAULT_PALETTE.colors
+      colors: DMG_PALETTE.colors
     }
   );
   return addEntity(state, "palettes", newPalette);

@@ -5,9 +5,9 @@ import Select, { components } from "react-select";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getPalettes } from "../../reducers/entitiesReducer";
 
-export const DEFAULT_PALETTE = {
-    id: "default",
-    name: "Default (DMG)",
+export const DMG_PALETTE = {
+    id: "dmg",
+    name: "DMG (GB Default)",
     colors: [ "E8F8E0", "B0F088", "509878", "202850" ]
 };
 
@@ -46,8 +46,9 @@ class PaletteSelect extends Component {
   }
 
   renderDropdownIndicator = props => {
-    const { palettes, value } = this.props;
-    const current = palettes.find((p) => p.id === value) || DEFAULT_PALETTE;
+    const { palettes, value, optionalDefaultPaletteId } = this.props;
+    const currentValue = value === "" ? optionalDefaultPaletteId : value;
+    const current = palettes.find((p) => p.id === currentValue) || DMG_PALETTE;
     return (
       <components.DropdownIndicator {...props}>
         <PaletteColors colors={current.colors} />
@@ -56,9 +57,10 @@ class PaletteSelect extends Component {
   };
 
   renderOption = props => {
-    const { palettes } = this.props;
+    const { palettes, optionalDefaultPaletteId } = this.props;
     const { value, label } = props;
-    const current = palettes.find((p) => p.id === value) || DEFAULT_PALETTE;
+    const currentValue = value === "" ? optionalDefaultPaletteId : value;
+    const current = palettes.find((p) => p.id === currentValue) || DMG_PALETTE;
     return (
       <components.Option {...props}>
         <div style={{ display: "flex" }}>
@@ -70,13 +72,28 @@ class PaletteSelect extends Component {
   };
 
   render() {
-    const { palettes, id, value, onChange } = this.props;
-    const current = palettes.find((p) => p.id === value) || DEFAULT_PALETTE;
-    const currentIndex = palettes.indexOf(current);
-    const options = [].concat(
+    const { palettes, id, value, onChange, optional, optionalLabel } = this.props;
+    
+    const optionalPalette = {
+      id: "",
+      name: optionalLabel
+    };
+    
+    const current = value === "" ? optionalPalette : palettes.find((p) => p.id === value) || DMG_PALETTE;
+    const currentIndex = value === "" && optional ? 0 : palettes.indexOf(current);
+    let options = [];
+    
+    if (optional) {
+      options = options.concat({
+        value: "",
+        label: optionalLabel
+      });
+    };
+    
+    options = options.concat(
       {
-        value: DEFAULT_PALETTE.id,
-        label: DEFAULT_PALETTE.name
+        value: DMG_PALETTE.id,
+        label: DMG_PALETTE.name
       },
       palettes.map((p, index) => {
         return {
@@ -114,14 +131,20 @@ PaletteSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
   direction: PropTypes.string,
-  frame: PropTypes.number
+  frame: PropTypes.number,
+  optional: PropTypes.bool,
+  optionalDefaultPaletteId: PropTypes.string,
+  optionalLabel: PropTypes.string
 };
 
 PaletteSelect.defaultProps = {
   id: undefined,
   value: "",
   frame: null,
-  direction: null
+  direction: null,
+  optional: false,
+  optionalDefaultPaletteId: "dmg",
+  optionalLabel: "None"
 };
 
 function mapStateToProps(state) {

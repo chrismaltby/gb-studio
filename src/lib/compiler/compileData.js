@@ -39,7 +39,7 @@ import {
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import { assetFilename } from "../helpers/gbstudio";
-import { DEFAULT_PALETTE } from "../../components/forms/PaletteSelect";
+import { DMG_PALETTE } from "../../components/forms/PaletteSelect";
 
 const indexById = indexBy("id");
 
@@ -448,7 +448,7 @@ const compile = async (
     )));
 
   const spritePalette = projectData.palettes.find(
-    p => p.id === projectData.settings.spritesPaletteId) || DEFAULT_PALETTE;
+    p => p.id === projectData.settings.spritesPaletteId) || DMG_PALETTE;
 
   output[`CustomColors.h`] = 
     `#include <gb/cgb.h>\n\n` +
@@ -633,7 +633,7 @@ export const precompileStrings = scenes => {
 };
 
 export const precompilePalettes = (palettes, scenes, settings) => {
-  const usedPalettes = [DEFAULT_PALETTE].concat(palettes.filter(
+  const usedPalettes = [DMG_PALETTE].concat(palettes.filter(
     palette => (
       scenes.find(scene => (scene.paletteId === palette.id || 
         scene.actors.find(actor => actor.paletteId === palette.id))

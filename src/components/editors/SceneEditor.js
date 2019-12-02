@@ -5,7 +5,7 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import BackgroundSelect from "../forms/BackgroundSelect";
-import PaletteSelect, { DEFAULT_PALETTE } from "../forms/PaletteSelect";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -13,7 +13,7 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
-import { SceneShape } from "../../reducers/stateShape";
+import { SceneShape, SettingsShape } from "../../reducers/stateShape";
 import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
 
@@ -100,7 +100,7 @@ class SceneEditor extends Component {
   };
 
   render() {
-    const { scene, sceneIndex, selectSidebar, defaultPaletteId, settings } = this.props;
+    const { scene, sceneIndex, selectSidebar, defaultBackgroundPaletteId, settings } = this.props;
 
     if (!scene) {
       return <WorldEditor />;
@@ -192,11 +192,14 @@ class SceneEditor extends Component {
               htmlFor="scenePalette"
               closedLabel="Set Palette"
               label="Palette"
-              open={!!scene.paletteId && scene.paletteId !== defaultPaletteId}
+              open={!!scene.paletteId && scene.paletteId !== ""}
             >
               <PaletteSelect
                 id="scenePalette"
-                value={scene.paletteId || defaultPaletteId}
+                value={scene.paletteId || ""}
+                optional
+                optionalLabel="None (Use default Background Palette)"
+                optionalDefaultPaletteId={defaultBackgroundPaletteId}
                 onChange={this.onEdit("paletteId")}
               />
             </ToggleableFormField>)}
@@ -237,14 +240,15 @@ class SceneEditor extends Component {
 SceneEditor.propTypes = {
   scene: SceneShape,
   sceneIndex: PropTypes.number.isRequired,
-  defaultPaletteId: PropTypes.string.isRequired,
+  defaultBackgroundPaletteId: PropTypes.string.isRequired,
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
   copyScene: PropTypes.func.isRequired,
   setScenePrefab: PropTypes.func.isRequired,
   setActorPrefab: PropTypes.func.isRequired,
   setTriggerPrefab: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired
+  selectSidebar: PropTypes.func.isRequired,
+  settings: SettingsShape.isRequired
 };
 
 SceneEditor.defaultProps = {
@@ -255,11 +259,11 @@ function mapStateToProps(state, props) {
   const scene = state.entities.present.entities.scenes[props.id];
   const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
   const settings = state.entities.present.result.settings;
-  const defaultPaletteId = settings.backgroundPaletteId || DEFAULT_PALETTE.id;
+  const defaultBackgroundPaletteId = settings.backgroundPaletteId || DMG_PALETTE.id;
   return {
     sceneIndex,
     scene,
-    defaultPaletteId,
+    defaultBackgroundPaletteId,
     settings
   };
 }

@@ -99,6 +99,7 @@ function mapStateToProps(state) {
   const paletteIds = getPaletteIds(state);
   const { id } = state.navigation;
   const palette = palettesLookup[id] || palettesLookup[paletteIds[0]];
+  const settings = state.entities.present.result.settings;
 
   return {
     project,
