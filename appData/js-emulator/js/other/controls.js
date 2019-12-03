@@ -227,6 +227,15 @@ if (isTouchEnabled) {
 bindKeyboard();
 bindClick();
 
+function resetKeys() {
+  for (var key in defaultKeys) {
+    GameBoyKeyUp(key);
+  }
+}
+
+window.addEventListener("focus", resetKeys);
+window.addEventListener("blur", resetKeys);
+
 // HTML Gamepad API Support
 
 // Load a key map for gamepad-to-gameboy buttons
