@@ -72,8 +72,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagRandomValue_b, 4}, // 0x2F
     {Script_ActorGetPos_b, 0},        // 0x30
     {Script_ActorSetPosToVal_b, 0},   // 0x31
-    {Script_ActorMoveToVal_b, 0},     // 0x32
-    {Script_ActorMoveRel_b, 4},       // 0x33
+    {Script_ActorMoveToVal_b, 1},     // 0x32
+    {Script_ActorMoveRel_b, 5},       // 0x33
     {Script_ActorSetPosRel_b, 4},     // 0x34
     {Script_MathAdd_b, 3},            // 0x35
     {Script_MathSub_b, 3},            // 0x36

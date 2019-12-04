@@ -125,19 +125,21 @@ class ScriptBuilder {
     output.push(y);
   };
 
-  actorMoveRelative = (x = 0, y = 0) => {
+  actorMoveRelative = (x = 0, y = 0, c = 0) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_RELATIVE));
     output.push(Math.abs(x));
     output.push(x < 0 ? 1 : 0);
     output.push(Math.abs(y));
     output.push(y < 0 ? 1 : 0);
+    output.push(c);
   };
 
-  actorMoveToVariables = (variableX, variableY) => {
+  actorMoveToVariables = (variableX, variableY, c = 0) => {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_MOVE_TO_VALUE));
+    output.push(c);
   };
 
   actorSetPosition = (x = 0, y = 0) => {

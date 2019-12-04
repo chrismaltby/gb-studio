@@ -85,6 +85,7 @@
   "FIELD_SCENE_POP_ALL_STATE_DESCRIPTION": "Pop all scene state from stack.",
   "FIELD_SCENE_RESET_STATE_DESCRIPTION": "Clears the stack of saved scene states.",
   "FIELD_SLIDE_UNTIL_COLLISION": "Slide Until Collision",
+  "FIELD_STOP_FOR_COLLISION": "Stop For Collision",
   "FIELD_LOOP": "Loop",
   "FIELD_SECONDS": "Seconds",
   "FIELD_SET_TRUE_IF": "Set to 'True' if",

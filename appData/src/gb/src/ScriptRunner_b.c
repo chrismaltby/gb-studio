@@ -362,7 +362,7 @@ void Script_ActorSetPos_b()
 void Script_ActorMoveTo_b()
 {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
-  actor_move_settings |= ACTOR_NOCLIP;
+  actor_move_settings |= ACTOR_NOCLIP; // Noclip On
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = (script_cmd_args[0] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
@@ -1024,11 +1024,20 @@ void Script_ActorSetPosToVal_b()
  * Command: ActorMoveToVal
  * ----------------------------
  * Set Actor position from variables
+ * 
+ *   arg0: Collide
  */
 void Script_ActorMoveToVal_b()
 {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
-  actor_move_settings |= ACTOR_NOCLIP;
+  if (script_cmd_args[0] == 1)
+  {  
+    actor_move_settings &= ~ACTOR_NOCLIP; // Stop for collisions
+  }
+  else  
+  {    
+    actor_move_settings |= ACTOR_NOCLIP; // Noclip On
+  }
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = (script_variables[script_ptr_x] << 3) + 8;
   actor_move_dest.y = 0; // @wtf-but-needed
@@ -1047,14 +1056,24 @@ void Script_ActorMoveToVal_b()
  * Walk actor to relative location.
  *
  *   arg0: Offset X Pos
- *   arg1: Offset Y Pos
+ *   arg1: X negate
+ *   arg2: Offset Y Pos
+ *   arg3: Y negate
+ *   arg4: Collide
  */
 void Script_ActorMoveRel_b()
 {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
-  actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest.x = 0; // @wtf-but-needed
   actor_move_dest.x = actors[script_actor].pos.x;
+  if (script_cmd_args[4] == 1)
+  {  
+    actor_move_settings &= ~ACTOR_NOCLIP; // Stop for collisions
+  }
+  else  
+  {    
+    actor_move_settings |= ACTOR_NOCLIP; // Noclip On
+  }
   if (script_cmd_args[0] != 0)
   {
     if (script_cmd_args[1] == 1)

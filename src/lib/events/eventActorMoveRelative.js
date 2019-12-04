@@ -25,11 +25,18 @@ export const fields = [
     max: 31,
     width: "50%",
     defaultValue: 0
+  },
+  {
+    key: "c",
+    label: l10n("FIELD_STOP_FOR_COLLISION"),
+    type: "checkbox",
+    width: "100%",
+    defaultValue: false
   }
 ];
 
 export const compile = (input, helpers) => {
   const { actorSetActive, actorMoveRelative } = helpers;
   actorSetActive(input.actorId);
-  actorMoveRelative(input.x, input.y);
+  actorMoveRelative(input.x, input.y, input.c);
 };
