@@ -2,7 +2,6 @@ import { dialog, shell } from "electron";
 import semver from "semver";
 import Octokit from "@octokit/rest";
 import settings from "electron-settings";
-import meta from "../../../package.json";
 
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
@@ -36,7 +35,7 @@ export const getLatestVersion = async () => {
 };
 
 export const getCurrentVersion = () => {
-  return meta.version;
+  return VERSION; /* Comes from webpack.plugins.js */
 };
 
 export const needsUpdate = async () => {

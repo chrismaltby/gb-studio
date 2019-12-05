@@ -5,7 +5,7 @@ import electron from "electron";
 import glob from "glob";
 import Path from "path";
 import settings from "electron-settings";
-import en from "../../lang/en";
+import en from "../../lang/en.json";
 
 export const locales = glob
   .sync(`${__dirname}/../../lang/*.json`)

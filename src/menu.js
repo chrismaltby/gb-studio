@@ -316,7 +316,7 @@ const buildMenu = async (plugins = []) => {
 
   if (process.platform === "darwin") {
     template.unshift({
-      label: app.getName(),
+      label: app.name,
       submenu: [
         {
           label: l10n("MENU_ABOUT"),

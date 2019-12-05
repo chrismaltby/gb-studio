@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
-import Splash from "../components/app/Splash";
-import "../lib/electron/handleFullScreen";
-import "../lib/helpers/handleTheme";
+import Splash from "./components/app/Splash";
+import "./lib/electron/handleFullScreen";
+// import "./lib/helpers/handleTheme";
+import "./styles/App.css";
 
 window.addEventListener("error", (error) => {
   if(error.message.indexOf("dead code elimination") > -1) {

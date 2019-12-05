@@ -3,7 +3,7 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
 } from "electron-devtools-installer";
-import { enableLiveReload, addBypassChecker } from "electron-compile";
+// import { addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
@@ -11,6 +11,9 @@ import { stat } from "fs-extra";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
+
+declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
+declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
 
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
@@ -20,28 +23,28 @@ if (require("electron-squirrel-startup")) {
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow = null;
-let splashWindow = null;
-let playWindow = null;
+let mainWindow:any = null;
+let splashWindow:any = null;
+let playWindow:any = null;
 let hasCheckedForUpdate = false;
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
+const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const validProjectExt = [".json", ".gbsproj"];
 
 // Allow images and json outside of application package to be loaded in production build
-addBypassChecker(filePath => {
-  return (
-    // filePath.indexOf(app.getAppPath()) === -1 ||
-    filePath.indexOf("/dist/") > -1 ||
-    filePath.indexOf("build/web") > -1 ||
-    /.mod/.test(filePath) ||
-    /.jpg/.test(filePath) ||
-    /.json/.test(filePath) ||
-    /.png/.test(filePath) ||
-    /.mem/.test(filePath)
-  );
-});
+// addBypassChecker(filePath => {
+//   return (
+//     // filePath.indexOf(app.getAppPath()) === -1 ||
+//     filePath.indexOf("/dist/") > -1 ||
+//     filePath.indexOf("build/web") > -1 ||
+//     /.mod/.test(filePath) ||
+//     /.jpg/.test(filePath) ||
+//     /.json/.test(filePath) ||
+//     /.png/.test(filePath) ||
+//     /.mem/.test(filePath)
+//   );
+// });
 
 const createSplash = async (forceNew = false) => {
   // Create the browser window.
@@ -61,7 +64,7 @@ const createSplash = async (forceNew = false) => {
 
   splashWindow.setMenu(null);
   splashWindow.loadURL(
-    `file://${__dirname}/windows/splash.html?new=${forceNew}`
+    `${SPLASH_WINDOW_WEBPACK_ENTRY}?new=${forceNew}`
   );
 
   splashWindow.webContents.on("did-finish-load", () => {
@@ -79,7 +82,7 @@ const createSplash = async (forceNew = false) => {
   });
 };
 
-const createWindow = async projectPath => {
+const createWindow = async (projectPath:string) => {
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800
@@ -114,7 +117,7 @@ const createWindow = async projectPath => {
   mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(
-    `file://${__dirname}/windows/project.html?path=${encodeURIComponent(
+    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(
       projectPath
     )}`
   );
@@ -136,15 +139,15 @@ const createWindow = async projectPath => {
     mainWindow.webContents.send("leave-full-screen");
   });
 
-  mainWindow.on("page-title-updated", (e, title) => {
+  mainWindow.on("page-title-updated", (e:any, title:string) => {
     mainWindow.name = title;
   });
 
-  mainWindow.on("close", e => {
+  mainWindow.on("close", (e:any) => {
     if (mainWindow.documentEdited) {
       // eslint-disable-next-line global-require
       const l10n = require("./lib/helpers/l10n").default;
-      const choice = dialog.showMessageBox(mainWindow, {
+      const choice = dialog.showMessageBoxSync(mainWindow, {
         type: "question",
         buttons: [
           l10n("DIALOG_SAVE"),
@@ -175,7 +178,7 @@ const createWindow = async projectPath => {
   });
 };
 
-const openHelp = async helpPage => {
+const openHelp = async (helpPage:string) => {
   if (helpPage === "sprites") {
     shell.openExternal("https://www.gbstudio.dev/docs/sprites/");
   } else if (helpPage === "backgrounds") {
@@ -189,7 +192,7 @@ const openHelp = async helpPage => {
   }
 };
 
-const createPlay = async url => {
+const createPlay = async (url:string) => {
   if (!playWindow) {
     const playWidth = process.platform === "win32" ? 494 : 480;
     const playHeight = process.platform === "win32" ? 471 : 454;
@@ -223,7 +226,7 @@ const createPlay = async url => {
 app.on("ready", async () => {
   // Enable DevTools.
   if (isDevMode) {
-    enableLiveReload({ strategy: "react-hmr" });
+    // enableLiveReload({ strategy: "react-hmr" });
     await installExtension(REACT_DEVELOPER_TOOLS);
     await installExtension(REDUX_DEVTOOLS);
   }
@@ -239,6 +242,7 @@ app.on("ready", async () => {
     createSplash();
   }
 });
+
 
 app.on("open-file", async (e, projectPath) => {
   await app.whenReady();
@@ -321,12 +325,12 @@ ipcMain.on("project-loaded", (event, project) => {
 ipcMain.on("set-menu-plugins", (event, plugins) => {
   // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
-  const distinct = (value, index, self) => self.indexOf(value) === index;
+  const distinct = <T>(value:T, index:number, self:T[]) => self.indexOf(value) === index;
 
   const pluginValues = Object.values(plugins);
 
   const pluginNames = pluginValues
-    .map(plugin => plugin.plugin)
+    .map((plugin:any) => plugin.plugin)
     .filter(distinct);
 
   menu.buildMenu(
@@ -334,10 +338,10 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
       return {
         label: pluginName,
         submenu: pluginValues
-          .filter(plugin => {
+          .filter((plugin:any) => {
             return plugin.plugin === pluginName;
           })
-          .map(plugin => {
+          .map((plugin:any) => {
             return {
               label: l10n(plugin.id) || plugin.name || plugin.name,
               accelerator: plugin.accelerator,
@@ -351,6 +355,7 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
     })
   );
 });
+
 
 menu.on("new", async () => {
   newProject();
@@ -372,7 +377,8 @@ menu.on("redo", async () => {
   mainWindow && mainWindow.webContents.send("redo");
 });
 
-menu.on("section", async section => {
+
+menu.on("section", async (section:string) => {
   mainWindow && mainWindow.webContents.send("section", section);
 });
 
@@ -380,7 +386,7 @@ menu.on("reloadAssets", () => {
   mainWindow && mainWindow.webContents.send("reloadAssets");
 });
 
-menu.on("zoom", zoomType => {
+menu.on("zoom", (zoomType:string) => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
@@ -388,7 +394,7 @@ menu.on("run", () => {
   mainWindow && mainWindow.webContents.send("run");
 });
 
-menu.on("build", buildType => {
+menu.on("build", (buildType:string) => {
   mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
@@ -396,7 +402,7 @@ menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });
 
-menu.on("updateSetting", (setting, value) => {
+menu.on("updateSetting", (setting:string, value:any) => {
   settings.set(setting, value);
   if (setting === "theme") {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
@@ -416,6 +422,7 @@ menu.on("updateSetting", (setting, value) => {
   }
 });
 
+
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.close();
@@ -428,8 +435,9 @@ const newProject = async () => {
   }
 };
 
+
 const openProjectPicker = async () => {
-  const files = dialog.showOpenDialog({
+  const files = dialog.showOpenDialogSync({
     properties: ["openFile"],
     filters: [
       {
@@ -443,7 +451,7 @@ const openProjectPicker = async () => {
   }
 };
 
-const openProject = async projectPath => {
+const openProject = async (projectPath:string) => {
   // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
   const ext = Path.extname(projectPath);
@@ -468,10 +476,10 @@ const openProject = async projectPath => {
   // Store recent projects
   settings.set(
     "recentProjects",
-    []
-      .concat(settings.get("recentProjects") || [], projectPath)
+    ([] as string[])
+      .concat((settings.get("recentProjects") || []) as string[], projectPath)
       .reverse()
-      .filter((filename, index, arr) => arr.indexOf(filename) === index) // Only unique
+      .filter((filename:string, index:number, arr:string[]) => arr.indexOf(filename) === index) // Only unique
       .reverse()
       .slice(-10)
   );

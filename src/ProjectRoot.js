@@ -5,14 +5,14 @@ import { ActionCreators } from "redux-undo";
 import { ipcRenderer } from "electron";
 import settings from "electron-settings";
 import { debounce } from "lodash";
-import * as actions from "../actions";
-import configureStore from "../store/configureStore";
-import watchProject from "../lib/project/watchProject";
-import App from "../components/app/App";
-import "../lib/electron/handleFullScreen";
-import AppContainerDnD from "../components/app/AppContainerDnD";
-import plugins from "../lib/plugins/plugins";
-import "../lib/helpers/handleTheme";
+import * as actions from "./actions";
+import configureStore from "./store/configureStore";
+import watchProject from "./lib/project/watchProject";
+import App from "./components/app/App";
+import "./lib/electron/handleFullScreen";
+import AppContainerDnD from "./components/app/AppContainerDnD";
+import plugins from "./lib/plugins/plugins";
+import "./lib/helpers/handleTheme";
 
 const store = configureStore();
 

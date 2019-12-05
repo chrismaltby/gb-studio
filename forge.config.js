@@ -51,5 +51,28 @@ module.exports = {
   },
   hooks: {
     postPackage: require("./src/hooks/notarize.js")
-  }
+  },
+  plugins: [
+    [
+      "@electron-forge/plugin-webpack",
+      {
+        mainConfig: "./webpack.main.config.js",
+        renderer: {
+          config: "./webpack.renderer.config.js",
+          entryPoints: [
+            {
+              html: "./src/project.html",
+              js: "./src/ProjectRoot.js",
+              name: "main_window"
+            },
+            {
+              html: "./src/splash.html",
+              js: "./src/SplashRoot.js",
+              name: "splash_window"
+            }
+          ]
+        }
+      }
+    ]
+  ]
 };
