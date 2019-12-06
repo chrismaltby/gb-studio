@@ -14,5 +14,8 @@ module.exports = {
   plugins: plugins,
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"]
-  }
+  },
+  externals: {
+    vm2: "vm2"
+  }  
 };

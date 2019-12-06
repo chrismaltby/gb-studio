@@ -1,5 +1,7 @@
 import settings from "electron-settings";
 import { ipcRenderer } from "electron";
+import darkTheme from "!!raw-loader!../../styles/theme-dark.css";
+import lightTheme from "!!raw-loader!../../styles/theme.css";
 
 const { systemPreferences } = require("electron").remote;
 
@@ -10,8 +12,7 @@ function updateMyAppTheme() {
       systemPreferences.isDarkMode &&
       systemPreferences.isDarkMode());
   const themeStyle = document.getElementById("theme");
-  const cssFile = darkMode ? "theme-dark.css" : "theme.css";
-  themeStyle.href = `../styles/${cssFile}`;
+  themeStyle.innerHTML = darkMode ? darkTheme : lightTheme;
 }
 
 if (systemPreferences.subscribeNotification) {

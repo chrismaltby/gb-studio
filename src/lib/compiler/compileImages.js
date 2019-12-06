@@ -108,4 +108,4 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   return output;
 };
 
-module.exports = compileImages;
+export default compileImages;

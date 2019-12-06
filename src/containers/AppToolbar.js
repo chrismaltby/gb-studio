@@ -204,7 +204,6 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  saveWorld: actions.saveWorld,
   setSection: actions.setSection,
   zoomIn: actions.zoomIn,
   zoomOut: actions.zoomOut,

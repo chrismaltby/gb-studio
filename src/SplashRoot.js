@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { AppContainer } from "react-hot-loader";
 import Splash from "./components/app/Splash";
 import "./lib/electron/handleFullScreen";
-// import "./lib/helpers/handleTheme";
+import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 
 window.addEventListener("error", (error) => {
