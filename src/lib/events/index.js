@@ -3,7 +3,9 @@
 import glob from "glob";
 // import plugins, { pluginEmitter } from "../plugins/plugins";
 
-const internalEventHandlerPaths = glob.sync(`${__dirname}/event*.js`);
+// const internalEventHandlerPaths = glob.sync(`${__dirname}/event*.js`);
+
+const internalEventHandlerPaths = [];
 
 console.log("internalEventHandlerPaths")
 console.log(internalEventHandlerPaths);

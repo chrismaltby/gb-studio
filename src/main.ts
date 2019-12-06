@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-  REDUX_DEVTOOLS
-} from "electron-devtools-installer";
+// import installExtension, {
+//   REACT_DEVELOPER_TOOLS,
+//   REDUX_DEVTOOLS
+// } from "electron-devtools-installer";
 // import { addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
@@ -227,8 +227,8 @@ app.on("ready", async () => {
   // Enable DevTools.
   if (isDevMode) {
     // enableLiveReload({ strategy: "react-hmr" });
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(REDUX_DEVTOOLS);
+    // await installExtension(REACT_DEVELOPER_TOOLS);
+    // await installExtension(REDUX_DEVTOOLS);
   }
 
   const lastArg = process.argv[process.argv.length - 1];

@@ -1,11 +1,31 @@
 /* eslint-disable global-require */
 module.exports = {
+  makers: [
+    {
+      name: "@electron-forge/maker-squirrel",
+      config: {
+        name: "my_app"
+      }
+    },
+    {
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin"]
+    },
+    {
+      name: "@electron-forge/maker-deb",
+      config: {}
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      config: {}
+    }
+  ],
   make_targets: {
     win32: ["squirrel", "zip"],
     darwin: ["zip"],
     linux: ["deb", "rpm"]
   },
-  electronPackagerConfig: {
+  packagerConfig: {
     name: "GB Studio",
     executableName: "gb-studio",
     packageManager: "yarn",

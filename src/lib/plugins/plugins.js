@@ -1,10 +1,13 @@
-import { NodeVM } from "vm2";
+
 import fs from "fs";
 import glob from "glob";
 import Path from "path";
 import chokidar from "chokidar";
 import EventEmitter from "events";
 import { ipcRenderer } from "electron";
+
+const VM2 = __non_webpack_require__("vm2");
+const NodeVM = VM2.NodeVM;
 
 const babel = require("@babel/standalone");
 const importExportPlugin = require("@babel/plugin-transform-modules-commonjs");

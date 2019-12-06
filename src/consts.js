@@ -1,19 +1,10 @@
 import path from "path";
 
-const isDist =
-  __dirname.endsWith("/dist") ||
-  __dirname.endsWith("/dist/windows") ||
-  __dirname.endsWith("/dist/windows/help") ||
-  __dirname.endsWith("\\dist") ||
-  __dirname.endsWith("\\dist\\windows") ||
-  __dirname.endsWith("\\dist\\windows\\help");
+const isDist = __dirname.indexOf("app.asar") > -1;
 
 const rootDir = isDist
-  ? __dirname
-      .replace(/[\\/]dist[\\/]windows[\\/]help$/, "")
-      .replace(/[\\/]dist[\\/]windows$/, "")
-      .replace(/[\\/]dist$/, "")
-  : path.normalize(`${__dirname}/../`);
+  ? __dirname.substr(0, __dirname.lastIndexOf(".webpack"))
+  : __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
 
 const engineRoot = path.normalize(`${rootDir}/appData/src`);
 const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);

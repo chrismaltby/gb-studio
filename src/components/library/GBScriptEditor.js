@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import AceEditor from "react-ace";
-import { NodeVM } from "vm2";
 import { debounce } from "lodash";
 import ScriptBuilder from "../../lib/compiler/scriptBuilder";
 
@@ -15,6 +14,9 @@ import {
   getSpriteSheets
 } from "../../reducers/entitiesReducer";
 import { ActorShape, SpriteShape } from "../../reducers/stateShape";
+
+const VM2 = __non_webpack_require__("vm2");
+const NodeVM = VM2.NodeVM;
 
 const sb = new ScriptBuilder();
 

@@ -60,7 +60,7 @@ export const zoomForSection = (section, editor) => {
 };
 
 export const assetFilename = (projectRoot, assetType, asset) => {
-  return (asset.plugin
+  return "file://" + (asset.plugin
     ? Path.join(projectRoot, "plugins", asset.plugin, assetType, asset.filename)
     : Path.join(projectRoot, "assets", assetType, asset.filename)
   ).replace(/\\/g, "/");

@@ -13,6 +13,7 @@ import "./lib/electron/handleFullScreen";
 import AppContainerDnD from "./components/app/AppContainerDnD";
 import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
+import "./styles/App.css";
 
 const store = configureStore();
 
