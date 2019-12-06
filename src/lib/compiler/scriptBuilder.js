@@ -267,26 +267,7 @@ class ScriptBuilder {
   textDialogue = (inputText = " ", avatarId) => {
     const output = this.output;
     const { strings, avatars, variables, event } = this.options;
-    const getVariableSymbol = index => `$${String(index).padStart(2, "0")}$`;
-
-    const text = inputText
-      // Replace Global variables
-      .replace(/\$([0-9]+)\$/g, (match, globalVariable) => {
-        const index = this.getVariableIndex(globalVariable, variables);
-        return getVariableSymbol(index);
-      })
-      // Replace Local variables
-      .replace(/\$(L[0-9])\$/g, (match, localVariable) => {
-        const index = this.getVariableIndex(localVariable, variables);
-        return getVariableSymbol(index);
-      })
-      // Replace Custom Event variables
-      .replace(/\$V([0-9])\$/g, (match, customVariable) => {
-        const mappedVariable = event.args[`$variable[${customVariable}]$`];
-        const index = this.getVariableIndex(mappedVariable, variables);
-        return getVariableSymbol(index);
-      });
-
+    const text = this.replaceVariables(inputText, variables, event);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -307,11 +288,12 @@ class ScriptBuilder {
 
   textChoice = (setVariable, args) => {
     const output = this.output;
-    const { strings, variables } = this.options;
+    const { strings, variables, event } = this.options;
     const choiceText = combineMultipleChoiceText(args);
-    let stringIndex = strings.indexOf(choiceText);
+    const text = this.replaceVariables(choiceText, variables, event);
+    let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
-      strings.push(choiceText);
+      strings.push(text);
       stringIndex = strings.length - 1;
     }
     const variableIndex = this.getVariableIndex(setVariable, variables);
@@ -330,13 +312,14 @@ class ScriptBuilder {
     cancelOnB = false
   ) => {
     const output = this.output;
-    const { strings, variables } = this.options;
+    const { strings, variables, event } = this.options;
     const menuText = options
       .map((option, index) => option || `Item ${index + 1}`)
       .join("\n");
-    let stringIndex = strings.indexOf(menuText);
+    const text = this.replaceVariables(menuText, variables, event);
+    let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
-      strings.push(menuText);
+      strings.push(text);
       stringIndex = strings.length - 1;
     }
     const variableIndex = this.getVariableIndex(setVariable, variables);
@@ -1030,6 +1013,28 @@ class ScriptBuilder {
       return actor.id;
     }
     throw new Error(`Actor ${name} not found`);
+  };
+
+  replaceVariables = (string, variables, event) => {
+    const getVariableSymbol = index => `$${String(index).padStart(2, "0")}$`;
+    
+    return string
+    // Replace Global variables
+    .replace(/\$([0-9]+)\$/g, (match, globalVariable) => {
+      const index = this.getVariableIndex(globalVariable, variables);
+      return getVariableSymbol(index);
+    })
+    // Replace Local variables
+    .replace(/\$(L[0-9])\$/g, (match, localVariable) => {
+      const index = this.getVariableIndex(localVariable, variables);
+      return getVariableSymbol(index);
+    })
+    // Replace Custom Event variables
+    .replace(/\$V([0-9])\$/g, (match, customVariable) => {
+      const mappedVariable = event.args[`$variable[${customVariable}]$`];
+      const index = this.getVariableIndex(mappedVariable, variables);
+      return getVariableSymbol(index);
+    });
   };
 }
 
