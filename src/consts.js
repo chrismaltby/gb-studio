@@ -11,6 +11,7 @@ const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
 const emulatorRoot = path.normalize(`${rootDir}/appData/js-emulator`);
 const projectTemplatesRoot = path.normalize(`${rootDir}/appData/templates`);
 const localesRoot = path.normalize(`${rootDir}/src/lang`);
+const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -22,6 +23,7 @@ export {
   emulatorRoot,
   projectTemplatesRoot,
   localesRoot,
+  eventsRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
   MIDDLE_MOUSE

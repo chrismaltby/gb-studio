@@ -130,7 +130,12 @@ class BankedData {
   }
 
   exportUsedBankNumbers() {
-    return [...Array(this.bankOffset + this.data.length).keys()].map(
+    const banksArr = [];
+    const totalBanks = this.bankOffset + this.data.length;
+    for(let i=0; i<totalBanks; i++) {
+      banksArr[i] = i;
+    }
+    return banksArr.map(
       bankNum => !!this.data[bankNum - this.bankOffset]
     );
   }

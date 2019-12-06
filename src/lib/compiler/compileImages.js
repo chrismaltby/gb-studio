@@ -99,7 +99,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   for (let i = 0; i < imgs.length; i++) {
     const tilemap = await ggbgfx.imageAndTilesetToTilemapIntArray(
       assetFilename(projectPath, "backgrounds", imgs[i]),
-      `${tmpPath}/tileset_${tilesetIndexes[i]}.png`
+      `file://${tmpPath}/tileset_${tilesetIndexes[i]}.png`
     );
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];

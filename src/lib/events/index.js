@@ -2,25 +2,57 @@
 /* eslint-disable import/no-dynamic-require */
 import glob from "glob";
 // import plugins, { pluginEmitter } from "../plugins/plugins";
+import { eventsRoot } from "../../consts";
+import fs from "fs";
+import l10n from "../../lib/helpers/l10n";
+import * as eventHelpers from "./helpers";
+import * as gbStudioHelpers from "../helpers/gbstudio";
+import * as eventSystemHelpers from "../helpers/eventSystem";
+import * as compileEntityEvents from "../compiler/compileEntityEvents";
+import trimLines from "../helpers/trimlines";
 
-// const internalEventHandlerPaths = glob.sync(`${__dirname}/event*.js`);
+const VM2 = __non_webpack_require__("vm2");
+const NodeVM = VM2.NodeVM;
 
-const internalEventHandlerPaths = [];
+const babel = require("@babel/standalone");
+const importExportPlugin = require("@babel/plugin-transform-modules-commonjs");
 
-console.log("internalEventHandlerPaths")
-console.log(internalEventHandlerPaths);
+const internalEventHandlerPaths = glob.sync(`${eventsRoot}/event*.js`);
+
+const compiler = code =>
+  babel.transform(code, {
+    plugins: [importExportPlugin]
+  }).code;
+
+const vm = new NodeVM({
+  timeout: 1000,
+  sandbox: {},
+  require: {
+    mock: {
+      "./helpers": eventHelpers,
+      "../helpers/l10n": l10n,
+      "../helpers/gbstudio": gbStudioHelpers,
+      "../helpers/eventSystem": eventSystemHelpers,
+      "../compiler/compileEntityEvents": compileEntityEvents,
+      "../helpers/trimlines": trimLines
+    }
+  },
+  compiler
+});
 
 const eventHandlers = {
-  // ...internalEventHandlerPaths.reduce((memo, path) => {
-  //   const handler = require(path);
-  //   if (!handler.id) {
-  //     throw new Error(`Event handler ${path} is missing id`);
-  //   }
-  //   return {
-  //     ...memo,
-  //     [handler.id]: handler
-  //   };
-  // }, {}),
+  ...internalEventHandlerPaths.reduce((memo, path) => {
+    const handlerCode = fs.readFileSync(path, "utf8");
+    console.log({ handlerCode });
+    const handler = vm.run(handlerCode);
+    if (!handler.id) {
+      throw new Error(`Event handler ${path} is missing id`);
+    }
+    return {
+      ...memo,
+      [handler.id]: handler
+    };
+  }, {})
   // ...plugins.events
 };
 
