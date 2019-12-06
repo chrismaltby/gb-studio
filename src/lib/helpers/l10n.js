@@ -6,9 +6,12 @@ import glob from "glob";
 import Path from "path";
 import settings from "electron-settings";
 import en from "../../lang/en.json";
+import { localesRoot } from "../../consts";
+
+const localesPath = `${localesRoot}/*.json`;
 
 export const locales = glob
-  .sync(`${__dirname}/../../lang/*.json`)
+  .sync(localesPath)
   .map(path => Path.basename(path, ".json"));
 
 const app = electron.app || (electron.remote && electron.remote.app);
@@ -19,7 +22,7 @@ const appLocale = settingsLocale || systemLocale;
 export const languageOverrides = locale => {
   if (locale && locale !== "en") {
     try {
-      return require(`../../lang/${locale}.json`);
+      return __non_webpack_require__(`${localesRoot}/${locale}.json`);
     } catch (e) {
       console.warn("No language pack for user setting, falling back to en");
       console.warn(

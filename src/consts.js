@@ -1,6 +1,6 @@
 import path from "path";
 
-const isDist = __dirname.indexOf("app.asar") > -1;
+const isDist = __dirname.indexOf(".webpack") > -1;
 
 const rootDir = isDist
   ? __dirname.substr(0, __dirname.lastIndexOf(".webpack"))
@@ -10,6 +10,7 @@ const engineRoot = path.normalize(`${rootDir}/appData/src`);
 const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
 const emulatorRoot = path.normalize(`${rootDir}/appData/js-emulator`);
 const projectTemplatesRoot = path.normalize(`${rootDir}/appData/templates`);
+const localesRoot = path.normalize(`${rootDir}/src/lang`);
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -20,6 +21,7 @@ export {
   buildToolsRoot,
   emulatorRoot,
   projectTemplatesRoot,
+  localesRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
   MIDDLE_MOUSE
