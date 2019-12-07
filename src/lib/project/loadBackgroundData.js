@@ -10,20 +10,24 @@ const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
 const loadBackgroundData = projectRoot => async filename => {
-  const size = await sizeOfAsync(filename);
   const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
-
-  return {
-    id: uuid(),
-    plugin,
-    name: file.replace(".png", ""),
-    width: Math.min(Math.floor(size.width / TILE_SIZE), 32),
-    height: Math.min(Math.floor(size.height / TILE_SIZE), 32),
-    imageWidth: size.width,
-    imageHeight: size.height,
-    filename: file,
-    _v: Date.now()
-  };
+  try {
+    const size = await sizeOfAsync(filename);
+    return {
+      id: uuid(),
+      plugin,
+      name: file.replace(".png", ""),
+      width: Math.min(Math.floor(size.width / TILE_SIZE), 32),
+      height: Math.min(Math.floor(size.height / TILE_SIZE), 32),
+      imageWidth: size.width,
+      imageHeight: size.height,
+      filename: file,
+      _v: Date.now()
+    };
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 const loadAllBackgroundData = async projectRoot => {
@@ -33,12 +37,14 @@ const loadAllBackgroundData = async projectRoot => {
   const pluginPaths = await globAsync(
     `${projectRoot}/plugins/*/backgrounds/**/*.png`
   );
-  const imageData = await Promise.all(
-    [].concat(
-      imagePaths.map(loadBackgroundData(projectRoot)),
-      pluginPaths.map(loadBackgroundData(projectRoot))
+  const imageData = (
+    await Promise.all(
+      [].concat(
+        imagePaths.map(loadBackgroundData(projectRoot)),
+        pluginPaths.map(loadBackgroundData(projectRoot))
+      )
     )
-  );
+  ).filter(i => i);
   return imageData;
 };
 

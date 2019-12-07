@@ -1,17 +1,41 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import cx from "classnames";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import * as actions from "../../actions";
-import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
 const DEFAULT_DARK = "509878";
 const DEFAULT_BLACK = "202850";
+
+const hexToDecimal = str => {
+  return parseInt(str, 16);
+};
+
+const rgbToGBCHex = (red, green, blue) => {
+  const value = (blue << 10) + (green << 5) + red;
+  const r = value & 0x1f;
+  const g = (value >> 5) & 0x1f;
+  const b = (value >> 10) & 0x1f;
+  return (
+    (((r * 13 + g * 2 + b) >> 1) << 16) |
+    ((g * 3 + b) << 9) |
+    ((r * 3 + g * 2 + b * 11) >> 1)
+  ).toString(16).padStart(6, "0");
+};
+
+const hexToGBCHex = hex => {
+  const r = Math.floor(hexToDecimal(hex.substring(0, 2)) / 8);
+  const g = Math.floor(hexToDecimal(hex.substring(2, 4)) / 8);
+  const b = Math.floor(hexToDecimal(hex.substring(4)) / 8);
+  if (r > 31) r = 31;
+  if (g > 31) g = 31;
+  if (b > 31) b = 31;
+  return rgbToGBCHex(r, g, b);
+};
 
 class CustomPalettePicker extends Component {
   constructor(props) {
@@ -202,9 +226,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_WHITE} 48.5%, var(--input-border-color) 49.5%, #${
-                      settings.customColorsWhite
-                    } 50%)`
+                    backgroundImage: `linear-gradient(#${DEFAULT_WHITE} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsWhite)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -220,9 +242,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_LIGHT} 48.9%, var(--input-border-color) 49.5%, #${
-                      settings.customColorsLight
-                    } 50%)`
+                    backgroundImage: `linear-gradient(#${DEFAULT_LIGHT} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsLight)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -238,9 +258,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_DARK} 48.9%, var(--input-border-color) 49.5%, #${
-                      settings.customColorsDark
-                    } 50%)`
+                    backgroundImage: `linear-gradient(#${DEFAULT_DARK} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsDark)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -256,9 +274,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_BLACK} 48.9%, var(--input-border-color) 49.5%, #${
-                      settings.customColorsBlack
-                    } 50%)`
+                    backgroundImage: `linear-gradient(#${DEFAULT_BLACK} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsBlack)} 50%)`
                   }}
                 >
                   &nbsp;

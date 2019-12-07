@@ -11,19 +11,24 @@ const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 
 const loadSpriteData = projectRoot => async filename => {
-  const size = await sizeOfAsync(filename);
-  const numFrames = size.width / FRAME_SIZE;
   const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
+  try {
+    const size = await sizeOfAsync(filename);
+    const numFrames = size.width / FRAME_SIZE;
 
-  return {
-    id: uuidv4(),
-    plugin,
-    name: file.replace(".png", ""),
-    numFrames,
-    type: spriteTypeFromNumFrames(numFrames),
-    filename: file,
-    _v: Date.now()
-  };
+    return {
+      id: uuidv4(),
+      plugin,
+      name: file.replace(".png", ""),
+      numFrames,
+      type: spriteTypeFromNumFrames(numFrames),
+      filename: file,
+      _v: Date.now()
+    };
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 const loadAllSpriteData = async projectRoot => {
@@ -31,12 +36,14 @@ const loadAllSpriteData = async projectRoot => {
   const pluginPaths = await globAsync(
     `${projectRoot}/plugins/*/sprites/**/*.png`
   );
-  const spriteData = await Promise.all(
-    [].concat(
-      spritePaths.map(loadSpriteData(projectRoot)),
-      pluginPaths.map(loadSpriteData(projectRoot))
+  const spriteData = (
+    await Promise.all(
+      [].concat(
+        spritePaths.map(loadSpriteData(projectRoot)),
+        pluginPaths.map(loadSpriteData(projectRoot))
+      )
     )
-  );
+  ).filter(i => i);
   return spriteData;
 };
 

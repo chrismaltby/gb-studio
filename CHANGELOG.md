@@ -5,18 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0]
 
+# Added
+
+- Add OnInit script to each actor.
+- Add preview in dropdowns for scenes, actors and sprite sheets.
+- Add ability to paste events by holding Alt while clicking event buttons.
+- Add language select to view menu.
+- Generate backups of previous version before saving.
+- Sidebar supports two column layout when wide enough.
+- Each actor/trigger/scene given four local variables.
+- Add ability to remap keyboard controls.
+- Add ability to set custom HTML header in web builds.
+- Add custom cursors depending on tool state.
+- Alternating row colors while scripting.
+- Add ability to disable events.
+- Add ability to disable else branch in conditional events.
+- Add ability to use any variable in text (no longer only first 100).
+- Add event to disable/enable collisions per actor.
+- Add Switch event.
+- Add Settings section grouping project settings together and adding settings for custom keyboard controls and custom HTML header.
+- Add support for GameBoy Color palettes. [@fydo](https://github.com/fydo)
+- Add support for GameBoy Color double CPU mode. [@pau-tomas](https://github.com/pau-tomas) [@RichardULZ](https://github.com/RichardULZ)
+- Add menu event. [@pau-tomas](https://github.com/pau-tomas)
+- Add 'Self' to actor selector. [@pau-tomas](https://github.com/pau-tomas)
+- Add custom events functionality. [@pau-tomas](https://github.com/pau-tomas)
+- Add avatars to text dialogue. [@pau-tomas](https://github.com/pau-tomas)
+- Add support for bit flag variables in scripting. [@pau-tomas](https://github.com/pau-tomas)
+- Add Comments in scripting. [@ManuGamesDev](https://github.com/ManuGamesDev)
+- Add sound effects. [@gregtour](https://github.com/gregtour)
+- Add timer events. [@gregtour](https://github.com/gregtour)
+- Add Gamepad support [@bbbbbr](https://github.com/bbbbbr)
+- Add events to save and restore actor direction using variables. [@ManuGamesDev](https://github.com/ManuGamesDev)
+- German localisation. [@WAUthethird](https://github.com/WAUthethird)
+- Spanish localisation. [@WAUthethird](https://github.com/WAUthethird)
 - Norwegian localisation. [@thomas-alrek](https://github.com/thomas-alrek)
-- CameraMoveTo speed fixes [@RichardULZ](https://github.com/RichardULZ)
-- Fix for issue with multiframe actors animating when moving [@RichardULZ](https://github.com/RichardULZ)
-- Fix for issue with cursor position moving while editing dialogue [@MattTuttle](https://github.com/MattTuttle)
-- Add support for GameBoy Color palettes [@fydo](https://github.com/fydo)
-- Add Settings section grouping project settings together and adding settings for custom keyboard controls and custom HTML header
-- Fix issue where copy / pasting scenes would break actor connections in scripts
-- Add support for bit flag variables in scripting. [@pau-tomas](https://github.com/pau-tomas) 
+- Italian localisation. [@marcosecchi](https://github.com/marcosecchi)
+- Latin American Spanish localisation. [@foobraco](https://github.com/foobraco)
+- Polish localisation. [@MajkelKorczak](https://github.com/MajkelKorczak)
+- Korean localisation. [@juni070127](https://github.com/juni070127)
+- Japanese localisation. [@cubicstyle](https://github.com/cubicstyle)
+- Scots localisation. [@Cobradabest](https://github.com/Cobradabest)
 
-## [1.1.0]
+### Changed
+
+- Update Windows 32-bit to use GBDK 2.96.
+- Prevent actors from leaving scene edges.
+- Refactor to handle larger project files.
+- Rebuilt event system allowing easier community contributions.
+- Update Windows 64-bit to use GBDK 2.96. [@gregtour](https://github.com/gregtour)
+- Updated Brazilian Portuguese localisation. [@junkajii](https://github.com/junkajii)
+- Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
+- Improve emulator audio. [@RichardULZ](https://github.com/RichardULZ)
+- Improve keyboard controls in event search. [@allie](https://github.com/allie)
+- Improve template.mod music file. [@RichardULZ](https://github.com/RichardULZ)
+
+### Fixed
+
+- Fixed MBC1 support.
+- Fix issues flushing sava data on Windows
+- Fix issue where copy / pasting scenes would break actor connections in scripts
+- Fix collisions at bottom edge of screen.
+- Ignore invalid PNG images when loading project.
+- Release held buttons when emulator loses focus.
+- Fix for issue with cursor position moving while editing dialogue [@MattTuttle](https://github.com/MattTuttle)
+- Fix GBTplayer ch4 pan fx [@RichardULZ](https://github.com/RichardULZ)
+- Fix bug when Actor Invoke is used with conditional statement [@RichardULZ](https://github.com/RichardULZ)
+- Fixed issue where multi-frame static actors would animate while moving [@RichardULZ](https://github.com/RichardULZ)
+- CameraMoveTo speed fixes [@RichardULZ](https://github.com/RichardULZ)
+
+## [1.1.0] - 2019-05-18
 
 ### Added
 
