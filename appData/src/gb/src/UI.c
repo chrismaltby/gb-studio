@@ -29,6 +29,7 @@ UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
 UBYTE tmp_text_in_speed = 1;
 UBYTE tmp_text_out_speed = 1;
+UBYTE tmp_text_draw_speed = 1;
 UBYTE text_num_lines = 0;
 
 UBYTE avatar_enabled = 0;
@@ -39,6 +40,7 @@ UBYTE menu_num_options = 2;
 UBYTE menu_cancel_on_last_option = TRUE;
 UBYTE menu_cancel_on_b = TRUE;
 UBYTE menu_layout = FALSE;
+
 
 const unsigned char ui_cursor_tiles[1] = {0xCB};
 const unsigned char ui_bg_tiles[1] = {0xC4};
@@ -231,6 +233,7 @@ void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
   menu_cancel_on_last_option = cancel_config & MENU_CANCEL_ON_LAST_OPTION;
   menu_cancel_on_b = cancel_config & MENU_CANCEL_ON_B_PRESSED;
   menu_layout = layout;
+  tmp_text_draw_speed = text_draw_speed;
   text_draw_speed = 0;
   UIShowText(line);
   menu_num_options = tmp_text_lines[0];
@@ -340,6 +343,9 @@ void UIDrawTextBufferChar()
   else
   {
     text_drawn = TRUE;
+    // restore the user selected text draw speed as it 
+    // might have been override in UIShowMenu
+    text_draw_speed = tmp_text_draw_speed; 
   }
 }
 
