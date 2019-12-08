@@ -11,7 +11,8 @@ module.exports = [
   }),
   new CopyPlugin([
     { from: "node_modules/vm2", to: "node_modules/vm2" },
+    { from: "node_modules/about-window", to: "node_modules/about-window" },
     { from: "src/lang", to: "src/lang" },
-    { from: "src/lib/events", to: "src/lib/events" }    
+    { from: "src/lib/events", to: "src/lib/events" }
   ])
 ];

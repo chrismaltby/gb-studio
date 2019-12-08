@@ -1,6 +1,7 @@
 import openAboutWindow from "about-window";
 import settings from "electron-settings";
 import { app, Menu, shell } from "electron";
+import { assetsRoot } from "./consts";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -414,7 +415,7 @@ const off = (event, fn) => {
 
 const openAbout = () => {
   return openAboutWindow({
-    icon_path: "../../src/assets/app/icon/app_icon.png"
+    icon_path: `${assetsRoot}/app/icon/app_icon.png`
   });
 };
 

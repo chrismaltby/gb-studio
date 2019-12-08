@@ -13,5 +13,8 @@ module.exports = {
   plugins,
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"]
+  },
+  externals: {
+    "about-window": "about-window"
   }
 };
