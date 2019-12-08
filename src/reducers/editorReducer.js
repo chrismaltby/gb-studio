@@ -42,7 +42,8 @@ import {
   SELECT_CUSTOM_EVENT,
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
-  RELOAD_ASSETS
+  RELOAD_ASSETS,
+  RENAME_VARIABLE
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -317,6 +318,12 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         uiVersion: state.uiVersion + 1
+      };
+    }
+    case RENAME_VARIABLE: {
+      return {
+        ...state,
+        variableVersion: state.variableVersion + 1
       };
     }
     case ZOOM_IN:
