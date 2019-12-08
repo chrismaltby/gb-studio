@@ -2,7 +2,10 @@
   "name": "gb-studio",
   "productName": "GB Studio",
   "homepage": "https://www.gbstudio.dev",
-  "version": "1.2.0",
+  "bugs": {
+    "url": "https://github.com/chrismaltby/gb-studio/issues"
+  },
+  "version": "1.2.1-beta1",
   "description": "Visual retro game maker",
   "main": "src/index.js",
   "scripts": {
