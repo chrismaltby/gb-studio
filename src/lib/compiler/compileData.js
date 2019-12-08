@@ -440,30 +440,24 @@ const compile = async (
     return `RGB(${r}, ${g}, ${b})`;
   };
   
-  const colors = new Set(precompiled.usedPalettes.flatMap(
-    palette => (
-      palette.colors.map(color => (
-        `#define COLOR_${color.toUpperCase()} ${convertHexTo15BitRGB(color)}`
-      ))
-    )));
+  if (projectData.settings.customColorsEnabled ) {
+    const colors = new Set(precompiled.usedPalettes.flatMap(
+      palette => (
+        palette.colors.map(color => (
+          `#define COLOR_${color.toUpperCase()} ${convertHexTo15BitRGB(color)}`
+        ))
+      )));
 
-  const spritePalette = projectData.palettes.find(
-    p => p.id === projectData.settings.spritesPaletteId) || DMG_PALETTE;
-
-  output[`CustomColors.h`] = 
-    `#include <gb/cgb.h>\n\n` +
-    `${Array.from(colors).join('\n')}\n\n` +
-    `static const UINT16 custom_pal[][4] = {\n` +
-    `${precompiled.usedPalettes.map(
-        p => ` /* ${p.name} */ { ${p.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')} }`).join(",\n")
-      }\n` +
-    `};\n` +
-    `static const UINT16 custom_spr1_pal[] = {\n` +
-    ` ${spritePalette.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')}\n` +
-    `};\n`;
-
-  console.log(output[`CustomColors.h`]);
-
+    output[`CustomColors.h`] = 
+      `#include <gb/cgb.h>\n\n` +
+      `${Array.from(colors).join('\n')}\n\n` +
+      `static const UINT16 custom_pal[][4] = {\n` +
+      `${precompiled.usedPalettes.map(
+          p => ` /* ${p.name} */ { ${p.colors.map(c => `COLOR_${c.toUpperCase()}`).join(', ')} }`).join(",\n")
+        }\n` +
+      `};\n`;
+  }
+  
   return {
     files: output,
     music
@@ -485,7 +479,7 @@ const precompile = async (
   const strings = precompileStrings(projectData.scenes);
 
   progress(EVENT_MSG_PRE_PALETTES);
-  const usedPalettes = precompilePalettes(projectData.palettes, projectData.scenes, projectData.settings);
+  const usedPalettes = projectData.settings.customColorsEnabled ? precompilePalettes(projectData.palettes, projectData.scenes, projectData.settings) : [ DMG_PALETTE ];
 
   progress(EVENT_MSG_PRE_IMAGES);
   const {
@@ -877,21 +871,21 @@ export const precompileScenes = (
       );
     }
 
-    const paletteIndex = usedPalettes.findIndex(
+    const paletteIndex = settings.customColorsEnabled ? usedPalettes.findIndex(
       palette => {
         if (!scene.paletteId) {
           return palette.id === settings.backgroundPaletteId;
         } 
         return palette.id === scene.paletteId;
       }
-    );
+    ) : 0;
 
-    const sceneSpritePaletteIds = scene.actors.reduce((current, a) => {
+    const sceneSpritePaletteIds = settings.customColorsEnabled ? scene.actors.reduce((current, a) => {
       if (!current.includes(a.paletteId)) {
         current.push(a.paletteId);
       }
       return current;
-    }, []);
+    }, []) : [ DMG_PALETTE.id ];
 
     if (scene.actors.length > MAX_ACTORS) {
       warnings(

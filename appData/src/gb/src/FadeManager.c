@@ -20,7 +20,7 @@ static UINT16 custom_bg_pal_fade_steps[][4] = {
   { 0, 0, 0, 0 }, // 2
   { 0, 0, 0, 0 }, // 3
   { 0, 0, 0, 0 }, // 4
-  { 0, 0, 0, 0 } // 5
+  { 0, 0, 0, 0 }  // 5
 };
 static UINT16 custom_spr1_pal_fade_steps[][4] = {
   { 0, 0, 0, 0 }, // 0
@@ -28,7 +28,7 @@ static UINT16 custom_spr1_pal_fade_steps[][4] = {
   { 0, 0, 0, 0 }, // 2
   { 0, 0, 0, 0 }, // 3
   { 0, 0, 0, 0 }, // 4
-  { 0, 0, 0, 0 } // 5
+  { 0, 0, 0, 0 }  // 5
 };
 
 static const UBYTE bg_fade_indexes[][4] = {
@@ -112,8 +112,8 @@ void FadeSetSpeed(UBYTE speed)
   fade_frames_per_step = fade_speeds[speed];
 }
 
+#ifdef CUSTOM_COLORS
 void FadeSetBackgroundPalette(UBYTE palette_index) {
-  #ifdef CUSTOM_COLORS
   UBYTE i, j, fade_index;
   UINT16 c;
   for (i = 0; i < 6; i++)
@@ -124,13 +124,10 @@ void FadeSetBackgroundPalette(UBYTE palette_index) {
 
       c = fade_index == 4 ? RGB_WHITE : custom_pal[palette_index][fade_index];
       custom_bg_pal_fade_steps[i][j] = c;
-      
-      c = fade_index == 4 ? RGB_WHITE : custom_spr1_pal[fade_index];      
-      custom_spr1_pal_fade_steps[i][j] = c;
     }
   }
-  #endif
 }
+#endif
 
 UBYTE IsFading()
 {

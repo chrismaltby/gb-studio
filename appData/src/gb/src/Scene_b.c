@@ -106,7 +106,9 @@ void SceneInit_b2()
   UBYTE sprite_len;
   UWORD scene_load_ptr;
   UBYTE num_spr_palettes;
+  #ifdef CUSTOM_COLORS
   UWORD sprite_palette_index;
+  #endif
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
@@ -118,11 +120,13 @@ void SceneInit_b2()
 
   num_spr_palettes = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr);
   scene_load_ptr++;
+  #ifdef CUSTOM_COLORS
   for (i = 0; i != num_spr_palettes; i++) 
   {
     sprite_palette_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + i);
     set_sprite_palette(i + 1, 1, custom_pal[sprite_palette_index]);
   }
+  #endif
 
   scene_load_ptr = scene_load_ptr + num_spr_palettes;
 
@@ -282,7 +286,9 @@ void SceneInit_b7()
   tileset_size = ReadBankedUBYTE(tileset_bank_ptr.bank, tileset_ptr);
   SetBankedBkgData(tileset_bank_ptr.bank, 0, tileset_size, tileset_ptr + 1u);
 
+  #ifdef CUSTOM_COLORS
   set_bkg_palette(0, 1, custom_pal[scene_bg_palette]);
+  #endif
 }
 
 void SceneInit_b8()
@@ -321,7 +327,9 @@ void SceneInit_b9()
   check_triggers = TRUE;
   SceneHandleTriggers_b();
 
+  #ifdef CUSTOM_COLORS
   FadeSetBackgroundPalette(scene_bg_palette);
+  #endif
   FadeIn();
 
   time = 0;

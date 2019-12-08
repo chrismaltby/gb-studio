@@ -7,7 +7,6 @@ import buildMakeBat from "./buildMakeBat";
 import { hexDec } from "../helpers/8bit";
 import getTmp from "../helpers/getTmp";
 import { isMBC1 } from "./helpers"
-import { DMG_PALETTE } from "../../components/forms/PaletteSelect";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -24,13 +23,6 @@ const setROMTitle = async (filename, title) => {
     romData[HEADER_TITLE + i] = charCode;
   }
   await fs.writeFile(filename, await patchROM(romData));
-};
-
-const convertHexTo15BitRGB = hex => {
-  const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
-  const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
-  const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
-  return `RGB(${r}, ${g}, ${b})`;
 };
 
 const patchROM = romData => {
@@ -68,7 +60,7 @@ const makeBuild = ({
 } = {}) => {
   return new Promise(async (resolve, reject) => {
     const env = Object.create(process.env);
-    const { settings, palettes } = data;
+    const { settings } = data;
 
     const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
       process.arch
@@ -97,45 +89,10 @@ const makeBuild = ({
     env.TMP = getTmp();
     env.TEMP = getTmp();
     
-    // Modify CustomColors.h to overide color palette
-    let customColorsHeader = await fs.readFile(`${buildRoot}/include/CustomColors.h`, "utf8");
-    if(settings.customColorsEnabled) {
-      const bgPalette = palettes.find(p => p.id === settings.backgroundPaletteId) || DMG_PALETTE;
-      const sprPalette = palettes.find(p => p.id === settings.spritesPaletteId) || DMG_PALETTE;
-
-      customColorsHeader = customColorsHeader
-        .replace(
-          /BG_DMG_WHITE RGB\(29, 31, 28\)/g, 
-          `BG_DMG_WHITE  ${convertHexTo15BitRGB(bgPalette.colors[0])}`)
-        .replace(
-          /BG_DMG_LIGHTGREEN RGB\(22, 30, 17\)/g, 
-          `BG_DMG_LIGHTGREEN ${convertHexTo15BitRGB(bgPalette.colors[1])}`)
-        .replace(
-          /BG_DMG_DARKGREEN RGB\(10, 19, 15\)/g, 
-          `BG_DMG_DARKGREEN ${convertHexTo15BitRGB(bgPalette.colors[2])}`)
-        .replace(
-          /BG_DMG_BLACK RGB\(4, 5, 10\)/g, 
-          `BG_DMG_BLACK ${convertHexTo15BitRGB(bgPalette.colors[3])}`)
-
-        .replace(
-          /SPR_DMG_WHITE RGB\(29, 31, 28\)/g, 
-          `SPR_DMG_WHITE  ${convertHexTo15BitRGB(sprPalette.colors[0])}`)
-        .replace(
-          /SPR_DMG_LIGHTGREEN RGB\(22, 30, 17\)/g, 
-          `SPR_DMG_LIGHTGREEN ${convertHexTo15BitRGB(sprPalette.colors[1])}`)
-        .replace(
-          /SPR_DMG_DARKGREEN RGB\(10, 19, 15\)/g, 
-          `SPR_DMG_DARKGREEN ${convertHexTo15BitRGB(sprPalette.colors[2])}`)
-        .replace(
-          /SPR_DMG_BLACK RGB\(4, 5, 10\)/g, 
-          `SPR_DMG_BLACK ${convertHexTo15BitRGB(sprPalette.colors[3])}`);
-    }     
-    if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
-      customColorsHeader = customColorsHeader.replace(/#define CUSTOM_COLORS/g, '');
-    }
-    await fs.writeFile(`${buildRoot}/include/CustomColors.h`, customColorsHeader, "utf8");
-
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
+    if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
+      gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, '');
+    }
     if (!settings.gbcFastCPUEnabled) {
       gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
     }
