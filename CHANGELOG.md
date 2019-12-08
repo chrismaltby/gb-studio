@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fix bug where collisions couldn't be placed if "Show Collisions" setting was off.
 - Fix bug where variable lists sometimes show show old names.
 - Fix bug where opening menu would modify text draw speed. [@pau-tomas](https://github.com/pau-tomas)
 - Switching scene background will keep current collisions if image hasn't had collisions set already. [@RichardULZ](https://github.com/RichardULZ)
