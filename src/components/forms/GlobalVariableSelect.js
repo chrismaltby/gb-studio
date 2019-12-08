@@ -54,7 +54,7 @@ class GlobalVariableSelect extends Component {
   };
 
   render() {
-    const { id, value, onChange } = this.props;
+    const { id, value, onChange, variablesVersion } = this.props;
 
     const options = [
       {
@@ -81,6 +81,7 @@ class GlobalVariableSelect extends Component {
 
     return (
       <SelectRenamable
+        key={variablesVersion}
         editPlaceholder={l10n("FIELD_VARIABLE_NAME")}
         editDefaultValue={
           valueIsLocal ? this.localName(value) : this.variableName(value || "0")
@@ -107,7 +108,8 @@ GlobalVariableSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   variables: PropTypes.objectOf(VariableShape).isRequired,
-  renameVariable: PropTypes.func.isRequired
+  renameVariable: PropTypes.func.isRequired,
+  variablesVersion: PropTypes.number.isRequired
 };
 
 GlobalVariableSelect.defaultProps = {
@@ -117,8 +119,10 @@ GlobalVariableSelect.defaultProps = {
 
 function mapStateToProps(state) {
   const variables = state.entities.present.entities.variables;
+  const variablesVersion = state.editor.variableVersion;
   return {
-    variables
+    variables,
+    variablesVersion
   };
 }
 
