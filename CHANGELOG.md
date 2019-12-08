@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Switching scene background will keep current collisions if image hasn't had collisions set already [@RichardULZ](https://github.com/RichardULZ)
 - Updated Brazilian Portuguese localisation. [@junkajii](https://github.com/junkajii)
 - Allow variables to be used in choice and menu events. [@pau-tomas](https://github.com/pau-tomas)
 
