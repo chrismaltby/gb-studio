@@ -240,6 +240,7 @@ textarea {
 .FormField .ReactSelect__control {
   height: 30px;
   min-height: 30px;
+  align-content: center;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg-color);
 }
