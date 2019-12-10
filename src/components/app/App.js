@@ -26,14 +26,19 @@ class App extends Component {
   componentDidMount() {
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
+    window.addEventListener("resize", this.onFocus);
   }
 
   onBlur = () => {
-    this.setState({ blur: true });
+    if(!this.state.blur) {
+      this.setState({ blur: true });
+    }
   };
 
   onFocus = () => {
-    this.setState({ blur: false });
+    if(this.state.blur) {
+      this.setState({ blur: false });
+    }
   };
 
   render() {

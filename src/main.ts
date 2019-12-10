@@ -97,7 +97,7 @@ const createWindow = async (projectPath:string) => {
     minWidth: 800,
     minHeight: 600,
     titleBarStyle: "hiddenInset",
-    fullscreenable: false,
+    fullscreenable: true,
     show: false,
     webPreferences: {
       nodeIntegration: true,
