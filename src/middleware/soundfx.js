@@ -15,6 +15,7 @@ import {
   stopBuffer,
   decodeAudioData
 } from "../lib/soundfx/soundfx";
+import { assetsRoot } from "../consts";
 
 let oscillator = null;
 let bufferSource = null;
@@ -30,7 +31,7 @@ window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
 function play(filename) {
-  const url = `../assets/soundfx/${filename}`;
+  const url = `file://${assetsRoot}/soundfx/${filename}`;
   fetch(url)
     .then(response => response.arrayBuffer())
     .then(decodeAudioData)
