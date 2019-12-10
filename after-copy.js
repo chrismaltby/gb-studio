@@ -9,17 +9,19 @@ function fileFilter(src, dest) {
 }
 
 function afterCopy(buildPath, electronVersion, platform, arch, callback) {
-  // Called from electronPackagerConfig in package.json
-  // Copies correct build Tools for architecture
-  const toolsDir = "/buildTools/" + platform + "-" + arch;
-  const dataDir = "/appData/";
+  // Called from packagerConfig in forge.config.js
+  // Copies correct build Tools for architecture + dynamically loaded js/json files
+  const copyPaths = [
+    "/buildTools/" + platform + "-" + arch,
+    "/appData/",
+    "/src/lang",
+    "/src/lib/events",
+    "/src/assets"    
+  ];
 
-  fs.copy(__dirname + toolsDir, buildPath + toolsDir, { filter: fileFilter })
-    .then(() => {
-      return fs.copy(__dirname + dataDir, buildPath + dataDir, {
-        filter: fileFilter
-      });
-    })
+  Promise.all(copyPaths.map((dir) => {
+    return fs.copy(__dirname + dir, buildPath + dir, { filter: fileFilter })
+  }))
     .then(() => callback())
     .catch(err => callback(err));
 }

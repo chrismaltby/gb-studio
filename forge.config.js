@@ -41,14 +41,7 @@ module.exports = {
       "gatekeeper-assess": false,
       entitlements: "./entitlements.plist",
       "entitlements-inherit": "./entitlements.plist"
-    },
-    ignore: [
-      "/.vscode($|/)",
-      "/coverage($|/)",
-      "/test($|/)",
-      "/appData($|/)",
-      "/buildTools($|/)"
-    ]
+    }
   },
   electronWinstallerConfig: {
     name: "gb_studio",
