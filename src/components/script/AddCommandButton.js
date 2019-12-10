@@ -33,11 +33,13 @@ class AddCommandButton extends Component {
   componentDidMount() {
     window.addEventListener("keydown", this.detectPasteMode);
     window.addEventListener("keyup", this.detectPasteMode);
+    window.addEventListener("blur", this.onBlur);
   }
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.detectPasteMode);
     window.removeEventListener("keyup", this.detectPasteMode);
+    window.removeEventListener("blur", this.onBlur);
   }
 
   detectPasteMode = e => {
@@ -45,6 +47,10 @@ class AddCommandButton extends Component {
       return;
     }
     this.setState({ pasteMode: e.altKey });
+  };
+
+  onBlur = e => {
+    this.setState({ pasteMode: false });
   };
 
   onOpen = () => {
