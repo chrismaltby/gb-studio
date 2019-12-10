@@ -25,6 +25,7 @@ export default {
     sceneDragX: 0,
     sceneDragY: 0,
     uiVersion: 0,
+    variableVersion: 0,
     hover: {
       sceneId: "",
       actorId: "",
