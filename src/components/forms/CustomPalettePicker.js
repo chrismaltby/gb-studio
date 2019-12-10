@@ -5,6 +5,7 @@ import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import * as actions from "../../actions";
 import Button from "../library/Button";
+import Solver from "3x3-equation-solver";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -15,6 +16,15 @@ const hexToDecimal = str => {
   return parseInt(str, 16);
 };
 
+const clamp = (value, min, max) => {
+  return Math.min(max, Math.max(min, value));
+}
+
+const clamp31 = (value) => {
+  return clamp(value, 0, 31);
+}
+
+/* 5-bit rgb value => GBC representative hex value */
 const rgbToGBCHex = (red, green, blue) => {
   const value = (blue << 10) + (green << 5) + red;
   const r = value & 0x1f;
@@ -27,14 +37,32 @@ const rgbToGBCHex = (red, green, blue) => {
   ).toString(16).padStart(6, "0");
 };
 
+/* 24-bit hex value => GBC representative Hex value */
 const hexToGBCHex = hex => {
-  const r = Math.floor(hexToDecimal(hex.substring(0, 2)) / 8);
-  const g = Math.floor(hexToDecimal(hex.substring(2, 4)) / 8);
-  const b = Math.floor(hexToDecimal(hex.substring(4)) / 8);
-  if (r > 31) r = 31;
-  if (g > 31) g = 31;
-  if (b > 31) b = 31;
+  let r = clamp31(Math.floor(hexToDecimal(hex.substring(0, 2)) / 8));
+  let g = clamp31(Math.floor(hexToDecimal(hex.substring(2, 4)) / 8));
+  let b = clamp31(Math.floor(hexToDecimal(hex.substring(4)) / 8));
   return rgbToGBCHex(r, g, b);
+};
+
+/* GBC representative Hex value => Closest matching 24-bit hex value => */
+const GBCHexToClosestHex = hex => {
+  if(hex === "ff0000") return hex; // otherwise comes back as 31,3,0
+  const r = Math.floor(hexToDecimal(hex.substring(0, 2)));
+  const g = Math.floor(hexToDecimal(hex.substring(2, 4)));
+  const b = Math.floor(hexToDecimal(hex.substring(4)));
+  const [r2, g2, b2] = Solver([
+    [13, 2, 1, r << 1],
+    [0, 3, 1, g >> 1],
+    [3, 2, 11, b << 1]
+  ]);
+  return (
+    (Math.round(255 * (clamp31(r2) / 31)) << 16) +
+    (Math.round(255 * (clamp31(g2) / 31)) << 8) +
+    Math.round(255 * (clamp31(b2) / 31))
+  )
+    .toString(16)
+    .padStart(6, "0");
 };
 
 class CustomPalettePicker extends Component {
@@ -167,6 +195,7 @@ class CustomPalettePicker extends Component {
     var hex = this.state.currentCustomHex.replace("#", "");
 
     if (hex.length == 6) {
+      hex = GBCHexToClosestHex(hex);
       var result = this.applyHexToState(hex);
       this.setCurrentColor(result.r, result.g, result.b);
       this.setState({ currentCustomHex: "" });
@@ -192,14 +221,28 @@ class CustomPalettePicker extends Component {
   };
 
   onRestoreDefault = e => {
-    // this.handleDefaultPaletteClick();
     const { editProjectSettings } = this.props;
-    editProjectSettings({
-      customColorsWhite: DEFAULT_WHITE,
-      customColorsLight: DEFAULT_LIGHT,
-      customColorsDark: DEFAULT_DARK,
-      customColorsBlack: DEFAULT_BLACK
-    });
+    this.setState(
+      {
+        selectedPalette: -1,
+        currentR: 0,
+        currentG: 0,
+        currentB: 0,           
+        whiteHex: DEFAULT_WHITE,
+        lightHex: DEFAULT_LIGHT,
+        darkHex: DEFAULT_DARK,
+        blackHex: DEFAULT_BLACK,
+        currentCustomHex: ""        
+      },
+      () => {
+        editProjectSettings({       
+          customColorsWhite: DEFAULT_WHITE,
+          customColorsLight: DEFAULT_LIGHT,
+          customColorsDark: DEFAULT_DARK,
+          customColorsBlack: DEFAULT_BLACK
+        });
+      }
+    );
   };
 
   render() {
@@ -226,7 +269,11 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsWhite)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(
+                      DEFAULT_WHITE
+                    )} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(
+                      settings.customColorsWhite
+                    )} 50%)`
                   }}
                 >
                   &nbsp;
@@ -242,7 +289,11 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsLight)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(
+                      DEFAULT_LIGHT
+                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
+                      settings.customColorsLight
+                    )} 50%)`
                   }}
                 >
                   &nbsp;
@@ -258,7 +309,11 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsDark)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(
+                      DEFAULT_DARK
+                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
+                      settings.customColorsDark
+                    )} 50%)`
                   }}
                 >
                   &nbsp;
@@ -274,7 +329,11 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsBlack)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(
+                      DEFAULT_BLACK
+                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
+                      settings.customColorsBlack
+                    )} 50%)`
                   }}
                 >
                   &nbsp;
