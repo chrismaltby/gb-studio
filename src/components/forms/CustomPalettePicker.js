@@ -226,7 +226,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_WHITE} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsWhite)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsWhite)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -242,7 +242,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_LIGHT} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsLight)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsLight)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -258,7 +258,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_DARK} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsDark)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsDark)} 50%)`
                   }}
                 >
                   &nbsp;
@@ -274,7 +274,7 @@ class CustomPalettePicker extends Component {
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#${DEFAULT_BLACK} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsBlack)} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(settings.customColorsBlack)} 50%)`
                   }}
                 >
                   &nbsp;
