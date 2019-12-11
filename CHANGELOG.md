@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Fix bug where collisions couldn't be placed if "Show Collisions" setting was off.
+- Fix bug where variable lists sometimes show show old names.
+- Fix bug where opening menu would modify text draw speed. [@pau-tomas](https://github.com/pau-tomas)
+- Switching scene background will keep current collisions if image hasn't had collisions set already. [@RichardULZ](https://github.com/RichardULZ)
+- Updated Brazilian Portuguese localisation. [@junkajii](https://github.com/junkajii)
+- Allow variables to be used in choice and menu events. [@pau-tomas](https://github.com/pau-tomas)
+
 ## [1.2.0]
 
 # Added

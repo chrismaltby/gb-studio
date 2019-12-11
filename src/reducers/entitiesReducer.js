@@ -426,6 +426,7 @@ const editScene = (state, action) => {
 
   // If switched background use collisions from another
   // scene using the background already if available
+  // otherwise keep old collisions if same width
   // otherwise make empty collisions array of
   // the correct size
   let newState = state;
@@ -439,10 +440,16 @@ const editScene = (state, action) => {
     const otherScene = scenes.find(s => {
       return s.backgroundId === action.values.backgroundId;
     });
+    const oldBackground = state.entities.backgrounds[scene.backgroundId];
     const background = state.entities.backgrounds[action.values.backgroundId];
 
     if (otherScene) {
       newCollisions = otherScene.collisions;
+    } else if (oldBackground.width == background.width){
+      const collisionsSize = Math.ceil(
+        (background.width * background.height) / 8
+      );
+        newCollisions = (scene.collisions.slice(0,collisionsSize));
     } else {
       const collisionsSize = Math.ceil(
         (background.width * background.height) / 8
