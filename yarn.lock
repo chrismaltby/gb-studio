@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"3x3-equation-solver@^1.2.18":
+  version "1.2.18"
+  resolved "https://registry.yarnpkg.com/3x3-equation-solver/-/3x3-equation-solver-1.2.18.tgz#0991179f00a3da7ff55bbb34c85e4282634cb3c0"
+  integrity sha512-iTrI50JhqYd10f9ShY4a7i57Nq5NhpCp+QrfSR19kBgWhwvSPe/Upi7feCvbM1yxxIU7PL5NOt9BMrkFweVoKw==
+
 "7zip@0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/7zip/-/7zip-0.0.6.tgz#9cafb171af82329490353b4816f03347aa150a30"
