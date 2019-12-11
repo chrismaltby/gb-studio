@@ -47,7 +47,7 @@ const hexToGBCHex = hex => {
 
 /* GBC representative Hex value => Closest matching 24-bit hex value => */
 const GBCHexToClosestHex = hex => {
-  if(hex === "ff0000") return hex; // otherwise comes back as 31,3,0
+  if(hex.toLowerCase() === "ff0000") return hex; // otherwise comes back as 31,3,0
   const r = Math.floor(hexToDecimal(hex.substring(0, 2)));
   const g = Math.floor(hexToDecimal(hex.substring(2, 4)));
   const b = Math.floor(hexToDecimal(hex.substring(4)));
