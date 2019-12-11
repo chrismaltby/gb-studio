@@ -4,12 +4,15 @@ module.exports = {
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        name: "my_app"
+        name: "gb_studio",
+        exe: "gb-studio.exe",
+        loadingGif: "src/assets/app/install.gif",
+        setupIcon: "src/assets/app/icon/app_icon.ico"
       }
     },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["darwin"]
+      platforms: ["darwin", "win32"]
     },
     {
       name: "@electron-forge/maker-deb",
@@ -20,11 +23,6 @@ module.exports = {
       config: {}
     }
   ],
-  make_targets: {
-    win32: ["squirrel", "zip"],
-    darwin: ["zip"],
-    linux: ["deb", "rpm"]
-  },
   packagerConfig: {
     name: "GB Studio",
     executableName: "gb-studio",
@@ -42,25 +40,6 @@ module.exports = {
       entitlements: "./entitlements.plist",
       "entitlements-inherit": "./entitlements.plist"
     }
-  },
-  electronWinstallerConfig: {
-    name: "gb_studio",
-    exe: "gb-studio.exe",
-    loadingGif: "src/assets/app/install.gif"
-  },
-  electronInstallerDebian: {},
-  electronInstallerRedhat: {},
-  github_repository: {
-    owner: "",
-    name: ""
-  },
-  electronInstallerDMG: {
-    background: "src/assets/app/dmg/background.tiff",
-    format: "ULFO"
-  },
-  windowsStoreConfig: {
-    packageName: "",
-    name: "gbstudio"
   },
   hooks: {
     postPackage: require("./src/hooks/notarize.js")
