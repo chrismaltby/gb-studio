@@ -147,7 +147,7 @@ class Scene extends Component {
             <img
               className="Scene__Background"
               alt=""
-              src={`${assetFilename(projectRoot, "backgrounds", image)}?_v=${
+              src={`file://${assetFilename(projectRoot, "backgrounds", image)}?_v=${
                 image._v
               }`}
             />

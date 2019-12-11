@@ -59,8 +59,8 @@ export const zoomForSection = (section, editor) => {
   return 100;
 };
 
-export const assetFilename = (projectRoot, assetType, asset, external=false) => {
-  return (external ? "" : "file://") + (asset.plugin
+export const assetFilename = (projectRoot, assetType, asset) => {
+  return (asset.plugin
     ? Path.join(projectRoot, "plugins", asset.plugin, assetType, asset.filename)
     : Path.join(projectRoot, "assets", assetType, asset.filename)
   ).replace(/\\/g, "/");

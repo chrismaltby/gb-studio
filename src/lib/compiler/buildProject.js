@@ -13,8 +13,8 @@ const buildProject = async (
     projectRoot = "/tmp",
     tmpPath = "/tmp",
     outputRoot = "/tmp/testing",
-    progress = () => {},
-    warnings = () => {}
+    progress = (_msg) => {},
+    warnings = (_msg) => {}
   } = {}
 ) => {
   const compiledData = await compile(data, {

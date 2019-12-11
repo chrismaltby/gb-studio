@@ -1,3 +1,5 @@
+jest.mock('../../../src/consts')
+
 import compileEntityEvents from "../../../src/lib/compiler/compileEntityEvents";
 import {
   EVENT_END,

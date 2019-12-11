@@ -14,6 +14,7 @@ import AppContainerDnD from "./components/app/AppContainerDnD";
 import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
+import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 
 const store = configureStore();
 
@@ -81,6 +82,23 @@ ipcRenderer.on("updateSetting", (event, setting, value) => {
       [setting]: value
     })
   );
+});
+
+ipcRenderer.on("build-start", async (event) => {
+  store.dispatch({ type: CMD_START });
+});
+
+ipcRenderer.on("build-complete", async (event) => {
+  store.dispatch({ type: CMD_COMPLETE });
+});
+
+ipcRenderer.on("build-stdout", async (event, message) => {
+  store.dispatch({ type: CMD_STD_OUT, text: message });
+});
+
+ipcRenderer.on("build-stderr", async (event, message) => {
+  store.dispatch({ type: CMD_STD_ERR, text: message });
+  store.dispatch({ type: SET_SECTION, section: "build" });
 });
 
 ipcRenderer.on("zoom", (event, zoomType) => {

@@ -953,7 +953,7 @@ const ensureProjectAsset = async (relativePath, { projectRoot, warnings }) => {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.
   }
-  return `file://${projectPath}`;
+  return `${projectPath}`;
 };
 
 export default compile;

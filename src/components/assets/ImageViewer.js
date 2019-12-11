@@ -63,7 +63,7 @@ class ImageViewer extends Component {
             >
               <img
                 alt=""
-                src={`${assetFilename(
+                src={`file://${assetFilename(
                   projectRoot,
                   folder,
                   file

@@ -8,12 +8,19 @@ import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
 import { stat } from "fs-extra";
+import uuid from "uuid/v4";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
+import getTmp from "./lib/helpers/getTmp";
+import copy from "./lib/helpers/fsCopy";
+import rimraf from "rimraf";
+import { promisify } from "util";
 
 declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
+
+const rmdir = promisify(rimraf);
 
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
@@ -23,9 +30,9 @@ if (require("electron-squirrel-startup")) {
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow:any = null;
-let splashWindow:any = null;
-let playWindow:any = null;
+let mainWindow: any = null;
+let splashWindow: any = null;
+let playWindow: any = null;
 let hasCheckedForUpdate = false;
 
 const isDevMode = !!process.execPath.match(/[\\/]electron/);
@@ -82,7 +89,7 @@ const createSplash = async (forceNew = false) => {
   });
 };
 
-const createWindow = async (projectPath:string) => {
+const createWindow = async (projectPath: string) => {
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800
@@ -139,11 +146,11 @@ const createWindow = async (projectPath:string) => {
     mainWindow.webContents.send("leave-full-screen");
   });
 
-  mainWindow.on("page-title-updated", (e:any, title:string) => {
+  mainWindow.on("page-title-updated", (e: any, title: string) => {
     mainWindow.name = title;
   });
 
-  mainWindow.on("close", (e:any) => {
+  mainWindow.on("close", (e: any) => {
     if (mainWindow.documentEdited) {
       // eslint-disable-next-line global-require
       const l10n = require("./lib/helpers/l10n").default;
@@ -178,7 +185,7 @@ const createWindow = async (projectPath:string) => {
   });
 };
 
-const openHelp = async (helpPage:string) => {
+const openHelp = async (helpPage: string) => {
   if (helpPage === "sprites") {
     shell.openExternal("https://www.gbstudio.dev/docs/sprites/");
   } else if (helpPage === "backgrounds") {
@@ -192,7 +199,7 @@ const openHelp = async (helpPage:string) => {
   }
 };
 
-const createPlay = async (url:string) => {
+const createPlay = async (url: string) => {
   if (!playWindow) {
     const playWidth = process.platform === "win32" ? 494 : 480;
     const playHeight = process.platform === "win32" ? 471 : 454;
@@ -325,12 +332,12 @@ ipcMain.on("project-loaded", (event, project) => {
 ipcMain.on("set-menu-plugins", (event, plugins) => {
   // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
-  const distinct = <T>(value:T, index:number, self:T[]) => self.indexOf(value) === index;
+  const distinct = <T>(value: T, index: number, self: T[]) => self.indexOf(value) === index;
 
   const pluginValues = Object.values(plugins);
 
   const pluginNames = pluginValues
-    .map((plugin:any) => plugin.plugin)
+    .map((plugin: any) => plugin.plugin)
     .filter(distinct);
 
   menu.buildMenu(
@@ -338,10 +345,10 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
       return {
         label: pluginName,
         submenu: pluginValues
-          .filter((plugin:any) => {
+          .filter((plugin: any) => {
             return plugin.plugin === pluginName;
           })
-          .map((plugin:any) => {
+          .map((plugin: any) => {
             return {
               label: l10n(plugin.id) || plugin.name || plugin.name,
               accelerator: plugin.accelerator,
@@ -356,6 +363,72 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
   );
 });
 
+const buildUUID = uuid();
+
+ipcMain.on("build-game", async (event, project: any, projectRoot: string, buildType: string, exportBuild: boolean, ejectBuild: boolean) => {
+  try {
+    const buildProject = require("./lib/compiler/buildProject").default;
+    const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+    await rmdir(outputRoot);
+
+    mainWindow && mainWindow.webContents.send("build-start");
+    await buildProject(project, {
+      projectRoot,
+      buildType,
+      outputRoot,
+      tmpPath: getTmp(),
+      progress: (message: string) => {
+        if (
+          message !== "'" &&
+          message.indexOf("unknown or unsupported #pragma") === -1
+        ) {
+          mainWindow && mainWindow.webContents.send("build-stdout", message)
+        }
+      },
+      warnings: (message: string) => {
+        mainWindow && mainWindow.webContents.send("build-stderr", message)
+      }
+    });
+
+    if (exportBuild) {
+      await copy(
+        `${outputRoot}/build/${buildType}`,
+        `${projectRoot}/build/${buildType}`
+      );
+      shell.openItem(`${projectRoot}/build/${buildType}`);
+      mainWindow && mainWindow.webContents.send("build-stdout", "-")
+      mainWindow && mainWindow.webContents.send("build-stdout", `Success! ${
+        buildType === "web"
+          ? `Site is ready at ${Path.normalize(
+            `${projectRoot}/build/web/index.html`
+          )}`
+          : `ROM is ready at ${Path.normalize(
+            `${projectRoot}/build/rom/game.gb`
+          )}`
+        }`);
+    } else if (ejectBuild) {
+      await copy(`${outputRoot}`, `${projectRoot}/eject`);
+      shell.openItem(`${projectRoot}/eject`);
+    }
+
+    if (buildType === "web" && !exportBuild && !ejectBuild) {
+      mainWindow && mainWindow.webContents.send("build-stdout", "-")
+      mainWindow && mainWindow.webContents.send("build-stdout", "Success! Starting emulator...");
+      createPlay(`file://${outputRoot}/build/web/index.html`);
+    }
+
+    mainWindow && mainWindow.webContents.send("build-complete");
+
+  } catch (e) {
+    if (typeof e === "string") {
+      mainWindow && mainWindow.webContents.send("build-stderr", e)
+    } else {
+      mainWindow && mainWindow.webContents.send("build-stderr", e.toString())
+    }
+    mainWindow && mainWindow.webContents.send("build-complete");
+    throw e;
+  }
+});
 
 menu.on("new", async () => {
   newProject();
@@ -377,8 +450,7 @@ menu.on("redo", async () => {
   mainWindow && mainWindow.webContents.send("redo");
 });
 
-
-menu.on("section", async (section:string) => {
+menu.on("section", async (section: string) => {
   mainWindow && mainWindow.webContents.send("section", section);
 });
 
@@ -386,7 +458,7 @@ menu.on("reloadAssets", () => {
   mainWindow && mainWindow.webContents.send("reloadAssets");
 });
 
-menu.on("zoom", (zoomType:string) => {
+menu.on("zoom", (zoomType: string) => {
   mainWindow && mainWindow.webContents.send("zoom", zoomType);
 });
 
@@ -394,7 +466,7 @@ menu.on("run", () => {
   mainWindow && mainWindow.webContents.send("run");
 });
 
-menu.on("build", (buildType:string) => {
+menu.on("build", (buildType: string) => {
   mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
@@ -402,7 +474,7 @@ menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });
 
-menu.on("updateSetting", (setting:string, value:any) => {
+menu.on("updateSetting", (setting: string, value: any) => {
   settings.set(setting, value);
   if (setting === "theme") {
     menu.ref().getMenuItemById("themeDefault").checked = value === undefined;
@@ -422,7 +494,6 @@ menu.on("updateSetting", (setting:string, value:any) => {
   }
 });
 
-
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.close();
@@ -434,7 +505,6 @@ const newProject = async () => {
     }
   }
 };
-
 
 const openProjectPicker = async () => {
   const files = dialog.showOpenDialogSync({
@@ -451,7 +521,7 @@ const openProjectPicker = async () => {
   }
 };
 
-const openProject = async (projectPath:string) => {
+const openProject = async (projectPath: string) => {
   // eslint-disable-next-line global-require
   const l10n = require("./lib/helpers/l10n").default;
   const ext = Path.extname(projectPath);
@@ -479,7 +549,7 @@ const openProject = async (projectPath:string) => {
     ([] as string[])
       .concat((settings.get("recentProjects") || []) as string[], projectPath)
       .reverse()
-      .filter((filename:string, index:number, arr:string[]) => arr.indexOf(filename) === index) // Only unique
+      .filter((filename: string, index: number, arr: string[]) => arr.indexOf(filename) === index) // Only unique
       .reverse()
       .slice(-10)
   );

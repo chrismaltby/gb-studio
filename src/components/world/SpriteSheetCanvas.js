@@ -49,7 +49,7 @@ class SpriteSheetCanvas extends Component {
   imageSrc = (projectRoot, spriteSheet) => {
     return (
       spriteSheet &&
-      `${assetFilename(projectRoot, "sprites", spriteSheet)}?_v=${
+      `file://${assetFilename(projectRoot, "sprites", spriteSheet)}?_v=${
         spriteSheet._v
       }`
     );

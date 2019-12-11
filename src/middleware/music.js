@@ -29,7 +29,7 @@ function onSongLoaded(player) {
 
 function play(filename) {
   if (modPlayer) {
-    modPlayer.loadModule(filename);
+    modPlayer.loadModule(`file://${filename}`);
   }
 }
 

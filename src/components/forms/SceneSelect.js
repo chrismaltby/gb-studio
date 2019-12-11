@@ -19,7 +19,7 @@ const DropdownIndicator = ({
           <div
             className="Thumbnail"
             style={{
-              backgroundImage: `url("${assetFilename(
+              backgroundImage: `url("file://${assetFilename(
                 projectRoot,
                 "backgrounds",
                 backgroundsLookup[scenesLookup[value].backgroundId]

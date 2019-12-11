@@ -43,7 +43,6 @@ const vm = new NodeVM({
 const eventHandlers = {
   ...internalEventHandlerPaths.reduce((memo, path) => {
     const handlerCode = fs.readFileSync(path, "utf8");
-    console.log({ handlerCode });
     const handler = vm.run(handlerCode);
     if (!handler.id) {
       throw new Error(`Event handler ${path} is missing id`);
