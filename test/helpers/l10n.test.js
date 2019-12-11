@@ -7,6 +7,8 @@ import {
   languageOverrides
 } from "../../src/lib/helpers/l10n";
 
+jest.mock('../../src/consts')
+
 test("should replace params in l10n string", () => {
   expect(replaceParams("Hello {place}!", { place: "World" })).toBe(
     "Hello World!"

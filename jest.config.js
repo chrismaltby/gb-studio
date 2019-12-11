@@ -1,7 +1,9 @@
 module.exports = {
+  roots: ["test/"],
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
-    "^.+\\.js?$": "ts-jest"
+    "\\.(ts|js)x?$": ["./test/custom-transformer"],
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"]
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  setupFilesAfterEnv: ["jest-extended"],
+  verbose: true
 };
