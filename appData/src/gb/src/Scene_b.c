@@ -725,12 +725,6 @@ void SceneUpdateTimer_b()
     return;
   }
 
-  // Don't update timer when UI is open
-  if (!UIIsClosed())
-  {
-    return;
-  }
-
   // Check if timer is enabled
   if (timer_script_duration != 0)
   {
