@@ -10,9 +10,9 @@ export const fields = [
     key: "duration",
     type: "number",
     label: l10n("FIELD_TIMER_DURATION"),
-    min: 0.50,
+    min: 0.25,
     max: 60,
-    step: 0.05,
+    step: 0.25,
     defaultValue: 10.0
   },
   {
