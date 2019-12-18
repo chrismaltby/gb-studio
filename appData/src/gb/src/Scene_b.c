@@ -720,13 +720,7 @@ void SceneUpdateTimer_b()
   }
 
   // Don't update timer while script is running
-  if (script_ptr != 0 || emote_timer != 0 || fade_running)
-  {
-    return;
-  }
-
-  // Don't update timer when UI is open
-  if (!UIIsClosed())
+  if (script_ptr != 0 || fade_running)
   {
     return;
   }
@@ -851,7 +845,8 @@ static void SceneHandleInput()
   }
 
   // Can't move while script is running
-  if (script_ptr != 0 || emote_timer != 0 || fade_running)
+  // (removed "emote_timer != 0" as it should only happen if script was set)
+  if (script_ptr != 0 || fade_running)
   {
     actors[0].moving = FALSE;
     return;
