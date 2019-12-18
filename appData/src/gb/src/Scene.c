@@ -37,7 +37,8 @@ BANK_PTR input_script_ptrs[NUM_INPUTS] = {{0}};
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BANK_PTR timer_script_ptr = {0};
-
+UBYTE scroll_x;
+UBYTE scroll_y;
 
 void SceneInit()
 {
