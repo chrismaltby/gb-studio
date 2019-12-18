@@ -336,5 +336,5 @@
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "No me preguntes de nuevo",
   "DIALOG_UP_TO_DATE": "¡Tienes la versión mas reciente!",
   "DIALOG_NEWEST_VERSION_AVAILABLE": "GB Studio {version} es la versión más reciente.",
-  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "No se puede comprobar la última versión en este momento.",
+  "DIALOG_UNABLE_TO_CHECK_LATEST_VERSION": "No se puede comprobar la última versión en este momento."
 }

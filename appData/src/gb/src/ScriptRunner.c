@@ -114,7 +114,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ResetTimer_b, 0},         // 0x59
     {Script_RemoveTimerScript_b, 0},  // 0x5A
     {Script_TextWithAvatar_b, 3},     // 0x5B
-    {Script_TextMenu_b, 6}            // 0x5C
+    {Script_TextMenu_b, 6},           // 0x5C
+    {Script_ActorSetCollisions_b, 1}  // 0x5D
 };
 
 UBYTE ScriptLastFnComplete();
