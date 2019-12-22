@@ -128,6 +128,13 @@ window.addEventListener("resize", debounce(() => {
   store.dispatch(actions.resizeFilesSidebar(state.settings.filesSidebarWidth));
 }, 500));
 
+// Prevent mousewheel from accidentally changing focused number fields 
+document.body.addEventListener("mousewheel", () => {
+  if(document.activeElement.type === "number"){
+      document.activeElement.blur();
+  }
+});
+
 let modified = true;
 store.subscribe(() => {
   const state = store.getState();
