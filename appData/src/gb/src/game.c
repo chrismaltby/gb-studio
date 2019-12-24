@@ -27,12 +27,27 @@ SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 
 void game_loop();
 
+void vbl_update() {
+  SCX_REG = scroll_x;
+  SCY_REG = scroll_y;
+}
+
 int main()
 {
+  #ifdef FAST_CPU
+  if (_cpu == CGB_TYPE)
+  {
+    cpu_fast();
+  }
+  #endif
+
+  disable_interrupts();
+  add_VBL(vbl_update);
+
   // Init LCD
   LCDC_REG = 0x67;
   set_interrupts(VBL_IFLAG | LCD_IFLAG);
-  STAT_REG = 0x45;
+  enable_interrupts();
 
   // Set palettes
   #ifdef CUSTOM_COLORS
@@ -47,13 +62,6 @@ int main()
     BGP_REG = 0xE4U;
     OBP0_REG = 0xD2U;
   }  
-
-  #ifdef FAST_CPU
-  if (_cpu == CGB_TYPE)
-  {
-    cpu_fast();
-  }
-  #endif
 
   // Position Window Layer
   WY_REG = MAXWNDPOSY - 7;
