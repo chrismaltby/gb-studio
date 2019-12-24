@@ -1,33 +1,53 @@
-CC = lcc -Wa-l -Wl-m -Wl-j -Wl-yt$(CART_TYPE) -Iinclude
+CC = lcc
 
 ROM_BUILD_DIR = build/rom
+OBJDIR = obj
 
-OBJ_DIR = obj
-SOURCE_DIR = src
+CFLAGS = -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Iinclude/core -Iinclude/states -Igenerated -Inode_modules/gbdkjs/include
+CFLAGS += -DCGB
 
-CFLAGS = -Wl-yo64 -Wl-ya4 -Wl-yp0x143=0x80
+LFLAGS_NBANKS += -Wl-yp0x143=0xC0
+LFLAGS = $(LFLAGS_NBANKS) -Wl-m
 
-SOURCES := $(shell find -L $(SOURCE_DIR) -name '*.c')
-SOURCES_ASM := $(shell find -L $(SOURCE_DIR) -name '*.s')
-OBJS = $(SOURCES:$(SOURCE_DIR)/%.c=$(OBJ_DIR)/%.o) $(SOURCES_ASM:$(SOURCE_DIR)/%.s=$(OBJ_DIR)/%.o)
+ASM = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.s))) 
+CLASSES = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.c))) 
+CORE_CLASSES = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.c))) 
+STATE_CLASSES = $(foreach dir,src/states,$(notdir $(wildcard $(dir)/*.c))) 
+DATA = $(foreach dir,src/data,$(notdir $(wildcard $(dir)/*.c))) 
 
-all:	game.html
+OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o)
 
-$(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.c
-	$(CC) -c -o $@ $<
+all:	$(ROM_BUILD_DIR)/game.gb
 
-$(OBJ_DIR)/%.o:	$(SOURCE_DIR)/%.s
-	$(CC) -c -o $@ $<
+$(OBJDIR)/%.o:	src/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(ROM_BUILD_DIR)/%.gb:  $(OBJS)
+$(OBJDIR)/%.o:	src/core/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/%.o:	src/states/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/%.o:	src/data/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<	
+
+$(OBJDIR)/%.s:	src/%.c
+	$(CC) $(CFLAGS) -S -o $@ $<
+
+$(OBJDIR)/%.o:	src/%.s
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
-	$(CC) $(CFLAGS) -o $@ $^	
+	$(CC) $(LFLAGS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Wl-yo64 -Wl-ya4 -Wl-yp0x143=0x80 -o $@ $^	
 
 clean:
+	echo $(dir)
+	echo $(CLASSES)
+	echo $(OBJS)
+	echo "---"
+	echo $(ASM:%.s=$(OBJDIR)/%.o)
+	rm -f obj/*
 	rm -rf build
-	rm -rf obj/*.o
-	rm -rf obj/data/*.o	
-	rm -rf obj/*.lst
-	rm -rf obj/data/*.lst
 
 rom: $(ROM_BUILD_DIR)/game.gb
