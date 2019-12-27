@@ -60,6 +60,8 @@ extern UBYTE timer_script_duration;
 extern UBYTE timer_script_time;
 extern BANK_PTR timer_script_ptr;
 extern UBYTE scene_loaded;
+extern UBYTE scroll_x;
+extern UBYTE scroll_y;
 
 void SceneInit();
 void SceneUpdate();

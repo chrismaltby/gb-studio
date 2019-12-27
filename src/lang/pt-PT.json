@@ -302,6 +302,8 @@
   "EVENT_TIMER_RESTART": "Temporizador: Reiniciar temporizador",
   "EVENT_TIMER_DISABLE": "Temporizador: Desactivar Script de Temporizador",
   "EVENT_MENU": "Text: Mostrar Menu",
+  "EVENT_ACTOR_COLLISIONS_ENABLE": "Actor: Activar Colisões",
+  "EVENT_ACTOR_COLLISIONS_DISABLE": "Actor: Desactivar Colisões",
 
   "// 10": "Menu -----------------------------------------------------",
 
