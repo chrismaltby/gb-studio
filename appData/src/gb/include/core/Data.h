@@ -2,33 +2,14 @@
 #define DATA_H
 
 #include <gb/gb.h>
+#include "Math.h"
+#include "BankData.h"
 
 typedef enum
 {
     SCENE = 1
 } STAGE_TYPE;
 
-typedef enum
-{
-    NONE = 1,
-    PLAYER_INPUT,
-    AI_RANDOM_FACE,
-    AI_INTERACT_FACE,
-    AI_RANDOM_WALK,
-    AI_ROTATE_TRB
-} MOVEMENT_TYPE;
-
-typedef enum
-{
-    SPRITE_STATIC = 0,
-    SPRITE_ACTOR,
-    SPRITE_ACTOR_ANIMATED
-} SPRITE_TYPE;
-
-typedef struct _BankPtr {
-  unsigned char bank;
-  unsigned int offset;
-} BankPtr;
 
 struct BackgroundInfo {
 	unsigned char tileIndex;
@@ -60,6 +41,20 @@ struct SceneInfo {
 	unsigned char* data;
 };
 
+struct ActorInfo {
+	unsigned char spriteOffset;
+	unsigned char spriteType;
+	unsigned char dirFrames;
+	unsigned char initialFrame;
+	unsigned char x;
+	unsigned char y;
+	unsigned char dir;
+	unsigned char movementType;
+	unsigned char moveSpeed;
+	unsigned char animSpeed;
+	BankPtr interactScript;
+};
+
 struct TilesInfo {
 	unsigned char size;
 	unsigned char* data;
@@ -81,39 +76,6 @@ struct TilePaletteInfo {
 	UWORD p0[4];
 };
 
-typedef struct _Pos {
-	UINT16 x;
-	UINT16 y;
-} Pos;
-
-typedef struct _Vector2D
-{
-    BYTE x;
-    BYTE y;
-} Vector2D;
-
-
-typedef struct _ACTORSPRITE
-{
-    UBYTE sprite;
-    Pos pos;
-    Vector2D dir;
-    UBYTE redraw;
-    UBYTE frame;
-    UBYTE frames_len;
-    UBYTE animate;
-    UBYTE enabled;
-    UBYTE flip;
-    UBYTE frame_offset;
-    UBYTE moving;
-    UBYTE move_speed;
-    UBYTE anim_speed;
-    UBYTE collisionsEnabled;
-    SPRITE_TYPE sprite_type;
-    UWORD script_ptr;
-    BankPtr events_ptr;
-    MOVEMENT_TYPE movement_type;
-} ACTOR;
 
 typedef struct _TRIGGER
 {

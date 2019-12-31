@@ -14,8 +14,8 @@ const localesRoot = path.normalize(`${rootDir}/src/lang`);
 const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
-const MAX_ACTORS = 9;
-const MAX_TRIGGERS = 9;
+const MAX_ACTORS = 30;
+const MAX_TRIGGERS = 30;
 const MIDDLE_MOUSE = 2;
 
 export {

@@ -4,6 +4,11 @@
 #include <gb/gb.h>
 #include "data_ptrs.h"
 
+typedef struct _BankPtr {
+  unsigned char bank;
+  unsigned int offset;
+} BankPtr;
+
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
 void SetBankedBkgTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned char *ptr);
 void SetBankedWinTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned char *ptr);

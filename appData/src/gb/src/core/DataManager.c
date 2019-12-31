@@ -6,6 +6,7 @@
 #include "Data.h"
 #include "TopDown.h"
 #include "Sprite.h"
+#include "Actor.h"
 
 BANK_PTR bank_ptr;
 
@@ -99,15 +100,16 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset)
     PUSH_BANK(bank);
     size = sprite_info->size * 4;
     set_sprite_data(sprite_offset, size, &sprite_info->data);
-    POP_BANK;   
+    POP_BANK;
 
-    return size; 
+    return size;
 }
 
 void LoadScene(UINT16 index)
 {
     UBYTE bank, i, k;
     struct SceneInfo *scene_info;
+    struct ActorInfo *actor_info;
     unsigned char *data_ptr;
 
     PUSH_BANK(DATA_PTRS_BANK);
@@ -125,14 +127,41 @@ void LoadScene(UINT16 index)
     data_ptr = &scene_info->data;
 
     // Load sprites
-    k = 0;
+    k = 24;
     for (i = 0; i != sprites_len; i++)
-    {  
+    {
         k += LoadSprite(*data_ptr, k);
         data_ptr++;
-        sprites[i].pos.x = 32 + (i<<5);
+        sprites[i].pos.x = 32 + (i << 5);
         sprites[i].pos.y = 64;
     }
+
+    // Load actors
+    for (i = 0; i != actors_len; i++)
+    {
+        actor_info = (struct ActorInfo *)data_ptr;
+        sprites[i].pos.x = 8 + ((actor_info->x) << 3);
+        sprites[i].pos.y = (actor_info->y * 8) + 8u;
+        // sprites[i].frame = actor_info->spriteOffset;
+        sprites[i].frame = actor_info->spriteOffset;
+        sprites[i].frames_len = actor_info->dirFrames;
+
+        actors[i].sprite = actor_info->spriteOffset;
+        actors[i].enabled = TRUE;
+        actors[i].collisionsEnabled = TRUE;
+        actors[i].moving = FALSE;
+
+        actors[i].sprite_type = actor_info->spriteType;
+        actors[i].frames_len = actor_info->dirFrames;
+
+        actors[i].pos.x = 8 + ((actor_info->x) << 3);
+        actors[i].pos.y = (actor_info->y * 8) + 8u;
+        data_ptr += sizeof(struct ActorInfo);
+    }
+
+    // Load triggers
+
+    // Load collisions
 
     POP_BANK;
 }
