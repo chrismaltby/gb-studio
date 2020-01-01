@@ -1,9 +1,8 @@
-import { remote, app } from "electron";
 import fs from "fs-extra";
+import os from "os";
 
 export default () => {
-  const electronApp = remote && remote.app ? remote.app : app;
-  let tmpPath = electronApp.getPath("temp");
+  let tmpPath = os.tmpdir();
   if (
     tmpPath.indexOf(" ") === -1 &&
     tmpPath.indexOf(".itch") === -1 &&

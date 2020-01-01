@@ -1,5 +1,4 @@
 import childProcess from "child_process";
-import { remote } from "electron";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";

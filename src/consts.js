@@ -1,9 +1,12 @@
 import path from "path";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
+const isCli = __dirname.indexOf("out/cli") > -1;
 
 const rootDir = isDist
   ? __dirname.substr(0, __dirname.lastIndexOf(".webpack"))
+  : isCli
+  ? __dirname.substr(0, __dirname.lastIndexOf("out/cli"))
   : __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
 
 const engineRoot = path.normalize(`${rootDir}/appData/src`);

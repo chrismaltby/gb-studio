@@ -21,7 +21,9 @@
     "lint": "eslint --cache --color --ext .jsx,.js src",
     "test": "jest --maxWorkers=2",
     "coverage": "jest --coverage --runInBand || true",
-    "missing-translations": "node src/lang/list_missing.js"
+    "missing-translations": "node src/lang/list_missing.js",
+    "make:cli": "webpack --config webpack.cli.config.js",
+    "cli": "node out/cli/gb-studio-cli.js"
   },
   "keywords": [],
   "author": "GB Studio",
