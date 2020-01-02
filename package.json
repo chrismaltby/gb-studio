@@ -23,7 +23,8 @@
     "coverage": "jest --coverage --runInBand || true",
     "missing-translations": "node src/lang/list_missing.js",
     "make:cli": "webpack --config webpack.cli.config.js",
-    "cli": "node out/cli/gb-studio-cli.js"
+    "cli": "node out/cli/gb-studio-cli.js",
+    "cli:watch": "sh -c 'PROJECT_FILE=$0; PROJECT_ROOT=$(dirname $PROJECT_FILE); fswatch -0 out/cli/gb-studio-cli.js appData/src/gb | xargs -0 -I {} sh -c \"npm run cli compile $PROJECT_FILE && open $PROJECT_ROOT/build/rom/game.gb\";'"
   },
   "keywords": [],
   "author": "GB Studio",
