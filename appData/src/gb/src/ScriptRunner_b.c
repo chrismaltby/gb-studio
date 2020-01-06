@@ -1457,9 +1457,11 @@ void Script_ActorInvoke_b()
  * Command: StackPush
  * ----------------------------
  * Push the current script pointer to the stack
+ * Store script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPush_b()
 {
+  script_bank_stack[script_stack_ptr] = script_ptr_bank;
   script_stack[script_stack_ptr] = script_ptr;
   script_start_stack[script_stack_ptr] = script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
@@ -1470,10 +1472,12 @@ void Script_StackPush_b()
  * Command: StackPop
  * ----------------------------
  * Pop the script pointer from the stack
+ * Retrieve script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPop_b()
 {
   script_stack_ptr--;
+  script_ptr_bank = script_bank_stack[script_stack_ptr];
   script_ptr = script_stack[script_stack_ptr];
   script_start_ptr = script_start_stack[script_stack_ptr];
   script_continue = TRUE;
