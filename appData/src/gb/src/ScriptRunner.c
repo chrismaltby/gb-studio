@@ -19,6 +19,7 @@ SCRIPT_CMD_FN last_fn;
 
 UBYTE script_stack_ptr = 0;
 UWORD script_stack[STACK_SIZE] = {0};
+UBYTE script_bank_stack[STACK_SIZE] = {0};
 UWORD script_start_stack[STACK_SIZE] = {0};
 
 SCRIPT_CMD script_cmds[] = {

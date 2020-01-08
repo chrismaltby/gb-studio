@@ -1,4 +1,4 @@
 const stripInvalidFilenameCharacters = string =>
-  string.replace(/[:/\\?*|"><]/g, "");
+  string.replace(/[:/\\?*|"><[\]#%&{}\b\0$!'@‘`“+^]/g, "");
 
 export default stripInvalidFilenameCharacters;

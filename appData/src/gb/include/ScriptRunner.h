@@ -20,6 +20,7 @@ extern UBYTE script_actor;
 // Max call stack depth
 #define STACK_SIZE 8
 extern UWORD script_stack[STACK_SIZE];
+extern UBYTE script_bank_stack[STACK_SIZE];
 extern UWORD script_start_stack[STACK_SIZE];
 extern UBYTE script_stack_ptr;
 
