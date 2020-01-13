@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import Path from "path";
 
 export default async (buildRoot, { CART_TYPE, customColorsEnabled, gbcFastCPUEnabled }) => {
-  const cmds = [];
+  const cmds = ['set __COMPAT_LAYER=WIN7RTM'];
   const buildFiles = [];
   const objFiles = [];
   let musicFiles = [];
