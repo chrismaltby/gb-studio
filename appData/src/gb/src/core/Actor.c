@@ -81,7 +81,8 @@ void MoveActors() {
 
     // Remove all offscreen actors
     for(i=0; i!=del_count; i++) {
-        DeactivateActiveActor(i);
+        a = actors_active_delete[i];
+        DeactivateActiveActor(a);
     }
 }
 
@@ -98,7 +99,18 @@ UBYTE ActorIsActive(UBYTE i)
 }
 
 void ActivateActor(UBYTE i)
-{
+{    
+    UBYTE j;
+    if(actors_active_size == MAX_ACTIVE_ACTORS) {
+        return;
+    }
+    // Stop if actor already active
+    for(j = 0; j != actors_active_size; j++)
+    {
+        if(actors_active[j] == i) {
+            return;
+        }
+    }    
     actors_active[actors_active_size++] = i;
 }
 

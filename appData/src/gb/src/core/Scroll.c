@@ -3,6 +3,7 @@
 #include "DataManager.h"
 #include "BankManager.h"
 #include "Data.h"
+#include "Actor.h"
 
 #define SCREEN_TILES_W 20 // 160 >> 3 = 20
 #define SCREEN_TILES_H 18 // 144 >> 3 = 18
@@ -180,6 +181,9 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y)
 #ifdef CGB
   pending_w_cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
+
+
+  ActivateActor(2);
 }
 
 void ScrollUpdateColumnR()
