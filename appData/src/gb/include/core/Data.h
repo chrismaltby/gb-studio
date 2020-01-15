@@ -32,6 +32,7 @@ struct SpriteInfo {
 
 struct SceneInfo {
 	UWORD backgroundIndex;
+	UBYTE sceneType;
 	UBYTE spritesLength;
 	UBYTE actorsLength;
 	UBYTE triggersLength;
@@ -75,7 +76,6 @@ struct TilePaletteInfo {
 	UWORD p1[4];
 	UWORD p0[4];
 };
-
 
 typedef struct _TRIGGER
 {

@@ -150,9 +150,11 @@ void ScrollUpdateRowR()
   for (i = 0u; i != 5 && pending_w_i != 0; ++i, --pending_w_i)
   {
 #ifdef CGB
+    PUSH_BANK(image_attr_bank);
     VBK_REG = 1;
     set_bkg_tiles(MOD_32(pending_w_x), MOD_32(pending_w_y), 1, 1, pending_w_cmap++);
     VBK_REG = 0;
+    POP_BANK;
     set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
     // UPDATE_TILE(pending_w_x++, pending_w_y, pending_w_map++, pending_w_cmap++);
 #else
@@ -184,12 +186,38 @@ void ScrollUpdateColumnR()
 {
   UINT8 i = 0u;
 
+/*
+#ifdef CGB
+  VBK_REG = 1;
+  PUSH_BANK(image_attr_bank);
+  for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--)
+  {
+    // set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y), 1, 1, pending_h_cmap);
+    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_cmap);
+    pending_h_cmap += image_tile_width;
+  }
+  POP_BANK;
+  VBK_REG = 0;
+#endif
+
+  for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--)
+  {
+    // UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, 0);
+    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
+    pending_h_map += image_tile_width;
+
+  }
+*/
+
+
   for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--)
   {
 #ifdef CGB
+    PUSH_BANK(image_attr_bank);
     VBK_REG = 1;
     set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y), 1, 1, pending_h_cmap);
     VBK_REG = 0;
+    POP_BANK;
     set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
     // UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, pending_h_cmap);
     pending_h_map += image_tile_width;
@@ -200,6 +228,7 @@ void ScrollUpdateColumnR()
     pending_h_map += image_tile_width;
 #endif
   }
+
 }
 
 void ScrollUpdateColumnWithDelay(INT16 x, INT16 y)

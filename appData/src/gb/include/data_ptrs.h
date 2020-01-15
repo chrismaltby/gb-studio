@@ -28,8 +28,11 @@ typedef struct _BANK_PTR {
 
 extern const BANK_PTR tileset_bank_ptrs[];
 extern const BANK_PTR background_bank_ptrs[];
+extern const BANK_PTR palette_bank_ptrs[];
+extern const BANK_PTR background_attr_bank_ptrs[];
 extern const BANK_PTR sprite_bank_ptrs[];
 extern const BANK_PTR scene_bank_ptrs[];
+extern const BANK_PTR collision_bank_ptrs[];
 extern const BANK_PTR string_bank_ptrs[];
 extern const BANK_PTR avatar_bank_ptrs[];
 extern const unsigned char (*bank_data_ptrs[])[];

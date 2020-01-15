@@ -10,19 +10,15 @@
 #include "Data.h"
 #include "Core_Main.h"
 #include "Input.h"
-
-INT16 my_scroll_x = 0;
-INT16 my_scroll_y = 0;
-UBYTE img_index = 6;
+#include "Collision.h"
+#include "Actor.h"
 
 void Start_TopDown()
 {
     UBYTE i;
 
-    img_index = 0;
-
     // LoadImage(img_index);
-    LoadScene(0);
+    // LoadScene(0);
 
     // k = 0;
 
@@ -53,49 +49,80 @@ void Start_TopDown()
 	// set_sprite_prop(2, 1);
 	// set_sprite_prop(3, 1);
 
-    scroll_target = &sprites[0].pos;
+    scroll_target = &actors[0].pos;
 }
 
 void Update_TopDown()
 {
-    // Controls
-    if (joy & J_LEFT)
-    { // Left pressed
-        sprites[0].pos.x -= 1;
+    UBYTE tile_x, tile_y;
+
+    tile_x = actors[0].pos.x >> 3;
+    tile_y = actors[0].pos.y >> 3;
+
+    // Move
+    if(ACTOR_ON_TILE(0)) {
+        actors[0].vel.x = 0;
+        actors[0].vel.y = 0;
+
+        if (joy & J_LEFT)
+        { // Left pressed
+            if (!TileAt(tile_x - 1, tile_y)) {
+                actors[0].vel.x -= 1;
+            }
+        }
+        else if (joy & J_RIGHT)
+        { // Right pressed
+            if (!TileAt(tile_x + 2, tile_y)) {
+                actors[0].vel.x += 1;
+            }
+        }
+        else {
+            if (joy & J_UP)
+            { // Up pressed
+                if (!TileAt(tile_x, tile_y - 1) && !TileAt(tile_x + 1, tile_y - 1)) {
+                    actors[0].vel.y -= 1;
+                }
+            }
+            else if (joy & J_DOWN)
+            { // Down pressed
+                if (!TileAt(tile_x, tile_y + 1) && !TileAt(tile_x + 1, tile_y + 1)) {
+                    actors[0].vel.y += 1;
+                }
+            }
+        }
     }
-    else if (joy & J_RIGHT)
-    { // Right pressed
-        sprites[0].pos.x += 1;
-    }
-    if (joy & J_UP)
-    { // Up pressed
-        sprites[0].pos.y -= 1;
-    }
-    else if (joy & J_DOWN)
-    { // Down pressed
-        sprites[0].pos.y += 1;
-    }
+
+
+    // // iT(!TileAt(tx, ty)) {
+    // if(ACTOR_ON_TILE(0)) {
+    //     // Controls
+    //     if (joy & J_LEFT)
+    //     { // Left pressed
+    //         sprites[0].pos.x -= 1;
+    //     }
+    //     else if (joy & J_RIGHT)
+    //     { // Right pressed
+    //         sprites[0].pos.x += 1;
+    //     }
+    //     if (joy & J_UP)
+    //     { // Up pressed
+    //         sprites[0].pos.y -= 1;
+    //     }
+    //     else if (joy & J_DOWN)
+    //     { // Down pressed
+    //         sprites[0].pos.y += 1;
+    //     }
+    // }
 
     if((joy & J_START) && !(last_joy & J_START)) {
-        if(img_index == 7) {
-            img_index = 6;
-        } else {
-            img_index = 7;
-        }
-        sprites[0].pos.x = 32;
-        sprites[0].pos.y = 32;
+        actors[0].pos.x = 32;
+        actors[0].pos.y = 32;
     }
 
-    if (my_scroll_x < 0)
-    {
-        my_scroll_x = 0;
-    }
-    if (my_scroll_y < 0)
-    {
-        my_scroll_y = 0;
-    }
-
+    UpdateActors();
     RefreshScroll();
+    MoveActors();
 
-    UpdateSprites();
+    // tx = sprites[0].pos.x >> 3;
+    // ty = sprites[0].pos.y >> 3;
 }

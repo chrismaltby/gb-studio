@@ -14,7 +14,13 @@ const compile = async (projectFile: string, buildType: string = "rom") => {
         projectRoot,
         buildType,
         outputRoot,
-        tmpPath: os.tmpdir()
+        tmpPath: os.tmpdir(),
+        progress: (message: string) => {
+            console.log(message);
+        },
+        warnings: (message: string) => {
+            console.warn(message);
+        }        
     });
 
     await copy(
@@ -28,4 +34,8 @@ const command = process.argv[2];
 if (command === "compile") {
     const projectFile = process.argv[3];
     compile(projectFile)
+    .catch((e) => {
+        console.error("ERROR");
+        console.error(e);
+    })
 }

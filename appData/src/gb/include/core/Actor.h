@@ -6,6 +6,15 @@
 #include "Data.h"
 
 #define MAX_ACTORS 11
+#define MAX_ACTIVE_ACTORS 11
+
+#define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
+#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
+#define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0) || (actors[(i)].pos.y == 254))
+#define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
+
+void UpdateActors();
+void MoveActors();
 
 typedef enum
 {
@@ -28,6 +37,7 @@ typedef struct _ACTORSPRITE
 {
     UBYTE sprite;
     Pos pos;
+    Vector2D vel;
     Vector2D dir;
     UBYTE redraw;
     UBYTE frame;
@@ -47,5 +57,6 @@ typedef struct _ACTORSPRITE
 } Actor;
 
 extern Actor actors[MAX_ACTORS];
+extern UBYTE actors_active[MAX_ACTORS];
 
 #endif

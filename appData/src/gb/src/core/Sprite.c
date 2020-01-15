@@ -10,6 +10,7 @@ Sprite sprites[MAX_SPRITES];
 
 void UpdateSprites()
 {
+	/*
 	UBYTE i, k, frame; //, flip, fo;
 	UINT16 screen_x;
 	UINT16 screen_y;
@@ -81,4 +82,5 @@ void UpdateSprites()
 			// }
 		}
 	}
+	*/
 }

@@ -15,7 +15,7 @@ import {
 import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
-import { hi, lo, decHex16, decHex } from "../helpers/8bit";
+import { hi, lo, decHex16, decHex, convertHexTo15BitDec } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
@@ -217,14 +217,55 @@ const compile = async (
     return banked.push([].concat(Math.ceil(tileset.length / 16), tileset));
   });
 
+  // @todo Read this from project
+  const usedPalettes = [
+    [
+      ["9cd920", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["ff0000", "00ff00", "0000ff","ff00ff"],
+      ["eeeeee", "cccccc", "999999","333333"]
+    ]
+  ];
+
+  console.log({usedPalettes})
+
+  // Add palette data
+  const palettePtrs = usedPalettes.map(palette => {
+    const paletteData = palette.reduce((memo, colors) => {
+      return memo.concat(
+        colors.reduce((colorMemo, color) => {
+          const colorVal = convertHexTo15BitDec(color);
+          return colorMemo.concat([lo(colorVal), hi(colorVal)])
+        }, [])
+      )
+    }, []);
+    return banked.push(paletteData);
+  });
+
+  console.log(palettePtrs);
+
   // Add background map data
   const backgroundPtrs = precompiled.usedBackgrounds.map(background => {
+    // banked.nextBank(); // @todo remove this
+
+    console.log("BACKGROUND--", {
+      w: Math.floor(background.width),
+      h: Math.floor(background.height),      
+      data: background.data.length
+    })
+
     return banked.push(
       [].concat(
         background.tilesetIndex,
         Math.floor(background.width),
         Math.floor(background.height),
         background.data,
+
+        /*
         // Palettes
         0xF3,0x07, // p0 - c1
         0xE8,0x03, // p0 - c2
@@ -298,12 +339,31 @@ const compile = async (
         0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,
         0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,
         0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,0x07,
-        
-        
+        */
+        // background.data.map(() => 0x07)
 
       )
     );
   });
+
+  // Add background map data
+  const backgroundAttrPtrs = precompiled.usedBackgrounds.map(background => {
+    // banked.nextBank(); // @todo remove this
+
+    console.log("BACKGROUND--", {
+      w: Math.floor(background.width),
+      h: Math.floor(background.height),      
+      data: background.data.length
+    })
+
+    return banked.push(
+      [].concat(
+        background.data.map((data) => 0x7)
+      )
+    );
+  });
+
+  // console.log({backgroundPtrs})
 
   // Add UI data
   const fontImagePtr = banked.push(precompiled.fontTiles);
@@ -320,9 +380,31 @@ const compile = async (
   const avatarPtrs = precompiled.usedAvatars.map(avatar => {
     return banked.push([].concat(avatar.frames, avatar.data));
   });
-  
+
+  // Add scene collisions data
+  const collisionPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
+    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
+    const collisionsLength = Math.ceil(
+      (sceneImage.width * sceneImage.height)
+    );    
+    
+    const collisions = Array(collisionsLength).fill(0)
+      .map((_, index) => {
+        // Uncompress collisions
+        const t = scene.collisions[Math.floor(index/8)];
+        return (t & (1 << (index & 7))) ? 1 : 0;
+    });
+
+    return banked.push(
+      collisions
+    );
+  });
+
   // Add scene data
   const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
+
+    // banked.nextBank(); // @todo remove this
+
     const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
     const collisionsLength = Math.ceil(
       (sceneImage.width * sceneImage.height) / 8
@@ -330,10 +412,28 @@ const compile = async (
     const collisions = []
       .concat(scene.collisions, Array(collisionsLength).fill(0))
       .slice(0, collisionsLength);
+
+    console.log("SCENES", [hi(scene.backgroundIndex),
+      lo(scene.backgroundIndex),
+      scene.sprites.length]);
+
+    console.log({
+        spriteLen: scene.sprites.length,
+        actorsLen: scene.actors.length,
+        triggersLen: scene.triggers.length,
+        collisionsLength: collisionsLength,
+        palettesLength: 0,
+        sprite: scene.sprites,
+        hi: hi(scene.backgroundIndex),
+        lo: lo(scene.backgroundIndex),
+        type: scene.type ? parseInt(scene.type, 10) : 0
+    })
+
     return banked.push(
       [].concat(
-        hi(scene.backgroundIndex),
         lo(scene.backgroundIndex),
+        hi(scene.backgroundIndex),
+        scene.type ? parseInt(scene.type, 10) : 0,
         scene.sprites.length,
         scene.actors.length,
         scene.triggers.length,
@@ -351,7 +451,7 @@ const compile = async (
         compileTriggers(scene.triggers, {
           eventPtrs: eventPtrs[sceneIndex].triggers
         }),
-        collisions
+        // collisions
       )
     );
   });
@@ -385,12 +485,15 @@ const compile = async (
     }
     return ptrs;
   };
-
+  
   const dataPtrs = {
     tileset_bank_ptrs: fixEmptyDataPtrs(tileSetPtrs),
     background_bank_ptrs: fixEmptyDataPtrs(backgroundPtrs),
+    background_attr_bank_ptrs: fixEmptyDataPtrs(backgroundAttrPtrs),
+    palette_bank_ptrs: fixEmptyDataPtrs(palettePtrs),
     sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
     scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
+    collision_bank_ptrs: fixEmptyDataPtrs(collisionPtrs),
     string_bank_ptrs: fixEmptyDataPtrs(stringPtrs),
     avatar_bank_ptrs: fixEmptyDataPtrs(avatarPtrs)
   };
@@ -706,6 +809,7 @@ export const precompileBackgrounds = async (
         }' has invalid dimensions and may not appear correctly. Width and height must be multiples of 8px and no larger than 256px.`
       );
     }
+    console.log("BG DATA Len", backgroundData.tilemaps[background.id].length);
     return {
       ...background,
       tilesetIndex:

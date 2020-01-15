@@ -23,7 +23,7 @@ UBYTE p_time = 0;
 
 void Start_Platform()
 {
-    LoadScene(0);
+    // LoadScene(0);
     p_time = 0;
     scroll_target = &sprites[0].pos;
 }

@@ -6,6 +6,8 @@
 #include "Fade.h"
 #include "Time.h"
 #include "Input.h"
+#include "DataManager.h"
+#include "Palette.h"
 
 UBYTE time;
 UINT8 next_state;
@@ -53,6 +55,9 @@ void vbl_update()
 		old_scroll_y -= (old_scroll_y - scroll_y + 1) >> 1;
 	SCY_REG = old_scroll_y;
 
+	// SCX_REG = scroll_x;
+	// SCY_REG = scroll_y;
+
 	// if(music_mute_frames != 0) {
 	// 	music_mute_frames --;
 	// 	if(music_mute_frames == 0) {
@@ -83,15 +88,16 @@ int core_start()
 	// Position Window Layer
 	WX_REG = 7;
 	WY_REG = MAXWNDPOSY + 1; // - 23;
-
+	
 	// DISPLAY_ON;
 	// SHOW_SPRITES;
 
     set_sprite_palette(0, 7, spritePalette);
 
 	state_running = 0;
-	next_state = 1;
+	next_state = START_SCENE_INDEX;
 	time = 0;
+	scene_type = 0;
 
 	while (1)
 	{
@@ -106,8 +112,8 @@ int core_start()
 			joy = joypad();
 
 			// SpriteManagerUpdate();
-			PUSH_BANK(stateBanks[current_state]);
-			updateFuncs[current_state]();
+			PUSH_BANK(stateBanks[scene_type]);
+			updateFuncs[scene_type]();
 			POP_BANK;
 
 			time++;
@@ -125,6 +131,7 @@ int core_start()
 		current_state = next_state;
 		scroll_target = 0;
 
+
 		// #ifdef CGB
 		// 		if (_cpu == CGB_TYPE) {
 		// 			SetPalette(BG_PALETTE, 0, 1, default_palette, 1);
@@ -133,9 +140,15 @@ int core_start()
 		// #endif
 		// 			BGP_REG = OBP0_REG = OBP1_REG = PAL_DEF(0, 1, 2, 3);
 
-		PUSH_BANK(stateBanks[current_state]);
-		(startFuncs[current_state])();
+		BGP_REG = PAL_DEF(0, 1, 2, 3);
+		OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
+
+		LoadScene(current_state);
+
+		PUSH_BANK(stateBanks[scene_type]);
+		(startFuncs[scene_type])();
 		POP_BANK;
+
 		old_scroll_x = scroll_x;
 		old_scroll_y = scroll_y;
 

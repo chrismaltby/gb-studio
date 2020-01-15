@@ -25,3 +25,10 @@ export const hi = longNum => wrap16Bit(longNum) >> 8;
 export const lo = longNum => wrap16Bit(longNum) % 256;
 
 export const divisibleBy8 = n => (n >> 3) << 3 === n;
+
+export const convertHexTo15BitDec = hex => {
+  const r = Math.floor(hexDec(hex.substring(0, 2)) * (32 / 256));
+  const g = Math.floor(hexDec(hex.substring(2, 4)) * (32 / 256));
+  const b = Math.max(1, Math.floor(hexDec(hex.substring(4, 6)) * (32 / 256)));
+  return (b<<10) + (g<<5) + r;
+};

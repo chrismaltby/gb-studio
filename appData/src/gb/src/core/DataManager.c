@@ -11,8 +11,11 @@
 BANK_PTR bank_ptr;
 
 UBYTE image_bank;
+UBYTE image_attr_bank;
+UBYTE collision_bank;
 unsigned char *image_ptr;
 unsigned char *image_attr_ptr;
+unsigned char *collision_ptr;
 UBYTE image_tile_width;
 UBYTE image_tile_height;
 UINT16 image_width;
@@ -22,6 +25,7 @@ UBYTE actors_len;
 UBYTE triggers_len;
 UBYTE collisions_len;
 UBYTE palettes_len;
+UBYTE scene_type;
 
 void LoadTiles(UINT16 index)
 {
@@ -42,7 +46,6 @@ void LoadImage(UINT16 index)
 {
     UBYTE i;
     struct BackgroundInfo *background_info;
-    struct TilePaletteInfo *palette_info;
 
     PUSH_BANK(DATA_PTRS_BANK);
     image_bank = background_bank_ptrs[index].bank;
@@ -52,6 +55,7 @@ void LoadImage(UINT16 index)
     PUSH_BANK(image_bank);
 
     LoadTiles(background_info->tileIndex);
+    LoadPalette(0);
 
     image_tile_width = background_info->width;
     image_tile_height = background_info->height;
@@ -60,9 +64,49 @@ void LoadImage(UINT16 index)
 
     image_ptr = &background_info->data;
 
+    LoadImageAttr(index);
+
+    for (i = 0; i != 21; i++)
+    {
+        set_bkg_tiles(0, i, 22, 1, image_ptr + (i * image_tile_width));
+    }
+
+    POP_BANK;
+}
+
+void LoadImageAttr(UINT16 index)
+{
+    UBYTE i;
+
+    PUSH_BANK(DATA_PTRS_BANK);
+    image_attr_bank = background_attr_bank_ptrs[index].bank;
+    image_attr_ptr = (unsigned char *)(background_attr_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[image_attr_bank]));
+    POP_BANK;
+
+    PUSH_BANK(image_attr_bank);
 #ifdef CGB
-    image_attr_ptr = image_ptr + (image_tile_height * image_tile_width);
-    palette_info = (struct TilePaletteInfo *)image_attr_ptr;
+    VBK_REG = 1;
+    for (i = 0; i != 21; i++)
+    {
+        set_bkg_tiles(0, i, 22, 1, image_attr_ptr + (i * image_tile_width));
+    }
+    VBK_REG = 0;    
+#endif
+    POP_BANK;
+}
+
+void LoadPalette(UINT16 index)
+{
+    UBYTE bank;
+    struct TilePaletteInfo *palette_info;
+
+    PUSH_BANK(DATA_PTRS_BANK);
+    bank = palette_bank_ptrs[index].bank;
+    palette_info = (struct TilePaletteInfo *)(palette_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
+    POP_BANK;
+
+    PUSH_BANK(bank);
+#ifdef CGB
     set_bkg_palette(7, 1, palette_info->p7);
     set_bkg_palette(6, 1, palette_info->p6);
     set_bkg_palette(5, 1, palette_info->p5);
@@ -73,18 +117,7 @@ void LoadImage(UINT16 index)
     set_bkg_palette(0, 1, palette_info->p0);
     image_attr_ptr += 64;
 #endif
-
-    for (i = 0; i != 20; i++)
-    {
-#ifdef CGB
-        VBK_REG = 1;
-        set_bkg_tiles(0, i, 22, 1, image_attr_ptr + (i * image_tile_width));
-        VBK_REG = 0;
-#endif
-        set_bkg_tiles(0, i, 22, 1, image_ptr + (i * image_tile_width));
-    }
-
-    POP_BANK;
+    POP_BANK;    
 }
 
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset)
@@ -115,10 +148,14 @@ void LoadScene(UINT16 index)
     PUSH_BANK(DATA_PTRS_BANK);
     bank = scene_bank_ptrs[index].bank;
     scene_info = (struct SceneInfo *)(scene_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
+    
+    collision_bank = collision_bank_ptrs[index].bank;
+    collision_ptr = (unsigned char *)(collision_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[collision_bank]));
     POP_BANK;
 
     PUSH_BANK(bank);
     LoadImage(scene_info->backgroundIndex);
+    scene_type = scene_info->sceneType;
     sprites_len = scene_info->spritesLength;
     actors_len = scene_info->actorsLength;
     triggers_len = scene_info->triggersLength;
@@ -140,13 +177,17 @@ void LoadScene(UINT16 index)
     for (i = 0; i != actors_len; i++)
     {
         actor_info = (struct ActorInfo *)data_ptr;
-        sprites[i].pos.x = 8 + ((actor_info->x) << 3);
-        sprites[i].pos.y = (actor_info->y * 8) + 8u;
-        // sprites[i].frame = actor_info->spriteOffset;
-        sprites[i].frame = actor_info->spriteOffset;
-        sprites[i].frames_len = actor_info->dirFrames;
 
-        actors[i].sprite = actor_info->spriteOffset;
+        actors[i].pos.x = 8 + ((actor_info->x) << 3);
+        actors[i].pos.y = (actor_info->y * 8) + 8u;
+
+        actors[i].pos.x = 8 + ((actor_info->x) << 3);
+        actors[i].pos.y = (actor_info->y * 8) + 8u;
+        // actors[i].frame = actor_info->spriteOffset;
+        actors[i].frame = actor_info->spriteOffset;
+        actors[i].frames_len = actor_info->dirFrames;
+
+        actors[i].sprite = i;
         actors[i].enabled = TRUE;
         actors[i].collisionsEnabled = TRUE;
         actors[i].moving = FALSE;
@@ -158,6 +199,8 @@ void LoadScene(UINT16 index)
         actors[i].pos.y = (actor_info->y * 8) + 8u;
         data_ptr += sizeof(struct ActorInfo);
     }
+
+    actors_active[0] = 0;
 
     // Load triggers
 

@@ -169,11 +169,17 @@ class SceneEditor extends Component {
             <FormField>
               <label htmlFor="sceneType">
                 {l10n("FIELD_TYPE")}
-                <select id="sceneType">
-                  <option>Top Down 2D</option>
+                <select id="sceneType"
+                  value={scene.type}
+                  onChange={this.onEdit("type")}
+                >
+                  <option value="0">Top Down 2D</option>
+                  <option value="1">Platformer</option>
                 </select>
               </label>
             </FormField>
+
+            {/* Scene type specific values - movement speed / jump speed / read from Variable? */ }
 
             <FormField>
               <label htmlFor="sceneImage">
