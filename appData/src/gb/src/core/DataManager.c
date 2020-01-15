@@ -201,7 +201,8 @@ void LoadScene(UINT16 index)
     }
 
     actors_active[0] = 0;
-
+    actors_active[1] = 1;
+    actors_active_size = 2;
     // Load triggers
 
     // Load collisions

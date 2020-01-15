@@ -15,6 +15,9 @@
 
 void UpdateActors();
 void MoveActors();
+UBYTE ActorIsActive(UBYTE i);
+void ActivateActor(UBYTE i);
+void DeactivateActiveActor(UBYTE i);
 
 typedef enum
 {
@@ -58,5 +61,6 @@ typedef struct _ACTORSPRITE
 
 extern Actor actors[MAX_ACTORS];
 extern UBYTE actors_active[MAX_ACTORS];
+extern UBYTE actors_active_size;
 
 #endif
