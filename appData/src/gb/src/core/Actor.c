@@ -16,7 +16,7 @@ UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_size = 0;
 
 void UpdateActors() {
-	UBYTE i, k, a, frame; //, flip, fo;
+	UBYTE i, k, a; //, flip, fo;
 
     for(i=0; i!=actors_active_size; i++) {
         a = actors_active[i];

@@ -1,6 +1,6 @@
-#include "Collision.h";
-#include "DataManager.h";
-#include "BankManager.h";
+#include "Collision.h"
+#include "DataManager.h"
+#include "BankManager.h"
 
 UBYTE TileAt(UINT16 x, UINT16 y)
 {
