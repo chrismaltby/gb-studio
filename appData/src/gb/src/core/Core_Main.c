@@ -4,12 +4,13 @@
 #include "BankManager.h"
 #include "assets.h"
 #include "Fade.h"
-#include "Time.h"
+#include "GameTime.h"
 #include "Input.h"
 #include "DataManager.h"
 #include "Palette.h"
+#include "Actor.h"
 
-UBYTE time;
+UBYTE game_time;
 UINT8 next_state;
 
 UINT8 delta_time;
@@ -20,15 +21,24 @@ UINT8 vbl_count;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
 
-#define RGB_RED        RGB(31,  0,  0)
-#define RGB_BLUE       RGB( 0,  0, 31)
-#define RGB_PURPLE     RGB(21,  0, 21)
+#define RGB_RED RGB(31, 0, 0)
+#define RGB_BLUE RGB(0, 0, 31)
+#define RGB_PURPLE RGB(21, 0, 21)
 #define RGB_LIGHTFLESH RGB(30, 20, 15)
 
 UWORD spritePalette[] = {
-	0, RGB_WHITE, RGB_LIGHTFLESH, RGB_BLACK,
-	0, RGB_WHITE, RGB_PURPLE, RGB_BLACK,
-	0, RGB_BLACK, RGB_BLUE, RGB_WHITE,
+	0,
+	RGB_WHITE,
+	RGB_LIGHTFLESH,
+	RGB_BLACK,
+	0,
+	RGB_WHITE,
+	RGB_PURPLE,
+	RGB_BLACK,
+	0,
+	RGB_BLACK,
+	RGB_BLUE,
+	RGB_WHITE,
 };
 
 void SetState(UINT8 state)
@@ -88,15 +98,31 @@ int core_start()
 	// Position Window Layer
 	WX_REG = 7;
 	WY_REG = MAXWNDPOSY + 1; // - 23;
-	
+
+	// Initialise Player
+	actors[0].sprite = 0;
+	actors[0].redraw = TRUE;
+	actors[0].moving = TRUE;
+	actors[0].frame = 0;
+	actors[0].frames_len = 2;
+	map_next_pos.x = actors[0].pos.x = (START_SCENE_X << 3);
+	map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3);
+	map_next_dir.x = actors[0].dir.x = START_SCENE_DIR_X;
+	map_next_dir.y = actors[0].dir.y = START_SCENE_DIR_Y;
+	map_next_sprite = START_PLAYER_SPRITE;
+	actors[0].movement_type = PLAYER_INPUT;
+	actors[0].enabled = TRUE;
+	actors[0].move_speed = START_PLAYER_MOVE_SPEED;
+	actors[0].anim_speed = START_PLAYER_ANIM_SPEED;
+
 	// DISPLAY_ON;
 	// SHOW_SPRITES;
 
-    set_sprite_palette(0, 7, spritePalette);
+	set_sprite_palette(0, 7, spritePalette);
 
 	state_running = 0;
 	next_state = START_SCENE_INDEX;
-	time = 0;
+	game_time = 0;
 	scene_type = 0;
 
 	while (1)
@@ -108,7 +134,7 @@ int core_start()
 			delta_time = vbl_count == 1u ? 0u : 1u;
 			vbl_count = 0;
 
-			last_joy = joy;	
+			last_joy = joy;
 			joy = joypad();
 
 			// SpriteManagerUpdate();
@@ -116,7 +142,11 @@ int core_start()
 			updateFuncs[scene_type]();
 			POP_BANK;
 
-			time++;
+			UpdateActors();
+			RefreshScroll();
+			MoveActors();
+
+			game_time++;
 		}
 
 		// FadeIn();
@@ -130,7 +160,6 @@ int core_start()
 		state_running = 1;
 		current_state = next_state;
 		scroll_target = 0;
-
 
 		// #ifdef CGB
 		// 		if (_cpu == CGB_TYPE) {
@@ -157,6 +186,5 @@ int core_start()
 			DISPLAY_ON;
 			// FadeOut();
 		}
-
 	}
 }

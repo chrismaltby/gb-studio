@@ -178,8 +178,8 @@ void LoadScene(UINT16 index)
     {
         actor_info = (struct ActorInfo *)data_ptr;
 
-        actors[i].pos.x = 8 + ((actor_info->x) << 3);
-        actors[i].pos.y = (actor_info->y * 8) + 8u;
+        actors[i].pos.x = ((actor_info->x) << 3);
+        actors[i].pos.y = (actor_info->y * 8);
 
         actors[i].pos.x = 8 + ((actor_info->x) << 3);
         actors[i].pos.y = (actor_info->y * 8) + 8u;
@@ -195,17 +195,33 @@ void LoadScene(UINT16 index)
         actors[i].sprite_type = actor_info->spriteType;
         actors[i].frames_len = actor_info->dirFrames;
 
-        actors[i].pos.x = 8 + ((actor_info->x) << 3);
-        actors[i].pos.y = (actor_info->y * 8) + 8u;
+        actors[i].pos.x = ((actor_info->x) << 3);
+        actors[i].pos.y = (actor_info->y * 8);
         data_ptr += sizeof(struct ActorInfo);
     }
 
     actors_active[0] = 0;
     actors_active[1] = 1;
-    actors_active_size = 2;
+    actors_active[2] = 2;
+    actors_active[3] = 3;
+    actors_active[4] = 4;
+    actors_active[5] = 5;
+    actors_active[6] = 6;
+    actors_active[7] = 7;
+    actors_active[8] = 8;
+    actors_active_size = 8;
     // Load triggers
 
     // Load collisions
+
+    // Initialise player position
+    actors[0].enabled = TRUE;
+    actors[0].moving = FALSE;
+    actors[0].collisionsEnabled = TRUE;
+    actors[0].pos.x = map_next_pos.x;
+    actors[0].pos.y = map_next_pos.y;
+    actors[0].dir.x = map_next_dir.x;
+    actors[0].dir.y = map_next_dir.y;
 
     POP_BANK;
 }

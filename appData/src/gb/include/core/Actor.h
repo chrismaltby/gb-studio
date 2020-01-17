@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Data.h"
 
-#define MAX_ACTORS 11
+#define MAX_ACTORS 30
 #define MAX_ACTIVE_ACTORS 11
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
@@ -18,6 +18,8 @@ void MoveActors();
 UBYTE ActorIsActive(UBYTE i);
 void ActivateActor(UBYTE i);
 void DeactivateActiveActor(UBYTE i);
+UBYTE ActorAtTile(UBYTE tx_a, UBYTE ty_a);
+UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a);
 
 typedef enum
 {
@@ -62,5 +64,8 @@ typedef struct _ACTORSPRITE
 extern Actor actors[MAX_ACTORS];
 extern UBYTE actors_active[MAX_ACTORS];
 extern UBYTE actors_active_size;
+extern Pos map_next_pos;
+extern Vector2D map_next_dir;
+extern UBYTE map_next_sprite;
 
 #endif
