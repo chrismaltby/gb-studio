@@ -5,14 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.1]
 
-- Fix bug where collisions couldn't be placed if "Show Collisions" setting was off.
-- Fix bug where variable lists sometimes show show old names.
-- Fix bug where opening menu would modify text draw speed. [@pau-tomas](https://github.com/pau-tomas)
-- Switching scene background will keep current collisions if image hasn't had collisions set already. [@RichardULZ](https://github.com/RichardULZ)
-- Updated Brazilian Portuguese localisation. [@junkajii](https://github.com/junkajii)
+### Added
 - Allow variables to be used in choice and menu events. [@pau-tomas](https://github.com/pau-tomas)
+- Switching scene background will keep current collisions if image hasn't had collisions set already. [@RichardULZ](https://github.com/RichardULZ)
+
+### Changed
+
+- Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
+- Updated Brazilian Portuguese localisation. [@junkajii](https://github.com/junkajii)
+
+### Fixed
+
+- Fix bug where color palettes would appear in different shades to provided hex codes when viewed in game
+- Fix bug where event buttons would become stuck in paste mode when switching windows while holding Alt key
+- Fix bug where projects could be made with invalid filenames
+- Fix bug where collisions couldn't be placed if "Show Collisions" setting was off.
+- Fix bug where variable lists sometimes showed old names.
+- Fix bug where game engine would occassionally be corrupted in Window 10 builds [@chrismaltby](https://github.com/chrismaltby) + [@RichardULZ](https://github.com/RichardULZ)
+- Fix bug where overlays would prevent timer scripts from running [@RichardULZ](https://github.com/RichardULZ)
+- Fix bug where opening menu would modify text draw speed. [@pau-tomas](https://github.com/pau-tomas)
 
 ## [1.2.0]
 
