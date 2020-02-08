@@ -440,8 +440,8 @@ const compile = async (
         collisionsLength,
         0,
         eventPtrs[sceneIndex].start.bank, // Event bank ptr
-        hi(eventPtrs[sceneIndex].start.offset), // Event offset ptr
-        lo(eventPtrs[sceneIndex].start.offset),
+        lo(eventPtrs[sceneIndex].start.offset), // Event offset ptr
+        hi(eventPtrs[sceneIndex].start.offset),
         scene.sprites,
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
@@ -1093,8 +1093,8 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
         eventPtrs[actorIndex].bank, // Event bank ptr
-        hi(eventPtrs[actorIndex].offset), // Event offset ptr
-        lo(eventPtrs[actorIndex].offset)
+        lo(eventPtrs[actorIndex].offset), // Event offset ptr
+        hi(eventPtrs[actorIndex].offset)
       ];
     })
   );
@@ -1110,8 +1110,8 @@ export const compileTriggers = (triggers, { eventPtrs }) => {
         Math.max(trigger.height, 1),
         trigger.trigger === "action" ? 1 : 0,
         eventPtrs[triggerIndex].bank, // Event bank ptr
-        hi(eventPtrs[triggerIndex].offset), // Event offset ptr
-        lo(eventPtrs[triggerIndex].offset)
+        lo(eventPtrs[triggerIndex].offset), // Event offset ptr
+        hi(eventPtrs[triggerIndex].offset)
       ];
     })
   );
