@@ -1,12 +1,13 @@
 #ifndef BANK_DATA_H
 #define BANK_DATA_H
 
+#include <gbdkjs.h>
 #include <gb/gb.h>
 #include "data_ptrs.h"
 
 typedef struct _BankPtr {
-  unsigned char bank;
-  unsigned int offset;
+  UBYTE bank;
+  UWORD offset;
 } BankPtr;
 
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
@@ -16,7 +17,7 @@ void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
 UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr);
 void ReadBankedUBYTEArray(UBYTE bank, unsigned char *out, unsigned char *ptr, UBYTE size);
 UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr);
-void StrCpyBanked(UBYTE bank, unsigned char *to, unsigned char *from);
+void StrCpyBanked(UBYTE bank, char *to, char *from);
 void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from);
 
 #endif

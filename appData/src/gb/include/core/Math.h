@@ -1,14 +1,21 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <gbdkjs.h>
+#include <gb/gb.h>
 #include "asm/types.h"
 
-
 INT16 DespRight(INT16 a, INT16 b);
+
+#define IS_NEG(a) ((UBYTE)(a)&0x80)
 
 #define U_LESS_THAN(A, B) ((A) - (B) & 0x8000u)
 
 #define DISTANCE(A, B) (U_LESS_THAN(A, B) ? (B - A) : (A - B))
+
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define CLAMP(a, min, max) (((a) < (min)) ? (min) : (((a) > (max)) ? (max) : (a)))
 
 #define SET_BIT(N, POS)   N |=   1 << POS
 #define UNSET_BIT(N, POS) N &= ~(1 << POS)
@@ -43,5 +50,15 @@ typedef struct _Vector2D
     BYTE x;
     BYTE y;
 } Vector2D;
+
+typedef enum
+{
+    OPERATOR_EQ = 1,
+    OPERATOR_NE,
+    OPERATOR_LT,
+    OPERATOR_GT,
+    OPERATOR_LTE,
+    OPERATOR_GTE
+} OPERATOR_TYPE;
 
 #endif

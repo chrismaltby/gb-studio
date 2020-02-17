@@ -1,10 +1,12 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include <gbdkjs.h>
 #include <gb/gb.h>
 
 extern UBYTE joy;
 extern UBYTE last_joy;
+extern UBYTE await_input;
 
 #define INPUT_LEFT (joy & J_LEFT)
 #define INPUT_RIGHT (joy & J_RIGHT)
@@ -23,5 +25,7 @@ extern UBYTE last_joy;
 #define INPUT_B_PRESSED ((joy & J_B) && !(last_joy & J_B))
 #define INPUT_START_PRESSED ((joy & J_START) && !(last_joy & J_START))
 #define INPUT_SELECT_PRESSED ((joy & J_SELECT) && !(last_joy & J_SELECT))
+
+UBYTE AwaitInputPressed();
 
 #endif

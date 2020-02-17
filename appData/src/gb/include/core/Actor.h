@@ -1,12 +1,15 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
+#include <gbdkjs.h>
 #include <gb/gb.h>
 #include "Math.h"
-#include "Data.h"
+#include "BankData.h"
 
-#define MAX_ACTORS 30
+#define ACTOR_BANK 1
+#define MAX_ACTORS 31
 #define MAX_ACTIVE_ACTORS 11
+#define player (actors[0])
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
 #define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
@@ -15,11 +18,14 @@
 
 void UpdateActors();
 void MoveActors();
-UBYTE ActorIsActive(UBYTE i);
 void ActivateActor(UBYTE i);
+void ActivateActorColumn(UBYTE tx_a, UBYTE ty_a);
 void DeactivateActiveActor(UBYTE i);
 UBYTE ActorAtTile(UBYTE tx_a, UBYTE ty_a);
 UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a);
+UBYTE ActorOverlapsPlayer();
+void ActivateActor(UBYTE i);
+void DeactivateActor(UBYTE i);
 
 typedef enum
 {
@@ -41,6 +47,7 @@ typedef enum
 typedef struct _ACTORSPRITE
 {
     UBYTE sprite;
+    UBYTE sprite_index;
     Pos pos;
     Vector2D vel;
     Vector2D dir;
@@ -62,7 +69,7 @@ typedef struct _ACTORSPRITE
 } Actor;
 
 extern Actor actors[MAX_ACTORS];
-extern UBYTE actors_active[MAX_ACTORS];
+extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
 extern Vector2D map_next_dir;

@@ -1,8 +1,10 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
+#include <gbdkjs.h>
 #include <gb/gb.h>
-#include "Data.h"
+
+#include "Math.h"
 
 extern Pos* scroll_target;
 extern UINT16 scroll_tiles_w;
@@ -21,5 +23,6 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y);
 void ScrollUpdateRowR();
 void ScrollUpdateColumnR();
 void RefreshScroll();
+void InitScroll();
 
 #endif

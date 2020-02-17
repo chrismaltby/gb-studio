@@ -2,6 +2,7 @@
 # yarn lockfile v1
 
 
-gbdkjs@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/gbdkjs/-/gbdkjs-2.0.0.tgz#3a4c50433b8b532ab1b8a312193023cab34b1b83"
+gbdkjs@^2.1.6:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/gbdkjs/-/gbdkjs-2.1.7.tgz#0608df4df90000e8c204c260a9a827f64445d736"
+  integrity sha512-CjVNpwmQ7KtbSx+X5mX+/XB02fdpThC5MdeIceODTs29gvlZly0A0IV6YiLN/4x2PkOzwtfmhuGz4m7UYYcrBw==

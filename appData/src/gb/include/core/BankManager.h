@@ -1,6 +1,7 @@
 #ifndef BANK_MANAGER_H
 #define BANK_MANAGER_H
 
+#include <gbdkjs.h>
 #include "game.h"
 #include "Stack.h"
 

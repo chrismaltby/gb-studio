@@ -1,14 +1,23 @@
-#include "game.h"
+#include "Core_Main.h"
 #include "main.h"
 #include "Scroll.h"
 #include "BankManager.h"
-#include "assets.h"
-#include "Fade.h"
-#include "GameTime.h"
 #include "Input.h"
 #include "DataManager.h"
-#include "Palette.h"
 #include "Actor.h"
+#include "UI.h"
+#include "Sprite.h"
+#include "Palette.h"
+#include "ScriptRunner.h"
+#include "TopDown.h"
+#include "Platform.h"
+#include <gb/cgb.h>
+
+#ifdef __EMSCRIPTEN__
+void game_loop();
+void Start_TopDown();
+void Update_TopDown();
+#endif
 
 UBYTE game_time;
 UINT8 next_state;
@@ -20,11 +29,6 @@ UINT8 state_running = 0;
 UINT8 vbl_count;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
-
-#define RGB_RED RGB(31, 0, 0)
-#define RGB_BLUE RGB(0, 0, 31)
-#define RGB_PURPLE RGB(21, 0, 21)
-#define RGB_LIGHTFLESH RGB(30, 20, 15)
 
 UWORD spritePalette[] = {
 	0,
@@ -53,6 +57,7 @@ void vbl_update()
 
 	//Instead of assigning scroll_y to SCX_REG I do a small interpolation that smooths the scroll transition giving the
 	//Illusion of a better frame rate
+	/*
 	if (old_scroll_x < scroll_x)
 		old_scroll_x += (scroll_x - old_scroll_x + 1) >> 1;
 	else if (old_scroll_x > scroll_x)
@@ -64,9 +69,10 @@ void vbl_update()
 	else if (old_scroll_y > scroll_y)
 		old_scroll_y -= (old_scroll_y - scroll_y + 1) >> 1;
 	SCY_REG = old_scroll_y;
+	*/
 
-	// SCX_REG = scroll_x;
-	// SCY_REG = scroll_y;
+	SCX_REG = scroll_x;
+	SCY_REG = scroll_y;
 
 	// if(music_mute_frames != 0) {
 	// 	music_mute_frames --;
@@ -95,25 +101,28 @@ int core_start()
 	BGP_REG = OBP0_REG = 0xE4U;
 	OBP1_REG = 0xD2U;
 
+	SCX_REG = 0;
+	SCY_REG = 0;
+
 	// Position Window Layer
 	WX_REG = 7;
 	WY_REG = MAXWNDPOSY + 1; // - 23;
 
 	// Initialise Player
-	actors[0].sprite = 0;
-	actors[0].redraw = TRUE;
-	actors[0].moving = TRUE;
-	actors[0].frame = 0;
-	actors[0].frames_len = 2;
-	map_next_pos.x = actors[0].pos.x = (START_SCENE_X << 3);
-	map_next_pos.y = actors[0].pos.y = (START_SCENE_Y << 3);
-	map_next_dir.x = actors[0].dir.x = START_SCENE_DIR_X;
-	map_next_dir.y = actors[0].dir.y = START_SCENE_DIR_Y;
+	player.sprite = 0;
+	player.redraw = TRUE;
+	player.moving = TRUE;
+	player.frame = 0;
+	player.frames_len = 2;
+	map_next_pos.x = player.pos.x = (START_SCENE_X << 3);
+	map_next_pos.y = player.pos.y = (START_SCENE_Y << 3);
+	map_next_dir.x = player.dir.x = START_SCENE_DIR_X;
+	map_next_dir.y = player.dir.y = START_SCENE_DIR_Y;
 	map_next_sprite = START_PLAYER_SPRITE;
-	actors[0].movement_type = PLAYER_INPUT;
-	actors[0].enabled = TRUE;
-	actors[0].move_speed = START_PLAYER_MOVE_SPEED;
-	actors[0].anim_speed = START_PLAYER_ANIM_SPEED;
+	player.movement_type = PLAYER_INPUT;
+	player.enabled = TRUE;
+	player.move_speed = START_PLAYER_MOVE_SPEED;
+	player.anim_speed = START_PLAYER_ANIM_SPEED;
 
 	// DISPLAY_ON;
 	// SHOW_SPRITES;
@@ -125,29 +134,67 @@ int core_start()
 	game_time = 0;
 	scene_type = 0;
 
+	LoadSprite(START_PLAYER_SPRITE, 0);
+	LoadUI();
+	UIInit();
+
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(game_loop, 60, 1);
+}
+
+void game_loop()
+{
+	emscripten_update_registers(
+		SCX_REG, SCY_REG,
+		WX_REG, WY_REG,
+		LYC_REG, LCDC_REG,
+		BGP_REG,
+		OBP0_REG, OBP1_REG);
+
+	if (state_running)
+	{
+#else
 	while (1)
 	{
 		while (state_running)
 		{
-			if (!vbl_count)
-				wait_vbl_done();
-			delta_time = vbl_count == 1u ? 0u : 1u;
-			vbl_count = 0;
+#endif
+		LOG("=====================================\n", game_time);
+		// LOG_VALUE("game_time", game_time);
 
-			last_joy = joy;
-			joy = joypad();
+		if (!vbl_count)
+		{
+			// LOG("CALL: wait_vbl_done \n");
+			wait_vbl_done();
+		}
+		delta_time = vbl_count == 1u ? 0u : 1u;
+		vbl_count = 0;
 
-			// SpriteManagerUpdate();
+		last_joy = joy;
+		joy = joypad();
+
+		if(!script_ptr) {
 			PUSH_BANK(stateBanks[scene_type]);
 			updateFuncs[scene_type]();
 			POP_BANK;
-
-			UpdateActors();
-			RefreshScroll();
-			MoveActors();
-
-			game_time++;
 		}
+		
+		ScriptRunnerUpdate();
+		UpdateActors();
+		RefreshScroll();
+		MoveActors();
+		UpdateSprites();
+		UIOnInteract();
+		UIUpdate();
+
+		game_time++;
+	}
+#ifdef __EMSCRIPTEN__
+	else
+	{
+#endif
+
+		LOG("c AA\n");
 
 		// FadeIn();
 		DISPLAY_OFF
@@ -155,34 +202,36 @@ int core_start()
 		// gbt_stop();
 		// last_music = 0;
 
-		// last_sprite_loaded = 0;
-		// SpriteManagerReset();
 		state_running = 1;
 		current_state = next_state;
-		scroll_target = 0;
 
-		// #ifdef CGB
-		// 		if (_cpu == CGB_TYPE) {
-		// 			SetPalette(BG_PALETTE, 0, 1, default_palette, 1);
-		// 			SetPalette(SPRITES_PALETTE, 0, 1, default_palette, 1);
-		// 		} else
-		// #endif
-		// 			BGP_REG = OBP0_REG = OBP1_REG = PAL_DEF(0, 1, 2, 3);
+		scroll_target = 0;
 
 		BGP_REG = PAL_DEF(0, 1, 2, 3);
 		OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
 
+		player.pos.x = map_next_pos.x;
+		player.pos.y = map_next_pos.y;
+		player.dir.x = map_next_dir.x;
+		player.dir.y = map_next_dir.y;
+		scroll_target = &player.pos;
+
+		LOG("ACTOR 0 pos [%u %u]\n", player.pos.x, player.pos.y);
+
 		LoadScene(current_state);
 
 		PUSH_BANK(stateBanks[scene_type]);
-		(startFuncs[scene_type])();
+		startFuncs[scene_type]();
 		POP_BANK;
 
 		old_scroll_x = scroll_x;
 		old_scroll_y = scroll_y;
 
+		LOG("d AA\n");
+
 		if (state_running)
 		{
+			LOG("e AA\n");
 			DISPLAY_ON;
 			// FadeOut();
 		}

@@ -2,9 +2,13 @@
 #ifndef DATA_MANAGER_H
 #define DATA_MANAGER_H
 
+#include <gbdkjs.h>
 #include <gb/gb.h>
 
+#define DATA_MANAGER_BANK 1
+
 void LoadTiles(UINT16 index);
+void LoadUI();
 void LoadImage(UINT16 index);
 void LoadImageAttr(UINT16 index);
 void LoadPalette(UINT16 index);
@@ -22,5 +26,10 @@ extern UBYTE image_tile_height;
 extern UINT16 image_width;
 extern UINT16 image_height;
 extern UBYTE scene_type;
+extern UBYTE actors_len;
+extern UBYTE sprites_len;
+extern UBYTE triggers_len;
+extern UBYTE collisions_len;
+extern UBYTE palettes_len;
 
 #endif
