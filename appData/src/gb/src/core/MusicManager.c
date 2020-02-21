@@ -12,26 +12,32 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
 {
   UBYTE music_bank;
 
-//   if (index != current_index)
-//   {
-//     current_index = index;
-//     music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
+  if (index != current_index)
+  {
+    current_index = index;
+    music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
-//     PUSH_BANK(return_bank);
-// #ifndef __EMSCRIPTEN__
-//     gbt_play(music_tracks[index], music_bank, 7);
-//     gbt_loop(loop);
-// #endif    
-//     POP_BANK;
-//   }
+    PUSH_BANK(return_bank);
+#ifndef __EMSCRIPTEN__
+    gbt_play(music_tracks[index], music_bank, 7);
+    gbt_loop(loop);
+#endif    
+    POP_BANK;
+  }
 }
 
 void MusicStop(UBYTE return_bank)
 {
-//   PUSH_BANK(return_bank);
-// #ifndef __EMSCRIPTEN__  
-//   gbt_stop();
-// #endif   
-//   current_index = MAX_MUSIC;
-//   POP_BANK;
+  PUSH_BANK(return_bank);
+#ifndef __EMSCRIPTEN__  
+  gbt_stop();
+#endif   
+  current_index = MAX_MUSIC;
+  POP_BANK;
 }
+
+void MusicUpdate() {
+	gbt_update();
+	REFRESH_BANK;
+}
+

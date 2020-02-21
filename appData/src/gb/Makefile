@@ -21,12 +21,15 @@ CLASSES = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.c)))
 CORE_CLASSES = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.c))) 
 STATE_CLASSES = $(foreach dir,src/states,$(notdir $(wildcard $(dir)/*.c))) 
 DATA = $(foreach dir,src/data,$(notdir $(wildcard $(dir)/*.c))) 
+MUSIC = $(foreach dir,src/music,$(notdir $(wildcard $(dir)/*.c))) 
 
-OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o)
-WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) $(STATE_CLASSES:%.c=$(OBJDIR)/%.bc) $(DATA:%.c=$(OBJDIR)/%.bc)
+OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o) $(MUSIC:%.c=$(OBJDIR)/%.o) 
+WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) $(STATE_CLASSES:%.c=$(OBJDIR)/%.bc) $(DATA:%.c=$(OBJDIR)/%.bc) $(MUSIC:%.c=$(OBJDIR)/%.bc) 
 # WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(ASM:%.s=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) 
 
 all:	$(ROM_BUILD_DIR)/game.gb
+
+.SECONDARY: $(OBJS) $(WEB_OBJS)
 
 $(OBJDIR)/%.o:	src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -38,6 +41,9 @@ $(OBJDIR)/%.o:	src/states/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR)/%.o:	src/data/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<	
+
+$(OBJDIR)/%.o:	src/music/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<	
 
 $(OBJDIR)/%.s:	src/%.c
@@ -57,6 +63,9 @@ $(OBJDIR)/%.bc:	src/states/%.c
 
 $(OBJDIR)/%.bc:	src/data/%.c
 	$(EMCC) -o $@ -c $<	
+
+$(OBJDIR)/%.bc:	src/music/%.c
+	$(EMCC) -o $@ -c $<		
 
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)

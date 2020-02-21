@@ -4,6 +4,7 @@
 
 #include <gbdkjs.h>
 #include <gb/gb.h>
+#include "BankData.h"
 
 #define DATA_MANAGER_BANK 1
 
@@ -28,8 +29,8 @@ extern UINT16 image_height;
 extern UBYTE scene_type;
 extern UBYTE actors_len;
 extern UBYTE sprites_len;
-extern UBYTE triggers_len;
 extern UBYTE collisions_len;
 extern UBYTE palettes_len;
+extern BankPtr scene_events_start_ptr;
 
 #endif

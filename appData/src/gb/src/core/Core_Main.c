@@ -1,4 +1,4 @@
-#include "Core_Main.h"
+ #include "Core_Main.h"
 #include "main.h"
 #include "Scroll.h"
 #include "BankManager.h"
@@ -11,6 +11,9 @@
 #include "ScriptRunner.h"
 #include "TopDown.h"
 #include "Platform.h"
+#include "GameTime.h"
+#include "MusicManager.h"
+#include "gbt_player.h"
 #include <gb/cgb.h>
 
 #ifdef __EMSCRIPTEN__
@@ -20,10 +23,10 @@ void Update_TopDown();
 #endif
 
 UBYTE game_time;
-UINT8 next_state;
+UINT16 next_state;
 
 UINT8 delta_time;
-UINT8 current_state;
+UINT16 current_state;
 UINT8 state_running = 0;
 
 UINT8 vbl_count;
@@ -45,7 +48,7 @@ UWORD spritePalette[] = {
 	RGB_WHITE,
 };
 
-void SetState(UINT8 state)
+void SetState(UINT16 state)
 {
 	state_running = 0;
 	next_state = state;
@@ -74,12 +77,14 @@ void vbl_update()
 	SCX_REG = scroll_x;
 	SCY_REG = scroll_y;
 
-	// if(music_mute_frames != 0) {
-	// 	music_mute_frames --;
-	// 	if(music_mute_frames == 0) {
-	// 		gbt_enable_channels(0xF);
-	// 	}
-	// }
+#ifndef __EMSCRIPTEN__  
+	if(music_mute_frames != 0) {
+		music_mute_frames --;
+		if(music_mute_frames == 0) {
+			gbt_enable_channels(0xF);
+		}
+	}
+#endif
 }
 
 UINT16 default_palette[] = {RGB(31, 31, 31), RGB(20, 20, 20), RGB(10, 10, 10), RGB(0, 0, 0)};
@@ -93,7 +98,16 @@ int core_start()
 	LCDC_REG = 0x67;
 
 	add_VBL(vbl_update);
-	set_interrupts(VBL_IFLAG | LCD_IFLAG);
+	add_TIM(MusicUpdate);
+#ifdef CGB
+	TMA_REG = _cpu == CGB_TYPE ? 120U : 0xBCU;
+#else
+	TMA_REG = 0xBCU;
+#endif
+	TAC_REG = 0x04U;
+
+	set_interrupts(VBL_IFLAG | TIM_IFLAG);
+	enable_interrupts();
 
 	STAT_REG = 0x45;
 
@@ -186,6 +200,7 @@ void game_loop()
 		UpdateSprites();
 		UIOnInteract();
 		UIUpdate();
+		HandleScriptWait();
 
 		game_time++;
 	}
@@ -199,7 +214,7 @@ void game_loop()
 		// FadeIn();
 		DISPLAY_OFF
 
-		// gbt_stop();
+
 		// last_music = 0;
 
 		state_running = 1;
@@ -223,6 +238,10 @@ void game_loop()
 		PUSH_BANK(stateBanks[scene_type]);
 		startFuncs[scene_type]();
 		POP_BANK;
+
+		LOG("SCRIPT START !!!!!===================================================================!!!!!!\n");
+
+		ScriptStart(&scene_events_start_ptr);
 
 		old_scroll_x = scroll_x;
 		old_scroll_y = scroll_y;

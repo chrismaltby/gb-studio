@@ -3,6 +3,7 @@
 UBYTE joy;
 UBYTE last_joy;
 UBYTE await_input;
+BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
 
 UBYTE AwaitInputPressed()
 {

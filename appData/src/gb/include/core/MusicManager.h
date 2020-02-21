@@ -5,5 +5,6 @@
 
 void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank);
 void MusicStop(UBYTE return_bank);
+void MusicUpdate();
 
 #endif

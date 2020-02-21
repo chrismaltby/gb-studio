@@ -14,5 +14,8 @@
 #define IS_FRAME_2 ((game_time & 0x1) == 0)
 
 extern UBYTE game_time;
+extern UBYTE wait_time;
+
+void HandleScriptWait();
 
 #endif

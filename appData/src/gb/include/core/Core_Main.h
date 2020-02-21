@@ -5,6 +5,6 @@
 #include <gb/gb.h>
 
 int core_start();
-void SetState(UINT8 state);
+void SetState(UINT16 state);
 
 #endif

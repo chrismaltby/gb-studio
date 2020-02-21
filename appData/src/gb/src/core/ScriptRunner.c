@@ -181,7 +181,7 @@ void ScriptRunnerUpdate()
 
   script_cmd_index = ReadBankedUBYTE(script_ptr_bank, script_ptr);
 
-  LOG("SCRIPT CMD INDEX WAS %u not=%u, zero=%u\n", script_cmd_index, !script_cmd_index, script_cmd_index == 0);
+  // LOG("SCRIPT CMD INDEX WAS %u not=%u, zero=%u\n", script_cmd_index, !script_cmd_index, script_cmd_index == 0);
 
   if (!script_cmd_index)
   {

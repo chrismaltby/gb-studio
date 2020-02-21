@@ -10,7 +10,6 @@
 
 UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 
-
 void UpdateActors_b()
 {
     UBYTE i, a;
@@ -51,6 +50,12 @@ void MoveActors_b()
         k = actors[a].sprite_index;
         flip = FALSE;
         fo = 0;
+
+        if (!actors[a].enabled) {
+            sprites[k].pos.x = -8;
+            sprites[k].pos.y = -8;
+            continue;
+        }
 
         screen_x = 8u + actors[a].pos.x - scroll_x;
         screen_y = 8u + actors[a].pos.y - scroll_y;

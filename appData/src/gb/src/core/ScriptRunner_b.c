@@ -10,6 +10,9 @@
 #include "UI.h"
 #include "Math.h"
 #include "Actor.h"
+#include "GameTime.h"
+#include "Core_Main.h"
+#include "Input.h"
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
@@ -264,11 +267,9 @@ void Script_CameraLock_b()
  */
 void Script_Wait_b()
 {
-  /*
   wait_time = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
-  */
 }
 
 /*
@@ -315,26 +316,28 @@ void Script_FadeIn_b()
  */
 void Script_LoadScene_b()
 {
-  /*
-  scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  scene_index = scene_next_index + 1;
+  UINT16 scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  // scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  // scene_index = scene_next_index + 1;
 
   map_next_pos.x = 0; // @wtf-but-needed
-  map_next_pos.x = (script_cmd_args[2] << 3) + 8;
+  map_next_pos.x = (script_cmd_args[2] << 3);
   map_next_pos.y = 0; // @wtf-but-needed
-  map_next_pos.y = (script_cmd_args[3] << 3) + 8;
+  map_next_pos.y = (script_cmd_args[3] << 3);
   map_next_dir.x = script_cmd_args[4] == 2 ? -1 : script_cmd_args[4] == 4 ? 1 : 0;
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
-  stage_next_type = SCENE;
-  scene_loaded = FALSE;
+  SetState(scene_next_index);
+
+  // stage_next_type = SCENE;
+  // scene_loaded = FALSE;
+  // script_action_complete = FALSE;
+
+  // FadeSetSpeed(script_cmd_args[5]);
+  // FadeOut();
+
   script_action_complete = FALSE;
-
-  FadeSetSpeed(script_cmd_args[5]);
-  FadeOut();
-
   script_ptr += 1 + script_cmd_args_len;
-  */
 }
 
 /*
@@ -446,7 +449,7 @@ void Script_ActorSetCollisions_b()
 {
   actors[script_actor].collisionsEnabled = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;  
+  script_continue = TRUE;
 }
 
 /*
@@ -539,11 +542,9 @@ void Script_OverlayMoveTo_b()
  */
 void Script_AwaitInput_b()
 {
-  /*
   await_input = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
-  */
 }
 
 /*
@@ -947,11 +948,15 @@ void Script_IfSavedData_b()
 {
   UBYTE jump;
 
+#ifdef __EMSCRIPTEN__
+  jump = 0;
+#else
   ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
   DISABLE_RAM;
+#endif
 
   if (jump)
   { // True path, jump to position specified by ptr
@@ -1637,7 +1642,6 @@ void Script_ScenePopAllState_b()
  */
 void Script_SetInputScript_b()
 {
-  /*
   UBYTE input, index;
 
   input = script_cmd_args[0];
@@ -1654,7 +1658,6 @@ void Script_SetInputScript_b()
 
   script_action_complete = TRUE;
   script_ptr += 1 + script_cmd_args_len;
-  */
 }
 
 /*
@@ -1961,7 +1964,6 @@ void Script_TextWithAvatar_b()
   UIShowAvatar(script_cmd_args[2]);
   script_action_complete = FALSE;
 }
-
 
 UBYTE ScriptLastFnComplete_b()
 {

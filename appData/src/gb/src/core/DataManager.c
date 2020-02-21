@@ -2,6 +2,7 @@
 #include "BankManager.h"
 #include "data_ptrs.h"
 #include "Actor.h"
+#include "Trigger.h"
 #include "Scroll.h"
 #include "Sprite.h"
 
@@ -18,10 +19,10 @@ UINT16 image_width;
 UINT16 image_height;
 UBYTE sprites_len;
 UBYTE actors_len;
-UBYTE triggers_len;
 UBYTE collisions_len;
 UBYTE palettes_len;
 UBYTE scene_type;
+BankPtr scene_events_start_ptr;
 
 void LoadTiles(UINT16 index)
 {
@@ -50,7 +51,6 @@ void LoadUI()
     PUSH_BANK(FRAME_BANK);
     set_bkg_data(192, 9, data_ptr);
     POP_BANK;
-
 
     // @todo REMOVE FROM HERE
     PUSH_BANK(DATA_PTRS_BANK);
@@ -216,11 +216,16 @@ void LoadScene(UINT16 index)
     collisions_len = *(data_ptr++);
     palettes_len = *(data_ptr++);
 
+    scene_events_start_ptr.bank = *(data_ptr++);    
+    scene_events_start_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    LOG("LOAD SCENE scene_events_start_ptr.offset: %d\n", scene_events_start_ptr.offset );
+
+
     // LOG("LOAD SCENE triggers_len: %u\n", triggers_len );
     // LOG("LOAD SCENE collisions_len: %u\n", collisions_len );
     // LOG("LOAD SCENE palettes_len: %u\n", palettes_len );
 
-    data_ptr += 3;
 
     // data_ptr = &scene_info->data;
 
@@ -295,19 +300,35 @@ void LoadScene(UINT16 index)
         actors[i].anim_speed = *(data_ptr++);
 
         actors[i].events_ptr.bank = *(data_ptr++);    
-        actors[i].events_ptr.offset = *(data_ptr++);    
+        actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256); 
 
         LOG("ACTOR %u bank=%u bank_offset=%d\n", i, actors[i].events_ptr.bank, actors[i].events_ptr.offset);
         // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actors[i].pos.x,  actors[i].pos.y);
 
 
-        data_ptr ++;
+        // data_ptr ++;
     }
 
     actors_active[0] = 0;
     actors_active_size = 1;
 
     // Load triggers
+    for (i = 0; i != triggers_len; i++)
+    {
+        LOG("LOAD TRIGGER\n");
+        LOG("v1 = %u\n", *(data_ptr));
+        triggers[i].x = *(data_ptr++);
+        LOG("v2 = %u\n", *(data_ptr));
+        triggers[i].y = *(data_ptr++);
+        LOG("v3 = %u\n", *(data_ptr));
+        triggers[i].w = *(data_ptr++);
+        LOG("v4 = %u\n", *(data_ptr));
+        triggers[i].h = *(data_ptr++);
+        LOG("v5 = %u\n", *(data_ptr));
+        data_ptr++; // Trigger type
+        triggers[i].events_ptr.bank = *(data_ptr++);
+        triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+    }
 
     // Load collisions
 

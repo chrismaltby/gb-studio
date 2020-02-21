@@ -19,6 +19,7 @@ void SpritePoolReset()
 	}
 	sprite_pool[0] = MAX_SPRITES;
 	sprite_active_pool[0] = 0;
+	sprite_active_pool_size = 0;
 }
 
 void SpritePoolReturn(UINT8 i)
