@@ -25,7 +25,6 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import { textNumLines } from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
-import GBScriptEditor from "../library/GBScriptEditor";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape } from "../../reducers/stateShape";
 
@@ -100,9 +99,6 @@ class ScriptEventInput extends Component {
           onChange={this.onChange}
         />
       );
-    }
-    if (type === "code") {
-      return <GBScriptEditor value={value || ""} onChange={this.onChange} />;
     }
     if (type === "number") {
       return (
