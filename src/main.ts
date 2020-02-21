@@ -17,7 +17,10 @@ import copy from "./lib/helpers/fsCopy";
 import rimraf from "rimraf";
 import { promisify } from "util";
 
+declare var MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
+
+declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
 
 const rmdir = promisify(rimraf);
@@ -65,7 +68,8 @@ const createSplash = async (forceNew = false) => {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      devTools: isDevMode
+      devTools: isDevMode,
+      preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY
     }
   });
 
@@ -109,7 +113,8 @@ const createWindow = async (projectPath: string) => {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
-      devTools: isDevMode
+      devTools: isDevMode,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     }
   });
 
