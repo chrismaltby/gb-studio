@@ -38,6 +38,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/standalone": "^7.4.5",
+    "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
