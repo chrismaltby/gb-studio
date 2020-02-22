@@ -24,7 +24,8 @@
     "missing-translations": "node src/lang/list_missing.js",
     "make:cli": "webpack --config webpack.cli.config.js",
     "cli": "node out/cli/gb-studio-cli.js",
-    "cli:watch": "sh -c 'PROJECT_FILE=$0; PROJECT_ROOT=$(dirname $PROJECT_FILE); fswatch -0 out/cli/gb-studio-cli.js appData/src/gb | xargs -0 -I {} sh -c \"npm run cli compile $PROJECT_FILE && open $PROJECT_ROOT/build/rom/game.gb\";'"
+    "cli:watch": "sh -c 'PROJECT_FILE=$0; PROJECT_ROOT=$(dirname $PROJECT_FILE); fswatch -0 out/cli/gb-studio-cli.js appData/src/gb | xargs -0 -I {} sh -c \"npm run cli compile $PROJECT_FILE && open $PROJECT_ROOT/build/rom/game.gb\";'",
+    "cache:clear": "rm -rf ./node_modules/.cache/hard-source/"
   },
   "keywords": [],
   "author": "GB Studio",
@@ -100,7 +101,7 @@
     "@types/webpack-env": "^1.14.1",
     "css-loader": "^3.0.0",
     "electron": "7.1.3",
-    "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "fork-ts-checker-webpack-plugin": "^4.0.4",
     "hard-source-webpack-plugin": "^0.13.1",
     "jest": "^24.9.0",
     "jest-extended": "^0.11.1",
