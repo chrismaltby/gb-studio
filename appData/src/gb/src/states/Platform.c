@@ -63,6 +63,7 @@ void Update_Platform()
     UBYTE hit_actor = 0;
 
     // Move NPCs
+    /*
     for (i = 1; i < actors_active_size; i++)
     {
         a = actors_active[i];    
@@ -75,6 +76,7 @@ void Update_Platform()
                 actors[a].pos.y--;
         }
     }
+    */
 
     // Move
     if (INPUT_LEFT)
