@@ -1,8 +1,10 @@
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = [
+  new HardSourceWebpackPlugin(),
   new ForkTsCheckerWebpackPlugin({
     async: false
   }),
