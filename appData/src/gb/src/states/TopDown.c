@@ -129,7 +129,6 @@ void Update_TopDown()
         // Check trigger collisions
         hit_trigger = TriggerAtTile(tile_x, tile_y);
         if(hit_trigger != MAX_TRIGGERS) {
-            player.pos.x = 0;
             ScriptStart(&triggers[hit_trigger].events_ptr);
         }
     }
