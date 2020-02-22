@@ -372,7 +372,7 @@ const buildUUID = uuid();
 
 ipcMain.on("build-game", async (event, project: any, projectRoot: string, buildType: string, exportBuild: boolean, ejectBuild: boolean) => {
   try {
-    const buildProject = require("./lib/compiler/buildProject").default;
+    const buildProject = await import("./lib/compiler/buildProject").then((m) => m.default);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
     await rmdir(outputRoot);
 
