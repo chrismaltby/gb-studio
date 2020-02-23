@@ -1,6 +1,6 @@
 import { ipcRenderer, clipboard, remote } from "electron";
 import settings from "electron-settings";
-import { uniq } from "lodash";
+import uniq from "lodash/uniq";
 import {
   OPEN_HELP,
   OPEN_FOLDER,

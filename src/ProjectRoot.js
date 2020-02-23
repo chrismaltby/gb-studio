@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { ActionCreators } from "redux-undo";
 import { ipcRenderer } from "electron";
 import settings from "electron-settings";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import * as actions from "./actions";
 import configureStore from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";

@@ -2,7 +2,7 @@ import uuid from "uuid/v4";
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
-import { mapValues } from "lodash";
+import mapValues from "lodash/mapValues";
 import {
   PROJECT_LOAD_SUCCESS,
   SPRITE_LOAD_SUCCESS,
