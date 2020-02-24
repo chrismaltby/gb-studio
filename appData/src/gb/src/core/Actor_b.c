@@ -1,4 +1,6 @@
+// clang-format off
 #pragma bank=1
+// clang-format on
 
 #include "Actor.h"
 #include "Sprite.h"
@@ -51,7 +53,8 @@ void MoveActors_b()
         flip = FALSE;
         fo = 0;
 
-        if (!actors[a].enabled) {
+        if (!actors[a].enabled)
+        {
             sprites[k].pos.x = -8;
             sprites[k].pos.y = -8;
             continue;

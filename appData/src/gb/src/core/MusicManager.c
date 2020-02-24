@@ -40,4 +40,3 @@ void MusicUpdate() {
 	gbt_update();
 	REFRESH_BANK;
 }
-

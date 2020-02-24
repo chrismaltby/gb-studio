@@ -1,11 +1,13 @@
+// clang-format off
 #pragma bank=1
-#include "Fade.h"
-UINT8 fade_bank = 1;
+// clang-format on
 
+#include "Fade.h"
 #include "gb/cgb.h"
 #include "Palette.h"
 #include "Math.h"
 
+UINT8 fade_bank = 1;
 UWORD ZGB_Fading_BPal[32];
 UWORD ZGB_Fading_SPal[32];
 
