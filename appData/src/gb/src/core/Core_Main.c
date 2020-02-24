@@ -200,6 +200,7 @@ void game_loop()
 		UpdateSprites();
 		UIOnInteract();
 		UIUpdate();
+		HandleInputScripts();
 		HandleScriptWait();
 
 		game_time++;

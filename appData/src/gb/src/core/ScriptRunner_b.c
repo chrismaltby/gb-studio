@@ -1667,7 +1667,6 @@ void Script_SetInputScript_b()
  */
 void Script_RemoveInputScript_b()
 {
-  /*
   UBYTE input, index;
 
   input = script_cmd_args[0];
@@ -1684,7 +1683,6 @@ void Script_RemoveInputScript_b()
 
   script_action_complete = TRUE;
   script_ptr += 1 + script_cmd_args_len;
-  */
 }
 
 /*
