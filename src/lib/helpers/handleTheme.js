@@ -20,7 +20,9 @@ const updateMyAppTheme = () => {
   const themeStyle = document.getElementById("theme");
   themeStyle.innerHTML = darkMode ? darkTheme : lightTheme;
 
-  nativeTheme.themeSource = theme;
+  if(nativeTheme.themeSource !== theme) {
+    nativeTheme.themeSource = theme;
+  }
 }
 
 nativeTheme.on("updated", () => {
