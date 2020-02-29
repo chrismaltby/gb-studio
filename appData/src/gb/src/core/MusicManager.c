@@ -37,6 +37,8 @@ void MusicStop(UBYTE return_bank)
 }
 
 void MusicUpdate() {
+#ifndef __EMSCRIPTEN__
 	gbt_update();
+#endif
 	REFRESH_BANK;
 }
