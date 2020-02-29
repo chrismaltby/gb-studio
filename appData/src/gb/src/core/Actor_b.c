@@ -66,52 +66,55 @@ void MoveActors_b()
         sprites[k].pos.x = screen_x;
         sprites[k].pos.y = screen_y;
 
-        // Increase frame based on facing direction
-        if (IS_NEG(actors[i].dir.y))
-        {
-            fo = 1 + (actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
-            if (sprites[k].frame_offset != fo)
+        if(actors[a].sprite_type != SPRITE_STATIC) {
+
+            // Increase frame based on facing direction
+            if (IS_NEG(actors[a].dir.y))
             {
-                sprites[k].frame_offset = fo;
-                sprites[k].flip = FALSE;
-                sprites[k].rerender = TRUE;
-            }
-        }
-        else if (actors[i].dir.x != 0)
-        {
-            fo = 2 + MUL_2(actors[i].sprite_type == SPRITE_ACTOR_ANIMATED);
-            if (sprites[k].frame_offset != fo)
-            {
-                sprites[k].frame_offset = fo;
-                sprites[k].rerender = TRUE;
-            }
-            // Facing left so flip sprite
-            if (IS_NEG(actors[i].dir.x))
-            {
-                flip = TRUE;
-                if (!sprites[k].flip)
+                fo = 1 + (actors[a].sprite_type == SPRITE_ACTOR_ANIMATED);
+                if (sprites[k].frame_offset != fo)
                 {
-                    sprites[k].flip = TRUE;
-                    sprites[k].rerender = TRUE;
-                }
-            }
-            else // Facing right
-            {
-                if (sprites[k].flip)
-                {
+                    sprites[k].frame_offset = fo;
                     sprites[k].flip = FALSE;
                     sprites[k].rerender = TRUE;
                 }
             }
-        }
-        else
-        {
-            fo = 0;
-            if (sprites[k].frame_offset != fo)
+            else if (actors[a].dir.x != 0)
             {
-                sprites[k].frame_offset = fo;
-                sprites[k].flip = FALSE;
-                sprites[k].rerender = TRUE;
+                fo = 2 + MUL_2(actors[a].sprite_type == SPRITE_ACTOR_ANIMATED);
+                if (sprites[k].frame_offset != fo)
+                {
+                    sprites[k].frame_offset = fo;
+                    sprites[k].rerender = TRUE;
+                }
+                // Facing left so flip sprite
+                if (IS_NEG(actors[a].dir.x))
+                {
+                    flip = TRUE;
+                    if (!sprites[k].flip)
+                    {
+                        sprites[k].flip = TRUE;
+                        sprites[k].rerender = TRUE;
+                    }
+                }
+                else // Facing right
+                {
+                    if (sprites[k].flip)
+                    {
+                        sprites[k].flip = FALSE;
+                        sprites[k].rerender = TRUE;
+                    }
+                }
+            }
+            else
+            {
+                fo = 0;
+                if (sprites[k].frame_offset != fo)
+                {
+                    sprites[k].frame_offset = fo;
+                    sprites[k].flip = FALSE;
+                    sprites[k].rerender = TRUE;
+                }
             }
         }
 
