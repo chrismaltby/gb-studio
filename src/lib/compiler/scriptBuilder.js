@@ -67,6 +67,7 @@ import {
   IF_INPUT,
   IF_ACTOR_AT_POSITION,
   IF_ACTOR_DIRECTION,
+  IF_ACTORS_OVERLAP,
   IF_SAVED_DATA,
   AWAIT_INPUT,
   NEXT_FRAME,
@@ -726,6 +727,24 @@ class ScriptBuilder {
       output
     });
   };
+
+  ifActorsOverlap = (actor1, actor2, truePath = [], falsePath = []) => {
+    const output = this.output;
+    const { scene, entity } = this.options;
+    const index1 = actor1 === "$self$"
+      ? getActorIndex(entity.id, scene)
+      : getActorIndex(actor1, scene);
+    const index2 = actor2 === "$self$"
+      ? getActorIndex(entity.id, scene)
+      : getActorIndex(actor2, scene);
+    output.push(cmd(IF_ACTORS_OVERLAP));
+    output.push(index1);
+    output.push(index2);
+    compileConditional(truePath, falsePath, {
+      ...this.options,
+      output
+    });
+  }
 
   ifDataSaved = (truePath = [], falsePath = []) => {
     const output = this.output;

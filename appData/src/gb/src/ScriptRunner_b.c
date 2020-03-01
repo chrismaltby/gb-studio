@@ -1908,3 +1908,34 @@ void Script_TextWithAvatar_b()
   UIShowAvatar(script_cmd_args[2]);
   script_action_complete = FALSE;
 }
+
+/*
+ * Command: IfActorsOverlap
+ * ----------------------------
+ * Jump to new script pointer position if specified actors are overlapping.
+ *
+ *   arg0: Actor 1 index
+ *   arg1: Actor 2 index
+ *   arg2: High 8 bits for new pointer
+ *   arg3: Low 8 bits for new pointer
+ */
+void Script_IfActorsOverlap_b()
+{
+  #define OVERLAP_DIST    8
+  #define OVERLAP_DIST_2  (2*OVERLAP_DIST)
+
+  UBYTE actor1 = script_cmd_args[0];
+  UBYTE actor2 = script_cmd_args[1];
+
+  if ((actors[actor1].pos.x - actors[actor2].pos.x + OVERLAP_DIST) <= OVERLAP_DIST_2 &&
+      (actors[actor1].pos.y - actors[actor2].pos.y + OVERLAP_DIST) <= OVERLAP_DIST_2)
+  { // True path, jump to position specified by ptr
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+  }
+  else
+  { // False path, skip to next command
+    script_ptr += 1 + script_cmd_args_len;
+  }
+
+  script_continue = TRUE;
+}
