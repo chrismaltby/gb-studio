@@ -330,13 +330,9 @@ void LoadScene(UINT16 index)
         triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
     }
 
-    // Load collisions
 
-    // Initialise player position
-    ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[map_next_sprite]);
-    sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
-    sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
-
+    // Initialise player 
+    sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
     player.enabled = TRUE;
     player.moving = FALSE;
     player.collisionsEnabled = TRUE;
@@ -344,11 +340,8 @@ void LoadScene(UINT16 index)
     player.pos.y = map_next_pos.y;
     player.dir.x = map_next_dir.x;
     player.dir.y = map_next_dir.y;
-    // player.sprite_type = SPRITE_ACTOR_ANIMATED;
-    player.sprite_type = SPRITE_STATIC;
-    // player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+    player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
     player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
-
     player.sprite_index = SpritePoolNext();
 
     InitScroll();
