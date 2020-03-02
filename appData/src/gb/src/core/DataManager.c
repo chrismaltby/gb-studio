@@ -182,6 +182,9 @@ void LoadScene(UINT16 index)
     UBYTE bank, i, k;
     UBYTE *data_ptr;
     UWORD backgroundIndex;
+    BANK_PTR sprite_bank_ptr;
+    UWORD sprite_ptr;
+    UBYTE sprite_frames, sprite_len;
 
     // LOG("LOAD SCENE %u\n", index);
 
@@ -193,11 +196,11 @@ void LoadScene(UINT16 index)
 
     // LOG("LOAD SCENE %u, offset=%u ptr=%u\n", index, scene_bank_ptrs[index].offset, bank_data_ptrs[bank]);
     data_ptr = (scene_bank_ptrs[index].offset + ((UBYTE *)bank_data_ptrs[bank]));
-    
+
     collision_bank = collision_bank_ptrs[index].bank;
     collision_ptr = (unsigned char *)(collision_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[collision_bank]));
     POP_BANK;
- 
+
     backgroundIndex = 2; //scene_info->backgroundIndex;
 
     SpritePoolReset();
@@ -216,23 +219,20 @@ void LoadScene(UINT16 index)
     collisions_len = *(data_ptr++);
     palettes_len = *(data_ptr++);
 
-    scene_events_start_ptr.bank = *(data_ptr++);    
+    scene_events_start_ptr.bank = *(data_ptr++);
     scene_events_start_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
-    LOG("LOAD SCENE scene_events_start_ptr.offset: %d\n", scene_events_start_ptr.offset );
-
+    LOG("LOAD SCENE scene_events_start_ptr.offset: %d\n", scene_events_start_ptr.offset);
 
     // LOG("LOAD SCENE triggers_len: %u\n", triggers_len );
     // LOG("LOAD SCENE collisions_len: %u\n", collisions_len );
     // LOG("LOAD SCENE palettes_len: %u\n", palettes_len );
-
 
     // data_ptr = &scene_info->data;
 
     // LOG("LOAD scene B V1,2,3, [%u, %u,%u,%u,%u,%u,%u,%u,%u,%u]\n", test_ptr, *(test_ptr),*(test_ptr+1),*(test_ptr+2),*(test_ptr+3),*(test_ptr+4),*(test_ptr+5),*(test_ptr+6),*(test_ptr+7),*(test_ptr+8));
 
     // LOG("LOAD scene C, [%u, %u,%u,%u,%u,%u]\n", scene_type, sprites_len, actors_len, triggers_len, collisions_len, palettes_len);
-
 
     // LOG("LOAD SCENE SPRITES %u\n", sprites_len);
     // LOG("LOAD SCENE ACTORS %u\n", actors_len);
@@ -262,7 +262,6 @@ void LoadScene(UINT16 index)
         // test_ptr = data_ptr;
         // LOG("LOAD actor V1,2,3, [%u, %u,%u,%u,%u,%u,%u,%u,%u,%u]\n", test_ptr, *(test_ptr),*(test_ptr+1),*(test_ptr+2),*(test_ptr+3),*(test_ptr+4),*(test_ptr+5),*(test_ptr+6),*(test_ptr+7),*(test_ptr+8));
 
-
         actors[i].sprite = *(data_ptr++);
         actors[i].frame = 0;
         // actors[i].frames_len = actor_info->dirFrames;
@@ -276,7 +275,7 @@ void LoadScene(UINT16 index)
         actors[i].frames_len = *(data_ptr++);
         actors[i].frame_offset = *(data_ptr++);
 
-        actors[i].sprite_type = SPRITE_STATIC;
+        // actors[i].sprite_type = SPRITE_STATIC;
         // actors[i].animate = TRUE;
         // actors[i].frames_len = 4;
         actors[i].frames_len = 0;
@@ -299,12 +298,13 @@ void LoadScene(UINT16 index)
         actors[i].move_speed = *(data_ptr++);
         actors[i].anim_speed = *(data_ptr++);
 
-        actors[i].events_ptr.bank = *(data_ptr++);    
-        actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256); 
+        actors[i].events_ptr.bank = *(data_ptr++);
+        actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
         LOG("ACTOR %u bank=%u bank_offset=%d\n", i, actors[i].events_ptr.bank, actors[i].events_ptr.offset);
-        // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actors[i].pos.x,  actors[i].pos.y);
+        LOG("LOAD ACTOR i=%u st=%u dx=%d dy=%d sprite=%u\n", i, actors[i].sprite_type, actors[i].dir.x, actors[i].dir.y, actors[i].sprite);
 
+        // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actors[i].pos.x,  actors[i].pos.y);
 
         // data_ptr ++;
     }
@@ -333,6 +333,10 @@ void LoadScene(UINT16 index)
     // Load collisions
 
     // Initialise player position
+    ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[map_next_sprite]);
+    sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+    sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
+
     player.enabled = TRUE;
     player.moving = FALSE;
     player.collisionsEnabled = TRUE;
@@ -340,9 +344,13 @@ void LoadScene(UINT16 index)
     player.pos.y = map_next_pos.y;
     player.dir.x = map_next_dir.x;
     player.dir.y = map_next_dir.y;
-    player.sprite_type = SPRITE_ACTOR_ANIMATED;
+    // player.sprite_type = SPRITE_ACTOR_ANIMATED;
+    // player.sprite_type = SPRITE_STATIC;
+    player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+    player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+
     player.sprite_index = SpritePoolNext();
-  
+
     InitScroll();
 
     POP_BANK;

@@ -1,12 +1,10 @@
 SHELL_FILE = node_modules/gbdkjs/shell_debug/build/index.html
 EMCC = emcc -O2 -Wno-implicit-function-declaration -Inode_modules/gbdkjs/include -Inode_modules/gbdkjs/gbdk/include -Iinclude -Iinclude/core -Iinclude/states -Lsrc -Lsrc/core -Lsrc/data -Lsrc/states --js-library node_modules/gbdkjs/emscripten_bindings.js -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1 -s DETERMINISTIC=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
 
-# -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1 -s DETERMINISTIC=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1 -s WASM=1
-
 CC = lcc
 
 ROM_BUILD_DIR = build/rom
-WEB_BUILD_DIR = build/web
+WEB_BUILD_DIR = build/debug
 
 OBJDIR = obj
 
@@ -25,7 +23,6 @@ MUSIC = $(foreach dir,src/music,$(notdir $(wildcard $(dir)/*.c)))
 
 OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o) $(MUSIC:%.c=$(OBJDIR)/%.o) 
 WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) $(STATE_CLASSES:%.c=$(OBJDIR)/%.bc) $(DATA:%.c=$(OBJDIR)/%.bc) $(MUSIC:%.c=$(OBJDIR)/%.bc) 
-# WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(ASM:%.s=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) 
 
 all:	$(ROM_BUILD_DIR)/game.gb
 
@@ -87,5 +84,5 @@ clean:
 
 rom: $(ROM_BUILD_DIR)/game.gb
 
-web: $(WEB_BUILD_DIR)/game.html
+debug: $(WEB_BUILD_DIR)/game.html
 	mv $(WEB_BUILD_DIR)/game.html $(WEB_BUILD_DIR)/index.html
