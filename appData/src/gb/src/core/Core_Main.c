@@ -148,7 +148,6 @@ int core_start()
 	game_time = 0;
 	scene_type = 0;
 
-	LoadSprite(START_PLAYER_SPRITE, 0);
 	LoadUI();
 	UIInit();
 
