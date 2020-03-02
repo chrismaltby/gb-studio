@@ -1,8 +1,8 @@
 #ifndef COLLISIONS_H
 #define COLLISIONS_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 
 UBYTE TileAt(UINT16 x, UINT16 y);
 

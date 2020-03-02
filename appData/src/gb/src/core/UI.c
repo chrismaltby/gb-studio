@@ -1,9 +1,9 @@
 #include "UI.h"
-#include "BankManager.h"
 #include "BankData.h"
-#include "Math.h"
+#include "BankManager.h"
 #include "GameTime.h"
 #include "Input.h"
+#include "Math.h"
 #include "data_ptrs.h"
 
 void UIInit_b();
@@ -50,43 +50,37 @@ const unsigned char ui_bg_tiles[1] = {0xC4};
 unsigned char text_lines[80] = "";
 unsigned char tmp_text_lines[80] = "";
 
-void UIInit()
-{
+void UIInit() {
   PUSH_BANK(UI_BANK);
   UIInit_b();
   POP_BANK;
 }
 
-void UIDebugLog(UBYTE val, UBYTE x, UBYTE y)
-{
-    UBYTE tile1;
-    tile1 = val + 203;
-    set_win_tiles(x, y, 1, 1, &tile1);
+void UIDebugLog(UBYTE val, UBYTE x, UBYTE y) {
+  UBYTE tile1;
+  tile1 = val + 203;
+  set_win_tiles(x, y, 1, 1, &tile1);
 }
 
-void UIUpdate()
-{
+void UIUpdate() {
   PUSH_BANK(UI_BANK);
   UIUpdate_b();
   POP_BANK;
 }
 
-void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height)
-{
+void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   PUSH_BANK(UI_BANK);
   UIDrawFrame_b(x, y, width, height);
   POP_BANK;
 }
 
-void UIDrawDialogueFrame(UBYTE h)
-{
+void UIDrawDialogueFrame(UBYTE h) {
   PUSH_BANK(UI_BANK);
   UIDrawDialogueFrame_b(h);
   POP_BANK;
 }
 
-void UIShowText(UWORD line)
-{
+void UIShowText(UWORD line) {
   BANK_PTR bank_ptr;
   UBYTE *ptr;
 
@@ -104,8 +98,7 @@ void UIShowText(UWORD line)
   POP_BANK;
 }
 
-void UIShowAvatar(UBYTE avatar_index) 
-{
+void UIShowAvatar(UBYTE avatar_index) {
   BANK_PTR avatar_bank_ptr;
   UBYTE *avatar_ptr;
   UBYTE avatar_len;
@@ -135,13 +128,11 @@ void UIShowAvatar(UBYTE avatar_index)
   avatar_enabled = TRUE;
 }
 
-void UIShowChoice(UWORD flag_index, UWORD line)
-{
+void UIShowChoice(UWORD flag_index, UWORD line) {
   UIShowMenu(flag_index, line, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
 }
 
-void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
-{
+void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config) {
   menu_index = 0;
   menu_flag = flag_index;
   menu_enabled = TRUE;
@@ -155,8 +146,7 @@ void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
   UIDrawMenuCursor();
 }
 
-void UISetTextBuffer(unsigned char *text)
-{
+void UISetTextBuffer(unsigned char *text) {
   UIDrawFrame(0, 2, 20, 4);
   text_drawn = FALSE;
   strcpy(text_lines, text);
@@ -166,67 +156,51 @@ void UISetTextBuffer(unsigned char *text)
   text_tile_count = 0;
 }
 
-void UIDrawTextBuffer()
-{
+void UIDrawTextBuffer() {
   PUSH_BANK(UI_BANK);
-  if (IS_FRAME_2)
-  {
+  if (IS_FRAME_2) {
     UIDrawTextBufferChar_b();
   }
   POP_BANK;
 }
 
-void UISetPos(UBYTE x, UBYTE y)
-{
+void UISetPos(UBYTE x, UBYTE y) {
   win_pos_x = x;
   win_dest_pos_x = x;
   win_pos_y = y;
   win_dest_pos_y = y;
 }
 
-void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed)
-{
+void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
   win_dest_pos_x = x;
   win_dest_pos_y = y;
-  if (speed == 0)
-  {
+  if (speed == 0) {
     win_pos_x = x;
     win_pos_y = y;
-  }
-  else
-  {
+  } else {
     win_speed = speed;
   }
 }
 
-UBYTE UIIsClosed()
-{
-  return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y;
-}
+UBYTE UIIsClosed() { return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y; }
 
-void UIDrawMenuCursor() 
-{
+void UIDrawMenuCursor() {
   UBYTE i;
-  for (i = 0; i < menu_num_options; i++) 
-  {
-    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1, menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
+  for (i = 0; i < menu_num_options; i++) {
+    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
+                  menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
   }
 }
 
-void UIOnInteract()
-{
+void UIOnInteract() {
   PUSH_BANK(UI_BANK);
   UIOnInteract_b();
-  POP_BANK;  
+  POP_BANK;
 }
 
-UBYTE UIAtDest()
-{
-  return win_pos_x == win_dest_pos_x && win_pos_y == win_dest_pos_y;
-}
+UBYTE UIAtDest() { return win_pos_x == win_dest_pos_x && win_pos_y == win_dest_pos_y; }
 
-void UISetColor(UBYTE color)
-{
+void UISetColor(UBYTE color) {
   PUSH_BANK(UI_BANK);
   UISetColor_b(color);
   POP_BANK;

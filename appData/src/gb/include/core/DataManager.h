@@ -2,8 +2,8 @@
 #ifndef DATA_MANAGER_H
 #define DATA_MANAGER_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 #include "BankData.h"
 
 #define DATA_MANAGER_BANK 1

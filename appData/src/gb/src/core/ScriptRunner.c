@@ -126,14 +126,17 @@ void ScriptStart(BankPtr *events_ptr)
 {
   UBYTE rnd, c, a0, a1, a2;
 
-  if(script_ptr) { return; }
+  if (script_ptr)
+  {
+    return;
+  }
 
   LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
 
   script_ptr_bank = events_ptr->bank;
-  script_ptr = ((UBYTE*)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
+  script_ptr = ((UBYTE *)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
 
-  LOG("ScriptStart bank_offset=%d script_ptr=%d\n", ((UBYTE*)bank_data_ptrs[script_ptr_bank]), script_ptr);
+  LOG("ScriptStart bank_offset=%d script_ptr=%d\n", ((UBYTE *)bank_data_ptrs[script_ptr_bank]), script_ptr);
 
   PUSH_BANK(script_ptr_bank);
   c = *(script_ptr);
@@ -148,7 +151,6 @@ void ScriptStart(BankPtr *events_ptr)
   UIDebugLog(a0, 1, 0);
   UIDebugLog(a1, 2, 0);
   UIDebugLog(a2, 3, 0);
-  
 
   rnd = *(ptr_div_reg);
   initrand(rnd);
@@ -169,7 +171,7 @@ void ScriptRunnerUpdate()
 
   if (!script_action_complete)
   {
-    PUSH_BANK(scriptrunner_bank);    
+    PUSH_BANK(scriptrunner_bank);
     script_action_complete = ScriptLastFnComplete_b();
     POP_BANK;
   }
@@ -224,4 +226,3 @@ void ScriptRunnerUpdate()
     ScriptRunnerUpdate();
   }
 }
-

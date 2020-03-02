@@ -2,25 +2,23 @@
 #define SCRIPT_RUNNER_H
 
 #include <gb/gb.h>
-#include "game.h"
 #include "BankData.h"
 #include "Math.h"
+#include "game.h"
 
 #define MAX_SCENE_STATES 8
 
 typedef void (*SCRIPT_CMD_FN)();
 
-typedef struct _SCRIPT_CMD
-{
-    SCRIPT_CMD_FN fn;
-    UBYTE args_len;
+typedef struct _SCRIPT_CMD {
+  SCRIPT_CMD_FN fn;
+  UBYTE args_len;
 } SCRIPT_CMD;
 
-typedef struct _SCENE_STATE
-{
-    UWORD scene_index;
-    Pos player_pos;
-    Vector2D player_dir;
+typedef struct _SCENE_STATE {
+  UWORD scene_index;
+  Pos player_pos;
+  Vector2D player_dir;
 } SCENE_STATE;
 
 extern UINT8 scriptrunner_bank;

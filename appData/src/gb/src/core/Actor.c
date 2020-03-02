@@ -36,21 +36,21 @@ void ActivateActor(UBYTE i)
 {
     PUSH_BANK(ACTOR_BANK);
     ActivateActor_b(i);
-    POP_BANK;   
+    POP_BANK;
 }
 
 void ActivateActorColumn(UBYTE tx_a, UBYTE ty_a)
 {
     PUSH_BANK(ACTOR_BANK);
     ActivateActorColumn_b(tx_a, ty_a);
-    POP_BANK;   
+    POP_BANK;
 }
 
 void DeactivateActor(UBYTE i)
 {
     PUSH_BANK(ACTOR_BANK);
     DeactivateActor_b(i);
-    POP_BANK;       
+    POP_BANK;
 }
 
 UBYTE ActorAtTile(UBYTE tx_a, UBYTE ty_a)
@@ -106,8 +106,7 @@ UBYTE ActorOverlapsPlayer()
             (actors[0].pos.x + 16 >= actors[a].pos.x) &&
             (actors[0].pos.x <= actors[a].pos.x + 16) &&
             (actors[0].pos.y + 8 >= actors[a].pos.y) &&
-            (actors[0].pos.y <= actors[a].pos.y + 8)
-        )
+            (actors[0].pos.y <= actors[a].pos.y + 8))
         {
             return a;
         }

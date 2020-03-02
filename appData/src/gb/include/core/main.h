@@ -1,8 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 
 typedef void (*Void_Func_Void)();
 

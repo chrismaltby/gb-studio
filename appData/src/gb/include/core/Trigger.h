@@ -1,23 +1,22 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
-#include "Math.h"
+#include <gbdkjs.h>
 #include "BankData.h"
+#include "Math.h"
 
 #define TRIGGER_BANK 1
 #define MAX_TRIGGERS 31
 #define MAX_ACTIVE_TRIGGERS 11
 
-typedef struct _TRIGGER
-{
-    UBYTE x;
-    UBYTE y;
-    UBYTE w;
-    UBYTE h;
-    UWORD script_ptr;
-    BankPtr events_ptr;
+typedef struct _TRIGGER {
+  UBYTE x;
+  UBYTE y;
+  UBYTE w;
+  UBYTE h;
+  UWORD script_ptr;
+  BankPtr events_ptr;
 } Trigger;
 
 extern Trigger triggers[MAX_TRIGGERS];

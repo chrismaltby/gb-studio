@@ -16,7 +16,7 @@ typedef struct _SPRITE
     UBYTE frames_len;
     UBYTE flip;
     UBYTE rerender;
-} Sprite; 
+} Sprite;
 
 extern UINT8 sprite_pool[];
 extern Sprite sprites[MAX_SPRITES];

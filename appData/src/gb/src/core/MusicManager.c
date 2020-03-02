@@ -21,7 +21,7 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
 #ifndef __EMSCRIPTEN__
     gbt_play(music_tracks[index], music_bank, 7);
     gbt_loop(loop);
-#endif    
+#endif
     POP_BANK;
   }
 }
@@ -29,16 +29,17 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
 void MusicStop(UBYTE return_bank)
 {
   PUSH_BANK(return_bank);
-#ifndef __EMSCRIPTEN__  
+#ifndef __EMSCRIPTEN__
   gbt_stop();
-#endif   
+#endif
   current_index = MAX_MUSIC;
   POP_BANK;
 }
 
-void MusicUpdate() {
+void MusicUpdate()
+{
 #ifndef __EMSCRIPTEN__
-	gbt_update();
+  gbt_update();
 #endif
-	REFRESH_BANK;
+  REFRESH_BANK;
 }

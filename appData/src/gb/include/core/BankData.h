@@ -1,8 +1,8 @@
 #ifndef BANK_DATA_H
 #define BANK_DATA_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 #include "data_ptrs.h"
 
 typedef struct _BankPtr {

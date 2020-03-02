@@ -1,8 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 #include "BankData.h"
 
 #define INPUT_LEFT (joy & J_LEFT)

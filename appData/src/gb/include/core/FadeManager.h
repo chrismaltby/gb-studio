@@ -16,10 +16,6 @@ UBYTE IsFading();
 
 extern UBYTE fade_running;
 
-typedef enum
-{
-  FADE_IN,
-  FADE_OUT
-} FADE_DIRECTION;
+typedef enum { FADE_IN, FADE_OUT } FADE_DIRECTION;
 
 #endif

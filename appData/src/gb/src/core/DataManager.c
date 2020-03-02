@@ -62,7 +62,6 @@ void LoadUI()
     // set_bkg_data(201, 64, data_ptr);
     POP_BANK;
     // @todo REMOVE TO HERE
-
 }
 
 void LoadImage(UINT16 index)
@@ -106,7 +105,7 @@ void LoadImageAttr(UINT16 index)
     {
         set_bkg_tiles(0, i, 22, 1, image_attr_ptr + (i * image_tile_width));
     }
-    VBK_REG = 0;    
+    VBK_REG = 0;
 #endif
     POP_BANK;
 }
@@ -120,7 +119,7 @@ void LoadPalette(UINT16 index)
     PUSH_BANK(DATA_PTRS_BANK);
     bank = palette_bank_ptrs[index].bank;
     palette_info = (struct TilePaletteInfo *)(palette_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
-    data_ptr = (UBYTE*)(palette_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
+    data_ptr = (UBYTE *)(palette_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
     POP_BANK;
 
     p7 = data_ptr;
@@ -134,11 +133,11 @@ void LoadPalette(UINT16 index)
     p3 = data_ptr;
     data_ptr += 8;
     p2 = data_ptr;
-    data_ptr += 8;                
+    data_ptr += 8;
     p1 = data_ptr;
-    data_ptr += 8;     
+    data_ptr += 8;
     p0 = data_ptr;
-    
+
     PUSH_BANK(bank);
 #ifdef CGB
     set_bkg_palette(7, 1, p0);
@@ -151,7 +150,7 @@ void LoadPalette(UINT16 index)
     set_bkg_palette(0, 1, p0);
     image_attr_ptr += 64;
 #endif
-    POP_BANK;    
+    POP_BANK;
 }
 
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset)
@@ -330,8 +329,7 @@ void LoadScene(UINT16 index)
         triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
     }
 
-
-    // Initialise player 
+    // Initialise player
     sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
     player.enabled = TRUE;
     player.moving = FALSE;

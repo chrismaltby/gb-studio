@@ -11,7 +11,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-typedef struct _BANK_PTR {
+typedef struct _BANK_PTR
+{
   unsigned char bank;
   unsigned int offset;
 } BANK_PTR;
@@ -45,9 +46,9 @@ extern const BANK_PTR collision_bank_ptrs[];
 extern const BANK_PTR string_bank_ptrs[];
 extern const BANK_PTR avatar_bank_ptrs[];
 extern const unsigned char (*bank_data_ptrs[])[];
-extern const unsigned char * music_tracks[];
+extern const unsigned char *music_tracks[];
 extern const unsigned char music_banks[];
 extern unsigned char script_variables[16];
-extern const unsigned char * music_8fbb75bd0_Data[];
+extern const unsigned char *music_8fbb75bd0_Data[];
 
 #endif
