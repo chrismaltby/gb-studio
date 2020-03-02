@@ -158,6 +158,7 @@ void ActivateActor_b(UBYTE i)
     actors_active[actors_active_size++] = i;
     actors[i].sprite_index = SpritePoolNext();
     sprites[actors[i].sprite_index].frame = actors[i].sprite;
+    sprites[actors[i].sprite_index].frame_offset = 0;
     sprites[actors[i].sprite_index].rerender = TRUE;
 }
 
