@@ -43,35 +43,37 @@ void MoveActors_b()
     UINT16 screen_x;
     UINT16 screen_y;
     UBYTE del_count = 0;
+    Actor *actor;
 
     k = 0;
 
     for (i = 0; i != actors_active_size; i++)
     {
         a = actors_active[i];
+        actor = &actors[a];
         k = actors[a].sprite_index;
         flip = FALSE;
         fo = 0;
 
-        if (!actors[a].enabled)
+        if (!actor->enabled)
         {
             sprites[k].pos.x = -8;
             sprites[k].pos.y = -8;
             continue;
         }
 
-        screen_x = 8u + actors[a].pos.x - scroll_x;
-        screen_y = 8u + actors[a].pos.y - scroll_y;
+        screen_x = 8u + actor->pos.x - scroll_x;
+        screen_y = 8u + actor->pos.y - scroll_y;
 
         sprites[k].pos.x = screen_x;
         sprites[k].pos.y = screen_y;
 
-        if(actors[a].sprite_type != SPRITE_STATIC) {
-
+        if (actor->sprite_type != SPRITE_STATIC)
+        {
             // Increase frame based on facing direction
-            if (IS_NEG(actors[a].dir.y))
+            if (IS_NEG(actor->dir.y))
             {
-                fo = 1 + (actors[a].sprite_type == SPRITE_ACTOR_ANIMATED);
+                fo = 1 + (actor->sprite_type == SPRITE_ACTOR_ANIMATED);
                 if (sprites[k].frame_offset != fo)
                 {
                     sprites[k].frame_offset = fo;
@@ -79,16 +81,16 @@ void MoveActors_b()
                     sprites[k].rerender = TRUE;
                 }
             }
-            else if (actors[a].dir.x != 0)
+            else if (actor->dir.x != 0)
             {
-                fo = 2 + MUL_2(actors[a].sprite_type == SPRITE_ACTOR_ANIMATED);
+                fo = 2 + MUL_2(actor->sprite_type == SPRITE_ACTOR_ANIMATED);
                 if (sprites[k].frame_offset != fo)
                 {
                     sprites[k].frame_offset = fo;
                     sprites[k].rerender = TRUE;
                 }
                 // Facing left so flip sprite
-                if (IS_NEG(actors[a].dir.x))
+                if (IS_NEG(actor->dir.x))
                 {
                     flip = TRUE;
                     if (!sprites[k].flip)

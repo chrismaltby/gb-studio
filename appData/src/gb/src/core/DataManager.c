@@ -345,8 +345,8 @@ void LoadScene(UINT16 index)
     player.dir.x = map_next_dir.x;
     player.dir.y = map_next_dir.y;
     // player.sprite_type = SPRITE_ACTOR_ANIMATED;
-    // player.sprite_type = SPRITE_STATIC;
-    player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+    player.sprite_type = SPRITE_STATIC;
+    // player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
     player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
 
     player.sprite_index = SpritePoolNext();
