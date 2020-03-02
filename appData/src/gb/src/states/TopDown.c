@@ -1,4 +1,6 @@
+// clang-format off
 #pragma bank=18
+// clang-format on
 
 #include "TopDown.h"
 #include "Scroll.h"
@@ -18,7 +20,6 @@ void Start_TopDown()
     LOG("START TOPDOWN\n");
     scroll_target = &player.pos;
     game_time = 0;
-
 
     rnd = *(ptr_div_reg_1);
     initrand(rnd);
@@ -42,7 +43,6 @@ void Update_TopDown()
 
     tile_x = player.pos.x >> 3;
     tile_y = player.pos.y >> 3;
-
 
     // Move NPCs
     /*
@@ -79,6 +79,19 @@ void Update_TopDown()
     // Move
     if (ACTOR_ON_TILE(0))
     {
+        if (player.vel.x != 0 || player.vel.y != 0)
+        {
+            // Check trigger collisions
+            hit_trigger = TriggerAtTile(tile_x, tile_y);
+            if (hit_trigger != MAX_TRIGGERS)
+            {
+                player.vel.x = 0;
+                player.vel.y = 0;
+                ScriptStart(&triggers[hit_trigger].events_ptr);
+                return;
+            }
+        }
+
         player.vel.x = 0;
         player.vel.y = 0;
 
@@ -125,38 +138,49 @@ void Update_TopDown()
                 }
             }
         }
-
-        // Check trigger collisions
-        hit_trigger = TriggerAtTile(tile_x, tile_y);
-        if(hit_trigger != MAX_TRIGGERS) {
-            ScriptStart(&triggers[hit_trigger].events_ptr);
-        }
     }
 
-    if(INPUT_A_PRESSED) {
+    if (INPUT_A_PRESSED)
+    {
         LOG("CHECK HIT\n");
         hit_actor = 0;
-        if(player.dir.y == -1) {
+        if (player.dir.y == -1)
+        {
             LOG("CHECK HIT UP\n");
             LOG_VALUE("check_x", tile_x);
             LOG_VALUE("check_y", tile_y - 1);
             hit_actor = ActorAtTile(tile_x, tile_y - 1);
-        } else if(player.dir.y == 1) {
+            actors[hit_actor].dir.x = 0;
+            actors[hit_actor].dir.y = 1;
+        }
+        else if (player.dir.y == 1)
+        {
             LOG("CHECK HIT DOWN\n");
             LOG_VALUE("check_x", tile_x);
             LOG_VALUE("check_y", tile_y + 2);
             hit_actor = ActorAtTile(tile_x, tile_y + 2);
-        } else {
-            if(player.dir.x == -1) {
+            actors[hit_actor].dir.x = 0;
+            actors[hit_actor].dir.y = -1;
+        }
+        else
+        {
+            if (player.dir.x == -1)
+            {
                 LOG("CHECK HIT LEFT\n");
                 LOG_VALUE("check_x", tile_x - 1);
                 LOG_VALUE("check_y", tile_y);
                 hit_actor = ActorAtTile(tile_x - 1, tile_y);
-            } else if(player.dir.x == 1) {
+                actors[hit_actor].dir.x = 1;
+                actors[hit_actor].dir.y = 0;
+            }
+            else if (player.dir.x == 1)
+            {
                 LOG("CHECK HIT RIGHT\n");
                 LOG_VALUE("check_x", tile_x + 2);
-                LOG_VALUE("check_y", tile_y);                
+                LOG_VALUE("check_y", tile_y);
                 hit_actor = ActorAtTile(tile_x + 2, tile_y);
+                actors[hit_actor].dir.x = -1;
+                actors[hit_actor].dir.y = 0;
             }
         }
         if (hit_actor)
@@ -178,5 +202,5 @@ void Update_TopDown()
     {
         player.pos.x = 512;
         player.pos.y = 512;
-    }   
+    }
 }
