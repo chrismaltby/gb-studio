@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "BankManager.h"
 #include "DataManager.h"
+#include "FadeManager.h"
 #include "GameTime.h"
 #include "Input.h"
 #include "MusicManager.h"
@@ -179,6 +180,7 @@ void game_loop() {
     UIUpdate();
     HandleInputScripts();
     HandleScriptWait();
+    FadeUpdate();
 
     game_time++;
   }
@@ -188,7 +190,13 @@ void game_loop() {
 
     LOG("c AA\n");
 
-    // FadeIn();
+    FadeOut();
+
+    while (fade_running) {
+      wait_vbl_done();
+      FadeUpdate();
+    }
+
     DISPLAY_OFF
 
     // last_music = 0;
@@ -228,7 +236,19 @@ void game_loop() {
     if (state_running) {
       LOG("e AA\n");
       DISPLAY_ON;
-      //   FadeOut();
+      FadeIn();
+
+      ScriptRunnerUpdate();
+      UpdateActors();
+      RefreshScroll();
+      MoveActors();
+      UpdateSprites();
+      UIUpdate();
+
+      while (fade_running) {
+        wait_vbl_done();
+        FadeUpdate();
+      }
     }
   }
 }
