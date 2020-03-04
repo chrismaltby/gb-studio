@@ -126,10 +126,6 @@ void ScriptStart(BankPtr *events_ptr)
 {
   UBYTE rnd, c, a0, a1, a2;
 
-  if (script_ptr)
-  {
-    return;
-  }
 
   LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
 
