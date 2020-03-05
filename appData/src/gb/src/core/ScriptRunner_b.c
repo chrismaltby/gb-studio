@@ -27,18 +27,14 @@ UBYTE *RAMPtr;
  * Perform no action, jump ahead by size of command.
  * Useful for skipping unimplemented commands.
  */
-void Script_Noop_b()
-{
-  script_ptr += 1 + script_cmd_args_len;
-}
+void Script_Noop_b() { script_ptr += 1 + script_cmd_args_len; }
 
 /*
  * Command: End
  * ----------------------------
  * Stop current script from running and reset script pointer.
  */
-void Script_End_b()
-{
+void Script_End_b() {
   script_ptr_bank = 0;
   script_ptr = 0;
 }
@@ -51,10 +47,10 @@ void Script_End_b()
  *   arg0: High 8 bits for string index
  *   arg1: Low 8 bits for string index
  */
-void Script_Text_b()
-{
+void Script_Text_b() {
   script_ptr += 1 + script_cmd_args_len;
-  LOG("Script_Text_b script_cmd_args[0]=%u script_cmd_args[1]=%u\n", script_cmd_args[0], script_cmd_args[1]);
+  LOG("Script_Text_b script_cmd_args[0]=%u script_cmd_args[1]=%u\n", script_cmd_args[0],
+      script_cmd_args[1]);
   UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
   // UIShowText
   script_action_complete = FALSE;
@@ -68,8 +64,7 @@ void Script_Text_b()
  *   arg0: High 8 bits for new pointer
  *   arg1: Low 8 bits for new pointer
  */
-void Script_Goto_b()
-{
+void Script_Goto_b() {
   script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_continue = TRUE;
 }
@@ -84,14 +79,11 @@ void Script_Goto_b()
  *   arg2: High 8 bits for new pointer
  *   arg3: Low 8 bits for new pointer
  */
-void Script_IfFlag_b()
-{
-  if (script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]])
-  { // True path, jump to position specified by ptr
+void Script_IfFlag_b() {
+  if (script_variables[(script_cmd_args[0] * 256) +
+                       script_cmd_args[1]]) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;
@@ -100,7 +92,8 @@ void Script_IfFlag_b()
 /*
  * Command: IfValue
  * ----------------------------
- * Jump to new script pointer position if specified flag is true when compared using operator to comparator.
+ * Jump to new script pointer position if specified flag is true when compared using operator to
+ * comparator.
  *
  *   arg0: High 8 bits for flag index
  *   arg1: Low 8 bits for flag index
@@ -109,42 +102,37 @@ void Script_IfFlag_b()
  *   arg4: High 8 bits for new pointer
  *   arg5: Low 8 bits for new pointer
  */
-void Script_IfValue_b()
-{
+void Script_IfValue_b() {
   UBYTE value, match;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   value = script_variables[ptr];
 
-  switch (script_cmd_args[2])
-  {
-  case OPERATOR_EQ:
-    match = value == script_cmd_args[3];
-    break;
-  case OPERATOR_LT:
-    match = value < script_cmd_args[3];
-    break;
-  case OPERATOR_LTE:
-    match = value <= script_cmd_args[3];
-    break;
-  case OPERATOR_GT:
-    match = value > script_cmd_args[3];
-    break;
-  case OPERATOR_GTE:
-    match = value >= script_cmd_args[3];
-    break;
-  case OPERATOR_NE:
-    match = value != script_cmd_args[3];
-    break;
-  default:
-    match = FALSE;
+  switch (script_cmd_args[2]) {
+    case OPERATOR_EQ:
+      match = value == script_cmd_args[3];
+      break;
+    case OPERATOR_LT:
+      match = value < script_cmd_args[3];
+      break;
+    case OPERATOR_LTE:
+      match = value <= script_cmd_args[3];
+      break;
+    case OPERATOR_GT:
+      match = value > script_cmd_args[3];
+      break;
+    case OPERATOR_GTE:
+      match = value >= script_cmd_args[3];
+      break;
+    case OPERATOR_NE:
+      match = value != script_cmd_args[3];
+      break;
+    default:
+      match = FALSE;
   }
 
-  if (match)
-  { // True path, jump to position specified by ptr
+  if (match) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;
@@ -158,8 +146,7 @@ void Script_IfValue_b()
  *   arg0: High 8 bits for flag index
  *   arg1: Low 8 bits for flag index
  */
-void Script_SetFlag_b()
-{
+void Script_SetFlag_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = TRUE;
   script_ptr += 1 + script_cmd_args_len;
@@ -174,8 +161,7 @@ void Script_SetFlag_b()
  *   arg0: High 8 bits for flag index
  *   arg1: Low 8 bits for flag index
  */
-void Script_ClearFlag_b()
-{
+void Script_ClearFlag_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = FALSE;
   script_ptr += 1 + script_cmd_args_len;
@@ -189,8 +175,7 @@ void Script_ClearFlag_b()
  *
  *   arg0: Direction for active actor to face
  */
-void Script_ActorSetDir_b()
-{
+void Script_ActorSetDir_b() {
   actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
   actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
   // SceneRenderActor(script_actor);
@@ -205,8 +190,7 @@ void Script_ActorSetDir_b()
  *
  *   arg0: Actor index
  */
-void Script_ActorActivate_b()
-{
+void Script_ActorActivate_b() {
   script_actor = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -221,8 +205,7 @@ void Script_ActorActivate_b()
  *   arg1: Camera destination Y (in Tiles)
  *   arg2: Camera settings
  */
-void Script_CameraMoveTo_b()
-{
+void Script_CameraMoveTo_b() {
   /*
   camera_dest.x = script_cmd_args[0] << 3;
   camera_dest.y = 0; // @wtf-but-needed
@@ -241,8 +224,7 @@ void Script_CameraMoveTo_b()
  *
  *   arg0: Camera settings
  */
-void Script_CameraLock_b()
-{
+void Script_CameraLock_b() {
   /*
   UBYTE cam_x, cam_y;
 
@@ -265,8 +247,7 @@ void Script_CameraLock_b()
  *
  *   arg0: Frames to wait
  */
-void Script_Wait_b()
-{
+void Script_Wait_b() {
   wait_time = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
@@ -279,8 +260,7 @@ void Script_Wait_b()
  *
  *   arg0: Fade speed
  */
-void Script_FadeOut_b()
-{
+void Script_FadeOut_b() {
   FadeOut();
   FadeSetSpeed(script_cmd_args[0]);
   script_ptr += 1 + script_cmd_args_len;
@@ -294,8 +274,7 @@ void Script_FadeOut_b()
  *
  *   arg0: Fade speed
  */
-void Script_FadeIn_b()
-{
+void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
   script_ptr += 1 + script_cmd_args_len;
@@ -314,15 +293,14 @@ void Script_FadeIn_b()
  *   arg4: Starting direction
  *   arg5: Fade speed
  */
-void Script_LoadScene_b()
-{
+void Script_LoadScene_b() {
   UINT16 scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
   // scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
   // scene_index = scene_next_index + 1;
 
-  map_next_pos.x = 0; // @wtf-but-needed
+  map_next_pos.x = 0;  // @wtf-but-needed
   map_next_pos.x = (script_cmd_args[2] << 3);
-  map_next_pos.y = 0; // @wtf-but-needed
+  map_next_pos.y = 0;  // @wtf-but-needed
   map_next_pos.y = (script_cmd_args[3] << 3);
   map_next_dir.x = script_cmd_args[4] == 2 ? -1 : script_cmd_args[4] == 4 ? 1 : 0;
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
@@ -348,11 +326,10 @@ void Script_LoadScene_b()
  *   arg0: New X Pos
  *   arg1: New Y Pos
  */
-void Script_ActorSetPos_b()
-{
-  actors[script_actor].pos.x = 0; // @wtf-but-needed
+void Script_ActorSetPos_b() {
+  actors[script_actor].pos.x = 0;  // @wtf-but-needed
   actors[script_actor].pos.x = (script_cmd_args[0] << 3) + 8;
-  actors[script_actor].pos.y = 0; // @wtf-but-needed
+  actors[script_actor].pos.y = 0;  // @wtf-but-needed
   actors[script_actor].pos.y = (script_cmd_args[1] << 3) + 8;
   /* @todo
   if (script_cmd_args[1] == 31)
@@ -372,8 +349,7 @@ void Script_ActorSetPos_b()
  *   arg0: New X Pos
  *   arg1: New Y Pos
  */
-void Script_ActorMoveTo_b()
-{
+void Script_ActorMoveTo_b() {
   /*
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
@@ -395,8 +371,7 @@ void Script_ActorMoveTo_b()
  * ----------------------------
  * Make all sprites visible
  */
-void Script_ShowSprites_b()
-{
+void Script_ShowSprites_b() {
   SHOW_SPRITES;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -407,8 +382,7 @@ void Script_ShowSprites_b()
  * ----------------------------
  * Hide all sprites
  */
-void Script_HideSprites_b()
-{
+void Script_HideSprites_b() {
   HIDE_SPRITES;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -419,8 +393,7 @@ void Script_HideSprites_b()
  * ----------------------------
  * Unhide actor
  */
-void Script_ActorShow_b()
-{
+void Script_ActorShow_b() {
   actors[script_actor].enabled = TRUE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -431,8 +404,7 @@ void Script_ActorShow_b()
  * ----------------------------
  * Hide actor
  */
-void Script_ActorHide_b()
-{
+void Script_ActorHide_b() {
   actors[script_actor].enabled = FALSE;
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -445,8 +417,7 @@ void Script_ActorHide_b()
  *
  *   arg0: Enabled
  */
-void Script_ActorSetCollisions_b()
-{
+void Script_ActorSetCollisions_b() {
   actors[script_actor].collisionsEnabled = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -459,8 +430,7 @@ void Script_ActorSetCollisions_b()
  *
  *   arg0: Emote Id
  */
-void Script_ActorSetEmote_b()
-{
+void Script_ActorSetEmote_b() {
   /*
   script_ptr += 1 + script_cmd_args_len;
   SceneSetEmote(script_actor, script_cmd_args[0]);
@@ -475,8 +445,7 @@ void Script_ActorSetEmote_b()
  *
  *   arg0: Number of frames to shake for
  */
-void Script_CameraShake_b()
-{
+void Script_CameraShake_b() {
   /*
   shake_time = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
@@ -489,8 +458,7 @@ void Script_CameraShake_b()
  * ----------------------------
  * Load image into window buffer and position.
  */
-void Script_ShowOverlay_b()
-{
+void Script_ShowOverlay_b() {
   UISetColor(script_cmd_args[0]);
   UISetPos(script_cmd_args[1] << 3, script_cmd_args[2] << 3);
   script_ptr += 1 + script_cmd_args_len;
@@ -502,8 +470,7 @@ void Script_ShowOverlay_b()
  * ----------------------------
  * Hide window buffer
  */
-void Script_HideOverlay_b()
-{
+void Script_HideOverlay_b() {
   /*
   UISetPos(0, MENU_CLOSED_Y);
   script_ptr += 1 + script_cmd_args_len;
@@ -516,8 +483,7 @@ void Script_HideOverlay_b()
  * ----------------------------
  * Window buffer set position to X/Y
  */
-void Script_OverlaySetPos_b()
-{
+void Script_OverlaySetPos_b() {
   UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -528,8 +494,7 @@ void Script_OverlaySetPos_b()
  * ----------------------------
  * Window buffer move position to X/Y with speed
  */
-void Script_OverlayMoveTo_b()
-{
+void Script_OverlayMoveTo_b() {
   UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3, script_cmd_args[2]);
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
@@ -540,8 +505,7 @@ void Script_OverlayMoveTo_b()
  * ----------------------------
  * Pause script until joy overlaps bits with provided input
  */
-void Script_AwaitInput_b()
-{
+void Script_AwaitInput_b() {
   await_input = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_action_complete = FALSE;
@@ -552,8 +516,7 @@ void Script_AwaitInput_b()
  * ----------------------------
  * Play the music track with given index
  */
-void Script_MusicPlay_b()
-{
+void Script_MusicPlay_b() {
   MusicPlay(script_cmd_args[0], script_cmd_args[1], scriptrunner_bank);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -564,8 +527,7 @@ void Script_MusicPlay_b()
  * ----------------------------
  * Stop any playing music
  */
-void Script_MusicStop_b()
-{
+void Script_MusicStop_b() {
   MusicStop(scriptrunner_bank);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -576,11 +538,9 @@ void Script_MusicStop_b()
  * ----------------------------
  * Reset all variables back to false
  */
-void Script_ResetVariables_b()
-{
+void Script_ResetVariables_b() {
   UWORD i;
-  for (i = 0; i != NUM_VARIABLES; ++i)
-  {
+  for (i = 0; i != NUM_VARIABLES; ++i) {
     script_variables[i] = FALSE;
   }
   script_ptr += 1 + script_cmd_args_len;
@@ -592,8 +552,7 @@ void Script_ResetVariables_b()
  * ----------------------------
  * Wait until next frame
  */
-void Script_NextFrame_b()
-{
+void Script_NextFrame_b() {
   script_ptr += 1 + script_cmd_args_len;
   script_continue = FALSE;
 }
@@ -603,13 +562,11 @@ void Script_NextFrame_b()
  * ----------------------------
  * Increase value stored in flag
  */
-void Script_IncFlag_b()
-{
+void Script_IncFlag_b() {
   UBYTE value;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   value = script_variables[ptr];
-  if (value != 255)
-  {
+  if (value != 255) {
     script_variables[ptr] = value + 1;
   }
   script_ptr += 1 + script_cmd_args_len;
@@ -621,13 +578,11 @@ void Script_IncFlag_b()
  * ----------------------------
  * Decrease value stored in flag
  */
-void Script_DecFlag_b()
-{
+void Script_DecFlag_b() {
   UBYTE value;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   value = script_variables[ptr];
-  if (value != 0)
-  {
+  if (value != 0) {
     script_variables[ptr] = value - 1;
   }
   script_ptr += 1 + script_cmd_args_len;
@@ -639,8 +594,7 @@ void Script_DecFlag_b()
  * ----------------------------
  * Set flag to specific value
  */
-void Script_SetFlagValue_b()
-{
+void Script_SetFlagValue_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
@@ -652,8 +606,7 @@ void Script_SetFlagValue_b()
  * ----------------------------
  * Goto true path if joy mask overlaps
  */
-void Script_IfInput_b()
-{
+void Script_IfInput_b() {
   /*
   UBYTE mask;
   mask = 0;
@@ -675,10 +628,10 @@ void Script_IfInput_b()
  * ----------------------------
  * Display multiple choice input
  */
-void Script_Choice_b()
-{
+void Script_Choice_b() {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3]);
+  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1],
+               (script_cmd_args[2] * 256) + script_cmd_args[3]);
   script_action_complete = FALSE;
 }
 
@@ -687,10 +640,11 @@ void Script_Choice_b()
  * ----------------------------
  * Display multiple choice menu
  */
-void Script_TextMenu_b()
-{
+void Script_TextMenu_b() {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4], script_cmd_args[5]);
+  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1],
+             (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4],
+             script_cmd_args[5]);
   script_action_complete = FALSE;
 }
 
@@ -699,8 +653,7 @@ void Script_TextMenu_b()
  * ----------------------------
  * Change sprite used by player
  */
-void Script_PlayerSetSprite_b()
-{
+void Script_PlayerSetSprite_b() {
   BANK_PTR sprite_bank_ptr;
   UBYTE *sprite_ptr;
   UBYTE sprite_index, sprite_frames, sprite_len;
@@ -714,7 +667,8 @@ void Script_PlayerSetSprite_b()
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
   actors[0].sprite = 0;
   actors[0].frame = 0;
-  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
+                                             : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
   actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
   // SceneRenderActor(0);
 
@@ -730,8 +684,7 @@ void Script_PlayerSetSprite_b()
  * ----------------------------
  * Push actor in direction player is facing
  */
-void Script_ActorPush_b()
-{
+void Script_ActorPush_b() {
   /*
   UBYTE dest_x, dest_y;
 
@@ -793,16 +746,12 @@ void Script_ActorPush_b()
  *   arg3: High 8 bits for new pointer
  *   arg4: Low 8 bits for new pointer
  */
-void Script_IfActorPos_b()
-{
-  if (
-      ((script_cmd_args[0] << 3) + 8 == actors[script_actor].pos.x) &&
-      ((script_cmd_args[1] << 3) + 8 == actors[script_actor].pos.y))
-  { // True path, jump to position specified by ptr
+void Script_IfActorPos_b() {
+  if (((script_cmd_args[0] << 3) + 8 == actors[script_actor].pos.x) &&
+      ((script_cmd_args[1] << 3) + 8 ==
+       actors[script_actor].pos.y)) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;
@@ -813,8 +762,7 @@ void Script_IfActorPos_b()
  * ----------------------------
  * Store current scene, player position and direction, current sprite and variable values into RAM
  */
-void Script_SaveData_b()
-{
+void Script_SaveData_b() {
   /*
   UWORD i;
 
@@ -868,8 +816,7 @@ void Script_SaveData_b()
  * ----------------------------
  * Restore current scene, player position and direction, current sprite and variable values from RAM
  */
-void Script_LoadData_b()
-{
+void Script_LoadData_b() {
   /*
   UWORD i;
 
@@ -925,8 +872,7 @@ void Script_LoadData_b()
  * ----------------------------
  * Clear current data in RAM
  */
-void Script_ClearData_b()
-{
+void Script_ClearData_b() {
   ENABLE_RAM;
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = FALSE;
@@ -944,8 +890,7 @@ void Script_ClearData_b()
  *   arg0: High 8 bits for flag index
  *   arg1: Low 8 bits for flag index
  */
-void Script_IfSavedData_b()
-{
+void Script_IfSavedData_b() {
   UBYTE jump;
 
 #ifdef __EMSCRIPTEN__
@@ -958,12 +903,9 @@ void Script_IfSavedData_b()
   DISABLE_RAM;
 #endif
 
-  if (jump)
-  { // True path, jump to position specified by ptr
+  if (jump) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
 }
@@ -978,20 +920,14 @@ void Script_IfSavedData_b()
  *   arg2: High 8 bits for new pointer
  *   arg3: Low 8 bits for new pointer
  */
-void Script_IfActorDirection_b()
-{
-
-  if (
-      (
-          actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
-          actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
+void Script_IfActorDirection_b() {
+  if ((actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
+       actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
       (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
-       actors[script_actor].dir.y == -1 && script_cmd_args[0] == 8))
-  { // True path, jump to position specified by ptr
+       actors[script_actor].dir.y == -1 &&
+           script_cmd_args[0] == 8)) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
 
@@ -1007,8 +943,7 @@ void Script_IfActorDirection_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Max value
  */
-void Script_SetFlagRandomValue_b()
-{
+void Script_SetFlagRandomValue_b() {
   UBYTE rand_val;
   UBYTE modulo;
   UBYTE offset;
@@ -1026,8 +961,7 @@ void Script_SetFlagRandomValue_b()
  * ----------------------------
  * Store Actor position in variables
  */
-void Script_ActorGetPos_b()
-{
+void Script_ActorGetPos_b() {
   script_variables[script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
   script_variables[script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
   script_ptr += 1 + script_cmd_args_len;
@@ -1039,8 +973,7 @@ void Script_ActorGetPos_b()
  * ----------------------------
  * Set Actor position from variables
  */
-void Script_ActorSetPosToVal_b()
-{
+void Script_ActorSetPosToVal_b() {
   /*
   actors[script_actor].pos.x = 0; // @wtf-but-needed
   actors[script_actor].pos.x = (script_variables[script_ptr_x] << 3) + 8;
@@ -1060,8 +993,7 @@ void Script_ActorSetPosToVal_b()
  * ----------------------------
  * Set Actor position from variables
  */
-void Script_ActorMoveToVal_b()
-{
+void Script_ActorMoveToVal_b() {
   /*
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
@@ -1086,8 +1018,7 @@ void Script_ActorMoveToVal_b()
  *   arg0: Offset X Pos
  *   arg1: Offset Y Pos
  */
-void Script_ActorMoveRel_b()
-{
+void Script_ActorMoveRel_b() {
   /*
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
@@ -1160,28 +1091,19 @@ void Script_ActorMoveRel_b()
  *   arg0: Offset X Pos
  *   arg1: Offset Y Pos
  */
-void Script_ActorSetPosRel_b()
-{
-  if (script_cmd_args[0] != 0)
-  {
-    if (script_cmd_args[1])
-    {
+void Script_ActorSetPosRel_b() {
+  if (script_cmd_args[0] != 0) {
+    if (script_cmd_args[1]) {
       actors[script_actor].pos.x = actors[script_actor].pos.x - (script_cmd_args[0] << 3);
-    }
-    else
-    {
+    } else {
       actors[script_actor].pos.x = actors[script_actor].pos.x + (script_cmd_args[0] << 3);
     }
   }
 
-  if (script_cmd_args[2] != 0)
-  {
-    if (script_cmd_args[3])
-    {
+  if (script_cmd_args[2] != 0) {
+    if (script_cmd_args[3]) {
       actors[script_actor].pos.y = actors[script_actor].pos.y - (script_cmd_args[2] << 3);
-    }
-    else
-    {
+    } else {
       actors[script_actor].pos.y = actors[script_actor].pos.y + (script_cmd_args[2] << 3);
     }
   }
@@ -1199,8 +1121,7 @@ void Script_ActorSetPosRel_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_MathAdd_b()
-{
+void Script_MathAdd_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1218,8 +1139,7 @@ void Script_MathAdd_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_MathSub_b()
-{
+void Script_MathSub_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1237,8 +1157,7 @@ void Script_MathSub_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_MathMul_b()
-{
+void Script_MathMul_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1256,8 +1175,7 @@ void Script_MathMul_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_MathDiv_b()
-{
+void Script_MathDiv_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1275,8 +1193,7 @@ void Script_MathDiv_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_MathMod_b()
-{
+void Script_MathMod_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1290,8 +1207,7 @@ void Script_MathMod_b()
  * ----------------------------
  * Add value from flag to flag
  */
-void Script_MathAddVal_b()
-{
+void Script_MathAddVal_b() {
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a + b;
@@ -1304,8 +1220,7 @@ void Script_MathAddVal_b()
  * ----------------------------
  * Subtract value from flag to flag
  */
-void Script_MathSubVal_b()
-{
+void Script_MathSubVal_b() {
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a - b;
@@ -1318,8 +1233,7 @@ void Script_MathSubVal_b()
  * ----------------------------
  * Multiply value from flag to flag
  */
-void Script_MathMulVal_b()
-{
+void Script_MathMulVal_b() {
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a * b;
@@ -1332,8 +1246,7 @@ void Script_MathMulVal_b()
  * ----------------------------
  * Divide value from flag to flag
  */
-void Script_MathDivVal_b()
-{
+void Script_MathDivVal_b() {
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a / b;
@@ -1346,8 +1259,7 @@ void Script_MathDivVal_b()
  * ----------------------------
  * Modulo value from flag to flag
  */
-void Script_MathModVal_b()
-{
+void Script_MathModVal_b() {
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a % b;
@@ -1360,8 +1272,7 @@ void Script_MathModVal_b()
  * ----------------------------
  * Copy value from flag to flag
  */
-void Script_CopyVal_b()
-{
+void Script_CopyVal_b() {
   UBYTE value = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = value;
   script_ptr += 1 + script_cmd_args_len;
@@ -1371,48 +1282,44 @@ void Script_CopyVal_b()
 /*
  * Command: IfValue
  * ----------------------------
- * Jump to new script pointer position if specified flag is true when compared using operator to comparator.
+ * Jump to new script pointer position if specified flag is true when compared using operator to
+ * comparator.
  *
  *   arg0: Operator
  *   arg1: High 8 bits for new pointer
  *   arg2: Low 8 bits for new pointer
  */
-void Script_IfValueCompare_b()
-{
+void Script_IfValueCompare_b() {
   UBYTE match;
   UBYTE a = script_variables[script_ptr_x];
   UBYTE b = script_variables[script_ptr_y];
 
-  switch (script_cmd_args[0])
-  {
-  case OPERATOR_EQ:
-    match = a == b;
-    break;
-  case OPERATOR_LT:
-    match = a < b;
-    break;
-  case OPERATOR_LTE:
-    match = a <= b;
-    break;
-  case OPERATOR_GT:
-    match = a > b;
-    break;
-  case OPERATOR_GTE:
-    match = a >= b;
-    break;
-  case OPERATOR_NE:
-    match = a != b;
-    break;
-  default:
-    match = FALSE;
+  switch (script_cmd_args[0]) {
+    case OPERATOR_EQ:
+      match = a == b;
+      break;
+    case OPERATOR_LT:
+      match = a < b;
+      break;
+    case OPERATOR_LTE:
+      match = a <= b;
+      break;
+    case OPERATOR_GT:
+      match = a > b;
+      break;
+    case OPERATOR_GTE:
+      match = a >= b;
+      break;
+    case OPERATOR_NE:
+      match = a != b;
+      break;
+    default:
+      match = FALSE;
   }
 
-  if (match)
-  { // True path, jump to position specified by ptr
+  if (match) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
-  }
-  else
-  { // False path, skip to next command
+  } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
   script_continue = TRUE;
@@ -1428,8 +1335,7 @@ void Script_IfValueCompare_b()
  *   arg2: High 8 bits for second pointer
  *   arg3: Low 8 bits for second pointer
  */
-void Script_LoadVectors_b()
-{
+void Script_LoadVectors_b() {
   script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
   script_ptr += 1 + script_cmd_args_len;
@@ -1443,8 +1349,7 @@ void Script_LoadVectors_b()
  *
  *   arg0: Movement speed to use
  */
-void Script_ActorSetMoveSpeed_b()
-{
+void Script_ActorSetMoveSpeed_b() {
   actors[script_actor].move_speed = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -1457,8 +1362,7 @@ void Script_ActorSetMoveSpeed_b()
  *
  *   arg0: Animation speed to use
  */
-void Script_ActorSetAnimSpeed_b()
-{
+void Script_ActorSetAnimSpeed_b() {
   actors[script_actor].anim_speed = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -1472,8 +1376,7 @@ void Script_ActorSetAnimSpeed_b()
  *   arg0: Animation speed to use
  *   arg1: Animation speed to use fading out
  */
-void Script_TextSetAnimSpeed_b()
-{
+void Script_TextSetAnimSpeed_b() {
   /*
   text_in_speed = script_cmd_args[0];
   text_out_speed = script_cmd_args[1];
@@ -1488,8 +1391,7 @@ void Script_TextSetAnimSpeed_b()
  * ----------------------------
  * Invoke Actor script
  */
-void Script_ActorInvoke_b()
-{
+void Script_ActorInvoke_b() {
   Script_StackPush_b();
   ScriptStart(&actors[script_actor].events_ptr);
 }
@@ -1499,8 +1401,7 @@ void Script_ActorInvoke_b()
  * ----------------------------
  * Push the current script pointer to the stack
  */
-void Script_StackPush_b()
-{
+void Script_StackPush_b() {
   script_stack[script_stack_ptr] = script_ptr;
   script_start_stack[script_stack_ptr] = script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
@@ -1512,8 +1413,7 @@ void Script_StackPush_b()
  * ----------------------------
  * Pop the script pointer from the stack
  */
-void Script_StackPop_b()
-{
+void Script_StackPop_b() {
   script_stack_ptr--;
   script_ptr = script_stack[script_stack_ptr];
   script_start_ptr = script_start_stack[script_stack_ptr];
@@ -1525,8 +1425,7 @@ void Script_StackPop_b()
  * ----------------------------
  * Stores the state of the current scene
  */
-void Script_ScenePushState_b()
-{
+void Script_ScenePushState_b() {
   /*
   if (scene_stack_ptr < MAX_SCENE_STATES)
   {
@@ -1552,8 +1451,7 @@ void Script_ScenePushState_b()
  *
  *   arg0: Fade speed
  */
-void Script_ScenePopState_b()
-{
+void Script_ScenePopState_b() {
   /*
   if (scene_stack_ptr)
   {
@@ -1589,8 +1487,7 @@ void Script_ScenePopState_b()
  * ----------------------------
  * Clear all saved scene state
  */
-void Script_SceneResetStack_b()
-{
+void Script_SceneResetStack_b() {
   /*
   scene_stack_ptr = 0;
   script_ptr += 1 + script_cmd_args_len;
@@ -1603,8 +1500,7 @@ void Script_SceneResetStack_b()
  * ----------------------------
  * Restores the first saved scene state
  */
-void Script_ScenePopAllState_b()
-{
+void Script_ScenePopAllState_b() {
   /*
   if (scene_stack_ptr)
   {
@@ -1640,15 +1536,13 @@ void Script_ScenePopAllState_b()
  * ----------------------------
  * Attach script to button press
  */
-void Script_SetInputScript_b()
-{
+void Script_SetInputScript_b() {
   UBYTE input, index;
 
   input = script_cmd_args[0];
 
   index = 0;
-  while (!(input & 1) && input != 0)
-  {
+  while (!(input & 1) && input != 0) {
     index += 1;
     input = input >> 1;
   }
@@ -1665,17 +1559,14 @@ void Script_SetInputScript_b()
  * ----------------------------
  * Remove script from button press
  */
-void Script_RemoveInputScript_b()
-{
+void Script_RemoveInputScript_b() {
   UBYTE input, index;
 
   input = script_cmd_args[0];
 
   index = 0;
-  for (index = 0; index != 8; ++index)
-  {
-    if (input & 1)
-    {
+  for (index = 0; index != 8; ++index) {
+    if (input & 1) {
       input_script_ptrs[index].bank = 0;
     }
     input = input >> 1;
@@ -1690,8 +1581,7 @@ void Script_RemoveInputScript_b()
  * ----------------------------
  * Set animation frame of current actor
  */
-void Script_ActorSetFrame_b()
-{
+void Script_ActorSetFrame_b() {
   actors[script_actor].frame = 0;
   actors[script_actor].flip = 0;
   actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
@@ -1705,11 +1595,11 @@ void Script_ActorSetFrame_b()
  * ----------------------------
  * Set animation frame of current actor using variable
  */
-void Script_ActorSetFrameToVal_b()
-{
+void Script_ActorSetFrameToVal_b() {
   actors[script_actor].frame = 0;
   actors[script_actor].flip = 0;
-  actors[script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] % actors[script_actor].frames_len;
+  actors[script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] %
+                               actors[script_actor].frames_len;
   // SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -1720,8 +1610,7 @@ void Script_ActorSetFrameToVal_b()
  * ----------------------------
  * Set flip state of current actor
  */
-void Script_ActorSetFlip_b()
-{
+void Script_ActorSetFlip_b() {
   actors[script_actor].flip = 0;
   actors[script_actor].flip = script_cmd_args[0];
   // SceneRenderActor(script_actor);
@@ -1738,29 +1627,21 @@ void Script_ActorSetFlip_b()
  *      - 2 (restore close speed)
  *      - 3 (restore open and close speed)
  */
-void Script_TextMulti_b()
-{
+void Script_TextMulti_b() {
   UBYTE mode;
   mode = script_cmd_args[0];
 
   LOG("Script_TextMulti_b\n");
 
-  if (mode == 0)
-  {
+  if (mode == 0) {
     tmp_text_out_speed = text_out_speed;
     text_out_speed = 0;
-  }
-  else if (mode == 1)
-  {
+  } else if (mode == 1) {
     tmp_text_in_speed = text_in_speed;
     text_in_speed = 0;
-  }
-  else if (mode == 2)
-  {
+  } else if (mode == 2) {
     text_out_speed = tmp_text_out_speed;
-  }
-  else if (mode == 3)
-  {
+  } else if (mode == 3) {
     text_in_speed = tmp_text_in_speed;
     text_out_speed = tmp_text_out_speed;
   }
@@ -1778,8 +1659,7 @@ void Script_TextMulti_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_VariableAddFlags_b()
-{
+void Script_VariableAddFlags_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1795,8 +1675,7 @@ void Script_VariableAddFlags_b()
  *   arg1: Low 8 bits for flag index
  *   arg2: Value
  */
-void Script_VariableClearFlags_b()
-{
+void Script_VariableClearFlags_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   UBYTE a = script_variables[ptr];
   UBYTE b = script_cmd_args[2];
@@ -1809,8 +1688,7 @@ void Script_VariableClearFlags_b()
  * Command: SoundStartTone
  * ----------------------------
  */
-void Script_SoundStartTone_b()
-{
+void Script_SoundStartTone_b() {
   UWORD tone = (script_cmd_args[0] * 256) + script_cmd_args[1];
 
   // enable sound
@@ -1837,8 +1715,7 @@ void Script_SoundStartTone_b()
  * Command: SoundStopTone
  * ----------------------------
  */
-void Script_SoundStopTone_b()
-{
+void Script_SoundStopTone_b() {
   // stop tone on channel 1
   NR12_REG = 0x00;
 
@@ -1850,8 +1727,7 @@ void Script_SoundStopTone_b()
  * Command: SoundPlayBeep
  * ----------------------------
  */
-void Script_SoundPlayBeep_b()
-{
+void Script_SoundPlayBeep_b() {
   UBYTE pitch = script_cmd_args[0];
 
   // enable sound
@@ -1878,8 +1754,7 @@ void Script_SoundPlayBeep_b()
  * Command: SoundPlayCrash
  * ----------------------------
  */
-void Script_SoundPlayCrash_b()
-{
+void Script_SoundPlayCrash_b() {
   // enable sound
   NR52_REG = 0x80;
 
@@ -1905,8 +1780,7 @@ void Script_SoundPlayCrash_b()
  * ----------------------------
  * Attach script to timer
  */
-void Script_SetTimerScript_b()
-{
+void Script_SetTimerScript_b() {
   /*
   timer_script_duration = script_cmd_args[0];
   timer_script_time = script_cmd_args[0];
@@ -1923,8 +1797,7 @@ void Script_SetTimerScript_b()
  * ----------------------------
  * Reset the countdown timer
  */
-void Script_ResetTimer_b()
-{
+void Script_ResetTimer_b() {
   /*
   timer_script_time = timer_script_duration;
   script_ptr += 1 + script_cmd_args_len;
@@ -1937,8 +1810,7 @@ void Script_ResetTimer_b()
  * ----------------------------
  * Disable timer script
  */
-void Script_RemoveTimerScript_b()
-{
+void Script_RemoveTimerScript_b() {
   /*
   timer_script_duration = 0;
   script_ptr += 1 + script_cmd_args_len;
@@ -1955,45 +1827,37 @@ void Script_RemoveTimerScript_b()
  *   arg1: Low 8 bits for string index
  *   arg2: Spritesheet to use as the dialogue avatar
  */
-void Script_TextWithAvatar_b()
-{
+void Script_TextWithAvatar_b() {
   script_ptr += 1 + script_cmd_args_len;
   UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
   UIShowAvatar(script_cmd_args[2]);
   script_action_complete = FALSE;
 }
 
-UBYTE ScriptLastFnComplete_b()
-{
+UBYTE ScriptLastFnComplete_b() {
   UBYTE fading = IsFading();
 
-  if (last_fn == Script_FadeIn_b && !fading)
-  {
+  if (last_fn == Script_FadeIn_b && !fading) {
     return TRUE;
   }
 
-  if (last_fn == Script_FadeOut_b && !fading)
-  {
+  if (last_fn == Script_FadeOut_b && !fading) {
     return TRUE;
   }
 
-  if (last_fn == Script_LoadScene_b && !fading)
-  {
+  if (last_fn == Script_LoadScene_b && !fading) {
     return TRUE;
   }
 
-  if (last_fn == Script_ScenePopState_b)
-  {
+  if (last_fn == Script_ScenePopState_b) {
     return TRUE;
   }
 
-  if (last_fn == Script_ScenePopAllState_b)
-  {
+  if (last_fn == Script_ScenePopAllState_b) {
     return TRUE;
   }
 
-  if (last_fn == Script_LoadData_b && !fading)
-  {
+  if (last_fn == Script_LoadData_b && !fading) {
     return TRUE;
   }
 
@@ -2004,28 +1868,23 @@ UBYTE ScriptLastFnComplete_b()
   }
   */
 
-  if (last_fn == Script_Text_b && UIIsClosed())
-  {
+  if (last_fn == Script_Text_b && UIIsClosed()) {
     return TRUE;
   }
 
-  if (last_fn == Script_Choice_b && UIIsClosed())
-  {
+  if (last_fn == Script_Choice_b && UIIsClosed()) {
     return TRUE;
   }
 
-  if (last_fn == Script_TextMenu_b && UIIsClosed())
-  {
+  if (last_fn == Script_TextMenu_b && UIIsClosed()) {
     return TRUE;
   }
 
-  if (last_fn == Script_OverlayMoveTo_b && UIAtDest())
-  {
+  if (last_fn == Script_OverlayMoveTo_b && UIAtDest()) {
     return TRUE;
   }
 
-  if (last_fn == Script_AwaitInput_b && AwaitInputPressed())
-  {
+  if (last_fn == Script_AwaitInput_b && AwaitInputPressed()) {
     return TRUE;
   }
 
@@ -2043,8 +1902,7 @@ UBYTE ScriptLastFnComplete_b()
   }
   */
 
-  if (last_fn == Script_TextWithAvatar_b && UIIsClosed())
-  {
+  if (last_fn == Script_TextWithAvatar_b && UIIsClosed()) {
     return TRUE;
   }
 
