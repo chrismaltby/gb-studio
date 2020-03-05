@@ -48,6 +48,10 @@ void Start_Platform() {
   cam_pos.y = player.pos.y - PLATFORM_CAMERA_OFFSET_Y;
   pos_y_delayed = player.pos.y;
   platform_y = player.pos.y;
+
+  pos_x = (player.pos.x + 4u) << 4;
+  pos_y = player.pos.y << 4;
+
   // cam_pos_offset.x = cam_pos.x;
   // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
 
@@ -182,6 +186,7 @@ void Update_Platform() {
     }
   }
 
+  LOG_VALUE("pos_x", pos_x);
   LOG_VALUE("pos_y", pos_y);
   // LOG("pos_y=%d pos_y>>4=%d vel_y=%d\n", pos_y, pos_y >> 4, vel_y);
   // LOG("pos_x=%d pos_x>>4=%d vel_x=%d tile_x=%u\n", pos_x, pos_x >> 4, vel_x, tile_x);
