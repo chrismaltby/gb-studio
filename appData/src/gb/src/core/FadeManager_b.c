@@ -26,6 +26,7 @@ void ApplyPaletteChange(UBYTE index) {
   UWORD *col = BkgPalette;
   UWORD *col_s = SprPalette;
 
+#ifdef CGB
   for (pal = 0; pal < 8; pal++) {
     for (c = 0; c < 4; ++c, ++col, ++col_s) {
       palette[c] = UpdateColor(index, *col);
@@ -34,6 +35,7 @@ void ApplyPaletteChange(UBYTE index) {
     set_bkg_palette(pal, 1, palette);
     set_sprite_palette(pal, 1, palette_s);
   }
+#endif
 
   OBP0_REG = obj_fade_vals[index];
   BGP_REG = bgp_fade_vals[index];
