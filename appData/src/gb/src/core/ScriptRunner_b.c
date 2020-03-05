@@ -333,7 +333,7 @@ void Script_LoadScene_b()
   // scene_loaded = FALSE;
   // script_action_complete = FALSE;
 
-  // FadeSetSpeed(script_cmd_args[5]);
+  FadeSetSpeed(script_cmd_args[5]);
   // FadeOut();
 
   script_action_complete = FALSE;
