@@ -23,4 +23,7 @@
 #define PAL_GREEN(C) (((C) >> 5) & 0x1F)
 #define PAL_BLUE(C) (((C) >> 10) & 0x1F)
 
+extern UWORD SprPalette[32];
+extern UWORD BkgPalette[32];
+
 #endif

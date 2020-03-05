@@ -138,6 +138,7 @@ int core_start() {
 
   LoadUI();
   UIInit();
+  FadeInit();
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(game_loop, 60, 1);

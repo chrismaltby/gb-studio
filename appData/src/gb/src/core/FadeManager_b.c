@@ -3,6 +3,9 @@
 // clang-format on
 
 #include "FadeManager.h"
+#include <gb/cgb.h>
+#include "Palette.h"
+#include "Math.h"
 
 static UBYTE fade_frame;
 static UBYTE fade_timer;
@@ -11,32 +14,27 @@ static FADE_DIRECTION fade_direction;
 static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
 static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
 
+UWORD UpdateColor(UINT8 i, UWORD col) {
+  return RGB2(PAL_RED(col) | DespRight(0x1F, i), PAL_GREEN(col) | DespRight(0x1F, i),
+              PAL_BLUE(col) | DespRight(0x1F, i));
+}
+
 void ApplyPaletteChange(UBYTE index) {
-  LOG("ApplyPaletteChange index=%u\n", index);
-  //   #ifdef CUSTOM_COLORS
-  //   if (_cpu == CGB_TYPE) {
-  //     if (index == 0 || index == 1) {
-  //       set_bkg_palette(0, 1, obj_fade_vals);
-  //       set_sprite_palette(0, 1, obj_fade_vals);
-  //     } else if (index == 2) {
-  //       set_bkg_palette(0, 1, obj_fade_vals);
-  //       set_sprite_palette(0, 1, obj_fade_vals);
-  //     } else if (index == 3) {
-  //       set_bkg_palette(0, 1, obj_fade_vals);
-  //       set_sprite_palette(0, 1, obj_fade_vals);
-  //     } else if (index == 4) {
-  //       set_bkg_palette(0, 1, obj_fade_vals);
-  //       set_sprite_palette(0, 1, obj_fade_vals);
-  //     } else if (index == 5) {
-  //       set_bkg_palette(0, 1, obj_fade_vals);
-  //       set_sprite_palette(0, 1, obj_fade_vals);
-  //     }
-  //   } else
-  //   #endif
-  //   {
-  //     OBP0_REG = obj_fade_vals[index];
-  //     BGP_REG = bgp_fade_vals[index];
-  //   }
+  UINT8 pal, c;
+  UWORD palette[4];
+  UWORD palette_s[4];
+  UWORD *col = BkgPalette;
+  UWORD *col_s = SprPalette;
+
+  for (pal = 0; pal < 8; pal++) {
+    for (c = 0; c < 4; ++c, ++col, ++col_s) {
+      palette[c] = UpdateColor(index, *col);
+      palette_s[c] = UpdateColor(index, *col_s);
+    };
+    set_bkg_palette(pal, 1, palette);
+    set_sprite_palette(pal, 1, palette_s);
+  }
+
   OBP0_REG = obj_fade_vals[index];
   BGP_REG = bgp_fade_vals[index];
 }
@@ -72,7 +70,6 @@ void FadeUpdate_b() {
         }
       }
     }
-
     ApplyPaletteChange(fade_timer);
     fade_frame++;
   }
