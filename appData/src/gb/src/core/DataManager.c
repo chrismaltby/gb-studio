@@ -111,11 +111,6 @@ void LoadImageAttr(UINT16 index) {
 void LoadPalette(UINT16 index) {
   UBYTE bank;
   UBYTE *data_ptr;
-  UINT8 pal, c;
-  UWORD palette[4];
-  UWORD palette_s[4];
-  UWORD *col = BkgPalette;
-  UWORD *col_s = SprPalette;
 
   PUSH_BANK(DATA_PTRS_BANK);
   bank = palette_bank_ptrs[index].bank;
@@ -154,9 +149,7 @@ void LoadScene(UINT16 index) {
   UBYTE bank, i, k;
   UBYTE *data_ptr;
   UWORD backgroundIndex;
-  BANK_PTR sprite_bank_ptr;
-  UWORD sprite_ptr;
-  UBYTE sprite_frames, sprite_len;
+  UBYTE sprite_frames;
 
   // LOG("LOAD SCENE %u\n", index);
 

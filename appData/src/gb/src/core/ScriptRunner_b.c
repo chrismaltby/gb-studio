@@ -13,6 +13,7 @@
 #include "GameTime.h"
 #include "Core_Main.h"
 #include "Input.h"
+#include <rand.h>
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
