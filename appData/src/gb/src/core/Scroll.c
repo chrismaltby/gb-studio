@@ -150,19 +150,22 @@ void ClampScrollLimits(UINT16 *x, UINT16 *y) {
 void ScrollUpdateRowR() {
   UINT8 i = 0u;
 
-  for (i = 0u; i != 5 && pending_w_i != 0; ++i, --pending_w_i) {
 #ifdef CGB
-    PUSH_BANK(image_attr_bank);
-    VBK_REG = 1;
-    set_bkg_tiles(MOD_32(pending_w_x), MOD_32(pending_w_y), 1, 1, pending_w_cmap++);
-    VBK_REG = 0;
-    POP_BANK;
-    set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
-    // UPDATE_TILE(pending_w_x++, pending_w_y, pending_w_map++, pending_w_cmap++);
-#else
-    // UPDATE_TILE(pending_w_x ++, pending_w_y, pending_w_map ++,0);
-    set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
+  if (_cpu == CGB_TYPE) {  // Color Row Load
+    for (i = 0u; i != 5 && pending_w_i != 0; ++i, --pending_w_i) {
+      PUSH_BANK(image_attr_bank);
+      VBK_REG = 1;
+      set_bkg_tiles(MOD_32(pending_w_x), MOD_32(pending_w_y), 1, 1, pending_w_cmap++);
+      VBK_REG = 0;
+      POP_BANK;
+      set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
+    }
+  } else
 #endif
+  {  // DMG Row Load
+    for (i = 0u; i != 5 && pending_w_i != 0; ++i, --pending_w_i) {
+      set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
+    }
   }
 }
 
@@ -256,45 +259,25 @@ void ScrollUpdateColumnR() {
   UINT8 i = 0u;
   UBYTE a = 0;
 
-  /*
 #ifdef CGB
-  VBK_REG = 1;
-  PUSH_BANK(image_attr_bank);
-  for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--)
-  {
-    // set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y), 1, 1, pending_h_cmap);
-    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_cmap);
-    pending_h_cmap += image_tile_width;
-  }
-  POP_BANK;
-  VBK_REG = 0;
+  if (_cpu == CGB_TYPE) {  // Color Column Load
+    for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--) {
+      PUSH_BANK(image_attr_bank);
+      VBK_REG = 1;
+      set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y), 1, 1, pending_h_cmap);
+      VBK_REG = 0;
+      POP_BANK;
+      set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
+      pending_h_map += image_tile_width;
+      pending_h_cmap += image_tile_width;
+    }
+  } else
 #endif
-
-  for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--)
-  {
-    // UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, 0);
-    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
-    pending_h_map += image_tile_width;
-
-  }
-*/
-
-  for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--) {
-#ifdef CGB
-    PUSH_BANK(image_attr_bank);
-    VBK_REG = 1;
-    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y), 1, 1, pending_h_cmap);
-    VBK_REG = 0;
-    POP_BANK;
-    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
-    // UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, pending_h_cmap);
-    pending_h_map += image_tile_width;
-    pending_h_cmap += image_tile_width;
-#else
-    // UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, 0);
-    set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
-    pending_h_map += image_tile_width;
-#endif
+  {  // DMG Column Load
+    for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--) {
+      set_bkg_tiles(MOD_32(pending_h_x), MOD_32(pending_h_y++), 1, 1, pending_h_map);
+      pending_h_map += image_tile_width;
+    }
   }
 }
 
@@ -305,31 +288,7 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
     ScrollUpdateColumnR();
   }
 
-  // ActivateActorColumn(x, y);
-  // if(x == 40) {
-  //   ActivateActor(1);
-  // }
-  // if(x == 23) {
-  //   ActivateActor(2);
-  // }
-
-  // LOG("ScrollUpdateColumnWithDelay x=%u\n", x);
-  // if(x == 26) {
-  //   LOG("ScrollUpdateColumnWithDelay ActivateActor 2\n");
-  //   ActivateActor(2);
-  // }
-
-  // LOG("ScrollUpdateColumnWithDelay ActivateActor 3\n");
-  // ActivateActor(2);
-  // ActivateActor(3);
-  // ActivateActor(4);
-  // ActivateActor(5);
-  // ActivateActor(6);
-
-  LOG_VALUE("actors_len", actors_len);
-
   for (i = 1; i != actors_len; i++) {
-    // LOG("CHECK COL %u - %d - %u - %u\n", i, x, actors[i].pos.x, actors[i].pos.x >> 3);
     if (actors[i].pos.x >> 3 == x) {
       ActivateActor(i);
     }
