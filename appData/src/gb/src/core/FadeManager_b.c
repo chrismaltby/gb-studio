@@ -15,18 +15,21 @@ static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
 static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
 
 UWORD UpdateColor(UINT8 i, UWORD col) {
-  return RGB2(PAL_RED(col) | DespRight(0x1F, i), PAL_GREEN(col) | DespRight(0x1F, i),
-              PAL_BLUE(col) | DespRight(0x1F, i));
+  return RGB2(PAL_RED(col) | DespRight(0x1F, i - 1), PAL_GREEN(col) | DespRight(0x1F, i - 1),
+              PAL_BLUE(col) | DespRight(0x1F, i - 1));
 }
 
-void ApplyPaletteChange(UBYTE index) {
+void ApplyPaletteChangeColor(UBYTE index) {
   UINT8 pal, c;
   UWORD palette[4];
   UWORD palette_s[4];
   UWORD *col = BkgPalette;
   UWORD *col_s = SprPalette;
 
-#ifdef CGB
+  if (index == 0) {
+    index = 1;
+  }
+
   for (pal = 0; pal < 8; pal++) {
     for (c = 0; c < 4; ++c, ++col, ++col_s) {
       palette[c] = UpdateColor(index, *col);
@@ -35,8 +38,9 @@ void ApplyPaletteChange(UBYTE index) {
     set_bkg_palette(pal, 1, palette);
     set_sprite_palette(pal, 1, palette_s);
   }
-#endif
+}
 
+void ApplyPaletteChangeDMG(UBYTE index) {
   OBP0_REG = obj_fade_vals[index];
   BGP_REG = bgp_fade_vals[index];
 }
@@ -46,7 +50,12 @@ void FadeIn_b() {
   fade_direction = FADE_IN;
   fade_running = TRUE;
   fade_timer = 0;
-  ApplyPaletteChange(fade_timer);
+#ifdef CGB
+  if (_cpu == CGB_TYPE) {
+    ApplyPaletteChangeColor(fade_timer);
+  } else
+#endif
+    ApplyPaletteChangeDMG(fade_timer);
 }
 
 void FadeOut_b() {
@@ -54,7 +63,12 @@ void FadeOut_b() {
   fade_direction = FADE_OUT;
   fade_running = TRUE;
   fade_timer = 5;
-  ApplyPaletteChange(fade_timer);
+#ifdef CGB
+  if (_cpu == CGB_TYPE) {
+    ApplyPaletteChangeColor(fade_timer);
+  } else
+#endif
+    ApplyPaletteChangeDMG(fade_timer);
 }
 
 void FadeUpdate_b() {
@@ -71,8 +85,13 @@ void FadeUpdate_b() {
           fade_running = FALSE;
         }
       }
+#ifdef CGB
+      if (_cpu == CGB_TYPE) {
+        ApplyPaletteChangeColor(fade_timer);
+      } else
+#endif
+        ApplyPaletteChangeDMG(fade_timer);
     }
-    ApplyPaletteChange(fade_timer);
     fade_frame++;
   }
 }

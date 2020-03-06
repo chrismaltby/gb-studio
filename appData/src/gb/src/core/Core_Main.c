@@ -129,8 +129,6 @@ int core_start() {
   // DISPLAY_ON;
   // SHOW_SPRITES;
 
-  set_sprite_palette(0, 7, spritePalette);
-
   state_running = 0;
   next_state = START_SCENE_INDEX;
   game_time = 0;

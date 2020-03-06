@@ -126,15 +126,6 @@ void LoadPalette(UINT16 index) {
   memcpy(BkgPalette, data_ptr, 64);
   memcpy(SprPalette, data_ptr, 64);
   POP_BANK;
-
-  for (pal = 0; pal < 8; pal++) {
-    for (c = 0; c < 4; ++c, ++col, ++col_s) {
-      palette[c] = *col;
-      palette_s[c] = *col_s;
-    };
-    set_bkg_palette(pal, 1, palette);
-    set_sprite_palette(pal, 1, palette_s);
-  }
 }
 
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
