@@ -664,7 +664,7 @@ void Script_Choice_b() {
   script_ptr += 1 + script_cmd_args_len;
   UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1],
                (script_cmd_args[2] * 256) + script_cmd_args[3]);
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -677,7 +677,7 @@ void Script_TextMenu_b() {
   UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1],
              (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4],
              script_cmd_args[5]);
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -1918,25 +1918,13 @@ void Script_TextWithAvatar_b() {
   script_ptr += 1 + script_cmd_args_len;
   UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
   UIShowAvatar(script_cmd_args[2]);
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 UBYTE ScriptLastFnComplete_b() {
   UBYTE fading = IsFading();
 
   /*
-    if (last_fn == Script_FadeIn_b && !fading) {
-      return TRUE;
-    }
-
-    if (last_fn == Script_FadeOut_b && !fading) {
-      return TRUE;
-    }
-
-    if (last_fn == Script_LoadScene_b && !fading) {
-      return TRUE;
-    }
-
     if (last_fn == Script_ScenePopState_b) {
       return TRUE;
     }
@@ -1956,17 +1944,7 @@ UBYTE ScriptLastFnComplete_b() {
   }
   */
   /*
-    if (last_fn == Script_Text_b && UIIsClosed()) {
-      return TRUE;
-    }
 
-    if (last_fn == Script_Choice_b && UIIsClosed()) {
-      return TRUE;
-    }
-
-    if (last_fn == Script_TextMenu_b && UIIsClosed()) {
-      return TRUE;
-    }
 
     if (last_fn == Script_OverlayMoveTo_b && UIAtDest()) {
       return TRUE;
@@ -1990,10 +1968,5 @@ UBYTE ScriptLastFnComplete_b() {
   }
   */
 
-  /*
-    if (last_fn == Script_TextWithAvatar_b && UIIsClosed()) {
-      return TRUE;
-    }
-  */
   return FALSE;
 }
