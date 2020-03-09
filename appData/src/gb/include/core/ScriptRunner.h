@@ -32,7 +32,7 @@ extern UBYTE *script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
 extern UBYTE script_action_complete;
-extern UBYTE script_continue;
+extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
 
 extern SCRIPT_CMD_FN last_fn;

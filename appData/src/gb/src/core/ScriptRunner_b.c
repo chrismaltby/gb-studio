@@ -53,6 +53,10 @@ UBYTE ScriptUpdate_MoveActor() {
   return FALSE;
 }
 
+UBYTE ScriptUpdate_AwaitFade() { return !IsFading(); }
+
+UBYTE ScriptUpdate_AwaitUIClosed() { return UIIsClosed(); }
+
 /*
  * Command: Noop
  * ----------------------------
@@ -81,11 +85,8 @@ void Script_End_b() {
  */
 void Script_Text_b() {
   script_ptr += 1 + script_cmd_args_len;
-  LOG("Script_Text_b script_cmd_args[0]=%u script_cmd_args[1]=%u\n", script_cmd_args[0],
-      script_cmd_args[1]);
   UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
-  // UIShowText
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -98,7 +99,7 @@ void Script_Text_b() {
  */
 void Script_Goto_b() {
   script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -118,7 +119,7 @@ void Script_IfFlag_b() {
   } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -167,7 +168,7 @@ void Script_IfValue_b() {
   } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -182,7 +183,7 @@ void Script_SetFlag_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = TRUE;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -197,7 +198,7 @@ void Script_ClearFlag_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = FALSE;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -212,7 +213,7 @@ void Script_ActorSetDir_b() {
   actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
   // SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -225,7 +226,7 @@ void Script_ActorSetDir_b() {
 void Script_ActorActivate_b() {
   script_actor = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -346,8 +347,14 @@ void Script_LoadScene_b() {
   FadeSetSpeed(script_cmd_args[5]);
   // FadeOut();
 
-  script_action_complete = FALSE;
+  // script_action_complete = FALSE;
   script_ptr += 1 + script_cmd_args_len;
+
+  LOG("Script_LoadScene_b BBB script_update_fn=%d\n", script_update_fn);
+
+  script_update_fn = ScriptUpdate_AwaitFade;
+
+  LOG("Script_LoadScene_b CCC script_update_fn=%d\n", script_update_fn);
 }
 
 /*
@@ -370,7 +377,7 @@ void Script_ActorSetPos_b() {
   }
   */
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -382,18 +389,12 @@ void Script_ActorSetPos_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorMoveTo_b() {
-  // actor_move_settings |= ACTOR_MOVE_ENABLED;
-  // actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
   actor_move_dest_x = (script_cmd_args[0] * 8);
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = (script_cmd_args[1] * 8);
-  LOG_VALUE("actor_move_dest_x", actor_move_dest_x);
-  LOG_VALUE("actor_move_dest_y", actor_move_dest_y);
-
   script_ptr += 1 + script_cmd_args_len;
   script_update_fn = ScriptUpdate_MoveActor;
-  script_action_complete = FALSE;
 }
 
 /*
@@ -404,7 +405,7 @@ void Script_ActorMoveTo_b() {
 void Script_ShowSprites_b() {
   SHOW_SPRITES;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -415,7 +416,7 @@ void Script_ShowSprites_b() {
 void Script_HideSprites_b() {
   HIDE_SPRITES;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -426,7 +427,7 @@ void Script_HideSprites_b() {
 void Script_ActorShow_b() {
   actors[script_actor].enabled = TRUE;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -437,7 +438,7 @@ void Script_ActorShow_b() {
 void Script_ActorHide_b() {
   actors[script_actor].enabled = FALSE;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -450,7 +451,7 @@ void Script_ActorHide_b() {
 void Script_ActorSetCollisions_b() {
   actors[script_actor].collisionsEnabled = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -492,7 +493,7 @@ void Script_ShowOverlay_b() {
   UISetColor(script_cmd_args[0]);
   UISetPos(script_cmd_args[1] << 3, script_cmd_args[2] << 3);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -504,7 +505,7 @@ void Script_HideOverlay_b() {
   /*
   UISetPos(0, MENU_CLOSED_Y);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -516,7 +517,7 @@ void Script_HideOverlay_b() {
 void Script_OverlaySetPos_b() {
   UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -549,7 +550,7 @@ void Script_AwaitInput_b() {
 void Script_MusicPlay_b() {
   MusicPlay(script_cmd_args[0], script_cmd_args[1], scriptrunner_bank);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -560,7 +561,7 @@ void Script_MusicPlay_b() {
 void Script_MusicStop_b() {
   MusicStop(scriptrunner_bank);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -574,7 +575,7 @@ void Script_ResetVariables_b() {
     script_variables[i] = FALSE;
   }
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -584,7 +585,8 @@ void Script_ResetVariables_b() {
  */
 void Script_NextFrame_b() {
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = FALSE;
+  // script_continue = FALSE;
+  script_await_next_frame = TRUE;
 }
 
 /*
@@ -600,7 +602,7 @@ void Script_IncFlag_b() {
     script_variables[ptr] = value + 1;
   }
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -616,7 +618,7 @@ void Script_DecFlag_b() {
     script_variables[ptr] = value - 1;
   }
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -628,7 +630,7 @@ void Script_SetFlagValue_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -649,7 +651,7 @@ void Script_IfInput_b() {
   { // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -706,7 +708,7 @@ void Script_PlayerSetSprite_b() {
   map_next_sprite = sprite_index;
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -839,7 +841,7 @@ void Script_IfActorPos_b() {
   } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -892,7 +894,7 @@ void Script_SaveData_b() {
   DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -964,7 +966,7 @@ void Script_ClearData_b() {
   DISABLE_RAM;
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1016,7 +1018,7 @@ void Script_IfActorDirection_b() {
     script_ptr += 1 + script_cmd_args_len;
   }
 
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1038,7 +1040,7 @@ void Script_SetFlagRandomValue_b() {
   modulo = script_cmd_args[3] + 1;
   script_variables[ptr] = offset + (rand_val % modulo);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1050,7 +1052,7 @@ void Script_ActorGetPos_b() {
   script_variables[script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
   script_variables[script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1069,7 +1071,7 @@ void Script_ActorSetPosToVal_b() {
     actors[script_actor].pos.y = ACTOR_MAX_Y;
   }
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1194,7 +1196,7 @@ void Script_ActorSetPosRel_b() {
   }
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1212,7 +1214,7 @@ void Script_MathAdd_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a + b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1230,7 +1232,7 @@ void Script_MathSub_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a - b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1248,7 +1250,7 @@ void Script_MathMul_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a * b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1266,7 +1268,7 @@ void Script_MathDiv_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a / b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1284,7 +1286,7 @@ void Script_MathMod_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a % b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1297,7 +1299,7 @@ void Script_MathAddVal_b() {
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a + b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1310,7 +1312,7 @@ void Script_MathSubVal_b() {
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a - b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1323,7 +1325,7 @@ void Script_MathMulVal_b() {
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a * b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1336,7 +1338,7 @@ void Script_MathDivVal_b() {
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a / b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1349,7 +1351,7 @@ void Script_MathModVal_b() {
   UBYTE b = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = a % b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1361,7 +1363,7 @@ void Script_CopyVal_b() {
   UBYTE value = script_variables[script_ptr_y];
   script_variables[script_ptr_x] = value;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1407,7 +1409,7 @@ void Script_IfValueCompare_b() {
   } else {  // False path, skip to next command
     script_ptr += 1 + script_cmd_args_len;
   }
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1424,7 +1426,7 @@ void Script_LoadVectors_b() {
   script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1437,7 +1439,7 @@ void Script_LoadVectors_b() {
 void Script_ActorSetMoveSpeed_b() {
   actors[script_actor].move_speed = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1450,7 +1452,7 @@ void Script_ActorSetMoveSpeed_b() {
 void Script_ActorSetAnimSpeed_b() {
   actors[script_actor].anim_speed = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1467,7 +1469,7 @@ void Script_TextSetAnimSpeed_b() {
   text_out_speed = script_cmd_args[1];
   text_draw_speed = script_cmd_args[2];
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1502,7 +1504,7 @@ void Script_StackPop_b() {
   script_stack_ptr--;
   script_ptr = script_stack[script_stack_ptr];
   script_start_ptr = script_start_stack[script_stack_ptr];
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1525,7 +1527,7 @@ void Script_ScenePushState_b() {
   }
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1576,7 +1578,7 @@ void Script_SceneResetStack_b() {
   /*
   scene_stack_ptr = 0;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1672,7 +1674,7 @@ void Script_ActorSetFrame_b() {
   actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
   // SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1687,7 +1689,7 @@ void Script_ActorSetFrameToVal_b() {
                                actors[script_actor].frames_len;
   // SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1700,7 +1702,7 @@ void Script_ActorSetFlip_b() {
   actors[script_actor].flip = script_cmd_args[0];
   // SceneRenderActor(script_actor);
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1734,7 +1736,7 @@ void Script_TextMulti_b() {
   LOG("Script_TextMulti_b DONE\n");
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1750,7 +1752,7 @@ void Script_VariableAddFlags_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a | b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1766,7 +1768,7 @@ void Script_VariableClearFlags_b() {
   UBYTE b = script_cmd_args[2];
   script_variables[ptr] = a & ~b;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1793,7 +1795,7 @@ void Script_SoundStartTone_b() {
   NR51_REG |= 0x11;
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1805,7 +1807,7 @@ void Script_SoundStopTone_b() {
   NR12_REG = 0x00;
 
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1832,7 +1834,7 @@ void Script_SoundPlayBeep_b() {
 
   // no delay
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1857,7 +1859,7 @@ void Script_SoundPlayCrash_b() {
 
   // no delay
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
 }
 
 /*
@@ -1886,7 +1888,7 @@ void Script_ResetTimer_b() {
   /*
   timer_script_time = timer_script_duration;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1899,7 +1901,7 @@ void Script_RemoveTimerScript_b() {
   /*
   timer_script_duration = 0;
   script_ptr += 1 + script_cmd_args_len;
-  script_continue = TRUE;
+  // script_continue = TRUE;
   */
 }
 
@@ -1922,57 +1924,58 @@ void Script_TextWithAvatar_b() {
 UBYTE ScriptLastFnComplete_b() {
   UBYTE fading = IsFading();
 
-  if (last_fn == Script_FadeIn_b && !fading) {
-    return TRUE;
-  }
+  /*
+    if (last_fn == Script_FadeIn_b && !fading) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_FadeOut_b && !fading) {
-    return TRUE;
-  }
+    if (last_fn == Script_FadeOut_b && !fading) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_LoadScene_b && !fading) {
-    return TRUE;
-  }
+    if (last_fn == Script_LoadScene_b && !fading) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_ScenePopState_b) {
-    return TRUE;
-  }
+    if (last_fn == Script_ScenePopState_b) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_ScenePopAllState_b) {
-    return TRUE;
-  }
+    if (last_fn == Script_ScenePopAllState_b) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_LoadData_b && !fading) {
-    return TRUE;
-  }
-
+    if (last_fn == Script_LoadData_b && !fading) {
+      return TRUE;
+    }
+  */
   /*
   if (last_fn == Script_ActorSetEmote_b && !SceneIsEmoting())
   {
     return TRUE;
   }
   */
+  /*
+    if (last_fn == Script_Text_b && UIIsClosed()) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_Text_b && UIIsClosed()) {
-    return TRUE;
-  }
+    if (last_fn == Script_Choice_b && UIIsClosed()) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_Choice_b && UIIsClosed()) {
-    return TRUE;
-  }
+    if (last_fn == Script_TextMenu_b && UIIsClosed()) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_TextMenu_b && UIIsClosed()) {
-    return TRUE;
-  }
+    if (last_fn == Script_OverlayMoveTo_b && UIAtDest()) {
+      return TRUE;
+    }
 
-  if (last_fn == Script_OverlayMoveTo_b && UIAtDest()) {
-    return TRUE;
-  }
-
-  if (last_fn == Script_AwaitInput_b && AwaitInputPressed()) {
-    return TRUE;
-  }
-
+    if (last_fn == Script_AwaitInput_b && AwaitInputPressed()) {
+      return TRUE;
+    }
+  */
   /*
   if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
   {
@@ -1987,9 +1990,10 @@ UBYTE ScriptLastFnComplete_b() {
   }
   */
 
-  if (last_fn == Script_TextWithAvatar_b && UIIsClosed()) {
-    return TRUE;
-  }
-
+  /*
+    if (last_fn == Script_TextWithAvatar_b && UIIsClosed()) {
+      return TRUE;
+    }
+  */
   return FALSE;
 }

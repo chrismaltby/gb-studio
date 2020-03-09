@@ -6,7 +6,7 @@
 #include "Actor.h"
 #include <rand.h>
 
-UBYTE script_continue;
+UBYTE script_await_next_frame;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 UBYTE scene_stack_ptr = 0;
@@ -19,7 +19,6 @@ UWORD script_ptr_y = 0;
 UBYTE *script_start_ptr = 0;
 UBYTE script_cmd_args[6] = {0};
 UBYTE script_cmd_args_len;
-SCRIPT_CMD_FN last_fn;
 UBYTE (*script_update_fn)();
 UBYTE script_stack_ptr = 0;
 UBYTE *script_stack[STACK_SIZE] = {0};
@@ -157,32 +156,43 @@ void ScriptStart(BankPtr *events_ptr) {
 
 void ScriptRunnerUpdate() {
   UBYTE i, script_cmd_index;
-  // SCRIPT_CMD_FN script_cmd_fn;
+  UBYTE update_complete = FALSE;
 
-  // if(script_ptr) {
-  //   while(TRUE) {
-  //     i++;
-  //   }
-  // }
+  if (script_ptr_bank) {
+    LOG("ScriptRunnerUpdate\n");
+  }
+
+  script_await_next_frame = FALSE;
 
   if (!script_action_complete) {
+    LOG("Has not script_action_complete\n");
     PUSH_BANK(scriptrunner_bank);
     script_action_complete = ScriptLastFnComplete_b();
     POP_BANK;
   }
 
   if (script_update_fn) {
+    LOG("Has script_update_fn\n");
     PUSH_BANK(scriptrunner_bank);
     // player.pos.x = 0;
-    script_action_complete = (*script_update_fn)();
-    // script_action_complete = TRUE;
-    if (script_action_complete) {
+    LOG("Has script_update_fn 1\n");
+
+    update_complete = (*script_update_fn)();
+    LOG("Has script_update_fn 2 -- %d\n", update_complete);
+
+    // update_complete = TRUE;
+    if (update_complete) {
+      LOG("Has script_update_fn 3\n");
+
       script_update_fn = FALSE;
     }
+    LOG("Has script_update_fn 4\n");
+
     POP_BANK;
   }
 
   if (!script_ptr_bank || !script_action_complete || script_update_fn) {
+    // LOG("STOPPED SCRIPT FOR NOW\n");
     return;
   }
 
@@ -217,14 +227,13 @@ void ScriptRunnerUpdate() {
   }
 
   PUSH_BANK(scriptrunner_bank);
-  // if(script_cmd_fn) {
   script_cmds[script_cmd_index].fn();
-  // }
   POP_BANK;
 
-  last_fn = script_cmds[script_cmd_index].fn;
+  LOG("script_await_next_frame = %u script_update_fn = %d\n", script_await_next_frame,
+      script_update_fn);
 
-  if (script_continue) {
+  if (!script_await_next_frame && !script_update_fn) {
     LOG("CONTINUE!\n");
     ScriptRunnerUpdate();
   }
