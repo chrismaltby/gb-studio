@@ -297,7 +297,7 @@ void Script_FadeOut_b() {
   FadeOut();
   FadeSetSpeed(script_cmd_args[0]);
   script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -311,7 +311,7 @@ void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
   script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
