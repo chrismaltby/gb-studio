@@ -9,6 +9,7 @@
 #define MAX_SCENE_STATES 8
 
 typedef void (*SCRIPT_CMD_FN)();
+typedef UBYTE (*SCRIPT_UPDATE_FN)();
 
 typedef struct _SCRIPT_CMD {
   SCRIPT_CMD_FN fn;
@@ -35,6 +36,7 @@ extern UBYTE script_continue;
 extern UBYTE script_actor;
 
 extern SCRIPT_CMD_FN last_fn;
+extern SCRIPT_UPDATE_FN script_update_fn;
 
 // Max call stack depth
 #define STACK_SIZE 8

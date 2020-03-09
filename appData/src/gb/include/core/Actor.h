@@ -10,6 +10,8 @@
 #define MAX_ACTORS 31
 #define MAX_ACTIVE_ACTORS 11
 #define player (actors[0])
+#define ACTOR_MOVE_ENABLED 0x80
+#define ACTOR_NOCLIP 0x40
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
 #define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
@@ -67,5 +69,7 @@ extern UBYTE actors_active_size;
 extern Pos map_next_pos;
 extern Vector2D map_next_dir;
 extern UBYTE map_next_sprite;
+extern UBYTE actor_move_settings;
+extern Pos actor_move_dest;
 
 #endif
