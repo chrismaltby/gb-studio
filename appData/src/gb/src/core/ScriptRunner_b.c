@@ -891,11 +891,7 @@ void Script_ActorPush_b() {
   actor_move_dir_x = actors[0].dir.x;
   actor_move_dir_y = actors[0].dir.y;
 
-  // script_ptr += 1 + script_cmd_args_len;
-  // script_action_complete = FALSE;
-
   script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
   script_update_fn = ScriptUpdate_MoveActor;
 
   LOG("DEST_X =%u\n", dest_x);
