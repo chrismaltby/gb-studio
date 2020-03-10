@@ -27,7 +27,7 @@ extern UBYTE script_ptr_bank;
 extern UBYTE *script_start_ptr;
 extern UBYTE script_cmd_args[6];
 extern UBYTE script_cmd_args_len;
-
+extern SCRIPT_CMD script_cmds[];
 extern UBYTE *script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
