@@ -154,6 +154,14 @@ UBYTE ScriptUpdate_AwaitFade() { return !IsFading(); }
 
 UBYTE ScriptUpdate_AwaitUIClosed() { return UIIsClosed(); }
 
+UBYTE ScriptUpdate_Wait() {
+  if (wait_time == 0) {
+    return TRUE;
+  }
+  wait_time--;
+  return FALSE;
+}
+
 /*
  * Command: Noop
  * ----------------------------
@@ -373,7 +381,7 @@ void Script_CameraLock_b() {
 void Script_Wait_b() {
   wait_time = script_cmd_args[0];
   script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_Wait;
 }
 
 /*
