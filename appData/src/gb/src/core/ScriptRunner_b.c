@@ -154,6 +154,8 @@ UBYTE ScriptUpdate_AwaitFade() { return !IsFading(); }
 
 UBYTE ScriptUpdate_AwaitUIClosed() { return UIIsClosed(); }
 
+UBYTE ScriptUpdate_AwaitUIAtDest() { return UIAtDest(); }
+
 UBYTE ScriptUpdate_AwaitInputPres() { return (joy & await_input) != 0; }
 
 UBYTE ScriptUpdate_Wait() {
@@ -619,7 +621,7 @@ void Script_OverlaySetPos_b() {
 void Script_OverlayMoveTo_b() {
   UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3, script_cmd_args[2]);
   script_ptr += 1 + script_cmd_args_len;
-  script_action_complete = FALSE;
+  script_update_fn = ScriptUpdate_AwaitUIAtDest;
 }
 
 /*
