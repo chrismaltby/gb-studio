@@ -432,9 +432,9 @@ void Script_LoadScene_b() {
   // scene_index = scene_next_index + 1;
 
   map_next_pos.x = 0;  // @wtf-but-needed
-  map_next_pos.x = (script_cmd_args[2] << 3);
+  map_next_pos.x = (script_cmd_args[2] * 8);
   map_next_pos.y = 0;  // @wtf-but-needed
-  map_next_pos.y = (script_cmd_args[3] << 3);
+  map_next_pos.y = (script_cmd_args[3] * 8);
   map_next_dir.x = script_cmd_args[4] == 2 ? -1 : script_cmd_args[4] == 4 ? 1 : 0;
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
