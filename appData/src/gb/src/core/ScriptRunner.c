@@ -33,6 +33,7 @@ void ScriptStart(BankPtr *events_ptr) {
 
   script_ptr_bank = events_ptr->bank;
   script_ptr = ((UBYTE *)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
+  script_update_fn = FALSE;
 
   LOG("ScriptStart bank_offset=%d script_ptr=%d\n", ((UBYTE *)bank_data_ptrs[script_ptr_bank]),
       script_ptr);
