@@ -6,8 +6,8 @@
 
 typedef void (*Void_Func_Void)();
 
-extern Void_Func_Void startFuncs[];
-extern Void_Func_Void updateFuncs[];
-extern UBYTE stateBanks[];
+extern const Void_Func_Void startFuncs[];
+extern const Void_Func_Void updateFuncs[];
+extern const UBYTE stateBanks[];
 
 #endif
