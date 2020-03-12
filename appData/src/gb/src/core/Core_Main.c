@@ -227,6 +227,13 @@ void game_loop() {
 
     ScriptStart(&scene_events_start_ptr);
 
+    ScriptRunnerUpdate();
+    UpdateActors();
+    RefreshScroll();
+    MoveActors();
+    UpdateSprites();
+    UIUpdate();
+
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;
 
