@@ -9,8 +9,6 @@
 UBYTE script_await_next_frame;
 UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
-UBYTE scene_stack_ptr = 0;
-SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE *ptr_div_reg = (UBYTE *)0xFF04;
 UBYTE script_ptr_bank = 0;
 UBYTE *script_ptr = 0;
