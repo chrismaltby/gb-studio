@@ -164,16 +164,4 @@ void Update_TopDown() {
       ScriptStart(&actors[hit_actor].events_ptr);
     }
   }
-
-  // LOG("[%u, %u] [%u, %u]\n", player.vel.x, player.vel.y, player.pos.x, player.pos.y);
-
-  if (INPUT_SELECT_PRESSED) {
-    player.pos.x = 32;
-    player.pos.y = 32;
-  }
-
-  if (INPUT_START_PRESSED) {
-    player.pos.x = 512;
-    player.pos.y = 512;
-  }
 }
