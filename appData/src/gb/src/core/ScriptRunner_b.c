@@ -156,7 +156,7 @@ UBYTE ScriptUpdate_AwaitUIClosed() { return UIIsClosed(); }
 
 UBYTE ScriptUpdate_AwaitUIAtDest() { return UIAtDest(); }
 
-UBYTE ScriptUpdate_AwaitInputPres() { return (joy & await_input) != 0; }
+UBYTE ScriptUpdate_AwaitInputPres() { return (joy != last_joy && joy & await_input) != 0; }
 
 UBYTE ScriptUpdate_Wait() {
   if (wait_time == 0) {
