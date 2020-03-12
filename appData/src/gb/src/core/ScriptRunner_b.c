@@ -432,8 +432,6 @@ void Script_FadeIn_b() {
  */
 void Script_LoadScene_b() {
   UINT16 scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  // scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  // scene_index = scene_next_index + 1;
 
   map_next_pos.x = 0;  // @wtf-but-needed
   map_next_pos.x = (script_cmd_args[2] * 8);
@@ -443,22 +441,10 @@ void Script_LoadScene_b() {
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
   SetState(scene_next_index);
-
-  // stage_next_type = SCENE;
-  // scene_loaded = FALSE;
-  // script_action_complete = FALSE;
-
   FadeSetSpeed(script_cmd_args[5]);
-  // FadeOut();
 
-  // script_action_complete = FALSE;
   script_ptr += 1 + script_cmd_args_len;
-
-  LOG("Script_LoadScene_b BBB script_update_fn=%d\n", script_update_fn);
-
   script_update_fn = ScriptUpdate_AwaitFade;
-
-  LOG("Script_LoadScene_b CCC script_update_fn=%d\n", script_update_fn);
 }
 
 /*
@@ -1954,14 +1940,6 @@ UBYTE ScriptLastFnComplete_b() {
   UBYTE fading = IsFading();
 
   /*
-    if (last_fn == Script_ScenePopState_b) {
-      return TRUE;
-    }
-
-    if (last_fn == Script_ScenePopAllState_b) {
-      return TRUE;
-    }
-
     if (last_fn == Script_LoadData_b && !fading) {
       return TRUE;
     }
@@ -1971,14 +1949,6 @@ UBYTE ScriptLastFnComplete_b() {
   {
     return TRUE;
   }
-  */
-  /*
-
-
-    if (last_fn == Script_OverlayMoveTo_b && UIAtDest()) {
-      return TRUE;
-    }
-
   */
   /*
   if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
