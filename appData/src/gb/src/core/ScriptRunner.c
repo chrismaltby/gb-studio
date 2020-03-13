@@ -57,6 +57,7 @@ void ScriptStart(BankPtr *events_ptr) {
 }
 
 void ScriptRunnerUpdate() {
+  UBYTE *initial_script_ptr;
   UBYTE i, script_cmd_index;
   UBYTE update_complete = FALSE;
 
@@ -132,7 +133,12 @@ void ScriptRunnerUpdate() {
   }
 
   PUSH_BANK(scriptrunner_bank);
+  initial_script_ptr = script_ptr;
   script_cmds[script_cmd_index].fn();
+  if (initial_script_ptr == script_ptr) {
+    // Increment script_ptr unless already modified by script_cmd
+    script_ptr += 1 + script_cmd_args_len;
+  }
   POP_BANK;
 
   LOG("script_await_next_frame = %u script_update_fn = %d\n", script_await_next_frame,
