@@ -44,8 +44,8 @@ UBYTE Gt16(UINT16 a, UINT16 b);
 #define DIV_2(a) ((a) >> 1)
 
 typedef struct _Pos {
-  UINT16 x;
-  UINT16 y;
+  WORD x;
+  WORD y;
 } Pos;
 
 typedef struct _Vector2D {

@@ -18,8 +18,8 @@ void MoveActors_b() {
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
 
-    actors[a].pos.x = (WORD)actors[a].pos.x + (BYTE)actors[a].vel.x;
-    actors[a].pos.y = (WORD)actors[a].pos.y + (BYTE)actors[a].vel.y;
+    actors[a].pos.x += actors[a].vel.x;
+    actors[a].pos.y += actors[a].vel.y;
   }
 }
 
