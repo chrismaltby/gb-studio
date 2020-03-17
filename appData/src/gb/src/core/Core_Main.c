@@ -1,5 +1,7 @@
 #include "Core_Main.h"
+
 #include <gb/cgb.h>
+
 #include "Actor.h"
 #include "BankManager.h"
 #include "DataManager.h"
@@ -178,7 +180,6 @@ void game_loop() {
     UIOnInteract();
     UIUpdate();
     HandleInputScripts();
-    HandleScriptWait();
     FadeUpdate();
 
     game_time++;

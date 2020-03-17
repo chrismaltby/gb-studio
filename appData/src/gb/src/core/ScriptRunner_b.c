@@ -30,6 +30,7 @@ BYTE actor_move_dir_y = 0;
 BYTE actor_move_speed = 1;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
+UBYTE wait_time = 0;
 
 const SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},                 // 0x00
