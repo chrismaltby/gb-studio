@@ -1,10 +1,12 @@
 #include "ScriptRunner.h"
+
+#include <rand.h>
+
+#include "Actor.h"
 #include "BankData.h"
 #include "BankManager.h"
-#include "UI.h"
 #include "FadeManager.h"
-#include "Actor.h"
-#include <rand.h>
+#include "UI.h"
 
 UBYTE script_await_next_frame;
 UBYTE script_action_complete = TRUE;

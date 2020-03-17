@@ -1,4 +1,5 @@
 #include "Sprite.h"
+
 #include "Stack.h"
 
 Sprite sprites[MAX_SPRITES];

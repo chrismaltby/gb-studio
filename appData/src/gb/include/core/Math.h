@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "asm/types.h"
 
 INT16 DespRight(INT16 a, INT16 b);

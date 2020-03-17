@@ -2,6 +2,7 @@
 #define SCRIPT_RUNNER_H
 
 #include <gb/gb.h>
+
 #include "BankData.h"
 #include "Math.h"
 #include "game.h"

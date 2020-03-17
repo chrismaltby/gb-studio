@@ -4,6 +4,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "BankData.h"
 
 #define DATA_MANAGER_BANK 1

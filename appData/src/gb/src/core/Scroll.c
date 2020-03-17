@@ -1,7 +1,8 @@
 #include "Scroll.h"
-#include "DataManager.h"
-#include "BankManager.h"
+
 #include "Actor.h"
+#include "BankManager.h"
+#include "DataManager.h"
 
 #define SCREEN_TILES_W 20  // 160 >> 3 = 20
 #define SCREEN_TILES_H 18  // 144 >> 3 = 18

@@ -1,8 +1,8 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 
 #include "Math.h"
 

@@ -2,6 +2,7 @@
 #define BANK_MANAGER_H
 
 #include <gbdkjs.h>
+
 #include "Stack.h"
 #include "game.h"
 

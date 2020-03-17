@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "BankData.h"
 #include "Math.h"
 

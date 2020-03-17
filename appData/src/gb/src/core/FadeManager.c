@@ -1,4 +1,5 @@
 #include "FadeManager.h"
+
 #include "BankManager.h"
 
 UBYTE fade_running;

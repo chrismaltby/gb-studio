@@ -1,4 +1,5 @@
 #include "DataManager.h"
+
 #include "Actor.h"
 #include "BankManager.h"
 #include "Palette.h"

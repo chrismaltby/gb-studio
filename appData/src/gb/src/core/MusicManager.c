@@ -1,19 +1,18 @@
 #include "MusicManager.h"
-#include "BankManager.h"
-#include "gbt_player.h"
-#include "data_ptrs.h"
+
 #include "BankData.h"
+#include "BankManager.h"
+#include "data_ptrs.h"
+#include "gbt_player.h"
 
 #define MAX_MUSIC 255
 
 UBYTE current_index = MAX_MUSIC;
 
-void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
-{
+void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank) {
   UBYTE music_bank;
 
-  if (index != current_index)
-  {
+  if (index != current_index) {
     current_index = index;
     music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
@@ -26,8 +25,7 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
   }
 }
 
-void MusicStop(UBYTE return_bank)
-{
+void MusicStop(UBYTE return_bank) {
   PUSH_BANK(return_bank);
 #ifndef __EMSCRIPTEN__
   gbt_stop();
@@ -36,8 +34,7 @@ void MusicStop(UBYTE return_bank)
   POP_BANK;
 }
 
-void MusicUpdate()
-{
+void MusicUpdate() {
 #ifndef __EMSCRIPTEN__
   gbt_update();
 #endif

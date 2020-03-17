@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "data_ptrs.h"
 
 typedef struct _BankPtr {

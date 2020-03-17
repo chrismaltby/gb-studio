@@ -1,8 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
-#include <gbdkjs.h>
 #include <gb/gb.h>
+#include <gbdkjs.h>
 
 #define UI_BANK 3
 #define MENU_OPEN_Y 112

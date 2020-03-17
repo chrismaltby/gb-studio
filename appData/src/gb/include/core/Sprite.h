@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "Math.h"
 
 #define MAX_SPRITES 20

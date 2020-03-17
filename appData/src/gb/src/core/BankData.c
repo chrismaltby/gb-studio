@@ -1,9 +1,10 @@
 #include "BankData.h"
-#include "BankManager.h"
+
 #include <string.h>
 
-void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr)
-{
+#include "BankManager.h"
+
+void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr) {
   PUSH_BANK(bank);
   set_bkg_data(i, l, ptr);
   POP_BANK;
@@ -25,15 +26,13 @@ void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr)
 //   POP_BANK;
 // }
 
-void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr)
-{
+void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr) {
   PUSH_BANK(bank);
   set_sprite_data(i, l, ptr);
   POP_BANK;
 }
 
-UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr)
-{
+UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr) {
   UBYTE value;
   PUSH_BANK(bank);
   value = *(UBYTE *)ptr;
@@ -69,8 +68,7 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr)
 //   strcpy(to, buffer);
 // }
 
-void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from)
-{
+void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from) {
   BANK_PTR bank_ptr;
   PUSH_BANK(bank);
   memcpy(&bank_ptr, from, sizeof(BANK_PTR));
