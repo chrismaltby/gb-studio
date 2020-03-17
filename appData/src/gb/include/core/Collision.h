@@ -4,6 +4,15 @@
 #include <gb/gb.h>
 #include <gbdkjs.h>
 
-UBYTE TileAt(UINT16 x, UINT16 y);
+#define OUT_OF_BOUNDS 255
+
+/**
+ * Return collision tile value at given tile x,y coordinate.
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return Tile value, 0 if no collisions, 255 if out of bounds
+ */
+UBYTE TileAt(UINT16 tx, UINT16 ty);
 
 #endif

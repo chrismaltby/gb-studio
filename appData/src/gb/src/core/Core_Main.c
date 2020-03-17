@@ -171,9 +171,9 @@ void game_loop() {
     }
 
     ScriptRunnerUpdate();
-    UpdateActors();
-    RefreshScroll();
     MoveActors();
+    RefreshScroll();
+    UpdateActors();
     UpdateSprites();
     UIOnInteract();
     UIUpdate();
@@ -228,9 +228,9 @@ void game_loop() {
     ScriptStart(&scene_events_start_ptr);
 
     ScriptRunnerUpdate();
-    UpdateActors();
-    RefreshScroll();
     MoveActors();
+    RefreshScroll();
+    UpdateActors();
     UpdateSprites();
     UIUpdate();
 
@@ -245,9 +245,9 @@ void game_loop() {
       FadeIn();
 
       ScriptRunnerUpdate();
-      UpdateActors();
-      RefreshScroll();
       MoveActors();
+      RefreshScroll();
+      UpdateActors();
       UpdateSprites();
       UIUpdate();
 

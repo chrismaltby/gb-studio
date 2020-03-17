@@ -1,8 +1,9 @@
 #include "Actor.h"
-#include "Sprite.h"
-#include "Scroll.h"
-#include "GameTime.h"
+
 #include "BankManager.h"
+#include "GameTime.h"
+#include "Scroll.h"
+#include "Sprite.h"
 
 void UpdateActors_b();
 void MoveActors_b();
@@ -19,15 +20,15 @@ Pos map_next_pos;
 Vector2D map_next_dir;
 UBYTE map_next_sprite = 0;
 
-void UpdateActors() {
-  PUSH_BANK(ACTOR_BANK);
-  UpdateActors_b();
-  POP_BANK;
-}
-
 void MoveActors() {
   PUSH_BANK(ACTOR_BANK);
   MoveActors_b();
+  POP_BANK;
+}
+
+void UpdateActors() {
+  PUSH_BANK(ACTOR_BANK);
+  UpdateActors_b();
   POP_BANK;
 }
 
@@ -37,9 +38,9 @@ void ActivateActor(UBYTE i) {
   POP_BANK;
 }
 
-void ActivateActorColumn(UBYTE tx_a, UBYTE ty_a) {
+void ActivateActorColumn(UBYTE tx, UBYTE ty) {
   PUSH_BANK(ACTOR_BANK);
-  ActivateActorColumn_b(tx_a, ty_a);
+  ActivateActorColumn_b(tx, ty);
   POP_BANK;
 }
 
@@ -49,35 +50,34 @@ void DeactivateActor(UBYTE i) {
   POP_BANK;
 }
 
-UBYTE ActorAtTile(UBYTE tx_a, UBYTE ty_a) {
+UBYTE ActorAtTile(UBYTE tx, UBYTE ty) {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0; i--) {
     UBYTE a = actors_active[i];
-    UBYTE tx_b, ty_b;
+    UBYTE a_tx, a_ty;
 
-    tx_b = DIV_8(actors[a].pos.x);
-    ty_b = DIV_8(actors[a].pos.y);
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
 
-    if ((ty_a == ty_b) && (tx_a == tx_b || tx_a == tx_b + 1)) {
+    if ((ty == a_ty) && (tx == a_tx || tx == a_tx + 1)) {
       return a;
     }
   }
   return 0;
 }
 
-UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a) {
+UBYTE ActorOverlapsActorTile(UBYTE tx, UBYTE ty) {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0; i--) {
     UBYTE a = actors_active[i];
-    UBYTE tx_b, ty_b;
+    UBYTE a_tx, a_ty;
 
-    tx_b = DIV_8(actors[a].pos.x);
-    ty_b = DIV_8(actors[a].pos.y);
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
 
-    if ((ty_a == ty_b || ty_a == ty_b - 1) &&
-        (tx_a == tx_b || tx_a == tx_b + 1 || tx_a + 1 == tx_b)) {
+    if ((ty == a_ty || ty == a_ty - 1) && (tx == a_tx || tx == a_tx + 1 || tx + 1 == a_tx)) {
       return a;
     }
   }
@@ -89,8 +89,8 @@ UBYTE ActorOverlapsPlayer() {
 
   for (i = actors_active_size - 1; i != 0; i--) {
     UBYTE a = actors_active[i];
-    if ((actors[0].pos.x + 16 >= actors[a].pos.x) && (actors[0].pos.x <= actors[a].pos.x + 16) &&
-        (actors[0].pos.y + 8 >= actors[a].pos.y) && (actors[0].pos.y <= actors[a].pos.y + 8)) {
+    if ((player.pos.x + 16 >= actors[a].pos.x) && (player.pos.x <= actors[a].pos.x + 16) &&
+        (player.pos.y + 8 >= actors[a].pos.y) && (player.pos.y <= actors[a].pos.y + 8)) {
       return a;
     }
   }

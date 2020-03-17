@@ -3,13 +3,13 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "BankData.h"
 #include "Math.h"
 
 #define ACTOR_BANK 1
 #define MAX_ACTORS 31
 #define MAX_ACTIVE_ACTORS 11
-#define player (actors[0])
 #define ACTOR_MOVE_ENABLED 0x80
 #define ACTOR_NOCLIP 0x40
 
@@ -17,17 +17,7 @@
 #define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
 #define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0) || (actors[(i)].pos.y == 254))
 #define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
-
-void UpdateActors();
-void MoveActors();
-void ActivateActor(UBYTE i);
-void ActivateActorColumn(UBYTE tx_a, UBYTE ty_a);
-void DeactivateActiveActor(UBYTE i);
-UBYTE ActorAtTile(UBYTE tx_a, UBYTE ty_a);
-UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a);
-UBYTE ActorOverlapsPlayer();
-void ActivateActor(UBYTE i);
-void DeactivateActor(UBYTE i);
+#define player (actors[0])
 
 typedef enum {
   NONE = 1,
@@ -40,7 +30,7 @@ typedef enum {
 
 typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;
 
-typedef struct _ACTORSPRITE {
+typedef struct {
   UBYTE sprite;
   UBYTE sprite_index;
   Pos pos;
@@ -71,5 +61,76 @@ extern Vector2D map_next_dir;
 extern UBYTE map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
+
+/**
+ * Move all actors positions based on their current velocities
+ */
+void MoveActors();
+
+/**
+ * Update all actors frames and their corresponding sprites
+ */
+void UpdateActors();
+
+/**
+ * Activate the actor from actors array at index
+ *
+ * @param i index of actor
+ */
+void ActivateActor(UBYTE i);
+
+/**
+ * Activate all actors within the column [tx, ty] to [tx, ty + 20]
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ */
+void ActivateActorColumn(UBYTE tx, UBYTE ty);
+
+/**
+ * Deactivate currently active actor
+ *
+ * @param i index of actor in actors_active array
+ */
+void DeactivateActiveActor(UBYTE i);
+
+/**
+ * Return index of actor at given tile coordinates
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorAtTile(UBYTE tx, UBYTE ty);
+
+/**
+ * Return index of actor that would overlap an actor at the given tile coordinates
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a);
+
+/**
+ * Return index of actor overlapping player
+ *
+ * @return index of overlapping actor in actors array
+ */
+UBYTE ActorOverlapsPlayer();
+
+/**
+ * Activate the actor from actors array at given index
+ *
+ * @param i index of actor in actors array
+ */
+void ActivateActor(UBYTE i);
+
+/**
+ * Deactivate the actor from actors array at given index
+ *
+ * @param i index of actor in actors array
+ */
+void DeactivateActor(UBYTE i);
 
 #endif
