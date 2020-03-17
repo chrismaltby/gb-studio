@@ -3,6 +3,7 @@
 
 #include <gb/gb.h>
 #include <gbdkjs.h>
+
 #include "BankData.h"
 
 /* TRUE if left is being held on dpad */
@@ -60,7 +61,6 @@ extern UBYTE last_joy;
 extern UBYTE await_input;
 extern BankPtr input_script_ptrs[NUM_INPUTS];
 
-UBYTE AwaitInputPressed();
 void HandleInputScripts();
 
 #endif
