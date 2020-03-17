@@ -153,6 +153,9 @@ void game_loop() {
   while (1) {
     while (state_running) {
 #endif
+
+    /* Game Core Loop Start *********************************/
+
     LOG("=====================================\n", game_time);
     // LOG_VALUE("game_time", game_time);
 
@@ -183,6 +186,8 @@ void game_loop() {
     FadeUpdate();
 
     game_time++;
+
+    /* Game Core Loop End ***********************************/
   }
 #ifdef __EMSCRIPTEN__
   else {
