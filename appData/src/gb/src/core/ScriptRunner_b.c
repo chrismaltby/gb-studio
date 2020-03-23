@@ -15,10 +15,16 @@
 #include "Core_Main.h"
 #include "Collision.h"
 #include "Input.h"
+#include "Sprite.h"
+#include "Scroll.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
+
+#define EMOTE_SPRITE 124
+#define BUBBLE_ANIMATION_FRAMES 15
+#define BUBBLE_TOTAL_FRAMES 60
 
 UINT8 scriptrunner_bank = 4;
 
@@ -31,6 +37,12 @@ BYTE actor_move_speed = 1;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE wait_time = 0;
+UBYTE emote_sprite = 0;
+UBYTE emote_timer = 0;
+
+const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0,
+                              0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0};
 
 const SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},                 // 0x00
@@ -167,6 +179,29 @@ UBYTE ScriptUpdate_Wait() {
   }
   wait_time--;
   return FALSE;
+}
+
+UBYTE ScriptUpdate_Emote() {
+  UWORD scene_load_ptr;
+  UINT16 screen_x;
+  UINT16 screen_y;
+
+  if (emote_timer == BUBBLE_TOTAL_FRAMES) {
+    SpritePoolReturn(emote_sprite);
+    return TRUE;
+  } else {
+    screen_x = 8u + actors[script_actor].pos.x - scroll_x;
+    screen_y = 8u + actors[script_actor].pos.y - scroll_y;
+
+    if (emote_timer < BUBBLE_ANIMATION_FRAMES) {
+      screen_y += emote_offsets[emote_timer];
+    }
+
+    sprites[emote_sprite].pos.x = screen_x;
+    sprites[emote_sprite].pos.y = screen_y - 16u;
+    emote_timer++;
+    return FALSE;
+  }
 }
 
 /*
@@ -513,10 +548,16 @@ void Script_ActorSetCollisions_b() { actors[script_actor].collisionsEnabled = sc
  *   arg0: Emote Id
  */
 void Script_ActorSetEmote_b() {
-  /*
-  SceneSetEmote(script_actor, script_cmd_args[0]);
-  script_action_complete = FALSE;
-  */
+  UWORD scene_load_ptr;
+  UINT16 screen_x;
+  UINT16 screen_y;
+  emote_sprite = SpritePoolNext();
+  emote_timer = 1;
+  script_update_fn = ScriptUpdate_Emote;
+  scene_load_ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
+  SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
+                      scene_load_ptr + ((UWORD)script_cmd_args[0] * 64));
+  sprites[emote_sprite].frame = 31;
 }
 
 /*
