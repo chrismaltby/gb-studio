@@ -103,11 +103,13 @@ void UpdateActors_b() {
     }
 
     // Check if actor is off screen
-    if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
-        ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
-      // Mark off screen actor for removal
-      actors_active_delete[del_count] = a;
-      del_count++;
+    if (IS_FRAME_32) {
+      if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
+          ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
+        // Mark off screen actor for removal
+        actors_active_delete[del_count] = a;
+        del_count++;
+      }
     }
   }
 
