@@ -82,6 +82,7 @@ void Update_TopDown() {
       if (hit_trigger != MAX_TRIGGERS) {
         player.vel.x = 0;
         player.vel.y = 0;
+        player.moving = FALSE;
         ScriptStart(&triggers[hit_trigger].events_ptr);
         return;
       }
@@ -96,6 +97,7 @@ void Update_TopDown() {
       player.dir.x = -1;
       if (!TileAt(tile_left, tile_y) && !ActorOverlapsActorTile(tile_left, tile_y)) {
         player.vel.x = -1;
+        player.moving = TRUE;
       }
     } else if (INPUT_RIGHT) {
       UBYTE tile_right = tile_x + 1;
@@ -103,6 +105,7 @@ void Update_TopDown() {
       player.dir.x = 1;
       if (!TileAt(tile_right + 1, tile_y) && !ActorOverlapsActorTile(tile_right, tile_y)) {
         player.vel.x = 1;
+        player.moving = TRUE;
       }
     } else {
       if (INPUT_UP) {
@@ -112,6 +115,7 @@ void Update_TopDown() {
         if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
             !ActorOverlapsActorTile(tile_x, tile_up)) {
           player.vel.y = -1;
+          player.moving = TRUE;
         }
       } else if (INPUT_DOWN) {
         UBYTE tile_down = tile_y + 1;
@@ -120,6 +124,7 @@ void Update_TopDown() {
         if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
             !ActorOverlapsActorTile(tile_x, tile_down)) {
           player.vel.y = 1;
+          player.moving = TRUE;
         }
       }
     }

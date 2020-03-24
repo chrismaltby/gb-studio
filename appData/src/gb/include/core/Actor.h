@@ -44,7 +44,7 @@ typedef struct {
   UBYTE flip;
   UBYTE frame_offset;
   UBYTE moving;
-  UBYTE move_speed;
+  BYTE move_speed;
   UBYTE anim_speed;
   UBYTE collisionsEnabled;
   SPRITE_TYPE sprite_type;
