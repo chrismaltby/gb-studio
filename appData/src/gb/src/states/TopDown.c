@@ -95,6 +95,7 @@ void Update_TopDown() {
       UBYTE tile_left = tile_x - 1;
       player.dir.y = 0;
       player.dir.x = -1;
+      player.rerender = TRUE;
       if (!TileAt(tile_left, tile_y) && !ActorOverlapsActorTile(tile_left, tile_y)) {
         player.vel.x = -1;
         player.moving = TRUE;
@@ -103,6 +104,7 @@ void Update_TopDown() {
       UBYTE tile_right = tile_x + 1;
       player.dir.y = 0;
       player.dir.x = 1;
+      player.rerender = TRUE;
       if (!TileAt(tile_right + 1, tile_y) && !ActorOverlapsActorTile(tile_right, tile_y)) {
         player.vel.x = 1;
         player.moving = TRUE;
@@ -112,6 +114,7 @@ void Update_TopDown() {
         UBYTE tile_up = tile_y - 1;
         player.dir.x = 0;
         player.dir.y = -1;
+        player.rerender = TRUE;
         if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
             !ActorOverlapsActorTile(tile_x, tile_up)) {
           player.vel.y = -1;
@@ -121,6 +124,7 @@ void Update_TopDown() {
         UBYTE tile_down = tile_y + 1;
         player.dir.x = 0;
         player.dir.y = 1;
+        player.rerender = TRUE;
         if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
             !ActorOverlapsActorTile(tile_x, tile_down)) {
           player.vel.y = 1;
@@ -140,6 +144,7 @@ void Update_TopDown() {
       hit_actor = ActorAtTile(tile_x, tile_y - 1);
       actors[hit_actor].dir.x = 0;
       actors[hit_actor].dir.y = 1;
+      actors[hit_actor].rerender = TRUE;
     } else if (player.dir.y == 1) {
       LOG("CHECK HIT DOWN\n");
       LOG_VALUE("check_x", tile_x);
@@ -147,6 +152,7 @@ void Update_TopDown() {
       hit_actor = ActorAtTile(tile_x, tile_y + 2);
       actors[hit_actor].dir.x = 0;
       actors[hit_actor].dir.y = -1;
+      actors[hit_actor].rerender = TRUE;
     } else {
       if (player.dir.x == -1) {
         LOG("CHECK HIT LEFT\n");
@@ -155,6 +161,7 @@ void Update_TopDown() {
         hit_actor = ActorAtTile(tile_x - 1, tile_y);
         actors[hit_actor].dir.x = 1;
         actors[hit_actor].dir.y = 0;
+        actors[hit_actor].rerender = TRUE;
       } else if (player.dir.x == 1) {
         LOG("CHECK HIT RIGHT\n");
         LOG_VALUE("check_x", tile_x + 2);
@@ -162,6 +169,7 @@ void Update_TopDown() {
         hit_actor = ActorAtTile(tile_x + 2, tile_y);
         actors[hit_actor].dir.x = -1;
         actors[hit_actor].dir.y = 0;
+        actors[hit_actor].rerender = TRUE;
       }
     }
     if (hit_actor) {

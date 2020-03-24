@@ -232,7 +232,7 @@ void LoadScene(UINT16 index) {
     // *(test_ptr),*(test_ptr+1),*(test_ptr+2),*(test_ptr+3),*(test_ptr+4),*(test_ptr+5),*(test_ptr+6),*(test_ptr+7),*(test_ptr+8));
 
     actors[i].sprite = *(data_ptr++);
-    actors[i].frame = 0;
+    // actors[i].frame = 0;
     // actors[i].frames_len = actor_info->dirFrames;
 
     // actors[i].sprite = 0; // Unused
@@ -242,13 +242,13 @@ void LoadScene(UINT16 index) {
 
     actors[i].sprite_type = *(data_ptr++);
     actors[i].frames_len = *(data_ptr++);
-    actors[i].frame_offset = *(data_ptr++);
+    actors[i].frame = *(data_ptr++);
 
     // actors[i].sprite_type = SPRITE_STATIC;
     // actors[i].animate = TRUE;
     // actors[i].frames_len = 4;
     actors[i].frames_len = 0;
-    actors[i].frame_offset = 0;
+    // actors[i].frame_offset = 0;
 
     // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actor_info->x, actor_info->y);
 
@@ -313,6 +313,7 @@ void LoadScene(UINT16 index) {
                                           : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
   player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
   player.sprite_index = SpritePoolNext();
+  player.rerender = TRUE;
 
   InitScroll();
 

@@ -179,7 +179,6 @@ void game_loop() {
     MoveActors();
     RefreshScroll();
     UpdateActors();
-    UpdateSprites();
     UIOnInteract();
     UIUpdate();
     HandleInputScripts();
@@ -237,7 +236,6 @@ void game_loop() {
     MoveActors();
     RefreshScroll();
     UpdateActors();
-    UpdateSprites();
     UIUpdate();
 
     old_scroll_x = scroll_x;
@@ -254,7 +252,6 @@ void game_loop() {
       MoveActors();
       RefreshScroll();
       UpdateActors();
-      UpdateSprites();
       UIUpdate();
 
       while (fade_running) {

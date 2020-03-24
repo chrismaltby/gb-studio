@@ -43,6 +43,7 @@ typedef struct {
   UBYTE enabled;
   UBYTE flip;
   UBYTE frame_offset;
+  UBYTE rerender;
   UBYTE moving;
   BYTE move_speed;
   UBYTE anim_speed;
