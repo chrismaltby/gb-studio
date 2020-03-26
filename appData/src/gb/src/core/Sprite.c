@@ -10,9 +10,9 @@ UBYTE sprite_active_pool_size = 0;
 
 void SpritePoolReset() {
   UBYTE i, k;
-  for (i = MAX_SPRITES; i != 0; i--) {
+  for (i = 0; i != MAX_SPRITES; i++) {
     k = i << 1;
-    sprite_pool[i] = MAX_SPRITES - i;
+    sprite_pool[i] = i;
     move_sprite(k, 0, 0);
     move_sprite(k + 1, 0, 0);
   }
