@@ -96,16 +96,16 @@ void Update_TopDown() {
       player.dir.y = 0;
       player.dir.x = -1;
       player.rerender = TRUE;
-      if (!TileAt(tile_left, tile_y) && !ActorOverlapsActorTile(tile_left, tile_y)) {
+      if (!TileAt(tile_left, tile_y) && !ActorAt1x2(tile_left - 1, tile_y)) {
         player.vel.x = -1;
         player.moving = TRUE;
       }
     } else if (INPUT_RIGHT) {
-      UBYTE tile_right = tile_x + 1;
+      UBYTE tile_right = tile_x + 2;
       player.dir.y = 0;
       player.dir.x = 1;
       player.rerender = TRUE;
-      if (!TileAt(tile_right + 1, tile_y) && !ActorOverlapsActorTile(tile_right, tile_y)) {
+      if (!TileAt(tile_right, tile_y) && !ActorAt1x2(tile_right, tile_y)) {
         player.vel.x = 1;
         player.moving = TRUE;
       }
@@ -116,7 +116,7 @@ void Update_TopDown() {
         player.dir.y = -1;
         player.rerender = TRUE;
         if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
-            !ActorOverlapsActorTile(tile_x, tile_up)) {
+            !ActorAt3x1(tile_x, tile_up)) {
           player.vel.y = -1;
           player.moving = TRUE;
         }
@@ -126,7 +126,7 @@ void Update_TopDown() {
         player.dir.y = 1;
         player.rerender = TRUE;
         if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
-            !ActorOverlapsActorTile(tile_x, tile_down)) {
+            !ActorAt3x1(tile_x, tile_down + 1)) {
           player.vel.y = 1;
           player.moving = TRUE;
         }
@@ -141,35 +141,43 @@ void Update_TopDown() {
       LOG("CHECK HIT UP\n");
       LOG_VALUE("check_x", tile_x);
       LOG_VALUE("check_y", tile_y - 1);
-      hit_actor = ActorAtTile(tile_x, tile_y - 1);
-      actors[hit_actor].dir.x = 0;
-      actors[hit_actor].dir.y = 1;
-      actors[hit_actor].rerender = TRUE;
+      hit_actor = ActorAt3x1(tile_x, tile_y - 1);
+      if (hit_actor) {
+        actors[hit_actor].dir.x = 0;
+        actors[hit_actor].dir.y = 1;
+        actors[hit_actor].rerender = TRUE;
+      }
     } else if (player.dir.y == 1) {
       LOG("CHECK HIT DOWN\n");
       LOG_VALUE("check_x", tile_x);
       LOG_VALUE("check_y", tile_y + 2);
-      hit_actor = ActorAtTile(tile_x, tile_y + 2);
-      actors[hit_actor].dir.x = 0;
-      actors[hit_actor].dir.y = -1;
-      actors[hit_actor].rerender = TRUE;
+      hit_actor = ActorAt3x1(tile_x, tile_y + 2);
+      if (hit_actor) {
+        actors[hit_actor].dir.x = 0;
+        actors[hit_actor].dir.y = -1;
+        actors[hit_actor].rerender = TRUE;
+      }
     } else {
       if (player.dir.x == -1) {
         LOG("CHECK HIT LEFT\n");
         LOG_VALUE("check_x", tile_x - 1);
         LOG_VALUE("check_y", tile_y);
-        hit_actor = ActorAtTile(tile_x - 1, tile_y);
-        actors[hit_actor].dir.x = 1;
-        actors[hit_actor].dir.y = 0;
-        actors[hit_actor].rerender = TRUE;
+        hit_actor = ActorAt1x2(tile_x - 2, tile_y);
+        if (hit_actor) {
+          actors[hit_actor].dir.x = 1;
+          actors[hit_actor].dir.y = 0;
+          actors[hit_actor].rerender = TRUE;
+        }
       } else if (player.dir.x == 1) {
         LOG("CHECK HIT RIGHT\n");
         LOG_VALUE("check_x", tile_x + 2);
         LOG_VALUE("check_y", tile_y);
-        hit_actor = ActorAtTile(tile_x + 2, tile_y);
-        actors[hit_actor].dir.x = -1;
-        actors[hit_actor].dir.y = 0;
-        actors[hit_actor].rerender = TRUE;
+        hit_actor = ActorAt1x2(tile_x + 2, tile_y);
+        if (hit_actor) {
+          actors[hit_actor].dir.x = -1;
+          actors[hit_actor].dir.y = 0;
+          actors[hit_actor].rerender = TRUE;
+        }
       }
     }
     if (hit_actor) {

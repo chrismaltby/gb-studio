@@ -104,6 +104,9 @@ void DeactivateActiveActor(UBYTE i);
  */
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty);
 
+UBYTE ActorAt3x1(UBYTE tx, UBYTE ty);
+UBYTE ActorAt1x2(UBYTE tx, UBYTE ty);
+
 /**
  * Return index of actor that would overlap an actor at the given tile coordinates
  *

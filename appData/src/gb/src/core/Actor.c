@@ -60,7 +60,58 @@ UBYTE ActorAtTile(UBYTE tx, UBYTE ty) {
     a_tx = DIV_8(actors[a].pos.x);
     a_ty = DIV_8(actors[a].pos.y);
 
+    if ((ty == a_ty || ty == a_ty + 1) && (tx == a_tx || tx == a_tx + 1 || tx == a_tx - 1)) {
+      return a;
+    }
+  }
+  return 0;
+}
+
+UBYTE ActorBaseAtTile(UBYTE tx, UBYTE ty) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
     if ((ty == a_ty) && (tx == a_tx || tx == a_tx + 1)) {
+      return a;
+    }
+  }
+  return 0;
+}
+
+UBYTE ActorAt1x2(UBYTE tx, UBYTE ty) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
+    if ((ty == a_ty || ty == a_ty - 1) && (tx == a_tx)) {
+      return a;
+    }
+  }
+  return 0;
+}
+
+UBYTE ActorAt3x1(UBYTE tx, UBYTE ty) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
+    if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx + 1)) {
       return a;
     }
   }
