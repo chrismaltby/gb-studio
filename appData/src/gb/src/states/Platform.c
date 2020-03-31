@@ -43,7 +43,7 @@ UINT16 platform_y = 1024;
 
 void Start_Platform() {
   LOG("START PLATFORM\n");
-  // p_time = 0;
+
   cam_pos.x = player.pos.x;
   cam_pos.y = player.pos.y - PLATFORM_CAMERA_OFFSET_Y;
   pos_y_delayed = player.pos.y;
@@ -202,19 +202,6 @@ void Update_Platform() {
   }
 
   LOG_VALUE("platform_y", platform_y);
-
-  /*
-  // Actor Collision
-  hit_actor = ActorOverlapsPlayer();
-
-  // LOG_VALUE("hit_actor", hit_actor);
-  if (hit_actor)
-  {
-      // LOG("A HIT ACTOR %u\n", hit_actor);
-      vel_y = -JUMP_VEL;
-      // ScriptStart(&actors[hit_actor].events_ptr);
-  }
-  */
 
   // Handle Camera Position
   cam_pos.x = player.pos.x;
