@@ -128,10 +128,6 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
   UBYTE bank, size;
   UBYTE *data_ptr;
 
-  // struct SpriteInfo *sprite_info;
-
-  // LOG("LOAD SPRITE %u\n", index);
-
   PUSH_BANK(DATA_PTRS_BANK);
   bank = sprite_bank_ptrs[index].bank;
   data_ptr = (UBYTE *)(sprite_bank_ptrs[index].offset + ((unsigned char *)bank_data_ptrs[bank]));
@@ -139,7 +135,6 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
 
   PUSH_BANK(bank);
   size = *(data_ptr++) * 4;
-  // LOG("SPRITE WAS SIZE %u\n", size);
   set_sprite_data(sprite_offset, size, data_ptr);
   POP_BANK;
 
@@ -149,19 +144,10 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
 void LoadScene(UINT16 index) {
   UBYTE bank, i, k;
   UBYTE *data_ptr;
-  UWORD backgroundIndex;
   UBYTE sprite_frames;
-
-  // LOG("LOAD SCENE %u\n", index);
 
   PUSH_BANK(DATA_PTRS_BANK);
   bank = scene_bank_ptrs[index].bank;
-  // LOG("SCENE BANK %u\n", bank);
-
-  // LOG("SIZE UBYTE=%u UWORD=%u\n", sizeof(UBYTE), sizeof(UWORD));
-
-  // LOG("LOAD SCENE %u, offset=%u ptr=%u\n", index, scene_bank_ptrs[index].offset,
-  // bank_data_ptrs[bank]);
   data_ptr = (scene_bank_ptrs[index].offset + ((UBYTE *)bank_data_ptrs[bank]));
 
   collision_bank = collision_bank_ptrs[index].bank;
@@ -169,16 +155,11 @@ void LoadScene(UINT16 index) {
                                     ((unsigned char *)bank_data_ptrs[collision_bank]));
   POP_BANK;
 
-  backgroundIndex = 2;  // scene_info->backgroundIndex;
-
   SpritePoolReset();
 
   PUSH_BANK(bank);
   LoadImage(*(data_ptr++));
-  // LoadImage(0);
   data_ptr++;  // scene_image was UWORD
-
-  // LOG("LOAD REST OF SCENE %u\n", index);
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = *(data_ptr++);
@@ -190,74 +171,26 @@ void LoadScene(UINT16 index) {
   scene_events_start_ptr.bank = *(data_ptr++);
   scene_events_start_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
-  LOG("LOAD SCENE scene_events_start_ptr.offset: %d\n", scene_events_start_ptr.offset);
-
-  // LOG("LOAD SCENE triggers_len: %u\n", triggers_len );
-  // LOG("LOAD SCENE collisions_len: %u\n", collisions_len );
-  // LOG("LOAD SCENE palettes_len: %u\n", palettes_len );
-
-  // data_ptr = &scene_info->data;
-
-  // LOG("LOAD scene B V1,2,3, [%u, %u,%u,%u,%u,%u,%u,%u,%u,%u]\n", test_ptr,
-  // *(test_ptr),*(test_ptr+1),*(test_ptr+2),*(test_ptr+3),*(test_ptr+4),*(test_ptr+5),*(test_ptr+6),*(test_ptr+7),*(test_ptr+8));
-
-  // LOG("LOAD scene C, [%u, %u,%u,%u,%u,%u]\n", scene_type, sprites_len, actors_len, triggers_len,
-  // collisions_len, palettes_len);
-
-  // LOG("LOAD SCENE SPRITES %u\n", sprites_len);
-  // LOG("LOAD SCENE ACTORS %u\n", actors_len);
-  // LOG("LOAD SIZEOF UBYTE %u\n", sizeof(UBYTE));
-
   // Load sprites
   k = 24;
   for (i = 0; i != sprites_len; i++) {
-    // LOG("LOAD SPRITES i= %u\n", i);
-
     k += LoadSprite(*(data_ptr++), k);
-
-    // LOG("K= %u\n", k);
-    // sprites[i].pos.x = 32 + (i << 5);
-    // sprites[i].pos.y = 64;
   }
 
   // Load actors
   for (i = 1; i != actors_len; i++) {
     UBYTE j;
-    // LOG("LOAD ACTOR %u data_ptr=%u\n", i, data_ptr);
-
-    // actor_info = (struct ActorInfo *)data_ptr;
-
-    // test_ptr = data_ptr;
-    // LOG("LOAD actor V1,2,3, [%u, %u,%u,%u,%u,%u,%u,%u,%u,%u]\n", test_ptr,
-    // *(test_ptr),*(test_ptr+1),*(test_ptr+2),*(test_ptr+3),*(test_ptr+4),*(test_ptr+5),*(test_ptr+6),*(test_ptr+7),*(test_ptr+8));
 
     actors[i].sprite = *(data_ptr++);
-    // actors[i].frame = 0;
-    // actors[i].frames_len = actor_info->dirFrames;
-
-    // actors[i].sprite = 0; // Unused
     actors[i].enabled = TRUE;
     actors[i].collisionsEnabled = TRUE;
     actors[i].moving = FALSE;
-
     actors[i].sprite_type = *(data_ptr++);
     actors[i].frames_len = *(data_ptr++);
-    actors[i].frame = *(data_ptr++);
-
-    // actors[i].sprite_type = SPRITE_STATIC;
-    // actors[i].animate = TRUE;
-    // actors[i].frames_len = 4;
-    actors[i].frames_len = 0;
-    // actors[i].frame_offset = 0;
-
-    // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actor_info->x, actor_info->y);
-
-    // actors[i].pos.x = (*(data_ptr++) * 8);
-    // actors[i].pos.y = (*(data_ptr++) * 8);
-
+    actors[i].animate = *(data_ptr++);
+    actors[i].frame = actors[i].animate >> 1;
     actors[i].pos.x = *(data_ptr++) * 8;
     actors[i].pos.y = *(data_ptr++) * 8;
-    // actors[i].move_speed
 
     j = *(data_ptr++);
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
@@ -269,15 +202,6 @@ void LoadScene(UINT16 index) {
 
     actors[i].events_ptr.bank = *(data_ptr++);
     actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    LOG("ACTOR %u bank=%u bank_offset=%d\n", i, actors[i].events_ptr.bank,
-        actors[i].events_ptr.offset);
-    LOG("LOAD ACTOR i=%u st=%u dx=%d dy=%d sprite=%u\n", i, actors[i].sprite_type, actors[i].dir.x,
-        actors[i].dir.y, actors[i].sprite);
-
-    // LOG("LOAD ACTOR %u x=%u y=%u\n", i, actors[i].pos.x,  actors[i].pos.y);
-
-    // data_ptr ++;
   }
 
   actors_active[0] = 0;
@@ -285,16 +209,10 @@ void LoadScene(UINT16 index) {
 
   // Load triggers
   for (i = 0; i != triggers_len; i++) {
-    LOG("LOAD TRIGGER\n");
-    LOG("v1 = %u\n", *(data_ptr));
     triggers[i].x = *(data_ptr++);
-    LOG("v2 = %u\n", *(data_ptr));
     triggers[i].y = *(data_ptr++);
-    LOG("v3 = %u\n", *(data_ptr));
     triggers[i].w = *(data_ptr++);
-    LOG("v4 = %u\n", *(data_ptr));
     triggers[i].h = *(data_ptr++);
-    LOG("v5 = %u\n", *(data_ptr));
     data_ptr++;  // Trigger type
     triggers[i].events_ptr.bank = *(data_ptr++);
     triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
