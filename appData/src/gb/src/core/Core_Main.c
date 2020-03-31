@@ -78,6 +78,16 @@ void vbl_update() {
 #endif
 }
 
+void lcd_update() {
+  if (LYC_REG == 0x0) {
+    SHOW_SPRITES;
+    LYC_REG = WY_REG;
+  } else {
+    HIDE_SPRITES;
+    LYC_REG = 0x0;
+  }
+}
+
 UINT16 default_palette[] = {RGB(31, 31, 31), RGB(20, 20, 20), RGB(10, 10, 10), RGB(0, 0, 0)};
 int core_start() {
 #ifdef CGB
@@ -89,6 +99,7 @@ int core_start() {
 
   add_VBL(vbl_update);
   add_TIM(MusicUpdate);
+  add_LCD(lcd_update);
 #ifdef CGB
   TMA_REG = _cpu == CGB_TYPE ? 120U : 0xBCU;
 #else
@@ -96,7 +107,9 @@ int core_start() {
 #endif
   TAC_REG = 0x04U;
 
-  set_interrupts(VBL_IFLAG | TIM_IFLAG);
+  LYC_REG = 0x0;  // LCD interupt pos
+
+  set_interrupts(VBL_IFLAG | TIM_IFLAG | LCD_IFLAG);
   enable_interrupts();
 
   STAT_REG = 0x45;
