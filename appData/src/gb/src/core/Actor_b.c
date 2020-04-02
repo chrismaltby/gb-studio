@@ -62,7 +62,12 @@ void UpdateActors_b() {
     if (IS_FRAME_8 && (((actors[a].vel.x != 0 || actors[a].vel.y != 0) &&
                         actors[a].sprite_type != SPRITE_STATIC) ||
                        actors[a].animate)) {
-      actors[a].frame++;
+      if (actors[a].anim_speed == 4 || (actors[a].anim_speed == 3 && IS_FRAME_16) ||
+          (actors[a].anim_speed == 2 && IS_FRAME_32) ||
+          (actors[a].anim_speed == 1 && IS_FRAME_64) ||
+          (actors[a].anim_speed == 0 && IS_FRAME_128)) {
+        actors[a].frame++;
+      }
       if (actors[a].frame == actors[a].frames_len) {
         actors[a].frame = 0;
       }
