@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "BankManager.h"
 #include "DataManager.h"
+#include "GameTime.h"
 
 #define SCREEN_TILES_W 20  // 160 >> 3 = 20
 #define SCREEN_TILES_H 18  // 144 >> 3 = 18
@@ -16,10 +17,6 @@
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
-// UINT16 image_width = 640U;
-// UINT16 image_height = 640U;
-// UINT16 image_width = 256U;
-// UINT16 image_height = 256U;
 
 INT16 pending_h_x, pending_h_y;
 UINT8 pending_h_i;
@@ -45,8 +42,6 @@ void MoveScroll(INT16 x, INT16 y) {
 
   PUSH_BANK(image_bank);
 
-  // ClampScrollLimits(&x, &y);
-
   if (U_LESS_THAN(x, 0u)) {
     x = 0u;
   }
@@ -66,36 +61,28 @@ void MoveScroll(INT16 x, INT16 y) {
   new_row = y >> 3;
 
   // If column is +/- 1 just render next column
-  if ((current_column == new_column + 1) || (current_column == new_column - 1)) {
+  if (current_column == new_column - 1) {
     // Render right column
-    if (current_column == new_column - 1) {
-      ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT + SCREEN_TILE_REFRES_W - 1,
-                                  new_row - SCREEN_PAD_TOP);
-    }
+    ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT + SCREEN_TILE_REFRES_W - 1,
+                                new_row - SCREEN_PAD_TOP);
+  } else if (current_column == new_column + 1) {
     // Render left column
-    else {
-      ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
-    }
-  }
-  // If column differs by more than 1 render entire screen
-  else if (current_column != new_column) {
+    ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
+  } else if (current_column != new_column) {
+    // If column differs by more than 1 render entire screen
     render = TRUE;
   }
 
   // If row is +/- 1 just render next row
-  if ((current_row == new_row + 1) || (current_row == new_row - 1)) {
-    if (current_row != new_row) {
-      // Render bottom row
-      if (current_row == new_row - 1) {
-        ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT,
-                                 new_row - SCREEN_PAD_TOP + SCREEN_TILE_REFRES_H - 1);
-      } else {
-        ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
-      }
-    }
-  }
-  // If row differs by more than 1 render entire screen
-  else if (current_row != new_row) {
+  if (current_row == new_row - 1) {
+    // Render bottom row
+    ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT,
+                             new_row - SCREEN_PAD_TOP + SCREEN_TILE_REFRES_H - 1);
+  } else if (current_row == new_row + 1) {
+    // Render top row
+    ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
+  } else if (current_row != new_row) {
+    // If row differs by more than 1 render entire screen
     render = TRUE;
   }
 
@@ -105,46 +92,19 @@ void MoveScroll(INT16 x, INT16 y) {
   if (render) {
     RenderScreen();
   } else {
-    if (pending_w_i) {
-      ScrollUpdateRowR();
-    }
-    if (pending_h_i) {
-      ScrollUpdateColumnR();
+    if (IS_FRAME_2) {
+      if (pending_w_i) {
+        // Render next pending chunk of row
+        ScrollUpdateRowR();
+      }
+      if (pending_h_i) {
+        // Render next pending chunk of column
+        ScrollUpdateColumnR();
+      }
     }
   }
 
   POP_BANK;
-}
-
-INT8 image_height_border = 0;
-UINT8 clamp_enabled = 1;
-void ClampScrollLimits(UINT16 *x, UINT16 *y) {
-  // if (clamp_enabled)
-  // {
-  // if (*y > (image_height - ((UINT16)SCREENHEIGHT)))
-  // {
-  //   *y = (image_height - ((UINT16)SCREENHEIGHT));
-  // }
-  if (*x > (image_width - ((UINT16)SCREENWIDTH))) {
-    *x = (image_width - (SCREENWIDTH));
-  }
-  if (*y > (image_height - ((UINT16)SCREENHEIGHT))) {
-    *y = (image_height - (SCREENHEIGHT));
-  }
-
-  // if (*y > (image_height - ((UINT16)SCREENHEIGHT) + ((UINT16)image_height_border)))
-  // {
-  //   *y = (image_height - ((UINT16)SCREENHEIGHT) + ((UINT16)image_height_border));
-  // }
-  if (U_LESS_THAN(*x, 0u)) {
-    *x = 0u;
-  }
-
-  if (U_LESS_THAN(*y, 0u)) {
-    *y = 0u;
-  }
-
-  // }
 }
 
 /* Update pending (up to 5) rows */
@@ -207,8 +167,6 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 
   LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
 
-  PUSH_BANK(image_bank);
-
   for (i = 0u; i != 23; i++) {
 #ifdef CGB
     PUSH_BANK(image_attr_bank);
@@ -231,29 +189,6 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
       }
     }
   }
-
-  // #ifdef CGB
-
-  //     PUSH_BANK(image_attr_bank);
-  //     VBK_REG = 1;
-  //     set_bkg_tiles(MOD_32(pending_w_x), MOD_32(pending_w_y), 1, 1, pending_w_cmap++);
-  //     VBK_REG = 0;
-  //     POP_BANK;
-  //     set_bkg_tiles(MOD_32(pending_w_x++), MOD_32(pending_w_y), 1, 1, pending_w_map++);
-  //     // UPDATE_TILE(pending_w_x++, pending_w_y, pending_w_map++, pending_w_cmap++);
-  // #else
-  //     // UPDATE_TILE(pending_w_x ++, pending_w_y, pending_w_map ++,0);
-  //     set_bkg_tiles(x, y, 1, 1, pending_w_map++);
-  // #endif
-
-  // for(i = 0u; i != SCREEN_TILE_REFRES_W; ++i) {
-  // 	#ifdef CGB
-  // 	UPDATE_TILE(x + i, y, map ++, cmap ++);
-  // 	#else
-  // 	UPDATE_TILE(x + i, y, map ++, 0);
-  // 	#endif
-  // }
-  POP_BANK;
 }
 
 void ScrollUpdateColumnR() {
@@ -286,6 +221,8 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
   UBYTE i;
 
   while (pending_h_i) {
+    // If previous column wasn't fully rendered
+    // render it now before starting next column
     ScrollUpdateColumnR();
   }
 
