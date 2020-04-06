@@ -182,6 +182,13 @@ void game_loop() {
     last_joy = joy;
     joy = joypad();
 
+    RefreshScroll();
+    UpdateActors();
+    UIOnInteract();
+    UIUpdate();
+    HandleInputScripts();
+    FadeUpdate();
+
     if (!script_ptr) {
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
@@ -190,12 +197,6 @@ void game_loop() {
 
     ScriptRunnerUpdate();
     MoveActors();
-    RefreshScroll();
-    UpdateActors();
-    UIOnInteract();
-    UIUpdate();
-    HandleInputScripts();
-    FadeUpdate();
 
     game_time++;
 

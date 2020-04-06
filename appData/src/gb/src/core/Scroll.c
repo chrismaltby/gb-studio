@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "BankManager.h"
+#include "Core_Main.h"
 #include "DataManager.h"
 #include "GameTime.h"
 
@@ -91,16 +92,14 @@ void MoveScroll(INT16 x, INT16 y) {
 
   if (render) {
     RenderScreen();
-  } else {
-    if (IS_FRAME_2) {
-      if (pending_w_i) {
-        // Render next pending chunk of row
-        ScrollUpdateRowR();
-      }
-      if (pending_h_i) {
-        // Render next pending chunk of column
-        ScrollUpdateColumnR();
-      }
+  } else if (IS_FRAME_2) {
+    if (pending_w_i) {
+      // Render next pending chunk of row
+      ScrollUpdateRowR();
+    }
+    if (pending_h_i) {
+      // Render next pending chunk of column
+      ScrollUpdateColumnR();
     }
   }
 
