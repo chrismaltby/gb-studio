@@ -12,7 +12,7 @@ void SpritePoolReset() {
   UBYTE i, k;
   for (i = 0; i != MAX_SPRITES; i++) {
     k = i << 1;
-    sprite_pool[i] = i;
+    sprite_pool[i] = k;
     move_sprite(k, 0, 0);
     move_sprite(k + 1, 0, 0);
   }
@@ -22,7 +22,7 @@ void SpritePoolReset() {
 }
 
 void SpritePoolReturn(UINT8 i) {
-  UBYTE j, k;
+  UBYTE j;
   UBYTE a = 0;
 
   StackPush(sprite_pool, i);
@@ -39,17 +39,15 @@ void SpritePoolReturn(UINT8 i) {
   if (a) {
     // Return index to pool
     sprite_active_pool[a] = sprite_active_pool[--sprite_active_pool_size];
-    k = i << 1;
     // Move sprite offscreen
-    move_sprite(k, 0, 0);
-    move_sprite(k + 1, 0, 0);
+    move_sprite(i, 0, 0);
+    move_sprite(i + 1, 0, 0);
   }
 }
 
 UINT8 SpritePoolNext() {
   UINT8 next = StackPop(sprite_pool);
   sprite_active_pool[sprite_active_pool_size++] = next;
-  sprites[next].rerender = TRUE;
   LOG("SPRITE:: gotfrompool %u\n", next);
   return next;
 }

@@ -45,7 +45,7 @@ void UpdateActors_b() {
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
     actor = &actors[a];
-    k = actors[a].sprite_index << 1;
+    k = actors[a].sprite_index;
     flip = FALSE;
     fo = 0;
 
