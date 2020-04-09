@@ -6,6 +6,7 @@
 #include "BankData.h"
 #include "GameTime.h"
 #include "Math.h"
+#include "ASMHelpers.h"
 #include "Input.h"
 #include <string.h>
 
@@ -129,6 +130,10 @@ void UIUpdate_b() {
 
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   UBYTE i, j;
+  UBYTE k = 1;
+
+  WaitForMode0Or1();
+
   LOG("UIDrawFrame_b\n");
 
   set_win_tiles(x, y, 1, 1, ui_frame_tl_tiles);
@@ -137,14 +142,17 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   set_win_tiles(x + width, height + 1, 1, 1, ui_frame_br_tiles);
 
   for (j = 1; j != height + 1; j++) {
+    WaitForMode0Or1();
     set_win_tiles(x, j, 1, 1, ui_frame_l_tiles);
     set_win_tiles(x + width, j, 1, 1, ui_frame_r_tiles);
     for (i = 1; i != width; ++i) {
+      WaitForMode0Or1();
       set_win_tiles(i, j, 1, 1, ui_frame_bg_tiles);
     }
   }
 
   for (i = 1; i != width; ++i) {
+    WaitForMode0Or1();
     set_win_tiles(i, 0, 1, 1, ui_frame_t_tiles);
     set_win_tiles(i, height + 1, 1, 1, ui_frame_b_tiles);
   }
@@ -245,6 +253,7 @@ void UIDrawTextBufferChar_b() {
   UBYTE text_size = strlen(text_lines);
   UBYTE tile;
   UBYTE *ptr;
+  UINT16 id;
 
   if (text_wait > 0) {
     text_wait--;
@@ -283,9 +292,15 @@ void UIDrawTextBufferChar_b() {
       i = text_tile_count + avatar_enabled * 4;
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
-      set_win_tiles(
-          text_x + 1 + avatar_enabled * 2 + menu_enabled + (text_y >= text_num_lines ? 9 : 0),
-          (text_y % text_num_lines) + 1, 1, 1, &tile);
+      // set_win_tiles(
+      //     text_x + 1 + avatar_enabled * 2 + menu_enabled + (text_y >= text_num_lines ? 9 : 0),
+      //     (text_y % text_num_lines) + 1, 1, 1, &tile);
+      id = 0x9C00 +
+           MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +
+                   (text_y >= text_num_lines ? 9 : 0))) +
+           ((UINT16)MOD_32((text_y % text_num_lines) + 1) << 5);
+      SetTile(id, tile);
+
       text_tile_count++;
     }
 
