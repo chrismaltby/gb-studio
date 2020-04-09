@@ -197,8 +197,9 @@ UBYTE ScriptUpdate_Emote() {
       screen_y += emote_offsets[emote_timer];
     }
 
-    sprites[emote_sprite].pos.x = screen_x;
-    sprites[emote_sprite].pos.y = screen_y - 16u;
+    move_sprite(emote_sprite, screen_x, screen_y - 16u);
+    move_sprite(emote_sprite + 1, screen_x + 8u, screen_y - 16u);
+
     emote_timer++;
     return FALSE;
   }
@@ -557,7 +558,10 @@ void Script_ActorSetEmote_b() {
   scene_load_ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
                       scene_load_ptr + ((UWORD)script_cmd_args[0] * 64));
-  sprites[emote_sprite].frame = 31;
+  set_sprite_prop(emote_sprite, 0);
+  set_sprite_prop(emote_sprite + 1, 0);
+  set_sprite_tile(emote_sprite, EMOTE_SPRITE);
+  set_sprite_tile(emote_sprite + 1, EMOTE_SPRITE + 2);
 }
 
 /*
