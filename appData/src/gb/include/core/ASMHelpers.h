@@ -4,6 +4,7 @@
 #include <gb/gb.h>
 #include <gbdkjs.h>
 
+void WaitForMode0Or1();
 void SetTile(UINT16 r, UINT8 t);
 
 #endif

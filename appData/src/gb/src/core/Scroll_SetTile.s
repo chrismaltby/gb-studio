@@ -22,3 +22,12 @@ _SetTile::
         and	a, #0x02
         jr	NZ,1$
         ret
+
+_WaitForMode0Or1::
+    ;while 0xff41 & 02 != 0 (cannot write)
+        ld	de,#0xff41
+    wait:
+        ld	a,(de)
+        and	a, #0x02
+        jr	NZ,wait
+        ret
