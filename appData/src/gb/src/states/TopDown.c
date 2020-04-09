@@ -33,6 +33,8 @@ void Start_TopDown() {
   // set_sprite_tile(8, 24);
   // set_sprite_tile(9, 24);
 
+  player.moving = FALSE;
+
   LOG("END START TOPDOWN\n");
 }
 
@@ -132,57 +134,57 @@ void Update_TopDown() {
         }
       }
     }
-  }
 
-  if (INPUT_A_PRESSED) {
-    LOG("CHECK HIT\n");
-    hit_actor = 0;
-    if (player.dir.y == -1) {
-      LOG("CHECK HIT UP\n");
-      LOG_VALUE("check_x", tile_x);
-      LOG_VALUE("check_y", tile_y - 1);
-      hit_actor = ActorAt3x1(tile_x, tile_y - 1);
-      if (hit_actor) {
-        actors[hit_actor].dir.x = 0;
-        actors[hit_actor].dir.y = 1;
-        actors[hit_actor].rerender = TRUE;
-      }
-    } else if (player.dir.y == 1) {
-      LOG("CHECK HIT DOWN\n");
-      LOG_VALUE("check_x", tile_x);
-      LOG_VALUE("check_y", tile_y + 2);
-      hit_actor = ActorAt3x1(tile_x, tile_y + 2);
-      if (hit_actor) {
-        actors[hit_actor].dir.x = 0;
-        actors[hit_actor].dir.y = -1;
-        actors[hit_actor].rerender = TRUE;
-      }
-    } else {
-      if (player.dir.x == -1) {
-        LOG("CHECK HIT LEFT\n");
-        LOG_VALUE("check_x", tile_x - 1);
-        LOG_VALUE("check_y", tile_y);
-        hit_actor = ActorAt1x2(tile_x - 2, tile_y);
+    if (INPUT_A_PRESSED) {
+      LOG("CHECK HIT\n");
+      hit_actor = 0;
+      if (player.dir.y == -1) {
+        LOG("CHECK HIT UP\n");
+        LOG_VALUE("check_x", tile_x);
+        LOG_VALUE("check_y", tile_y - 1);
+        hit_actor = ActorAt3x1(tile_x, tile_y - 1);
         if (hit_actor) {
-          actors[hit_actor].dir.x = 1;
-          actors[hit_actor].dir.y = 0;
+          actors[hit_actor].dir.x = 0;
+          actors[hit_actor].dir.y = 1;
           actors[hit_actor].rerender = TRUE;
         }
-      } else if (player.dir.x == 1) {
-        LOG("CHECK HIT RIGHT\n");
-        LOG_VALUE("check_x", tile_x + 2);
-        LOG_VALUE("check_y", tile_y);
-        hit_actor = ActorAt1x2(tile_x + 2, tile_y);
+      } else if (player.dir.y == 1) {
+        LOG("CHECK HIT DOWN\n");
+        LOG_VALUE("check_x", tile_x);
+        LOG_VALUE("check_y", tile_y + 2);
+        hit_actor = ActorAt3x1(tile_x, tile_y + 2);
         if (hit_actor) {
-          actors[hit_actor].dir.x = -1;
-          actors[hit_actor].dir.y = 0;
+          actors[hit_actor].dir.x = 0;
+          actors[hit_actor].dir.y = -1;
           actors[hit_actor].rerender = TRUE;
         }
+      } else {
+        if (player.dir.x == -1) {
+          LOG("CHECK HIT LEFT\n");
+          LOG_VALUE("check_x", tile_x - 1);
+          LOG_VALUE("check_y", tile_y);
+          hit_actor = ActorAt1x2(tile_x - 2, tile_y);
+          if (hit_actor) {
+            actors[hit_actor].dir.x = 1;
+            actors[hit_actor].dir.y = 0;
+            actors[hit_actor].rerender = TRUE;
+          }
+        } else if (player.dir.x == 1) {
+          LOG("CHECK HIT RIGHT\n");
+          LOG_VALUE("check_x", tile_x + 2);
+          LOG_VALUE("check_y", tile_y);
+          hit_actor = ActorAt1x2(tile_x + 2, tile_y);
+          if (hit_actor) {
+            actors[hit_actor].dir.x = -1;
+            actors[hit_actor].dir.y = 0;
+            actors[hit_actor].rerender = TRUE;
+          }
+        }
       }
-    }
-    if (hit_actor) {
-      LOG("GOT HIT\n");
-      ScriptStart(&actors[hit_actor].events_ptr);
+      if (hit_actor) {
+        player.moving = FALSE;
+        ScriptStart(&actors[hit_actor].events_ptr);
+      }
     }
   }
 }
