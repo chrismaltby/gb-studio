@@ -182,7 +182,6 @@ UBYTE ScriptUpdate_Wait() {
 }
 
 UBYTE ScriptUpdate_Emote() {
-  UWORD scene_load_ptr;
   UINT16 screen_x;
   UINT16 screen_y;
 
@@ -550,8 +549,6 @@ void Script_ActorSetCollisions_b() { actors[script_actor].collisionsEnabled = sc
  */
 void Script_ActorSetEmote_b() {
   UWORD scene_load_ptr;
-  UINT16 screen_x;
-  UINT16 screen_y;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
   script_update_fn = ScriptUpdate_Emote;
