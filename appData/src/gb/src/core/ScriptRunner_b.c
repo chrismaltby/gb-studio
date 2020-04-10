@@ -889,34 +889,26 @@ void Script_IfActorPos_b() {
  * Store current scene, player position and direction, current sprite and variable values into RAM
  */
 void Script_SaveData_b() {
-  /*
   UWORD i;
 
   ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
-  RAMPtr[0] = TRUE; // Flag to determine if data has been stored
+  RAMPtr[0] = TRUE;  // Flag to determine if data has been stored
 
   // Save current scene
-  RAMPtr[1] = scene_index;
+  RAMPtr[1] = current_state;
 
   // Save player position
-  RAMPtr[2] = actors[0].pos.x;
-  RAMPtr[3] = actors[0].pos.y;
-  if (actors[0].dir.x < 0)
-  {
+  RAMPtr[2] = player.pos.x;
+  RAMPtr[3] = player.pos.y;
+  if (player.dir.x < 0) {
     RAMPtr[4] = 2;
-  }
-  else if (actors[0].dir.x > 0)
-  {
+  } else if (player.dir.x > 0) {
     RAMPtr[4] = 4;
-  }
-  else if (actors[0].dir.y < 0)
-  {
+  } else if (player.dir.y < 0) {
     RAMPtr[4] = 8;
-  }
-  else
-  {
+  } else {
     RAMPtr[4] = 1;
   }
 
@@ -925,14 +917,11 @@ void Script_SaveData_b() {
 
   // Save variable values
   RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
-  for (i = 0; i < NUM_VARIABLES; i++)
-  {
+  for (i = 0; i < NUM_VARIABLES; i++) {
     RAMPtr[i] = script_variables[i];
   }
 
   DISABLE_RAM;
-
-  */
 }
 
 /*
@@ -941,25 +930,23 @@ void Script_SaveData_b() {
  * Restore current scene, player position and direction, current sprite and variable values from RAM
  */
 void Script_LoadData_b() {
-  /*
+  UINT16 scene_next_index;
   UWORD i;
 
   ENABLE_RAM;
 
   RAMPtr = (UBYTE *)RAM_START_PTR;
-  if (*RAMPtr == TRUE)
-  {
+  if (*RAMPtr == TRUE) {
     // Set scene index
     RAMPtr++;
     scene_next_index = *RAMPtr;
-    scene_index = scene_next_index + 1;
 
     // Position player
     RAMPtr++;
-    map_next_pos.x = 0; // @wtf-but-needed
+    map_next_pos.x = 0;  // @wtf-but-needed
     map_next_pos.x = *RAMPtr;
     RAMPtr++;
-    map_next_pos.y = 0; // @wtf-but-needed
+    map_next_pos.y = 0;  // @wtf-but-needed
     map_next_pos.y = *RAMPtr;
     RAMPtr++;
     map_next_dir.x = *RAMPtr == 2 ? -1 : *RAMPtr == 4 ? 1 : 0;
@@ -971,23 +958,18 @@ void Script_LoadData_b() {
 
     // Load variable values
     RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
-    for (i = 0; i < NUM_VARIABLES; i++)
-    {
+    for (i = 0; i < NUM_VARIABLES; i++) {
       script_variables[i] = RAMPtr[i];
     }
 
     // Switch to next scene
-    stage_next_type = SCENE;
-    scene_loaded = FALSE;
+    SetState(scene_next_index);
     FadeSetSpeed(2);
-    FadeOut();
 
-    script_action_complete = FALSE;
+    script_update_fn = ScriptUpdate_AwaitFade;
   }
 
   DISABLE_RAM;
-
-  */
 }
 
 /*
