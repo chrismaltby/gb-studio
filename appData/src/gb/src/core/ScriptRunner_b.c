@@ -1825,8 +1825,6 @@ void Script_TextWithAvatar_b() {
 }
 
 UBYTE ScriptLastFnComplete_b() {
-  UBYTE fading = IsFading();
-
   /*
     if (last_fn == Script_LoadData_b && !fading) {
       return TRUE;
