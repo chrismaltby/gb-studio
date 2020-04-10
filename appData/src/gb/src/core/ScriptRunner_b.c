@@ -752,7 +752,7 @@ void Script_PlayerSetSprite_b() {
   actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
                                              : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
   actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
-  // SceneRenderActor(0);
+  actors[0].rerender = TRUE;
 
   // Keep new sprite when switching scene
   map_next_sprite = sprite_index;
@@ -1622,7 +1622,7 @@ void Script_ActorSetFrame_b() {
   actors[script_actor].frame = 0;
   actors[script_actor].flip = 0;
   actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
-  // SceneRenderActor(script_actor);
+  actors[script_actor].rerender = TRUE;
 }
 
 /*
@@ -1635,7 +1635,7 @@ void Script_ActorSetFrameToVal_b() {
   actors[script_actor].flip = 0;
   actors[script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] %
                                actors[script_actor].frames_len;
-  // SceneRenderActor(script_actor);
+  actors[script_actor].rerender = TRUE;
 }
 
 /*
@@ -1646,7 +1646,7 @@ void Script_ActorSetFrameToVal_b() {
 void Script_ActorSetFlip_b() {
   actors[script_actor].flip = 0;
   actors[script_actor].flip = script_cmd_args[0];
-  // SceneRenderActor(script_actor);
+  actors[script_actor].rerender = TRUE;
 }
 
 /*
