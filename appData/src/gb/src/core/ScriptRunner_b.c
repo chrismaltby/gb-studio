@@ -475,16 +475,8 @@ void Script_LoadScene_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorSetPos_b() {
-  actors[script_actor].pos.x = 0;  // @wtf-but-needed
-  actors[script_actor].pos.x = (script_cmd_args[0] << 3) + 8;
-  actors[script_actor].pos.y = 0;  // @wtf-but-needed
-  actors[script_actor].pos.y = (script_cmd_args[1] << 3) + 8;
-  /* @todo
-  if (script_cmd_args[1] == 31)
-  {
-    actors[script_actor].pos.y = ACTOR_MAX_Y;
-  }
-  */
+  actors[script_actor].pos.x = ((WORD)script_cmd_args[0] << 3);
+  actors[script_actor].pos.y = ((WORD)script_cmd_args[1] << 3);
 }
 
 /*
@@ -876,8 +868,8 @@ void Script_ActorPush_b() {
  *   arg4: Low 8 bits for new pointer
  */
 void Script_IfActorPos_b() {
-  if (((script_cmd_args[0] << 3) + 8 == actors[script_actor].pos.x) &&
-      ((script_cmd_args[1] << 3) + 8 ==
+  if ((((WORD)script_cmd_args[0] << 3) == actors[script_actor].pos.x) &&
+      (((WORD)script_cmd_args[1] << 3) ==
        actors[script_actor].pos.y)) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
