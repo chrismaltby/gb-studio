@@ -1851,12 +1851,6 @@ UBYTE ScriptLastFnComplete_b() {
     }
   */
   /*
-  if (last_fn == Script_ActorSetEmote_b && !SceneIsEmoting())
-  {
-    return TRUE;
-  }
-  */
-  /*
   if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
   {
     camera_settings = camera_settings & ~CAMERA_TRANSITION_FLAG;
