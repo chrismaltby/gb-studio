@@ -122,6 +122,11 @@ void UIUpdate_b() {
     }
   } else {
     UIDrawTextBuffer();
+    // Reenable hide_sprites_under_win if
+    // disabled, once UI has closed
+    if (!hide_sprites_under_win && UIIsClosed()) {
+      hide_sprites_under_win = TRUE;
+    }
   }
 
   WX_REG = win_pos_x + 7;
@@ -345,7 +350,6 @@ void UICloseDialogue_b() {
   menu_enabled = FALSE;
   menu_layout = 0;
   avatar_enabled = FALSE;
-  hide_sprites_under_win = TRUE;
 }
 
 void UIOnInteract_b() {
