@@ -14,6 +14,7 @@
 
 extern unsigned char text_lines[80];
 extern unsigned char tmp_text_lines[80];
+extern UBYTE hide_sprites_under_win;
 extern UBYTE win_pos_x;
 extern UBYTE win_pos_y;
 extern UBYTE win_dest_pos_x;

@@ -1419,11 +1419,9 @@ void Script_ActorSetAnimSpeed_b() { actors[script_actor].anim_speed = script_cmd
  *   arg1: Animation speed to use fading out
  */
 void Script_TextSetAnimSpeed_b() {
-  /*
   text_in_speed = script_cmd_args[0];
   text_out_speed = script_cmd_args[1];
   text_draw_speed = script_cmd_args[2];
-  */
 }
 
 /*

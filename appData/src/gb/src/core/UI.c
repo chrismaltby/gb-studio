@@ -21,6 +21,7 @@ UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
 UBYTE win_dest_pos_y;
 UBYTE win_speed;
+UBYTE hide_sprites_under_win = FALSE;
 
 UBYTE text_x;
 UBYTE text_y;
@@ -85,6 +86,8 @@ void UIShowText(UWORD line) {
   BANK_PTR bank_ptr;
   UBYTE *ptr;
 
+  hide_sprites_under_win = TRUE;
+
   strcpy(tmp_text_lines, "");
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &string_bank_ptrs[line]);
@@ -130,6 +133,7 @@ void UIShowAvatar(UBYTE avatar_index) {
 }
 
 void UIShowChoice(UWORD flag_index, UWORD line) {
+  hide_sprites_under_win = TRUE;
   UIShowMenu(flag_index, line, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
 }
 
@@ -143,6 +147,7 @@ void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
   tmp_text_draw_speed = text_draw_speed;
   text_draw_speed = 0;
   UIShowText(line);
+  hide_sprites_under_win = layout == 0;
   menu_num_options = tmp_text_lines[0];
   UIDrawMenuCursor();
 }

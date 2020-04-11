@@ -7,6 +7,7 @@
 #include "Scroll.h"
 #include "Math.h"
 #include "GameTime.h"
+#include "UI.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
@@ -164,8 +165,14 @@ void UpdateActors_b() {
     */
 
     // LOG("SPRITE MOVE %u %u\n", i, s);
-    move_sprite(k, screen_x, screen_y);
-    move_sprite(k + 1, screen_x + 8, screen_y);
+
+    if (!hide_sprites_under_win && screen_x > WX_REG && screen_y - 8 > WY_REG) {
+      move_sprite(k, 0, 0);
+      move_sprite(k + 1, 0, 0);
+    } else {
+      move_sprite(k, screen_x, screen_y);
+      move_sprite(k + 1, screen_x + 8, screen_y);
+    }
 
     // Check if actor is off screen
     if (IS_FRAME_32) {

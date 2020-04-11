@@ -290,6 +290,9 @@ void UIDrawTextBufferChar_b() {
 
     if (text_lines[text_count] != '\b' && text_lines[text_count] != '\n') {
       i = text_tile_count + avatar_enabled * 4;
+
+      WaitForMode0Or1();
+
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
       // set_win_tiles(
@@ -342,6 +345,7 @@ void UICloseDialogue_b() {
   menu_enabled = FALSE;
   menu_layout = 0;
   avatar_enabled = FALSE;
+  hide_sprites_under_win = TRUE;
 }
 
 void UIOnInteract_b() {
