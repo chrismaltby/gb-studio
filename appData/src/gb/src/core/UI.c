@@ -21,7 +21,7 @@ UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
 UBYTE win_dest_pos_y;
 UBYTE win_speed;
-UBYTE hide_sprites_under_win = FALSE;
+UBYTE hide_sprites_under_win = TRUE;
 
 UBYTE text_x;
 UBYTE text_y;
@@ -86,7 +86,6 @@ void UIShowText(UWORD line) {
   BANK_PTR bank_ptr;
   UBYTE *ptr;
 
-  hide_sprites_under_win = TRUE;
 
   strcpy(tmp_text_lines, "");
 
@@ -133,7 +132,6 @@ void UIShowAvatar(UBYTE avatar_index) {
 }
 
 void UIShowChoice(UWORD flag_index, UWORD line) {
-  hide_sprites_under_win = TRUE;
   UIShowMenu(flag_index, line, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
 }
 
