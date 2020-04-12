@@ -171,32 +171,48 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
 
 void ScrollUpdateRow(INT16 x, INT16 y) {
   UINT8 i = 0u;
+  UBYTE screen_x, screen_y;
   unsigned char *map = image_ptr + image_tile_width * y + x;
-
 #ifdef CGB
   unsigned char *cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
 
   LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
 
-  for (i = 0u; i != 23; i++) {
+  screen_x = MOD_32(x);
+  screen_y = MOD_32(y);
+
+  if (screen_x <= 9) {
+    // If screen doesn't wrap in X direction can draw entire row in single draw call
 #ifdef CGB
     PUSH_BANK(image_attr_bank);
     VBK_REG = 1;
-    set_bkg_tiles(MOD_32(x + i), MOD_32(y), 1, 1, cmap++);
+    set_bkg_tiles(screen_x, screen_y, 23, 1, cmap);
     VBK_REG = 0;
     POP_BANK;
 #endif
-    // LOG("SET TILE x= %u\n", x + i);
-    set_bkg_tiles(MOD_32(x + i), MOD_32(y), 1, 1, map++);
+    set_bkg_tiles(screen_x, screen_y, 23, 1, map);
+  } else {
+    // If screen does wrap render right hand side first then left hand side
+#ifdef CGB
+    PUSH_BANK(image_attr_bank);
+    VBK_REG = 1;
+    set_bkg_tiles(screen_x, screen_y, 32 - screen_x, 1, cmap);
+    cmap += 32 - screen_x;
+    set_bkg_tiles(MOD_32(screen_x + (32 - screen_x)), screen_y, 23 - (32 - screen_x), 1, cmap);
+    VBK_REG = 0;
+    POP_BANK;
+#endif
+    set_bkg_tiles(screen_x, screen_y, 32 - screen_x, 1, map);
+    map += 32 - screen_x;
+    set_bkg_tiles(MOD_32(screen_x + (32 - screen_x)), screen_y, 23 - (32 - screen_x), 1, map);
   }
 
+  // Activate Actors in Row
   for (i = 1; i != actors_len; i++) {
-    // LOG("CHECK ROW %u - %d - %u - %u\n", i, y, actors[i].pos.y, actors[i].pos.y >> 3);
     if (actors[i].pos.y >> 3 == y) {
       INT16 tx = actors[i].pos.x >> 3;
       if (tx >= x && tx <= x + 23) {
-        // LOG("ROW ACTIVATE %u\n", i);
         ActivateActor(i);
       }
     }
@@ -291,6 +307,7 @@ void RenderScreen() {
 
   DISPLAY_OFF;
 
+  // Clear pending rows/ columns
   pending_w_i = 0;
   pending_h_i = 0;
 
