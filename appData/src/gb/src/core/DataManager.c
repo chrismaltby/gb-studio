@@ -232,6 +232,8 @@ void LoadScene(UINT16 index) {
   player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
   player.sprite_index = SpritePoolNext();
   player.rerender = TRUE;
+  player.moving = FALSE;
+  player.animate = FALSE;
 
   InitScroll();
 

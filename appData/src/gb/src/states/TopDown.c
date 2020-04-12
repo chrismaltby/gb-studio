@@ -33,8 +33,6 @@ void Start_TopDown() {
   // set_sprite_tile(8, 24);
   // set_sprite_tile(9, 24);
 
-  player.moving = FALSE;
-
   LOG("END START TOPDOWN\n");
 }
 
