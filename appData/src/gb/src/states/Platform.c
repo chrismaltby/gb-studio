@@ -132,8 +132,11 @@ void Update_Platform() {
 
   // Jump
   if (INPUT_B_PRESSED && grounded) {
-    vel_y = -JUMP_VEL;
-    grounded = FALSE;
+    if (!(TileAt(tile_x, tile_y - 2) ||                                      // Left Edge
+          (((pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2)))) {  // Right edge
+      vel_y = -JUMP_VEL;
+      grounded = FALSE;
+    }
   }
 
   // Gravity
@@ -180,8 +183,10 @@ void Update_Platform() {
       if (TileAt(tile_x, tile_y - 2) ||                                  // Left Edge
           (((pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2))  // Right edge
       ) {
-        vel_y = 0;
-        pos_y = ((tile_y * 8) << 4);
+        if (MOD_128(pos_y) < 32) {
+          vel_y = 0;
+          pos_y = ((tile_y * 8) << 4);
+        }
       }
     }
   }

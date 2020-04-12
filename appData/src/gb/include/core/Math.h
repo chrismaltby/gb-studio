@@ -32,6 +32,8 @@ UBYTE Gt16(UINT16 a, UINT16 b);
 #define MOD_4(a) ((a)&3)
 #define MOD_8(a) ((a)&7)
 #define MOD_32(a) ((a)&31)
+#define MOD_64(a) ((a)&63)
+#define MOD_128(a) ((a)&127)
 
 #define MUL_16(a) ((a) << 4)
 #define MUL_8(a) ((a) << 3)
