@@ -38,8 +38,8 @@ WORD vel_y = 0;
 WORD pos_x = 16512;
 WORD pos_y = 1024;
 Pos cam_pos = {0, 0};
-UINT16 pos_y_delayed = 1024;
-UINT16 platform_y = 1024;
+WORD pos_y_delayed = 1024;
+WORD platform_y = 1024;
 
 void Start_Platform() {
   LOG("START PLATFORM\n");
@@ -81,6 +81,10 @@ void Update_Platform() {
       }
   }
   */
+
+  // Update scene pos from player pos
+  pos_x = ((player.pos.x + 4u) << 4) + (pos_x & 0xF);
+  pos_y = ((player.pos.y) << 4) + (pos_y & 0xF);
 
   // Move
   if (INPUT_LEFT) {
@@ -223,12 +227,12 @@ void Update_Platform() {
   LOG_VALUE("cam_pos.y", cam_pos.y);
 
   if (INPUT_SELECT_PRESSED) {
-    pos_x = 32;
-    pos_y = 32;
+    player.pos.x = 16;
+    player.pos.y = 16;
   }
 
   if (INPUT_START_PRESSED) {
-    pos_x = 0x421B;
-    pos_y = 32;
+    player.pos.x = 1024;
+    player.pos.y = 24;
   }
 }
