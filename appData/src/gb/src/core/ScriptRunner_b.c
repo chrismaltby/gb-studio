@@ -33,7 +33,6 @@ UINT16 actor_move_dest_x = 0;
 UINT16 actor_move_dest_y = 0;
 BYTE actor_move_dir_x = 0;
 BYTE actor_move_dir_y = 0;
-BYTE actor_move_speed = 1;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE wait_time = 0;
@@ -145,21 +144,33 @@ UBYTE ScriptUpdate_MoveActor() {
   // Actor reached destination
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
+    actors[script_actor].moving = FALSE;
+    actors[script_actor].vel.x = 0;
+    actors[script_actor].vel.y = 0;
     return TRUE;
   }
+  actors[script_actor].moving = TRUE;
   // Actor not at horizontal destination
   if (actors[script_actor].pos.x != actor_move_dest_x) {
+    actors[script_actor].vel.y = 0;
+    actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].pos.x += actor_move_speed;
+      actors[script_actor].vel.x = 1;
+      actors[script_actor].dir.x = 1;
     } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].pos.x -= actor_move_speed;
+      actors[script_actor].vel.x = -1;
+      actors[script_actor].dir.x = -1;
     }
   } else {
     // Actor not at vertical destination
+    actors[script_actor].vel.x = 0;
+    actors[script_actor].dir.x = 0;
     if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].pos.y += actor_move_speed;
+      actors[script_actor].vel.y = 1;
+      actors[script_actor].dir.y = 1;
     } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].pos.y -= actor_move_speed;
+      actors[script_actor].vel.y = -1;
+      actors[script_actor].dir.y = -1;
     }
   }
   return FALSE;
