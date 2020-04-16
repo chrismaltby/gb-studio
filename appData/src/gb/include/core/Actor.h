@@ -12,12 +12,23 @@
 #define MAX_ACTIVE_ACTORS 11
 #define ACTOR_MOVE_ENABLED 0x80
 #define ACTOR_NOCLIP 0x40
+#define ACTOR_MIN_X 0
+#define ACTOR_MIN_Y 8
 
 #define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
 #define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
 #define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0) || (actors[(i)].pos.y == 254))
 #define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
 #define player (actors[0])
+#define PlayerSetMovement(dir_x, dir_y) (ActorSetMovement(0, dir_x, dir_y))
+#define PlayerStopMovement() (ActorStopMovement(0))
+#define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
+#define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
+#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
+#define PlayerBetweenTiles() (ACTOR_BETWEEN_TILES(0))
+#define PlayerOnTileX() (ACTOR_ON_TILE_X(0))
+#define PlayerOnTileY() (ACTOR_ON_TILE_Y(0))
+#define PlayerOnTile() ((ACTOR_ON_TILE_X(0)) && (ACTOR_ON_TILE_Y(0)))
 
 typedef enum {
   NONE = 1,
@@ -102,10 +113,10 @@ void DeactivateActiveActor(UBYTE i);
  * @param ty Top tile
  * @return index of actor at tile in actors array
  */
-UBYTE ActorAtTile(UBYTE tx, UBYTE ty);
+UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
-UBYTE ActorAt3x1(UBYTE tx, UBYTE ty);
-UBYTE ActorAt1x2(UBYTE tx, UBYTE ty);
+UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
 /**
  * Return index of actor that would overlap an actor at the given tile coordinates
@@ -114,14 +125,19 @@ UBYTE ActorAt1x2(UBYTE tx, UBYTE ty);
  * @param ty Top tile
  * @return index of actor at tile in actors array
  */
-UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a);
+UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a, UBYTE inc_noclip);
 
 /**
  * Return index of actor overlapping player
  *
  * @return index of overlapping actor in actors array
  */
-UBYTE ActorOverlapsPlayer();
+UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
+
+void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y);
+void ActorStopMovement(UBYTE i);
+
+UBYTE ActorInFrontOfActor(UBYTE i);
 
 /**
  * Activate the actor from actors array at given index

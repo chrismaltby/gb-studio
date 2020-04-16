@@ -60,9 +60,8 @@ void UpdateActors_b() {
     screen_y = 8u + actor->pos.y - scroll_y;
 
     // Update animation frames
-    if (IS_FRAME_8 && (((actors[a].vel.x != 0 || actors[a].vel.y != 0) &&
-                        actors[a].sprite_type != SPRITE_STATIC) ||
-                       actors[a].animate)) {
+    if (IS_FRAME_8 &&
+        (((actors[a].moving) && actors[a].sprite_type != SPRITE_STATIC) || actors[a].animate)) {
       if (actors[a].anim_speed == 4 || (actors[a].anim_speed == 3 && IS_FRAME_16) ||
           (actors[a].anim_speed == 2 && IS_FRAME_32) ||
           (actors[a].anim_speed == 1 && IS_FRAME_64) ||

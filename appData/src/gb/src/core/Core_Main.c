@@ -242,6 +242,8 @@ void game_loop() {
     startFuncs[scene_type]();
     POP_BANK;
 
+    game_time = 0;
+
     LOG("SCRIPT START "
         "!!!!!===================================================================!!!!!!\n");
 

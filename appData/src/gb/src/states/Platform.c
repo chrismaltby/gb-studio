@@ -125,9 +125,9 @@ void Update_Platform() {
 
   if (grounded && INPUT_A_PRESSED) {
     if (player.dir.x == 1) {
-      hit_actor = ActorAtTile(tile_x + 2, tile_y);
+      hit_actor = ActorAtTile(tile_x + 2, tile_y, TRUE);
     } else {
-      hit_actor = ActorAtTile(tile_x - 1, tile_y);
+      hit_actor = ActorAtTile(tile_x - 1, tile_y, TRUE);
     }
     if (hit_actor) {
       ScriptStart(&actors[hit_actor].events_ptr);
