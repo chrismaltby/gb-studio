@@ -1069,16 +1069,10 @@ void Script_ActorGetPos_b() {
  * Set Actor position from variables
  */
 void Script_ActorSetPosToVal_b() {
-  /*
-  actors[script_actor].pos.x = 0; // @wtf-but-needed
-  actors[script_actor].pos.x = (script_variables[script_ptr_x] << 3) + 8;
-  actors[script_actor].pos.y = 0; // @wtf-but-needed
-  actors[script_actor].pos.y = (script_variables[script_ptr_y] << 3) + 8;
-  if (script_variables[script_ptr_y] == 31)
-  {
-    actors[script_actor].pos.y = ACTOR_MAX_Y;
-  }
-  */
+  actors[script_actor].pos.x = 0;  // @wtf-but-needed
+  actors[script_actor].pos.x = ((WORD)script_variables[script_ptr_x] << 3);
+  actors[script_actor].pos.y = 0;  // @wtf-but-needed
+  actors[script_actor].pos.y = ((WORD)script_variables[script_ptr_y] << 3);
 }
 
 /*
@@ -1087,19 +1081,16 @@ void Script_ActorSetPosToVal_b() {
  * Set Actor position from variables
  */
 void Script_ActorMoveToVal_b() {
-  /*
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
-  actor_move_dest_x = 0; // @wtf-but-needed
-  actor_move_dest_x = (script_variables[script_ptr_x] << 3) + 8;
-  actor_move_dest_y = 0; // @wtf-but-needed
-  actor_move_dest_y = (script_variables[script_ptr_y] << 3) + 8;
-  if (script_variables[script_ptr_y] == 31)
-  {
-    actor_move_dest_y = ACTOR_MAX_Y;
+  actor_move_dest_x = 0;  // @wtf-but-needed
+  actor_move_dest_x = (script_variables[script_ptr_x] << 3);
+  actor_move_dest_y = 0;  // @wtf-but-needed
+  actor_move_dest_y = (script_variables[script_ptr_y] << 3);
+  if (script_variables[script_ptr_y] == 31) {
+    actor_move_dest_y = image_width - 8;
   }
-  script_action_complete = FALSE;
-  */
+  script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
@@ -1111,67 +1102,49 @@ void Script_ActorMoveToVal_b() {
  *   arg1: Offset Y Pos
  */
 void Script_ActorMoveRel_b() {
-  /*
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
-  actor_move_dest_x = 0; // @wtf-but-needed
+  actor_move_dest_x = 0;  // @wtf-but-needed
   actor_move_dest_x = actors[script_actor].pos.x;
-  if (script_cmd_args[0] != 0)
-  {
-    if (script_cmd_args[1] == 1)
-    {
+  if (script_cmd_args[0] != 0) {
+    if (script_cmd_args[1] == 1) {
       actor_move_dest_x = actor_move_dest_x - (script_cmd_args[0] << 3);
       // If destination wrapped past left edge set to min X
-      if (actor_move_dest_x > actors[script_actor].pos.x)
-      {
+      if (actor_move_dest_x > actors[script_actor].pos.x) {
+        actor_move_dest_x = ACTOR_MIN_X;
+      } else if (actor_move_dest_x < ACTOR_MIN_X) {
         actor_move_dest_x = ACTOR_MIN_X;
       }
-      else if (actor_move_dest_x < ACTOR_MIN_X)
-      {
-        actor_move_dest_x = ACTOR_MIN_X;
-      }
-    }
-    else
-    {
+    } else {
       actor_move_dest_x = actor_move_dest_x + (script_cmd_args[0] << 3);
-      // If destination wrapped past right edge set to max X
-      if (actor_move_dest_x < actors[script_actor].pos.x)
-      {
-        actor_move_dest_x = ACTOR_MAX_X;
+      // If destination beyond max X set to max X
+      if (actor_move_dest_x > image_width - 16) {
+        actor_move_dest_x = image_width - 16;
       }
     }
   }
 
-  actor_move_dest_y = 0; // @wtf-but-needed
+  actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = actors[script_actor].pos.y;
-  if (script_cmd_args[2] != 0)
-  {
-    if (script_cmd_args[3] == 1)
-    {
+  if (script_cmd_args[2] != 0) {
+    if (script_cmd_args[3] == 1) {
       actor_move_dest_y = actor_move_dest_y - (script_cmd_args[2] << 3);
       // If destination wrapped past top edge set to min Y
-      if (actor_move_dest_y > actors[script_actor].pos.y)
-      {
+      if (actor_move_dest_y > actors[script_actor].pos.y) {
+        actor_move_dest_y = ACTOR_MIN_Y;
+      } else if (actor_move_dest_y < ACTOR_MIN_Y) {
         actor_move_dest_y = ACTOR_MIN_Y;
       }
-      else if (actor_move_dest_y < ACTOR_MIN_Y)
-      {
-        actor_move_dest_y = ACTOR_MIN_Y;
-      }
-    }
-    else
-    {
+    } else {
       actor_move_dest_y = actor_move_dest_y + (script_cmd_args[2] << 3);
-      // If destination wrapped past bottom edge set to max Y
-      if (actor_move_dest_y < actors[script_actor].pos.y)
-      {
-        actor_move_dest_y = ACTOR_MAX_Y;
+      // If destination beyond max Y set to max Y
+      if (actor_move_dest_y > image_height - 8) {
+        actor_move_dest_y = image_height - 8;
       }
     }
   }
 
-  script_action_complete = FALSE;
-  */
+  script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
