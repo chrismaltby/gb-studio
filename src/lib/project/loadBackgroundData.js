@@ -16,7 +16,7 @@ const loadBackgroundData = projectRoot => async filename => {
     return {
       id: uuid(),
       plugin,
-      name: file.replace(".png", ""),
+      name: file.replace(/.png/i, ""),
       width: Math.min(Math.floor(size.width / TILE_SIZE), 255),
       height: Math.min(Math.floor(size.height / TILE_SIZE), 255),
       imageWidth: size.width,
@@ -32,10 +32,10 @@ const loadBackgroundData = projectRoot => async filename => {
 
 const loadAllBackgroundData = async projectRoot => {
   const imagePaths = await globAsync(
-    `${projectRoot}/assets/backgrounds/**/*.png`
+    `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`
   );
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/backgrounds/**/*.png`
+    `${projectRoot}/plugins/*/backgrounds/**/@(*.png|*.PNG)`
   );
   const imageData = (
     await Promise.all(
