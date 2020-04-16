@@ -1522,8 +1522,6 @@ void Script_ScenePopAllState_b() {
 
     return;
   }
-
-  script_action_complete = TRUE;
 }
 
 /*
@@ -1544,8 +1542,6 @@ void Script_SetInputScript_b() {
 
   input_script_ptrs[index].bank = script_cmd_args[1];
   input_script_ptrs[index].offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
-
-  script_action_complete = TRUE;
 }
 
 /*
@@ -1565,8 +1561,6 @@ void Script_RemoveInputScript_b() {
     }
     input = input >> 1;
   }
-
-  script_action_complete = TRUE;
 }
 
 /*
