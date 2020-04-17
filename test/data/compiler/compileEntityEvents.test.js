@@ -129,7 +129,7 @@ test("should output text command", () => {
   ];
   const strings = ["HELLO WORLD"];
   const output = compileEntityEvents(input, { strings });
-  expect(output).toEqual([CMD_LOOKUP.TEXT, 0, 0, CMD_LOOKUP.END]);
+  expect(output).toEqual([CMD_LOOKUP.TEXT, "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", CMD_LOOKUP.END]);
 });
 
 test("should output text command string pointers", () => {
@@ -155,11 +155,13 @@ test("should output text command string pointers", () => {
   const output = compileEntityEvents(input, { strings });
   expect(output).toEqual([
     CMD_LOOKUP.TEXT,
-    0,
-    10,
+    "__REPLACE:STRING_BANK:10",
+    "__REPLACE:STRING_HI:10",
+    "__REPLACE:STRING_LO:10",
     CMD_LOOKUP.TEXT,
-    1,
-    4,
+    "__REPLACE:STRING_BANK:260",
+    "__REPLACE:STRING_HI:260",
+    "__REPLACE:STRING_LO:260",
     CMD_LOOKUP.END
   ]);
 });
@@ -179,8 +181,9 @@ test("should output text with avatar command", () => {
   const output = compileEntityEvents(input, { strings, avatars });
   expect(output).toEqual([
     CMD_LOOKUP.TEXT_WITH_AVATAR,
-    0,
-    0,
+    "__REPLACE:STRING_BANK:0",
+    "__REPLACE:STRING_HI:0",
+    "__REPLACE:STRING_LO:0",
     0,
     CMD_LOOKUP.END
   ]);
@@ -212,12 +215,14 @@ test("should output text wit avatar command string pointers", () => {
   const output = compileEntityEvents(input, { strings, avatars });
   expect(output).toEqual([
     CMD_LOOKUP.TEXT_WITH_AVATAR,
-    0,
-    10,
+    "__REPLACE:STRING_BANK:10",
+    "__REPLACE:STRING_HI:10",
+    "__REPLACE:STRING_LO:10",
     0,
     CMD_LOOKUP.TEXT_WITH_AVATAR,
-    1,
-    4,
+    "__REPLACE:STRING_BANK:260",
+    "__REPLACE:STRING_HI:260",
+    "__REPLACE:STRING_LO:260",
     0,
     CMD_LOOKUP.END
   ]);
@@ -258,19 +263,21 @@ test("should allow conditional statements", () => {
     0, // 1 Variable ptr hi
     3, // 2 Variable ptr lo
     0, // 3 Jump ptr hi
-    11, // 4 Jump ptr lo
+    12, // 4 Jump ptr lo
     // False path
     CMD_LOOKUP.TEXT, // 5
-    0, // 6
-    2, // 7
-    CMD_LOOKUP.JUMP, // 8
-    0, // 9 Jump to end
-    14, // 10
+    "__REPLACE:STRING_BANK:2", // 6
+    "__REPLACE:STRING_HI:2", // 7
+    "__REPLACE:STRING_LO:2", // 8
+    CMD_LOOKUP.JUMP, // 9
+    0, // 10 Jump to end
+    16, // 11
     // True path
-    CMD_LOOKUP.TEXT, // 11
-    0, // 12
-    1, // 13
-    CMD_LOOKUP.END // 14
+    CMD_LOOKUP.TEXT, // 12
+    "__REPLACE:STRING_BANK:1", // 13
+    "__REPLACE:STRING_HI:1", // 14
+    "__REPLACE:STRING_LO:1", // 15
+    CMD_LOOKUP.END // 16
   ]);
 });
 
@@ -315,22 +322,25 @@ test("should allow commands after conditional", () => {
     0, // 1 Variable ptr hi
     3, // 2 Variable ptr lo
     0, // 3 Jump ptr hi
-    11, // 4 Jump ptr lo
+    12, // 4 Jump ptr lo
     // False path
     CMD_LOOKUP.TEXT, // 5
-    0, // 6
-    2, // 7
-    CMD_LOOKUP.JUMP, // 8
-    0, // 9 Jump to end
-    14, // 10
+    "__REPLACE:STRING_BANK:2", // 6
+    "__REPLACE:STRING_HI:2", // 7
+    "__REPLACE:STRING_LO:2", // 8
+    CMD_LOOKUP.JUMP, // 9
+    0, // 10 Jump to end
+    16, // 11
     // True path
-    CMD_LOOKUP.TEXT, // 11
-    0, // 12
-    1, // 13
-    CMD_LOOKUP.TEXT, // 14
-    0, // 15 After text hi ptr
-    3, // 16
-    CMD_LOOKUP.END // 17
+    CMD_LOOKUP.TEXT, // 12
+    "__REPLACE:STRING_BANK:1", // 13
+    "__REPLACE:STRING_HI:1", // 14
+    "__REPLACE:STRING_LO:1", // 15
+    CMD_LOOKUP.TEXT, // 16
+    "__REPLACE:STRING_BANK:3", // 17
+    "__REPLACE:STRING_HI:3", // 18
+    "__REPLACE:STRING_LO:3", // 19
+    CMD_LOOKUP.END // 20
   ]);
 });
 

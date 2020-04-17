@@ -347,7 +347,7 @@ test("Should be able to display text", () => {
   const strings = ["First Text"];
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue("First Text");
-  expect(output).toEqual([cmd(TEXT), 0, 0]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual(["First Text"]);
 });
 
@@ -357,7 +357,7 @@ test("Should be able to add additional display text", () => {
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue("First Text");
   sb.textDialogue("Second Text");
-  expect(output).toEqual([cmd(TEXT), 0, 0, cmd(TEXT), 0, 2]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", cmd(TEXT), "__REPLACE:STRING_BANK:2", "__REPLACE:STRING_HI:2", "__REPLACE:STRING_LO:2"]);
   expect(strings).toEqual(["First Text", "Unused Text", "Second Text"]);
 });
 
@@ -366,7 +366,7 @@ test("Should default to empty display text", () => {
   const strings = [];
   const sb = new ScriptBuilder(output, { strings });
   sb.textDialogue();
-  expect(output).toEqual([cmd(TEXT), 0, 0]);
+  expect(output).toEqual([cmd(TEXT), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual([" "]);
 });
 
@@ -376,7 +376,7 @@ test("Should be able to display text with avatar", () => {
   const avatars = [{ id: "avatar-1" }, { id: "avatar-2" }];
   const sb = new ScriptBuilder(output, { strings, avatars });
   sb.textDialogue("First Text", "avatar-2");
-  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), 0, 0, 1]);
+  expect(output).toEqual([cmd(TEXT_WITH_AVATAR), "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0", 1]);
   expect(strings).toEqual(["First Text"]);
 });
 
@@ -385,7 +385,7 @@ test("Should be able to display choice", () => {
   const strings = ["Hello World"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textChoice("2", { trueText: "One", falseText: "Two" });
-  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 1]);
+  expect(output).toEqual([cmd(CHOICE), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1"]);
   expect(strings).toEqual(["Hello World", "One\nTwo"]);
 });
 
@@ -394,7 +394,7 @@ test("Should not store choice text multiple times", () => {
   const strings = ["One\nTwo"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textChoice("2", { trueText: "One", falseText: "Two" });
-  expect(output).toEqual([cmd(CHOICE), 0, 2, 0, 0]);
+  expect(output).toEqual([cmd(CHOICE), 0, 2, "__REPLACE:STRING_BANK:0", "__REPLACE:STRING_HI:0", "__REPLACE:STRING_LO:0"]);
   expect(strings).toEqual(["One\nTwo"]);
 });
 
@@ -403,7 +403,7 @@ test("Should be able to display menu with default values", () => {
   const strings = ["Hello World"];
   const sb = new ScriptBuilder(output, { variables: ["0", "1", "2"], strings });
   sb.textMenu("2", [ "item1", "item2", "item3" ]);
-  expect(output).toEqual([cmd(MENU), 0, 2, 0, 1, 1, 0]);
+  expect(output).toEqual([cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 0]);
   expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
 });
 
@@ -431,15 +431,15 @@ test("Should be able to display menu with different config values", () => {
   sb.textMenu("2", [ "item1", "item2", "item3" ], "dialogue", true, true);
 
   expect(output).toEqual([
-    cmd(MENU), 0, 2, 0, 1, 1, 0,
-    cmd(MENU), 0, 2, 0, 1, 1, 1,
-    cmd(MENU), 0, 2, 0, 1, 1, 2,
-    cmd(MENU), 0, 2, 0, 1, 1, 3,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 0,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 1,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 2,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 1, 3,
 
-    cmd(MENU), 0, 2, 0, 1, 0, 0,
-    cmd(MENU), 0, 2, 0, 1, 0, 1,
-    cmd(MENU), 0, 2, 0, 1, 0, 2,
-    cmd(MENU), 0, 2, 0, 1, 0, 3,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 0,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 1,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 2,
+    cmd(MENU), 0, 2, "__REPLACE:STRING_BANK:1", "__REPLACE:STRING_HI:1", "__REPLACE:STRING_LO:1", 0, 3,
   ]);
   expect(strings).toEqual(["Hello World", "item1\nitem2\nitem3"]);
 });
