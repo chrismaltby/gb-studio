@@ -1,14 +1,14 @@
 import fs from "fs-extra";
 import Path from "path";
 
-export default async (buildRoot, { CART_TYPE, customColorsEnabled, gbcFastCPUEnabled }) => {
+export default async (buildRoot, { CART_TYPE, CART_SIZE, customColorsEnabled, gbcFastCPUEnabled }) => {
   const cmds = ['set __COMPAT_LAYER=WIN7RTM'];
   const buildFiles = [];
   const objFiles = [];
   let musicFiles = [];
 
   const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
-  const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo64 -Wl-ya4`;
+  const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo${CART_SIZE} -Wl-ya4`;
   const CGBFLAGS = `-Wl-yp0x143=0x80`;
 
   const srcRoot = `${buildRoot}/src`;
