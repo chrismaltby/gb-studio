@@ -279,6 +279,28 @@ const compile = async (
     );
   });
 
+  // Replace ptrs in banked data
+  banked.mutate((data) => {
+    if(typeof data === "number") {
+      return data;
+    }
+    if(typeof data === "string" && data.startsWith("__REPLACE")) {
+      if(data.startsWith("__REPLACE:STRING_BANK:")) {
+        const index = parseInt(data.replace(/.*:/,''), 10);
+        return stringPtrs[index].bank;
+      }
+      if(data.startsWith("__REPLACE:STRING_HI:")) {
+        const index = parseInt(data.replace(/.*:/,''), 10);
+        return hi(stringPtrs[index].offset);
+      }
+      if(data.startsWith("__REPLACE:STRING_LO:")) {
+        const index = parseInt(data.replace(/.*:/,''), 10);
+        return lo(stringPtrs[index].offset);
+      }      
+    }
+    return 0;
+  })
+  
   let startSceneIndex = precompiled.sceneData.findIndex(
     m => m.id === projectData.settings.startSceneId
   );
@@ -314,7 +336,6 @@ const compile = async (
     background_bank_ptrs: fixEmptyDataPtrs(backgroundPtrs),
     sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
     scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
-    string_bank_ptrs: fixEmptyDataPtrs(stringPtrs),
     avatar_bank_ptrs: fixEmptyDataPtrs(avatarPtrs)
   };
 

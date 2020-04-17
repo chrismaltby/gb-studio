@@ -53,7 +53,7 @@ void Script_End_b()
 void Script_Text_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   script_action_complete = FALSE;
 }
 
@@ -655,7 +655,7 @@ void Script_IfInput_b()
 void Script_Choice_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3]);
+  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2], (script_cmd_args[3] * 256) + script_cmd_args[4]);
   script_action_complete = FALSE;
 }
 
@@ -667,7 +667,7 @@ void Script_Choice_b()
 void Script_TextMenu_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4], script_cmd_args[5]);
+  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2], (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5], script_cmd_args[6]);
   script_action_complete = FALSE;
 }
 
@@ -1904,7 +1904,7 @@ void Script_RemoveTimerScript_b()
 void Script_TextWithAvatar_b()
 {
   script_ptr += 1 + script_cmd_args_len;
-  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
-  UIShowAvatar(script_cmd_args[2]);
+  UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
+  UIShowAvatar(script_cmd_args[3]);
   script_action_complete = FALSE;
 }

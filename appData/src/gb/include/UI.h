@@ -35,8 +35,8 @@ void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame(UBYTE h);
 void UIDrawText(char *str, UBYTE x, UBYTE y);
 void UIDrawTextBkg(char *str, UBYTE x, UBYTE y);
-void UIShowText(UWORD line);
-void UIShowChoice(UWORD flag_index, UWORD line);
+void UIShowText(UBYTE bank, UWORD bank_offset);
+void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset);
 void UISetTextBuffer(unsigned char *text);
 void UIDrawTextBuffer();
 void UISetPos(UBYTE x, UBYTE y);
@@ -47,7 +47,7 @@ UBYTE UIAtDest();
 void UISetColor(UBYTE color);
 void UISetTextSpeed(UBYTE in, UBYTE out);
 void UIShowAvatar(UBYTE avatar_index);
-void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config);
+void UIShowMenu(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout, UBYTE cancel_config);
 void UIDrawMenuCursor();
 
 #endif

@@ -97,9 +97,8 @@ void UIDrawTextBkg(char *str, UBYTE x, UBYTE y)
   }
 }
 
-void UIShowText(UWORD line)
+void UIShowText(UBYTE bank, UWORD bank_offset)
 {
-  BANK_PTR bank_ptr;
   UWORD ptr, var_index;
   unsigned char value_string[6];
   UBYTE i, j, k;
@@ -107,10 +106,9 @@ void UIShowText(UWORD line)
 
   strcpy(tmp_text_lines, "");
 
-  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &string_bank_ptrs[line]);
-  ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
+  ptr = ((UWORD)bank_data_ptrs[bank]) + bank_offset;
 
-  PUSH_BANK(bank_ptr.bank);
+  PUSH_BANK(bank);
   strcat(tmp_text_lines, ptr);
   POP_BANK;
 
@@ -219,12 +217,12 @@ void UIShowAvatar(UBYTE avatar_index)
   avatar_enabled = TRUE;
 }
 
-void UIShowChoice(UWORD flag_index, UWORD line)
+void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset)
 {
-  UIShowMenu(flag_index, line, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
+  UIShowMenu(flag_index, bank, bank_offset, 0, MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
 }
 
-void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
+void UIShowMenu(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout, UBYTE cancel_config)
 {
   menu_index = 0;
   menu_flag = flag_index;
@@ -232,7 +230,7 @@ void UIShowMenu(UWORD flag_index, UWORD line, UBYTE layout, UBYTE cancel_config)
   menu_cancel_on_last_option = cancel_config & MENU_CANCEL_ON_LAST_OPTION;
   menu_cancel_on_b = cancel_config & MENU_CANCEL_ON_B_PRESSED;
   menu_layout = layout;
-  UIShowText(line);
+  UIShowText(bank, bank_offset);
   menu_num_options = tmp_text_lines[0];
   UIDrawMenuCursor();
 }

@@ -134,6 +134,14 @@ class BankedData {
       bankNum => !!this.data[bankNum - this.bankOffset]
     );
   }
+
+  mutate(fn) {
+    for(let bank=0; bank<this.data.length; bank++) {
+      for(let offset=0; offset<this.data[bank].length; offset++) {
+        this.data[bank][offset] = fn(this.data[bank][offset]);
+      }
+    }
+  }
 }
 
 export default BankedData;

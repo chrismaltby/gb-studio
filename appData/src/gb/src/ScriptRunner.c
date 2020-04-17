@@ -24,7 +24,7 @@ UWORD script_start_stack[STACK_SIZE] = {0};
 
 SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},                // 0x00
-    {Script_Text_b, 2},               // 0x01
+    {Script_Text_b, 3},               // 0x01
     {Script_Goto_b, 2},               // 0x02
     {Script_IfFlag_b, 4},             // 0x03
     {Script_Noop_b, 0},               // 0x04
@@ -62,7 +62,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagValue_b, 3},       // 0x24
     {Script_IfValue_b, 6},            // 0x25
     {Script_IfInput_b, 3},            // 0x26
-    {Script_Choice_b, 4},             // 0x27
+    {Script_Choice_b, 5},             // 0x27
     {Script_ActorPush_b, 1},          // 0x28
     {Script_IfActorPos_b, 4},         // 0x29
     {Script_LoadData_b, 0},           // 0x2A
@@ -114,8 +114,8 @@ SCRIPT_CMD script_cmds[] = {
     {Script_SetTimerScript_b, 4},     // 0x58
     {Script_ResetTimer_b, 0},         // 0x59
     {Script_RemoveTimerScript_b, 0},  // 0x5A
-    {Script_TextWithAvatar_b, 3},     // 0x5B
-    {Script_TextMenu_b, 6},           // 0x5C
+    {Script_TextWithAvatar_b, 4},     // 0x5B
+    {Script_TextMenu_b, 7},           // 0x5C
     {Script_ActorSetCollisions_b, 1}  // 0x5D
 };
 
