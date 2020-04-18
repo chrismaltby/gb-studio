@@ -39,6 +39,7 @@ const buildProject = async (
   await makeBuild({
     buildRoot: outputRoot,
     buildType,
+    cartSize: compiledData.cartSize,
     data,
     progress,
     warnings

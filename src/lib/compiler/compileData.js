@@ -42,6 +42,7 @@ import { assetFilename } from "../helpers/gbstudio";
 
 const indexById = indexBy("id");
 
+const MAX_BANKS = 512; // GBDK supports max of 512 banks
 const DATA_PTRS_BANK = 5;
 const NUM_MUSIC_BANKS = 8;
 
@@ -449,9 +450,23 @@ const compile = async (
     output[`bank_${bank}.c`] = bankDataBank;
   });
 
+  const maxDataBank = banked.getMaxWriteBank();
+  const maxMusicBank = music.length > 0 && Math.max.apply(null, music.map((m)=>m.bank)) || 0;
+  const banksRequired = Math.max(maxDataBank, maxMusicBank) + 1;
+  
+  // Determine next power of 2 for cart size based on number of banks required
+  const cartSize = Math.pow(2, Math.ceil(Math.log(banksRequired) / Math.log(2)));
+
+  if (cartSize > MAX_BANKS) {
+    throw new Error(
+      `Game content is over the maximum of ${MAX_BANKS} banks available. Content requires ${banksRequired} banks.`
+    );
+  }
+
   return {
     files: output,
-    music
+    music,
+    cartSize
   };
 };
 
