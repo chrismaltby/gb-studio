@@ -44,7 +44,7 @@ const indexById = indexBy("id");
 
 const MAX_BANKS = 512; // GBDK supports max of 512 banks
 const DATA_PTRS_BANK = 5;
-const NUM_MUSIC_BANKS = 8;
+const NUM_MUSIC_BANKS = 16;
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
