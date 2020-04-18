@@ -13,7 +13,7 @@ UWORD script_ptr = 0;
 UWORD script_ptr_x = 0;
 UWORD script_ptr_y = 0;
 UWORD script_start_ptr = 0;
-UBYTE script_cmd_args[6] = {0};
+UBYTE script_cmd_args[7] = {0};
 UBYTE script_cmd_args_len;
 SCRIPT_CMD_FN last_fn;
 
