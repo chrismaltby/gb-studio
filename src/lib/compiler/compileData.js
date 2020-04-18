@@ -298,7 +298,12 @@ const compile = async (
         return lo(stringPtrs[index].offset);
       }      
     }
-    return 0;
+    const value = parseInt(data, 10);
+    if(!isNaN(value)) {
+      return value;
+    }
+    warnings(`Non numeric data found while processing banked data "${data}".`);
+    return data;
   })
   
   let startSceneIndex = precompiled.sceneData.findIndex(
