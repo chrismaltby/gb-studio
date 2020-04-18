@@ -102,7 +102,7 @@ const compileEntityEvents = (input = [], options = {}) => {
           // If string was equivent to position integer then replace it
           // in output otherwise
           output[oi] = intCmd;
-        } else {
+        } else if(!(typeof output[oi] === "string" && output[oi].startsWith("__REPLACE:"))) {
           let reason = "";
           if (String(output[oi]).startsWith("goto:")) {
             reason = "Did you remember to define a label in the script?";

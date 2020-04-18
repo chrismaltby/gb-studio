@@ -276,13 +276,15 @@ class ScriptBuilder {
     if (avatarId) {
       const avatarIndex = getSpriteIndex(avatarId, avatars);
       output.push(cmd(TEXT_WITH_AVATAR));
-      output.push(hi(stringIndex));
-      output.push(lo(stringIndex));
+      output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
+      output.push(`__REPLACE:STRING_HI:${stringIndex}`);
+      output.push(`__REPLACE:STRING_LO:${stringIndex}`);
       output.push(avatarIndex);
     } else {
       output.push(cmd(TEXT));
-      output.push(hi(stringIndex));
-      output.push(lo(stringIndex));
+      output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
+      output.push(`__REPLACE:STRING_HI:${stringIndex}`);
+      output.push(`__REPLACE:STRING_LO:${stringIndex}`);
     }
   };
 
@@ -300,8 +302,9 @@ class ScriptBuilder {
     output.push(cmd(CHOICE));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
-    output.push(hi(stringIndex));
-    output.push(lo(stringIndex));
+    output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
+    output.push(`__REPLACE:STRING_HI:${stringIndex}`);
+    output.push(`__REPLACE:STRING_LO:${stringIndex}`);
   };
 
   textMenu = (
@@ -326,8 +329,9 @@ class ScriptBuilder {
     output.push(cmd(MENU));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));
-    output.push(hi(stringIndex));
-    output.push(lo(stringIndex));
+    output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
+    output.push(`__REPLACE:STRING_HI:${stringIndex}`);
+    output.push(`__REPLACE:STRING_LO:${stringIndex}`);
     output.push(layout === "menu" ? 1 : 0);
     output.push((cancelOnLastOption ? 1 : 0) | (cancelOnB ? 2 : 0));
   };
