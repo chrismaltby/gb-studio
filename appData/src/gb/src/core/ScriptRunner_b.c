@@ -45,7 +45,7 @@ const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -
 
 const SCRIPT_CMD script_cmds[] = {
     {Script_End_b, 0},                 // 0x00
-    {Script_Text_b, 2},                // 0x01
+    {Script_Text_b, 3},                // 0x01
     {Script_Goto_b, 2},                // 0x02
     {Script_IfFlag_b, 4},              // 0x03
     {Script_Noop_b, 0},                // 0x04
@@ -83,7 +83,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagValue_b, 3},        // 0x24
     {Script_IfValue_b, 6},             // 0x25
     {Script_IfInput_b, 3},             // 0x26
-    {Script_Choice_b, 4},              // 0x27
+    {Script_Choice_b, 5},              // 0x27
     {Script_ActorPush_b, 1},           // 0x28
     {Script_IfActorPos_b, 4},          // 0x29
     {Script_LoadData_b, 0},            // 0x2A
@@ -135,8 +135,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_SetTimerScript_b, 4},      // 0x58
     {Script_ResetTimer_b, 0},          // 0x59
     {Script_RemoveTimerScript_b, 0},   // 0x5A
-    {Script_TextWithAvatar_b, 3},      // 0x5B
-    {Script_TextMenu_b, 6},            // 0x5C
+    {Script_TextWithAvatar_b, 4},      // 0x5B
+    {Script_TextMenu_b, 7},            // 0x5C
     {Script_ActorSetCollisions_b, 1}   // 0x5D
 };
 
@@ -242,7 +242,7 @@ void Script_End_b() {
  *   arg1: Low 8 bits for string index
  */
 void Script_Text_b() {
-  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
@@ -716,8 +716,8 @@ void Script_IfInput_b() {
  * Display multiple choice input
  */
 void Script_Choice_b() {
-  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1],
-               (script_cmd_args[2] * 256) + script_cmd_args[3]);
+  UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
+               (script_cmd_args[3] * 256) + script_cmd_args[4]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
@@ -727,9 +727,9 @@ void Script_Choice_b() {
  * Display multiple choice menu
  */
 void Script_TextMenu_b() {
-  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1],
-             (script_cmd_args[2] * 256) + script_cmd_args[3], script_cmd_args[4],
-             script_cmd_args[5]);
+  UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
+             (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5],
+             script_cmd_args[6]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
@@ -1422,8 +1422,10 @@ void Script_ActorInvoke_b() {
  * Command: StackPush
  * ----------------------------
  * Push the current script pointer to the stack
+ * Store script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPush_b() {
+  script_bank_stack[script_stack_ptr] = script_ptr_bank;
   script_stack[script_stack_ptr] = script_ptr;
   script_start_stack[script_stack_ptr] = script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
@@ -1434,9 +1436,11 @@ void Script_StackPush_b() {
  * Command: StackPop
  * ----------------------------
  * Pop the script pointer from the stack
+ * Retrieve script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPop_b() {
   script_stack_ptr--;
+  script_ptr_bank = script_bank_stack[script_stack_ptr];
   script_ptr = script_stack[script_stack_ptr];
   script_start_ptr = script_start_stack[script_stack_ptr];
 }
@@ -1787,8 +1791,8 @@ void Script_RemoveTimerScript_b() {
  *   arg2: Spritesheet to use as the dialogue avatar
  */
 void Script_TextWithAvatar_b() {
-  UIShowText((script_cmd_args[0] * 256) + script_cmd_args[1]);
-  UIShowAvatar(script_cmd_args[2]);
+  UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
+  UIShowAvatar(script_cmd_args[3]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 

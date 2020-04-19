@@ -84,6 +84,17 @@ const compileEntityEvents = (input = [], options = {}) => {
   if (!branch) {
     output.push(0); // End script
 
+    if (output.length > 16383) {
+      warnings(
+        `This script is too big for 1 bank, was ${output.length} bytes, must be under 16384.
+        ${JSON.stringify( location )}
+        `
+      );
+      warnings(
+        'Try splitting this script across multiple actors with *Actor invoke*.'
+      );
+    }
+
     for (let oi = 0; oi < output.length; oi++) {
       if (typeof output[oi] === "string" || output[oi] < 0) {
         const intCmd = Number(output[oi]);
@@ -91,7 +102,7 @@ const compileEntityEvents = (input = [], options = {}) => {
           // If string was equivent to position integer then replace it
           // in output otherwise
           output[oi] = intCmd;
-        } else {
+        } else if(!(typeof output[oi] === "string" && output[oi].startsWith("__REPLACE:"))) {
           let reason = "";
           if (String(output[oi]).startsWith("goto:")) {
             reason = "Did you remember to define a label in the script?";

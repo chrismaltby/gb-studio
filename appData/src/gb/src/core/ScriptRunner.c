@@ -22,6 +22,7 @@ UBYTE script_cmd_args_len;
 UBYTE (*script_update_fn)();
 UBYTE script_stack_ptr = 0;
 UBYTE *script_stack[STACK_SIZE] = {0};
+UBYTE script_bank_stack[STACK_SIZE] = {0};
 UBYTE *script_start_stack[STACK_SIZE] = {0};
 
 UBYTE ScriptLastFnComplete_b();

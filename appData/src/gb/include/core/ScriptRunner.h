@@ -42,6 +42,7 @@ extern SCRIPT_UPDATE_FN script_update_fn;
 // Max call stack depth
 #define STACK_SIZE 8
 extern UBYTE *script_stack[STACK_SIZE];
+extern UBYTE script_bank_stack[STACK_SIZE];
 extern UBYTE *script_start_stack[STACK_SIZE];
 extern UBYTE script_stack_ptr;
 

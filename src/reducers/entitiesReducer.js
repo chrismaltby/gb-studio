@@ -714,36 +714,37 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
   let newState = state;
   const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
   const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
+  const patchCustomEventScript = event => {
+    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+      return event;
+    }
+    if (event.args.customEventId !== id) {
+      return event;
+    }
+    const newArgs = Object.assign({ ...event.args });
+    Object.keys(newArgs).forEach((k) => {
+      if (k.startsWith("$") &&
+        !usedVariables.find((v) => v === k) &&
+        !usedActors.find((a) => a === k)) {
+        delete newArgs[k];
+      }
+    });
+    return {
+      ...event,
+      args: newArgs,
+      children: {
+        script: [...script]
+      }
+    };
+  };
   Object.values(entities).forEach(entity => {
-    if (!entity || !entity.script) {
+    if (!entity || (!entity.script && !entity.startScript)) {
       return;
     }
     const patchEntity = {
       ...entity,
-      script: mapEvents(entity.script, event => {
-        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-          return event;
-        }
-        if (event.args.customEventId !== id) {
-          return event;
-        }
-        const newArgs = Object.assign({ ...event.args });
-        Object.keys(newArgs).forEach((k) => {
-          if (k.startsWith("$") && 
-            !usedVariables.find((v) => v === k) && 
-            !usedActors.find((a) => a === k)
-            ) {
-            delete newArgs[k];
-          }
-        });
-        return {
-          ...event,
-          args: newArgs,
-          children: {
-            script: [...script]
-          }
-        };
-      })
+      ...entity.script && { script: mapEvents(entity.script, patchCustomEventScript) },
+      ...entity.startScript && { startScript: mapEvents(entity.startScript, patchCustomEventScript) }   
     };
     newState = editEntity(newState, type, entity.id, patchEntity);
   });
