@@ -1786,11 +1786,6 @@ void Script_TextWithAvatar_b() {
 
 UBYTE ScriptLastFnComplete_b() {
   /*
-    if (last_fn == Script_LoadData_b && !fading) {
-      return TRUE;
-    }
-  */
-  /*
   if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
   {
     camera_settings = camera_settings & ~CAMERA_TRANSITION_FLAG;
