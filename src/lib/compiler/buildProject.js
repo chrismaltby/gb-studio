@@ -36,6 +36,11 @@ const buildProject = async (
     progress,
     warnings
   });
+  var trackMaxBank = 0;
+  compiledData.music.forEach(track => {
+    trackMaxBank = Math.max(track.bank,trackMaxBank)
+  });
+  console.log(trackMaxBank); //You need this to auto expand the rom
   await makeBuild({
     buildRoot: outputRoot,
     buildType,
