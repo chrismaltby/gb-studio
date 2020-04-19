@@ -699,15 +699,12 @@ void Script_SetFlagValue_b() {
  * Goto true path if joy mask overlaps
  */
 void Script_IfInput_b() {
-  /*
   UBYTE mask;
   mask = 0;
   mask = script_cmd_args[0];
-  if ((joy & mask) != 0)
-  { // True path, jump to position specified by ptr
+  if ((joy & mask) != 0) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
-  */
 }
 
 /*
