@@ -8,6 +8,7 @@
 #include "Math.h"
 #include "GameTime.h"
 #include "UI.h"
+#include "ScriptRunner.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
@@ -174,7 +175,7 @@ void UpdateActors_b() {
     }
 
     // Check if actor is off screen
-    if (IS_FRAME_32) {
+    if (IS_FRAME_32 && (a != script_actor)) {
       if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
           ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
         // Mark off screen actor for removal
@@ -242,5 +243,16 @@ void DeactivateActor_b(UBYTE i) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
     actors_active[a] = actors_active[--actors_active_size];
+  }
+}
+
+void ActorsUnstick_b() {
+  UBYTE i, a;
+  // Fix stuck actors
+  for (i = 0; i != actors_active_size; i++) {
+    a = actors_active[i];
+    if (!actors[a].moving && !ACTOR_ON_TILE(a)) {
+      actors[a].moving = TRUE;
+    }
   }
 }

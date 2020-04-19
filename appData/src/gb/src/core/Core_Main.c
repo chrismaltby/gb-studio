@@ -196,6 +196,7 @@ void game_loop() {
       POP_BANK;
     }
 
+    ScriptTimerUpdate();
     ScriptRunnerUpdate();
     MoveActors();
 
@@ -224,6 +225,9 @@ void game_loop() {
     current_state = next_state;
 
     scroll_target = 0;
+
+    // Disable timer script
+    timer_script_duration = 0;
 
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);

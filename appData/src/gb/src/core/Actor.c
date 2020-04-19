@@ -11,6 +11,7 @@ void MoveActors_b();
 void ActivateActor_b(UBYTE i);
 void ActivateActorColumn_b(UBYTE tx_a, UBYTE ty_a);
 void DeactivateActor_b(UBYTE i);
+void ActorsUnstick_b();
 
 Actor actors[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
@@ -247,4 +248,10 @@ UBYTE ActorInFrontOfActor(UBYTE i) {
   }
 
   return hit_actor;
+}
+
+void ActorsUnstick() {
+  PUSH_BANK(ACTOR_BANK);
+  ActorsUnstick_b();
+  POP_BANK;
 }

@@ -46,8 +46,14 @@ extern UBYTE script_bank_stack[STACK_SIZE];
 extern UBYTE *script_start_stack[STACK_SIZE];
 extern UBYTE script_stack_ptr;
 
+// Timer script
+extern UBYTE timer_script_duration;
+extern UBYTE timer_script_time;
+extern BankPtr timer_script_ptr;
+
 void ScriptStart(BankPtr *events_ptr);
 void ScriptRunnerUpdate();
+void ScriptTimerUpdate();
 
 // Banked functions - don't call directly
 void Script_Noop_b();

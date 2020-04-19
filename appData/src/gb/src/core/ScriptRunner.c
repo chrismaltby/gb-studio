@@ -6,6 +6,8 @@
 #include "BankData.h"
 #include "BankManager.h"
 #include "FadeManager.h"
+#include "GameTime.h"
+#include "Input.h"
 #include "UI.h"
 
 UBYTE script_await_next_frame;
@@ -24,11 +26,20 @@ UBYTE script_stack_ptr = 0;
 UBYTE *script_stack[STACK_SIZE] = {0};
 UBYTE script_bank_stack[STACK_SIZE] = {0};
 UBYTE *script_start_stack[STACK_SIZE] = {0};
+UBYTE timer_script_duration = 0;
+UBYTE timer_script_time = 0;
+BankPtr timer_script_ptr = {0};
 
 UBYTE ScriptLastFnComplete_b();
 
 void ScriptStart(BankPtr *events_ptr) {
-  UBYTE rnd, c, a0, a1, a2;
+  UBYTE rnd, c, a0, a1, a2, i, a;
+
+  // Stop all actor movement
+  for (i = 0; i != actors_active_size; i++) {
+    a = actors_active[i];
+    actors[a].moving = FALSE;
+  }
 
   LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
 
@@ -118,6 +129,7 @@ void ScriptRunnerUpdate() {
     LOG("SCRIPT FINISHED\n");
     script_ptr_bank = 0;
     script_ptr = 0;
+    ActorsUnstick();
     return;
   }
 
@@ -150,5 +162,31 @@ void ScriptRunnerUpdate() {
   if (!script_await_next_frame && !script_update_fn) {
     LOG("CONTINUE!\n");
     ScriptRunnerUpdate();
+  }
+}
+
+void ScriptTimerUpdate() {
+  UBYTE i, a;
+
+  // Don't update timer while script is running
+  if (script_ptr != 0) {
+    return;
+  }
+
+  // Check if timer is enabled
+  if (timer_script_duration != 0) {
+    if (timer_script_time == 0) {
+      last_joy = last_joy & 0xF0;
+
+      ScriptStart(&timer_script_ptr);
+
+      // Reset the countdown timer
+      timer_script_time = timer_script_duration;
+    } else {
+      // Timer tick every 16 frames
+      if ((game_time & 0x0F) == 0x00) {
+        --timer_script_time;
+      }
+    }
   }
 }

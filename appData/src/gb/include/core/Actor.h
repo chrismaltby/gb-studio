@@ -153,4 +153,6 @@ void ActivateActor(UBYTE i);
  */
 void DeactivateActor(UBYTE i);
 
+void ActorsUnstick();
+
 #endif

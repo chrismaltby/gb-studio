@@ -367,7 +367,10 @@ void Script_ActorSetDir_b() {
  *
  *   arg0: Actor index
  */
-void Script_ActorActivate_b() { script_actor = script_cmd_args[0]; }
+void Script_ActorActivate_b() {
+  script_actor = script_cmd_args[0];
+  ActivateActor(script_actor);
+}
 
 /*
  * Command: CameraMoveTo
@@ -1746,14 +1749,10 @@ void Script_SoundPlayCrash_b() {
  * Attach script to timer
  */
 void Script_SetTimerScript_b() {
-  /*
   timer_script_duration = script_cmd_args[0];
   timer_script_time = script_cmd_args[0];
   timer_script_ptr.bank = script_cmd_args[1];
   timer_script_ptr.offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
-
-  script_action_complete = TRUE;
-  */
 }
 
 /*
@@ -1761,22 +1760,14 @@ void Script_SetTimerScript_b() {
  * ----------------------------
  * Reset the countdown timer
  */
-void Script_ResetTimer_b() {
-  /*
-  timer_script_time = timer_script_duration;
-  */
-}
+void Script_ResetTimer_b() { timer_script_time = timer_script_duration; }
 
 /*
  * Command: RemoveTimerScript
  * ----------------------------
  * Disable timer script
  */
-void Script_RemoveTimerScript_b() {
-  /*
-  timer_script_duration = 0;
-  */
-}
+void Script_RemoveTimerScript_b() { timer_script_duration = 0; }
 
 /*
  * Command: Text with Avatar
