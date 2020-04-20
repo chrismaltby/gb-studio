@@ -2,6 +2,7 @@ import childProcess from "child_process";
 import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { assetFilename } from "../helpers/gbstudio";
+import { GB_MAX_BANK_SIZE } from "./bankedData";
 
 const filterLogs = str => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -9,6 +10,7 @@ const filterLogs = str => {
 
 const compileMusic = async ({
   music = [],
+  musicBanks = [],
   buildRoot = "/tmp",
   projectRoot,
   progress = () => {},
@@ -16,7 +18,6 @@ const compileMusic = async ({
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
   var banksize = [];
-  const musicBanksStart = music[0].bank-1;
 
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
@@ -35,17 +36,17 @@ const compileMusic = async ({
     var musicSize = Math.floor(musicTrackTemp.length/5.5);
     progress(track.dataName + ' aprox size in bytes: ' + musicSize);
 
-    if (musicSize + banksize[banksize.length-1] < 16384) {
-      // fill bank, replaces bank=8 with current bank
-      banksize[banksize.length-1] = (banksize[banksize.length-1] + musicSize);
-      musicTrackTemp = musicTrackTemp.replace('#pragma bank=8', '#pragma bank='+ (musicBanksStart+banksize.length));
+    if (musicSize + banksize[banksize.length-1] < GB_MAX_BANK_SIZE) {
+      // Fill bank
+      banksize[banksize.length-1] = (banksize[banksize.length - 1] + musicSize);
     } else {
-      // new bank, replaces bank=8 with current bank
+      // New bank
       banksize.push(musicSize);
-      musicTrackTemp = musicTrackTemp.replace('#pragma bank=8', '#pragma bank='+ (musicBanksStart+banksize.length));
     }
-    progress('Put ' + track.dataName + ' in bank '+ (musicBanksStart+banksize.length));
-    music[i].bank = (musicBanksStart+banksize.length);
+    // Replaces bank=8 with current bank
+    music[i].bank = (musicBanks[banksize.length-1]); // MBC1 compliance
+    musicTrackTemp = musicTrackTemp.replace('#pragma bank=8', '#pragma bank='+ music[i].bank);
+    progress('Put ' + track.dataName + ' in bank '+ music[i].bank);
     await fs.writeFile(`${buildRoot}/src/music/${track.dataName}.c`, musicTrackTemp, "utf8");
   }
 

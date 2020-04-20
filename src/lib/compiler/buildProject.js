@@ -31,6 +31,7 @@ const buildProject = async (
   });
   await compileMusic({
     music: compiledData.music,
+    musicBanks: compiledData.musicBanks,
     projectRoot,
     buildRoot: outputRoot,
     progress,
@@ -40,7 +41,7 @@ const buildProject = async (
   compiledData.music.forEach(track => {
     trackMaxBank = Math.max(track.bank,trackMaxBank)
   });
-  console.log(trackMaxBank); //You need this to auto expand the rom
+  console.log('The last bank with music data is ' + trackMaxBank); // for cartSize, 0 if no music...
   await makeBuild({
     buildRoot: outputRoot,
     buildType,
