@@ -446,9 +446,12 @@ const compile = async (
     output[`bank_${bank}.c`] = bankDataBank;
   });
 
+  const maxDataBank = banked.getMaxWriteBank();
+
   return {
     files: output,
     music,
+    maxDataBank,
     musicBanks
   };
 };

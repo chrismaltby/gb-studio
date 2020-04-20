@@ -21,7 +21,8 @@ class BankedData {
     this.bankOffset = bankOffset;
     this.bankController = bankController;
     this.data = [];
-    this.currentBank = 0;
+    this.dataWriteBanks = []
+    this.currentBank = -1;
   }
 
   push(newData) {
@@ -32,49 +33,35 @@ class BankedData {
       throw BANKED_DATA_TOO_LARGE;
     }
 
-    const writeBank = this.getWriteBank();
+    const lookBehindDistance = 10;
 
-    if (!this.data[this.currentBank]) {
-      // First bank
-      const ptr = {
-        bank: writeBank,
-        offset: 0
-      };
-      this.data[this.currentBank] = newData;
-      return ptr;
+    // Find an existing bank to fit the data
+    for(let i=Math.max(0, this.data.length - lookBehindDistance); i<this.data.length; i++) {
+      if (this.data[i].length + newData.length <= this.bankSize) {
+        // Found a bank to write to
+        const ptr = {
+          bank: this.dataWriteBanks[i],
+          offset: this.data[i].length
+        };
+        // Append contents
+        this.data[i] = [].concat(
+          this.data[i],
+          newData
+        );
+        return ptr;
+      }
     }
-    if (this.data[this.currentBank].length + newData.length > this.bankSize) {
-      // Current bank is over size, make a new one
-      this.currentBank++;
-      const nextWriteBank = this.getWriteBank();
-      const ptr = {
-        bank: nextWriteBank,
-        offset: 0
-      };
-      this.data[this.currentBank] = newData;
-      return ptr;
-    }
+
+    // Create a new bank
+    this.currentBank++;
+    const writeBank = this.getWriteBank();
+    this.data.push(newData);
+    this.dataWriteBanks.push(writeBank);
     const ptr = {
       bank: writeBank,
-      offset: this.data[this.currentBank].length
+      offset: 0
     };
-    // Bank has room, append contents
-    this.data[this.currentBank] = [].concat(
-      this.data[this.currentBank],
-      newData
-    );
     return ptr;
-  }
-
-  dataWillFitCurrentBank(newData) {
-    return (
-      (this.data[this.currentBank] || []).length + newData.length <=
-      this.bankSize
-    );
-  }
-
-  currentBankSize() {
-    return (this.data[this.currentBank] || []).length;
   }
 
   getWriteBank() {
@@ -88,19 +75,8 @@ class BankedData {
     return bank;
   }
 
-  nextBank() {
-    if (this.data[this.currentBank] && this.data[this.currentBank].length > 0) {
-      this.currentBank++;
-    }
-  }
-
-  romBanksNeeded() {
-    const maxBank = this.data.length + this.bankOffset;
-    const nearestPow2 = Math.pow(2, Math.ceil(Math.log(maxBank) / Math.log(2)));
-    if (nearestPow2 > MAX_BANKS) {
-      throw BANKED_COUNT_OVERFLOW;
-    }
-    return nearestPow2;
+  getMaxWriteBank() {
+    return this.dataWriteBanks[this.dataWriteBanks.length - 1];
   }
 
   exportRaw() {
@@ -110,7 +86,7 @@ class BankedData {
   exportCData() {
     return this.data
       .map((data, index) => {
-        const bank = index + this.bankOffset;
+        const bank = this.dataWriteBanks[index];
         return `#pragma bank=${bank}\n\n${cIntArray(
           `bank_${bank}_data`,
           data
@@ -122,7 +98,7 @@ class BankedData {
   exportCHeader() {
     return `#ifndef BANKS_H\n#define BANKS_H\n\n${this.data
       .map((data, index) => {
-        const bank = index + this.bankOffset;
+        const bank = this.dataWriteBanks[index];
         return cIntArrayExternDeclaration(`bank_${bank}_data`);
       })
       .filter(i => i)
@@ -130,8 +106,9 @@ class BankedData {
   }
 
   exportUsedBankNumbers() {
-    return [...Array(this.bankOffset + this.data.length).keys()].map(
-      bankNum => !!this.data[bankNum - this.bankOffset]
+    const maxBank = this.dataWriteBanks[this.dataWriteBanks.length - 1];
+    return [...Array(maxBank + 1).keys()].map(
+      bankNum => this.dataWriteBanks.indexOf(bankNum) > -1
     );
   }
 
