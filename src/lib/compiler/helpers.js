@@ -147,6 +147,13 @@ const replaceInvalidCustomEventVariables = variable => {
   return String(variableIndex);
 };
 
+const replaceInvalidCustomEventActors = actor => {
+  if (actor.indexOf("-") > -1 || parseInt(actor, 10) >= 10) {
+    return "0";
+  }
+  return actor;
+};
+
 module.exports = {
   nameToCName,
   dirDec,
@@ -161,5 +168,6 @@ module.exports = {
   actorFramesPerDir,
   combineMultipleChoiceText,
   isMBC1,
-  replaceInvalidCustomEventVariables
+  replaceInvalidCustomEventVariables,
+  replaceInvalidCustomEventActors
 };

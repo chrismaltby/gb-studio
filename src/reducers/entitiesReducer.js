@@ -50,7 +50,7 @@ import {
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { replaceInvalidCustomEventVariables } from "../lib/compiler/helpers";
+import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 
 const addEntity = (state, type, data) => {
   return {
@@ -534,6 +534,7 @@ const editCustomEvent = (state, action) => {
   if (patch.script) {
     // Fix invalid variables in script
     const fix = replaceInvalidCustomEventVariables;
+    const fixActor = replaceInvalidCustomEventActors;
     patch.script = mapEvents(patch.script, event => {
       return {
         ...event,
@@ -541,7 +542,8 @@ const editCustomEvent = (state, action) => {
           ...event.args,
           variable: event.args.variable && fix(event.args.variable),
           vectorX: event.args.vectorX && fix(event.args.vectorX),
-          vectorY: event.args.vectorY && fix(event.args.vectorY)
+          vectorY: event.args.vectorY && fix(event.args.vectorY),
+          actorId: event.args.actorId && fixActor(event.args.actorId)
         }
       };
     });
