@@ -31,11 +31,17 @@ const buildProject = async (
   });
   await compileMusic({
     music: compiledData.music,
+    musicBanks: compiledData.musicBanks,
     projectRoot,
     buildRoot: outputRoot,
     progress,
     warnings
   });
+  var trackMaxBank = 0;
+  compiledData.music.forEach(track => {
+    trackMaxBank = Math.max(track.bank,trackMaxBank)
+  });
+  console.log('The last bank with music data is ' + trackMaxBank); // for cartSize, 0 if no music...
   await makeBuild({
     buildRoot: outputRoot,
     buildType,
