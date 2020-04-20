@@ -1,5 +1,4 @@
 import { copy } from "fs-extra";
-import uuid from "uuid/v4";
 import BankedData, {
   MIN_DATA_BANK,
   GB_MAX_BANK_SIZE,
@@ -42,9 +41,8 @@ import { assetFilename } from "../helpers/gbstudio";
 
 const indexById = indexBy("id");
 
-const MAX_BANKS = 512; // GBDK supports max of 512 banks
 const DATA_PTRS_BANK = 5;
-const NUM_MUSIC_BANKS = 16;
+const NUM_MUSIC_BANKS = 30; // To calculate usable banks if MBC1
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
@@ -436,9 +434,7 @@ const compile = async (
       .map(track => `${track.dataName}_Data`)
       .join(", ") || "0"}, 0` +
     `\n};\n\n` +
-    `const unsigned char music_banks[] = {\n${music
-      .map(track => track.bank)
-      .join(", ") || "0"}, 0` +
+    `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
     `unsigned char script_variables[${precompiled.variables.length +
       1}] = { 0 };\n`;
@@ -451,22 +447,12 @@ const compile = async (
   });
 
   const maxDataBank = banked.getMaxWriteBank();
-  const maxMusicBank = music.length > 0 && Math.max.apply(null, music.map((m)=>m.bank)) || 0;
-  const banksRequired = Math.max(maxDataBank, maxMusicBank) + 1;
-  
-  // Determine next power of 2 for cart size based on number of banks required
-  const cartSize = Math.pow(2, Math.ceil(Math.log(banksRequired) / Math.log(2)));
-
-  if (cartSize > MAX_BANKS) {
-    throw new Error(
-      `Game content is over the maximum of ${MAX_BANKS} banks available. Content requires ${banksRequired} banks.`
-    );
-  }
 
   return {
     files: output,
     music,
-    cartSize
+    maxDataBank,
+    musicBanks
   };
 };
 
@@ -832,7 +818,7 @@ export const precompileMusic = (scenes, music) => {
     .map((track, index) => {
       return {
         ...track,
-        dataName: `music_${uuid().replace(/-.*/, "")}${index}`
+        dataName: (`music_track_`+ (index + 101) + '_')
       };
     });
   return { usedMusic };
