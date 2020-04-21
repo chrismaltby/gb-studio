@@ -77,7 +77,7 @@ test("Should return pointer to start of second bank", () => {
 
 test("Should return pointer to a location in second bank", () => {
   const banked = new BankedData({ bankSize: 3 });
-  banked.push([42, 99]);
+  banked.push([42, 99, 33]);
   banked.push([5, 6]);
   const ptr = banked.push([7]);
   expect(ptr).toEqual({
@@ -138,26 +138,6 @@ test("Should construct C header from input", async () => {
       `bank_${MIN_DATA_BANK + 1}_data`
     )}\n\n#endif\n`
   );
-});
-
-test("should calculate rom banks needed to store banked data", () => {
-  const banked = new BankedData({ bankSize: 2, bankOffset: 0 });
-  banked.push([0]);
-  banked.push([1, 2]);
-  expect(banked.romBanksNeeded()).toBe(2);
-});
-
-test("should calculate rom banks needed to store banked data when offset", () => {
-  const banked = new BankedData({ bankSize: 2, bankOffset: 64 });
-  banked.push([0]);
-  banked.push([1, 2]);
-  expect(banked.romBanksNeeded()).toBe(128);
-});
-
-test("should throw if unsupported number of rom banks are required", () => {
-  const banked = new BankedData({ bankSize: 2, bankOffset: 1024 });
-  banked.push([0]);
-  expect(() => banked.romBanksNeeded()).toThrow(BANKED_COUNT_OVERFLOW);
 });
 
 test("should disallow bank 0x20 when using MBC1", () => {

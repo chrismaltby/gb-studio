@@ -11,7 +11,7 @@ OBJDIR = obj
 CFLAGS = -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Iinclude/core -Iinclude/states -Igenerated -Inode_modules/gbdkjs/include
 CFLAGS += -DCGB
 
-LFLAGS_NBANKS += -Wl-yp0x143=0xC0
+LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4 -Wl-yp0x143=0x80
 LFLAGS = $(LFLAGS_NBANKS) -Wl-m
 
 ASM = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.s))) 
@@ -66,7 +66,7 @@ $(OBJDIR)/%.bc:	src/music/%.c
 
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
-	$(CC) $(LFLAGS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Wl-yo64 -Wl-ya4  -o $@ $^	
+	$(CC) $(LFLAGS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -o $@ $^	
 
 $(WEB_BUILD_DIR)/%.html:	$(WEB_OBJS)
 	mkdir -p $(WEB_BUILD_DIR)

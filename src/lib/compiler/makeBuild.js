@@ -61,6 +61,7 @@ const makeBuild = ({
   buildType = "rom",
   buildRoot = "/tmp",
   data = {},
+  cartSize = 64,
   progress = () => {},
   warnings = () => {}
 } = {}) => {
@@ -92,6 +93,7 @@ const makeBuild = ({
     env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
 
     env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
+    env.CART_SIZE = cartSize;
     env.TMP = getTmp();
     env.TEMP = getTmp();
     
@@ -125,6 +127,7 @@ const makeBuild = ({
 
     const makeBat = await buildMakeBat(buildRoot, {
       CART_TYPE: env.CART_TYPE,
+      CART_SIZE: env.CART_SIZE,
       customColorsEnabled: settings.customColorsEnabled,
       gbcFastCPUEnabled: settings.gbcFastCPUEnabled
     });

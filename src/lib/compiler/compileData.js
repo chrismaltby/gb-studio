@@ -1,5 +1,4 @@
 import { copy } from "fs-extra";
-import uuid from "uuid/v4";
 import BankedData, {
   MIN_DATA_BANK,
   GB_MAX_BANK_SIZE,
@@ -43,7 +42,7 @@ import { assetFilename } from "../helpers/gbstudio";
 const indexById = indexBy("id");
 
 const DATA_PTRS_BANK = 5;
-const NUM_MUSIC_BANKS = 8;
+const NUM_MUSIC_BANKS = 30; // To calculate usable banks if MBC1
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
 export const EVENT_DATA_COMPILE_PROGRESS = "EVENT_DATA_COMPILE_PROGRESS";
@@ -615,9 +614,7 @@ const compile = async (
       .map(track => `${track.dataName}_Data`)
       .join(", ") || "0"}, 0` +
     `\n};\n\n` +
-    `const unsigned char music_banks[] = {\n${music
-      .map(track => track.bank)
-      .join(", ") || "0"}, 0` +
+    `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
     `unsigned char script_variables[${precompiled.variables.length +
       1}] = { 0 };\n`;
@@ -629,9 +626,13 @@ const compile = async (
     output[`bank_${bank}.c`] = bankDataBank;
   });
 
+  const maxDataBank = banked.getMaxWriteBank();
+
   return {
     files: output,
-    music
+    music,
+    maxDataBank,
+    musicBanks
   };
 };
 
@@ -998,7 +999,7 @@ export const precompileMusic = (scenes, music) => {
     .map((track, index) => {
       return {
         ...track,
-        dataName: `music_${uuid().replace(/-.*/, "")}${index}`
+        dataName: (`music_track_`+ (index + 101) + '_')
       };
     });
   return { usedMusic };
