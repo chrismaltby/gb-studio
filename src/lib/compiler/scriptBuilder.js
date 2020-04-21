@@ -83,7 +83,8 @@ import {
   TIMER_RESTART,
   TIMER_DISABLE,
   TEXT_WITH_AVATAR,
-  MENU
+  MENU,
+  SWITCH_SCENE_BG
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -545,6 +546,17 @@ class ScriptBuilder {
   sceneResetState = () => {
     const output = this.output;
     output.push(cmd(SCENE_STATE_RESET));
+  };
+
+  sceneSwitchBG = (sceneId) => {
+    const output = this.output;
+    const { scenes } = this.options;
+    const sceneIndex = scenes.findIndex(s => s.id === sceneId);
+    if (sceneIndex > -1) {
+      output.push(cmd(SWITCH_SCENE_BG));
+      output.push(hi(sceneIndex));
+      output.push(lo(sceneIndex));
+    }
   };
 
   // Overlays

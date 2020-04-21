@@ -1908,3 +1908,23 @@ void Script_TextWithAvatar_b()
   UIShowAvatar(script_cmd_args[3]);
   script_action_complete = FALSE;
 }
+
+/*
+ * Command: LoadBackground
+ * ----------------------------
+ * Load a new scene.
+ *
+ *   arg0: High 8 bits for stage index
+ *   arg1: Low 8 bits for stage index
+ */
+void Script_LoadSceneBG_b()
+{
+  scene_next_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  scene_index = scene_next_index;
+
+  scene_loaded = FALSE;
+  SceneBackground();
+
+  script_ptr += 1 + script_cmd_args_len;
+  script_continue = TRUE;
+}

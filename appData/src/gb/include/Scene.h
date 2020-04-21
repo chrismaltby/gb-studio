@@ -64,6 +64,7 @@ extern UBYTE scroll_x;
 extern UBYTE scroll_y;
 
 void SceneInit();
+void SceneBackground();
 void SceneUpdate();
 void SceneSetEmote(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting();

@@ -312,6 +312,29 @@ void SceneInit_b9()
   DISPLAY_ON;
 }
 
+void SceneInit_bG1()
+{
+  //DISPLAY_OFF;
+  scene_loaded = FALSE;
+  scene_input_ready = FALSE;
+  UIInit();
+
+  // Load scene
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
+  image_index = ReadBankedUWORD(bank_ptr.bank, ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset);
+}
+
+void SceneInit_bG9()
+{
+  last_joy = 0;
+  scene_loaded = TRUE;
+  scene_input_ready = TRUE;
+
+  SHOW_SPRITES;
+  DISPLAY_ON;
+  //FadeIn();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Update
 ////////////////////////////////////////////////////////////////////////////////

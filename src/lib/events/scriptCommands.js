@@ -92,6 +92,7 @@ export const TIMER_DISABLE = "TIMER_DISABLE";
 export const TEXT_WITH_AVATAR = "TEXT_WITH_AVATAR";
 export const MENU = "MENU";
 export const ACTOR_SET_COLLISIONS = "ACTOR_SET_COLLISIONS";
+export const SWITCH_SCENE_BG = "SWITCH_SCENE_BG";
 
 export const scriptCommands = [
   END,
@@ -187,7 +188,8 @@ export const scriptCommands = [
   TIMER_DISABLE,
   TEXT_WITH_AVATAR,
   MENU,
-  ACTOR_SET_COLLISIONS
+  ACTOR_SET_COLLISIONS,
+  SWITCH_SCENE_BG
 ];
 
 export const commandIndex = key => {

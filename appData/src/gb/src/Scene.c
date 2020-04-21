@@ -11,6 +11,8 @@ void SceneInit_b6();
 void SceneInit_b7();
 void SceneInit_b8();
 void SceneInit_b9();
+void SceneInit_bG1();
+void SceneInit_bG9();
 void SceneUpdate_b();
 void SceneSetEmote_b(UBYTE actor, UBYTE type);
 UBYTE SceneIsEmoting_b();
@@ -92,6 +94,17 @@ void SceneInit()
 
   PUSH_BANK(scene_bank);
   SceneInit_b9();
+  POP_BANK;
+}
+
+void SceneBackground()
+{
+  PUSH_BANK(scene_bank);
+  SceneInit_bG1();
+  wait_vbl_done();
+  SceneInit_b6();
+  SceneInit_b7();
+  SceneInit_bG9();
   POP_BANK;
 }
 
