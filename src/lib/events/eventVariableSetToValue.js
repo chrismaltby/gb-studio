@@ -16,6 +16,14 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { variableSetToValue } = helpers;
-  variableSetToValue(input.variable, input.value);
+  if (input.value > 1)  {
+    const { variableSetToValue } = helpers;
+    variableSetToValue(input.variable, input.value);
+  }else if (input.value == 1) {
+    const { variableSetToTrue } = helpers;
+    variableSetToTrue(input.variable);
+  }else {
+    const { variableSetToFalse } = helpers;
+    variableSetToFalse(input.variable);
+  }
 };
