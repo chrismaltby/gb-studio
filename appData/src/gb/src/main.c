@@ -8,6 +8,6 @@
 
 const Void_Func_Void startFuncs[] = {0, Start_TopDown, Start_Platform};
 const Void_Func_Void updateFuncs[] = {0, Update_TopDown, Update_Platform};
-const UBYTE stateBanks[] = {0, 18, 18};
+const UBYTE stateBanks[] = {0, 5, 5};
 
 int main() { core_start(); }

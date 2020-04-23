@@ -1,5 +1,5 @@
 // clang-format off
-#pragma bank=18
+#pragma bank=5
 // clang-format on
 
 #include "TopDown.h"
