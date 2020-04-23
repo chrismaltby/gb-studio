@@ -364,6 +364,10 @@ menu.on("save", async () => {
   mainWindow && mainWindow.webContents.send("save-project");
 });
 
+menu.on("saveAs", async () => {
+  saveAsProjectPicker();
+});
+
 menu.on("undo", async () => {
   mainWindow && mainWindow.webContents.send("undo");
 });
@@ -487,4 +491,53 @@ const openProject = async projectPath => {
     oldMainWindow.close();
     mainWindow = newMainWindow;
   }
+};
+
+const saveAsProjectPicker = async () => {
+  const files = dialog.showSaveDialog({
+    filters: [
+      {
+        name: "Projects",
+        extensions: ["gbsproj", "json"]
+      }
+    ]
+  });
+  if (files) {
+    saveAsProject(files);
+  }
+};
+
+const saveAsProject = async saveAsPath => {
+  const l10n = require("./lib/helpers/l10n").default;
+
+  // Find a cleaner way to do this
+  let projectExists;
+  try {
+    await stat(saveAsPath);
+    projectExists = true;
+  } catch (e) {
+    projectExists = false;
+  }
+  if(projectExists) {
+      dialog.showErrorBox(
+          l10n("ERROR_INVALID_FILE_TYPE"),
+          l10n("ERROR_PROJECT_ALREADY_EXISTS")
+      );
+      return;
+  }
+
+  const ext = Path.extname(saveAsPath);
+  if (validProjectExt.indexOf(ext) === -1) {
+    dialog.showErrorBox(
+        l10n("ERROR_INVALID_FILE_TYPE"),
+        l10n("ERROR_OPEN_GBSPROJ_FILE")
+    );
+    return;
+  }
+
+  const projectName = Path.parse(saveAsPath).name;
+  const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
+  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
+
+  mainWindow && mainWindow.webContents.send("save-as-project", projectPath);
 };

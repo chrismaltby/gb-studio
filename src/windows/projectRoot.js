@@ -58,6 +58,10 @@ ipcRenderer.on("save-project-and-close", async () => {
   window.close();
 });
 
+ipcRenderer.on("save-as-project", (event, pathName) => {
+  store.dispatch(actions.saveAsProjectAction(pathName));
+});
+
 ipcRenderer.on("undo", () => {
   store.dispatch(ActionCreators.undo());
 });
