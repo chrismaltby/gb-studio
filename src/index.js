@@ -510,7 +510,6 @@ const saveAsProjectPicker = async () => {
 const saveAsProject = async saveAsPath => {
   const l10n = require("./lib/helpers/l10n").default;
 
-  // Find a cleaner way to do this
   let projectExists;
   try {
     await stat(saveAsPath);
