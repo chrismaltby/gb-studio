@@ -9,10 +9,14 @@ WEB_BUILD_DIR = build/debug
 OBJDIR = obj
 
 CFLAGS = -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Iinclude/core -Iinclude/states -Igenerated -Inode_modules/gbdkjs/include
-CFLAGS += -DCGB
 
-LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4 -Wl-yp0x143=0x80
+LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4
 LFLAGS = $(LFLAGS_NBANKS) -Wl-m
+
+ifdef COLOR
+CFLAGS += -DCGB
+LFLAGS += -Wl-yp0x143=0x80
+endif
 
 ASM = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.s))) 
 CLASSES = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.c))) 

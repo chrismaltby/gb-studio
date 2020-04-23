@@ -108,7 +108,7 @@ class BankedData {
 
   exportUsedBankNumbers() {
     const maxBank = this.dataWriteBanks[this.dataWriteBanks.length - 1];
-    return [...Array(maxBank + 1).keys()].map(
+    return Array.from(Array(maxBank + 1).keys()).map(
       (bankNum) => this.dataWriteBanks.indexOf(bankNum) > -1
     );
   }

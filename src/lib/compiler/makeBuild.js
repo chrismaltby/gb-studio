@@ -96,6 +96,7 @@ const makeBuild = ({
     env.CART_SIZE = cartSize;
     env.TMP = getTmp();
     env.TEMP = getTmp();
+    env.COLOR = settings.customColorsEnabled;
     
     // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
@@ -111,6 +112,9 @@ const makeBuild = ({
     }
     if (!settings.gbcFastCPUEnabled) {
       gameHeader = gameHeader.replace(/#define FAST_CPU/g, '');
+    }
+    if (settings.customColorsEnabled) {
+      gameHeader = gameHeader.replace(/#define CGB/g, '');
     }
     if(isMBC1(settings.cartType)) {
       gameHeader = gameHeader.replace(/_MBC5/g, '_MBC1');

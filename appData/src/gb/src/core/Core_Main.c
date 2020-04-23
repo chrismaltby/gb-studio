@@ -92,7 +92,9 @@ void lcd_update() {
 UINT16 default_palette[] = {RGB(31, 31, 31), RGB(20, 20, 20), RGB(10, 10, 10), RGB(0, 0, 0)};
 int core_start() {
 #ifdef CGB
-  cpu_fast();
+  if (_cpu == CGB_TYPE) {
+    cpu_fast();
+  }
 #endif
 
   // Init LCD

@@ -9,7 +9,7 @@ export default async (buildRoot, { CART_TYPE, CART_SIZE, customColorsEnabled, gb
 
   const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
   const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo${CART_SIZE} -Wl-ya4`;
-  const CGBFLAGS = `-Wl-yp0x143=0x80`;
+  const CGBFLAGS = `-Wl-yp0x143=0x80 -DCGB`;
 
   const srcRoot = `${buildRoot}/src`;
   const dataRoot = `${buildRoot}/src/data`;
