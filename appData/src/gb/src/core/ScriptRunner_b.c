@@ -771,38 +771,44 @@ void Script_ActorPush_b() {
   UBYTE check_tile, end_tile, check_tile2;
   UBYTE check_dir = 0;
 
-  if (script_cmd_args[0]) {
-    if (actors[0].dir.x < 0) {
-      dest_x = 0;
-      check_dir = 1;
-    } else if (actors[0].dir.x > 0) {
-      dest_x = image_width;
-      check_dir = 2;
-    } else {
-      dest_x = actors[script_actor].pos.x;
-    }
-    if (actors[0].dir.y < 0) {
-      dest_y = 0;
-      check_dir = 3;
-    } else if (actors[0].dir.y > 0) {
-      dest_y = image_height;
-      check_dir = 4;
-    } else {
-      dest_y = actors[script_actor].pos.y;
-    }
+  LOG("PUSH1 Script_ActorPush_b\n");
+
+  if (actors[0].dir.x < 0) {
+    dest_x = 0;
+    check_dir = 1;
+  } else if (actors[0].dir.x > 0) {
+    dest_x = image_width;
+    check_dir = 2;
   } else {
+    dest_x = actors[script_actor].pos.x;
+  }
+  if (actors[0].dir.y < 0) {
+    dest_y = 0;
+    check_dir = 3;
+  } else if (actors[0].dir.y > 0) {
+    dest_y = image_height;
+    check_dir = 4;
+  } else {
+    dest_y = actors[script_actor].pos.y;
+  }
+
+  // If not continuing until collision just push on 16px tile
+  if (!script_cmd_args[0]) {
     dest_x = actors[script_actor].pos.x + (actors[0].dir.x * 16);
     dest_y = actors[script_actor].pos.y + (actors[0].dir.y * 16);
   }
 
   switch (check_dir) {
-    case 1:
-      LOG("CHECK LEFT\n");
+    case 1:  // Check left
       end_tile = DIV_8(dest_x);
       check_tile = DIV_8(actors[script_actor].pos.x);
       check_tile2 = DIV_8(dest_y);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile - 1, check_tile2)) {
+        if (TileAt(check_tile - 1, check_tile2) ||                  // Tile left
+            TileAt(check_tile - 1, check_tile2 - 1) ||              // Tile left upper
+            ActorAt1x2Tile(check_tile - 2, check_tile2, FALSE) ||   // Actor left
+            ActorAt1x2Tile(check_tile - 2, check_tile2 - 1, FALSE)  // Actor left upper
+        ) {
           dest_x = (check_tile)*8;
           break;
         }
@@ -810,40 +816,48 @@ void Script_ActorPush_b() {
       }
       break;
       break;
-    case 2:
-      LOG("CHECK RIGHT\n");
+    case 2:  // Check right
       end_tile = DIV_8(dest_x);
       check_tile = DIV_8(actors[script_actor].pos.x);
       check_tile2 = DIV_8(dest_y);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile + 2, check_tile2)) {
-          LOG("CHECK RIGHT FOUND TILE AT [%d, %d]\n", check_tile - 1, check_tile2);
+        if (TileAt(check_tile + 2, check_tile2) ||                  // Tile right
+            TileAt(check_tile + 2, check_tile2 - 1) ||              // Tile right upper
+            ActorAt1x2Tile(check_tile + 2, check_tile2, FALSE) ||   // Actor right
+            ActorAt1x2Tile(check_tile + 2, check_tile2 - 1, FALSE)  // Actor right upper
+        ) {
           dest_x = (check_tile)*8;
           break;
         }
         check_tile++;
       }
       break;
-    case 3:
-      LOG("CHECK UP\n");
+    case 3:  // Check up
       end_tile = DIV_8(dest_y);
       check_tile = DIV_8(actors[script_actor].pos.y);
       check_tile2 = DIV_8(dest_x);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile2, check_tile - 1)) {
+        if (TileAt(check_tile2, check_tile - 2) ||                 // Tile up
+            TileAt(check_tile2 + 1, check_tile - 2) ||             // Tile up right
+            ActorAt3x1Tile(check_tile2, check_tile - 2, FALSE) ||  // Actor up
+            ActorAt3x1Tile(check_tile2, check_tile - 1, FALSE)     // Actor up overlapped
+        ) {
           dest_y = (check_tile)*8;
           break;
         }
         check_tile--;
       }
       break;
-    case 4:
-      LOG("CHECK DOWN\n");
+    case 4:  // Check down
       end_tile = DIV_8(dest_y);
       check_tile = DIV_8(actors[script_actor].pos.y);
       check_tile2 = DIV_8(dest_x);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile2, check_tile + 1)) {
+        if (TileAt(check_tile2, check_tile + 1) ||                 // Tile down
+            TileAt(check_tile2 + 1, check_tile + 1) ||             // Tile down right
+            ActorAt3x1Tile(check_tile2, check_tile + 2, FALSE) ||  // Actor down
+            ActorAt3x1Tile(check_tile2, check_tile + 1, FALSE)     // Actor down overlapped
+        ) {
           dest_y = (check_tile)*8;
           break;
         }
