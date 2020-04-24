@@ -26,7 +26,7 @@ typedef struct _SCENE_STATE {
 extern UINT8 scriptrunner_bank;
 extern UBYTE script_ptr_bank;
 extern UBYTE *script_start_ptr;
-extern UBYTE script_cmd_args[6];
+extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
 extern const SCRIPT_CMD script_cmds[];
 extern UBYTE *script_ptr;
