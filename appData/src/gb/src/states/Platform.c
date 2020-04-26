@@ -5,6 +5,7 @@
 #include "Platform.h"
 #include "Actor.h"
 #include "BankManager.h"
+#include "Camera.h"
 #include "Collision.h"
 #include "Core_Main.h"
 #include "Data.h"
@@ -55,7 +56,7 @@ void Start_Platform() {
   // cam_pos_offset.x = cam_pos.x;
   // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
 
-  scroll_target = &cam_pos;
+  camera_target = &cam_pos;
   game_time = 0;
   LOG("END START PLATFORM\n");
 }

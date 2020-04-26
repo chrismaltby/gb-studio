@@ -10,11 +10,12 @@
 #include "Trigger.h"
 #include "GameTime.h"
 #include "ScriptRunner.h"
+#include "Camera.h"
 #include "rand.h"
 
 void Start_TopDown() {
   // Set camera to follow player
-  scroll_target = &player.pos;
+  camera_target = &player.pos;
 }
 
 void Update_TopDown() {

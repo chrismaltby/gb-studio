@@ -4,6 +4,7 @@
 
 #include "Actor.h"
 #include "BankManager.h"
+#include "Camera.h"
 #include "DataManager.h"
 #include "FadeManager.h"
 #include "GameTime.h"
@@ -185,6 +186,7 @@ void game_loop() {
     last_joy = joy;
     joy = joypad();
 
+    UpdateCamera();
     RefreshScroll();
     UpdateActors();
     UIOnInteract();
@@ -227,6 +229,7 @@ void game_loop() {
     current_state = next_state;
 
     scroll_target = 0;
+    scroll_target = &camera_pos;
 
     // Disable timer script
     timer_script_duration = 0;
@@ -234,11 +237,6 @@ void game_loop() {
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
 
-    player.pos.x = map_next_pos.x;
-    player.pos.y = map_next_pos.y;
-    player.dir.x = map_next_dir.x;
-    player.dir.y = map_next_dir.y;
-    scroll_target = &player.pos;
 
     LOG("ACTOR 0 pos [%u %u]\n", player.pos.x, player.pos.y);
 
@@ -267,6 +265,7 @@ void game_loop() {
 
       ScriptRunnerUpdate();
       MoveActors();
+      UpdateCamera();
       RefreshScroll();
       UpdateActors();
       UIUpdate();

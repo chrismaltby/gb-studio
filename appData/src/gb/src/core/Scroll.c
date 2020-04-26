@@ -20,6 +20,8 @@
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
 
+INT16 scroll_offset_x = 0;
+
 INT16 pending_h_x, pending_h_y;
 UINT8 pending_h_i;
 unsigned char *pending_h_map = 0;
@@ -88,7 +90,7 @@ void MoveScroll(INT16 x, INT16 y) {
     render = TRUE;
   }
 
-  scroll_x = x;
+  scroll_x = x + scroll_offset_x;
   scroll_y = y;
 
   if (render) {

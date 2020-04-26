@@ -17,6 +17,7 @@
 #include "Input.h"
 #include "Sprite.h"
 #include "Scroll.h"
+#include "Camera.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000
@@ -38,6 +39,7 @@ SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE wait_time = 0;
 UBYTE emote_sprite = 0;
 UBYTE emote_timer = 0;
+UBYTE shake_time = 0;
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0,
                               0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0,
@@ -213,6 +215,22 @@ UBYTE ScriptUpdate_Emote() {
     emote_timer++;
     return FALSE;
   }
+}
+
+UBYTE ScriptUpdate_CamShake() {
+  if (shake_time == 0) {
+    scroll_offset_x = 0;
+    return TRUE;
+  }
+
+  shake_time--;
+
+  // Handle Shake
+  if (shake_time != 0) {
+    scroll_offset_x = (INT16)(shake_time & 0x5);
+  }
+
+  return FALSE;
 }
 
 /*
@@ -575,10 +593,8 @@ void Script_ActorSetEmote_b() {
  *   arg0: Number of frames to shake for
  */
 void Script_CameraShake_b() {
-  /*
   shake_time = script_cmd_args[0];
-  script_action_complete = FALSE;
-  */
+  script_update_fn = ScriptUpdate_CamShake;
 }
 
 /*
