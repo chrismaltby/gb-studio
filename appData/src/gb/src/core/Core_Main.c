@@ -82,8 +82,10 @@ void vbl_update() {
 void lcd_update() {
   if (LYC_REG == 0x0) {
     SHOW_SPRITES;
-    LYC_REG = WY_REG;
 
+    if (WY_REG != MENU_CLOSED_Y) {
+      LYC_REG = WY_REG;
+    }
   } else if (hide_sprites_under_win) {
     HIDE_SPRITES;
     LYC_REG = 0x0;
