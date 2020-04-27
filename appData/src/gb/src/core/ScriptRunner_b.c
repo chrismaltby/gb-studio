@@ -40,6 +40,7 @@ UBYTE wait_time = 0;
 UBYTE emote_sprite = 0;
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
+UBYTE after_lock_camera = FALSE;
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0,
                               0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0,
@@ -215,6 +216,41 @@ UBYTE ScriptUpdate_Emote() {
     emote_timer++;
     return FALSE;
   }
+}
+
+UBYTE ScriptUpdate_MoveCamera() {
+  // If camera is animating move towards location
+  if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
+    if ((game_time & camera_speed) == 0) {
+      if (camera_pos.x > camera_dest.x) {
+        camera_pos.x--;
+      } else if (camera_pos.x < camera_dest.x) {
+        camera_pos.x++;
+      }
+      if (camera_pos.y > camera_dest.y) {
+        camera_pos.y--;
+      } else if (camera_pos.y < camera_dest.y) {
+        camera_pos.y++;
+      }
+    }
+    if ((camera_pos.x == camera_dest.x) && (camera_pos.y == camera_dest.y)) {
+      if (after_lock_camera) {
+        camera_settings = camera_settings | CAMERA_LOCK_FLAG;
+      }
+      return TRUE;
+    }
+  }
+  // Otherwise jump imediately to camera destination
+  else {
+    camera_pos.x = camera_dest.x;
+    camera_pos.y = camera_dest.y;
+    if (after_lock_camera) {
+      camera_settings = camera_settings | CAMERA_LOCK_FLAG;
+    }
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 UBYTE ScriptUpdate_CamShake() {
@@ -400,14 +436,25 @@ void Script_ActorActivate_b() {
  *   arg2: Camera settings
  */
 void Script_CameraMoveTo_b() {
-  /*
-  camera_dest.x = script_cmd_args[0] << 3;
-  camera_dest.y = 0; // @wtf-but-needed
-  camera_dest.y = script_cmd_args[1] << 3;
+  camera_dest.x = script_cmd_args[0] * 8;
+  camera_dest.y = script_cmd_args[1] * 8;
   camera_settings = (UBYTE)script_cmd_args[2] & ~CAMERA_LOCK_FLAG;
   camera_speed = (UBYTE)script_cmd_args[2] & CAMERA_SPEED_MASK;
-  script_action_complete = FALSE;
-  */
+
+  // Clamp Destination
+  if (camera_dest.x > image_width - SCREEN_WIDTH_HALF) {
+    camera_dest.x = image_width - SCREEN_WIDTH_HALF;
+  } else if (camera_dest.x < SCREEN_WIDTH_HALF) {
+    camera_dest.x = SCREEN_WIDTH_HALF;
+  }
+  if (camera_dest.y > image_height - SCREEN_HEIGHT_HALF) {
+    camera_dest.y = image_height - SCREEN_HEIGHT_HALF;
+  } else if (camera_dest.y < SCREEN_HEIGHT_HALF) {
+    camera_dest.y = SCREEN_HEIGHT_HALF;
+  }
+
+  after_lock_camera = FALSE;
+  script_update_fn = ScriptUpdate_MoveCamera;
 }
 
 /*
@@ -418,18 +465,25 @@ void Script_CameraMoveTo_b() {
  *   arg0: Camera settings
  */
 void Script_CameraLock_b() {
-  /*
-  UBYTE cam_x, cam_y;
-
   camera_settings = script_cmd_args[0] & ~CAMERA_LOCK_FLAG;
   camera_speed = (UBYTE)script_cmd_args[0] & CAMERA_SPEED_MASK;
-  cam_x = ClampUBYTE(actors[0].pos.x, SCREEN_WIDTH_HALF, MUL_8(scene_width) - SCREEN_WIDTH_HALF);
-  camera_dest.x = cam_x - SCREEN_WIDTH_HALF;
-  cam_y = ClampUBYTE(actors[0].pos.y, SCREEN_HEIGHT_HALF, MUL_8(scene_height) - SCREEN_HEIGHT_HALF);
-  camera_dest.y = cam_y - SCREEN_HEIGHT_HALF;
+  camera_dest.x = player.pos.x;
+  camera_dest.y = player.pos.y;
 
-  script_action_complete = FALSE;
-  */
+  // Clamp Destination
+  if (camera_dest.x > image_width - SCREEN_WIDTH_HALF) {
+    camera_dest.x = image_width - SCREEN_WIDTH_HALF;
+  } else if (camera_dest.x < SCREEN_WIDTH_HALF) {
+    camera_dest.x = SCREEN_WIDTH_HALF;
+  }
+  if (camera_dest.y > image_height - SCREEN_HEIGHT_HALF) {
+    camera_dest.y = image_height - SCREEN_HEIGHT_HALF;
+  } else if (camera_dest.y < SCREEN_HEIGHT_HALF) {
+    camera_dest.y = SCREEN_HEIGHT_HALF;
+  }
+
+  after_lock_camera = TRUE;
+  script_update_fn = ScriptUpdate_MoveCamera;
 }
 
 /*
@@ -1812,22 +1866,4 @@ void Script_TextWithAvatar_b() {
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
-}
-
-UBYTE ScriptLastFnComplete_b() {
-  /*
-  if (last_fn == Script_CameraMoveTo_b && SceneCameraAtDest())
-  {
-    camera_settings = camera_settings & ~CAMERA_TRANSITION_FLAG;
-    return TRUE;
-  }
-
-  if (last_fn == Script_CameraLock_b && SceneCameraAtDest())
-  {
-    camera_settings = CAMERA_LOCK_FLAG;
-    return TRUE;
-  }
-  */
-
-  return FALSE;
 }

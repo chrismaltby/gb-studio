@@ -234,6 +234,8 @@ void game_loop() {
     // Disable timer script
     timer_script_duration = 0;
 
+    camera_settings = CAMERA_LOCK_FLAG;
+
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
 

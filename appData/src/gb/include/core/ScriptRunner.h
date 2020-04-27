@@ -32,7 +32,6 @@ extern const SCRIPT_CMD script_cmds[];
 extern UBYTE *script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
-extern UBYTE script_action_complete;
 extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
 

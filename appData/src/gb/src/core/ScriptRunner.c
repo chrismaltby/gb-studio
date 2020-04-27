@@ -11,7 +11,6 @@
 #include "UI.h"
 
 UBYTE script_await_next_frame;
-UBYTE script_action_complete = TRUE;
 UBYTE script_actor;
 UBYTE *ptr_div_reg = (UBYTE *)0xFF04;
 UBYTE script_ptr_bank = 0;
@@ -29,8 +28,6 @@ UBYTE *script_start_stack[STACK_SIZE] = {0};
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
-
-UBYTE ScriptLastFnComplete_b();
 
 void ScriptStart(BankPtr *events_ptr) {
   UBYTE rnd, c, a0, a1, a2, i, a;
@@ -81,13 +78,6 @@ void ScriptRunnerUpdate() {
 
   script_await_next_frame = FALSE;
 
-  if (!script_action_complete) {
-    LOG("Has not script_action_complete\n");
-    PUSH_BANK(scriptrunner_bank);
-    script_action_complete = ScriptLastFnComplete_b();
-    POP_BANK;
-  }
-
   if (script_update_fn) {
     LOG("Has script_update_fn\n");
     PUSH_BANK(scriptrunner_bank);
@@ -108,7 +98,7 @@ void ScriptRunnerUpdate() {
     POP_BANK;
   }
 
-  if (!script_ptr_bank || !script_action_complete || script_update_fn) {
+  if (!script_ptr_bank || script_update_fn) {
     // LOG("STOPPED SCRIPT FOR NOW\n");
     return;
   }
