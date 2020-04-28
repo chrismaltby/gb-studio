@@ -83,14 +83,14 @@ import {
   TIMER_RESTART,
   TIMER_DISABLE,
   TEXT_WITH_AVATAR,
-  MENU
+  MENU,
 } from "../events/scriptCommands";
 import {
   getActorIndex,
   getVariableIndex,
   getSpriteIndex,
   getMusicIndex,
-  compileConditional
+  compileConditional,
 } from "../events/helpers";
 import {
   dirDec,
@@ -98,7 +98,7 @@ import {
   inputDec,
   moveSpeedDec,
   animSpeedDec,
-  combineMultipleChoiceText
+  combineMultipleChoiceText,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
@@ -108,12 +108,13 @@ class ScriptBuilder {
     this.options = options;
   }
 
-  actorSetActive = id => {
+  actorSetActive = (id) => {
     const output = this.output;
     const { scene, entity } = this.options;
-    const index = id === "$self$"
-      ? getActorIndex(entity.id, scene)
-      : getActorIndex(id, scene);
+    const index =
+      id === "$self$"
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(id, scene);
     output.push(cmd(ACTOR_SET_ACTIVE));
     output.push(index);
   };
@@ -192,7 +193,7 @@ class ScriptBuilder {
     output.push(frame || 0);
   };
 
-  actorSetFrameToVariable = variable => {
+  actorSetFrameToVariable = (variable) => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
@@ -201,7 +202,7 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
   };
 
-  actorSetFlip = flip => {
+  actorSetFlip = (flip) => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_FLIP));
     output.push(flip ? 1 : 0);
@@ -234,7 +235,7 @@ class ScriptBuilder {
     output.push(cmd(ACTOR_HIDE));
   };
 
-  actorSetCollisions = enabled => {
+  actorSetCollisions = (enabled) => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_COLLISIONS));
     output.push(enabled ? 1 : 0);
@@ -242,7 +243,7 @@ class ScriptBuilder {
 
   // Player
 
-  playerSetSprite = spriteSheetId => {
+  playerSetSprite = (spriteSheetId) => {
     const output = this.output;
     const { sprites } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
@@ -378,7 +379,7 @@ class ScriptBuilder {
     return getVariableIndex(variable, variables);
   };
 
-  variableSetToTrue = variable => {
+  variableSetToTrue = (variable) => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
@@ -387,7 +388,7 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
   };
 
-  variableSetToFalse = variable => {
+  variableSetToFalse = (variable) => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
@@ -465,7 +466,7 @@ class ScriptBuilder {
     output.push(lo(indexY));
   };
 
-  variableInc = variable => {
+  variableInc = (variable) => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
@@ -474,7 +475,7 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
   };
 
-  variableDec = variable => {
+  variableDec = (variable) => {
     const output = this.output;
     const { variables } = this.options;
     const variableIndex = this.getVariableIndex(variable, variables);
@@ -513,7 +514,7 @@ class ScriptBuilder {
   sceneSwitch = (sceneId, x = 0, y = 0, direction = "down", fadeSpeed = 2) => {
     const output = this.output;
     const { scenes } = this.options;
-    const sceneIndex = scenes.findIndex(s => s.id === sceneId);
+    const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
     if (sceneIndex > -1) {
       output.push(cmd(SWITCH_SCENE));
       output.push(hi(sceneIndex));
@@ -581,7 +582,7 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -602,7 +603,7 @@ class ScriptBuilder {
     output.push(comparator || 0);
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -696,7 +697,7 @@ class ScriptBuilder {
     output.push(operatorDec(operator));
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -706,7 +707,7 @@ class ScriptBuilder {
     output.push(inputDec(input));
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -717,7 +718,7 @@ class ScriptBuilder {
     output.push(y || 0);
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -727,7 +728,7 @@ class ScriptBuilder {
     output.push(dirDec(direction));
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
@@ -736,13 +737,13 @@ class ScriptBuilder {
     output.push(cmd(IF_SAVED_DATA));
     compileConditional(truePath, falsePath, {
       ...this.options,
-      output
+      output,
     });
   };
 
   // Goto
 
-  labelDefine = name => {
+  labelDefine = (name) => {
     const { labels } = this.options;
     const output = this.output;
     const ptr = output.length;
@@ -756,7 +757,7 @@ class ScriptBuilder {
     }
   };
 
-  labelGoto = name => {
+  labelGoto = (name) => {
     const { labels } = this.options;
     const output = this.output;
     if (labels[name] !== undefined) {
@@ -773,7 +774,7 @@ class ScriptBuilder {
 
   // Input
 
-  inputAwait = input => {
+  inputAwait = (input) => {
     const output = this.output;
     output.push(cmd(AWAIT_INPUT));
     output.push(inputDec(input));
@@ -800,7 +801,7 @@ class ScriptBuilder {
     output.push(lo(bankPtr.offset));
   };
 
-  inputScriptRemove = input => {
+  inputScriptRemove = (input) => {
     const output = this.output;
     output.push(cmd(REMOVE_INPUT_SCRIPT));
     output.push(inputDec(input));
@@ -830,7 +831,7 @@ class ScriptBuilder {
     output.push(speedFlag);
   };
 
-  cameraShake = frames => {
+  cameraShake = (frames) => {
     const output = this.output;
     output.push(cmd(CAMERA_SHAKE));
     output.push(frames);
@@ -928,7 +929,7 @@ class ScriptBuilder {
     output.push(cmd(NEXT_FRAME));
   };
 
-  wait = frames => {
+  wait = (frames) => {
     const output = this.output;
     output.push(cmd(WAIT));
     output.push(frames);
@@ -989,7 +990,7 @@ class ScriptBuilder {
     const { sprites } = this.options;
     const searchName = name.toUpperCase();
     const searchPlugin = plugin.toUpperCase();
-    const sprite = sprites.find(s => {
+    const sprite = sprites.find((s) => {
       return (
         (searchName === s.name.toUpperCase() ||
           searchName === s.filename.toUpperCase()) &&
@@ -1002,7 +1003,7 @@ class ScriptBuilder {
     throw new Error(`Sprite ${name} not found`);
   };
 
-  getActor = name => {
+  getActor = (name) => {
     if (name === "player") {
       return name;
     }
@@ -1020,25 +1021,27 @@ class ScriptBuilder {
   };
 
   replaceVariables = (string, variables, event) => {
-    const getVariableSymbol = index => `$${String(index).padStart(2, "0")}$`;
-    
-    return string
-    // Replace Global variables
-    .replace(/\$([0-9]+)\$/g, (match, globalVariable) => {
-      const index = this.getVariableIndex(globalVariable, variables);
-      return getVariableSymbol(index);
-    })
-    // Replace Local variables
-    .replace(/\$(L[0-9])\$/g, (match, localVariable) => {
-      const index = this.getVariableIndex(localVariable, variables);
-      return getVariableSymbol(index);
-    })
-    // Replace Custom Event variables
-    .replace(/\$V([0-9])\$/g, (match, customVariable) => {
-      const mappedVariable = event.args[`$variable[${customVariable}]$`];
-      const index = this.getVariableIndex(mappedVariable, variables);
-      return getVariableSymbol(index);
-    });
+    const getVariableSymbol = (index) => `$${String(index).padStart(2, "0")}$`;
+
+    return (
+      string
+        // Replace Global variables
+        .replace(/\$([0-9]+)\$/g, (match, globalVariable) => {
+          const index = this.getVariableIndex(globalVariable, variables);
+          return getVariableSymbol(index);
+        })
+        // Replace Local variables
+        .replace(/\$(L[0-9])\$/g, (match, localVariable) => {
+          const index = this.getVariableIndex(localVariable, variables);
+          return getVariableSymbol(index);
+        })
+        // Replace Custom Event variables
+        .replace(/\$V([0-9])\$/g, (match, customVariable) => {
+          const mappedVariable = event.args[`$variable[${customVariable}]$`];
+          const index = this.getVariableIndex(mappedVariable, variables);
+          return getVariableSymbol(index);
+        })
+    );
   };
 }
 

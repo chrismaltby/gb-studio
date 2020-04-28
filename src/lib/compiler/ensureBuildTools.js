@@ -4,9 +4,7 @@ import copy from "../helpers/fsCopy";
 import getTmp from "../helpers/getTmp";
 
 const ensureBuildTools = async () => {
-  const buildToolsPath = `${buildToolsRoot}/${process.platform}-${
-    process.arch
-  }`;
+  const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
 
   const tmpPath = getTmp();
   const tmpBuildToolsPath = `${tmpPath}/_gbs`;
@@ -18,7 +16,7 @@ const ensureBuildTools = async () => {
   } catch (e) {
     await copy(buildToolsPath, tmpBuildToolsPath, {
       overwrite: false,
-      mode: 0o755
+      mode: 0o755,
     });
   }
 

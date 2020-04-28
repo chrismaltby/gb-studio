@@ -19,7 +19,7 @@ const compileEntityEvents = (input = [], options = {}) => {
     entity,
     entityType,
     entityIndex,
-    warnings
+    warnings,
   } = options;
   const helpers = {
     ...options,
@@ -27,22 +27,22 @@ const compileEntityEvents = (input = [], options = {}) => {
       compileEntityEvents(childInput, {
         ...options,
         output: eventOutput || output,
-        branch: eventBranch
-      })
+        branch: eventBranch,
+      }),
   };
   const location = Object.assign(
     {},
     scene && {
-      scene: scene.name || `Scene ${sceneIndex + 1}`
+      scene: scene.name || `Scene ${sceneIndex + 1}`,
     },
     entityType && {
-      scriptType: entityType
+      scriptType: entityType,
     },
     entityType === "actor" && {
-      actor: entity.name || `Actor ${entityIndex + 1}`
+      actor: entity.name || `Actor ${entityIndex + 1}`,
     },
     entityType === "trigger" && {
-      actor: entity.name || `Trigger ${entityIndex + 1}`
+      actor: entity.name || `Trigger ${entityIndex + 1}`,
     }
   );
 
@@ -62,7 +62,7 @@ const compileEntityEvents = (input = [], options = {}) => {
           {
             ...helpers,
             ...scriptBuilder,
-            event: input[i]
+            event: input[i],
           }
         );
       } catch (e) {
@@ -86,12 +86,14 @@ const compileEntityEvents = (input = [], options = {}) => {
 
     if (output.length > 16383) {
       warnings(
-        `This script is too big for 1 bank, was ${output.length} bytes, must be under 16384.
-        ${JSON.stringify( location )}
+        `This script is too big for 1 bank, was ${
+          output.length
+        } bytes, must be under 16384.
+        ${JSON.stringify(location)}
         `
       );
       warnings(
-        'Try splitting this script across multiple actors with *Actor invoke*.'
+        "Try splitting this script across multiple actors with *Actor invoke*."
       );
     }
 
@@ -102,7 +104,12 @@ const compileEntityEvents = (input = [], options = {}) => {
           // If string was equivent to position integer then replace it
           // in output otherwise
           output[oi] = intCmd;
-        } else if(!(typeof output[oi] === "string" && output[oi].startsWith("__REPLACE:"))) {
+        } else if (
+          !(
+            typeof output[oi] === "string" &&
+            output[oi].startsWith("__REPLACE:")
+          )
+        ) {
           let reason = "";
           if (String(output[oi]).startsWith("goto:")) {
             reason = "Did you remember to define a label in the script?";

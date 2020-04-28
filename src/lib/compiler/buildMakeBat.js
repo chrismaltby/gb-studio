@@ -1,8 +1,11 @@
 import fs from "fs-extra";
 import Path from "path";
 
-export default async (buildRoot, { CART_TYPE, CART_SIZE, customColorsEnabled, gbcFastCPUEnabled }) => {
-  const cmds = ['set __COMPAT_LAYER=WIN7RTM'];
+export default async (
+  buildRoot,
+  { CART_TYPE, CART_SIZE, customColorsEnabled, gbcFastCPUEnabled }
+) => {
+  const cmds = ["set __COMPAT_LAYER=WIN7RTM"];
   const buildFiles = [];
   const objFiles = [];
   let musicFiles = [];
@@ -53,7 +56,9 @@ export default async (buildRoot, { CART_TYPE, CART_SIZE, customColorsEnabled, gb
   }
 
   if (customColorsEnabled || gbcFastCPUEnabled) {
-    cmds.push(`${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
+    cmds.push(
+      `${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`
+    );
   } else {
     cmds.push(`${CC} ${CFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
   }

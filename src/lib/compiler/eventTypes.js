@@ -132,14 +132,14 @@ export const EventsHidden = [
   EVENT_MATH_MUL_VALUE,
   EVENT_MATH_DIV_VALUE,
   EVENT_MATH_MOD_VALUE,
-  EVENT_CALL_CUSTOM_EVENT
+  EVENT_CALL_CUSTOM_EVENT,
 ];
 
 export const EventFields = {
   [EVENT_LOOP]: [
     {
-      label: l10n("FIELD_LOOP_EXIT")
-    }
+      label: l10n("FIELD_LOOP_EXIT"),
+    },
   ],
   [EVENT_GROUP]: [],
   [EVENT_COMMENT]: [],
@@ -148,20 +148,20 @@ export const EventFields = {
       key: "input",
       label: l10n("FIELD_ON_PRESS"),
       type: "input",
-      defaultValue: "b"
-    }
+      defaultValue: "b",
+    },
   ],
   [EVENT_REMOVE_INPUT_SCRIPT]: [
     {
       key: "input",
       label: l10n("FIELD_REMOVE_INPUT_SCRIPT_ON"),
       type: "input",
-      defaultValue: ["b"]
-    }
+      defaultValue: ["b"],
+    },
   ],
   [EVENT_STOP]: [
     {
-      label: l10n("FIELD_STOP_SCRIPT")
-    }
-  ]
+      label: l10n("FIELD_STOP_SCRIPT"),
+    },
+  ],
 };

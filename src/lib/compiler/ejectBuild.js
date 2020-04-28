@@ -12,7 +12,7 @@ const ejectBuild = async ({
   outputRoot = "/tmp",
   compiledData,
   progress = () => {},
-  warnings = () => {}
+  warnings = () => {},
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
   progress(`Unlink ${Path.basename(outputRoot)}`);

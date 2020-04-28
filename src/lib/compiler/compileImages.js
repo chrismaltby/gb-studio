@@ -11,7 +11,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   const output = {
     tilesets: {},
     tilemaps: {},
-    tilemapsTileset: {}
+    tilemapsTileset: {},
   };
 
   // Build lookups
@@ -24,9 +24,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     tilesetIndexes[i] = i;
     if (tilesetLength > MAX_TILESET_TILES) {
       warnings(
-        `Background '${
-          img.filename
-        }' contains too many unique 8x8px tiles (${tilesetLength} where limit is ${MAX_TILESET_TILES}) meaning it may not display correctly. ` +
+        `Background '${img.filename}' contains too many unique 8x8px tiles (${tilesetLength} where limit is ${MAX_TILESET_TILES}) meaning it may not display correctly. ` +
           `Consider reducing the amount of detail in this image.`
       );
     }
@@ -42,7 +40,7 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     for (let j = i + 1; j < imgs.length; j++) {
       const mergedLookup = await ggbgfx.mergeTileLookups([
         tilesetLookups[i],
-        tilesetLookups[j]
+        tilesetLookups[j],
       ]);
       const mergedLength = Object.keys(mergedLookup).length;
       const diffLength =
