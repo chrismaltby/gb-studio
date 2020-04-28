@@ -626,13 +626,13 @@ void Script_ActorSetCollisions_b() { actors[script_actor].collisionsEnabled = sc
  *   arg0: Emote Id
  */
 void Script_ActorSetEmote_b() {
-  UWORD scene_load_ptr;
+  unsigned char *emote_ptr;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
   script_update_fn = ScriptUpdate_Emote;
-  scene_load_ptr = ((UWORD)bank_data_ptrs[EMOTES_SPRITE_BANK]) + EMOTES_SPRITE_BANK_OFFSET;
+  emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
-                      scene_load_ptr + ((UWORD)script_cmd_args[0] * 64));
+                      emote_ptr + ((UWORD)script_cmd_args[0] * 64));
   set_sprite_prop(emote_sprite, 0);
   set_sprite_prop(emote_sprite + 1, 0);
   set_sprite_tile(emote_sprite, EMOTE_SPRITE);
@@ -816,7 +816,7 @@ void Script_PlayerSetSprite_b() {
   // Load Player Sprite
   sprite_index = script_cmd_args[0];
   ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
-  sprite_ptr = ((UBYTE *)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
+  sprite_ptr = (BankDataPtr(sprite_bank_ptr.bank)) + sprite_bank_ptr.offset;
   sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
   sprite_len = MUL_4(sprite_frames);
   SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);

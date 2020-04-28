@@ -87,7 +87,7 @@ void UIShowText(UBYTE bank, UWORD bank_offset) {
 
   strcpy(tmp_text_lines, "");
 
-  ptr = ((UBYTE *)bank_data_ptrs[bank]) + bank_offset;
+  ptr = (BankDataPtr(bank)) + bank_offset;
 
   PUSH_BANK(bank);
   strcat(tmp_text_lines, ptr);
@@ -107,7 +107,7 @@ void UIShowAvatar(UBYTE avatar_index) {
   unsigned char *tmp_avatar_ptr[100];
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &avatar_bank_ptr, &avatar_bank_ptrs[avatar_index]);
-  avatar_ptr = ((UBYTE *)bank_data_ptrs[avatar_bank_ptr.bank]) + avatar_bank_ptr.offset;
+  avatar_ptr = (BankDataPtr(avatar_bank_ptr.bank)) + avatar_bank_ptr.offset;
   avatar_len = MUL_4(ReadBankedUBYTE(avatar_bank_ptr.bank, avatar_ptr));
 
   PUSH_BANK(avatar_bank_ptr.bank);

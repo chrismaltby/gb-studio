@@ -96,8 +96,10 @@ const makeBuild = ({
     env.CART_SIZE = cartSize;
     env.TMP = getTmp();
     env.TEMP = getTmp();
-    env.COLOR = settings.customColorsEnabled;
-    
+    if (settings.customColorsEnabled) {
+      env.COLOR = true;
+    }
+
     // Modify game.h to overide color palette
     let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
     if (settings.customColorsEnabled) {

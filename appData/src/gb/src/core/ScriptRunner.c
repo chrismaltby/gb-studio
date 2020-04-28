@@ -41,11 +41,10 @@ void ScriptStart(BankPtr *events_ptr) {
   LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
 
   script_ptr_bank = events_ptr->bank;
-  script_ptr = ((UBYTE *)bank_data_ptrs[script_ptr_bank]) + events_ptr->offset;
+  script_ptr = (BankDataPtr(script_ptr_bank)) + events_ptr->offset;
   script_update_fn = FALSE;
 
-  LOG("ScriptStart bank_offset=%d script_ptr=%d\n", ((UBYTE *)bank_data_ptrs[script_ptr_bank]),
-      script_ptr);
+  LOG("ScriptStart bank_offset=%d script_ptr=%d\n", (BankDataPtr(script_ptr_bank)), script_ptr);
 
   PUSH_BANK(script_ptr_bank);
   c = *(script_ptr);

@@ -586,7 +586,7 @@ const compile = async (
         return `extern const BANK_PTR ${name}[];`;
       })
       .join(`\n`)}\n` +
-    `extern const unsigned char (*bank_data_ptrs[])[];\n` +
+    `extern const unsigned int bank_data_ptrs[];\n` +
     `extern const unsigned char * music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
     `extern unsigned char script_variables[${precompiled.variables.length +
@@ -596,28 +596,33 @@ const compile = async (
       })
       .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
-    `${`#pragma bank=${DATA_PTRS_BANK}\n` +
-      `#include "data_ptrs.h"\n` +
-      `#include "banks.h"\n\n` +
-      `const unsigned char (*bank_data_ptrs[])[] = {\n`}${bankDataPtrs.join(
-      ","
-    )}\n};\n\n${Object.keys(dataPtrs)
-      .map(name => {
+    `#pragma bank=${DATA_PTRS_BANK}\n` +
+    `#include "data_ptrs.h"\n` +
+    `#include "banks.h"\n\n` +
+    `#ifdef __EMSCRIPTEN__\n` + 
+    `const unsigned int bank_data_ptrs[] = {\n` +
+    bankDataPtrs.join(",") +
+    `\n};\n`+
+    `#endif\n\n` +
+    Object.keys(dataPtrs)
+      .map((name) => {
         return `const BANK_PTR ${name}[] = {\n${dataPtrs[name]
-          .map(dataPtr => {
+          .map((dataPtr) => {
             return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
           })
           .join(",")}\n};\n`;
       })
-      .join(`\n`)}\n` +
-    `const unsigned char * music_tracks[] = {\n${music
-      .map(track => `${track.dataName}_Data`)
-      .join(", ") || "0"}, 0` +
+      .join(`\n`) +
+    `\n` +
+    `const unsigned char * music_tracks[] = {\n` +
+    (music.map((track) => `${track.dataName}_Data`).join(", ") || "0") +
+    `, 0` +
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
-    `unsigned char script_variables[${precompiled.variables.length +
-      1}] = { 0 };\n`;
+    `unsigned char script_variables[${
+      precompiled.variables.length + 1
+    }] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 

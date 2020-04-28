@@ -6,6 +6,12 @@
 
 #include "data_ptrs.h"
 
+#ifdef __EMSCRIPTEN__
+#define BankDataPtr(bank) ((UBYTE *)bank_data_ptrs[(bank)])
+#else
+#define BankDataPtr(bank) ((UBYTE *)0x4000)
+#endif
+
 typedef struct _BankPtr {
   UBYTE bank;
   UWORD offset;
