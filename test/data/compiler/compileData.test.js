@@ -347,6 +347,9 @@ test("should walk all scene events to build list of used variables", () => {
   ];
   const precompiledVariables = precompileVariables(scenes);
   let output = [];
+  for(let i=0; i<100; i++) {
+    output.push(String(i));
+  }
   output.push("109");
   output.push("110");
   output.push("tmp1");
