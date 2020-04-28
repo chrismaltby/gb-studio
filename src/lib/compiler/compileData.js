@@ -555,6 +555,11 @@ const precompile = async (
 
 export const precompileVariables = scenes => {
   const variables = [];
+  
+  for (let i=0; i<100; i++) {
+    variables.push(String(i));
+  }
+
   walkScenesEvents(scenes, cmd => {
     if (eventHasArg(cmd, "variable")) {
       const variable = cmd.args.variable || "0";
