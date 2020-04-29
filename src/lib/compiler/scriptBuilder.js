@@ -87,6 +87,7 @@ import {
 } from "../events/scriptCommands";
 import {
   getActorIndex,
+  getActor,
   getVariableIndex,
   getSpriteIndex,
   getMusicIndex,
@@ -1018,6 +1019,12 @@ class ScriptBuilder {
       return actor.id;
     }
     throw new Error(`Actor ${name} not found`);
+  };
+
+  getActorById = (id) => {
+    const output = this.output;
+    const { scene, entity } = this.options;
+    return id === "$self$" ? getActor(entity.id, scene) : getActor(id, scene);
   };
 
   replaceVariables = (string, variables, event) => {

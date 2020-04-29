@@ -1,4 +1,4 @@
-import { getActor, getSprite } from "./helpers";
+import { getSprite } from "./helpers";
 import { directionToFrame } from "../helpers/gbstudio";
 
 export const id = "EVENT_ACTOR_SET_DIRECTION";
@@ -7,25 +7,25 @@ export const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "player",
   },
   {
     key: "direction",
     type: "direction",
-    defaultValue: "up"
-  }
+    defaultValue: "up",
+  },
 ];
 
 export const compile = (input, helpers) => {
   const {
+    getActorById,
     actorSetActive,
     actorSetDirection,
     actorSetFrame,
     actorSetFlip,
-    scene,
-    sprites
+    sprites,
   } = helpers;
-  const actor = getActor(input.actorId, scene);
+  const actor = getActorById(input.actorId);
 
   actorSetActive(input.actorId);
   actorSetDirection(input.direction);
