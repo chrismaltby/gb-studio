@@ -134,32 +134,29 @@ void UIUpdate_b() {
 }
 
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
+  UINT16 id = 0;
   UBYTE i, j;
   UBYTE k = 1;
 
-  WaitForMode0Or1();
+  id = 0x9C00;  // Window VRAM
 
-  LOG("UIDrawFrame_b\n");
-
-  set_win_tiles(x, y, 1, 1, ui_frame_tl_tiles);
-  set_win_tiles(x, height + 1, 1, 1, ui_frame_bl_tiles);
-  set_win_tiles(x + width, 0, 1, 1, ui_frame_tr_tiles);
-  set_win_tiles(x + width, height + 1, 1, 1, ui_frame_br_tiles);
+  SetTile(id, *ui_frame_tl_tiles);                                // Frame top left
+  SetTile(id + ((height + 1) * 32), *ui_frame_bl_tiles);          // Frame bottom left
+  SetTile(id + width, *ui_frame_tr_tiles);                        // Frame top right
+  SetTile(id + ((height + 1) * 32) + width, *ui_frame_br_tiles);  // Frame bottom right
 
   for (j = 1; j != height + 1; j++) {
-    WaitForMode0Or1();
-    set_win_tiles(x, j, 1, 1, ui_frame_l_tiles);
-    set_win_tiles(x + width, j, 1, 1, ui_frame_r_tiles);
+    SetTile(id + (j * 32), *ui_frame_l_tiles);          // Frame left
+    SetTile(id + (j * 32) + width, *ui_frame_r_tiles);  // Frame right
+
     for (i = 1; i != width; ++i) {
-      WaitForMode0Or1();
-      set_win_tiles(i, j, 1, 1, ui_frame_bg_tiles);
+      SetTile(id + (j * 32) + i, *ui_frame_bg_tiles);  // Frame background
     }
   }
 
   for (i = 1; i != width; ++i) {
-    WaitForMode0Or1();
-    set_win_tiles(i, 0, 1, 1, ui_frame_t_tiles);
-    set_win_tiles(i, height + 1, 1, 1, ui_frame_b_tiles);
+    SetTile(id + i, *ui_frame_t_tiles);                        // Frame top
+    SetTile(id + ((height + 1) * 32) + i, *ui_frame_b_tiles);  // Frame bottom
   }
 }
 
