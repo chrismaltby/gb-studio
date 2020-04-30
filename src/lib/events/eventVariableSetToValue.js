@@ -16,6 +16,15 @@ export const fields = [
 ];
 
 export const compile = (input, helpers) => {
-  const { variableSetToValue } = helpers;
-  variableSetToValue(input.variable, input.value);
+  const value = parseInt(input.value, 10);
+  if (value > 1)  {
+    const { variableSetToValue } = helpers;
+    variableSetToValue(input.variable, value);
+  } else if (value === 1) {
+    const { variableSetToTrue } = helpers;
+    variableSetToTrue(input.variable);
+  } else {
+    const { variableSetToFalse } = helpers;
+    variableSetToFalse(input.variable);
+  }
 };
