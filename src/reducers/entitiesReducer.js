@@ -5,6 +5,7 @@ import deepmerge from "deepmerge";
 import { mapValues } from "lodash";
 import {
   PROJECT_LOAD_SUCCESS,
+  PROJECT_SAVE_AS_SUCCESS,
   SPRITE_LOAD_SUCCESS,
   BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
@@ -173,6 +174,11 @@ export const denormalizeProject = projectData => {
 const loadProject = (state, action) => {
   const data = normalizeProject(action.data);
   return deepmerge(state, data);
+};
+
+const saveAsProject = (state, action) => {
+  const data = normalizeProject(action.data);
+  return deepmerge({}, data);
 };
 
 const editProject = (state, action) => {
@@ -1266,6 +1272,8 @@ export default function project(state = initialState.entities, action) {
   switch (action.type) {
     case PROJECT_LOAD_SUCCESS:
       return loadProject(state, action);
+    case PROJECT_SAVE_AS_SUCCESS:
+      return saveAsProject(state, action);
     case EDIT_PROJECT:
       return editProject(state, action);
     case EDIT_PROJECT_SETTINGS:

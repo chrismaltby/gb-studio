@@ -6,6 +6,9 @@ import {
   PROJECT_SAVE_REQUEST,
   PROJECT_SAVE_SUCCESS,
   PROJECT_SAVE_FAILURE,
+  PROJECT_SAVE_AS_REQUEST,
+  PROJECT_SAVE_AS_SUCCESS,
+  PROJECT_SAVE_AS_FAILURE,
   ADD_SCENE,
   MOVE_SCENE,
   EDIT_SCENE,
@@ -63,6 +66,24 @@ export default function modified(state = initialState.document, action) {
         saving: false
       };
     case PROJECT_SAVE_FAILURE:
+      return {
+        ...state,
+        saving: false
+      };
+    case PROJECT_SAVE_AS_REQUEST:
+      return {
+        ...state,
+        saving: true
+      };
+    case PROJECT_SAVE_AS_SUCCESS:
+      return {
+        ...state,
+        path: action.path,
+        root: path.dirname(action.path),
+        modified: false,
+        saving: false
+      };
+    case PROJECT_SAVE_AS_FAILURE:
       return {
         ...state,
         saving: false
