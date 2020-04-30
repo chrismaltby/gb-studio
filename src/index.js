@@ -510,9 +510,13 @@ const saveAsProjectPicker = async () => {
 const saveAsProject = async saveAsPath => {
   const l10n = require("./lib/helpers/l10n").default;
 
+  const projectName = Path.parse(saveAsPath).name;
+  const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
+  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
+
   let projectExists;
   try {
-    await stat(saveAsPath);
+    await stat(projectPath);
     projectExists = true;
   } catch (e) {
     projectExists = false;
@@ -533,10 +537,6 @@ const saveAsProject = async saveAsPath => {
     );
     return;
   }
-
-  const projectName = Path.parse(saveAsPath).name;
-  const projectDir = Path.join(Path.dirname(saveAsPath), projectName);
-  const projectPath = Path.join(projectDir, Path.basename(saveAsPath));
 
   mainWindow && mainWindow.webContents.send("save-as-project", projectPath);
 };
