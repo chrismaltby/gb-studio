@@ -164,10 +164,8 @@ function bindDpad(el) {
 
 function bindTouchRestore() {
   window.addEventListener("touchstart", function(e) {
-    if(!isTouchEnabled) {
-      controller.style.display = "block";
-      isTouchEnabled = true;
-    }
+    controller.style.display = "block";
+    isTouchEnabled = true;
   })
 }
 
@@ -215,6 +213,7 @@ function bindClick() {
 }
 
 if (isTouchEnabled) {
+  controller.style.display = "block";
   bindButton(btnA, "a");
   bindButton(btnB, "b");
   bindButton(btnStart, "start");
