@@ -469,17 +469,7 @@ const openProject = async projectPath => {
     return;
   }
 
-  // Store recent projects
-  settings.set(
-    "recentProjects",
-    []
-      .concat(settings.get("recentProjects") || [], projectPath)
-      .reverse()
-      .filter((filename, index, arr) => arr.indexOf(filename) === index) // Only unique
-      .reverse()
-      .slice(-10)
-  );
-  app.addRecentDocument(projectPath);
+  addRecentProject(projectPath); 
 
   const oldMainWindow = mainWindow;
   await createWindow(projectPath);
@@ -492,6 +482,20 @@ const openProject = async projectPath => {
     mainWindow = newMainWindow;
   }
 };
+
+const addRecentProject = (projectPath) => {
+  // Store recent projects
+  settings.set(
+    "recentProjects",
+    []
+      .concat(settings.get("recentProjects") || [], projectPath)
+      .reverse()
+      .filter((filename, index, arr) => arr.indexOf(filename) === index) // Only unique
+      .reverse()
+      .slice(-10)
+  );
+  app.addRecentDocument(projectPath);
+}
 
 const saveAsProjectPicker = async () => {
   const files = dialog.showSaveDialog({
@@ -537,6 +541,8 @@ const saveAsProject = async saveAsPath => {
     );
     return;
   }
+
+  addRecentProject(projectPath);
 
   mainWindow && mainWindow.webContents.send("save-as-project", projectPath);
 };
