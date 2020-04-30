@@ -527,8 +527,8 @@ const saveAsProject = async saveAsPath => {
   }
   if(projectExists) {
       dialog.showErrorBox(
-          l10n("ERROR_INVALID_FILE_TYPE"),
-          l10n("ERROR_PROJECT_ALREADY_EXISTS")
+          l10n("ERROR_PROJECT_ALREADY_EXISTS"),
+          l10n("ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION")
       );
       return;
   }
