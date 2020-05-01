@@ -16,6 +16,7 @@
 #include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
+#include "Trigger.h"
 
 #define MIN_WALK_VEL 0x130
 #define WALK_ACC 0x98
@@ -52,6 +53,8 @@ void Start_Platform() {
 
   pos_x = (player.pos.x + 4u) << 4;
   pos_y = player.pos.y << 4;
+  vel_x = 0;
+  vel_y = 0;
 
   // cam_pos_offset.x = cam_pos.x;
   // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
@@ -66,6 +69,7 @@ void Update_Platform() {
   UBYTE camera_y, player_y, i, a;
   UINT16 tmp_y;
   UBYTE hit_actor = 0;
+  UBYTE hit_trigger = 0;
 
   // Move NPCs
   /*
@@ -224,16 +228,27 @@ void Update_Platform() {
   }
   cam_pos.y = pos_y_delayed - PLATFORM_CAMERA_OFFSET_Y;
 
-  LOG_VALUE("pos_y_delayed", pos_y_delayed);
-  LOG_VALUE("cam_pos.y", cam_pos.y);
-
-  if (INPUT_SELECT_PRESSED) {
-    player.pos.x = 16;
-    player.pos.y = 16;
+  // If player was moving on the previous frame
+  // if (player.moving) {
+  // Check for trigger collisions
+  hit_trigger = TriggerAtTile(tile_x, tile_y);
+  if (hit_trigger != MAX_TRIGGERS) {
+    // Run trigger script
+    ScriptStart(&triggers[hit_trigger].events_ptr);
+    return;
   }
+  // }
 
-  if (INPUT_START_PRESSED) {
-    player.pos.x = 1024;
-    player.pos.y = 24;
-  }
+  // LOG_VALUE("pos_y_delayed", pos_y_delayed);
+  // LOG_VALUE("cam_pos.y", cam_pos.y);
+
+  // if (INPUT_SELECT_PRESSED) {
+  //   player.pos.x = 16;
+  //   player.pos.y = 16;
+  // }
+
+  // if (INPUT_START_PRESSED) {
+  //   player.pos.x = 1024;
+  //   player.pos.y = 24;
+  // }
 }
