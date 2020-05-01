@@ -27,7 +27,7 @@ body {
 }
 
 #controller {
-  display: block;
+  display: none;
   position: fixed;
   bottom: 0px;
   height: 210px;
@@ -277,7 +277,8 @@ body {
   }
 }
 
-@media only screen and (max-device-width: 812px) and (orientation: landscape) {
+/* Small devices in landscape */
+@media only screen and (max-device-width: 300px) and (orientation: landscape) {
   html,
   body {
     height: 100%;
@@ -304,3 +305,13 @@ body {
     display: none;
   }
 }
+
+/* Devices large enough for landscape */
+@media only screen and (min-width: 300px) and (orientation: landscape) {
+  #controller {
+    bottom: 50%;
+    transform: translateY(50%);
+    opacity: 0.5;
+  }
+}
+

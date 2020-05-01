@@ -1,7 +1,9 @@
 import uuid from "uuid/v4";
+import Path from "path";
 import * as types from "./actionTypes";
 import loadProjectData from "../lib/project/loadProjectData";
 import saveProjectData from "../lib/project/saveProjectData";
+import saveAsProjectData from "../lib/project/saveAsProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
@@ -14,6 +16,7 @@ import {
 import { denormalizeProject } from "../reducers/entitiesReducer";
 import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
+import {dialog} from "electron";
 
 const asyncAction = async (
   dispatch,
@@ -251,6 +254,33 @@ export const saveProject = () => async (dispatch, getState) => {
       data.settings.zoom = state.editor.zoom;
       await saveProjectData(state.document.path, data);
     }
+  );
+};
+
+export const saveAsProjectAction = path => async (dispatch, getState) => {
+  const state = getState();
+  if (
+      !state.document.loaded ||
+      state.document.saving
+  ) {
+    return;
+  }
+  await asyncAction(
+      dispatch,
+      types.PROJECT_SAVE_AS_REQUEST,
+      types.PROJECT_SAVE_AS_SUCCESS,
+      types.PROJECT_SAVE_AS_FAILURE,
+      async () => {
+        const saveData = denormalizeProject(state.entities.present);
+        saveData.settings.zoom = state.editor.zoom;
+        saveData.name = Path.parse(path).name;
+        await saveAsProjectData(state.document.path, path, saveData);
+        const data = await loadProjectData(path);
+        return {
+          data,
+          path
+        }
+      }
   );
 };
 

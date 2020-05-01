@@ -39,6 +39,14 @@ const buildMenu = async (plugins = []) => {
             notifyListeners("save");
           }
         },
+        {
+          label: l10n("MENU_SAVE_AS"),
+          accelerator: "CommandOrControl+Alt+S",
+          click: () => {
+            notifyListeners("saveAs");
+          }
+        },
+
         { type: "separator" },
         {
           label: l10n("MENU_RELOAD_ASSETS"),
@@ -388,6 +396,7 @@ const listeners = {
   new: [],
   open: [],
   save: [],
+  saveAs: [],
   checkUpdates: [],
   undo: [],
   redo: [],

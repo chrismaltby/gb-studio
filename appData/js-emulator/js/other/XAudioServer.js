@@ -197,6 +197,10 @@ XAudioServer.prototype.initializeWebAudio = function () {
         XAudioJSWebAudioAudioNode.onaudioprocess = null;
         XAudioJSWebAudioAudioNode = null;
     }
+	//Android chrome exception has stuttery audio, firefox android is fine with 2048
+	if (navigator.userAgent.includes("Android") && navigator.userAgent.includes("Chrome")) {
+		XAudioJSSamplesPerCallback = 4096;
+	}
     try {
         XAudioJSWebAudioAudioNode = XAudioJSWebAudioContextHandle.createScriptProcessor(XAudioJSSamplesPerCallback, 0, XAudioJSChannelsAllocated);	//Create the js event node.
     }
@@ -432,7 +436,7 @@ var XAudioJSMediaStreamWorker = null;
 var XAudioJSMediaStreamBuffer = [];
 var XAudioJSMediaStreamSampleRate = 44100;
 var XAudioJSMozAudioSampleRate = 44100;
-var XAudioJSSamplesPerCallback = 4096;			//Has to be between 2048 and 4096 (If over, then samples are ignored, if under then silence is added, 4096 fixes chrome android).
+var XAudioJSSamplesPerCallback = 2048;			//Has to be between 2048 and 4096 (If over, then samples are ignored, if under then silence is added, 4096 fixes chrome android).
 var XAudioJSFlashTransportEncoder = null;
 var XAudioJSMediaStreamLengthAliasCounter = 0;
 var XAudioJSBinaryString = [];
