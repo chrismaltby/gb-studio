@@ -6,26 +6,26 @@ export const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "player",
   },
   {
     key: "x",
     label: l10n("FIELD_X"),
     type: "number",
     min: 0,
-    max: 30,
+    max: 256,
     width: "50%",
-    defaultValue: 0
+    defaultValue: 0,
   },
   {
     key: "y",
     label: l10n("FIELD_Y"),
     type: "number",
     min: 0,
-    max: 31,
+    max: 256,
     width: "50%",
-    defaultValue: 0
-  }
+    defaultValue: 0,
+  },
 ];
 
 export const compile = (input, helpers) => {
