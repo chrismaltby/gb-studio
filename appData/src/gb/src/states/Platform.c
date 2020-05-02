@@ -34,7 +34,6 @@
 #define PLATFORM_CAMERA_OFFSET_Y 48
 
 UBYTE grounded = FALSE;
-UBYTE GROUND = 136;
 WORD vel_x = 0;
 WORD vel_y = 0;
 WORD pos_x = 16512;
@@ -50,11 +49,14 @@ void Start_Platform() {
   cam_pos.y = player.pos.y - PLATFORM_CAMERA_OFFSET_Y;
   pos_y_delayed = player.pos.y;
   platform_y = player.pos.y;
-
+  player.vel.x = 0;
+  player.vel.y = 0;
+  player.moving = FALSE;
   pos_x = (player.pos.x + 4u) << 4;
   pos_y = player.pos.y << 4;
   vel_x = 0;
   vel_y = 0;
+  grounded = FALSE;
 
   // cam_pos_offset.x = cam_pos.x;
   // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
@@ -90,6 +92,8 @@ void Update_Platform() {
   // Update scene pos from player pos
   pos_x = ((player.pos.x + 4u) << 4) + (pos_x & 0xF);
   pos_y = ((player.pos.y) << 4) + (pos_y & 0xF);
+
+  player.moving = FALSE;
 
   // Move
   if (INPUT_LEFT) {
@@ -235,6 +239,7 @@ void Update_Platform() {
   if (hit_trigger != MAX_TRIGGERS) {
     // Run trigger script
     ScriptStart(&triggers[hit_trigger].events_ptr);
+    player.moving = FALSE;
     return;
   }
   // }
