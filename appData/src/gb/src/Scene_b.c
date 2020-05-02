@@ -116,7 +116,7 @@ void SceneInit_b2()
   for (i = 0; i != num_sprites; i++)
   {
     // LOG("LOAD SPRITE=%u k=%u\n", i, k);
-    sprite_index = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + i);
+    sprite_index = (UWORD)(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + (2 * i)) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + (2 * i) + 1);
     // LOG("SPRITE INDEX=%u\n", sprite_index);
     ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
     sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
@@ -125,7 +125,7 @@ void SceneInit_b2()
     SetBankedSpriteData(sprite_bank_ptr.bank, k, sprite_len, sprite_ptr + 1);
     k += sprite_len;
   }
-  scene_load_ptr = scene_load_ptr + num_sprites;
+  scene_load_ptr = scene_load_ptr + (2 * num_sprites);
 
   // Load actors
   scene_num_actors = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr) + 1;
