@@ -85,14 +85,14 @@ void UpdateActors_b() {
         } else if (actor->dir.x != 0) {
           fo = 2 + MUL_2(actor->sprite_type == SPRITE_ACTOR_ANIMATED);
         }
+        // Facing left so flip sprite
+        if (IS_NEG(actor->dir.x)) {
+          LOG("AUR FLIP DIR X0\n");
+          flip = TRUE;
+        }
       }
 
       LOG("RERENDER actor a=%u\n", a);
-      // Facing left so flip sprite
-      if (IS_NEG(actor->dir.x)) {
-        LOG("AUR FLIP DIR X0\n");
-        flip = TRUE;
-      }
 
       frame = MUL_4(actor->sprite + actor->frame + fo);
       LOG("RERENDER actor a=%u with FRAME %u  [ %u + %u ] \n", a, frame, actor->sprite,
