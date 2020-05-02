@@ -107,7 +107,7 @@ void SceneInit_b2()
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &scene_bank_ptrs[scene_index]);
   scene_load_ptr = ((UWORD)bank_data_ptrs[bank_ptr.bank]) + bank_ptr.offset;
-  image_index = ReadBankedUWORD(bank_ptr.bank, scene_load_ptr);
+  image_index = (UWORD)(ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr) * 256) + ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 1);
   num_sprites = ReadBankedUBYTE(bank_ptr.bank, scene_load_ptr + 2);
 
   // Load sprites
