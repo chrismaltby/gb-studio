@@ -42,7 +42,7 @@ SCRIPT_CMD script_cmds[] = {
     {Script_ActorMoveTo_b, 2},        // 0x10
     {Script_ShowSprites_b, 0},        // 0x11
     {Script_HideSprites_b, 0},        // 0x12
-    {Script_PlayerSetSprite_b, 1},    // 0x13
+    {Script_PlayerSetSprite_b, 2},    // 0x13
     {Script_ActorShow_b, 0},          // 0x14
     {Script_ActorHide_b, 0},          // 0x15
     {Script_ActorSetEmote_b, 1},      // 0x16

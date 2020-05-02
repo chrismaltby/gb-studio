@@ -680,10 +680,11 @@ void Script_PlayerSetSprite_b()
 {
   BANK_PTR sprite_bank_ptr;
   UWORD sprite_ptr;
-  UBYTE sprite_index, sprite_frames, sprite_len;
+  UWORD sprite_index;
+  UBYTE sprite_frames, sprite_len;
 
   // Load Player Sprite
-  sprite_index = script_cmd_args[0];
+  sprite_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
   ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
   sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
   sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
