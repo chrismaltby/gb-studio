@@ -18,7 +18,9 @@ class World extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0
+      hoverY: 0,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight      
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
@@ -31,6 +33,7 @@ class World extends Component {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("mouseup", this.onMouseUp);
     window.addEventListener("mousewheel", this.onMouseWheel);
+    window.addEventListener("resize", this.onWindowResize);
 
     const viewContents = this.scrollContentsRef.current;
     // Set zoom ratio on component mount incase it wasn't at 100%
@@ -186,6 +189,13 @@ class World extends Component {
     scrollWorld(e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
   };
 
+  onWindowResize = e => {
+    this.setState({
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight
+    })
+  }
+
   onAddScene = e => {
     const { addScene, setTool, prefab } = this.props;
     const { hoverX, hoverY } = this.state;
@@ -197,6 +207,8 @@ class World extends Component {
   render() {
     const {
       scenes,
+      scrollX,
+      scrollY,
       scrollWidth,
       scrollHeight,
       tool,
@@ -206,9 +218,16 @@ class World extends Component {
       selectWorld,
       loaded
     } = this.props;
-    const { hover, hoverX, hoverY } = this.state;
+    const { hover, hoverX, hoverY, windowWidth, windowHeight } = this.state;
 
     const worldStyle = { right: sidebarWidth };
+    
+    const viewBounds = {
+      x: scrollX / zoomRatio,
+      y: scrollY / zoomRatio,
+      width: windowWidth / zoomRatio,
+      height: windowHeight / zoomRatio
+    }
 
     return (
       <div
@@ -232,7 +251,7 @@ class World extends Component {
           {loaded && scenes.length === 0 && <WorldHelp />}
 
           {scenes.map((sceneId, index) => (
-            <Scene key={sceneId} id={sceneId} index={index} />
+            <Scene key={sceneId} id={sceneId} index={index} viewBounds={viewBounds} />
           ))}
 
           {showConnections && (
