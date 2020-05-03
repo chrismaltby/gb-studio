@@ -23,7 +23,11 @@ export const SceneShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   actors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  triggers: PropTypes.arrayOf(PropTypes.string).isRequired
+  triggers: PropTypes.arrayOf(PropTypes.string).isRequired,
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired
 });
 
 export const SpriteShape = PropTypes.shape({
