@@ -275,7 +275,7 @@ function mapStateToProps(state, props) {
   const tool = state.tools.selected;
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
-  const sceneFiltered = searchTerm && (sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1);
+  const sceneFiltered = (searchTerm && (sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1)) || false;
 
   return {
     scene,

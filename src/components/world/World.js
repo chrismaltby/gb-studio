@@ -333,8 +333,8 @@ function mapStateToProps(state) {
     })
     : [];
 
-  const onlyMatchingScene = matchingScenes.length === 1
-    && scenesLookup[matchingScenes[0]];
+  const onlyMatchingScene = (matchingScenes.length === 1
+    && scenesLookup[matchingScenes[0]]) || null;
 
   return {
     scenes,
