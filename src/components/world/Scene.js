@@ -109,6 +109,7 @@ class Scene extends Component {
       id,
       index,
       scene,
+      sceneName,
       image,
       event,
       width,
@@ -117,7 +118,8 @@ class Scene extends Component {
       showCollisions,
       selected,
       hovered,
-      frameCount
+      frameCount,
+      sceneFiltered
     } = this.props;
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
@@ -125,14 +127,14 @@ class Scene extends Component {
     return (
       <div
         ref={this.containerRef}
-        className={cx("Scene", { "Scene--Selected": selected })}
+        className={cx("Scene", { "Scene--Selected": selected, "Scene--Filtered": sceneFiltered })}
         style={{
           top: y,
           left: x
         }}
       >
         <div className="Scene__Name" onMouseDown={this.onStartDrag}>
-          {scene.name || `Scene ${index + 1}`}
+          {sceneName}
         </div>
         <div
           className="Scene__Image"
@@ -239,7 +241,9 @@ Scene.propTypes = {
   moveScene: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   moveSelectedEntity: PropTypes.func.isRequired,
-  sceneHover: PropTypes.func.isRequired
+  sceneHover: PropTypes.func.isRequired,
+  sceneName: PropTypes.string.isRequired,
+  sceneFiltered: PropTypes.bool.isRequired
 };
 
 Scene.defaultProps = {
@@ -269,6 +273,9 @@ function mapStateToProps(state, props) {
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.tools.selected;
+  const searchTerm = state.editor.searchTerm;
+  const sceneName = scene.name || `Scene ${props.index + 1}`;
+  const sceneFiltered = searchTerm && (sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1);
 
   return {
     scene,
@@ -283,7 +290,9 @@ function mapStateToProps(state, props) {
     selected,
     dragging,
     hovered,
-    frameCount: getSceneFrameCount(state, props)
+    frameCount: getSceneFrameCount(state, props),
+    sceneName,
+    sceneFiltered
   };
 }
 

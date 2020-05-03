@@ -28,6 +28,7 @@
   "TOOLBAR_EXPORT_ROM": "Export ROM",
   "TOOLBAR_EXPORT_WEB": "Export Web",
   "TOOLBAR_RUN": "Run",
+  "TOOLBAR_SEARCH": "Search...",
 
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Select",

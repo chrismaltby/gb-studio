@@ -2,13 +2,15 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
+import { debounce } from "lodash";
 import {
   Toolbar,
   ToolbarTitle,
   ToolbarSpacer,
   ToolbarFixedSpacer,
   ToolbarButton,
-  ToolbarDropdownButton
+  ToolbarDropdownButton,
+  ToolbarSearch
 } from "../components/library/Toolbar";
 import { MenuItem } from "../components/library/Menu";
 import {
@@ -76,14 +78,25 @@ class AppToolbar extends Component {
     openFolder(projectRoot);
   };
 
+  onChangeSearchTerm = e => {
+    this.onChangeSearchTermDebounced(e.currentTarget.value);
+  }
+
+  onChangeSearchTermDebounced = debounce((searchTerm) => {
+    const { editSearchTerm } = this.props;
+    editSearchTerm(searchTerm);
+  }, 300);
+
   render() {
     const {
       name,
       section = "world",
       zoom,
       showZoom,
+      showSearch,
       running,
-      modified
+      modified,
+      searchTerm
     } = this.props;
 
     return (
@@ -132,6 +145,14 @@ class AppToolbar extends Component {
             <PlusIcon />
           </ToolbarButton>
         </ToolbarButton>
+        <ToolbarSearch
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          defaultValue={searchTerm}
+          onChange={this.onChangeSearchTerm}
+          style={{
+            visibility: !showSearch && "hidden"
+          }}
+        />
         <ToolbarSpacer />
         <ToolbarTitle>
           {name || "Untitled"} {modified && ` (${l10n("TOOLBAR_MODIFIED")})`}
@@ -182,7 +203,10 @@ AppToolbar.propTypes = {
   buildGame: PropTypes.func.isRequired,
   running: PropTypes.bool.isRequired,
   modified: PropTypes.bool.isRequired,
-  showZoom: PropTypes.bool.isRequired
+  showZoom: PropTypes.bool.isRequired,
+  searchTerm: PropTypes.string.isRequired,
+  showSearch: PropTypes.bool.isRequired,
+  editSearchTerm: PropTypes.func.isRequired
 };
 
 AppToolbar.defaultProps = {
@@ -192,6 +216,7 @@ AppToolbar.defaultProps = {
 function mapStateToProps(state) {
   const section = state.navigation.section;
   const zoom = zoomForSection(section, state.editor);
+  const searchTerm = state.editor.searchTerm;
   return {
     projectRoot: state.document && state.document.root,
     modified: state.document && state.document.modified,
@@ -199,7 +224,9 @@ function mapStateToProps(state) {
     section,
     zoom,
     showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,
-    running: state.console.status === "running"
+    running: state.console.status === "running",
+    searchTerm,
+    showSearch: section === "world"
   };
 }
 
@@ -209,6 +236,7 @@ const mapDispatchToProps = {
   zoomIn: actions.zoomIn,
   zoomOut: actions.zoomOut,
   zoomReset: actions.zoomReset,
+  editSearchTerm: actions.editSearchTerm,
   buildGame: actions.buildGame,
   openFolder: actions.openFolder
 };

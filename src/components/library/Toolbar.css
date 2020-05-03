@@ -98,7 +98,8 @@
 
 .Toolbar__Button + .Toolbar__Button,
 .Toolbar__DropdownButton + .Toolbar__Button,
-.Toolbar__Button + .Toolbar__DropdownButton {
+.Toolbar__Button + .Toolbar__DropdownButton,
+.Toolbar__Button + .Toolbar__Search {
   margin-left: 5px;
 }
 
@@ -158,5 +159,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0px 10px;
+}
+
+.Toolbar__Search {
+  height: 26px;
+  background-color: var(--input-bg-color);
+  color: var(--input-text-color);
+  border: 1px solid var(--toolbar-button-border-color);
+  border-radius: 20px;
+  font-size: 13px;
   padding: 0px 10px;
 }

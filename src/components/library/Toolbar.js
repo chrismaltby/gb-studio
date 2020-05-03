@@ -18,6 +18,10 @@ export const ToolbarTitle = props => (
   <div className="Toolbar__Title" {...props} />
 );
 
+export const ToolbarSearch = props => (
+  <input type="search" className="Toolbar__Search" {...props} />
+);
+
 export class ToolbarDropdownButton extends Component {
   constructor() {
     super();

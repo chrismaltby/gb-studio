@@ -103,6 +103,7 @@ export const ZOOM_IN = "ZOOM_IN";
 export const ZOOM_OUT = "ZOOM_OUT";
 export const ZOOM_RESET = "ZOOM_RESET";
 export const SCROLL_WORLD = "SCROLL_WORLD";
+export const EDIT_SEARCH_TERM = "EDIT_SEARCH_TERM";
 
 export const CMD_CLEAR = "CMD_CLEAR";
 export const CMD_START = "CMD_START";
