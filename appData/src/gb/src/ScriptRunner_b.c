@@ -799,30 +799,32 @@ void Script_SaveData_b()
   RAMPtr[0] = TRUE; // Flag to determine if data has been stored
 
   // Save current scene
-  RAMPtr[1] = scene_index;
+  RAMPtr[1] = scene_index >> 8;
+  RAMPtr[2] = scene_index & 0xFF;
 
   // Save player position
-  RAMPtr[2] = actors[0].pos.x;
-  RAMPtr[3] = actors[0].pos.y;
+  RAMPtr[3] = actors[0].pos.x;
+  RAMPtr[4] = actors[0].pos.y;
   if (actors[0].dir.x < 0)
   {
-    RAMPtr[4] = 2;
+    RAMPtr[5] = 2;
   }
   else if (actors[0].dir.x > 0)
   {
-    RAMPtr[4] = 4;
+    RAMPtr[5] = 4;
   }
   else if (actors[0].dir.y < 0)
   {
-    RAMPtr[4] = 8;
+    RAMPtr[5] = 8;
   }
   else
   {
-    RAMPtr[4] = 1;
+    RAMPtr[5] = 1;
   }
 
   // Save player sprite
-  RAMPtr[5] = map_next_sprite;
+  RAMPtr[6] = map_next_sprite >> 8;
+  RAMPtr[7] = map_next_sprite & 0xFF;
 
   // Save variable values
   RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
@@ -853,7 +855,7 @@ void Script_LoadData_b()
   {
     // Set scene index
     RAMPtr++;
-    scene_next_index = *RAMPtr;
+    scene_next_index = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
     scene_index = scene_next_index + 1;
 
     // Position player
@@ -869,7 +871,7 @@ void Script_LoadData_b()
 
     // Load player sprite
     RAMPtr++;
-    map_next_sprite = *RAMPtr;
+    map_next_sprite = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
 
     // Load variable values
     RAMPtr = (UBYTE *)RAM_START_VARS_PTR;

@@ -20,7 +20,7 @@ void SceneRenderActor_b(UBYTE i);
 
 POS map_next_pos;
 VEC2D map_next_dir;
-UBYTE map_next_sprite;
+UWORD map_next_sprite;
 ACTOR actors[MAX_ACTORS];
 TRIGGER triggers[MAX_TRIGGERS];
 UWORD scene_index;
