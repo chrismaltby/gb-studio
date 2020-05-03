@@ -325,7 +325,7 @@ test("Should be able to change player sprite", () => {
     sprites: [{ id: "def" }]
   });
   sb.playerSetSprite("def");
-  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0]);
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0]);
 });
 
 test("Should be able to hide all sprites", () => {

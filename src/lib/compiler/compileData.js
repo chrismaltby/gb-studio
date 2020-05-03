@@ -258,7 +258,7 @@ const compile = async (
         hi(scene.backgroundIndex),
         lo(scene.backgroundIndex),
         scene.sprites.length,
-        scene.sprites,
+        flatten(scene.sprites.map((spriteIndex)=> [hi(spriteIndex), lo(spriteIndex)])),
         scene.actors.length,
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
