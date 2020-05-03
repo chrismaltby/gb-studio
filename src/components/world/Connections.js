@@ -147,6 +147,7 @@ class Connections extends Component {
 
   render() {
     const {
+      showConnections,
       width,
       height,
       startScene,
@@ -168,7 +169,7 @@ class Connections extends Component {
         const entity = actorsLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          if(scene.id === selectedSceneId || event.args.sceneId === selectedSceneId) {
+          if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
             const destScene = scenesLookup[event.args.sceneId];
             if (destScene) {
               memo.push(
@@ -195,7 +196,7 @@ class Connections extends Component {
         const entity = triggersLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          if(scene.id === selectedSceneId || event.args.sceneId === selectedSceneId) {
+          if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
             const destScene = scenesLookup[event.args.sceneId];
             if (destScene) {
               memo.push(
@@ -220,7 +221,7 @@ class Connections extends Component {
       // Scene Event Transitions
       const sceneTransitionEvents = scriptMapTransition(scene.script || []);
       sceneTransitionEvents.forEach(event => {
-        if(scene.id === selectedSceneId || event.args.sceneId === selectedSceneId) {
+        if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
           const destScene = scenesLookup[event.args.sceneId];
           if (destScene) {
             memo.push(
@@ -298,7 +299,8 @@ Connections.propTypes = {
   dragPlayerStop: PropTypes.func.isRequired,
   dragDestinationStart: PropTypes.func.isRequired,
   dragDestinationStop: PropTypes.func.isRequired,
-  selectedSceneId: PropTypes.string
+  selectedSceneId: PropTypes.string,
+  showConnections: PropTypes.oneOf(["all", "selected", true])
 };
 
 Connections.defaultProps = {
@@ -315,6 +317,7 @@ function mapStateToProps(state) {
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
   const {
+    showConnections,
     startSceneId,
     startX,
     startY,
@@ -323,7 +326,9 @@ function mapStateToProps(state) {
   const { scene: selectedSceneId } = state.editor;
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;
+
   return {
+    showConnections,
     scenes,
     scenesLookup,
     actorsLookup,

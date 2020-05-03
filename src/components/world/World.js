@@ -333,7 +333,7 @@ function mapStateToProps(state) {
     tool: state.tools.selected,
     prefab: state.tools.prefab,
     zoomRatio: (state.editor.zoom || 100) / 100,
-    showConnections,
+    showConnections: !!showConnections,
     sidebarWidth,
     loaded,
     focus
