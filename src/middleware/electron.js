@@ -34,7 +34,7 @@ export default store => next => action => {
   } else if (action.type === OPEN_FOLDER) {
     remote.shell.openItem(action.path);
   } else if (action.type === PROJECT_LOAD_SUCCESS) {
-    ipcRenderer.send("project-loaded", action.data);
+    ipcRenderer.send("project-loaded", action.data.settings);
   } else if (action.type === SIDEBAR_WORLD_RESIZE) {
     settings.set("worldSidebarWidth", action.width);
   } else if (action.type === SIDEBAR_FILES_RESIZE) {

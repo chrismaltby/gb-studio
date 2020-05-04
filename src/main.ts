@@ -328,8 +328,8 @@ ipcMain.on("document-unmodified", () => {
   mainWindow.documentEdited = false; // For Windows
 });
 
-ipcMain.on("project-loaded", (event, project) => {
-  const { showCollisions, showConnections } = project.settings;
+ipcMain.on("project-loaded", (event, settings) => {
+  const { showCollisions, showConnections } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnectionsAll").checked = showConnections === "all";
   menu.ref().getMenuItemById("showConnectionsSelected").checked = showConnections === "selected" || showConnections === true;
