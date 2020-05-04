@@ -8,9 +8,11 @@ import Connections from "./Connections";
 import * as actions from "../../actions";
 import {
   getMaxSceneRight,
-  getMaxSceneBottom
+  getMaxSceneBottom,
+  getScenesLookup
 } from "../../reducers/entitiesReducer";
 import { MIDDLE_MOUSE } from "../../consts";
+import { SceneShape } from "../../reducers/stateShape";
 
 class World extends Component {
   constructor(props) {
@@ -50,7 +52,7 @@ class World extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { zoomRatio, scrollX, scrollY, loaded } = this.props;
+    const { zoomRatio, scrollX, scrollY, loaded, onlyMatchingScene } = this.props;
     if (zoomRatio !== prevProps.zoomRatio) {
       const view = this.scrollRef.current;
       const viewContents = this.scrollContentsRef.current;
@@ -77,6 +79,20 @@ class World extends Component {
     const scroll = this.scrollRef.current;
     if (scroll && loaded && !prevProps.loaded) {
       scroll.scrollTo(scrollX, scrollY);
+    }
+
+    if(onlyMatchingScene && (onlyMatchingScene !== prevProps.onlyMatchingScene)) {
+      const view = this.scrollRef.current;
+      const viewContents = this.scrollContentsRef.current;
+      const halfViewWidth = 0.5 * view.clientWidth;
+      const halfViewHeight = 0.5 * view.clientHeight;
+      const newScrollX = ((onlyMatchingScene.x + (onlyMatchingScene.width * 8 * 0.5)) * zoomRatio) - halfViewWidth;
+      const newScrollY = ((onlyMatchingScene.y + (onlyMatchingScene.height * 8 * 0.5)) * zoomRatio) - halfViewHeight;
+      viewContents.style.transform = `scale(${zoomRatio})`;
+      view.scroll({
+        top: newScrollY,
+        left: newScrollX
+      });      
     }
   }
 
@@ -299,16 +315,19 @@ World.propTypes = {
   loaded: PropTypes.bool.isRequired,
   copySelectedEntity: PropTypes.func.isRequired,
   pasteClipboardEntity: PropTypes.func.isRequired,
-  scrollWorld: PropTypes.func.isRequired
+  scrollWorld: PropTypes.func.isRequired,
+  onlyMatchingScene: SceneShape
 };
 
 World.defaultProps = {
-  prefab: null
+  prefab: null,
+  onlyMatchingScene: null
 };
 
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
   const scenes = state.entities.present.result.scenes;
+  const scenesLookup = getScenesLookup(state);
   const {
     showConnections,
     worldScrollX: scrollX,
@@ -324,6 +343,18 @@ function mapStateToProps(state) {
 
   const focus = state.editor.worldFocus;
 
+  const searchTerm = state.editor.searchTerm;
+
+  const matchingScenes = searchTerm ? 
+    scenes.filter((scene, sceneIndex) => {
+      const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
+      return sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1;
+    })
+    : [];
+
+  const onlyMatchingScene = (matchingScenes.length === 1
+    && scenesLookup[matchingScenes[0]]) || null;
+
   return {
     scenes,
     scrollWidth,
@@ -336,7 +367,8 @@ function mapStateToProps(state) {
     showConnections: !!showConnections,
     sidebarWidth,
     loaded,
-    focus
+    focus,
+    onlyMatchingScene
   };
 }
 

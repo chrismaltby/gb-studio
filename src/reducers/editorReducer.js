@@ -27,6 +27,7 @@ import {
   ZOOM_IN,
   ZOOM_OUT,
   ZOOM_RESET,
+  EDIT_SEARCH_TERM,
   REMOVE_SCENE,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
@@ -420,6 +421,11 @@ export default function editor(state = initialState.editor, action) {
           zoomUI: 100
         }
       );
+    case EDIT_SEARCH_TERM:
+      return {
+        ...state,
+        searchTerm: action.searchTerm
+      };
     default:
       return state;
   }

@@ -26,6 +26,7 @@ export default {
     sceneDragY: 0,
     uiVersion: 0,
     variableVersion: 0,
+    searchTerm: "",
     hover: {
       sceneId: "",
       actorId: "",
