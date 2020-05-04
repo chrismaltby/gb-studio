@@ -7,16 +7,6 @@
 #include "DataManager.h"
 #include "GameTime.h"
 
-#define SCREEN_TILES_W 20  // 160 >> 3 = 20
-#define SCREEN_TILES_H 18  // 144 >> 3 = 18
-#define SCREEN_PAD_LEFT 1
-#define SCREEN_PAD_RIGHT 2
-#define SCREEN_PAD_TOP 1
-#define SCREEN_PAD_BOTTOM 2
-
-#define SCREEN_TILE_REFRES_W (SCREEN_TILES_W + SCREEN_PAD_LEFT + SCREEN_PAD_RIGHT)
-#define SCREEN_TILE_REFRES_H (SCREEN_TILES_H + SCREEN_PAD_TOP + SCREEN_PAD_BOTTOM)
-
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
 
@@ -34,80 +24,9 @@ INT16 pending_w_x, pending_w_y;
 UINT8 pending_w_i;
 Pos *scroll_target = 0;
 
-extern UINT8 scroll_top_movement_limit;
-extern UINT8 scroll_bottom_movement_limit;
-
 void ScrollUpdateRow(INT16 x, INT16 y);
 void RenderScreen();
-
-void MoveScroll(INT16 x, INT16 y) {
-  INT16 current_column, new_column, current_row, new_row;
-  UBYTE render = FALSE;
-
-  PUSH_BANK(image_bank);
-
-  if (U_LESS_THAN(x, 0u)) {
-    x = 0u;
-  }
-  if (U_LESS_THAN(y, 0u)) {
-    y = 0u;
-  }
-  if (x > (image_width - ((UINT16)SCREENWIDTH))) {
-    x = (image_width - (SCREENWIDTH));
-  }
-  if (y > (image_height - ((UINT16)SCREENHEIGHT))) {
-    y = (image_height - (SCREENHEIGHT));
-  }
-
-  current_column = scroll_x >> 3;
-  new_column = x >> 3;
-  current_row = scroll_y >> 3;
-  new_row = y >> 3;
-
-  // If column is +/- 1 just render next column
-  if (current_column == new_column - 1) {
-    // Render right column
-    ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT + SCREEN_TILE_REFRES_W - 1,
-                                new_row - SCREEN_PAD_TOP);
-  } else if (current_column == new_column + 1) {
-    // Render left column
-    ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
-  } else if (current_column != new_column) {
-    // If column differs by more than 1 render entire screen
-    render = TRUE;
-  }
-
-  // If row is +/- 1 just render next row
-  if (current_row == new_row - 1) {
-    // Render bottom row
-    ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT,
-                             new_row - SCREEN_PAD_TOP + SCREEN_TILE_REFRES_H - 1);
-  } else if (current_row == new_row + 1) {
-    // Render top row
-    ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
-  } else if (current_row != new_row) {
-    // If row differs by more than 1 render entire screen
-    render = TRUE;
-  }
-
-  scroll_x = x + scroll_offset_x;
-  scroll_y = y;
-
-  if (render) {
-    RenderScreen();
-  } else if (IS_FRAME_2) {
-    if (pending_w_i) {
-      // Render next pending chunk of row
-      ScrollUpdateRowR();
-    }
-    if (pending_h_i) {
-      // Render next pending chunk of column
-      ScrollUpdateColumnR();
-    }
-  }
-
-  POP_BANK;
-}
+void RefreshScroll_b();
 
 /* Update pending (up to 5) rows */
 void ScrollUpdateRowR() {
@@ -116,6 +35,8 @@ void ScrollUpdateRowR() {
   UBYTE y_offset;
 
   y_offset = MOD_32(pending_w_y);
+
+  PUSH_BANK(image_bank);
 
 #ifdef CGB
   if (_cpu == CGB_TYPE) {  // Color Row Load
@@ -142,6 +63,8 @@ void ScrollUpdateRowR() {
       pending_w_map++;
     }
   }
+
+  POP_BANK;
 }
 
 void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
@@ -178,6 +101,8 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 #ifdef CGB
   unsigned char *cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
+
+  PUSH_BANK(image_bank);
 
   LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
 
@@ -219,6 +144,8 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
       }
     }
   }
+
+  POP_BANK;
 }
 
 void ScrollUpdateColumnR() {
@@ -226,6 +153,8 @@ void ScrollUpdateColumnR() {
   UBYTE a = 0;
   UINT16 id = 0;
   UBYTE x_offset;
+
+  PUSH_BANK(image_bank);
 
   x_offset = MOD_32(pending_h_x);
 
@@ -255,6 +184,8 @@ void ScrollUpdateColumnR() {
       pending_h_map += image_tile_width;
     }
   }
+
+  POP_BANK;
 }
 
 void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
@@ -283,17 +214,9 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
 }
 
 void RefreshScroll() {
-  // UINT16 ny = scroll_y;
-
-  if (scroll_target) {
-    // if(U_LESS_THAN(scroll_bottom_movement_limit, scroll_target->y - scroll_y)) {
-    // 	ny = scroll_target->y - scroll_bottom_movement_limit;
-    // } else if(U_LESS_THAN(scroll_target->y - scroll_y, scroll_top_movement_limit)) {
-    // 	ny = scroll_target->y - scroll_top_movement_limit;
-    // }
-
-    MoveScroll(scroll_target->x - (SCREENWIDTH >> 1), scroll_target->y - (SCREENHEIGHT >> 1));
-  }
+  PUSH_BANK(SCROLL_BANK);
+  RefreshScroll_b();
+  POP_BANK;
 }
 
 void InitScroll() {
