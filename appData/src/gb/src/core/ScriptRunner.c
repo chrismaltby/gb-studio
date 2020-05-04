@@ -76,7 +76,7 @@ void ScriptRunnerUpdate() {
 
   if (script_update_fn) {
     LOG("Has script_update_fn\n");
-    PUSH_BANK(scriptrunner_bank);
+    PUSH_BANK(SCRIPT_RUNNER_BANK);
     // player.pos.x = 0;
     LOG("Has script_update_fn 1\n");
 
@@ -107,7 +107,7 @@ void ScriptRunnerUpdate() {
   if (!script_cmd_index) {
     if (script_stack_ptr) {
       // Return from Actor Invocation
-      PUSH_BANK(scriptrunner_bank);
+      PUSH_BANK(SCRIPT_RUNNER_BANK);
       Script_StackPop_b();
       POP_BANK;
       return;
@@ -119,7 +119,7 @@ void ScriptRunnerUpdate() {
     return;
   }
 
-  PUSH_BANK(scriptrunner_bank);
+  PUSH_BANK(SCRIPT_RUNNER_BANK);
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   POP_BANK;
 
@@ -133,7 +133,7 @@ void ScriptRunnerUpdate() {
     LOG("SCRIPT ARG-%u = %u\n", i, script_cmd_args[i]);
   }
 
-  PUSH_BANK(scriptrunner_bank);
+  PUSH_BANK(SCRIPT_RUNNER_BANK);
   initial_script_ptr = script_ptr;
   script_cmds[script_cmd_index].fn();
   if (initial_script_ptr == script_ptr) {
@@ -152,7 +152,7 @@ void ScriptRunnerUpdate() {
 }
 
 void ScriptTimerUpdate() {
-  PUSH_BANK(scriptrunner_bank);
+  PUSH_BANK(SCRIPT_RUNNER_BANK);
   ScriptTimerUpdate_b();
   POP_BANK;
 }

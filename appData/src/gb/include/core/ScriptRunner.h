@@ -7,6 +7,7 @@
 #include "Math.h"
 #include "game.h"
 
+#define SCRIPT_RUNNER_BANK 4
 #define MAX_SCENE_STATES 8
 
 typedef void (*SCRIPT_CMD_FN)();
@@ -23,7 +24,6 @@ typedef struct _SCENE_STATE {
   Vector2D player_dir;
 } SCENE_STATE;
 
-extern UINT8 scriptrunner_bank;
 extern UBYTE script_ptr_bank;
 extern UBYTE *script_start_ptr;
 extern UBYTE script_cmd_args[7];

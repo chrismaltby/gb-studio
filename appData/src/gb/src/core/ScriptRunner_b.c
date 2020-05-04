@@ -27,8 +27,6 @@
 #define BUBBLE_ANIMATION_FRAMES 15
 #define BUBBLE_TOTAL_FRAMES 60
 
-UINT8 scriptrunner_bank = 4;
-
 UBYTE *RAMPtr;
 UINT16 actor_move_dest_x = 0;
 UINT16 actor_move_dest_y = 0;
@@ -720,14 +718,14 @@ void Script_AwaitInput_b() {
  * ----------------------------
  * Play the music track with given index
  */
-void Script_MusicPlay_b() { MusicPlay(script_cmd_args[0], script_cmd_args[1], scriptrunner_bank); }
+void Script_MusicPlay_b() { MusicPlay(script_cmd_args[0], script_cmd_args[1], SCRIPT_RUNNER_BANK); }
 
 /*
  * Command: MusicStop
  * ----------------------------
  * Stop any playing music
  */
-void Script_MusicStop_b() { MusicStop(scriptrunner_bank); }
+void Script_MusicStop_b() { MusicStop(SCRIPT_RUNNER_BANK); }
 
 /*
  * Command: ResetVariables
