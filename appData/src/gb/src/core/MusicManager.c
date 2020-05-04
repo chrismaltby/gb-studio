@@ -18,8 +18,10 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank) {
 
     PUSH_BANK(return_bank);
 #ifndef __EMSCRIPTEN__
+    PUSH_BANK(DATA_PTRS_BANK);
     gbt_play(music_tracks[index], music_bank, 7);
     gbt_loop(loop);
+    POP_BANK;
 #endif
     POP_BANK;
   }

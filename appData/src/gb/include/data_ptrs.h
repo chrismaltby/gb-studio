@@ -45,7 +45,7 @@ extern const BANK_PTR collision_bank_ptrs[];
 extern const BANK_PTR string_bank_ptrs[];
 extern const BANK_PTR avatar_bank_ptrs[];
 extern const unsigned int bank_data_ptrs[];
-extern const unsigned char *music_tracks[];
+extern const unsigned int music_tracks[];
 extern const unsigned char music_banks[];
 extern unsigned char script_variables[16];
 extern const unsigned char *music_8fbb75bd0_Data[];

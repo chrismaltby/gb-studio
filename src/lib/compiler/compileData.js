@@ -588,13 +588,13 @@ const compile = async (
       })
       .join(`\n`)}\n` +
     `extern const unsigned int bank_data_ptrs[];\n` +
-    `extern const unsigned char * music_tracks[];\n` +
+    `extern const unsigned int music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
     `extern unsigned char script_variables[${
       precompiled.variables.length + 1
     }];\n${music
       .map((track, index) => {
-        return `extern const unsigned char * ${track.dataName}_Data[];`;
+        return `extern const unsigned int ${track.dataName}_Data[];`;
       })
       .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
@@ -616,9 +616,7 @@ const compile = async (
       })
       .join(`\n`) +
     `\n` +
-    `const unsigned char * music_tracks[] = {\n` +
-    (music.map((track) => `${track.dataName}_Data`).join(", ") || "0") +
-    `, 0` +
+    `const unsigned int music_tracks[] = {\n` +
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
