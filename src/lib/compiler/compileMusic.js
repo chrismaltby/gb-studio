@@ -64,6 +64,7 @@ const compileMusic = async ({
       // If current track fits into the current bank then store it
       bankedData[bankedData.length - 1].size += musicData.size;
       bankedData[bankedData.length - 1].tracks.push(musicData);
+      track.bank = bankedData[bankedData.length - 1].bank;
     } else {
       // Otherwise switch to new bank
       bankedData.push({
@@ -71,6 +72,7 @@ const compileMusic = async ({
         size: musicData.size,
         tracks: [musicData],
       });
+      track.bank = musicBanks[bankedData.length];
     }
   }
 
