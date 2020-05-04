@@ -80,6 +80,10 @@ const compileMusic = async ({
   for (let i = 0; i < bankedData.length; i++) {
     const musicBank = bankedData[i];
 
+    if (musicBank.size === 0) {
+      continue;
+    }
+
     // Build music bank file with combined data for all
     // tracks in this bank
     let fileData =
