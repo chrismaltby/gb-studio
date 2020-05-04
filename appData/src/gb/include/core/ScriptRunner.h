@@ -34,6 +34,7 @@ extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
 extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
+extern UBYTE script_complete;
 
 extern SCRIPT_CMD_FN last_fn;
 extern SCRIPT_UPDATE_FN script_update_fn;

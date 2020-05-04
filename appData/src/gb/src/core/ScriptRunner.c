@@ -28,6 +28,7 @@ UBYTE *script_start_stack[STACK_SIZE] = {0};
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
+UBYTE script_complete = FALSE;
 
 void ScriptStart(BankPtr *events_ptr) {
   UBYTE rnd, c, a0, a1, a2, i, a;
@@ -118,7 +119,7 @@ void ScriptRunnerUpdate() {
     LOG("SCRIPT FINISHED\n");
     script_ptr_bank = 0;
     script_ptr = 0;
-    ActorsUnstick();
+    script_complete = TRUE;
     return;
   }
 

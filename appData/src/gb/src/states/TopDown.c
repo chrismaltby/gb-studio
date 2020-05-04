@@ -24,6 +24,12 @@ void Update_TopDown() {
   tile_x = player.pos.x >> 3;
   tile_y = player.pos.y >> 3;
 
+  // Cleanup after script complete -------------------------------
+
+  if (script_complete) {
+    ActorsUnstick();
+  }
+
   // NPC Logic ---------------------------------------------------
 
   for (i = 1; i < actors_active_size; i++) {
