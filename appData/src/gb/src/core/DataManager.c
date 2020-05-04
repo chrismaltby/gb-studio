@@ -157,8 +157,7 @@ void LoadScene(UINT16 index) {
   SpritePoolReset();
 
   PUSH_BANK(bank);
-  LoadImage(*(data_ptr++));
-  data_ptr++;  // scene_image was UWORD
+  LoadImage((*(data_ptr++) * 256) + *(data_ptr++));
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = *(data_ptr++);
@@ -173,7 +172,7 @@ void LoadScene(UINT16 index) {
   // Load sprites
   k = 24;
   for (i = 0; i != sprites_len; i++) {
-    k += LoadSprite(*(data_ptr++), k);
+    k += LoadSprite((*(data_ptr++) * 256) + *(data_ptr++), k);
   }
 
   // Load actors

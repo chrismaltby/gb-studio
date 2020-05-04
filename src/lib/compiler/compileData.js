@@ -429,8 +429,8 @@ const compile = async (
 
     return banked.push(
       [].concat(
-        lo(scene.backgroundIndex),
         hi(scene.backgroundIndex),
+        lo(scene.backgroundIndex),
         scene.type ? parseInt(scene.type, 10) : 0,
         scene.sprites.length,
         scene.actors.length,
@@ -440,7 +440,7 @@ const compile = async (
         eventPtrs[sceneIndex].start.bank, // Event bank ptr
         lo(eventPtrs[sceneIndex].start.offset), // Event offset ptr
         hi(eventPtrs[sceneIndex].start.offset),
-        scene.sprites,
+        flatten(scene.sprites.map((spriteIndex)=> [hi(spriteIndex), lo(spriteIndex)])),
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
           sprites: precompiled.usedSprites,

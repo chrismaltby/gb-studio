@@ -249,7 +249,8 @@ class ScriptBuilder {
     const { sprites } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
     output.push(cmd(PLAYER_SET_SPRITE));
-    output.push(spriteIndex);
+    output.push(hi(spriteIndex));
+    output.push(lo(spriteIndex));
   };
 
   // Sprites

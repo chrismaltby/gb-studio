@@ -70,7 +70,7 @@ extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
 extern Vector2D map_next_dir;
-extern UBYTE map_next_sprite;
+extern UWORD map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
 

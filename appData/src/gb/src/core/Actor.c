@@ -20,7 +20,7 @@ UBYTE actor_move_settings;
 
 Pos map_next_pos;
 Vector2D map_next_dir;
-UBYTE map_next_sprite = 0;
+UWORD map_next_sprite = 0;
 
 void MoveActors() {
   PUSH_BANK(ACTOR_BANK);

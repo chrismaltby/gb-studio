@@ -66,7 +66,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorMoveTo_b, 2},         // 0x10
     {Script_ShowSprites_b, 0},         // 0x11
     {Script_HideSprites_b, 0},         // 0x12
-    {Script_PlayerSetSprite_b, 1},     // 0x13
+    {Script_PlayerSetSprite_b, 2},     // 0x13
     {Script_ActorShow_b, 0},           // 0x14
     {Script_ActorHide_b, 0},           // 0x15
     {Script_ActorSetEmote_b, 1},       // 0x16
@@ -811,10 +811,11 @@ void Script_TextMenu_b() {
 void Script_PlayerSetSprite_b() {
   BANK_PTR sprite_bank_ptr;
   UBYTE *sprite_ptr;
-  UBYTE sprite_index, sprite_frames, sprite_len;
+  UWORD sprite_index;
+  UBYTE sprite_frames, sprite_len;
 
   // Load Player Sprite
-  sprite_index = script_cmd_args[0];
+  sprite_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
   ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[sprite_index]);
   sprite_ptr = (BankDataPtr(sprite_bank_ptr.bank)) + sprite_bank_ptr.offset;
   sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
@@ -983,24 +984,32 @@ void Script_SaveData_b() {
   RAMPtr = (UBYTE *)RAM_START_PTR;
   RAMPtr[0] = TRUE;  // Flag to determine if data has been stored
 
-  // Save current scene
-  RAMPtr[1] = current_state;
+  RAMPtr[1] = current_state >> 8;
+  RAMPtr[2] = current_state & 0xFF;
 
   // Save player position
-  RAMPtr[2] = player.pos.x;
-  RAMPtr[3] = player.pos.y;
-  if (player.dir.x < 0) {
-    RAMPtr[4] = 2;
-  } else if (player.dir.x > 0) {
-    RAMPtr[4] = 4;
-  } else if (player.dir.y < 0) {
-    RAMPtr[4] = 8;
-  } else {
-    RAMPtr[4] = 1;
+  RAMPtr[3] = player.pos.x;
+  RAMPtr[4] = player.pos.y;
+  if (player.dir.x < 0)
+  {
+    RAMPtr[5] = 2;
+  }
+  else if (player.dir.x > 0)
+  {
+    RAMPtr[5] = 4;
+  }
+  else if (player.dir.y < 0)
+  {
+    RAMPtr[5] = 8;
+  }
+  else
+  {
+    RAMPtr[5] = 1;
   }
 
   // Save player sprite
-  RAMPtr[5] = map_next_sprite;
+  RAMPtr[6] = map_next_sprite >> 8;
+  RAMPtr[7] = map_next_sprite & 0xFF;
 
   // Save variable values
   RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
@@ -1026,7 +1035,7 @@ void Script_LoadData_b() {
   if (*RAMPtr == TRUE) {
     // Set scene index
     RAMPtr++;
-    scene_next_index = *RAMPtr;
+    scene_next_index = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
 
     // Position player
     RAMPtr++;
@@ -1041,7 +1050,7 @@ void Script_LoadData_b() {
 
     // Load player sprite
     RAMPtr++;
-    map_next_sprite = *RAMPtr;
+    map_next_sprite = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
 
     // Load variable values
     RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
