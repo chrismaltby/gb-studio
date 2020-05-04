@@ -23,12 +23,12 @@ void MoveActors_b() {
       if (actors[a].move_speed == 0) {
         // Half speed only move every other frame
         if (IS_FRAME_2) {
-          actors[a].pos.x += actors[a].vel.x;
-          actors[a].pos.y += actors[a].vel.y;
+          actors[a].pos.x += actors[a].dir.x;
+          actors[a].pos.y += actors[a].dir.y;
         }
       } else {
-        actors[a].pos.x += actors[a].vel.x * actors[a].move_speed;
-        actors[a].pos.y += actors[a].vel.y * actors[a].move_speed;
+        actors[a].pos.x += actors[a].dir.x * actors[a].move_speed;
+        actors[a].pos.y += actors[a].dir.y * actors[a].move_speed;
       }
     }
   }

@@ -16,7 +16,6 @@ typedef struct _TRIGGER {
   UBYTE y;
   UBYTE w;
   UBYTE h;
-  UWORD script_ptr;
   BankPtr events_ptr;
 } Trigger;
 

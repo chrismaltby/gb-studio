@@ -164,8 +164,6 @@ void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
 
   actors[i].dir.x = 0;
   actors[i].dir.y = 0;
-  actors[i].vel.x = 0;
-  actors[i].vel.y = 0;
   actors[i].dir.x = dir_x;
   actors[i].dir.y = dir_y;
   actors[i].rerender = TRUE;
@@ -175,16 +173,12 @@ void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
     if (dir_x == -1) {
       UBYTE tile_left = tile_x - 1;
       if (!TileAt(tile_left, tile_y) && !ActorAt1x2Tile(tile_left - 1, tile_y, FALSE)) {
-        actors[i].vel.x = dir_x;
-        actors[i].vel.y = dir_y;
         actors[i].moving = TRUE;
       }
       // Move right
     } else if (dir_x == 1) {
       UBYTE tile_right = tile_x + 2;
       if (!TileAt(tile_right, tile_y) && !ActorAt1x2Tile(tile_right, tile_y, FALSE)) {
-        actors[i].vel.x = dir_x;
-        actors[i].vel.y = dir_y;
         actors[i].moving = TRUE;
       }
     }
@@ -193,8 +187,6 @@ void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_up = tile_y - 1;
       if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
           !ActorAt3x1Tile(tile_x, tile_up, FALSE)) {
-        actors[i].vel.x = dir_x;
-        actors[i].vel.y = dir_y;
         actors[i].moving = TRUE;
       }
       // Move down
@@ -202,14 +194,10 @@ void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_down = tile_y + 1;
       if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
           !ActorAt3x1Tile(tile_x, tile_down + 1, FALSE)) {
-        actors[i].vel.x = dir_x;
-        actors[i].vel.y = dir_y;
         actors[i].moving = TRUE;
       }
     }
   } else {
-    actors[i].vel.x = dir_x;
-    actors[i].vel.y = dir_y;
     actors[i].moving = TRUE;
   }
 }

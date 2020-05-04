@@ -47,12 +47,10 @@ typedef struct {
   Pos pos;
   Vector2D vel;
   Vector2D dir;
-  UBYTE redraw;
   UBYTE frame;
   UBYTE frames_len;
   UBYTE animate;
   UBYTE enabled;
-  UBYTE flip;
   UBYTE frame_offset;
   UBYTE rerender;
   UBYTE moving;

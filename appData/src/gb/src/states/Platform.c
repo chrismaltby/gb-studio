@@ -49,8 +49,6 @@ void Start_Platform() {
   cam_pos.y = player.pos.y - PLATFORM_CAMERA_OFFSET_Y;
   pos_y_delayed = player.pos.y;
   platform_y = player.pos.y;
-  player.vel.x = 0;
-  player.vel.y = 0;
   player.moving = FALSE;
   pos_x = (player.pos.x + 4u) << 4;
   pos_y = player.pos.y << 4;

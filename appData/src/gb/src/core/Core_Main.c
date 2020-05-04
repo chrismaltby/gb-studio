@@ -133,7 +133,6 @@ int core_start() {
 
   // Initialise Player
   player.sprite = 0;
-  player.redraw = TRUE;
   player.moving = TRUE;
   player.frame = 0;
   player.frames_len = 2;
@@ -240,7 +239,6 @@ void game_loop() {
 
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
-
 
     LOG("ACTOR 0 pos [%u %u]\n", player.pos.x, player.pos.y);
 

@@ -148,31 +148,25 @@ UBYTE ScriptUpdate_MoveActor() {
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
     actors[script_actor].moving = FALSE;
-    actors[script_actor].vel.x = 0;
-    actors[script_actor].vel.y = 0;
+    actors[script_actor].dir.x = 0;
+    actors[script_actor].dir.y = 0;
     return TRUE;
   }
   actors[script_actor].moving = TRUE;
   // Actor not at horizontal destination
   if (actors[script_actor].pos.x != actor_move_dest_x) {
-    actors[script_actor].vel.y = 0;
     actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].vel.x = 1;
       actors[script_actor].dir.x = 1;
     } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].vel.x = -1;
       actors[script_actor].dir.x = -1;
     }
   } else {
     // Actor not at vertical destination
-    actors[script_actor].vel.x = 0;
     actors[script_actor].dir.x = 0;
     if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].vel.y = 1;
       actors[script_actor].dir.y = 1;
     } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].vel.y = -1;
       actors[script_actor].dir.y = -1;
     }
   }
@@ -1667,7 +1661,6 @@ void Script_RemoveInputScript_b() {
  */
 void Script_ActorSetFrame_b() {
   actors[script_actor].frame = 0;
-  actors[script_actor].flip = 0;
   actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
   actors[script_actor].rerender = TRUE;
 }
@@ -1679,7 +1672,6 @@ void Script_ActorSetFrame_b() {
  */
 void Script_ActorSetFrameToVal_b() {
   actors[script_actor].frame = 0;
-  actors[script_actor].flip = 0;
   actors[script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] %
                                actors[script_actor].frames_len;
   actors[script_actor].rerender = TRUE;
@@ -1691,9 +1683,7 @@ void Script_ActorSetFrameToVal_b() {
  * Set flip state of current actor
  */
 void Script_ActorSetFlip_b() {
-  actors[script_actor].flip = 0;
-  actors[script_actor].flip = script_cmd_args[0];
-  actors[script_actor].rerender = TRUE;
+  /* NOOP - This command has been removed */
 }
 
 /*
