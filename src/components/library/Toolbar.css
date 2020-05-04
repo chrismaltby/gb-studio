@@ -99,7 +99,8 @@
 .Toolbar__Button + .Toolbar__Button,
 .Toolbar__DropdownButton + .Toolbar__Button,
 .Toolbar__Button + .Toolbar__DropdownButton,
-.Toolbar__Button + .Toolbar__Search {
+.Toolbar__Button + .Toolbar__Search,
+.Toolbar__Search + .Toolbar__Button {
   margin-left: 5px;
 }
 

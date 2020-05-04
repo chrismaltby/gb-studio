@@ -145,20 +145,20 @@ class AppToolbar extends Component {
             <PlusIcon />
           </ToolbarButton>
         </ToolbarButton>
-        <ToolbarSearch
-          placeholder={l10n("TOOLBAR_SEARCH")}
-          defaultValue={searchTerm}
-          onChange={this.onChangeSearchTerm}
-          style={{
-            visibility: !showSearch && "hidden"
-          }}
-        />
         <ToolbarSpacer />
         <ToolbarTitle>
           {name || "Untitled"} {modified && ` (${l10n("TOOLBAR_MODIFIED")})`}
         </ToolbarTitle>
         <ToolbarSpacer />
-        <ToolbarFixedSpacer style={{ width: 138 }} />
+        <ToolbarSearch
+          placeholder={l10n("TOOLBAR_SEARCH")}
+          defaultValue={searchTerm}
+          onChange={this.onChangeSearchTerm}
+          style={{
+            visibility: !showSearch && "hidden",
+            width: 133
+          }}
+        />        
         <ToolbarButton
           title={l10n("TOOLBAR_OPEN_PROJECT_FOLDER")}
           onClick={this.openProjectFolder}
