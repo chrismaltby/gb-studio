@@ -988,8 +988,8 @@ void Script_SaveData_b() {
   RAMPtr[2] = current_state & 0xFF;
 
   // Save player position
-  RAMPtr[3] = player.pos.x;
-  RAMPtr[4] = player.pos.y;
+  RAMPtr[3] = (player.pos.x >> 3) & 0xFF;
+  RAMPtr[4] = (player.pos.y >> 3) & 0xFF;
   if (player.dir.x < 0)
   {
     RAMPtr[5] = 2;
@@ -1040,10 +1040,10 @@ void Script_LoadData_b() {
     // Position player
     RAMPtr++;
     map_next_pos.x = 0;  // @wtf-but-needed
-    map_next_pos.x = *RAMPtr;
+    map_next_pos.x = (WORD)(*RAMPtr) * 8;
     RAMPtr++;
     map_next_pos.y = 0;  // @wtf-but-needed
-    map_next_pos.y = *RAMPtr;
+    map_next_pos.y = (WORD)(*RAMPtr) * 8;
     RAMPtr++;
     map_next_dir.x = *RAMPtr == 2 ? -1 : *RAMPtr == 4 ? 1 : 0;
     map_next_dir.y = *RAMPtr == 8 ? -1 : *RAMPtr == 1 ? 1 : 0;
