@@ -109,6 +109,7 @@ class Scene extends Component {
       id,
       index,
       scene,
+      visible,
       image,
       event,
       width,
@@ -121,6 +122,10 @@ class Scene extends Component {
     } = this.props;
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
+
+    if(!visible) {
+      return null;
+    }
 
     return (
       <div
@@ -227,6 +232,7 @@ Scene.propTypes = {
   scene: SceneShape.isRequired,
   event: EventShape,
   id: PropTypes.string.isRequired,
+  visible: PropTypes.bool.isRequired,
   image: BackgroundShape,
   prefab: PropTypes.shape({}),
   width: PropTypes.number.isRequired,
@@ -269,9 +275,16 @@ function mapStateToProps(state, props) {
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.tools.selected;
+  
+  const { viewBounds } = props;
+  const visible = ((scene.x + (scene.width * 8)) > viewBounds.x)
+    && (scene.x < (viewBounds.x + viewBounds.width))
+    && ((scene.y + (scene.height * 8) + 50) > viewBounds.y)
+    && (scene.y < (viewBounds.y + viewBounds.height));
 
   return {
     scene,
+    visible,
     projectRoot: state.document && state.document.root,
     prefab: state.tools.prefab,
     event,

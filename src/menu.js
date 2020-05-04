@@ -248,13 +248,37 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
-          id: "showConnections",
           label: l10n("MENU_SHOW_CONNECTIONS"),
-          type: "checkbox",
-          checked: true,
-          click: item => {
-            notifyListeners("updateSetting", "showConnections", item.checked);
-          }
+          submenu: [
+            {
+              id: "showConnectionsAll",
+              label: l10n("MENU_SHOW_CONNECTIONS_ALL"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === "all",
+              click() {
+                notifyListeners("updateSetting", "showConnections", "all");
+              }
+            },
+            {
+              id: "showConnectionsSelected",
+              label: l10n("MENU_SHOW_CONNECTIONS_SELECTED"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === "selected" || settings.get("showConnections") === true,
+              click() {
+                notifyListeners("updateSetting", "showConnections", "selected");
+              }
+            },
+            { type: "separator" },
+            {
+              id: "showConnectionsNone",
+              label: l10n("MENU_SHOW_CONNECTIONS_NONE"),
+              type: "checkbox",
+              checked: settings.get("showConnections") === false,
+              click() {
+                notifyListeners("updateSetting", "showConnections", false);
+              }
+            }
+          ]
         },
         { type: "separator" },
         {

@@ -147,6 +147,7 @@ class Connections extends Component {
 
   render() {
     const {
+      showConnections,
       width,
       height,
       startScene,
@@ -158,7 +159,8 @@ class Connections extends Component {
       scenesLookup,
       actorsLookup,
       triggersLookup,
-      dragging
+      dragging,
+      selectedSceneId
     } = this.props;
 
     const connections = scenes.reduce((memo, scene) => {
@@ -167,22 +169,24 @@ class Connections extends Component {
         const entity = actorsLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          const destScene = scenesLookup[event.args.sceneId];
-          if (destScene) {
-            memo.push(
-              calculateTransitionCoords({
-                type: "actors",
-                event,
-                scene,
-                destScene,
-                entityIndex,
-                entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: entity.width || 2,
-                entityHeight: entity.height || 1
-              })
-            );
+          if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
+            const destScene = scenesLookup[event.args.sceneId];
+            if (destScene) {
+              memo.push(
+                calculateTransitionCoords({
+                  type: "actors",
+                  event,
+                  scene,
+                  destScene,
+                  entityIndex,
+                  entityId: entity.id,
+                  entityX: entity.x,
+                  entityY: entity.y,
+                  entityWidth: entity.width || 2,
+                  entityHeight: entity.height || 1
+                })
+              );
+            }
           }
         });
       });
@@ -192,22 +196,24 @@ class Connections extends Component {
         const entity = triggersLookup[entityId];
         const transitionEvents = scriptMapTransition(entity.script || []);
         transitionEvents.forEach(event => {
-          const destScene = scenesLookup[event.args.sceneId];
-          if (destScene) {
-            memo.push(
-              calculateTransitionCoords({
-                type: "triggers",
-                event,
-                scene,
-                destScene,
-                entityIndex,
-                entityId: entity.id,
-                entityX: entity.x,
-                entityY: entity.y,
-                entityWidth: entity.width || 2,
-                entityHeight: entity.height || 1
-              })
-            );
+          if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
+            const destScene = scenesLookup[event.args.sceneId];
+            if (destScene) {
+              memo.push(
+                calculateTransitionCoords({
+                  type: "triggers",
+                  event,
+                  scene,
+                  destScene,
+                  entityIndex,
+                  entityId: entity.id,
+                  entityX: entity.x,
+                  entityY: entity.y,
+                  entityWidth: entity.width || 2,
+                  entityHeight: entity.height || 1
+                })
+              );
+            }
           }
         });
       });
@@ -215,16 +221,18 @@ class Connections extends Component {
       // Scene Event Transitions
       const sceneTransitionEvents = scriptMapTransition(scene.script || []);
       sceneTransitionEvents.forEach(event => {
-        const destScene = scenesLookup[event.args.sceneId];
-        if (destScene) {
-          memo.push(
-            calculateTransitionCoords({
-              type: "scenes",
-              event,
-              scene,
-              destScene
-            })
-          );
+        if(showConnections === "all" || (scene.id === selectedSceneId || event.args.sceneId === selectedSceneId)) {
+          const destScene = scenesLookup[event.args.sceneId];
+          if (destScene) {
+            memo.push(
+              calculateTransitionCoords({
+                type: "scenes",
+                event,
+                scene,
+                destScene
+              })
+            );
+          }
         }
       });
       return memo;
@@ -290,11 +298,14 @@ Connections.propTypes = {
   dragPlayerStart: PropTypes.func.isRequired,
   dragPlayerStop: PropTypes.func.isRequired,
   dragDestinationStart: PropTypes.func.isRequired,
-  dragDestinationStop: PropTypes.func.isRequired
+  dragDestinationStop: PropTypes.func.isRequired,
+  selectedSceneId: PropTypes.string,
+  showConnections: PropTypes.oneOf(["all", "selected", true])
 };
 
 Connections.defaultProps = {
   startScene: null,
+  selectedSceneId: null,
   startX: 0,
   startY: 0,
   startDirection: "down"
@@ -306,14 +317,18 @@ function mapStateToProps(state) {
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
   const {
+    showConnections,
     startSceneId,
     startX,
     startY,
     startDirection
   } = state.entities.present.result.settings;
+  const { scene: selectedSceneId } = state.editor;
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;
+
   return {
+    showConnections,
     scenes,
     scenesLookup,
     actorsLookup,
@@ -322,7 +337,8 @@ function mapStateToProps(state) {
     startX,
     startY,
     startDirection,
-    dragging: !!dragging
+    dragging: !!dragging,
+    selectedSceneId
   };
 }
 

@@ -331,7 +331,9 @@ ipcMain.on("document-unmodified", () => {
 ipcMain.on("project-loaded", (event, project) => {
   const { showCollisions, showConnections } = project.settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
-  menu.ref().getMenuItemById("showConnections").checked = showConnections;
+  menu.ref().getMenuItemById("showConnectionsAll").checked = showConnections === "all";
+  menu.ref().getMenuItemById("showConnectionsSelected").checked = showConnections === "selected" || showConnections === true;
+  menu.ref().getMenuItemById("showConnectionsNone").checked = showConnections === false;
 });
 
 ipcMain.on("set-menu-plugins", (event, plugins) => {
@@ -499,6 +501,11 @@ menu.on("updateSetting", (setting: string, value: any) => {
     }
     switchLanguageDialog();
   } else {
+    if (setting === "showConnections") {
+      menu.ref().getMenuItemById("showConnectionsAll").checked = value === "all";
+      menu.ref().getMenuItemById("showConnectionsSelected").checked = value === "selected" || value === true;
+      menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
+    }
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }
 });
