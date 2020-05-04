@@ -48,8 +48,15 @@ const calculateTransitionCoords = ({
   const x2 = destX + (event.args.x || 0) * 8 + 5;
   const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
   const y2 = 20 + destY + (event.args.y || 0) * 8 + 5;
-  const qx = x1 < x2 ? ((x1 + x2) * 1) / 2.1 : ((x1 + x2) * 1) / 1.9;
-  const qy = y1 < y2 ? ((y1 + y2) * 1) / 2.1 : ((y1 + y2) * 1) / 1.9;
+
+  const xDiff = Math.abs(x1 - x2);
+  const yDiff = Math.abs(y1 - y2);
+
+  const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
+  const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
+
+  const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
+  const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
 
   return {
     x1,
