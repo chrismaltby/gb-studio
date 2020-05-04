@@ -12,7 +12,6 @@
 
 UBYTE script_await_next_frame;
 UBYTE script_actor;
-UBYTE *ptr_div_reg = (UBYTE *)0xFF04;
 UBYTE script_ptr_bank = 0;
 UBYTE *script_ptr = 0;
 UWORD script_ptr_x = 0;
@@ -29,6 +28,8 @@ UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
 UBYTE script_complete = FALSE;
+
+void ScriptTimerUpdate_b();
 
 void ScriptStart(BankPtr *events_ptr) {
   UBYTE rnd, c, a0, a1, a2, i, a;
@@ -55,13 +56,8 @@ void ScriptStart(BankPtr *events_ptr) {
   POP_BANK;
 
   LOG("SCRIPT VALUE c=%u 0=%u 1=%u 2=%u\n", c, a0, a1, a2);
-  UIDebugLog(9, 6, 0);
-  UIDebugLog(c, 0, 0);
-  UIDebugLog(a0, 1, 0);
-  UIDebugLog(a1, 2, 0);
-  UIDebugLog(a2, 3, 0);
 
-  rnd = *(ptr_div_reg);
+  rnd = *((UBYTE *)0xFF04);
   initrand(rnd);
 
   script_start_ptr = script_ptr;
@@ -156,27 +152,7 @@ void ScriptRunnerUpdate() {
 }
 
 void ScriptTimerUpdate() {
-  UBYTE i, a;
-
-  // Don't update timer while script is running
-  if (script_ptr != 0) {
-    return;
-  }
-
-  // Check if timer is enabled
-  if (timer_script_duration != 0) {
-    if (timer_script_time == 0) {
-      last_joy = last_joy & 0xF0;
-
-      ScriptStart(&timer_script_ptr);
-
-      // Reset the countdown timer
-      timer_script_time = timer_script_duration;
-    } else {
-      // Timer tick every 16 frames
-      if ((game_time & 0x0F) == 0x00) {
-        --timer_script_time;
-      }
-    }
-  }
+  PUSH_BANK(scriptrunner_bank);
+  ScriptTimerUpdate_b();
+  POP_BANK;
 }

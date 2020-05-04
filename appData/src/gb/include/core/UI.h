@@ -43,14 +43,11 @@ extern UWORD menu_flag;
 extern UBYTE menu_cancel_on_b;
 
 void UIInit();
-void UIDebugLog(UBYTE val, UBYTE x, UBYTE y);
-
 void UIUpdate();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame(UBYTE h);
 void UIShowText(UBYTE bank, UWORD bank_offset);
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset);
-void UISetTextBuffer(unsigned char *text);
 void UIDrawTextBuffer();
 void UISetPos(UBYTE x, UBYTE y);
 void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed);

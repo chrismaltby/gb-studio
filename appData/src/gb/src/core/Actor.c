@@ -12,6 +12,9 @@ void ActivateActor_b(UBYTE i);
 void ActivateActorColumn_b(UBYTE tx_a, UBYTE ty_a);
 void DeactivateActor_b(UBYTE i);
 void ActorsUnstick_b();
+void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y);
+UBYTE ActorInFrontOfActor_b(UBYTE i);
+void InitPlayer_b();
 
 Actor actors[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
@@ -157,89 +160,29 @@ UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
 }
 
 void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
-  UBYTE tile_x, tile_y;
-
-  tile_x = actors[i].pos.x >> 3;
-  tile_y = actors[i].pos.y >> 3;
-
-  actors[i].dir.x = 0;
-  actors[i].dir.y = 0;
-  actors[i].dir.x = dir_x;
-  actors[i].dir.y = dir_y;
-  actors[i].rerender = TRUE;
-
-  if (actors[i].collisionsEnabled) {
-    // Move left
-    if (dir_x == -1) {
-      UBYTE tile_left = tile_x - 1;
-      if (!TileAt(tile_left, tile_y) && !ActorAt1x2Tile(tile_left - 1, tile_y, FALSE)) {
-        actors[i].moving = TRUE;
-      }
-      // Move right
-    } else if (dir_x == 1) {
-      UBYTE tile_right = tile_x + 2;
-      if (!TileAt(tile_right, tile_y) && !ActorAt1x2Tile(tile_right, tile_y, FALSE)) {
-        actors[i].moving = TRUE;
-      }
-    }
-    // Move up
-    if (dir_y == -1) {
-      UBYTE tile_up = tile_y - 1;
-      if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
-          !ActorAt3x1Tile(tile_x, tile_up, FALSE)) {
-        actors[i].moving = TRUE;
-      }
-      // Move down
-    } else if (dir_y == 1) {
-      UBYTE tile_down = tile_y + 1;
-      if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
-          !ActorAt3x1Tile(tile_x, tile_down + 1, FALSE)) {
-        actors[i].moving = TRUE;
-      }
-    }
-  } else {
-    actors[i].moving = TRUE;
-  }
+  PUSH_BANK(ACTOR_BANK);
+  ActorSetMovement_b(i, dir_x, dir_y);
+  POP_BANK;
 }
 
 void ActorStopMovement(UBYTE i) { actors[i].moving = FALSE; }
 
 UBYTE ActorInFrontOfActor(UBYTE i) {
-  UBYTE tile_x, tile_y;
-  UBYTE hit_actor = 0;
-
-  tile_x = actors[i].pos.x >> 3;
-  tile_y = actors[i].pos.y >> 3;
-
-  if (actors[i].dir.y == -1) {
-    LOG("CHECK HIT UP\n");
-    LOG_VALUE("check_x", tile_x);
-    LOG_VALUE("check_y", tile_y - 1);
-    hit_actor = ActorAt3x1Tile(tile_x, tile_y - 1, TRUE);
-  } else if (actors[i].dir.y == 1) {
-    LOG("CHECK HIT DOWN\n");
-    LOG_VALUE("check_x", tile_x);
-    LOG_VALUE("check_y", tile_y + 2);
-    hit_actor = ActorAt3x1Tile(tile_x, tile_y + 2, TRUE);
-  } else {
-    if (actors[i].dir.x == -1) {
-      LOG("CHECK HIT LEFT\n");
-      LOG_VALUE("check_x", tile_x - 1);
-      LOG_VALUE("check_y", tile_y);
-      hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
-    } else if (actors[i].dir.x == 1) {
-      LOG("CHECK HIT RIGHT\n");
-      LOG_VALUE("check_x", tile_x + 2);
-      LOG_VALUE("check_y", tile_y);
-      hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, TRUE);
-    }
-  }
-
+  UBYTE hit_actor = FALSE;
+  PUSH_BANK(ACTOR_BANK);
+  hit_actor = ActorInFrontOfActor_b(i);
+  POP_BANK;
   return hit_actor;
 }
 
 void ActorsUnstick() {
   PUSH_BANK(ACTOR_BANK);
   ActorsUnstick_b();
+  POP_BANK;
+}
+
+void InitPlayer() {
+  PUSH_BANK(ACTOR_BANK);
+  InitPlayer_b();
   POP_BANK;
 }

@@ -9,6 +9,8 @@
 #include "GameTime.h"
 #include "UI.h"
 #include "ScriptRunner.h"
+#include "Collision.h"
+#include "DataManager.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
@@ -257,4 +259,104 @@ void ActorsUnstick_b() {
       actors[a].moving = TRUE;
     }
   }
+}
+
+void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
+  UBYTE tile_x, tile_y;
+
+  tile_x = actors[i].pos.x >> 3;
+  tile_y = actors[i].pos.y >> 3;
+
+  actors[i].dir.x = 0;
+  actors[i].dir.y = 0;
+  actors[i].dir.x = dir_x;
+  actors[i].dir.y = dir_y;
+  actors[i].rerender = TRUE;
+
+  if (actors[i].collisionsEnabled) {
+    // Move left
+    if (dir_x == -1) {
+      UBYTE tile_left = tile_x - 1;
+      if (!TileAt(tile_left, tile_y) && !ActorAt1x2Tile(tile_left - 1, tile_y, FALSE)) {
+        actors[i].moving = TRUE;
+      }
+      // Move right
+    } else if (dir_x == 1) {
+      UBYTE tile_right = tile_x + 2;
+      if (!TileAt(tile_right, tile_y) && !ActorAt1x2Tile(tile_right, tile_y, FALSE)) {
+        actors[i].moving = TRUE;
+      }
+    }
+    // Move up
+    if (dir_y == -1) {
+      UBYTE tile_up = tile_y - 1;
+      if (!TileAt(tile_x, tile_up) && !TileAt(tile_x + 1, tile_up) &&
+          !ActorAt3x1Tile(tile_x, tile_up, FALSE)) {
+        actors[i].moving = TRUE;
+      }
+      // Move down
+    } else if (dir_y == 1) {
+      UBYTE tile_down = tile_y + 1;
+      if (!TileAt(tile_x, tile_down) && !TileAt(tile_x + 1, tile_down) &&
+          !ActorAt3x1Tile(tile_x, tile_down + 1, FALSE)) {
+        actors[i].moving = TRUE;
+      }
+    }
+  } else {
+    actors[i].moving = TRUE;
+  }
+}
+
+UBYTE ActorInFrontOfActor_b(UBYTE i) {
+  UBYTE tile_x, tile_y;
+  UBYTE hit_actor = 0;
+
+  tile_x = actors[i].pos.x >> 3;
+  tile_y = actors[i].pos.y >> 3;
+
+  if (actors[i].dir.y == -1) {
+    LOG("CHECK HIT UP\n");
+    LOG_VALUE("check_x", tile_x);
+    LOG_VALUE("check_y", tile_y - 1);
+    hit_actor = ActorAt3x1Tile(tile_x, tile_y - 1, TRUE);
+  } else if (actors[i].dir.y == 1) {
+    LOG("CHECK HIT DOWN\n");
+    LOG_VALUE("check_x", tile_x);
+    LOG_VALUE("check_y", tile_y + 2);
+    hit_actor = ActorAt3x1Tile(tile_x, tile_y + 2, TRUE);
+  } else {
+    if (actors[i].dir.x == -1) {
+      LOG("CHECK HIT LEFT\n");
+      LOG_VALUE("check_x", tile_x - 1);
+      LOG_VALUE("check_y", tile_y);
+      hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
+    } else if (actors[i].dir.x == 1) {
+      LOG("CHECK HIT RIGHT\n");
+      LOG_VALUE("check_x", tile_x + 2);
+      LOG_VALUE("check_y", tile_y);
+      hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, TRUE);
+    }
+  }
+
+  return hit_actor;
+}
+
+void InitPlayer_b() {
+  UBYTE sprite_frames;
+
+  sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
+  player.enabled = TRUE;
+  player.moving = FALSE;
+  player.collisionsEnabled = TRUE;
+  player.pos.x = map_next_pos.x;
+  player.pos.y = map_next_pos.y;
+  player.dir.x = map_next_dir.x;
+  player.dir.y = map_next_dir.y;
+  player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
+                                          : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  player.sprite_index = SpritePoolNext();
+  player.rerender = TRUE;
+  player.moving = FALSE;
+  player.animate = FALSE;
 }

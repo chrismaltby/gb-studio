@@ -6,6 +6,8 @@
 
 #include "Math.h"
 
+#define CAMERA_BANK 1
+
 #define SCREEN_WIDTH 160
 #define SCREEN_HEIGHT 144
 #define SCREEN_WIDTH_HALF 80

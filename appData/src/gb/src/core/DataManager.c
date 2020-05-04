@@ -143,7 +143,6 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
 void LoadScene(UINT16 index) {
   UBYTE bank, i, k;
   UBYTE *data_ptr;
-  UBYTE sprite_frames;
 
   PUSH_BANK(DATA_PTRS_BANK);
   bank = scene_bank_ptrs[index].bank;
@@ -216,23 +215,8 @@ void LoadScene(UINT16 index) {
     triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
   }
 
-  // Initialise player
-  sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
-  player.enabled = TRUE;
-  player.moving = FALSE;
-  player.collisionsEnabled = TRUE;
-  player.pos.x = map_next_pos.x;
-  player.pos.y = map_next_pos.y;
-  player.dir.x = map_next_dir.x;
-  player.dir.y = map_next_dir.y;
-  player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
-                                          : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
-  player.sprite_index = SpritePoolNext();
-  player.rerender = TRUE;
-  player.moving = FALSE;
-  player.animate = FALSE;
-
+  // Initialise scene
+  InitPlayer();
   InitScroll();
 
   POP_BANK;

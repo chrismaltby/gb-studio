@@ -6,6 +6,7 @@
 
 #include "Math.h"
 
+#define SPRITE_BANK 1
 #define MAX_SPRITES 20
 
 typedef struct _SPRITE {

@@ -42,8 +42,8 @@ typedef enum {
 typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;
 
 typedef struct {
-  UBYTE sprite;
-  UBYTE sprite_index;
+  UBYTE sprite;        // Offset into scene sprites image data
+  UBYTE sprite_index;  // Sprite pool index
   Pos pos;
   Vector2D vel;
   Vector2D dir;
@@ -152,5 +152,7 @@ void ActivateActor(UBYTE i);
 void DeactivateActor(UBYTE i);
 
 void ActorsUnstick();
+
+void InitPlayer();
 
 #endif

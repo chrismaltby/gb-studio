@@ -72,6 +72,8 @@ const unsigned char ui_white[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+const unsigned char ui_cursor_tiles[1] = {0xCB};
+const unsigned char ui_bg_tiles[1] = {0xC4};
 
 void UIInit_b() {
   UBYTE *ptr;
@@ -395,5 +397,29 @@ void UIOnInteract_b() {
       script_variables[menu_flag] = 0;
       UICloseDialogue_b();
     }
+  }
+}
+
+void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
+                  UBYTE cancel_config) {
+  menu_index = 0;
+  menu_flag = flag_index;
+  menu_enabled = TRUE;
+  menu_cancel_on_last_option = cancel_config & MENU_CANCEL_ON_LAST_OPTION;
+  menu_cancel_on_b = cancel_config & MENU_CANCEL_ON_B_PRESSED;
+  menu_layout = layout;
+  tmp_text_draw_speed = text_draw_speed;
+  text_draw_speed = 0;
+  UIShowText(bank, bank_offset);
+  hide_sprites_under_win = layout == 0;
+  menu_num_options = tmp_text_lines[0];
+  UIDrawMenuCursor();
+}
+
+void UIDrawMenuCursor_b() {
+  UBYTE i;
+  for (i = 0; i < menu_num_options; i++) {
+    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
+                  menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
   }
 }

@@ -15,6 +15,9 @@ void UIDrawTextBufferChar_b();
 void UISetColor_b(UWORD image_index);
 void UIShowText_b();
 void UIOnInteract_b();
+void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
+                  UBYTE cancel_config);
+void UIDrawMenuCursor_b();
 
 UBYTE win_pos_x;
 UBYTE win_pos_y;
@@ -46,9 +49,6 @@ UBYTE menu_cancel_on_last_option = TRUE;
 UBYTE menu_cancel_on_b = TRUE;
 UBYTE menu_layout = FALSE;
 
-const unsigned char ui_cursor_tiles[1] = {0xCB};
-const unsigned char ui_bg_tiles[1] = {0xC4};
-
 unsigned char text_lines[80] = "";
 unsigned char tmp_text_lines[80] = "";
 
@@ -56,12 +56,6 @@ void UIInit() {
   PUSH_BANK(UI_BANK);
   UIInit_b();
   POP_BANK;
-}
-
-void UIDebugLog(UBYTE val, UBYTE x, UBYTE y) {
-  UBYTE tile1;
-  tile1 = val + 203;
-  set_win_tiles(x, y, 1, 1, &tile1);
 }
 
 void UIUpdate() {
@@ -129,34 +123,17 @@ void UIShowAvatar(UBYTE avatar_index) {
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
-  UIShowMenu(flag_index, bank, bank_offset, 0,
-             MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
+  PUSH_BANK(UI_BANK);
+  UIShowMenu_b(flag_index, bank, bank_offset, 0,
+               MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
+  POP_BANK;
 }
 
 void UIShowMenu(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
                 UBYTE cancel_config) {
-  menu_index = 0;
-  menu_flag = flag_index;
-  menu_enabled = TRUE;
-  menu_cancel_on_last_option = cancel_config & MENU_CANCEL_ON_LAST_OPTION;
-  menu_cancel_on_b = cancel_config & MENU_CANCEL_ON_B_PRESSED;
-  menu_layout = layout;
-  tmp_text_draw_speed = text_draw_speed;
-  text_draw_speed = 0;
-  UIShowText(bank, bank_offset);
-  hide_sprites_under_win = layout == 0;
-  menu_num_options = tmp_text_lines[0];
-  UIDrawMenuCursor();
-}
-
-void UISetTextBuffer(unsigned char *text) {
-  UIDrawFrame(0, 2, 20, 4);
-  text_drawn = FALSE;
-  strcpy(text_lines, text);
-  text_x = 0;
-  text_y = 0;
-  text_count = 0;
-  text_tile_count = 0;
+  PUSH_BANK(UI_BANK);
+  UIShowMenu_b(flag_index, bank, bank_offset, layout, cancel_config);
+  POP_BANK;
 }
 
 void UIDrawTextBuffer() {
@@ -188,11 +165,9 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
 UBYTE UIIsClosed() { return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y; }
 
 void UIDrawMenuCursor() {
-  UBYTE i;
-  for (i = 0; i < menu_num_options; i++) {
-    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
-                  menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
-  }
+  PUSH_BANK(UI_BANK);
+  UIDrawMenuCursor_b();
+  POP_BANK;
 }
 
 void UIOnInteract() {

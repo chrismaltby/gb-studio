@@ -143,6 +143,32 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetCollisions_b, 1}   // 0x5D
 };
 
+void ScriptTimerUpdate_b() {
+  UBYTE i, a;
+
+  // Don't update timer while script is running
+  if (script_ptr != 0) {
+    return;
+  }
+
+  // Check if timer is enabled
+  if (timer_script_duration != 0) {
+    if (timer_script_time == 0) {
+      last_joy = last_joy & 0xF0;
+
+      ScriptStart(&timer_script_ptr);
+
+      // Reset the countdown timer
+      timer_script_time = timer_script_duration;
+    } else {
+      // Timer tick every 16 frames
+      if ((game_time & 0x0F) == 0x00) {
+        --timer_script_time;
+      }
+    }
+  }
+}
+
 UBYTE ScriptUpdate_MoveActor() {
   // Actor reached destination
   if (actors[script_actor].pos.x == actor_move_dest_x &&
@@ -984,20 +1010,13 @@ void Script_SaveData_b() {
   // Save player position
   RAMPtr[3] = (player.pos.x >> 3) & 0xFF;
   RAMPtr[4] = (player.pos.y >> 3) & 0xFF;
-  if (player.dir.x < 0)
-  {
+  if (player.dir.x < 0) {
     RAMPtr[5] = 2;
-  }
-  else if (player.dir.x > 0)
-  {
+  } else if (player.dir.x > 0) {
     RAMPtr[5] = 4;
-  }
-  else if (player.dir.y < 0)
-  {
+  } else if (player.dir.y < 0) {
     RAMPtr[5] = 8;
-  }
-  else
-  {
+  } else {
     RAMPtr[5] = 1;
   }
 
@@ -1682,8 +1701,7 @@ void Script_ActorSetFrameToVal_b() {
  * ----------------------------
  * Set flip state of current actor
  */
-void Script_ActorSetFlip_b() {
-  /* NOOP - This command has been removed */
+void Script_ActorSetFlip_b() { /* NOOP - This command has been removed */
 }
 
 /*
