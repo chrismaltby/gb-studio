@@ -163,14 +163,19 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
 void UIDrawDialogueFrame_b(UBYTE h) { UIDrawFrame_b(0, 0, 19, h); }
 
 void UISetColor_b(UBYTE color) {
-  UBYTE i;
+  UINT16 id = 0;
+  UBYTE x, y;
+
+  id = 0x9C00;  // Window VRAM
+
   // Not sure why need to set_bkg_data again but this doesn't
   // work in rom without reseting here
   set_bkg_data(0xC9, 1, ui_white);
   set_bkg_data(0xCA, 1, ui_black);
-  for (i = 0; i != 18; i++) {
-    WaitForMode0Or1();
-    set_win_tiles(0, i, 20, 1, ui_colors[color]);
+  for (y = 0; y != 18; y++) {
+    for (x = 0; x != 20; x++) {
+      SetTile(id + x + (y * 32), *ui_colors[color]);
+    }
   }
 }
 
