@@ -27,6 +27,7 @@ class World extends Component {
     this.worldDragging = false;
     this.scrollRef = React.createRef();
     this.scrollContentsRef = React.createRef();
+    this.dragDistance = { x:0, y:0 };
   }
 
   componentDidMount() {
@@ -141,7 +142,16 @@ class World extends Component {
     }
   };
 
-  onMouseUp = e => {
+  onMouseUp = (e) => {
+    const { selectWorld } = this.props;
+    if (this.worldDragging) {
+      if (
+        Math.abs(this.dragDistance.x) < 20 &&
+        Math.abs(this.dragDistance.y) < 20
+      ) {
+        selectWorld();
+      }
+    }
     this.worldDragging = false;
   };
 
@@ -150,6 +160,8 @@ class World extends Component {
     if (this.worldDragging) {
       e.currentTarget.scrollLeft -= e.movementX;
       e.currentTarget.scrollTop -= e.movementY;
+      this.dragDistance.x -= e.movementX;
+      this.dragDistance.y -= e.movementY;      
     } else {
       const boundingRect = e.currentTarget.getBoundingClientRect();
       const x = e.pageX + e.currentTarget.scrollLeft - 0;
@@ -183,6 +195,8 @@ class World extends Component {
 
   startWorldDrag = e => {
     this.worldDragging = true;
+    this.dragDistance.x = 0;
+    this.dragDistance.y = 0;
   };
 
   startWorldDragIfAltOrMiddleClick = e => {
@@ -231,7 +245,6 @@ class World extends Component {
       showConnections,
       zoomRatio,
       sidebarWidth,
-      selectWorld,
       loaded
     } = this.props;
     const { hover, hoverX, hoverY, windowWidth, windowHeight } = this.state;
@@ -260,7 +273,6 @@ class World extends Component {
           <div
             className="World__Grid"
             style={{ width: scrollWidth, height: scrollHeight }}
-            onClick={selectWorld}
             onMouseDown={this.startWorldDrag}
           />
 
