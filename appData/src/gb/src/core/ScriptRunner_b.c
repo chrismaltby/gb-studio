@@ -142,8 +142,6 @@ const SCRIPT_CMD script_cmds[] = {
 };
 
 void ScriptTimerUpdate_b() {
-  UBYTE i, a;
-
   // Don't update timer while script is running
   if (script_ptr != 0) {
     return;

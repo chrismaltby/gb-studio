@@ -36,5 +36,6 @@ void ScrollUpdateColumnR();
 
 void RefreshScroll();
 void InitScroll();
+void RenderScreen();
 
 #endif

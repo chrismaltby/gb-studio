@@ -140,7 +140,6 @@ UBYTE ActorOverlapsActorTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
 }
 
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
-  /*
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0; i--) {
@@ -155,7 +154,6 @@ UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
       return a;
     }
   }
-  */
   return 0;
 }
 

@@ -25,7 +25,6 @@ UINT8 pending_w_i;
 Pos *scroll_target = 0;
 
 void ScrollUpdateRow(INT16 x, INT16 y);
-void RenderScreen();
 void RefreshScroll_b();
 
 /* Update pending (up to 5) rows */

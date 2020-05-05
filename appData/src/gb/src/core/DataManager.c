@@ -89,7 +89,9 @@ void LoadImage(UINT16 index) {
 }
 
 void LoadImageAttr(UINT16 index) {
+#ifdef CGB
   UBYTE i;
+#endif
 
   PUSH_BANK(DATA_PTRS_BANK);
   image_attr_bank = background_attr_bank_ptrs[index].bank;
