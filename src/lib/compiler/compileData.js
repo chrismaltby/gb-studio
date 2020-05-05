@@ -236,8 +236,6 @@ const compile = async (
     ],
   ];
 
-  console.log({ usedPalettes });
-
   // Add palette data
   const palettePtrs = usedPalettes.map((palette) => {
     const paletteData = palette.reduce((memo, colors) => {
@@ -251,18 +249,9 @@ const compile = async (
     return banked.push(paletteData);
   });
 
-  console.log(palettePtrs);
-
   // Add background map data
   const backgroundPtrs = precompiled.usedBackgrounds.map((background) => {
     // banked.nextBank(); // @todo remove this
-
-    console.log("BACKGROUND--", {
-      w: Math.floor(background.width),
-      h: Math.floor(background.height),
-      data: background.data.length,
-    });
-
     return banked.push(
       [].concat(
         background.tilesetIndex,
@@ -353,17 +342,8 @@ const compile = async (
   // Add background map data
   const backgroundAttrPtrs = precompiled.usedBackgrounds.map((background) => {
     // banked.nextBank(); // @todo remove this
-
-    console.log("BACKGROUND--", {
-      w: Math.floor(background.width),
-      h: Math.floor(background.height),
-      data: background.data.length,
-    });
-
     return banked.push([].concat(background.data.map((data) => 0x7)));
   });
-
-  // console.log({backgroundPtrs})
 
   // Add UI data
   const fontImagePtr = banked.push(precompiled.fontTiles);
@@ -409,24 +389,6 @@ const compile = async (
       .concat(scene.collisions, Array(collisionsLength).fill(0))
       .slice(0, collisionsLength);
 
-    console.log("SCENES", [
-      hi(scene.backgroundIndex),
-      lo(scene.backgroundIndex),
-      scene.sprites.length,
-    ]);
-
-    console.log({
-      spriteLen: scene.sprites.length,
-      actorsLen: scene.actors.length,
-      triggersLen: scene.triggers.length,
-      collisionsLength: collisionsLength,
-      palettesLength: 0,
-      sprite: scene.sprites,
-      hi: hi(scene.backgroundIndex),
-      lo: lo(scene.backgroundIndex),
-      type: scene.type ? parseInt(scene.type, 10) : 0,
-    });
-
     return banked.push(
       [].concat(
         hi(scene.backgroundIndex),
@@ -440,7 +402,9 @@ const compile = async (
         eventPtrs[sceneIndex].start.bank, // Event bank ptr
         lo(eventPtrs[sceneIndex].start.offset), // Event offset ptr
         hi(eventPtrs[sceneIndex].start.offset),
-        flatten(scene.sprites.map((spriteIndex)=> [hi(spriteIndex), lo(spriteIndex)])),
+        flatten(
+          scene.sprites.map((spriteIndex) => [hi(spriteIndex), lo(spriteIndex)])
+        ),
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
           sprites: precompiled.usedSprites,
@@ -844,7 +808,6 @@ export const precompileBackgrounds = async (
         `Background '${background.filename}' has invalid dimensions and may not appear correctly. Width and height must be multiples of 8px and no larger than 256px.`
       );
     }
-    console.log("BG DATA Len", backgroundData.tilemaps[background.id].length);
     return {
       ...background,
       tilesetIndex:
