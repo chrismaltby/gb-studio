@@ -84,7 +84,7 @@ void UpdateActors_b() {
         // Increase frame based on facing direction
         if (IS_NEG(actor->dir.y)) {
           fo = 1 + (actor->sprite_type == SPRITE_ACTOR_ANIMATED);
-        } else if (actor->dir.x != 0) {
+        } else if (actor->dir.y == 0 && actor->dir.x != 0) {
           fo = 2 + MUL_2(actor->sprite_type == SPRITE_ACTOR_ANIMATED);
         }
         // Facing left so flip sprite
@@ -272,6 +272,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
   actors[i].dir.x = dir_x;
   actors[i].dir.y = dir_y;
   actors[i].rerender = TRUE;
+  actors[i].moving = FALSE;
 
   if (actors[i].collisionsEnabled) {
     // Move left
@@ -395,6 +396,8 @@ void InitPlayer_b() {
   player.collisionsEnabled = TRUE;
   player.pos.x = map_next_pos.x;
   player.pos.y = map_next_pos.y;
+  player.start_pos.x = player.pos.x;
+  player.start_pos.y = player.pos.y;
   player.dir.x = map_next_dir.x;
   player.dir.y = map_next_dir.y;
   player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED

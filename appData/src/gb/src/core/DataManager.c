@@ -190,6 +190,8 @@ void LoadScene(UINT16 index) {
     actors[i].frame = actors[i].animate >> 1;
     actors[i].pos.x = *(data_ptr++) * 8;
     actors[i].pos.y = *(data_ptr++) * 8;
+    actors[i].start_pos.x = actors[i].pos.x;
+    actors[i].start_pos.y = actors[i].pos.y;
 
     j = *(data_ptr++);
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;

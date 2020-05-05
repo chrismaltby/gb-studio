@@ -33,5 +33,6 @@ extern UBYTE sprites_len;
 extern UBYTE collisions_len;
 extern UBYTE palettes_len;
 extern BankPtr scene_events_start_ptr;
+extern UBYTE actors_len;
 
 #endif

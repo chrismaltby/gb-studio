@@ -53,6 +53,7 @@ typedef struct {
   UBYTE sprite;        // Offset into scene sprites image data
   UBYTE sprite_index;  // Sprite pool index
   Pos pos;
+  Pos start_pos;
   Vector2D vel;
   Vector2D dir;
   UBYTE frame;

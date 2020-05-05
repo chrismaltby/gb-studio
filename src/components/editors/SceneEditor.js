@@ -175,6 +175,8 @@ class SceneEditor extends Component {
                 >
                   <option value="0">Top Down 2D</option>
                   <option value="1">Platformer</option>
+                  <option value="2">Adventure</option>
+                  <option value="3">Shoot Em' Up</option>
                 </select>
               </label>
             </FormField>

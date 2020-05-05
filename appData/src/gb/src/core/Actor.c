@@ -172,7 +172,7 @@ UBYTE ActorOverlapsActorTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0xFF; i--) {
+  for (i = actors_active_size - 1; i != 0; i--) {
     UBYTE a = actors_active[i];
 
     if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
