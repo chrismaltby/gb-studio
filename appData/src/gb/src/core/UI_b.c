@@ -140,7 +140,7 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   UBYTE i, j;
   UBYTE k = 1;
 
-  id = 0x9C00;  // Window VRAM
+  id = 0x9C00 + x + (y * 32);  // Window VRAM + X/Y Offset
 
   SetTile(id, *ui_frame_tl_tiles);                                // Frame top left
   SetTile(id + ((height + 1) * 32), *ui_frame_bl_tiles);          // Frame bottom left
