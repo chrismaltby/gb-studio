@@ -8,7 +8,6 @@
 #include "Camera.h"
 #include "Collision.h"
 #include "Core_Main.h"
-#include "Data.h"
 #include "DataManager.h"
 #include "GameTime.h"
 #include "Input.h"
