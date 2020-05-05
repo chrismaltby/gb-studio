@@ -14,12 +14,13 @@ import MusicPage from "../../containers/pages/MusicPage";
 import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
 import { ErrorShape } from "../../reducers/stateShape";
+import LoadingPane from "../library/LoadingPane";
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      blur: false
+      blur: false,
     };
   }
 
@@ -30,43 +31,47 @@ class App extends Component {
   }
 
   onBlur = () => {
-    if(!this.state.blur) {
+    if (!this.state.blur) {
       this.setState({ blur: true });
     }
   };
 
   onFocus = () => {
-    if(this.state.blur) {
+    if (this.state.blur) {
       this.setState({ blur: false });
     }
   };
 
   render() {
-    const { section, error } = this.props;
+    const { section, loaded, error } = this.props;
     const { blur } = this.state;
 
-    if(error.visible) {
-      return <GlobalError error={error} />
+    if (error.visible) {
+      return <GlobalError error={error} />;
     }
 
     return (
       <div
         className={cx("App", {
           "App--Blur": blur,
-          "App--RTL": l10n("RTL") === true
+          "App--RTL": l10n("RTL") === true,
         })}
       >
         <AppToolbar />
-        <div className="App__Content">
-          {section === "world" && <WorldPage />}
-          {section === "backgrounds" && <BackgroundsPage />}
-          {section === "sprites" && <SpritesPage />}
-          {section === "ui" && <UIPage />}
-          {section === "music" && <MusicPage />}
-          {section === "dialogue" && <DialoguePage />}
-          {section === "build" && <BuildPage />}
-          {section === "settings" && <SettingsPage />}
-        </div>
+        {!loaded ? (
+          <LoadingPane />
+        ) : (
+          <div className="App__Content">
+            {section === "world" && <WorldPage />}
+            {section === "backgrounds" && <BackgroundsPage />}
+            {section === "sprites" && <SpritesPage />}
+            {section === "ui" && <UIPage />}
+            {section === "music" && <MusicPage />}
+            {section === "dialogue" && <DialoguePage />}
+            {section === "build" && <BuildPage />}
+            {section === "settings" && <SettingsPage />}
+          </div>
+        )}
       </div>
     );
   }
@@ -81,15 +86,17 @@ App.propTypes = {
     "music",
     "dialogue",
     "build",
-    "settings"
+    "settings",
   ]).isRequired,
-  error: ErrorShape.isRequired
+  loaded: PropTypes.bool.isRequired,
+  error: ErrorShape.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     section: state.navigation.section,
-    error: state.error
+    error: state.error,
+    loaded: state.document.loaded,
   };
 }
 

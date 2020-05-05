@@ -1,0 +1,25 @@
+.LoadingPane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.LoadingPane__Content {
+  opacity: 0;
+  animation: LoadingPane__Content__FadeIn 1s normal forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes LoadingPane__Content__FadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

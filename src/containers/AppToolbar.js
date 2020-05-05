@@ -96,8 +96,13 @@ class AppToolbar extends Component {
       showSearch,
       running,
       modified,
-      searchTerm
+      searchTerm,
+      loaded,
     } = this.props;
+
+    if (!loaded) {
+      return <Toolbar />;
+    }
 
     return (
       <Toolbar>
@@ -192,6 +197,7 @@ class AppToolbar extends Component {
 
 AppToolbar.propTypes = {
   name: PropTypes.string,
+  loaded: PropTypes.bool.isRequired,
   projectRoot: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
   zoom: PropTypes.number.isRequired,
@@ -217,6 +223,7 @@ function mapStateToProps(state) {
   const section = state.navigation.section;
   const zoom = zoomForSection(section, state.editor);
   const searchTerm = state.editor.searchTerm;
+  const loaded = state.document.loaded;
   return {
     projectRoot: state.document && state.document.root,
     modified: state.document && state.document.modified,
@@ -226,7 +233,8 @@ function mapStateToProps(state) {
     showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,
     running: state.console.status === "running",
     searchTerm,
-    showSearch: section === "world"
+    showSearch: section === "world",
+    loaded,
   };
 }
 

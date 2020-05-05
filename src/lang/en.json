@@ -195,6 +195,7 @@
   "FIELD_CUSTOM_EVENT_DESCRIPTION_PLACEHOLDER": "Describe the purpose of this custom event",
   "FIELD_LOCAL": "Local",
   "FIELD_GLOBAL": "Global",
+  "FIELD_LOADING": "Loading...",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
