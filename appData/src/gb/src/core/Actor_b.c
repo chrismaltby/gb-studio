@@ -277,33 +277,58 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
     // Move left
     if (dir_x == -1) {
       UBYTE tile_left = tile_x - 1;
+#ifdef COLS_16
       hit_actor = ActorAt1x3Tile(tile_left - 1, tile_y - 1, FALSE);
       if (!TileAt2x2(tile_left, tile_y - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
+#else
+      hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
+      if (!TileAt2x1(tile_left, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+        actors[i].moving = TRUE;
+      }
+#endif
       // Move right
     } else if (dir_x == 1) {
       UBYTE tile_right = tile_x + 1;
+#ifdef COLS_16
       hit_actor = ActorAt1x3Tile(tile_right + 1, tile_y - 1, FALSE);
       if (!TileAt2x2(tile_right, tile_y - 1) &&
           (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
+#else
+      hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
+      if (!TileAt2x1(tile_right, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+        actors[i].moving = TRUE;
+      }
+#endif
     }
     // Move up
     if (dir_y == -1) {
-      UBYTE tile_up = tile_y - 1;
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up - 1, FALSE);
-      if (!TileAt2x2(tile_x, tile_up - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+#ifdef COLS_16
+      UBYTE tile_up = tile_y - 2;
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
+      if (!TileAt2x2(tile_x, tile_up) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
+#else
+      UBYTE tile_up = tile_y - 1;
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
+      if (!TileAt2x1(tile_x, tile_up) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+        actors[i].moving = TRUE;
+      }
+#endif
       // Move down
     } else if (dir_y == 1) {
       UBYTE tile_down = tile_y + 1;
       hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
       LOG("DIR DOWN %u [%u, %u]\n", hit_actor, tile_x, tile_down + 1);
       if (!TileAt2x2(tile_x, tile_down - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
-        actors[i].moving = TRUE;
+        hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
+        if (hit_actor == NO_ACTOR_COLLISON || hit_actor == i) {
+          actors[i].moving = TRUE;
+        }
       }
     }
   } else {
@@ -322,7 +347,11 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
     LOG("CHECK HIT UP\n");
     LOG_VALUE("check_x", tile_x);
     LOG_VALUE("check_y", tile_y - 1);
+#ifdef COLS_16
     hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 2, TRUE);
+#else
+    hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, TRUE);
+#endif
   } else if (actors[i].dir.y == 1) {
     LOG("CHECK HIT DOWN\n");
     LOG_VALUE("check_x", tile_x);
@@ -333,12 +362,20 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
       LOG("CHECK HIT LEFT\n");
       LOG_VALUE("check_x", tile_x - 1);
       LOG_VALUE("check_y", tile_y);
+#ifdef COLS_16
       hit_actor = ActorAt1x3Tile(tile_x - 2, tile_y - 1, TRUE);
+#else
+      hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
+#endif
     } else if (actors[i].dir.x == 1) {
       LOG("CHECK HIT RIGHT\n");
       LOG_VALUE("check_x", tile_x + 2);
       LOG_VALUE("check_y", tile_y);
+#ifdef COLS_16
       hit_actor = ActorAt1x3Tile(tile_x + 2, tile_y - 1, TRUE);
+#else
+      hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, TRUE);
+#endif
     }
   }
 
