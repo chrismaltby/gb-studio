@@ -58,7 +58,7 @@ void DeactivateActor(UBYTE i) {
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0; i--) {
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
     UBYTE a_tx, a_ty;
 
@@ -73,13 +73,13 @@ UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
       return a;
     }
   }
-  return 0;
+  return NO_ACTOR_COLLISON;
 }
 
 UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0; i--) {
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
     UBYTE a_tx, a_ty;
 
@@ -94,13 +94,13 @@ UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
       return a;
     }
   }
-  return 0;
+  return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0; i--) {
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
     UBYTE a_tx, a_ty;
 
@@ -111,17 +111,47 @@ UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
     a_tx = DIV_8(actors[a].pos.x);
     a_ty = DIV_8(actors[a].pos.y);
 
-    if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx + 1)) {
+    if ((ty == a_ty || ty == a_ty - 1 || ty == a_ty - 2) && (tx == a_tx)) {
       return a;
     }
   }
-  return 0;
+  return NO_ACTOR_COLLISON;
+}
+
+UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+  UBYTE i;
+
+  LOG("ActorAt3x1Tile [%u, %u] - %u\n", tx, ty, inc_noclip);
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+    LOG("ActorAt3x1Tile:1 %u %u\n", i, a);
+
+    if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
+      continue;
+    }
+
+    LOG("ActorAt3x1Tile:2 %u %u\n", i, a);
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
+    LOG("ty=%u a_ty=%u tx=%u a_tx=%u\n", ty, a_ty, tx, a_tx);
+
+    if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) {
+      LOG("ActorAt3x1Tile:3 %u %u\n", i, a);
+      return a;
+    }
+  }
+  LOG("ActorAt3x1Tile:4 %u %u\n", i);
+
+  return NO_ACTOR_COLLISON;
 }
 
 UBYTE ActorOverlapsActorTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0; i--) {
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
     UBYTE a_tx, a_ty;
 
@@ -136,13 +166,13 @@ UBYTE ActorOverlapsActorTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
       return a;
     }
   }
-  return 0;
+  return NO_ACTOR_COLLISON;
 }
 
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
   UBYTE i;
 
-  for (i = actors_active_size - 1; i != 0; i--) {
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
 
     if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
@@ -154,7 +184,7 @@ UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
       return a;
     }
   }
-  return 0;
+  return NO_ACTOR_COLLISON;
 }
 
 void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {

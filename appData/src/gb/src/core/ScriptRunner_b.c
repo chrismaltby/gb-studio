@@ -891,10 +891,9 @@ void Script_ActorPush_b() {
       check_tile = DIV_8(actors[script_actor].pos.x);
       check_tile2 = DIV_8(dest_y);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile - 1, check_tile2) ||                  // Tile left
-            TileAt(check_tile - 1, check_tile2 - 1) ||              // Tile left upper
-            ActorAt1x2Tile(check_tile - 2, check_tile2, FALSE) ||   // Actor left
-            ActorAt1x2Tile(check_tile - 2, check_tile2 - 1, FALSE)  // Actor left upper
+        if (TileAt2x2(check_tile - 1, check_tile2 - 1) ||  // Tile left
+            ActorAt1x3Tile(check_tile - 2, check_tile2 - 1, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor left
         ) {
           dest_x = (check_tile)*8;
           break;
@@ -908,10 +907,9 @@ void Script_ActorPush_b() {
       check_tile = DIV_8(actors[script_actor].pos.x);
       check_tile2 = DIV_8(dest_y);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile + 2, check_tile2) ||                  // Tile right
-            TileAt(check_tile + 2, check_tile2 - 1) ||              // Tile right upper
-            ActorAt1x2Tile(check_tile + 2, check_tile2, FALSE) ||   // Actor right
-            ActorAt1x2Tile(check_tile + 2, check_tile2 - 1, FALSE)  // Actor right upper
+        if (TileAt2x2(check_tile + 1, check_tile2 - 1) ||  // Tile right
+            ActorAt1x3Tile(check_tile + 2, check_tile2 - 1, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor right
         ) {
           dest_x = (check_tile)*8;
           break;
@@ -924,10 +922,9 @@ void Script_ActorPush_b() {
       check_tile = DIV_8(actors[script_actor].pos.y);
       check_tile2 = DIV_8(dest_x);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile2, check_tile - 2) ||                 // Tile up
-            TileAt(check_tile2 + 1, check_tile - 2) ||             // Tile up right
-            ActorAt3x1Tile(check_tile2, check_tile - 2, FALSE) ||  // Actor up
-            ActorAt3x1Tile(check_tile2, check_tile - 1, FALSE)     // Actor up overlapped
+        if (TileAt2x2(check_tile2, check_tile - 2) ||  // Tile up
+            (ActorAt3x1Tile(check_tile2 - 1, check_tile - 3, FALSE) !=
+             NO_ACTOR_COLLISON)  // Actor up
         ) {
           dest_y = (check_tile)*8;
           break;
@@ -940,10 +937,9 @@ void Script_ActorPush_b() {
       check_tile = DIV_8(actors[script_actor].pos.y);
       check_tile2 = DIV_8(dest_x);
       while (check_tile != end_tile) {
-        if (TileAt(check_tile2, check_tile + 1) ||                 // Tile down
-            TileAt(check_tile2 + 1, check_tile + 1) ||             // Tile down right
-            ActorAt3x1Tile(check_tile2, check_tile + 2, FALSE) ||  // Actor down
-            ActorAt3x1Tile(check_tile2, check_tile + 1, FALSE)     // Actor down overlapped
+        if (TileAt2x2(check_tile2, check_tile) ||  // Tile down
+            ActorAt3x1Tile(check_tile2 - 1, check_tile + 2, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor down
         ) {
           dest_y = (check_tile)*8;
           break;

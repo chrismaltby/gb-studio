@@ -14,21 +14,29 @@
 #define ACTOR_NOCLIP 0x40
 #define ACTOR_MIN_X 0
 #define ACTOR_MIN_Y 8
+#define NO_ACTOR_COLLISON 0xFF
 
-#define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
-#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
-#define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0))
-#define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
 #define player (actors[0])
+
 #define PlayerSetMovement(dir_x, dir_y) (ActorSetMovement(0, dir_x, dir_y))
 #define PlayerStopMovement() (ActorStopMovement(0))
 #define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
-#define ACTOR_BETWEEN_TILES(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
-#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
-#define PlayerBetweenTiles() (ACTOR_BETWEEN_TILES(0))
-#define PlayerOnTileX() (ACTOR_ON_TILE_X(0))
-#define PlayerOnTileY() (ACTOR_ON_TILE_Y(0))
-#define PlayerOnTile() ((ACTOR_ON_TILE_X(0)) && (ACTOR_ON_TILE_Y(0)))
+
+#define ActorOnTileX(i) ((actors[(i)].pos.x & 7) == 0)
+#define ActorOnTileY(i) (((actors[(i)].pos.y & 7) == 0))
+#define ActorOnTile(i) ((ActorOnTileX(i)) && (ActorOnTileY(i)))
+#define ActorBetweenTiles(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
+#define PlayerOnTile() (ActorOnTile(0))
+#define PlayerOnTileX() (ActorOnTileX(0))
+#define PlayerOnTileY() (ActorOnTileY(0))
+#define PlayerBetweenTiles() (ActorBetweenTiles(0))
+
+#define ActorOnTileX16(i) ((actors[(i)].pos.x & 15) == 0)
+#define ActorOnTileY16(i) (((actors[(i)].pos.y & 15) == 0))
+#define ActorOnTile16(i) ((ActorOnTileX16(i)) && (ActorOnTileY16(i)))
+#define ActorBetweenTiles16(i) (((actors[(i)].pos.x & 15) != 0) || ((actors[(i)].pos.y & 15) != 0))
+#define PlayerOnTile16() (ActorOnTile16(0))
+#define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
 typedef enum {
   NONE = 1,
@@ -113,6 +121,7 @@ void DeactivateActiveActor(UBYTE i);
  */
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
+UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 

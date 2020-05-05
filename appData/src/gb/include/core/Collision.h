@@ -15,4 +15,6 @@
  */
 UBYTE TileAt(UINT16 tx, UINT16 ty);
 
+UBYTE TileAt2x2(UINT16 tx, UINT16 ty);
+
 #endif

@@ -96,7 +96,7 @@ void Update_TopDown() {
       // Find actor in front of player
       hit_actor = ActorInFrontOfPlayer();
 
-      if (hit_actor) {
+      if (hit_actor != NO_ACTOR_COLLISON) {
         // Turn actor to face player
         actors[hit_actor].dir.x = -player.dir.x;
         actors[hit_actor].dir.y = -player.dir.y;
