@@ -35,7 +35,7 @@ void Update_TopDown() {
   for (i = 1; i < actors_active_size; i++) {
     a = actors_active[i];
     if (actors[a].movement_type == AI_RANDOM_WALK) {
-      if (ACTOR_ON_TILE(a)) {
+      if (ActorOnTile(a)) {
         if (IS_FRAME_128) {
           rnd = rand();
           if (rnd & 0x1u) {
