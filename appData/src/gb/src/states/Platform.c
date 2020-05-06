@@ -59,6 +59,8 @@ void Start_Platform() {
   // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
 
   camera_target = &cam_pos;
+  camera_offset.x = 0;
+  camera_offset.y = 0;
   game_time = 0;
   LOG("END START PLATFORM\n");
 }

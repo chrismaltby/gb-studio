@@ -14,6 +14,8 @@
 #include "DataManager.h"
 #include "rand.h"
 
+void Reset_Shmup();
+
 void Start_Shmup() {
   // Set camera to follow player
   camera_target = &player.pos;
@@ -24,8 +26,8 @@ void Start_Shmup() {
 void Update_Shmup() {
   UBYTE tile_x, tile_y, hit_actor, hit_trigger, a, i, rnd;
 
-  tile_x = (player.pos.x + 8) >> 3;
-  tile_y = (player.pos.y - 4) >> 3;
+  tile_x = (player.pos.x) >> 3;
+  tile_y = (player.pos.y) >> 3;
 
   // Cleanup after script complete -------------------------------
 
@@ -75,8 +77,6 @@ void Update_Shmup() {
           }
         }
         if (actors[a].dir.x && (actors[a].pos.x - player.pos.x > 100)) {
-          // actors[a].pos.x = 0;
-          // actors[a].pos.y = actors[a].start_pos.y + 1;
           actors[a].moving = FALSE;
         }
       }
@@ -93,15 +93,12 @@ void Update_Shmup() {
   }
 
   // Check input to set player movement
-  if (INPUT_UP && (player.pos.y > 8)) {
+  if (INPUT_UP && (player.pos.y > 4)) {
     player.dir.y = -1;
-    // PlayerSetMovement(1, -1);
   } else if (INPUT_DOWN && (player.pos.y < (image_height - 8))) {
     player.dir.y = 1;
-    // PlayerSetMovement(1, 1);
   } else {
     player.dir.y = 0;
-    // PlayerSetMovement(1, 0);
   }
   if (player.pos.x < image_width - SCREEN_WIDTH_HALF - 64) {
     player.dir.x = 1;
@@ -117,12 +114,24 @@ void Update_Shmup() {
 
   player.moving = TRUE;
 
-  hit_actor = ActorAt1x2Tile(tile_x, tile_y, FALSE);
+  // Enemy Collisions
+  hit_actor = ActorAt1x2Tile(tile_x + 1, tile_y, FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
-    player.pos.x = 0;
-    for (i = 1; i < actors_len; i++) {
-      actors[i].pos.x = actors[i].start_pos.x;
-      actors[i].pos.y = actors[i].start_pos.y;
-    }
+    Reset_Shmup();
+  }
+
+  // World Collisions
+  if (TileAt(tile_x + 1, tile_y)) {
+    Reset_Shmup();
+  }
+}
+
+void Reset_Shmup() {
+  UBYTE i;
+  player.pos.x = player.start_pos.x;
+  player.pos.y = player.start_pos.y;
+  for (i = 1; i < actors_len; i++) {
+    actors[i].pos.x = actors[i].start_pos.x;
+    actors[i].pos.y = actors[i].start_pos.y;
   }
 }
