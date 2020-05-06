@@ -124,6 +124,13 @@ const buildMenu = async (plugins = []) => {
                 notifyListeners("ejectEngine");
               },
             },
+            { type: "separator" },
+            {
+              label: l10n("MENU_EJECT_PROJECT_BUILD"),
+              click() {
+                notifyListeners("ejectProject");
+              },
+            },
           ],
         },
       ],
@@ -443,6 +450,7 @@ const listeners = {
   run: [],
   build: [],
   ejectEngine: [],
+  ejectProject: [],
 };
 
 const notifyListeners = (event, ...data) => {

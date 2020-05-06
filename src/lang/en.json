@@ -383,6 +383,7 @@
   "MENU_RELOAD_ASSETS": "Reload Assets",
   "MENU_ADVANCED": "Advanced",
   "MENU_EJECT_ENGINE": "Eject Engine",
+  "MENU_EJECT_PROJECT_BUILD": "Export Project Source",
 
   "// 11": "Warnings -----------------------------------------------------",
 

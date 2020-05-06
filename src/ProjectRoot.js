@@ -120,11 +120,12 @@ const onRun = () => {
   store.dispatch(actions.buildGame());
 }
 
-const onBuild = (event, buildType) => {
+const onBuild = (event, buildType, eject) => {
   store.dispatch(
     actions.buildGame({
       buildType,
-      exportBuild: true
+      exportBuild: !eject,
+      ejectBuild: eject
     })
   );
 }

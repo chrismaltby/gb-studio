@@ -414,8 +414,8 @@ ipcMain.on("build-game", async (event, project: any, projectRoot: string, buildT
           )}`
         }`);
     } else if (ejectBuild) {
-      await copy(`${outputRoot}`, `${projectRoot}/eject`);
-      shell.openItem(`${projectRoot}/eject`);
+      await copy(`${outputRoot}`, `${projectRoot}/build/src`);
+      shell.openItem(`${projectRoot}/build/src`);
     }
 
     if (buildType === "web" && !exportBuild && !ejectBuild) {
@@ -483,6 +483,10 @@ menu.on("build", (buildType: string) => {
 
 menu.on("ejectEngine", () => {
   mainWindow && mainWindow.webContents.send("ejectEngine");
+});
+
+menu.on("ejectProject", () => {
+  mainWindow && mainWindow.webContents.send("build", "rom", true);
 });
 
 menu.on("checkUpdates", () => {
