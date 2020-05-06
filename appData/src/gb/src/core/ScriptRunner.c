@@ -115,6 +115,7 @@ void ScriptRunnerUpdate() {
     LOG("SCRIPT FINISHED\n");
     script_ptr_bank = 0;
     script_ptr = 0;
+    script_actor = 0;
     script_complete = TRUE;
     return;
   }
