@@ -135,7 +135,7 @@ void Update_Platform() {
     } else {
       hit_actor = ActorAtTile(tile_x - 1, tile_y, TRUE);
     }
-    if (hit_actor != NO_ACTOR_COLLISON) {
+    if (hit_actor && (hit_actor != NO_ACTOR_COLLISON)) {
       ScriptStart(&actors[hit_actor].events_ptr);
     }
   }
