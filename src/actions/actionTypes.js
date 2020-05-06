@@ -118,6 +118,8 @@ export const BUILD_GAME = "BUILD_GAME";
 export const PLAY_MUSIC = "PLAY_MUSIC";
 export const PAUSE_MUSIC = "PAUSE_MUSIC";
 
+export const EJECT_ENGINE = "EJECT_ENGINE";
+
 export const PLAY_SOUNDFX_BEEP = "PLAY_SOUNDFX_BEEP";
 export const PLAY_SOUNDFX_TONE = "PLAY_SOUNDFX_TONE";
 export const PLAY_SOUNDFX_CRASH = "PLAY_SOUNDFX_CRASH";

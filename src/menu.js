@@ -110,11 +110,23 @@ const buildMenu = async (plugins = []) => {
               accelerator: "CommandOrControl+Shift+N",
               click() {
                 notifyListeners("build", "web");
-              }
-            }
-          ]
-        }
-      ]
+              },
+            },
+          ],
+        },
+        { type: "separator" },
+        {
+          label: l10n("MENU_ADVANCED"),
+          submenu: [
+            {
+              label: l10n("MENU_EJECT_ENGINE"),
+              click() {
+                notifyListeners("ejectEngine");
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       label: l10n("MENU_VIEW"),
@@ -429,7 +441,8 @@ const listeners = {
   reloadAssets: [],
   updateSetting: [],
   run: [],
-  build: []
+  build: [],
+  ejectEngine: [],
 };
 
 const notifyListeners = (event, ...data) => {

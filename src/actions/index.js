@@ -653,6 +653,10 @@ export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };
 
+export const ejectEngine = () => {
+  return { type: types.EJECT_ENGINE };
+};
+
 export const buildGame = ({
   buildType = "web",
   exportBuild = false,

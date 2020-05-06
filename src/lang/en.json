@@ -381,6 +381,8 @@
   "MENU_CHECK_FOR_UPDATES": "Check For Updates...",
   "MENU_PLUGINS": "Plugins",
   "MENU_RELOAD_ASSETS": "Reload Assets",
+  "MENU_ADVANCED": "Advanced",
+  "MENU_EJECT_ENGINE": "Eject Engine",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -452,6 +454,12 @@
   "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} uses of this event will also be removed.\n\nFound in: {sceneNames}",
   "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} use of this event will also be removed.\n\nFound in: {sceneNames}",
+  "DIALOG_EJECT_ENGINE": "Eject game engine?",
+  "DIALOG_EJECT_ENGINE_DESCRIPTION": "The latest GB Studio engine files will be copied to 'assets/engine'. You can make changes to any of these files and they will replace the default engine during builds.\n\nTo restore the default engine delete 'assets/engine'",
+  "DIALOG_EJECT": "Eject",
+  "DIALOG_EJECT_ENGINE_REPLACE": "Ejected game engine already found",
+  "DIALOG_EJECT_ENGINE_REPLACE_DESCRIPTION": "You have already ejected the GB Studio engine to your project.\n\nIf you continue the previously ejected files will be replaced and any changes you made will be lost.",
+  "DIALOG_EJECT_REPLACE": "Replace Engine",
 
   "// 16": "Settings ----------------------------------------------------",
 

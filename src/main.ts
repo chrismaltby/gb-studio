@@ -481,6 +481,10 @@ menu.on("build", (buildType: string) => {
   mainWindow && mainWindow.webContents.send("build", buildType);
 });
 
+menu.on("ejectEngine", () => {
+  mainWindow && mainWindow.webContents.send("ejectEngine");
+});
+
 menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });

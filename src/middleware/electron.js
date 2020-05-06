@@ -1,6 +1,8 @@
 import { ipcRenderer, clipboard, remote } from "electron";
 import settings from "electron-settings";
 import uniq from "lodash/uniq";
+import Path from "path";
+import { statSync } from "fs-extra";
 import {
   OPEN_HELP,
   OPEN_FOLDER,
@@ -13,9 +15,11 @@ import {
   SIDEBAR_WORLD_RESIZE,
   SIDEBAR_FILES_RESIZE,
   PROJECT_LOAD_FAILURE,
-  REMOVE_CUSTOM_EVENT
+  REMOVE_CUSTOM_EVENT,
+  EJECT_ENGINE,
 } from "../actions/actionTypes";
 import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
+import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
 import {
   getScenes,
   getScenesLookup,
@@ -27,6 +31,8 @@ import { walkEvents, filterEvents } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { editScene, editActor, editTrigger } from "../actions";
 import l10n from "../lib/helpers/l10n";
+import ejectEngineToDir from "../lib/project/ejectEngineToDir";
+import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {
@@ -195,6 +201,32 @@ export default store => next => action => {
         );
       });
     }
+  } else if (action.type === EJECT_ENGINE) {
+    const cancel = confirmEjectEngineDialog();
+
+    if (cancel) {
+      return;
+    }
+
+    const state = store.getState();
+    const outputDir = Path.join(state.document.root, "assets", "engine");
+
+    let ejectedEngineExists;
+    try {
+      statSync(outputDir);
+      ejectedEngineExists = true;
+    } catch (e) {
+      ejectedEngineExists = false;
+    }
+
+    if (ejectedEngineExists) {
+      const cancel = confirmEjectEngineReplaceDialog();
+      if (cancel) {
+        return;
+      }
+    }
+
+    ejectEngineToDir(outputDir);
   }
 
   next(action);

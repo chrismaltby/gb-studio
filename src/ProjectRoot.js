@@ -51,61 +51,61 @@ window.addEventListener("error", (error) => {
   return false;
 });
 
-ipcRenderer.on("save-project", () => {
-  store.dispatch(actions.saveProject());
-});
+const onSaveProject = () => {
+  store.dispatch(actions.saveProject());  
+}
 
-ipcRenderer.on("save-project-and-close", async () => {
+const onSaveAndCloseProject = async () => {
   await store.dispatch(actions.saveProject());
-  window.close();
-});
+  window.close();  
+}
 
-ipcRenderer.on("save-as-project", (event, pathName) => {
+const onSaveProjectAs = (event, pathName) => {
   store.dispatch(actions.saveAsProjectAction(pathName));
-});
+}
 
-ipcRenderer.on("undo", () => {
+const onUndo = () => {
   store.dispatch(ActionCreators.undo());
-});
+}
 
-ipcRenderer.on("redo", () => {
+const onRedo = () => {
   store.dispatch(ActionCreators.redo());
-});
+}
 
-ipcRenderer.on("section", (event, section) => {
+const onSetSection =  (event, section) => {
   store.dispatch(actions.setSection(section));
-});
+}
 
-ipcRenderer.on("reloadAssets", (event) => {
+const onReloadAssets = () => {
   store.dispatch(actions.reloadAssets());
-});
+}
 
-ipcRenderer.on("updateSetting", (event, setting, value) => {
+const onUpdateSetting = (event, setting, value) => {
   store.dispatch(
     actions.editProjectSettings({
       [setting]: value
     })
   );
-});
+}
 
-ipcRenderer.on("build-start", async (event) => {
+const onBuildStart = () => {
   store.dispatch({ type: CMD_START });
-});
+}
 
-ipcRenderer.on("build-complete", async (event) => {
+const onBuildComplete = () => {
   store.dispatch({ type: CMD_COMPLETE });
-});
+}
 
-ipcRenderer.on("build-stdout", async (event, message) => {
+const onBuildStdOut = (event, message) => {
   store.dispatch({ type: CMD_STD_OUT, text: message });
-});
+}
 
-ipcRenderer.on("build-stderr", async (event, message) => {
+const onBuildStdErr = (event, message) => {
   store.dispatch({ type: CMD_STD_ERR, text: message });
   store.dispatch({ type: SET_SECTION, section: "build" });
-});
+}
 
-ipcRenderer.on("zoom", (event, zoomType) => {
+const onZoom = (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {
     store.dispatch(actions.zoomIn(state.navigation.section));
@@ -114,26 +114,49 @@ ipcRenderer.on("zoom", (event, zoomType) => {
   } else {
     store.dispatch(actions.zoomReset(state.navigation.section));
   }
-});
+}
 
-ipcRenderer.on("run", event => {
+const onRun = () => {
   store.dispatch(actions.buildGame());
-});
+}
 
-ipcRenderer.on("build", async (event, buildType) => {
+const onBuild = (event, buildType) => {
   store.dispatch(
     actions.buildGame({
       buildType,
       exportBuild: true
     })
   );
-});
+}
 
-ipcRenderer.on("plugin-run", (event, pluginId) => {
+const onEjectEngine = () => {
+  console.log("GOT EJECT ENGINE FROM MAIN 12 3")
+  store.dispatch(actions.ejectEngine());
+}
+
+const onPluginRun = (event, pluginId) => {
   if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
     plugins.menu[pluginId].run(store, actions);
   }
-});
+}
+
+ipcRenderer.on("save-project", onSaveProject);
+ipcRenderer.on("save-project-and-close", onSaveAndCloseProject);
+ipcRenderer.on("save-as-project", onSaveProjectAs);
+ipcRenderer.on("undo", onUndo);
+ipcRenderer.on("redo", onRedo);
+ipcRenderer.on("section", onSetSection);
+ipcRenderer.on("reloadAssets", onReloadAssets);
+ipcRenderer.on("updateSetting", onUpdateSetting);
+ipcRenderer.on("build-start", onBuildStart);
+ipcRenderer.on("build-complete", onBuildComplete);
+ipcRenderer.on("build-stdout", onBuildStdOut);
+ipcRenderer.on("build-stderr", onBuildStdErr);
+ipcRenderer.on("zoom", onZoom);
+ipcRenderer.on("run", onRun);
+ipcRenderer.on("build", onBuild);
+ipcRenderer.on("ejectEngine", onEjectEngine);
+ipcRenderer.on("plugin-run", onPluginRun);
 
 const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");
@@ -183,5 +206,5 @@ const render = () => {
 render();
 
 if (module.hot) {
-  module.hot.accept(render);
+  module.hot.accept("./components/app/App", render);
 }

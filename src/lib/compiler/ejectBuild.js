@@ -10,17 +10,29 @@ const rmdir = promisify(rimraf);
 const ejectBuild = async ({
   projectType = "gb",
   outputRoot = "/tmp",
+  projectRoot = "/tmp",
   compiledData,
   progress = () => {},
   warnings = () => {},
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
+  const localCorePath = `${projectRoot}/assets/engine`;
+
   progress(`Unlink ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
-  progress("Copy core");
+  progress("Copy default engine");
 
   await copy(corePath, outputRoot);
+
+  try {
+    progress("Looking for local engine in assets/engine");
+    await copy(localCorePath, outputRoot);
+    progress("Copy local engine");
+  } catch (e) {
+    progress("Local engine not found, using default engine");
+  }
+
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/node_modules`);
   await fs.ensureDir(`${outputRoot}/obj`);
