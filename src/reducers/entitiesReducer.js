@@ -1189,6 +1189,8 @@ export const getSpriteSheetIds = state =>
   state.entities.present.result.spriteSheets;
 export const getSceneActorIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].actors;
+export const getSettings = state =>
+  state.entities.present.result.settings
 
 export const getMaxSceneRight = createSelector(
   [getScenesLookup, getSceneIds],

@@ -12,14 +12,17 @@ import EventHelper from "./EventHelper";
 import {
   SceneShape,
   EventShape,
-  BackgroundShape
+  BackgroundShape,
 } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import {
   getSceneFrameCount,
   getActorsLookup,
-  getTriggersLookup
+  getTriggersLookup,
+  getScenesLookup,
+  getBackgroundsLookup,
+  getSettings,
 } from "../../reducers/entitiesReducer";
 
 window.React = React;
@@ -46,14 +49,14 @@ class Scene extends Component {
     window.removeEventListener("mouseup", this.onEndDrag);
   }
 
-  onMouseMove = e => {
+  onMouseMove = (e) => {
     const {
       id,
       zoomRatio,
       width,
       height,
       moveSelectedEntity,
-      sceneHover
+      sceneHover,
     } = this.props;
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
@@ -71,12 +74,12 @@ class Scene extends Component {
     }
   };
 
-  onMouseLeave = e => {
+  onMouseLeave = (e) => {
     const { sceneHover } = this.props;
     sceneHover("");
   };
 
-  onStartDrag = e => {
+  onStartDrag = (e) => {
     const { id, selectScene } = this.props;
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
@@ -86,7 +89,7 @@ class Scene extends Component {
     this.dragging = true;
   };
 
-  onMoveDrag = e => {
+  onMoveDrag = (e) => {
     const { zoomRatio, moveScene, id, scene } = this.props;
     const { x, y } = scene;
     if (this.dragging) {
@@ -100,7 +103,7 @@ class Scene extends Component {
     }
   };
 
-  onEndDrag = e => {
+  onEndDrag = (e) => {
     this.dragging = false;
   };
 
@@ -120,22 +123,27 @@ class Scene extends Component {
       selected,
       hovered,
       frameCount,
-      sceneFiltered
+      sceneFiltered,
     } = this.props;
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
-    if(!visible) {
+    console.log("RENDER SCENE" + scene.name);
+
+    if (!visible) {
       return null;
     }
 
     return (
       <div
         ref={this.containerRef}
-        className={cx("Scene", { "Scene--Selected": selected, "Scene--Filtered": sceneFiltered })}
+        className={cx("Scene", {
+          "Scene--Selected": selected,
+          "Scene--Filtered": sceneFiltered,
+        })}
         style={{
           top: y,
-          left: x
+          left: x,
         }}
       >
         <div className="Scene__Name" onMouseDown={this.onStartDrag}>
@@ -147,16 +155,18 @@ class Scene extends Component {
           onMouseLeave={this.onMouseLeave}
           style={{
             width: width * TILE_SIZE,
-            height: height * TILE_SIZE
+            height: height * TILE_SIZE,
           }}
         >
           {image && (
             <img
               className="Scene__Background"
               alt=""
-              src={`file://${assetFilename(projectRoot, "backgrounds", image)}?_v=${
-                image._v
-              }`}
+              src={`file://${assetFilename(
+                projectRoot,
+                "backgrounds",
+                image
+              )}?_v=${image._v}`}
             />
           )}
           {showCollisions && (
@@ -169,10 +179,10 @@ class Scene extends Component {
             </div>
           )}
           <SceneCursor sceneId={id} enabled={hovered} />
-          {triggers.map(triggerId => (
+          {triggers.map((triggerId) => (
             <Trigger key={triggerId} id={triggerId} sceneId={id} />
           ))}
-          {actors.map(actorId => (
+          {actors.map((actorId) => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
 
@@ -184,12 +194,10 @@ class Scene extends Component {
         </div>
         <div className="Scene__Info" onMouseDown={this.onStartDrag}>
           <span
-            title={`Number of actors in scene. This scene has used ${
-              scene.actors.length
-            } of ${MAX_ACTORS} available.`}
+            title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
             className={cx({
               "Scene__Info--Warning": scene.actors.length === MAX_ACTORS,
-              "Scene__Info--Error": scene.actors.length > MAX_ACTORS
+              "Scene__Info--Error": scene.actors.length > MAX_ACTORS,
             })}
           >
             A: {scene.actors.length}/{MAX_ACTORS}
@@ -205,19 +213,17 @@ class Scene extends Component {
             } Stay within limits to prevent tile data overwriting sprite data.`}
             className={cx({
               "Scene__Info--Warning": frameCount === MAX_FRAMES,
-              "Scene__Info--Error": frameCount > MAX_FRAMES
+              "Scene__Info--Error": frameCount > MAX_FRAMES,
             })}
           >
             F: {frameCount}/{MAX_FRAMES}
           </span>
           {"\u00A0 \u00A0"}
           <span
-            title={`Number of triggers in scene. This scene has used ${
-              scene.triggers.length
-            } of ${MAX_TRIGGERS} available.`}
+            title={`Number of triggers in scene. This scene has used ${scene.triggers.length} of ${MAX_TRIGGERS} available.`}
             className={cx({
               "Scene__Info--Warning": scene.triggers.length === MAX_TRIGGERS,
-              "Scene__Info--Error": scene.triggers.length > MAX_TRIGGERS
+              "Scene__Info--Error": scene.triggers.length > MAX_TRIGGERS,
             })}
           >
             T: {scene.triggers.length}/{MAX_TRIGGERS}
@@ -249,25 +255,44 @@ Scene.propTypes = {
   moveSelectedEntity: PropTypes.func.isRequired,
   sceneHover: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
-  sceneFiltered: PropTypes.bool.isRequired
+  sceneFiltered: PropTypes.bool.isRequired,
 };
 
 Scene.defaultProps = {
   image: null,
   event: null,
-  prefab: null
+  prefab: null,
+};
+
+const testScene = {
+  id: "",
+  name: "",
+  actors: [],
+  triggers: [],
+  x: 0,
+  y: 0,
+  width: 32,
+  height: 32,
 };
 
 function mapStateToProps(state, props) {
+  console.log("MAP STATE SCENE");
+
   const { scene: sceneId, dragging: editorDragging } = state.editor;
-  const scene = state.entities.present.entities.scenes[props.id];
+
+  const scenesLookup = getScenesLookup(state);
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
-  const image = state.entities.present.entities.backgrounds[scene.backgroundId];
-  const { settings } = state.entities.present.result;
+  const backgroundsLookup = getBackgroundsLookup(state);
+  const settings = getSettings(state);
+
+  const scene = scenesLookup[props.id];
+  const image = backgroundsLookup[scene.backgroundId];
+
+  const sceneEventVisible =
+    state.editor.eventId && state.editor.scene === props.id;
   const event =
-    (state.editor.eventId &&
-      state.editor.scene === props.id &&
+    (sceneEventVisible &&
       normalizedFindSceneEvent(
         scene,
         actorsLookup,
@@ -275,20 +300,25 @@ function mapStateToProps(state, props) {
         state.editor.eventId
       )) ||
     null;
+
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.tools.selected;
-  
+
   const { viewBounds } = props;
-  const visible = ((scene.x + (scene.width * 8)) > viewBounds.x)
-    && (scene.x < (viewBounds.x + viewBounds.width))
-    && ((scene.y + (scene.height * 8) + 50) > viewBounds.y)
-    && (scene.y < (viewBounds.y + viewBounds.height));
-    
+  const visible =
+    scene.x + scene.width * 8 > viewBounds.x &&
+    scene.x < viewBounds.x + viewBounds.width &&
+    scene.y + scene.height * 8 + 50 > viewBounds.y &&
+    scene.y < viewBounds.y + viewBounds.height;
+
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
-  const sceneFiltered = (searchTerm && (sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1)) || false;
+  const sceneFiltered =
+    (searchTerm &&
+      sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1) ||
+    false;
 
   return {
     scene,
@@ -306,7 +336,7 @@ function mapStateToProps(state, props) {
     hovered,
     frameCount: getSceneFrameCount(state, props),
     sceneName,
-    sceneFiltered
+    sceneFiltered,
   };
 }
 
@@ -314,10 +344,7 @@ const mapDispatchToProps = {
   moveScene: actions.moveScene,
   selectScene: actions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
-  sceneHover: actions.sceneHover
+  sceneHover: actions.sceneHover,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Scene);
+export default connect(mapStateToProps, mapDispatchToProps)(Scene);
