@@ -173,7 +173,7 @@ export const denormalizeProject = projectData => {
 
 const loadProject = (state, action) => {
   const data = normalizeProject(action.data);
-  return deepmerge(state, data);
+  return fixSceneCollisions(deepmerge(state, data));
 };
 
 const saveAsProject = (state, action) => {
@@ -298,13 +298,13 @@ const fixSceneCollisions = state => {
       scenes: Object.keys(state.entities.scenes).reduce((memo, sceneId) => {
         const scene = state.entities.scenes[sceneId];
         const background = state.entities.backgrounds[scene.backgroundId];
-        const collisionsSize =
-          background && Math.ceil((background.width * background.height) / 8);
 
-        if (!background || scene.collisions.length !== collisionsSize) {
+        if (!background || scene.width !== background.width || scene.height !== background.height) {
           // eslint-disable-next-line no-param-reassign
           memo[sceneId] = {
             ...scene,
+            width: background ? background.width : 32,
+            height: background ? background.height: 32,
             collisions: []
           };
         } else {
