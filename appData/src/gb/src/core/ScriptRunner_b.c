@@ -577,8 +577,8 @@ void Script_LoadScene_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorSetPos_b() {
-  actors[script_actor].pos.x = ((WORD)script_cmd_args[0] << 3);
-  actors[script_actor].pos.y = ((WORD)script_cmd_args[1] << 3);
+  actors[script_actor].pos.x = script_cmd_args[0] * 8;
+  actors[script_actor].pos.y = script_cmd_args[1] * 8;
 }
 
 /*
@@ -976,9 +976,11 @@ void Script_ActorPush_b() {
  *   arg4: Low 8 bits for new pointer
  */
 void Script_IfActorPos_b() {
-  if ((((WORD)script_cmd_args[0] << 3) == actors[script_actor].pos.x) &&
-      (((WORD)script_cmd_args[1] << 3) ==
-       actors[script_actor].pos.y)) {  // True path, jump to position specified by ptr
+  UBYTE tile_x, tile_y;
+  tile_x = actors[script_actor].pos.x >> 3;
+  tile_y = actors[script_actor].pos.y >> 3;
+  if ((script_cmd_args[0] == tile_x) &&
+      (script_cmd_args[1] == tile_y)) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
 }
@@ -1168,9 +1170,9 @@ void Script_ActorGetPos_b() {
  */
 void Script_ActorSetPosToVal_b() {
   actors[script_actor].pos.x = 0;  // @wtf-but-needed
-  actors[script_actor].pos.x = ((WORD)script_variables[script_ptr_x] << 3);
+  actors[script_actor].pos.x = script_variables[script_ptr_x] * 8;
   actors[script_actor].pos.y = 0;  // @wtf-but-needed
-  actors[script_actor].pos.y = ((WORD)script_variables[script_ptr_y] << 3);
+  actors[script_actor].pos.y = script_variables[script_ptr_y] * 8;
 }
 
 /*
@@ -1182,12 +1184,9 @@ void Script_ActorMoveToVal_b() {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = (script_variables[script_ptr_x] << 3);
+  actor_move_dest_x = script_variables[script_ptr_x] * 8;
   actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = (script_variables[script_ptr_y] << 3);
-  if (script_variables[script_ptr_y] == 31) {
-    actor_move_dest_y = image_width - 8;
-  }
+  actor_move_dest_y = script_variables[script_ptr_y] * 8;
   script_update_fn = ScriptUpdate_MoveActor;
 }
 
@@ -1206,7 +1205,7 @@ void Script_ActorMoveRel_b() {
   actor_move_dest_x = actors[script_actor].pos.x;
   if (script_cmd_args[0] != 0) {
     if (script_cmd_args[1] == 1) {
-      actor_move_dest_x = actor_move_dest_x - (script_cmd_args[0] << 3);
+      actor_move_dest_x = actor_move_dest_x - (script_cmd_args[0] * 8);
       // If destination wrapped past left edge set to min X
       if (actor_move_dest_x > actors[script_actor].pos.x) {
         actor_move_dest_x = ACTOR_MIN_X;
@@ -1214,7 +1213,7 @@ void Script_ActorMoveRel_b() {
         actor_move_dest_x = ACTOR_MIN_X;
       }
     } else {
-      actor_move_dest_x = actor_move_dest_x + (script_cmd_args[0] << 3);
+      actor_move_dest_x = actor_move_dest_x + (script_cmd_args[0] * 8);
       // If destination beyond max X set to max X
       if (actor_move_dest_x > image_width - 16) {
         actor_move_dest_x = image_width - 16;
@@ -1226,7 +1225,7 @@ void Script_ActorMoveRel_b() {
   actor_move_dest_y = actors[script_actor].pos.y;
   if (script_cmd_args[2] != 0) {
     if (script_cmd_args[3] == 1) {
-      actor_move_dest_y = actor_move_dest_y - (script_cmd_args[2] << 3);
+      actor_move_dest_y = actor_move_dest_y - (script_cmd_args[2] * 8);
       // If destination wrapped past top edge set to min Y
       if (actor_move_dest_y > actors[script_actor].pos.y) {
         actor_move_dest_y = ACTOR_MIN_Y;
@@ -1234,7 +1233,7 @@ void Script_ActorMoveRel_b() {
         actor_move_dest_y = ACTOR_MIN_Y;
       }
     } else {
-      actor_move_dest_y = actor_move_dest_y + (script_cmd_args[2] << 3);
+      actor_move_dest_y = actor_move_dest_y + (script_cmd_args[2] * 8);
       // If destination beyond max Y set to max Y
       if (actor_move_dest_y > image_height - 8) {
         actor_move_dest_y = image_height - 8;
@@ -1256,17 +1255,17 @@ void Script_ActorMoveRel_b() {
 void Script_ActorSetPosRel_b() {
   if (script_cmd_args[0] != 0) {
     if (script_cmd_args[1]) {
-      actors[script_actor].pos.x = actors[script_actor].pos.x - (script_cmd_args[0] << 3);
+      actors[script_actor].pos.x = actors[script_actor].pos.x - (script_cmd_args[0] * 8);
     } else {
-      actors[script_actor].pos.x = actors[script_actor].pos.x + (script_cmd_args[0] << 3);
+      actors[script_actor].pos.x = actors[script_actor].pos.x + (script_cmd_args[0] * 8);
     }
   }
 
   if (script_cmd_args[2] != 0) {
     if (script_cmd_args[3]) {
-      actors[script_actor].pos.y = actors[script_actor].pos.y - (script_cmd_args[2] << 3);
+      actors[script_actor].pos.y = actors[script_actor].pos.y - (script_cmd_args[2] * 8);
     } else {
-      actors[script_actor].pos.y = actors[script_actor].pos.y + (script_cmd_args[2] << 3);
+      actors[script_actor].pos.y = actors[script_actor].pos.y + (script_cmd_args[2] * 8);
     }
   }
 }
@@ -1577,9 +1576,9 @@ void Script_ScenePopState_b() {
     scene_next_index = scene_stack[scene_stack_ptr].scene_index;
 
     map_next_pos.x = 0;  // @wtf-but-needed
-    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x << 3;
+    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x * 8;
     map_next_pos.y = 0;  // @wtf-but-needed
-    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y << 3;
+    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y * 8;
     map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
@@ -1612,9 +1611,9 @@ void Script_ScenePopAllState_b() {
     scene_next_index = scene_stack[scene_stack_ptr].scene_index;
 
     map_next_pos.x = 0;  // @wtf-but-needed
-    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x << 3;
+    map_next_pos.x = scene_stack[scene_stack_ptr].player_pos.x * 8;
     map_next_pos.y = 0;  // @wtf-but-needed
-    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y << 3;
+    map_next_pos.y = scene_stack[scene_stack_ptr].player_pos.y * 8;
     map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
