@@ -242,5 +242,8 @@ void RenderScreen() {
   }
   POP_BANK;
 
+  game_time = 0;
+  UpdateActors();
+
   DISPLAY_ON;
 }
