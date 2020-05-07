@@ -112,7 +112,7 @@ const createWindow = async (projectPath: string) => {
     show: false,
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: false,
+      webSecurity: process.env.NODE_ENV !== 'development',
       devTools: isDevMode,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     }
