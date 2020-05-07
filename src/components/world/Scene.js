@@ -158,7 +158,7 @@ class Scene extends Component {
             height: height * TILE_SIZE,
           }}
         >
-          {!simplifiedRender && image && (
+          {image && (
             <img
               className="Scene__Background"
               alt=""
@@ -191,7 +191,7 @@ class Scene extends Component {
             </div>
           )}
         </div>
-        {/* {!simplifiedRender && <div className="Scene__Info" onMouseDown={this.onStartDrag}>
+        {!simplifiedRender && <div className="Scene__Info" onMouseDown={this.onStartDrag}>
           <span
             title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
             className={cx({
@@ -227,7 +227,7 @@ class Scene extends Component {
           >
             T: {scene.triggers.length}/{MAX_TRIGGERS}
           </span>
-        </div>} */}
+        </div>}
       </div>
     );
   }
