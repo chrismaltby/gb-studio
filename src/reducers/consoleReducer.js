@@ -23,6 +23,9 @@ export default function console(state = initialState.console, action) {
         warnings: []
       };
     case CMD_STD_OUT:
+      if(!action.text) {
+        return state;
+      }
       return {
         ...state,
         output: [].concat(state.output, {
@@ -31,6 +34,9 @@ export default function console(state = initialState.console, action) {
         })
       };
     case CMD_STD_ERR:
+      if(!action.text) {
+        return state;
+      }      
       return {
         ...state,
         output: [].concat(state.output, {
