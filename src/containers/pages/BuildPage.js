@@ -46,6 +46,13 @@ class BuildPage extends Component {
 
   render() {
     const { output, warnings, status } = this.props;
+
+    // Only show the latest 100 lines during build
+    // show full output on complete
+    const outputLines = status === "complete"
+      ? output
+      : output.slice(-100);
+
     return (
       <div
         style={{
@@ -67,7 +74,7 @@ class BuildPage extends Component {
             userSelect: "text"
           }}
         >
-          {output.map((out, index) => (
+          {outputLines.map((out, index) => (
             <div
               // eslint-disable-next-line react/no-array-index-key
               key={index}
