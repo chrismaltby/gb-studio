@@ -16,7 +16,8 @@ import {
 import { denormalizeProject } from "../reducers/entitiesReducer";
 import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
-import {dialog} from "electron";
+import { ActionCreators } from "redux-undo";
+import { debounce } from "lodash";
 
 const asyncAction = async (
   dispatch,
@@ -61,16 +62,33 @@ export const resizeFilesSidebar = width => {
   };
 };
 
-export const scrollWorld = (x, y) => {
-  return {
+export const scrollWorld = (x, y) => (dispatch) => {
+  scrollWorldThottled(dispatch, x, y);
+  dispatch({
     type: types.SCROLL_WORLD,
     x,
-    y
-  };
+    y,
+  });
+};
+
+export const scrollWorldThottled = debounce((dispatch, x, y) => {
+  dispatch({
+    type: types.SCROLL_WORLD_THROTTLED,
+    x,
+    y,
+  });
+}, 60);
+
+export const resizeWorldView = (width, height) => {
+  return {
+    type: types.RESIZE_WORLD_VIEW,
+    width,
+    height
+  }
 };
 
 export const loadProject = path => async dispatch => {
-  return asyncAction(
+  await asyncAction(
     dispatch,
     types.PROJECT_LOAD_REQUEST,
     types.PROJECT_LOAD_SUCCESS,
@@ -100,6 +118,7 @@ export const loadProject = path => async dispatch => {
       };
     }
   );
+  dispatch(ActionCreators.clearHistory())
 };
 
 export const loadSprite = filename => async (dispatch, getState) => {
@@ -252,6 +271,8 @@ export const saveProject = () => async (dispatch, getState) => {
     async () => {
       const data = denormalizeProject(state.entities.present);
       data.settings.zoom = state.editor.zoom;
+      data.settings.worldScrollX = state.editor.worldScrollX;
+      data.settings.worldScrollY = state.editor.worldScrollY;
       await saveProjectData(state.document.path, data);
     }
   );

@@ -32,7 +32,13 @@ export default {
       actorId: "",
       x: 0,
       y: 0
-    }
+    },
+    worldScrollX: 0,
+    worldScrollY: 0,   
+    worldScrollThrottledX: 0,
+    worldScrollThrottledY: 0,
+    worldViewWidth: 0,
+    worldViewHeight: 0
   },
   navigation: {
     section: "world",

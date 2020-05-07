@@ -5,9 +5,6 @@
   text-align: center;
   border-radius: 4px;
   transition: background 0.3s ease-in-out;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000;
 }
 
 .Scene:hover {
@@ -55,7 +52,7 @@
 
 .Scene__Image {
   position: relative;
-  background-color: #fff;
+  background-color: var(--sidebar-edge-color);
   outline: 1px solid var(--sidebar-edge-color);
   image-rendering: pixelated;
   overflow: hidden;

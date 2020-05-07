@@ -44,7 +44,10 @@ import {
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
   RELOAD_ASSETS,
-  RENAME_VARIABLE
+  RENAME_VARIABLE,
+  SCROLL_WORLD,
+  SCROLL_WORLD_THROTTLED,  
+  RESIZE_WORLD_VIEW
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -65,7 +68,15 @@ export default function editor(state = initialState.editor, action) {
         action.data.settings &&
           action.data.settings.zoom && {
             zoom: action.data.settings.zoom
-          }
+          },
+        action.data.settings &&
+          action.data.settings.worldScrollX && 
+          action.data.settings.worldScrollY && {
+            worldScrollX: action.data.settings.worldScrollX,
+            worldScrollY: action.data.settings.worldScrollY,
+            worldScrollThrottledX: action.data.settings.worldScrollX,
+            worldScrollThrottledY: action.data.settings.worldScrollY
+          }          
       );
     }
     case SET_SECTION: {
@@ -426,6 +437,24 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         searchTerm: action.searchTerm
       };
+    case SCROLL_WORLD:
+      return {
+        ...state,
+        worldScrollX: action.x,
+        worldScrollY: action.y,
+      }
+      case SCROLL_WORLD_THROTTLED:
+        return {
+          ...state,
+          worldScrollThrottledX: action.x,
+          worldScrollThrottledY: action.y,
+        }      
+    case RESIZE_WORLD_VIEW:
+      return {
+        ...state,
+        worldViewWidth: action.width,
+        worldViewHeight: action.height
+      }
     default:
       return state;
   }

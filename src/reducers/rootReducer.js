@@ -10,14 +10,8 @@ import entities from "./entitiesReducer";
 import settings from "./settingsReducer";
 import error from "./errorReducer";
 
-import {
-  PROJECT_LOAD_SUCCESS,
-  PROJECT_SAVE_SUCCESS
-} from "../actions/actionTypes";
-
 let lastEntityUndoStateTime = 0;
-
-const UNDO_THROTTLE = 2000;
+const UNDO_THROTTLE = 300;
 
 const rootReducer = combineReducers({
   tools,
@@ -27,10 +21,10 @@ const rootReducer = combineReducers({
   console,
   music,
   entities: undoable(entities, {
-    limit: 50,
-    filter: (_action, currentState, previousState) => {
+    limit: 20,
+    filter: (_action, currentState, previousHistory) => {
       const shouldStoreUndo =
-        currentState !== previousState &&
+        currentState !== previousHistory.present &&
         Date.now() > lastEntityUndoStateTime + UNDO_THROTTLE;
       if (shouldStoreUndo) {
         lastEntityUndoStateTime = Date.now();
@@ -39,9 +33,7 @@ const rootReducer = combineReducers({
     },
     initTypes: [
       "@@redux/INIT",
-      "@@INIT",
-      PROJECT_LOAD_SUCCESS,
-      PROJECT_SAVE_SUCCESS
+      "@@INIT"
     ]
   }),
   settings,

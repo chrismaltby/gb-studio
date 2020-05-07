@@ -124,16 +124,16 @@ class Scene extends Component {
       hovered,
       frameCount,
       sceneFiltered,
+      simplifiedRender
     } = this.props;
 
     const { x, y, triggers = [], collisions = [], actors = [] } = scene;
 
-    console.log("RENDER SCENE" + scene.name);
 
     if (!visible) {
       return null;
     }
-
+    
     return (
       <div
         ref={this.containerRef}
@@ -158,7 +158,7 @@ class Scene extends Component {
             height: height * TILE_SIZE,
           }}
         >
-          {image && (
+          {!simplifiedRender && image && (
             <img
               className="Scene__Background"
               alt=""
@@ -169,7 +169,7 @@ class Scene extends Component {
               )}?_v=${image._v}`}
             />
           )}
-          {showCollisions && (
+          {!simplifiedRender && showCollisions && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
@@ -179,20 +179,19 @@ class Scene extends Component {
             </div>
           )}
           <SceneCursor sceneId={id} enabled={hovered} />
-          {triggers.map((triggerId) => (
+          {!simplifiedRender && triggers.map((triggerId) => (
             <Trigger key={triggerId} id={triggerId} sceneId={id} />
           ))}
-          {actors.map((actorId) => (
+          {!simplifiedRender && actors.map((actorId) => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
-
-          {event && (
+          {!simplifiedRender && event && (
             <div className="Scene__EventHelper">
               <EventHelper event={event} scene={scene} />
             </div>
           )}
         </div>
-        <div className="Scene__Info" onMouseDown={this.onStartDrag}>
+        {/* {!simplifiedRender && <div className="Scene__Info" onMouseDown={this.onStartDrag}>
           <span
             title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
             className={cx({
@@ -228,7 +227,7 @@ class Scene extends Component {
           >
             T: {scene.triggers.length}/{MAX_TRIGGERS}
           </span>
-        </div>
+        </div>} */}
       </div>
     );
   }
@@ -256,6 +255,7 @@ Scene.propTypes = {
   sceneHover: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
+  simplifiedRender: PropTypes.bool.isRequired,
 };
 
 Scene.defaultProps = {
@@ -276,7 +276,6 @@ const testScene = {
 };
 
 function mapStateToProps(state, props) {
-  console.log("MAP STATE SCENE");
 
   const { scene: sceneId, dragging: editorDragging } = state.editor;
 
@@ -306,13 +305,39 @@ function mapStateToProps(state, props) {
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.tools.selected;
 
-  const { viewBounds } = props;
-  const visible =
-    scene.x + scene.width * 8 > viewBounds.x &&
-    scene.x < viewBounds.x + viewBounds.width &&
-    scene.y + scene.height * 8 + 50 > viewBounds.y &&
-    scene.y < viewBounds.y + viewBounds.height;
+  const {
+    worldScrollX,
+    worldScrollY,
+    worldViewWidth,
+    worldViewHeight,
+    worldScrollThrottledX,
+    worldScrollThrottledY,
+    zoom,
+  } = state.editor;
+  const zoomRatio = zoom / 100;
 
+  const viewBoundsX = (worldScrollX - 500) / zoomRatio;
+  const viewBoundsY = (worldScrollY - 500) / zoomRatio;
+  const viewBoundsWidth = (worldViewWidth + 1000) / zoomRatio;
+  const viewBoundsHeight = (worldViewHeight + 1000) / zoomRatio;
+
+  const viewBoundsThrottledX = (worldScrollThrottledX) / zoomRatio;
+  const viewBoundsThrottledY = (worldScrollThrottledY) / zoomRatio;
+  const viewBoundsThrottledWidth = (worldViewWidth) / zoomRatio;
+  const viewBoundsThrottledHeight = (worldViewHeight) / zoomRatio;
+
+  const visible =
+    scene.x + scene.width * 8 > viewBoundsX &&
+    scene.x < viewBoundsX + viewBoundsWidth &&
+    scene.y + scene.height * 8 + 50 > viewBoundsY &&
+    scene.y < viewBoundsY + viewBoundsHeight;
+
+  const fullRender =
+    scene.x + scene.width * 8 > viewBoundsThrottledX &&
+    scene.x < viewBoundsThrottledX + viewBoundsThrottledWidth &&
+    scene.y + scene.height * 8 + 50 > viewBoundsThrottledY &&
+    scene.y < viewBoundsThrottledY + viewBoundsThrottledHeight;
+    
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
   const sceneFiltered =
@@ -337,6 +362,7 @@ function mapStateToProps(state, props) {
     frameCount: getSceneFrameCount(state, props),
     sceneName,
     sceneFiltered,
+    simplifiedRender: !fullRender
   };
 }
 

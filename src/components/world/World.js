@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
+import { throttle } from "lodash";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -20,9 +21,7 @@ class World extends Component {
     this.state = {
       hover: false,
       hoverX: 0,
-      hoverY: 0,
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight      
+      hoverY: 0 
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
@@ -50,6 +49,9 @@ class World extends Component {
     if (scroll) {
       scroll.scrollTo(scrollX, scrollY);
     }
+
+    const { resizeWorldView } = this.props;
+    resizeWorldView(window.innerWidth, window.innerHeight);    
   }
 
   componentDidUpdate(prevProps) {
@@ -142,13 +144,10 @@ class World extends Component {
     }
   };
 
-  onMouseUp = (e) => {
+  onMouseUp = e => {
     const { selectWorld } = this.props;
-    if (this.worldDragging) {
-      if (
-        Math.abs(this.dragDistance.x) < 20 &&
-        Math.abs(this.dragDistance.y) < 20
-      ) {
+    if(this.worldDragging) {
+      if(Math.abs(this.dragDistance.x) < 20 && Math.abs(this.dragDistance.y) < 20) {
         selectWorld();
       }
     }
@@ -215,15 +214,17 @@ class World extends Component {
   };
 
   onScroll = e => {
+    this.onScrollThrottled(e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
+  }
+
+  onScrollThrottled = throttle((left, top) => {
     const { scrollWorld } = this.props;
-    scrollWorld(e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
-  };
+    scrollWorld(left, top);
+  }, 50);
 
   onWindowResize = e => {
-    this.setState({
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight
-    })
+    const { resizeWorldView } = this.props;
+    resizeWorldView(window.innerWidth, window.innerHeight);
   }
 
   onAddScene = e => {
@@ -237,8 +238,6 @@ class World extends Component {
   render() {
     const {
       scenes,
-      scrollX,
-      scrollY,
       scrollWidth,
       scrollHeight,
       tool,
@@ -247,17 +246,10 @@ class World extends Component {
       sidebarWidth,
       loaded
     } = this.props;
-    const { hover, hoverX, hoverY, windowWidth, windowHeight } = this.state;
+    const { hover, hoverX, hoverY } = this.state;
 
     const worldStyle = { right: sidebarWidth };
     
-    const viewBounds = {
-      x: scrollX / zoomRatio,
-      y: scrollY / zoomRatio,
-      width: windowWidth / zoomRatio,
-      height: windowHeight / zoomRatio
-    }
-
     return (
       <div
         ref={this.scrollRef}
@@ -279,7 +271,11 @@ class World extends Component {
           {loaded && scenes.length === 0 && <WorldHelp />}
 
           {scenes.map((sceneId, index) => (
-            <Scene key={sceneId} id={sceneId} index={index} viewBounds={viewBounds} />
+            <Scene
+              key={sceneId}
+              id={sceneId}
+              index={index}
+            />
           ))}
 
           {showConnections && (
@@ -296,7 +292,7 @@ class World extends Component {
               onClick={this.onAddScene}
               style={{
                 left: hoverX,
-                top: hoverY
+                top: hoverY,
               }}
             />
           )}
@@ -341,10 +337,13 @@ function mapStateToProps(state) {
   const scenes = state.entities.present.result.scenes;
   const scenesLookup = getScenesLookup(state);
   const {
-    showConnections,
+    showConnections
+  } = state.entities.present.result.settings;
+  const {
     worldScrollX: scrollX,
     worldScrollY: scrollY
-  } = state.entities.present.result.settings;
+  } = state.editor;
+  
   const { worldSidebarWidth: sidebarWidth } = state.settings;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
@@ -402,7 +401,8 @@ const mapDispatchToProps = {
   zoomOut: actions.zoomOut,
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
-  scrollWorld: actions.scrollWorld
+  scrollWorld: actions.scrollWorld,
+  resizeWorldView: actions.resizeWorldView
 };
 
 export default connect(

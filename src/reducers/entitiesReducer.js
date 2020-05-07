@@ -37,7 +37,6 @@ import {
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
-  SCROLL_WORLD,
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
   RELOAD_ASSETS
@@ -1130,20 +1129,6 @@ const renameVariable = (state, action) => {
   return removeEntity(state, "variables", action.variableId);
 };
 
-const scrollWorld = (state, action) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      settings: {
-        ...state.result.settings,
-        worldScrollX: action.x,
-        worldScrollY: action.y
-      }
-    }
-  };
-};
-
 const reloadAssets = (state, action) => {
   const now = Date.now();
   return {
@@ -1342,8 +1327,6 @@ export default function project(state = initialState.entities, action) {
       return editTriggerEventDestinationPosition(state, action);
     case RENAME_VARIABLE:
       return renameVariable(state, action);
-    case SCROLL_WORLD:
-      return scrollWorld(state, action);
     case RELOAD_ASSETS:
       return reloadAssets(state, action);
     default:
