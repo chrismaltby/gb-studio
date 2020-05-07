@@ -8,10 +8,10 @@
 }
 
 .Sidebar__DragHandle {
-  width: 16px;
+  width: 12px;
   height: 100vh;
   position: fixed;
-  margin-left: -8px;
+  margin-left: -2px;
   cursor: ew-resize;
 }
 
