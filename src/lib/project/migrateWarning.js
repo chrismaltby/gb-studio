@@ -30,69 +30,64 @@ export default async projectPath => {
     currentVersion = "1.0.0";
   }
 
-  return new Promise((resolve, reject) => {
-    if (fromFuture(currentVersion)) {
-      const dialogOptions = {
-        type: "info",
-        buttons: [
-          l10n("DIALOG_DOWNLOAD"),
-          l10n("DIALOG_OPEN_ANYWAY"),
-          l10n("DIALOG_CANCEL")
-        ],
-        defaultId: 0,
-        cancelId: 1,
-        title: l10n("DIALOG_FUTURE"),
-        message: l10n("DIALOG_FUTURE"),
-        detail: l10n("DIALOG_FUTURE_DESCRIPTION", {
-          currentVersion,
-          version: LATEST_PROJECT_VERSION
-        })
-      };
-      dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
-        if (buttonIndex === 0) {
-          shell.openExternal("https://www.gbstudio.dev/download/");
-          return reject();
-        }
-        if (buttonIndex === 2) {
-          return reject();
-        }
-        return resolve(true);
-      });
-      return;
-    }
-
-    if (!needsUpdate(currentVersion)) {
-      resolve(true);
-      return;
-    }
-
+  if (fromFuture(currentVersion)) {
     const dialogOptions = {
       type: "info",
       buttons: [
-        l10n("DIALOG_MIGRATE", {
-          version: LATEST_PROJECT_VERSION
-        }),
+        l10n("DIALOG_DOWNLOAD"),
+        l10n("DIALOG_OPEN_ANYWAY"),
         l10n("DIALOG_CANCEL")
       ],
       defaultId: 0,
       cancelId: 1,
-      title: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
-      message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
-      detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
+      title: l10n("DIALOG_FUTURE"),
+      message: l10n("DIALOG_FUTURE"),
+      detail: l10n("DIALOG_FUTURE_DESCRIPTION", {
         currentVersion,
         version: LATEST_PROJECT_VERSION
       })
     };
+    const { response: updateButtonIndex } = await dialog.showMessageBox(dialogOptions);
+    if (updateButtonIndex === 0) {
+      await shell.openExternal("https://www.gbstudio.dev/download/");
+      return false;
+    }
+    if (updateButtonIndex === 2) {
+      return false;
+    }
+    return true;
+  }
 
-    dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
-      if (checkboxChecked) {
-        // Ignore all updates until manually check for updates
-        settings.set("dontCheckForUpdates", true);
-      }
-      if (buttonIndex === 0) {
-        return resolve(true);
-      }
-      return resolve(false);
-    });
-  });
+  if (!needsUpdate(currentVersion)) {
+    return true;
+  }
+
+  const dialogOptions = {
+    type: "info",
+    buttons: [
+      l10n("DIALOG_MIGRATE", {
+        version: LATEST_PROJECT_VERSION
+      }),
+      l10n("DIALOG_CANCEL")
+    ],
+    defaultId: 0,
+    cancelId: 1,
+    title: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
+    message: l10n("DIALOG_PROJECT_NEED_MIGRATION"),
+    detail: l10n("DIALOG_MIGRATION_DESCRIPTION", {
+      currentVersion,
+      version: LATEST_PROJECT_VERSION
+    })
+  };
+
+  const {response: buttonIndex, checkboxChecked} = await dialog.showMessageBox(dialogOptions);
+
+  if (checkboxChecked) {
+    // Ignore all updates until manually check for updates
+    settings.set("dontCheckForUpdates", true);
+  }
+  if (buttonIndex === 0) {
+    return true;
+  }
+  return false;
 };
