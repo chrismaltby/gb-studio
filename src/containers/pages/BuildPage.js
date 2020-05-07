@@ -50,7 +50,7 @@ class BuildPage extends Component {
       <div
         style={{
           width: "100%",
-          height: "100%",
+          height: "calc(100vh - 38px)",
           display: "flex",
           flexDirection: "column"
         }}
