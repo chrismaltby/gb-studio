@@ -923,7 +923,7 @@ void Script_ActorPush_b() {
       check_tile2 = DIV_8(dest_x);
       while (check_tile != end_tile) {
         if (TileAt2x2(check_tile2, check_tile - 2) ||  // Tile up
-            (ActorAt3x1Tile(check_tile2 - 1, check_tile - 3, FALSE) !=
+            (ActorAt3x1Tile(check_tile2 - 1, check_tile - 2, FALSE) !=
              NO_ACTOR_COLLISON)  // Actor up
         ) {
           dest_y = (check_tile)*8;
