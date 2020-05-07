@@ -9,8 +9,8 @@ const oneHour = 60 * 60 * 1000;
 const cache = {
   latest: {
     value: null,
-    timestamp: null
-  }
+    timestamp: null,
+  },
 };
 
 export const getLatestVersion = async () => {
@@ -21,7 +21,7 @@ export const getLatestVersion = async () => {
 
   const latest = await github.repos.getLatestRelease({
     owner: "chrismaltby",
-    repo: "gb-studio"
+    repo: "gb-studio",
   });
 
   if (latest) {
@@ -47,7 +47,7 @@ export const needsUpdate = async () => {
   return false;
 };
 
-export const checkForUpdate = async force => {
+export const checkForUpdate = async (force) => {
   // eslint-disable-next-line global-require
   const l10n = require("./l10n").default;
   if (force) {
@@ -73,9 +73,9 @@ export const checkForUpdate = async force => {
           buttons: [l10n("DIALOG_OK")],
           defaultId: 0,
           title: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION"),
-          message: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION")
+          message: l10n("DIALOG_UNABLE_TO_CHECK_LATEST_VERSION"),
         };
-        dialog.showMessageBox(dialogOptions);
+        await dialog.showMessageBox(dialogOptions);
         return;
       }
     }
@@ -91,31 +91,34 @@ export const checkForUpdate = async force => {
         buttons: [
           l10n("DIALOG_DOWNLOAD"),
           l10n("DIALOG_REMIND_LATER"),
-          l10n("DIALOG_SKIP_VERSION")
+          l10n("DIALOG_SKIP_VERSION"),
         ],
         defaultId: 0,
         cancelId: 1,
         title: l10n("DIALOG_UPDATE_AVAILABLE"),
         message: l10n("DIALOG_UPDATE_AVAILABLE"),
         detail: l10n("DIALOG_UPDATE_DESCRIPTION", {
-          version: latestVersion
+          version: latestVersion,
         }),
         checkboxLabel: l10n("DIALOG_UPDATE_DONT_ASK_AGAIN"),
-        checkboxChecked: false
+        checkboxChecked: false,
       };
 
-      dialog.showMessageBox(dialogOptions, (buttonIndex, checkboxChecked) => {
-        if (checkboxChecked) {
-          // Ignore all updates until manually check for updates
-          settings.set("dontCheckForUpdates", true);
-        }
-        if (buttonIndex === 0) {
-          shell.openExternal("https://www.gbstudio.dev/download/");
-        } else if (buttonIndex === 2) {
-          // Ingore this version but notify for next
-          settings.set("dontNotifyUpdatesForVersion", latestVersion);
-        }
-      });
+      const {
+        response: buttonIndex,
+        checkboxChecked,
+      } = await dialog.showMessageBox(dialogOptions);
+
+      if (checkboxChecked) {
+        // Ignore all updates until manually check for updates
+        settings.set("dontCheckForUpdates", true);
+      }
+      if (buttonIndex === 0) {
+        shell.openExternal("https://www.gbstudio.dev/download/");
+      } else if (buttonIndex === 2) {
+        // Ingore this version but notify for next
+        settings.set("dontNotifyUpdatesForVersion", latestVersion);
+      }
     } else if (force) {
       // If specifically asked to check for updates need to show message
       // that you're all up to date
@@ -126,11 +129,11 @@ export const checkForUpdate = async force => {
         title: l10n("DIALOG_UP_TO_DATE"),
         message: l10n("DIALOG_UP_TO_DATE"),
         detail: l10n("DIALOG_NEWEST_VERSION_AVAILABLE", {
-          version: latestVersion
-        })
+          version: latestVersion,
+        }),
       };
 
-      dialog.showMessageBox(dialogOptions);
+      await dialog.showMessageBox(dialogOptions);
     }
   }
 };
