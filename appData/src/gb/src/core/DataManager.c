@@ -121,6 +121,7 @@ void LoadPalette(UINT16 index) {
 
   PUSH_BANK(bank);
   memcpy(BkgPalette, data_ptr, 64);
+  data_ptr += 64;
   memcpy(SprPalette, data_ptr, 64);
   POP_BANK;
 }

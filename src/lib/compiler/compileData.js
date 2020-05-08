@@ -225,14 +225,24 @@ const compile = async (
   // @todo Read this from project
   const usedPalettes = [
     [
+      // Background
+      ["9cd920", "ccffcc", "999999", "ff33ff"],
+      ["9cd920", "00ff00", "0000ff", "ff00ff"],
       ["9cd920", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
+      ["ff00ff", "00ff00", "000000", "0000ff"], // Background default
+      // Sprites
+      ["ffffff", "ffffff", "666666", "000000"], // Sprite default   
+      ["9cd920", "00ff00", "0000ff", "ff00ff"],
+      ["9cd920", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
       ["ff0000", "00ff00", "0000ff", "ff00ff"],
-      ["eeeeee", "cccccc", "999999", "333333"],
+      ["ff0000", "00ff00", "0000ff", "ff00ff"],
+      ["ff0000", "00ff00", "0000ff", "ff00ff"],
+      ["0000ff", "00ff00", "000000", "0000ff"],  
     ],
   ];
 
