@@ -1,19 +1,11 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
-// import installExtension, {
-//   REACT_DEVELOPER_TOOLS,
-//   REDUX_DEVTOOLS
-// } from "electron-devtools-installer";
-// import { addBypassChecker } from "electron-compile";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
 import Path from "path";
 import { stat } from "fs-extra";
-import uuid from "uuid/v4";
 import menu from "./menu";
 import { checkForUpdate } from "./lib/helpers/updateChecker";
 import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
-import getTmp from "./lib/helpers/getTmp";
-import copy from "./lib/helpers/fsCopy";
 import rimraf from "rimraf";
 import { promisify } from "util";
 
@@ -22,8 +14,6 @@ declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
-
-const rmdir = promisify(rimraf);
 
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
@@ -368,73 +358,6 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
       };
     })
   );
-});
-
-const buildUUID = uuid();
-
-ipcMain.on("build-game", async (event, project: any, projectRoot: string, buildType: string, exportBuild: boolean, ejectBuild: boolean) => {
-  try {
-    const buildProject = await import("./lib/compiler/buildProject").then((m) => m.default);
-    const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
-    await rmdir(outputRoot);
-
-    mainWindow && mainWindow.webContents.send("build-start");
-    await buildProject(project, {
-      projectRoot,
-      buildType,
-      outputRoot,
-      tmpPath: getTmp(),
-      progress: (message: string) => {
-        if (
-          message !== "'" &&
-          message.indexOf("unknown or unsupported #pragma") === -1
-        ) {
-          mainWindow && mainWindow.webContents.send("build-stdout", message)
-        }
-      },
-      warnings: (message: string) => {
-        mainWindow && mainWindow.webContents.send("build-stderr", message)
-      }
-    });
-
-    if (exportBuild) {
-      await copy(
-        `${outputRoot}/build/${buildType}`,
-        `${projectRoot}/build/${buildType}`
-      );
-      shell.openItem(`${projectRoot}/build/${buildType}`);
-      mainWindow && mainWindow.webContents.send("build-stdout", "-")
-      mainWindow && mainWindow.webContents.send("build-stdout", `Success! ${
-        buildType === "web"
-          ? `Site is ready at ${Path.normalize(
-            `${projectRoot}/build/web/index.html`
-          )}`
-          : `ROM is ready at ${Path.normalize(
-            `${projectRoot}/build/rom/game.gb`
-          )}`
-        }`);
-    } else if (ejectBuild) {
-      await copy(`${outputRoot}`, `${projectRoot}/build/src`);
-      shell.openItem(`${projectRoot}/build/src`);
-    }
-
-    if (buildType === "web" && !exportBuild && !ejectBuild) {
-      mainWindow && mainWindow.webContents.send("build-stdout", "-")
-      mainWindow && mainWindow.webContents.send("build-stdout", "Success! Starting emulator...");
-      createPlay(`file://${outputRoot}/build/web/index.html`);
-    }
-
-    mainWindow && mainWindow.webContents.send("build-complete");
-
-  } catch (e) {
-    if (typeof e === "string") {
-      mainWindow && mainWindow.webContents.send("build-stderr", e)
-    } else {
-      mainWindow && mainWindow.webContents.send("build-stderr", e.toString())
-    }
-    mainWindow && mainWindow.webContents.send("build-complete");
-    throw e;
-  }
 });
 
 menu.on("new", async () => {

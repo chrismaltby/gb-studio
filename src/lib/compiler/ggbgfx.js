@@ -1,6 +1,6 @@
 const fs = require("fs");
 const promisify = require("util").promisify;
-const getPixels = promisify(require("get-pixels"));
+const getPixels = promisify(require("get-pixels/node-pixels"));
 const zeros = require("zeros");
 const savePixels = require("save-pixels");
 
