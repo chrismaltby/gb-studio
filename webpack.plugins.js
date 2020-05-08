@@ -6,7 +6,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = [
   // new HardSourceWebpackPlugin(),
   new ForkTsCheckerWebpackPlugin({
-    async: false
+    async: false,
+    memoryLimit: 4096
   }),
   new webpack.DefinePlugin({
     VERSION: JSON.stringify(require("./package.json").version)
