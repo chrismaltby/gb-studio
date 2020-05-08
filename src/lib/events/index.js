@@ -47,12 +47,6 @@ const eventHandlers = {
     if (!handler.id) {
       throw new Error(`Event handler ${path} is missing id`);
     }
-    if (handler.fields) {
-      // Convert fields to plain javascript object rather than proxy
-      // fixes an issue where creating a new AWAIT_INPUT event
-      // would set default value as an object rather than an array
-      handler.fields = JSON.parse(JSON.stringify(handler.fields));
-    }
     return {
       ...memo,
       [handler.id]: handler
