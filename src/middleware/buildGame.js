@@ -7,7 +7,8 @@ import {
   CMD_START,
   CMD_COMPLETE,
   CMD_STD_OUT,
-  CMD_STD_ERR
+  CMD_STD_ERR,
+  CMD_CLEAR
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
@@ -107,7 +108,25 @@ export default store => next => async action => {
       dispatch({ type: CMD_COMPLETE });
       throw e;
     }
+
+    if(module.hot) {  
+      module.hot.accept("../lib/compiler/buildProject", () => {
+        dispatch({
+          type: CMD_CLEAR
+        });
+        dispatch({
+          type: CMD_STD_OUT,
+          text: "Reloaded GB Studio Compiler"
+        });        
+      });
+    }    
   }
+
+
   
   return next(action);
 };
+
+if(module.hot) {
+  module.hot.accept("../lib/compiler/buildProject");
+}   
