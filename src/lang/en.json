@@ -38,6 +38,7 @@
   "TOOL_ADD_SCENE_LABEL": "Add Scene",
   "TOOL_ERASER_LABEL": "Eraser",
   "TOOL_COLLISIONS_LABEL": "Collisions",
+  "TOOL_COLORS_LABEL": "Colorize",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",

@@ -121,6 +121,7 @@ class Scene extends Component {
       height,
       projectRoot,
       showCollisions,
+      showColors,
       selected,
       hovered,
       frameCount,
@@ -128,7 +129,7 @@ class Scene extends Component {
       simplifiedRender
     } = this.props;
 
-    const { x, y, triggers = [], collisions = [], actors = [] } = scene;
+    const { x, y, triggers = [], collisions = [], actors = [], tileColors = [] } = scene;
 
 
     if (!visible) {
@@ -170,14 +171,14 @@ class Scene extends Component {
                 "backgrounds",
                 image
               )}?_v=${image._v}`}
-              tiles={[0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0]}
+              tiles={tileColors}
               palettes={[
                 ["#ff0000", "#00ff00", "#0000ff", "#ffffff"],
                 ["#ff00ff", "#ffff00", "#00ffff", "#000000"]
               ]}
             />
           )}
-          {!simplifiedRender && showCollisions && (
+          {!simplifiedRender && showCollisions && !showColors && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
@@ -187,10 +188,10 @@ class Scene extends Component {
             </div>
           )}
           <SceneCursor sceneId={id} enabled={hovered} />
-          {!simplifiedRender && triggers.map((triggerId) => (
+          {!simplifiedRender && !showColors && triggers.map((triggerId) => (
             <Trigger key={triggerId} id={triggerId} sceneId={id} />
           ))}
-          {!simplifiedRender && actors.map((actorId) => (
+          {!simplifiedRender && !showColors && actors.map((actorId) => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
           {!simplifiedRender && event && (
@@ -257,6 +258,7 @@ Scene.propTypes = {
   frameCount: PropTypes.number.isRequired,
   zoomRatio: PropTypes.number.isRequired,
   showCollisions: PropTypes.bool.isRequired,
+  showColors: PropTypes.bool.isRequired,
   moveScene: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   moveSelectedEntity: PropTypes.func.isRequired,
@@ -324,10 +326,10 @@ function mapStateToProps(state, props) {
   } = state.editor;
   const zoomRatio = zoom / 100;
 
-  const viewBoundsX = (worldScrollX - 500) / zoomRatio;
-  const viewBoundsY = (worldScrollY - 500) / zoomRatio;
-  const viewBoundsWidth = (worldViewWidth + 1000) / zoomRatio;
-  const viewBoundsHeight = (worldViewHeight + 1000) / zoomRatio;
+  const viewBoundsX = (worldScrollX) / zoomRatio;
+  const viewBoundsY = (worldScrollY) / zoomRatio;
+  const viewBoundsWidth = (worldViewWidth) / zoomRatio;
+  const viewBoundsHeight = (worldViewHeight) / zoomRatio;
 
   const viewBoundsThrottledX = (worldScrollThrottledX) / zoomRatio;
   const viewBoundsThrottledY = (worldScrollThrottledY) / zoomRatio;
@@ -363,6 +365,7 @@ function mapStateToProps(state, props) {
     width: image ? image.width : 32,
     height: image ? image.height : 32,
     showCollisions: settings.showCollisions || tool === "collisions",
+    showColors: tool === "colors",
     zoomRatio: (state.editor.zoom || 100) / 100,
     selected,
     dragging,

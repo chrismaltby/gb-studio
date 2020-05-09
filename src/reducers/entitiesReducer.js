@@ -27,6 +27,7 @@ import {
   REMOVE_TRIGGER_AT,
   ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
+  SET_COLOR_TILE,
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
@@ -1070,6 +1071,31 @@ const removeCollisionTile = (state, action) => {
   });
 };
 
+const setColorTile = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  const background = state.entities.backgrounds[scene.backgroundId];
+
+  if (!background) {
+    return state;
+  }
+
+  const tileColorsSize = Math.ceil((background.width * background.height));
+  const tileColors = (scene.tileColors || []).slice(0, tileColorsSize);
+
+  if (tileColors.length < tileColorsSize) {
+    for (let i = tileColors.length; i < tileColorsSize; i++) {
+      tileColors[i] = 0;
+    }
+  }
+
+  const tileColorIndex = (background.width * action.y) + action.x;
+  tileColors[tileColorIndex] = action.paletteIndex;
+
+  return editEntity(state, "scenes", scene.id, {
+    tileColors
+  });
+};
+
 const editPlayerStartAt = (state, action) => {
   return editProjectSettings(state, {
     values: {
@@ -1317,6 +1343,8 @@ export default function project(state = initialState.entities, action) {
       return addCollisionTile(state, action);
     case REMOVE_COLLISION_TILE:
       return removeCollisionTile(state, action);
+    case SET_COLOR_TILE:
+      return setColorTile(state, action);
     case EDIT_PLAYER_START_AT:
       return editPlayerStartAt(state, action);
     case EDIT_SCENE_EVENT_DESTINATION_POSITION:

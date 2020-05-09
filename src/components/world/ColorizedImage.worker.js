@@ -5,7 +5,7 @@ const DMGPalette = [
   [36, 50, 66],
 ];
 
-const indexColour = (g: number) => {
+const indexColour = (g) => {
   if (g < 65) {
     return 3;
   }
@@ -18,31 +18,51 @@ const indexColour = (g: number) => {
   return 0;
 };
 
+const cache = {};
+
 onmessage = async (evt) => {
-  const canvas:OffscreenCanvas = evt.data.canvas;
-  const src:string = evt.data.src;
+  const id = evt.data.id;
+  const src = evt.data.src;
   const tiles = evt.data.tiles;
   const palettes = evt.data.palettes;
+  const width = evt.data.width;
+  const height = evt.data.height;
 
-  const ctx = canvas.getContext("2d");
+  let canvas;
+  let ctx;
+  let img;
 
-  if(!ctx) {
-    return;
-  }
-
-  const width = canvas.width;
-  const tileWidth = Math.floor(canvas.width / 8);
-  const tileHeight = Math.floor(canvas.width / 8);
+  const tileWidth = Math.floor(width / 8);
+  const tileHeight = Math.floor(width / 8);
   const tilesLength = tileWidth * tileHeight;
 
-  const imgblob = await fetch(src).then((r) => r.blob());
-  const img = await createImageBitmap(imgblob);
+  if (cache[src]) {
+    // Using Cached Data
+    canvas = cache[src].canvas;
+    ctx = cache[src].ctx;
+    img = cache[src].img;
+  } else {
+    // Fetch New Data
+    canvas = new OffscreenCanvas(width, height);
+    ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+    const imgblob = await fetch(src).then((r) => r.blob());
+    img = await createImageBitmap(imgblob, {
+      resizeQuality: "pixelated",
+    });
 
-  ctx.fillRect(10,10,50,20);
+    cache[src] = {
+      canvas,
+      ctx,
+      img,
+    };
+  }
 
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, width, height);
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
 
   for (let t = 0; t < tilesLength; t++) {
@@ -68,7 +88,6 @@ onmessage = async (evt) => {
 
   ctx.putImageData(imageData, 0, 0);
 
-  ctx.fillStyle="red";
-  ctx.fillRect(50,70,30,10);
-
+  const canvasImage = canvas.transferToImageBitmap();
+  postMessage({ id, canvasImage }, [canvasImage]);
 };

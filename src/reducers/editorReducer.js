@@ -40,6 +40,7 @@ import {
   SELECT_SIDEBAR,
   ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
+  SET_COLOR_TILE,
   SELECT_CUSTOM_EVENT,
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
@@ -317,7 +318,8 @@ export default function editor(state = initialState.editor, action) {
       };
     }
     case ADD_COLLISION_TILE:
-    case REMOVE_COLLISION_TILE: {
+    case REMOVE_COLLISION_TILE:
+    case SET_COLOR_TILE: {
       return {
         ...state,
         type: "scenes",

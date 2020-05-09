@@ -445,6 +445,10 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
+export const setColorTile = (sceneId, x, y, paletteIndex) => {
+  return { type: types.SET_COLOR_TILE, sceneId, x, y, paletteIndex };
+};
+
 export const addTrigger = (sceneId, x, y, defaults) => {
   return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid(), defaults };
 };

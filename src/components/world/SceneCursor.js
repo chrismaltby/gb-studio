@@ -53,6 +53,7 @@ class SceneCursor extends Component {
       showCollisions,
       addCollisionTile,
       removeCollisionTile,
+      setColorTile,
       removeActorAt,
       removeTriggerAt
     } = this.props;
@@ -82,6 +83,10 @@ class SceneCursor extends Component {
       }
       window.addEventListener("mousemove", this.onCollisionsMove);
       window.addEventListener("mouseup", this.onCollisionsStop);
+    } else if (tool === "colors") {
+      setColorTile(sceneId, x, y, 1);
+      window.addEventListener("mousemove", this.onColorsMove);
+      window.addEventListener("mouseup", this.onColorsStop);
     } else if (tool === "eraser") {
       if (showCollisions) {
         removeCollisionTile(sceneId, x, y);
@@ -135,6 +140,25 @@ class SceneCursor extends Component {
     window.removeEventListener("mousemove", this.onCollisionsMove);
     window.removeEventListener("mouseup", this.onCollisionsStop);
   };
+
+  onColorsMove = e => {
+    const {
+      x,
+      y,
+      sceneId,
+      setColorTile
+    } = this.props;
+    if (this.currentX !== x || this.currentY !== y) {
+      setColorTile(sceneId, x, y, 1);
+      this.currentX = x;
+      this.currentY = y;
+    }
+  };
+
+  onColorsStop = e => {
+    window.removeEventListener("mousemove", this.onColorsMove);
+    window.removeEventListener("mouseup", this.onColorsStop);
+  };  
 
   onEraserMove = e => {
     const { x, y, sceneId, showCollisions, removeCollisionTile } = this.props;
@@ -239,6 +263,7 @@ const mapDispatchToProps = {
   removeActorAt: actions.removeActorAt,
   addCollisionTile: actions.addCollisionTile,
   removeCollisionTile: actions.removeCollisionTile,
+  setColorTile: actions.setColorTile,
   addTrigger: actions.addTrigger,
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,

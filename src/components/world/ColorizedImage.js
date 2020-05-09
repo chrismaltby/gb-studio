@@ -6,33 +6,40 @@ const workerPool = [
   new ColorizedImageWorker(),
   new ColorizedImageWorker(),
   new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker()  
 ];
+
+let id = 0;
 
 class ColorizedImage extends Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
     this.image = null;
+    this.offscreen = false;
+    this.offscreenCanvas = document.createElement("canvas");
+    this.offscreenCtx = this.offscreenCanvas.getContext("bitmaprenderer");
+    this.id = id++;
+    this.worker = workerPool[Math.floor(workerPool.length * Math.random())];
   }
 
   componentDidMount() {
-    const { src } = this.props;
-    this.draw(src);
+    this.draw();
+    this.worker.addEventListener("message", this.onWorkerComplete);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { src } = nextProps;
-    if (src !== this.props.src) {
-      this.draw(src);
+  componentWillUnmount() {
+    this.worker.removeEventListener("message", this.onWorkerComplete);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { src, tiles } = this.props;
+    if (src !== prevProps.src || tiles !== prevProps.tiles) {
+      this.draw();
     }
   }
 
   draw = (src) => {
-    const { tiles } = this.props;
+    const { src, tiles, width, height } = this.props;
 
     const palettes = [
       [
@@ -50,9 +57,22 @@ class ColorizedImage extends Component {
     ];
 
     if (this.canvas && this.canvas.current) {
-        const worker = workerPool[Math.floor(workerPool.length * Math.random())];
-        var offscreen = this.canvas.current.transferControlToOffscreen();
-        worker.postMessage({canvas: offscreen, src, palettes, tiles }, [offscreen]);
+      this.worker.postMessage({
+        src,
+        palettes,
+        tiles,
+        width,
+        height,
+        id: this.id,
+      });
+    }
+  };
+
+  onWorkerComplete = (e, a, b) => {
+    if (this.offscreenCanvas && this.offscreenCtx && e.data.id === this.id) {
+      const ctx = this.canvas.current.getContext("2d");
+      this.offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+      ctx.drawImage(this.offscreenCanvas, 0, 0);
     }
   };
 

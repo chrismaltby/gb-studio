@@ -278,7 +278,7 @@ class World extends Component {
             />
           ))}
 
-          {showConnections && (
+          {showConnections && (tool !== "colors") && (
             <Connections
               width={scrollWidth}
               height={scrollHeight}
