@@ -112,6 +112,7 @@
     "style-loader": "^0.23.1",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.0"
+    "typescript": "^3.7.0",
+    "worker-loader": "^2.0.0"
   }
 }

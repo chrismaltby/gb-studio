@@ -5,6 +5,8 @@
   text-align: center;
   border-radius: 4px;
   transition: background 0.3s ease-in-out;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
 }
 
 .Scene:hover {

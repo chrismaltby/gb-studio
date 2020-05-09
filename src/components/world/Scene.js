@@ -24,6 +24,7 @@ import {
   getBackgroundsLookup,
   getSettings,
 } from "../../reducers/entitiesReducer";
+import ColorizedImage from "./ColorizedImage";
 
 window.React = React;
 window.Component = Component;
@@ -159,14 +160,21 @@ class Scene extends Component {
           }}
         >
           {image && (
-            <img
+            <ColorizedImage
               className="Scene__Background"
               alt=""
+              width={width * TILE_SIZE}
+              height={height * TILE_SIZE}
               src={`file://${assetFilename(
                 projectRoot,
                 "backgrounds",
                 image
               )}?_v=${image._v}`}
+              tiles={[0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0]}
+              palettes={[
+                ["#ff0000", "#00ff00", "#0000ff", "#ffffff"],
+                ["#ff00ff", "#ffff00", "#00ffff", "#000000"]
+              ]}
             />
           )}
           {!simplifiedRender && showCollisions && (
