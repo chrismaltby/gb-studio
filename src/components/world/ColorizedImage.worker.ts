@@ -1,3 +1,5 @@
+const workerCtx: Worker = self as any;
+
 const DMGPalette = [
   [233, 242, 228],
   [181, 214, 156],
@@ -5,7 +7,7 @@ const DMGPalette = [
   [36, 50, 66],
 ];
 
-const indexColour = (g) => {
+const indexColour = (g: number) => {
   if (g < 65) {
     return 3;
   }
@@ -18,9 +20,15 @@ const indexColour = (g) => {
   return 0;
 };
 
-const cache = {};
+interface CacheRecord {
+  canvas: OffscreenCanvas;
+  ctx: OffscreenCanvasRenderingContext2D;
+  img: ImageBitmap;
+}
 
-onmessage = async (evt) => {
+const cache: Record<string, CacheRecord> = {};
+
+workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const src = evt.data.src;
   const tiles = evt.data.tiles;
@@ -28,9 +36,9 @@ onmessage = async (evt) => {
   const width = evt.data.width;
   const height = evt.data.height;
 
-  let canvas;
-  let ctx;
-  let img;
+  let canvas: OffscreenCanvas;
+  let ctx: OffscreenCanvasRenderingContext2D;
+  let img: ImageBitmap;
 
   const tileWidth = Math.floor(width / 8);
   const tileHeight = Math.floor(width / 8);
@@ -44,14 +52,13 @@ onmessage = async (evt) => {
   } else {
     // Fetch New Data
     canvas = new OffscreenCanvas(width, height);
-    ctx = canvas.getContext("2d");
-    if (!ctx) {
+    const tmpCtx = canvas.getContext("2d");
+    if (!tmpCtx) {
       return;
     }
+    ctx = tmpCtx;
     const imgblob = await fetch(src).then((r) => r.blob());
-    img = await createImageBitmap(imgblob, {
-      resizeQuality: "pixelated",
-    });
+    img = await createImageBitmap(imgblob);
 
     cache[src] = {
       canvas,
@@ -89,5 +96,7 @@ onmessage = async (evt) => {
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();
-  postMessage({ id, canvasImage }, [canvasImage]);
+  workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
 };
+
+export { }
