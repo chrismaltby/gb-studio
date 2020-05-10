@@ -482,7 +482,7 @@ const precompile = async (
     projectData.scenes,
     projectRoot,
     tmpPath,
-    { warnings }
+    { progress, warnings }
   );
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
@@ -622,7 +622,7 @@ export const precompileBackgrounds = async (
   scenes,
   projectRoot,
   tmpPath,
-  { warnings } = {}
+  { progress, warnings } = {}
 ) => {
   const eventImageIds = [];
   walkScenesEvents(scenes, cmd => {
@@ -641,7 +641,7 @@ export const precompileBackgrounds = async (
     projectRoot,
     tmpPath,
     {
-      warnings
+      progress, warnings
     }
   );
   const usedTilesets = [];

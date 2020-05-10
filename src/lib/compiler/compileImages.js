@@ -5,7 +5,7 @@ const ggbgfx = require("./ggbgfx");
 const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
 
-const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
+const compileImages = async (imgs, projectPath, tmpPath, { progress, warnings }) => {
   const tilesetLookups = [];
   const tilesetIndexes = [];
   const output = {
@@ -28,6 +28,12 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
           img.filename
         }' contains too many unique 8x8px tiles (${tilesetLength} where limit is ${MAX_TILESET_TILES}) meaning it may not display correctly. ` +
           `Consider reducing the amount of detail in this image.`
+      );
+    } else {
+      progress(
+        `Background '${
+          img.filename
+        }' contains (${tilesetLength} of ${MAX_TILESET_TILES}) unique 8x8px tiles`
       );
     }
     tilesetLookups.push(tilesetLookup);
