@@ -48,7 +48,8 @@ import {
   RENAME_VARIABLE,
   SCROLL_WORLD,
   SCROLL_WORLD_THROTTLED,  
-  RESIZE_WORLD_VIEW
+  RESIZE_WORLD_VIEW,
+  SET_SELECTED_PALETTE
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -456,6 +457,11 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         worldViewWidth: action.width,
         worldViewHeight: action.height
+      }
+    case SET_SELECTED_PALETTE:
+      return {
+        ...state,
+        selectedPalette: action.paletteIndex
       }
     default:
       return state;

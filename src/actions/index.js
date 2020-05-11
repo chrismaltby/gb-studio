@@ -17,7 +17,7 @@ import { denormalizeProject } from "../reducers/entitiesReducer";
 import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 
 const asyncAction = async (
   dispatch,
@@ -309,6 +309,10 @@ export const setTool = tool => {
   return { type: types.SET_TOOL, tool };
 };
 
+export const setSelectedPalette = paletteIndex => {
+  return { type: types.SET_SELECTED_PALETTE, paletteIndex }
+};
+
 export const setActorPrefab = actor => {
   return { type: types.SET_ACTOR_PREFAB, actor };
 };
@@ -480,6 +484,18 @@ export const selectTrigger = (sceneId, id) => {
 export const renameVariable = (variableId, name) => {
   return { type: types.RENAME_VARIABLE, variableId, name };
 };
+
+export const addPalette = () => {
+  return { type: types.ADD_PALETTE, id: uuid() };
+}
+
+export const editPalette = (paletteId, colors) => {
+  return { type: types.EDIT_PALETTE, paletteId, colors}
+}
+
+export const removePalette = (paletteId) => {
+  return { type: types.REMOVE_PALETTE, paletteId}
+}
 
 export const setStatus = status => {
   return { type: types.SET_STATUS, status };

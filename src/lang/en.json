@@ -197,6 +197,8 @@
   "FIELD_LOCAL": "Local",
   "FIELD_GLOBAL": "Global",
   "FIELD_LOADING": "Loading...",
+  "FIELD_PALETTE": "Palette",
+  "FIELD_PALETTES": "Palettes",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

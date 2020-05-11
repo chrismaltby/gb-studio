@@ -349,11 +349,6 @@ const compile = async (
     );
   });
 
-  // Add background map data
-  const backgroundAttrPtrs = precompiled.usedBackgrounds.map((background) => {
-    // banked.nextBank(); // @todo remove this
-    return banked.push([].concat(background.data.map((data) => 0x7)));
-  });
 
   // Add UI data
   const fontImagePtr = banked.push(precompiled.fontTiles);
@@ -385,6 +380,20 @@ const compile = async (
       });
 
     return banked.push(collisions);
+  });
+
+  // Add scene tile colors data
+  const backgroundAttrPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
+    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
+    const tileColorsLength = Math.ceil(sceneImage.width * sceneImage.height);
+
+    const tileColors = Array(tileColorsLength)
+      .fill(0)
+      .map((_, index) => {
+        return (scene.tileColors && scene.tileColors[index]) || 0;
+      });
+
+    return banked.push(tileColors);
   });
 
   // Add scene data

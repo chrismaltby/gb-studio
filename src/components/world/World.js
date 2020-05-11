@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import { throttle } from "lodash";
+import throttle from "lodash/throttle";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -278,7 +278,7 @@ class World extends Component {
             />
           ))}
 
-          {showConnections && (tool !== "colors") && (
+          {showConnections&& (
             <Connections
               width={scrollWidth}
               height={scrollHeight}
@@ -366,16 +366,18 @@ function mapStateToProps(state) {
   const onlyMatchingScene = (matchingScenes.length === 1
     && scenesLookup[matchingScenes[0]]) || null;
 
+  const { selected: tool, prefab } = state.tools;
+
   return {
     scenes,
     scrollWidth,
     scrollHeight,
     scrollX,
     scrollY,
-    tool: state.tools.selected,
-    prefab: state.tools.prefab,
+    tool,
+    prefab,
     zoomRatio: (state.editor.zoom || 100) / 100,
-    showConnections: !!showConnections,
+    showConnections: (!!showConnections) && (tool !== "colors") && (tool !== "collisions"),
     sidebarWidth,
     loaded,
     focus,

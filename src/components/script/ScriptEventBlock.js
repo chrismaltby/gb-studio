@@ -441,10 +441,10 @@ ScriptEventField.defaultProps = {
 };
 
 class ScriptEventBlock extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("ScriptEventBlock", this.props, {}, nextProps, {});
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("ScriptEventBlock", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   getFields() {
     const { command, value, customEvents } = this.props;

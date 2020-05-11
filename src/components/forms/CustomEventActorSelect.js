@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../reducers/stateShape";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+// import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
   id: String(i),
@@ -12,10 +12,10 @@ const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({
 }));
 
 class CustomEventActorSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("CustomEventActorSelect", this.props, {}, nextProps, {});
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("CustomEventActorSelect", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   defaultValue = () => {
     const { playerSpriteSheetId } = this.props;

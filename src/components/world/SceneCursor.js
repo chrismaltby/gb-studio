@@ -44,6 +44,7 @@ class SceneCursor extends Component {
       y,
       tool,
       setTool,
+      selectedPalette,
       addActor,
       addTrigger,
       sceneId,
@@ -84,7 +85,7 @@ class SceneCursor extends Component {
       window.addEventListener("mousemove", this.onCollisionsMove);
       window.addEventListener("mouseup", this.onCollisionsStop);
     } else if (tool === "colors") {
-      setColorTile(sceneId, x, y, 1);
+      setColorTile(sceneId, x, y, selectedPalette);
       window.addEventListener("mousemove", this.onColorsMove);
       window.addEventListener("mouseup", this.onColorsStop);
     } else if (tool === "eraser") {
@@ -146,10 +147,11 @@ class SceneCursor extends Component {
       x,
       y,
       sceneId,
-      setColorTile
+      selectedPalette,
+      setColorTile,
     } = this.props;
     if (this.currentX !== x || this.currentY !== y) {
-      setColorTile(sceneId, x, y, 1);
+      setColorTile(sceneId, x, y, selectedPalette);
       this.currentX = x;
       this.currentY = y;
     }
@@ -242,7 +244,7 @@ SceneCursor.defaultProps = {
 function mapStateToProps(state, props) {
   const { selected: tool, prefab } = state.tools;
   const { x, y } = state.editor.hover;
-  const { type: editorType, entityId } = state.editor;
+  const { type: editorType, entityId, selectedPalette } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
   const scenesLookup = getScenesLookup(state);
   const scene = scenesLookup[props.sceneId];
@@ -250,6 +252,7 @@ function mapStateToProps(state, props) {
     x: x || 0,
     y: y || 0,
     tool,
+    selectedPalette,
     prefab,
     editorType,
     entityId,

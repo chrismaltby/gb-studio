@@ -25,6 +25,7 @@ import {
   getSettings,
 } from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
+import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 window.React = React;
 window.Component = Component;
@@ -33,6 +34,27 @@ const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
 const MAX_FRAMES = 25;
 const TILE_SIZE = 8;
+
+const tmpPalettes = [
+  [
+    [248, 248, 136],
+    [200, 122, 32],
+    [112, 48, 32],
+    [0, 0, 0],
+  ],
+  [
+    [248, 248, 136],
+    [96, 184, 32],
+    [48, 104, 40],
+    [0, 0, 0],
+  ],      
+  [
+    [255, 255, 255],
+    [200, 200, 200],
+    [100, 100, 100],
+    [0, 0, 0],
+  ],  
+];
 
 class Scene extends Component {
   constructor() {
@@ -49,6 +71,11 @@ class Scene extends Component {
     window.removeEventListener("mousemove", this.onMoveDrag);
     window.removeEventListener("mouseup", this.onEndDrag);
   }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("Scene", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   onMouseMove = (e) => {
     const {
@@ -125,12 +152,12 @@ class Scene extends Component {
       selected,
       hovered,
       frameCount,
+      palettes,
       sceneFiltered,
       simplifiedRender
     } = this.props;
 
-    const { x, y, triggers = [], collisions = [], actors = [], tileColors = [] } = scene;
-
+    const { x, y, triggers = [], collisions = [], actors = [], tileColors } = scene;
 
     if (!visible) {
       return null;
@@ -172,10 +199,7 @@ class Scene extends Component {
                 image
               )}?_v=${image._v}`}
               tiles={tileColors}
-              palettes={[
-                ["#ff0000", "#00ff00", "#0000ff", "#ffffff"],
-                ["#ff00ff", "#ffff00", "#00ffff", "#000000"]
-              ]}
+              palettes={palettes}
             />
           )}
           {!simplifiedRender && showCollisions && !showColors && (
@@ -355,6 +379,10 @@ function mapStateToProps(state, props) {
       sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1) ||
     false;
 
+  const gbcEnabled = settings.customColorsEnabled;
+
+  const palettes = gbcEnabled && tmpPalettes;
+
   return {
     scene,
     visible,
@@ -373,7 +401,8 @@ function mapStateToProps(state, props) {
     frameCount: getSceneFrameCount(state, props),
     sceneName,
     sceneFiltered,
-    simplifiedRender: !fullRender
+    simplifiedRender: !fullRender,
+    palettes
   };
 }
 

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { SelectRenamable } from "../library/Forms";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+// import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
@@ -14,10 +14,10 @@ const allVariables = Array.from(Array(512).keys()).map(n =>
 const localVariables = ["L0", "L1", "L2", "L3"];
 
 class GlobalVariableSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("GlobalVariableSelect", this.props, {}, nextProps, {});
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("GlobalVariableSelect", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   onRename = name => {
     const { renameVariable, value, entityId } = this.props;

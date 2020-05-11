@@ -19,6 +19,8 @@ import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
+import { getSettings } from "../../reducers/entitiesReducer";
 
 class ActorEditor extends Component {
   constructor() {
@@ -75,8 +77,21 @@ class ActorEditor extends Component {
     }
   };
 
+  renderScriptHeader = ({ buttons }) => {
+    const { scriptMode } = this.state;
+    return <SidebarTabs
+      value={scriptMode}
+      values={{
+        interact: l10n("SIDEBAR_ON_INTERACT"),
+        start: l10n("SIDEBAR_ON_INIT")
+      }}
+      buttons={buttons}
+      onChange={this.onSetScriptMode}
+    />
+  }
+
   render() {
-    const { index, actor, scene, spriteSheet, selectSidebar } = this.props;
+    const { index, actor, scene, spriteSheet, selectSidebar, colorsEnabled, defaultSpritesPaletteId } = this.props;
     const { clipboardActor, scriptMode } = this.state;
 
     if (!actor) {
@@ -105,18 +120,6 @@ class ActorEditor extends Component {
         actor.movementType !== "static") ||
         (actor.animate &&
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
-
-    const renderScriptHeader = ({ buttons }) => (
-      <SidebarTabs
-        value={scriptMode}
-        values={{
-          interact: l10n("SIDEBAR_ON_INTERACT"),
-          start: l10n("SIDEBAR_ON_INIT")
-        }}
-        buttons={buttons}
-        onChange={this.onSetScriptMode}
-      />
-    );
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -207,6 +210,22 @@ class ActorEditor extends Component {
                 />
               </label>
             </FormField>
+
+            {colorsEnabled && (
+              <FormField>
+              <label htmlFor="actorPalette">
+                  {l10n("FIELD_PALETTE")}
+                  <PaletteSelect
+                    id="actorPalette"
+                    value={actor.paletteId || ""}
+                    optional
+                    optionalLabel="None (Use default Sprites Palette)"
+                    optionalDefaultPaletteId={defaultSpritesPaletteId}
+                    onChange={this.onEdit("paletteId")}
+                  />
+                </label>
+              </FormField>
+            )}
 
             {spriteSheet &&
               spriteSheet.type !== "static" &&
@@ -335,7 +354,7 @@ class ActorEditor extends Component {
             <ScriptEditor
               value={actor.startScript}
               type="actor"
-              renderHeader={renderScriptHeader}
+              renderHeader={this.renderScriptHeader}
               onChange={this.onEditStartScript}
               entityId={actor.id}
             />
@@ -343,7 +362,7 @@ class ActorEditor extends Component {
             <ScriptEditor
               value={actor.script}
               type="actor"
-              renderHeader={renderScriptHeader}
+              renderHeader={this.renderScriptHeader}
               onChange={this.onEditScript}
               entityId={actor.id}
             />
@@ -360,6 +379,8 @@ ActorEditor.propTypes = {
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
   spriteSheet: SpriteShape,
+  defaultSpritesPaletteId: PropTypes.string.isRequired,
+  colorsEnabled: PropTypes.bool.isRequired,
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
@@ -380,11 +401,16 @@ function mapStateToProps(state, props) {
   const spriteSheet =
     actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
   const index = scene.actors.indexOf(props.id);
+  const settings = getSettings(state);
+  const colorsEnabled = settings.customColorsEnabled;
+  const defaultSpritesPaletteId = settings.spritesPaletteId || DMG_PALETTE.id;
   return {
     index,
     actor,
     scene,
-    spriteSheet
+    spriteSheet,
+    colorsEnabled,
+    defaultSpritesPaletteId
   };
 }
 

@@ -83,8 +83,6 @@ void LoadImage(UINT16 index) {
   image_height = image_tile_height * 8;
   image_ptr = data_ptr;
 
-  LoadImageAttr(index);
-
   POP_BANK;
 }
 
@@ -160,6 +158,7 @@ void LoadScene(UINT16 index) {
 
   PUSH_BANK(bank);
   LoadImage((*(data_ptr++) * 256) + *(data_ptr++));
+  LoadImageAttr(index);
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = *(data_ptr++);

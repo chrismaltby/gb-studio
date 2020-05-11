@@ -5,13 +5,13 @@ import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../reducers/stateShape";
 import { getSceneActors } from "../../reducers/entitiesReducer";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+// import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 class SceneActorSelect extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("SceneActorSelect", this.props, {}, nextProps, {});
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("SceneActorSelect", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   defaultValue = () => {
     const { playerSpriteSheetId } = this.props;

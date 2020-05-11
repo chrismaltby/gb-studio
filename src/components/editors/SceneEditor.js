@@ -15,6 +15,9 @@ import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneShape } from "../../reducers/stateShape";
 import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
+import { getSettings } from "../../reducers/entitiesReducer";
+import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 class SceneEditor extends Component {
   constructor() {
@@ -25,6 +28,11 @@ class SceneEditor extends Component {
       clipboardTrigger: null
     };
   }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   rerenderCheck("SceneEditor", this.props, {}, nextProps, {});
+  //   return true;
+  // }
 
   onEdit = key => e => {
     const { editScene, scene } = this.props;
@@ -98,23 +106,33 @@ class SceneEditor extends Component {
     removeScene(scene.id);
   };
 
+  onEditScript = this.onEdit("script");
+
+  renderScriptHeader = ({ buttons }) => {
+    return <SidebarTabs
+      values={{
+        init: l10n("SIDEBAR_ON_INIT")
+      }}
+      buttons={buttons}
+    />
+  }
+
+  onEditPaletteId = (index) => e => {
+    const { scene } = this.props;
+    let paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
+    paletteIds[index] = castEventValue(e);
+    // console.log("NEW PALETTE IDS", paletteIds)
+    this.onEdit("paletteIds")(paletteIds)
+  }
+
   render() {
-    const { scene, sceneIndex, selectSidebar } = this.props;
+    const { scene, sceneIndex, selectSidebar, colorsEnabled, defaultBackgroundPaletteId } = this.props;
 
     if (!scene) {
       return <WorldEditor />;
     }
 
     const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
-
-    const renderScriptHeader = ({ buttons }) => (
-      <SidebarTabs
-        values={{
-          init: l10n("SIDEBAR_ON_INIT")
-        }}
-        buttons={buttons}
-      />
-    );
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -194,6 +212,62 @@ class SceneEditor extends Component {
               </label>
             </FormField>
 
+            {colorsEnabled && (
+              <FormField>
+                <label htmlFor="scenePalette">
+                  {l10n("FIELD_PALETTES")}
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[0] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(0)}
+                  />
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[1] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(1)}
+                  />
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[2] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(2)}
+                  />
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[3] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(3)}
+                  />
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[4] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(4)}
+                  />
+                  <PaletteSelect
+                    id="scenePalette"
+                    value={scene.paletteIds && scene.paletteIds[5] || ""}
+                    optional
+                    optionalLabel="None (Use default Background Palette)"
+                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
+                    onChange={this.onEditPaletteId(5)}
+                  />                                                                                          
+                </label>
+              </FormField>
+            )}
+
             <ToggleableFormField
               htmlFor="sceneNotes"
               closedLabel={l10n("FIELD_ADD_NOTES")}
@@ -216,9 +290,9 @@ class SceneEditor extends Component {
         <SidebarColumn>
           <ScriptEditor
             value={scene.script}
-            renderHeader={renderScriptHeader}
+            renderHeader={this.renderScriptHeader}
             type="scene"
-            onChange={this.onEdit("script")}
+            onChange={this.onEditScript}
             entityId={scene.id}
           />
         </SidebarColumn>
@@ -246,9 +320,14 @@ SceneEditor.defaultProps = {
 function mapStateToProps(state, props) {
   const scene = state.entities.present.entities.scenes[props.id];
   const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
+  const settings = getSettings(state);
+  const colorsEnabled = settings.customColorsEnabled;
+  const defaultBackgroundPaletteId = settings.backgroundPaletteId || DMG_PALETTE.id;
   return {
     sceneIndex,
-    scene
+    scene,
+    colorsEnabled,
+    defaultBackgroundPaletteId    
   };
 }
 

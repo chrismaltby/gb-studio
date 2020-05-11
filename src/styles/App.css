@@ -5,6 +5,7 @@
 @import url("./../components/forms/InputPicker.css");
 @import url("./../components/forms/CartPicker.css");
 @import url("./../components/forms/CustomControlsPicker.css");
+@import url("./../components/forms/PaletteSelect.css");
 @import url("./../components/editors/Sidebar.css");
 @import url("./../components/editors/EditorSidebar.css");
 @import url("./../components/assets/FilesSidebar.css");
@@ -17,6 +18,7 @@
 @import url("./../components/world/Scene.css");
 @import url("./../components/world/StatusBar.css");
 @import url("./../components/world/ToolPicker.css");
+@import url("./../components/world/PalettePicker.css");
 @import url("./../components/world/EventHelper.css");
 @import url("./../components/world/World.css");
 @import url("./../components/world/WorldHelp.css");

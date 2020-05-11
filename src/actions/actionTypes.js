@@ -85,6 +85,12 @@ export const SET_COLOR_TILE = "SET_COLOR_TILE";
 
 export const RENAME_VARIABLE = "RENAME_VARIABLE";
 
+export const ADD_PALETTE = "ADD_PALETTE";
+export const EDIT_PALETTE = "EDIT_PALETTE";
+export const REMOVE_PALETTE = "REMOVE_PALETTE";
+
+export const SET_SELECTED_PALETTE = "SET_SELECTED_PALETTE";
+
 export const SET_STATUS = "SET_STATUS";
 
 export const SELECT_WORLD = "SELECT_WORLD";

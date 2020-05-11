@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import ColorizedImageWorker from "./ColorizedImage.worker";
+import debounce from "lodash/debounce";
 
-const workerPool = [
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-  new ColorizedImageWorker(),
-];
+const workerPool = [];
+for(let i=0; i<navigator.hardwareConcurrency; i++) {
+  workerPool.push(new ColorizedImageWorker())
+}
+
+console.log("workerPool.length", workerPool.length)
 
 let id = 0;
 
@@ -23,7 +24,7 @@ class ColorizedImage extends Component {
   }
 
   componentDidMount() {
-    this.draw();
+    this.debouncedDraw();
     this.worker.addEventListener("message", this.onWorkerComplete);
   }
 
@@ -34,27 +35,33 @@ class ColorizedImage extends Component {
   componentDidUpdate(prevProps) {
     const { src, tiles } = this.props;
     if (src !== prevProps.src || tiles !== prevProps.tiles) {
-      this.draw();
+      this.debouncedDraw();
     }
   }
 
   draw = (src) => {
-    const { src, tiles, width, height } = this.props;
+    const { src, tiles = [], width, height, palettes = [] } = this.props;
 
-    const palettes = [
-      [
-        [255, 0, 0],
-        [0, 0, 255],
-        [0, 255, 0],
-        [255, 255, 255],
-      ],
-      [
-        [255, 0, 255],
-        [0, 255, 255],
-        [255, 255, 0],
-        [0, 255, 0],
-      ],
-    ];
+    // const palettes = [
+    //   [
+    //     [248, 248, 136],
+    //     [200, 122, 32],
+    //     [112, 48, 32],
+    //     [0, 0, 0],
+    //   ],
+    //   [
+    //     [248, 248, 136],
+    //     [96, 184, 32],
+    //     [48, 104, 40],
+    //     [0, 0, 0],
+    //   ],      
+    //   [
+    //     [255, 255, 255],
+    //     [200, 200, 200],
+    //     [100, 100, 100],
+    //     [0, 0, 0],
+    //   ],
+    // ];
 
     if (this.canvas && this.canvas.current) {
       this.worker.postMessage({
@@ -67,6 +74,8 @@ class ColorizedImage extends Component {
       });
     }
   };
+
+  debouncedDraw = debounce(this.draw, 16);
 
   onWorkerComplete = (e, a, b) => {
     if (this.offscreenCanvas && this.offscreenCtx && e.data.id === this.id) {

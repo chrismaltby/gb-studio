@@ -1,6 +1,6 @@
 export default {
   tools: {
-    selected: "select",
+    selected: "colors",
     prefab: null
   },
   document: {
@@ -38,7 +38,8 @@ export default {
     worldScrollThrottledX: 0,
     worldScrollThrottledY: 0,
     worldViewWidth: 0,
-    worldViewHeight: 0
+    worldViewHeight: 0,
+    selectedPalette: 0
   },
   navigation: {
     section: "world",
@@ -68,7 +69,8 @@ export default {
       spriteSheets: {},
       triggers: {},
       variables: {},
-      customEvents: {}
+      customEvents: {},
+      palettes: {}
     },
     result: {
       settings: {

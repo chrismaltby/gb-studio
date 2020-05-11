@@ -4,6 +4,10 @@ import Select, { components } from "react-select";
 import { connect } from "react-redux";
 import { SceneShape, BackgroundShape } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import { getScenesLookup, getScenes, getBackgroundsLookup } from "../../reducers/entitiesReducer";
+import memoize from "lodash/memoize";
+
+const getCachedObject = memoize(t => t, JSON.stringify);
 
 const DropdownIndicator = ({
   scenesLookup,
@@ -43,7 +47,7 @@ const Option = ({ scenesLookup, backgroundsLookup, projectRoot }) => props => {
             <div
               className="Thumbnail"
               style={{
-                backgroundImage: `url("${assetFilename(
+                backgroundImage: `url("file://${assetFilename(
                   projectRoot,
                   "backgrounds",
                   backgroundsLookup[scenesLookup[value].backgroundId]
@@ -59,6 +63,7 @@ const Option = ({ scenesLookup, backgroundsLookup, projectRoot }) => props => {
 };
 
 class SceneSelect extends Component {
+
   render() {
     const {
       allowNone,
@@ -132,12 +137,20 @@ SceneSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scenes = state.entities.present.result.scenes.map(sceneId => {
-    return state.entities.present.entities.scenes[sceneId];
-  });
-  const backgroundsLookup = state.entities.present.entities.backgrounds;
-  const scenesLookup = state.entities.present.entities.scenes;
-
+  const fullScenesLookup = getScenesLookup(state);
+  const fullScenes = getScenes(state);
+  const scenesLookup = getCachedObject(Object.keys(fullScenesLookup).reduce((memo, key) => {
+    memo[key] = {
+      backgroundId: fullScenesLookup[key].backgroundId
+    };
+    return memo;
+  }, {}));
+  const scenes = getCachedObject(fullScenes.map((scene) => ({
+    id: scene.id,
+    name: scene.name,
+    backgroundId: scene.backgroundId
+  })));
+  const backgroundsLookup = getBackgroundsLookup(state);
   return {
     backgroundsLookup,
     scenesLookup,
