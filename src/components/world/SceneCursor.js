@@ -45,6 +45,7 @@ class SceneCursor extends Component {
       tool,
       setTool,
       selectedPalette,
+      selectedBrush,
       addActor,
       addTrigger,
       sceneId,
@@ -85,7 +86,7 @@ class SceneCursor extends Component {
       window.addEventListener("mousemove", this.onCollisionsMove);
       window.addEventListener("mouseup", this.onCollisionsStop);
     } else if (tool === "colors") {
-      setColorTile(sceneId, x, y, selectedPalette);
+      setColorTile(sceneId, x, y, selectedPalette, selectedBrush);
       window.addEventListener("mousemove", this.onColorsMove);
       window.addEventListener("mouseup", this.onColorsStop);
     } else if (tool === "eraser") {
@@ -148,10 +149,11 @@ class SceneCursor extends Component {
       y,
       sceneId,
       selectedPalette,
+      selectedBrush,
       setColorTile,
     } = this.props;
     if (this.currentX !== x || this.currentY !== y) {
-      setColorTile(sceneId, x, y, selectedPalette);
+      setColorTile(sceneId, x, y, selectedPalette, selectedBrush);
       this.currentX = x;
       this.currentY = y;
     }
@@ -179,7 +181,7 @@ class SceneCursor extends Component {
   };
 
   render() {
-    const { x, y, tool, enabled } = this.props;
+    const { x, y, tool, enabled, selectedBrush } = this.props;
     const { resize } = this.state;
     if (!enabled) {
       return <div />;
@@ -190,7 +192,8 @@ class SceneCursor extends Component {
           "SceneCursor--AddActor": tool === "actors",
           "SceneCursor--AddTrigger": tool === "triggers",
           "SceneCursor--Eraser": tool === "eraser",
-          "SceneCursor--Collisions": tool === "collisions"
+          "SceneCursor--Collisions": tool === "collisions",
+          "SceneCursor--Size2x2": tool === "colors" && selectedBrush === "tile2x2"
         })}
         onMouseDown={this.onMouseDown}
         style={{
@@ -244,7 +247,7 @@ SceneCursor.defaultProps = {
 function mapStateToProps(state, props) {
   const { selected: tool, prefab } = state.tools;
   const { x, y } = state.editor.hover;
-  const { type: editorType, entityId, selectedPalette } = state.editor;
+  const { type: editorType, entityId, selectedPalette, selectedBrush } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
   const scenesLookup = getScenesLookup(state);
   const scene = scenesLookup[props.sceneId];
@@ -253,6 +256,7 @@ function mapStateToProps(state, props) {
     y: y || 0,
     tool,
     selectedPalette,
+    selectedBrush,
     prefab,
     editorType,
     entityId,

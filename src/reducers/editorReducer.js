@@ -49,7 +49,8 @@ import {
   SCROLL_WORLD,
   SCROLL_WORLD_THROTTLED,  
   RESIZE_WORLD_VIEW,
-  SET_SELECTED_PALETTE
+  SET_SELECTED_PALETTE,
+  SET_SELECTED_BRUSH
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -463,6 +464,11 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         selectedPalette: action.paletteIndex
       }
+    case SET_SELECTED_BRUSH:
+      return {
+        ...state,
+        selectedBrush: action.brush
+      }      
     default:
       return state;
   }

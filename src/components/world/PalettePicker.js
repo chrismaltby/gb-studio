@@ -40,13 +40,10 @@ class PalettePicker extends Component {
     }
   };
 
-  setTool = (id) => (e) => {
+  setBrush = (brush) => (e) => {
     e.stopPropagation();
-    const { setTool } = this.props;
-    setTool(id);
-    this.setState({
-      add: false,
-    });
+    const { setSelectedBrush } = this.props;
+    setSelectedBrush(brush);
   };
 
   setSelectedPalette = (paletteIndex) => (e) => {
@@ -55,35 +52,35 @@ class PalettePicker extends Component {
   };
 
   render() {
-    const { selectedPalette, visible } = this.props;
+    const { selectedPalette, selectedBrush, visible } = this.props;
     return (
       <div
         className={cx("PalettePicker", { "PalettePicker--Visible": visible })}
       >
         <div
-          onClick={this.setTool("colors")}
+          onClick={this.setBrush("tile")}
           className={cx("PalettePicker__Item", {
-            "PalettePicker__Item--Selected": true,
+            "PalettePicker__Item--Selected": selectedBrush === "tile",
           })}
-          title={`${l10n("TOOL_COLORS_LABEL")} (z)`}
+          title={`${l10n("TOOL_BRUSH", {size: "8px"})}`}
         >
           <SquareIconSmall />
         </div>
         <div
-          onClick={this.setTool("colors")}
+          onClick={this.setBrush("tile2x2")}
           className={cx("PalettePicker__Item", {
-            "PalettePicker__Item--Selected": false,
+            "PalettePicker__Item--Selected": selectedBrush === "tile2x2",
           })}
-          title={`${l10n("TOOL_COLORS_LABEL")} (z)`}
+          title={`${l10n("TOOL_BRUSH", {size: "16px"})}`}
         >
           <SquareIcon />
         </div>
         <div
-          onClick={this.setTool("colors")}
+          onClick={this.setBrush("fill")}
           className={cx("PalettePicker__Item", {
-            "PalettePicker__Item--Selected": false,
+            "PalettePicker__Item--Selected": selectedBrush === "fill",
           })}
-          title={`${l10n("TOOL_COLORS_LABEL")} (z)`}
+          title={`${l10n("TOOL_FILL", {size: "8px"})}`}
         >
           <PaintBucketIcon />
         </div>
@@ -126,17 +123,23 @@ PalettePicker.propTypes = {
   visible: PropTypes.bool.isRequired,
   selectedPalette: PropTypes.number.isRequired,
   setSelectedPalette: PropTypes.func.isRequired,
+  setSelectedBrush: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
+  const { selectedPalette, selectedBrush } = state.editor;
+  const selectedTool = state.tools.selected;
+  const visible = selectedTool === "colors";
   return {
-    selectedPalette: state.editor.selectedPalette,
-    visible: state.tools.selected === "colors",
+    selectedPalette,
+    selectedBrush,
+    visible
   };
 }
 
 const mapDispatchToProps = {
   setSelectedPalette: actions.setSelectedPalette,
+  setSelectedBrush: actions.setSelectedBrush
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PalettePicker);

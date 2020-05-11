@@ -39,6 +39,9 @@
   "TOOL_ERASER_LABEL": "Eraser",
   "TOOL_COLLISIONS_LABEL": "Collisions",
   "TOOL_COLORS_LABEL": "Colorize",
+  "TOOL_BRUSH": "Brush {size}",
+  "TOOL_FILL": "Fill",
+  "TOOL_PALETTE_N": "Palette {number}",
 
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navigation",
@@ -199,6 +202,7 @@
   "FIELD_LOADING": "Loading...",
   "FIELD_PALETTE": "Palette",
   "FIELD_PALETTES": "Palettes",
+
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

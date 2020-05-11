@@ -1080,6 +1080,7 @@ const removeCollisionTile = (state, action) => {
 const setColorTile = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const background = state.entities.backgrounds[scene.backgroundId];
+  const brush = action.brush;
 
   if (!background) {
     return state;
@@ -1094,8 +1095,19 @@ const setColorTile = (state, action) => {
     }
   }
 
-  const tileColorIndex = (background.width * action.y) + action.x;
-  tileColors[tileColorIndex] = action.paletteIndex;
+  if(brush === "tile2x2") {
+    for(let x=action.x; (x <= action.x + 1) && x < background.width; x++) {
+      for(let y=action.y; (y <= action.y + 1) && y < background.height; y++) {
+        const tileColorIndex = (background.width * y) + x;
+        tileColors[tileColorIndex] = action.paletteIndex;
+      }
+    }
+  } else if (brush === "fill") {
+    console.log("FLOOD FILL");
+  } else {
+    const tileColorIndex = (background.width * action.y) + action.x;
+    tileColors[tileColorIndex] = action.paletteIndex;  
+  }
 
   return editEntity(state, "scenes", scene.id, {
     tileColors

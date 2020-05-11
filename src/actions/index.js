@@ -313,6 +313,10 @@ export const setSelectedPalette = paletteIndex => {
   return { type: types.SET_SELECTED_PALETTE, paletteIndex }
 };
 
+export const setSelectedBrush = brush => {
+  return { type: types.SET_SELECTED_BRUSH, brush }
+};
+
 export const setActorPrefab = actor => {
   return { type: types.SET_ACTOR_PREFAB, actor };
 };
@@ -449,8 +453,8 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
-export const setColorTile = (sceneId, x, y, paletteIndex) => {
-  return { type: types.SET_COLOR_TILE, sceneId, x, y, paletteIndex };
+export const setColorTile = (sceneId, x, y, paletteIndex, brush) => {
+  return { type: types.SET_COLOR_TILE, sceneId, x, y, paletteIndex, brush };
 };
 
 export const addTrigger = (sceneId, x, y, defaults) => {

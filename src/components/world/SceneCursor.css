@@ -6,6 +6,11 @@
   background: rgba(140, 150, 156, 0.4);
 }
 
+.SceneCursor--Size2x2 {
+  width: 16px;
+  height: 16px;
+}
+
 .SceneCursor--AddActor {
   width: 16px;
   background-color: rgba(247, 45, 220, 0.5);

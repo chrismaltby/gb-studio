@@ -39,7 +39,8 @@ export default {
     worldScrollThrottledY: 0,
     worldViewWidth: 0,
     worldViewHeight: 0,
-    selectedPalette: 0
+    selectedPalette: 0,
+    selectedBrush: "tile"
   },
   navigation: {
     section: "world",
