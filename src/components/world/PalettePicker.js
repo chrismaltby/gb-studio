@@ -37,6 +37,12 @@ class PalettePicker extends Component {
       this.setSelectedPalette(4)(e);
     } else if (e.code === "Digit6") {
       this.setSelectedPalette(5)(e);
+    } else if (e.code === "Digit8") {
+      this.setBrush("tile")(e);
+    } else if (e.code === "Digit9") {
+      this.setBrush("tile2x2")(e);
+    } else if (e.code === "Digit0") {
+      this.setBrush("fill")(e);
     }
   };
 
@@ -62,7 +68,7 @@ class PalettePicker extends Component {
           className={cx("PalettePicker__Item", {
             "PalettePicker__Item--Selected": selectedBrush === "tile",
           })}
-          title={`${l10n("TOOL_BRUSH", {size: "8px"})}`}
+          title={`${l10n("TOOL_BRUSH", {size: "8px"})} (8)`}
         >
           <SquareIconSmall />
         </div>
@@ -71,7 +77,7 @@ class PalettePicker extends Component {
           className={cx("PalettePicker__Item", {
             "PalettePicker__Item--Selected": selectedBrush === "tile2x2",
           })}
-          title={`${l10n("TOOL_BRUSH", {size: "16px"})}`}
+          title={`${l10n("TOOL_BRUSH", {size: "16px"})} (9)`}
         >
           <SquareIcon />
         </div>
@@ -80,11 +86,11 @@ class PalettePicker extends Component {
           className={cx("PalettePicker__Item", {
             "PalettePicker__Item--Selected": selectedBrush === "fill",
           })}
-          title={`${l10n("TOOL_FILL", {size: "8px"})}`}
+          title={`${l10n("TOOL_FILL")} (0)`}
         >
           <PaintBucketIcon />
         </div>
-        <div className="PalettePicker__Divider" />
+        <div className="PalettePicker__Divider" />        
         {paletteIndexes.map((paletteIndex) => (
           <div
             key={paletteIndex}
@@ -92,7 +98,7 @@ class PalettePicker extends Component {
             className={cx("PalettePicker__Item", {
               "PalettePicker__Item--Selected": paletteIndex === selectedPalette,
             })}
-            title={`${l10n("TOOL_COLORS_LABEL")} (z)`}
+            title={`${l10n("TOOL_PALETTE_N", {number: paletteIndex + 1})} (${paletteIndex + 1})`}
           >
             <div className="PalettePicker__Swatch">
               <div
