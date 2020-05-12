@@ -56,6 +56,7 @@ import {
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
+import { paint, paintLine, floodFill } from "../lib/helpers/paint";
 
 const addEntity = (state, type, data) => {
   return {
@@ -1095,18 +1096,28 @@ const setColorTile = (state, action) => {
     }
   }
 
+  const getValue = (x, y) => {
+    const tileColorIndex = (background.width * y) + x;
+    return tileColors[tileColorIndex];    
+  }
+
+  const setValue = (x, y, value) => {
+    const tileColorIndex = (background.width * y) + x;
+    tileColors[tileColorIndex] = value;    
+  }
+
+  const isInBounds = (x, y) => {
+    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+  }
+
+  const equal = (a, b) => a === b;
+
   if(brush === "tile2x2") {
-    for(let x=action.x; (x <= action.x + 1) && x < background.width; x++) {
-      for(let y=action.y; (y <= action.y + 1) && y < background.height; y++) {
-        const tileColorIndex = (background.width * y) + x;
-        tileColors[tileColorIndex] = action.paletteIndex;
-      }
-    }
+    paint(action.x, action.y, 2, action.paletteIndex, setValue, isInBounds);
   } else if (brush === "fill") {
-    console.log("FLOOD FILL");
+    floodFill(action.x, action.y, action.paletteIndex, getValue, setValue, isInBounds, equal);
   } else {
-    const tileColorIndex = (background.width * action.y) + action.x;
-    tileColors[tileColorIndex] = action.paletteIndex;  
+    paint(action.x, action.y, 1, action.paletteIndex, setValue, isInBounds, equal);
   }
 
   return editEntity(state, "scenes", scene.id, {
