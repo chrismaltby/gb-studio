@@ -12,7 +12,6 @@ import {
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
-import buildProject from "../lib/compiler/buildProject";
 import getTmp from "../lib/helpers/getTmp";
 import rimraf from "rimraf";
 import { promisify } from "util";
@@ -36,6 +35,8 @@ export default store => next => async action => {
 
       await rmdir(outputRoot);
   
+      const buildProject = await import("../lib/compiler/buildProject").then((module) => module.default);
+
       await buildProject(project, {
         projectRoot,
         buildType,
