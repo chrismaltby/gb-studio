@@ -1,5 +1,4 @@
 import ScriptBuilder from "./scriptBuilder";
-import events from "../events";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -11,6 +10,8 @@ const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 // and what the command code is?
 
 const compileEntityEvents = (input = [], options = {}) => {
+  const events = require("../events").default;
+  
   const {
     output = [],
     branch = false,
