@@ -20,6 +20,24 @@ module.exports = {
   module: {
     rules
   },
+  optimization: {
+    splitChunks: {
+        cacheGroups: {
+            'vendor-react': {
+                name: 'vendor-react',
+                test: /[\\/]node_modules[\\/]react.*?[\\/]/,
+                chunks: 'initial',
+                priority: 2
+            },
+            'vendor-scriptracker': {
+              name: 'vendor-scriptracker',
+              test: /[\\/]src[\\/]lib[\\/]vendor[\\/]scriptracker[\\/]/,
+              chunks: 'all',
+              priority: 2              
+            }
+        }
+    }
+  },  
   plugins: rendererPlugins,
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],

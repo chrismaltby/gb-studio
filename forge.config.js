@@ -55,12 +55,14 @@ module.exports = {
             {
               html: "./src/project.html",
               js: "./src/ProjectRoot.js",
-              name: "main_window"
+              name: "main_window",
+              additionalChunks:["vendor-react", "vendor-scriptracker"]
             },
             {
               html: "./src/splash.html",
               js: "./src/SplashRoot.js",
-              name: "splash_window"
+              name: "splash_window",
+              additionalChunks:["vendor-react"]
             }
           ]
         }
