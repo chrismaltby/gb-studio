@@ -140,7 +140,7 @@ function mapStateToProps(state) {
   const fullScenesLookup = getScenesLookup(state);
   const fullScenes = getScenes(state);
   const scenesLookup = getCachedObject(Object.keys(fullScenesLookup).reduce((memo, key) => {
-    memo[key] = {
+    memo[key] = fullScenesLookup[key] && {
       backgroundId: fullScenesLookup[key].backgroundId
     };
     return memo;
