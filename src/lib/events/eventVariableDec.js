@@ -1,6 +1,6 @@
-export const id = "EVENT_DEC_VALUE";
+const id = "EVENT_DEC_VALUE";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -8,7 +8,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { variableDec } = helpers;
   variableDec(input.variable);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

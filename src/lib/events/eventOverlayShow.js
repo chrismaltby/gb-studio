@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_OVERLAY_SHOW";
+const id = "EVENT_OVERLAY_SHOW";
 
-export const fields = [
+const fields = [
   {
     key: "color",
     type: "overlayColor",
@@ -28,7 +28,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { overlayShow } = helpers;
   overlayShow(input.color, input.x, input.y);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

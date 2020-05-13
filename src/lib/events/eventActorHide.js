@@ -1,6 +1,6 @@
-export const id = "EVENT_ACTOR_HIDE";
+const id = "EVENT_ACTOR_HIDE";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -8,8 +8,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorHide } = helpers;
   actorSetActive(input.actorId);
   actorHide();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

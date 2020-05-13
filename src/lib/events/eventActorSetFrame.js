@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_ACTOR_SET_FRAME";
+const id = "EVENT_ACTOR_SET_FRAME";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -18,8 +18,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetFrame } = helpers;
   actorSetActive(input.actorId);
   actorSetFrame(input.frame);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

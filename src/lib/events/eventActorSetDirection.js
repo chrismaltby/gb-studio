@@ -1,9 +1,9 @@
-import { getSprite } from "./helpers";
-import { directionToFrame } from "../helpers/gbstudio";
+const getSprite = require("./helpers").getSprite;
+const directionToFrame = require("../helpers/gbstudio").directionToFrame;
 
-export const id = "EVENT_ACTOR_SET_DIRECTION";
+const id = "EVENT_ACTOR_SET_DIRECTION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -16,7 +16,7 @@ export const fields = [
   },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     getActorById,
     actorSetActive,
@@ -41,4 +41,10 @@ export const compile = (input, helpers) => {
       actorSetFlip(flip);
     }
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

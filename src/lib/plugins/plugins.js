@@ -9,10 +9,6 @@ import { ipcRenderer } from "electron";
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
-const babel = require("@babel/standalone");
-const importExportPlugin = require("@babel/plugin-transform-modules-commonjs");
-const jsxPlugin = require("@babel/plugin-transform-react-jsx");
-
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 const projectRoot = projectPath && Path.dirname(projectPath);
@@ -26,15 +22,9 @@ const pluginMenuHandlerPaths = projectRoot
 
 const pluginEmitter = new EventEmitter();
 
-const compiler = code =>
-  babel.transform(code, {
-    plugins: [importExportPlugin, jsxPlugin]
-  }).code;
-
 const vm = new NodeVM({
   timeout: 1000,
-  sandbox: {},
-  compiler
+  sandbox: {}
 });
 
 const loadPlugin = path => {

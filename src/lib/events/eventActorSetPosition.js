@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_ACTOR_SET_POSITION";
+const id = "EVENT_ACTOR_SET_POSITION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -28,8 +28,14 @@ export const fields = [
   },
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetPosition } = helpers;
   actorSetActive(input.actorId);
   actorSetPosition(input.x, input.y);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -14,15 +14,7 @@ import trimLines from "../helpers/trimlines";
 const VM2 = __non_webpack_require__("vm2");
 const NodeVM = VM2.NodeVM;
 
-const babel = require("@babel/standalone");
-const importExportPlugin = require("@babel/plugin-transform-modules-commonjs");
-
 const internalEventHandlerPaths = glob.sync(`${eventsRoot}/event*.js`);
-
-const compiler = code =>
-  babel.transform(code, {
-    plugins: [importExportPlugin]
-  }).code;
 
 const vm = new NodeVM({
   timeout: 1000,
@@ -36,8 +28,7 @@ const vm = new NodeVM({
       "../compiler/compileEntityEvents": compileEntityEvents,
       "../helpers/trimlines": trimLines
     }
-  },
-  compiler
+  }
 });
 
 const eventHandlers = {

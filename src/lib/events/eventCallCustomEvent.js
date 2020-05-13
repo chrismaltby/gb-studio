@@ -1,9 +1,9 @@
-import { walkEvents } from "../helpers/eventSystem";
-import compileEntityEvents from "../compiler/compileEntityEvents";
+const walkEvents = require("../helpers/eventSystem").walkEvents;
+const compileEntityEvents = require("../compiler/compileEntityEvents").default;
 
-export const id = "EVENT_CALL_CUSTOM_EVENT";
+const id = "EVENT_CALL_CUSTOM_EVENT";
 
-export const fields = [
+const fields = [
   {
     type: "events",
     key: "script",
@@ -17,7 +17,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const script = JSON.parse(JSON.stringify(input.script));
   walkEvents(script, e => {
     if (!e.args) return;
@@ -37,4 +37,10 @@ export const compile = (input, helpers) => {
     }
   });
   compileEntityEvents(script, { ...helpers, branch: true });
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

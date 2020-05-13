@@ -1,6 +1,6 @@
-export const id = "EVENT_FADE_IN";
+const id = "EVENT_FADE_IN";
 
-export const fields = [
+const fields = [
   {
     key: "speed",
     type: "fadeSpeed",
@@ -8,7 +8,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { fadeIn } = helpers;
   fadeIn(input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

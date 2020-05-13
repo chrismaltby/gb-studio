@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_SOUND_PLAY_EFFECT";
+const id = "EVENT_SOUND_PLAY_EFFECT";
 
-export const fields = [
+const fields = [
   {
     key: "type",
     type: "soundEffect",
@@ -49,7 +49,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     soundPlayBeep,
     soundStartTone,
@@ -86,4 +86,10 @@ export const compile = (input, helpers) => {
   if (input.type === "tone") {
     soundStopTone();
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

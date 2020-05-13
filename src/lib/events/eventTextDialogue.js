@@ -1,9 +1,9 @@
-import trimlines from "../helpers/trimlines";
-import l10n from "../helpers/l10n";
+const trimlines = require("../helpers/trimlines");
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_TEXT";
+const id = "EVENT_TEXT";
 
-export const fields = [
+const fields = [
   {
     key: "text",
     type: "textarea",
@@ -35,7 +35,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     textDialogue,
     textSetOpenInstant,
@@ -71,4 +71,10 @@ export const compile = (input, helpers) => {
   } else {
     textDialogue(input.text || " ", input.avatarId);
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

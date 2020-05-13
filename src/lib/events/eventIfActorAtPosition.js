@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_IF_ACTOR_AT_POSITION";
+const id = "EVENT_IF_ACTOR_AT_POSITION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -58,10 +58,16 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, ifActorAtPosition } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   actorSetActive(input.actorId);
   ifActorAtPosition(input.x, input.y, truePath, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_SWITCH_SCENE";
+const id = "EVENT_SWITCH_SCENE";
 
-export const fields = [
+const fields = [
   {
     key: "sceneId",
     type: "scene",
@@ -42,7 +42,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { sceneSwitch, scriptEnd } = helpers;
   sceneSwitch(
     input.sceneId,
@@ -52,4 +52,10 @@ export const compile = (input, helpers) => {
     input.fadeSpeed
   );
   scriptEnd();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

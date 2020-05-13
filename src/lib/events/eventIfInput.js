@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_IF_INPUT";
+const id = "EVENT_IF_INPUT";
 
-export const fields = [
+const fields = [
   {
     key: "input",
     label: l10n("FIELD_ANY_OF"),
@@ -41,9 +41,15 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { ifInput } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   ifInput(input.input, truePath, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

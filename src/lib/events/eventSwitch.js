@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_SWITCH";
+const id = "EVENT_SWITCH";
 
-export const fields = [].concat(
+const fields = [].concat(
   [
     {
       key: "variable",
@@ -97,7 +97,7 @@ export const fields = [].concat(
   ]
 );
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { caseVariableValue } = helpers;
   const falsePath = input.__disableElse ? [] : input.false;
 
@@ -116,4 +116,10 @@ export const compile = (input, helpers) => {
     }, {});
 
   caseVariableValue(input.variable, choiceLookup, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

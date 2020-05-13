@@ -1,4 +1,12 @@
 const plugins = require("./webpack.plugins");
+const CopyPlugin = require("copy-webpack-plugin");
+
+const mainPlugins = [].concat(
+  plugins,
+  new CopyPlugin([
+    { from: "node_modules/about-window", to: "node_modules/about-window" }
+  ]) 
+);
 
 module.exports = {
   target: "electron-main",
@@ -11,7 +19,7 @@ module.exports = {
   module: {
     rules: require("./webpack.rules")
   },
-  plugins,
+  plugins: mainPlugins,
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"]
   },

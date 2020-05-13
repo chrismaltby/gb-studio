@@ -1,6 +1,6 @@
-export const id = "EVENT_ACTOR_COLLISIONS_DISABLE";
+const id = "EVENT_ACTOR_COLLISIONS_DISABLE";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -8,8 +8,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetCollisions } = helpers;
   actorSetActive(input.actorId);
   actorSetCollisions(false);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

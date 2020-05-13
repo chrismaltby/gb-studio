@@ -1,6 +1,6 @@
-export const id = "EVENT_PLAYER_SET_SPRITE";
+const id = "EVENT_PLAYER_SET_SPRITE";
 
-export const fields = [
+const fields = [
   {
     key: "spriteSheetId",
     type: "sprite",
@@ -8,7 +8,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { playerSetSprite } = helpers;
   playerSetSprite(input.spriteSheetId);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

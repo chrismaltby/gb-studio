@@ -1,6 +1,6 @@
-export const id = "EVENT_ACTOR_GET_DIRECTION";
+const id = "EVENT_ACTOR_GET_DIRECTION";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -13,7 +13,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, ifActorDirection, variableSetToValue } = helpers;
   actorSetActive(input.actorId);
   ifActorDirection(
@@ -41,4 +41,10 @@ export const compile = (input, helpers) => {
       );
     }
   );
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

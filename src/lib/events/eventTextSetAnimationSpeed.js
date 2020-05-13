@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_TEXT_SET_ANIMATION_SPEED";
+const id = "EVENT_TEXT_SET_ANIMATION_SPEED";
 
-export const fields = [
+const fields = [
   {
     label: l10n("TEXT_SPEED_IN"),
     key: "speedIn",
@@ -25,7 +25,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
   textSetAnimSpeed(input.speedIn, input.speedOut, input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_MENU";
+const id = "EVENT_MENU";
 
-export const fields = [].concat(
+const fields = [].concat(
   [
     {
       key: "variable",
@@ -95,7 +95,13 @@ export const fields = [].concat(
     }
 );
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { textMenu } = helpers;
   textMenu(input.variable, [input.option1, input.option2, input.option3, input.option4, input.option5, input.option6, input.option7, input.option8].splice(0, input.items), input.layout, input.cancelOnLastOption, input.cancelOnB);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

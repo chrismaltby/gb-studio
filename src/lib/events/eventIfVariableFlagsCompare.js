@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_IF_FLAGS_COMPARE";
+const id = "EVENT_IF_FLAGS_COMPARE";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -55,7 +55,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     ifVariableValue,
     variableSetToValue,
@@ -75,4 +75,10 @@ export const compile = (input, helpers) => {
   variablesMod(tmp1, tmp2);
 
   ifVariableValue(tmp1, "==", 1, truePath, falsePath);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -1,6 +1,6 @@
-export const id = "EVENT_SET_VALUE";
+const id = "EVENT_SET_VALUE";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -15,7 +15,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const value = parseInt(input.value, 10);
   if (value > 1)  {
     const { variableSetToValue } = helpers;
@@ -27,4 +27,10 @@ export const compile = (input, helpers) => {
     const { variableSetToFalse } = helpers;
     variableSetToFalse(input.variable);
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

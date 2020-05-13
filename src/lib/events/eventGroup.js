@@ -1,13 +1,19 @@
-export const id = "EVENT_GROUP";
+const id = "EVENT_GROUP";
 
-export const fields = [
+const fields = [
   {
     key: "true",
     type: "events"
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { compileEvents } = helpers;
   compileEvents(input.true);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

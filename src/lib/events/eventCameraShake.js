@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_CAMERA_SHAKE";
+const id = "EVENT_CAMERA_SHAKE";
 
-export const fields = [
+const fields = [
   {
     key: "time",
     type: "number",
@@ -14,7 +14,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { cameraShake } = helpers;
   let seconds = typeof input.time === "number" ? input.time : 0.5;
   // Convert seconds into frames (60fps)
@@ -23,4 +23,10 @@ export const compile = (input, helpers) => {
     cameraShake(Math.ceil(60 * time));
     seconds -= time;
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

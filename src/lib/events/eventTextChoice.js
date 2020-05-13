@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_CHOICE";
+const id = "EVENT_CHOICE";
 
-export const fields = [
+const fields = [
   {
     key: "variable",
     type: "variable",
@@ -26,8 +26,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { textChoice } = helpers;
   const { variable, trueText, falseText } = input;
   textChoice(variable, { trueText, falseText });
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

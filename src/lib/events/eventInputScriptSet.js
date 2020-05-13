@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_SET_INPUT_SCRIPT";
+const id = "EVENT_SET_INPUT_SCRIPT";
 
-export const fields = [
+const fields = [
   {
     key: "input",
     label: l10n("FIELD_ON_PRESS"),
@@ -15,7 +15,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { inputScriptSet } = helpers;
   inputScriptSet(input.input, input.true);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

@@ -1,14 +1,20 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_TIMER_RESTART";
+const id = "EVENT_TIMER_RESTART";
 
-export const fields = [
+const fields = [
   {
     label: l10n("FIELD_TIMER_RESTART")
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { timerRestart } = helpers;
   timerRestart();
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

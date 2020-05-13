@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_AWAIT_INPUT";
+const id = "EVENT_AWAIT_INPUT";
 
-export const fields = [
+const fields = [
   {
     key: "input",
     label: l10n("FIELD_ANY_OF"),
@@ -11,7 +11,13 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { inputAwait } = helpers;
   inputAwait(input.input);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

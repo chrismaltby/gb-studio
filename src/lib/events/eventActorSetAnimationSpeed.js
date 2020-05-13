@@ -1,6 +1,6 @@
-export const id = "EVENT_ACTOR_SET_ANIMATION_SPEED";
+const id = "EVENT_ACTOR_SET_ANIMATION_SPEED";
 
-export const fields = [
+const fields = [
   {
     key: "actorId",
     type: "actor",
@@ -13,8 +13,14 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const { actorSetActive, actorSetAnimationSpeed } = helpers;
   actorSetActive(input.actorId);
   actorSetAnimationSpeed(input.speed);
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

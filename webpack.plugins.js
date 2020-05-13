@@ -1,19 +1,19 @@
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
-const CopyPlugin = require("copy-webpack-plugin");
-// const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-module.exports = [
-  // new HardSourceWebpackPlugin(),
+const plugins = [
   new ForkTsCheckerWebpackPlugin({
     async: false,
     memoryLimit: 4096
   }),
   new webpack.DefinePlugin({
     VERSION: JSON.stringify(require("./package.json").version)
-  }),
-  new CopyPlugin([
-    { from: "node_modules/vm2", to: "node_modules/vm2" },
-    { from: "node_modules/about-window", to: "node_modules/about-window" }
-  ])
+  })
 ];
+
+if(process.env.ANALYZE_BUNDLE) {
+  plugins.push(new BundleAnalyzerPlugin());
+}
+
+module.exports = plugins;

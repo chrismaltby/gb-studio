@@ -1,8 +1,8 @@
-import l10n from "../helpers/l10n";
+const l10n = require("../helpers/l10n");
 
-export const id = "EVENT_VARIABLE_MATH";
+const id = "EVENT_VARIABLE_MATH";
 
-export const fields = [
+const fields = [
   {
     key: "vectorX",
     type: "variable",
@@ -94,7 +94,7 @@ export const fields = [
   }
 ];
 
-export const compile = (input, helpers) => {
+const compile = (input, helpers) => {
   const {
     variableSetToValue,
     variableCopy,
@@ -149,4 +149,10 @@ export const compile = (input, helpers) => {
       variableCopy(input.vectorX, tmp1);
       break;
   }
+};
+
+module.exports = {
+  id,
+  fields,
+  compile
 };

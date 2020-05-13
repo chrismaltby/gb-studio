@@ -25,7 +25,7 @@
     "make:cli": "webpack --config webpack.cli.config.js",
     "cli": "node out/cli/gb-studio-cli.js",
     "cli:watch": "sh -c 'PROJECT_FILE=$0; PROJECT_ROOT=$(dirname $PROJECT_FILE); fswatch -0 out/cli/gb-studio-cli.js appData/src/gb | xargs -0 -I {} sh -c \"npm run cli compile $PROJECT_FILE && open $PROJECT_ROOT/build/rom/game.gb\";'",
-    "cache:clear": "rm -rf ./node_modules/.cache/hard-source/"
+    "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start"
   },
   "keywords": [],
   "author": "GB Studio",
@@ -35,10 +35,6 @@
   },
   "dependencies": {
     "3x3-equation-solver": "^1.2.18",
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/standalone": "^7.4.5",
     "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
     "about-window": "^1.13.2",
@@ -114,6 +110,7 @@
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.0",
+    "webpack-bundle-analyzer": "^3.7.0",
     "worker-loader": "^2.0.0"
   }
 }
