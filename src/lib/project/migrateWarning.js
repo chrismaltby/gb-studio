@@ -1,21 +1,22 @@
 import fs from "fs-extra";
 import { remote, shell } from "electron";
 import settings from "electron-settings";
-import semver from "semver";
+import semverValid from "semver/functions/valid";
+import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
 
 const { dialog } = remote;
 
 export const needsUpdate = currentVersion => {
-  if (semver.valid(currentVersion) && semver.valid(LATEST_PROJECT_VERSION)) {
-    return semver.gt(LATEST_PROJECT_VERSION, currentVersion);
+  if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
+    return semverGt(LATEST_PROJECT_VERSION, currentVersion);
   }
   return false;
 };
 
 export const fromFuture = currentVersion => {
-  if (semver.valid(currentVersion) && semver.valid(LATEST_PROJECT_VERSION)) {
-    return semver.gt(currentVersion, LATEST_PROJECT_VERSION);
+  if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
+    return semverGt(currentVersion, LATEST_PROJECT_VERSION);
   }
   return false;
 };

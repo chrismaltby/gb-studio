@@ -1,5 +1,6 @@
 import { dialog, shell } from "electron";
-import semver from "semver";
+import semverValid from "semver/functions/valid";
+import semverGt from "semver/functions/gt";
 import Octokit from "@octokit/rest";
 import settings from "electron-settings";
 
@@ -41,8 +42,8 @@ export const getCurrentVersion = () => {
 export const needsUpdate = async () => {
   const currentVersion = getCurrentVersion();
   const latestVersion = await getLatestVersion();
-  if (semver.valid(currentVersion) && semver.valid(latestVersion)) {
-    return semver.gt(latestVersion, currentVersion);
+  if (semverValid(currentVersion) && semverValid(latestVersion)) {
+    return semverGt(latestVersion, currentVersion);
   }
   return false;
 };
