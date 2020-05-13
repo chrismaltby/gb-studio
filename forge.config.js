@@ -7,21 +7,21 @@ module.exports = {
         name: "gb_studio",
         exe: "gb-studio.exe",
         loadingGif: "src/assets/app/install.gif",
-        setupIcon: "src/assets/app/icon/app_icon.ico"
-      }
+        setupIcon: "src/assets/app/icon/app_icon.ico",
+      },
     },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["darwin", "win32"]
+      platforms: ["darwin", "win32"],
     },
     {
       name: "@electron-forge/maker-deb",
-      config: {}
+      config: {},
     },
     {
       name: "@electron-forge/maker-rpm",
-      config: {}
-    }
+      config: {},
+    },
   ],
   packagerConfig: {
     name: "GB Studio",
@@ -38,11 +38,11 @@ module.exports = {
       "hardened-runtime": true,
       "gatekeeper-assess": false,
       entitlements: "./entitlements.plist",
-      "entitlements-inherit": "./entitlements.plist"
-    }
+      "entitlements-inherit": "./entitlements.plist",
+    },
   },
   hooks: {
-    postPackage: require("./src/hooks/notarize.js")
+    postPackage: require("./src/hooks/notarize.js"),
   },
   plugins: [
     [
@@ -56,17 +56,27 @@ module.exports = {
               html: "./src/project.html",
               js: "./src/ProjectRoot.js",
               name: "main_window",
-              additionalChunks:["vendor-react", "vendor-scriptracker"]
+              additionalChunks: [
+                "vendor-react",
+                "vendor-scriptracker",
+                "vendor-hotloader",
+                "vendor-lodash",
+                "vendor-chokidar",
+              ],
             },
             {
               html: "./src/splash.html",
               js: "./src/SplashRoot.js",
               name: "splash_window",
-              additionalChunks:["vendor-react"]
-            }
-          ]
-        }
-      }
-    ]
-  ]
+              additionalChunks: [
+                "vendor-react",
+                "vendor-hotloader",
+                "vendor-lodash",
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  ],
 };
