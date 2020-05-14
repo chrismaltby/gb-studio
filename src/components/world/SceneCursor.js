@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon } from "../library/Icons";
+import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
@@ -73,8 +73,10 @@ class SceneCursor extends Component {
       prefab,
       selectScene,
       showCollisions,
-      addCollisionTile,
       removeCollisionTile,
+      paintCollisionTile,
+      paintCollisionLine,
+      paintCollisionFill,
       paintColorTile,
       paintColorLine,
       paintColorFill,
@@ -101,14 +103,26 @@ class SceneCursor extends Component {
       const collisionByteOffset = collisionIndex & 7;
       const collisionByteMask = 1 << collisionByteOffset;
       if (scene.collisions[collisionByteIndex] & collisionByteMask) {
-        removeCollisionTile(sceneId, x, y);
         this.remove = true;
       } else {
-        addCollisionTile(sceneId, x, y);
         this.remove = false;
       }
-      window.addEventListener("mousemove", this.onCollisionsMove);
-      window.addEventListener("mouseup", this.onCollisionsStop);
+      if(selectedBrush === "fill") {
+        paintCollisionFill(sceneId, x, y, !this.remove);
+      } else {
+        const brushSize = selectedBrush === "16px" ? 2 : 1;
+        if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
+          paintCollisionLine(sceneId, this.startX, this.startY, x, y, !this.remove, brushSize);
+          this.startX = x;
+          this.startY = y;
+        } else {
+          this.startX = x;
+          this.startY = y;          
+          paintCollisionTile(sceneId, x, y, !this.remove, brushSize);
+        }
+        window.addEventListener("mousemove", this.onCollisionsMove);
+        window.addEventListener("mouseup", this.onCollisionsStop);
+      }
     } else if (tool === "colors") {
       if(selectedBrush === "fill") {
         paintColorFill(sceneId, x, y, selectedPalette);
@@ -160,15 +174,34 @@ class SceneCursor extends Component {
     const {
       x,
       y,
+      enabled,
       sceneId,
-      addCollisionTile,
-      removeCollisionTile
+      selectedBrush,
+      paintCollisionTile,
+      paintCollisionLine
     } = this.props;
-    if (this.currentX !== x || this.currentY !== y) {
-      if (this.remove) {
-        removeCollisionTile(sceneId, x, y);
+    if (enabled && (this.currentX !== x || this.currentY !== y)) {
+      const brushSize = selectedBrush === "16px" ? 2 : 1;
+
+      if(this.drawLine) {
+        let x1 = x;
+        let y1 = y;
+        if(this.lockX) {
+          x1 = this.startX;
+        } else if(this.lockY) {
+          y1 = this.startY;
+        } else if (x !== this.startX) {
+          this.lockY = true;
+          y1 = this.startY;
+        } else if (y !== this.startY) {
+          this.lockX = true;
+          x1 = this.startX;
+        }
+        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, !this.remove, brushSize);        
+        this.startX = x1;
+        this.startY = y1;
       } else {
-        addCollisionTile(sceneId, x, y);
+        paintCollisionTile(sceneId, x, y, !this.remove, brushSize);
       }
       this.currentX = x;
       this.currentY = y;
@@ -253,6 +286,7 @@ class SceneCursor extends Component {
           "SceneCursor--AddTrigger": tool === TOOL_TRIGGERS,
           "SceneCursor--Eraser": tool === TOOL_ERASER,
           "SceneCursor--Collisions": tool === TOOL_COLLISIONS,
+          "SceneCursor--Colors": tool === TOOL_COLORS,
           "SceneCursor--Size16px": (tool === TOOL_COLORS || tool === TOOL_COLLISIONS || tool === TOOL_ERASER) && selectedBrush === "16px"
         })}
         onMouseDown={this.onMouseDown}
@@ -261,15 +295,17 @@ class SceneCursor extends Component {
           left: x * 8
         }}
       >
-        {(tool === "actors" ||
-          tool === "triggers" ||
-          tool === "eraser" ||
-          tool === "collisions") && (
+        {(tool === TOOL_ACTORS ||
+          tool === TOOL_TRIGGERS ||
+          tool === TOOL_ERASER ||
+          tool === TOOL_COLORS ||
+          tool === TOOL_COLLISIONS) && (
           <div className="SceneCursor__AddBubble">
-            {tool === "actors" && <PlusIcon />}
-            {tool === "triggers" && (resize ? <ResizeIcon /> : <PlusIcon />)}
-            {tool === "eraser" && <CloseIcon />}
-            {tool === "collisions" && <BrickIcon />}
+            {tool === TOOL_ACTORS && <PlusIcon />}
+            {tool === TOOL_TRIGGERS && (resize ? <ResizeIcon /> : <PlusIcon />)}
+            {tool === TOOL_ERASER && <CloseIcon />}
+            {tool === TOOL_COLLISIONS && <BrickIcon />}
+            {tool === TOOL_COLORS && <PaintIcon />}
           </div>
         )}
       </div>
@@ -291,7 +327,6 @@ SceneCursor.propTypes = {
   selectScene: PropTypes.func.isRequired,
   addActor: PropTypes.func.isRequired,
   addTrigger: PropTypes.func.isRequired,
-  addCollisionTile: PropTypes.func.isRequired,
   editPlayerStartAt: PropTypes.func.isRequired,
   resizeTrigger: PropTypes.func.isRequired,
   removeActorAt: PropTypes.func.isRequired,
@@ -328,8 +363,10 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   addActor: actions.addActor,
   removeActorAt: actions.removeActorAt,
-  addCollisionTile: actions.addCollisionTile,
   removeCollisionTile: actions.removeCollisionTile,
+  paintCollisionTile: actions.paintCollisionTile,
+  paintCollisionLine: actions.paintCollisionLine,
+  paintCollisionFill: actions.paintCollisionFill,
   paintColorTile: actions.paintColorTile,
   paintColorLine: actions.paintColorLine,
   paintColorFill: actions.paintColorFill,

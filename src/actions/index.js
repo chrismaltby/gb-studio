@@ -453,6 +453,18 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
+export const paintCollisionTile = (sceneId, x, y, value, brushSize) => {
+  return { type: types.PAINT_COLLISION_TILE, sceneId, x, y, value, brushSize };
+};
+
+export const paintCollisionLine = (sceneId, startX, startY, endX, endY, value, brushSize) => {
+  return { type: types.PAINT_COLLISION_LINE, sceneId, startX, startY, endX, endY, value, brushSize };
+};
+
+export const paintCollisionFill = (sceneId, x, y, value) => {
+  return { type: types.PAINT_COLLISION_FILL, sceneId, x, y, value };
+};
+
 export const paintColorTile = (sceneId, x, y, paletteIndex, brushSize) => {
   return { type: types.PAINT_COLOR_TILE, sceneId, x, y, paletteIndex, brushSize };
 };

@@ -26,8 +26,10 @@ import {
   EDIT_TRIGGER,
   REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,
-  ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
+  PAINT_COLLISION_TILE,
+  PAINT_COLLISION_LINE,
+  PAINT_COLLISION_FILL,  
   PAINT_COLOR_TILE,
   PAINT_COLOR_LINE,
   PAINT_COLOR_FILL,    
@@ -1024,34 +1026,6 @@ const removeTriggerAt = (state, action) => {
   return state;
 };
 
-const addCollisionTile = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const background = state.entities.backgrounds[scene.backgroundId];
-
-  if (!background) {
-    return state;
-  }
-
-  const collisionsSize = Math.ceil((background.width * background.height) / 8);
-  const collisions = scene.collisions.slice(0, collisionsSize);
-
-  if (collisions.length < collisionsSize) {
-    for (let i = collisions.length; i < collisionsSize; i++) {
-      collisions[i] = 0;
-    }
-  }
-
-  const collisionIndex = background.width * action.y + action.x;
-  const collisionByteIndex = collisionIndex >> 3;
-  const collisionByteOffset = collisionIndex & 7;
-  const collisionByteMask = 1 << collisionByteOffset;
-  collisions[collisionByteIndex] |= collisionByteMask;
-
-  return editEntity(state, "scenes", scene.id, {
-    collisions
-  });
-};
-
 const removeCollisionTile = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const background = state.entities.backgrounds[scene.backgroundId];
@@ -1074,6 +1048,62 @@ const removeCollisionTile = (state, action) => {
   const collisionByteOffset = collisionIndex & 7;
   const collisionByteMask = 1 << collisionByteOffset;
   collisions[collisionByteIndex] &= ~collisionByteMask;
+
+  return editEntity(state, "scenes", scene.id, {
+    collisions
+  });
+};
+
+const paintCollision = (state, action) => {
+  const scene = state.entities.scenes[action.sceneId];
+  const background = state.entities.backgrounds[scene.backgroundId];
+
+  if (!background) {
+    return state;
+  }
+
+  const collisionsSize = Math.ceil((background.width * background.height) / 8);
+  const collisions = scene.collisions.slice(0, collisionsSize);
+
+  if (collisions.length < collisionsSize) {
+    for (let i = collisions.length; i < collisionsSize; i++) {
+      collisions[i] = 0;
+    }
+  }
+
+  const getValue = (x, y) => {
+    const collisionIndex = background.width * y + x;
+    const collisionByteIndex = collisionIndex >> 3;
+    const collisionByteOffset = collisionIndex & 7;
+    const collisionByteMask = 1 << collisionByteOffset;
+    return !!(collisions[collisionByteIndex] & collisionByteMask);
+  }
+
+  const setValue = (x, y, value) => {   
+    const collisionIndex = background.width * y + x;
+    const collisionByteIndex = collisionIndex >> 3;
+    const collisionByteOffset = collisionIndex & 7;
+    const collisionByteMask = 1 << collisionByteOffset;
+    if(value) {
+      collisions[collisionByteIndex] |= collisionByteMask;
+    } else {
+      collisions[collisionByteIndex] &= ~collisionByteMask;
+    }
+  }
+
+  const isInBounds = (x, y) => {
+    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+  }
+
+  const equal = (a, b) => a === b;
+
+  if(action.type === PAINT_COLLISION_TILE) {
+    paint(action.x, action.y, action.brushSize, action.value, setValue, isInBounds);
+  } else if (action.type === PAINT_COLLISION_LINE) {
+    paintLine(action.startX, action.startY, action.endX, action.endY, action.brushSize, action.value, setValue, isInBounds);
+  } else if (action.type === PAINT_COLLISION_FILL) {
+    floodFill(action.x, action.y, action.value, getValue, setValue, isInBounds, equal);
+  }
 
   return editEntity(state, "scenes", scene.id, {
     collisions
@@ -1125,8 +1155,6 @@ const paintColor = (state, action) => {
     tileColors
   });
 };
-
-
 
 const editPlayerStartAt = (state, action) => {
   return editProjectSettings(state, {
@@ -1403,10 +1431,14 @@ export default function project(state = initialState.entities, action) {
       return removeTrigger(state, action);
     case REMOVE_TRIGGER_AT:
       return removeTriggerAt(state, action);
-    case ADD_COLLISION_TILE:
-      return addCollisionTile(state, action);
     case REMOVE_COLLISION_TILE:
       return removeCollisionTile(state, action);
+    case PAINT_COLLISION_TILE:
+      return paintCollision(state, action);
+    case PAINT_COLLISION_LINE:
+      return paintCollision(state, action);
+    case PAINT_COLLISION_FILL:
+      return paintCollision(state, action);         
     case PAINT_COLOR_TILE:
       return paintColor(state, action);
     case PAINT_COLOR_LINE:

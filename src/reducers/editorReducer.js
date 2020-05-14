@@ -38,8 +38,10 @@ import {
   EDIT_PLAYER_START_AT,
   EDIT_UI,
   SELECT_SIDEBAR,
-  ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
+  PAINT_COLLISION_TILE,
+  PAINT_COLLISION_LINE,
+  PAINT_COLLISION_FILL,
   PAINT_COLOR_TILE,
   PAINT_COLOR_LINE,
   PAINT_COLOR_FILL,    
@@ -322,8 +324,10 @@ export default function editor(state = initialState.editor, action) {
         worldFocus: true
       };
     }
-    case ADD_COLLISION_TILE:
     case REMOVE_COLLISION_TILE:
+    case PAINT_COLLISION_TILE:
+    case PAINT_COLLISION_LINE:
+    case PAINT_COLLISION_FILL:
     case PAINT_COLOR_TILE:
     case PAINT_COLOR_LINE:
     case PAINT_COLOR_FILL: {
