@@ -12,7 +12,7 @@ import {
   getMaxSceneBottom,
   getScenesLookup
 } from "../../reducers/entitiesReducer";
-import { MIDDLE_MOUSE } from "../../consts";
+import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 import { SceneShape } from "../../reducers/stateShape";
 
 class World extends Component {
@@ -341,7 +341,8 @@ function mapStateToProps(state) {
   } = state.entities.present.result.settings;
   const {
     worldScrollX: scrollX,
-    worldScrollY: scrollY
+    worldScrollY: scrollY,
+    showLayers
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.settings;
@@ -377,7 +378,7 @@ function mapStateToProps(state) {
     tool,
     prefab,
     zoomRatio: (state.editor.zoom || 100) / 100,
-    showConnections: (!!showConnections) && (tool !== "colors") && (tool !== "collisions"),
+    showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
     sidebarWidth,
     loaded,
     focus,
