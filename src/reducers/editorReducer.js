@@ -52,7 +52,8 @@ import {
   SCROLL_WORLD_THROTTLED,  
   RESIZE_WORLD_VIEW,
   SET_SELECTED_PALETTE,
-  SET_SELECTED_BRUSH
+  SET_SELECTED_BRUSH,
+  SET_SHOW_LAYERS
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -472,7 +473,12 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         selectedBrush: action.brush
-      }      
+      }  
+    case SET_SHOW_LAYERS:
+      return {
+        ...state,
+        showLayers: action.showLayers
+      }            
     default:
       return state;
   }

@@ -21,6 +21,14 @@ const MAX_ACTORS = 30;
 const MAX_TRIGGERS = 30;
 const MIDDLE_MOUSE = 2;
 
+export const TOOL_SELECT = "select";
+export const TOOL_ACTORS = "actors";
+export const TOOL_COLLISIONS = "collisions";
+export const TOOL_COLORS = "colors";
+export const TOOL_SCENE = "scene";
+export const TOOL_TRIGGERS = "triggers";
+export const TOOL_ERASER = "eraser";
+
 export {
   engineRoot,
   buildToolsRoot,

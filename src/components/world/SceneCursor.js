@@ -6,6 +6,7 @@ import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon } from "../library/Icons";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS } from "../../consts";
 
 class SceneCursor extends Component {
   constructor() {
@@ -248,11 +249,11 @@ class SceneCursor extends Component {
     return (
       <div
         className={cx("SceneCursor", {
-          "SceneCursor--AddActor": tool === "actors",
-          "SceneCursor--AddTrigger": tool === "triggers",
-          "SceneCursor--Eraser": tool === "eraser",
-          "SceneCursor--Collisions": tool === "collisions",
-          "SceneCursor--Size16px": tool === "colors" && selectedBrush === "16px"
+          "SceneCursor--AddActor": tool === TOOL_ACTORS,
+          "SceneCursor--AddTrigger": tool === TOOL_TRIGGERS,
+          "SceneCursor--Eraser": tool === TOOL_ERASER,
+          "SceneCursor--Collisions": tool === TOOL_COLLISIONS,
+          "SceneCursor--Size16px": (tool === TOOL_COLORS || tool === TOOL_COLLISIONS || tool === TOOL_ERASER) && selectedBrush === "16px"
         })}
         onMouseDown={this.onMouseDown}
         style={{

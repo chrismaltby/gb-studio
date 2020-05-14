@@ -26,6 +26,7 @@ import {
 } from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 
 window.React = React;
 window.Component = Component;
@@ -147,14 +148,15 @@ class Scene extends Component {
       width,
       height,
       projectRoot,
-      showCollisions,
       showColors,
       selected,
       hovered,
       frameCount,
       palettes,
       sceneFiltered,
-      simplifiedRender
+      simplifiedRender,
+      showEntities,
+      showCollisions
     } = this.props;
 
     const { x, y, triggers = [], collisions = [], actors = [], tileColors } = scene;
@@ -202,7 +204,7 @@ class Scene extends Component {
               palettes={palettes}
             />
           )}
-          {!simplifiedRender && showCollisions && !showColors && (
+          {!simplifiedRender && showCollisions && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
@@ -212,10 +214,10 @@ class Scene extends Component {
             </div>
           )}
           <SceneCursor sceneId={id} enabled={hovered} />
-          {!simplifiedRender && !showColors && triggers.map((triggerId) => (
+          {!simplifiedRender && showEntities && triggers.map((triggerId) => (
             <Trigger key={triggerId} id={triggerId} sceneId={id} />
           ))}
-          {!simplifiedRender && !showColors && actors.map((actorId) => (
+          {!simplifiedRender && showEntities && actors.map((actorId) => (
             <Actor key={actorId} id={actorId} sceneId={id} />
           ))}
           {!simplifiedRender && event && (
@@ -279,9 +281,10 @@ Scene.propTypes = {
   height: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   hovered: PropTypes.bool.isRequired,
+  showEntities: PropTypes.bool.isRequired,
+  showCollisions: PropTypes.bool.isRequired,
   frameCount: PropTypes.number.isRequired,
   zoomRatio: PropTypes.number.isRequired,
-  showCollisions: PropTypes.bool.isRequired,
   showColors: PropTypes.bool.isRequired,
   moveScene: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
@@ -311,7 +314,7 @@ const testScene = {
 
 function mapStateToProps(state, props) {
 
-  const { scene: sceneId, dragging: editorDragging } = state.editor;
+  const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
   const scenesLookup = getScenesLookup(state);
   const actorsLookup = getActorsLookup(state);
@@ -383,6 +386,9 @@ function mapStateToProps(state, props) {
 
   const palettes = gbcEnabled && tmpPalettes;
 
+  const showEntities = (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER) || showLayers;
+  const showCollisions = (tool !== TOOL_COLORS || showLayers) && (settings.showCollisions || tool === TOOL_COLLISIONS);
+
   return {
     scene,
     visible,
@@ -392,7 +398,6 @@ function mapStateToProps(state, props) {
     image,
     width: image ? image.width : 32,
     height: image ? image.height : 32,
-    showCollisions: settings.showCollisions || tool === "collisions",
     showColors: tool === "colors",
     zoomRatio: (state.editor.zoom || 100) / 100,
     selected,
@@ -402,7 +407,9 @@ function mapStateToProps(state, props) {
     sceneName,
     sceneFiltered,
     simplifiedRender: !fullRender,
-    palettes
+    palettes,
+    showEntities,
+    showCollisions
   };
 }
 

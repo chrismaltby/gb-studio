@@ -40,7 +40,8 @@ export default {
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
-    selectedBrush: "8px"
+    selectedBrush: "8px",
+    showLayers: true
   },
   navigation: {
     section: "world",

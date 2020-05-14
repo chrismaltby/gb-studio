@@ -45,9 +45,7 @@ class ToolPicker extends Component {
     } else if (e.code === "KeyV") {
       this.setTool("select")(e);
     } else if (e.code === "Escape") {
-      if (this.isAddSelected()) {
-        this.setTool("select")(e);
-      }
+      this.setTool("select")(e);
     }
   };
 

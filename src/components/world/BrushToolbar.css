@@ -1,4 +1,4 @@
-.PalettePicker {
+.BrushToolbar {
     position: fixed;
     height: 36px;
     left: 56px;
@@ -12,11 +12,11 @@
     align-items: center;
   }
 
-  .PalettePicker--Visible {
+  .BrushToolbar--Visible {
     top: 45px;
   }
   
-  .PalettePicker__Item {
+  .BrushToolbar__Item {
     position: relative;
     width: 36px;
     height: 36px;
@@ -25,34 +25,34 @@
     align-items: center;
   }
   
-  .PalettePicker svg {
+  .BrushToolbar svg {
     fill: var(--main-text-color);
     width: 20px;
   }
   
-  .PalettePicker__Item:hover {
+  .BrushToolbar__Item:hover {
     background-color: var(--sidebar-hover-color);
   }
   
-  .PalettePicker__Item--Selected,
-  .PalettePicker__Item--Selected:hover {
+  .BrushToolbar__Item--Selected,
+  .BrushToolbar__Item--Selected:hover {
     background-color: var(--sidebar-selected-color);
   }
   
-  .PalettePicker__Divider {
+  .BrushToolbar__Divider {
     background-color: var(--sidebar-edge-color);
     min-width: 1px;
     align-self: stretch;
     margin: 5px 5px;
   }
 
-  .PalettePicker__Swatch {
+  .BrushToolbar__Swatch {
     width: 24px;
     height: 24px;
     background-color: white;
   }
 
-  .PalettePicker__Color {
+  .BrushToolbar__Color {
     width: 10px;
     height: 10px;
     float: left;

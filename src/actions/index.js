@@ -465,6 +465,10 @@ export const paintColorFill = (sceneId, x, y, paletteIndex) => {
   return { type: types.PAINT_COLOR_FILL, sceneId, x, y, paletteIndex };
 };
 
+export const setShowLayers = (showLayers) => {
+  return { type: types.SET_SHOW_LAYERS, showLayers };
+}
+
 export const addTrigger = (sceneId, x, y, defaults) => {
   return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid(), defaults };
 };
