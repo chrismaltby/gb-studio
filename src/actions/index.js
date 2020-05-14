@@ -453,8 +453,16 @@ export const removeCollisionTile = (sceneId, x, y) => {
   return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
 };
 
-export const setColorTile = (sceneId, x, y, paletteIndex, brush) => {
-  return { type: types.SET_COLOR_TILE, sceneId, x, y, paletteIndex, brush };
+export const paintColorTile = (sceneId, x, y, paletteIndex, brushSize) => {
+  return { type: types.PAINT_COLOR_TILE, sceneId, x, y, paletteIndex, brushSize };
+};
+
+export const paintColorLine = (sceneId, startX, startY, endX, endY, paletteIndex, brushSize) => {
+  return { type: types.PAINT_COLOR_LINE, sceneId, startX, startY, endX, endY, paletteIndex, brushSize };
+};
+
+export const paintColorFill = (sceneId, x, y, paletteIndex) => {
+  return { type: types.PAINT_COLOR_FILL, sceneId, x, y, paletteIndex };
 };
 
 export const addTrigger = (sceneId, x, y, defaults) => {

@@ -40,7 +40,7 @@ export default {
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
-    selectedBrush: "tile"
+    selectedBrush: "8px"
   },
   navigation: {
     section: "world",

@@ -6,7 +6,7 @@
   background: rgba(140, 150, 156, 0.4);
 }
 
-.SceneCursor--Size2x2 {
+.SceneCursor--Size16px {
   width: 16px;
   height: 16px;
 }

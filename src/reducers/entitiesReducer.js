@@ -28,7 +28,9 @@ import {
   REMOVE_TRIGGER_AT,
   ADD_COLLISION_TILE,
   REMOVE_COLLISION_TILE,
-  SET_COLOR_TILE,
+  PAINT_COLOR_TILE,
+  PAINT_COLOR_LINE,
+  PAINT_COLOR_FILL,    
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
@@ -1078,10 +1080,9 @@ const removeCollisionTile = (state, action) => {
   });
 };
 
-const setColorTile = (state, action) => {
+const paintColor = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const background = state.entities.backgrounds[scene.backgroundId];
-  const brush = action.brush;
 
   if (!background) {
     return state;
@@ -1112,18 +1113,20 @@ const setColorTile = (state, action) => {
 
   const equal = (a, b) => a === b;
 
-  if(brush === "tile2x2") {
-    paint(action.x, action.y, 2, action.paletteIndex, setValue, isInBounds);
-  } else if (brush === "fill") {
+  if(action.type === PAINT_COLOR_TILE) {
+    paint(action.x, action.y, action.brushSize, action.paletteIndex, setValue, isInBounds);
+  } else if (action.type === PAINT_COLOR_LINE) {
+    paintLine(action.startX, action.startY, action.endX, action.endY, action.brushSize, action.paletteIndex, setValue, isInBounds);
+  } else if (action.type === PAINT_COLOR_FILL) {
     floodFill(action.x, action.y, action.paletteIndex, getValue, setValue, isInBounds, equal);
-  } else {
-    paint(action.x, action.y, 1, action.paletteIndex, setValue, isInBounds, equal);
   }
 
   return editEntity(state, "scenes", scene.id, {
     tileColors
   });
 };
+
+
 
 const editPlayerStartAt = (state, action) => {
   return editProjectSettings(state, {
@@ -1404,8 +1407,12 @@ export default function project(state = initialState.entities, action) {
       return addCollisionTile(state, action);
     case REMOVE_COLLISION_TILE:
       return removeCollisionTile(state, action);
-    case SET_COLOR_TILE:
-      return setColorTile(state, action);
+    case PAINT_COLOR_TILE:
+      return paintColor(state, action);
+    case PAINT_COLOR_LINE:
+      return paintColor(state, action);
+    case PAINT_COLOR_FILL:
+      return paintColor(state, action);              
     case EDIT_PLAYER_START_AT:
       return editPlayerStartAt(state, action);
     case EDIT_SCENE_EVENT_DESTINATION_POSITION:
