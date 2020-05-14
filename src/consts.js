@@ -29,6 +29,10 @@ export const TOOL_SCENE = "scene";
 export const TOOL_TRIGGERS = "triggers";
 export const TOOL_ERASER = "eraser";
 
+export const BRUSH_8PX = "8px";
+export const BRUSH_16PX = "16px";
+export const BRUSH_FILL = "fill";
+
 export {
   engineRoot,
   buildToolsRoot,

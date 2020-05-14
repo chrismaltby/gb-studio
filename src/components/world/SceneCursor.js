@@ -6,7 +6,7 @@ import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../librar
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS } from "../../consts";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX } from "../../consts";
 
 class SceneCursor extends Component {
   constructor() {
@@ -112,10 +112,10 @@ class SceneCursor extends Component {
           this.remove = false;
         }
       }
-      if(selectedBrush === "fill") {
+      if(selectedBrush === BRUSH_FILL) {
         paintCollisionFill(sceneId, x, y, !this.remove);
       } else {
-        const brushSize = selectedBrush === "16px" ? 2 : 1;
+        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
           paintCollisionLine(sceneId, this.startX, this.startY, x, y, !this.remove, brushSize);
           this.startX = x;
@@ -129,10 +129,10 @@ class SceneCursor extends Component {
         window.addEventListener("mouseup", this.onCollisionsStop);
       }
     } else if (tool === "colors") {
-      if(selectedBrush === "fill") {
+      if(selectedBrush === BRUSH_FILL) {
         paintColorFill(sceneId, x, y, selectedPalette);
       } else {
-        const brushSize = selectedBrush === "16px" ? 2 : 1;
+        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
           paintColorLine(sceneId, this.startX, this.startY, x, y, selectedPalette, brushSize);
           this.startX = x;
@@ -148,10 +148,10 @@ class SceneCursor extends Component {
     } else if (tool === "eraser") {
       if (showCollisions) {
         this.remove = true;
-        if(selectedBrush === "fill") {
+        if(selectedBrush === BRUSH_FILL) {
           paintCollisionFill(sceneId, x, y, !this.remove);
         } else {
-          const brushSize = selectedBrush === "16px" ? 2 : 1;
+          const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
           if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
             paintCollisionLine(sceneId, this.startX, this.startY, x, y, !this.remove, brushSize);
             this.startX = x;
@@ -168,7 +168,7 @@ class SceneCursor extends Component {
       if(showLayers) {
         removeActorAt(sceneId, x, y);
         removeTriggerAt(sceneId, x, y);
-        if(selectedBrush === "16px") {
+        if(selectedBrush === BRUSH_16PX) {
           removeActorAt(sceneId, x + 1, y);
           removeTriggerAt(sceneId, x + 1, y);
           removeActorAt(sceneId, x, y + 1);
@@ -210,7 +210,7 @@ class SceneCursor extends Component {
       paintCollisionLine
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === "16px" ? 2 : 1;
+      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
 
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
@@ -258,7 +258,7 @@ class SceneCursor extends Component {
       paintColorLine
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === "16px" ? 2 : 1;
+      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
 
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
@@ -308,7 +308,7 @@ class SceneCursor extends Component {
           "SceneCursor--Eraser": tool === TOOL_ERASER,
           "SceneCursor--Collisions": tool === TOOL_COLLISIONS,
           "SceneCursor--Colors": tool === TOOL_COLORS,
-          "SceneCursor--Size16px": (tool === TOOL_COLORS || tool === TOOL_COLLISIONS || tool === TOOL_ERASER) && selectedBrush === "16px"
+          "SceneCursor--Size16px": (tool === TOOL_COLORS || tool === TOOL_COLLISIONS || tool === TOOL_ERASER) && selectedBrush === BRUSH_16PX
         })}
         onMouseDown={this.onMouseDown}
         style={{

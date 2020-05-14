@@ -1,6 +1,8 @@
+import { TOOL_SELECT, BRUSH_8PX } from "../consts";
+
 export default {
   tools: {
-    selected: "colors",
+    selected: TOOL_SELECT,
     prefab: null
   },
   document: {
@@ -40,7 +42,7 @@ export default {
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
-    selectedBrush: "8px",
+    selectedBrush: BRUSH_8PX,
     showLayers: true
   },
   navigation: {

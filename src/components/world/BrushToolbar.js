@@ -11,7 +11,7 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
 } from "../library/Icons";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, BRUSH_8PX, BRUSH_16PX, BRUSH_FILL } from "../../consts";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -32,7 +32,6 @@ class BrushToolbar extends Component {
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
-    console.log(e.code);
     if (e.code === "Digit1") {
       this.setSelectedPalette(0)(e);
     } else if (e.code === "Digit2") {
@@ -46,11 +45,11 @@ class BrushToolbar extends Component {
     } else if (e.code === "Digit6") {
       this.setSelectedPalette(5)(e);
     } else if (e.code === "Digit8") {
-      this.setBrush("8px")(e);
+      this.setBrush(BRUSH_8PX)(e);
     } else if (e.code === "Digit9") {
-      this.setBrush("16px")(e);
+      this.setBrush(BRUSH_16PX)(e);
     } else if (e.code === "Digit0") {
-      this.setBrush("fill")(e);
+      this.setBrush(BRUSH_FILL)(e);
     } else if (e.code === "Minus") {
       this.toggleShowLayers(e);
     }
@@ -83,27 +82,27 @@ class BrushToolbar extends Component {
     return (
       <div className={cx("BrushToolbar", { "BrushToolbar--Visible": visible })}>
         <div
-          onClick={this.setBrush("8px")}
+          onClick={this.setBrush(BRUSH_8PX)}
           className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === "8px",
+            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_8PX,
           })}
           title={`${l10n("TOOL_BRUSH", { size: "8px" })} (8)`}
         >
           <SquareIconSmall />
         </div>
         <div
-          onClick={this.setBrush("16px")}
+          onClick={this.setBrush(BRUSH_16PX)}
           className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === "16px",
+            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_16PX,
           })}
           title={`${l10n("TOOL_BRUSH", { size: "16px" })} (9)`}
         >
           <SquareIcon />
         </div>
         <div
-          onClick={this.setBrush("fill")}
+          onClick={this.setBrush(BRUSH_FILL)}
           className={cx("BrushToolbar__Item", {
-            "BrushToolbar__Item--Selected": selectedBrush === "fill",
+            "BrushToolbar__Item--Selected": selectedBrush === BRUSH_FILL,
           })}
           title={`${l10n("TOOL_FILL")} (0)`}
         >
