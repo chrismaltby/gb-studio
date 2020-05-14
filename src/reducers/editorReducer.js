@@ -38,7 +38,6 @@ import {
   EDIT_PLAYER_START_AT,
   EDIT_UI,
   SELECT_SIDEBAR,
-  REMOVE_COLLISION_TILE,
   PAINT_COLLISION_TILE,
   PAINT_COLLISION_LINE,
   PAINT_COLLISION_FILL,
@@ -324,7 +323,6 @@ export default function editor(state = initialState.editor, action) {
         worldFocus: true
       };
     }
-    case REMOVE_COLLISION_TILE:
     case PAINT_COLLISION_TILE:
     case PAINT_COLLISION_LINE:
     case PAINT_COLLISION_FILL:

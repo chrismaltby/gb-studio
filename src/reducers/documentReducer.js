@@ -18,7 +18,6 @@ import {
   EDIT_ACTOR,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
-  REMOVE_COLLISION_TILE,
   PAINT_COLLISION_TILE,
   PAINT_COLLISION_LINE,  
   PAINT_COLLISION_FILL,   
@@ -102,7 +101,6 @@ export default function modified(state = initialState.document, action) {
     case EDIT_ACTOR:
     case REMOVE_ACTOR:
     case REMOVE_ACTOR_AT:
-    case REMOVE_COLLISION_TILE:
     case PAINT_COLLISION_TILE:
     case PAINT_COLLISION_LINE:
     case PAINT_COLLISION_FILL:

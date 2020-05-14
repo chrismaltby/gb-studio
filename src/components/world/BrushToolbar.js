@@ -146,7 +146,9 @@ class BrushToolbar extends Component {
         {showPalettes && <div className="BrushToolbar__Divider" />}
         <div
           onClick={this.toggleShowLayers}
-          className="BrushToolbar__Item"
+          className={cx("BrushToolbar__Item", {
+            "BrushToolbar__Item--Selected": !showLayers,
+          })}          
           title={`${
             showLayers
               ? l10n("TOOL_HIDE_LAYERS")

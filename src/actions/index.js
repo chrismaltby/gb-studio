@@ -445,14 +445,6 @@ export const selectScriptEvent = eventId => {
   return { type: types.SELECT_SCRIPT_EVENT, eventId };
 };
 
-export const addCollisionTile = (sceneId, x, y) => {
-  return { type: types.ADD_COLLISION_TILE, sceneId, x, y };
-};
-
-export const removeCollisionTile = (sceneId, x, y) => {
-  return { type: types.REMOVE_COLLISION_TILE, sceneId, x, y };
-};
-
 export const paintCollisionTile = (sceneId, x, y, value, brushSize) => {
   return { type: types.PAINT_COLLISION_TILE, sceneId, x, y, value, brushSize };
 };
