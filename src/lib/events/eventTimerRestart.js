@@ -1,4 +1,4 @@
-const l10n = require("../helpers/l10n");
+const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_TIMER_RESTART";
 

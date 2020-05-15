@@ -4,7 +4,7 @@ import glob from "glob";
 // import plugins, { pluginEmitter } from "../plugins/plugins";
 import { eventsRoot } from "../../consts";
 import fs from "fs";
-import l10n from "../../lib/helpers/l10n";
+import * as l10n from "../../lib/helpers/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "../helpers/gbstudio";
 import * as eventSystemHelpers from "../helpers/eventSystem";

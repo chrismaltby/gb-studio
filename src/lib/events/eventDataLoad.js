@@ -1,5 +1,6 @@
-const l10n = require("../helpers/l10n");
+const l10n = require("../helpers/l10n").default;
 
+console.log(l10n);
 const id = "EVENT_LOAD_DATA";
 
 const fields = [
