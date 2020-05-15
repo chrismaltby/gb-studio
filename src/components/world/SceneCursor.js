@@ -108,14 +108,20 @@ class SceneCursor extends Component {
     } else if (tool === "collisions") {
 
       if(!this.drawLine || this.startX === undefined || this.startY === undefined) {
-        const collisionIndex = scene.width * y + x;
-        const collisionByteIndex = collisionIndex >> 3;
-        const collisionByteOffset = collisionIndex & 7;
-        const collisionByteMask = 1 << collisionByteOffset;
-        if (scene.collisions[collisionByteIndex] & collisionByteMask) {
-          this.remove = true;
-        } else {
-          this.remove = false;
+        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
+        this.remove = true;
+        // If any tile under brush is currently not filled then
+        // paint collisions rather than remove them
+        for(let xi=x; xi<x + brushSize; xi++) {
+          for(let yi=y; yi<y + brushSize; yi++) {
+            const collisionIndex = scene.width * yi + xi;
+            const collisionByteIndex = collisionIndex >> 3;
+            const collisionByteOffset = collisionIndex & 7;
+            const collisionByteMask = 1 << collisionByteOffset;          
+            if(!(scene.collisions[collisionByteIndex] & collisionByteMask)) {
+              this.remove = false; 
+            }
+          }
         }
       }
       if(selectedBrush === BRUSH_FILL) {
