@@ -3,6 +3,7 @@ import { compile } from "../../src/lib/events/eventActorSetDirection";
 test("Should set player direction", () => {
   const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
+  const mockGetActorById = jest.fn()
 
   compile(
     {
@@ -12,7 +13,8 @@ test("Should set player direction", () => {
     {
       scene: { actors: [] },
       actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection
+      actorSetDirection: mockActorSetDirection,
+      getActorById: mockGetActorById
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
@@ -22,6 +24,7 @@ test("Should set player direction", () => {
 test("Should set actor direction", () => {
   const mockactorSetActive = jest.fn();
   const mockActorSetDirection = jest.fn();
+  const mockGetActorById = jest.fn()
 
   compile(
     {
@@ -37,7 +40,8 @@ test("Should set actor direction", () => {
         ]
       },
       actorSetActive: mockactorSetActive,
-      actorSetDirection: mockActorSetDirection
+      actorSetDirection: mockActorSetDirection,
+      getActorById: mockGetActorById
     }
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
@@ -49,6 +53,13 @@ test("Should set frame of actor using static movement", () => {
   const mockActorSetDirection = jest.fn();
   const mockActorSetFrame = jest.fn();
   const mockActorSetFlip = jest.fn();
+  const mockGetActorById = jest.fn();
+
+  mockGetActorById.mockReturnValue({
+    id: "abc",
+    movementType: "static",
+    spriteSheetId: "def"   
+  });
 
   compile(
     {
@@ -74,7 +85,8 @@ test("Should set frame of actor using static movement", () => {
       actorSetActive: mockactorSetActive,
       actorSetDirection: mockActorSetDirection,
       actorSetFrame: mockActorSetFrame,
-      actorSetFlip: mockActorSetFlip
+      actorSetFlip: mockActorSetFlip,
+      getActorById: mockGetActorById
     }
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
@@ -88,6 +100,13 @@ test("Should set flip actor using static movement when facing left", () => {
   const mockActorSetDirection = jest.fn();
   const mockActorSetFrame = jest.fn();
   const mockActorSetFlip = jest.fn();
+  const mockGetActorById = jest.fn();
+
+  mockGetActorById.mockReturnValue({
+    id: "abc",
+    movementType: "static",
+    spriteSheetId: "def"   
+  });
 
   compile(
     {
@@ -113,7 +132,8 @@ test("Should set flip actor using static movement when facing left", () => {
       actorSetActive: mockactorSetActive,
       actorSetDirection: mockActorSetDirection,
       actorSetFrame: mockActorSetFrame,
-      actorSetFlip: mockActorSetFlip
+      actorSetFlip: mockActorSetFlip,
+      getActorById: mockGetActorById
     }
   );
   expect(mockactorSetActive).toBeCalledWith("abc");
@@ -124,9 +144,16 @@ test("Should set flip actor using static movement when facing left", () => {
 
 test("Should not set frame if spritesheet has no frames", () => {
   const mockactorSetActive = jest.fn();
+  const mockGetActorById = jest.fn();
   const mockActorSetDirection = jest.fn();
   const mockActorSetFrame = jest.fn();
   const mockActorSetFlip = jest.fn();
+
+  mockGetActorById.mockReturnValue({
+    id: "abc",
+    movementType: "static",
+    spriteSheetId: "def"
+  });
 
   compile(
     {
@@ -151,7 +178,8 @@ test("Should not set frame if spritesheet has no frames", () => {
       actorSetActive: mockactorSetActive,
       actorSetDirection: mockActorSetDirection,
       actorSetFrame: mockActorSetFrame,
-      actorSetFlip: mockActorSetFlip
+      actorSetFlip: mockActorSetFlip,
+      getActorById: mockGetActorById
     }
   );
 
@@ -179,7 +207,8 @@ test("Should not set frame if spritesheet has no frames", () => {
       actorSetActive: mockactorSetActive,
       actorSetDirection: mockActorSetDirection,
       actorSetFrame: mockActorSetFrame,
-      actorSetFlip: mockActorSetFlip
+      actorSetFlip: mockActorSetFlip,
+      getActorById: mockGetActorById
     }
   );
 
