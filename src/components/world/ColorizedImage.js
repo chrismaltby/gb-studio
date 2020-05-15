@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import ColorizedImageWorker from "./ColorizedImage.worker";
+import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
+// eslint-disable-next-line import/no-unresolved
+import ColorizedImageWorker from "./ColorizedImage.worker";
 
 const workerPool = [];
-for(let i=0; i<navigator.hardwareConcurrency; i++) {
-  workerPool.push(new ColorizedImageWorker())
+for (let i = 0; i < navigator.hardwareConcurrency; i++) {
+  workerPool.push(new ColorizedImageWorker());
 }
 
 let id = 0;
@@ -19,15 +21,12 @@ class ColorizedImage extends Component {
     this.offscreenCtx = this.offscreenCanvas.getContext("bitmaprenderer");
     this.id = id++;
     this.worker = workerPool[Math.floor(workerPool.length * Math.random())];
+    this.debouncedDraw = debounce(this.draw, 16);
   }
 
   componentDidMount() {
     this.debouncedDraw();
     this.worker.addEventListener("message", this.onWorkerComplete);
-  }
-
-  componentWillUnmount() {
-    this.worker.removeEventListener("message", this.onWorkerComplete);
   }
 
   componentDidUpdate(prevProps) {
@@ -37,7 +36,11 @@ class ColorizedImage extends Component {
     }
   }
 
-  draw = (src) => {
+  componentWillUnmount() {
+    this.worker.removeEventListener("message", this.onWorkerComplete);
+  }
+
+  draw = () => {
     const { src, tiles = [], width, height, palettes = [] } = this.props;
 
     // const palettes = [
@@ -52,7 +55,7 @@ class ColorizedImage extends Component {
     //     [96, 184, 32],
     //     [48, 104, 40],
     //     [0, 0, 0],
-    //   ],      
+    //   ],
     //   [
     //     [255, 255, 255],
     //     [200, 200, 200],
@@ -73,8 +76,6 @@ class ColorizedImage extends Component {
     }
   };
 
-  debouncedDraw = debounce(this.draw, 16);
-
   onWorkerComplete = (e, a, b) => {
     if (this.offscreenCanvas && this.offscreenCtx && e.data.id === this.id) {
       const ctx = this.canvas.current.getContext("2d");
@@ -88,5 +89,18 @@ class ColorizedImage extends Component {
     return <canvas ref={this.canvas} width={width} height={height} />;
   }
 }
+
+ColorizedImage.propTypes = {
+  src: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  tiles: PropTypes.arrayOf(PropTypes.number),
+  palettes: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))),
+};
+
+ColorizedImage.defaultProps = {
+  tiles: [],
+  palettes: []
+};
 
 export default ColorizedImage;

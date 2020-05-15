@@ -383,7 +383,7 @@ function mapStateToProps(state, props) {
 
   const gbcEnabled = settings.customColorsEnabled;
 
-  const palettes = gbcEnabled && tmpPalettes;
+  const palettes = gbcEnabled ? tmpPalettes : undefined;
 
   const showEntities = (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER) || showLayers;
   const showCollisions = (tool !== TOOL_COLORS || showLayers) && (settings.showCollisions || tool === TOOL_COLLISIONS);
