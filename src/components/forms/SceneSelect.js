@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
+import memoize from "lodash/memoize";
 import { SceneShape, BackgroundShape } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { getScenesLookup, getScenes, getBackgroundsLookup } from "../../reducers/entitiesReducer";
-import memoize from "lodash/memoize";
 
 const getCachedObject = memoize(t => t, JSON.stringify);
 
@@ -36,7 +36,6 @@ const DropdownIndicator = ({
 };
 
 const Option = ({ scenesLookup, backgroundsLookup, projectRoot }) => props => {
-  // eslint-disable-next-line react/prop-types
   const { value, label } = props;
   return (
     <components.Option {...props}>
@@ -119,13 +118,23 @@ class SceneSelect extends Component {
   }
 }
 
+export const CachedSceneShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  backgroundId: PropTypes.string.isRequired
+});
+
+export const CachedSceneLookupShape = PropTypes.shape({
+  backgroundId: PropTypes.string.isRequired
+});
+
 SceneSelect.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   allowNone: PropTypes.bool,
-  scenes: PropTypes.arrayOf(SceneShape).isRequired,
-  scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
+  scenes: PropTypes.arrayOf(CachedSceneShape).isRequired,
+  scenesLookup: PropTypes.objectOf(CachedSceneLookupShape).isRequired,
   backgroundsLookup: PropTypes.objectOf(BackgroundShape).isRequired,
   projectRoot: PropTypes.string.isRequired
 };
@@ -140,6 +149,7 @@ function mapStateToProps(state) {
   const fullScenesLookup = getScenesLookup(state);
   const fullScenes = getScenes(state);
   const scenesLookup = getCachedObject(Object.keys(fullScenesLookup).reduce((memo, key) => {
+    // eslint-disable-next-line no-param-reassign
     memo[key] = fullScenesLookup[key] && {
       backgroundId: fullScenesLookup[key].backgroundId
     };
