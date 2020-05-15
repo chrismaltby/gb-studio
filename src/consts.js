@@ -33,6 +33,12 @@ export const BRUSH_8PX = "8px";
 export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
 
+export const DMG_PALETTE = {
+  id: "dmg",
+  name: "DMG (GB Default)",
+  colors: [ "E8F8E0", "B0F088", "509878", "202850" ]
+};
+
 export {
   engineRoot,
   buildToolsRoot,

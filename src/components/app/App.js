@@ -11,6 +11,7 @@ import BuildPage from "../../containers/pages/BuildPage";
 import WorldPage from "../../containers/pages/WorldPage";
 import UIPage from "../../containers/pages/UIPage";
 import MusicPage from "../../containers/pages/MusicPage";
+import PalettePage from "../../containers/pages/PalettePage";
 import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
 import { ErrorShape } from "../../reducers/stateShape";
@@ -67,6 +68,7 @@ class App extends Component {
             {section === "sprites" && <SpritesPage />}
             {section === "ui" && <UIPage />}
             {section === "music" && <MusicPage />}
+            {section === "palettes" && <PalettePage />}
             {section === "dialogue" && <DialoguePage />}
             {section === "build" && <BuildPage />}
             {section === "settings" && <SettingsPage />}
@@ -84,6 +86,7 @@ App.propTypes = {
     "sprites",
     "ui",
     "music",
+    "palettes",    
     "dialogue",
     "build",
     "settings",

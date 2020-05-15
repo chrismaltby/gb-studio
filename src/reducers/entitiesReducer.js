@@ -60,6 +60,7 @@ import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
+import { DMG_PALETTE } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -1187,13 +1188,11 @@ const renameVariable = (state, action) => {
 };
 
 const addPalette = (state, action) => {
-  const newPalette = Object.assign(
-    {
-      id: action.id,
-      name: `Palette ${state.result.palettes.length + 1}`,
-      colors: DMG_PALETTE.colors
-    }
-  );
+  const newPalette = {
+    id: action.id,
+    name: `Palette ${state.result.palettes.length + 1}`,
+    colors: DMG_PALETTE.colors
+  }
   return addEntity(state, "palettes", newPalette);
 };
 
