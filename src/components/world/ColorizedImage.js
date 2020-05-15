@@ -7,8 +7,6 @@ for(let i=0; i<navigator.hardwareConcurrency; i++) {
   workerPool.push(new ColorizedImageWorker())
 }
 
-console.log("workerPool.length", workerPool.length)
-
 let id = 0;
 
 class ColorizedImage extends Component {
