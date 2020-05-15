@@ -360,7 +360,7 @@ function mapStateToProps(state) {
   const matchingScenes = searchTerm ? 
     scenes.filter((scene, sceneIndex) => {
       const sceneName = scenesLookup[scene].name || `Scene ${sceneIndex + 1}`;
-      return sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1;
+      return searchTerm === scene || sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1;
     })
     : [];
 

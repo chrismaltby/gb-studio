@@ -83,11 +83,17 @@ class SceneCursor extends Component {
       paintColorLine,
       paintColorFill,
       removeActorAt,
-      removeTriggerAt
+      removeTriggerAt,
+      sceneFiltered,
+      editSearchTerm
     } = this.props;
 
     this.lockX = undefined;
-    this.lockY = undefined;     
+    this.lockY = undefined;
+
+    if(sceneFiltered) {
+      editSearchTerm(undefined);
+    }
 
     if (tool === "actors") {
       addActor(sceneId, x, y, prefab);
@@ -397,7 +403,8 @@ const mapDispatchToProps = {
   selectScene: actions.selectScene,
   setTool: actions.setTool,
   editPlayerStartAt: actions.editPlayerStartAt,
-  editDestinationPosition: actions.editDestinationPosition
+  editDestinationPosition: actions.editDestinationPosition,
+  editSearchTerm: actions.editSearchTerm
 };
 
 export default connect(

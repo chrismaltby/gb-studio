@@ -37,10 +37,21 @@ const sectionNames = {
 };
 
 class AppToolbar extends Component {
-  setSection = section => e => {
-    const { setSection } = this.props;
-    setSection(section);
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchTerm: props.searchTerm
+    }
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { searchTerm } = this.state;
+    if(searchTerm && !nextProps.searchTerm) {
+      this.setState({
+        searchTerm: nextProps.searchTerm
+      })
+    }
+  }
 
   onZoomIn = e => {
     e.preventDefault();
@@ -73,12 +84,10 @@ class AppToolbar extends Component {
     buildGame({ buildType, exportBuild: true });
   };
 
-  openProjectFolder = e => {
-    const { openFolder, projectRoot } = this.props;
-    openFolder(projectRoot);
-  };
-
   onChangeSearchTerm = e => {
+    this.setState({
+      searchTerm: e.currentTarget.value
+    })
     this.onChangeSearchTermDebounced(e.currentTarget.value);
   }
 
@@ -86,6 +95,16 @@ class AppToolbar extends Component {
     const { editSearchTerm } = this.props;
     editSearchTerm(searchTerm);
   }, 300);
+
+  openProjectFolder = e => {
+    const { openFolder, projectRoot } = this.props;
+    openFolder(projectRoot);
+  };
+
+  setSection = section => e => {
+    const { setSection } = this.props;
+    setSection(section);
+  };
 
   render() {
     const {
@@ -96,9 +115,11 @@ class AppToolbar extends Component {
       showSearch,
       running,
       modified,
-      searchTerm,
       loaded,
     } = this.props;
+    const {
+      searchTerm
+    } = this.state;
 
     if (!loaded) {
       return <Toolbar />;
@@ -155,15 +176,19 @@ class AppToolbar extends Component {
           {name || "Untitled"} {modified && ` (${l10n("TOOLBAR_MODIFIED")})`}
         </ToolbarTitle>
         <ToolbarSpacer />
+        {showSearch && (
         <ToolbarSearch
           placeholder={l10n("TOOLBAR_SEARCH")}
-          defaultValue={searchTerm}
+          value={searchTerm || ""}
           onChange={this.onChangeSearchTerm}
+          onSubmit={this.onChangeSearchTerm}
           style={{
-            visibility: !showSearch && "hidden",
+            // visibility: !showSearch && "hidden",
             width: 133
           }}
-        />        
+        /> 
+        )}
+       
         <ToolbarButton
           title={l10n("TOOLBAR_OPEN_PROJECT_FOLDER")}
           onClick={this.openProjectFolder}

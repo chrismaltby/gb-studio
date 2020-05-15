@@ -17,6 +17,11 @@
   border-bottom: 1px solid var(--sidebar-border-color);
 }
 
+.PageContent section:last-of-type {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
 .PageContent section h2 {
   margin-top: 0px;
 }

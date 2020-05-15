@@ -212,7 +212,7 @@ class Scene extends Component {
               />
             </div>
           )}
-          <SceneCursor sceneId={id} enabled={hovered} />
+          <SceneCursor sceneId={id} enabled={hovered} sceneFiltered={sceneFiltered} />
           {!simplifiedRender && showEntities && triggers.map((triggerId) => (
             <Trigger key={triggerId} id={triggerId} sceneId={id} />
           ))}
@@ -288,6 +288,7 @@ Scene.propTypes = {
   selectScene: PropTypes.func.isRequired,
   moveSelectedEntity: PropTypes.func.isRequired,
   sceneHover: PropTypes.func.isRequired,
+  editSearchTerm: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
   simplifiedRender: PropTypes.bool.isRequired,
@@ -377,7 +378,7 @@ function mapStateToProps(state, props) {
   const sceneName = scene.name || `Scene ${props.index + 1}`;
   const sceneFiltered =
     (searchTerm &&
-      sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1) ||
+      sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1 && scene.id !== searchTerm) ||
     false;
 
   const gbcEnabled = settings.customColorsEnabled;
@@ -415,6 +416,7 @@ const mapDispatchToProps = {
   selectScene: actions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
   sceneHover: actions.sceneHover,
+  editSearchTerm: actions.editSearchTerm,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scene);
