@@ -80,6 +80,8 @@ class ColorizedImage extends Component {
     if (this.offscreenCanvas && this.offscreenCtx && e.data.id === this.id) {
       const ctx = this.canvas.current.getContext("2d");
       this.offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+      this.canvas.current.width = e.data.width;
+      this.canvas.current.height = e.data.height;
       ctx.drawImage(this.offscreenCanvas, 0, 0);
     }
   };

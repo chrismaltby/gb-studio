@@ -33,16 +33,10 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tiles = evt.data.tiles;
   const palettes = evt.data.palettes;
-  const width = evt.data.width;
-  const height = evt.data.height;
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
   let img: ImageBitmap;
-
-  const tileWidth = Math.floor(width / 8);
-  const tileHeight = Math.floor(width / 8);
-  const tilesLength = tileWidth * tileHeight;
 
   if (cache[src]) {
     // Using Cached Data
@@ -51,14 +45,16 @@ workerCtx.onmessage = async (evt) => {
     img = cache[src].img;
   } else {
     // Fetch New Data
-    canvas = new OffscreenCanvas(width, height);
+    const imgblob = await fetch(src).then((r) => r.blob());
+    img = await createImageBitmap(imgblob);
+
+    canvas = new OffscreenCanvas(img.width, img.height);
+
     const tmpCtx = canvas.getContext("2d");
     if (!tmpCtx) {
       return;
     }
     ctx = tmpCtx;
-    const imgblob = await fetch(src).then((r) => r.blob());
-    img = await createImageBitmap(imgblob);
 
     cache[src] = {
       canvas,
@@ -66,6 +62,15 @@ workerCtx.onmessage = async (evt) => {
       img,
     };
   }
+
+  const width = img.width;
+  const height = img.height;
+  const tileWidth = Math.floor(width / 8);
+  const tileHeight = Math.floor(width / 8);
+  const tilesLength = tileWidth * tileHeight;
+
+  canvas.width = width;
+  canvas.height = height;
 
   ctx.drawImage(img, 0, 0, width, height);
 
@@ -96,7 +101,7 @@ workerCtx.onmessage = async (evt) => {
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();
-  workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
+  workerCtx.postMessage({ id, width, height, canvasImage }, [canvasImage]);
 };
 
 export { }
