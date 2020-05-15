@@ -209,7 +209,7 @@ const createPlay = async (url: string) => {
       autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: false,
-        webSecurity: false
+        webSecurity: process.env.NODE_ENV !== 'development'
       }
     });
   } else {
