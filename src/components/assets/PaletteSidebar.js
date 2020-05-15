@@ -6,9 +6,9 @@ import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
-import { PaletteColors } from "../forms/PaletteSelect";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getPalettes } from "../../reducers/entitiesReducer";
+import PaletteBlock from "../library/PaletteBlock";
 
 class PaletteSidebar extends Component {
   render() {
@@ -36,7 +36,7 @@ class PaletteSidebar extends Component {
                 })}
               >
                 <div style={{flex: 1, lineHeight: 1.5}}>{palette.name}</div>
-                <PaletteColors colors={palette.colors} />
+                <PaletteBlock colors={palette.colors} size={19} />
               </div>)
           ))}
         </div>

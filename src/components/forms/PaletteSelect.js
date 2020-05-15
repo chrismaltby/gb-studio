@@ -4,34 +4,12 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getPalettes } from "../../reducers/entitiesReducer";
+import PaletteBlock from "../library/PaletteBlock.tsx";
 
 export const DMG_PALETTE = {
     id: "dmg",
     name: "DMG (GB Default)",
     colors: [ "E8F8E0", "B0F088", "509878", "202850" ]
-};
-
-const PaletteColors = ({ colors }) => (
-  <div
-    className="PaletteSelect__Preview"
-    style={{ 
-      backgroundImage: `
-        linear-gradient(
-          90deg, 
-          #${colors[0]} 0%,
-          #${colors[0]} 24.9%,
-          #${colors[1]} 25.1%,
-          #${colors[1]} 50%,
-          #${colors[2]} 50%,
-          #${colors[2]} 75%,
-          #${colors[3]} 75%,
-          #${colors[3]} 100%
-        )`
-    }} 
-  />);
-
-PaletteColors.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 class PaletteSelect extends Component {
@@ -51,7 +29,7 @@ class PaletteSelect extends Component {
     const current = palettes.find((p) => p.id === currentValue) || DMG_PALETTE;
     return (
       <components.DropdownIndicator {...props}>
-        <PaletteColors colors={current.colors} />
+        <PaletteBlock colors={current.colors} size={16} />
       </components.DropdownIndicator>
     );
   };
@@ -155,5 +133,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(PaletteSelect);
-
-export { PaletteColors };

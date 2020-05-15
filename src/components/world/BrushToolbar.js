@@ -12,6 +12,7 @@ import {
   EyeClosedIcon,
 } from "../library/Icons";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, BRUSH_8PX, BRUSH_16PX, BRUSH_FILL } from "../../consts";
+import PaletteBlock from "../library/PaletteBlock";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -122,24 +123,7 @@ class BrushToolbar extends Component {
                 number: paletteIndex + 1,
               })} (${paletteIndex + 1})`}
             >
-              <div className="BrushToolbar__Swatch">
-                <div
-                  className="BrushToolbar__Color"
-                  style={{ background: "#ff0000" }}
-                />
-                <div
-                  className="BrushToolbar__Color"
-                  style={{ background: "#00ff00" }}
-                />
-                <div
-                  className="BrushToolbar__Color"
-                  style={{ background: "#ff00ff" }}
-                />
-                <div
-                  className="BrushToolbar__Color"
-                  style={{ background: "#0000ff" }}
-                />
-              </div>
+              <PaletteBlock colors={["ff0000","00ff00","ff00ff","0000ff"]} />
             </div>
           ))}
         {showPalettes && <div className="BrushToolbar__Divider" />}
