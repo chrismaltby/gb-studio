@@ -1,9 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { directionToFrame, assetFilename } from "../../lib/helpers/gbstudio";
+import debounce from "lodash/debounce";
+import { assetFilename } from "../../lib/helpers/gbstudio";
+// eslint-disable-next-line import/no-unresolved
+import SpriteSheetCanasWorker from "./SpriteSheetCanvas.worker";
 
-const imageCache = {};
+const workerPool = [];
+for(let i=0; i<navigator.hardwareConcurrency; i++) {
+  workerPool.push(new SpriteSheetCanasWorker())
+}
+
+let id = 0;
 
 const SPRITE_SIZE = 16;
 
@@ -11,30 +19,18 @@ class SpriteSheetCanvas extends Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
+    this.image = null;
+    this.offscreen = false;
+    this.offscreenCanvas = document.createElement("canvas");
+    this.offscreenCtx = this.offscreenCanvas.getContext("bitmaprenderer");    
+    this.id = id++;
+    this.worker = workerPool[Math.floor(workerPool.length * Math.random())];    
+    this.debouncedDraw = debounce(this.draw, 16);
   }
 
   componentDidMount() {
-    const { projectRoot, spriteSheet } = this.props;
-    this.loadImage(projectRoot, spriteSheet);
-    // console.log("new spritesheetcanvas");
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { direction, frame } = this.props;
-    const {
-      projectRoot,
-      spriteSheet,
-      direction: nextDirection,
-      frame: nextFrame
-    } = nextProps;
-    const newSrc = this.imageSrc(projectRoot, spriteSheet);
-    if (
-      newSrc !== this.src ||
-      direction !== nextDirection ||
-      frame !== nextFrame
-    ) {
-      this.loadImage(projectRoot, spriteSheet);
-    }
+    this.debouncedDraw();
+    this.worker.addEventListener("message", this.onWorkerComplete);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -46,6 +42,53 @@ class SpriteSheetCanvas extends Component {
     );
   }
 
+  componentDidUpdate(prevProps) {
+    const { direction, frame } = prevProps;
+    const {
+      projectRoot,
+      spriteSheet,
+      direction: nextDirection,
+      frame: nextFrame
+    } = this.props;
+    const newSrc = this.imageSrc(projectRoot, spriteSheet);
+    if (
+      newSrc !== this.src ||
+      direction !== nextDirection ||
+      frame !== nextFrame
+    ) {
+      this.debouncedDraw();
+    }
+  }
+
+  componentWillUnmount() {
+    this.worker.removeEventListener("message", this.onWorkerComplete);
+  }
+
+  draw = () => {
+    const { projectRoot, spriteSheet = {}, direction = "down", frame } = this.props;
+    if (this.canvas && this.canvas.current) {
+      this.worker.postMessage({
+        src: this.imageSrc(projectRoot, spriteSheet),
+        width: SPRITE_SIZE,
+        height: SPRITE_SIZE,
+        id: this.id,
+        numFrames: spriteSheet.numFrames,
+        type: spriteSheet.type,
+        direction,
+        frame
+      });
+    }
+  };
+
+  onWorkerComplete = (e, a, b) => {
+    if (this.offscreenCanvas && this.offscreenCtx && e.data.id === this.id) {
+      const ctx = this.canvas.current.getContext("2d");
+      this.offscreenCtx.transferFromImageBitmap(e.data.canvasImage);
+      ctx.clearRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+      ctx.drawImage(this.offscreenCanvas, 0, 0);
+    }
+  };
+
   imageSrc = (projectRoot, spriteSheet) => {
     return (
       spriteSheet &&
@@ -55,70 +98,7 @@ class SpriteSheetCanvas extends Component {
     );
   };
 
-  loadImage = (projectRoot, spriteSheet) => {
-    if (!spriteSheet) {
-      if (this.canvas.current) {
-        this.canvas.current.width = this.canvas.current.width;
-      }
-    } else {
-      this.src = this.imageSrc(projectRoot, spriteSheet);
-      if (imageCache[this.src]) {
-        this.img = imageCache[this.src];
-        requestAnimationFrame(this.draw);
-      } else {
-        this.imgLoaded = false;
-        this.img = new Image();
-        this.img.crossOrigin = "anonymous";
-        this.img.onload = this.draw;
-        this.img.src = this.src;
-      }
-    }
-  };
-
-  draw = () => {
-    const { spriteSheet = {}, direction = "down", frame } = this.props;
-    this.imgLoaded = true;
-
-    if (!imageCache[this.src]) {
-      imageCache[this.src] = this.img;
-    }
-
-    if (this.canvas.current) {
-      const ctx = this.canvas.current.getContext("2d");
-      const tmpCanvas = document.createElement("canvas");
-      const tmpCtx = tmpCanvas.getContext("2d");
-
-      const directionFrame = directionToFrame(direction, spriteSheet.numFrames);
-      const spriteOffset = directionFrame + (frame || 0);
-
-      tmpCanvas.width = SPRITE_SIZE;
-      tmpCanvas.height = SPRITE_SIZE;
-      if (
-        direction === "left" &&
-        (spriteSheet.type === "actor" || spriteSheet.type === "actor_animated")
-      ) {
-        tmpCtx.translate(tmpCanvas.width, 0);
-        tmpCtx.scale(-1, 1);
-      }
-      tmpCtx.drawImage(this.img, spriteOffset * -SPRITE_SIZE, 0);
-
-      // console.log("spriteOffset", spriteOffset);
-
-      // Remove background colour
-      const imgData = tmpCtx.getImageData(0, 0, SPRITE_SIZE, SPRITE_SIZE);
-      for (let i = 0; i < imgData.data.length; i += 4) {
-        // Full green
-        if (imgData.data[i + 1] === 255) {
-          imgData.data[i + 3] = 0;
-        }
-      }
-
-      ctx.putImageData(imgData, 0, 0);
-    }
-  };
-
   render() {
-    // console.log("Render: SpriteSheetCanvas");
     return (
       <canvas ref={this.canvas} width={SPRITE_SIZE} height={SPRITE_SIZE} />
     );
