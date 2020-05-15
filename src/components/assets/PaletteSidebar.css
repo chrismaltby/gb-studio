@@ -25,19 +25,9 @@
   transition: right 0.3s ease-in-out;
 }
 
-.PaletteSidebar__Title {
-  height: 36px;
-  line-height: 36px;
-  margin: 0px;
-  font-size: 14px;
-  font-weight: bold;
-  border-bottom: 1px solid var(--sidebar-border-color);
-  border-top: 1px solid var(--sidebar-border-color);
-  text-align: left;
-  padding: 5px 10px;
+.PaletteSidebar__Search {
   display: flex;
-  align-items: center;
-  display: flex;
+  padding: 10px;
 }
 
 .PaletteSidebar input {
@@ -57,12 +47,13 @@
   border-radius: 2px;
 }
 
-.PaletteSidebar__Title .Button {
+.PaletteSidebar__Search .Button {
   margin-left: 5px;
-  padding: 5px 13px 5px 14px;
+  padding: 5px 12px 5px 12px;
+  flex-shrink: 0;
 }
 
-.PaletteSidebar__Title svg {
+.PaletteSidebar__Search svg {
   width: 16px;
   height: 16px;
   fill: var(--button-text-color);

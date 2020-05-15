@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
-import * as actions from "../../actions";
 import Button from "../library/Button";
 import Solver from "3x3-equation-solver";
+import { getPalettesLookup } from "../../reducers/entitiesReducer";
+import { PaletteShape } from "../../reducers/stateShape";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -69,134 +71,117 @@ class CustomPalettePicker extends Component {
   constructor(props) {
     super(props);
 
-    const { settings } = this.props;
+    const { palette } = this.props;
 
     this.state = {
-      selectedPalette: -1,
+      selectedColor: -1,
       currentR: 0,
       currentG: 0,
       currentB: 0,
-      whiteHex: settings.customColorsWhite || DEFAULT_WHITE,
-      lightHex: settings.customColorsLight || DEFAULT_LIGHT,
-      darkHex: settings.customColorsDark || DEFAULT_DARK,
-      blackHex: settings.customColorsBlack || DEFAULT_BLACK,
+      whiteHex: palette.colors[0] || DEFAULT_WHITE,
+      lightHex: palette.colors[1] || DEFAULT_LIGHT,
+      darkHex: palette.colors[2] || DEFAULT_DARK,
+      blackHex: palette.colors[3] || DEFAULT_BLACK,
       currentCustomHex: ""
     };
   }
 
-  paletteSelect = e => {
-    if (e.target.id == "customColor_0") {
-      if (this.state.selectedPalette == 0) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 0 });
-        this.applyHexToState(this.state.whiteHex);
-      }
-    } else if (e.target.id == "customColor_1") {
-      if (this.state.selectedPalette == 1) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 1 });
-        this.applyHexToState(this.state.lightHex);
-      }
-    } else if (e.target.id == "customColor_2") {
-      if (this.state.selectedPalette == 2) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 2 });
-        this.applyHexToState(this.state.darkHex);
-      }
-    } else if (e.target.id == "customColor_3") {
-      if (this.state.selectedPalette == 3) {
-        this.setState({ selectedPalette: -1 });
-      } else {
-        this.setState({ selectedPalette: 3 });
-        this.applyHexToState(this.state.blackHex);
-      }
-    }
-  };
-
-  applyHexToState(hex) {
-    var r = this.hexToDecimal(hex.substring(0, 2)) / 8;
-    var g = this.hexToDecimal(hex.substring(2, 4)) / 8;
-    var b = this.hexToDecimal(hex.substring(4)) / 8;
-
-    if (r > 31) r = 31;
-    if (g > 31) g = 31;
-    if (b > 31) b = 31;
-
-    this.setState({
-      currentR: Math.floor(r),
-      currentG: Math.floor(g),
-      currentB: Math.floor(b)
-    });
-
-    return {
-      r: r,
-      g: g,
-      b: b
-    };
-  }
-
-  decimalToHexString(number) {
-    var ret = number.toString(16).toUpperCase();
-    return ret.length == 1 ? "0" + ret : ret;
-  }
-
-  hexToDecimal(str) {
-    return parseInt("0x" + str);
-  }
-
   setCurrentColor(r, g, b) {
-    const { editProjectSettings } = this.props;
+    const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
+    const { editPalette, paletteId } = this.props;
 
     const hexString =
       this.decimalToHexString(r * 8) +
       this.decimalToHexString(g * 8) +
       this.decimalToHexString(b * 8);
 
-    if (this.state.selectedPalette == 0) {
+    if (selectedColor === 0) {
       this.setState({ whiteHex: hexString });
-      editProjectSettings({ customColorsWhite: hexString });
-    } else if (this.state.selectedPalette == 1) {
+      editPalette(paletteId, {
+        colors: [hexString, lightHex, darkHex, blackHex]
+      })
+    } else if (selectedColor === 1) {
       this.setState({ lightHex: hexString });
-      editProjectSettings({ customColorsLight: hexString });
-    } else if (this.state.selectedPalette == 2) {
+      editPalette(paletteId, {
+        colors: [whiteHex, hexString, darkHex, blackHex]
+      })
+    } else if (selectedColor === 2) {
       this.setState({ darkHex: hexString });
-      editProjectSettings({ customColorsDark: hexString });
-    } else if (this.state.selectedPalette == 3) {
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, hexString, blackHex]
+      })
+    } else if (selectedColor === 3) {
       this.setState({ blackHex: hexString });
-      editProjectSettings({ customColorsBlack: hexString });
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, darkHex, hexString]
+      })
     }
   }
+
+  onColorSelect = e => {
+    const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
+    const { id } = this.props;
+
+    if (e.target.id === `${id}-customColor_0`) {
+      if (selectedColor === 0) {
+        this.setState({ selectedColor: -1 });
+      } else {
+        this.setState({ selectedColor: 0 });
+        this.applyHexToState(whiteHex);
+      }
+    } else if (e.target.id === `${id}-customColor_1`) {
+      if (selectedColor === 1) {
+        this.setState({ selectedColor: -1 });
+      } else {
+        this.setState({ selectedColor: 1 });
+        this.applyHexToState(lightHex);
+      }
+    } else if (e.target.id === `${id}-customColor_2`) {
+      if (selectedColor === 2) {
+        this.setState({ selectedColor: -1 });
+      } else {
+        this.setState({ selectedColor: 2 });
+        this.applyHexToState(darkHex);
+      }
+    } else if (e.target.id === `${id}-customColor_3`) {
+      if (selectedColor === 3) {
+        this.setState({ selectedColor: -1 });
+      } else {
+        this.setState({ selectedColor: 3 });
+        this.applyHexToState(blackHex);
+      }
+    }
+  };
 
   hexChange = e => {
     this.setState({ currentCustomHex: e.target.value });
   };
 
-  colorChange = e => {
+  onColorComponentChange = e => {
+    const { currentR, currentG, currentB } = this.state;
     const min = 0;
     const max = 31;
     const value = Math.max(min, Math.min(max, e.currentTarget.value));
 
     if (e.target.id === "colorR") {
       this.setState({ currentR: value || "" });
-      this.setCurrentColor(value, this.state.currentG, this.state.currentB);
+      this.setCurrentColor(value, currentG, currentB);
     } else if (e.target.id === "colorG") {
       this.setState({ currentG: value || "" });
-      this.setCurrentColor(this.state.currentR, value, this.state.currentB);
+      this.setCurrentColor(currentR, value, currentB);
     } else if (e.target.id === "colorB") {
       this.setState({ currentB: value || "" });
-      this.setCurrentColor(this.state.currentR, this.state.currentG, value);
+      this.setCurrentColor(currentR, currentG, value);
     }
   };
 
-  handleHexConvertClick = e => {
-    var hex = this.state.currentCustomHex.replace("#", "");
+  handleHexConvertClick = () => {
+    const { currentCustomHex } = this.state;
+    const hex = currentCustomHex.replace("#", "");
 
     if (hex.length == 6) {
       hex = GBCHexToClosestHex(hex);
-      var result = this.applyHexToState(hex);
+      const result = this.applyHexToState(hex);
       this.setCurrentColor(result.r, result.g, result.b);
       this.setState({ currentCustomHex: "" });
     } else {
@@ -204,24 +189,8 @@ class CustomPalettePicker extends Component {
     }
   };
 
-  handleDefaultPaletteClick = e => {
-    var result;
-
-    if (this.state.selectedPalette == 0) {
-      result = this.applyHexToState(DEFAULT_WHITE); // White
-    } else if (this.state.selectedPalette == 1) {
-      result = this.applyHexToState(DEFAULT_LIGHT); // Light Green
-    } else if (this.state.selectedPalette == 2) {
-      result = this.applyHexToState(DEFAULT_DARK); // Dark Green
-    } else if (this.state.selectedPalette == 3) {
-      result = this.applyHexToState(DEFAULT_BLACK); // Black
-    }
-
-    this.setCurrentColor(result.r, result.g, result.b);
-  };
-
-  onRestoreDefault = e => {
-    const { editProjectSettings } = this.props;
+  onRestoreDefault = () => {
+    const { editPalette, paletteId } = this.props;
     this.setState(
       {
         selectedPalette: -1,
@@ -235,18 +204,52 @@ class CustomPalettePicker extends Component {
         currentCustomHex: ""        
       },
       () => {
-        editProjectSettings({       
-          customColorsWhite: DEFAULT_WHITE,
-          customColorsLight: DEFAULT_LIGHT,
-          customColorsDark: DEFAULT_DARK,
-          customColorsBlack: DEFAULT_BLACK
+        editPalette(paletteId, {
+          colors: [
+            DEFAULT_WHITE, 
+            DEFAULT_LIGHT, 
+            DEFAULT_DARK, 
+            DEFAULT_BLACK
+          ]
         });
       }
     );
   };
 
+  decimalToHexString = number => {
+    const ret = number.toString(16).toUpperCase();
+    return ret.length === 1 ? `0${  ret}` : ret;
+  }
+
+  hexToDecimal = str => {
+    return parseInt(`0x${  str}`);
+  }
+
+  applyHexToState(hex) {
+    let r = this.hexToDecimal(hex.substring(0, 2)) / 8;
+    let g = this.hexToDecimal(hex.substring(2, 4)) / 8;
+    let b = this.hexToDecimal(hex.substring(4)) / 8;
+
+    if (r > 31) r = 31;
+    if (g > 31) g = 31;
+    if (b > 31) b = 31;
+
+    this.setState({
+      currentR: Math.floor(r),
+      currentG: Math.floor(g),
+      currentB: Math.floor(b)
+    });
+
+    return {
+      r,
+      g,
+      b
+    };
+  };
+
   render() {
-    const { settings } = this.props;
+    const { id, palette } = this.props;
+    const { currentR, currentG, currentB, currentCustomHex, selectedColor } = this.state;
 
     return (
       <div className="CustomPalettePicker">
@@ -259,81 +262,66 @@ class CustomPalettePicker extends Component {
                 {l10n("FIELD_CUSTOM")}
               </div>
 
-              <label htmlFor="customColor_0" title={l10n("FIELD_COLOR1_NAME")}>
+              <label htmlFor={`${id}-customColor_0`} title={l10n("FIELD_COLOR1_NAME")}>
                 <input
-                  id="customColor_0"
+                  id={`${id}-customColor_0`}
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 0}
+                  onChange={this.onColorSelect}
+                  checked={selectedColor === 0}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(
-                      DEFAULT_WHITE
-                    )} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(
-                      settings.customColorsWhite
-                    )} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[0])} 50%)`
                   }}
                 >
                   &nbsp;
                 </div>
               </label>
-              <label htmlFor="customColor_1" title={l10n("FIELD_COLOR2_NAME")}>
+              <label htmlFor={`${id}-customColor_1`} title={l10n("FIELD_COLOR2_NAME")}>
                 <input
-                  id="customColor_1"
+                  id={`${id}-customColor_1`}
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 1}
+                  onChange={this.onColorSelect}
+                  checked={selectedColor === 1}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(
-                      DEFAULT_LIGHT
-                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
-                      settings.customColorsLight
-                    )} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[1])
+                    } 50%)`
                   }}
                 >
                   &nbsp;
                 </div>
               </label>
-              <label htmlFor="customColor_2" title={l10n("FIELD_COLOR3_NAME")}>
+              <label htmlFor={`${id}-customColor_2`} title={l10n("FIELD_COLOR3_NAME")}>
                 <input
-                  id="customColor_2"
+                  id={`${id}-customColor_2`}
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 2}
+                  onChange={this.onColorSelect}
+                  checked={selectedColor === 2}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(
-                      DEFAULT_DARK
-                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
-                      settings.customColorsDark
-                    )} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[2])} 50%)`
                   }}
                 >
                   &nbsp;
                 </div>
               </label>
-              <label htmlFor="customColor_3" title={l10n("FIELD_COLOR4_NAME")}>
+              <label htmlFor={`${id}-customColor_3`} title={l10n("FIELD_COLOR4_NAME")}>
                 <input
-                  id="customColor_3"
+                  id={`${id}-customColor_3`}
                   type="checkbox"
-                  onChange={this.paletteSelect.bind()}
-                  checked={this.state.selectedPalette === 3}
+                  onChange={this.onColorSelect}
+                  checked={selectedColor === 3}
                 />
                 <div
                   className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
                   style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(
-                      DEFAULT_BLACK
-                    )} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(
-                      settings.customColorsBlack
-                    )} 50%)`
+                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[3])} 50%)`
                   }}
                 >
                   &nbsp;
@@ -342,10 +330,10 @@ class CustomPalettePicker extends Component {
             </div>
           </div>
 
+          { selectedColor === -1 ? '' :
           <div
             id="CustomPaletteEdit"
             className="CustomPalettePicker__Column"
-            style={this.state.selectedPalette == -1 ? { display: "none" } : {}}
           >
             <FormField thirdWidth>
               <label htmlFor="colorR">
@@ -354,11 +342,11 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorR"
                   type="number"
-                  value={this.state.currentR}
+                  value={currentR}
                   min={0}
                   max={31}
                   placeholder={0}
-                  onChange={this.colorChange.bind()}
+                  onChange={this.onColorComponentChange}
                 />
               </label>
             </FormField>
@@ -370,11 +358,11 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorG"
                   type="number"
-                  value={this.state.currentG}
+                  value={currentG}
                   min={0}
                   max={31}
                   placeholder={0}
-                  onChange={this.colorChange.bind()}
+                  onChange={this.onColorComponentChange}
                 />
               </label>
             </FormField>
@@ -386,11 +374,11 @@ class CustomPalettePicker extends Component {
                 <input
                   id="colorB"
                   type="number"
-                  value={this.state.currentB}
+                  value={currentB}
                   min={0}
                   max={31}
                   placeholder={0}
-                  onChange={this.colorChange.bind()}
+                  onChange={this.onColorComponentChange}
                 />
               </label>
             </FormField>
@@ -402,7 +390,7 @@ class CustomPalettePicker extends Component {
                   type="text"
                   maxLength="7"
                   placeholder="#000000"
-                  value={this.state.currentCustomHex}
+                  value={currentCustomHex}
                   onChange={this.hexChange.bind()}
                 />
               </label>
@@ -411,6 +399,7 @@ class CustomPalettePicker extends Component {
             <FormField halfWidth>
               <button
                 id="btnConvertHex"
+                type="button"
                 className="Button"
                 style={{ width: "100%" }}
                 onClick={this.handleHexConvertClick}
@@ -419,8 +408,9 @@ class CustomPalettePicker extends Component {
               </button>
             </FormField>
           </div>
+          }
         </div>
-        <div style={{ marginTop: 30 }}>
+        <div style={{ marginTop: 10 }}>
           <Button onClick={this.onRestoreDefault}>
             {l10n("FIELD_RESTORE_DEFAULT")}
           </Button>
@@ -431,29 +421,29 @@ class CustomPalettePicker extends Component {
 }
 
 CustomPalettePicker.propTypes = {
-  settings: PropTypes.shape({
-    customColorsWhite: PropTypes.string,
-    customColorsLight: PropTypes.string,
-    customColorsDark: PropTypes.string,
-    customColorsBlack: PropTypes.string
-  }).isRequired,
-  editProjectSettings: PropTypes.func.isRequired
+  id: PropTypes.string.isRequired,
+  palette: PaletteShape,
+  paletteId: PropTypes.string.isRequired, 
+  editPalette: PropTypes.func.isRequired
 };
 
 CustomPalettePicker.defaultProps = {
-  id: undefined
+  palette: {
+    id: "",
+    colors: []
+  }
 };
 
 function mapStateToProps(state, props) {
-  const project = state.entities.present.result;
-  const { settings } = project;
+  const { paletteId } = props;
+  const palette = getPalettesLookup(state)[paletteId];
   return {
-    settings
+    palette
   };
 }
 
 const mapDispatchToProps = {
-  editProjectSettings: actions.editProjectSettings
+  editPalette: actions.editPalette
 };
 
 export default connect(

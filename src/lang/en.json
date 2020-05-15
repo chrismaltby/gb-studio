@@ -487,7 +487,11 @@
   "SETTINGS_GBC": "GB Color Options",
   "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)",
 
-  "// 17 ": "Error ------------------------------------------------------",
+  "// 17 ": "Palettes ---------------------------------------------------",
+
+  "PALETTES_EDITOR": "Palettes Editor",
+
+  "// 18 ": "Error ------------------------------------------------------",
 
   "ERROR_TITLE": "GB Studio encountered an error",
   "ERROR_WHAT_CAN_I_DO": "What can I do?",

@@ -11,13 +11,100 @@ import { getPalettes } from "../../reducers/entitiesReducer";
 import PaletteBlock from "../library/PaletteBlock";
 
 class PaletteSidebar extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dragging: false,
+    };
+    this.dragHandler = React.createRef();
+  }
+
+  componentDidMount() {
+    window.addEventListener("mousemove", this.onMouseMove);
+    window.addEventListener("mouseup", this.onMouseUp);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("mousemove", this.onMouseMove);
+    window.removeEventListener("mouseup", this.onMouseUp);
+  }
+
+  onMouseDown = () => {
+    this.setState({
+      dragging: true,
+    });
+  };
+
+  onMouseUp = () => {
+    const { dragging } = this.state;
+    if (dragging) {
+      this.setState({
+        dragging: false,
+      });
+    }
+  };
+
+  onMouseMove = (event) => {
+    const { resizeFilesSidebar } = this.props;
+    const { dragging } = this.state;
+    if (dragging) {
+      resizeFilesSidebar(window.innerWidth - event.pageX);
+    }
+  };
+
+  onSearch = (e) => {
+    const { onSearch } = this.props;
+    onSearch(e.currentTarget.value);
+  };
+
+  renderFile = (file) => {
+    const { selectedPalette, setNavigationId } = this.props;
+    return (
+      <div
+        key={file.id}
+        onClick={() => setNavigationId(file.id)}
+        className={cx("FilesSidebar__ListItem", {
+          "FilesSidebar__ListItem--Active": file.id === selectedPalette.id,
+        })}
+      >
+        {file.name}
+      </div>
+    );
+  };
+
   render() {
-    const { onAdd, width, palettes, selectedPalette, setNavigationId } = this.props;
+    const {
+      onAdd,
+      width,
+      palettes,
+      selectedPalette,
+      setNavigationId,
+      query,
+    } = this.props;
 
     return (
       <div className="PaletteSidebarWrapper">
+        <div
+          ref={this.dragHandler}
+          className="PaletteSidebarDragHandle"
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
+        />        
         <div className="PaletteSidebar" style={{ width }}>
-          <div className="PaletteSidebar__Title SidebarHeading">
+          <div className="PaletteSidebar__Search">
+            <input
+              autoFocus
+              placeholder={l10n("ASSET_SEARCH")}
+              onChange={this.onSearch}
+              value={query}
+            />
+            {onAdd && (
+              <Button onClick={onAdd} title={l10n("ASSET_ADD")}>
+                <PlusIcon />
+              </Button>
+            )}
+          </div>
+          {/* <div className="PaletteSidebar__Title SidebarHeading">
             Palettes
             <div className="SidebarHeading__FluidSpacer" />
             {onAdd && (
@@ -25,20 +112,23 @@ class PaletteSidebar extends Component {
                 <PlusIcon />
               </Button>
             )}
-          </div>
-          {palettes.map(palette => (
-            palette.id && (
-              <div 
-                key={palette.id} 
-                onClick={() => setNavigationId(palette.id)}
-                className={cx("PaletteSidebar__ListItem", {
-                  "PaletteSidebar__ListItem--Active": palette.id === selectedPalette.id
-                })}
-              >
-                <div style={{flex: 1, lineHeight: 1.5}}>{palette.name}</div>
-                <PaletteBlock colors={palette.colors} size={19} />
-              </div>)
-          ))}
+          </div> */}
+          {palettes.map(
+            (palette) =>
+              palette.id && (
+                <div
+                  key={palette.id}
+                  onClick={() => setNavigationId(palette.id)}
+                  className={cx("PaletteSidebar__ListItem", {
+                    "PaletteSidebar__ListItem--Active":
+                      palette.id === selectedPalette.id,
+                  })}
+                >
+                  <div style={{ flex: 1, lineHeight: 1.5 }}>{palette.name}</div>
+                  <PaletteBlock colors={palette.colors} size={19} />
+                </div>
+              )
+          )}
         </div>
       </div>
     );
@@ -54,24 +144,19 @@ PaletteSidebar.propTypes = {
 };
 
 PaletteSidebar.defaultProps = {
-  width: 300
+  width: 300,
 };
 
 function mapStateToProps(state) {
-  const { PaletteSidebarWidth: width } = state.settings;
-  const palettes = getPalettes(state);
+  const { filesSidebarWidth: width } = state.settings;
   return {
-    width,
-    palettes
+    width
   };
 }
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizePaletteSidebar: actions.resizePaletteSidebar
+  resizeFilesSidebar: actions.resizeFilesSidebar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PaletteSidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(PaletteSidebar);
