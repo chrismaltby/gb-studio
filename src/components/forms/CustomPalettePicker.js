@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Solver from "3x3-equation-solver";
 import cx from "classnames";
+import { clipboard } from "electron";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
@@ -190,7 +191,40 @@ class CustomPalettePicker extends Component {
 
   componentDidMount() {
     this.onColorSelect(0)();
+    window.addEventListener("copy", this.onCopy);
+    window.addEventListener("paste", this.onPaste);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("copy", this.onCopy);
+    window.removeEventListener("paste", this.onPaste);
+  }
+
+  onCopy = (e) => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    const { palette } = this.props;
+    const { selectedColor } = this.state;
+    e.preventDefault();
+    clipboard.writeText(palette.colors[selectedColor]);
+  };
+
+  onPaste = (e) => {
+    if (e.target.nodeName !== "BODY") {
+      return;
+    }
+    e.preventDefault();
+    try {
+      const clipboardData = clipboard.readText();
+      const hexString = clipboardData.replace(/[^A-Fa-f0-9]*/g, "");
+      if (hexString.length === 6) {
+        this.updateCurrentColor(hexString);
+      }
+    } catch (err) {
+      // Clipboard isn't pastable, just ignore it
+    }
+  };
 
   onColorSelect = (colorIndex) => (e) => {
     const { whiteHex, lightHex, darkHex, blackHex } = this.state;
@@ -205,7 +239,7 @@ class CustomPalettePicker extends Component {
       editHex = blackHex;
     }
 
-    this.setState({ selectedColor: colorIndex, currentCustomHex: editHex });
+    this.setState({ selectedColor: colorIndex, currentCustomHex: "" });
     this.applyHexToState(editHex);
   };
 
@@ -228,86 +262,43 @@ class CustomPalettePicker extends Component {
   onChangeRGB = (channel) => (e) => {
     const newValue = e.currentTarget ? e.currentTarget.value : e;
     const value = clamp31(newValue);
-    this.setState({ [channel]: value }, this.updateColorFromRGB);
+    this.setState(
+      { [channel]: value, currentCustomHex: "" },
+      this.updateColorFromRGB
+    );
   };
 
   onChangeHSV = (channel) => (e) => {
     const newValue = e.currentTarget ? e.currentTarget.value : e;
     const value =
       channel === "colorH" ? clamp(newValue, 0, 360) : clamp(newValue, 0, 100);
-    this.setState({ [channel]: value }, this.updateColorFromHSV);
+    this.setState(
+      { [channel]: value, currentCustomHex: "" },
+      this.updateColorFromHSV
+    );
   };
 
-  updateColorFromRGB = (updateHex = true) => {
-    const {
-      selectedColor,
-      whiteHex,
-      lightHex,
-      darkHex,
-      blackHex,
-      colorR: r,
-      colorG: g,
-      colorB: b,
-    } = this.state;
-    const { editPalette, paletteId } = this.props;
+  updateColorFromRGB = () => {
+    const { colorR: r, colorG: g, colorB: b } = this.state;
 
     const hexString =
       decimalToHexString(r * 8) +
       decimalToHexString(g * 8) +
       decimalToHexString(b * 8);
 
-    if (selectedColor === 0) {
-      this.setState({ whiteHex: hexString });
-      editPalette(paletteId, {
-        colors: [hexString, lightHex, darkHex, blackHex],
-      });
-    } else if (selectedColor === 1) {
-      this.setState({ lightHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, hexString, darkHex, blackHex],
-      });
-    } else if (selectedColor === 2) {
-      this.setState({ darkHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, lightHex, hexString, blackHex],
-      });
-    } else if (selectedColor === 3) {
-      this.setState({ blackHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, lightHex, darkHex, hexString],
-      });
-    }
+    this.updateCurrentColor(hexString);
 
     const hsv = RGBtoHSV(r * 8, g * 8, b * 8);
 
-    if (updateHex) {
-      this.setState({
-        colorH: Math.floor(hsv.h * 360),
-        colorS: Math.floor(hsv.s * 100),
-        colorV: Math.floor(hsv.v * 100),
-        currentCustomHex: hexToGBCHex(hexString),
-      });
-    } else {
-      this.setState({
-        colorH: Math.floor(hsv.h * 360),
-        colorS: Math.floor(hsv.s * 100),
-        colorV: Math.floor(hsv.v * 100),
-      });
-    }
+    this.setState({
+      colorH: Math.floor(hsv.h * 360),
+      colorS: Math.floor(hsv.s * 100),
+      colorV: Math.floor(hsv.v * 100),
+    });
   };
 
   updateColorFromHSV = () => {
-    const {
-      selectedColor,
-      whiteHex,
-      lightHex,
-      darkHex,
-      blackHex,
-      colorH: h,
-      colorS: s,
-      colorV: v,
-    } = this.state;
-    const { editPalette, paletteId } = this.props;
+    const { colorH: h, colorS: s, colorV: v } = this.state;
 
     const rgb = HSVtoRGB(h / 360, s / 100, v / 100);
 
@@ -324,34 +315,39 @@ class CustomPalettePicker extends Component {
       decimalToHexString(g * 8) +
       decimalToHexString(b * 8);
 
-    if (selectedColor === 0) {
-      this.setState({ whiteHex: hexString });
-      editPalette(paletteId, {
-        colors: [hexString, lightHex, darkHex, blackHex],
-      });
-    } else if (selectedColor === 1) {
-      this.setState({ lightHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, hexString, darkHex, blackHex],
-      });
-    } else if (selectedColor === 2) {
-      this.setState({ darkHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, lightHex, hexString, blackHex],
-      });
-    } else if (selectedColor === 3) {
-      this.setState({ blackHex: hexString });
-      editPalette(paletteId, {
-        colors: [whiteHex, lightHex, darkHex, hexString],
-      });
-    }
+    this.updateCurrentColor(hexString);
 
     this.setState({
       colorR: r,
       colorG: g,
       colorB: b,
-      currentCustomHex: hexToGBCHex(hexString),
     });
+  };
+
+  updateCurrentColor = (newHex) => {
+    const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
+    const { editPalette, paletteId } = this.props;
+    if (selectedColor === 0) {
+      this.setState({ whiteHex: newHex });
+      editPalette(paletteId, {
+        colors: [newHex, lightHex, darkHex, blackHex],
+      });
+    } else if (selectedColor === 1) {
+      this.setState({ lightHex: newHex });
+      editPalette(paletteId, {
+        colors: [whiteHex, newHex, darkHex, blackHex],
+      });
+    } else if (selectedColor === 2) {
+      this.setState({ darkHex: newHex });
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, newHex, blackHex],
+      });
+    } else if (selectedColor === 3) {
+      this.setState({ blackHex: newHex });
+      editPalette(paletteId, {
+        colors: [whiteHex, lightHex, darkHex, newHex],
+      });
+    }
   };
 
   onRestoreDefault = () => {
@@ -395,7 +391,7 @@ class CustomPalettePicker extends Component {
         colorS: Math.floor(hsv.s * 100),
         colorV: Math.floor(hsv.v * 100),
       },
-      () => this.updateColorFromRGB(false)
+      this.updateColorFromRGB
     );
   }
 
@@ -434,23 +430,6 @@ class CustomPalettePicker extends Component {
             </div>
           ))}
         </div>
-
-        <FormField>
-          <label htmlFor="colorHex">
-            {l10n("FIELD_HEX_COLOR")}
-            <small> ({l10n("FIELD_CLOSEST_MATCH")})</small>
-
-            <input
-              id="colorHex"
-              className="Input--Large"
-              type="text"
-              maxLength="7"
-              placeholder="#000000"
-              value={currentCustomHex}
-              onChange={this.onHexChange}
-            />
-          </label>
-        </FormField>
 
         <FormField thirdWidth>
           <label htmlFor="colorR">
@@ -622,6 +601,23 @@ class CustomPalettePicker extends Component {
             }}
             handleColor={`#${selectedHex}`}
           />
+        </FormField>
+
+        <FormField>
+          <label htmlFor="colorHex">
+            {l10n("FIELD_HEX_COLOR")}
+            <small> ({l10n("FIELD_CLOSEST_MATCH")})</small>
+
+            <input
+              id="colorHex"
+              className="Input--Large"
+              type="text"
+              maxLength="7"
+              placeholder="#000000"
+              value={currentCustomHex}
+              onChange={this.onHexChange}
+            />
+          </label>
         </FormField>
       </div>
     );
