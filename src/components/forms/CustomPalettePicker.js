@@ -201,7 +201,7 @@ class CustomPalettePicker extends Component {
   }
 
   onCopy = (e) => {
-    if (e.target.nodeName !== "BODY") {
+    if (e.target.nodeName !== "BODY" && e.target.value.length > 0) {
       return;
     }
     const { palette } = this.props;
