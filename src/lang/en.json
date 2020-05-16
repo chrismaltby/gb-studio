@@ -207,6 +207,11 @@
   "FIELD_PALETTES": "Palettes",
   "FIELD_HEX_COLOR": "Hex Color",
   "FIELD_CLOSEST_MATCH": "Closest Match",
+  "FIELD_HUE": "Hue",
+  "FIELD_SATURATION": "Saturation",
+  "FIELD_BRIGHTNESS": "Brightness",
+  "FIELD_COLOR_LIGHTEST": "Lightest",
+  "FIELD_COLOR_DARKEST": "Darkest",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
