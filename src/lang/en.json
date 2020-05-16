@@ -205,7 +205,8 @@
   "FIELD_LOADING": "Loading...",
   "FIELD_PALETTE": "Palette",
   "FIELD_PALETTES": "Palettes",
-
+  "FIELD_HEX_COLOR": "Hex Color",
+  "FIELD_CLOSEST_MATCH": "Closest Match",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Solver from "3x3-equation-solver";
+import cx from "classnames";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import Button from "../library/Button";
-import Solver from "3x3-equation-solver";
 import { getPalettesLookup } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 
@@ -14,17 +15,19 @@ const DEFAULT_LIGHT = "B0F088";
 const DEFAULT_DARK = "509878";
 const DEFAULT_BLACK = "202850";
 
-const hexToDecimal = str => {
+const channelValues = Array.from(Array(32).keys());
+
+const hexToDecimal = (str) => {
   return parseInt(str, 16);
 };
 
 const clamp = (value, min, max) => {
   return Math.min(max, Math.max(min, value));
-}
+};
 
 const clamp31 = (value) => {
   return clamp(value, 0, 31);
-}
+};
 
 /* 5-bit rgb value => GBC representative hex value */
 const rgbToGBCHex = (red, green, blue) => {
@@ -36,27 +39,36 @@ const rgbToGBCHex = (red, green, blue) => {
     (((r * 13 + g * 2 + b) >> 1) << 16) |
     ((g * 3 + b) << 9) |
     ((r * 3 + g * 2 + b * 11) >> 1)
-  ).toString(16).padStart(6, "0");
+  )
+    .toString(16)
+    .padStart(6, "0");
 };
 
+window.rgbToGBCHex = rgbToGBCHex;
+
 /* 24-bit hex value => GBC representative Hex value */
-const hexToGBCHex = hex => {
-  let r = clamp31(Math.floor(hexToDecimal(hex.substring(0, 2)) / 8));
-  let g = clamp31(Math.floor(hexToDecimal(hex.substring(2, 4)) / 8));
-  let b = clamp31(Math.floor(hexToDecimal(hex.substring(4)) / 8));
+const hexToGBCHex = (hex) => {
+  const r = clamp31(Math.floor(hexToDecimal(hex.substring(0, 2)) / 8));
+  const g = clamp31(Math.floor(hexToDecimal(hex.substring(2, 4)) / 8));
+  const b = clamp31(Math.floor(hexToDecimal(hex.substring(4)) / 8));
   return rgbToGBCHex(r, g, b);
 };
 
+const decimalToHexString = (number) => {
+  const ret = number.toString(16).toUpperCase();
+  return ret.length === 1 ? `0${ret}` : ret;
+};
+
 /* GBC representative Hex value => Closest matching 24-bit hex value => */
-const GBCHexToClosestHex = hex => {
-  if(hex.toLowerCase() === "ff0000") return hex; // otherwise comes back as 31,3,0
+const GBCHexToClosestHex = (hex) => {
+  if (hex.toLowerCase() === "ff0000") return hex; // otherwise comes back as 31,3,0
   const r = Math.floor(hexToDecimal(hex.substring(0, 2)));
   const g = Math.floor(hexToDecimal(hex.substring(2, 4)));
   const b = Math.floor(hexToDecimal(hex.substring(4)));
   const [r2, g2, b2] = Solver([
     [13, 2, 1, r << 1],
     [0, 3, 1, g >> 1],
-    [3, 2, 11, b << 1]
+    [3, 2, 11, b << 1],
   ]);
   return (
     (Math.round(255 * (clamp31(r2) / 31)) << 16) +
@@ -74,7 +86,7 @@ class CustomPalettePicker extends Component {
     const { palette } = this.props;
 
     this.state = {
-      selectedColor: -1,
+      selectedColor: 0,
       currentR: 0,
       currentG: 0,
       currentB: 0,
@@ -82,110 +94,91 @@ class CustomPalettePicker extends Component {
       lightHex: palette.colors[1] || DEFAULT_LIGHT,
       darkHex: palette.colors[2] || DEFAULT_DARK,
       blackHex: palette.colors[3] || DEFAULT_BLACK,
-      currentCustomHex: ""
+      currentCustomHex: "",
     };
   }
 
   setCurrentColor(r, g, b) {
+    console.log("setCurrentColor", r, g, b);
     const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
     const { editPalette, paletteId } = this.props;
 
     const hexString =
-      this.decimalToHexString(r * 8) +
-      this.decimalToHexString(g * 8) +
-      this.decimalToHexString(b * 8);
+      decimalToHexString(r * 8) +
+      decimalToHexString(g * 8) +
+      decimalToHexString(b * 8);
 
     if (selectedColor === 0) {
       this.setState({ whiteHex: hexString });
       editPalette(paletteId, {
-        colors: [hexString, lightHex, darkHex, blackHex]
-      })
+        colors: [hexString, lightHex, darkHex, blackHex],
+      });
     } else if (selectedColor === 1) {
       this.setState({ lightHex: hexString });
       editPalette(paletteId, {
-        colors: [whiteHex, hexString, darkHex, blackHex]
-      })
+        colors: [whiteHex, hexString, darkHex, blackHex],
+      });
     } else if (selectedColor === 2) {
       this.setState({ darkHex: hexString });
       editPalette(paletteId, {
-        colors: [whiteHex, lightHex, hexString, blackHex]
-      })
+        colors: [whiteHex, lightHex, hexString, blackHex],
+      });
     } else if (selectedColor === 3) {
       this.setState({ blackHex: hexString });
       editPalette(paletteId, {
-        colors: [whiteHex, lightHex, darkHex, hexString]
-      })
+        colors: [whiteHex, lightHex, darkHex, hexString],
+      });
     }
   }
 
-  onColorSelect = e => {
-    const { selectedColor, whiteHex, lightHex, darkHex, blackHex } = this.state;
-    const { id } = this.props;
-
-    if (e.target.id === `${id}-customColor_0`) {
-      if (selectedColor === 0) {
-        this.setState({ selectedColor: -1 });
-      } else {
-        this.setState({ selectedColor: 0 });
-        this.applyHexToState(whiteHex);
-      }
-    } else if (e.target.id === `${id}-customColor_1`) {
-      if (selectedColor === 1) {
-        this.setState({ selectedColor: -1 });
-      } else {
-        this.setState({ selectedColor: 1 });
-        this.applyHexToState(lightHex);
-      }
-    } else if (e.target.id === `${id}-customColor_2`) {
-      if (selectedColor === 2) {
-        this.setState({ selectedColor: -1 });
-      } else {
-        this.setState({ selectedColor: 2 });
-        this.applyHexToState(darkHex);
-      }
-    } else if (e.target.id === `${id}-customColor_3`) {
-      if (selectedColor === 3) {
-        this.setState({ selectedColor: -1 });
-      } else {
-        this.setState({ selectedColor: 3 });
-        this.applyHexToState(blackHex);
-      }
+  onColorSelect = (colorIndex) => (e) => {
+    const { whiteHex, lightHex, darkHex, blackHex } = this.state;
+    this.setState({ selectedColor: colorIndex });
+    if (colorIndex === 0) {
+      this.applyHexToState(whiteHex);
+    } else if (colorIndex === 1) {
+      this.applyHexToState(lightHex);
+    } else if (colorIndex === 2) {
+      this.applyHexToState(darkHex);
+    } else if (colorIndex === 3) {
+      this.applyHexToState(blackHex);
     }
   };
 
-  hexChange = e => {
-    this.setState({ currentCustomHex: e.target.value });
-  };
+  hexChange = (e) => {
+    const parsedValue = e.target.value.replace(/[^#A-Fa-f0-9]/g, "");
+    const croppedValue = parsedValue.startsWith("#")
+      ? parsedValue.substring(0, 7)
+      : parsedValue.substring(0, 6);
 
-  onColorComponentChange = e => {
-    const { currentR, currentG, currentB } = this.state;
-    const min = 0;
-    const max = 31;
-    const value = Math.max(min, Math.min(max, e.currentTarget.value));
+    this.setState({ currentCustomHex: croppedValue });
 
-    if (e.target.id === "colorR") {
-      this.setState({ currentR: value || "" });
-      this.setCurrentColor(value, currentG, currentB);
-    } else if (e.target.id === "colorG") {
-      this.setState({ currentG: value || "" });
-      this.setCurrentColor(currentR, value, currentB);
-    } else if (e.target.id === "colorB") {
-      this.setState({ currentB: value || "" });
-      this.setCurrentColor(currentR, currentG, value);
+    let hex = croppedValue.replace("#", "");
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
-  };
-
-  handleHexConvertClick = () => {
-    const { currentCustomHex } = this.state;
-    const hex = currentCustomHex.replace("#", "");
-
-    if (hex.length == 6) {
+    if (hex.length === 6) {
       hex = GBCHexToClosestHex(hex);
       const result = this.applyHexToState(hex);
       this.setCurrentColor(result.r, result.g, result.b);
-      this.setState({ currentCustomHex: "" });
-    } else {
-      // Show error?
+    }
+  };
+
+  onColorComponentChange = (channel) => (e) => {
+    const { currentR, currentG, currentB } = this.state;
+    const newValue = e.currentTarget ? e.currentTarget.value : e;
+    const min = 0;
+    const max = 31;
+    const value = Math.max(min, Math.min(max, newValue));
+    if (channel === "colorR") {
+      this.setState({ currentR: value || "" });
+      this.setCurrentColor(value, currentG, currentB);
+    } else if (channel === "colorG") {
+      this.setState({ currentG: value || "" });
+      this.setCurrentColor(currentR, value, currentB);
+    } else if (channel === "colorB") {
+      this.setState({ currentB: value || "" });
+      this.setCurrentColor(currentR, currentG, value);
     }
   };
 
@@ -193,42 +186,32 @@ class CustomPalettePicker extends Component {
     const { editPalette, paletteId } = this.props;
     this.setState(
       {
-        selectedPalette: -1,
         currentR: 0,
         currentG: 0,
-        currentB: 0,           
+        currentB: 0,
         whiteHex: DEFAULT_WHITE,
         lightHex: DEFAULT_LIGHT,
         darkHex: DEFAULT_DARK,
         blackHex: DEFAULT_BLACK,
-        currentCustomHex: ""        
+        currentCustomHex: "",
       },
       () => {
         editPalette(paletteId, {
-          colors: [
-            DEFAULT_WHITE, 
-            DEFAULT_LIGHT, 
-            DEFAULT_DARK, 
-            DEFAULT_BLACK
-          ]
+          colors: [DEFAULT_WHITE, DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_BLACK],
         });
       }
     );
   };
 
-  decimalToHexString = number => {
+  decimalToHexString = (number) => {
     const ret = number.toString(16).toUpperCase();
-    return ret.length === 1 ? `0${  ret}` : ret;
-  }
-
-  hexToDecimal = str => {
-    return parseInt(`0x${  str}`);
-  }
+    return ret.length === 1 ? `0${ret}` : ret;
+  };
 
   applyHexToState(hex) {
-    let r = this.hexToDecimal(hex.substring(0, 2)) / 8;
-    let g = this.hexToDecimal(hex.substring(2, 4)) / 8;
-    let b = this.hexToDecimal(hex.substring(4)) / 8;
+    let r = hexToDecimal(hex.substring(0, 2)) / 8;
+    let g = hexToDecimal(hex.substring(2, 4)) / 8;
+    let b = hexToDecimal(hex.substring(4)) / 8;
 
     if (r > 31) r = 31;
     if (g > 31) g = 31;
@@ -237,179 +220,168 @@ class CustomPalettePicker extends Component {
     this.setState({
       currentR: Math.floor(r),
       currentG: Math.floor(g),
-      currentB: Math.floor(b)
+      currentB: Math.floor(b),
     });
 
     return {
       r,
       g,
-      b
+      b,
     };
-  };
+  }
 
   render() {
-    const { id, palette } = this.props;
-    const { currentR, currentG, currentB, currentCustomHex, selectedColor } = this.state;
+    const { palette } = this.props;
+    const {
+      currentR,
+      currentG,
+      currentB,
+      currentCustomHex,
+      selectedColor,
+    } = this.state;
 
     return (
       <div className="CustomPalettePicker">
-        <div className="CustomPalettePicker__Columns">
-          <div className="CustomPalettePicker__Column">
-            <div className="CustomPalettePicker__Colors">
-              <div className="CustomPalettePicker__Legend">
-                {l10n("FIELD_ORIGINAL")}
-                <br />
-                {l10n("FIELD_CUSTOM")}
-              </div>
-
-              <label htmlFor={`${id}-customColor_0`} title={l10n("FIELD_COLOR1_NAME")}>
-                <input
-                  id={`${id}-customColor_0`}
-                  type="checkbox"
-                  onChange={this.onColorSelect}
-                  checked={selectedColor === 0}
-                />
-                <div
-                  className="CustomPalettePicker__Button CustomPalettePicker__Button--Left"
-                  style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_WHITE)} 48.5%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[0])} 50%)`
-                  }}
-                >
-                  &nbsp;
-                </div>
-              </label>
-              <label htmlFor={`${id}-customColor_1`} title={l10n("FIELD_COLOR2_NAME")}>
-                <input
-                  id={`${id}-customColor_1`}
-                  type="checkbox"
-                  onChange={this.onColorSelect}
-                  checked={selectedColor === 1}
-                />
-                <div
-                  className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
-                  style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_LIGHT)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[1])
-                    } 50%)`
-                  }}
-                >
-                  &nbsp;
-                </div>
-              </label>
-              <label htmlFor={`${id}-customColor_2`} title={l10n("FIELD_COLOR3_NAME")}>
-                <input
-                  id={`${id}-customColor_2`}
-                  type="checkbox"
-                  onChange={this.onColorSelect}
-                  checked={selectedColor === 2}
-                />
-                <div
-                  className="CustomPalettePicker__Button CustomPalettePicker__Button--Middle"
-                  style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_DARK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[2])} 50%)`
-                  }}
-                >
-                  &nbsp;
-                </div>
-              </label>
-              <label htmlFor={`${id}-customColor_3`} title={l10n("FIELD_COLOR4_NAME")}>
-                <input
-                  id={`${id}-customColor_3`}
-                  type="checkbox"
-                  onChange={this.onColorSelect}
-                  checked={selectedColor === 3}
-                />
-                <div
-                  className="CustomPalettePicker__Button CustomPalettePicker__Button--Right"
-                  style={{
-                    backgroundImage: `linear-gradient(#${hexToGBCHex(DEFAULT_BLACK)} 48.9%, var(--input-border-color) 49.5%, #${hexToGBCHex(palette.colors[3])} 50%)`
-                  }}
-                >
-                  &nbsp;
-                </div>
-              </label>
-            </div>
-          </div>
-
-          { selectedColor === -1 ? '' :
-          <div
-            id="CustomPaletteEdit"
-            className="CustomPalettePicker__Column"
-          >
-            <FormField thirdWidth>
-              <label htmlFor="colorR">
-                {l10n("FIELD_CUSTOM_RED")}
-                <small> (0-31)</small>
-                <input
-                  id="colorR"
-                  type="number"
-                  value={currentR}
-                  min={0}
-                  max={31}
-                  placeholder={0}
-                  onChange={this.onColorComponentChange}
-                />
-              </label>
-            </FormField>
-
-            <FormField thirdWidth>
-              <label htmlFor="colorG">
-                {l10n("FIELD_CUSTOM_GREEN")}
-                <small> (0-31)</small>
-                <input
-                  id="colorG"
-                  type="number"
-                  value={currentG}
-                  min={0}
-                  max={31}
-                  placeholder={0}
-                  onChange={this.onColorComponentChange}
-                />
-              </label>
-            </FormField>
-
-            <FormField thirdWidth>
-              <label htmlFor="colorB">
-                {l10n("FIELD_CUSTOM_BLUE")}
-                <small> (0-31)</small>
-                <input
-                  id="colorB"
-                  type="number"
-                  value={currentB}
-                  min={0}
-                  max={31}
-                  placeholder={0}
-                  onChange={this.onColorComponentChange}
-                />
-              </label>
-            </FormField>
-
-            <FormField halfWidth>
-              <label htmlFor="colorHex">
-                <input
-                  id="colorHex"
-                  type="text"
-                  maxLength="7"
-                  placeholder="#000000"
-                  value={currentCustomHex}
-                  onChange={this.hexChange.bind()}
-                />
-              </label>
-            </FormField>
-
-            <FormField halfWidth>
-              <button
-                id="btnConvertHex"
-                type="button"
-                className="Button"
-                style={{ width: "100%" }}
-                onClick={this.handleHexConvertClick}
-              >
-                {l10n("FIELD_CUSTOM_HEX")}
-              </button>
-            </FormField>
-          </div>
-          }
+        <div className="CustomPalettePicker__Colors">
+          {[0, 1, 2, 3].map((index) => (
+            <div
+              key={index}
+              className={cx("CustomPalettePicker__Button", {
+                "CustomPalettePicker__Button--Selected":
+                  selectedColor === index,
+              })}
+              onClick={this.onColorSelect(index)}
+              style={{
+                backgroundColor: `#${hexToGBCHex(palette.colors[index])}`,
+              }}
+            />
+          ))}
         </div>
+
+        <FormField>
+          <label htmlFor="colorHex">
+            {l10n("FIELD_HEX_COLOR")}
+            <small> ({l10n("FIELD_CLOSEST_MATCH")})</small>
+
+            <input
+              className="Input--Large"
+              type="text"
+              maxLength="7"
+              placeholder="#000000"
+              value={currentCustomHex}
+              onChange={this.hexChange.bind()}
+            />
+          </label>
+        </FormField>
+
+        <FormField thirdWidth>
+          <label htmlFor="colorR">
+            {l10n("FIELD_CUSTOM_RED")}
+            <small> (0-31)</small>
+            <input
+              type="number"
+              value={currentR}
+              min={0}
+              max={31}
+              placeholder={0}
+              onChange={this.onColorComponentChange("colorR")}
+            />
+          </label>
+          <div className="CustomPalettePicker__ChannelRow">
+            {channelValues.map((channelIndex) => (
+              <div
+                className={cx("CustomPalettePicker__ChannelBlock", {
+                  "CustomPalettePicker__ChannelBlock--Selected": currentR
+                    ? currentR === channelIndex
+                    : channelIndex === 0,
+                })}
+                style={{
+                  backgroundColor: `#${rgbToGBCHex(
+                    channelIndex,
+                    currentG,
+                    currentB
+                  )}`,
+                }}
+                onClick={() =>
+                  this.onColorComponentChange("colorR")(channelIndex)
+                }
+              />
+            ))}
+          </div>
+        </FormField>
+
+        <FormField thirdWidth>
+          <label htmlFor="colorG">
+            {l10n("FIELD_CUSTOM_GREEN")}
+            <small> (0-31)</small>
+            <input
+              type="number"
+              value={currentG}
+              min={0}
+              max={31}
+              placeholder={0}
+              onChange={this.onColorComponentChange("colorG")}
+            />
+          </label>
+          <div className="CustomPalettePicker__ChannelRow">
+            {channelValues.map((channelIndex) => (
+              <div
+                className={cx("CustomPalettePicker__ChannelBlock", {
+                  "CustomPalettePicker__ChannelBlock--Selected": currentG
+                    ? currentG === channelIndex
+                    : channelIndex === 0,
+                })}
+                style={{
+                  backgroundColor: `#${rgbToGBCHex(
+                    currentR,
+                    channelIndex,
+                    currentB
+                  )}`,
+                }}
+                onClick={() =>
+                  this.onColorComponentChange("colorG")(channelIndex)
+                }
+              />
+            ))}
+          </div>
+        </FormField>
+
+        <FormField thirdWidth>
+          <label htmlFor="colorB">
+            {l10n("FIELD_CUSTOM_BLUE")}
+            <small> (0-31)</small>
+            <input
+              type="number"
+              value={currentB}
+              min={0}
+              max={31}
+              placeholder={0}
+              onChange={this.onColorComponentChange("colorB")}
+            />
+          </label>
+          <div className="CustomPalettePicker__ChannelRow">
+            {channelValues.map((channelIndex) => (
+              <div
+                className={cx("CustomPalettePicker__ChannelBlock", {
+                  "CustomPalettePicker__ChannelBlock--Selected": currentB
+                    ? currentB === channelIndex
+                    : channelIndex === 0,
+                })}
+                style={{
+                  backgroundColor: `#${rgbToGBCHex(
+                    currentR,
+                    currentG,
+                    channelIndex
+                  )}`,
+                }}
+                onClick={() =>
+                  this.onColorComponentChange("colorB")(channelIndex)
+                }
+              />
+            ))}
+          </div>
+        </FormField>
+
         <div style={{ marginTop: 10 }}>
           <Button onClick={this.onRestoreDefault}>
             {l10n("FIELD_RESTORE_DEFAULT")}
@@ -421,29 +393,28 @@ class CustomPalettePicker extends Component {
 }
 
 CustomPalettePicker.propTypes = {
-  id: PropTypes.string.isRequired,
   palette: PaletteShape,
-  paletteId: PropTypes.string.isRequired, 
-  editPalette: PropTypes.func.isRequired
+  paletteId: PropTypes.string.isRequired,
+  editPalette: PropTypes.func.isRequired,
 };
 
 CustomPalettePicker.defaultProps = {
   palette: {
     id: "",
-    colors: []
-  }
+    colors: [],
+  },
 };
 
 function mapStateToProps(state, props) {
   const { paletteId } = props;
   const palette = getPalettesLookup(state)[paletteId];
   return {
-    palette
+    palette,
   };
 }
 
 const mapDispatchToProps = {
-  editPalette: actions.editPalette
+  editPalette: actions.editPalette,
 };
 
 export default connect(

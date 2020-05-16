@@ -6,10 +6,7 @@ import l10n from "../../lib/helpers/l10n";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
-import {
-  getPalettesLookup,
-  getPalettes,
-} from "../../reducers/entitiesReducer";
+import { getPalettesLookup, getPalettes } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 import { FormField } from "../../components/library/Forms";
 import * as actions from "../../actions";
@@ -39,18 +36,20 @@ class PalettePage extends Component {
   };
 
   onFinishEdit = (e) => {
+    const palette = this.getCurrentPalette();
+    if (!palette.name) {
+      this.onEdit("name")("Palette");
+    }
     this.setState({
       edit: false,
-    });    
-  }
+    });
+  };
 
   checkForFinishEdit = (e) => {
-    if(e.key === "Enter") {
-      this.setState({
-        edit: false,
-      });        
+    if (e.key === "Enter") {
+      this.onFinishEdit();
     }
-  }
+  };
 
   onEdit = (key) => (e) => {
     const { editPalette } = this.props;
@@ -93,12 +92,10 @@ class PalettePage extends Component {
     return (
       <div
         style={{
-          position: "fixed",
-          left: "0px",
-          top: "38px",
-          bottom: "0px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
           overflow: "auto",
-          right: sidebarWidth,
         }}
       >
         <PageHeader>
@@ -122,15 +119,17 @@ class PalettePage extends Component {
                 </Button>
               )}
             </h1>
-          ): <h1>No palette selected</h1>}
+          ) : (
+            <h1>No palette selected</h1>
+          )}
         </PageHeader>
         <PageContent>
           <section>
             {palette && palette.id && (
-              <FormField key={palette.id}>
+              <div key={palette.id} style={{ paddingRight: sidebarWidth }}>
                 <CustomPalettePicker id={palette.id} paletteId={palette.id} />
                 <Button onClick={this.onRemove}>Remove Palette</Button>
-              </FormField>
+              </div>
             )}
           </section>
         </PageContent>

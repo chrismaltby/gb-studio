@@ -99,6 +99,11 @@ textarea {
   height: 30px;
 }
 
+.FormField .Input--Large {
+  padding: 20px 5px;
+  font-size: 22px;
+}
+
 .FormField input[type="checkbox"] {
   width: 1px;
   position: absolute;
