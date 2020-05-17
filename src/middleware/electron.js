@@ -17,22 +17,26 @@ import {
   PROJECT_LOAD_FAILURE,
   REMOVE_CUSTOM_EVENT,
   EJECT_ENGINE,
+  SET_TOOL
 } from "../actions/actionTypes";
 import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
 import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
+import confirmEnableColorDialog from "../lib/electron/dialog/confirmEnableColorDialog";
 import {
   getScenes,
   getScenesLookup,
   getCustomEvents,
   getActorsLookup,
-  getTriggersLookup
+  getTriggersLookup,
+  getSettings
 } from "../reducers/entitiesReducer";
 import { walkEvents, filterEvents } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { editScene, editActor, editTrigger } from "../actions";
+import { editScene, editActor, editTrigger, editProjectSettings } from "../actions";
 import l10n from "../lib/helpers/l10n";
 import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import { TOOL_COLORS } from "../consts";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {
@@ -220,13 +224,25 @@ export default store => next => action => {
     }
 
     if (ejectedEngineExists) {
-      const cancel = confirmEjectEngineReplaceDialog();
-      if (cancel) {
+      const cancel2 = confirmEjectEngineReplaceDialog();
+      if (cancel2) {
         return;
       }
     }
 
     ejectEngineToDir(outputDir);
+  } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
+    const state = store.getState();
+    const projectSettings = getSettings(state);
+    if(!projectSettings.customColorsEnabled) {
+      const cancel = confirmEnableColorDialog();
+      if (cancel) {
+        return;
+      }
+      store.dispatch(editProjectSettings({
+        customColorsEnabled: true
+      }));
+    }
   }
 
   next(action);
