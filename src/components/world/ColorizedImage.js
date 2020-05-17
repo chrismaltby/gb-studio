@@ -4,11 +4,21 @@ import debounce from "lodash/debounce";
 // eslint-disable-next-line import/no-unresolved
 import ColorizedImageWorker from "./ColorizedImage.worker";
 import { PaletteShape } from "../../reducers/stateShape";
+import { DMG_PALETTE } from "../../consts";
 
 const workerPool = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
   workerPool.push(new ColorizedImageWorker());
 }
+
+const dmgPalettes = [
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+];
 
 let id = 0;
 
@@ -82,7 +92,7 @@ ColorizedImage.propTypes = {
 
 ColorizedImage.defaultProps = {
   tiles: [],
-  palettes: []
+  palettes: dmgPalettes
 };
 
 export default ColorizedImage;
