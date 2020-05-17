@@ -2,7 +2,7 @@ import { TOOL_SELECT, BRUSH_8PX } from "../consts";
 
 export default {
   tools: {
-    selected: "colors",
+    selected: TOOL_SELECT,
     prefab: null,
   },
   document: {
