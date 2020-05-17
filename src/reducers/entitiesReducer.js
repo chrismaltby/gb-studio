@@ -329,7 +329,6 @@ const fixSceneCollisions = state => {
 };
 
 const fixDefaultPalettes = (state) => {
-  console.log("fixDefaultPalettes", state);
   return {
     ...state,
     result: {
