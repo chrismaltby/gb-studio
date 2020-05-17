@@ -68,7 +68,7 @@ class SpriteSheetCanvas extends Component {
 
   draw = () => {
     const { projectRoot, spriteSheet = {}, direction = "down", frame, palette } = this.props;
-    if (this.canvas && this.canvas.current) {
+    if (this.canvas && this.canvas.current && spriteSheet) {
       this.worker.postMessage({
         src: this.imageSrc(projectRoot, spriteSheet),
         width: SPRITE_SIZE,
