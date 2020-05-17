@@ -148,7 +148,7 @@ class SettingsPage extends Component {
 
               <div style={{ marginTop: 30 }}>
                 <Button onClick={() => setSection("palettes")}>
-                  Edit Palettes
+                  {l10n("FIELD_EDIT_PALETTES")}
                 </Button>
               </div>
             </ToggleableCheckBoxField>

@@ -1,7 +1,7 @@
 .PaletteBlock {
-  background-color: white;
+  background-color: var(--input-bg-color);
   width: 24px;
-  border: 1px solid #fff; 
+  border: 1px solid var(--input-bg-color);
   box-sizing: border-box;
   border-radius: 4px;
   overflow: hidden;

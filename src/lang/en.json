@@ -214,6 +214,7 @@
   "FIELD_COLOR_DARKEST": "Darkest",
   "FIELD_EXPORT_IN_COLOR": "Enable Color Mode",
   "FIELD_GLOBAL_DEFAULT": "Global Default",
+  "FIELD_EDIT_PALETTES": "Edit Palettes",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
