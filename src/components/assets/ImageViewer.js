@@ -6,7 +6,6 @@ import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { divisibleBy8 } from "../../lib/helpers/8bit";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
-import ColorizedImage from "../world/ColorizedImage";
 
 class ImageViewer extends Component {
   componentDidMount() {
@@ -62,7 +61,7 @@ class ImageViewer extends Component {
               className="ImageViewer__Image"
               style={{ transform: `scale(${zoom})` }}
             >
-              <ColorizedImage
+              <img
                 alt=""
                 src={`file://${assetFilename(
                   projectRoot,

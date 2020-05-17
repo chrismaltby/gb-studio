@@ -19,7 +19,7 @@
   background-color: #fff;
 }
 
-.ImageViewer__Image canvas {
+.ImageViewer__Image img {
   display: block;
   image-rendering: pixelated;
   -webkit-user-drag: none;
