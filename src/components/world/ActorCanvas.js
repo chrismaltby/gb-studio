@@ -5,6 +5,8 @@ import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { framesPerDirection } from "../../lib/helpers/gbstudio";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
+import { getCachedObject } from "../../lib/helpers/cache";
+import { DMG_PALETTE } from "../../consts";
 
 const ActorCanvas = ({
   spriteSheetId,
@@ -13,7 +15,7 @@ const ActorCanvas = ({
   overrideDirection,
   frame,
   totalFrames,
-  palette
+  palette,
 }) => {
   let spriteFrame = frame || 0;
   if (movementType !== "static") {
@@ -39,7 +41,7 @@ ActorCanvas.propTypes = {
   overrideDirection: PropTypes.string,
   frame: PropTypes.number,
   totalFrames: PropTypes.number,
-  palette: PaletteShape
+  palette: PaletteShape,
 };
 
 ActorCanvas.defaultProps = {
@@ -47,18 +49,31 @@ ActorCanvas.defaultProps = {
   overrideDirection: undefined,
   frame: undefined,
   totalFrames: 1,
-  palette: undefined
+  palette: undefined,
 };
 
 function mapStateToProps(state, props) {
-  const { spriteSheetId, movementType, direction, frame, paletteId } = props.actor;
+  const {
+    spriteSheetId,
+    movementType,
+    direction,
+    frame,
+    paletteId,
+  } = props.actor;
   const spriteSheet =
     state.entities.present.entities.spriteSheets[spriteSheetId];
   const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
   const totalFrames = framesPerDirection(movementType, spriteFrames);
   const settings = getSettings(state);
   const palettesLookup = getPalettesLookup(state);
-  const palette = palettesLookup[paletteId] || palettesLookup[settings.defaultSpritePaletteId];
+  const gbcEnabled = settings.customColorsEnabled;
+  const palette = gbcEnabled
+    ? getCachedObject(
+        palettesLookup[paletteId] ||
+          palettesLookup[settings.defaultSpritePaletteId]
+      )
+    : DMG_PALETTE;
+
   return {
     spriteSheetId,
     movementType,
@@ -66,7 +81,7 @@ function mapStateToProps(state, props) {
     overrideDirection: props.direction,
     frame: props.frame !== undefined ? props.frame % totalFrames : frame,
     totalFrames,
-    palette
+    palette,
   };
 }
 

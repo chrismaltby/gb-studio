@@ -35,6 +35,7 @@ import {
   TOOL_ERASER,
   DMG_PALETTE,
 } from "../../consts";
+import { getCachedObject } from "../../lib/helpers/cache";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
@@ -49,8 +50,6 @@ const dmgPalettes = [
   DMG_PALETTE,
   DMG_PALETTE,
 ];
-
-const getCachedObject = memoize(t => t, JSON.stringify);
 
 // const tmpPalettes = [
 //   [
@@ -433,8 +432,8 @@ function mapStateToProps(state, props) {
     settings.defaultBackgroundPaletteIds || [];
   const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
-  const palettes = getCachedObject(gbcEnabled
-    ? [
+  const palettes = gbcEnabled
+    ? getCachedObject([
         palettesLookup[sceneBackgroundPaletteIds[0]] ||
           palettesLookup[defaultBackgroundPaletteIds[0]] ||
           DMG_PALETTE,
@@ -453,8 +452,8 @@ function mapStateToProps(state, props) {
         palettesLookup[sceneBackgroundPaletteIds[5]] ||
           palettesLookup[defaultBackgroundPaletteIds[5]] ||
           DMG_PALETTE,
-      ]
-    : dmgPalettes);
+      ])
+    : dmgPalettes;
 
   return {
     scene,

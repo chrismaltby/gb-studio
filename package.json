@@ -91,6 +91,7 @@
     "@types/electron-settings": "^3.1.1",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.23",
+    "@types/lodash": "^4.14.151",
     "@types/react": "^16.9.14",
     "@types/react-dom": "^16.9.4",
     "@types/rimraf": "^2.0.3",

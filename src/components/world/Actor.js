@@ -6,6 +6,8 @@ import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
+import { getCachedObject } from "../../lib/helpers/cache";
+import { DMG_PALETTE } from "../../consts";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -75,12 +77,19 @@ function mapStateToProps(state, props) {
   const showSprite = state.editor.zoom > 80;
   const settings = getSettings(state);
   const palettesLookup = getPalettesLookup(state);
-  const palette = palettesLookup[actor.paletteId] || palettesLookup[settings.defaultSpritePaletteId];
+  const gbcEnabled = settings.customColorsEnabled;
+  const palette = gbcEnabled
+    ? getCachedObject(
+        palettesLookup[actor.paletteId] ||
+          palettesLookup[settings.defaultSpritePaletteId]
+      )
+    : DMG_PALETTE;
+
   return {
     actor,
     selected,
     showSprite,
-    palette
+    palette,
   };
 }
 
