@@ -184,7 +184,7 @@ export const denormalizeProject = projectData => {
 
 const loadProject = (state, action) => {
   const data = normalizeProject(action.data);
-  return fixSceneCollisions(deepmerge(state, data));
+  return fixDefaultPalettes(fixSceneCollisions(deepmerge(state, data)));
 };
 
 const saveAsProject = (state, action) => {
@@ -326,6 +326,22 @@ const fixSceneCollisions = state => {
       }, {})
     }
   };
+};
+
+const fixDefaultPalettes = (state) => {
+  console.log("fixDefaultPalettes", state);
+  return {
+    ...state,
+    result: {
+      ...state.result,
+      settings: {
+        ...state.result.settings,
+        defaultBackgroundPaletteIds: state.result.settings.defaultBackgroundPaletteIds
+          ? state.result.settings.defaultBackgroundPaletteIds.slice(-6)
+          : [],
+      },
+    }
+  }
 };
 
 const addScene = (state, action) => {
