@@ -136,7 +136,7 @@ class BrushToolbar extends Component {
               })}
               title={`${l10n("TOOL_PALETTE_N", {
                 number: paletteIndex + 1,
-              })} (${paletteIndex + 1})`}
+              })} (${paletteIndex + 1}) - ${palettes[paletteIndex].name}`}
             >
               <PaletteBlock colors={palettes[paletteIndex].colors} />
             </div>

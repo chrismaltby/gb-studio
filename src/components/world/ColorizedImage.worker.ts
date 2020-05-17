@@ -1,11 +1,6 @@
-const workerCtx: Worker = self as any;
+import { hex2GBCrgb } from "../../lib/helpers/color";
 
-const DMGPalette = [
-  [233, 242, 228],
-  [181, 214, 156],
-  [91, 144, 116],
-  [36, 50, 66],
-];
+const workerCtx: Worker = self as any;
 
 const indexColour = (g: number) => {
   if (g < 65) {
@@ -33,6 +28,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tiles = evt.data.tiles;
   const palettes = evt.data.palettes;
+  const palettesRGB = palettes.map((colors:string[]) => colors.map(hex2GBCrgb));
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;
@@ -80,7 +76,7 @@ workerCtx.onmessage = async (evt) => {
   for (let t = 0; t < tilesLength; t++) {
     const tX = t % tileWidth;
     const tY = Math.floor(t / tileWidth);
-    const palette = palettes[tiles[t]] || DMGPalette;
+    const palette = palettesRGB[tiles[t]] || palettesRGB[0];
     const p1X = tX * 8;
     const p2X = p1X + 8;
     const p1Y = tY * 8;
@@ -90,9 +86,9 @@ workerCtx.onmessage = async (evt) => {
         const index = (pX + pY * width) * 4;
         const colorIndex = indexColour(data[index + 1]);
         const color = palette[colorIndex];
-        data[index] = color[0];
-        data[index + 1] = color[1];
-        data[index + 2] = color[2];
+        data[index] = color.r;
+        data[index + 1] = color.g;
+        data[index + 2] = color.b;
         data[index + 3] = 255;
       }
     }

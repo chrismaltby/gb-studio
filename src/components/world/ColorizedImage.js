@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
 // eslint-disable-next-line import/no-unresolved
 import ColorizedImageWorker from "./ColorizedImage.worker";
+import { PaletteShape } from "../../reducers/stateShape";
 
 const workerPool = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -30,8 +31,8 @@ class ColorizedImage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { src, tiles } = this.props;
-    if (src !== prevProps.src || tiles !== prevProps.tiles) {
+    const { src, tiles, palettes } = this.props;
+    if (src !== prevProps.src || tiles !== prevProps.tiles || palettes !== prevProps.palettes) {
       this.debouncedDraw();
     }
   }
@@ -43,31 +44,10 @@ class ColorizedImage extends Component {
   draw = () => {
     const { src, tiles = [], width, height, palettes = [] } = this.props;
 
-    // const palettes = [
-    //   [
-    //     [248, 248, 136],
-    //     [200, 122, 32],
-    //     [112, 48, 32],
-    //     [0, 0, 0],
-    //   ],
-    //   [
-    //     [248, 248, 136],
-    //     [96, 184, 32],
-    //     [48, 104, 40],
-    //     [0, 0, 0],
-    //   ],
-    //   [
-    //     [255, 255, 255],
-    //     [200, 200, 200],
-    //     [100, 100, 100],
-    //     [0, 0, 0],
-    //   ],
-    // ];
-
     if (this.canvas && this.canvas.current) {
       this.worker.postMessage({
         src,
-        palettes,
+        palettes: palettes.map((p) => p.colors),
         tiles,
         width,
         height,
@@ -97,7 +77,7 @@ ColorizedImage.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   tiles: PropTypes.arrayOf(PropTypes.number),
-  palettes: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))),
+  palettes: PropTypes.arrayOf(PaletteShape)
 };
 
 ColorizedImage.defaultProps = {

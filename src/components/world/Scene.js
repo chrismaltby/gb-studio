@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
+import memoize from "lodash/memoize";
 import * as actions from "../../actions";
 import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
@@ -13,6 +14,7 @@ import {
   SceneShape,
   EventShape,
   BackgroundShape,
+  PaletteShape,
 } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
@@ -23,39 +25,53 @@ import {
   getScenesLookup,
   getBackgroundsLookup,
   getSettings,
+  getPalettesLookup,
 } from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
-
-window.React = React;
-window.Component = Component;
+import {
+  TOOL_COLORS,
+  TOOL_COLLISIONS,
+  TOOL_ERASER,
+  DMG_PALETTE,
+} from "../../consts";
 
 const MAX_ACTORS = 9;
 const MAX_TRIGGERS = 9;
 const MAX_FRAMES = 25;
 const TILE_SIZE = 8;
 
-const tmpPalettes = [
-  [
-    [248, 248, 136],
-    [200, 122, 32],
-    [112, 48, 32],
-    [0, 0, 0],
-  ],
-  [
-    [248, 248, 136],
-    [96, 184, 32],
-    [48, 104, 40],
-    [0, 0, 0],
-  ],      
-  [
-    [255, 255, 255],
-    [200, 200, 200],
-    [100, 100, 100],
-    [0, 0, 0],
-  ],  
+const dmgPalettes = [
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
+  DMG_PALETTE,
 ];
+
+const getCachedObject = memoize(t => t, JSON.stringify);
+
+// const tmpPalettes = [
+//   [
+//     [248, 248, 136],
+//     [200, 122, 32],
+//     [112, 48, 32],
+//     [0, 0, 0],
+//   ],
+//   [
+//     [248, 248, 136],
+//     [96, 184, 32],
+//     [48, 104, 40],
+//     [0, 0, 0],
+//   ],
+//   [
+//     [255, 255, 255],
+//     [200, 200, 200],
+//     [100, 100, 100],
+//     [0, 0, 0],
+//   ],
+// ];
 
 class Scene extends Component {
   constructor() {
@@ -155,15 +171,22 @@ class Scene extends Component {
       sceneFiltered,
       simplifiedRender,
       showEntities,
-      showCollisions
+      showCollisions,
     } = this.props;
 
-    const { x, y, triggers = [], collisions = [], actors = [], tileColors } = scene;
+    const {
+      x,
+      y,
+      triggers = [],
+      collisions = [],
+      actors = [],
+      tileColors,
+    } = scene;
 
     if (!visible) {
       return null;
     }
-    
+
     return (
       <div
         ref={this.containerRef}
@@ -212,56 +235,66 @@ class Scene extends Component {
               />
             </div>
           )}
-          <SceneCursor sceneId={id} enabled={hovered} sceneFiltered={sceneFiltered} />
-          {!simplifiedRender && showEntities && triggers.map((triggerId) => (
-            <Trigger key={triggerId} id={triggerId} sceneId={id} />
-          ))}
-          {!simplifiedRender && showEntities && actors.map((actorId) => (
-            <Actor key={actorId} id={actorId} sceneId={id} />
-          ))}
+          <SceneCursor
+            sceneId={id}
+            enabled={hovered}
+            sceneFiltered={sceneFiltered}
+          />
+          {!simplifiedRender &&
+            showEntities &&
+            triggers.map((triggerId) => (
+              <Trigger key={triggerId} id={triggerId} sceneId={id} />
+            ))}
+          {!simplifiedRender &&
+            showEntities &&
+            actors.map((actorId) => (
+              <Actor key={actorId} id={actorId} sceneId={id} />
+            ))}
           {!simplifiedRender && event && (
             <div className="Scene__EventHelper">
               <EventHelper event={event} scene={scene} />
             </div>
           )}
         </div>
-        {!simplifiedRender && <div className="Scene__Info" onMouseDown={this.onStartDrag}>
-          <span
-            title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
-            className={cx({
-              "Scene__Info--Warning": scene.actors.length === MAX_ACTORS,
-              "Scene__Info--Error": scene.actors.length > MAX_ACTORS,
-            })}
-          >
-            A: {scene.actors.length}/{MAX_ACTORS}
-          </span>
-          {"\u00A0 \u00A0"}
-          <span
-            title={`Number of frames used by actors in scene. ${
-              frameCount <= MAX_FRAMES
-                ? `This scene has used ${frameCount} or ${MAX_FRAMES} available.`
-                : `This scene is over available limits and may have rendering issues. ` +
-                  `Try reducing number of actors in scene or use static and non animated ` +
-                  `sprites where possible.`
-            } Stay within limits to prevent tile data overwriting sprite data.`}
-            className={cx({
-              "Scene__Info--Warning": frameCount === MAX_FRAMES,
-              "Scene__Info--Error": frameCount > MAX_FRAMES,
-            })}
-          >
-            F: {frameCount}/{MAX_FRAMES}
-          </span>
-          {"\u00A0 \u00A0"}
-          <span
-            title={`Number of triggers in scene. This scene has used ${scene.triggers.length} of ${MAX_TRIGGERS} available.`}
-            className={cx({
-              "Scene__Info--Warning": scene.triggers.length === MAX_TRIGGERS,
-              "Scene__Info--Error": scene.triggers.length > MAX_TRIGGERS,
-            })}
-          >
-            T: {scene.triggers.length}/{MAX_TRIGGERS}
-          </span>
-        </div>}
+        {!simplifiedRender && (
+          <div className="Scene__Info" onMouseDown={this.onStartDrag}>
+            <span
+              title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
+              className={cx({
+                "Scene__Info--Warning": scene.actors.length === MAX_ACTORS,
+                "Scene__Info--Error": scene.actors.length > MAX_ACTORS,
+              })}
+            >
+              A: {scene.actors.length}/{MAX_ACTORS}
+            </span>
+            {"\u00A0 \u00A0"}
+            <span
+              title={`Number of frames used by actors in scene. ${
+                frameCount <= MAX_FRAMES
+                  ? `This scene has used ${frameCount} or ${MAX_FRAMES} available.`
+                  : `This scene is over available limits and may have rendering issues. ` +
+                    `Try reducing number of actors in scene or use static and non animated ` +
+                    `sprites where possible.`
+              } Stay within limits to prevent tile data overwriting sprite data.`}
+              className={cx({
+                "Scene__Info--Warning": frameCount === MAX_FRAMES,
+                "Scene__Info--Error": frameCount > MAX_FRAMES,
+              })}
+            >
+              F: {frameCount}/{MAX_FRAMES}
+            </span>
+            {"\u00A0 \u00A0"}
+            <span
+              title={`Number of triggers in scene. This scene has used ${scene.triggers.length} of ${MAX_TRIGGERS} available.`}
+              className={cx({
+                "Scene__Info--Warning": scene.triggers.length === MAX_TRIGGERS,
+                "Scene__Info--Error": scene.triggers.length > MAX_TRIGGERS,
+              })}
+            >
+              T: {scene.triggers.length}/{MAX_TRIGGERS}
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -280,6 +313,7 @@ Scene.propTypes = {
   height: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   hovered: PropTypes.bool.isRequired,
+  palettes: PropTypes.arrayOf(PaletteShape).isRequired,
   showEntities: PropTypes.bool.isRequired,
   showCollisions: PropTypes.bool.isRequired,
   frameCount: PropTypes.number.isRequired,
@@ -312,7 +346,6 @@ const testScene = {
 };
 
 function mapStateToProps(state, props) {
-
   const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
   const scenesLookup = getScenesLookup(state);
@@ -352,15 +385,15 @@ function mapStateToProps(state, props) {
   } = state.editor;
   const zoomRatio = zoom / 100;
 
-  const viewBoundsX = (worldScrollX) / zoomRatio;
-  const viewBoundsY = (worldScrollY) / zoomRatio;
-  const viewBoundsWidth = (worldViewWidth) / zoomRatio;
-  const viewBoundsHeight = (worldViewHeight) / zoomRatio;
+  const viewBoundsX = worldScrollX / zoomRatio;
+  const viewBoundsY = worldScrollY / zoomRatio;
+  const viewBoundsWidth = worldViewWidth / zoomRatio;
+  const viewBoundsHeight = worldViewHeight / zoomRatio;
 
-  const viewBoundsThrottledX = (worldScrollThrottledX) / zoomRatio;
-  const viewBoundsThrottledY = (worldScrollThrottledY) / zoomRatio;
-  const viewBoundsThrottledWidth = (worldViewWidth) / zoomRatio;
-  const viewBoundsThrottledHeight = (worldViewHeight) / zoomRatio;
+  const viewBoundsThrottledX = worldScrollThrottledX / zoomRatio;
+  const viewBoundsThrottledY = worldScrollThrottledY / zoomRatio;
+  const viewBoundsThrottledWidth = worldViewWidth / zoomRatio;
+  const viewBoundsThrottledHeight = worldViewHeight / zoomRatio;
 
   const visible =
     scene.x + scene.width * 8 > viewBoundsX &&
@@ -373,20 +406,55 @@ function mapStateToProps(state, props) {
     scene.x < viewBoundsThrottledX + viewBoundsThrottledWidth &&
     scene.y + scene.height * 8 + 50 > viewBoundsThrottledY &&
     scene.y < viewBoundsThrottledY + viewBoundsThrottledHeight;
-    
+
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
   const sceneFiltered =
     (searchTerm &&
-      sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1 && scene.id !== searchTerm) ||
+      sceneName.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1 &&
+      scene.id !== searchTerm) ||
     false;
 
   const gbcEnabled = settings.customColorsEnabled;
 
-  const palettes = gbcEnabled ? tmpPalettes : undefined;
+  // const palettes = gbcEnabled ? tmpPalettes : undefined;
 
-  const showEntities = (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER) || showLayers;
-  const showCollisions = (tool !== TOOL_COLORS || showLayers) && (settings.showCollisions || tool === TOOL_COLLISIONS);
+  const showEntities =
+    (tool !== TOOL_COLORS &&
+      tool !== TOOL_COLLISIONS &&
+      tool !== TOOL_ERASER) ||
+    showLayers;
+  const showCollisions =
+    (tool !== TOOL_COLORS || showLayers) &&
+    (settings.showCollisions || tool === TOOL_COLLISIONS);
+
+  const palettesLookup = getPalettesLookup(state);
+  const defaultBackgroundPaletteIds =
+    settings.defaultBackgroundPaletteIds || [];
+  const sceneBackgroundPaletteIds = scene.paletteIds || [];
+
+  const palettes = getCachedObject(gbcEnabled
+    ? [
+        palettesLookup[sceneBackgroundPaletteIds[0]] ||
+          palettesLookup[defaultBackgroundPaletteIds[0]] ||
+          DMG_PALETTE,
+        palettesLookup[sceneBackgroundPaletteIds[1]] ||
+          palettesLookup[defaultBackgroundPaletteIds[1]] ||
+          DMG_PALETTE,
+        palettesLookup[sceneBackgroundPaletteIds[2]] ||
+          palettesLookup[defaultBackgroundPaletteIds[2]] ||
+          DMG_PALETTE,
+        palettesLookup[sceneBackgroundPaletteIds[3]] ||
+          palettesLookup[defaultBackgroundPaletteIds[3]] ||
+          DMG_PALETTE,
+        palettesLookup[sceneBackgroundPaletteIds[4]] ||
+          palettesLookup[defaultBackgroundPaletteIds[4]] ||
+          DMG_PALETTE,
+        palettesLookup[sceneBackgroundPaletteIds[5]] ||
+          palettesLookup[defaultBackgroundPaletteIds[5]] ||
+          DMG_PALETTE,
+      ]
+    : dmgPalettes);
 
   return {
     scene,
@@ -407,7 +475,7 @@ function mapStateToProps(state, props) {
     simplifiedRender: !fullRender,
     palettes,
     showEntities,
-    showCollisions
+    showCollisions,
   };
 }
 
