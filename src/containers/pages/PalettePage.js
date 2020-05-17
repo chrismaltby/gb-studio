@@ -59,6 +59,14 @@ class PalettePage extends Component {
     });
   };
 
+  onReset = () => {
+    const { editPalette } = this.props;
+    const palette = this.getCurrentPalette();
+    editPalette(palette.id, {
+      colors: palette.defaultColors || [] 
+    });    
+  }
+
   onRemove = () => {
     const { removePalette } = this.props;
     const palette = this.getCurrentPalette();
@@ -113,7 +121,7 @@ class PalettePage extends Component {
               ) : (
                 palette.name
               )}{" "}
-              {!edit && (
+              {!palette.defaultColors && !edit && (
                 <Button key="edit" onClick={this.onStartEdit} small transparent>
                   {l10n("FIELD_RENAME")}
                 </Button>
@@ -128,7 +136,13 @@ class PalettePage extends Component {
             {palette && palette.id && (
               <div key={palette.id} style={{ paddingRight: sidebarWidth }}>
                 <CustomPalettePicker id={palette.id} paletteId={palette.id} />
-                <Button onClick={this.onRemove}>Remove Palette</Button>
+                <div style={{marginTop: 30}}>
+                  {palette.defaultColors ? (
+                    <Button onClick={this.onReset}>Reset Palette</Button>
+                  ) : (
+                    <Button onClick={this.onRemove}>Remove Palette</Button>
+                  )}
+                </div>
               </div>
             )}
           </section>

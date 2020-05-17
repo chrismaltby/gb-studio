@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {
   FormField,
   ToggleableFormField,
-  ToggleableCheckBoxField
+  ToggleableCheckBoxField,
 } from "../../components/library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import PageHeader from "../../components/library/PageHeader";
@@ -15,31 +15,57 @@ import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
+import PaletteSelect from "../../components/forms/PaletteSelect";
+import { DMG_PALETTE } from "../../consts";
+import Button from "../../components/library/Button";
+import {
+  ProjectShape,
+  SettingsShape,
+  SceneShape,
+} from "../../reducers/stateShape";
 
 class SettingsPage extends Component {
-  onEditSetting = key => e => {
+  onEditSetting = (key) => (e) => {
     const { editProjectSettings } = this.props;
     editProjectSettings({
-      [key]: castEventValue(e)
+      [key]: castEventValue(e),
     });
   };
 
-  onEditProject = key => e => {
+  onEditProject = (key) => (e) => {
     const { editProject } = this.props;
     editProject({
-      [key]: castEventValue(e)
+      [key]: castEventValue(e),
     });
+  };
+
+  onEditPaletteId = (index) => (e) => {
+    const { settings } = this.props;
+    const { defaultBackgroundPaletteIds } = settings;
+
+    const paletteIds = defaultBackgroundPaletteIds
+      ? [...defaultBackgroundPaletteIds]
+      : [];
+    paletteIds[index] = castEventValue(e);
+    // console.log("NEW PALETTE IDS", paletteIds)
+    this.onEditSetting("defaultBackgroundPaletteIds")(paletteIds);
   };
 
   render() {
-    const { project, settings, scenesLookup } = this.props;
+    const { project, settings, scenesLookup, setSection } = this.props;
 
     if (!project || !project.scenes) {
       return <div />;
     }
 
     const { scenes } = project;
-    const { customColorsEnabled, customHead, gbcFastCPUEnabled } = settings;
+    const {
+      customColorsEnabled,
+      customHead,
+      defaultUIPaletteId,
+      defaultSpritePaletteId,
+      defaultBackgroundPaletteIds,
+    } = settings;
 
     const scenesLength = scenes.length;
     const actorsLength = scenes.reduce((memo, sceneId) => {
@@ -55,7 +81,7 @@ class SettingsPage extends Component {
           display: "flex",
           flexDirection: "column",
           overflow: "auto",
-          transform: "translate3d(0,0,0)"
+          transform: "translate3d(0,0,0)",
         }}
       >
         <PageHeader>
@@ -78,17 +104,53 @@ class SettingsPage extends Component {
             <h2>{l10n("SETTINGS_GBC")}</h2>
 
             <ToggleableCheckBoxField
-              label={l10n("FIELD_GBC_FAST_CPU")}
-              open={gbcFastCPUEnabled}
-              onToggle={this.onEditSetting("gbcFastCPUEnabled")}
-            ></ToggleableCheckBoxField>
-
-            <ToggleableCheckBoxField
-              label={l10n("FIELD_EXPORT_CUSTOM_COLORS")}
+              label={l10n("FIELD_EXPORT_IN_COLOR")}
               open={customColorsEnabled}
               onToggle={this.onEditSetting("customColorsEnabled")}
             >
-              <CustomPalettePicker />
+              <br />
+              <h3>Default Background Palettes</h3>
+
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <FormField halfWidth key={index}>
+                  <PaletteSelect
+                    id="scenePalette"
+                    prefix={`${index + 1}: `}
+                    value={
+                      (defaultBackgroundPaletteIds &&
+                        defaultBackgroundPaletteIds[index]) ||
+                      ""
+                    }
+                    onChange={this.onEditPaletteId(index)}
+                  />
+                </FormField>
+              ))}
+
+              <FormField halfWidth>
+                <h3>Default Sprite Palette</h3>
+
+                <PaletteSelect
+                  id="scenePalette"
+                  value={defaultSpritePaletteId || ""}
+                  onChange={this.onEditSetting("defaultSpritePaletteId")}
+                />
+              </FormField>
+
+              <FormField halfWidth>
+                <h3>Default UI Palette</h3>
+
+                <PaletteSelect
+                  id="scenePalette"
+                  value={defaultUIPaletteId || ""}
+                  onChange={this.onEditSetting("defaultUIPaletteId")}
+                />
+              </FormField>
+
+              <div style={{ marginTop: 30 }}>
+                <Button onClick={() => setSection("palettes")}>
+                  Edit Palettes
+                </Button>
+              </div>
             </ToggleableCheckBoxField>
           </section>
 
@@ -140,6 +202,15 @@ class SettingsPage extends Component {
   }
 }
 
+SettingsPage.propTypes = {
+  project: ProjectShape.isRequired,
+  settings: SettingsShape.isRequired,
+  scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
+  editProject: PropTypes.func.isRequired,
+  editProjectSettings: PropTypes.func.isRequired,
+  setSection: PropTypes.func.isRequired,
+};
+
 function mapStateToProps(state) {
   const project = state.entities.present.result;
   const settings = project ? project.settings : {};
@@ -148,16 +219,14 @@ function mapStateToProps(state) {
   return {
     project,
     settings,
-    scenesLookup
+    scenesLookup,
   };
 }
 
 const mapDispatchToProps = {
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: actions.editProjectSettings,
+  setSection: actions.setSection,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SettingsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);

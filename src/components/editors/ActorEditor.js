@@ -27,20 +27,20 @@ class ActorEditor extends Component {
     super();
     this.state = {
       clipboardActor: null,
-      scriptMode: "interact"
+      scriptMode: "interact",
     };
   }
 
-  onSetScriptMode = mode => {
+  onSetScriptMode = (mode) => {
     this.setState({
-      scriptMode: mode
+      scriptMode: mode,
     });
   };
 
-  onEdit = key => e => {
+  onEdit = (key) => (e) => {
     const { editActor, sceneId, actor } = this.props;
     editActor(sceneId, actor.id, {
-      [key]: castEventValue(e)
+      [key]: castEventValue(e),
     });
   };
 
@@ -48,23 +48,23 @@ class ActorEditor extends Component {
 
   onEditStartScript = this.onEdit("startScript");
 
-  onCopy = e => {
+  onCopy = (e) => {
     const { copyActor, actor } = this.props;
     copyActor(actor);
   };
 
-  onPaste = e => {
+  onPaste = (e) => {
     const { setActorPrefab } = this.props;
     const { clipboardActor } = this.state;
     setActorPrefab(clipboardActor);
   };
 
-  onRemove = e => {
+  onRemove = (e) => {
     const { removeActor, sceneId, actor } = this.props;
     removeActor(sceneId, actor.id);
   };
 
-  readClipboard = e => {
+  readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "actor") {
@@ -79,19 +79,29 @@ class ActorEditor extends Component {
 
   renderScriptHeader = ({ buttons }) => {
     const { scriptMode } = this.state;
-    return <SidebarTabs
-      value={scriptMode}
-      values={{
-        interact: l10n("SIDEBAR_ON_INTERACT"),
-        start: l10n("SIDEBAR_ON_INIT")
-      }}
-      buttons={buttons}
-      onChange={this.onSetScriptMode}
-    />
-  }
+    return (
+      <SidebarTabs
+        value={scriptMode}
+        values={{
+          interact: l10n("SIDEBAR_ON_INTERACT"),
+          start: l10n("SIDEBAR_ON_INIT"),
+        }}
+        buttons={buttons}
+        onChange={this.onSetScriptMode}
+      />
+    );
+  };
 
   render() {
-    const { index, actor, scene, spriteSheet, selectSidebar, colorsEnabled, defaultSpritesPaletteId } = this.props;
+    const {
+      index,
+      actor,
+      scene,
+      spriteSheet,
+      selectSidebar,
+      colorsEnabled,
+      defaultSpritePaletteId,
+    } = this.props;
     const { clipboardActor, scriptMode } = this.state;
 
     if (!actor) {
@@ -121,6 +131,7 @@ class ActorEditor extends Component {
         (actor.animate &&
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
 
+          console.log({defaultSpritePaletteId})
     return (
       <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>
@@ -212,19 +223,21 @@ class ActorEditor extends Component {
             </FormField>
 
             {colorsEnabled && (
-              <FormField>
-              <label htmlFor="actorPalette">
-                  {l10n("FIELD_PALETTE")}
-                  <PaletteSelect
-                    id="actorPalette"
-                    value={actor.paletteId || ""}
-                    optional
-                    optionalLabel="None (Use default Sprites Palette)"
-                    optionalDefaultPaletteId={defaultSpritesPaletteId}
-                    onChange={this.onEdit("paletteId")}
-                  />
-                </label>
-              </FormField>
+              <ToggleableFormField
+                htmlFor="actorPalette"
+                closedLabel={l10n("FIELD_PALETTE")}
+                label={l10n("FIELD_PALETTE")}
+                open={!!actor.paletteId}
+              >
+                <PaletteSelect
+                  id="actorPalette"
+                  value={actor.paletteId || ""}
+                  optional
+                  optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                  optionalDefaultPaletteId={defaultSpritePaletteId || ""}
+                  onChange={this.onEdit("paletteId")}
+                />
+              </ToggleableFormField>
             )}
 
             {spriteSheet &&
@@ -379,20 +392,20 @@ ActorEditor.propTypes = {
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
   spriteSheet: SpriteShape,
-  defaultSpritesPaletteId: PropTypes.string.isRequired,
+  defaultSpritePaletteId: PropTypes.string.isRequired,
   colorsEnabled: PropTypes.bool.isRequired,
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
   setActorPrefab: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired
+  selectSidebar: PropTypes.func.isRequired,
 };
 
 ActorEditor.defaultProps = {
   actor: null,
   scene: null,
-  spriteSheet: null
+  spriteSheet: null,
 };
 
 function mapStateToProps(state, props) {
@@ -403,14 +416,14 @@ function mapStateToProps(state, props) {
   const index = scene.actors.indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;
-  const defaultSpritesPaletteId = settings.spritesPaletteId || DMG_PALETTE.id;
+  const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
   return {
     index,
     actor,
     scene,
     spriteSheet,
     colorsEnabled,
-    defaultSpritesPaletteId
+    defaultSpritePaletteId,
   };
 }
 
@@ -420,7 +433,7 @@ const mapDispatchToProps = {
   copyActor: actions.copyActor,
   setActorPrefab: actions.setActorPrefab,
   selectScene: actions.selectScene,
-  selectSidebar: actions.selectSidebar
+  selectSidebar: actions.selectSidebar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

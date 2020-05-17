@@ -43,14 +43,15 @@ class PaletteSelect extends Component {
       <components.Option {...props}>
         <div style={{ display: "flex" }}>
           <div style={{ flexGrow: 1 }}>{label}</div>
-          <PaletteColors colors={current.colors} />
+          <PaletteBlock colors={current.colors} size={16} />
         </div>
       </components.Option>
     );
   };
 
+
   render() {
-    const { palettes, id, value, onChange, optional, optionalLabel } = this.props;
+    const { palettes, id, value, onChange, optional, optionalLabel, prefix } = this.props;
     
     const optionalPalette = {
       id: "",
@@ -81,6 +82,7 @@ class PaletteSelect extends Component {
       })
     );
 
+
     return (
       <Select
         id={id}
@@ -88,7 +90,7 @@ class PaletteSelect extends Component {
         classNamePrefix="ReactSelect"
         options={options}
         value={{ 
-          label: "1:" + current ? current.name || `Palette ${currentIndex + 1}` : "None", 
+          label: prefix + (current ? current.name || `Palette ${currentIndex + 1}` : "None"), 
           value 
         }}
         onChange={data => {
@@ -112,7 +114,8 @@ PaletteSelect.propTypes = {
   frame: PropTypes.number,
   optional: PropTypes.bool,
   optionalDefaultPaletteId: PropTypes.string,
-  optionalLabel: PropTypes.string
+  optionalLabel: PropTypes.string,
+  prefix: PropTypes.string
 };
 
 PaletteSelect.defaultProps = {
@@ -122,7 +125,8 @@ PaletteSelect.defaultProps = {
   direction: null,
   optional: false,
   optionalDefaultPaletteId: "dmg",
-  optionalLabel: "None"
+  optionalLabel: "None",
+  prefix: ""
 };
 
 function mapStateToProps(state) {

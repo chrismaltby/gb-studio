@@ -5,6 +5,8 @@ import debounce from "lodash/debounce";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 // eslint-disable-next-line import/no-unresolved
 import SpriteSheetCanasWorker from "./SpriteSheetCanvas.worker";
+import { DMG_PALETTE } from "../../consts";
+import { PaletteShape } from "../../reducers/stateShape";
 
 const workerPool = [];
 for(let i=0; i<navigator.hardwareConcurrency; i++) {
@@ -65,7 +67,7 @@ class SpriteSheetCanvas extends Component {
   }
 
   draw = () => {
-    const { projectRoot, spriteSheet = {}, direction = "down", frame } = this.props;
+    const { projectRoot, spriteSheet = {}, direction = "down", frame, palette } = this.props;
     if (this.canvas && this.canvas.current) {
       this.worker.postMessage({
         src: this.imageSrc(projectRoot, spriteSheet),
@@ -75,7 +77,8 @@ class SpriteSheetCanvas extends Component {
         numFrames: spriteSheet.numFrames,
         type: spriteSheet.type,
         direction,
-        frame
+        frame,
+        palette: palette.colors
       });
     }
   };
@@ -113,13 +116,15 @@ SpriteSheetCanvas.propTypes = {
     filename: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     _v: PropTypes.number
-  })
+  }),
+  palette: PaletteShape
 };
 
 SpriteSheetCanvas.defaultProps = {
   direction: "down",
   frame: 0,
-  spriteSheet: null
+  spriteSheet: null,
+  palette: DMG_PALETTE
 };
 
 function mapStateToProps(state, props) {

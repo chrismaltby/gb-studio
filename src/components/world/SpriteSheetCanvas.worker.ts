@@ -1,4 +1,5 @@
 import { directionToFrame } from "../../lib/helpers/gbstudio";
+import { hex2GBCrgb } from "../../lib/helpers/color";
 
 const workerCtx: Worker = self as any;
 
@@ -39,6 +40,8 @@ workerCtx.onmessage = async (evt) => {
     const numFrames = evt.data.numFrames;
     const type = evt.data.type;
     const frame = evt.data.frame;
+    const palette = evt.data.palette;
+    const paletteRGB = palette.map(hex2GBCrgb);
 
     let canvas: OffscreenCanvas;
     let ctx: OffscreenCanvasRenderingContext2D;
@@ -93,7 +96,6 @@ workerCtx.onmessage = async (evt) => {
     for (let t = 0; t < tilesLength; t++) {
         const tX = t % tileWidth;
         const tY = Math.floor(t / tileWidth);
-        const palette = DMGPalette;
         const p1X = tX * 8;
         const p2X = p1X + 8;
         const p1Y = tY * 8;
@@ -102,14 +104,14 @@ workerCtx.onmessage = async (evt) => {
             for (let pY = p1Y; pY < p2Y; pY++) {
                 const index = (pX + pY * width) * 4;
                 const colorIndex = indexColour(data[index + 1]);
-                const color = palette[colorIndex];
+                const color = paletteRGB[colorIndex];
                 if (data[index + 1] === 255) {
                     // Set transparent background on pure green
                     data[index + 3] = 0;
                 }
-                data[index] = color[0];
-                data[index + 1] = color[1];
-                data[index + 2] = color[2];
+                data[index] = color.r;
+                data[index + 1] = color.g;
+                data[index + 2] = color.b;
             }
         }
     }

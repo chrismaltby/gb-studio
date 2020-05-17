@@ -97,6 +97,8 @@
   padding: 6px 10px;
 }
 
+.PaletteSidebar__ListItem--Default {}
+
 .PaletteSidebar__ListItem:hover {
 }
 

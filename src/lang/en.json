@@ -212,6 +212,8 @@
   "FIELD_BRIGHTNESS": "Brightness",
   "FIELD_COLOR_LIGHTEST": "Lightest",
   "FIELD_COLOR_DARKEST": "Darkest",
+  "FIELD_EXPORT_IN_COLOR": "Enable Color Mode",
+  "FIELD_GLOBAL_DEFAULT": "Global Default",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

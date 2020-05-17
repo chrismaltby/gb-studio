@@ -50,11 +50,12 @@ class ColorSlider extends Component<ColorSliderProps> {
         onMouseDown={this.onMouseDown}
       >
         {
-          stepValues.map((channelIndex) => {
-            const normalisedValue = channelIndex / (stepValues.length - 1);
+          stepValues.map((stepIndex) => {
+            const normalisedValue = stepIndex / (stepValues.length - 1);
             const color = colorAtValue(normalisedValue);
             return (
               <div
+                key={stepIndex}
                 className="ColorSlider__Color"
                 style={{
                   backgroundColor: color,

@@ -3,14 +3,14 @@ import { TOOL_SELECT, BRUSH_8PX } from "../consts";
 export default {
   tools: {
     selected: TOOL_SELECT,
-    prefab: null
+    prefab: null,
   },
   document: {
     path: "",
     root: "",
     loaded: false,
     saving: false,
-    modified: false
+    modified: false,
   },
   world: {},
   editor: {
@@ -33,36 +33,36 @@ export default {
       sceneId: "",
       actorId: "",
       x: 0,
-      y: 0
+      y: 0,
     },
     worldScrollX: 0,
-    worldScrollY: 0,   
+    worldScrollY: 0,
     worldScrollThrottledX: 0,
     worldScrollThrottledY: 0,
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
     selectedBrush: BRUSH_8PX,
-    showLayers: true
+    showLayers: true,
   },
   navigation: {
     section: "world",
-    status: {}
+    status: {},
   },
   music: {
-    playing: false
+    playing: false,
   },
   console: {
     status: "idle",
     output: [],
-    warnings: []
+    warnings: [],
   },
   clipboard: {
     event: null,
     actor: null,
     trigger: null,
     scene: null,
-    last: null
+    last: null,
   },
   entities: {
     entities: {
@@ -74,7 +74,7 @@ export default {
       triggers: {},
       variables: {},
       customEvents: {},
-      palettes: {}
+      palettes: {},
     },
     result: {
       settings: {
@@ -86,20 +86,30 @@ export default {
         customColorsWhite: "E8F8E0",
         customColorsLight: "B0F088",
         customColorsDark: "509878",
-        customColorsBlack: "202850"
+        customColorsBlack: "202850",
+        defaultBackgroundPaletteIds: [
+          "default-bg-1",
+          "default-bg-2",
+          "default-bg-3",
+          "default-bg-4",
+          "default-bg-5",
+          "default-bg-6",
+        ],
+        defaultSpritePaletteId: "default-sprite",
+        defaultUIPaletteId: "default-ui",
       },
-      scenes: []
-    }
+      scenes: [],
+    },
   },
   settings: {
     worldSidebarWidth: 300,
-    filesSidebarWidth: 300
+    filesSidebarWidth: 300,
   },
   error: {
     visible: false,
     message: "",
     filename: "",
     line: 0,
-    col: 0
-  }
+    col: 0,
+  },
 };

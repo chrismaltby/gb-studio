@@ -82,6 +82,9 @@ class PaletteSidebar extends Component {
       query,
     } = this.props;
 
+    const defaultPalettes = palettes.filter((p) => p.defaultColors);
+    const customPalettes = palettes.filter((p) => !p.defaultColors);
+
     return (
       <div className="PaletteSidebarWrapper">
         <div
@@ -89,7 +92,7 @@ class PaletteSidebar extends Component {
           className="PaletteSidebarDragHandle"
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
-        />        
+        />
         <div className="PaletteSidebar" style={{ width }}>
           <div className="PaletteSidebar__Search">
             <input
@@ -113,21 +116,59 @@ class PaletteSidebar extends Component {
               </Button>
             )}
           </div> */}
-          {palettes.map(
-            (palette) =>
-              palette.id && (
-                <div
-                  key={palette.id}
-                  onClick={() => setNavigationId(palette.id)}
-                  className={cx("PaletteSidebar__ListItem", {
-                    "PaletteSidebar__ListItem--Active":
-                      palette.id === selectedPalette.id,
-                  })}
-                >
-                  <div style={{ flex: 1, lineHeight: 1.5 }}>{palette.name}</div>
-                  <PaletteBlock colors={palette.colors} size={19} />
-                </div>
-              )
+
+          {defaultPalettes.length > 0 && (
+            <div className="PaletteSidebar__Group">
+              <div className="PaletteSidebar__GroupHeading">Default</div>
+
+              {defaultPalettes.map(
+                (palette) =>
+                  palette.id && (
+                    <div
+                      key={palette.id}
+                      onClick={() => setNavigationId(palette.id)}
+                      className={cx("PaletteSidebar__ListItem", {
+                        "PaletteSidebar__ListItem--Default":
+                          palette.defaultColors,
+                        "PaletteSidebar__ListItem--Active":
+                          palette.id === selectedPalette.id,
+                      })}
+                    >
+                      <div style={{ flex: 1, lineHeight: 1.5 }}>
+                        {palette.name}
+                      </div>
+                      <PaletteBlock colors={palette.colors} size={19} />
+                    </div>
+                  )
+              )}
+            </div>
+          )}
+
+          {customPalettes.length > 0 && (
+            <div className="PaletteSidebar__Group">
+              <div className="PaletteSidebar__GroupHeading">Custom</div>
+
+              {customPalettes.map(
+                (palette) =>
+                  palette.id && (
+                    <div
+                      key={palette.id}
+                      onClick={() => setNavigationId(palette.id)}
+                      className={cx("PaletteSidebar__ListItem", {
+                        "PaletteSidebar__ListItem--Default":
+                          palette.defaultColors,
+                        "PaletteSidebar__ListItem--Active":
+                          palette.id === selectedPalette.id,
+                      })}
+                    >
+                      <div style={{ flex: 1, lineHeight: 1.5 }}>
+                        {palette.name}
+                      </div>
+                      <PaletteBlock colors={palette.colors} size={19} />
+                    </div>
+                  )
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -150,13 +191,13 @@ PaletteSidebar.defaultProps = {
 function mapStateToProps(state) {
   const { filesSidebarWidth: width } = state.settings;
   return {
-    width
+    width,
   };
 }
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizeFilesSidebar: actions.resizeFilesSidebar
+  resizeFilesSidebar: actions.resizeFilesSidebar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaletteSidebar);

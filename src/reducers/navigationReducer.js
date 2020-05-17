@@ -7,7 +7,8 @@ import {
   ADD_ACTOR,
   ADD_TRIGGER,
   SET_STATUS,
-  CMD_STD_ERR
+  CMD_STD_ERR,
+  ADD_PALETTE
 } from "../actions/actionTypes";
 
 export default function tools(state = initialState.navigation, action) {
@@ -23,6 +24,11 @@ export default function tools(state = initialState.navigation, action) {
         ...state,
         id: action.id
       };
+    case ADD_PALETTE:
+      return {
+        ...state,
+        id: action.id        
+      }
     case ADD_ACTOR:
     case ADD_TRIGGER:
     case SELECT_ACTOR:

@@ -25,7 +25,7 @@ class SceneEditor extends Component {
     this.state = {
       clipboardActor: null,
       clipboardScene: null,
-      clipboardTrigger: null
+      clipboardTrigger: null,
     };
   }
 
@@ -34,74 +34,74 @@ class SceneEditor extends Component {
   //   return true;
   // }
 
-  onEdit = key => e => {
+  onEdit = (key) => (e) => {
     const { editScene, scene } = this.props;
     editScene(scene.id, {
-      [key]: castEventValue(e)
+      [key]: castEventValue(e),
     });
   };
 
-  onCopy = e => {
+  onCopy = (e) => {
     const { copyScene, scene } = this.props;
     copyScene(scene);
   };
 
-  onPaste = e => {
+  onPaste = (e) => {
     const { setScenePrefab } = this.props;
     const { clipboardScene } = this.state;
     setScenePrefab(clipboardScene);
   };
 
-  onPasteActor = e => {
+  onPasteActor = (e) => {
     const { setActorPrefab } = this.props;
     const { clipboardActor } = this.state;
     setActorPrefab(clipboardActor);
   };
 
-  onPasteTrigger = e => {
+  onPasteTrigger = (e) => {
     const { setTriggerPrefab } = this.props;
     const { clipboardTrigger } = this.state;
     setTriggerPrefab(clipboardTrigger);
   };
 
-  readClipboard = e => {
+  readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "actor") {
         this.setState({
           clipboardActor: clipboardData,
           clipboardTrigger: null,
-          clipboardScene: null
+          clipboardScene: null,
         });
       } else if (clipboardData.__type === "trigger") {
         this.setState({
           clipboardActor: null,
           clipboardTrigger: clipboardData,
-          clipboardScene: null
+          clipboardScene: null,
         });
       } else if (clipboardData.__type === "scene") {
         this.setState({
           clipboardActor: null,
           clipboardTrigger: null,
-          clipboardScene: clipboardData
+          clipboardScene: clipboardData,
         });
       } else {
         this.setState({
           clipboardActor: null,
           clipboardTrigger: null,
-          clipboardScene: null
+          clipboardScene: null,
         });
       }
     } catch (err) {
       this.setState({
         clipboardActor: null,
         clipboardTrigger: null,
-        clipboardScene: null
+        clipboardScene: null,
       });
     }
   };
 
-  onRemove = e => {
+  onRemove = (e) => {
     const { removeScene, scene } = this.props;
     removeScene(scene.id);
   };
@@ -109,24 +109,31 @@ class SceneEditor extends Component {
   onEditScript = this.onEdit("script");
 
   renderScriptHeader = ({ buttons }) => {
-    return <SidebarTabs
-      values={{
-        init: l10n("SIDEBAR_ON_INIT")
-      }}
-      buttons={buttons}
-    />
-  }
+    return (
+      <SidebarTabs
+        values={{
+          init: l10n("SIDEBAR_ON_INIT"),
+        }}
+        buttons={buttons}
+      />
+    );
+  };
 
-  onEditPaletteId = (index) => e => {
+  onEditPaletteId = (index) => (e) => {
     const { scene } = this.props;
-    let paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
+    const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
     paletteIds[index] = castEventValue(e);
-    // console.log("NEW PALETTE IDS", paletteIds)
-    this.onEdit("paletteIds")(paletteIds)
-  }
+    this.onEdit("paletteIds")(paletteIds);
+  };
 
   render() {
-    const { scene, sceneIndex, selectSidebar, colorsEnabled, defaultBackgroundPaletteId } = this.props;
+    const {
+      scene,
+      sceneIndex,
+      selectSidebar,
+      colorsEnabled,
+      defaultBackgroundPaletteIds,
+    } = this.props;
 
     if (!scene) {
       return <WorldEditor />;
@@ -187,7 +194,8 @@ class SceneEditor extends Component {
             <FormField>
               <label htmlFor="sceneType">
                 {l10n("FIELD_TYPE")}
-                <select id="sceneType"
+                <select
+                  id="sceneType"
                   value={scene.type}
                   onChange={this.onEdit("type")}
                 >
@@ -199,7 +207,7 @@ class SceneEditor extends Component {
               </label>
             </FormField>
 
-            {/* Scene type specific values - movement speed / jump speed / read from Variable? */ }
+            {/* Scene type specific values - movement speed / jump speed / read from Variable? */}
 
             <FormField>
               <label htmlFor="sceneImage">
@@ -213,59 +221,24 @@ class SceneEditor extends Component {
             </FormField>
 
             {colorsEnabled && (
-              <FormField>
-                <label htmlFor="scenePalette">
-                  {l10n("FIELD_PALETTES")}
+              <ToggleableFormField
+                htmlFor="scenePalette"
+                closedLabel={l10n("FIELD_PALETTES")}
+                label={l10n("FIELD_PALETTES")}
+                open={!!scene.paletteIds && scene.paletteIds.filter((i) => i).length > 0}
+              >
+                {[0, 1, 2, 3, 4, 5].map((index) => (
                   <PaletteSelect
                     id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[0] || ""}
+                    value={(scene.paletteIds && scene.paletteIds[index]) || ""}
+                    prefix={`${index + 1}: `}
+                    onChange={this.onEditPaletteId(index)}
                     optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(0)}
+                    optionalDefaultPaletteId={defaultBackgroundPaletteIds[index] || ""}
+                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
                   />
-                  <PaletteSelect
-                    id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[1] || ""}
-                    optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(1)}
-                  />
-                  <PaletteSelect
-                    id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[2] || ""}
-                    optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(2)}
-                  />
-                  <PaletteSelect
-                    id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[3] || ""}
-                    optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(3)}
-                  />
-                  <PaletteSelect
-                    id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[4] || ""}
-                    optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(4)}
-                  />
-                  <PaletteSelect
-                    id="scenePalette"
-                    value={scene.paletteIds && scene.paletteIds[5] || ""}
-                    optional
-                    optionalLabel="None (Use default Background Palette)"
-                    optionalDefaultPaletteId={defaultBackgroundPaletteId}
-                    onChange={this.onEditPaletteId(5)}
-                  />                                                                                          
-                </label>
-              </FormField>
+                ))}
+              </ToggleableFormField>
             )}
 
             <ToggleableFormField
@@ -310,11 +283,11 @@ SceneEditor.propTypes = {
   setScenePrefab: PropTypes.func.isRequired,
   setActorPrefab: PropTypes.func.isRequired,
   setTriggerPrefab: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired
+  selectSidebar: PropTypes.func.isRequired,
 };
 
 SceneEditor.defaultProps = {
-  scene: null
+  scene: null,
 };
 
 function mapStateToProps(state, props) {
@@ -322,12 +295,13 @@ function mapStateToProps(state, props) {
   const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;
-  const defaultBackgroundPaletteId = settings.backgroundPaletteId || DMG_PALETTE.id;
+  const defaultBackgroundPaletteIds =
+    settings.defaultBackgroundPaletteIds || [];
   return {
     sceneIndex,
     scene,
     colorsEnabled,
-    defaultBackgroundPaletteId    
+    defaultBackgroundPaletteIds,
   };
 }
 
@@ -340,7 +314,7 @@ const mapDispatchToProps = {
   setScenePrefab: actions.setScenePrefab,
   setActorPrefab: actions.setActorPrefab,
   setTriggerPrefab: actions.setTriggerPrefab,
-  selectSidebar: actions.selectSidebar
+  selectSidebar: actions.selectSidebar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);

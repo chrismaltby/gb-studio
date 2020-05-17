@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
-import { ActorShape } from "../../reducers/stateShape";
+import { ActorShape, PaletteShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
+import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -23,7 +24,7 @@ class Actor extends Component {
   };
 
   render() {
-    const { actor, selected, showSprite } = this.props;
+    const { actor, selected, showSprite, palette } = this.props;
     const { x, y, spriteSheetId, direction, movementType, frame } = actor;
     return (
       <div
@@ -39,6 +40,7 @@ class Actor extends Component {
             spriteSheetId={spriteSheetId}
             direction={direction}
             frame={movementType === "static" ? frame : 0}
+            palette={palette}
           />
         )}
       </div>
@@ -49,6 +51,7 @@ class Actor extends Component {
 Actor.propTypes = {
   actor: ActorShape,
   sceneId: PropTypes.string.isRequired,
+  palette: PaletteShape,
   selected: PropTypes.bool,
   showSprite: PropTypes.bool.isRequired,
   dragActorStart: PropTypes.func.isRequired,
@@ -58,6 +61,7 @@ Actor.propTypes = {
 
 Actor.defaultProps = {
   actor: {},
+  palette: undefined,
   selected: false,
 };
 
@@ -69,10 +73,14 @@ function mapStateToProps(state, props) {
     sceneId === props.sceneId &&
     entityId === props.id;
   const showSprite = state.editor.zoom > 80;
+  const settings = getSettings(state);
+  const palettesLookup = getPalettesLookup(state);
+  const palette = palettesLookup[actor.paletteId] || palettesLookup[settings.defaultSpritePaletteId];
   return {
     actor,
     selected,
     showSprite,
+    palette
   };
 }
 
