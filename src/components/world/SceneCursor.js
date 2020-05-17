@@ -6,7 +6,7 @@ import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../librar
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX } from "../../consts";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT } from "../../consts";
 
 class SceneCursor extends Component {
   constructor() {
@@ -44,9 +44,10 @@ class SceneCursor extends Component {
       return;
     }
     if (e.code === "KeyP") {
-      const { x, y, enabled, sceneId, editPlayerStartAt } = this.props;
+      const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
       if (enabled) {
         editPlayerStartAt(sceneId, x, y);
+        setTool(TOOL_SELECT);
       }
     }
   };
