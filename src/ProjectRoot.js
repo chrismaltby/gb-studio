@@ -47,6 +47,7 @@ window.addEventListener("error", (error) => {
   }  
   error.stopPropagation();
   error.preventDefault();
+  console.error(error);
   store.dispatch(actions.setGlobalError(error.message, error.filename, error.lineno, error.colno, error.error.stack));
   return false;
 });
