@@ -106,7 +106,7 @@ const removeEntity = (state, type, id) => {
       ...state.entities,
       [type]: {
         ...state.entities[type],
-        [id]: null
+        [id]: undefined
       }
     },
     result: Object.assign(

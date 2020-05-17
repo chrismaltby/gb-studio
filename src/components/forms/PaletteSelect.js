@@ -26,7 +26,7 @@ class PaletteSelect extends Component {
   renderDropdownIndicator = props => {
     const { palettes, value, optionalDefaultPaletteId } = this.props;
     const currentValue = value === "" ? optionalDefaultPaletteId : value;
-    const current = palettes.find((p) => p.id === currentValue) || DMG_PALETTE;
+    const current = palettes.find((p) => p.id === currentValue) || palettes.find((p) => p.id === optionalDefaultPaletteId) || DMG_PALETTE;
     return (
       <components.DropdownIndicator {...props}>
         <PaletteBlock colors={current.colors} size={16} />
@@ -58,7 +58,7 @@ class PaletteSelect extends Component {
       name: optionalLabel
     };
     
-    const current = value === "" ? optionalPalette : palettes.find((p) => p.id === value) || DMG_PALETTE;
+    const current = value === "" ? optionalPalette : palettes.find((p) => p.id === value) || optionalPalette || DMG_PALETTE;
     const currentIndex = value === "" && optional ? 0 : palettes.indexOf(current);
     let options = [];
     
@@ -81,7 +81,6 @@ class PaletteSelect extends Component {
         };
       })
     );
-
 
     return (
       <Select
