@@ -62,7 +62,7 @@ workerCtx.onmessage = async (evt) => {
   const width = img.width;
   const height = img.height;
   const tileWidth = Math.floor(width / 8);
-  const tileHeight = Math.floor(width / 8);
+  const tileHeight = Math.floor(height / 8);
   const tilesLength = tileWidth * tileHeight;
 
   canvas.width = width;
