@@ -192,6 +192,7 @@ void LoadScene(UINT16 index) {
     UBYTE j;
 
     actors[i].sprite = *(data_ptr++);
+    actors[i].palette_index = *(data_ptr++);
     actors[i].enabled = TRUE;
     actors[i].collisionsEnabled = TRUE;
     actors[i].moving = FALSE;

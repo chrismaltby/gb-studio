@@ -52,6 +52,7 @@ typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_T
 typedef struct {
   UBYTE sprite;        // Offset into scene sprites image data
   UBYTE sprite_index;  // Sprite pool index
+  UBYTE palette_index;
   Pos pos;
   Pos start_pos;
   Vector2D vel;

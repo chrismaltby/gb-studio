@@ -467,6 +467,7 @@ const compile = async (
           eventPtrs: eventPtrs[sceneIndex].actors,
           sprites: precompiled.usedSprites,
           scene,
+          actorPaletteIndexes: precompiled.actorPaletteIndexes
         }),
         compileTriggers(scene.triggers, {
           eventPtrs: eventPtrs[sceneIndex].triggers,
@@ -956,7 +957,9 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       for(let a=0; a<scene.actors.length; a++) {
         const actor = scene.actors[a];
 
-        const actorPalette = (palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors;
+        const actorPalette = [].concat((palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors);
+        actorPalette[2] = actorPalette[1];
+        actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
 
         if(sceneActorPalettesCache[actorPaletteKey] === undefined) {
@@ -1008,7 +1011,9 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       //  based on the sorted and cropped color palette
       for(let a=0; a<scene.actors.length; a++) {
         const actor = scene.actors[a];
-        const actorPalette = (palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors;
+        const actorPalette = [].concat((palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors);
+        actorPalette[2] = actorPalette[1];
+        actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
         const actorPaletteIndex = Math.max(0, sceneUsedActorPaletteKeys.indexOf(actorPaletteKey));
         actorPaletteIndexes[actor.id] = actorPaletteIndex;
@@ -1238,7 +1243,7 @@ export const precompileScenes = (
   return scenesData;
 };
 
-export const compileActors = (actors, { eventPtrs, sprites }) => {
+export const compileActors = (actors, { eventPtrs, sprites, actorPaletteIndexes }) => {
   // console.log("ACTOR", actor, eventsPtr);
   const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
@@ -1272,6 +1277,7 @@ export const compileActors = (actors, { eventPtrs, sprites }) => {
         moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
+        actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
         spriteTypeDec(actor.movementType, spriteFrames), // Sprite Type
         actorFrames, // Frames per direction
         (actor.animate ? 1 : 0) + (initialFrame << 1),

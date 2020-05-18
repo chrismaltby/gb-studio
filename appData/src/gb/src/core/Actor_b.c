@@ -101,13 +101,23 @@ void UpdateActors_b() {
           actor->frame_offset);
 
       if (flip) {
-        set_sprite_prop(k, S_FLIPX);
-        set_sprite_prop(k + 1, S_FLIPX);
+        #ifdef CGB
+          set_sprite_prop(k, actor->palette_index | S_FLIPX);
+          set_sprite_prop(k + 1, actor->palette_index | S_FLIPX);
+        #else
+          set_sprite_prop(k, S_FLIPX);
+          set_sprite_prop(k + 1, S_FLIPX);        
+        #endif
         set_sprite_tile(k, frame + 2);
         set_sprite_tile(k + 1, frame);
       } else {
-        set_sprite_prop(k, 0);
-        set_sprite_prop(k + 1, 0);
+        #ifdef CGB
+          set_sprite_prop(k, actor->palette_index);
+          set_sprite_prop(k + 1, actor->palette_index);
+        #else
+          set_sprite_prop(k, 0);
+          set_sprite_prop(k + 1, 0);        
+        #endif
         set_sprite_tile(k, frame);
         set_sprite_tile(k + 1, frame + 2);
       }
