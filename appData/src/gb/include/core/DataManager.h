@@ -14,6 +14,7 @@ void LoadUI();
 void LoadImage(UINT16 index);
 void LoadImageAttr(UINT16 index);
 void LoadPalette(UINT16 index);
+void LoadSpritePalette(UINT16 index);
 void LoadScene(UINT16 index);
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset);
 
@@ -30,8 +31,6 @@ extern UINT16 image_height;
 extern UBYTE scene_type;
 extern UBYTE actors_len;
 extern UBYTE sprites_len;
-extern UBYTE collisions_len;
-extern UBYTE palettes_len;
 extern BankPtr scene_events_start_ptr;
 extern UBYTE actors_len;
 

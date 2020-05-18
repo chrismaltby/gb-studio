@@ -21,8 +21,6 @@ UINT16 image_width;
 UINT16 image_height;
 UBYTE sprites_len;
 UBYTE actors_len;
-UBYTE collisions_len;
-UBYTE palettes_len;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
 
@@ -75,7 +73,6 @@ void LoadImage(UINT16 index) {
   PUSH_BANK(image_bank);
 
   LoadTiles(*(data_ptr++));
-  LoadPalette(0);
 
   image_tile_width = *(data_ptr++);
   image_tile_height = *(data_ptr++);
@@ -118,8 +115,22 @@ void LoadPalette(UINT16 index) {
   POP_BANK;
 
   PUSH_BANK(bank);
-  memcpy(BkgPalette, data_ptr, 64);
-  data_ptr += 64;
+  memcpy(BkgPalette, data_ptr, 48);
+  // data_ptr += 64;
+  // memcpy(SprPalette, data_ptr, 64);
+  POP_BANK;
+}
+
+void LoadSpritePalette(UINT16 index) {
+  UBYTE bank;
+  UBYTE *data_ptr;
+
+  PUSH_BANK(DATA_PTRS_BANK);
+  bank = palette_bank_ptrs[index].bank;
+  data_ptr = (UBYTE *)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
+  POP_BANK;
+
+  PUSH_BANK(bank);
   memcpy(SprPalette, data_ptr, 64);
   POP_BANK;
 }
@@ -159,13 +170,13 @@ void LoadScene(UINT16 index) {
   PUSH_BANK(bank);
   LoadImage((*(data_ptr++) * 256) + *(data_ptr++));
   LoadImageAttr(index);
+  LoadPalette((*(data_ptr++) * 256) + *(data_ptr++));
+  LoadSpritePalette((*(data_ptr++) * 256) + *(data_ptr++));
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = *(data_ptr++);
   actors_len = (*(data_ptr++)) + 1;
   triggers_len = *(data_ptr++);
-  collisions_len = *(data_ptr++);
-  palettes_len = *(data_ptr++);
 
   scene_events_start_ptr.bank = *(data_ptr++);
   scene_events_start_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);

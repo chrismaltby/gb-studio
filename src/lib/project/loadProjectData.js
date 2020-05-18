@@ -109,42 +109,42 @@ const loadProject = async (projectPath) => {
     {
       id: "default-bg-1",
       name: "Default BG 1",
-      colors: ["f8e8c8", "d89048", "a82820", "301850"],
+      colors: ["F8E8C8", "D89048", "A82820", "301850"],
     },
     {
       id: "default-bg-2",
       name: "Default BG 2",
-      colors: ["e0f8a0", "78c838", "488818", "081800"],
+      colors: ["E0F8A0", "78C838", "488818", "081800"],
     },
     {
       id: "default-bg-3",
       name: "Default BG 3",
-      colors: ["f8d8a8", "e0a878", "785888", "002030"],
+      colors: ["F8D8A8", "E0A878", "785888", "002030"],
     },
     {
       id: "default-bg-4",
       name: "Default BG 4",
-      colors: ["b8d0d0", "d880d8", "8000a0", "380000"],
+      colors: ["B8D0D0", "D880D8", "8000A0", "380000"],
     },
     {
       id: "default-bg-5",
       name: "Default BG 5",
-      colors: ["f8f8b8", "90c8c8", "486878", "082048"],
+      colors: ["F8F8b8", "90C8C8", "486878", "082048"],
     },
     {
       id: "default-bg-6",
       name: "Default BG 6",
-      colors: ["f8d8b0", "78c078", "688840", "583820"],
+      colors: ["F8D8B0", "78C078", "688840", "583820"],
     },
     {
       id: "default-sprite",
       name: "Default Sprites",
-      colors: ["d8d8c0", "c8b070", "b05010", "000000"],
+      colors: ["D8D8C0", "C8B070", "B05010", "000000"],
     },
     {
       id: "default-ui",
       name: "Default UI",
-      colors: ["f8c0f8", "e89850", "983860", "383898"],
+      colors: ["F8C0F8", "E89850", "983860", "383898"],
     },
   ];
 
