@@ -66,6 +66,7 @@ export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
+export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
 const compile = async (
   projectData,
@@ -98,6 +99,11 @@ const compile = async (
     bankOffset,
     bankController: isMBC1(cartType) ? MBC1 : MBC5,
   });
+
+  progress(EVENT_MSG_COMPILING_EVENTS);
+  // Hacky small wait to allow console to update before event loop is blocked
+  // Can maybe move some of the compilation into workers to prevent this
+  await new Promise((resolve) => setTimeout(resolve, 20));
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
