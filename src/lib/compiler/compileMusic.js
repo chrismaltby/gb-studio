@@ -3,11 +3,15 @@ import fs from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { assetFilename } from "../helpers/gbstudio";
 import { GB_MAX_BANK_SIZE } from "./bankedData";
-import { decHex16 } from "../helpers/8bit";
+import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
+import { flatten } from "../helpers/array";
+import { objectIntArray } from "../helpers/cGeneration";
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
 };
+
+const trackBuildCache = {};
 
 const compileMusic = async ({
   music = [],
@@ -18,6 +22,7 @@ const compileMusic = async ({
   warnings = () => {},
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
+  await fs.ensureDir(`${buildRoot}/src/music`);
 
   // Raw music track data organised into banks
   const bankedData = [
@@ -31,31 +36,42 @@ const compileMusic = async ({
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
 
-    // Compile track using mod2gbt
-    await compileTrack(track, {
-      buildRoot,
-      buildToolsPath,
-      projectRoot,
-      progress,
-      warnings,
-    });
+    const trackModifiedTime = await getTrackModifiedTime(track, { projectRoot });
+    let musicData;
+    if(trackBuildCache[track.id] && trackBuildCache[track.id].timestamp >= trackModifiedTime) {
+      musicData = trackBuildCache[track.id].data;
+    } else {
+      // Compile track using mod2gbt
+      await compileTrack(track, {
+        buildRoot,
+        buildToolsPath,
+        projectRoot,
+        progress,
+        warnings,
+      });
 
-    // Read track's compiled C data
-    let musicTrackTemp = await fs.readFile(
-      `${buildRoot}/src/music/${track.dataName}.c`,
-      "utf8"
-    );
+      // Read track's compiled C data
+      let musicTrackTemp = await fs.readFile(
+        `${buildRoot}/src/music/${track.dataName}.c`,
+        "utf8"
+      );
 
-    // Parse C data into raw pattern and order data
-    const musicData = {
-      name: track.dataName,
-      ...parseMusicFile(musicTrackTemp),
-    };
+      // Parse C data into raw pattern and order data
+      musicData = {
+        name: track.dataName,
+        ...parseMusicFile(musicTrackTemp),
+      };
 
-    // Delete mod2gbt compile track, no longer needed
-    await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
+      trackBuildCache[track.id] = {
+        data: musicData,
+        timestamp: trackModifiedTime
+      }
 
-    progress(track.dataName + " aprox size in bytes: " + musicData.size);
+      // Delete mod2gbt compile track, no longer needed
+      await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
+    }
+
+    progress(`${track.dataName} approx size in bytes: ${musicData.size}`);
 
     if (
       musicData.size + bankedData[bankedData.length - 1].size <
@@ -77,7 +93,7 @@ const compileMusic = async ({
   }
 
   // Array of tracks containing bank number and memory offset
-  let trackPtrs = [];
+  const trackPtrs = [];
 
   for (let i = 0; i < bankedData.length; i++) {
     const musicBank = bankedData[i];
@@ -95,29 +111,34 @@ const compileMusic = async ({
       `};\n\n`;
 
     let maxOffset = 0x4000; // Banked memory start address
-
-    for (let i = 0; i < musicBank.tracks.length; i++) {
-      const track = musicBank.tracks[i];
+    const patternOffsets = [];
+    for (let t = 0; t < musicBank.tracks.length; t++) {
+      const track = musicBank.tracks[t];
 
       // Calculate memory offsets in bank for each pattern
-      let patternOffsets = [];
+      let trackPatternOffsets = [];
       for (let p = 0; p < track.patterns.length; p++) {
-        patternOffsets[p] = maxOffset;
+        trackPatternOffsets[p] = maxOffset;
         maxOffset += track.patterns[p].length;
       }
+      // patternOffsets.push(trackPatternOffsets);
 
+      const orderedTrackPatternOffsets = [];
       // Build pointers to patterns based on calculated memory offsets
       fileData += `const unsigned int ${track.name}_Data[] = {\n`;
       for (let o = 0; o < track.order.length; o++) {
-        fileData += decHex16(patternOffsets[track.order[o]]) + ",";
+        fileData += decHex16(trackPatternOffsets[track.order[o]]) + ",";
+        orderedTrackPatternOffsets.push(trackPatternOffsets[track.order[o]]);
       }
+      patternOffsets.push(orderedTrackPatternOffsets);
+
       fileData += `0x0000\n};\n\n`;
     }
 
     // Calculate memory pointers for each track in bank to
     // rebuild data_ptrs later
-    for (let i = 0; i < musicBank.tracks.length; i++) {
-      const track = musicBank.tracks[i];
+    for (let t = 0; t < musicBank.tracks.length; t++) {
+      const track = musicBank.tracks[t];
       trackPtrs.push({
         bank: musicBank.bank,
         offset: maxOffset,
@@ -125,11 +146,56 @@ const compileMusic = async ({
       maxOffset += (track.order.length + 1) * 2;
     }
 
+    const patternOffsetObjectData = patternOffsets.map((trackOffsets) => {
+      return flatten([].concat( 
+        trackOffsets.map((offset) => [lo(offset), hi(offset)]),
+        [[0,0]]
+      ));
+    });
+
+    const objectTrackData = flatten(musicBank.tracks.map((track) => flatten(track.patterns)));
+    const objectPatternData = flatten(patternOffsetObjectData);
+
+    const objectData = [].concat(
+      objectTrackData,
+      objectPatternData
+    );
+
+    let objectVarDef = "";
+    let objectVarOffset = objectTrackData.length;
+    for (let t = 0; t < musicBank.tracks.length; t++) {
+      objectVarDef += `S _${musicBank.tracks[t].name}_Data Def${wrap16Bit(objectVarOffset).toString(16)}\n`
+      objectVarOffset += patternOffsetObjectData[t].length;
+    }
+
+    const objectFile = `XL
+H A areas ${musicBank.tracks.length + 1} global symbols
+M music_bank_${musicBank.bank}
+A _CODE size 0 flags 0
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+A _CODE_${musicBank.bank} size ${wrap16Bit(objectData.length).toString(16)} flags 0
+S _bank_${musicBank.bank}_data Def0000
+${objectVarDef}${objectIntArray(objectData)}`;
+    
     await fs.writeFile(
       `${buildRoot}/src/music/music_bank_${musicBank.bank}.c`,
       fileData,
       "utf8"
     );
+
+    await fs.writeFile(
+      `${buildRoot}/obj/music_bank_${musicBank.bank}.o`,
+      objectFile,
+      "utf8"
+    );
+
   }
 
   // Modify data_ptrs for new music banks
@@ -176,7 +242,8 @@ const parseMusicFile = (string) => {
       .replace(/}/g, "")
       .split(",")
       .map((s) => s.trim())
-      .filter((i) => i);
+      .filter((i) => i)
+      .map((s) => parseInt(s, 16))
   });
   const patternsSize = patterns.reduce((memo, pattern) => {
     return memo + pattern.length;
@@ -197,6 +264,13 @@ const parseMusicFile = (string) => {
     size: patternsSize + (order.length + 1) * 2,
   };
 };
+
+const getTrackModifiedTime = async (track, {
+    projectRoot,
+}) => {
+  const modPath = assetFilename(projectRoot, "music", track, true);
+  return (await fs.stat(modPath)).mtimeMs;
+}
 
 const compileTrack = async (
   track,
