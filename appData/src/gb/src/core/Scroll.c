@@ -95,6 +95,7 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
 
 void ScrollUpdateRow(INT16 x, INT16 y) {
   UINT8 i = 0u;
+  UINT16 id;
   UBYTE screen_x, screen_y;
   unsigned char *map = image_ptr + image_tile_width * y + x;
 #ifdef CGB
@@ -105,33 +106,20 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 
   LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
 
-  screen_x = MOD_32(x);
+  screen_x = x;
   screen_y = MOD_32(y);
 
-  if (screen_x <= 9) {
-    // If screen doesn't wrap in X direction can draw entire row in single draw call
+  for(i=0; i!=23;i++) {
+    id = 0x9800 + MOD_32(screen_x++) + ((UINT16)screen_y << 5);
+
 #ifdef CGB
     PUSH_BANK(image_attr_bank);
-    VBK_REG = 1;
-    set_bkg_tiles(screen_x, screen_y, 23, 1, cmap);
+    VBK_REG = 1;    
+    SetTile(id, *(cmap++));
     VBK_REG = 0;
     POP_BANK;
 #endif
-    set_bkg_tiles(screen_x, screen_y, 23, 1, map);
-  } else {
-    // If screen does wrap render right hand side first then left hand side
-#ifdef CGB
-    PUSH_BANK(image_attr_bank);
-    VBK_REG = 1;
-    set_bkg_tiles(screen_x, screen_y, 32 - screen_x, 1, cmap);
-    cmap += 32 - screen_x;
-    set_bkg_tiles(MOD_32(screen_x + (32 - screen_x)), screen_y, 23 - (32 - screen_x), 1, cmap);
-    VBK_REG = 0;
-    POP_BANK;
-#endif
-    set_bkg_tiles(screen_x, screen_y, 32 - screen_x, 1, map);
-    map += 32 - screen_x;
-    set_bkg_tiles(MOD_32(screen_x + (32 - screen_x)), screen_y, 23 - (32 - screen_x), 1, map);
+    SetTile(id, *(map++));
   }
 
   // Activate Actors in Row
