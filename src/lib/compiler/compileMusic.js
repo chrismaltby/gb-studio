@@ -6,6 +6,7 @@ import { GB_MAX_BANK_SIZE } from "./bankedData";
 import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
 import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
+import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -36,7 +37,9 @@ const compileMusic = async ({
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
 
-    const trackModifiedTime = await getTrackModifiedTime(track, { projectRoot });
+    const filename = assetFilename(projectRoot, "music", track, true);
+    const trackModifiedTime = await getFileModifiedTime(filename);
+
     let musicData;
     if(trackBuildCache[track.id] && trackBuildCache[track.id].timestamp >= trackModifiedTime) {
       musicData = trackBuildCache[track.id].data;
