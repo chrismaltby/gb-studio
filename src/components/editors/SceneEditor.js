@@ -64,6 +64,8 @@ class SceneEditor extends Component {
     setTriggerPrefab(clipboardTrigger);
   };
 
+  onEditScript = this.onEdit("script");
+
   readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
@@ -106,7 +108,6 @@ class SceneEditor extends Component {
     removeScene(scene.id);
   };
 
-  onEditScript = this.onEdit("script");
 
   renderScriptHeader = ({ buttons }) => {
     return (
@@ -229,6 +230,7 @@ class SceneEditor extends Component {
               >
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <PaletteSelect
+                    key={index}
                     id="scenePalette"
                     value={(scene.paletteIds && scene.paletteIds[index]) || ""}
                     prefix={`${index + 1}: `}

@@ -131,7 +131,6 @@ class ActorEditor extends Component {
         (actor.animate &&
           (actor.movementType === "static" || spriteSheet.type !== "actor")));
 
-          console.log({defaultSpritePaletteId})
     return (
       <Sidebar onMouseDown={selectSidebar}>
         <SidebarColumn>

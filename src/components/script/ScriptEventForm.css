@@ -1,20 +1,20 @@
-.ScriptEventBlock {
+.ScriptEventForm {
   background: var(--sidebar-bg-color);
   background: var(--script-editor-bg-color);
 }
 
-.ScriptEventBlock__InputRow {
+.ScriptEventForm__InputRow {
   position: relative;
 }
 
-.ScriptEventBlock__BtnRow {
+.ScriptEventForm__BtnRow {
   position: absolute;
   right: 9px;
   bottom: 7px;
   display: flex;
 }
 
-.ScriptEventBlock__Btn {
+.ScriptEventForm__Btn {
   background: rgba(128, 128, 128, 0.3);
   color: var(--main-text-color);
   width: 18px;
@@ -25,10 +25,10 @@
   border-radius: 2px;
 }
 
-.ScriptEventBlock__InputRow:hover .ScriptEventBlock__Btn {
+.ScriptEventForm__InputRow:hover .ScriptEventForm__Btn {
   opacity: 1;
 }
 
-.ScriptEventBlock__Btn:hover {
+.ScriptEventForm__Btn:hover {
   background: rgba(128, 128, 128, 0.5);
 }
