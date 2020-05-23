@@ -18,6 +18,7 @@ import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../reducers/entitiesReducer";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
+import LabelButton from "../library/LabelButton";
 
 class SceneEditor extends Component {
   constructor() {
@@ -154,6 +155,19 @@ class SceneEditor extends Component {
                 right
                 onMouseDown={this.readClipboard}
               >
+                <MenuItem>
+                  <div style={{display:"flex"}}>
+                    <div style={{marginRight: 5}}>
+                      <LabelButton onClick={() => this.onEdit("labelColor")("")} />
+                    </div>
+                    {["red", "orange", "yellow", "green", "blue", "purple", "gray"].map((color) =>
+                      <div key={color} style={{marginRight: 5}}>
+                        <LabelButton color={color} onClick={() => this.onEdit("labelColor")(color)} />
+                      </div>
+                    )}
+                  </div>
+                </MenuItem>
+                <MenuDivider />
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_SCENE")}
                 </MenuItem>

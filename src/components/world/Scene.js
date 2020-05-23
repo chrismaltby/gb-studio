@@ -180,6 +180,7 @@ class Scene extends Component {
       collisions = [],
       actors = [],
       tileColors,
+      labelColor
     } = scene;
 
     if (!visible) {
@@ -199,7 +200,18 @@ class Scene extends Component {
         }}
       >
         <div className="Scene__Name" onMouseDown={this.onStartDrag}>
-          {sceneName}
+          <div className={cx("Scene__Label", {
+              "Scene__Label--Red": labelColor === "red",
+              "Scene__Label--Orange": labelColor === "orange",
+              "Scene__Label--Yellow": labelColor === "yellow",
+              "Scene__Label--Green": labelColor === "green",
+              "Scene__Label--Blue": labelColor === "blue",
+              "Scene__Label--Purple": labelColor === "purple",
+              "Scene__Label--Gray": labelColor === "gray"
+            })}
+          >
+            {sceneName}
+          </div>
         </div>
         <div
           className="Scene__Image"
