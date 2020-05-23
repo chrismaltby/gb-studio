@@ -24,6 +24,7 @@ export default store => next => async action => {
   if (action.type === BUILD_GAME) {
     const { buildType, exportBuild, ejectBuild } = action;
     const dispatch = store.dispatch.bind(store);
+    const buildStartTime = Date.now();
 
     dispatch({ type: CMD_START });
 
@@ -97,6 +98,13 @@ export default store => next => async action => {
         );
       }
   
+      const buildTime = Date.now() - buildStartTime;
+
+      dispatch({
+        type: CMD_STD_OUT,
+        text: `Build Time: ${buildTime}ms`
+      });
+
       dispatch({ type: CMD_COMPLETE });      
     } catch (e) {
       if (typeof e === "string") {
