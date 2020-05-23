@@ -230,7 +230,10 @@ export default store => next => action => {
       }
     }
 
-    ejectEngineToDir(outputDir);
+    ejectEngineToDir(outputDir).then(() => {
+      remote.shell.openItem(outputDir);
+    });
+
   } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
     const state = store.getState();
     const projectSettings = getSettings(state);
