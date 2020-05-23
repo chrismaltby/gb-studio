@@ -15,6 +15,9 @@ import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
+import { getSettings } from "../../reducers/entitiesReducer";
+import { DMG_PALETTE } from "../../consts";
+import PaletteSelect from "../forms/PaletteSelect";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -32,7 +35,7 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar, addCustomEvent } = this.props;
+    const { project, selectSidebar, addCustomEvent, colorsEnabled } = this.props;
 
     if (!project || !project.scenes || !project.customEvents) {
       return <div />;
@@ -41,12 +44,14 @@ class WorldEditor extends Component {
     const { name, author, notes, scenes, settings } = project;
     const {
       startSceneId,
+      playerPaletteId,
       playerSpriteSheetId,
       startDirection,
       startAnimSpeed,
       startMoveSpeed,
       startX,
-      startY
+      startY,
+      defaultSpritePaletteId,      
     } = settings;
 
     return (
@@ -118,6 +123,24 @@ class WorldEditor extends Component {
                   />
                 </label>
               </FormField>
+
+              {colorsEnabled && (
+                <ToggleableFormField
+                  htmlFor="playerPalette"
+                  closedLabel={l10n("FIELD_PLAYER_PALETTE")}
+                  label={l10n("FIELD_PLAYER_PALETTE")}
+                  open={!!playerPaletteId}
+                >
+                  <PaletteSelect
+                    id="playerPalette"
+                    value={playerPaletteId || ""}
+                    optional
+                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                    optionalDefaultPaletteId={defaultSpritePaletteId || ""}
+                    onChange={this.onEditSetting("playerPaletteId")}
+                  />
+                </ToggleableFormField>
+              )}
 
               <FormField halfWidth>
                 <label htmlFor="startX">
@@ -208,6 +231,8 @@ class WorldEditor extends Component {
 
 WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
+  defaultSpritePaletteId: PropTypes.string.isRequired,
+  colorsEnabled: PropTypes.bool.isRequired, 
   editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
@@ -216,8 +241,13 @@ WorldEditor.propTypes = {
 
 function mapStateToProps(state) {
   const project = state.entities.present.result;
+  const settings = getSettings(state); 
+  const colorsEnabled = settings.customColorsEnabled;
+  const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
   return {
-    project
+    project,
+    colorsEnabled,
+    defaultSpritePaletteId    
   };
 }
 

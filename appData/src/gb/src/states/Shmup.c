@@ -2,7 +2,7 @@
 #pragma bank=5
 // clang-format on
 
-#include "Shmup.h"
+#include "states/Shmup.h"
 #include "Scroll.h"
 #include "Input.h"
 #include "Collision.h"

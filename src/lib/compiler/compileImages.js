@@ -1,9 +1,15 @@
 import { assetFilename } from "../helpers/gbstudio";
+import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 
 const ggbgfx = require("./ggbgfx");
 
 const MAX_SIZE = 9999999999;
 const MAX_TILESET_TILES = 16 * 12;
+
+const imageBuildCache = {};
+
+let lastOutput = null;
+let lastOutputIds = "";
 
 const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
   const tilesetLookups = [];
@@ -13,13 +19,27 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     tilemaps: {},
     tilemapsTileset: {},
   };
+  let uncachedCount = 0;
 
   // Build lookups
   for (let i = 0; i < imgs.length; i++) {
     const img = imgs[i];
-    const tilesetLookup = await ggbgfx.imageToTilesetLookup(
-      assetFilename(projectPath, "backgrounds", img)
-    );
+    const filename = assetFilename(projectPath, "backgrounds", img);
+    let tilesetLookup;
+
+    const imageModifiedTime = await getFileModifiedTime(filename);
+
+    if(imageBuildCache[img.id] && imageBuildCache[img.id].timestamp >= imageModifiedTime) {
+      tilesetLookup = imageBuildCache[img.id].data;
+    } else {
+      tilesetLookup = await ggbgfx.imageToTilesetLookup(filename);
+      imageBuildCache[img.id] = {
+        data: tilesetLookup,
+        timestamp: imageModifiedTime
+      }
+      uncachedCount++;
+    }
+
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
     if (tilesetLength > MAX_TILESET_TILES) {
@@ -29,6 +49,14 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
       );
     }
     tilesetLookups.push(tilesetLookup);
+  }
+
+  // If previous build generated the same images all unmodified
+  // no need to recalculate image tiles and tile lookups,
+  // just reuse last compile
+  const ids = imgs.map((img) => img.id).join();
+  if(uncachedCount === 0 && ids === lastOutputIds) {
+    return lastOutput;
   }
 
   // Find smallest overlapping lookups
@@ -89,7 +117,6 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
         `${tmpPath}/tileset_${i}.png`
       );
 
-      // output.tilesets[i] = ggbgfx.tilesLookupToTilesString(tilesetLookups[i]);
       output.tilesets[i] = ggbgfx.tilesLookupToTilesIntArray(tilesetLookups[i]);
     }
   }
@@ -102,6 +129,9 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     output.tilemaps[imgs[i].id] = tilemap;
     output.tilemapsTileset[imgs[i].id] = tilesetIndexes[i];
   }
+
+  lastOutput = output;
+  lastOutputIds = ids;
 
   return output;
 };

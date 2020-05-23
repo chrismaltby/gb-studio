@@ -5,7 +5,6 @@
 
 #include "BankData.h"
 #include "Math.h"
-#include "game.h"
 
 #define SCRIPT_RUNNER_BANK 4
 #define MAX_SCENE_STATES 8

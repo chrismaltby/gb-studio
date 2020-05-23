@@ -1,12 +1,10 @@
 #include "main.h"
 
-#include "Adventure.h"
 #include "Core_Main.h"
-#include "Platform.h"
-#include "Scroll.h"
-#include "Shmup.h"
-#include "TopDown.h"
-#include "game.h"
+#include "states/Adventure.h"
+#include "states/Platform.h"
+#include "states/Shmup.h"
+#include "states/TopDown.h"
 
 const Void_Func_Void startFuncs[] = {0, Start_TopDown, Start_Platform, Start_Adventure,
                                      Start_Shmup};

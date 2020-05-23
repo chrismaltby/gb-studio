@@ -4,7 +4,6 @@
 #include <gbdkjs.h>
 
 #include "Stack.h"
-#include "game.h"
 
 #define SWITCH_ROM SWITCH_ROM_MBC5
 #define ENABLE_RAM ENABLE_RAM_MBC5

@@ -1,4 +1,5 @@
-import { cIntArray, cIntArrayExternDeclaration } from "../helpers/cGeneration";
+import { cIntArray, cIntArrayExternDeclaration, objectIntArray } from "../helpers/cGeneration";
+import { wrap16Bit } from "../helpers/8bit";
 
 const BANKED_DATA_NOT_ARRAY = "BANKED_DATA_NOT_ARRAY";
 const BANKED_DATA_TOO_LARGE = "BANKED_DATA_TOO_LARGE";
@@ -92,6 +93,33 @@ class BankedData {
           `bank_${bank}_data`,
           data
         )}\n`;
+      })
+      .filter((i) => i);
+  }
+
+  exportObjectData() {
+    return this.data
+      .map((data, index) => {
+        const bank = this.dataWriteBanks[index];
+        return `XL
+H A areas 1 global symbols
+M bank_${bank}
+A _CODE size 0 flags 0
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+A _CODE_${bank} size ${wrap16Bit(data.length).toString(16)} flags 0
+S _bank_${bank}_data Def0000
+${objectIntArray(data)}`;
+        // return `#pragma bank=${bank}\n\n${cIntArray(
+        //   `bank_${bank}_data`,
+        //   data
+        // )}\n`;
       })
       .filter((i) => i);
   }

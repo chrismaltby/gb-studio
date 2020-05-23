@@ -14,7 +14,9 @@ void LoadUI();
 void LoadImage(UINT16 index);
 void LoadImageAttr(UINT16 index);
 void LoadPalette(UINT16 index);
+void LoadUIPalette(UINT16 index);
 void LoadSpritePalette(UINT16 index);
+void LoadPlayerSpritePalette(UINT16 index);
 void LoadScene(UINT16 index);
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset);
 

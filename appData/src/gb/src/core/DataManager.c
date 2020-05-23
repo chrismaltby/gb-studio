@@ -7,6 +7,8 @@
 #include "Sprite.h"
 #include "Trigger.h"
 #include "data_ptrs.h"
+#include <stdio.h>
+#include <string.h>
 
 BANK_PTR bank_ptr;
 UBYTE image_bank;
@@ -121,6 +123,20 @@ void LoadPalette(UINT16 index) {
   POP_BANK;
 }
 
+void LoadUIPalette(UINT16 index) {
+  UBYTE bank;
+  UBYTE *data_ptr;
+
+  PUSH_BANK(DATA_PTRS_BANK);
+  bank = palette_bank_ptrs[index].bank;
+  data_ptr = (UBYTE *)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
+  POP_BANK;
+
+  PUSH_BANK(bank);
+  memcpy(BkgPalette + UI_PALETTE_OFFSET, data_ptr, 8);
+  POP_BANK;
+}
+
 void LoadSpritePalette(UINT16 index) {
   UBYTE bank;
   UBYTE *data_ptr;
@@ -131,7 +147,21 @@ void LoadSpritePalette(UINT16 index) {
   POP_BANK;
 
   PUSH_BANK(bank);
-  memcpy(SprPalette, data_ptr, 64);
+  memcpy(SprPalette, data_ptr, 56);
+  POP_BANK;
+}
+
+void LoadPlayerSpritePalette(UINT16 index) {
+  UBYTE bank;
+  UBYTE *data_ptr;
+
+  PUSH_BANK(DATA_PTRS_BANK);
+  bank = palette_bank_ptrs[index].bank;
+  data_ptr = (UBYTE *)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
+  POP_BANK;
+
+  PUSH_BANK(bank);
+  memcpy(SprPalette + PLAYER_PALETTE_OFFSET, data_ptr, 8);
   POP_BANK;
 }
 
@@ -172,6 +202,8 @@ void LoadScene(UINT16 index) {
   LoadImageAttr(index);
   LoadPalette((*(data_ptr++) * 256) + *(data_ptr++));
   LoadSpritePalette((*(data_ptr++) * 256) + *(data_ptr++));
+  LoadPlayerSpritePalette(0);
+  LoadUIPalette(1);
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = *(data_ptr++);

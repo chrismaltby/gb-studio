@@ -6,6 +6,8 @@
 #include "Input.h"
 #include "Math.h"
 #include "data_ptrs.h"
+#include <stdio.h>
+#include <string.h>
 
 void UIInit_b();
 void UIUpdate_b();

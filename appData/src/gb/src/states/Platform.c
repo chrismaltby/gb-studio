@@ -2,7 +2,7 @@
 #pragma bank=5
 // clang-format on
 
-#include "Platform.h"
+#include "states/Platform.h"
 #include "Actor.h"
 #include "BankManager.h"
 #include "Camera.h"

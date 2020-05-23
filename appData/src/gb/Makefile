@@ -1,5 +1,5 @@
 SHELL_FILE = node_modules/gbdkjs/shell_debug/build/index.html
-EMCC = emcc -O2 -Wno-implicit-function-declaration -Inode_modules/gbdkjs/include -Inode_modules/gbdkjs/gbdk/include -Iinclude -Iinclude/core -Iinclude/states -Lsrc -Lsrc/core -Lsrc/data -Lsrc/states --js-library node_modules/gbdkjs/emscripten_bindings.js -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1 -s DETERMINISTIC=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
+EMCC = emcc -O2 -Wno-implicit-function-declaration -Inode_modules/gbdkjs/include -Inode_modules/gbdkjs/gbdk/include -Iinclude -Lsrc -Lsrc/core -Lsrc/data -Lsrc/states --js-library node_modules/gbdkjs/emscripten_bindings.js -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1 -s DETERMINISTIC=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
 
 CC = lcc
 
@@ -8,10 +8,10 @@ WEB_BUILD_DIR = build/debug
 
 OBJDIR = obj
 
-CFLAGS = -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -Iinclude/core -Iinclude/states -Igenerated -Inode_modules/gbdkjs/include
+CFLAGS = -Wa-l -Iinclude
 
-LFLAGS_NBANKS += -Wl-yo$(CART_SIZE) -Wl-ya4
-LFLAGS = $(LFLAGS_NBANKS) -Wl-m
+LFLAGS_NBANKS += -Wl-yo$(CART_SIZE)
+LFLAGS = $(LFLAGS_NBANKS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Wl-ya4 -Wl-yt27
 
 ifdef COLOR
 CFLAGS += -DCGB
@@ -70,7 +70,7 @@ $(OBJDIR)/%.bc:	src/music/%.c
 
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
-	$(CC) $(LFLAGS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Iinclude -o $@ $^	
+	$(CC) $(LFLAGS) -Iinclude -o $@ $^	
 
 $(WEB_BUILD_DIR)/%.html:	$(WEB_OBJS)
 	mkdir -p $(WEB_BUILD_DIR)

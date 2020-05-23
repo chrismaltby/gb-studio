@@ -205,6 +205,7 @@
   "FIELD_LOADING": "Loading...",
   "FIELD_PALETTE": "Palette",
   "FIELD_PALETTES": "Palettes",
+  "FIELD_PLAYER_PALETTE": "Player Palette",
   "FIELD_HEX_COLOR": "Hex Color",
   "FIELD_CLOSEST_MATCH": "Find Closest Match",
   "FIELD_HUE": "Hue",

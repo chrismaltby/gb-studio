@@ -2,7 +2,7 @@
 #pragma bank=5
 // clang-format on
 
-#include "Adventure.h"
+#include "states/Adventure.h"
 #include "Scroll.h"
 #include "Input.h"
 #include "Collision.h"

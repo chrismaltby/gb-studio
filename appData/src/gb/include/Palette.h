@@ -19,6 +19,10 @@
 #define PAL_GREEN(C) (((C) >> 5) & 0x1F)
 #define PAL_BLUE(C) (((C) >> 10) & 0x1F)
 
+#define PLAYER_PALETTE 0x7
+#define PLAYER_PALETTE_OFFSET 0x1C
+#define UI_PALETTE_OFFSET 0x1C
+
 extern UWORD SprPalette[32];
 extern UWORD BkgPalette[32];
 

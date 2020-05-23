@@ -11,6 +11,7 @@
 #include "ScriptRunner.h"
 #include "Collision.h"
 #include "DataManager.h"
+#include "Palette.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
@@ -403,6 +404,7 @@ void InitPlayer_b() {
   sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
   player.enabled = TRUE;
   player.moving = FALSE;
+  player.palette_index = PLAYER_PALETTE;
   player.collisionsEnabled = TRUE;
   player.pos.x = map_next_pos.x;
   player.pos.y = map_next_pos.y;
