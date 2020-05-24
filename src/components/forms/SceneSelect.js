@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
-import { SceneShape, BackgroundShape } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import {
   getScenesLookup,
@@ -11,7 +10,6 @@ import {
 } from "../../reducers/entitiesReducer";
 
 const DropdownIndicator = ({ filename, ...props }) => {
-  console.log("RENDER DropdownIndicator ")
   return (
     <components.DropdownIndicator {...props}>
       {filename && (
@@ -97,8 +95,6 @@ const OptionWithData = connect((state, ownProps) => {
 
 class SceneSelect extends Component {
   render() {
-    console.log("RENDER SceneSelect ")
-
     const { sceneIds, id, label, value, onChange } = this.props;
 
     const options = sceneIds.map((sceneId, sceneIndex) => ({
