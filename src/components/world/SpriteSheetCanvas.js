@@ -36,27 +36,30 @@ class SpriteSheetCanvas extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const { direction, frame, spriteSheet } = this.props;
+    const { direction, frame, spriteSheet, palette } = this.props;
     return (
       nextProps.direction !== direction ||
       nextProps.frame !== frame ||
-      spriteSheet === nextProps.spriteSheet
+      spriteSheet !== nextProps.spriteSheet || 
+      palette !== nextProps.palette
     );
   }
 
   componentDidUpdate(prevProps) {
-    const { direction, frame } = prevProps;
+    const { direction, frame, palette } = prevProps;
     const {
       projectRoot,
       spriteSheet,
       direction: nextDirection,
-      frame: nextFrame
+      frame: nextFrame,
+      palette: nextPalette
     } = this.props;
     const newSrc = this.imageSrc(projectRoot, spriteSheet);
     if (
       newSrc !== this.src ||
       direction !== nextDirection ||
-      frame !== nextFrame
+      frame !== nextFrame ||
+      palette !== nextPalette
     ) {
       this.debouncedDraw();
     }
