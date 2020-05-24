@@ -30,7 +30,7 @@ class Splash extends Component {
       blur: false,
       tab: "new",
       name: l10n("SPLASH_DEFAULT_PROJECT_NAME"),
-      target: "gbhtml",
+      target: "gbs2",
       path: getLastUsedPath(),
       nameError: null,
       pathError: null,
@@ -223,9 +223,12 @@ class Splash extends Component {
                   value={target}
                   onChange={this.onChange("target")}
                 >
-                  <option value="gbhtml">
+                  <option value="gbs2">
                     {l10n("SPLASH_SAMPLE_PROJECT")}
                   </option>
+                  <option value="gbhtml">
+                    {l10n("SPLASH_SAMPLE_PROJECT")} (GBS 1.0)
+                  </option>                  
                   <option value="blank">{l10n("SPLASH_BLANK_PROJECT")}</option>
                 </select>
               </label>
