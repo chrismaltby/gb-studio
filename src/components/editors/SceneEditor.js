@@ -155,13 +155,13 @@ class SceneEditor extends Component {
                 right
                 onMouseDown={this.readClipboard}
               >
-                <MenuItem>
+                <MenuItem style={{paddingRight: 10, marginBottom: 5}}>
                   <div style={{display:"flex"}}>
                     <div style={{marginRight: 5}}>
                       <LabelButton onClick={() => this.onEdit("labelColor")("")} />
                     </div>
                     {["red", "orange", "yellow", "green", "blue", "purple", "gray"].map((color) =>
-                      <div key={color} style={{marginRight: 5}}>
+                      <div key={color} style={{marginRight: color === "gray" ? 0 : 5}}>
                         <LabelButton color={color} onClick={() => this.onEdit("labelColor")(color)} />
                       </div>
                     )}
