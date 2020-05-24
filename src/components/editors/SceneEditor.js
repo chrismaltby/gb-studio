@@ -218,6 +218,7 @@ class SceneEditor extends Component {
                   <option value="1">Platformer</option>
                   <option value="2">Adventure</option>
                   <option value="3">Shoot Em' Up</option>
+                  <option value="4">Point and Click</option>
                 </select>
               </label>
             </FormField>
