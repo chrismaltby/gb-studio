@@ -24,7 +24,7 @@ void Start_Shmup() {
 }
 
 void Update_Shmup() {
-  UBYTE tile_x, tile_y, hit_actor, hit_trigger, a, i, rnd;
+  UBYTE tile_x, tile_y, hit_actor, hit_trigger, a, i;
 
   tile_x = (player.pos.x) >> 3;
   tile_y = (player.pos.y) >> 3;
@@ -51,11 +51,13 @@ void Update_Shmup() {
             actors[a].dir.y = -1;
           }
         }
+        actors[a].animate = TRUE;
         actors[a].moving = TRUE;
       }
     } else if (actors[a].movement_type == AI_RANDOM_FACE) {
       // Homing
       if (IS_FRAME_8) {
+        actors[a].animate = TRUE;
         if (actors[a].pos.y == actors[a].start_pos.y) {
           if (actors[a].pos.x - player.pos.x < 50) {
             actors[a].dir.x = 1;
