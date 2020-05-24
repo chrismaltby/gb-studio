@@ -43,7 +43,7 @@ class BackgroundSelect extends Component {
           <div
             className="Thumbnail"
             style={{
-              backgroundImage: `url("${assetFilename(
+              backgroundImage: `url("file://${assetFilename(
                 projectRoot,
                 "backgrounds",
                 backgroundsLookup[value]
