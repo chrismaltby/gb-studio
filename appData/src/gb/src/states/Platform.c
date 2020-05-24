@@ -67,13 +67,12 @@ void Start_Platform() {
 
 void Update_Platform() {
   WORD tile_x, tile_y;
-  UBYTE camera_y, player_y, i, a;
+  UBYTE i, a;
   UINT16 tmp_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
   // Move NPCs
-  /*
   for (i = 1; i < actors_active_size; i++)
   {
       a = actors_active[i];
@@ -86,7 +85,6 @@ void Update_Platform() {
               actors[a].pos.y--;
       }
   }
-  */
 
   // Update scene pos from player pos
   pos_x = ((player.pos.x + 4u) << 4) + (pos_x & 0xF);
@@ -205,9 +203,6 @@ void Update_Platform() {
 
   LOG_VALUE("pos_x", pos_x);
   LOG_VALUE("pos_y", pos_y);
-  // LOG("pos_y=%d pos_y>>4=%d vel_y=%d\n", pos_y, pos_y >> 4, vel_y);
-  // LOG("pos_x=%d pos_x>>4=%d vel_x=%d tile_x=%u\n", pos_x, pos_x >> 4, vel_x, tile_x);
-  // LOG("pos_x=%d pos_x>>4=%d vel_x=%d tile_x=%u\n", pos_x, pos_x >> 4, vel_x, tile_x);
 
   player.pos.x = (pos_x >> 4) - 4u;
   player.pos.y = pos_y >> 4;
@@ -231,8 +226,6 @@ void Update_Platform() {
   }
   cam_pos.y = pos_y_delayed - PLATFORM_CAMERA_OFFSET_Y;
 
-  // If player was moving on the previous frame
-  // if (player.moving) {
   // Check for trigger collisions
   hit_trigger = TriggerAtTile(tile_x, tile_y);
   if (hit_trigger != MAX_TRIGGERS) {
@@ -241,18 +234,4 @@ void Update_Platform() {
     player.moving = FALSE;
     return;
   }
-  // }
-
-  // LOG_VALUE("pos_y_delayed", pos_y_delayed);
-  // LOG_VALUE("cam_pos.y", cam_pos.y);
-
-  // if (INPUT_SELECT_PRESSED) {
-  //   player.pos.x = 16;
-  //   player.pos.y = 16;
-  // }
-
-  // if (INPUT_START_PRESSED) {
-  //   player.pos.x = 1024;
-  //   player.pos.y = 24;
-  // }
 }
