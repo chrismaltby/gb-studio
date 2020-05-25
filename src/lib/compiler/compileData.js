@@ -784,11 +784,9 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
 
     // Player palettes
 
-    const playerPalette = [
-      palettesLookup[settings.playerPaletteId] ||
-      palettesLookup[defaultSpritePaletteId] ||
-      DMG_PALETTE 
-    ].map((p) => p.colors);
+    const playerPalette = [[].concat((palettesLookup[settings.playerPaletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors)];
+    playerPalette[0][2] = playerPalette[0][1];
+    playerPalette[0][1] = playerPalette[0][0];
     const playerPaletteKey = JSON.stringify(playerPalette);
     const playerPaletteIndex = usedPalettes.length;
     usedPalettes.push(playerPalette);
