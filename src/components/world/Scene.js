@@ -37,8 +37,8 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 
-const MAX_ACTORS = 9;
-const MAX_TRIGGERS = 9;
+const MAX_ACTORS = 30;
+const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
 const TILE_SIZE = 8;
 
