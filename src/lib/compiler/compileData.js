@@ -1164,6 +1164,7 @@ export const compileActors = (actors, { eventPtrs, sprites, actorPaletteIndexes 
         moveDec(actor.movementType), // Movement Type
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
+        actor.isPinned || 0,
         eventPtrs[actorIndex].bank, // Event bank ptr
         lo(eventPtrs[actorIndex].offset), // Event offset ptr
         hi(eventPtrs[actorIndex].offset),

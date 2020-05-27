@@ -60,8 +60,13 @@ void UpdateActors_b() {
       continue;
     }
 
-    screen_x = 8u + actor->pos.x - scroll_x;
-    screen_y = 8u + actor->pos.y - scroll_y;
+    if(actor->pinned) {
+      screen_x = 8u + actor->pos.x;
+      screen_y = 8u + actor->pos.y;
+    } else {
+      screen_x = 8u + actor->pos.x - scroll_x;
+      screen_y = 8u + actor->pos.y - scroll_y;
+    }
 
     // Update animation frames
     if (IS_FRAME_8 &&

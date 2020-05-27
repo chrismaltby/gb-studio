@@ -66,6 +66,7 @@ typedef struct {
   UBYTE moving;
   BYTE move_speed;
   UBYTE anim_speed;
+  UBYTE pinned;
   UBYTE collisionsEnabled;
   SPRITE_TYPE sprite_type;
   UWORD script_ptr;

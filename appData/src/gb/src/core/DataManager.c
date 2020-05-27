@@ -226,7 +226,6 @@ void LoadScene(UINT16 index) {
     actors[i].sprite = *(data_ptr++);
     actors[i].palette_index = *(data_ptr++);
     actors[i].enabled = TRUE;
-    actors[i].collisionsEnabled = TRUE;
     actors[i].moving = FALSE;
     actors[i].sprite_type = *(data_ptr++);
     actors[i].frames_len = *(data_ptr++);
@@ -244,6 +243,8 @@ void LoadScene(UINT16 index) {
     actors[i].movement_type = *(data_ptr++);
     actors[i].move_speed = *(data_ptr++);
     actors[i].anim_speed = *(data_ptr++);
+    actors[i].pinned = *(data_ptr++);
+    actors[i].collisionsEnabled = !actors[i].pinned;
 
     actors[i].events_ptr.bank = *(data_ptr++);
     actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
@@ -267,5 +268,12 @@ void LoadScene(UINT16 index) {
   InitPlayer();
   InitScroll();
 
+  // Enable all pinned actors by default
+  for (i = 1; i != actors_len; i++) {
+      if(actors[i].pinned) {
+      ActivateActor(i);
+    }
+  }
+  
   POP_BANK;
 }

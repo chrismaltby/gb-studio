@@ -329,6 +329,20 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
+            <FormField>
+              <label htmlFor="actorIsPinned">
+                <input
+                  id="actorIsPinned"
+                  type="checkbox"
+                  className="Checkbox"
+                  checked={actor.isPinned}
+                  onChange={this.onEdit("isPinned")}
+                />
+                <div className="FormCheckbox" />
+                Pin to screen
+              </label>
+            </FormField>
+
             <ToggleableFormField
               htmlFor="actorNotes"
               closedLabel={l10n("FIELD_ADD_NOTES")}
