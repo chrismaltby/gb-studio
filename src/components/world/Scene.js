@@ -101,6 +101,7 @@ class Scene extends Component {
       height,
       moveSelectedEntity,
       sceneHover,
+      hovered,
     } = this.props;
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
@@ -108,7 +109,7 @@ class Scene extends Component {
     const tX = Math.floor(x / (8 * zoomRatio));
     const tY = Math.floor(y / (8 * zoomRatio));
 
-    if (tX !== this.lastTX || tY !== this.lastTY) {
+    if (tX !== this.lastTX || tY !== this.lastTY || !hovered) {
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
         sceneHover(id, tX, tY);
         moveSelectedEntity(id, tX, tY);
@@ -120,7 +121,7 @@ class Scene extends Component {
 
   onMouseLeave = (e) => {
     const { sceneHover } = this.props;
-    sceneHover("");
+    sceneHover("", this.lastTX, this.lastTY);
   };
 
   onStartDrag = (e) => {
