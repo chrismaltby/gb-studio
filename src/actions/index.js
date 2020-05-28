@@ -683,11 +683,11 @@ export const pasteClipboardEntityInPlace = (clipboardData) => (dispatch, getStat
   const { scene: sceneId } = state.editor;
   if (clipboardData.__type === "scene") {
     dispatch(addScene(clipboardData.x, clipboardData.y, clipboardData));
-  } else if (clipboardData.__type === "actor") {
+  } else if (sceneId && clipboardData.__type === "actor") {
     dispatch(
       addActor(sceneId, clipboardData.x, clipboardData.y, clipboardData)
     );
-  } else if (clipboardData.__type === "trigger") {
+  } else if (sceneId && clipboardData.__type === "trigger") {
     dispatch(
       addTrigger(sceneId, clipboardData.x, clipboardData.y, clipboardData.width, clipboardData.height, clipboardData)
     );
