@@ -810,8 +810,8 @@ const addActor = (state, action) => {
     },
     {
       id: action.id,
-      x: action.x,
-      y: action.y
+      x: clamp(action.x, 0, scene.width - 2),
+      y: clamp(action.y, 0, scene.height - 1)
     }
   );
 
@@ -970,6 +970,10 @@ const addTrigger = (state, action) => {
     action.defaults &&
     action.defaults.script &&
     action.defaults.script.map(regenerateEventIds);
+
+  const width = Math.min(action.width || 1, scene.width);
+  const height = Math.min(action.height || 1, scene.height);
+
   const newTrigger = Object.assign(
     {
       trigger: "walk"
@@ -980,10 +984,10 @@ const addTrigger = (state, action) => {
     },
     {
       id: action.id,
-      x: action.x,
-      y: action.y,
-      width: action.width || 1,
-      height: action.height || 1
+      x: clamp(action.x, 0, scene.width - width),
+      y: clamp(action.y, 0, scene.height - height),
+      width,
+      height
     }
   );
 
