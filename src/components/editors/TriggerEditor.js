@@ -125,7 +125,7 @@ class TriggerEditor extends Component {
                   value={trigger.x}
                   placeholder={0}
                   min={0}
-                  max={31}
+                  max={scene.width - trigger.width}
                   onChange={this.onEdit("x")}
                 />
               </label>
@@ -140,7 +140,7 @@ class TriggerEditor extends Component {
                   value={trigger.y}
                   placeholder={0}
                   min={0}
-                  max={31}
+                  max={scene.height - trigger.height}
                   onChange={this.onEdit("y")}
                 />
               </label>
@@ -155,7 +155,7 @@ class TriggerEditor extends Component {
                   value={trigger.width}
                   placeholder={1}
                   min={1}
-                  max={32}
+                  max={scene.width - trigger.x}
                   onChange={this.onEdit("width")}
                 />
               </label>
@@ -170,7 +170,7 @@ class TriggerEditor extends Component {
                   value={trigger.height}
                   placeholder={1}
                   min={1}
-                  max={32}
+                  max={scene.height - trigger.y}
                   onChange={this.onEdit("height")}
                 />
               </label>
