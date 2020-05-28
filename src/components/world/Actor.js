@@ -29,23 +29,26 @@ class Actor extends Component {
     const { actor, selected, showSprite, palette } = this.props;
     const { x, y, spriteSheetId, direction, movementType, frame } = actor;
     return (
-      <div
-        className={cx("Actor", { "Actor--Selected": selected })}
-        onMouseDown={this.onMouseDown}
-        style={{
-          top: y * 8,
-          left: x * 8,
-        }}
-      >
-        {showSprite && (
-          <SpriteSheetCanvas
-            spriteSheetId={spriteSheetId}
-            direction={direction}
-            frame={movementType === "static" ? frame : 0}
-            palette={palette}
-          />
-        )}
-      </div>
+      <>
+        {selected && actor.isPinned && <div className="Actor__ScreenPreview" />}
+        <div
+          className={cx("Actor", { "Actor--Selected": selected })}
+          onMouseDown={this.onMouseDown}
+          style={{
+            top: y * 8,
+            left: x * 8,
+          }}
+        >
+          {showSprite && (
+            <SpriteSheetCanvas
+              spriteSheetId={spriteSheetId}
+              direction={direction}
+              frame={movementType === "static" ? frame : 0}
+              palette={palette}
+            />
+          )}
+        </div>
+      </>
     );
   }
 }
