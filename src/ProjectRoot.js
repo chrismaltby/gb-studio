@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import * as actions from "./actions";
@@ -142,6 +142,15 @@ const onPluginRun = (event, pluginId) => {
   }
 }
 
+const onPasteInPlace = (event) => {
+  try {
+    const clipboardData = JSON.parse(clipboard.readText());
+    store.dispatch(actions.pasteClipboardEntityInPlace(clipboardData));
+  } catch (err) {
+    // Clipboard isn't pastable, just ignore it
+  }
+}
+
 ipcRenderer.on("save-project", onSaveProject);
 ipcRenderer.on("save-project-and-close", onSaveAndCloseProject);
 ipcRenderer.on("save-as-project", onSaveProjectAs);
@@ -159,6 +168,7 @@ ipcRenderer.on("run", onRun);
 ipcRenderer.on("build", onBuild);
 ipcRenderer.on("ejectEngine", onEjectEngine);
 ipcRenderer.on("plugin-run", onPluginRun);
+ipcRenderer.on("paste-in-place", onPasteInPlace);
 
 const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");
