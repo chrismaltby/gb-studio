@@ -415,6 +415,10 @@ menu.on("ejectProject", () => {
   mainWindow && mainWindow.webContents.send("build", "rom", true);
 });
 
+menu.on("pasteInPlace", () => {
+  mainWindow && mainWindow.webContents.send("paste-in-place");
+});
+
 menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });

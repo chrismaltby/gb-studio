@@ -473,8 +473,8 @@ export const setShowLayers = (showLayers) => {
   return { type: types.SET_SHOW_LAYERS, showLayers };
 }
 
-export const addTrigger = (sceneId, x, y, defaults) => {
-  return { type: types.ADD_TRIGGER, sceneId, x, y, id: uuid(), defaults };
+export const addTrigger = (sceneId, x, y, width, height, defaults) => {
+  return { type: types.ADD_TRIGGER, sceneId, x, y, width, height, id: uuid(), defaults };
 };
 
 export const removeTrigger = (sceneId, id) => {
@@ -675,6 +675,22 @@ export const pasteClipboardEntity = clipboardData => dispatch => {
     dispatch(setActorPrefab(clipboardData));
   } else if (clipboardData.__type === "trigger") {
     dispatch(setTriggerPrefab(clipboardData));
+  }
+};
+
+export const pasteClipboardEntityInPlace = (clipboardData) => (dispatch, getState) => {
+  const state = getState();
+  const { scene: sceneId } = state.editor;
+  if (clipboardData.__type === "scene") {
+    dispatch(addScene(clipboardData.x, clipboardData.y, clipboardData));
+  } else if (clipboardData.__type === "actor") {
+    dispatch(
+      addActor(sceneId, clipboardData.x, clipboardData.y, clipboardData)
+    );
+  } else if (clipboardData.__type === "trigger") {
+    dispatch(
+      addTrigger(sceneId, clipboardData.x, clipboardData.y, clipboardData.width, clipboardData.height, clipboardData)
+    );
   }
 };
 

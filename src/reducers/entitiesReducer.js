@@ -982,8 +982,8 @@ const addTrigger = (state, action) => {
       id: action.id,
       x: action.x,
       y: action.y,
-      width: 1,
-      height: 1
+      width: action.width || 1,
+      height: action.height || 1
     }
   );
 

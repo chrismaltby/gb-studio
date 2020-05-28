@@ -100,7 +100,7 @@ class SceneCursor extends Component {
       addActor(sceneId, x, y, prefab);
       setTool("select");
     } else if (tool === "triggers") {
-      addTrigger(sceneId, x, y, prefab);
+      addTrigger(sceneId, x, y, 1, 1, prefab);
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });

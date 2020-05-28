@@ -80,7 +80,13 @@ const buildMenu = async (plugins = []) => {
         { role: "cut" },
         { role: "copy" },
         { role: "paste" },
-        { role: "pasteandmatchstyle" },
+        {
+          label: l10n("MENU_PASTE_IN_PLACE"),
+          accelerator: "Shift+CommandOrControl+V",
+          click: () => {
+            notifyListeners("pasteInPlace");
+          }
+        },
         { role: "delete" },
         { role: "selectall" }
       ]
@@ -458,6 +464,7 @@ const listeners = {
   build: [],
   ejectEngine: [],
   ejectProject: [],
+  pasteInPlace: []
 };
 
 const notifyListeners = (event, ...data) => {
