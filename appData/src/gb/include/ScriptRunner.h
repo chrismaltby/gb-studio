@@ -76,7 +76,7 @@ extern BankPtr timer_script_ptr;
 
 void ScriptRunnerInit();
 void ScriptStart(BankPtr *events_ptr);
-void ScriptStartBg(BankPtr *events_ptr);
+UBYTE ScriptStartBg(BankPtr *events_ptr);
 void ScriptRunnerUpdate();
 void ScriptTimerUpdate();
 void ScriptRestoreCtx(UBYTE i);

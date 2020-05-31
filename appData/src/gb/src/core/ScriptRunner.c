@@ -82,24 +82,31 @@ void ScriptStart(BankPtr *events_ptr) {
   // ctx_inc++;
 }
 
-void ScriptStartBg(BankPtr *events_ptr) {
-  UBYTE ctx = 0;
+UBYTE ScriptStartBg(BankPtr *events_ptr) {
+  // UBYTE out_ctx = 0;
+  // UBYTE ctx = 0;
 
   SeedRand();
 
   // Run in background context
 
-  ctx = ScriptCtxPoolNext();
+  current_script_ctx = ScriptCtxPoolNext();
 
-  if(ctx != 0) {
-    LOG("RUN IN BACKGROUND USING CTX=%u\n", ctx);
+  // out_ctx = 0;
+  // out_ctx = ctx;
 
-    script_ctxs[ctx].script_ptr_bank = events_ptr->bank;
-    script_ctxs[ctx].script_ptr =
-        (BankDataPtr(script_ctxs[ctx].script_ptr_bank)) + events_ptr->offset;
-    script_ctxs[ctx].script_update_fn = FALSE;
-    script_ctxs[ctx].script_start_ptr = script_ctxs[ctx].script_ptr;
+  if(current_script_ctx != 0) {
+    LOG("RUN IN BACKGROUND USING CTX=%u\n", current_script_ctx);
+
+    script_ctxs[current_script_ctx].script_ptr_bank = events_ptr->bank;
+    script_ctxs[current_script_ctx].script_ptr =
+        (BankDataPtr(script_ctxs[current_script_ctx].script_ptr_bank)) + events_ptr->offset;
+    script_ctxs[current_script_ctx].script_update_fn = FALSE;
+    script_ctxs[current_script_ctx].script_start_ptr = script_ctxs[current_script_ctx].script_ptr;
+    return current_script_ctx;
   }
+
+  return current_script_ctx;
 }
 
 void ScriptRunnerUpdate() {
@@ -188,6 +195,7 @@ void ScriptRunnerUpdate() {
     LOG("CONTINUE!\n");
     ctx_cmd_remaining--;
     ScriptRunnerUpdate();
+    return;
   }
 
   ScriptSaveCtx();
@@ -250,6 +258,6 @@ UINT8 ScriptCtxPoolNext() {
 
 void ScriptCtxPoolReturn(UINT8 ctx) {
   // LOG("RETURN CTX=%u\n", ctx);
-  // script_ctxs[ctx].script_ptr_bank = 0;
+  script_ctxs[ctx].script_ptr_bank = 0;
   StackPush(script_ctx_pool, ctx);
 }

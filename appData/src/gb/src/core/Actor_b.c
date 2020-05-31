@@ -244,10 +244,10 @@ void ActivateActor_b(UBYTE i) {
   actors[i].rerender = TRUE;
 
   if(actors[i].movement_ptr.bank) {
-    ScriptStartBg(&actors[i].movement_ptr);
-  //   actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr);
-  // } else {
-  //   actors[i].movement_ctx = 0;
+    // ScriptStartBg(&actors[i].movement_ptr);
+    actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr);
+  } else {
+    actors[i].movement_ctx = 0;
   }
 }
 
@@ -281,10 +281,9 @@ void DeactivateActor_b(UBYTE i) {
   if (a) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
-    // if(actors[i].movement_ctx) {
-    //   LOG("SHOULD RETURN CTX=%u\n", actors[i].movement_ctx);
-    //   // ScriptCtxPoolReturn(actors[i].movement_ctx);
-    // }
+    if(actors[i].movement_ctx) {
+      ScriptCtxPoolReturn(actors[i].movement_ctx);
+    }
     actors_active[a] = actors_active[--actors_active_size];
   }
 }

@@ -73,6 +73,7 @@ typedef struct {
   BankPtr events_ptr;
   BankPtr movement_ptr;
   MOVEMENT_TYPE movement_type;
+  UBYTE movement_ctx;
 } Actor;
 
 extern Actor actors[MAX_ACTORS];
