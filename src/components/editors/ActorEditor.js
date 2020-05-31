@@ -48,6 +48,8 @@ class ActorEditor extends Component {
 
   onEditStartScript = this.onEdit("startScript");
 
+  onEditMovementScript = this.onEdit("movementScript");
+
   onCopy = (e) => {
     const { copyActor, actor } = this.props;
     copyActor(actor);
@@ -85,6 +87,7 @@ class ActorEditor extends Component {
         values={{
           interact: l10n("SIDEBAR_ON_INTERACT"),
           start: l10n("SIDEBAR_ON_INIT"),
+          movement: "Movement"
         }}
         buttons={buttons}
         onChange={this.onSetScriptMode}
@@ -376,7 +379,7 @@ class ActorEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          {scriptMode === "start" ? (
+          {scriptMode === "start" && (
             <ScriptEditor
               value={actor.startScript}
               type="actor"
@@ -384,7 +387,8 @@ class ActorEditor extends Component {
               onChange={this.onEditStartScript}
               entityId={actor.id}
             />
-          ) : (
+          )}
+          {scriptMode === "interact" && (
             <ScriptEditor
               value={actor.script}
               type="actor"
@@ -393,6 +397,15 @@ class ActorEditor extends Component {
               entityId={actor.id}
             />
           )}
+          {scriptMode === "movement" && (
+            <ScriptEditor
+              value={actor.movementScript}
+              type="actor"
+              renderHeader={this.renderScriptHeader}
+              onChange={this.onEditMovementScript}
+              entityId={actor.id}
+            />
+          )}          
         </SidebarColumn>
       </Sidebar>
     );

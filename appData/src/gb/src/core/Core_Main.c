@@ -195,7 +195,7 @@ void game_loop() {
     HandleInputScripts();
     FadeUpdate();
 
-    if (!script_ptr) {
+    if (!script_ctxs[0].script_ptr_bank) {
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
@@ -260,7 +260,9 @@ void game_loop() {
     LOG("SCRIPT START "
         "!!!!!===================================================================!!!!!!\n");
 
+/* @todo enable this again
     ScriptStart(&scene_events_start_ptr);
+*/
 
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;

@@ -8,6 +8,7 @@
 
 #define SCRIPT_RUNNER_BANK 4
 #define MAX_SCENE_STATES 8
+#define MAX_SCRIPT_CONTEXTS 40
 
 typedef void (*SCRIPT_CMD_FN)();
 typedef UBYTE (*SCRIPT_UPDATE_FN)();
@@ -23,19 +24,36 @@ typedef struct _SCENE_STATE {
   Vector2D player_dir;
 } SCENE_STATE;
 
-extern UBYTE script_ptr_bank;
+typedef struct {
+  UINT16 actor_move_dest_x;
+  UINT16 actor_move_dest_y;  
+  SCRIPT_UPDATE_FN script_update_fn;
+  UBYTE *script_start_ptr;
+  UBYTE *script_ptr;
+  UWORD script_ptr_x;
+  UWORD script_ptr_y;
+  UBYTE script_ptr_bank;
+  UBYTE wait_time;
+  UBYTE script_await_next_frame;
+  UBYTE script_actor;
+} ScriptContext;
+
+extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
+extern ScriptContext *current_script_ctx;
+extern ScriptContext *main_script_ctx;
+
+// extern UBYTE script_ptr_bank;
 extern UBYTE *script_start_ptr;
 extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
 extern const SCRIPT_CMD script_cmds[];
-extern UBYTE *script_ptr;
+// extern UBYTE *script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
-extern UBYTE script_await_next_frame;
+// extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
 extern UBYTE script_complete;
 
-extern SCRIPT_CMD_FN last_fn;
 extern SCRIPT_UPDATE_FN script_update_fn;
 
 // Max call stack depth

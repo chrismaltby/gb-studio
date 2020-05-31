@@ -20,8 +20,20 @@ UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 
 void MoveActors_b() {
   UBYTE i, a;
+  UBYTE actor_time;
+
+  actor_time = game_time >> 2;
+
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
+
+    if ((actor_time & 0xF) == i) {
+      // Time to run this actor's movement script
+      if(actors[a].movement_ptr.bank) {
+        ScriptStart(&actors[a].movement_ptr);
+      }
+    }
+
     if (actors[a].moving) {
       if (actors[a].move_speed == 0) {
         // Half speed only move every other frame

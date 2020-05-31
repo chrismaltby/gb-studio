@@ -197,18 +197,27 @@ const compile = async (
       return banked.push(compiledSceneScript);
     };
 
-    const bankEntityEvents = (entityType) => (entity, entityIndex) => {
+    const bankEntityEvents = (entityType, entityScriptField = "script") => (entity, entityIndex) => {
+      if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
+        return {
+          bank: 0,
+          offset: 0
+        };
+      }
       return banked.push(
-        compileScript(entity.script, entityType, entity, entityIndex)
+        compileScript(entity[entityScriptField], entityType, entity, entityIndex)
       );
     };
 
     return {
       start: bankSceneEvents(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
+      actorsMovement: scene.actors.map(bankEntityEvents("actor","movementScript")),
       triggers: scene.triggers.map(bankEntityEvents("trigger")),
     };
   });
+
+  console.log({eventPtrs})
 
   // Strings
   const stringPtrs = precompiled.strings.map((string) => {
@@ -330,6 +339,7 @@ const compile = async (
         ),
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
+          movementPtrs: eventPtrs[sceneIndex].actorsMovement,
           sprites: precompiled.usedSprites,
           scene,
           actorPaletteIndexes: precompiled.actorPaletteIndexes
@@ -1120,7 +1130,7 @@ export const precompileScenes = (
   return scenesData;
 };
 
-export const compileActors = (actors, { eventPtrs, sprites, actorPaletteIndexes }) => {
+export const compileActors = (actors, { eventPtrs, movementPtrs, sprites, actorPaletteIndexes }) => {
   // console.log("ACTOR", actor, eventsPtr);
   const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
@@ -1144,6 +1154,7 @@ export const compileActors = (actors, { eventPtrs, sprites, actorPaletteIndexes 
     return lookup;
   };
 
+
   return flatten(
     actors.map((actor, actorIndex) => {
       const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
@@ -1164,10 +1175,13 @@ export const compileActors = (actors, { eventPtrs, sprites, actorPaletteIndexes 
         moveDec(actor.movementType), // Movement Type
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
-        actor.isPinned || 0,
+        actor.isPinned ? 1 : 0,
         eventPtrs[actorIndex].bank, // Event bank ptr
         lo(eventPtrs[actorIndex].offset), // Event offset ptr
         hi(eventPtrs[actorIndex].offset),
+        movementPtrs[actorIndex].bank, // Movement script bank ptr
+        lo(movementPtrs[actorIndex].offset), // Movement script offset ptr
+        hi(movementPtrs[actorIndex].offset),        
       ];
     })
   );

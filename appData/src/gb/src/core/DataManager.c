@@ -248,6 +248,9 @@ void LoadScene(UINT16 index) {
 
     actors[i].events_ptr.bank = *(data_ptr++);
     actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    actors[i].movement_ptr.bank = *(data_ptr++);
+    actors[i].movement_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
   }
 
   actors_active[0] = 0;

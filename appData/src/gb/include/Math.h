@@ -9,6 +9,7 @@
 INT16 DespRight(INT16 a, INT16 b);
 UBYTE Lt16(UINT16 a, UINT16 b);
 UBYTE Gt16(UINT16 a, UINT16 b);
+void SeedRand();
 
 #define IS_NEG(a) ((UBYTE)(a)&0x80)
 

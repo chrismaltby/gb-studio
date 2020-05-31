@@ -71,6 +71,7 @@ typedef struct {
   SPRITE_TYPE sprite_type;
   UWORD script_ptr;
   BankPtr events_ptr;
+  BankPtr movement_ptr;
   MOVEMENT_TYPE movement_type;
 } Actor;
 

@@ -1,6 +1,7 @@
 #include "Math.h"
 
 #include <gb/gb.h>
+#include <rand.h>
 
 INT16 DespRight(INT16 a, INT16 b) { return a >> b; }
 
@@ -18,4 +19,10 @@ UBYTE Gt16(UINT16 a, UINT16 b) {
   UBYTE a_lo = a & 0xFF;
   UBYTE b_lo = b & 0xFF;
   return a_hi > b_hi || (a_hi == b_hi && a_lo > b_lo);
+}
+
+void SeedRand() {
+  UBYTE rnd;
+  rnd = *((UBYTE *)0xFF04);
+  initrand(rnd);
 }
