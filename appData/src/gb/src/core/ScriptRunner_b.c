@@ -1159,8 +1159,8 @@ void Script_SetFlagRandomValue_b() {
  * Store Actor position in variables
  */
 void Script_ActorGetPos_b() {
-  script_variables[script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
-  script_variables[script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
+  script_variables[script_ptr_x] = actors[script_actor].pos.x >> 3;
+  script_variables[script_ptr_y] = actors[script_actor].pos.y >> 3;
 }
 
 /*
