@@ -43,13 +43,7 @@ UBYTE ctx_cmd_remaining = 5;
 void ScriptTimerUpdate_b();
 
 void ScriptRunnerInit() {
-  UBYTE i;
-  for (i = 1; i != MAX_BG_SCRIPT_CONTEXTS + 1; i++) {
-    script_ctx_pool[i] = i;
-    LOG("SET POOL CTX %u\n", i);
-  }
-  script_ctx_pool[0] = MAX_BG_SCRIPT_CONTEXTS;
-  // script_ctx_active_pool_size = 0;
+  ScriptCtxPoolReset();
 }
 
 void ScriptStart(BankPtr *events_ptr) {
@@ -82,7 +76,7 @@ void ScriptStart(BankPtr *events_ptr) {
   // ctx_inc++;
 }
 
-UBYTE ScriptStartBg(BankPtr *events_ptr) {
+UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner) {
   // UBYTE out_ctx = 0;
   // UBYTE ctx = 0;
 
@@ -97,12 +91,13 @@ UBYTE ScriptStartBg(BankPtr *events_ptr) {
 
   if(current_script_ctx != 0) {
     LOG("RUN IN BACKGROUND USING CTX=%u\n", current_script_ctx);
-
+    script_ctxs[current_script_ctx].owner = 0; // @wtf
     script_ctxs[current_script_ctx].script_ptr_bank = events_ptr->bank;
     script_ctxs[current_script_ctx].script_ptr =
         (BankDataPtr(script_ctxs[current_script_ctx].script_ptr_bank)) + events_ptr->offset;
     script_ctxs[current_script_ctx].script_update_fn = FALSE;
     script_ctxs[current_script_ctx].script_start_ptr = script_ctxs[current_script_ctx].script_ptr;
+    script_ctxs[current_script_ctx].owner = owner;
     return current_script_ctx;
   }
 
@@ -160,7 +155,7 @@ void ScriptRunnerUpdate() {
     script_complete = TRUE;
     ScriptSaveCtx();
     if(current_script_ctx != 0) {
-      ScriptCtxPoolReturn(current_script_ctx);
+      ScriptCtxPoolReturn(current_script_ctx, script_ctxs[current_script_ctx].owner);
     }
     return;
   }
@@ -256,8 +251,20 @@ UINT8 ScriptCtxPoolNext() {
   return 0;
 }
 
-void ScriptCtxPoolReturn(UINT8 ctx) {
-  // LOG("RETURN CTX=%u\n", ctx);
-  script_ctxs[ctx].script_ptr_bank = 0;
-  StackPush(script_ctx_pool, ctx);
+void ScriptCtxPoolReturn(UINT8 ctx, UBYTE owner) {
+  // Make sure ctx is still owned by this entity
+  // i.e. script didn't finish and was released 
+  // before actor went offscreen
+  if (script_ctxs[ctx].owner == owner) {
+    script_ctxs[ctx].script_ptr_bank = 0;
+    StackPush(script_ctx_pool, ctx);
+  }
+}
+
+void ScriptCtxPoolReset() {
+  UBYTE i;
+  for (i = 1; i != MAX_BG_SCRIPT_CONTEXTS + 1; i++) {
+    script_ctx_pool[i] = i;
+  }
+  script_ctx_pool[0] = MAX_BG_SCRIPT_CONTEXTS;
 }

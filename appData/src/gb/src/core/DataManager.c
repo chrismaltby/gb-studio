@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "Trigger.h"
 #include "data_ptrs.h"
+#include "ScriptRunner.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -196,6 +197,7 @@ void LoadScene(UINT16 index) {
   POP_BANK;
 
   SpritePoolReset();
+  ScriptCtxPoolReset();
 
   PUSH_BANK(bank);
   LoadImage((*(data_ptr++) * 256) + *(data_ptr++));
@@ -251,6 +253,8 @@ void LoadScene(UINT16 index) {
 
     actors[i].movement_ptr.bank = *(data_ptr++);
     actors[i].movement_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    actors[i].movement_ctx = 0;
   }
 
   actors_active[0] = 0;

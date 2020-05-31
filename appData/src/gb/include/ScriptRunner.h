@@ -37,6 +37,7 @@ typedef struct {
   UBYTE wait_time;
   UBYTE script_await_next_frame;
   UBYTE script_actor;
+  UBYTE owner;
 } ScriptContext;
 
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
@@ -76,13 +77,14 @@ extern BankPtr timer_script_ptr;
 
 void ScriptRunnerInit();
 void ScriptStart(BankPtr *events_ptr);
-UBYTE ScriptStartBg(BankPtr *events_ptr);
+UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner);
 void ScriptRunnerUpdate();
 void ScriptTimerUpdate();
 void ScriptRestoreCtx(UBYTE i);
 void ScriptSaveCtx();
 UINT8 ScriptCtxPoolNext();
-void ScriptCtxPoolReturn(UINT8 ctx);
+void ScriptCtxPoolReturn(UINT8 ctx, UBYTE owner);
+void ScriptCtxPoolReset();
 
 // Banked functions - don't call directly
 void Script_Noop_b();

@@ -126,7 +126,7 @@ void Update_TopDown() {
         // PlayerStopMovement();
 
         // Run actors interact script
-        ScriptStartBg(&actors[hit_actor].events_ptr);
+        ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
       }
     }
   }

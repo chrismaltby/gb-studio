@@ -245,7 +245,8 @@ void ActivateActor_b(UBYTE i) {
 
   if(actors[i].movement_ptr.bank) {
     // ScriptStartBg(&actors[i].movement_ptr);
-    actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr);
+    actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr, i);
+    LOG("BG_SCRIPT START owner=%u ctx=%u\n", i, actors[i].movement_ctx);
   } else {
     actors[i].movement_ctx = 0;
   }
@@ -282,7 +283,8 @@ void DeactivateActor_b(UBYTE i) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
     if(actors[i].movement_ctx) {
-      ScriptCtxPoolReturn(actors[i].movement_ctx);
+      LOG("BG_SCRIPT STOP owner=%u ctx=%u\n", i, actors[i].movement_ctx);
+      ScriptCtxPoolReturn(actors[i].movement_ctx, i);
     }
     actors_active[a] = actors_active[--actors_active_size];
   }

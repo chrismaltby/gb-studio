@@ -272,9 +272,7 @@ void game_loop() {
     LOG("SCRIPT START "
         "!!!!!===================================================================!!!!!!\n");
 
-/* @todo enable this again
     ScriptStart(&scene_events_start_ptr);
-*/
 
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;
