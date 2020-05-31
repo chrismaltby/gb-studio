@@ -17,7 +17,7 @@ void HandleInputScripts() {
       if (input_joy & 1) {
         if (input_script_ptrs[input_index].bank) {
           last_joy = joy;
-          ScriptStart(&input_script_ptrs[input_index]);
+          ScriptStartBg(&input_script_ptrs[input_index], 255);
           return;
         }
       }
