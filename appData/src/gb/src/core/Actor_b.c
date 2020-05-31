@@ -27,12 +27,12 @@ void MoveActors_b() {
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
 
-    if ((actor_time & 0xF) == i) {
-      // Time to run this actor's movement script
-      if(actors[a].movement_ptr.bank) {
-        ScriptStart(&actors[a].movement_ptr);
-      }
-    }
+    // if ((actor_time & 0xF) == i) {
+    //   // Time to run this actor's movement script
+    //   if(actors[a].movement_ptr.bank) {
+    //     ScriptStart(&actors[a].movement_ptr);
+    //   }
+    // }
 
     if (actors[a].moving) {
       if (actors[a].move_speed == 0) {
@@ -207,7 +207,7 @@ void UpdateActors_b() {
     }
 
     // Check if actor is off screen
-    if (IS_FRAME_32 && (a != script_actor)) {
+    if (IS_FRAME_32 && (a != script_ctxs[0].script_actor)) {
       if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
           ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
         // Mark off screen actor for removal
@@ -242,6 +242,13 @@ void ActivateActor_b(UBYTE i) {
   actors[i].sprite_index = SpritePoolNext();
   actors[i].frame_offset = 0;
   actors[i].rerender = TRUE;
+
+  if(actors[i].movement_ptr.bank) {
+    ScriptStartBg(&actors[i].movement_ptr);
+  //   actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr);
+  // } else {
+  //   actors[i].movement_ctx = 0;
+  }
 }
 
 void ActivateActorColumn_b(UBYTE tx_a, UBYTE ty_a) {
@@ -274,6 +281,10 @@ void DeactivateActor_b(UBYTE i) {
   if (a) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
+    // if(actors[i].movement_ctx) {
+    //   LOG("SHOULD RETURN CTX=%u\n", actors[i].movement_ctx);
+    //   // ScriptCtxPoolReturn(actors[i].movement_ctx);
+    // }
     actors_active[a] = actors_active[--actors_active_size];
   }
 }

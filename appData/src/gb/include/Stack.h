@@ -13,7 +13,10 @@
 
 #define StackPeek(STACK) STACK[STACK[0]]
 
+#define StackSize(STACK) STACK[0]
+
 void StackPush(UINT8 *stack, UINT8 elem);
 UINT8 StackPop(UINT8 *stack);
+UINT8 StackShift(UINT8 *stack);
 
 #endif

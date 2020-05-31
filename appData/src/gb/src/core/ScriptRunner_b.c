@@ -28,13 +28,13 @@
 #define BUBBLE_TOTAL_FRAMES 60
 
 UBYTE *RAMPtr;
-UINT16 actor_move_dest_x = 0;
-UINT16 actor_move_dest_y = 0;
+// UINT16 actor_move_dest_x = 0;
+// UINT16 actor_move_dest_y = 0;
 BYTE actor_move_dir_x = 0;
 BYTE actor_move_dir_y = 0;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
-UBYTE wait_time = 0;
+// UBYTE wait_time = 0;
 UBYTE emote_sprite = 0;
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
@@ -143,7 +143,7 @@ const SCRIPT_CMD script_cmds[] = {
 
 void ScriptTimerUpdate_b() {
   // Don't update timer while script is running
-  if (current_script_ctx->script_ptr != 0) {
+  if (script_ptr != 0) {
     return;
   }
 
@@ -299,8 +299,8 @@ void Script_Noop_b() {}
  * Stop current script from running and reset script pointer.
  */
 void Script_End_b() {
-  current_script_ctx->script_ptr_bank = 0;
-  current_script_ctx->script_ptr = 0;
+  script_ptr_bank = 0;
+  script_ptr = 0;
 }
 
 /*
@@ -313,7 +313,7 @@ void Script_End_b() {
  */
 void Script_Text_b() {
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitUIClosed;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -325,7 +325,7 @@ void Script_Text_b() {
  *   arg1: Low 8 bits for new pointer
  */
 void Script_Goto_b() {
-  current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
 }
 
 /*
@@ -341,7 +341,7 @@ void Script_Goto_b() {
 void Script_IfFlag_b() {
   if (script_variables[(script_cmd_args[0] * 256) +
                        script_cmd_args[1]]) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
 }
 
@@ -387,7 +387,7 @@ void Script_IfValue_b() {
   }
 
   if (match) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
+    script_ptr = script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
   }
 }
 
@@ -470,7 +470,7 @@ void Script_CameraMoveTo_b() {
   }
 
   after_lock_camera = FALSE;
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveCamera;
+  script_update_fn = ScriptUpdate_MoveCamera;
 }
 
 /*
@@ -499,7 +499,7 @@ void Script_CameraLock_b() {
   }
 
   after_lock_camera = TRUE;
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveCamera;
+  script_update_fn = ScriptUpdate_MoveCamera;
 }
 
 /*
@@ -511,7 +511,7 @@ void Script_CameraLock_b() {
  */
 void Script_Wait_b() {
   wait_time = script_cmd_args[0];
-  current_script_ctx->script_update_fn = ScriptUpdate_Wait;
+  script_update_fn = ScriptUpdate_Wait;
 }
 
 /*
@@ -524,7 +524,7 @@ void Script_Wait_b() {
 void Script_FadeOut_b() {
   FadeOut();
   FadeSetSpeed(script_cmd_args[0]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+  script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -537,7 +537,7 @@ void Script_FadeOut_b() {
 void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+  script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -565,7 +565,7 @@ void Script_LoadScene_b() {
   SetState(scene_next_index);
   FadeSetSpeed(script_cmd_args[5]);
 
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+  script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -594,7 +594,7 @@ void Script_ActorMoveTo_b() {
   actor_move_dest_x = (script_cmd_args[0] * 8);
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = (script_cmd_args[1] * 8);
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveActor;
+  script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
@@ -645,7 +645,7 @@ void Script_ActorSetEmote_b() {
   unsigned char *emote_ptr;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
-  current_script_ctx->script_update_fn = ScriptUpdate_Emote;
+  script_update_fn = ScriptUpdate_Emote;
   emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
                       emote_ptr + ((UWORD)script_cmd_args[0] * 64));
@@ -664,7 +664,7 @@ void Script_ActorSetEmote_b() {
  */
 void Script_CameraShake_b() {
   shake_time = script_cmd_args[0];
-  current_script_ctx->script_update_fn = ScriptUpdate_CamShake;
+  script_update_fn = ScriptUpdate_CamShake;
 }
 
 /*
@@ -698,7 +698,7 @@ void Script_OverlaySetPos_b() { UISetPos(script_cmd_args[0] << 3, script_cmd_arg
  */
 void Script_OverlayMoveTo_b() {
   UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3, script_cmd_args[2]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitUIAtDest;
+  script_update_fn = ScriptUpdate_AwaitUIAtDest;
 }
 
 /*
@@ -708,7 +708,7 @@ void Script_OverlayMoveTo_b() {
  */
 void Script_AwaitInput_b() {
   await_input = script_cmd_args[0];
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitInputPres;
+  script_update_fn = ScriptUpdate_AwaitInputPres;
 }
 
 /*
@@ -742,7 +742,7 @@ void Script_ResetVariables_b() {
  * ----------------------------
  * Wait until next frame
  */
-void Script_NextFrame_b() { current_script_ctx->script_await_next_frame = TRUE; }
+void Script_NextFrame_b() { script_await_next_frame = TRUE; }
 
 /*
  * Command: IncFlag
@@ -792,7 +792,7 @@ void Script_IfInput_b() {
   mask = 0;
   mask = script_cmd_args[0];
   if ((joy & mask) != 0) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -804,7 +804,7 @@ void Script_IfInput_b() {
 void Script_Choice_b() {
   UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
                (script_cmd_args[3] * 256) + script_cmd_args[4]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitUIClosed;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -816,7 +816,7 @@ void Script_TextMenu_b() {
   UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
              (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5],
              script_cmd_args[6]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitUIClosed;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -958,7 +958,7 @@ void Script_ActorPush_b() {
   actor_move_dir_x = actors[0].dir.x;
   actor_move_dir_y = actors[0].dir.y;
 
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveActor;
+  script_update_fn = ScriptUpdate_MoveActor;
 
   LOG("DEST_X =%u\n", dest_x);
   LOG("DEST_Y =%u\n", dest_y);
@@ -981,7 +981,7 @@ void Script_IfActorPos_b() {
   tile_y = actors[script_actor].pos.y >> 3;
   if ((script_cmd_args[0] == tile_x) &&
       (script_cmd_args[1] == tile_y)) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
 }
 
@@ -1069,7 +1069,7 @@ void Script_LoadData_b() {
     SetState(scene_next_index);
     FadeSetSpeed(2);
 
-    current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+    script_update_fn = ScriptUpdate_AwaitFade;
   }
 
   DISABLE_RAM;
@@ -1109,7 +1109,7 @@ void Script_IfSavedData_b() {
 #endif
 
   if (jump) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+    script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
   }
 }
 
@@ -1129,7 +1129,7 @@ void Script_IfActorDirection_b() {
       (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
        actors[script_actor].dir.y == -1 &&
            script_cmd_args[0] == 8)) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -1159,8 +1159,8 @@ void Script_SetFlagRandomValue_b() {
  * Store Actor position in variables
  */
 void Script_ActorGetPos_b() {
-  script_variables[current_script_ctx->script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
-  script_variables[current_script_ctx->script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
+  script_variables[script_ptr_x] = actors[script_actor].pos.x - 8 >> 3;
+  script_variables[script_ptr_y] = actors[script_actor].pos.y - 8 >> 3;
 }
 
 /*
@@ -1170,9 +1170,9 @@ void Script_ActorGetPos_b() {
  */
 void Script_ActorSetPosToVal_b() {
   actors[script_actor].pos.x = 0;  // @wtf-but-needed
-  actors[script_actor].pos.x = script_variables[current_script_ctx->script_ptr_x] * 8;
+  actors[script_actor].pos.x = script_variables[script_ptr_x] * 8;
   actors[script_actor].pos.y = 0;  // @wtf-but-needed
-  actors[script_actor].pos.y = script_variables[current_script_ctx->script_ptr_y] * 8;
+  actors[script_actor].pos.y = script_variables[script_ptr_y] * 8;
 }
 
 /*
@@ -1184,10 +1184,10 @@ void Script_ActorMoveToVal_b() {
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = script_variables[current_script_ctx->script_ptr_x] * 8;
+  actor_move_dest_x = script_variables[script_ptr_x] * 8;
   actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = script_variables[current_script_ctx->script_ptr_y] * 8;
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveActor;
+  actor_move_dest_y = script_variables[script_ptr_y] * 8;
+  script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
@@ -1241,7 +1241,7 @@ void Script_ActorMoveRel_b() {
     }
   }
 
-  current_script_ctx->script_update_fn = ScriptUpdate_MoveActor;
+  script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
@@ -1356,9 +1356,9 @@ void Script_MathMod_b() {
  * Add value from flag to flag
  */
 void Script_MathAddVal_b() {
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = a + b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a + b;
 }
 
 /*
@@ -1367,9 +1367,9 @@ void Script_MathAddVal_b() {
  * Subtract value from flag to flag
  */
 void Script_MathSubVal_b() {
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = a - b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a - b;
 }
 
 /*
@@ -1378,9 +1378,9 @@ void Script_MathSubVal_b() {
  * Multiply value from flag to flag
  */
 void Script_MathMulVal_b() {
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = a * b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a * b;
 }
 
 /*
@@ -1389,9 +1389,9 @@ void Script_MathMulVal_b() {
  * Divide value from flag to flag
  */
 void Script_MathDivVal_b() {
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = a / b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a / b;
 }
 
 /*
@@ -1400,9 +1400,9 @@ void Script_MathDivVal_b() {
  * Modulo value from flag to flag
  */
 void Script_MathModVal_b() {
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = a % b;
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = a % b;
 }
 
 /*
@@ -1411,8 +1411,8 @@ void Script_MathModVal_b() {
  * Copy value from flag to flag
  */
 void Script_CopyVal_b() {
-  UBYTE value = script_variables[current_script_ctx->script_ptr_y];
-  script_variables[current_script_ctx->script_ptr_x] = value;
+  UBYTE value = script_variables[script_ptr_y];
+  script_variables[script_ptr_x] = value;
 }
 
 /*
@@ -1427,8 +1427,8 @@ void Script_CopyVal_b() {
  */
 void Script_IfValueCompare_b() {
   UBYTE match;
-  UBYTE a = script_variables[current_script_ctx->script_ptr_x];
-  UBYTE b = script_variables[current_script_ctx->script_ptr_y];
+  UBYTE a = script_variables[script_ptr_x];
+  UBYTE b = script_variables[script_ptr_y];
 
   switch (script_cmd_args[0]) {
     case OPERATOR_EQ:
@@ -1454,7 +1454,7 @@ void Script_IfValueCompare_b() {
   }
 
   if (match) {  // True path, jump to position specified by ptr
-    current_script_ctx->script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -1469,8 +1469,8 @@ void Script_IfValueCompare_b() {
  *   arg3: Low 8 bits for second pointer
  */
 void Script_LoadVectors_b() {
-  current_script_ctx->script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  current_script_ctx->script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
 }
 
 /*
@@ -1522,8 +1522,8 @@ void Script_ActorInvoke_b() {
  * Store script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPush_b() {
-  script_bank_stack[script_stack_ptr] = current_script_ctx->script_ptr_bank;
-  script_stack[script_stack_ptr] = current_script_ctx->script_ptr;
+  script_bank_stack[script_stack_ptr] = script_ptr_bank;
+  script_stack[script_stack_ptr] = script_ptr;
   script_start_stack[script_stack_ptr] = script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
   script_stack_ptr++;
@@ -1537,8 +1537,8 @@ void Script_StackPush_b() {
  */
 void Script_StackPop_b() {
   script_stack_ptr--;
-  current_script_ctx->script_ptr_bank = script_bank_stack[script_stack_ptr];
-  current_script_ctx->script_ptr = script_stack[script_stack_ptr];
+  script_ptr_bank = script_bank_stack[script_stack_ptr];
+  script_ptr = script_stack[script_stack_ptr];
   script_start_ptr = script_start_stack[script_stack_ptr];
 }
 
@@ -1584,7 +1584,7 @@ void Script_ScenePopState_b() {
 
     SetState(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
-    current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+    script_update_fn = ScriptUpdate_AwaitFade;
 
     return;
   }
@@ -1619,7 +1619,7 @@ void Script_ScenePopAllState_b() {
 
     SetState(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
-    current_script_ctx->script_update_fn = ScriptUpdate_AwaitFade;
+    script_update_fn = ScriptUpdate_AwaitFade;
 
     return;
   }
@@ -1873,5 +1873,5 @@ void Script_RemoveTimerScript_b() { timer_script_duration = 0; }
 void Script_TextWithAvatar_b() {
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
-  current_script_ctx->script_update_fn = ScriptUpdate_AwaitUIClosed;
+  script_update_fn = ScriptUpdate_AwaitUIClosed;
 }

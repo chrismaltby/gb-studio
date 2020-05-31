@@ -157,6 +157,7 @@ int core_start() {
   LoadUI();
   UIInit();
   FadeInit();
+  ScriptRunnerInit();
 
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(game_loop, 60, 1);
@@ -208,8 +209,19 @@ void game_loop() {
       script_complete = FALSE;
     }
 
-    ScriptTimerUpdate();
-    ScriptRunnerUpdate();
+    // ScriptTimerUpdate();
+    ScriptRestoreCtx(0);
+    ScriptRestoreCtx(1);
+    ScriptRestoreCtx(2);
+    ScriptRestoreCtx(3);
+    ScriptRestoreCtx(4);
+    ScriptRestoreCtx(5);
+    ScriptRestoreCtx(6);
+    ScriptRestoreCtx(7);
+    ScriptRestoreCtx(8);
+    ScriptRestoreCtx(9);
+    ScriptRestoreCtx(10);
+    ScriptRestoreCtx(11);        
     MoveActors();
 
     game_time++;
@@ -274,7 +286,7 @@ void game_loop() {
       DISPLAY_ON;
       FadeIn();
 
-      ScriptRunnerUpdate();
+      ScriptRestoreCtx(0);
       MoveActors();
       UpdateCamera();
       RefreshScroll();

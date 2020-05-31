@@ -8,7 +8,8 @@
 
 #define SCRIPT_RUNNER_BANK 4
 #define MAX_SCENE_STATES 8
-#define MAX_SCRIPT_CONTEXTS 40
+#define MAX_BG_SCRIPT_CONTEXTS 11
+#define MAX_SCRIPT_CONTEXTS 12
 
 typedef void (*SCRIPT_CMD_FN)();
 typedef UBYTE (*SCRIPT_UPDATE_FN)();
@@ -39,20 +40,25 @@ typedef struct {
 } ScriptContext;
 
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
-extern ScriptContext *current_script_ctx;
-extern ScriptContext *main_script_ctx;
+extern UBYTE current_script_ctx;
+extern UINT8 script_ctx_pool[];
 
-// extern UBYTE script_ptr_bank;
+// extern ScriptContext *main_script_ctx;
+
+extern UBYTE script_ptr_bank;
 extern UBYTE *script_start_ptr;
 extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
 extern const SCRIPT_CMD script_cmds[];
-// extern UBYTE *script_ptr;
+extern UBYTE *script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
-// extern UBYTE script_await_next_frame;
+extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
 extern UBYTE script_complete;
+extern UINT16 actor_move_dest_x;
+extern UINT16 actor_move_dest_y;
+extern UBYTE wait_time;
 
 extern SCRIPT_UPDATE_FN script_update_fn;
 
@@ -68,9 +74,15 @@ extern UBYTE timer_script_duration;
 extern UBYTE timer_script_time;
 extern BankPtr timer_script_ptr;
 
+void ScriptRunnerInit();
 void ScriptStart(BankPtr *events_ptr);
+void ScriptStartBg(BankPtr *events_ptr);
 void ScriptRunnerUpdate();
 void ScriptTimerUpdate();
+void ScriptRestoreCtx(UBYTE i);
+void ScriptSaveCtx();
+UINT8 ScriptCtxPoolNext();
+void ScriptCtxPoolReturn(UINT8 ctx);
 
 // Banked functions - don't call directly
 void Script_Noop_b();
