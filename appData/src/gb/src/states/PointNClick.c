@@ -34,42 +34,6 @@ void Update_PointNClick() {
   tile_x = player.pos.x >> 3;
   tile_y = player.pos.y >> 3;
 
-  // Cleanup after script complete -------------------------------
-
-  if (script_complete) {
-    ActorsUnstick();
-  }
-
-  // NPC Logic ---------------------------------------------------
-
-  for (i = 1; i < actors_active_size; i++) {
-    a = actors_active[i];
-    if (actors[a].movement_type == AI_RANDOM_WALK) {
-      if (ActorOnTile(a)) {
-        if (IS_FRAME_128) {
-          rnd = rand();
-          if (rnd & 0x1u) {
-            rnd = rand();
-            ActorSetMovement(a, 1 - ((rnd & 0x1u) * 2), 0);
-          } else {
-            rnd = rand();
-            ActorSetMovement(a, 0, 1 - ((rnd & 0x1u) * 2));
-          }
-        } else {
-          ActorStopMovement(a);
-        }
-      }
-    } else if (actors[a].movement_type == AI_RANDOM_FACE) {
-      if (IS_FRAME_128) {
-        rnd = rand();
-        actors[a].dir.x = 1 - ((rnd & 0x1u) * 2);
-        rnd = rand();
-        actors[a].dir.y = 1 - ((rnd & 0x1u) * 2);
-        actors[a].rerender = TRUE;
-      }
-    }
-  }
-
   // Player Logic ------------------------------------------------
 
   player.moving = FALSE;
