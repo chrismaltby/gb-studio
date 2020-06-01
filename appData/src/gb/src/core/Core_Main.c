@@ -11,14 +11,14 @@
 #include "Input.h"
 #include "MusicManager.h"
 #include "Palette.h"
-#include "states/Platform.h"
 #include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
-#include "states/TopDown.h"
 #include "UI.h"
 #include "gbt_player.h"
 #include "main.h"
+#include "states/Platform.h"
+#include "states/TopDown.h"
 
 #ifdef __EMSCRIPTEN__
 void game_loop();
@@ -196,7 +196,7 @@ void game_loop() {
     HandleInputScripts();
     FadeUpdate();
 
-    if (!script_ctxs[0].script_ptr_bank) {
+    if (!script_ctxs[0].script_ptr_bank && !(text_drawn && text_count != 0) && !menu_enabled) {
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
@@ -210,7 +210,10 @@ void game_loop() {
     }
 
     // ScriptTimerUpdate();
+
     ScriptRestoreCtx(0);
+
+    // if (!(text_drawn && text_count != 0) && !menu_enabled) {
     ScriptRestoreCtx(1);
     ScriptRestoreCtx(2);
     ScriptRestoreCtx(3);
@@ -221,8 +224,9 @@ void game_loop() {
     ScriptRestoreCtx(8);
     ScriptRestoreCtx(9);
     ScriptRestoreCtx(10);
-    ScriptRestoreCtx(11);        
+    ScriptRestoreCtx(11);
     MoveActors();
+    // }
 
     game_time++;
 

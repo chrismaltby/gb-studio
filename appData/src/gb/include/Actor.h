@@ -169,4 +169,6 @@ void ActorsUnstick();
 
 void InitPlayer();
 
+void ActorRunScript(UBYTE i);
+
 #endif

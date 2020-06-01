@@ -15,6 +15,7 @@ DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
 
 UBYTE script_await_next_frame;
 UBYTE script_actor;
+UBYTE script_main_ctx_actor;
 UBYTE script_ptr_bank = 0;
 UBYTE *script_ptr = 0;
 UWORD script_ptr_x = 0;
@@ -49,6 +50,7 @@ void ScriptRunnerInit() {
 void ScriptStart(BankPtr *events_ptr) {
   SeedRand();
 
+  PlayerStopMovement();
 
   
 
@@ -152,10 +154,11 @@ void ScriptRunnerUpdate() {
     script_ptr_bank = 0;
     script_ptr = 0;
     script_actor = 0;
-    script_complete = TRUE;
     ScriptSaveCtx();
     if(current_script_ctx != 0) {
       ScriptCtxPoolReturn(current_script_ctx, script_ctxs[current_script_ctx].owner);
+    } else {
+      script_main_ctx_actor = 0;
     }
     return;
   }
@@ -220,10 +223,10 @@ void ScriptSaveCtx() {
 }
 
 void ScriptRestoreCtx(UBYTE i) {
-  if (!script_ctxs[i].script_ptr_bank) {
+  if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[i].owner == script_main_ctx_actor)) {
     return;
   }
-  LOG("- UPDATE CTX=%u\n", i);
+  LOG("- UPDATE CTX=%u script_ctxs[i].owner=%u script_main_ctx_actor=%u\n", i, script_ctxs[i].owner, script_main_ctx_actor);
 
   ctx_cmd_remaining = 2;
   current_script_ctx = i;

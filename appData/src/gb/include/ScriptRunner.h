@@ -56,6 +56,7 @@ extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
 extern UBYTE script_await_next_frame;
 extern UBYTE script_actor;
+extern UBYTE script_main_ctx_actor;
 extern UBYTE script_complete;
 extern UINT16 actor_move_dest_x;
 extern UINT16 actor_move_dest_y;

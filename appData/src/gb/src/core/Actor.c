@@ -5,6 +5,7 @@
 #include "GameTime.h"
 #include "Scroll.h"
 #include "Sprite.h"
+#include "ScriptRunner.h"
 
 void UpdateActors_b();
 void MoveActors_b();
@@ -213,4 +214,10 @@ void InitPlayer() {
   PUSH_BANK(ACTOR_BANK);
   InitPlayer_b();
   POP_BANK;
+}
+
+void ActorRunScript(UBYTE i) {
+  script_main_ctx_actor = i;
+  actors[i].moving = FALSE;
+  ScriptStart(&actors[i].events_ptr);
 }

@@ -81,7 +81,12 @@ void Update_PointNClick() {
 
     if (hover_actor) {
       // Run actor's interact script
+      script_main_ctx_actor = hit_actor;
+      actors[hit_actor].moving = FALSE;      
       ScriptStart(&actors[hit_actor].events_ptr);
+
+      // ActorRunScript(hit_actor);
+
     } else if (hover_trigger) {
       // Run trigger script
       ScriptStart(&triggers[hit_trigger].events_ptr);

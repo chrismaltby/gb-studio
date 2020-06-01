@@ -108,6 +108,8 @@ void Update_TopDown() {
         PlayerStopMovement();
 
         // Run actors interact script
+        script_main_ctx_actor = hit_actor;
+        actors[hit_actor].moving = FALSE;
         ScriptStart(&actors[hit_actor].events_ptr);
       }
     }
