@@ -873,13 +873,14 @@ class ScriptBuilder {
 
   // Sound
 
-  soundStartTone = (period = 1600) => {
+  soundStartTone = (period = 1600, toneFrames = 30) => {
     const output = this.output;
 
     // start playing tone
     output.push(cmd(SOUND_START_TONE));
     output.push(hi(period));
     output.push(lo(period));
+    output.push(lo(toneFrames));
   };
 
   soundStopTone = () => {

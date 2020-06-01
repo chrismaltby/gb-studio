@@ -46,6 +46,12 @@ const fields = [
     max: 4.25,
     step: 0.01,
     defaultValue: 0.5
+  },
+  {
+    key: "wait",
+    type: "checkbox",
+    label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
+    defaultValue: false
   }
 ];
 
@@ -53,10 +59,11 @@ const compile = (input, helpers) => {
   const {
     soundPlayBeep,
     soundStartTone,
-    soundStopTone,
     soundPlayCrash,
     wait
   } = helpers;
+
+  let seconds = typeof input.duration === "number" ? input.duration : 0.5;
 
   if (input.type === "beep" || !input.type) {
     const pitch = typeof input.pitch === "number" ? input.pitch : 4;
@@ -70,22 +77,21 @@ const compile = (input, helpers) => {
     if (period < 0) {
       period = 0;
     }
-    soundStartTone(period);
+    const toneFrames = Math.min(255, Math.ceil(seconds * 60));
+    soundStartTone(period, toneFrames);
   } else if (input.type === "crash") {
     soundPlayCrash();
   }
 
   // Convert seconds into frames (60fps)
-  let seconds = typeof input.duration === "number" ? input.duration : 0.5;
-  while (seconds > 0) {
-    const time = Math.min(seconds, 1);
-    wait(Math.ceil(60 * time));
-    seconds -= time;
+  if(input.wait) {
+    while (seconds > 0) {
+      const time = Math.min(seconds, 1);
+      wait(Math.ceil(60 * time));
+      seconds -= time;
+    }
   }
 
-  if (input.type === "tone") {
-    soundStopTone();
-  }
 };
 
 module.exports = {
