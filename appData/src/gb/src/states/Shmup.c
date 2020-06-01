@@ -14,6 +14,10 @@
 #include "DataManager.h"
 #include "rand.h"
 
+#define SHOOTER_HURT_IFRAMES 6
+
+UBYTE shooter_iframes = 0;
+
 void Reset_Shmup();
 
 void Start_Shmup() {
@@ -21,6 +25,7 @@ void Start_Shmup() {
   camera_target = &player.pos;
   camera_offset.x = -64;
   camera_offset.y = 0;
+  shooter_iframes = 0;
 }
 
 void Update_Shmup() {
@@ -118,13 +123,22 @@ void Update_Shmup() {
 
   // Enemy Collisions
   hit_actor = ActorAt1x2Tile(tile_x + 1, tile_y, FALSE);
-  if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
-    Reset_Shmup();
+  if (hit_actor && hit_actor != NO_ACTOR_COLLISON && shooter_iframes == 0) {
+    shooter_iframes = SHOOTER_HURT_IFRAMES;
+    // ActorRunScript(hit_actor);
+    ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
   }
 
   // World Collisions
   if (TileAt(tile_x + 1, tile_y)) {
     Reset_Shmup();
+  }
+
+  if (shooter_iframes != 0 && IS_FRAME_8) {
+    player.enabled = shooter_iframes & 0x1;
+    shooter_iframes--;
+  } else {
+    player.enabled = TRUE;
   }
 }
 
