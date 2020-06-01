@@ -28,13 +28,11 @@ void Start_PointNClick() {
 }
 
 void Update_PointNClick() {
-  UBYTE tile_x, tile_y, hit_actor, hit_trigger, hover_actor, hover_trigger, a, i, rnd;
+  UBYTE tile_x, tile_y, hit_actor, hit_trigger, hover_actor, hover_trigger;
   WORD dir_x, dir_y;
 
   tile_x = player.pos.x >> 3;
   tile_y = player.pos.y >> 3;
-
-  // Player Logic ------------------------------------------------
 
   player.moving = FALSE;
 
@@ -42,7 +40,6 @@ void Update_PointNClick() {
   dir_y = 0;
 
   // Move
-  //   player.dir.x = 0;
   if (INPUT_LEFT) {
     dir_x = -1;
   } else if (INPUT_RIGHT) {
@@ -81,15 +78,10 @@ void Update_PointNClick() {
 
     if (hover_actor) {
       // Run actor's interact script
-      script_main_ctx_actor = hit_actor;
-      actors[hit_actor].moving = FALSE;      
-      ScriptStart(&actors[hit_actor].events_ptr);
-
-      // ActorRunScript(hit_actor);
-
+      ActorRunScript(hit_actor);
     } else if (hover_trigger) {
       // Run trigger script
-      ScriptStart(&triggers[hit_trigger].events_ptr);
+      TriggerRunScript(hit_trigger);
     }
   }
 }

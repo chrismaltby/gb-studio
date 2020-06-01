@@ -25,5 +25,6 @@ extern UBYTE triggers_active_size;
 extern UBYTE triggers_len;
 
 UBYTE TriggerAtTile(UBYTE tx_a, UBYTE ty_a);
+void TriggerRunScript(UBYTE i);
 
 #endif

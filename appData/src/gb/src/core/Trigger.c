@@ -1,5 +1,7 @@
 #include "Trigger.h"
 
+#include "ScriptRunner.h"
+
 Trigger triggers[MAX_TRIGGERS];
 UBYTE triggers_active[MAX_ACTIVE_TRIGGERS];
 UBYTE triggers_active_size;
@@ -26,4 +28,8 @@ UBYTE TriggerAtTile(UBYTE tx_a, UBYTE ty_a) {
   }
 
   return MAX_TRIGGERS;
+}
+
+void TriggerRunScript(UBYTE i) {
+  ScriptStart(&triggers[i].events_ptr);
 }
