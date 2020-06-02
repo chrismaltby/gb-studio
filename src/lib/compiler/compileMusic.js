@@ -9,6 +9,8 @@ const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
 };
 
+const trackBuildCache = {};
+
 const compileMusic = async ({
   music = [],
   musicBanks = [],
@@ -32,30 +34,41 @@ const compileMusic = async ({
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
 
-    // Compile track using mod2gbt
-    await compileTrack(track, {
-      buildRoot,
-      buildToolsPath,
-      projectRoot,
-      progress,
-      warnings,
-    });
+    const trackModifiedTime = await getTrackModifiedTime(track, { projectRoot });
 
-    // Read track's compiled C data
-    const musicTrackTemp = await fs.readFile(
-      `${buildRoot}/src/music/${track.dataName}.c`,
-      "utf8"
-    );
+    let musicData;
+    if(trackBuildCache[track.id] && trackBuildCache[track.id].timestamp >= trackModifiedTime) {
+      musicData = trackBuildCache[track.id].data;
+    } else {
+      // Compile track using mod2gbt
+      await compileTrack(track, {
+        buildRoot,
+        buildToolsPath,
+        projectRoot,
+        progress,
+        warnings,
+      });
 
-    // Parse C data into raw pattern and order data
-    const musicData = {
-      name: track.dataName,
-      ...parseMusicFile(musicTrackTemp),
-    };
+      // Read track's compiled C data
+      let musicTrackTemp = await fs.readFile(
+        `${buildRoot}/src/music/${track.dataName}.c`,
+        "utf8"
+      );
 
-    // Delete mod2gbt compile track, no longer needed
-    await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
-  
+      // Parse C data into raw pattern and order data
+      musicData = {
+        name: track.dataName,
+        ...parseMusicFile(musicTrackTemp),
+      };
+
+      trackBuildCache[track.id] = {
+        data: musicData,
+        timestamp: trackModifiedTime
+      }
+
+      // Delete mod2gbt compile track, no longer needed
+      await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
+    }
 
     progress(`${track.dataName} approx size in bytes: ${musicData.size}`);
 
@@ -102,7 +115,7 @@ const compileMusic = async ({
       const track = musicBank.tracks[t];
 
       // Calculate memory offsets in bank for each pattern
-      const trackPatternOffsets = [];
+      let trackPatternOffsets = [];
       for (let p = 0; p < track.patterns.length; p++) {
         trackPatternOffsets[p] = maxOffset;
         maxOffset += track.patterns[p].length;
@@ -137,6 +150,7 @@ const compileMusic = async ({
       fileData,
       "utf8"
     );
+
   }
 
   // Modify data_ptrs for new music banks
@@ -205,6 +219,13 @@ const parseMusicFile = (string) => {
     size: patternsSize + (order.length + 1) * 2,
   };
 };
+
+const getTrackModifiedTime = async (track, {
+    projectRoot,
+}) => {
+  const modPath = assetFilename(projectRoot, "music", track, true);
+  return (await fs.stat(modPath)).mtimeMs;
+}
 
 const compileTrack = async (
   track,
