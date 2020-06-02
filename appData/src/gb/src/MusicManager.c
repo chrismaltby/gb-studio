@@ -18,9 +18,10 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank)
     music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
     PUSH_BANK(return_bank);
+    PUSH_BANK(DATA_PTRS_BANK);
     gbt_play(music_tracks[index], music_bank, 7);
     gbt_loop(loop);
-
+    POP_BANK;
     POP_BANK;
   }
 }
