@@ -227,8 +227,11 @@ void ScriptRestoreCtx(UBYTE i) {
     return;
   }
   LOG("- UPDATE CTX=%u script_ctxs[i].owner=%u script_main_ctx_actor=%u\n", i, script_ctxs[i].owner, script_main_ctx_actor);
-
-  ctx_cmd_remaining = 2;
+  if(i == 0) {
+    ctx_cmd_remaining = 255;
+  } else {
+    ctx_cmd_remaining = 2;
+  }
   current_script_ctx = i;
   actor_move_dest_x = script_ctxs[i].actor_move_dest_x;
   actor_move_dest_y = script_ctxs[i].actor_move_dest_y;
