@@ -392,6 +392,7 @@
   "ERROR_OPEN_GBSPROJ_FILE": "Por favor, seleccionar tipos de ficheiro .gbsproj ou .json",
   "ERROR_MISSING_PROJECT": "Ficheiro de Projecto inexistente",
   "ERROR_MOVED_OR_DELETED": "O directório poderá ter sido alterado ou apagado",
+  "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "Escolha outro directório para gravar",
 
   "// 13": "Início -------------------------------------------------------",
 
