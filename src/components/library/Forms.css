@@ -39,6 +39,7 @@ textarea {
   padding: 10px;
   padding-bottom: 0;
   width: 100%;
+  vertical-align: top;
 }
 
 .FormField--HalfWidth {
