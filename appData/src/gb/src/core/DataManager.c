@@ -233,6 +233,7 @@ void LoadScene(UINT16 index) {
     actors[i].frames_len = *(data_ptr++);
     actors[i].animate = *(data_ptr++);
     actors[i].frame = actors[i].animate >> 1;
+    actors[i].animate = actors[i].animate & 0x1;
     actors[i].pos.x = *(data_ptr++) * 8;
     actors[i].pos.y = *(data_ptr++) * 8;
     actors[i].start_pos.x = actors[i].pos.x;
