@@ -72,20 +72,6 @@ void Update_Platform() {
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
-  // Move NPCs
-  for (i = 1; i < actors_active_size; i++)
-  {
-      a = actors_active[i];
-      switch (actors[a].movement_type)
-      {
-          case 0:
-              actors[a].pos.x -= actors[a].move_speed;
-              break;
-          case 1:
-              actors[a].pos.y--;
-      }
-  }
-
   // Update scene pos from player pos
   pos_x = ((player.pos.x + 4u) << 4) + (pos_x & 0xF);
   pos_y = ((player.pos.y) << 4) + (pos_y & 0xF);

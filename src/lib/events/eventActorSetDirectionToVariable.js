@@ -67,7 +67,7 @@ function changeDirection(direction, input, helpers) {
 
   actorSetDirection(direction);
 
-  if (actor && actor.movementType === "static") {
+  if (actor && actor.spriteType === "static") {
     const spriteSheet = getSprite(actor.spriteSheetId, sprites);
     const numFrames = spriteSheet ? spriteSheet.numFrames : 0;
     const isActorSheet = numFrames === 3 || numFrames === 6;

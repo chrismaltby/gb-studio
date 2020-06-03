@@ -21,8 +21,7 @@ class CustomEventActorSelect extends Component {
     const { playerSpriteSheetId } = this.props;
     return {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
+      spriteSheetId: playerSpriteSheetId
     };
   };
 
@@ -85,8 +84,7 @@ class CustomEventActorSelect extends Component {
 
     const defaultValue = {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
+      spriteSheetId: playerSpriteSheetId
     };
     const current = actors.find(a => a.id === value) || defaultValue;
     const currentIndex = allCustomEventActors.indexOf(current);

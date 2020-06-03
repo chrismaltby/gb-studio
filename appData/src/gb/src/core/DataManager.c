@@ -242,7 +242,6 @@ void LoadScene(UINT16 index) {
     actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
     actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
 
-    actors[i].movement_type = *(data_ptr++);
     actors[i].move_speed = *(data_ptr++);
     actors[i].anim_speed = *(data_ptr++);
     actors[i].pinned = *(data_ptr++);

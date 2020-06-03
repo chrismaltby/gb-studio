@@ -217,6 +217,7 @@
   "FIELD_GLOBAL_DEFAULT": "Global Default",
   "FIELD_EDIT_PALETTES": "Edit Palettes",
   "FIELD_WAIT_UNTIL_FINISHED": "Wait until finished",
+  "FIELD_ACTOR_TYPE": "Sprite Type",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

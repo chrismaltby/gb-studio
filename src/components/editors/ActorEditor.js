@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import MovementTypeSelect from "../forms/MovementTypeSelect";
+import SpriteTypeSelect from "../forms/SpriteTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
@@ -21,6 +21,7 @@ import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../reducers/entitiesReducer";
+import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, SPRITE_TYPE_ACTOR_ANIMATED, SPRITE_TYPE_ANIMATED } from "../../consts";
 
 class ActorEditor extends Component {
   constructor() {
@@ -113,26 +114,26 @@ class ActorEditor extends Component {
 
     const showDirectionInput =
       spriteSheet &&
-      spriteSheet.type !== "static" &&
-      spriteSheet.type !== "animated" &&
-      actor.movementType !== "static";
+      spriteSheet.type !== SPRITE_TYPE_STATIC &&
+      spriteSheet.type !== SPRITE_TYPE_ANIMATED &&
+      actor.spriteType !== SPRITE_TYPE_STATIC;
 
     const showFrameInput =
       spriteSheet &&
       spriteSheet.numFrames > 1 &&
-      actor.movementType === "static";
+      actor.spriteType === SPRITE_TYPE_STATIC;
 
     const showAnimatedCheckbox =
       spriteSheet &&
       spriteSheet.numFrames > 1 &&
-      (actor.movementType === "static" || spriteSheet.type !== "actor");
+      (actor.spriteType === SPRITE_TYPE_STATIC || spriteSheet.type !== SPRITE_TYPE_ACTOR);
 
     const showAnimSpeed =
       spriteSheet &&
-      ((spriteSheet.type === "actor_animated" &&
-        actor.movementType !== "static") ||
+      ((spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED &&
+        actor.spriteType !== SPRITE_TYPE_STATIC) ||
         (actor.animate &&
-          (actor.movementType === "static" || spriteSheet.type !== "actor")));
+          (actor.spriteType === SPRITE_TYPE_STATIC || spriteSheet.type !== SPRITE_TYPE_ACTOR)));
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -215,7 +216,7 @@ class ActorEditor extends Component {
                   frame={
                     spriteSheet &&
                     spriteSheet.numFrames > 1 &&
-                    actor.movementType === "static"
+                    actor.spriteType === SPRITE_TYPE_STATIC
                       ? actor.frame
                       : 0
                   }
@@ -242,25 +243,10 @@ class ActorEditor extends Component {
               </ToggleableFormField>
             )}
 
-            {spriteSheet &&
-              spriteSheet.type !== "static" &&
-              spriteSheet.type !== "animated" && (
-                <FormField halfWidth>
-                  <label htmlFor="actorMovement">
-                    {l10n("FIELD_MOVEMENT_TYPE")}
-                    <MovementTypeSelect
-                      id="actorMovement"
-                      value={actor.movementType}
-                      onChange={this.onEdit("movementType")}
-                    />
-                  </label>
-                </FormField>
-              )}
-
             {showDirectionInput && (
               <FormField halfWidth>
                 <label htmlFor="actorDirection">
-                  {l10n("FIELD_DIRECTION")}
+                  {l10n("FIELD_DIRECTION")}                
                   <DirectionPicker
                     id="actorDirection"
                     value={actor.direction}
@@ -287,6 +273,21 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
+            {spriteSheet &&
+              spriteSheet.type !== "static" &&
+              spriteSheet.type !== "animated" && (
+                <FormField halfWidth>
+                  <label htmlFor="actorMovement">
+                    {l10n("FIELD_ACTOR_TYPE")}
+                    <SpriteTypeSelect
+                      id="actorMovement"
+                      value={actor.spriteType}
+                      onChange={this.onEdit("spriteType")}
+                    />
+                  </label>
+                </FormField>
+              )}
+
             {showAnimatedCheckbox && (
               <FormField>
                 <label htmlFor="actorAnimate">
@@ -298,8 +299,8 @@ class ActorEditor extends Component {
                     onChange={this.onEdit("animate")}
                   />
                   <div className="FormCheckbox" />
-                  {actor.movementType !== "static" &&
-                  spriteSheet.type === "actor_animated"
+                  {actor.spriteType !== SPRITE_TYPE_STATIC &&
+                  spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED
                     ? l10n("FIELD_ANIMATE_WHEN_STATIONARY")
                     : l10n("FIELD_ANIMATE_FRAMES")}
                 </label>

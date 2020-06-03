@@ -17,8 +17,7 @@ class SceneActorSelect extends Component {
     const { playerSpriteSheetId } = this.props;
     return {
       name: "Player",
-      spriteSheetId: playerSpriteSheetId,
-      movementType: "player"
+      spriteSheetId: playerSpriteSheetId
     };
   };
 

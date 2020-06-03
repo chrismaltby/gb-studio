@@ -72,7 +72,6 @@ typedef struct {
   UWORD script_ptr;
   BankPtr events_ptr;
   BankPtr movement_ptr;
-  MOVEMENT_TYPE movement_type;
   UBYTE movement_ctx;
 } Actor;
 

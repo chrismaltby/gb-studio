@@ -1,3 +1,5 @@
+import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR_ANIMATED, SPRITE_TYPE_ACTOR } from "../../consts";
+
 const DIR_LOOKUP = {
   down: 1,
   left: 2,
@@ -36,7 +38,7 @@ const KEY_BITS = {
   start: 0x80,
 };
 
-const inputDec = (input) => {
+export const inputDec = (input) => {
   let output = 0;
   if (Array.isArray(input)) {
     for (let i = 0; i < input.length; i++) {
@@ -55,16 +57,16 @@ const inputDec = (input) => {
   return output;
 };
 
-const nameToCName = (name) => {
+export const nameToCName = (name) => {
   return name
     .toLowerCase()
     .replace(/ /g, "_")
     .replace(/[^A-Za-z0-9_]/g, "");
 };
 
-const dirDec = (dir) => DIR_LOOKUP[dir] || 1;
+export const dirDec = (dir) => DIR_LOOKUP[dir] || 1;
 
-const dirToXDec = (dir) => {
+export const dirToXDec = (dir) => {
   const d = dirDec(dir);
   if (d === 2) {
     // Facing left
@@ -77,7 +79,7 @@ const dirToXDec = (dir) => {
   return 0;
 };
 
-const dirToYDec = (dir) => {
+export const dirToYDec = (dir) => {
   const d = dirDec(dir);
   if (d === 8) {
     // Facing up
@@ -90,19 +92,19 @@ const dirToYDec = (dir) => {
   return 0;
 };
 
-const moveDec = (move) => MOVEMENT_LOOKUP[move] || 1;
+export const moveDec = (move) => MOVEMENT_LOOKUP[move] || 1;
 
-const moveSpeedDec = (moveSpeed) =>
+export const moveSpeedDec = (moveSpeed) =>
   MOVEMENT_SPEED_LOOKUP[moveSpeed] !== undefined
     ? MOVEMENT_SPEED_LOOKUP[moveSpeed]
     : 1;
 
-const animSpeedDec = (animSpeed) => (animSpeed !== undefined ? animSpeed : 3);
+export const animSpeedDec = (animSpeed) => (animSpeed !== undefined ? animSpeed : 3);
 
-const operatorDec = (operator) => OPERATOR_LOOKUP[operator] || 1;
+export const operatorDec = (operator) => OPERATOR_LOOKUP[operator] || 1;
 
-const spriteTypeDec = (movementType, numFrames) => {
-  if (moveDec(movementType) === 1) {
+export const spriteTypeDec = (spriteType, numFrames) => {
+  if (spriteType === SPRITE_TYPE_STATIC) {
     // If movement type is static and cycling frames, always set as static sprite
     return 0;
   }
@@ -116,8 +118,8 @@ const spriteTypeDec = (movementType, numFrames) => {
   return 0;
 };
 
-const actorFramesPerDir = (movementType, numFrames) => {
-  if (moveDec(movementType) === 1) {
+export const actorFramesPerDir = (spriteType, numFrames) => {
+  if (spriteType === SPRITE_TYPE_STATIC) {
     // If movement type is static and cycling frames
     return numFrames;
   }
@@ -131,15 +133,15 @@ const actorFramesPerDir = (movementType, numFrames) => {
   return numFrames;
 };
 
-const combineMultipleChoiceText = (args) => {
+export const combineMultipleChoiceText = (args) => {
   const trueText = args.trueText.slice(0, 17) || "Choice A";
   const falseText = args.falseText.slice(0, 17) || "Choice B";
   return `${trueText}\n${falseText}`;
 };
 
-const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
+export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
 
-const replaceInvalidCustomEventVariables = (variable) => {
+export const replaceInvalidCustomEventVariables = (variable) => {
   const variableIndex = parseInt(String(variable).replace(/^L/, ""), 10);
   if (variableIndex >= 10) {
     return "0";
@@ -147,27 +149,9 @@ const replaceInvalidCustomEventVariables = (variable) => {
   return String(variableIndex);
 };
 
-const replaceInvalidCustomEventActors = (actor) => {
+export const replaceInvalidCustomEventActors = (actor) => {
   if (actor.indexOf("-") > -1 || parseInt(actor, 10) >= 10) {
     return "0";
   }
   return actor;
-};
-
-module.exports = {
-  nameToCName,
-  dirDec,
-  dirToXDec,
-  dirToYDec,
-  inputDec,
-  moveDec,
-  moveSpeedDec,
-  animSpeedDec,
-  operatorDec,
-  spriteTypeDec,
-  actorFramesPerDir,
-  combineMultipleChoiceText,
-  isMBC1,
-  replaceInvalidCustomEventVariables,
-  replaceInvalidCustomEventActors,
 };

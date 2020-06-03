@@ -60,7 +60,7 @@ import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
-import { DMG_PALETTE } from "../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -799,7 +799,7 @@ const addActor = (state, action) => {
   const newActor = Object.assign(
     {
       spriteSheetId,
-      movementType: "static",
+      spriteType: SPRITE_TYPE_STATIC,
       direction: "down",
       moveSpeed: "1",
       animSpeed: "3"
@@ -896,12 +896,12 @@ const editActor = (state, action) => {
   // If changed spriteSheetId
   if (patch.spriteSheetId) {
     const newSprite = state.entities.spriteSheets[patch.spriteSheetId];
-    // If new sprite not an actor then reset movement type back to static
+    // If new sprite not an actor then reset sprite type back to static
     if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-      patch.movementType = "static";
+      patch.spriteType = SPRITE_TYPE_STATIC;
     }
     const oldSprite = state.entities.spriteSheets[actor.spriteSheetId];
-    // If new sprite is an actor and old one wasn't reset movement type to face interaction
+    // If new sprite is an actor and old one wasn't reset sprite type to actor
     if (
       oldSprite &&
       newSprite &&
@@ -909,7 +909,7 @@ const editActor = (state, action) => {
       (oldSprite.numFrames !== 3 && oldSprite.numFrames !== 6) &&
       (newSprite.numFrames === 3 || newSprite.numFrames === 6)
     ) {
-      patch.movementType = "faceInteraction";
+      patch.spriteType = SPRITE_TYPE_ACTOR;
     }
 
     if (newSprite && newSprite.numFrames <= actor.frame) {
@@ -918,8 +918,8 @@ const editActor = (state, action) => {
   }
   // If static and cycling frames start from frame 1 (facing downwards)
   if (
-    (patch.animate && actor.movementType === "static") ||
-    patch.movementType === "static"
+    (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
+    patch.spriteType === SPRITE_TYPE_STATIC
   ) {
     patch.direction = "down";
   }

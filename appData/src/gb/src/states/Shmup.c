@@ -34,64 +34,6 @@ void Update_Shmup() {
   tile_x = (player.pos.x) >> 3;
   tile_y = (player.pos.y) >> 3;
 
-  // Cleanup after script complete -------------------------------
-
-  // if (script_complete) {
-  //   ActorsUnstick();
-  // }
-
-  // // NPC Logic ---------------------------------------------------
-
-  // for (i = 1; i < actors_active_size; i++) {
-  //   a = actors_active[i];
-  //   if (actors[a].movement_type == AI_RANDOM_WALK) {
-  //     // Wave
-  //     if (IS_FRAME_8) {
-  //       if (actors[a].dir.y == -1) {
-  //         if (actors[a].pos.y < actors[a].start_pos.y - 16) {
-  //           actors[a].dir.y = 1;
-  //         }
-  //       } else {
-  //         if (actors[a].pos.y > actors[a].start_pos.y + 16) {
-  //           actors[a].dir.y = -1;
-  //         }
-  //       }
-  //       actors[a].animate = TRUE;
-  //       actors[a].moving = TRUE;
-  //     }
-  //   } else if (actors[a].movement_type == AI_RANDOM_FACE) {
-  //     // Homing
-  //     if (IS_FRAME_8) {
-  //       actors[a].animate = TRUE;
-  //       if (actors[a].pos.y == actors[a].start_pos.y) {
-  //         if (actors[a].pos.x - player.pos.x < 50) {
-  //           actors[a].dir.x = 1;
-  //           if (actors[a].pos.y < player.pos.y) {
-  //             actors[a].dir.y = 1;
-  //           } else {
-  //             actors[a].dir.y = -1;
-  //           }
-  //           actors[a].move_speed = 2;
-  //           actors[a].moving = TRUE;
-  //         }
-  //       } else if (actors[a].dir.y == 1) {
-  //         if (actors[a].pos.y > player.pos.y) {
-  //           actors[a].dir.y = 0;
-  //         }
-  //       } else if (actors[a].dir.y == -1) {
-  //         if (actors[a].pos.y < player.pos.y) {
-  //           actors[a].dir.y = 0;
-  //         }
-  //       }
-  //       if (actors[a].dir.x && (actors[a].pos.x - player.pos.x > 100)) {
-  //         actors[a].moving = FALSE;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // Player Logic ------------------------------------------------
-
   // Check for trigger collisions
   hit_trigger = TriggerAtTile(tile_x, tile_y);
   if (hit_trigger != MAX_TRIGGERS) {

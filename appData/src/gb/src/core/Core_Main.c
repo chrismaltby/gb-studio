@@ -141,7 +141,6 @@ int core_start() {
   map_next_dir.x = player.dir.x = START_SCENE_DIR_X;
   map_next_dir.y = player.dir.y = START_SCENE_DIR_Y;
   map_next_sprite = START_PLAYER_SPRITE;
-  player.movement_type = PLAYER_INPUT;
   player.enabled = TRUE;
   player.move_speed = START_PLAYER_MOVE_SPEED;
   player.anim_speed = START_PLAYER_ANIM_SPEED;

@@ -29,7 +29,7 @@ import {
   EVENT_SET_INPUT_SCRIPT,
   EVENT_END,
 } from "./eventTypes";
-import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE } from "../../consts";
+import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 import {
   combineMultipleChoiceText,
   dirDec,
@@ -1160,19 +1160,18 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, sprites, actorP
       const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
       if (!sprite) return [];
       const spriteFrames = sprite.frames;
-      const actorFrames = actorFramesPerDir(actor.movementType, spriteFrames);
+      const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
       const initialFrame =
-        moveDec(actor.movementType) === 1 ? actor.frame % actorFrames : 0;
+        actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
         actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
-        spriteTypeDec(actor.movementType, spriteFrames), // Sprite Type
+        spriteTypeDec(actor.spriteType, spriteFrames), // Sprite Type
         actorFrames, // Frames per direction
         (actor.animate ? 1 : 0) + (initialFrame << 1),
         actor.x, // X Pos
         actor.y, // Y Pos
         dirDec(actor.direction), // Direction
-        moveDec(actor.movementType), // Movement Type
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
         actor.isPinned ? 1 : 0,

@@ -33,6 +33,11 @@ export const BRUSH_8PX = "8px";
 export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
 
+export const SPRITE_TYPE_STATIC = "static";
+export const SPRITE_TYPE_ACTOR = "actor";
+export const SPRITE_TYPE_ACTOR_ANIMATED = "actor_animated";
+export const SPRITE_TYPE_ANIMATED = "animated";
+
 export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",

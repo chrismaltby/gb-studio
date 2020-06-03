@@ -7,7 +7,7 @@ import { ActorShape, PaletteShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -27,7 +27,7 @@ class Actor extends Component {
 
   render() {
     const { actor, selected, showSprite, palette } = this.props;
-    const { x, y, spriteSheetId, direction, movementType, frame } = actor;
+    const { x, y, spriteSheetId, direction, spriteType, frame } = actor;
     return (
       <>
         {selected && actor.isPinned && <div className="Actor__ScreenPreview" />}
@@ -43,7 +43,7 @@ class Actor extends Component {
             <SpriteSheetCanvas
               spriteSheetId={spriteSheetId}
               direction={direction}
-              frame={movementType === "static" ? frame : 0}
+              frame={spriteType === SPRITE_TYPE_STATIC ? frame : 0}
               palette={palette}
             />
           )}

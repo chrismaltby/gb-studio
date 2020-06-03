@@ -27,22 +27,6 @@ void Update_Adventure() {
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
-  // Move NPCs
-  /*
-  for (i = 1; i < actors_active_size; i++)
-  {
-      a = actors_active[i];
-      switch (actors[a].movement_type)
-      {
-          case 0:
-              actors[a].pos.x -= actors[a].move_speed;
-              break;
-          case 1:
-              actors[a].pos.y--;
-      }
-  }
-  */
-
   player.moving = FALSE;
 
   // Move

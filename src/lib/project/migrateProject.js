@@ -1,9 +1,11 @@
+/* eslint-disable no-nested-ternary */
 import { indexBy } from "../helpers/array";
 import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
+import uuid from "uuid/v4";
 
 const indexById = indexBy("id");
 
-export const LATEST_PROJECT_VERSION = "1.2.0";
+export const LATEST_PROJECT_VERSION = "2.0.0";
 
 const migrateProject = project => {
   let data = { ...project };
@@ -22,6 +24,10 @@ const migrateProject = project => {
   if (version === "1.1.0") {
     data = migrateFrom110To120Events(data);
     version = "1.2.0";
+  }
+  if (version === "1.2.0") {
+    data = migrateFrom120To200Actors(data);
+    version = "2.0.0";
   }
 
   data._version = version;
@@ -242,6 +248,53 @@ const migrateFrom110To120Events = data => {
   return {
     ...data,
     scenes: mapScenesEvents(data.scenes, migrateFrom110To120Event)
+  };
+};
+
+/*
+ * In version 1.2.0 Actors had a movementType field, in 2.0.0 movement
+ * is now handled with movement scripts and whether an actor treats it's
+ * spritesheet as static or an actor sprite is set using the spriteType field
+ */
+const migrateFrom120To200Actors = (data) => {
+  return {
+    ...data,
+    scenes: data.scenes.map((scene) => {
+      return {
+        ...scene,
+        actors: scene.actors.map((actor) => {
+          let movementScript;
+          if(actor.movementType === "randomFace") {
+            movementScript = [
+              {
+                id: uuid(),
+                command: "EVENT_TEXT",
+                args: {
+                  text: "RANDOM_FACE\nPLACEHOLDER",
+                  avatarId: "",
+                },
+              },
+            ];
+          } else if (actor.movementType === "randomWalk") {
+            movementScript = [
+              {
+                id: uuid(),
+                command: "EVENT_TEXT",
+                args: {
+                  text: "RANDOM_WALK\nPLACEHOLDER",
+                  avatarId: "",
+                },
+              },
+            ];
+          }
+          return {
+            ...actor,
+            spriteType: actor.movementType === "static" ? "static" : "actor",
+            movementScript
+          };
+        }),
+      };
+    }),
   };
 };
 

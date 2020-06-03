@@ -6,11 +6,11 @@ import { framesPerDirection } from "../../lib/helpers/gbstudio";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 
 const ActorCanvas = ({
   spriteSheetId,
-  movementType,
+  spriteType,
   direction,
   overrideDirection,
   frame,
@@ -18,7 +18,7 @@ const ActorCanvas = ({
   palette,
 }) => {
   let spriteFrame = frame || 0;
-  if (movementType !== "static") {
+  if (spriteType !== SPRITE_TYPE_STATIC) {
     spriteFrame = frame % totalFrames;
   } else if (overrideDirection) {
     spriteFrame = 0;
@@ -36,7 +36,7 @@ const ActorCanvas = ({
 
 ActorCanvas.propTypes = {
   spriteSheetId: PropTypes.string.isRequired,
-  movementType: PropTypes.string.isRequired,
+  spriteType: PropTypes.string.isRequired,
   direction: PropTypes.string,
   overrideDirection: PropTypes.string,
   frame: PropTypes.number,
@@ -55,15 +55,16 @@ ActorCanvas.defaultProps = {
 function mapStateToProps(state, props) {
   const {
     spriteSheetId,
-    movementType,
+    spriteType,
     direction,
     frame,
     paletteId,
   } = props.actor;
+
   const spriteSheet =
     state.entities.present.entities.spriteSheets[spriteSheetId];
   const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
-  const totalFrames = framesPerDirection(movementType, spriteFrames);
+  const totalFrames = framesPerDirection(spriteType, spriteFrames);
   const settings = getSettings(state);
   const palettesLookup = getPalettesLookup(state);
   const gbcEnabled = settings.customColorsEnabled;
@@ -76,7 +77,7 @@ function mapStateToProps(state, props) {
 
   return {
     spriteSheetId,
-    movementType,
+    spriteType,
     direction: props.direction !== undefined ? props.direction : direction,
     overrideDirection: props.direction,
     frame: props.frame !== undefined ? props.frame % totalFrames : frame,
