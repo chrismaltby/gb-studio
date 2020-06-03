@@ -51,7 +51,7 @@ const fields = [
     key: "wait",
     type: "checkbox",
     label: l10n("FIELD_WAIT_UNTIL_FINISHED"),
-    defaultValue: false
+    defaultValue: true
   }
 ];
 

@@ -27,6 +27,7 @@ const migrateProject = project => {
   }
   if (version === "1.2.0") {
     data = migrateFrom120To200Actors(data);
+    data = migrateFrom120To200Events(data);
     version = "2.0.0";
   }
 
@@ -295,6 +296,31 @@ const migrateFrom120To200Actors = (data) => {
         }),
       };
     }),
+  };
+};
+
+/*
+ * Version 2.0.0 allows sound effects to play in background rather than
+ * pausing the script until the sound has finished playing, wait flag
+ * needs to be added to all sound scripts to make old functionality the default
+ */
+export const migrateFrom120To200Event = event => {
+  if (event.args && event.command === "EVENT_SOUND_PLAY_EFFECT") {
+    return {
+      ...event,
+      args: {
+        ...event.args,
+        wait: true
+      }
+    }
+  }
+  return event;
+};
+
+const migrateFrom120To200Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom120To200Event)
   };
 };
 
