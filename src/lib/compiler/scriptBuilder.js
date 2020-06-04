@@ -84,6 +84,7 @@ import {
   TIMER_DISABLE,
   TEXT_WITH_AVATAR,
   MENU,
+  LAUNCH_PROJECTILE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -264,6 +265,19 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(HIDE_SPRITES));
   };
+
+  // Projectiles
+
+  launchProjectile = (spriteSheetId, x, y) => {
+    const output = this.output;
+    const { sprites } = this.options;
+    const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
+    output.push(cmd(LAUNCH_PROJECTILE));
+    output.push(hi(spriteIndex));
+    output.push(lo(spriteIndex));
+    output.push(x);
+    output.push(y);
+  }
 
   // Text
 

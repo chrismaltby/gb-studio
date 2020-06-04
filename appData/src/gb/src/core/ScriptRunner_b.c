@@ -18,6 +18,7 @@
 #include "Sprite.h"
 #include "Scroll.h"
 #include "Camera.h"
+#include "Projectiles.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000
@@ -138,7 +139,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_RemoveTimerScript_b, 0},   // 0x5A
     {Script_TextWithAvatar_b, 4},      // 0x5B
     {Script_TextMenu_b, 7},            // 0x5C
-    {Script_ActorSetCollisions_b, 1}   // 0x5D
+    {Script_ActorSetCollisions_b, 1},  // 0x5D
+    {Script_LaunchProjectile_b, 4}     // 0x5E
 };
 
 void ScriptTimerUpdate_b() {
@@ -1825,4 +1827,9 @@ void Script_TextWithAvatar_b() {
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
+}
+
+void Script_LaunchProjectile_b() {
+  ProjectileLaunch(1, player.pos.x, player.pos.y, 1, 0, 1, 3, 60, 255, 0);
+  // ProjectileLaunch(1, player.pos.x + 8, player.pos.y, 1, 0, 1, 0, 2, 255, 0);
 }

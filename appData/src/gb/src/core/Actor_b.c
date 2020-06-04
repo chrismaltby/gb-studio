@@ -207,7 +207,7 @@ void UpdateActors_b() {
     }
 
     // Check if actor is off screen
-    if (IS_FRAME_32 && (a != script_ctxs[0].script_actor)) {
+    if (IS_FRAME_4 && (a != script_ctxs[0].script_actor)) {
       if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
           ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
         // Mark off screen actor for removal

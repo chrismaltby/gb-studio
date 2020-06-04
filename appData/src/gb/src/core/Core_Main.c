@@ -14,6 +14,7 @@
 #include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
+#include "Projectiles.h"
 #include "UI.h"
 #include "gbt_player.h"
 #include "main.h"
@@ -190,6 +191,7 @@ void game_loop() {
     UpdateCamera();
     RefreshScroll();
     UpdateActors();
+    UpdateProjectiles();
     UIOnInteract();
     UIUpdate();
     HandleInputScripts();

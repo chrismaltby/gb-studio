@@ -6,6 +6,7 @@
 #include "Scroll.h"
 #include "Sprite.h"
 #include "Trigger.h"
+#include "Projectiles.h"
 #include "data_ptrs.h"
 #include "ScriptRunner.h"
 #include <stdio.h>
@@ -274,6 +275,7 @@ void LoadScene(UINT16 index) {
   // Initialise scene
   InitPlayer();
   InitScroll();
+  ProjectilesInit();
 
   // Enable all pinned actors by default
   for (i = 1; i != actors_len; i++) {
