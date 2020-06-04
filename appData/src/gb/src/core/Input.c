@@ -4,6 +4,7 @@
 
 UBYTE joy;
 UBYTE last_joy;
+UBYTE recent_joy;
 UBYTE await_input;
 BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
 

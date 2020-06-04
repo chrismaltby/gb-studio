@@ -7,16 +7,16 @@
 #include "BankData.h"
 
 /* TRUE if left is being held on dpad */
-#define INPUT_LEFT (joy & J_LEFT)
+#define INPUT_LEFT ((recent_joy & J_LEFT) || (!recent_joy && (joy & J_LEFT)))
 
 /* TRUE if right is being held on dpad */
-#define INPUT_RIGHT (joy & J_RIGHT)
+#define INPUT_RIGHT ((recent_joy & J_RIGHT) || (!recent_joy && (joy & J_RIGHT)))
 
 /* TRUE if up is being held on dpad */
-#define INPUT_UP (joy & J_UP)
+#define INPUT_UP ((recent_joy & J_UP) || (!recent_joy && (joy & J_UP)))
 
 /* TRUE if down is being held on dpad */
-#define INPUT_DOWN (joy & J_DOWN)
+#define INPUT_DOWN ((recent_joy & J_DOWN) || (!recent_joy && (joy & J_DOWN)))
 
 /* TRUE if A button is being held */
 #define INPUT_A (joy & J_A)
@@ -58,6 +58,7 @@
 
 extern UBYTE joy;
 extern UBYTE last_joy;
+extern UBYTE recent_joy;
 extern UBYTE await_input;
 extern BankPtr input_script_ptrs[NUM_INPUTS];
 
