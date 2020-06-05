@@ -187,7 +187,7 @@ void game_loop() {
 
     last_joy = joy;
     joy = joypad();
-    if(joy != last_joy) {
+    if((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD)) {
       // https://stackoverflow.com/a/50705674
       recent_joy = joy & ~last_joy;
     }

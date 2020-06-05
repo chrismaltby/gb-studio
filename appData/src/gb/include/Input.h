@@ -56,6 +56,8 @@
 
 #define NUM_INPUTS 8
 
+#define INPUT_DPAD 0xF
+
 extern UBYTE joy;
 extern UBYTE last_joy;
 extern UBYTE recent_joy;
