@@ -116,6 +116,7 @@ class SceneSelect extends Component {
           DropdownIndicator: DropdownIndicatorWithData(value),
           Option: OptionWithData,
         }}
+        menuPlacement="auto"
       />
     );
   }

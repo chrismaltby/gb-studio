@@ -37,6 +37,7 @@ class CustomEventVariableSelect extends Component {
         }}
         onChange={onChange}
         options={options}
+        menuPlacement="auto"
       />
     );
   }

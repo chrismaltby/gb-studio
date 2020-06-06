@@ -292,6 +292,7 @@ export class SelectRenamable extends Component {
             onChange={onChange}
             loadOptions={this.loadOptions}
             reduceOptions={grouped ? reduceGroupedOptions : undefined}
+            menuPlacement="auto"
           />
         )}
         {edit ? (

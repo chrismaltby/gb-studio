@@ -100,6 +100,7 @@ class SoundEffectSelect extends Component {
           DropdownIndicator: this.renderDropdownIndicator,
           Option: this.renderOption
         }}
+        menuPlacement="auto"
       />
     );
   }

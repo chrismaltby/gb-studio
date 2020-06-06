@@ -100,6 +100,7 @@ class BackgroundSelect extends Component {
           DropdownIndicator: this.renderDropdownIndicator,
           Option: this.renderOption
         }}
+        menuPlacement="auto"
       />
     );
   }

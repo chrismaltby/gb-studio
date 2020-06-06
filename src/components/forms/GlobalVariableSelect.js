@@ -97,6 +97,7 @@ class GlobalVariableSelect extends Component {
         onChange={onChange}
         options={options}
         grouped
+        menuPlacement="auto"
       />
     );
   }

@@ -127,6 +127,7 @@ class SceneActorSelect extends Component {
           DropdownIndicator: this.renderDropdownIndicator,
           Option: this.renderOption
         }}
+        menuPlacement="auto"
       />
     );
   }
