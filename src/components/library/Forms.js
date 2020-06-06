@@ -8,6 +8,8 @@ import AsyncPaginate, {
 } from "react-select-async-paginate";
 import l10n from "../../lib/helpers/l10n";
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 reduceGroupedOptions([], []);
 
 export const Textarea = ({ small, large, borderless, fixedSize, ...props }) => (
@@ -293,6 +295,7 @@ export class SelectRenamable extends Component {
             loadOptions={this.loadOptions}
             reduceOptions={grouped ? reduceGroupedOptions : undefined}
             menuPlacement="auto"
+            menuPortalTarget={menuPortalEl}
           />
         )}
         {edit ? (

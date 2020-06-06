@@ -12,31 +12,54 @@ const fields = [
     key: "x",
     label: l10n("FIELD_X"),
     type: "union",
-    types: ["number", "variable", "actor", "property"],
+    types: ["number", "variable", "property"],
     min: 0,
     max: 255,
     width: "50%",
     defaultValue: {
-      number: 5,
-      actor: "player",
+      type: "number",
+      number: 0,
       variable: "LAST_VARIABLE"
     },
   },
   {
     key: "y",
     label: l10n("FIELD_Y"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0,
-  },
+    defaultValue: {
+      type: "number",
+      number: 0,
+      variable: "LAST_VARIABLE"
+    },   
+  }
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveTo } = helpers;
+  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableSetToValue } = helpers;
+  const tmp1 = "tmp1";
+  const tmp2 = "tmp2";
+
   actorSetActive(input.actorId);
-  actorMoveTo(input.x, input.y);
+
+  if(input.x.type === "number" && input.y.type === "number") {
+    actorMoveTo(input.x.value, input.y.value);
+  } else {
+    let xVar = input.x.value;
+    let yVar = input.y.value;
+    if(input.x.type === "number"){
+      variableSetToValue(tmp1, input.x.value);
+      xVar = tmp1;
+    }
+    if(input.y.type === "number"){
+      variableSetToValue(tmp2, input.y.value);
+      yVar = tmp2;
+    }    
+    actorMoveToVariables(xVar, yVar);
+  }
 };
 
 module.exports = {

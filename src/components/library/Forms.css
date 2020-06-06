@@ -265,24 +265,27 @@ textarea {
   box-shadow: 0 0 0px 2px var(--highlight-color);
 }
 
-.FormField .ReactSelect__menu {
+body .ReactSelect__menu {
   color: var(--main-text-color);
   background-color: var(--menu-bg-color);
   z-index: 100;
+  min-width: 200px;
+  right: 0;
   box-shadow: 0 0 0 1px rgba(120, 120, 120, 0.3),
     0 4px 11px hsla(0, 0%, 0%, 0.1);
 }
 
-.FormField .ReactSelect__option {
+body .ReactSelect__option {
   font-size: 11px;
   padding: 6px 10px;
+  white-space: nowrap;
 }
 
-.FormField .ReactSelect__option:active {
-  background-color: var(--menu-bg-color);
+body .ReactSelect__option:active {
+  background-color: var(--menu-bg-color) !important;
 }
 
-.FormField .ReactSelect__option .Button--Small {
+.ReactSelect__option .Button--Small {
   height: 20px;
   min-width: 24px;
   width: 24px;
@@ -293,11 +296,11 @@ textarea {
   margin-bottom: -2px;
 }
 
-.FormField .ReactSelect__option .Button--Small svg {
+.ReactSelect__option .Button--Small svg {
   height: 10px;
 }
 
-.FormField .ReactSelect__group {
+.ReactSelect__group {
   padding-bottom: 0px;
   padding-left: 0px;
   border-top: 1px solid var(--menu-hover-color);
@@ -306,7 +309,7 @@ textarea {
   /* border-bottom: 1px solid var(--input-border-color); */
 }
 
-.FormField .ReactSelect__group-heading {
+.ReactSelect__group-heading {
   margin-top: -14px;
   float: left;
   background: var(--menu-bg-color);
@@ -318,17 +321,17 @@ textarea {
   padding-left: 3px;
 }
 
-.FormField .ReactSelect__option--is-focused {
+body .ReactSelect__option--is-focused {
   color: var(--main-text-color);
   background-color: var(--menu-hover-color) !important;
 }
 
-.FormField .ReactSelect__option--is-selected {
+body .ReactSelect__option--is-selected {
   color: var(--highlight-color);
   background-color: inherit;
 }
 
-.FormField .ReactSelect__indicator-separator {
+body .FormField .ReactSelect__indicator-separator {
   background: var(--menu-hover-color);
 }
 
