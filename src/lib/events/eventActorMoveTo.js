@@ -11,11 +11,16 @@ const fields = [
   {
     key: "x",
     label: l10n("FIELD_X"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "actor", "property"],
     min: 0,
     max: 255,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 5,
+      actor: "player",
+      variable: "LAST_VARIABLE"
+    },
   },
   {
     key: "y",

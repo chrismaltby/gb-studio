@@ -100,6 +100,7 @@ class ScriptEventFormField extends Component {
               type={field.type}
               field={field}
               index={valueIndex}
+              defaultValue={field.defaultValue}
               value={value[valueIndex]}
               args={args}
               onChange={this.onChange}
@@ -129,6 +130,7 @@ class ScriptEventFormField extends Component {
         entityId={entityId}
         type={field.type}
         field={field}
+        defaultValue={field.defaultValue}
         value={value}
         args={args}
         onChange={this.onChange}
@@ -150,11 +152,13 @@ class ScriptEventFormField extends Component {
 
     return (
       <FormField halfWidth={field.width === "50%"}>
-        <label htmlFor={genKey(eventId, field.key)}>
-          {field.type !== "checkbox" && field.type !== "group" && label}
-          {inputField}
-          {field.type === "checkbox" && label}
-        </label>
+        {field.type !== "checkbox" && field.type !== "group" && (
+          <label htmlFor={genKey(eventId, field.key)}>{label}</label>
+        )}
+        {inputField}
+        {field.type === "checkbox" && (
+          <label htmlFor={genKey(eventId, field.key)}>{label}</label>
+        )}
       </FormField>
     );
   }

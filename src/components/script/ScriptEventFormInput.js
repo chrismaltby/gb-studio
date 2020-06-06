@@ -18,11 +18,14 @@ import SoundEffectSelect from "../forms/SoundEffectSelect";
 import castEventValue from "../../lib/helpers/castEventValue";
 import OperatorSelect from "../forms/OperatorSelect";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
+import { DropdownButton } from "../library/Button";
+import { MenuItem } from "../library/Menu";
+import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 
 class ScriptEventFormInput extends Component {
   onChange = e => {
-    const { onChange, field, value, index, args } = this.props;
-    const { type, updateFn } = field;
+    const { onChange, field, value, index, args, type } = this.props;
+    const { updateFn } = field;
     let newValue = e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value) {
       // Toggle direction
@@ -37,8 +40,26 @@ class ScriptEventFormInput extends Component {
     onChange(newValue, index);
   };
 
+  onChangeUnionValue = newValue => {
+    const { onChange, value, index } = this.props;
+    onChange({
+      ...value,
+      value: newValue
+    }, index);
+  };
+
+  onChangeUnionType = newType => e => {
+    const { onChange, value, index } = this.props;
+    if(newType !== value.type) {
+      onChange({
+        type: newType,
+        value: undefined
+      }, index);
+    }
+  }  
+
   render() {
-    const { type, id, value, args, field, entityId } = this.props;
+    const { type, id, value, defaultValue, args, field, entityId } = this.props;
 
     if (type === "textarea") {
       return (
@@ -57,7 +78,7 @@ class ScriptEventFormInput extends Component {
           id={id}
           type="text"
           value={value || ""}
-          placeholder={field.placeholder || field.defaultValue}
+          placeholder={field.placeholder || defaultValue}
           maxLength={field.maxLength}
           onChange={this.onChange}
         />
@@ -72,7 +93,7 @@ class ScriptEventFormInput extends Component {
           min={field.min}
           max={field.max}
           step={field.step}
-          placeholder={field.placeholder || field.defaultValue}
+          placeholder={field.placeholder || defaultValue}
           onChange={this.onChange}
         />
       );
@@ -200,6 +221,38 @@ class ScriptEventFormInput extends Component {
           pitch={args.pitch}
           frequency={args.frequency}
         />
+      );
+    }
+    if(type === "union") {
+      const currentType = (value && value.type) || (field.defaultType);
+      const currentValue = value && value.value;
+      return (
+        <div style={{display: "flex", alignItems:"center"}}>
+          <div style={{flexGrow:1, marginRight: 2}}>
+            <ScriptEventFormInput
+              id={id}
+              entityId={entityId}
+              type={currentType}
+              field={field}
+              value={currentValue}
+              defaultValue={field.defaultValue[currentType]}
+              args={args}
+              onChange={this.onChangeUnionValue}
+            />
+          </div>
+          <DropdownButton
+            transparent
+            small
+            showArrow={false}
+            label={<ConnectIcon connected={currentType !== "number"} />}
+          >
+            {field.types.map((type) =>
+              <MenuItem key={type} onClick={this.onChangeUnionType(type)}>
+                {type === currentType ? <CheckIcon /> : <BlankIcon />} {type}
+              </MenuItem>
+            )}
+          </DropdownButton>
+        </div>
       );
     }
     return <div />;

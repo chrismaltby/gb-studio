@@ -27,6 +27,14 @@
   overflow: hidden;
 }
 
+.MenuItem svg {
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+}
+
 .MenuItem:hover {
   background-color: var(--menu-hover-color);
 }
