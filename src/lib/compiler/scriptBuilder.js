@@ -122,11 +122,13 @@ class ScriptBuilder {
     output.push(index);
   };
 
-  actorMoveTo = (x = 0, y = 0) => {
+  actorMoveTo = (x = 0, y = 0, useCollisions = false, verticalFirst = false) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_TO));
     output.push(x);
     output.push(y);
+    output.push(useCollisions ? 1 : 0);
+    output.push(verticalFirst ? 1 : 0);
   };
 
   actorMoveRelative = (x = 0, y = 0) => {
@@ -138,10 +140,12 @@ class ScriptBuilder {
     output.push(y < 0 ? 1 : 0);
   };
 
-  actorMoveToVariables = (variableX, variableY) => {
+  actorMoveToVariables = (variableX, variableY, useCollisions = false, verticalFirst = false) => {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_MOVE_TO_VALUE));
+    output.push(useCollisions ? 1 : 0);
+    output.push(verticalFirst ? 1 : 0);    
   };
 
   actorSetPosition = (x = 0, y = 0) => {
@@ -443,7 +447,6 @@ class ScriptBuilder {
       "frame"
     ]
     const propertyIndex = properties.indexOf(propertyValue);
-    console.log("HERE",propertyValue, cmd(SET_PROPERTY), hi(variableIndex), lo(variableIndex), Math.max(0, propertyIndex), actorIndex)
     output.push(cmd(SET_PROPERTY));
     output.push(hi(variableIndex));
     output.push(lo(variableIndex));

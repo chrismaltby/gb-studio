@@ -427,6 +427,55 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
   return hit_actor;
 }
 
+UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir) {
+  switch (check_dir) {
+    case CHECK_DIR_LEFT:  // Check left
+      while (start_x != end_tile) {
+        if (TileAt2x2(start_x - 1, start_y - 1) ||  // Tile left
+            ActorAt1x3Tile(start_x - 2, start_y - 1, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor left
+        ) {
+          return start_x;
+        }
+        start_x--;
+      }
+      return end_tile;
+    case CHECK_DIR_RIGHT:  // Check right
+      while (start_x != end_tile) {
+        if (TileAt2x2(start_x + 1, start_y - 1) ||  // Tile right
+            ActorAt1x3Tile(start_x + 2, start_y - 1, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor right
+        ) {
+          return start_x;
+        }
+        start_x++;
+      }
+      return end_tile;
+    case CHECK_DIR_UP:  // Check up
+      while (start_y != end_tile) {
+        if (TileAt2x2(start_x, start_y - 2) ||  // Tile up
+            (ActorAt3x1Tile(start_x - 1, start_y - 2, FALSE) !=
+             NO_ACTOR_COLLISON)  // Actor up
+        ) {
+          return start_y;
+        }
+        start_y--;
+      }
+      return end_tile;
+    case CHECK_DIR_DOWN:  // Check down
+      while (start_y != end_tile) {
+        if (TileAt2x2(start_x, start_y) ||  // Tile down
+            ActorAt3x1Tile(start_x - 1, start_y + 2, FALSE) !=
+                NO_ACTOR_COLLISON  // Actor down
+        ) {
+          return start_y;
+        }
+        start_y++;
+      }
+      return end_tile;
+  }
+} 
+
 void InitPlayer_b() {
   UBYTE sprite_frames;
 

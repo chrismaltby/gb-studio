@@ -28,11 +28,15 @@
 #define BUBBLE_ANIMATION_FRAMES 15
 #define BUBBLE_TOTAL_FRAMES 60
 
+void ScriptHelper_CalcDest();
+
 UBYTE *RAMPtr;
 // UINT16 actor_move_dest_x = 0;
 // UINT16 actor_move_dest_y = 0;
 BYTE actor_move_dir_x = 0;
 BYTE actor_move_dir_y = 0;
+UBYTE actor_move_cols = FALSE;
+UBYTE actor_move_vert = FALSE;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 // UBYTE wait_time = 0;
@@ -62,7 +66,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_FadeIn_b, 1},              // 0x0D
     {Script_LoadScene_b, 6},           // 0x0E
     {Script_ActorSetPos_b, 2},         // 0x0F
-    {Script_ActorMoveTo_b, 2},         // 0x10
+    {Script_ActorMoveTo_b, 4},         // 0x10
     {Script_ShowSprites_b, 0},         // 0x11
     {Script_HideSprites_b, 0},         // 0x12
     {Script_PlayerSetSprite_b, 2},     // 0x13
@@ -96,7 +100,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagRandomValue_b, 4},  // 0x2F
     {Script_ActorGetPos_b, 0},         // 0x30
     {Script_ActorSetPosToVal_b, 0},    // 0x31
-    {Script_ActorMoveToVal_b, 0},      // 0x32
+    {Script_ActorMoveToVal_b, 2},      // 0x32
     {Script_ActorMoveRel_b, 4},        // 0x33
     {Script_ActorSetPosRel_b, 4},      // 0x34
     {Script_MathAdd_b, 3},             // 0x35
@@ -179,7 +183,7 @@ UBYTE ScriptUpdate_MoveActor() {
   }
   actors[script_actor].moving = TRUE;
   // Actor not at horizontal destination
-  if (actors[script_actor].pos.x != actor_move_dest_x) {
+  if (actors[script_actor].pos.x != actor_move_dest_x && (!actor_move_vert || (actors[script_actor].pos.y == actor_move_dest_y))) {
     actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
       actors[script_actor].dir.x = 1;
@@ -597,7 +601,71 @@ void Script_ActorMoveTo_b() {
   actor_move_dest_x = (script_cmd_args[0] * 8);
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = (script_cmd_args[1] * 8);
+  actor_move_cols = script_cmd_args[2];
+  actor_move_vert = script_cmd_args[3];
+  if(actor_move_cols) {
+    ScriptHelper_CalcDest();
+  }
   script_update_fn = ScriptUpdate_MoveActor;
+}
+
+
+void ScriptHelper_CalcDest() {
+  UBYTE check_dir = CHECK_DIR_LEFT;
+  UWORD new_dest;
+  if(actor_move_vert) {
+    if(actor_move_dest_y != actors[script_actor].pos.y) {
+      // Check vertical collisions in path
+      if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
+        check_dir = CHECK_DIR_UP;
+      } else {
+        check_dir = CHECK_DIR_DOWN;
+      }
+      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_y), check_dir) * 8u;
+      if(new_dest != actor_move_dest_y) {
+        actor_move_dest_y = new_dest;
+        actor_move_dest_x = actors[script_actor].pos.x;
+        return;
+      }
+    }
+    // Check horizontal collisions in path
+    if (Lt16(actor_move_dest_x, actors[script_actor].pos.x)) {
+      check_dir = CHECK_DIR_LEFT;
+    } else {
+      check_dir = CHECK_DIR_RIGHT;
+    }
+    new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actor_move_dest_y), DIV_8(actor_move_dest_x), check_dir) * 8u;
+    if(new_dest != actor_move_dest_x) {
+      actor_move_dest_x = new_dest;
+      return;
+    }      
+  } else {
+      // Check horizontal collisions in path
+    if(actor_move_dest_x != actors[script_actor].pos.x) {
+      if (Lt16(actor_move_dest_x, actors[script_actor].pos.x)) {
+        check_dir = CHECK_DIR_LEFT;
+      } else {
+        check_dir = CHECK_DIR_RIGHT;
+      }
+      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_x), check_dir) * 8u;
+      if(new_dest != actor_move_dest_x) {
+        actor_move_dest_x = new_dest;
+        actor_move_dest_y = actors[script_actor].pos.y;
+        return;
+      }
+    }
+    // Check vertical collisions in path
+    if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
+      check_dir = CHECK_DIR_UP;
+    } else {
+      check_dir = CHECK_DIR_DOWN;
+    } 
+    new_dest = CheckCollisionInDirection(DIV_8(actor_move_dest_x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_y), check_dir) * 8;
+    if(new_dest != actor_move_dest_y) {
+      actor_move_dest_y = new_dest;
+      return;
+    }
+  }
 }
 
 /*
@@ -904,93 +972,32 @@ void Script_ActorPush_b() {
 
   LOG("PUSH1 Script_ActorPush_b\n");
 
-  if (actors[0].dir.x < 0) {
-    dest_x = 0;
-    check_dir = 1;
-  } else if (actors[0].dir.x > 0) {
-    dest_x = image_width;
-    check_dir = 2;
-  } else {
-    dest_x = actors[script_actor].pos.x;
-  }
-  if (actors[0].dir.y < 0) {
-    dest_y = 0;
-    check_dir = 3;
-  } else if (actors[0].dir.y > 0) {
-    dest_y = image_height;
-    check_dir = 4;
-  } else {
-    dest_y = actors[script_actor].pos.y;
-  }
 
-  // If not continuing until collision just push on 16px tile
-  if (!script_cmd_args[0]) {
+  if (script_cmd_args[0]) {
+    // If pushing until collision set destination at scene bounds
+    // Collision check happens in ScriptHelper_CalcDest()
+    if (actors[0].dir.x < 0) {
+      dest_x = 0;
+      check_dir = CHECK_DIR_LEFT;
+    } else if (actors[0].dir.x > 0) {
+      dest_x = image_width;
+      check_dir = CHECK_DIR_RIGHT;
+    } else {
+      dest_x = actors[script_actor].pos.x;
+    }
+    if (actors[0].dir.y < 0) {
+      dest_y = 0;
+      check_dir = CHECK_DIR_UP;
+    } else if (actors[0].dir.y > 0) {
+      dest_y = image_height;
+      check_dir = CHECK_DIR_DOWN;
+    } else {
+      dest_y = actors[script_actor].pos.y;
+    }
+  } else {
+    // If not continuing until collision just push on 16px tile
     dest_x = actors[script_actor].pos.x + (actors[0].dir.x * 16);
     dest_y = actors[script_actor].pos.y + (actors[0].dir.y * 16);
-  }
-
-  switch (check_dir) {
-    case 1:  // Check left
-      end_tile = DIV_8(dest_x);
-      check_tile = DIV_8(actors[script_actor].pos.x);
-      check_tile2 = DIV_8(dest_y);
-      while (check_tile != end_tile) {
-        if (TileAt2x2(check_tile - 1, check_tile2 - 1) ||  // Tile left
-            ActorAt1x3Tile(check_tile - 2, check_tile2 - 1, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor left
-        ) {
-          dest_x = (check_tile)*8;
-          break;
-        }
-        check_tile--;
-      }
-      break;
-      break;
-    case 2:  // Check right
-      end_tile = DIV_8(dest_x);
-      check_tile = DIV_8(actors[script_actor].pos.x);
-      check_tile2 = DIV_8(dest_y);
-      while (check_tile != end_tile) {
-        if (TileAt2x2(check_tile + 1, check_tile2 - 1) ||  // Tile right
-            ActorAt1x3Tile(check_tile + 2, check_tile2 - 1, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor right
-        ) {
-          dest_x = (check_tile)*8;
-          break;
-        }
-        check_tile++;
-      }
-      break;
-    case 3:  // Check up
-      end_tile = DIV_8(dest_y);
-      check_tile = DIV_8(actors[script_actor].pos.y);
-      check_tile2 = DIV_8(dest_x);
-      while (check_tile != end_tile) {
-        if (TileAt2x2(check_tile2, check_tile - 2) ||  // Tile up
-            (ActorAt3x1Tile(check_tile2 - 1, check_tile - 2, FALSE) !=
-             NO_ACTOR_COLLISON)  // Actor up
-        ) {
-          dest_y = (check_tile)*8;
-          break;
-        }
-        check_tile--;
-      }
-      break;
-    case 4:  // Check down
-      end_tile = DIV_8(dest_y);
-      check_tile = DIV_8(actors[script_actor].pos.y);
-      check_tile2 = DIV_8(dest_x);
-      while (check_tile != end_tile) {
-        if (TileAt2x2(check_tile2, check_tile) ||  // Tile down
-            ActorAt3x1Tile(check_tile2 - 1, check_tile + 2, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor down
-        ) {
-          dest_y = (check_tile)*8;
-          break;
-        }
-        check_tile++;
-      }
-      break;
   }
 
   actor_move_settings |= ACTOR_MOVE_ENABLED;
@@ -1001,6 +1008,8 @@ void Script_ActorPush_b() {
   actor_move_dest_y = dest_y;
   actor_move_dir_x = actors[0].dir.x;
   actor_move_dir_y = actors[0].dir.y;
+
+  ScriptHelper_CalcDest();
 
   script_update_fn = ScriptUpdate_MoveActor;
 
@@ -1231,6 +1240,11 @@ void Script_ActorMoveToVal_b() {
   actor_move_dest_x = script_variables[script_ptr_x] * 8;
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = script_variables[script_ptr_y] * 8;
+  actor_move_cols = script_cmd_args[0];
+  actor_move_vert = script_cmd_args[1];
+  if(actor_move_cols) {
+    ScriptHelper_CalcDest();
+  }  
   script_update_fn = ScriptUpdate_MoveActor;
 }
 

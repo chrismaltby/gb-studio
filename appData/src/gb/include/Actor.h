@@ -15,6 +15,10 @@
 #define ACTOR_MIN_X 0
 #define ACTOR_MIN_Y 8
 #define NO_ACTOR_COLLISON 0xFF
+#define CHECK_DIR_LEFT 1
+#define CHECK_DIR_RIGHT 2
+#define CHECK_DIR_UP 3
+#define CHECK_DIR_DOWN 4
 
 #define player (actors[0])
 
@@ -163,6 +167,8 @@ void ActivateActor(UBYTE i);
  * @param i index of actor in actors array
  */
 void DeactivateActor(UBYTE i);
+
+UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
 
 void ActorsUnstick();
 

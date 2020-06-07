@@ -5,7 +5,7 @@
 void ProjectilesInit_b();
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
                         UBYTE move_speed, UBYTE life_time, UBYTE col_mask, UWORD col_script);
-void UpdateProjectiles();
+void UpdateProjectiles_b();
 
 void ProjectilesInit() {
   PUSH_BANK(PROJECTILE_BANK);

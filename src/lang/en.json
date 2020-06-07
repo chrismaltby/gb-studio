@@ -223,6 +223,11 @@
   "FIELD_SOURCE": "Source",
   "FIELD_X_POSITION": "X Position",
   "FIELD_Y_POSITION": "Y Position",
+  "FIELD_USE_COLLISIONS": "Use Collisions",
+  "FIELD_ORDER": "Order",
+  "FIELD_HORIZONTAL": "Horizontal",
+  "FIELD_VERTICAL": "Vertical",
+  "FIELD_VERTICAL_FIRST": "Vertical First",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

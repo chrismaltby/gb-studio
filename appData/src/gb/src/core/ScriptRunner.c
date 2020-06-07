@@ -209,8 +209,12 @@ void ScriptSaveCtx() {
   script_ctxs[current_script_ctx].script_ptr_bank = 0;  // @wtf
   script_ctxs[current_script_ctx].script_actor = 0;     // @wtf
   script_ctxs[current_script_ctx].wait_time = 0;        // @wtf
+  script_ctxs[current_script_ctx].actor_move_cols = 0;  // @wtf
+  script_ctxs[current_script_ctx].actor_move_vert = 0;  // @wtf
   script_ctxs[current_script_ctx].actor_move_dest_x = actor_move_dest_x;
   script_ctxs[current_script_ctx].actor_move_dest_y = actor_move_dest_y;
+  script_ctxs[current_script_ctx].actor_move_cols = actor_move_cols;
+  script_ctxs[current_script_ctx].actor_move_vert = actor_move_vert;
   script_ctxs[current_script_ctx].script_update_fn = script_update_fn;
   script_ctxs[current_script_ctx].script_start_ptr = script_start_ptr;
   script_ctxs[current_script_ctx].script_ptr = script_ptr;
@@ -235,6 +239,8 @@ void ScriptRestoreCtx(UBYTE i) {
   current_script_ctx = i;
   actor_move_dest_x = script_ctxs[i].actor_move_dest_x;
   actor_move_dest_y = script_ctxs[i].actor_move_dest_y;
+  actor_move_cols = script_ctxs[i].actor_move_cols;
+  actor_move_vert = script_ctxs[i].actor_move_vert;
   script_update_fn = script_ctxs[i].script_update_fn;
   script_start_ptr = script_ctxs[i].script_start_ptr;
   script_ptr = script_ctxs[i].script_ptr;

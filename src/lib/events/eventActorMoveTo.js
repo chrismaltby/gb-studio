@@ -37,7 +37,21 @@ const fields = [
       variable: "LAST_VARIABLE",
       property: "$self$:xpos"
     },   
-  }
+  },
+  {
+    key: "useCollisions",
+    label: l10n("FIELD_USE_COLLISIONS"),
+    width: "50%",
+    type: "checkbox",
+    defaultValue: false
+  },
+  {
+    key: "verticalFirst",
+    label: l10n("FIELD_VERTICAL_FIRST"),
+    width: "50%",
+    type: "checkbox",
+    defaultValue: false
+  } 
 ];
 
 const compile = (input, helpers) => {
@@ -48,7 +62,7 @@ const compile = (input, helpers) => {
   actorSetActive(input.actorId);
 
   if(input.x.type === "number" && input.y.type === "number") {
-    actorMoveTo(input.x.value, input.y.value);
+    actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.verticalFirst);
   } else {
     let xVar = input.x.value;
     let yVar = input.y.value;
@@ -65,12 +79,11 @@ const compile = (input, helpers) => {
       variableSetToValue(tmp2, input.y.value);
       yVar = tmp2;
     } else if(input.y.type === "property"){
-      console.log("SET VAR 2 to PROPERTY")
       variableSetToProperty(tmp2, input.y.value);
       yVar = tmp2;
     }
 
-    actorMoveToVariables(xVar, yVar);
+    actorMoveToVariables(xVar, yVar, input.useCollisions, input.verticalFirst);
   }
 };
 

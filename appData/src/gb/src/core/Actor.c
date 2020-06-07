@@ -15,6 +15,7 @@ void DeactivateActor_b(UBYTE i);
 void ActorsUnstick_b();
 void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y);
 UBYTE ActorInFrontOfActor_b(UBYTE i);
+UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
 void InitPlayer_b();
 
 Actor actors[MAX_ACTORS];
@@ -202,6 +203,14 @@ UBYTE ActorInFrontOfActor(UBYTE i) {
   hit_actor = ActorInFrontOfActor_b(i);
   POP_BANK;
   return hit_actor;
+}
+
+UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir) {
+  UBYTE tile;
+  PUSH_BANK(ACTOR_BANK);
+  tile = CheckCollisionInDirection_b(start_x, start_y, end_tile, check_dir);
+  POP_BANK;  
+  return tile;
 }
 
 void ActorsUnstick() {
