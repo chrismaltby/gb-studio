@@ -47,8 +47,6 @@ const DropdownIndicatorWithData = (value) =>
   })(DropdownIndicator);
 
 const Option = ({ label, value, filename, ...props }) => {
-  console.log("RENDER Option ")
-
   return (
     <components.Option {...props}>
       <div style={{ display: "flex" }}>

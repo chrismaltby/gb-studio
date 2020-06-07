@@ -9,8 +9,14 @@ const fields = [
     defaultValue: "LAST_SPRITE",
   },
   {
+    key: "actorId",
+    type: "actor",
+    label: l10n("FIELD_SOURCE"),
+    defaultValue: "player",
+  },
+  {
     key: "x",
-    label: l10n("FIELD_X"),
+    label: l10n("FIELD_OFFSET_X"),
     type: "number",
     min: 0,
     max: 255,
@@ -19,7 +25,7 @@ const fields = [
   },
   {
     key: "y",
-    label: l10n("FIELD_Y"),
+    label: l10n("FIELD_OFFSET_Y"),
     type: "number",
     min: 0,
     max: 255,

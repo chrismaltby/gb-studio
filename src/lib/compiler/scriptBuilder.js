@@ -84,7 +84,8 @@ import {
   TIMER_DISABLE,
   TEXT_WITH_AVATAR,
   MENU,
-  LAUNCH_PROJECTILE
+  LAUNCH_PROJECTILE,
+  SET_PROPERTY
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -422,6 +423,33 @@ class ScriptBuilder {
     output.push(lo(variableIndex));
     output.push(value);
   };
+
+  variableSetToProperty = (variable, property) => {
+    const output = this.output;
+    const { variables, scene, entity } = this.options;
+    const variableIndex = this.getVariableIndex(variable, variables);
+    const actorValue = property && property.replace(/:.*/,"");
+    const propertyValue = property && property.replace(/.*:/,"");
+    const actorIndex =
+      actorValue === "$self$"
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(actorValue, scene);    
+    const properties = [
+      "xpos",
+      "ypos",
+      "direction",
+      "moveSpeed",
+      "animSpeed",
+      "frame"
+    ]
+    const propertyIndex = properties.indexOf(propertyValue);
+    console.log("HERE",propertyValue, cmd(SET_PROPERTY), hi(variableIndex), lo(variableIndex), Math.max(0, propertyIndex), actorIndex)
+    output.push(cmd(SET_PROPERTY));
+    output.push(hi(variableIndex));
+    output.push(lo(variableIndex));
+    output.push(Math.max(0, propertyIndex));
+    output.push(actorIndex);    
+  }
 
   variableCopy = (setVariable, otherVariable) => {
     const output = this.output;

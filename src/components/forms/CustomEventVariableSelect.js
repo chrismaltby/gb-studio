@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { VariableShape } from "../../reducers/stateShape";
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 const allVariables = Array.from(Array(10).keys());
 
 class CustomEventVariableSelect extends Component {
@@ -19,7 +21,6 @@ class CustomEventVariableSelect extends Component {
 
   render() {
     const { id, value, onChange } = this.props;
-
     const options = allVariables.map((variable, index) => {
       return {
         value: String(index),
@@ -38,6 +39,7 @@ class CustomEventVariableSelect extends Component {
         onChange={onChange}
         options={options}
         menuPlacement="auto"
+        menuPortalTarget={menuPortalEl}
       />
     );
   }

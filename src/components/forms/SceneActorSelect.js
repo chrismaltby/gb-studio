@@ -11,6 +11,8 @@ import {
 } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 // Dropdown Indicator ---------------------------------------------------------
 
 const DropdownIndicator = ({ actor, direction, frame, ...props }) => {
@@ -168,6 +170,7 @@ class SceneActorSelect extends Component {
           Option: OptionWithData,
         }}
         menuPlacement="auto"
+        menuPortalTarget={menuPortalEl}
       />
     );
   }
@@ -203,20 +206,17 @@ function mapStateToProps(state, ownProps) {
   const value = ownProps.value;
   const actorId = value === "$self$" ? contextEntityId : value;
   const actorIndex = actorIds.indexOf(actorId);
-  const actor =
-    value === "$self$"
-      ? actorsLookup[actorId]
-      : getCachedObject({
-          id: "player",
-          spriteSheetId: playerSpriteSheetId,
-        });
+  const actor = actorsLookup[actorId] || getCachedObject({
+    id: "player",
+    spriteSheetId: playerSpriteSheetId,
+  });
   const actorName = actor ? actor.name || `Actor ${actorIndex + 1}` : "";
-  const label =
-    value === "player"
-      ? "Player"
-      : value === "$self$"
-      ? `Self (${actorName})`
-      : actorName;
+  let label = actorName;
+  if(value === "player") {
+    label = "Player";
+  } else if(value === "$self$") {
+    label = `Self (${actorName})`;
+  }
   return {
     label,
     actorIds,

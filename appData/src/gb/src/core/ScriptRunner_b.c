@@ -140,7 +140,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_TextWithAvatar_b, 4},      // 0x5B
     {Script_TextMenu_b, 7},            // 0x5C
     {Script_ActorSetCollisions_b, 1},  // 0x5D
-    {Script_LaunchProjectile_b, 4}     // 0x5E
+    {Script_LaunchProjectile_b, 4},    // 0x5E
+    {Script_SetFlagProperty_b, 4}      // 0x5F
 };
 
 void ScriptTimerUpdate_b() {
@@ -782,6 +783,47 @@ void Script_DecFlag_b() {
 void Script_SetFlagValue_b() {
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   script_variables[ptr] = script_cmd_args[2];
+}
+
+/*
+ * Command: SetFlagProperty
+ * ----------------------------
+ * Set flag to an actor property
+ */
+void Script_SetFlagProperty_b() {
+  UBYTE value = 0;
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  
+      // "xpos",
+      // "ypos",
+      // "direction",
+      // "moveSpeed",
+      // "animSpeed",
+      // "frame"
+
+// value = script_cmd_args[2];
+
+  switch(script_cmd_args[2]) {
+    case 0:
+      value = actors[script_cmd_args[3]].pos.x >> 3;
+      break;
+    case 1:
+      value = actors[script_cmd_args[3]].pos.y >> 3;
+      break;  
+    case 2:
+      value = 0; //actors[script_cmd_args[3]].dir
+      break;            
+    case 3:
+      value = actors[script_cmd_args[3]].move_speed;
+      break;
+    case 4:
+      value = actors[script_cmd_args[3]].anim_speed;
+      break;
+    case 5:
+      value = actors[script_cmd_args[3]].frame;
+      break;
+  }
+  script_variables[ptr] = value;
 }
 
 /*

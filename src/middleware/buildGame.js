@@ -18,7 +18,8 @@ import { promisify } from "util";
 
 const rmdir = promisify(rimraf);
 
-const buildUUID = uuid();
+// const buildUUID = uuid();
+const buildUUID = "debugbb";
 
 export default store => next => async action => {
   if (action.type === BUILD_GAME) {

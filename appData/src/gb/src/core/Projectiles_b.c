@@ -7,9 +7,13 @@
 #include "GameTime.h"
 #include "Scroll.h"
 #include "Sprite.h"
+#include "Actor.h"
+#include "DataManager.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
+
+#define EMOTE_SPRITE 124
 
 Projectile projectiles[MAX_PROJECTILES];
 UBYTE current_projectile = 0;
@@ -17,8 +21,6 @@ UBYTE current_projectile = 0;
 void ProjectilesInit_b() {
   UBYTE i;
   for (i = 0; i != MAX_PROJECTILES; i++) {
-    projectiles[i].pos.x = 32 + (32 * i);
-    projectiles[i].pos.y = 32 + (32 * i);
     projectiles[i].sprite_index = SpritePoolNext();
     LOG("MADE PROJECTILE %u WITH sprite_index=%u\n", i, projectiles[i].sprite_index);
   }
@@ -26,8 +28,16 @@ void ProjectilesInit_b() {
 
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
                         UBYTE move_speed, UBYTE life_time, UBYTE col_mask, UWORD col_script) {
+  unsigned char *emote_ptr;
 
   if (projectiles[current_projectile].life_time == 0) {
+    emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
+    SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4, emote_ptr);
+    set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
+    set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
+    set_sprite_tile(projectiles[current_projectile].sprite_index, EMOTE_SPRITE);
+    set_sprite_tile(projectiles[current_projectile].sprite_index + 1, EMOTE_SPRITE + 2);
+
     projectiles[current_projectile].life_time = 0;
     projectiles[current_projectile].moving = 0;
     projectiles[current_projectile].pos.x = 0;
@@ -52,7 +62,7 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
 }
 
 void UpdateProjectiles_b() {
-  UBYTE i, k;
+  UBYTE i, k, j, a, hit;
   UINT16 screen_x;
   UINT16 screen_y;
 
@@ -69,6 +79,33 @@ void UpdateProjectiles_b() {
           projectiles[i].pos.x += projectiles[i].dir.x * projectiles[i].move_speed;
           projectiles[i].pos.y += projectiles[i].dir.y * projectiles[i].move_speed;
         }
+      }
+
+      // Determine if projectile hit any actors
+      hit = NO_ACTOR_COLLISON;
+      for (j = actors_active_size - 1; j != 0; j--) {
+        UBYTE a = actors_active[j];
+
+        if (!actors[a].enabled) {
+          continue;
+        }
+
+        if ((projectiles[i].pos.x + 16 >= actors[a].pos.x) &&
+            (projectiles[i].pos.x <= actors[a].pos.x + 16) &&
+            (projectiles[i].pos.y + 8 >= actors[a].pos.y) &&
+            (projectiles[i].pos.y <= actors[a].pos.y + 8)) {
+          hit = a;
+        }
+      }
+
+      // If hit actor play collision event
+      if (hit != NO_ACTOR_COLLISON) {
+        // player.pos.x = 0;
+        projectiles[i].life_time = 0;
+        k = projectiles[i].sprite_index;
+        move_sprite(k, 0, 0);
+        move_sprite(k + 1, 0, 0);
+        return;
       }
 
       k = projectiles[i].sprite_index;

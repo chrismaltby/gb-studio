@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -21,6 +22,7 @@ import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
+import PropertySelect from "../forms/PropertySelect";
 
 class ScriptEventFormInput extends Component {
   onChange = e => {
@@ -49,11 +51,20 @@ class ScriptEventFormInput extends Component {
   };
 
   onChangeUnionType = newType => e => {
-    const { onChange, value, index } = this.props;
+    const { onChange, value, index, field, scope } = this.props;
     if(newType !== value.type) {
+      let replaceValue = null;
+      const defaultValue = field.defaultValue[newType];
+
+      if (defaultValue === "LAST_VARIABLE") {
+        replaceValue = scope === "customEvents" ? "0" : "L0";
+      } else if (defaultValue !== undefined) {
+        replaceValue = defaultValue;
+      }
+
       onChange({
         type: newType,
-        value: undefined
+        value: replaceValue
       }, index);
     }
   }  
@@ -223,6 +234,15 @@ class ScriptEventFormInput extends Component {
         />
       );
     }
+    if (type === "property") {
+      return (
+        <PropertySelect
+          id={id}
+          value={value}
+          onChange={this.onChange}
+        />
+      );
+    }    
     if(type === "union") {
       const currentType = (value && value.type) || (field.defaultType);
       const currentValue = value && value.value;
@@ -274,7 +294,8 @@ ScriptEventFormInput.propTypes = {
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.arrayOf(PropTypes.bool)
   ]),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  scope: PropTypes.string.isRequired
 };
 
 ScriptEventFormInput.defaultProps = {
@@ -285,4 +306,13 @@ ScriptEventFormInput.defaultProps = {
   type: ""
 };
 
-export default ScriptEventFormInput;
+function mapStateToProps(state) {
+  const scope = state.editor.type === "customEvents"
+    ? "customEvent"
+    : "global";
+  return {
+    scope
+  };
+}
+
+export default connect(mapStateToProps)(ScriptEventFormInput);

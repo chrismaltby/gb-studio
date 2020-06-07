@@ -93,6 +93,7 @@ export const TEXT_WITH_AVATAR = "TEXT_WITH_AVATAR";
 export const MENU = "MENU";
 export const ACTOR_SET_COLLISIONS = "ACTOR_SET_COLLISIONS";
 export const LAUNCH_PROJECTILE = "LAUNCH_PROJECTILE";
+export const SET_PROPERTY = "SET_PROPERTY";
 
 export const scriptCommands = [
   END,
@@ -189,7 +190,8 @@ export const scriptCommands = [
   TEXT_WITH_AVATAR,
   MENU,
   ACTOR_SET_COLLISIONS,
-  LAUNCH_PROJECTILE
+  LAUNCH_PROJECTILE,
+  SET_PROPERTY
 ];
 
 export const commandIndex = key => {

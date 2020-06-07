@@ -218,6 +218,11 @@
   "FIELD_EDIT_PALETTES": "Edit Palettes",
   "FIELD_WAIT_UNTIL_FINISHED": "Wait until finished",
   "FIELD_ACTOR_TYPE": "Sprite Type",
+  "FIELD_OFFSET_X": "Offset X",
+  "FIELD_OFFSET_Y": "Offset Y",
+  "FIELD_SOURCE": "Source",
+  "FIELD_X_POSITION": "X Position",
+  "FIELD_Y_POSITION": "Y Position",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

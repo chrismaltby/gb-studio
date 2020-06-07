@@ -44,15 +44,25 @@ export const ButtonToolbarFixedSpacer = props => (
 export class DropdownButton extends Component {
   constructor() {
     super();
+    this.buttonEl = React.createRef();
     this.state = {
+      menuDirection: "down",
       open: false
     };
   }
 
   toggleOpen = () => {
     this.setState(prevState => {
+      let menuDirection = "down";
+      if(!prevState.open && this.buttonEl.current) {
+        const boundingRect = this.buttonEl.current.getBoundingClientRect();
+        if(boundingRect.bottom > window.innerHeight - 150) {
+          menuDirection = "up";
+        }
+      }
       return {
-        open: !prevState.open
+        open: !prevState.open,
+        menuDirection
       };
     });
   };
@@ -68,10 +78,9 @@ export class DropdownButton extends Component {
       right,
       ...props
     } = this.props;
-    const { open } = this.state;
-
+    const { open, menuDirection } = this.state;
     return (
-      <div className="DropdownButton" {...props}>
+      <div ref={this.buttonEl} className="DropdownButton" {...props}>
         <Button
           onClick={this.toggleOpen}
           transparent={transparent}
@@ -87,7 +96,7 @@ export class DropdownButton extends Component {
         </Button>
         {open && <MenuOverlay onClick={this.toggleOpen} />}
         {open && (
-          <Menu onClick={this.toggleOpen} right>
+          <Menu onClick={this.toggleOpen} up={menuDirection === "up"} right>
             {children}
           </Menu>
         )}

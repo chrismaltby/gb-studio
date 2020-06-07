@@ -20,6 +20,10 @@
   right: 0;
 }
 
+.Menu--Up {
+  bottom: 30px;
+}
+
 .MenuItem {
   padding: 6px 10px;
   padding-right: 20px;
@@ -33,6 +37,7 @@
   margin-right: 5px;
   margin-bottom: 2px;
   vertical-align: middle;
+  fill: var(--main-text-color);
 }
 
 .MenuItem:hover {

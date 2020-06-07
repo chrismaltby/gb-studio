@@ -61,24 +61,34 @@ class ScriptEditor extends Component {
       ? eventFields.reduce(
           (memo, field) => {
             let replaceValue = null;
-            if (field.defaultValue === "LAST_SCENE") {
+            let defaultValue = field.defaultValue;
+            if(field.type === "union") {
+              defaultValue = field.defaultValue[field.defaultType];
+            }
+            if (defaultValue === "LAST_SCENE") {
               replaceValue = sceneIds[sceneIds.length - 1];
-            } else if (field.defaultValue === "LAST_VARIABLE") {
+            } else if (defaultValue === "LAST_VARIABLE") {
               replaceValue = scope === "customEvents" ? "0" : "L0";
-            } else if (field.defaultValue === "LAST_MUSIC") {
+            } else if (defaultValue === "LAST_MUSIC") {
               replaceValue = musicIds[0];
-            } else if (field.defaultValue === "LAST_SPRITE") {
+            } else if (defaultValue === "LAST_SPRITE") {
               replaceValue = spriteSheetIds[0];
-            } else if (field.defaultValue === "LAST_ACTOR") {
+            } else if (defaultValue === "LAST_ACTOR") {
               replaceValue =
                 actorIds.length > 0 ? actorIds[actorIds.length - 1] : "player";
             } else if (field.type === "events") {
               replaceValue = undefined;
             } else if (
-              field.defaultValue !== undefined &&
+              defaultValue !== undefined &&
               !defaults[field.key]
             ) {
-              replaceValue = field.defaultValue;
+              replaceValue = defaultValue;
+            }
+            if(field.type === "union") {
+              replaceValue = {
+                type: field.defaultType,
+                value: replaceValue
+              }
             }
             if (replaceValue !== null) {
               return {
