@@ -155,9 +155,9 @@ class ScriptEventFormField extends Component {
         {field.type !== "checkbox" && field.type !== "group" && (
           <label htmlFor={genKey(eventId, field.key)}>{label}</label>
         )}
-        {inputField}
+        {field.type !== "checkbox" && inputField}
         {field.type === "checkbox" && (
-          <label htmlFor={genKey(eventId, field.key)}>{label}</label>
+          <label htmlFor={genKey(eventId, field.key)}>{inputField} {label}</label>
         )}
       </FormField>
     );
