@@ -97,7 +97,6 @@ function changeDirection(direction, input, helpers) {
   }
 }
 
-
 module.exports = {
   id,
   fields,

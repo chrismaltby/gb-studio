@@ -349,7 +349,21 @@ export const migrateFrom120To200Event = event => {
         }
       }
     };
+  }
+  if(event.args && event.command === "EVENT_ACTOR_SET_DIRECTION_TO_VALUE") {
+    return {
+      ...event,
+      command: "EVENT_ACTOR_SET_DIRECTION",
+      args: {
+        actorId: event.args.actorId,
+        direction: {
+          type: "variable",
+          value: event.args.variable,
+        }
+      }
+    };
   }  
+
   return event;
 };
 
