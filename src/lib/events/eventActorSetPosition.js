@@ -11,27 +11,47 @@ const fields = [
   {
     key: "x",
     label: l10n("FIELD_X"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
-    max: 256,
+    max: 255,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos"
+    },
   },
   {
     key: "y",
     label: l10n("FIELD_Y"),
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
-    max: 256,
+    max: 255,
     width: "50%",
-    defaultValue: 0,
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos"
+    },   
   },
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetPosition } = helpers;
+  const { actorSetActive, actorSetPosition, actorSetPositionToVariables, variableFromUnion } = helpers;
   actorSetActive(input.actorId);
-  actorSetPosition(input.x, input.y);
+  if(input.x.type === "number" && input.y.type === "number") {
+    // If all inputs are numbers use fixed implementation
+    actorSetPosition(input.x.value, input.y.value);
+  } else {
+    // If any value is not a number transfer values into variables and use variable implementation
+    const xVar = variableFromUnion(input.x, "tmp1");
+    const yVar = variableFromUnion(input.y, "tmp2");
+    actorSetPositionToVariables(xVar, yVar);
+  }
 };
 
 module.exports = {

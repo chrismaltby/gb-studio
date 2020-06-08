@@ -55,34 +55,17 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableSetToValue, variableSetToProperty } = helpers;
-  const tmp1 = "tmp1";
-  const tmp2 = "tmp2";
+  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableFromUnion } = helpers;
 
   actorSetActive(input.actorId);
-
+  
   if(input.x.type === "number" && input.y.type === "number") {
+    // If all inputs are numbers use fixed implementation
     actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.verticalFirst);
   } else {
-    let xVar = input.x.value;
-    let yVar = input.y.value;
-    
-    if(input.x.type === "number"){
-      variableSetToValue(tmp1, input.x.value);
-      xVar = tmp1;
-    } else if(input.x.type === "property"){
-      variableSetToProperty(tmp1, input.x.value);
-      xVar = tmp1;
-    }
-
-    if(input.y.type === "number"){
-      variableSetToValue(tmp2, input.y.value);
-      yVar = tmp2;
-    } else if(input.y.type === "property"){
-      variableSetToProperty(tmp2, input.y.value);
-      yVar = tmp2;
-    }
-
+    // If any value is not a number transfer values into variables and use variable implementation
+    const xVar = variableFromUnion(input.x, "tmp1");
+    const yVar = variableFromUnion(input.y, "tmp2");
     actorMoveToVariables(xVar, yVar, input.useCollisions, input.verticalFirst);
   }
 };

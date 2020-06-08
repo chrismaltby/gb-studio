@@ -556,6 +556,23 @@ class ScriptBuilder {
     output.push(flags);
   };
 
+  variableFromUnion = (unionValue, tmpVar) => {
+    if(unionValue.type === "variable") {
+      return unionValue.value;
+    }
+    const { entity } = this.options;
+    const variable = `${entity.id}__${tmpVar}`
+    if(unionValue.type === "number"){
+      this.variableSetToValue(variable, unionValue.value);
+      return variable;
+    }
+    if(unionValue.type === "property"){
+      this.variableSetToProperty(variable, unionValue.value);
+      return variable;
+    }
+    throw new Error(`Union type "${unionValue.type}" unknown.`);
+  }
+
   // Scenes
 
   sceneSwitch = (sceneId, x = 0, y = 0, direction = "down", fadeSpeed = 2) => {

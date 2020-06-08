@@ -333,6 +333,23 @@ export const migrateFrom120To200Event = event => {
       }
     };
   }
+  if(event.args && event.command === "EVENT_ACTOR_SET_POSITION_TO_VALUE") {
+    return {
+      ...event,
+      command: "EVENT_ACTOR_SET_POSITION",
+      args: {
+        actorId: event.args.actorId,
+        x: {
+          type: "variable",
+          value: event.args.vectorX,
+        },
+        y: {
+          type: "variable",
+          value: event.args.vectorY,
+        }
+      }
+    };
+  }  
   return event;
 };
 
