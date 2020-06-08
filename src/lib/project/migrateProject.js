@@ -333,6 +333,24 @@ export const migrateFrom120To200Event = event => {
       }
     };
   }
+  if(event.args && event.command === "EVENT_ACTOR_MOVE_TO") {
+    return {
+      ...event,
+      args: {
+        actorId: event.args.actorId,
+        x: {
+          type: "number",
+          value: event.args.x,
+        },
+        y: {
+          type: "number",
+          value: event.args.y,
+        },
+        useCollisions: false,
+        verticalFirst: false,
+      }
+    };
+  } 
   if(event.args && event.command === "EVENT_ACTOR_SET_POSITION_TO_VALUE") {
     return {
       ...event,
@@ -350,6 +368,22 @@ export const migrateFrom120To200Event = event => {
       }
     };
   }
+  if(event.args && event.command === "EVENT_ACTOR_SET_POSITION") {
+    return {
+      ...event,
+      args: {
+        actorId: event.args.actorId,
+        x: {
+          type: "number",
+          value: event.args.x,
+        },
+        y: {
+          type: "number",
+          value: event.args.y,
+        }
+      }
+    };
+  }  
   if(event.args && event.command === "EVENT_ACTOR_SET_DIRECTION_TO_VALUE") {
     return {
       ...event,
@@ -363,6 +397,43 @@ export const migrateFrom120To200Event = event => {
       }
     };
   }  
+  if(event.args && event.command === "EVENT_ACTOR_SET_DIRECTION") {
+    return {
+      ...event,
+      args: {
+        actorId: event.args.actorId,
+        direction: {
+          type: "direction",
+          value: event.args.direction,
+        }
+      }
+    };
+  }
+  if(event.args && event.command === "EVENT_ACTOR_SET_FRAME_TO_VALUE") {
+    return {
+      ...event,
+      command: "EVENT_ACTOR_SET_FRAME",
+      args: {
+        actorId: event.args.actorId,
+        frame: {
+          type: "variable",
+          value: event.args.variable,
+        }
+      }
+    };
+  }  
+  if(event.args && event.command === "EVENT_ACTOR_SET_FRAME") {
+    return {
+      ...event,
+      args: {
+        actorId: event.args.actorId,
+        frame: {
+          type: "number",
+          value: event.args.frame,
+        }
+      }
+    };
+  }
 
   return event;
 };
