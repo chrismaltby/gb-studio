@@ -314,13 +314,38 @@ export const migrateFrom120To200Event = event => {
       }
     }
   }
+  if(event.args && event.command === "EVENT_ACTOR_MOVE_TO_VALUE") {
+    return {
+      ...event,
+      command: "EVENT_ACTOR_MOVE_TO",
+      args: {
+        actorId: event.args.actorId,
+        x: {
+          type: "variable",
+          value: event.args.vectorX,
+        },
+        y: {
+          type: "variable",
+          value: event.args.vectorY,
+        },
+        useCollisions: false,
+        verticalFirst: false,
+      }
+    };
+  }
   return event;
 };
 
 const migrateFrom120To200Events = data => {
   return {
     ...data,
-    scenes: mapScenesEvents(data.scenes, migrateFrom120To200Event)
+    scenes: mapScenesEvents(data.scenes, migrateFrom120To200Event),
+    customEvents: data.customEvents.map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom120To200Event)
+      }
+    })
   };
 };
 
