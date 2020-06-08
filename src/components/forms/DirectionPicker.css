@@ -90,3 +90,8 @@
 .DirectionPicker__Button--Down svg {
   transform: rotate(180deg);
 }
+
+.FormField .DirectionPicker > label > input,
+.FormField .DirectionPicker > label > div {
+  margin-top: 0;
+}

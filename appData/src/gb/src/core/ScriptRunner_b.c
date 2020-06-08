@@ -858,32 +858,38 @@ void Script_SetFlagProperty_b() {
   UBYTE value = 0;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
   
-      // "xpos",
-      // "ypos",
-      // "direction",
-      // "moveSpeed",
-      // "animSpeed",
-      // "frame"
-
-// value = script_cmd_args[2];
 
   switch(script_cmd_args[2]) {
     case 0:
+      // Actor pos x
       value = actors[script_cmd_args[3]].pos.x >> 3;
       break;
     case 1:
+      // Actor pos y
       value = actors[script_cmd_args[3]].pos.y >> 3;
       break;  
     case 2:
-      value = 0; //actors[script_cmd_args[3]].dir
+      // Actor direction
+      if(actors[script_cmd_args[3]].dir.y == 1) {
+        value = 1;
+      } else if(actors[script_cmd_args[3]].dir.x == -1) {
+        value = 2;
+      } else if(actors[script_cmd_args[3]].dir.x == 1) {
+        value = 4;
+      } else {
+        value = 8;
+      }
       break;            
     case 3:
+      // Actor movement speed
       value = actors[script_cmd_args[3]].move_speed;
       break;
     case 4:
+      // Actor animation speed
       value = actors[script_cmd_args[3]].anim_speed;
       break;
     case 5:
+      // Actor frame
       value = actors[script_cmd_args[3]].frame;
       break;
   }

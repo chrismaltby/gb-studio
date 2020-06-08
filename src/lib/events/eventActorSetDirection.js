@@ -11,37 +11,92 @@ const fields = [
   },
   {
     key: "direction",
-    type: "direction",
-    defaultValue: "up",
+    type: "union",
+    types: ["direction", "variable", "property"],
+    defaultType: "direction",    
+    defaultValue: {
+      direction: "up",
+      variable: "LAST_VARIABLE",
+      property: "$self$:direction"
+    },    
   },
 ];
 
 const compile = (input, helpers) => {
   const {
-    getActorById,
     actorSetActive,
+    ifVariableValue,
+    variableFromUnion
+  } = helpers;
+
+  actorSetActive(input.actorId);
+
+  if(input.direction.type === "direction") {
+    changeDirection(input.direction.value, input, helpers)
+  } else if(typeof input.direction === "string") {
+    changeDirection(input.direction, input, helpers)    
+  } else {
+    const dirVar = variableFromUnion(input.direction, "tmp1");
+    ifVariableValue(
+      dirVar,
+      "==",
+      1,
+      () => {
+        changeDirection("down", input, helpers);
+      },
+      () => {
+        ifVariableValue(
+          dirVar,
+          "==",
+          2,
+          () => {
+            changeDirection("left", input, helpers);
+          },
+          () => {
+            ifVariableValue(
+              dirVar,
+              "==",
+              4,
+              () => {
+                changeDirection("right", input, helpers);
+              },
+              () => {
+                changeDirection("up", input, helpers);
+              }
+            );
+          }
+        );
+      }
+    );
+  }
+};
+
+function changeDirection(direction, input, helpers) {
+  const {
+    getActorById,
     actorSetDirection,
     actorSetFrame,
     actorSetFlip,
     sprites,
   } = helpers;
+
   const actor = getActorById(input.actorId);
 
-  actorSetActive(input.actorId);
-  actorSetDirection(input.direction);
+  actorSetDirection(direction);
 
   if (actor && actor.spriteType === "static") {
     const spriteSheet = getSprite(actor.spriteSheetId, sprites);
     const numFrames = spriteSheet ? spriteSheet.numFrames : 0;
     const isActorSheet = numFrames === 3 || numFrames === 6;
     if (isActorSheet) {
-      const frame = directionToFrame(input.direction, numFrames);
-      const flip = input.direction === "left";
+      const frame = directionToFrame(direction, numFrames);
+      const flip = direction === "left";
       actorSetFrame(frame);
       actorSetFlip(flip);
     }
   }
-};
+}
+
 
 module.exports = {
   id,
