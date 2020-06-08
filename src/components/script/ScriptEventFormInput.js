@@ -24,6 +24,16 @@ import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 
+const argValue = (arg) => {
+  if(arg && arg.value) {
+    if(arg.type === "variable" || arg.type === "property") {
+      return undefined;
+    }
+    return arg.value;
+  }
+  return arg;
+}
+
 class ScriptEventFormInput extends Component {
   onChange = e => {
     const { onChange, field, value, index, args, type } = this.props;
@@ -206,9 +216,9 @@ class ScriptEventFormInput extends Component {
         <ActorSelect
           id={id}
           value={value}
-          direction={args.direction}
-          frame={args.frame}
-          onChange={this.onChange}
+          direction={argValue(args.direction)}
+          frame={argValue(args.frame)}
+          onChange={argValue(this.onChange)}
         />
       );
     }
@@ -229,9 +239,9 @@ class ScriptEventFormInput extends Component {
           id={id}
           value={value}
           onChange={this.onChange}
-          duration={args.duration}
-          pitch={args.pitch}
-          frequency={args.frequency}
+          duration={argValue(args.duration)}
+          pitch={argValue(args.pitch)}
+          frequency={argValue(args.frequency)}
         />
       );
     }
