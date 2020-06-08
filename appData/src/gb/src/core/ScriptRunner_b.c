@@ -624,8 +624,6 @@ void ScriptHelper_CalcDest() {
       new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_y), check_dir) * 8u;
       if(new_dest != actor_move_dest_y) {
         actor_move_dest_y = new_dest;
-        actor_move_dest_x = actors[script_actor].pos.x;
-        return;
       }
     }
     // Check horizontal collisions in path
@@ -650,8 +648,6 @@ void ScriptHelper_CalcDest() {
       new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_x), check_dir) * 8u;
       if(new_dest != actor_move_dest_x) {
         actor_move_dest_x = new_dest;
-        actor_move_dest_y = actors[script_actor].pos.y;
-        return;
       }
     }
     // Check vertical collisions in path
