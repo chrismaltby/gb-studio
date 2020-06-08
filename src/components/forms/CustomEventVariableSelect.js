@@ -11,7 +11,7 @@ const allVariables = Array.from(Array(10).keys());
 class CustomEventVariableSelect extends Component {
   variableName = index => {
     const { variables } = this.props;
-    const letter = String.fromCharCode("A".charCodeAt(0) + index);
+    const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(index, 10));
     return variables[index] ? variables[index].name : `Variable ${letter}`;
   };
 
