@@ -70,7 +70,7 @@ class ScriptEventFormInput extends Component {
   }  
 
   render() {
-    const { type, id, value, defaultValue, args, field, entityId } = this.props;
+    const { type, id, value, defaultValue, args, field, entityId, allowRename } = this.props;
 
     if (type === "textarea") {
       return (
@@ -163,6 +163,7 @@ class ScriptEventFormInput extends Component {
           value={value || "0"}
           entityId={entityId}
           onChange={this.onChange}
+          allowRename={allowRename}
         />
       );
     }
@@ -256,6 +257,7 @@ class ScriptEventFormInput extends Component {
               field={field}
               value={currentValue}
               defaultValue={field.defaultValue[currentType]}
+              allowRename={false}
               args={args}
               onChange={this.onChangeUnionValue}
             />
@@ -294,6 +296,7 @@ ScriptEventFormInput.propTypes = {
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.arrayOf(PropTypes.bool)
   ]),
+  allowRename: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   scope: PropTypes.string.isRequired
 };
@@ -303,7 +306,8 @@ ScriptEventFormInput.defaultProps = {
   index: undefined,
   value: "",
   args: {},
-  type: ""
+  type: "",
+  allowRename: true
 };
 
 function mapStateToProps(state) {

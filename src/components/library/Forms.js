@@ -268,7 +268,8 @@ export class SelectRenamable extends Component {
       id,
       value,
       onChange,
-      grouped
+      grouped,
+      allowRename
     } = this.props;
     const { edit, editValue } = this.state;
 
@@ -298,7 +299,7 @@ export class SelectRenamable extends Component {
             menuPortalTarget={menuPortalEl}
           />
         )}
-        {/* {edit ? (
+        {allowRename && (edit ? (
           <div
             key="save"
             className="SelectRenamable__EditBtn SelectRenamable__SaveBtn"
@@ -314,7 +315,7 @@ export class SelectRenamable extends Component {
           >
             {l10n("FIELD_RENAME")}
           </div>
-        )} */}
+        ))}
       </div>
     );
   }

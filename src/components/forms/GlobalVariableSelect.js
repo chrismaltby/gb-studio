@@ -54,7 +54,7 @@ class GlobalVariableSelect extends Component {
   };
 
   render() {
-    const { id, value, onChange, variablesVersion } = this.props;
+    const { id, value, onChange, variablesVersion, allowRename } = this.props;
 
     const options = [
       {
@@ -96,6 +96,7 @@ class GlobalVariableSelect extends Component {
         }}
         onChange={onChange}
         options={options}
+        allowRename={allowRename}
         grouped
         menuPlacement="auto"
       />
