@@ -7,7 +7,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player",
+    defaultValue: "$self$"
   },
   {
     key: "direction",

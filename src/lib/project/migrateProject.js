@@ -1,7 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import { indexBy } from "../helpers/array";
 import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
-import uuid from "uuid/v4";
+import generateRandomWalkScript from "../movement/generateRandomWalkScript";
+import generateRandomLookScript from "../movement/generateRandomLookScript";
 
 const indexById = indexBy("id");
 
@@ -266,27 +267,9 @@ const migrateFrom120To200Actors = (data) => {
         actors: scene.actors.map((actor) => {
           let movementScript;
           if(actor.movementType === "randomFace") {
-            movementScript = [
-              {
-                id: uuid(),
-                command: "EVENT_TEXT",
-                args: {
-                  text: "RANDOM_FACE\nPLACEHOLDER",
-                  avatarId: "",
-                },
-              },
-            ];
+            movementScript = generateRandomLookScript();
           } else if (actor.movementType === "randomWalk") {
-            movementScript = [
-              {
-                id: uuid(),
-                command: "EVENT_TEXT",
-                args: {
-                  text: "RANDOM_WALK\nPLACEHOLDER",
-                  avatarId: "",
-                },
-              },
-            ];
+            movementScript = generateRandomWalkScript();
           }
           return {
             ...actor,
