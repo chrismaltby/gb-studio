@@ -131,13 +131,15 @@ class ScriptBuilder {
     output.push(verticalFirst ? 1 : 0);
   };
 
-  actorMoveRelative = (x = 0, y = 0) => {
+  actorMoveRelative = (x = 0, y = 0, useCollisions = false, verticalFirst = false) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_RELATIVE));
     output.push(Math.abs(x));
     output.push(x < 0 ? 1 : 0);
     output.push(Math.abs(y));
     output.push(y < 0 ? 1 : 0);
+    output.push(useCollisions ? 1 : 0);
+    output.push(verticalFirst ? 1 : 0);    
   };
 
   actorMoveToVariables = (variableX, variableY, useCollisions = false, verticalFirst = false) => {

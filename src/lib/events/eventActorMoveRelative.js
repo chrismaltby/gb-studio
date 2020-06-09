@@ -6,7 +6,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "player"
+    defaultValue: "$self$"
   },
   {
     key: "x",
@@ -25,13 +25,27 @@ const fields = [
     max: 31,
     width: "50%",
     defaultValue: 0
-  }
+  },
+  {
+    key: "useCollisions",
+    label: l10n("FIELD_USE_COLLISIONS"),
+    width: "50%",
+    type: "checkbox",
+    defaultValue: false
+  },
+  {
+    key: "verticalFirst",
+    label: l10n("FIELD_VERTICAL_FIRST"),
+    width: "50%",
+    type: "checkbox",
+    defaultValue: false
+  }  
 ];
 
 const compile = (input, helpers) => {
   const { actorSetActive, actorMoveRelative } = helpers;
   actorSetActive(input.actorId);
-  actorMoveRelative(input.x, input.y);
+  actorMoveRelative(input.x, input.y, input.useCollisions, input.verticalFirst);
 };
 
 module.exports = {

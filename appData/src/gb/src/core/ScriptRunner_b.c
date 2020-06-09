@@ -101,7 +101,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorGetPos_b, 0},         // 0x30
     {Script_ActorSetPosToVal_b, 0},    // 0x31
     {Script_ActorMoveToVal_b, 2},      // 0x32
-    {Script_ActorMoveRel_b, 4},        // 0x33
+    {Script_ActorMoveRel_b, 6},        // 0x33
     {Script_ActorSetPosRel_b, 4},      // 0x34
     {Script_MathAdd_b, 3},             // 0x35
     {Script_MathSub_b, 3},             // 0x36
@@ -1300,6 +1300,13 @@ void Script_ActorMoveRel_b() {
       }
     }
   }
+
+  actor_move_cols = script_cmd_args[4];
+  actor_move_vert = script_cmd_args[5];
+
+  if(actor_move_cols) {
+    ScriptHelper_CalcDest();
+  }  
 
   script_update_fn = ScriptUpdate_MoveActor;
 }
