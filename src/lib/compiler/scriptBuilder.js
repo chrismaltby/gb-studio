@@ -561,7 +561,12 @@ class ScriptBuilder {
       return unionValue.value;
     }
     const { entity } = this.options;
-    const variable = `${entity.id}__${tmpVar}`
+    const variable = `${entity.id}__${tmpVar}`;
+    this.variableSetToUnionValue(variable, unionValue);
+    return variable;
+  }
+
+  variableSetToUnionValue = (variable, unionValue) => {
     if(unionValue.type === "number"){
       this.variableSetToValue(variable, unionValue.value);
       return variable;
@@ -570,7 +575,10 @@ class ScriptBuilder {
       this.variableSetToProperty(variable, unionValue.value);
       return variable;
     }
-    throw new Error(`Union type "${unionValue.type}" unknown.`);
+    if(unionValue.type === "variable") {
+      this.variableCopy(variable, unionValue.value);
+    }
+    throw new Error(`Union type "${unionValue.type}" unknown.`);    
   }
 
   // Scenes

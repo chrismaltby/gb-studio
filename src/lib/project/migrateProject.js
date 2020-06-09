@@ -434,6 +434,18 @@ export const migrateFrom120To200Event = event => {
       }
     };
   }
+  if(event.args && event.command === "EVENT_SET_VALUE") {
+    return {
+      ...event,
+      args: {
+        variable: event.args.variable,
+        value: {
+          type: "number",
+          value: event.args.value,          
+        }
+      }
+    }
+  }
 
   return event;
 };

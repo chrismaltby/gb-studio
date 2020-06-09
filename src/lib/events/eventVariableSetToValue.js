@@ -8,24 +8,36 @@ const fields = [
   },
   {
     key: "value",
-    type: "number",
+    type: "union",
+    types: ["number", "variable", "property"],
+    defaultType: "number",
     min: 0,
     max: 255,
-    defaultValue: "0"
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+      property: "$self$:xpos"
+    },
   }
 ];
 
 const compile = (input, helpers) => {
-  const value = parseInt(input.value, 10);
-  if (value > 1)  {
-    const { variableSetToValue } = helpers;
-    variableSetToValue(input.variable, value);
-  } else if (value === 1) {
-    const { variableSetToTrue } = helpers;
-    variableSetToTrue(input.variable);
+  const { variableSetToUnionValue } = helpers;
+
+  if(input.value.type === "number") {
+    const value = parseInt(input.value.value, 10);
+    if (value > 1)  {
+      const { variableSetToValue } = helpers;
+      variableSetToValue(input.variable, value);
+    } else if (value === 1) {
+      const { variableSetToTrue } = helpers;
+      variableSetToTrue(input.variable);
+    } else {
+      const { variableSetToFalse } = helpers;
+      variableSetToFalse(input.variable);
+    }
   } else {
-    const { variableSetToFalse } = helpers;
-    variableSetToFalse(input.variable);
+    variableSetToUnionValue(input.variable, input.value);
   }
 };
 
