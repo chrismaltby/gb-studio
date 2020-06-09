@@ -11,7 +11,7 @@ const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
 );
 
-const localVariables = ["L0", "L1", "L2", "L3"];
+const localVariables = ["L0", "L1", "L2", "L3", "L4", "L5"];
 
 class GlobalVariableSelect extends Component {
   // shouldComponentUpdate(nextProps, nextState) {
