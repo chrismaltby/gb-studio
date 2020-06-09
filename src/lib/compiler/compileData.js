@@ -29,7 +29,7 @@ import {
   EVENT_SET_INPUT_SCRIPT,
   EVENT_END,
 } from "./eventTypes";
-import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
   combineMultipleChoiceText,
   dirDec,
@@ -217,7 +217,6 @@ const compile = async (
     };
   });
 
-  console.log({eventPtrs})
 
   // Strings
   const stringPtrs = precompiled.strings.map((string) => {
@@ -480,6 +479,8 @@ const compile = async (
       `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
       `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
       `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
+      `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
+      `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n` + 
       `\n`
     }${Object.keys(dataPtrs)
       .map((name) => {
@@ -682,8 +683,8 @@ export const precompileVariables = (scenes) => {
       }
     }
   });
-  variables.push("tmp1");
-  variables.push("tmp2");
+  variables.push(TMP_VAR_1);
+  variables.push(TMP_VAR_2);
   return variables;
 };
 

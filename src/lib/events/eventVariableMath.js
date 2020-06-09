@@ -103,9 +103,10 @@ const compile = (input, helpers) => {
     variablesSub,
     variablesMul,
     variablesDiv,
-    variablesMod
+    variablesMod,
+    temporaryEntityVariable
   } = helpers;
-  const tmp1 = "tmp1";
+  const tmp1 = temporaryEntityVariable(0);
   switch (input.other) {
     case "true":
       variableSetToValue(tmp1, 1);

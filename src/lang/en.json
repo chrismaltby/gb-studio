@@ -228,6 +228,7 @@
   "FIELD_HORIZONTAL": "Horizontal",
   "FIELD_VERTICAL": "Vertical",
   "FIELD_VERTICAL_FIRST": "Vertical First",
+  "FIELD_TEMPORARY": "Temporary",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

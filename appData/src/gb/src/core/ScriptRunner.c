@@ -65,6 +65,9 @@ void ScriptStart(BankPtr *events_ptr) {
 
   LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
 
+  script_variables[TMP_VAR_1] = 0;
+  script_variables[TMP_VAR_2] = 0;
+
   script_ctxs[0].script_ptr_bank = events_ptr->bank;
   script_ctxs[0].script_ptr =
       (BankDataPtr(script_ctxs[0].script_ptr_bank)) + events_ptr->offset;
@@ -92,6 +95,9 @@ UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner) {
   // out_ctx = ctx;
 
   if(current_script_ctx != 0) {
+    script_variables[TMP_VAR_1] = 0;
+    script_variables[TMP_VAR_2] = 0;
+
     LOG("RUN IN BACKGROUND USING CTX=%u\n", current_script_ctx);
     script_ctxs[current_script_ctx].owner = 0; // @wtf
     script_ctxs[current_script_ctx].script_ptr_bank = events_ptr->bank;
@@ -211,6 +217,8 @@ void ScriptSaveCtx() {
   script_ctxs[current_script_ctx].wait_time = 0;        // @wtf
   script_ctxs[current_script_ctx].actor_move_cols = 0;  // @wtf
   script_ctxs[current_script_ctx].actor_move_vert = 0;  // @wtf
+  script_ctxs[current_script_ctx].tmp_1 = 0;            // @wtf
+  script_ctxs[current_script_ctx].tmp_2 = 0;            // @wtf
   script_ctxs[current_script_ctx].actor_move_dest_x = actor_move_dest_x;
   script_ctxs[current_script_ctx].actor_move_dest_y = actor_move_dest_y;
   script_ctxs[current_script_ctx].actor_move_cols = actor_move_cols;
@@ -224,6 +232,8 @@ void ScriptSaveCtx() {
   script_ctxs[current_script_ctx].wait_time = wait_time;
   script_ctxs[current_script_ctx].script_await_next_frame = script_await_next_frame;
   script_ctxs[current_script_ctx].script_actor = script_actor;
+  script_ctxs[current_script_ctx].tmp_1 = script_variables[TMP_VAR_1];
+  script_ctxs[current_script_ctx].tmp_2 = script_variables[TMP_VAR_2];
 }
 
 void ScriptRestoreCtx(UBYTE i) {
@@ -250,6 +260,8 @@ void ScriptRestoreCtx(UBYTE i) {
   wait_time = script_ctxs[i].wait_time;
   script_await_next_frame = script_ctxs[i].script_await_next_frame;
   script_actor = script_ctxs[i].script_actor;
+  script_variables[TMP_VAR_1] = script_ctxs[i].tmp_1;
+  script_variables[TMP_VAR_2] = script_ctxs[i].tmp_2;
   ScriptRunnerUpdate();
 }
 

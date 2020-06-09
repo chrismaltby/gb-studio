@@ -61,10 +61,11 @@ const compile = (input, helpers) => {
     variableSetToValue,
     variableCopy,
     variablesDiv,
-    variablesMod
+    variablesMod,
+    temporaryEntityVariable
   } = helpers;
-  const tmp1 = "tmp1";
-  const tmp2 = "tmp2";
+  const tmp1 = temporaryEntityVariable(0);
+  const tmp2 = temporaryEntityVariable(1);
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
 

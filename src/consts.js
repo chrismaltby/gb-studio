@@ -44,6 +44,9 @@ export const DMG_PALETTE = {
   colors: [ "E8F8E0", "B0F088", "509878", "202850" ]
 };
 
+export const TMP_VAR_1 = "T0";
+export const TMP_VAR_2 = "T1";
+
 export {
   engineRoot,
   buildToolsRoot,

@@ -33,7 +33,9 @@ typedef struct _BANK_PTR {
 #define CURSOR_BANK_OFFSET 3728
 #define EMOTES_SPRITE_BANK 7
 #define EMOTES_SPRITE_BANK_OFFSET 3744
-#define NUM_VARIABLES 15
+#define NUM_VARIABLES 130
+#define TMP_VAR_1 102
+#define TMP_VAR_2 103
 
 extern const BANK_PTR tileset_bank_ptrs[];
 extern const BANK_PTR background_bank_ptrs[];

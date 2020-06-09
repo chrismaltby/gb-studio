@@ -40,6 +40,8 @@ typedef struct {
   UBYTE owner;
   UBYTE actor_move_cols;
   UBYTE actor_move_vert;
+  UBYTE tmp_1;
+  UBYTE tmp_2;
 } ScriptContext;
 
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];

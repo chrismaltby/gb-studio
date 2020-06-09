@@ -26,7 +26,8 @@ const compile = (input, helpers) => {
   const {
     actorSetActive,
     ifVariableValue,
-    variableFromUnion
+    variableFromUnion,
+    temporaryEntityVariable
   } = helpers;
 
   actorSetActive(input.actorId);
@@ -36,7 +37,7 @@ const compile = (input, helpers) => {
   } else if(typeof input.direction === "string") {
     changeDirection(input.direction, input, helpers)    
   } else {
-    const dirVar = variableFromUnion(input.direction, "tmp1");
+    const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
     ifVariableValue(
       dirVar,
       "==",

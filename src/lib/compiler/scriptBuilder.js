@@ -558,14 +558,17 @@ class ScriptBuilder {
     output.push(flags);
   };
 
-  variableFromUnion = (unionValue, tmpVar) => {
+  temporaryEntityVariable = (index) => {
+    const { entity } = this.options;
+    return  `${entity.id}__${index}`;    
+  }
+
+  variableFromUnion = (unionValue, defaultVariable) => {
     if(unionValue.type === "variable") {
       return unionValue.value;
     }
-    const { entity } = this.options;
-    const variable = `${entity.id}__${tmpVar}`;
-    this.variableSetToUnionValue(variable, unionValue);
-    return variable;
+    this.variableSetToUnionValue(defaultVariable, unionValue);
+    return defaultVariable;
   }
 
   variableSetToUnionValue = (variable, unionValue) => {
@@ -1116,6 +1119,11 @@ class ScriptBuilder {
           const index = this.getVariableIndex(localVariable, variables);
           return getVariableSymbol(index);
         })
+        // Replace Temp variables
+        .replace(/\$(T[0-9])\$/g, (match, tempVariable) => {
+          const index = this.getVariableIndex(tempVariable, variables);
+          return getVariableSymbol(index);
+        })        
         // Replace Custom Event variables
         .replace(/\$V([0-9])\$/g, (match, customVariable) => {
           const mappedVariable = event.args[`$variable[${customVariable}]$`];

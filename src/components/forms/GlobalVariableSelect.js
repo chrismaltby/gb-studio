@@ -6,12 +6,14 @@ import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
+import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
 );
 
 const localVariables = ["L0", "L1", "L2", "L3", "L4", "L5"];
+const tempVariables = [TMP_VAR_1, TMP_VAR_2];
 
 class GlobalVariableSelect extends Component {
   // shouldComponentUpdate(nextProps, nextState) {
@@ -43,6 +45,10 @@ class GlobalVariableSelect extends Component {
       : `Local ${code[1]}`;
   };
 
+  tempName = code => {
+    return `Temp ${code[1]}`;
+  };  
+
   variableLabel = index => {
     const ptr = `$${String(index).padStart(2, "0")}$ : `;
     return `${ptr}${this.variableName(index)}`;
@@ -52,6 +58,11 @@ class GlobalVariableSelect extends Component {
     const ptr = `$${index}$ : `;
     return `${ptr}${this.localName(index)}`;
   };
+
+  tempLabel = index => {
+    const ptr = `$${index}$ : `;
+    return `${ptr}${this.tempName(index)}`;
+  };  
 
   render() {
     const { id, value, onChange, variablesVersion, allowRename } = this.props;
@@ -67,6 +78,15 @@ class GlobalVariableSelect extends Component {
         })
       },
       {
+        label: l10n("FIELD_TEMPORARY"),
+        options: tempVariables.map((variable, index) => {
+          return {
+            value: variable,
+            label: this.tempLabel(variable)
+          };
+        })
+      },      
+      {
         label: l10n("FIELD_GLOBAL"),
         options: allVariables.map((variable, index) => {
           return {
@@ -78,6 +98,16 @@ class GlobalVariableSelect extends Component {
     ];
 
     const valueIsLocal = localVariables.indexOf(value) > -1;
+    const valueIsTemp = tempVariables.indexOf(value) > -1;
+
+    let label;
+    if(valueIsLocal) {
+      label = this.localLabel(value);
+    } else if(valueIsTemp) {
+      label = this.tempLabel(value);
+    } else {
+      label = this.variableLabel(value);
+    }
 
     return (
       <SelectRenamable
@@ -90,13 +120,11 @@ class GlobalVariableSelect extends Component {
         id={id}
         value={{
           value,
-          label: valueIsLocal
-            ? this.localLabel(value)
-            : this.variableLabel(value)
+          label
         }}
         onChange={onChange}
         options={options}
-        allowRename={allowRename}
+        allowRename={allowRename && !valueIsTemp}
         grouped
         menuPlacement="auto"
       />

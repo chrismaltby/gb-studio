@@ -55,7 +55,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableFromUnion } = helpers;
+  const { actorSetActive, actorMoveTo, actorMoveToVariables, variableFromUnion, temporaryEntityVariable } = helpers;
 
   actorSetActive(input.actorId);
   
@@ -64,8 +64,8 @@ const compile = (input, helpers) => {
     actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.verticalFirst);
   } else {
     // If any value is not a number transfer values into variables and use variable implementation
-    const xVar = variableFromUnion(input.x, "tmp1");
-    const yVar = variableFromUnion(input.y, "tmp2");
+    const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
+    const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
     actorMoveToVariables(xVar, yVar, input.useCollisions, input.verticalFirst);
   }
 };

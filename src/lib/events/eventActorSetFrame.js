@@ -26,12 +26,12 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetFrame, actorSetFrameToVariable, variableFromUnion } = helpers;
+  const { actorSetActive, actorSetFrame, actorSetFrameToVariable, variableFromUnion, temporaryEntityVariable } = helpers;
   actorSetActive(input.actorId);
   if(input.frame.type === "number") {
     actorSetFrame(input.frame.value);
   } else {
-    const frameVar = variableFromUnion(input.frame, "tmp1");
+    const frameVar = variableFromUnion(input.frame, temporaryEntityVariable(0));
     actorSetFrameToVariable(frameVar);
   }
 };
