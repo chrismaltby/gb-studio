@@ -459,8 +459,9 @@ void Script_ActorActivate_b() {
  *   arg2: Camera settings
  */
 void Script_CameraMoveTo_b() {
-  camera_dest.x = script_cmd_args[0] * 8;
-  camera_dest.y = script_cmd_args[1] * 8;
+  camera_dest.x = (script_cmd_args[0] * 8) + SCREEN_WIDTH_HALF;
+  camera_dest.y = (script_cmd_args[1] * 8) + SCREEN_HEIGHT_HALF;
+
   camera_settings = (UBYTE)script_cmd_args[2] & ~CAMERA_LOCK_FLAG;
   camera_speed = (UBYTE)script_cmd_args[2] & CAMERA_SPEED_MASK;
 
