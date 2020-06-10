@@ -19,10 +19,10 @@ const generateRandomLookScript = () => {
             id: uuid(),
             command: "EVENT_VARIABLE_MATH",
             args: {
-              vectorX: "L0",
+              vectorX: "T0",
               operation: "set",
               other: "rnd",
-              vectorY: "L0",
+              vectorY: "T0",
               value: "1",
               minValue: "0",
               maxValue: 5,
@@ -32,7 +32,7 @@ const generateRandomLookScript = () => {
             id: uuid(),
             command: "EVENT_SWITCH",
             args: {
-              variable: "L0",
+              variable: "T0",
               choices: 4,
               __collapseCase0: false,
               value0: 1,
