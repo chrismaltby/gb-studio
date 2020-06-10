@@ -46,13 +46,13 @@ void Update_TopDown() {
     PlayerStopMovement();
 
     // Check input to set player movement
-    if (INPUT_LEFT) {
+    if (INPUT_RECENT_LEFT) {
       PlayerSetMovement(-1, 0);
-    } else if (INPUT_RIGHT) {
+    } else if (INPUT_RECENT_RIGHT) {
       PlayerSetMovement(1, 0);
-    } else if (INPUT_UP) {
+    } else if (INPUT_RECENT_UP) {
       PlayerSetMovement(0, -1);
-    } else if (INPUT_DOWN) {
+    } else if (INPUT_RECENT_DOWN) {
       PlayerSetMovement(0, 1);
     }
 
