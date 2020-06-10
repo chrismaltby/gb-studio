@@ -116,36 +116,36 @@ class Connections extends Component {
 
   renderMarker = ({ x, y, direction, onMouseDown, eventId, className }) => (
     <g key={eventId} className={className} onMouseDown={onMouseDown}>
-      <rect x={x - 4} y={y - 4 - 8} rx={4} ry={4} width={16} height={16} />
+      <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
-          points={`${x},${y + 2 - 4} ${x + 4},${y - 3 - 4} ${x + 8},${y + 2 - 4}`}
+          points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
           style={{
-            fill: "#fbe9e7",
+            fill: "#fbe9e7"
           }}
         />
       )}
       {direction === "down" && (
         <polygon
-          points={`${x},${y - 2 - 4} ${x + 4},${y + 3 - 4} ${x + 8},${y - 2 - 4}`}
+          points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
           style={{
-            fill: "#fbe9e7",
+            fill: "#fbe9e7"
           }}
         />
       )}
       {direction === "left" && (
         <polygon
-          points={`${x},${y - 4} ${x + 6},${y - 3 - 4} ${x + 6},${y + 3 - 4}`}
+          points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
           style={{
-            fill: "#fbe9e7",
+            fill: "#fbe9e7"
           }}
         />
       )}
       {direction === "right" && (
         <polygon
-          points={`${x + 8},${y - 4} ${x + 2},${y - 3 - 4} ${x + 2},${y + 3 - 4}`}
+          points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
           style={{
-            fill: "#fbe9e7",
+            fill: "#fbe9e7"
           }}
         />
       )}
