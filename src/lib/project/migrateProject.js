@@ -27,6 +27,7 @@ const migrateProject = project => {
     version = "1.2.0";
   }
   if (version === "1.2.0") {
+    data = migrateFrom120To200Scenes(data);
     data = migrateFrom120To200Actors(data);
     data = migrateFrom120To200Events(data);
     version = "2.0.0";
@@ -250,6 +251,27 @@ const migrateFrom110To120Events = data => {
   return {
     ...data,
     scenes: mapScenesEvents(data.scenes, migrateFrom110To120Event)
+  };
+};
+
+/*
+ * In version 1.2.0 and below scene width/height was mostly a calculated
+ * from the image width and height. In version 2.0.0 the scene values are
+ * kept up to date and are the single source of truth for scene dimensions
+ */
+const migrateFrom120To200Scenes = (data) => {
+  const backgroundLookup = indexById(data.backgrounds);
+
+  return {
+    ...data,
+    scenes: data.scenes.map((scene) => {
+      const background = backgroundLookup[scene.backgroundId];
+      return {
+        ...scene,
+        width: background && background.width || 32,
+        height: background && background.height || 32,
+      };
+    }),
   };
 };
 
