@@ -437,7 +437,7 @@ const migrateFrom120To200Events = data => {
   return {
     ...data,
     scenes: mapScenesEvents(data.scenes, migrateFrom120To200Event),
-    customEvents: data.customEvents.map((customEvent) => {
+    customEvents: (data.customEvents || []).map((customEvent) => {
       return {
         ...customEvent,
         script: mapEvents(customEvent.script, migrateFrom120To200Event)
