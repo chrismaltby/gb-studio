@@ -152,7 +152,7 @@ class ScriptEventFormField extends Component {
 
     return (
       <FormField halfWidth={field.width === "50%"}>
-        {field.type !== "checkbox" && field.type !== "group" && (
+        {label && field.type !== "checkbox" && field.type !== "group" && (
           <label htmlFor={genKey(eventId, field.key)}>{label}</label>
         )}
         {field.type !== "checkbox" && inputField}
