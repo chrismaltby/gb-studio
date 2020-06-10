@@ -289,6 +289,7 @@ void ScriptCtxPoolReset() {
   UBYTE i;
   for (i = 1; i != MAX_BG_SCRIPT_CONTEXTS + 1; i++) {
     script_ctx_pool[i] = i;
+    script_ctxs[i].script_ptr_bank = 0; 
   }
   script_ctx_pool[0] = MAX_BG_SCRIPT_CONTEXTS;
 }
