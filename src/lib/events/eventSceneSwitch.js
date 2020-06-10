@@ -43,7 +43,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { sceneSwitch, scriptEnd } = helpers;
+  const { sceneSwitch } = helpers;
   sceneSwitch(
     input.sceneId,
     input.x,
@@ -51,7 +51,6 @@ const compile = (input, helpers) => {
     input.direction,
     input.fadeSpeed
   );
-  scriptEnd();
 };
 
 module.exports = {

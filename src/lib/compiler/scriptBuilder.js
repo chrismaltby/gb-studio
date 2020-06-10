@@ -600,6 +600,7 @@ class ScriptBuilder {
       output.push(y);
       output.push(dirDec(direction));
       output.push(fadeSpeed);
+      this.scriptEnd();
     }
   };
 
