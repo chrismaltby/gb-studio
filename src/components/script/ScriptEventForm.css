@@ -4,12 +4,13 @@
 }
 
 .ScriptEventForm__InputRow {
+  display: block;
   position: relative;
 }
 
 .ScriptEventForm__BtnRow {
   position: absolute;
-  right: 9px;
+  right: 4px;
   bottom: 7px;
   display: flex;
 }
