@@ -66,25 +66,25 @@ textarea {
   background: rgba(80, 80, 80, 0.1);
 }
 
-.FormField label {
+.FormField > label {
   display: block;
   text-align: left;
   box-sizing: border-box;
   font-size: 12px;
 }
 
-.FormField label > input,
-.FormField label > select,
-.FormField label > textarea,
-.FormField label > div {
+.FormField > label > input,
+.FormField > label > select,
+.FormField > label > textarea,
+.FormField > label > div {
   margin-top: 5px;
 }
 
-.FormField label > div label > div {
+.FormField > label > div label > div {
   margin-top: 0px;
 }
 
-.FormField label ~ * {
+.FormField > label ~ * {
   margin-top: 5px;
 }
 

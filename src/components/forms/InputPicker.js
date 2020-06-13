@@ -67,10 +67,12 @@ class InputPicker extends Component {
           {inputs.slice(4, 8).map(renderButton(id, value, onChange))}
         </div>
         {Array.isArray(value) &&
-          inputs
-            .filter(input => value.indexOf(input.key) > -1)
-            .map(input => input.name)
-            .join(", ")}
+          <div className="InputPicker__Selection">
+            {inputs
+              .filter(input => value.indexOf(input.key) > -1)
+              .map(input => input.name)
+              .join(", ")}
+          </div>}
       </div>
     );
   }
