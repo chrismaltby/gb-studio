@@ -484,6 +484,7 @@ void InitPlayer_b() {
   player.moving = FALSE;
   player.palette_index = PLAYER_PALETTE;
   player.collisionsEnabled = TRUE;
+  player.collision_group = 0;
   player.pos.x = map_next_pos.x;
   player.pos.y = map_next_pos.y;
   player.start_pos.x = player.pos.x;

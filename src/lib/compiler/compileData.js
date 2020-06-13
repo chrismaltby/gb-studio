@@ -41,6 +41,7 @@ import {
   spriteTypeDec,
   actorFramesPerDir,
   isMBC1,
+  collisionGroupDec,
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import { assetFilename } from "../helpers/gbstudio";
@@ -1175,7 +1176,7 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, sprites, actorP
         dirDec(actor.direction), // Direction
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
-        actor.isPinned ? 1 : 0,
+        (actor.isPinned ? 1 : 0) + (collisionGroupDec(actor.collisionGroup) << 1),
         eventPtrs[actorIndex].bank, // Event bank ptr
         lo(eventPtrs[actorIndex].offset), // Event offset ptr
         hi(eventPtrs[actorIndex].offset),

@@ -23,6 +23,7 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
+import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 
 const argValue = (arg) => {
   if(arg && arg.value) {
@@ -38,7 +39,7 @@ class ScriptEventFormInput extends Component {
   onChange = e => {
     const { onChange, field, value, index, args, type } = this.props;
     const { updateFn } = field;
-    let newValue = e.currentTarget ? castEventValue(e) : e;
+    let newValue = e && e.currentTarget ? castEventValue(e) : e;
     if (type === "direction" && newValue === value) {
       // Toggle direction
       newValue = "";
@@ -180,6 +181,9 @@ class ScriptEventFormInput extends Component {
     if (type === "direction") {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
     }
+    if (type === "collisionMask") {
+      return <CollisionMaskPicker id={id} value={value} onChange={this.onChange} includePlayer={field.includePlayer} />;
+    }    
     if (type === "input") {
       return <InputPicker id={id} value={value} onChange={this.onChange} />;
     }

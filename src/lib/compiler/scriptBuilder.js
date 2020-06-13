@@ -101,6 +101,7 @@ import {
   inputDec,
   moveSpeedDec,
   animSpeedDec,
+  collisionMaskDec,
   combineMultipleChoiceText,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
@@ -275,15 +276,17 @@ class ScriptBuilder {
 
   // Projectiles
 
-  launchProjectile = (spriteSheetId, x, y) => {
+  launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionMask) => {
     const output = this.output;
-    const { sprites } = this.options;
+    const { sprites, variables } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
+    const dirVariableIndex = this.getVariableIndex(dirVariable, variables);
     output.push(cmd(LAUNCH_PROJECTILE));
     output.push(hi(spriteIndex));
     output.push(lo(spriteIndex));
-    output.push(x);
-    output.push(y);
+    output.push(hi(dirVariableIndex));
+    output.push(lo(dirVariableIndex));
+    output.push(((collisionMaskDec(collisionMask)) << 4) + moveSpeedDec(speed));
   }
 
   // Text
@@ -576,6 +579,10 @@ class ScriptBuilder {
       this.variableSetToValue(variable, unionValue.value);
       return variable;
     }
+    if(unionValue.type === "direction"){
+      this.variableSetToValue(variable, dirDec(unionValue.value));
+      return variable;
+    }    
     if(unionValue.type === "property"){
       this.variableSetToProperty(variable, unionValue.value);
       return variable;

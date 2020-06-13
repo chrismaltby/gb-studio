@@ -15,34 +15,47 @@ const fields = [
     defaultValue: "player",
   },
   {
-    key: "x",
-    label: l10n("FIELD_OFFSET_X"),
-    type: "number",
-    min: 0,
-    max: 255,
-    width: "50%",
-    defaultValue: 0,
-  },
-  {
-    key: "y",
-    label: l10n("FIELD_OFFSET_Y"),
-    type: "number",
-    min: 0,
-    max: 255,
-    width: "50%",
-    defaultValue: 0,
-  },
-  {
     key: "direction",
     label: l10n("FIELD_DIRECTION"),
-    type: "direction",
-    defaultValue: "up",
+    type: "union",
+    types: ["direction", "variable", "property"],
+    defaultType: "property",    
+    defaultValue: {
+      direction: "up",
+      variable: "LAST_VARIABLE",
+      property: "$self$:direction"
+    },
   },
+  {
+    key: "speed",
+    label: l10n("FIELD_SPEED"),
+    type: "moveSpeed",
+    // width: "50%",    
+    defaultValue: "1"
+  },
+  {
+    key: "collisionGroup",
+    label: l10n("FIELD_COLLISION_GROUP"),
+    type: "collisionMask",
+    width: "50%",    
+    includePlayer: false,
+    defaultValue: "3"
+  },
+  {
+    key: "collisionMask",
+    label: l10n("FIELD_COLLIDE_WITH"),
+    type: "collisionMask",
+    width: "50%",    
+    includePlayer: true,
+    defaultValue: ["1"]
+  }    
 ];
 
 const compile = (input, helpers) => {
-  const { launchProjectile } = helpers;
-  launchProjectile(input.spriteSheetId, input.x, input.y);
+  const { launchProjectile, actorSetActive, variableFromUnion, temporaryEntityVariable } = helpers;
+  const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
+  actorSetActive(input.actorId);
+  launchProjectile(input.spriteSheetId, input.x, input.y, dirVar, input.speed, input.collisionMask);
 };
 
 module.exports = {

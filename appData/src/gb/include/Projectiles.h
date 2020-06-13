@@ -25,7 +25,7 @@ typedef struct _PROJECTILE {
 extern Projectile projectiles[MAX_PROJECTILES];
 
 void ProjectilesInit();
-void ProjectileLaunch(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving, UBYTE move_speed, UBYTE life_time, UBYTE col_mask, UWORD col_script);
+void ProjectileLaunch(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving, UBYTE move_speed, UBYTE life_time, UBYTE col_mask);
 void UpdateProjectiles();
 
 #endif

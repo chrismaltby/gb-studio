@@ -27,7 +27,7 @@ void ProjectilesInit_b() {
 }
 
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
-                        UBYTE move_speed, UBYTE life_time, UBYTE col_mask, UWORD col_script) {
+                        UBYTE move_speed, UBYTE life_time, UBYTE col_mask) {
   unsigned char *emote_ptr;
 
   if (projectiles[current_projectile].life_time == 0) {
@@ -68,18 +68,7 @@ void UpdateProjectiles_b() {
 
   for (i = 0; i != MAX_PROJECTILES; i++) {
     if (projectiles[i].life_time != 0) {
-      if (projectiles[i].moving) {
-        if (projectiles[i].move_speed == 0) {
-          // Half speed only move every other frame
-          if (IS_FRAME_2) {
-            projectiles[i].pos.x += projectiles[i].dir.x;
-            projectiles[i].pos.y += projectiles[i].dir.y;
-          }
-        } else {
-          projectiles[i].pos.x += projectiles[i].dir.x * projectiles[i].move_speed;
-          projectiles[i].pos.y += projectiles[i].dir.y * projectiles[i].move_speed;
-        }
-      }
+
 
       // Determine if projectile hit any actors
       hit = NO_ACTOR_COLLISON;
@@ -87,6 +76,10 @@ void UpdateProjectiles_b() {
         UBYTE a = actors_active[j];
 
         if (!actors[a].enabled) {
+          continue;
+        }
+
+        if (!(actors[a].collision_group & projectiles[i].col_mask)) {
           continue;
         }
 
@@ -100,12 +93,7 @@ void UpdateProjectiles_b() {
 
       // If hit actor play collision event
       if (hit != NO_ACTOR_COLLISON) {
-        // player.pos.x = 0;
         projectiles[i].life_time = 0;
-        k = projectiles[i].sprite_index;
-        move_sprite(k, 0, 0);
-        move_sprite(k + 1, 0, 0);
-        return;
       }
 
       k = projectiles[i].sprite_index;
@@ -126,6 +114,19 @@ void UpdateProjectiles_b() {
           projectiles[i].life_time = 0;
         } else {
           projectiles[i].life_time--;
+        }
+      }
+
+      if (projectiles[i].moving) {
+        if (projectiles[i].move_speed == 0) {
+          // Half speed only move every other frame
+          if (IS_FRAME_2) {
+            projectiles[i].pos.x += projectiles[i].dir.x;
+            projectiles[i].pos.y += projectiles[i].dir.y;
+          }
+        } else {
+          projectiles[i].pos.x += projectiles[i].dir.x * projectiles[i].move_speed;
+          projectiles[i].pos.y += projectiles[i].dir.y * projectiles[i].move_speed;
         }
       }
 

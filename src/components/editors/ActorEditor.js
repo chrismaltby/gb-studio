@@ -15,6 +15,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
+import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
@@ -332,6 +333,17 @@ class ActorEditor extends Component {
                 </label>
               </FormField>
             )}
+
+            <FormField halfWidth>
+              <label htmlFor="actorCollisionGroup">
+                {l10n("FIELD_COLLISION_GROUP")}
+                <CollisionMaskPicker
+                  id="actorCollisionGroup"
+                  value={actor.collisionGroup}
+                  onChange={this.onEdit("collisionGroup")}
+                />
+              </label>
+            </FormField>
 
             <FormField>
               <label htmlFor="actorIsPinned">

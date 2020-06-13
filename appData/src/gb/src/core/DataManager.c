@@ -247,6 +247,9 @@ void LoadScene(UINT16 index) {
     actors[i].move_speed = *(data_ptr++);
     actors[i].anim_speed = *(data_ptr++);
     actors[i].pinned = *(data_ptr++);
+    actors[i].collision_group = actors[i].pinned >> 1;
+    actors[i].pinned = actors[i].pinned & 0x1;
+
     actors[i].collisionsEnabled = !actors[i].pinned;
 
     actors[i].events_ptr.bank = *(data_ptr++);

@@ -229,6 +229,10 @@
   "FIELD_VERTICAL": "Vertical",
   "FIELD_VERTICAL_FIRST": "Vertical First",
   "FIELD_TEMPORARY": "Temporary",
+  "FIELD_COLLISION_GROUP": "Collision Group",
+  "FIELD_COLLIDE_WITH": "Collide With",
+  "FIELD_COLLISION_GROUP_N": "Collision Group {n}",
+  "FIELD_PLAYER": "Player",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

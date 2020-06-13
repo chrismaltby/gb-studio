@@ -144,7 +144,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_TextWithAvatar_b, 4},      // 0x5B
     {Script_TextMenu_b, 7},            // 0x5C
     {Script_ActorSetCollisions_b, 1},  // 0x5D
-    {Script_LaunchProjectile_b, 4},    // 0x5E
+    {Script_LaunchProjectile_b, 5},    // 0x5E
     {Script_SetFlagProperty_b, 4}      // 0x5F
 };
 
@@ -199,6 +199,44 @@ UBYTE ScriptUpdate_MoveActor() {
       actors[script_actor].dir.y = -1;
     }
   }
+
+  return FALSE;
+}
+
+UBYTE ScriptUpdate_MoveActorDiag() {
+  // Actor reached destination
+  if (actors[script_actor].pos.x == actor_move_dest_x &&
+      actors[script_actor].pos.y == actor_move_dest_y) {
+    actors[script_actor].moving = FALSE;
+    actors[script_actor].dir.x = 0;
+    actors[script_actor].dir.y = 0;
+    return TRUE;
+  }
+  actors[script_actor].moving = TRUE;
+
+  // Actor not at horizontal destination
+  if (actors[script_actor].pos.x != actor_move_dest_x) {
+    // actors[script_actor].dir.y = 0;
+    if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+      actors[script_actor].dir.x = 1;
+    } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+      actors[script_actor].dir.x = -1;
+    }
+  } else {
+    actors[script_actor].dir.x = 0;
+  }
+
+  // Actor not at vertical destination
+  if (actors[script_actor].pos.y != actor_move_dest_y) {    
+    if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+      actors[script_actor].dir.y = 1;
+    } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+      actors[script_actor].dir.y = -1;
+    }
+  } else {
+    actors[script_actor].dir.y = 0;
+  }
+
   return FALSE;
 }
 
@@ -1896,6 +1934,34 @@ void Script_TextWithAvatar_b() {
 }
 
 void Script_LaunchProjectile_b() {
-  ProjectileLaunch(1, player.pos.x, player.pos.y, 1, 0, 1, 3, 60, 255, 0);
-  // ProjectileLaunch(1, player.pos.x + 8, player.pos.y, 1, 0, 1, 0, 2, 255, 0);
+  UBYTE dir_value;
+  BYTE dir_x, dir_y;
+
+  dir_x = 0;
+  dir_y = 0;
+  dir_value = script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]];
+
+  if (dir_value == 1) {
+    dir_x = 0;
+    dir_y = 1;
+  } else if (dir_value == 2) {
+    dir_x = -1;
+    dir_y = 0;
+  } else if (dir_value == 4) {
+    dir_x = 1;
+    dir_y = 0;
+  } else if (dir_value == 8) {
+    dir_x = 0;
+    dir_y = -1;
+  }
+
+  ProjectileLaunch(1,                                          // Sprite
+                   actors[script_actor].pos.x + (dir_x * 16),  // Launch X
+                   actors[script_actor].pos.y + (dir_y * 16),  // Launch Y
+                   dir_x,                                      // Dir x
+                   dir_y,                                      // Dir y
+                   1,                                          // Moving
+                   script_cmd_args[4] & 0xF,                   // Move Speed
+                   60,                                         // Life time
+                   script_cmd_args[4] >> 4);                   // Collision mask
 }

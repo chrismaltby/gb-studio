@@ -155,3 +155,28 @@ export const replaceInvalidCustomEventActors = (actor) => {
   }
   return actor;
 };
+
+export const collisionGroupDec = (group) => {
+  if(group === "player") {
+    return 1;
+  }
+  if (group === "1") {
+    return 2;
+  }
+  if (group === "2") {
+    return 4;
+  }
+  if (group === "3") {
+    return 8;
+  }
+  return 0;
+}
+
+export const collisionMaskDec = (mask) => {
+  if(!Array.isArray(mask)) {
+    return 0;
+  }
+  return mask.reduce((memo, group) => {
+    return memo | collisionGroupDec(group);
+  }, 0);
+}

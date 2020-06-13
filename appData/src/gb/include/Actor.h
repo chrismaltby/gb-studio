@@ -72,6 +72,7 @@ typedef struct {
   UBYTE anim_speed;
   UBYTE pinned;
   UBYTE collisionsEnabled;
+  UBYTE collision_group;
   SPRITE_TYPE sprite_type;
   UWORD script_ptr;
   BankPtr events_ptr;
