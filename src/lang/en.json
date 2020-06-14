@@ -60,6 +60,9 @@
   "SIDEBAR_ON_INIT": "On Init",
   "SIDEBAR_ON_TRIGGER": "On Trigger",
   "SIDEBAR_ON_INTERACT": "On Interact",
+  "SIDEBAR_ON_HIT": "On Hit",
+  "SIDEBAR_ON_PLAYER_HIT": "On Player Hit",
+  "SIDEBAR_MOVEMENT": "Movement",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
@@ -231,7 +234,7 @@
   "FIELD_TEMPORARY": "Temporary",
   "FIELD_COLLISION_GROUP": "Collision Group",
   "FIELD_COLLIDE_WITH": "Collide With",
-  "FIELD_COLLISION_GROUP_N": "Collision Group {n}",
+  "FIELD_COLLISION_GROUP_N": "Group {n}",
   "FIELD_PLAYER": "Player",
 
   "// 7": "Asset Viewer ---------------------------------------------",

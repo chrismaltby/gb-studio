@@ -16,10 +16,6 @@ import {
   regenerateEventIds
 } from "../../lib/helpers/eventSystem";
 import * as actions from "../../actions";
-import { DropdownButton } from "../library/Button";
-import { MenuItem, MenuDivider } from "../library/Menu";
-import l10n from "../../lib/helpers/l10n";
-import { SidebarHeading } from "../editors/Sidebar";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 
@@ -150,12 +146,6 @@ class ScriptEditor extends Component {
     copyEvent(event);
   };
 
-  onCopyScript = () => {
-    const { copyScript } = this.props;
-    const { value } = this.props;
-    copyScript(value);
-  };
-
   onPaste = (id, event, before) => {
     const { value } = this.props;
     const newEvent = Array.isArray(event)
@@ -165,49 +155,6 @@ class ScriptEditor extends Component {
       ? prependEvent(value, id, newEvent)
       : appendEvent(value, id, newEvent);
     this.onChange(input);
-  };
-
-  onRemoveScript = e => {
-    this.onChange([
-      {
-        id: uuid(),
-        command: EVENT_END
-      }
-    ]);
-  };
-
-  onReplaceScript = e => {
-    const { clipboardEvent } = this.state;
-    if (clipboardEvent) {
-      this.onChange(
-        []
-          .concat(
-            clipboardEvent,
-            !Array.isArray(clipboardEvent)
-              ? {
-                  id: uuid(),
-                  command: EVENT_END
-                }
-              : []
-          )
-          .map(regenerateEventIds)
-      );
-    }
-  };
-
-  onPasteScript = before => () => {
-    const { clipboardEvent } = this.state;
-    const { value } = this.props;
-    const newEvent = Array.isArray(clipboardEvent)
-      ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
-      : regenerateEventIds(clipboardEvent);
-    if (clipboardEvent) {
-      if (before) {
-        this.onChange([].concat(newEvent, value));
-      } else {
-        this.onChange([].concat(value.slice(0, -1), newEvent, value.slice(-1)));
-      }
-    }
   };
 
   onEnter = id => {
@@ -241,74 +188,36 @@ class ScriptEditor extends Component {
   };
 
   render() {
-    const { type, title, value, entityId, renderHeader } = this.props;
+    const { type, value, entityId } = this.props;
     const { clipboardEvent } = this.state;
 
-    const buttons = (
-      <DropdownButton small transparent right onMouseDown={this.readClipboard}>
-        <MenuItem onClick={this.onCopyScript}>
-          {l10n("MENU_COPY_SCRIPT")}
-        </MenuItem>
-        {clipboardEvent && <MenuDivider />}
-        {clipboardEvent && (
-          <MenuItem onClick={this.onReplaceScript}>
-            {l10n("MENU_REPLACE_SCRIPT")}
-          </MenuItem>
-        )}
-        {clipboardEvent && value && value.length > 1 && (
-          <MenuItem onClick={this.onPasteScript(true)}>
-            {l10n("MENU_PASTE_SCRIPT_BEFORE")}
-          </MenuItem>
-        )}
-        {clipboardEvent && value && value.length > 1 && (
-          <MenuItem onClick={this.onPasteScript(false)}>
-            {l10n("MENU_PASTE_SCRIPT_AFTER")}
-          </MenuItem>
-        )}
-        <MenuDivider />
-        <MenuItem onClick={this.onRemoveScript}>
-          {l10n("MENU_DELETE_SCRIPT")}
-        </MenuItem>
-      </DropdownButton>
-    );
-
-    const heading = renderHeader ? (
-      renderHeader({ buttons })
-    ) : (
-      <SidebarHeading title={title} buttons={buttons} />
-    );
-
     return (
-      <div>
-        {heading}
-        <div className="ScriptEditor">
-          {value.map(action => (
-            <ScriptEditorEvent
-              key={action.id}
-              id={action.id}
-              entityId={entityId}
-              type={type}
-              action={action}
-              moveActions={this.moveActions}
-              onAdd={this.onAdd}
-              onRemove={this.onRemove}
-              onEdit={this.onEdit}
-              onCopy={this.onCopy}
-              onPaste={this.onPaste}
-              onSelectCustomEvent={this.onSelectCustomEvent}
-              onMouseEnter={this.onEnter}
-              onMouseLeave={this.onLeave}
-              clipboardEvent={clipboardEvent}
-            />
-          ))}
-        </div>
+      <div className="ScriptEditor">
+        {value.map(action => (
+          <ScriptEditorEvent
+            key={action.id}
+            id={action.id}
+            entityId={entityId}
+            type={type}
+            action={action}
+            moveActions={this.moveActions}
+            onAdd={this.onAdd}
+            onRemove={this.onRemove}
+            onEdit={this.onEdit}
+            onCopy={this.onCopy}
+            onPaste={this.onPaste}
+            onSelectCustomEvent={this.onSelectCustomEvent}
+            onMouseEnter={this.onEnter}
+            onMouseLeave={this.onLeave}
+            clipboardEvent={clipboardEvent}
+          />
+        ))}
       </div>
     );
   }
 }
 
 ScriptEditor.propTypes = {
-  title: PropTypes.string,
   type: PropTypes.string.isRequired,
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
@@ -318,11 +227,9 @@ ScriptEditor.propTypes = {
   spriteSheetIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectScriptEvent: PropTypes.func.isRequired,
   copyEvent: PropTypes.func.isRequired,
-  copyScript: PropTypes.func.isRequired,
   selectCustomEvent: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
-  scope: PropTypes.string.isRequired,
-  renderHeader: PropTypes.func
+  scope: PropTypes.string.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create(
@@ -358,7 +265,6 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
-  copyScript: actions.copyScript,
   selectCustomEvent: actions.selectCustomEvent
 };
 

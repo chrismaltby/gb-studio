@@ -19,6 +19,18 @@ import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../reducers/entitiesReducer";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import LabelButton from "../library/LabelButton";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+
+const defaultTabs = {
+  start: l10n("SIDEBAR_ON_INIT"),
+  hit: l10n("SIDEBAR_ON_PLAYER_HIT"),
+};
+
+const hitTabs = {
+  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+};
 
 class SceneEditor extends Component {
   constructor() {
@@ -27,8 +39,22 @@ class SceneEditor extends Component {
       clipboardActor: null,
       clipboardScene: null,
       clipboardTrigger: null,
+      scriptMode: "start",
+      scriptModeSecondary: "hit1"
     };
   }
+
+  onSetScriptMode = (mode) => {
+    this.setState({
+      scriptMode: mode,
+    });
+  };
+
+  onSetScriptModeSecondary = (mode) => {
+    this.setState({
+      scriptModeSecondary: mode,
+    });
+  };  
 
   // shouldComponentUpdate(nextProps, nextState) {
   //   rerenderCheck("SceneEditor", this.props, {}, nextProps, {});
@@ -66,6 +92,12 @@ class SceneEditor extends Component {
   };
 
   onEditScript = this.onEdit("script");
+
+  onEditPlayerHit1Script = this.onEdit("playerHit1Script");
+
+  onEditPlayerHit2Script = this.onEdit("playerHit2Script");
+
+  onEditPlayerHit3Script = this.onEdit("playerHit3Script");
 
   readClipboard = (e) => {
     try {
@@ -108,19 +140,7 @@ class SceneEditor extends Component {
     const { removeScene, scene } = this.props;
     removeScene(scene.id);
   };
-
-
-  renderScriptHeader = ({ buttons }) => {
-    return (
-      <SidebarTabs
-        values={{
-          init: l10n("SIDEBAR_ON_INIT"),
-        }}
-        buttons={buttons}
-      />
-    );
-  };
-
+  
   onEditPaletteId = (index) => (e) => {
     const { scene } = this.props;
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
@@ -141,7 +161,35 @@ class SceneEditor extends Component {
       return <WorldEditor />;
     }
 
-    const { clipboardScene, clipboardActor, clipboardTrigger } = this.state;
+    const {
+      clipboardScene,
+      clipboardActor,
+      clipboardTrigger,
+      scriptMode,
+      scriptModeSecondary
+    } = this.state;
+
+    const scripts = {
+      start: {
+        value: scene.script,
+        onChange: this.onEditScript,
+      },
+      hit: {
+        tabs: hitTabs,
+        hit1: {
+          value: scene.playerHit1Script,
+          onChange: this.onEditPlayerHit1Script,
+        },
+        hit2: {
+          value: scene.playerHit2Script,
+          onChange: this.onEditPlayerHit2Script,
+        },
+        hit3: {
+          value: scene.playerHit3Script,
+          onChange: this.onEditPlayerHit3Script,
+        },
+      },
+    };
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -155,16 +203,32 @@ class SceneEditor extends Component {
                 right
                 onMouseDown={this.readClipboard}
               >
-                <MenuItem style={{paddingRight: 10, marginBottom: 5}}>
-                  <div style={{display:"flex"}}>
-                    <div style={{marginRight: 5}}>
-                      <LabelButton onClick={() => this.onEdit("labelColor")("")} />
+                <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
+                  <div style={{ display: "flex" }}>
+                    <div style={{ marginRight: 5 }}>
+                      <LabelButton
+                        onClick={() => this.onEdit("labelColor")("")}
+                      />
                     </div>
-                    {["red", "orange", "yellow", "green", "blue", "purple", "gray"].map((color) =>
-                      <div key={color} style={{marginRight: color === "gray" ? 0 : 5}}>
-                        <LabelButton color={color} onClick={() => this.onEdit("labelColor")(color)} />
+                    {[
+                      "red",
+                      "orange",
+                      "yellow",
+                      "green",
+                      "blue",
+                      "purple",
+                      "gray",
+                    ].map((color) => (
+                      <div
+                        key={color}
+                        style={{ marginRight: color === "gray" ? 0 : 5 }}
+                      >
+                        <LabelButton
+                          color={color}
+                          onClick={() => this.onEdit("labelColor")(color)}
+                        />
                       </div>
-                    )}
+                    ))}
                   </div>
                 </MenuItem>
                 <MenuDivider />
@@ -223,8 +287,6 @@ class SceneEditor extends Component {
               </label>
             </FormField>
 
-            {/* Scene type specific values - movement speed / jump speed / read from Variable? */}
-
             <FormField>
               <label htmlFor="sceneImage">
                 {l10n("FIELD_BACKGROUND")}
@@ -241,7 +303,10 @@ class SceneEditor extends Component {
                 htmlFor="scenePalette"
                 closedLabel={l10n("FIELD_PALETTES")}
                 label={l10n("FIELD_PALETTES")}
-                open={!!scene.paletteIds && scene.paletteIds.filter((i) => i).length > 0}
+                open={
+                  !!scene.paletteIds &&
+                  scene.paletteIds.filter((i) => i).length > 0
+                }
               >
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <PaletteSelect
@@ -251,7 +316,9 @@ class SceneEditor extends Component {
                     prefix={`${index + 1}: `}
                     onChange={this.onEditPaletteId(index)}
                     optional
-                    optionalDefaultPaletteId={defaultBackgroundPaletteIds[index] || ""}
+                    optionalDefaultPaletteId={
+                      defaultBackgroundPaletteIds[index] || ""
+                    }
                     optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
                   />
                 ))}
@@ -278,13 +345,50 @@ class SceneEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          <ScriptEditor
-            value={scene.script}
-            renderHeader={this.renderScriptHeader}
-            type="scene"
-            onChange={this.onEditScript}
-            entityId={scene.id}
-          />
+          <div>
+            <SidebarTabs
+              value={scriptMode}
+              values={defaultTabs}
+              onChange={this.onSetScriptMode}
+              buttons={
+                scripts[scriptMode] && !scripts[scriptMode].tabs && (
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode].value}
+                    onChange={scripts[scriptMode].onChange}
+                  />
+                )
+              }
+            />
+            {scripts[scriptMode] && scripts[scriptMode].tabs && (
+              <SidebarTabs
+                value={scriptModeSecondary}
+                values={scripts[scriptMode].tabs}
+                onChange={this.onSetScriptModeSecondary}
+                buttons={
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode][scriptModeSecondary].value}
+                    onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+                  />
+                }
+              />
+            )}
+            {scripts[scriptMode] && !scripts[scriptMode].tabs && (
+              <ScriptEditor
+                value={scripts[scriptMode].value}
+                type="scene"
+                onChange={scripts[scriptMode].onChange}
+                entityId={scene.id}
+              />
+            )}
+            {scripts[scriptMode] && scripts[scriptMode].tabs && scripts[scriptMode][scriptModeSecondary] && (
+              <ScriptEditor
+                value={scripts[scriptMode][scriptModeSecondary].value}
+                type="scene"
+                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+                entityId={scene.id}
+              />
+            )}            
+          </div>
         </SidebarColumn>
       </Sidebar>
     );

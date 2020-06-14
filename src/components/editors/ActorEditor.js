@@ -22,14 +22,40 @@ import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../reducers/entitiesReducer";
-import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, SPRITE_TYPE_ACTOR_ANIMATED, SPRITE_TYPE_ANIMATED } from "../../consts";
+import {
+  SPRITE_TYPE_STATIC,
+  SPRITE_TYPE_ACTOR,
+  SPRITE_TYPE_ACTOR_ANIMATED,
+  SPRITE_TYPE_ANIMATED,
+} from "../../consts";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+
+const defaultTabs = {
+  interact: l10n("SIDEBAR_ON_INTERACT"),
+  start: l10n("SIDEBAR_ON_INIT"),
+  movement: l10n("SIDEBAR_MOVEMENT"),
+};
+
+const collisionTabs = {
+  hit: l10n("SIDEBAR_ON_HIT"),
+  start: l10n("SIDEBAR_ON_INIT"),
+  movement: l10n("SIDEBAR_MOVEMENT"),
+};
+
+const hitTabs = {
+  hitPlayer: l10n("FIELD_PLAYER"),
+  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+};
 
 class ActorEditor extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       clipboardActor: null,
-      scriptMode: "interact",
+      scriptMode: (props.actor && props.actor.collisionGroup) ? "hit" : "interact",
+      scriptModeSecondary: "hitPlayer",
     };
   }
 
@@ -39,8 +65,23 @@ class ActorEditor extends Component {
     });
   };
 
+  onSetScriptModeSecondary = (mode) => {
+    this.setState({
+      scriptModeSecondary: mode,
+    });
+  };
+
   onEdit = (key) => (e) => {
     const { editActor, sceneId, actor } = this.props;
+    const { scriptMode } = this.state;
+
+    if(key === "collisionGroup" && scriptMode === "hit" && !e) {
+      this.onSetScriptMode("interact");
+    }
+    if(key === "collisionGroup" && scriptMode === "interact" && e) {
+      this.onSetScriptMode("hit");
+    }
+
     editActor(sceneId, actor.id, {
       [key]: castEventValue(e),
     });
@@ -51,6 +92,14 @@ class ActorEditor extends Component {
   onEditStartScript = this.onEdit("startScript");
 
   onEditMovementScript = this.onEdit("movementScript");
+
+  onEditHitPlayerScript = this.onEdit("hitPlayerScript");
+
+  onEditHit1Script = this.onEdit("hit1Script");
+
+  onEditHit2Script = this.onEdit("hit2Script");
+
+  onEditHit3Script = this.onEdit("hit3Script");
 
   onCopy = (e) => {
     const { copyActor, actor } = this.props;
@@ -81,22 +130,6 @@ class ActorEditor extends Component {
     }
   };
 
-  renderScriptHeader = ({ buttons }) => {
-    const { scriptMode } = this.state;
-    return (
-      <SidebarTabs
-        value={scriptMode}
-        values={{
-          interact: l10n("SIDEBAR_ON_INTERACT"),
-          start: l10n("SIDEBAR_ON_INIT"),
-          movement: "Movement"
-        }}
-        buttons={buttons}
-        onChange={this.onSetScriptMode}
-      />
-    );
-  };
-
   render() {
     const {
       index,
@@ -107,7 +140,7 @@ class ActorEditor extends Component {
       colorsEnabled,
       defaultSpritePaletteId,
     } = this.props;
-    const { clipboardActor, scriptMode } = this.state;
+    const { clipboardActor, scriptMode, scriptModeSecondary } = this.state;
 
     if (!actor) {
       return <WorldEditor />;
@@ -127,14 +160,50 @@ class ActorEditor extends Component {
     const showAnimatedCheckbox =
       spriteSheet &&
       spriteSheet.numFrames > 1 &&
-      (actor.spriteType === SPRITE_TYPE_STATIC || spriteSheet.type !== SPRITE_TYPE_ACTOR);
+      (actor.spriteType === SPRITE_TYPE_STATIC ||
+        spriteSheet.type !== SPRITE_TYPE_ACTOR);
 
     const showAnimSpeed =
       spriteSheet &&
       ((spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED &&
         actor.spriteType !== SPRITE_TYPE_STATIC) ||
         (actor.animate &&
-          (actor.spriteType === SPRITE_TYPE_STATIC || spriteSheet.type !== SPRITE_TYPE_ACTOR)));
+          (actor.spriteType === SPRITE_TYPE_STATIC ||
+            spriteSheet.type !== SPRITE_TYPE_ACTOR)));
+
+    const scripts = {
+      start: {
+        value: actor.startScript,
+        onChange: this.onEditStartScript,
+      },
+      interact: {
+        value: actor.script,
+        onChange: this.onEditScript,
+      },
+      movement: {
+        value: actor.movementScript,
+        onChange: this.onEditMovementScript,
+      },
+      hit: {
+        tabs: hitTabs,
+        hitPlayer: {
+          value: actor.hitPlayerScript,
+          onChange: this.onEditHitPlayerScript,
+        },
+        hit1: {
+          value: actor.hit1Script,
+          onChange: this.onEditHit1Script,
+        },
+        hit2: {
+          value: actor.hit2Script,
+          onChange: this.onEditHit2Script,
+        },
+        hit3: {
+          value: actor.hit3Script,
+          onChange: this.onEditHit3Script,
+        },
+      },
+    };
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -247,7 +316,7 @@ class ActorEditor extends Component {
             {showDirectionInput && (
               <FormField halfWidth>
                 <label htmlFor="actorDirection">
-                  {l10n("FIELD_DIRECTION")}                
+                  {l10n("FIELD_DIRECTION")}
                   <DirectionPicker
                     id="actorDirection"
                     value={actor.direction}
@@ -392,33 +461,51 @@ class ActorEditor extends Component {
         </SidebarColumn>
 
         <SidebarColumn>
-          {scriptMode === "start" && (
-            <ScriptEditor
-              value={actor.startScript}
-              type="actor"
-              renderHeader={this.renderScriptHeader}
-              onChange={this.onEditStartScript}
-              entityId={actor.id}
+          <div>
+            <SidebarTabs
+              value={scriptMode}
+              values={actor.collisionGroup ? collisionTabs : defaultTabs}
+              onChange={this.onSetScriptMode}
+              buttons={
+                scripts[scriptMode] &&
+                !scripts[scriptMode].tabs && (
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode].value}
+                    onChange={scripts[scriptMode].onChange}
+                  />
+                )
+              }
             />
-          )}
-          {scriptMode === "interact" && (
-            <ScriptEditor
-              value={actor.script}
-              type="actor"
-              renderHeader={this.renderScriptHeader}
-              onChange={this.onEditScript}
-              entityId={actor.id}
-            />
-          )}
-          {scriptMode === "movement" && (
-            <ScriptEditor
-              value={actor.movementScript}
-              type="actor"
-              renderHeader={this.renderScriptHeader}
-              onChange={this.onEditMovementScript}
-              entityId={actor.id}
-            />
-          )}          
+            {scripts[scriptMode] && scripts[scriptMode].tabs && (
+              <SidebarTabs
+                value={scriptModeSecondary}
+                values={scripts[scriptMode].tabs}
+                onChange={this.onSetScriptModeSecondary}
+                buttons={
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode][scriptModeSecondary].value}
+                    onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+                  />
+                }
+              />
+            )}       
+            {scripts[scriptMode] && !scripts[scriptMode].tabs && (
+              <ScriptEditor
+                value={scripts[scriptMode].value}
+                type="actor"
+                onChange={scripts[scriptMode].onChange}
+                entityId={actor.id}
+              />
+            )}
+            {scripts[scriptMode] && scripts[scriptMode].tabs && scripts[scriptMode][scriptModeSecondary] && (
+              <ScriptEditor
+                value={scripts[scriptMode][scriptModeSecondary].value}
+                type="actor"
+                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+                entityId={actor.id}
+              />
+            )}     
+          </div>
         </SidebarColumn>
       </Sidebar>
     );
@@ -455,7 +542,8 @@ function mapStateToProps(state, props) {
   const index = scene.actors.indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;
-  const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
+  const defaultSpritePaletteId =
+    settings.defaultSpritePaletteId || DMG_PALETTE.id;
   return {
     index,
     actor,

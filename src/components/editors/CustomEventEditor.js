@@ -15,6 +15,7 @@ import {
   getCustomEventsLookup
 } from "../../reducers/entitiesReducer";
 import WorldEditor from "./WorldEditor";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -151,15 +152,25 @@ class CustomEventEditor extends Component {
           </div>
         </SidebarColumn>
         <SidebarColumn>
-          <ScriptEditor
-            value={customEvent.script}
-            title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
-            type="customEvent"
-            variables={Object.keys(customEvent.variables)}
-            actors={Object.keys(customEvent.actors)}
-            onChange={this.onEdit("script")}
-            entityId={customEvent.id}
-          />
+          <div>
+            <SidebarHeading
+              title={l10n("SIDEBAR_CUSTOM_EVENT_SCRIPT")}
+              buttons={
+                <ScriptEditorDropdownButton 
+                  value={customEvent.script}
+                  onChange={this.onEdit("script")}
+                />
+              }
+            />
+            <ScriptEditor
+              value={customEvent.script}
+              type="customEvent"
+              variables={Object.keys(customEvent.variables)}
+              actors={Object.keys(customEvent.actors)}
+              onChange={this.onEdit("script")}
+              entityId={customEvent.id}
+            />
+          </div>
         </SidebarColumn>
       </Sidebar>
     );
