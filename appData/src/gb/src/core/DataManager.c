@@ -258,6 +258,18 @@ void LoadScene(UINT16 index) {
     actors[i].movement_ptr.bank = *(data_ptr++);
     actors[i].movement_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
+    actors[i].hit_player_ptr.bank = *(data_ptr++);
+    actors[i].hit_player_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    actors[i].hit_1_ptr.bank = *(data_ptr++);
+    actors[i].hit_1_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    actors[i].hit_2_ptr.bank = *(data_ptr++);
+    actors[i].hit_2_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+    actors[i].hit_3_ptr.bank = *(data_ptr++);
+    actors[i].hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
     actors[i].movement_ctx = 0;
   }
 
@@ -279,6 +291,15 @@ void LoadScene(UINT16 index) {
   InitPlayer();
   InitScroll();
   ProjectilesInit();
+
+  player.hit_1_ptr.bank = *(data_ptr++);
+  player.hit_1_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+  player.hit_2_ptr.bank = *(data_ptr++);
+  player.hit_2_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+
+  player.hit_3_ptr.bank = *(data_ptr++);
+  player.hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
   // Enable all pinned actors by default
   for (i = 1; i != actors_len; i++) {

@@ -18,14 +18,14 @@ typedef struct _PROJECTILE {
   BYTE move_speed;
   UBYTE sprite_index;
   UBYTE life_time;
+  UBYTE col_group;
   UBYTE col_mask;
-  BankPtr col_script;
 } Projectile;
 
 extern Projectile projectiles[MAX_PROJECTILES];
 
 void ProjectilesInit();
-void ProjectileLaunch(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving, UBYTE move_speed, UBYTE life_time, UBYTE col_mask);
+void ProjectileLaunch(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving, UBYTE move_speed, UBYTE life_time, UBYTE col_group, UBYTE col_mask);
 void UpdateProjectiles();
 
 #endif

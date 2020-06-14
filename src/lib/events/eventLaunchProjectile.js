@@ -55,7 +55,7 @@ const compile = (input, helpers) => {
   const { launchProjectile, actorSetActive, variableFromUnion, temporaryEntityVariable } = helpers;
   const dirVar = variableFromUnion(input.direction, temporaryEntityVariable(0));
   actorSetActive(input.actorId);
-  launchProjectile(input.spriteSheetId, input.x, input.y, dirVar, input.speed, input.collisionMask);
+  launchProjectile(input.spriteSheetId, input.x, input.y, dirVar, input.speed, input.collisionGroup, input.collisionMask);
 };
 
 module.exports = {

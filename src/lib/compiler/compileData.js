@@ -212,8 +212,15 @@ const compile = async (
 
     return {
       start: bankSceneEvents(scene),
+      playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
+      playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
+      playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
       actorsMovement: scene.actors.map(bankEntityEvents("actor","movementScript")),
+      actorsHitPlayer: scene.actors.map(bankEntityEvents("actor","hitPlayerScript")),
+      actorsHit1: scene.actors.map(bankEntityEvents("actor","hit1Script")),
+      actorsHit2: scene.actors.map(bankEntityEvents("actor","hit2Script")),
+      actorsHit3: scene.actors.map(bankEntityEvents("actor","hit3Script")),
       triggers: scene.triggers.map(bankEntityEvents("trigger")),
     };
   });
@@ -340,13 +347,26 @@ const compile = async (
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
           movementPtrs: eventPtrs[sceneIndex].actorsMovement,
+          hitPlayerPtrs: eventPtrs[sceneIndex].actorsHitPlayer,
+          hit1Ptrs: eventPtrs[sceneIndex].actorsHit1,
+          hit2Ptrs: eventPtrs[sceneIndex].actorsHit2,
+          hit3Ptrs: eventPtrs[sceneIndex].actorsHit3,
           sprites: precompiled.usedSprites,
           scene,
           actorPaletteIndexes: precompiled.actorPaletteIndexes
         }),
         compileTriggers(scene.triggers, {
           eventPtrs: eventPtrs[sceneIndex].triggers,
-        })
+        }),
+        eventPtrs[sceneIndex].playerHit1.bank, // Player Hit 1 bank ptr
+        lo(eventPtrs[sceneIndex].playerHit1.offset), // Player Hit 1 offset ptr
+        hi(eventPtrs[sceneIndex].playerHit1.offset), 
+        eventPtrs[sceneIndex].playerHit2.bank, // Player Hit 2 bank ptr
+        lo(eventPtrs[sceneIndex].playerHit2.offset), // Player Hit 2 offset ptr
+        hi(eventPtrs[sceneIndex].playerHit2.offset), 
+        eventPtrs[sceneIndex].playerHit3.bank, // Player Hit 3 bank ptr
+        lo(eventPtrs[sceneIndex].playerHit3.offset), // Player Hit 3 offset ptr
+        hi(eventPtrs[sceneIndex].playerHit3.offset),                 
         // collisions
       )
     );
@@ -1132,7 +1152,7 @@ export const precompileScenes = (
   return scenesData;
 };
 
-export const compileActors = (actors, { eventPtrs, movementPtrs, sprites, actorPaletteIndexes }) => {
+export const compileActors = (actors, { eventPtrs, movementPtrs, hitPlayerPtrs, hit1Ptrs, hit2Ptrs, hit3Ptrs, sprites, actorPaletteIndexes }) => {
   // console.log("ACTOR", actor, eventsPtr);
   const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
@@ -1182,7 +1202,19 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, sprites, actorP
         hi(eventPtrs[actorIndex].offset),
         movementPtrs[actorIndex].bank, // Movement script bank ptr
         lo(movementPtrs[actorIndex].offset), // Movement script offset ptr
-        hi(movementPtrs[actorIndex].offset),        
+        hi(movementPtrs[actorIndex].offset),
+        hitPlayerPtrs[actorIndex].bank, // Hit player script bank ptr
+        lo(hitPlayerPtrs[actorIndex].offset), // Hit player script offset ptr
+        hi(hitPlayerPtrs[actorIndex].offset),   
+        hit1Ptrs[actorIndex].bank, // Hit collision group 1 bank ptr
+        lo(hit1Ptrs[actorIndex].offset), // Hit collision group 1 offset ptr
+        hi(hit1Ptrs[actorIndex].offset),   
+        hit2Ptrs[actorIndex].bank, // Hit collision group 2 bank ptr
+        lo(hit2Ptrs[actorIndex].offset), // Hit collision group 2 offset ptr
+        hi(hit2Ptrs[actorIndex].offset),   
+        hit3Ptrs[actorIndex].bank, // Hit collision group 3 bank ptr
+        lo(hit3Ptrs[actorIndex].offset), // Hit collision group 3 offset ptr
+        hi(hit3Ptrs[actorIndex].offset)
       ];
     })
   );

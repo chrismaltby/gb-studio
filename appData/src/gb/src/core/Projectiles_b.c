@@ -9,6 +9,7 @@
 #include "Sprite.h"
 #include "Actor.h"
 #include "DataManager.h"
+#include "ScriptRunner.h"
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
@@ -27,7 +28,7 @@ void ProjectilesInit_b() {
 }
 
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
-                        UBYTE move_speed, UBYTE life_time, UBYTE col_mask) {
+                        UBYTE move_speed, UBYTE life_time, UBYTE col_group, UBYTE col_mask) {
   unsigned char *emote_ptr;
 
   if (projectiles[current_projectile].life_time == 0) {
@@ -46,6 +47,7 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].dir.y = 0;
     projectiles[current_projectile].move_speed = 0;
     projectiles[current_projectile].life_time = 0;
+    projectiles[current_projectile].col_group = 0;
     projectiles[current_projectile].col_mask = 0;
 
     projectiles[current_projectile].moving = moving;
@@ -55,6 +57,7 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].dir.y = dir_y;
     projectiles[current_projectile].move_speed = move_speed;
     projectiles[current_projectile].life_time = life_time;
+    projectiles[current_projectile].col_group = col_group;
     projectiles[current_projectile].col_mask = col_mask;
   }
 
@@ -72,7 +75,7 @@ void UpdateProjectiles_b() {
 
       // Determine if projectile hit any actors
       hit = NO_ACTOR_COLLISON;
-      for (j = actors_active_size - 1; j != 0; j--) {
+      for (j = 0; j != actors_active_size; j++) {
         UBYTE a = actors_active[j];
 
         if (!actors[a].enabled) {
@@ -94,6 +97,19 @@ void UpdateProjectiles_b() {
       // If hit actor play collision event
       if (hit != NO_ACTOR_COLLISON) {
         projectiles[i].life_time = 0;
+        if(projectiles[i].col_group == 2) {
+          if(actors[hit].hit_1_ptr.bank) {
+            ScriptStartBg(&actors[hit].hit_1_ptr, a);
+          }
+        } else if(projectiles[i].col_group == 4) {
+          if(actors[hit].hit_2_ptr.bank) {
+            ScriptStartBg(&actors[hit].hit_2_ptr, a);
+          }
+        } else if(projectiles[i].col_group == 8) {
+          if(actors[hit].hit_3_ptr.bank) {
+            ScriptStartBg(&actors[hit].hit_3_ptr, a);
+          }
+        }
       }
 
       k = projectiles[i].sprite_index;

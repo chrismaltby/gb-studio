@@ -103,6 +103,7 @@ import {
   animSpeedDec,
   collisionMaskDec,
   combineMultipleChoiceText,
+  collisionGroupDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
@@ -276,7 +277,7 @@ class ScriptBuilder {
 
   // Projectiles
 
-  launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionMask) => {
+  launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionGroup, collisionMask) => {
     const output = this.output;
     const { sprites, variables } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
@@ -286,7 +287,8 @@ class ScriptBuilder {
     output.push(lo(spriteIndex));
     output.push(hi(dirVariableIndex));
     output.push(lo(dirVariableIndex));
-    output.push(((collisionMaskDec(collisionMask)) << 4) + moveSpeedDec(speed));
+    output.push(moveSpeedDec(speed));
+    output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
   }
 
   // Text
