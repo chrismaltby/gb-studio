@@ -29,6 +29,7 @@
 #define BUBBLE_TOTAL_FRAMES 60
 
 void ScriptHelper_CalcDest();
+void ScriptHelper_ClampCamDest();
 
 UBYTE *RAMPtr;
 // UINT16 actor_move_dest_x = 0;
@@ -503,17 +504,7 @@ void Script_CameraMoveTo_b() {
   camera_settings = (UBYTE)script_cmd_args[2] & ~CAMERA_LOCK_FLAG;
   camera_speed = (UBYTE)script_cmd_args[2] & CAMERA_SPEED_MASK;
 
-  // Clamp Destination
-  if (camera_dest.x > image_width - SCREEN_WIDTH_HALF) {
-    camera_dest.x = image_width - SCREEN_WIDTH_HALF;
-  } else if (camera_dest.x < SCREEN_WIDTH_HALF) {
-    camera_dest.x = SCREEN_WIDTH_HALF;
-  }
-  if (camera_dest.y > image_height - SCREEN_HEIGHT_HALF) {
-    camera_dest.y = image_height - SCREEN_HEIGHT_HALF;
-  } else if (camera_dest.y < SCREEN_HEIGHT_HALF) {
-    camera_dest.y = SCREEN_HEIGHT_HALF;
-  }
+  ScriptHelper_ClampCamDest();
 
   after_lock_camera = FALSE;
   script_update_fn = ScriptUpdate_MoveCamera;
@@ -532,20 +523,24 @@ void Script_CameraLock_b() {
   camera_dest.x = player.pos.x;
   camera_dest.y = player.pos.y;
 
-  // Clamp Destination
-  if (camera_dest.x > image_width - SCREEN_WIDTH_HALF) {
-    camera_dest.x = image_width - SCREEN_WIDTH_HALF;
-  } else if (camera_dest.x < SCREEN_WIDTH_HALF) {
-    camera_dest.x = SCREEN_WIDTH_HALF;
-  }
-  if (camera_dest.y > image_height - SCREEN_HEIGHT_HALF) {
-    camera_dest.y = image_height - SCREEN_HEIGHT_HALF;
-  } else if (camera_dest.y < SCREEN_HEIGHT_HALF) {
-    camera_dest.y = SCREEN_HEIGHT_HALF;
-  }
+  ScriptHelper_ClampCamDest();
 
   after_lock_camera = TRUE;
   script_update_fn = ScriptUpdate_MoveCamera;
+}
+
+void ScriptHelper_ClampCamDest() {
+  // Clamp Camera Destination
+  if (Gt16(camera_dest.x, image_width - SCREEN_WIDTH_HALF)) {
+    camera_dest.x = image_width - SCREEN_WIDTH_HALF;
+  } else if (Lt16(camera_dest.x, SCREEN_WIDTH_HALF)) {
+    camera_dest.x = SCREEN_WIDTH_HALF;
+  }
+  if (Gt16(camera_dest.y, image_height - SCREEN_HEIGHT_HALF)) {
+    camera_dest.y = image_height - SCREEN_HEIGHT_HALF;
+  } else if (Lt16(camera_dest.y, SCREEN_HEIGHT_HALF)) {
+    camera_dest.y = SCREEN_HEIGHT_HALF;
+  }
 }
 
 /*
