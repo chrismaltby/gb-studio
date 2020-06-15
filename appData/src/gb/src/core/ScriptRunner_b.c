@@ -145,7 +145,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_TextWithAvatar_b, 4},      // 0x5B
     {Script_TextMenu_b, 7},            // 0x5C
     {Script_ActorSetCollisions_b, 1},  // 0x5D
-    {Script_LaunchProjectile_b, 6},    // 0x5E
+    {Script_LaunchProjectile_b, 5},    // 0x5E
     {Script_SetFlagProperty_b, 4}      // 0x5F
 };
 
@@ -1934,7 +1934,7 @@ void Script_LaunchProjectile_b() {
 
   dir_x = 0;
   dir_y = 0;
-  dir_value = script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]];
+  dir_value = script_variables[(script_cmd_args[1] * 256) + script_cmd_args[2]];
 
   if (dir_value == 1) {
     dir_x = 0;
@@ -1950,14 +1950,14 @@ void Script_LaunchProjectile_b() {
     dir_y = -1;
   }
 
-  ProjectileLaunch(1,                                          // Sprite
+  ProjectileLaunch(script_cmd_args[0],                                          // Sprite
                    actors[script_actor].pos.x + (dir_x * 16),  // Launch X
                    actors[script_actor].pos.y + (dir_y * 16),  // Launch Y
                    dir_x,                                      // Dir x
                    dir_y,                                      // Dir y
                    1,                                          // Moving
-                   script_cmd_args[4],                         // Move Speed
+                   script_cmd_args[3],                         // Move Speed
                    60,                                         // Life time
-                   script_cmd_args[5] & 0xF,                   // Collision group
-                   script_cmd_args[5] >> 4);                   // Collision mask
+                   script_cmd_args[4] & 0xF,                   // Collision group
+                   script_cmd_args[4] >> 4);                   // Collision mask
 }

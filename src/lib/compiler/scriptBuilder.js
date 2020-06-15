@@ -94,6 +94,7 @@ import {
   getSpriteIndex,
   getMusicIndex,
   compileConditional,
+  getSpriteOffset,
 } from "../events/helpers";
 import {
   dirDec,
@@ -279,12 +280,12 @@ class ScriptBuilder {
 
   launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionGroup, collisionMask) => {
     const output = this.output;
-    const { sprites, variables } = this.options;
-    const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
+    const { sprites, variables, scene } = this.options;
+    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
     const dirVariableIndex = this.getVariableIndex(dirVariable, variables);
+    
     output.push(cmd(LAUNCH_PROJECTILE));
-    output.push(hi(spriteIndex));
-    output.push(lo(spriteIndex));
+    output.push(spriteOffset);
     output.push(hi(dirVariableIndex));
     output.push(lo(dirVariableIndex));
     output.push(moveSpeedDec(speed));

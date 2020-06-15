@@ -7,9 +7,9 @@ import BankedData, {
 } from "./bankedData";
 import {
   walkScenesEvents,
-  findSceneEvent,
   walkEventsDepthFirst,
   eventHasArg,
+  walkSceneEvents,
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
 import { indexBy, flatten } from "../helpers/array";
@@ -28,6 +28,7 @@ import {
   EVENT_CHOICE,
   EVENT_SET_INPUT_SCRIPT,
   EVENT_END,
+  EVENT_PLAYER_SET_SPRITE,
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
@@ -1123,13 +1124,24 @@ export const precompileScenes = (
       return usedSprites.find((s) => s.id === actor.spriteSheetId);
     });
 
+    const actorSpriteIds = actors.map((a) => a.spriteSheetId);
+    const eventSpriteIds = [];
+
+    walkSceneEvents(scene, (event) => {
+      if(event.args && event.args.spriteSheetId && event.cmd !== EVENT_PLAYER_SET_SPRITE) {
+        eventSpriteIds.push(event.args.spriteSheetId)
+      }
+    });
+
+    const sceneSpriteIds = [].concat(actorSpriteIds, eventSpriteIds);
+
     return {
       ...scene,
       backgroundIndex,
       actors,
-      sprites: actors.reduce((memo, actor) => {
+      sprites: sceneSpriteIds.reduce((memo, spriteId) => {
         const spriteIndex = usedSprites.findIndex(
-          (sprite) => sprite.id === actor.spriteSheetId
+          (sprite) => sprite.id === spriteId
         );
         if (memo.indexOf(spriteIndex) === -1) {
           memo.push(spriteIndex);

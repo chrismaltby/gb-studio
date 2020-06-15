@@ -32,12 +32,10 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
   unsigned char *emote_ptr;
 
   if (projectiles[current_projectile].life_time == 0) {
-    emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
-    SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4, emote_ptr);
     set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
     set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
-    set_sprite_tile(projectiles[current_projectile].sprite_index, EMOTE_SPRITE);
-    set_sprite_tile(projectiles[current_projectile].sprite_index + 1, EMOTE_SPRITE + 2);
+    set_sprite_tile(projectiles[current_projectile].sprite_index, sprite * 4);
+    set_sprite_tile(projectiles[current_projectile].sprite_index + 1, (sprite * 4) + 2);
 
     projectiles[current_projectile].life_time = 0;
     projectiles[current_projectile].moving = 0;

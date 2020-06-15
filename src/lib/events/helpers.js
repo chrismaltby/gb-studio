@@ -25,6 +25,21 @@ export const getSprite = (spriteId, sprites) => {
   return sprites.find(sprite => sprite.id === spriteId);
 };
 
+export const getSpriteOffset = (spriteId, sprites, scene) => {
+  const spriteIndex = getSpriteIndex(spriteId, sprites);
+
+  let spriteOffset = 6;
+  for(let i=0; i<scene.sprites.length; i++) {
+    if(scene.sprites[i] === spriteIndex) {
+      break;
+    }
+    const sprite = sprites[scene.sprites[i]];
+    spriteOffset += sprite.size / 64;
+  }
+
+  return spriteOffset;
+}
+
 export const getVariableIndex = (variable, variables) => {
   const normalisedVariable = String(variable)
     .replace(/\$/g, "")
