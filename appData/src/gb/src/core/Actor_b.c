@@ -27,13 +27,6 @@ void MoveActors_b() {
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
 
-    // if ((actor_time & 0xF) == i) {
-    //   // Time to run this actor's movement script
-    //   if(actors[a].movement_ptr.bank) {
-    //     ScriptStart(&actors[a].movement_ptr);
-    //   }
-    // }
-
     if (actors[a].moving) {
       if (actors[a].move_speed == 0) {
         // Half speed only move every other frame
@@ -143,65 +136,13 @@ void UpdateActors_b() {
       actor->rerender = FALSE;
     }
 
-    /*
-        if (IS_FRAME_8 && (((actors[a].vel.x != 0 || actors[a].vel.y != 0) &&
-                            actors[a].sprite_type != SPRITE_STATIC) ||
-                           actors[a].animate)) {
-          actors[a].frame++;
-          if (actors[a].frame == actors[a].frames_len) {
-            actors[a].frame = 0;
-          }
-
-          sprites[actors[a].sprite_index].frame = actors[a].frame;
-          sprites[actors[a].sprite_index].rerender = TRUE;
-        }
-
-        if (actor->sprite_type != SPRITE_STATIC) {
-          // Increase frame based on facing direction
-          if (IS_NEG(actor->dir.y)) {
-            fo = 1 + (actor->sprite_type == SPRITE_ACTOR_ANIMATED);
-            if (sprites[k].frame_offset != fo) {
-              sprites[k].frame_offset = fo;
-              sprites[k].flip = FALSE;
-              sprites[k].rerender = TRUE;
-            }
-          } else if (actor->dir.x != 0) {
-            fo = 2 + MUL_2(actor->sprite_type == SPRITE_ACTOR_ANIMATED);
-            if (sprites[k].frame_offset != fo) {
-              sprites[k].frame_offset = fo;
-              sprites[k].rerender = TRUE;
-            }
-            // Facing left so flip sprite
-            if (IS_NEG(actor->dir.x)) {
-              flip = TRUE;
-              if (!sprites[k].flip) {
-                sprites[k].flip = TRUE;
-                sprites[k].rerender = TRUE;
-              }
-            } else  // Facing right
-            {
-              if (sprites[k].flip) {
-                sprites[k].flip = FALSE;
-                sprites[k].rerender = TRUE;
-              }
-            }
-          } else {
-            fo = 0;
-            if (sprites[k].frame_offset != fo) {
-              sprites[k].frame_offset = fo;
-              sprites[k].flip = FALSE;
-              sprites[k].rerender = TRUE;
-            }
-          }
-        }
-    */
-
-    // LOG("SPRITE MOVE %u %u\n", i, s);
-
+    // Hide sprites that are under menus
+    // Actors occluded by text boxes are handled by lcd_update instead
     if (!hide_sprites_under_win && screen_x > WX_REG && screen_y - 8 > WY_REG) {
       move_sprite(k, 0, 0);
       move_sprite(k + 1, 0, 0);
     } else {
+      // Display sprite at screen x/y coordinate
       move_sprite(k, screen_x, screen_y);
       move_sprite(k + 1, screen_x + 8, screen_y);
     }
