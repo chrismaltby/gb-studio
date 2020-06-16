@@ -8,7 +8,7 @@ import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { normalizedFindSceneEvent } from "../../lib/helpers/eventSystem";
+import { normalizedFindSceneEvent, walkSceneEvents } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
@@ -268,7 +268,7 @@ class Scene extends Component {
             </div>
           )}
         </div>
-        {!simplifiedRender && (
+        {selected && !simplifiedRender && (
           <div className="Scene__Info" onMouseDown={this.onStartDrag}>
             <span
               title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
@@ -481,7 +481,7 @@ function mapStateToProps(state, props) {
     selected,
     dragging,
     hovered,
-    frameCount: getSceneFrameCount(state, props),
+    frameCount: selected ? getSceneFrameCount(state, props) : 0,
     sceneName,
     sceneFiltered,
     simplifiedRender: !fullRender,

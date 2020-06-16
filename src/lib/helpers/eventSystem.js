@@ -33,11 +33,18 @@ const mapSceneEvents = (scene, callback) => {
   return {
     ...scene,
     script: mapEvents(scene.script, callback),
+    playerHit1Script: mapEvents(scene.playerHit1Script, callback),
+    playerHit2Script: mapEvents(scene.playerHit2Script, callback),
+    playerHit3Script: mapEvents(scene.playerHit3Script, callback),    
     actors: scene.actors.map(actor => {
       return {
         ...actor,
         script: mapEvents(actor.script, callback),
-        startScript: mapEvents(actor.startScript, callback)
+        startScript: mapEvents(actor.startScript, callback),
+        hitPlayerScript: mapEvents(actor.hitPlayerScript, callback),
+        hit1Script: mapEvents(actor.hit1Script, callback),
+        hit2Script: mapEvents(actor.hit2Script, callback),
+        hit3Script: mapEvents(actor.hit3Script, callback)
       };
     }),
     triggers: scene.triggers.map(trigger => {
@@ -79,9 +86,18 @@ const walkScenesEvents = (scenes, callback) => {
 
 const walkSceneEvents = (scene, callback) => {
   walkEvents(scene.script, callback);
+  walkEvents(scene.playerHit1Script, callback);
+  walkEvents(scene.playerHit2Script, callback);
+  walkEvents(scene.playerHit3Script, callback);
+
   scene.actors.forEach(actor => {
     walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
+    walkEvents(actor.movementScript, callback);
+    walkEvents(actor.hitPlayerScript, callback);
+    walkEvents(actor.hit1Script, callback);
+    walkEvents(actor.hit2Script, callback);
+    walkEvents(actor.hit3Script, callback);
   });
   scene.triggers.forEach(trigger => {
     walkEvents(trigger.script, callback);

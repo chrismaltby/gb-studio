@@ -54,10 +54,11 @@ import {
   patchEvents,
   regenerateEventIds,
   mapEvents,
-  walkEvents
+  walkEvents,
+  walkSceneEvents
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_PLAYER_SET_SPRITE } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
@@ -1272,6 +1273,16 @@ export const getSpriteSheetIds = state =>
   state.entities.present.result.spriteSheets;
 export const getSceneActorIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].actors;
+export const getScene = (state, props) =>
+  state.entities.present.entities.scenes[props.id];  
+export const getSceneInitScript = (state, props) =>
+  state.entities.present.entities.scenes[props.id].script;
+export const getScenePlayerHit1Script = (state, props) =>
+  state.entities.present.entities.scenes[props.id].playerHit1Script;
+export const getScenePlayerHit2Script = (state, props) =>
+  state.entities.present.entities.scenes[props.id].playerHit2Script;
+export const getScenePlayerHit3Script = (state, props) =>
+  state.entities.present.entities.scenes[props.id].playerHit3Script;        
 export const getPalettesLookup = state =>
   state.entities.present.entities.palettes;
 export const getPaletteIds = state =>
@@ -1306,15 +1317,29 @@ export const getMaxSceneBottom = createSelector(
 );
 
 export const getSceneUniqueSpriteSheets = createSelector(
-  [getSceneActorIds, getActorsLookup, getSpriteSheetsLookup],
-  (actorIds, actors, spriteSheets) =>
-    actorIds.reduce((memo, actorId) => {
+  [getScene, getSceneActorIds, getActorsLookup, getSpriteSheetsLookup],
+  (scene, actorIds, actors, spriteSheets) => {
+    const ids = [];
+
+    walkSceneEvents(scene, (event) => {
+      if(event.args && event.args.spriteSheetId && event.cmd !== EVENT_PLAYER_SET_SPRITE) {
+        const spriteSheet = spriteSheets[event.args.spriteSheetId];
+        if (ids.indexOf(spriteSheet) === -1) {
+          
+          ids.push(spriteSheet)
+        }
+      }      
+    })
+
+    actorIds.forEach((actorId) => {
       const spriteSheet = spriteSheets[actors[actorId].spriteSheetId];
-      if (memo.indexOf(spriteSheet) === -1) {
-        memo.push(spriteSheet);
+      if (ids.indexOf(spriteSheet) === -1) {
+        ids.push(spriteSheet);
       }
-      return memo;
-    }, [])
+    })
+
+    return ids;
+  }
 );
 
 export const getSceneFrameCount = createSelector(
