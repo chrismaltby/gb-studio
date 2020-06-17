@@ -718,14 +718,20 @@ void Script_HideSprites_b() { HIDE_SPRITES; }
  * ----------------------------
  * Unhide actor
  */
-void Script_ActorShow_b() { actors[script_actor].enabled = TRUE; }
+void Script_ActorShow_b() {
+  actors[script_actor].enabled = TRUE;
+  ActivateActor(script_actor);
+}
 
 /*
  * Command: ActorHide
  * ----------------------------
  * Hide actor
  */
-void Script_ActorHide_b() { actors[script_actor].enabled = FALSE; }
+void Script_ActorHide_b() {
+  actors[script_actor].enabled = FALSE;
+  DeactivateActor(script_actor);
+}
 
 /*
  * Command: ActorSetCollisions

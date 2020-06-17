@@ -82,34 +82,29 @@ void ScriptStart(BankPtr *events_ptr) {
 }
 
 UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner) {
-  // UBYTE out_ctx = 0;
-  // UBYTE ctx = 0;
+  UWORD new_ctx = 0;
 
   SeedRand();
 
   // Run in background context
+  new_ctx = ScriptCtxPoolNext();
 
-  current_script_ctx = ScriptCtxPoolNext();
-
-  // out_ctx = 0;
-  // out_ctx = ctx;
-
-  if(current_script_ctx != 0) {
+  if(new_ctx != 0) {
     script_variables[TMP_VAR_1] = 0;
     script_variables[TMP_VAR_2] = 0;
 
-    LOG("RUN IN BACKGROUND USING CTX=%u\n", current_script_ctx);
-    script_ctxs[current_script_ctx].owner = 0; // @wtf
-    script_ctxs[current_script_ctx].script_ptr_bank = events_ptr->bank;
-    script_ctxs[current_script_ctx].script_ptr =
-        (BankDataPtr(script_ctxs[current_script_ctx].script_ptr_bank)) + events_ptr->offset;
-    script_ctxs[current_script_ctx].script_update_fn = FALSE;
-    script_ctxs[current_script_ctx].script_start_ptr = script_ctxs[current_script_ctx].script_ptr;
-    script_ctxs[current_script_ctx].owner = owner;
-    return current_script_ctx;
+    script_ctxs[new_ctx].owner = 0; // @wtf
+    script_ctxs[new_ctx].script_ptr_bank = events_ptr->bank;
+    script_ctxs[new_ctx].script_ptr =
+        (BankDataPtr(script_ctxs[new_ctx].script_ptr_bank)) + events_ptr->offset;
+    script_ctxs[new_ctx].script_update_fn = FALSE;
+    script_ctxs[new_ctx].script_start_ptr = script_ctxs[new_ctx].script_ptr;
+    script_ctxs[new_ctx].owner = owner;
+
+    return new_ctx;
   }
 
-  return current_script_ctx;
+  return new_ctx;
 }
 
 void ScriptRunnerUpdate() {
@@ -237,7 +232,7 @@ void ScriptSaveCtx() {
 }
 
 void ScriptRestoreCtx(UBYTE i) {
-  if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[i].owner == script_main_ctx_actor)) {
+  if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
   LOG("- UPDATE CTX=%u script_ctxs[i].owner=%u script_main_ctx_actor=%u\n", i, script_ctxs[i].owner, script_main_ctx_actor);

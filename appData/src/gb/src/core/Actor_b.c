@@ -183,6 +183,7 @@ void ActivateActor_b(UBYTE i) {
   actors[i].sprite_index = SpritePoolNext();
   actors[i].frame_offset = 0;
   actors[i].rerender = TRUE;
+  actors[i].moving = FALSE;
 
   if(actors[i].movement_ptr.bank) {
     // ScriptStartBg(&actors[i].movement_ptr);
