@@ -85,7 +85,8 @@ import {
   TEXT_WITH_AVATAR,
   MENU,
   LAUNCH_PROJECTILE,
-  SET_PROPERTY
+  SET_PROPERTY,
+  ACTOR_SET_SPRITE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -95,6 +96,7 @@ import {
   getMusicIndex,
   compileConditional,
   getSpriteOffset,
+  getSprite,
 } from "../events/helpers";
 import {
   dirDec,
@@ -251,6 +253,16 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(ACTOR_SET_COLLISIONS));
     output.push(enabled ? 1 : 0);
+  };
+
+  actorSetSprite = (spriteSheetId) => {
+    const output = this.output;
+    const { sprites, scene } = this.options;
+    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
+    const sprite = getSprite(spriteSheetId, sprites);
+    output.push(cmd(ACTOR_SET_SPRITE));
+    output.push(spriteOffset);
+    output.push(sprite.frames);
   };
 
   // Player

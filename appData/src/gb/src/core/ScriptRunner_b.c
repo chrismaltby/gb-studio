@@ -146,7 +146,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_TextMenu_b, 7},            // 0x5C
     {Script_ActorSetCollisions_b, 1},  // 0x5D
     {Script_LaunchProjectile_b, 5},    // 0x5E
-    {Script_SetFlagProperty_b, 4}      // 0x5F
+    {Script_SetFlagProperty_b, 4},     // 0x5F
+    {Script_ActorSetSprite_b, 2},      // 0x60
 };
 
 void ScriptTimerUpdate_b() {
@@ -965,6 +966,25 @@ void Script_TextMenu_b() {
              (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5],
              script_cmd_args[6]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
+}
+
+/*
+ * Command: ActorSetSprite
+ * ----------------------------
+ * Change sprite used by player
+ */
+void Script_ActorSetSprite_b() {
+  UBYTE sprite_frames;
+
+  sprite_frames = script_cmd_args[1];
+
+  actors[script_actor].sprite = script_cmd_args[0];
+  actors[script_actor].frame = 0;
+  actors[script_actor].sprite_type = sprite_frames == 6
+                                         ? SPRITE_ACTOR_ANIMATED
+                                         : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
+  actors[script_actor].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  actors[script_actor].rerender = TRUE;
 }
 
 /*
