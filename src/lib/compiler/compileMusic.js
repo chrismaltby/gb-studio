@@ -39,6 +39,7 @@ const compileMusic = async ({
     let musicData;
     if(trackBuildCache[track.id] && trackBuildCache[track.id].timestamp >= trackModifiedTime) {
       musicData = trackBuildCache[track.id].data;
+      musicData.name = track.dataName;
     } else {
       // Compile track using mod2gbt
       await compileTrack(track, {
@@ -203,7 +204,6 @@ const parseMusicFile = (string) => {
   const patternsSize = patterns.reduce((memo, pattern) => {
     return memo + pattern.length;
   }, 0);
-  const orderName = string.match(/music_track_[0-9]+__Data/g)[0];
   const order = string
     .replace(/[\S\s]*music_track_[0-9]+__Data\[\] = {/g, "")
     .replace(/}.*/g, "")
@@ -213,7 +213,6 @@ const parseMusicFile = (string) => {
     .map((s) => parseInt(s.replace(/.*_/, ""), 10));
   return {
     patterns,
-    orderName,
     order,
     patternsSize,
     size: patternsSize + (order.length + 1) * 2,
