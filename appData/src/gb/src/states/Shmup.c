@@ -24,7 +24,8 @@ void Reset_Shmup();
 void Start_Shmup() {
   // Set camera to follow player
   camera_target = &player.pos;
-  // camera_offset.x = -64;
+  
+  camera_offset.x = 0;
   camera_offset.y = 0;
 
   if (player.dir.x < 0) {
