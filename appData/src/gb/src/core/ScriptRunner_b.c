@@ -282,31 +282,19 @@ UBYTE ScriptUpdate_Emote() {
 }
 
 UBYTE ScriptUpdate_MoveCamera() {
-  // If camera is animating move towards location
-  if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
-    if ((game_time & camera_speed) == 0) {
-      if (camera_pos.x > camera_dest.x) {
-        camera_pos.x--;
-      } else if (camera_pos.x < camera_dest.x) {
-        camera_pos.x++;
-      }
-      if (camera_pos.y > camera_dest.y) {
-        camera_pos.y--;
-      } else if (camera_pos.y < camera_dest.y) {
-        camera_pos.y++;
-      }
+  if ((game_time & camera_speed) == 0) {
+    if (camera_pos.x > camera_dest.x) {
+      camera_pos.x--;
+    } else if (camera_pos.x < camera_dest.x) {
+      camera_pos.x++;
     }
-    if ((camera_pos.x == camera_dest.x) && (camera_pos.y == camera_dest.y)) {
-      if (after_lock_camera) {
-        camera_settings = camera_settings | CAMERA_LOCK_FLAG;
-      }
-      return TRUE;
+    if (camera_pos.y > camera_dest.y) {
+      camera_pos.y--;
+    } else if (camera_pos.y < camera_dest.y) {
+      camera_pos.y++;
     }
   }
-  // Otherwise jump imediately to camera destination
-  else {
-    camera_pos.x = camera_dest.x;
-    camera_pos.y = camera_dest.y;
+  if ((camera_pos.x == camera_dest.x) && (camera_pos.y == camera_dest.y)) {
     if (after_lock_camera) {
       camera_settings = camera_settings | CAMERA_LOCK_FLAG;
     }
@@ -507,8 +495,13 @@ void Script_CameraMoveTo_b() {
 
   ScriptHelper_ClampCamDest();
 
-  after_lock_camera = FALSE;
-  script_update_fn = ScriptUpdate_MoveCamera;
+  if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
+    after_lock_camera = FALSE;
+    script_update_fn = ScriptUpdate_MoveCamera;
+  } else {
+    camera_pos.x = camera_dest.x;
+    camera_pos.y = camera_dest.y;
+  }
 }
 
 /*
@@ -526,8 +519,13 @@ void Script_CameraLock_b() {
 
   ScriptHelper_ClampCamDest();
 
-  after_lock_camera = TRUE;
-  script_update_fn = ScriptUpdate_MoveCamera;
+  if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
+    after_lock_camera = TRUE;
+    script_update_fn = ScriptUpdate_MoveCamera;
+  } else {
+    camera_pos.x = camera_dest.x;
+    camera_pos.y = camera_dest.y;    
+  }
 }
 
 void ScriptHelper_ClampCamDest() {
