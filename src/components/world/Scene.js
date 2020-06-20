@@ -172,6 +172,8 @@ class Scene extends Component {
       simplifiedRender,
       showEntities,
       showCollisions,
+      labelOffsetLeft,
+      labelOffsetRight
     } = this.props;
 
     const {
@@ -200,7 +202,10 @@ class Scene extends Component {
           left: x,
         }}
       >
-        <div className="Scene__Name" onMouseDown={this.onStartDrag}>
+        <div className="Scene__Name" onMouseDown={this.onStartDrag}             style={{
+              paddingLeft: labelOffsetLeft,
+              paddingRight: labelOffsetRight
+            }}>
           <div className={cx("Scene__Label", {
               "Scene__Label--Red": labelColor === "red",
               "Scene__Label--Orange": labelColor === "orange",
@@ -210,6 +215,7 @@ class Scene extends Component {
               "Scene__Label--Purple": labelColor === "purple",
               "Scene__Label--Gray": labelColor === "gray"
             })}
+
           >
             {sceneName}
           </div>
@@ -269,7 +275,10 @@ class Scene extends Component {
           )}
         </div>
         {selected && !simplifiedRender && (
-          <div className="Scene__Info" onMouseDown={this.onStartDrag}>
+          <div className="Scene__Info" onMouseDown={this.onStartDrag} style={{
+            paddingLeft: labelOffsetLeft,
+            paddingRight: labelOffsetRight
+          }}>
             <span
               title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
               className={cx({
@@ -334,27 +343,17 @@ Scene.propTypes = {
   selectScene: PropTypes.func.isRequired,
   moveSelectedEntity: PropTypes.func.isRequired,
   sceneHover: PropTypes.func.isRequired,
-  editSearchTerm: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
   simplifiedRender: PropTypes.bool.isRequired,
+  labelOffsetLeft: PropTypes.number.isRequired,
+  labelOffsetRight: PropTypes.number.isRequired
 };
 
 Scene.defaultProps = {
   image: null,
   event: null,
   prefab: null,
-};
-
-const testScene = {
-  id: "",
-  name: "",
-  actors: [],
-  triggers: [],
-  x: 0,
-  y: 0,
-  width: 32,
-  height: 32,
 };
 
 function mapStateToProps(state, props) {
@@ -386,6 +385,8 @@ function mapStateToProps(state, props) {
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.tools.selected;
 
+  const { worldSidebarWidth: sidebarWidth } = state.settings;
+
   const {
     worldScrollX,
     worldScrollY,
@@ -399,12 +400,12 @@ function mapStateToProps(state, props) {
 
   const viewBoundsX = worldScrollX / zoomRatio;
   const viewBoundsY = worldScrollY / zoomRatio;
-  const viewBoundsWidth = worldViewWidth / zoomRatio;
+  const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
   const viewBoundsHeight = worldViewHeight / zoomRatio;
 
   const viewBoundsThrottledX = worldScrollThrottledX / zoomRatio;
   const viewBoundsThrottledY = worldScrollThrottledY / zoomRatio;
-  const viewBoundsThrottledWidth = worldViewWidth / zoomRatio;
+  const viewBoundsThrottledWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
   const viewBoundsThrottledHeight = worldViewHeight / zoomRatio;
 
   const visible =
@@ -418,6 +419,10 @@ function mapStateToProps(state, props) {
     scene.x < viewBoundsThrottledX + viewBoundsThrottledWidth &&
     scene.y + scene.height * 8 + 50 > viewBoundsThrottledY &&
     scene.y < viewBoundsThrottledY + viewBoundsThrottledHeight;
+
+  const offsetLabels = (scene.width * 8) > viewBoundsWidth / 2;
+  const labelOffsetLeft = offsetLabels ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), (scene.width * 8) - 100) : 0;
+  const labelOffsetRight = offsetLabels ? Math.min(Math.max(0, (scene.x + (scene.width * 8) - 10) - (viewBoundsX + viewBoundsWidth)), (scene.width * 8) - 100) : 0;
 
   const searchTerm = state.editor.searchTerm;
   const sceneName = scene.name || `Scene ${props.index + 1}`;
@@ -488,6 +493,8 @@ function mapStateToProps(state, props) {
     palettes,
     showEntities,
     showCollisions,
+    labelOffsetLeft,
+    labelOffsetRight
   };
 }
 
@@ -496,7 +503,6 @@ const mapDispatchToProps = {
   selectScene: actions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
   sceneHover: actions.sceneHover,
-  editSearchTerm: actions.editSearchTerm,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scene);

@@ -34,6 +34,8 @@
   color: var(--main-text-color);
   line-height: 20px;
   font-size: 11px;
+  transition: padding-left 0.1s ease-in-out, padding-right 0.1s ease-in-out;
+  transition-delay: 0.3s;
 }
 
 .Scene__Label {
@@ -83,7 +85,9 @@
   color: #888;
   opacity: 0;
   font-size: 11px;
-  transition: opacity 0.3s ease-in-out;
+  white-space: nowrap;
+  transition: opacity 0.3s ease-in-out, padding-left 0.1s ease-in-out, padding-right 0.1s ease-in-out;
+  transition-delay: 0.3s;  
 }
 
 .Scene__Info--Warning {
@@ -105,6 +109,10 @@
 .Scene__Image img {
   -webkit-user-drag: none;
   display: block;
+}
+
+.Scene--Selected {
+  z-index: 10;
 }
 
 .Scene--Selected .Scene__Image {
