@@ -231,6 +231,8 @@ void game_loop() {
     ScriptRestoreCtx(10);
     ScriptRestoreCtx(11);
     MoveActors();
+    ActorRunCollisionScripts();
+
     // }
 
     game_time++;

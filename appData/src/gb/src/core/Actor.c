@@ -21,6 +21,7 @@ UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+void ActorRunCollisionScripts_b();
 
 Actor actors[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
@@ -30,6 +31,7 @@ UBYTE actor_move_settings;
 Pos map_next_pos;
 Vector2D map_next_dir;
 UWORD map_next_sprite = 0;
+UBYTE player_iframes;
 
 void MoveActors() {
   PUSH_BANK(ACTOR_BANK);
@@ -133,4 +135,10 @@ void ActorRunScript(UBYTE i) {
   script_main_ctx_actor = i;
   actors[i].moving = FALSE;
   ScriptStart(&actors[i].events_ptr);
+}
+
+void ActorRunCollisionScripts() {
+  PUSH_BANK(ACTOR_BANK);
+  ActorRunCollisionScripts_b();
+  POP_BANK;  
 }

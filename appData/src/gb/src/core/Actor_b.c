@@ -255,57 +255,41 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
   actors[i].dir.y = dir_y;
   actors[i].rerender = TRUE;
   actors[i].moving = FALSE;
+  // actors[i].hit_actor = NO_ACTOR_COLLISON;
 
   if (actors[i].collisionsEnabled) {
     // Move left
     if (dir_x == -1) {
       UBYTE tile_left = tile_x - 1;
-#ifdef COLS_16
-      hit_actor = ActorAt1x3Tile(tile_left - 1, tile_y - 1, FALSE);
-      if (!TileAt2x2(tile_left, tile_y - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
-        actors[i].moving = TRUE;
-      }
-#else
-      hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
+      actors[i].hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
+      hit_actor = actors[i].hit_actor;
       if (!TileAt2x1(tile_left, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
-#endif
       // Move right
     } else if (dir_x == 1) {
       UBYTE tile_right = tile_x + 1;
-#ifdef COLS_16
-      hit_actor = ActorAt1x3Tile(tile_right + 1, tile_y - 1, FALSE);
-      if (!TileAt2x2(tile_right, tile_y - 1) &&
-          (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
-        actors[i].moving = TRUE;
-      }
-#else
-      hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
+      // hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
+      // actors[i].hit_actor = hit_actor;
+      actors[i].hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
+      hit_actor = actors[i].hit_actor;
       if (!TileAt2x1(tile_right, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
-#endif
     }
     // Move up
     if (dir_y == -1) {
-#ifdef COLS_16
-      UBYTE tile_up = tile_y - 2;
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
-      if (!TileAt2x2(tile_x, tile_up) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
-        actors[i].moving = TRUE;
-      }
-#else
       UBYTE tile_up = tile_y - 1;
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
+      actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
+      hit_actor = actors[i].hit_actor;
       if (!TileAt2x1(tile_x, tile_up) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
-#endif
       // Move down
     } else if (dir_y == 1) {
       UBYTE tile_down = tile_y + 1;
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
+      actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
+      hit_actor = actors[i].hit_actor;
       LOG("DIR DOWN %u [%u, %u]\n", hit_actor, tile_x, tile_down + 1);
       if (!TileAt2x2(tile_x, tile_down - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
@@ -330,11 +314,7 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
     LOG("CHECK HIT UP\n");
     LOG_VALUE("check_x", tile_x);
     LOG_VALUE("check_y", tile_y - 1);
-#ifdef COLS_16
-    hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 2, TRUE);
-#else
     hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, TRUE);
-#endif
   } else if (actors[i].dir.y == 1) {
     LOG("CHECK HIT DOWN\n");
     LOG_VALUE("check_x", tile_x);
@@ -345,20 +325,12 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
       LOG("CHECK HIT LEFT\n");
       LOG_VALUE("check_x", tile_x - 1);
       LOG_VALUE("check_y", tile_y);
-#ifdef COLS_16
-      hit_actor = ActorAt1x3Tile(tile_x - 2, tile_y - 1, TRUE);
-#else
       hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
-#endif
     } else if (actors[i].dir.x == 1) {
       LOG("CHECK HIT RIGHT\n");
       LOG_VALUE("check_x", tile_x + 2);
       LOG_VALUE("check_y", tile_y);
-#ifdef COLS_16
-      hit_actor = ActorAt1x3Tile(tile_x + 2, tile_y - 1, TRUE);
-#else
       hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, TRUE);
-#endif
     }
   }
 
@@ -407,8 +379,10 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
     case CHECK_DIR_DOWN:  // Check down
       while (start_y != end_tile) {
         if (TileAt2x2(start_x, start_y) ||  // Tile down
+            ActorAt3x1Tile(start_x - 1, start_y + 1, FALSE) !=
+                NO_ACTOR_COLLISON || // Actor down 1 tile       
             ActorAt3x1Tile(start_x - 1, start_y + 2, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor down
+                NO_ACTOR_COLLISON  // Actor down 2 tiles
         ) {
           return start_y;
         }
@@ -533,4 +507,42 @@ void InitPlayer_b() {
   player.rerender = TRUE;
   player.moving = FALSE;
   player.animate = FALSE;
+  player.hit_actor = NO_ACTOR_COLLISON;
+}
+
+void ActorRunCollisionScripts_b() {
+  Actor *actor;
+
+  if(player_iframes == 0 && player.hit_actor != NO_ACTOR_COLLISON) {
+    actor = &actors[player.hit_actor];
+    
+    if(actor->collision_group) {
+      if(actor->collision_group == 2) {
+        if(player.hit_1_ptr.bank) {
+          ScriptStartBg(&player.hit_1_ptr, 0);
+        }
+        if (actor->hit_player_ptr.bank) {
+          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        }
+      } else if(actor->collision_group == 4) {
+        if(player.hit_2_ptr.bank) {
+          ScriptStartBg(&player.hit_2_ptr, 0);
+        }
+        if (actor->hit_player_ptr.bank) {
+          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        }        
+      } else if(actor->collision_group == 8) {
+        if(player.hit_3_ptr.bank) {
+          ScriptStartBg(&player.hit_3_ptr, 0);
+        }
+        if (actor->hit_player_ptr.bank) {
+          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        }        
+      }
+      player_iframes = 10;
+      player.hit_actor = NO_ACTOR_COLLISON;
+    }
+  } else if (player_iframes != 0) {
+    player_iframes--;
+  }
 }

@@ -74,6 +74,7 @@ typedef struct {
   UBYTE collisionsEnabled;
   UBYTE collision_group;
   SPRITE_TYPE sprite_type;
+  UBYTE hit_actor;
   UWORD script_ptr;
   BankPtr events_ptr;
   BankPtr movement_ptr;
@@ -92,6 +93,7 @@ extern Vector2D map_next_dir;
 extern UWORD map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
+extern UBYTE player_iframes;
 
 /**
  * Move all actors positions based on their current velocities
@@ -180,5 +182,7 @@ void ActorsUnstick();
 void InitPlayer();
 
 void ActorRunScript(UBYTE i);
+
+void ActorRunCollisionScripts();
 
 #endif

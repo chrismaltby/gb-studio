@@ -76,7 +76,7 @@ void UpdateProjectiles_b() {
       for (j = 0; j != actors_active_size; j++) {
         UBYTE a = actors_active[j];
 
-        if (!actors[a].enabled) {
+        if (!actors[a].enabled || !actors[a].collisionsEnabled) {
           continue;
         }
 
