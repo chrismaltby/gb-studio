@@ -293,6 +293,7 @@ export class SelectRenamable extends Component {
             classNamePrefix="ReactSelect"
             value={value}
             onChange={onChange}
+            options={this.loadOptions("", []).options}
             loadOptions={this.loadOptions}
             reduceOptions={grouped ? reduceGroupedOptions : undefined}
             menuPlacement="auto"
