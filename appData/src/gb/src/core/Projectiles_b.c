@@ -29,7 +29,6 @@ void ProjectilesInit_b() {
 
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
                         UBYTE move_speed, UBYTE life_time, UBYTE col_group, UBYTE col_mask) {
-  unsigned char *emote_ptr;
 
   if (projectiles[current_projectile].life_time == 0) {
     set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
@@ -63,7 +62,7 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
 }
 
 void UpdateProjectiles_b() {
-  UBYTE i, k, j, a, hit;
+  UBYTE i, k, j, hit;
   UINT16 screen_x;
   UINT16 screen_y;
 
