@@ -48,7 +48,7 @@ void Start_Shmup() {
 }
 
 void Update_Shmup() {
-  UBYTE tile_x, tile_y, hit_actor, hit_trigger, a, i;
+  UBYTE tile_x, tile_y, hit_actor, hit_trigger;
 
   tile_x = (player.pos.x) >> 3;
   tile_y = (player.pos.y) >> 3;
