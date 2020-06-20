@@ -1197,6 +1197,7 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hitPlayerPtrs, 
       const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
       const initialFrame =
         actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
+      const collisionGroup = collisionGroupDec(actor.collisionGroup);
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
         actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
@@ -1208,8 +1209,8 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hitPlayerPtrs, 
         dirDec(actor.direction), // Direction
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
-        (actor.isPinned ? 1 : 0) + (collisionGroupDec(actor.collisionGroup) << 1),
-        eventPtrs[actorIndex].bank, // Event bank ptr
+        (actor.isPinned ? 1 : 0) + (collisionGroup << 1),
+        collisionGroup ? 0 : eventPtrs[actorIndex].bank, // Event bank ptr
         lo(eventPtrs[actorIndex].offset), // Event offset ptr
         hi(eventPtrs[actorIndex].offset),
         movementPtrs[actorIndex].bank, // Movement script bank ptr
