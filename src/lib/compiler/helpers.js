@@ -196,3 +196,16 @@ export const actorRelativeDec = (operation) => {
   }
   return 0;
 }
+
+export const moveTypeDec = (type) => {
+  if (type === "horizontal") {
+    return 0;
+  }
+  if (type === "vertical") {
+    return 1;
+  }
+  if (type === "diagonal") {
+    return 2;
+  }
+  return 0;
+}

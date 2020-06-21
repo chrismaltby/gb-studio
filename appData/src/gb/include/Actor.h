@@ -42,14 +42,6 @@
 #define PlayerOnTile16() (ActorOnTile16(0))
 #define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
-typedef enum {
-  NONE = 1,
-  PLAYER_INPUT,
-  AI_RANDOM_FACE,
-  AI_INTERACT_FACE,
-  AI_RANDOM_WALK,
-  AI_ROTATE_TRB
-} MOVEMENT_TYPE;
 
 typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;
 

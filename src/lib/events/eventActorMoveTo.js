@@ -39,19 +39,25 @@ const fields = [
     },   
   },
   {
+    key: "moveType",
+    label: l10n("FIELD_MOVEMENT_TYPE"),
+    type: "select",
+    options: [
+      ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL_FIRST")],
+      ["vertical", "↕ " + l10n("FIELD_VERTICAL_FIRST")],
+      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")]
+    ],
+    defaultValue: "horizontal",
+    width: "50%",
+  },    
+  {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
     width: "50%",
+    alignCheckbox: true,
     type: "checkbox",
     defaultValue: false
-  },
-  {
-    key: "verticalFirst",
-    label: l10n("FIELD_VERTICAL_FIRST"),
-    width: "50%",
-    type: "checkbox",
-    defaultValue: false
-  } 
+  }
 ];
 
 const compile = (input, helpers) => {
@@ -61,12 +67,12 @@ const compile = (input, helpers) => {
   
   if(input.x.type === "number" && input.y.type === "number") {
     // If all inputs are numbers use fixed implementation
-    actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.verticalFirst);
+    actorMoveTo(input.x.value, input.y.value, input.useCollisions, input.moveType);
   } else {
     // If any value is not a number transfer values into variables and use variable implementation
     const xVar = variableFromUnion(input.x, temporaryEntityVariable(0));
     const yVar = variableFromUnion(input.y, temporaryEntityVariable(1));
-    actorMoveToVariables(xVar, yVar, input.useCollisions, input.verticalFirst);
+    actorMoveToVariables(xVar, yVar, input.useCollisions, input.moveType);
   }
 };
 

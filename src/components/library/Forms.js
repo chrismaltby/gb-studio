@@ -42,6 +42,7 @@ export const FormField = ({
   halfWidth,
   thirdWidth,
   quarterWidth,
+  alignCheckbox,
   children
 }) => (
   <div
@@ -55,6 +56,9 @@ export const FormField = ({
       },
       {
         "FormField--QuarterWidth": quarterWidth
+      },
+      {
+        "FormField--AlignCheckbox": alignCheckbox
       }
     )}
   >
@@ -66,6 +70,7 @@ FormField.propTypes = {
   halfWidth: PropTypes.bool,
   thirdWidth: PropTypes.bool,
   quarterWidth: PropTypes.bool,
+  alignCheckbox: PropTypes.bool,
   children: PropTypes.node
 };
 
@@ -73,6 +78,7 @@ FormField.defaultProps = {
   halfWidth: false,
   thirdWidth: false,
   quarterWidth: false,
+  alignCheckbox: false,
   children: null
 };
 

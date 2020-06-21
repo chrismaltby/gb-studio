@@ -54,6 +54,10 @@ textarea {
   width: 25%;
 }
 
+.FormField--AlignCheckbox {
+  padding-top: 35px;
+}
+
 .FormField--ToggleableClosed label {
   float: left;
   text-decoration: underline;
@@ -181,6 +185,10 @@ textarea {
 
 .FormField:last-child {
   padding-bottom: 10px;
+}
+
+.FormField--AlignCheckbox:last-child {
+  padding-bottom: 20px;
 }
 
 .SelectRenamable {

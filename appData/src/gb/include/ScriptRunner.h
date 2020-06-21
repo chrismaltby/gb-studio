@@ -14,6 +14,12 @@
 typedef void (*SCRIPT_CMD_FN)();
 typedef UBYTE (*SCRIPT_UPDATE_FN)();
 
+typedef enum {
+  MOVE_HORIZONTAL = 0,
+  MOVE_VERTICAL,
+  MOVE_DIAGONAL
+} MOVEMENT_TYPE;
+
 typedef struct _SCRIPT_CMD {
   SCRIPT_CMD_FN fn;
   UBYTE args_len;
@@ -39,7 +45,7 @@ typedef struct {
   UBYTE script_actor;
   UBYTE owner;
   UBYTE actor_move_cols;
-  UBYTE actor_move_vert;
+  MOVEMENT_TYPE actor_move_type;
   UBYTE tmp_1;
   UBYTE tmp_2;
 } ScriptContext;
@@ -65,7 +71,7 @@ extern UBYTE script_complete;
 extern UINT16 actor_move_dest_x;
 extern UINT16 actor_move_dest_y;
 extern UBYTE actor_move_cols;
-extern UBYTE actor_move_vert;
+extern MOVEMENT_TYPE actor_move_type;
 extern UBYTE wait_time;
 
 extern SCRIPT_UPDATE_FN script_update_fn;

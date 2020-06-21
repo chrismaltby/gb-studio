@@ -109,6 +109,7 @@ import {
   combineMultipleChoiceText,
   collisionGroupDec,
   actorRelativeDec,
+  moveTypeDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
@@ -129,16 +130,16 @@ class ScriptBuilder {
     output.push(index);
   };
 
-  actorMoveTo = (x = 0, y = 0, useCollisions = false, verticalFirst = false) => {
+  actorMoveTo = (x = 0, y = 0, useCollisions = false, moveType) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_TO));
     output.push(x);
     output.push(y);
     output.push(useCollisions ? 1 : 0);
-    output.push(verticalFirst ? 1 : 0);
+    output.push(moveTypeDec(moveType));
   };
 
-  actorMoveRelative = (x = 0, y = 0, useCollisions = false, verticalFirst = false) => {
+  actorMoveRelative = (x = 0, y = 0, useCollisions = false, moveType) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_RELATIVE));
     output.push(Math.abs(x));
@@ -146,15 +147,15 @@ class ScriptBuilder {
     output.push(Math.abs(y));
     output.push(y < 0 ? 1 : 0);
     output.push(useCollisions ? 1 : 0);
-    output.push(verticalFirst ? 1 : 0);    
+    output.push(moveTypeDec(moveType));
   };
 
-  actorMoveToVariables = (variableX, variableY, useCollisions = false, verticalFirst = false) => {
+  actorMoveToVariables = (variableX, variableY, useCollisions = false, moveType) => {
     const output = this.output;
     this.vectorsLoad(variableX, variableY);
     output.push(cmd(ACTOR_MOVE_TO_VALUE));
     output.push(useCollisions ? 1 : 0);
-    output.push(verticalFirst ? 1 : 0);    
+    output.push(moveTypeDec(moveType));
   };
 
   actorSetPosition = (x = 0, y = 0) => {

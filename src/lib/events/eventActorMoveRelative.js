@@ -27,25 +27,31 @@ const fields = [
     defaultValue: 0
   },
   {
+    key: "moveType",
+    label: l10n("FIELD_MOVEMENT_TYPE"),
+    type: "select",
+    options: [
+      ["horizontal", "↔ " + l10n("FIELD_HORIZONTAL_FIRST")],
+      ["vertical", "↕ " + l10n("FIELD_VERTICAL_FIRST")],
+      ["diagonal", "⤡ " + l10n("FIELD_DIAGONAL")]
+    ],
+    defaultValue: "horizontal",
+    width: "50%",
+  },    
+  {
     key: "useCollisions",
     label: l10n("FIELD_USE_COLLISIONS"),
     width: "50%",
+    alignCheckbox: true,
     type: "checkbox",
     defaultValue: false
-  },
-  {
-    key: "verticalFirst",
-    label: l10n("FIELD_VERTICAL_FIRST"),
-    width: "50%",
-    type: "checkbox",
-    defaultValue: false
-  }  
+  } 
 ];
 
 const compile = (input, helpers) => {
   const { actorSetActive, actorMoveRelative } = helpers;
   actorSetActive(input.actorId);
-  actorMoveRelative(input.x, input.y, input.useCollisions, input.verticalFirst);
+  actorMoveRelative(input.x, input.y, input.useCollisions, input.moveType);
 };
 
 module.exports = {

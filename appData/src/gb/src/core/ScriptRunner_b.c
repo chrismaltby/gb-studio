@@ -37,7 +37,7 @@ UBYTE *RAMPtr;
 BYTE actor_move_dir_x = 0;
 BYTE actor_move_dir_y = 0;
 UBYTE actor_move_cols = FALSE;
-UBYTE actor_move_vert = FALSE;
+MOVEMENT_TYPE actor_move_type = MOVE_HORIZONTAL;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 // UBYTE wait_time = 0;
@@ -186,7 +186,7 @@ UBYTE ScriptUpdate_MoveActor() {
   }
   actors[script_actor].moving = TRUE;
   // Actor not at horizontal destination
-  if (actors[script_actor].pos.x != actor_move_dest_x && (!actor_move_vert || (actors[script_actor].pos.y == actor_move_dest_y))) {
+  if (actors[script_actor].pos.x != actor_move_dest_x && (!actor_move_type || (actors[script_actor].pos.y == actor_move_dest_y))) {
     actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
       actors[script_actor].dir.x = 1;
@@ -636,18 +636,22 @@ void Script_ActorMoveTo_b() {
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = (script_cmd_args[1] * 8);
   actor_move_cols = script_cmd_args[2];
-  actor_move_vert = script_cmd_args[3];
+  actor_move_type = script_cmd_args[3];
   if(actor_move_cols) {
     ScriptHelper_CalcDest();
   }
-  script_update_fn = ScriptUpdate_MoveActor;
+  if(actor_move_type == MOVE_DIAGONAL) {
+    script_update_fn = ScriptUpdate_MoveActorDiag;
+  } else {
+    script_update_fn = ScriptUpdate_MoveActor;
+  }
 }
 
 
 void ScriptHelper_CalcDest() {
   UBYTE check_dir = CHECK_DIR_LEFT;
   UWORD new_dest;
-  if(actor_move_vert) {
+  if(actor_move_type) {
     if(actor_move_dest_y != actors[script_actor].pos.y) {
       // Check vertical collisions in path
       if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
@@ -1332,11 +1336,15 @@ void Script_ActorMoveToVal_b() {
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = script_variables[script_ptr_y] * 8;
   actor_move_cols = script_cmd_args[0];
-  actor_move_vert = script_cmd_args[1];
+  actor_move_type = script_cmd_args[1];
   if(actor_move_cols) {
     ScriptHelper_CalcDest();
   }  
-  script_update_fn = ScriptUpdate_MoveActor;
+  if(actor_move_type == MOVE_DIAGONAL) {
+    script_update_fn = ScriptUpdate_MoveActorDiag;
+  } else {
+    script_update_fn = ScriptUpdate_MoveActor;
+  }
 }
 
 /*
@@ -1391,13 +1399,17 @@ void Script_ActorMoveRel_b() {
   }
 
   actor_move_cols = script_cmd_args[4];
-  actor_move_vert = script_cmd_args[5];
+  actor_move_type = script_cmd_args[5];
 
   if(actor_move_cols) {
     ScriptHelper_CalcDest();
   }  
 
-  script_update_fn = ScriptUpdate_MoveActor;
+  if(actor_move_type == MOVE_DIAGONAL) {
+    script_update_fn = ScriptUpdate_MoveActorDiag;
+  } else {
+    script_update_fn = ScriptUpdate_MoveActor;
+  }
 }
 
 /*
