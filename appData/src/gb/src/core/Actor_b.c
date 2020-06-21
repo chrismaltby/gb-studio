@@ -485,6 +485,27 @@ UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
+UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
+    UBYTE a = actors_active[i];
+
+    if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
+      continue;
+    }
+
+    if ((player.pos.x + 16 >= actors[a].pos.x) &&
+        (player.pos.x <= actors[a].pos.x + 16) &&
+        (player.pos.y + 8 >= actors[a].pos.y) &&
+        (player.pos.y <= actors[a].pos.y + 8)) {
+      return a;
+    }
+  }
+
+  return NO_ACTOR_COLLISON;  
+}
+
 void InitPlayer_b() {
   UBYTE sprite_frames;
 

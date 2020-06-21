@@ -139,6 +139,7 @@ UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
 
 /**
  * Return index of actor that would overlap an actor at the given tile coordinates

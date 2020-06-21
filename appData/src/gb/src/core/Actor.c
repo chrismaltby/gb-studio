@@ -21,6 +21,7 @@ UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip);
 void ActorRunCollisionScripts_b();
 
 Actor actors[MAX_ACTORS];
@@ -91,6 +92,14 @@ UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE hit_actor = FALSE;
   PUSH_BANK(ACTOR_BANK);
   hit_actor = ActorAt3x1Tile_b(tx, ty, inc_noclip);
+  POP_BANK;
+  return hit_actor;
+}
+
+UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
+  UBYTE hit_actor = FALSE;
+  PUSH_BANK(ACTOR_BANK);
+  hit_actor = ActorOverlapsPlayer_b(inc_noclip);
   POP_BANK;
   return hit_actor;
 }

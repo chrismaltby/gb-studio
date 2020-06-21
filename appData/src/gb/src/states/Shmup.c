@@ -143,7 +143,7 @@ void Update_Shmup() {
   player.moving = TRUE;
 
   // Actor Collisions
-  hit_actor = ActorAt1x2Tile(tile_x + 1, tile_y, FALSE);
+  hit_actor = ActorOverlapsPlayer(FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
     if(actors[hit_actor].collision_group) {
       player.hit_actor = 0;
