@@ -180,3 +180,19 @@ export const collisionMaskDec = (mask) => {
     return memo | collisionGroupDec(group);
   }, 0);
 }
+
+export const actorRelativeDec = (operation) => {
+  if (operation === "up") {
+    return 0;
+  }
+  if (operation === "down") {
+    return 1;
+  }
+  if (operation === "left") {
+    return 2;
+  }
+  if (operation === "right") {
+    return 3;
+  }
+  return 0;
+}

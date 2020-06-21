@@ -86,7 +86,8 @@ import {
   MENU,
   LAUNCH_PROJECTILE,
   SET_PROPERTY,
-  ACTOR_SET_SPRITE
+  ACTOR_SET_SPRITE,
+  IF_ACTOR_RELATIVE_TO_ACTOR
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -107,6 +108,7 @@ import {
   collisionMaskDec,
   combineMultipleChoiceText,
   collisionGroupDec,
+  actorRelativeDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
@@ -831,6 +833,22 @@ class ScriptBuilder {
       output,
     });
   };
+
+  ifActorRelativeToActor = (operation, otherId, truePath = [], falsePath = []) => {
+    const output = this.output;
+    const { scene, entity } = this.options;
+    const otherIndex =
+      otherId === "$self$"
+        ? getActorIndex(entity.id, scene)
+        : getActorIndex(otherId, scene);
+    output.push(cmd(IF_ACTOR_RELATIVE_TO_ACTOR));
+    output.push(actorRelativeDec(operation));
+    output.push(otherIndex);
+    compileConditional(truePath, falsePath, {
+      ...this.options,
+      output,
+    }); 
+  }
 
   ifDataSaved = (truePath = [], falsePath = []) => {
     const output = this.output;

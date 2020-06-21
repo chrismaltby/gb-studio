@@ -190,5 +190,6 @@ void Script_TextMenu_b();
 void Script_ActorSetCollisions_b();
 void Script_LaunchProjectile_b();
 void Script_ActorSetSprite_b();
+void Script_IfActorRelActor_b();
 
 #endif

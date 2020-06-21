@@ -148,6 +148,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_LaunchProjectile_b, 5},    // 0x5E
     {Script_SetFlagProperty_b, 4},     // 0x5F
     {Script_ActorSetSprite_b, 2},      // 0x60
+    {Script_IfActorRelActor_b, 4},     // 0x61
 };
 
 void ScriptTimerUpdate_b() {
@@ -1243,6 +1244,36 @@ void Script_IfActorDirection_b() {
        actors[script_actor].dir.y == -1 &&
            script_cmd_args[0] == 8)) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+  }
+}
+
+/*
+ * Command: IfActorRelActor
+ * ----------------------------
+ * Jump to new script pointer position if actor position is in specificied direction relative to second actor.
+ *
+ *   arg0: Operation
+ *   arg1: Second actor index
+ *   arg2: High 8 bits for new pointer
+ *   arg3: Low 8 bits for new pointer 
+ */
+void Script_IfActorRelActor_b() {
+  if(script_cmd_args[0] == 0) { // Above
+    if(Lt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    }
+  } else if(script_cmd_args[0] == 1) { // Down
+    if(Gt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    }
+  } else if(script_cmd_args[0] == 2) { // Left
+    if(Lt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    }
+  } else if(script_cmd_args[0] == 3) { // Right
+    if(Gt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    }
   }
 }
 
