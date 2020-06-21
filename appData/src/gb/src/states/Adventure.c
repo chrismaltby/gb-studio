@@ -52,26 +52,15 @@ void Update_Adventure() {
     player.rerender = TRUE;
   }
 
-  //   player.pos.x += player.dir.x;
-  //   player.pos.y += player.dir.y;
-
   tile_x = (player.pos.x + 4) >> 3;
   tile_y = (player.pos.y) >> 3;
 
   if (INPUT_A_PRESSED) {
-    if (player.dir.x == 1) {
-      hit_actor = ActorAtTile(tile_x + 2, tile_y, TRUE);
-    } else {
-      hit_actor = ActorAtTile(tile_x - 1, tile_y, TRUE);
-    }
+    hit_actor = ActorInFrontOfPlayer();
     if (hit_actor != NO_ACTOR_COLLISON) {
       ScriptStart(&actors[hit_actor].events_ptr);
     }
   }
-  //
-  //   vel_y = MIN(vel_y, MAX_FALL_VEL);
-  //   pos_y += vel_y >> 8;
-  //   tile_y = pos_y >> 7;
 
   // Left Collision
   if (player.dir.x < 0) {
@@ -124,4 +113,17 @@ void Update_Adventure() {
       return;
     }
   }
+
+  // Actor Collisions
+  hit_actor = ActorOverlapsPlayer(FALSE);
+  if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
+    if(actors[hit_actor].collision_group) {
+      player.hit_actor = 0;
+      player.hit_actor = hit_actor;
+    } else {
+      player_iframes = 10;
+      ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
+    }
+  }
+
 }
