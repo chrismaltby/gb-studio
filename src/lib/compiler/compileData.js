@@ -146,7 +146,8 @@ const compile = async (
       entityType,
       entity,
       entityIndex,
-      alreadyCompiled
+      loop,
+      alreadyCompiled,
     ) => {
       return compileEntityEvents(script, {
         scene,
@@ -165,6 +166,7 @@ const compile = async (
         entity,
         banked,
         warnings,
+        loop,
         output: alreadyCompiled || [],
       });
     };
@@ -182,6 +184,7 @@ const compile = async (
           "actor",
           actor,
           actorIndex,
+          false,
           compiledSceneScript
         );
         compiledSceneScript.splice(-1);
@@ -193,6 +196,7 @@ const compile = async (
         "scene",
         scene,
         sceneIndex,
+        false,
         compiledSceneScript
       );
 
@@ -207,7 +211,7 @@ const compile = async (
         };
       }
       return banked.push(
-        compileScript(entity[entityScriptField], entityType, entity, entityIndex)
+        compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
       );
     };
 
@@ -217,7 +221,7 @@ const compile = async (
       playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
       playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
-      actorsMovement: scene.actors.map(bankEntityEvents("actor","movementScript")),
+      actorsMovement: scene.actors.map(bankEntityEvents("actor","updateScript")),
       actorsHitPlayer: scene.actors.map(bankEntityEvents("actor","hitPlayerScript")),
       actorsHit1: scene.actors.map(bankEntityEvents("actor","hit1Script")),
       actorsHit2: scene.actors.map(bankEntityEvents("actor","hit2Script")),

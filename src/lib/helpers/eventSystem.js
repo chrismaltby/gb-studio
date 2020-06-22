@@ -93,7 +93,7 @@ const walkSceneEvents = (scene, callback) => {
   scene.actors.forEach(actor => {
     walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
-    walkEvents(actor.movementScript, callback);
+    walkEvents(actor.updateScript, callback);
     walkEvents(actor.hitPlayerScript, callback);
     walkEvents(actor.hit1Script, callback);
     walkEvents(actor.hit2Script, callback);

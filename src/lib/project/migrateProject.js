@@ -287,16 +287,16 @@ const migrateFrom120To200Actors = (data) => {
       return {
         ...scene,
         actors: scene.actors.map((actor) => {
-          let movementScript;
+          let updateScript;
           if(actor.movementType === "randomFace") {
-            movementScript = generateRandomLookScript();
+            updateScript = generateRandomLookScript();
           } else if (actor.movementType === "randomWalk") {
-            movementScript = generateRandomWalkScript();
+            updateScript = generateRandomWalkScript();
           }
           return {
             ...actor,
             spriteType: actor.movementType === "static" ? "static" : "actor",
-            movementScript
+            updateScript
           };
         }),
       };

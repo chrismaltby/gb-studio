@@ -21,6 +21,7 @@ const compileEntityEvents = (input = [], options = {}) => {
     entityType,
     entityIndex,
     warnings,
+    loop
   } = options;
   const helpers = {
     ...options,
@@ -48,6 +49,12 @@ const compileEntityEvents = (input = [], options = {}) => {
   );
 
   const scriptBuilder = new ScriptBuilder(output, helpers);
+
+  const loopId = `loop_${Math.random()}`;
+
+  if(loop && input.length > 1) {
+    scriptBuilder.labelDefine(loopId);
+  }
 
   for (let i = 0; i < input.length; i++) {
     const command = input[i].command;
@@ -83,6 +90,11 @@ const compileEntityEvents = (input = [], options = {}) => {
   }
 
   if (!branch) {
+
+    if(loop && input.length > 1) {
+      scriptBuilder.nextFrameAwait();
+      scriptBuilder.labelGoto(loopId);    
+    }
     output.push(0); // End script
 
     if (output.length > 16383) {

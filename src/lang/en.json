@@ -62,7 +62,7 @@
   "SIDEBAR_ON_INTERACT": "On Interact",
   "SIDEBAR_ON_HIT": "On Hit",
   "SIDEBAR_ON_PLAYER_HIT": "On Player Hit",
-  "SIDEBAR_MOVEMENT": "Movement",
+  "SIDEBAR_ON_UPDATE": "On Update",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",

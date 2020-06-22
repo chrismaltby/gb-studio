@@ -33,13 +33,13 @@ import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
   start: l10n("SIDEBAR_ON_INIT"),
-  movement: l10n("SIDEBAR_MOVEMENT"),
+  update: l10n("SIDEBAR_ON_UPDATE"),
 };
 
 const collisionTabs = {
   hit: l10n("SIDEBAR_ON_HIT"),
   start: l10n("SIDEBAR_ON_INIT"),
-  movement: l10n("SIDEBAR_MOVEMENT"),
+  update: l10n("SIDEBAR_ON_UPDATE"),
 };
 
 const hitTabs = {
@@ -91,7 +91,7 @@ class ActorEditor extends Component {
 
   onEditStartScript = this.onEdit("startScript");
 
-  onEditMovementScript = this.onEdit("movementScript");
+  onEditUpdateScript = this.onEdit("updateScript");
 
   onEditHitPlayerScript = this.onEdit("hitPlayerScript");
 
@@ -180,9 +180,9 @@ class ActorEditor extends Component {
         value: actor.script,
         onChange: this.onEditScript,
       },
-      movement: {
-        value: actor.movementScript,
-        onChange: this.onEditMovementScript,
+      update: {
+        value: actor.updateScript,
+        onChange: this.onEditUpdateScript,
       },
       hit: {
         tabs: hitTabs,
