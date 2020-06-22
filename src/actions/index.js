@@ -706,6 +706,18 @@ export const zoomReset = section => {
   return { type: types.ZOOM_RESET, section };
 };
 
+export const setScriptTab = tab => {
+  return { type: types.SET_SCRIPT_TAB, tab };
+};
+
+export const setScriptTabScene = tab => {
+  return { type: types.SET_SCRIPT_TAB_SCENE, tab };
+};
+
+export const setScriptTabSecondary = tab => {
+  return { type: types.SET_SCRIPT_TAB_SECONDARY, tab };
+};
+
 export const editSearchTerm = searchTerm => {
   return { type: types.EDIT_SEARCH_TERM, searchTerm };
 }

@@ -44,6 +44,9 @@ export default {
     selectedPalette: 0,
     selectedBrush: BRUSH_8PX,
     showLayers: true,
+    lastScriptTab: "",
+    lastScriptTabScene: "",
+    lastScriptTabSecondary: ""
   },
   navigation: {
     section: "world",

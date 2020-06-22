@@ -54,7 +54,10 @@ import {
   RESIZE_WORLD_VIEW,
   SET_SELECTED_PALETTE,
   SET_SELECTED_BRUSH,
-  SET_SHOW_LAYERS
+  SET_SHOW_LAYERS,
+  SET_SCRIPT_TAB,
+  SET_SCRIPT_TAB_SCENE,
+  SET_SCRIPT_TAB_SECONDARY,
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -480,7 +483,22 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         showLayers: action.showLayers
-      }            
+      }    
+    case SET_SCRIPT_TAB:
+      return {
+        ...state,
+        lastScriptTab: action.tab
+      }
+    case SET_SCRIPT_TAB_SCENE:
+      return {
+        ...state,
+        lastScriptTabScene: action.tab
+      }
+    case SET_SCRIPT_TAB_SECONDARY:
+      return {
+        ...state,
+        lastScriptTabSecondary: action.tab
+      }              
     default:
       return state;
   }

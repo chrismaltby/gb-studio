@@ -52,20 +52,31 @@ const hitTabs = {
 class ActorEditor extends Component {
   constructor(props) {
     super(props);
+
+    const tabs = Object.keys((props.actor && props.actor.collisionGroup) ?  collisionTabs : defaultTabs);
+    const secondaryTabs = Object.keys(hitTabs);
+
+    const initialTab = tabs.includes(props.lastScriptTab) ? props.lastScriptTab : tabs[0];
+    const initialSecondaryTab = secondaryTabs.includes(props.lastScriptTabSecondary) ? props.lastScriptTabSecondary : secondaryTabs[0];
+
     this.state = {
       clipboardActor: null,
-      scriptMode: (props.actor && props.actor.collisionGroup) ? "hit" : "interact",
-      scriptModeSecondary: "hitPlayer",
+      scriptMode: initialTab,
+      scriptModeSecondary: initialSecondaryTab,
     };
   }
 
   onSetScriptMode = (mode) => {
+    const { setScriptTab } = this.props;
+    setScriptTab(mode);
     this.setState({
       scriptMode: mode,
     });
   };
 
   onSetScriptModeSecondary = (mode) => {
+    const { setScriptTabSecondary } = this.props;
+    setScriptTabSecondary(mode);
     this.setState({
       scriptModeSecondary: mode,
     });
@@ -478,6 +489,7 @@ class ActorEditor extends Component {
             />
             {scripts[scriptMode] && scripts[scriptMode].tabs && (
               <SidebarTabs
+                secondary
                 value={scriptModeSecondary}
                 values={scripts[scriptMode].tabs}
                 onChange={this.onSetScriptModeSecondary}
@@ -517,6 +529,8 @@ ActorEditor.propTypes = {
   actor: ActorShape,
   scene: SceneShape,
   sceneId: PropTypes.string.isRequired,
+  lastScriptTab: PropTypes.string.isRequired,
+  lastScriptTabSecondary: PropTypes.string.isRequired,
   spriteSheet: SpriteShape,
   defaultSpritePaletteId: PropTypes.string.isRequired,
   colorsEnabled: PropTypes.bool.isRequired,
@@ -526,6 +540,8 @@ ActorEditor.propTypes = {
   setActorPrefab: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
+  setScriptTab: PropTypes.func.isRequired,
+  setScriptTabSecondary: PropTypes.func.isRequired
 };
 
 ActorEditor.defaultProps = {
@@ -544,6 +560,7 @@ function mapStateToProps(state, props) {
   const colorsEnabled = settings.customColorsEnabled;
   const defaultSpritePaletteId =
     settings.defaultSpritePaletteId || DMG_PALETTE.id;
+  const { lastScriptTab, lastScriptTabSecondary } = state.editor;
   return {
     index,
     actor,
@@ -551,6 +568,8 @@ function mapStateToProps(state, props) {
     spriteSheet,
     colorsEnabled,
     defaultSpritePaletteId,
+    lastScriptTab,
+    lastScriptTabSecondary
   };
 }
 
@@ -561,6 +580,8 @@ const mapDispatchToProps = {
   setActorPrefab: actions.setActorPrefab,
   selectScene: actions.selectScene,
   selectSidebar: actions.selectSidebar,
+  setScriptTab: actions.setScriptTab,
+  setScriptTabSecondary: actions.setScriptTabSecondary
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

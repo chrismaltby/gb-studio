@@ -177,6 +177,15 @@
   padding-top: 10px;
 }
 
+.SidebarTabs--Secondary {
+  padding-top: 0px;
+  padding-bottom: 2px;
+  border-top: 1px solid var(--input-bg-color);
+  margin-top: -2px;
+  background: var(--input-bg-color);
+  border-top: 1px solid var(--sidebar-border-color);  
+}
+
 .SidebarTabs__FluidSpacer {
   flex: 1;
 }
@@ -201,6 +210,11 @@
   background: var(--input-bg-color);
   opacity: 1;
   outline: 1px solid var(--input-border-color);
+}
+
+.SidebarTabs--Secondary .SidebarTabs__Tab--Active {
+  background-color: transparent;
+  outline: none;
 }
 
 .Sidebar--TwoColumn

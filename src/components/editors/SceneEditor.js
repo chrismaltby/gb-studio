@@ -33,24 +33,35 @@ const hitTabs = {
 };
 
 class SceneEditor extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
+    const tabs = Object.keys(defaultTabs);
+    const secondaryTabs = Object.keys(hitTabs);
+
+    const initialTab = tabs.includes(props.lastScriptTab) ? props.lastScriptTab : tabs[0];
+    const initialSecondaryTab = secondaryTabs.includes(props.lastScriptTabSecondary) ? props.lastScriptTabSecondary : secondaryTabs[0];
+
     this.state = {
       clipboardActor: null,
       clipboardScene: null,
       clipboardTrigger: null,
-      scriptMode: "start",
-      scriptModeSecondary: "hit1"
+      scriptMode: initialTab,
+      scriptModeSecondary: initialSecondaryTab
     };
   }
 
   onSetScriptMode = (mode) => {
+    const { setScriptTab } = this.props;
+    setScriptTab(mode);    
     this.setState({
       scriptMode: mode,
     });
   };
 
   onSetScriptModeSecondary = (mode) => {
+    const { setScriptTabSecondary } = this.props;
+    setScriptTabSecondary(mode);    
     this.setState({
       scriptModeSecondary: mode,
     });
@@ -361,6 +372,7 @@ class SceneEditor extends Component {
             />
             {scripts[scriptMode] && scripts[scriptMode].tabs && (
               <SidebarTabs
+                secondary
                 value={scriptModeSecondary}
                 values={scripts[scriptMode].tabs}
                 onChange={this.onSetScriptModeSecondary}
@@ -398,6 +410,8 @@ class SceneEditor extends Component {
 SceneEditor.propTypes = {
   scene: SceneShape,
   sceneIndex: PropTypes.number.isRequired,
+  lastScriptTab: PropTypes.string.isRequired,
+  lastScriptTabSecondary: PropTypes.string.isRequired,  
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
   copyScene: PropTypes.func.isRequired,
@@ -405,6 +419,8 @@ SceneEditor.propTypes = {
   setActorPrefab: PropTypes.func.isRequired,
   setTriggerPrefab: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
+  setScriptTab: PropTypes.func.isRequired,
+  setScriptTabSecondary: PropTypes.func.isRequired  
 };
 
 SceneEditor.defaultProps = {
@@ -418,11 +434,14 @@ function mapStateToProps(state, props) {
   const colorsEnabled = settings.customColorsEnabled;
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
+  const { lastScriptTabScene: lastScriptTab, lastScriptTabSecondary } = state.editor;    
   return {
     sceneIndex,
     scene,
     colorsEnabled,
     defaultBackgroundPaletteIds,
+    lastScriptTab,
+    lastScriptTabSecondary    
   };
 }
 
@@ -436,6 +455,8 @@ const mapDispatchToProps = {
   setActorPrefab: actions.setActorPrefab,
   setTriggerPrefab: actions.setTriggerPrefab,
   selectSidebar: actions.selectSidebar,
+  setScriptTab: actions.setScriptTabScene,
+  setScriptTabSecondary: actions.setScriptTabSecondary  
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);

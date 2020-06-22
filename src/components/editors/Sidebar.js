@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import * as actions from "../../actions";
 
-const SidebarTabs = ({ values, value, onChange, buttons }) => (
-  <div className="SidebarTabs">
+const SidebarTabs = ({ values, value, onChange, buttons, secondary }) => (
+  <div className={cx("SidebarTabs", {"SidebarTabs--Secondary": secondary})}>
     <div className="SidebarTabs__Container">
       {Object.keys(values).map((key, index) => (
         <div
@@ -28,12 +28,14 @@ SidebarTabs.propTypes = {
   value: PropTypes.string,
   values: PropTypes.objectOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
-  buttons: PropTypes.node
+  buttons: PropTypes.node,
+  secondary: PropTypes.bool
 };
 
 SidebarTabs.defaultProps = {
   buttons: null,
   value: null,
+  secondary: false,
   onChange: () => {}
 };
 
