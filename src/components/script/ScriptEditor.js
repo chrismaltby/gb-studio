@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
+import debounce from "lodash/debounce";
 import {
   EVENT_END
 } from "../../lib/compiler/eventTypes";
@@ -18,22 +19,51 @@ import {
 import * as actions from "../../actions";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
+import l10n from "../../lib/helpers/l10n";
 
 class ScriptEditor extends Component {
+
   constructor() {
     super();
+    this.timer = null;  
+    this.scriptBottomRef = React.createRef();
     this.state = {
-      clipboardEvent: null
+      clipboardEvent: null,
+      limit: 10
     };
+    this.debouncedLoadMore = debounce(this.loadMore, 10);
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if(this.scriptBottomRef.current) {
+        const bottomBoundingRect = this.scriptBottomRef.current.getBoundingClientRect();
+        if(bottomBoundingRect.top <= window.innerHeight + 100) {  
+          this.debouncedLoadMore();    
+        }
+      }
+    }, 100);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     const { value } = this.props;
-    const { clipboardEvent } = this.state;
+    const { clipboardEvent, limit } = this.state;
     return (
-      nextProps.value !== value || nextState.clipboardEvent !== clipboardEvent
+      nextProps.value !== value || nextState.clipboardEvent !== clipboardEvent || nextState.limit !== limit
     );
   }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  loadMore = () => {
+    const { limit } = this.state;
+    const { value } = this.props;
+    if (limit < value.length) {
+      this.setState({ limit: limit + 10 });
+    }    
+  };
 
   onChange = newValue => {
     const { onChange } = this.props;
@@ -189,11 +219,11 @@ class ScriptEditor extends Component {
 
   render() {
     const { type, value, entityId } = this.props;
-    const { clipboardEvent } = this.state;
+    const { clipboardEvent, limit } = this.state;
 
     return (
       <div className="ScriptEditor">
-        {value.map(action => (
+        {value.slice(0, limit).map(action => (
           <ScriptEditorEvent
             key={action.id}
             id={action.id}
@@ -212,6 +242,12 @@ class ScriptEditor extends Component {
             clipboardEvent={clipboardEvent}
           />
         ))}
+        {limit < value.length &&
+          <div className="ScriptEditor__Loading">
+            {l10n("FIELD_LOADING")}
+          </div>
+        }
+        <div ref={this.scriptBottomRef} />
       </div>
     );
   }

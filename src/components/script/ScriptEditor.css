@@ -6,6 +6,13 @@
   background: var(--script-editor-bg-color);
 }
 
+.ScriptEditor__Loading {
+  padding: 10px;
+  padding-bottom: 20px;
+  text-align: center;
+  opacity: 0.5;
+}
+
 .ScriptEditorEvent {
   position: relative;
   user-select: none;
