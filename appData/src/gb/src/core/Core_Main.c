@@ -201,7 +201,7 @@ void game_loop() {
     HandleInputScripts();
     FadeUpdate();
 
-    if (!script_ctxs[0].script_ptr_bank && !(text_drawn && text_count != 0) && !menu_enabled) {
+    if (!script_ctxs[0].script_ptr_bank && UIIsClosed()) {
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
@@ -219,19 +219,21 @@ void game_loop() {
     ScriptRestoreCtx(0);
 
     // if (!(text_drawn && text_count != 0) && !menu_enabled) {
-    ScriptRestoreCtx(1);
-    ScriptRestoreCtx(2);
-    ScriptRestoreCtx(3);
-    ScriptRestoreCtx(4);
-    ScriptRestoreCtx(5);
-    ScriptRestoreCtx(6);
-    ScriptRestoreCtx(7);
-    ScriptRestoreCtx(8);
-    ScriptRestoreCtx(9);
-    ScriptRestoreCtx(10);
-    ScriptRestoreCtx(11);
-    MoveActors();
-    ActorRunCollisionScripts();
+    if(UIIsClosed()) {
+      ScriptRestoreCtx(1);
+      ScriptRestoreCtx(2);
+      ScriptRestoreCtx(3);
+      ScriptRestoreCtx(4);
+      ScriptRestoreCtx(5);
+      ScriptRestoreCtx(6);
+      ScriptRestoreCtx(7);
+      ScriptRestoreCtx(8);
+      ScriptRestoreCtx(9);
+      ScriptRestoreCtx(10);
+      ScriptRestoreCtx(11);
+      MoveActors();
+      ActorRunCollisionScripts();
+    }
 
     // }
 
