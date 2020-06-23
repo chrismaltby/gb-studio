@@ -529,6 +529,7 @@ void InitPlayer_b() {
   player.moving = FALSE;
   player.animate = FALSE;
   player.hit_actor = NO_ACTOR_COLLISON;
+  player.script_control = FALSE;
 }
 
 void ActorRunCollisionScripts_b() {

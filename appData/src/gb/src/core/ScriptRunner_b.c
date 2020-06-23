@@ -182,6 +182,7 @@ UBYTE ScriptUpdate_MoveActor() {
     actors[script_actor].moving = FALSE;
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
+    actors[script_actor].script_control = FALSE;
     return TRUE;
   }
   actors[script_actor].moving = TRUE;
@@ -213,6 +214,7 @@ UBYTE ScriptUpdate_MoveActorDiag() {
     actors[script_actor].moving = FALSE;
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
+    actors[script_actor].script_control = FALSE;
     return TRUE;
   }
   actors[script_actor].moving = TRUE;
@@ -631,12 +633,18 @@ void Script_ActorSetPos_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorMoveTo_b() {
+  if(actors[script_actor].script_control) {
+    return;
+  }
   actor_move_dest_x = 0;  // @wtf-but-needed
   actor_move_dest_x = (script_cmd_args[0] * 8);
   actor_move_dest_y = 0;  // @wtf-but-needed
   actor_move_dest_y = (script_cmd_args[1] * 8);
   actor_move_cols = script_cmd_args[2];
   actor_move_type = script_cmd_args[3];
+
+  actors[script_actor].script_control = TRUE;
+
   if(actor_move_cols) {
     ScriptHelper_CalcDest();
   }
@@ -1035,6 +1043,10 @@ void Script_ActorPush_b() {
   UBYTE check_tile, end_tile, check_tile2;
   UBYTE check_dir = 0;
 
+  if(actors[script_actor].script_control) {
+    return;
+  }
+
   LOG("PUSH1 Script_ActorPush_b\n");
 
 
@@ -1073,6 +1085,7 @@ void Script_ActorPush_b() {
   actor_move_dest_y = dest_y;
   actor_move_dir_x = actors[0].dir.x;
   actor_move_dir_y = actors[0].dir.y;
+  actors[script_actor].script_control = TRUE;
 
   ScriptHelper_CalcDest();
 
@@ -1329,6 +1342,9 @@ void Script_ActorSetPosToVal_b() {
  * Set Actor position from variables
  */
 void Script_ActorMoveToVal_b() {
+  if(actors[script_actor].script_control) {
+    return;
+  }
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
@@ -1337,6 +1353,7 @@ void Script_ActorMoveToVal_b() {
   actor_move_dest_y = script_variables[script_ptr_y] * 8;
   actor_move_cols = script_cmd_args[0];
   actor_move_type = script_cmd_args[1];
+  actors[script_actor].script_control = TRUE;
   if(actor_move_cols) {
     ScriptHelper_CalcDest();
   }  
@@ -1356,6 +1373,9 @@ void Script_ActorMoveToVal_b() {
  *   arg1: Offset Y Pos
  */
 void Script_ActorMoveRel_b() {
+  if(actors[script_actor].script_control) {
+    return;
+  }  
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
@@ -1400,6 +1420,8 @@ void Script_ActorMoveRel_b() {
 
   actor_move_cols = script_cmd_args[4];
   actor_move_type = script_cmd_args[5];
+
+  actors[script_actor].script_control = TRUE;
 
   if(actor_move_cols) {
     ScriptHelper_CalcDest();

@@ -67,6 +67,7 @@ typedef struct {
   UBYTE collision_group;
   SPRITE_TYPE sprite_type;
   UBYTE hit_actor;
+  UBYTE script_control;
   UWORD script_ptr;
   BankPtr events_ptr;
   BankPtr movement_ptr;

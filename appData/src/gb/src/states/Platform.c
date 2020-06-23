@@ -207,8 +207,13 @@ void Update_Platform() {
     pos_y_delayed = platform_y;
   } else if (pos_y_delayed > platform_y) {
     pos_y_delayed--;
+  if(!player.script_control) {
+    player.pos.x = (pl_pos_x >> 4) - 4u;
+    player.pos.y = pl_pos_y >> 4;
+    player.animate = grounded && pl_vel_x != 0;
   } else {
-    pos_y_delayed = platform_y;
+    pl_vel_x = 0;
+    pl_vel_y = 0;
   }
   cam_pos.y = pos_y_delayed - PLATFORM_CAMERA_OFFSET_Y;
 
