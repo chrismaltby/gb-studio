@@ -5,6 +5,13 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   "rules": {
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
