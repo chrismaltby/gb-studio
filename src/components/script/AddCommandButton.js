@@ -230,7 +230,7 @@ class AddCommandButton extends Component {
   render() {
     const { query, open, selectedIndex, pasteMode } = this.state;
     const { onPaste } = this.props;
-    const actionsList = this.filteredList();
+    const actionsList = open && this.filteredList();
 
     return (
       <div ref={this.button} className="AddCommandButton">
