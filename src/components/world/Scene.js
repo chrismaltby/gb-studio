@@ -2,13 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import memoize from "lodash/memoize";
 import * as actions from "../../actions";
 import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
 import SceneCollisions from "./SceneCollisions";
-import { normalizedFindSceneEvent, walkSceneEvents } from "../../lib/helpers/eventSystem";
+import { normalizedFindSceneEvent } from "../../lib/helpers/eventSystem";
 import EventHelper from "./EventHelper";
 import {
   SceneShape,
@@ -19,7 +18,6 @@ import {
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import {
-  getSceneFrameCount,
   getActorsLookup,
   getTriggersLookup,
   getScenesLookup,
@@ -28,7 +26,6 @@ import {
   getPalettesLookup,
 } from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
@@ -36,10 +33,8 @@ import {
   DMG_PALETTE,
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
+import SceneInfo from "./SceneInfo";
 
-const MAX_ACTORS = 30;
-const MAX_TRIGGERS = 30;
-const MAX_FRAMES = 25;
 const TILE_SIZE = 8;
 
 const dmgPalettes = [
@@ -50,27 +45,6 @@ const dmgPalettes = [
   DMG_PALETTE,
   DMG_PALETTE,
 ];
-
-// const tmpPalettes = [
-//   [
-//     [248, 248, 136],
-//     [200, 122, 32],
-//     [112, 48, 32],
-//     [0, 0, 0],
-//   ],
-//   [
-//     [248, 248, 136],
-//     [96, 184, 32],
-//     [48, 104, 40],
-//     [0, 0, 0],
-//   ],
-//   [
-//     [255, 255, 255],
-//     [200, 200, 200],
-//     [100, 100, 100],
-//     [0, 0, 0],
-//   ],
-// ];
 
 class Scene extends Component {
   constructor() {
@@ -87,11 +61,6 @@ class Scene extends Component {
     window.removeEventListener("mousemove", this.onMoveDrag);
     window.removeEventListener("mouseup", this.onEndDrag);
   }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   rerenderCheck("Scene", this.props, {}, nextProps, {});
-  //   return true;
-  // }
 
   onMouseMove = (e) => {
     const {
@@ -155,7 +124,6 @@ class Scene extends Component {
   render() {
     const {
       id,
-      index,
       scene,
       visible,
       sceneName,
@@ -166,7 +134,6 @@ class Scene extends Component {
       projectRoot,
       selected,
       hovered,
-      frameCount,
       palettes,
       sceneFiltered,
       simplifiedRender,
@@ -202,10 +169,14 @@ class Scene extends Component {
           left: x,
         }}
       >
-        <div className="Scene__Name" onMouseDown={this.onStartDrag}             style={{
-              paddingLeft: labelOffsetLeft,
-              paddingRight: labelOffsetRight
-            }}>
+        <div
+          className="Scene__Name"
+          onMouseDown={this.onStartDrag}
+          style={{
+            paddingLeft: labelOffsetLeft,
+            paddingRight: labelOffsetRight
+          }}
+        >
           <div className={cx("Scene__Label", {
               "Scene__Label--Red": labelColor === "red",
               "Scene__Label--Orange": labelColor === "orange",
@@ -215,7 +186,6 @@ class Scene extends Component {
               "Scene__Label--Purple": labelColor === "purple",
               "Scene__Label--Gray": labelColor === "gray"
             })}
-
           >
             {sceneName}
           </div>
@@ -275,45 +245,15 @@ class Scene extends Component {
           )}
         </div>
         {selected && !simplifiedRender && (
-          <div className="Scene__Info" onMouseDown={this.onStartDrag} style={{
-            paddingLeft: labelOffsetLeft,
-            paddingRight: labelOffsetRight
-          }}>
-            <span
-              title={`Number of actors in scene. This scene has used ${scene.actors.length} of ${MAX_ACTORS} available.`}
-              className={cx({
-                "Scene__Info--Warning": scene.actors.length === MAX_ACTORS,
-                "Scene__Info--Error": scene.actors.length > MAX_ACTORS,
-              })}
-            >
-              A: {scene.actors.length}/{MAX_ACTORS}
-            </span>
-            {"\u00A0 \u00A0"}
-            <span
-              title={`Number of frames used by actors in scene. ${
-                frameCount <= MAX_FRAMES
-                  ? `This scene has used ${frameCount} or ${MAX_FRAMES} available.`
-                  : `This scene is over available limits and may have rendering issues. ` +
-                    `Try reducing number of actors in scene or use static and non animated ` +
-                    `sprites where possible.`
-              } Stay within limits to prevent tile data overwriting sprite data.`}
-              className={cx({
-                "Scene__Info--Warning": frameCount === MAX_FRAMES,
-                "Scene__Info--Error": frameCount > MAX_FRAMES,
-              })}
-            >
-              F: {frameCount}/{MAX_FRAMES}
-            </span>
-            {"\u00A0 \u00A0"}
-            <span
-              title={`Number of triggers in scene. This scene has used ${scene.triggers.length} of ${MAX_TRIGGERS} available.`}
-              className={cx({
-                "Scene__Info--Warning": scene.triggers.length === MAX_TRIGGERS,
-                "Scene__Info--Error": scene.triggers.length > MAX_TRIGGERS,
-              })}
-            >
-              T: {scene.triggers.length}/{MAX_TRIGGERS}
-            </span>
+          <div
+            className="Scene__Info"
+            onMouseDown={this.onStartDrag}
+            style={{
+              paddingLeft: labelOffsetLeft,
+              paddingRight: labelOffsetRight
+            }}
+          >
+            <SceneInfo id={id} />
           </div>
         )}
       </div>
@@ -322,7 +262,6 @@ class Scene extends Component {
 }
 
 Scene.propTypes = {
-  index: PropTypes.number.isRequired,
   projectRoot: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   event: EventShape,
@@ -337,7 +276,6 @@ Scene.propTypes = {
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
   showEntities: PropTypes.bool.isRequired,
   showCollisions: PropTypes.bool.isRequired,
-  frameCount: PropTypes.number.isRequired,
   zoomRatio: PropTypes.number.isRequired,
   moveScene: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
@@ -434,8 +372,6 @@ function mapStateToProps(state, props) {
 
   const gbcEnabled = settings.customColorsEnabled;
 
-  // const palettes = gbcEnabled ? tmpPalettes : undefined;
-
   const showEntities =
     (tool !== TOOL_COLORS &&
       tool !== TOOL_COLLISIONS &&
@@ -486,7 +422,6 @@ function mapStateToProps(state, props) {
     selected,
     dragging,
     hovered,
-    frameCount: selected ? getSceneFrameCount(state, props) : 0,
     sceneName,
     sceneFiltered,
     simplifiedRender: !fullRender,

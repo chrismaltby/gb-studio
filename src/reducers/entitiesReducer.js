@@ -3,7 +3,6 @@ import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
 import mapValues from "lodash/mapValues";
-import memoize from "lodash/memoize";
 import {
   PROJECT_LOAD_SUCCESS,
   PROJECT_SAVE_AS_SUCCESS,
@@ -54,11 +53,10 @@ import {
   patchEvents,
   regenerateEventIds,
   mapEvents,
-  walkEvents,
-  walkSceneEvents
+  walkEvents
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { EVENT_CALL_CUSTOM_EVENT, EVENT_PLAYER_SET_SPRITE } from "../lib/compiler/eventTypes";
+import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
@@ -1273,6 +1271,8 @@ export const getSpriteSheetIds = state =>
   state.entities.present.result.spriteSheets;
 export const getSceneActorIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].actors;
+export const getSceneTriggerIds = (state, props) =>
+  state.entities.present.entities.scenes[props.id].triggers;  
 export const getScene = (state, props) =>
   state.entities.present.entities.scenes[props.id];  
 export const getSceneInitScript = (state, props) =>
@@ -1313,40 +1313,6 @@ export const getMaxSceneBottom = createSelector(
         return sceneBottom;
       }
       return memo;
-    }, 0)
-);
-
-export const getSceneUniqueSpriteSheets = createSelector(
-  [getScene, getSceneActorIds, getActorsLookup, getSpriteSheetsLookup],
-  (scene, actorIds, actors, spriteSheets) => {
-    const ids = [];
-
-    walkSceneEvents(scene, (event) => {
-      if(event.args && event.args.spriteSheetId && event.cmd !== EVENT_PLAYER_SET_SPRITE) {
-        const spriteSheet = spriteSheets[event.args.spriteSheetId];
-        if (ids.indexOf(spriteSheet) === -1) {
-          
-          ids.push(spriteSheet)
-        }
-      }      
-    })
-
-    actorIds.forEach((actorId) => {
-      const spriteSheet = spriteSheets[actors[actorId].spriteSheetId];
-      if (ids.indexOf(spriteSheet) === -1) {
-        ids.push(spriteSheet);
-      }
-    })
-
-    return ids;
-  }
-);
-
-export const getSceneFrameCount = createSelector(
-  [getSceneUniqueSpriteSheets],
-  spriteSheets =>
-    spriteSheets.reduce((memo, spriteSheet) => {
-      return memo + (spriteSheet ? spriteSheet.numFrames : 0);
     }, 0)
 );
 

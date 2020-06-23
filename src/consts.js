@@ -19,6 +19,8 @@ const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
 const MAX_ACTORS = 30;
 const MAX_TRIGGERS = 30;
+const MAX_FRAMES = 25;
+
 const MIDDLE_MOUSE = 2;
 
 export const TOOL_SELECT = "select";
@@ -57,5 +59,6 @@ export {
   assetsRoot,
   MAX_ACTORS,
   MAX_TRIGGERS,
+  MAX_FRAMES,
   MIDDLE_MOUSE
 };
