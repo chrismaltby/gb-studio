@@ -71,7 +71,6 @@ typedef struct {
   UWORD script_ptr;
   BankPtr events_ptr;
   BankPtr movement_ptr;
-  BankPtr hit_player_ptr;
   BankPtr hit_1_ptr;
   BankPtr hit_2_ptr;
   BankPtr hit_3_ptr;        

@@ -41,7 +41,6 @@ const mapSceneEvents = (scene, callback) => {
         ...actor,
         script: mapEvents(actor.script, callback),
         startScript: mapEvents(actor.startScript, callback),
-        hitPlayerScript: mapEvents(actor.hitPlayerScript, callback),
         hit1Script: mapEvents(actor.hit1Script, callback),
         hit2Script: mapEvents(actor.hit2Script, callback),
         hit3Script: mapEvents(actor.hit3Script, callback)
@@ -94,7 +93,6 @@ const walkSceneEvents = (scene, callback) => {
     walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
     walkEvents(actor.updateScript, callback);
-    walkEvents(actor.hitPlayerScript, callback);
     walkEvents(actor.hit1Script, callback);
     walkEvents(actor.hit2Script, callback);
     walkEvents(actor.hit3Script, callback);

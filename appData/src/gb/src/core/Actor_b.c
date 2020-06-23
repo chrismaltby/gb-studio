@@ -543,22 +543,22 @@ void ActorRunCollisionScripts_b() {
         if(player.hit_1_ptr.bank) {
           ScriptStartBg(&player.hit_1_ptr, 0);
         }
-        if (actor->hit_player_ptr.bank) {
-          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        if (actor->events_ptr.bank) {
+          ScriptStartBg(&actor->events_ptr, player.hit_actor);
         }
       } else if(actor->collision_group == 4) {
         if(player.hit_2_ptr.bank) {
           ScriptStartBg(&player.hit_2_ptr, 0);
         }
-        if (actor->hit_player_ptr.bank) {
-          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        if (actor->events_ptr.bank) {
+          ScriptStartBg(&actor->events_ptr, player.hit_actor);
         }        
       } else if(actor->collision_group == 8) {
         if(player.hit_3_ptr.bank) {
           ScriptStartBg(&player.hit_3_ptr, 0);
         }
-        if (actor->hit_player_ptr.bank) {
-          ScriptStartBg(&actor->hit_player_ptr, player.hit_actor);
+        if (actor->events_ptr.bank) {
+          ScriptStartBg(&actor->events_ptr, player.hit_actor);
         }        
       }
       player_iframes = 10;

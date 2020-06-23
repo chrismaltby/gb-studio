@@ -222,7 +222,6 @@ const compile = async (
       playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
       actors: scene.actors.map(bankEntityEvents("actor")),
       actorsMovement: scene.actors.map(bankEntityEvents("actor","updateScript")),
-      actorsHitPlayer: scene.actors.map(bankEntityEvents("actor","hitPlayerScript")),
       actorsHit1: scene.actors.map(bankEntityEvents("actor","hit1Script")),
       actorsHit2: scene.actors.map(bankEntityEvents("actor","hit2Script")),
       actorsHit3: scene.actors.map(bankEntityEvents("actor","hit3Script")),
@@ -352,7 +351,6 @@ const compile = async (
         compileActors(scene.actors, {
           eventPtrs: eventPtrs[sceneIndex].actors,
           movementPtrs: eventPtrs[sceneIndex].actorsMovement,
-          hitPlayerPtrs: eventPtrs[sceneIndex].actorsHitPlayer,
           hit1Ptrs: eventPtrs[sceneIndex].actorsHit1,
           hit2Ptrs: eventPtrs[sceneIndex].actorsHit2,
           hit3Ptrs: eventPtrs[sceneIndex].actorsHit3,
@@ -1168,7 +1166,7 @@ export const precompileScenes = (
   return scenesData;
 };
 
-export const compileActors = (actors, { eventPtrs, movementPtrs, hitPlayerPtrs, hit1Ptrs, hit2Ptrs, hit3Ptrs, sprites, actorPaletteIndexes }) => {
+export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2Ptrs, hit3Ptrs, sprites, actorPaletteIndexes }) => {
   // console.log("ACTOR", actor, eventsPtr);
   const mapSpritesLookup = {};
   let mapSpritesIndex = 6;
@@ -1214,15 +1212,12 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hitPlayerPtrs, 
         moveSpeedDec(actor.moveSpeed),
         animSpeedDec(actor.animSpeed),
         (actor.isPinned ? 1 : 0) + (collisionGroup << 1),
-        collisionGroup ? 0 : eventPtrs[actorIndex].bank, // Event bank ptr
+        eventPtrs[actorIndex].bank, // Event bank ptr
         lo(eventPtrs[actorIndex].offset), // Event offset ptr
         hi(eventPtrs[actorIndex].offset),
         movementPtrs[actorIndex].bank, // Movement script bank ptr
         lo(movementPtrs[actorIndex].offset), // Movement script offset ptr
         hi(movementPtrs[actorIndex].offset),
-        hitPlayerPtrs[actorIndex].bank, // Hit player script bank ptr
-        lo(hitPlayerPtrs[actorIndex].offset), // Hit player script offset ptr
-        hi(hitPlayerPtrs[actorIndex].offset),   
         hit1Ptrs[actorIndex].bank, // Hit collision group 1 bank ptr
         lo(hit1Ptrs[actorIndex].offset), // Hit collision group 1 offset ptr
         hi(hit1Ptrs[actorIndex].offset),   

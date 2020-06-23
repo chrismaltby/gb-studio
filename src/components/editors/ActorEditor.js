@@ -104,8 +104,6 @@ class ActorEditor extends Component {
 
   onEditUpdateScript = this.onEdit("updateScript");
 
-  onEditHitPlayerScript = this.onEdit("hitPlayerScript");
-
   onEditHit1Script = this.onEdit("hit1Script");
 
   onEditHit2Script = this.onEdit("hit2Script");
@@ -198,8 +196,8 @@ class ActorEditor extends Component {
       hit: {
         tabs: hitTabs,
         hitPlayer: {
-          value: actor.hitPlayerScript,
-          onChange: this.onEditHitPlayerScript,
+          value: actor.script,
+          onChange: this.onEditScript,
         },
         hit1: {
           value: actor.hit1Script,
