@@ -19,6 +19,7 @@
 #include "Scroll.h"
 #include "Camera.h"
 #include "Projectiles.h"
+#include "states/Platform.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000
@@ -183,6 +184,10 @@ UBYTE ScriptUpdate_MoveActor() {
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
+    if(script_actor == 0) {
+      pl_vel_x = 0;
+      pl_vel_y = 0;
+    }
     return TRUE;
   }
   actors[script_actor].moving = TRUE;
@@ -215,6 +220,10 @@ UBYTE ScriptUpdate_MoveActorDiag() {
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
+    if(script_actor == 0) {
+      pl_vel_x = 0;
+      pl_vel_y = 0;
+    }    
     return TRUE;
   }
   actors[script_actor].moving = TRUE;

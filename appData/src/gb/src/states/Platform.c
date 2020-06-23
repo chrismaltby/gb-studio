@@ -30,37 +30,27 @@
 #define HOLD_GRAV 0x200
 #define GRAV 0x700
 #define MAX_FALL_VEL 0x4E20
-#define PLATFORM_CAMERA_OFFSET_Y 48
+#define PLATFORM_CAMERA_OFFSET_Y 32
 
 UBYTE grounded = FALSE;
-WORD vel_x = 0;
-WORD vel_y = 0;
-WORD pos_x = 16512;
-WORD pos_y = 1024;
-Pos cam_pos = {0, 0};
-WORD pos_y_delayed = 1024;
-WORD platform_y = 1024;
+WORD pl_vel_x = 0;
+WORD pl_vel_y = 0;
+WORD pl_pos_x = 16512;
+WORD pl_pos_y = 1024;
 
 void Start_Platform() {
   LOG("START PLATFORM\n");
 
-  cam_pos.x = player.pos.x;
-  cam_pos.y = player.pos.y - PLATFORM_CAMERA_OFFSET_Y;
-  pos_y_delayed = player.pos.y;
-  platform_y = player.pos.y;
   player.moving = FALSE;
-  pos_x = (player.pos.x + 4u) << 4;
-  pos_y = player.pos.y << 4;
-  vel_x = 0;
-  vel_y = 0;
+  pl_pos_x = (player.pos.x + 4u) << 4;
+  pl_pos_y = player.pos.y << 4;
+  pl_vel_x = 0;
+  pl_vel_y = 0;
   grounded = FALSE;
 
-  // cam_pos_offset.x = cam_pos.x;
-  // cam_pos_offset.y = cam_pos.y - PLATFORM_CAMERA_OFFSET_Y;
-
-  camera_target = &cam_pos;
+  camera_target = &player.pos;
   camera_offset.x = 0;
-  camera_offset.y = 0;
+  camera_offset.y = PLATFORM_CAMERA_OFFSET_Y;
   game_time = 0;
   LOG("END START PLATFORM\n");
 }
@@ -68,13 +58,12 @@ void Start_Platform() {
 void Update_Platform() {
   WORD tile_x, tile_y;
   UBYTE i, a;
-  UINT16 tmp_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
   // Update scene pos from player pos
-  pos_x = ((player.pos.x + 4u) << 4) + (pos_x & 0xF);
-  pos_y = ((player.pos.y) << 4) + (pos_y & 0xF);
+  pl_pos_x = ((player.pos.x + 4u) << 4) + (pl_pos_x & 0xF);
+  pl_pos_y = ((player.pos.y) << 4) + (pl_pos_y & 0xF);
 
   player.moving = FALSE;
 
@@ -82,38 +71,38 @@ void Update_Platform() {
   if (INPUT_LEFT) {
     player.dir.x = -1;
     if (INPUT_A) {
-      vel_x -= RUN_ACC;
-      vel_x = CLAMP(vel_x, -MAX_RUN_VEL, -MIN_WALK_VEL);
+      pl_vel_x -= RUN_ACC;
+      pl_vel_x = CLAMP(pl_vel_x, -MAX_RUN_VEL, -MIN_WALK_VEL);
     } else {
-      vel_x -= WALK_ACC;
-      vel_x = CLAMP(vel_x, -MAX_WALK_VEL, -MIN_WALK_VEL);
+      pl_vel_x -= WALK_ACC;
+      pl_vel_x = CLAMP(pl_vel_x, -MAX_WALK_VEL, -MIN_WALK_VEL);
     }
   } else if (INPUT_RIGHT) {
     player.dir.x = 1;
     if (INPUT_A) {
-      vel_x += RUN_ACC;
-      vel_x = CLAMP(vel_x, MIN_WALK_VEL, MAX_RUN_VEL);
+      pl_vel_x += RUN_ACC;
+      pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_RUN_VEL);
     } else {
-      vel_x += WALK_ACC;
-      vel_x = CLAMP(vel_x, MIN_WALK_VEL, MAX_WALK_VEL);
+      pl_vel_x += WALK_ACC;
+      pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_WALK_VEL);
     }
   } else if (grounded) {
-    if (vel_x < 0) {
-      vel_x += RELEASE_DEC;
-      if (vel_x > 0) {
-        vel_x = 0;
+    if (pl_vel_x < 0) {
+      pl_vel_x += RELEASE_DEC;
+      if (pl_vel_x > 0) {
+        pl_vel_x = 0;
       }
-    } else if (vel_x > 0) {
-      vel_x -= RELEASE_DEC;
-      if (vel_x < 0) {
-        vel_x = 0;
+    } else if (pl_vel_x > 0) {
+      pl_vel_x -= RELEASE_DEC;
+      if (pl_vel_x < 0) {
+        pl_vel_x = 0;
       }
     }
   }
 
-  pos_x += vel_x >> 8;
-  tile_x = pos_x >> 7;
-  tile_y = pos_y >> 7;
+  pl_pos_x += pl_vel_x >> 8;
+  tile_x = pl_pos_x >> 7;
+  tile_y = pl_pos_y >> 7;
 
   if (grounded && INPUT_A_PRESSED) {
     if (player.dir.x == 1) {
@@ -129,84 +118,64 @@ void Update_Platform() {
   // Jump
   if (INPUT_B_PRESSED && grounded) {
     if (!(TileAt(tile_x, tile_y - 2) ||                                      // Left Edge
-          (((pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2)))) {  // Right edge
-      vel_y = -JUMP_VEL;
+          (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2)))) {  // Right edge
+      pl_vel_y = -JUMP_VEL;
       grounded = FALSE;
     }
   }
 
   // Gravity
-  if (INPUT_B && vel_y < 0) {
-    vel_y += HOLD_GRAV;
+  if (INPUT_B && pl_vel_y < 0) {
+    pl_vel_y += HOLD_GRAV;
   } else {
-    vel_y += GRAV;
+    pl_vel_y += GRAV;
   }
 
-  vel_y = MIN(vel_y, MAX_FALL_VEL);
-  pos_y += vel_y >> 8;
-  tile_y = pos_y >> 7;
+  pl_vel_y = MIN(pl_vel_y, MAX_FALL_VEL);
+  pl_pos_y += pl_vel_y >> 8;
+  tile_y = pl_pos_y >> 7;
 
   // Left Collision
-  if (vel_x < 0) {
+  if (pl_vel_x < 0) {
     if (TileAt(tile_x, tile_y) || TileAt(tile_x, tile_y - 1)) {
-      vel_x = 0;
-      pos_x = ((tile_x + 1) * 8) << 4;
-      tile_x = pos_x >> 7;
+      pl_vel_x = 0;
+      pl_pos_x = ((tile_x + 1) * 8) << 4;
+      tile_x = pl_pos_x >> 7;
     }
   }
 
   // Right Collision
-  if (vel_x > 0) {
+  if (pl_vel_x > 0) {
     if (TileAt(tile_x + 1, tile_y) || TileAt(tile_x + 1, tile_y - 1)) {
-      vel_x = 0;
-      pos_x = (tile_x * 8) << 4;
-      tile_x = pos_x >> 7;
+      pl_vel_x = 0;
+      pl_pos_x = (tile_x * 8) << 4;
+      tile_x = pl_pos_x >> 7;
     }
   }
 
   // Ground Collision
-  if (vel_y >= 0 && (TileAt(tile_x, tile_y + 1) ||                                   // Left Edge
-                     (((pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1)))  // Right edge
+  if (pl_vel_y >= 0 && (TileAt(tile_x, tile_y + 1) ||                                   // Left Edge
+                     (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1)))  // Right edge
   ) {
     grounded = TRUE;
-    vel_y = 0;
-    pos_y = (tile_y * 8) << 4;
+    pl_vel_y = 0;
+    pl_pos_y = (tile_y * 8) << 4;
   } else {
     grounded = FALSE;
 
     // Ceiling Collision
-    if (vel_y < 0) {
+    if (pl_vel_y < 0) {
       if (TileAt(tile_x, tile_y - 2) ||                                  // Left Edge
-          (((pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2))  // Right edge
+          (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2))  // Right edge
       ) {
-        if (MOD_128(pos_y) < 32) {
-          vel_y = 0;
-          pos_y = ((tile_y * 8) << 4);
+        if (MOD_128(pl_pos_y) < 32) {
+          pl_vel_y = 0;
+          pl_pos_y = ((tile_y * 8) << 4);
         }
       }
     }
   }
 
-  LOG_VALUE("pos_x", pos_x);
-  LOG_VALUE("pos_y", pos_y);
-
-  player.pos.x = (pos_x >> 4) - 4u;
-  player.pos.y = pos_y >> 4;
-  player.animate = grounded && vel_x != 0;
-
-  tmp_y = player.pos.y;
-  if (grounded || (platform_y != player.pos.y && platform_y < player.pos.y)) {
-    platform_y = player.pos.y;
-  }
-
-  LOG_VALUE("platform_y", platform_y);
-
-  // Handle Camera Position
-  cam_pos.x = player.pos.x;
-  if (pos_y_delayed < platform_y) {
-    pos_y_delayed = platform_y;
-  } else if (pos_y_delayed > platform_y) {
-    pos_y_delayed--;
   if(!player.script_control) {
     player.pos.x = (pl_pos_x >> 4) - 4u;
     player.pos.y = pl_pos_y >> 4;
@@ -215,7 +184,6 @@ void Update_Platform() {
     pl_vel_x = 0;
     pl_vel_y = 0;
   }
-  cam_pos.y = pos_y_delayed - PLATFORM_CAMERA_OFFSET_Y;
 
   // Check for trigger collisions
   hit_trigger = TriggerAtTile(tile_x, tile_y);
