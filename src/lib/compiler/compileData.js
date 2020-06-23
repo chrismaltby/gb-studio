@@ -1132,7 +1132,7 @@ export const precompileScenes = (
     const eventSpriteIds = [];
 
     walkSceneEvents(scene, (event) => {
-      if(event.args && event.args.spriteSheetId && event.cmd !== EVENT_PLAYER_SET_SPRITE) {
+      if(event.args && event.args.spriteSheetId && event.command !== EVENT_PLAYER_SET_SPRITE && !event.args.__comment) {
         eventSpriteIds.push(event.args.spriteSheetId)
       }
     });
