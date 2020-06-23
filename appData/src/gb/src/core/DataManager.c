@@ -268,6 +268,7 @@ void LoadScene(UINT16 index) {
     actors[i].hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
     actors[i].movement_ctx = 0;
+    actors[i].script_control = FALSE;
   }
 
   actors_active[0] = 0;
