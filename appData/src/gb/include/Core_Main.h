@@ -5,7 +5,7 @@
 #include <gbdkjs.h>
 
 int core_start();
-void SetState(UINT16 state);
+void SetScene(UINT16 state);
 
 extern UINT16 current_state;
 

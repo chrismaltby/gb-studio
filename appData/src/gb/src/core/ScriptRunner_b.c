@@ -615,7 +615,7 @@ void Script_LoadScene_b() {
   map_next_dir.x = script_cmd_args[4] == 2 ? -1 : script_cmd_args[4] == 4 ? 1 : 0;
   map_next_dir.y = script_cmd_args[4] == 8 ? -1 : script_cmd_args[4] == 1 ? 1 : 0;
 
-  SetState(scene_next_index);
+  SetScene(scene_next_index);
   FadeSetSpeed(script_cmd_args[5]);
 
   script_update_fn = ScriptUpdate_AwaitFade;
@@ -1222,7 +1222,7 @@ void Script_LoadData_b() {
     }
 
     // Switch to next scene
-    SetState(scene_next_index);
+    SetScene(scene_next_index);
     FadeSetSpeed(2);
 
     script_update_fn = ScriptUpdate_AwaitFade;
@@ -1797,7 +1797,7 @@ void Script_ScenePopState_b() {
     map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
-    SetState(scene_next_index);
+    SetScene(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
     script_update_fn = ScriptUpdate_AwaitFade;
 
@@ -1832,7 +1832,7 @@ void Script_ScenePopAllState_b() {
     map_next_dir.x = scene_stack[scene_stack_ptr].player_dir.x;
     map_next_dir.y = scene_stack[scene_stack_ptr].player_dir.y;
 
-    SetState(scene_next_index);
+    SetScene(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
     script_update_fn = ScriptUpdate_AwaitFade;
 

@@ -18,32 +18,21 @@
 #include "UI.h"
 #include "gbt_player.h"
 #include "main.h"
-#include "states/Platform.h"
-#include "states/TopDown.h"
 
 #ifdef __EMSCRIPTEN__
 void game_loop();
-void Start_TopDown();
-void Update_TopDown();
 #endif
 
 UBYTE game_time;
 UINT16 next_state;
-
 UINT8 delta_time;
 UINT16 current_state;
 UINT8 state_running = 0;
-
 UINT8 vbl_count;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
 
-UWORD spritePalette[] = {
-    0,         RGB_WHITE, RGB_LIGHTFLESH, RGB_BLACK, 0,         RGB_WHITE, RGB_PURPLE,
-    RGB_BLACK, 0,         RGB_BLACK,      RGB_BLUE,  RGB_WHITE,
-};
-
-void SetState(UINT16 state) {
+void SetScene(UINT16 state) {
   state_running = 0;
   next_state = state;
 }
@@ -51,6 +40,8 @@ void SetState(UINT16 state) {
 void vbl_update() {
   vbl_count++;
 
+  // Update background scroll in vbl 
+  // interupt to prevent tearing
   SCX_REG = scroll_x;
   SCY_REG = scroll_y;
 
@@ -68,16 +59,21 @@ void lcd_update() {
   if (LYC_REG == 0x0) {
     SHOW_SPRITES;
 
+    // If UI is open cause lcd interupt
+    // to fire again when first line of
+    // window is being drawn
     if (WY_REG != MENU_CLOSED_Y) {
       LYC_REG = WY_REG;
     }
   } else if (hide_sprites_under_win) {
+    // If interupt fired on Window position 
+    // and hide_sprites_under_win then hide
+    // all sprites past this y-coordinate
     HIDE_SPRITES;
     LYC_REG = 0x0;
   }
 }
 
-UINT16 default_palette[] = {RGB(31, 31, 31), RGB(20, 20, 20), RGB(10, 10, 10), RGB(0, 0, 0)};
 int core_start() {
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
@@ -88,9 +84,11 @@ int core_start() {
   // Init LCD
   LCDC_REG = 0x67;
 
+  // Set interupt handlers
   add_VBL(vbl_update);
   add_TIM(MusicUpdate);
   add_LCD(lcd_update);
+
 #ifdef CGB
   TMA_REG = _cpu == CGB_TYPE ? 120U : 0xBCU;
 #else
@@ -114,7 +112,7 @@ int core_start() {
 
   // Position Window Layer
   WX_REG = 7;
-  WY_REG = MAXWNDPOSY + 1;  // - 23;
+  WY_REG = MAXWNDPOSY + 1;
 
   // Initialise Player
   player.sprite = 0;
@@ -129,9 +127,6 @@ int core_start() {
   player.enabled = TRUE;
   player.move_speed = START_PLAYER_MOVE_SPEED;
   player.anim_speed = START_PLAYER_ANIM_SPEED;
-
-  // DISPLAY_ON;
-  // SHOW_SPRITES;
 
   state_running = 0;
   next_state = START_SCENE_INDEX;
@@ -198,8 +193,8 @@ void game_loop() {
 
     ScriptRestoreCtx(0);
 
-    // if (!(text_drawn && text_count != 0) && !menu_enabled) {
     if(UIIsClosed()) {
+      // Run background scripts
       ScriptRestoreCtx(1);
       ScriptRestoreCtx(2);
       ScriptRestoreCtx(3);
@@ -211,11 +206,11 @@ void game_loop() {
       ScriptRestoreCtx(9);
       ScriptRestoreCtx(10);
       ScriptRestoreCtx(11);
+
+      // Reposition actors and check for collisions
       MoveActors();
       ActorRunCollisionScripts();
     }
-
-    // }
 
     game_time++;
 
