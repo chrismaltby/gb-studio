@@ -76,7 +76,6 @@ class SceneInfo extends Component {
         event.command !== EVENT_PLAYER_SET_SPRITE &&
         !event.args.__comment
       ) {
-          console.log(event);
         const spriteSheet = spriteSheetsLookup[event.args.spriteSheetId];
         if (usedSpriteSheets.indexOf(spriteSheet) === -1) {
           usedSpriteSheets.push(spriteSheet);
