@@ -1002,6 +1002,13 @@ void Script_TextMenu_b() {
 void Script_ActorSetSprite_b() {
   UBYTE sprite_frames;
 
+  if(script_actor == 0) {
+    // Don't allow ActorSetSprite to be used for the player
+    // Should use PlayerSetSprite instead. Events should
+    // handle this automatically
+    return;
+  }
+
   sprite_frames = script_cmd_args[1];
 
   actors[script_actor].sprite = script_cmd_args[0];
