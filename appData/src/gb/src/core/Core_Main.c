@@ -51,22 +51,6 @@ void SetState(UINT16 state) {
 void vbl_update() {
   vbl_count++;
 
-  // Instead of assigning scroll_y to SCX_REG I do a small interpolation that smooths the scroll
-  // transition giving the Illusion of a better frame rate
-  /*
-  if (old_scroll_x < scroll_x)
-          old_scroll_x += (scroll_x - old_scroll_x + 1) >> 1;
-  else if (old_scroll_x > scroll_x)
-          old_scroll_x -= (old_scroll_x - scroll_x + 1) >> 1;
-  SCX_REG = old_scroll_x;
-
-  if (old_scroll_y < scroll_y)
-          old_scroll_y += (scroll_y - old_scroll_y + 1) >> 1;
-  else if (old_scroll_y > scroll_y)
-          old_scroll_y -= (old_scroll_y - scroll_y + 1) >> 1;
-  SCY_REG = old_scroll_y;
-  */
-
   SCX_REG = scroll_x;
   SCY_REG = scroll_y;
 
