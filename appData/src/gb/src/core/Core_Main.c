@@ -175,11 +175,7 @@ void game_loop() {
 
     /* Game Core Loop Start *********************************/
 
-    LOG("=====================================\n", game_time);
-    // LOG_VALUE("game_time", game_time);
-
     if (!vbl_count) {
-      // LOG("CALL: wait_vbl_done \n");
       wait_vbl_done();
     }
     delta_time = vbl_count == 1u ? 0u : 1u;
@@ -245,8 +241,6 @@ void game_loop() {
   else {
 #endif
 
-    LOG("c AA\n");
-
     FadeOut();
 
     while (fade_running) {
@@ -272,8 +266,6 @@ void game_loop() {
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
 
-    LOG("ACTOR 0 pos [%u %u]\n", player.pos.x, player.pos.y);
-
     LoadScene(current_state);
 
     PUSH_BANK(stateBanks[scene_type]);
@@ -282,18 +274,12 @@ void game_loop() {
 
     game_time = 0;
 
-    LOG("SCRIPT START "
-        "!!!!!===================================================================!!!!!!\n");
-
     ScriptStart(&scene_events_start_ptr);
 
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;
 
-    LOG("d AA\n");
-
     if (state_running) {
-      LOG("e AA\n");
       DISPLAY_ON;
       FadeIn();
 
