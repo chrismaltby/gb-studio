@@ -22,8 +22,6 @@ void Start_Adventure() {
 
 void Update_Adventure() {
   WORD tile_x, tile_y;
-  UBYTE camera_y, player_y, i, a;
-  UINT16 tmp_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
