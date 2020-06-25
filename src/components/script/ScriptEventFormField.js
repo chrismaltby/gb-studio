@@ -5,16 +5,11 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { TriangleIcon } from "../library/Icons";
 import { FormField, ToggleableFormField } from "../library/Forms";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import ScriptEventFormInput from "./ScriptEventFormInput";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
 class ScriptEventFormField extends Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    rerenderCheck("ScriptEventFormField", this.props, {}, nextProps, {});
-    return true;
-  }
 
   onChange = (newValue, valueIndex) => {
     const { field, value, onChange } = this.props;
