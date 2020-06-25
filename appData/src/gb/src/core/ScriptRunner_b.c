@@ -1056,8 +1056,6 @@ void Script_PlayerSetSprite_b() {
  */
 void Script_ActorPush_b() {
   UINT16 dest_x, dest_y;
-  UBYTE check_tile, end_tile, check_tile2;
-  UBYTE check_dir = 0;
 
   if(actors[script_actor].script_control) {
     return;
@@ -1065,25 +1063,20 @@ void Script_ActorPush_b() {
 
   LOG("PUSH1 Script_ActorPush_b\n");
 
-
   if (script_cmd_args[0]) {
     // If pushing until collision set destination at scene bounds
     // Collision check happens in ScriptHelper_CalcDest()
     if (actors[0].dir.x < 0) {
       dest_x = 0;
-      check_dir = CHECK_DIR_LEFT;
     } else if (actors[0].dir.x > 0) {
       dest_x = image_width;
-      check_dir = CHECK_DIR_RIGHT;
     } else {
       dest_x = actors[script_actor].pos.x;
     }
     if (actors[0].dir.y < 0) {
       dest_y = 0;
-      check_dir = CHECK_DIR_UP;
     } else if (actors[0].dir.y > 0) {
       dest_y = image_height;
-      check_dir = CHECK_DIR_DOWN;
     } else {
       dest_y = actors[script_actor].pos.y;
     }
