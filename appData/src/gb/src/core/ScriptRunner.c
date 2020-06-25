@@ -101,6 +101,8 @@ UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner) {
     script_ctxs[new_ctx].script_start_ptr = script_ctxs[new_ctx].script_ptr;
     script_ctxs[new_ctx].owner = owner;
 
+    ScriptRestoreCtx(new_ctx);
+    
     return new_ctx;
   }
 
