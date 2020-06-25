@@ -19,9 +19,9 @@ const fields = [
     label: l10n("FIELD_DIRECTION"),
     type: "union",
     types: ["direction", "variable", "property"],
-    defaultType: "property",    
+    defaultType: "direction",    
     defaultValue: {
-      direction: "up",
+      direction: "right",
       variable: "LAST_VARIABLE",
       property: "$self$:direction"
     },
@@ -30,8 +30,7 @@ const fields = [
     key: "speed",
     label: l10n("FIELD_SPEED"),
     type: "moveSpeed",
-    // width: "50%",    
-    defaultValue: "1"
+    defaultValue: "2"
   },
   {
     key: "collisionGroup",
