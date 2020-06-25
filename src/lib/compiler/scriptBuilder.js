@@ -87,7 +87,8 @@ import {
   LAUNCH_PROJECTILE,
   SET_PROPERTY,
   ACTOR_SET_SPRITE,
-  IF_ACTOR_RELATIVE_TO_ACTOR
+  IF_ACTOR_RELATIVE_TO_ACTOR,
+  PLAYER_BOUNCE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -110,6 +111,7 @@ import {
   collisionGroupDec,
   actorRelativeDec,
   moveTypeDec,
+  heightDec
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 
@@ -278,6 +280,12 @@ class ScriptBuilder {
     output.push(hi(spriteIndex));
     output.push(lo(spriteIndex));
   };
+
+  playerBounce = (height) => {
+    const output = this.output;
+    output.push(cmd(PLAYER_BOUNCE));
+    output.push(heightDec(height));
+  }
 
   // Sprites
 

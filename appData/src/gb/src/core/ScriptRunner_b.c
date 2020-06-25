@@ -150,6 +150,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_SetFlagProperty_b, 4},     // 0x5F
     {Script_ActorSetSprite_b, 2},      // 0x60
     {Script_IfActorRelActor_b, 4},     // 0x61
+    {Script_PlayerBounce_b, 1},        // 0x62
 };
 
 void ScriptTimerUpdate_b() {
@@ -992,6 +993,21 @@ void Script_TextMenu_b() {
              (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5],
              script_cmd_args[6]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;
+}
+
+/*
+ * Command: PlayerBounce
+ * ----------------------------
+ * Cause player to bounce (Platform scenes only)
+ */
+void Script_PlayerBounce_b() {
+  if(script_cmd_args[0] == 0) {
+    pl_vel_y = -0x2000;
+  } else if(script_cmd_args[0] == 1) {
+    pl_vel_y = -0x4000;
+  } else if(script_cmd_args[0] == 2) {
+    pl_vel_y = -0x6000;
+  }
 }
 
 /*

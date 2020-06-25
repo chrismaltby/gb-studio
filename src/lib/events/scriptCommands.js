@@ -96,6 +96,7 @@ export const LAUNCH_PROJECTILE = "LAUNCH_PROJECTILE";
 export const SET_PROPERTY = "SET_PROPERTY";
 export const ACTOR_SET_SPRITE = "ACTOR_SET_SPRITE";
 export const IF_ACTOR_RELATIVE_TO_ACTOR = "IF_ACTOR_RELATIVE_TO_ACTOR";
+export const PLAYER_BOUNCE = "PLAYER_BOUNCE";
 
 export const scriptCommands = [
   END,
@@ -195,7 +196,8 @@ export const scriptCommands = [
   LAUNCH_PROJECTILE,
   SET_PROPERTY,
   ACTOR_SET_SPRITE,
-  IF_ACTOR_RELATIVE_TO_ACTOR
+  IF_ACTOR_RELATIVE_TO_ACTOR,
+  PLAYER_BOUNCE
 ];
 
 export const commandIndex = key => {

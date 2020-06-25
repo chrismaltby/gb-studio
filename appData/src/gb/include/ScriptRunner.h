@@ -197,5 +197,6 @@ void Script_ActorSetCollisions_b();
 void Script_LaunchProjectile_b();
 void Script_ActorSetSprite_b();
 void Script_IfActorRelActor_b();
+void Script_PlayerBounce_b();
 
 #endif

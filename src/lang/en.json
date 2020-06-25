@@ -240,6 +240,10 @@
   "FIELD_IS_BELOW": "Is Below",
   "FIELD_IS_LEFT_OF": "Is Left of",
   "FIELD_IS_RIGHT_OF": "Is Right of",
+  "FIELD_LOW": "Low",
+  "FIELD_MEDIUM": "Medium",
+  "FIELD_HIGH": "High",
+  "FIELD_BOUNCE_NOTE": "Affects Platform scenes only",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -353,6 +357,7 @@
   "EVENT_LAUNCH_PROJECTILE": "Weapon: Launch Projectile",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR": "If Actor Relative To Actor",
   "EVENT_ACTOR_SET_SPRITE": "Actor: Set Sprite Sheet",
+  "EVENT_PLAYER_BOUNCE": "Actor: Player Bounce",
 
   "// 10": "Menu -----------------------------------------------------",
 

@@ -209,3 +209,16 @@ export const moveTypeDec = (type) => {
   }
   return 0;
 }
+
+export const heightDec = (type) => {
+  if (type === "low") {
+    return 0;
+  }
+  if (type === "medium") {
+    return 1;
+  }
+  if (type === "high") {
+    return 2;
+  }
+  return 1;
+}
