@@ -25,7 +25,9 @@ const compile = (input, helpers) => {
     if (e.args.actorId && e.args.actordId !== "player") {
       e.args.actorId = input[`$actor[${e.args.actorId}]$`];
     }
-
+    if (e.args.otherActorId && e.args.otherActorId !== "player") {
+      e.args.otherActorId = input[`$actor[${e.args.otherActorId}]$`];
+    }
     if (e.args.variable) {
       e.args.variable = input[`$variable[${e.args.variable}]$`];
     }
