@@ -46,6 +46,13 @@ void Start_Platform() {
   pl_pos_y = player.pos.y << 4;
   pl_vel_x = 0;
   pl_vel_y = 0;
+
+  if(player.dir.x == 0) {
+    player.dir.y = 0;
+    player.dir.x = 1;
+    player.rerender = TRUE;
+  }
+
   grounded = FALSE;
 
   camera_target = &player.pos;
@@ -57,7 +64,6 @@ void Start_Platform() {
 
 void Update_Platform() {
   WORD tile_x, tile_y;
-  UBYTE i, a;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
@@ -66,6 +72,7 @@ void Update_Platform() {
   pl_pos_y = ((player.pos.y) << 4) + (pl_pos_y & 0xF);
 
   player.moving = FALSE;
+  player.dir.y = 0;
 
   // Move
   if (INPUT_LEFT) {
