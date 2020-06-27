@@ -21,6 +21,7 @@ void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
                   UBYTE cancel_config);
 void UIDrawMenuCursor_b();
 
+UBYTE ui_block = FALSE;
 UBYTE win_pos_x;
 UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
@@ -55,6 +56,7 @@ unsigned char tmp_text_lines[80] = "";
 
 void UIInit() {
   PUSH_BANK(UI_BANK);
+  ui_block = FALSE;
   UIInit_b();
   POP_BANK;
 }
@@ -162,6 +164,8 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
     win_speed = speed;
   }
 }
+
+UBYTE UIIsBlocking() { return ui_block == TRUE; }
 
 UBYTE UIIsClosed() { return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y; }
 

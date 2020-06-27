@@ -175,7 +175,7 @@ void game_loop() {
     HandleInputScripts();
     FadeUpdate();
 
-    if (!script_ctxs[0].script_ptr_bank && UIIsClosed()) {
+    if (!script_ctxs[0].script_ptr_bank && !UIIsBlocking()) {
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
@@ -192,7 +192,7 @@ void game_loop() {
 
     ScriptRestoreCtx(0);
 
-    if(UIIsClosed()) {
+    if(!UIIsBlocking()) {
       // Run background scripts
       ScriptRestoreCtx(1);
       ScriptRestoreCtx(2);

@@ -13,6 +13,7 @@
 #define MENU_CANCEL_ON_LAST_OPTION 0x01U
 #define MENU_CANCEL_ON_B_PRESSED 0x02U
 
+extern UBYTE ui_block;
 extern unsigned char text_lines[80];
 extern unsigned char tmp_text_lines[80];
 extern UBYTE win_pos_x;
@@ -59,5 +60,13 @@ void UISetTextSpeed(UBYTE in, UBYTE out);
 void UIShowAvatar(UBYTE avatar_index);
 void UIShowMenu(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout, UBYTE cancel_config);
 void UIDrawMenuCursor();
+
+/**
+ * Determine if UI is in state that should prevent input and background scripts from being handled
+ *
+ * @return boolean true if UI should be blocking
+ */
+UBYTE UIIsBlocking();
+
 
 #endif

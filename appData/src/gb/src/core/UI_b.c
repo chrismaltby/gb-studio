@@ -212,6 +212,8 @@ void UIShowText_b() {
   UBYTE value;
   unsigned char value_string[6];
 
+  ui_block = TRUE;
+
   LOG("UIShowText 6\n");
 
   for (i = 1, k = 0; i < 81; i++) {
@@ -379,6 +381,7 @@ void UICloseDialogue_b() {
   menu_enabled = FALSE;
   menu_layout = 0;
   avatar_enabled = FALSE;
+  ui_block = FALSE;
 }
 
 void UIOnInteract_b() {
