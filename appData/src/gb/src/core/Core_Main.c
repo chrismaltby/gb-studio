@@ -253,6 +253,10 @@ void game_loop() {
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;
 
+    // Fade in new scene
+    DISPLAY_ON;
+    FadeIn();
+
     // Run scene init script
     ScriptStart(&scene_events_start_ptr);
     ScriptRestoreCtx(0);
@@ -263,9 +267,7 @@ void game_loop() {
     UpdateActors();
     UIUpdate();
 
-    // Fade in new scene
-    DISPLAY_ON;
-    FadeIn();
+    // Wait for fade in to complete
     while (fade_running) {
       wait_vbl_done();
       FadeUpdate();
