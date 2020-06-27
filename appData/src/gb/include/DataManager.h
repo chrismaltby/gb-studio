@@ -10,7 +10,6 @@
 #define DATA_MANAGER_BANK 1
 
 void LoadTiles(UINT16 index);
-void LoadUI();
 void LoadImage(UINT16 index);
 void LoadImageAttr(UINT16 index);
 void LoadPalette(UINT16 index);

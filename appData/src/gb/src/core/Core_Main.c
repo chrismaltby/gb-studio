@@ -132,7 +132,6 @@ int core_start() {
   game_time = 0;
   scene_type = 0;
 
-  LoadUI();
   UIInit();
   FadeInit();
   ScriptRunnerInit();

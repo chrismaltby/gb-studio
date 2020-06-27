@@ -43,29 +43,6 @@ void LoadTiles(UINT16 index) {
   POP_BANK;
 }
 
-void LoadUI() {
-  UBYTE *data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  data_ptr = BankDataPtr(FRAME_BANK) + FRAME_BANK_OFFSET;
-  POP_BANK;
-
-  PUSH_BANK(FRAME_BANK);
-  set_bkg_data(192, 9, data_ptr);
-  POP_BANK;
-
-  // @todo REMOVE FROM HERE
-  PUSH_BANK(DATA_PTRS_BANK);
-  data_ptr = BankDataPtr(FONT_BANK) + FONT_BANK_OFFSET;
-  POP_BANK;
-
-  PUSH_BANK(FONT_BANK);
-  set_bkg_data(203, 64, data_ptr + 256);
-  // set_bkg_data(201, 64, data_ptr);
-  POP_BANK;
-  // @todo REMOVE TO HERE
-}
-
 void LoadImage(UINT16 index) {
   UBYTE *data_ptr;
 
