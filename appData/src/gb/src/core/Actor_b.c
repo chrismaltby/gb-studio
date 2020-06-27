@@ -138,7 +138,7 @@ void UpdateActors_b() {
 
     // Hide sprites that are under menus
     // Actors occluded by text boxes are handled by lcd_update instead
-    if (!hide_sprites_under_win && screen_x > WX_REG && screen_y - 8 > WY_REG) {
+    if ((WX_REG != WIN_LEFT_X) && screen_x > WX_REG && screen_y - 8 > WY_REG) {
       move_sprite(k, 0, 0);
       move_sprite(k + 1, 0, 0);
     } else {

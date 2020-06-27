@@ -65,10 +65,9 @@ void lcd_update() {
     if (WY_REG != MENU_CLOSED_Y) {
       LYC_REG = WY_REG;
     }
-  } else if (hide_sprites_under_win) {
-    // If interupt fired on Window position 
-    // and hide_sprites_under_win then hide
-    // all sprites past this y-coordinate
+  } else if (WX_REG == WIN_LEFT_X) {
+    // If window is covering entire scan line
+    // can just hide all sprites until next frame
     HIDE_SPRITES;
     LYC_REG = 0x0;
   }

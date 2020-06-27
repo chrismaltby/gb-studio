@@ -26,7 +26,6 @@ UBYTE win_pos_y;
 UBYTE win_dest_pos_x;
 UBYTE win_dest_pos_y;
 UBYTE win_speed;
-UBYTE hide_sprites_under_win = TRUE;
 
 UBYTE text_x;
 UBYTE text_y;

@@ -154,11 +154,6 @@ void UIUpdate_b() {
     }
   } else {
     UIDrawTextBuffer();
-    // Reenable hide_sprites_under_win if
-    // disabled, once UI has closed
-    if (!hide_sprites_under_win && UIIsClosed()) {
-      hide_sprites_under_win = TRUE;
-    }
   }
 
   WX_REG = win_pos_x + 7;
@@ -286,8 +281,6 @@ void UIShowText_b() {
   text_y = 0;
   text_count = 0;
   text_tile_count = 0;
-
-  LOG("UIShowText 101\n");
 }
 
 void UIDrawTextBufferChar_b() {
@@ -441,7 +434,6 @@ void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
   tmp_text_draw_speed = text_draw_speed;
   text_draw_speed = 0;
   UIShowText(bank, bank_offset);
-  hide_sprites_under_win = layout == 0;
   menu_num_options = tmp_text_lines[0];
   UIDrawMenuCursor();
 }

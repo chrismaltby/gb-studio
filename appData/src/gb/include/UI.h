@@ -6,6 +6,7 @@
 
 #define UI_BANK 3
 #define MENU_OPEN_Y 112
+#define WIN_LEFT_X 7
 #define MENU_CLOSED_Y (MAXWNDPOSY + 1)
 #define TEXT_BUFFER_START 0xCC
 #define MENU_LAYOUT_INITIAL_X 88
@@ -14,7 +15,6 @@
 
 extern unsigned char text_lines[80];
 extern unsigned char tmp_text_lines[80];
-extern UBYTE hide_sprites_under_win;
 extern UBYTE win_pos_x;
 extern UBYTE win_pos_y;
 extern UBYTE win_dest_pos_x;
