@@ -212,7 +212,7 @@ function mapStateToProps(state, ownProps) {
   });
   const actorName = actor ? actor.name || `Actor ${actorIndex + 1}` : "";
   let label = actorName;
-  if(value === "player") {
+  if(value === "player" || (value === "$self$" && contextType !== "actors")) {
     label = "Player";
   } else if(value === "$self$") {
     label = `Self (${actorName})`;
