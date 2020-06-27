@@ -219,59 +219,57 @@ void game_loop() {
   else {
 #endif
 
-    FadeOut();
+    //  Switch Scene
 
+    // Fade out current scene
+    FadeOut();
     while (fade_running) {
       wait_vbl_done();
       FadeUpdate();
     }
-
     DISPLAY_OFF
-
-    // last_music = 0;
 
     state_running = 1;
     current_state = next_state;
 
+    // Reset scroll target and camera
     scroll_target = 0;
     scroll_target = &camera_pos;
+    camera_settings = CAMERA_LOCK_FLAG;
 
     // Disable timer script
     timer_script_duration = 0;
-
-    camera_settings = CAMERA_LOCK_FLAG;
 
     BGP_REG = PAL_DEF(0, 1, 2, 3);
     OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
 
     LoadScene(current_state);
 
+    // Run scene type init function
     PUSH_BANK(stateBanks[scene_type]);
     startFuncs[scene_type]();
     POP_BANK;
 
     game_time = 0;
-
-    ScriptStart(&scene_events_start_ptr);
-
     old_scroll_x = scroll_x;
     old_scroll_y = scroll_y;
 
-    if (state_running) {
-      DISPLAY_ON;
-      FadeIn();
+    // Run scene init script
+    ScriptStart(&scene_events_start_ptr);
+    ScriptRestoreCtx(0);
 
-      ScriptRestoreCtx(0);
-      MoveActors();
-      UpdateCamera();
-      RefreshScroll();
-      UpdateActors();
-      UIUpdate();
+    MoveActors();
+    UpdateCamera();
+    RefreshScroll();
+    UpdateActors();
+    UIUpdate();
 
-      while (fade_running) {
-        wait_vbl_done();
-        FadeUpdate();
-      }
+    // Fade in new scene
+    DISPLAY_ON;
+    FadeIn();
+    while (fade_running) {
+      wait_vbl_done();
+      FadeUpdate();
     }
   }
 }
