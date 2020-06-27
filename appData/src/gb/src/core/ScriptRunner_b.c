@@ -164,7 +164,7 @@ void ScriptTimerUpdate_b() {
     if (timer_script_time == 0) {
       last_joy = last_joy & 0xF0;
 
-      ScriptStart(&timer_script_ptr);
+      ScriptStartBg(&timer_script_ptr, 255);
 
       // Reset the countdown timer
       timer_script_time = timer_script_duration;

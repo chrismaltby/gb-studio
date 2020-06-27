@@ -188,7 +188,7 @@ void game_loop() {
       script_complete = FALSE;
     }
 
-    // ScriptTimerUpdate();
+    ScriptTimerUpdate();
 
     ScriptRestoreCtx(0);
 
