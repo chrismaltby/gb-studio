@@ -171,10 +171,10 @@ void game_loop() {
     UpdateProjectiles();
     UIOnInteract();
     UIUpdate();
-    HandleInputScripts();
     FadeUpdate();
 
     if (!script_ctxs[0].script_ptr_bank && !UIIsBlocking()) {
+      HandleInputScripts();
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
