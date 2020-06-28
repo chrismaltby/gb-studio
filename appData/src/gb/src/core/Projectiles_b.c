@@ -14,9 +14,8 @@
 
 #define SCREENWIDTH_PLUS_64 224   // 160 + 64
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
-
-#define EMOTE_SPRITE 124
 #define NO_ACTOR_PINNED 255
+#define ATTACK_OFFSET 10
 
 Projectile projectiles[MAX_PROJECTILES];
 UBYTE current_projectile = 0;
@@ -25,16 +24,11 @@ void ProjectilesInit_b() {
   UBYTE i;
   for (i = 0; i != MAX_PROJECTILES; i++) {
     projectiles[i].sprite_index = SpritePoolNext();
-    LOG("MADE PROJECTILE %u WITH sprite_index=%u\n", i, projectiles[i].sprite_index);
   }
 }
 
 void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
-    set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
-    set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
-    set_sprite_tile(projectiles[current_projectile].sprite_index, sprite * 4);
-    set_sprite_tile(projectiles[current_projectile].sprite_index + 1, (sprite * 4) + 2);
 
     projectiles[current_projectile].life_time = 0;
     projectiles[current_projectile].moving = 0;
@@ -53,15 +47,13 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
     projectiles[current_projectile].sprite = sprite;
     projectiles[current_projectile].moving = FALSE;
     projectiles[current_projectile].sprite_type = SPRITE_ACTOR_ANIMATED;
-    // projectiles[current_projectile].pos.x = actors[actor].pos.x;
-    // projectiles[current_projectile].pos.y = actors[actor].pos.y;
     projectiles[current_projectile].dir.x = actors[actor].dir.x;
     projectiles[current_projectile].dir.y = actors[actor].dir.y;
 
     if (actors[projectiles[current_projectile].pin_actor].dir.y == 0) {
       projectiles[current_projectile].pos.x =
           actors[projectiles[current_projectile].pin_actor].pos.x +
-          (10 * actors[projectiles[current_projectile].pin_actor].dir.x);
+          (ATTACK_OFFSET * actors[projectiles[current_projectile].pin_actor].dir.x);
       projectiles[current_projectile].pos.y =
           actors[projectiles[current_projectile].pin_actor].pos.y;
     } else {
@@ -69,7 +61,7 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
           actors[projectiles[current_projectile].pin_actor].pos.x;
       projectiles[current_projectile].pos.y =
           actors[projectiles[current_projectile].pin_actor].pos.y +
-          (10 * actors[projectiles[current_projectile].pin_actor].dir.y);
+          (ATTACK_OFFSET * actors[projectiles[current_projectile].pin_actor].dir.y);
     }
 
     projectiles[current_projectile].move_speed = 0;
@@ -88,10 +80,10 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
 void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
                         UBYTE move_speed, UBYTE life_time, UBYTE col_group, UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
-    set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
-    set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
-    set_sprite_tile(projectiles[current_projectile].sprite_index, sprite * 4);
-    set_sprite_tile(projectiles[current_projectile].sprite_index + 1, (sprite * 4) + 2);
+    // set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
+    // set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
+    // set_sprite_tile(projectiles[current_projectile].sprite_index, sprite * 4);
+    // set_sprite_tile(projectiles[current_projectile].sprite_index + 1, (sprite * 4) + 2);
 
     projectiles[current_projectile].life_time = 0;
     projectiles[current_projectile].moving = 0;
@@ -117,21 +109,31 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].life_time = life_time;
     projectiles[current_projectile].col_group = col_group;
     projectiles[current_projectile].col_mask = col_mask;
-    projectiles[current_projectile].sprite_type = SPRITE_STATIC;
+    projectiles[current_projectile].sprite_type = SPRITE_ACTOR_ANIMATED;
     projectiles[current_projectile].time = 1;
     projectiles[current_projectile].frame = 0; 
+    projectiles[current_projectile].frames_len = 2;
+
+
+    projectiles[current_projectile].sprite_type = SPRITE_STATIC;
+    projectiles[current_projectile].frames_len = 1;
+
   }
 
   current_projectile = (current_projectile + 1) % MAX_PROJECTILES;
 }
 
 void UpdateProjectiles_b() {
-  UBYTE i, k, j, hit, frame, flip, fo, ptime;
+  UBYTE i, k, j, hit, frame, flip, fo;
   UINT16 screen_x;
   UINT16 screen_y;
 
   for (i = 0; i != MAX_PROJECTILES; i++) {
+
+    LOG("PROJECTILE::: i=%u life=%u\n", i, projectiles[i].life_time);
+
     if (projectiles[i].life_time != 0) {
+
       // Determine if projectile hit any actors
       hit = NO_ACTOR_COLLISON;
       for (j = 0; j != actors_active_size; j++) {
@@ -160,40 +162,39 @@ void UpdateProjectiles_b() {
         }
         if (projectiles[i].col_group == 2) {
           if (actors[hit].hit_1_ptr.bank) {
-            ScriptStartBg(&actors[hit].hit_1_ptr, a);
+            projectiles[i].col_group = 0;
+            ScriptStartBg(&actors[hit].hit_1_ptr, hit);
           }
         } else if (projectiles[i].col_group == 4) {
           if (actors[hit].hit_2_ptr.bank) {
-            ScriptStartBg(&actors[hit].hit_2_ptr, a);
+            projectiles[i].col_group = 0;
+            ScriptStartBg(&actors[hit].hit_2_ptr, hit);
           }
         } else if (projectiles[i].col_group == 8) {
           if (actors[hit].hit_3_ptr.bank) {
-            ScriptStartBg(&actors[hit].hit_3_ptr, a);
+            projectiles[i].col_group = 0;
+            ScriptStartBg(&actors[hit].hit_3_ptr, hit);
           }
         }
       }
 
       k = projectiles[i].sprite_index;
+
+      // Projectile frame update
       fo = 0;
       flip = FALSE;
-      ptime = 1;
-      ptime = projectiles[i].time;
-
-      // if (ptime == 1) {
-      //   projectiles[i].frame++;
-      // }
-
       if ((projectiles[i].time & 0x3) == 0) {
         projectiles[i].frame++;
       }
       if (projectiles[i].frame == projectiles[i].frames_len) {
-        projectiles[i].life_time = 0;
-        projectiles[i].frame--;
-      // move_sprite(k, 0, 0);
-      // move_sprite(k + 1, 0, 0);
+        if(projectiles[i].pin_actor == NO_ACTOR_PINNED) {
+          projectiles[i].frame = 0;
+        } else {
+          projectiles[i].life_time = 1;
+          projectiles[i].frame--;
+        }
       }
 
-      // Projectile frame
       if (projectiles[i].sprite_type != SPRITE_STATIC) {
         // Increase frame based on facing direction
         if (IS_NEG(projectiles[i].dir.y)) {
@@ -203,19 +204,12 @@ void UpdateProjectiles_b() {
         }
         // Facing left so flip sprite
         if (IS_NEG(projectiles[i].dir.x)) {
-          LOG("AUR FLIP DIR X0\n");
           flip = TRUE;
         }
       }
-
-      LOG("RERENDER actor a=%u\n", a);
-
-      // fo = 0;
       frame = MUL_4(projectiles[i].sprite + projectiles[i].frame + fo);
-      // frame = fo;
-      LOG("RERENDER actor a=%u with FRAME %u  [ %u + %u ] \n", a, frame, projectiles[i].sprite,
-          projectiles[i].frame_offset);
 
+      // Update GB Sprite tile and props
       if (flip) {
         set_sprite_prop(k, S_FLIPX);
         set_sprite_prop(k + 1, S_FLIPX);
@@ -228,6 +222,7 @@ void UpdateProjectiles_b() {
         set_sprite_tile(k + 1, frame + 2);
       }
 
+      // Reposition GB Sprite
       screen_x = 8u + projectiles[i].pos.x - scroll_x;
       screen_y = 8u + projectiles[i].pos.y - scroll_y;
 
@@ -238,34 +233,15 @@ void UpdateProjectiles_b() {
       if (IS_FRAME_4) {
         if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
             ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
-          // Mark off screen actor for removal
-          LOG("PROJECTILE OFFSCREEN %u p_x=%d s_x=%u s_y=%u s1_x=%u s1_y=%u max_x=%u max_y=%u\n", i,
-              projectiles[i].pos.x, screen_x, screen_y, (UINT16)(screen_x + 32u),
-              (UINT16)(screen_y + 32u), SCREENWIDTH_PLUS_64, SCREENHEIGHT_PLUS_64);
+          // Mark off screen projectile for removal
           projectiles[i].life_time = 0;
         } else {
           projectiles[i].life_time--;
         }
       }
 
-      projectiles[i].time++;
-
-      if (projectiles[i].pin_actor != NO_ACTOR_PINNED) {
-        if ((actors[projectiles[i].pin_actor].dir.x != projectiles[i].dir.x) ||
-            (actors[projectiles[i].pin_actor].dir.y != projectiles[i].dir.y)) {
-          projectiles[i].life_time = 0;
-        } else {
-          if (actors[projectiles[i].pin_actor].dir.y == 0) {
-            projectiles[i].pos.x = actors[projectiles[i].pin_actor].pos.x +
-                                   (10 * actors[projectiles[i].pin_actor].dir.x);
-            projectiles[i].pos.y = actors[projectiles[i].pin_actor].pos.y;
-          } else {
-            projectiles[i].pos.x = actors[projectiles[i].pin_actor].pos.x;
-            projectiles[i].pos.y = actors[projectiles[i].pin_actor].pos.y +
-                                   (10 * actors[projectiles[i].pin_actor].dir.y);
-          }
-        }
-      } else {
+      if (projectiles[i].pin_actor == NO_ACTOR_PINNED) {
+        // If launched projectile continue movement in current direction
         if (projectiles[i].moving) {
           if (projectiles[i].move_speed == 0) {
             // Half speed only move every other frame
@@ -278,10 +254,27 @@ void UpdateProjectiles_b() {
             projectiles[i].pos.y += projectiles[i].dir.y * projectiles[i].move_speed;
           }
         }
+      } else {
+        // If pinned projectile reposition based on parent actor pos/dir
+        if ((actors[projectiles[i].pin_actor].dir.x != projectiles[i].dir.x) ||
+            (actors[projectiles[i].pin_actor].dir.y != projectiles[i].dir.y)) {
+          projectiles[i].life_time = 0;
+        } else {
+          if (actors[projectiles[i].pin_actor].dir.y == 0) {
+            projectiles[i].pos.x = actors[projectiles[i].pin_actor].pos.x +
+                                   (ATTACK_OFFSET * actors[projectiles[i].pin_actor].dir.x);
+            projectiles[i].pos.y = actors[projectiles[i].pin_actor].pos.y;
+          } else {
+            projectiles[i].pos.x = actors[projectiles[i].pin_actor].pos.x;
+            projectiles[i].pos.y = actors[projectiles[i].pin_actor].pos.y +
+                                   (ATTACK_OFFSET * actors[projectiles[i].pin_actor].dir.y);
+          }
+        }
       }
 
+      projectiles[i].time++;
+
     } else {
-      LOG("HIDE PROJECTILE %u\n", i);
       k = projectiles[i].sprite_index;
       move_sprite(k, 0, 0);
       move_sprite(k + 1, 0, 0);
