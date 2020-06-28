@@ -28,7 +28,7 @@ void Update_Adventure() {
   player.moving = FALSE;
 
   // Move
-  player.dir.x = 0;
+  // player.dir.x = 0;
   if (INPUT_LEFT) {
     player.dir.x = -1;
     player.moving = TRUE;
@@ -39,7 +39,7 @@ void Update_Adventure() {
     player.rerender = TRUE;
   }
 
-  player.dir.y = 0;
+  // player.dir.y = 0;
   if (INPUT_UP) {
     player.dir.y = -1;
     player.moving = TRUE;
@@ -48,6 +48,12 @@ void Update_Adventure() {
     player.dir.y = 1;
     player.moving = TRUE;
     player.rerender = TRUE;
+  }
+
+  if((INPUT_LEFT || INPUT_RIGHT) && !INPUT_UP && !INPUT_DOWN) {
+    player.dir.y = 0;
+  } else if((INPUT_UP || INPUT_DOWN) && !INPUT_LEFT && !INPUT_RIGHT) {
+    player.dir.x = 0;
   }
 
   tile_x = (player.pos.x + 4) >> 3;

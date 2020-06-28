@@ -88,7 +88,8 @@ import {
   SET_PROPERTY,
   ACTOR_SET_SPRITE,
   IF_ACTOR_RELATIVE_TO_ACTOR,
-  PLAYER_BOUNCE
+  PLAYER_BOUNCE,
+  WEAPON_ATTACK
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -299,7 +300,17 @@ class ScriptBuilder {
     output.push(cmd(HIDE_SPRITES));
   };
 
-  // Projectiles
+  // Weapons
+
+  weaponAttack = (spriteSheetId, collisionGroup, collisionMask) => {
+    const output = this.output;
+    const { sprites, scene } = this.options;
+    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
+    
+    output.push(cmd(WEAPON_ATTACK));
+    output.push(spriteOffset);
+    output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
+  }
 
   launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionGroup, collisionMask) => {
     const output = this.output;

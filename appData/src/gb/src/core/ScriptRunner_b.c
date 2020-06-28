@@ -151,6 +151,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetSprite_b, 2},      // 0x60
     {Script_IfActorRelActor_b, 4},     // 0x61
     {Script_PlayerBounce_b, 1},        // 0x62
+    {Script_WeaponAttack_b, 2},        // 0x63
 };
 
 void ScriptTimerUpdate_b() {
@@ -2074,4 +2075,11 @@ void Script_LaunchProjectile_b() {
                    60,                                         // Life time
                    script_cmd_args[4] & 0xF,                   // Collision group
                    script_cmd_args[4] >> 4);                   // Collision mask
+}
+
+void Script_WeaponAttack_b() {
+  WeaponAttack(script_cmd_args[0],  // Sprite
+               script_actor,
+               script_cmd_args[1] & 0xF,  // Collision group
+               script_cmd_args[1] >> 4);  // Collision mask
 }

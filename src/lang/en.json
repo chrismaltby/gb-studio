@@ -244,6 +244,7 @@
   "FIELD_MEDIUM": "Medium",
   "FIELD_HIGH": "High",
   "FIELD_BOUNCE_NOTE": "Affects Platform scenes only",
+  "FIELD_WEAPON_SPRITE": "Weapon Sprite Sheet",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -358,7 +359,8 @@
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR": "If Actor Relative To Actor",
   "EVENT_ACTOR_SET_SPRITE": "Actor: Set Sprite Sheet",
   "EVENT_PLAYER_BOUNCE": "Actor: Player Bounce",
-
+  "EVENT_WEAPON_ATTACK": "Weapon: Attack",
+  
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "File",
