@@ -186,7 +186,7 @@ void LoadScene(UINT16 index) {
   LoadUIPalette(1);
 
   scene_type = (*(data_ptr++)) + 1;
-  sprites_len = *(data_ptr++);
+  sprites_len = (*(data_ptr++)) + 1;
   actors_len = (*(data_ptr++)) + 1;
   triggers_len = *(data_ptr++);
 
@@ -195,8 +195,20 @@ void LoadScene(UINT16 index) {
 
   // Load sprites
   k = 24;
-  for (i = 0; i != sprites_len; i++) {
-    k += LoadSprite((*(data_ptr++) * 256) + *(data_ptr++), k);
+  for (i = 1; i != sprites_len; i++) {
+    UBYTE sprite_len = LoadSprite((*(data_ptr++) * 256) + *(data_ptr++), k);
+    sprites_info[i].sprite_offset = DIV_4(k);
+    sprites_info[i].frames_len = DIV_4(sprite_len);
+    if(sprites_info[i].frames_len == 6) {
+      sprites_info[i].sprite_type = SPRITE_ACTOR_ANIMATED;
+      sprites_info[i].frames_len = 2;
+    } else if(sprites_info[i].frames_len == 3) {
+      sprites_info[i].sprite_type = SPRITE_ACTOR;
+      sprites_info[i].frames_len = 1;
+    } else {
+      sprites_info[i].sprite_type = SPRITE_STATIC;
+    }
+    k += sprite_len;
   }
 
   // Load actors

@@ -100,6 +100,7 @@ import {
   compileConditional,
   getSpriteOffset,
   getSprite,
+  getSpriteSceneIndex,
 } from "../events/helpers";
 import {
   dirDec,
@@ -112,9 +113,12 @@ import {
   collisionGroupDec,
   actorRelativeDec,
   moveTypeDec,
-  heightDec
+  heightDec,
+  actorFramesPerDir,
+  spriteTypeDec
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
+import { SPRITE_TYPE_ACTOR } from "../../consts";
 
 class ScriptBuilder {
   constructor(output, options) {
@@ -305,21 +309,21 @@ class ScriptBuilder {
   weaponAttack = (spriteSheetId, collisionGroup, collisionMask) => {
     const output = this.output;
     const { sprites, scene } = this.options;
-    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
+    const spriteSceneIndex = getSpriteSceneIndex(spriteSheetId, sprites, scene);
     
     output.push(cmd(WEAPON_ATTACK));
-    output.push(spriteOffset);
+    output.push(spriteSceneIndex);
     output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
   }
 
   launchProjectile = (spriteSheetId, x, y, dirVariable, speed, collisionGroup, collisionMask) => {
     const output = this.output;
     const { sprites, variables, scene } = this.options;
-    const spriteOffset = getSpriteOffset(spriteSheetId, sprites, scene);
+    const spriteSceneIndex = getSpriteSceneIndex(spriteSheetId, sprites, scene);
     const dirVariableIndex = this.getVariableIndex(dirVariable, variables);
-    
+
     output.push(cmd(LAUNCH_PROJECTILE));
-    output.push(spriteOffset);
+    output.push(spriteSceneIndex);
     output.push(hi(dirVariableIndex));
     output.push(lo(dirVariableIndex));
     output.push(moveSpeedDec(speed));

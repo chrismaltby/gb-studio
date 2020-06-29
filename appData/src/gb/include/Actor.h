@@ -6,6 +6,7 @@
 
 #include "BankData.h"
 #include "Math.h"
+#include "Sprite.h"
 
 #define ACTOR_BANK 1
 #define MAX_ACTORS 31
@@ -43,7 +44,6 @@
 #define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
 
-typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;
 
 typedef struct {
   UBYTE sprite;        // Offset into scene sprites image data

@@ -3,8 +3,7 @@
 #include "BankManager.h"
 #include "Stack.h"
 
-Sprite sprites[MAX_SPRITES];
-
+SpriteInfo sprites_info[MAX_FRAMES];
 DECLARE_STACK(sprite_pool, MAX_SPRITES);
 
 void SpritePoolReset_b();

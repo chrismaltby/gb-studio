@@ -2065,7 +2065,7 @@ void Script_LaunchProjectile_b() {
     dir_y = -1;
   }
 
-  ProjectileLaunch(script_cmd_args[0],                                          // Sprite
+  ProjectileLaunch(script_cmd_args[0],                         // Sprite
                    actors[script_actor].pos.x + (dir_x * 16),  // Launch X
                    actors[script_actor].pos.y + (dir_y * 16),  // Launch Y
                    dir_x,                                      // Dir x

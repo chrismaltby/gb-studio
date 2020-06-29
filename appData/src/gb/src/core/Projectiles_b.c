@@ -44,11 +44,10 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
     projectiles[current_projectile].sprite = 0;
     projectiles[current_projectile].sprite_type = 0;
 
-    projectiles[current_projectile].sprite = sprite;
     projectiles[current_projectile].moving = FALSE;
-    projectiles[current_projectile].sprite_type = SPRITE_ACTOR_ANIMATED;
     projectiles[current_projectile].dir.x = actors[actor].dir.x;
     projectiles[current_projectile].dir.y = actors[actor].dir.y;
+    projectiles[current_projectile].pin_actor = actor;
 
     if (actors[projectiles[current_projectile].pin_actor].dir.y == 0) {
       projectiles[current_projectile].pos.x =
@@ -68,10 +67,12 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
     projectiles[current_projectile].life_time = 30;
     projectiles[current_projectile].col_group = col_group;
     projectiles[current_projectile].col_mask = col_mask;
-    projectiles[current_projectile].pin_actor = actor;
-    projectiles[current_projectile].frames_len = 2;
     projectiles[current_projectile].time = 1;
     projectiles[current_projectile].frame = 0;
+
+    projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
+    projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
+    projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;
   }
 
   current_projectile = (current_projectile + 1) % MAX_PROJECTILES;
@@ -99,7 +100,6 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].sprite = 0;
     projectiles[current_projectile].sprite_type = 0;
 
-    projectiles[current_projectile].sprite = sprite;
     projectiles[current_projectile].moving = moving;
     projectiles[current_projectile].pos.x = x;
     projectiles[current_projectile].pos.y = y;
@@ -114,9 +114,9 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].frame = 0; 
     projectiles[current_projectile].frames_len = 2;
 
-
-    projectiles[current_projectile].sprite_type = SPRITE_STATIC;
-    projectiles[current_projectile].frames_len = 1;
+    projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
+    projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
+    projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;
 
   }
 

@@ -8,18 +8,17 @@
 
 #define SPRITE_BANK 1
 #define MAX_SPRITES 20
+#define MAX_FRAMES 25
 
-typedef struct _SPRITE {
-  Pos pos;
-  UBYTE sprite;
-  UBYTE frame;
-  UBYTE frame_offset;
+typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;
+
+typedef struct _SPRITEINFO {
+  UBYTE sprite_offset;
   UBYTE frames_len;
-  UBYTE flip;
-  UBYTE rerender;
-} Sprite;
+  SPRITE_TYPE sprite_type;
+} SpriteInfo;
 
-extern Sprite sprites[MAX_SPRITES];
+extern SpriteInfo sprites_info[MAX_FRAMES];
 extern UINT8 sprite_pool[];
 
 /**

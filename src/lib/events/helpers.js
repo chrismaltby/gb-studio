@@ -40,6 +40,11 @@ export const getSpriteOffset = (spriteId, sprites, scene) => {
   return spriteOffset;
 }
 
+export const getSpriteSceneIndex = (spriteId, sprites, scene) => {
+  const spriteIndex = getSpriteIndex(spriteId, sprites);
+  return scene.sprites.indexOf(spriteIndex) + 1;
+}
+
 export const getVariableIndex = (variable, variables) => {
   const normalisedVariable = String(variable)
     .replace(/\$/g, "")
