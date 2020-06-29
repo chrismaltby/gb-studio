@@ -1,67 +1,36 @@
-import fs from "fs-extra";
-import Path from "path";
+import glob from "glob";
+import { promisify } from "util";
+
+const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { CART_TYPE, CART_SIZE, customColorsEnabled, gbcFastCPUEnabled }
+  { CART_TYPE, CART_SIZE, customColorsEnabled }
 ) => {
   const cmds = ["set __COMPAT_LAYER=WIN7RTM"];
-  const buildFiles = [];
   const objFiles = [];
-  let musicFiles = [];
 
-  const CC = `..\\_gbs\\gbdk\\bin\\lcc -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Iinclude`;
-  const CFLAGS = `-DUSE_SFR_FOR_REG -Wl-yo${CART_SIZE} -Wl-ya4`;
-  const CGBFLAGS = `-Wl-yp0x143=0x80 -DCGB`;
+  const CC = `..\\_gbs\\gbdk\\bin\\lcc`;
+  let CFLAGS = `-Wa-l -Iinclude`;
+  let LFLAGS = `-Wl-yo${CART_SIZE} -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
 
-  const srcRoot = `${buildRoot}/src`;
-  const dataRoot = `${buildRoot}/src/data`;
-  const musicRoot = `${buildRoot}/src/music`;
-  const srcFiles = await fs.readdir(srcRoot);
-  const dataFiles = await fs.readdir(dataRoot);
-  try {
-    musicFiles = await fs.readdir(musicRoot);
-  } catch (e) {
-    // No music folder
+  if (customColorsEnabled) {
+    CFLAGS += " -DCGB";
+    LFLAGS += " -Wl-yp0x143=0x80";
   }
 
-  for (const file of srcFiles) {
-    const fileStat = await fs.lstat(`${srcRoot}/${file}`);
-    const ext = Path.extname(file);
-    if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
-      buildFiles.push(`src/${file}`);
-    }
-  }
-
-  for (const file of dataFiles) {
-    const fileStat = await fs.lstat(`${dataRoot}/${file}`);
-    const ext = Path.extname(file);
-    if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
-      buildFiles.push(`src/data/${file}`);
-    }
-  }
-
-  for (const file of musicFiles) {
-    const fileStat = await fs.lstat(`${musicRoot}/${file}`);
-    const ext = Path.extname(file);
-    if (fileStat.isFile() && [".c", ".s"].indexOf(ext) > -1) {
-      buildFiles.push(`src/music/${file}`);
-    }
-  }
+  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
+  const buildFiles = await globAsync(srcRoot);
 
   for (const file of buildFiles) {
-    const objFile = `${file.replace(/^src/, "obj").replace(/\.[cs]$/, "")}.o`;
-    cmds.push(`${CC} -c -o ${objFile} ${file}`);
+    const objFile = `${file.replace(/src.*\//, "obj/").replace(/\.[cs]$/, "")}.o`;
+    if(file.indexOf("data/bank_") == -1 && file.indexOf("music/music_bank_") == -1) {
+     cmds.push(`${CC} ${CFLAGS} -c -o ${objFile} ${file}`);
+    }
     objFiles.push(objFile);
   }
 
-  if (customColorsEnabled || gbcFastCPUEnabled) {
-    cmds.push(
-      `${CC} ${CFLAGS} ${CGBFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`
-    );
-  } else {
-    cmds.push(`${CC} ${CFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
-  }
+  cmds.push(`${CC} ${LFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`);
 
   return cmds.join("\n");
 };
