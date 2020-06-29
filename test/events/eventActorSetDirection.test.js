@@ -8,7 +8,10 @@ test("Should set player direction", () => {
   compile(
     {
       actorId: "player",
-      direction: "up"
+      direction: {
+        type: "direction",
+        value: "up"
+      }
     },
     {
       scene: { actors: [] },
@@ -29,7 +32,10 @@ test("Should set actor direction", () => {
   compile(
     {
       actorId: "abc",
-      direction: "right"
+      direction: {
+        type: "direction",
+        value: "right"
+      }
     },
     {
       scene: {
@@ -57,21 +63,24 @@ test("Should set frame of actor using static movement", () => {
 
   mockGetActorById.mockReturnValue({
     id: "abc",
-    movementType: "static",
+    spriteType: "static",
     spriteSheetId: "def"   
   });
 
   compile(
     {
       actorId: "abc",
-      direction: "up"
+      direction: {
+        type: "direction",
+        value: "up"
+      }
     },
     {
       scene: {
         actors: [
           {
             id: "abc",
-            movementType: "static",
+            spriteType: "static",
             spriteSheetId: "def"
           }
         ]
@@ -104,21 +113,24 @@ test("Should set flip actor using static movement when facing left", () => {
 
   mockGetActorById.mockReturnValue({
     id: "abc",
-    movementType: "static",
+    spriteType: "static",
     spriteSheetId: "def"   
   });
 
   compile(
     {
       actorId: "abc",
-      direction: "left"
+      direction: {
+        type: "direction",
+        value: "left"
+      }
     },
     {
       scene: {
         actors: [
           {
             id: "abc",
-            movementType: "static",
+            spriteType: "static",
             spriteSheetId: "def"
           }
         ]
@@ -151,21 +163,24 @@ test("Should not set frame if spritesheet has no frames", () => {
 
   mockGetActorById.mockReturnValue({
     id: "abc",
-    movementType: "static",
+    spriteType: "static",
     spriteSheetId: "def"
   });
 
   compile(
     {
       actorId: "abc",
-      direction: "left"
+      direction: {
+        type: "direction",
+        value: "left"
+      }
     },
     {
       scene: {
         actors: [
           {
             id: "abc",
-            movementType: "static",
+            spriteType: "static",
             spriteSheetId: "def"
           }
         ]
@@ -191,14 +206,17 @@ test("Should not set frame if spritesheet has no frames", () => {
   compile(
     {
       actorId: "abc",
-      direction: "right"
+      direction: {
+        type: "direction",
+        value: "right"
+      }
     },
     {
       scene: {
         actors: [
           {
             id: "abc",
-            movementType: "static",
+            spriteType: "static",
             spriteSheetId: "def"
           }
         ]

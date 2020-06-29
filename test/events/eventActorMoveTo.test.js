@@ -7,8 +7,16 @@ test("Should set move player to position", () => {
   compile(
     {
       actorId: "player",
-      x: 5,
-      y: 9
+      x: {
+        type: "number",
+        value: 5
+      },
+      y: {
+        type: "number",
+        value: 9
+      },
+      moveType: "horizontal",
+      useCollisions: true
     },
     {
       scene: { actors: [] },
@@ -17,5 +25,5 @@ test("Should set move player to position", () => {
     }
   );
   expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorMoveTo).toBeCalledWith(5, 9);
+  expect(mockActorMoveTo).toBeCalledWith(5, 9, true, "horizontal");
 });

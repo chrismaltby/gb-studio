@@ -352,8 +352,8 @@ test("should walk all scene events to build list of used variables", () => {
   }
   output.push("109");
   output.push("110");
-  output.push("tmp1");
-  output.push("tmp2");
+  output.push("T0");
+  output.push("T1");
   expect(precompiledVariables).toEqual(output);
 });
 

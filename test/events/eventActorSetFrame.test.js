@@ -7,7 +7,10 @@ test("Should set player frame", () => {
   compile(
     {
       actorId: "player",
-      frame: 4
+      frame: {
+        type: "number",
+        value: 4
+      }
     },
     {
       scene: { actors: [] },

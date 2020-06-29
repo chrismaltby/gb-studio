@@ -5,7 +5,10 @@ test("Should set variable to a value", () => {
   compile(
     {
       variable: "2",
-      value: 9
+      value: {
+        type: "number",
+        value: 9
+      }
     },
     {
       variableSetToValue: mockVariableSetToValue
@@ -19,7 +22,10 @@ test("Should set variable to true if value was 1", () => {
   compile(
     {
       variable: "2",
-      value: 1
+      value: {
+        type: "number",
+        value: 1
+      }
     },
     {
       variableSetToTrue: mockVariableSetToTrue
@@ -33,7 +39,10 @@ test("Should set variable to true if value was 1 as a string", () => {
   compile(
     {
       variable: "2",
-      value: "1"
+      value: {
+        type: "number",
+        value: "1"
+      }
     },
     {
       variableSetToTrue: mockVariableSetToTrue
@@ -48,7 +57,10 @@ test("Should set variable to false if value was 0", () => {
   compile(
     {
       variable: "2",
-      value: 0
+      value: {
+        type: "number",
+        value: 0
+      }
     },
     {
       variableSetToFalse: mockVariableSetToFalse
@@ -62,7 +74,10 @@ test("Should set variable to false if value was undefined", () => {
   compile(
     {
       variable: "2",
-      value: undefined
+      value: {
+        type: "number",
+        value: undefined
+      }
     },
     {
       variableSetToFalse: mockVariableSetToFalse

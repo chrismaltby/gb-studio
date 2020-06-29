@@ -104,50 +104,52 @@ test("Should be able to set active actor to player", () => {
 test("Should be able to move active actor to position", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveTo(5, 6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 5, 6]);
+  sb.actorMoveTo(5, 6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 5, 6, 0, 0]);
 });
 
 test("Should default move active actor to position to origin", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.actorMoveTo();
-  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 0, 0]);
+  expect(output).toEqual([cmd(ACTOR_MOVE_TO), 0, 0, 0, 0]);
 });
 
 test("Should be able to move active actor relatively", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveRelative(5, 6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 0, 6, 0]);
+  sb.actorMoveRelative(5, 6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 0, 6, 0, 0, 0]);
 });
 
 test("Should be able to move active actor to position defined by variables", () => {
   const output = [];
   const sb = new ScriptBuilder(output, { variables: ["0", "1"] });
-  sb.actorMoveToVariables("0", "1");
+  sb.actorMoveToVariables("0", "1", false, "horizontal");
   expect(output).toEqual([
     cmd(LOAD_VECTORS),
     0,
     0,
     0,
     1,
-    cmd(ACTOR_MOVE_TO_VALUE)
+    cmd(ACTOR_MOVE_TO_VALUE),
+    0,
+    0
   ]);
 });
 
 test("Should be able to move active actor relatively with negative values", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.actorMoveRelative(-5, -6);
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 1, 6, 1]);
+  sb.actorMoveRelative(-5, -6, false, "horizontal");
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 5, 1, 6, 1, 0, 0]);
 });
 
 test("Should default to relative actor move to no movement", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.actorMoveRelative();
-  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 0, 0, 0, 0]);
+  expect(output).toEqual([cmd(ACTOR_MOVE_RELATIVE), 0, 0, 0, 0, 0, 0]);
 });
 
 test("Should be able to reposition active actor", () => {
@@ -635,8 +637,8 @@ test("Should be able to switch scene", () => {
       }
     ]
   });
-  sb.sceneSwitch("abc", 5, 9, "up", 2);
-  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 5, 9, dirDec("up"), 2]);
+  sb.sceneSwitch("abc", 5, 9, "up", 2, 0);
+  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 5, 9, dirDec("up"), 2, 0]);
 });
 
 test("Should skip switching scene if not found", () => {
@@ -648,7 +650,7 @@ test("Should skip switching scene if not found", () => {
       }
     ]
   });
-  sb.sceneSwitch("def", 5, 9, "up", 2);
+  sb.sceneSwitch("def", 5, 9, "up", 2, 0);
   expect(output).toEqual([]);
 });
 
@@ -662,7 +664,7 @@ test("Should default scene switch to facing downwards at origin with default fad
     ]
   });
   sb.sceneSwitch("abc");
-  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2]);
+  expect(output).toEqual([cmd(SWITCH_SCENE), 0, 0, 0, 0, dirDec("down"), 2, 0]);
 });
 
 test("Should be able to store current scene on stack", () => {
@@ -1103,7 +1105,7 @@ test("Should be able to start a tone with period 1000", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.soundStartTone(1000);
-  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232]);
+  expect(output).toEqual([cmd(SOUND_START_TONE), 3, 232, 30]);
 });
 
 test("Should be able to stop a tone", () => {
