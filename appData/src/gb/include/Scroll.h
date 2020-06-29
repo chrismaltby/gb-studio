@@ -16,7 +16,7 @@
 #define SCREEN_TILE_REFRES_W (SCREEN_TILES_W + SCREEN_PAD_LEFT + SCREEN_PAD_RIGHT)
 #define SCREEN_TILE_REFRES_H (SCREEN_TILES_H + SCREEN_PAD_TOP + SCREEN_PAD_BOTTOM)
 
-extern Pos *scroll_target;
+extern Pos* scroll_target;
 extern UINT16 scroll_tiles_w;
 extern INT16 scroll_x;
 extern INT16 scroll_y;

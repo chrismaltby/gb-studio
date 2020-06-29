@@ -29,7 +29,6 @@ void ProjectilesInit_b() {
 
 void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
-
     projectiles[current_projectile].life_time = 0;
     projectiles[current_projectile].moving = 0;
     projectiles[current_projectile].pos.x = 0;
@@ -78,8 +77,16 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
   current_projectile = (current_projectile + 1) % MAX_PROJECTILES;
 }
 
-void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UBYTE moving,
-                        UBYTE move_speed, UBYTE life_time, UBYTE col_group, UBYTE col_mask) {
+void ProjectileLaunch_b(UBYTE sprite,
+                        WORD x,
+                        WORD y,
+                        BYTE dir_x,
+                        BYTE dir_y,
+                        UBYTE moving,
+                        UBYTE move_speed,
+                        UBYTE life_time,
+                        UBYTE col_group,
+                        UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
     // set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
     // set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
@@ -111,13 +118,12 @@ void ProjectileLaunch_b(UBYTE sprite, WORD x, WORD y, BYTE dir_x, BYTE dir_y, UB
     projectiles[current_projectile].col_mask = col_mask;
     projectiles[current_projectile].sprite_type = SPRITE_ACTOR_ANIMATED;
     projectiles[current_projectile].time = 1;
-    projectiles[current_projectile].frame = 0; 
+    projectiles[current_projectile].frame = 0;
     projectiles[current_projectile].frames_len = 2;
 
     projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
     projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
     projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;
-
   }
 
   current_projectile = (current_projectile + 1) % MAX_PROJECTILES;
@@ -129,11 +135,9 @@ void UpdateProjectiles_b() {
   UINT16 screen_y;
 
   for (i = 0; i != MAX_PROJECTILES; i++) {
-
     LOG("PROJECTILE::: i=%u life=%u\n", i, projectiles[i].life_time);
 
     if (projectiles[i].life_time != 0) {
-
       // Determine if projectile hit any actors
       hit = NO_ACTOR_COLLISON;
       for (j = 0; j != actors_active_size; j++) {
@@ -187,7 +191,7 @@ void UpdateProjectiles_b() {
         projectiles[i].frame++;
       }
       if (projectiles[i].frame == projectiles[i].frames_len) {
-        if(projectiles[i].pin_actor == NO_ACTOR_PINNED) {
+        if (projectiles[i].pin_actor == NO_ACTOR_PINNED) {
           projectiles[i].frame = 0;
         } else {
           projectiles[i].life_time = 1;

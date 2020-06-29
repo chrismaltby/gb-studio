@@ -5,7 +5,7 @@
 #include "ASMHelpers.h"
 #include "BankManager.h"
 
-void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr) {
+void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char* ptr) {
   PUSH_BANK(bank);
   WaitForMode0Or1();
   set_bkg_data(i, l, ptr);
@@ -28,16 +28,16 @@ void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr) {
 //   POP_BANK;
 // }
 
-void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr) {
+void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char* ptr) {
   PUSH_BANK(bank);
   set_sprite_data(i, l, ptr);
   POP_BANK;
 }
 
-UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr) {
+UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char* ptr) {
   UBYTE value;
   PUSH_BANK(bank);
-  value = *(UBYTE *)ptr;
+  value = *(UBYTE*)ptr;
   POP_BANK;
   return value;
 }
@@ -70,7 +70,7 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr) {
 //   strcpy(to, buffer);
 // }
 
-void ReadBankedBankPtr(UBYTE bank, BANK_PTR *to, unsigned char *from) {
+void ReadBankedBankPtr(UBYTE bank, BANK_PTR* to, unsigned char* from) {
   BANK_PTR bank_ptr;
   PUSH_BANK(bank);
   memcpy(&bank_ptr, from, sizeof(BANK_PTR));

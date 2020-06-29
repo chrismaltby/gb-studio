@@ -47,7 +47,7 @@ void Start_Platform() {
   pl_vel_x = 0;
   pl_vel_y = 0;
 
-  if(player.dir.x == 0) {
+  if (player.dir.x == 0) {
     player.dir.y = 0;
     player.dir.x = 1;
     player.rerender = TRUE;
@@ -124,7 +124,7 @@ void Update_Platform() {
 
   // Jump
   if (INPUT_B_PRESSED && grounded) {
-    if (!(TileAt(tile_x, tile_y - 2) ||                                      // Left Edge
+    if (!(TileAt(tile_x, tile_y - 2) ||                                         // Left Edge
           (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2)))) {  // Right edge
       pl_vel_y = -JUMP_VEL;
       grounded = FALSE;
@@ -161,8 +161,9 @@ void Update_Platform() {
   }
 
   // Ground Collision
-  if (pl_vel_y >= 0 && (TileAt(tile_x, tile_y + 1) ||                                   // Left Edge
-                     (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1)))  // Right edge
+  if (pl_vel_y >= 0 &&
+      (TileAt(tile_x, tile_y + 1) ||                                      // Left Edge
+       (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1)))  // Right edge
   ) {
     grounded = TRUE;
     pl_vel_y = 0;
@@ -172,7 +173,7 @@ void Update_Platform() {
 
     // Ceiling Collision
     if (pl_vel_y < 0) {
-      if (TileAt(tile_x, tile_y - 2) ||                                  // Left Edge
+      if (TileAt(tile_x, tile_y - 2) ||                                     // Left Edge
           (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2))  // Right edge
       ) {
         if (MOD_128(pl_pos_y) < 32) {
@@ -183,7 +184,7 @@ void Update_Platform() {
     }
   }
 
-  if(!player.script_control) {
+  if (!player.script_control) {
     player.pos.x = (pl_pos_x >> 4) - 4u;
     player.pos.y = pl_pos_y >> 4;
     player.animate = grounded && pl_vel_x != 0;
@@ -204,10 +205,9 @@ void Update_Platform() {
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if(actors[hit_actor].collision_group) {
+    if (actors[hit_actor].collision_group) {
       player.hit_actor = 0;
       player.hit_actor = hit_actor;
     }
   }
-
 }

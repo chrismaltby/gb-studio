@@ -13,7 +13,9 @@ void FadeIn_b();
 void FadeOut_b();
 void FadeUpdate_b();
 
-void FadeInit() { fade_frames_per_step = fade_speeds[2]; }
+void FadeInit() {
+  fade_frames_per_step = fade_speeds[2];
+}
 
 void FadeIn() {
   LOG("FadeIn\n");
@@ -35,6 +37,10 @@ void FadeUpdate() {
   POP_BANK;
 }
 
-void FadeSetSpeed(UBYTE speed) { fade_frames_per_step = fade_speeds[speed]; }
+void FadeSetSpeed(UBYTE speed) {
+  fade_frames_per_step = fade_speeds[speed];
+}
 
-UBYTE IsFading() { return fade_running; }
+UBYTE IsFading() {
+  return fade_running;
+}

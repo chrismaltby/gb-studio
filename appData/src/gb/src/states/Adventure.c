@@ -50,9 +50,9 @@ void Update_Adventure() {
     player.rerender = TRUE;
   }
 
-  if((INPUT_LEFT || INPUT_RIGHT) && !INPUT_UP && !INPUT_DOWN) {
+  if ((INPUT_LEFT || INPUT_RIGHT) && !INPUT_UP && !INPUT_DOWN) {
     player.dir.y = 0;
-  } else if((INPUT_UP || INPUT_DOWN) && !INPUT_LEFT && !INPUT_RIGHT) {
+  } else if ((INPUT_UP || INPUT_DOWN) && !INPUT_LEFT && !INPUT_RIGHT) {
     player.dir.x = 0;
   }
 
@@ -121,7 +121,7 @@ void Update_Adventure() {
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if(actors[hit_actor].collision_group) {
+    if (actors[hit_actor].collision_group) {
       player.hit_actor = 0;
       player.hit_actor = hit_actor;
     } else {
@@ -129,5 +129,4 @@ void Update_Adventure() {
       ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
     }
   }
-
 }

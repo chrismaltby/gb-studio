@@ -14,15 +14,15 @@ INT16 scroll_offset_x = 0;
 
 INT16 pending_h_x, pending_h_y;
 UINT8 pending_h_i;
-unsigned char *pending_h_map = 0;
-unsigned char *pending_w_map = 0;
+unsigned char* pending_h_map = 0;
+unsigned char* pending_w_map = 0;
 #ifdef CGB
-unsigned char *pending_h_cmap = 0;
-unsigned char *pending_w_cmap = 0;
+unsigned char* pending_h_cmap = 0;
+unsigned char* pending_w_cmap = 0;
 #endif
 INT16 pending_w_x, pending_w_y;
 UINT8 pending_w_i;
-Pos *scroll_target = 0;
+Pos* scroll_target = 0;
 
 void ScrollUpdateRow(INT16 x, INT16 y);
 void RefreshScroll_b();
@@ -97,9 +97,9 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
   UINT8 i = 0u;
   UINT16 id;
   UBYTE screen_x, screen_y;
-  unsigned char *map = image_ptr + image_tile_width * y + x;
+  unsigned char* map = image_ptr + image_tile_width * y + x;
 #ifdef CGB
-  unsigned char *cmap = image_attr_ptr + image_tile_width * y + x;
+  unsigned char* cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
 
   PUSH_BANK(image_bank);
@@ -109,12 +109,12 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
   screen_x = x;
   screen_y = MOD_32(y);
 
-  for(i=0; i!=23;i++) {
+  for (i = 0; i != 23; i++) {
     id = 0x9800 + MOD_32(screen_x++) + ((UINT16)screen_y << 5);
 
 #ifdef CGB
     PUSH_BANK(image_attr_bank);
-    VBK_REG = 1;    
+    VBK_REG = 1;
     SetTile(id, *(cmap++));
     VBK_REG = 0;
     POP_BANK;

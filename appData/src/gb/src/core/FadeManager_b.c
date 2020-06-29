@@ -23,8 +23,8 @@ void ApplyPaletteChangeColor(UBYTE index) {
   UINT8 pal, c;
   UWORD palette[4];
   UWORD palette_s[4];
-  UWORD *col = BkgPalette;
-  UWORD *col_s = SprPalette;
+  UWORD* col = BkgPalette;
+  UWORD* col_s = SprPalette;
 
   if (index == 0) {
     index = 1;

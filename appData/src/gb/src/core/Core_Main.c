@@ -11,10 +11,10 @@
 #include "Input.h"
 #include "MusicManager.h"
 #include "Palette.h"
+#include "Projectiles.h"
 #include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
-#include "Projectiles.h"
 #include "UI.h"
 #include "gbt_player.h"
 #include "main.h"
@@ -40,7 +40,7 @@ void SetScene(UINT16 state) {
 void vbl_update() {
   vbl_count++;
 
-  // Update background scroll in vbl 
+  // Update background scroll in vbl
   // interupt to prevent tearing
   SCX_REG = scroll_x;
   SCY_REG = scroll_y;
@@ -160,7 +160,7 @@ void game_loop() {
 
     last_joy = joy;
     joy = joypad();
-    if((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD)) {
+    if ((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD)) {
       // https://stackoverflow.com/a/50705674
       recent_joy = joy & ~last_joy;
     }
@@ -191,7 +191,7 @@ void game_loop() {
 
     ScriptRestoreCtx(0);
 
-    if(!UIIsBlocking()) {
+    if (!UIIsBlocking()) {
       // Run background scripts
       ScriptRestoreCtx(1);
       ScriptRestoreCtx(2);

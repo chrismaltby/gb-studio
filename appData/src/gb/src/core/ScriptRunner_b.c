@@ -32,7 +32,7 @@
 void ScriptHelper_CalcDest();
 void ScriptHelper_ClampCamDest();
 
-UBYTE *RAMPtr;
+UBYTE* RAMPtr;
 // UINT16 actor_move_dest_x = 0;
 // UINT16 actor_move_dest_y = 0;
 BYTE actor_move_dir_x = 0;
@@ -186,7 +186,7 @@ UBYTE ScriptUpdate_MoveActor() {
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
-    if(script_actor == 0) {
+    if (script_actor == 0) {
       pl_vel_x = 0;
       pl_vel_y = 0;
     }
@@ -194,7 +194,8 @@ UBYTE ScriptUpdate_MoveActor() {
   }
   actors[script_actor].moving = TRUE;
   // Actor not at horizontal destination
-  if (actors[script_actor].pos.x != actor_move_dest_x && (!actor_move_type || (actors[script_actor].pos.y == actor_move_dest_y))) {
+  if (actors[script_actor].pos.x != actor_move_dest_x &&
+      (!actor_move_type || (actors[script_actor].pos.y == actor_move_dest_y))) {
     actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
       actors[script_actor].dir.x = 1;
@@ -222,10 +223,10 @@ UBYTE ScriptUpdate_MoveActorDiag() {
     actors[script_actor].dir.x = 0;
     actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
-    if(script_actor == 0) {
+    if (script_actor == 0) {
       pl_vel_x = 0;
       pl_vel_y = 0;
-    }    
+    }
     return TRUE;
   }
   actors[script_actor].moving = TRUE;
@@ -243,7 +244,7 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   }
 
   // Actor not at vertical destination
-  if (actors[script_actor].pos.y != actor_move_dest_y) {    
+  if (actors[script_actor].pos.y != actor_move_dest_y) {
     if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
       actors[script_actor].dir.y = 1;
     } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
@@ -256,13 +257,21 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   return FALSE;
 }
 
-UBYTE ScriptUpdate_AwaitFade() { return !IsFading(); }
+UBYTE ScriptUpdate_AwaitFade() {
+  return !IsFading();
+}
 
-UBYTE ScriptUpdate_AwaitUIClosed() { return UIIsClosed(); }
+UBYTE ScriptUpdate_AwaitUIClosed() {
+  return UIIsClosed();
+}
 
-UBYTE ScriptUpdate_AwaitUIAtDest() { return UIAtDest(); }
+UBYTE ScriptUpdate_AwaitUIAtDest() {
+  return UIAtDest();
+}
 
-UBYTE ScriptUpdate_AwaitInputPres() { return (joy != last_joy && joy & await_input) != 0; }
+UBYTE ScriptUpdate_AwaitInputPres() {
+  return (joy != last_joy && joy & await_input) != 0;
+}
 
 UBYTE ScriptUpdate_Wait() {
   if (wait_time == 0) {
@@ -538,7 +547,7 @@ void Script_CameraLock_b() {
     script_update_fn = ScriptUpdate_MoveCamera;
   } else {
     camera_pos.x = camera_dest.x;
-    camera_pos.y = camera_dest.y;    
+    camera_pos.y = camera_dest.y;
   }
 }
 
@@ -644,7 +653,7 @@ void Script_ActorSetPos_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorMoveTo_b() {
-  if(actors[script_actor].script_control) {
+  if (actors[script_actor].script_control) {
     return;
   }
   actor_move_dest_x = 0;  // @wtf-but-needed
@@ -656,30 +665,32 @@ void Script_ActorMoveTo_b() {
 
   actors[script_actor].script_control = TRUE;
 
-  if(actor_move_cols) {
+  if (actor_move_cols) {
     ScriptHelper_CalcDest();
   }
-  if(actor_move_type == MOVE_DIAGONAL) {
+  if (actor_move_type == MOVE_DIAGONAL) {
     script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
     script_update_fn = ScriptUpdate_MoveActor;
   }
 }
 
-
 void ScriptHelper_CalcDest() {
   UBYTE check_dir = CHECK_DIR_LEFT;
   UWORD new_dest;
-  if(actor_move_type) {
-    if(actor_move_dest_y != actors[script_actor].pos.y) {
+  if (actor_move_type) {
+    if (actor_move_dest_y != actors[script_actor].pos.y) {
       // Check vertical collisions in path
       if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
         check_dir = CHECK_DIR_UP;
       } else {
         check_dir = CHECK_DIR_DOWN;
       }
-      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_y), check_dir) * 8u;
-      if(new_dest != actor_move_dest_y) {
+      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x),
+                                           DIV_8(actors[script_actor].pos.y),
+                                           DIV_8(actor_move_dest_y), check_dir) *
+                 8u;
+      if (new_dest != actor_move_dest_y) {
         actor_move_dest_y = new_dest;
       }
     }
@@ -689,21 +700,27 @@ void ScriptHelper_CalcDest() {
     } else {
       check_dir = CHECK_DIR_RIGHT;
     }
-    new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actor_move_dest_y), DIV_8(actor_move_dest_x), check_dir) * 8u;
-    if(new_dest != actor_move_dest_x) {
+    new_dest =
+        CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actor_move_dest_y),
+                                  DIV_8(actor_move_dest_x), check_dir) *
+        8u;
+    if (new_dest != actor_move_dest_x) {
       actor_move_dest_x = new_dest;
       return;
-    }      
+    }
   } else {
-      // Check horizontal collisions in path
-    if(actor_move_dest_x != actors[script_actor].pos.x) {
+    // Check horizontal collisions in path
+    if (actor_move_dest_x != actors[script_actor].pos.x) {
       if (Lt16(actor_move_dest_x, actors[script_actor].pos.x)) {
         check_dir = CHECK_DIR_LEFT;
       } else {
         check_dir = CHECK_DIR_RIGHT;
       }
-      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_x), check_dir) * 8u;
-      if(new_dest != actor_move_dest_x) {
+      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x),
+                                           DIV_8(actors[script_actor].pos.y),
+                                           DIV_8(actor_move_dest_x), check_dir) *
+                 8u;
+      if (new_dest != actor_move_dest_x) {
         actor_move_dest_x = new_dest;
       }
     }
@@ -712,9 +729,12 @@ void ScriptHelper_CalcDest() {
       check_dir = CHECK_DIR_UP;
     } else {
       check_dir = CHECK_DIR_DOWN;
-    } 
-    new_dest = CheckCollisionInDirection(DIV_8(actor_move_dest_x), DIV_8(actors[script_actor].pos.y), DIV_8(actor_move_dest_y), check_dir) * 8;
-    if(new_dest != actor_move_dest_y) {
+    }
+    new_dest =
+        CheckCollisionInDirection(DIV_8(actor_move_dest_x), DIV_8(actors[script_actor].pos.y),
+                                  DIV_8(actor_move_dest_y), check_dir) *
+        8;
+    if (new_dest != actor_move_dest_y) {
       actor_move_dest_y = new_dest;
       return;
     }
@@ -726,14 +746,18 @@ void ScriptHelper_CalcDest() {
  * ----------------------------
  * Make all sprites visible
  */
-void Script_ShowSprites_b() { SHOW_SPRITES; }
+void Script_ShowSprites_b() {
+  SHOW_SPRITES;
+}
 
 /*
  * Command: HideSprites
  * ----------------------------
  * Hide all sprites
  */
-void Script_HideSprites_b() { HIDE_SPRITES; }
+void Script_HideSprites_b() {
+  HIDE_SPRITES;
+}
 
 /*
  * Command: ActorShow
@@ -762,7 +786,9 @@ void Script_ActorHide_b() {
  *
  *   arg0: Enabled
  */
-void Script_ActorSetCollisions_b() { actors[script_actor].collisionsEnabled = script_cmd_args[0]; }
+void Script_ActorSetCollisions_b() {
+  actors[script_actor].collisionsEnabled = script_cmd_args[0];
+}
 
 /*
  * Command: ActorSetEmote
@@ -772,7 +798,7 @@ void Script_ActorSetCollisions_b() { actors[script_actor].collisionsEnabled = sc
  *   arg0: Emote Id
  */
 void Script_ActorSetEmote_b() {
-  unsigned char *emote_ptr;
+  unsigned char* emote_ptr;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
   script_update_fn = ScriptUpdate_Emote;
@@ -812,14 +838,18 @@ void Script_ShowOverlay_b() {
  * ----------------------------
  * Hide window buffer
  */
-void Script_HideOverlay_b() { UISetPos(0, MENU_CLOSED_Y); }
+void Script_HideOverlay_b() {
+  UISetPos(0, MENU_CLOSED_Y);
+}
 
 /*
  * Command: OverlaySetPos
  * ----------------------------
  * Window buffer set position to X/Y
  */
-void Script_OverlaySetPos_b() { UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3); }
+void Script_OverlaySetPos_b() {
+  UISetPos(script_cmd_args[0] << 3, script_cmd_args[1] << 3);
+}
 
 /*
  * Command: OverlaySetPos
@@ -846,14 +876,18 @@ void Script_AwaitInput_b() {
  * ----------------------------
  * Play the music track with given index
  */
-void Script_MusicPlay_b() { MusicPlay(script_cmd_args[0], script_cmd_args[1], SCRIPT_RUNNER_BANK); }
+void Script_MusicPlay_b() {
+  MusicPlay(script_cmd_args[0], script_cmd_args[1], SCRIPT_RUNNER_BANK);
+}
 
 /*
  * Command: MusicStop
  * ----------------------------
  * Stop any playing music
  */
-void Script_MusicStop_b() { MusicStop(SCRIPT_RUNNER_BANK); }
+void Script_MusicStop_b() {
+  MusicStop(SCRIPT_RUNNER_BANK);
+}
 
 /*
  * Command: ResetVariables
@@ -872,7 +906,9 @@ void Script_ResetVariables_b() {
  * ----------------------------
  * Wait until next frame
  */
-void Script_NextFrame_b() { script_await_next_frame = TRUE; }
+void Script_NextFrame_b() {
+  script_await_next_frame = TRUE;
+}
 
 /*
  * Command: IncFlag
@@ -920,9 +956,8 @@ void Script_SetFlagValue_b() {
 void Script_SetFlagProperty_b() {
   UBYTE value = 0;
   UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  
 
-  switch(script_cmd_args[2]) {
+  switch (script_cmd_args[2]) {
     case 0:
       // Actor pos x
       value = actors[script_cmd_args[3]].pos.x >> 3;
@@ -930,19 +965,19 @@ void Script_SetFlagProperty_b() {
     case 1:
       // Actor pos y
       value = actors[script_cmd_args[3]].pos.y >> 3;
-      break;  
+      break;
     case 2:
       // Actor direction
-      if(actors[script_cmd_args[3]].dir.y == 1) {
+      if (actors[script_cmd_args[3]].dir.y == 1) {
         value = 1;
-      } else if(actors[script_cmd_args[3]].dir.x == -1) {
+      } else if (actors[script_cmd_args[3]].dir.x == -1) {
         value = 2;
-      } else if(actors[script_cmd_args[3]].dir.x == 1) {
+      } else if (actors[script_cmd_args[3]].dir.x == 1) {
         value = 4;
       } else {
         value = 8;
       }
-      break;            
+      break;
     case 3:
       // Actor movement speed
       value = actors[script_cmd_args[3]].move_speed;
@@ -1002,11 +1037,11 @@ void Script_TextMenu_b() {
  * Cause player to bounce (Platform scenes only)
  */
 void Script_PlayerBounce_b() {
-  if(script_cmd_args[0] == 0) {
+  if (script_cmd_args[0] == 0) {
     pl_vel_y = -0x2000;
-  } else if(script_cmd_args[0] == 1) {
+  } else if (script_cmd_args[0] == 1) {
     pl_vel_y = -0x4000;
-  } else if(script_cmd_args[0] == 2) {
+  } else if (script_cmd_args[0] == 2) {
     pl_vel_y = -0x6000;
   }
 }
@@ -1019,7 +1054,7 @@ void Script_PlayerBounce_b() {
 void Script_ActorSetSprite_b() {
   UBYTE sprite_frames;
 
-  if(script_actor == 0) {
+  if (script_actor == 0) {
     // Don't allow ActorSetSprite to be used for the player
     // Should use PlayerSetSprite instead. Events should
     // handle this automatically
@@ -1044,7 +1079,7 @@ void Script_ActorSetSprite_b() {
  */
 void Script_PlayerSetSprite_b() {
   BANK_PTR sprite_bank_ptr;
-  UBYTE *sprite_ptr;
+  UBYTE* sprite_ptr;
   UWORD sprite_index;
   UBYTE sprite_frames, sprite_len;
 
@@ -1074,7 +1109,7 @@ void Script_PlayerSetSprite_b() {
 void Script_ActorPush_b() {
   UINT16 dest_x, dest_y;
 
-  if(actors[script_actor].script_control) {
+  if (actors[script_actor].script_control) {
     return;
   }
 
@@ -1152,7 +1187,7 @@ void Script_SaveData_b() {
 
   ENABLE_RAM;
 
-  RAMPtr = (UBYTE *)RAM_START_PTR;
+  RAMPtr = (UBYTE*)RAM_START_PTR;
   RAMPtr[0] = TRUE;  // Flag to determine if data has been stored
 
   RAMPtr[1] = current_state >> 8;
@@ -1176,7 +1211,7 @@ void Script_SaveData_b() {
   RAMPtr[7] = map_next_sprite & 0xFF;
 
   // Save variable values
-  RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
+  RAMPtr = (UBYTE*)RAM_START_VARS_PTR;
   for (i = 0; i < NUM_VARIABLES; i++) {
     RAMPtr[i] = script_variables[i];
   }
@@ -1195,7 +1230,7 @@ void Script_LoadData_b() {
 
   ENABLE_RAM;
 
-  RAMPtr = (UBYTE *)RAM_START_PTR;
+  RAMPtr = (UBYTE*)RAM_START_PTR;
   if (*RAMPtr == TRUE) {
     // Set scene index
     RAMPtr++;
@@ -1217,7 +1252,7 @@ void Script_LoadData_b() {
     map_next_sprite = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
 
     // Load variable values
-    RAMPtr = (UBYTE *)RAM_START_VARS_PTR;
+    RAMPtr = (UBYTE*)RAM_START_VARS_PTR;
     for (i = 0; i < NUM_VARIABLES; i++) {
       script_variables[i] = RAMPtr[i];
     }
@@ -1239,7 +1274,7 @@ void Script_LoadData_b() {
  */
 void Script_ClearData_b() {
   ENABLE_RAM;
-  RAMPtr = (UBYTE *)RAM_START_PTR;
+  RAMPtr = (UBYTE*)RAM_START_PTR;
   RAMPtr[0] = FALSE;
   DISABLE_RAM;
 }
@@ -1259,7 +1294,7 @@ void Script_IfSavedData_b() {
   jump = 0;
 #else
   ENABLE_RAM;
-  RAMPtr = (UBYTE *)RAM_START_PTR;
+  RAMPtr = (UBYTE*)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
   DISABLE_RAM;
@@ -1293,28 +1328,29 @@ void Script_IfActorDirection_b() {
 /*
  * Command: IfActorRelActor
  * ----------------------------
- * Jump to new script pointer position if actor position is in specificied direction relative to second actor.
+ * Jump to new script pointer position if actor position is in specificied direction relative to
+ * second actor.
  *
  *   arg0: Operation
  *   arg1: Second actor index
  *   arg2: High 8 bits for new pointer
- *   arg3: Low 8 bits for new pointer 
+ *   arg3: Low 8 bits for new pointer
  */
 void Script_IfActorRelActor_b() {
-  if(script_cmd_args[0] == 0) { // Above
-    if(Lt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+  if (script_cmd_args[0] == 0) {  // Above
+    if (Lt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
       script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
-  } else if(script_cmd_args[0] == 1) { // Down
-    if(Gt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+  } else if (script_cmd_args[0] == 1) {  // Down
+    if (Gt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
       script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
-  } else if(script_cmd_args[0] == 2) { // Left
-    if(Lt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+  } else if (script_cmd_args[0] == 2) {  // Left
+    if (Lt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
       script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
-  } else if(script_cmd_args[0] == 3) { // Right
-    if(Gt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+  } else if (script_cmd_args[0] == 3) {  // Right
+    if (Gt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
       script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
   }
@@ -1368,7 +1404,7 @@ void Script_ActorSetPosToVal_b() {
  * Set Actor position from variables
  */
 void Script_ActorMoveToVal_b() {
-  if(actors[script_actor].script_control) {
+  if (actors[script_actor].script_control) {
     return;
   }
   actor_move_settings |= ACTOR_MOVE_ENABLED;
@@ -1380,10 +1416,10 @@ void Script_ActorMoveToVal_b() {
   actor_move_cols = script_cmd_args[0];
   actor_move_type = script_cmd_args[1];
   actors[script_actor].script_control = TRUE;
-  if(actor_move_cols) {
+  if (actor_move_cols) {
     ScriptHelper_CalcDest();
-  }  
-  if(actor_move_type == MOVE_DIAGONAL) {
+  }
+  if (actor_move_type == MOVE_DIAGONAL) {
     script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
     script_update_fn = ScriptUpdate_MoveActor;
@@ -1399,9 +1435,9 @@ void Script_ActorMoveToVal_b() {
  *   arg1: Offset Y Pos
  */
 void Script_ActorMoveRel_b() {
-  if(actors[script_actor].script_control) {
+  if (actors[script_actor].script_control) {
     return;
-  }  
+  }
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
   actor_move_dest_x = 0;  // @wtf-but-needed
@@ -1449,11 +1485,11 @@ void Script_ActorMoveRel_b() {
 
   actors[script_actor].script_control = TRUE;
 
-  if(actor_move_cols) {
+  if (actor_move_cols) {
     ScriptHelper_CalcDest();
-  }  
+  }
 
-  if(actor_move_type == MOVE_DIAGONAL) {
+  if (actor_move_type == MOVE_DIAGONAL) {
     script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
     script_update_fn = ScriptUpdate_MoveActor;
@@ -1696,7 +1732,9 @@ void Script_LoadVectors_b() {
  *
  *   arg0: Movement speed to use
  */
-void Script_ActorSetMoveSpeed_b() { actors[script_actor].move_speed = script_cmd_args[0]; }
+void Script_ActorSetMoveSpeed_b() {
+  actors[script_actor].move_speed = script_cmd_args[0];
+}
 
 /*
  * Command: ActorSetAnimSpeed
@@ -1705,7 +1743,9 @@ void Script_ActorSetMoveSpeed_b() { actors[script_actor].move_speed = script_cmd
  *
  *   arg0: Animation speed to use
  */
-void Script_ActorSetAnimSpeed_b() { actors[script_actor].anim_speed = script_cmd_args[0]; }
+void Script_ActorSetAnimSpeed_b() {
+  actors[script_actor].anim_speed = script_cmd_args[0];
+}
 
 /*
  * Command: TextSetAnimSpeed
@@ -1811,7 +1851,9 @@ void Script_ScenePopState_b() {
  * ----------------------------
  * Clear all saved scene state
  */
-void Script_SceneResetStack_b() { scene_stack_ptr = 0; }
+void Script_SceneResetStack_b() {
+  scene_stack_ptr = 0;
+}
 
 /*
  * Command: ScenePopAllState
@@ -2019,14 +2061,18 @@ void Script_SetTimerScript_b() {
  * ----------------------------
  * Reset the countdown timer
  */
-void Script_ResetTimer_b() { timer_script_time = timer_script_duration; }
+void Script_ResetTimer_b() {
+  timer_script_time = timer_script_duration;
+}
 
 /*
  * Command: RemoveTimerScript
  * ----------------------------
  * Disable timer script
  */
-void Script_RemoveTimerScript_b() { timer_script_duration = 0; }
+void Script_RemoveTimerScript_b() {
+  timer_script_duration = 0;
+}
 
 /*
  * Command: Text with Avatar

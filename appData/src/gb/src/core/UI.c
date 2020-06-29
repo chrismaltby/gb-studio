@@ -1,13 +1,14 @@
 #include "UI.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #include "BankData.h"
 #include "BankManager.h"
 #include "GameTime.h"
 #include "Input.h"
 #include "Math.h"
 #include "data_ptrs.h"
-#include <stdio.h>
-#include <string.h>
 
 void UIInit_b();
 void UIUpdate_b();
@@ -17,7 +18,10 @@ void UIDrawTextBufferChar_b();
 void UISetColor_b(UWORD image_index);
 void UIShowText_b();
 void UIOnInteract_b();
-void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
+void UIShowMenu_b(UWORD flag_index,
+                  UBYTE bank,
+                  UWORD bank_offset,
+                  UBYTE layout,
                   UBYTE cancel_config);
 void UIDrawMenuCursor_b();
 
@@ -80,7 +84,7 @@ void UIDrawDialogueFrame(UBYTE h) {
 }
 
 void UIShowText(UBYTE bank, UWORD bank_offset) {
-  UBYTE *ptr;
+  UBYTE* ptr;
 
   strcpy(tmp_text_lines, "");
 
@@ -97,11 +101,11 @@ void UIShowText(UBYTE bank, UWORD bank_offset) {
 
 void UIShowAvatar(UBYTE avatar_index) {
   BANK_PTR avatar_bank_ptr;
-  UBYTE *avatar_ptr;
+  UBYTE* avatar_ptr;
   UBYTE avatar_len;
   UBYTE tile1, tile2, tile3, tile4;
 
-  unsigned char *tmp_avatar_ptr[100];
+  unsigned char* tmp_avatar_ptr[100];
 
   ReadBankedBankPtr(DATA_PTRS_BANK, &avatar_bank_ptr, &avatar_bank_ptrs[avatar_index]);
   avatar_ptr = (BankDataPtr(avatar_bank_ptr.bank)) + avatar_bank_ptr.offset;
@@ -132,7 +136,10 @@ void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
   POP_BANK;
 }
 
-void UIShowMenu(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
+void UIShowMenu(UWORD flag_index,
+                UBYTE bank,
+                UWORD bank_offset,
+                UBYTE layout,
                 UBYTE cancel_config) {
   PUSH_BANK(UI_BANK);
   UIShowMenu_b(flag_index, bank, bank_offset, layout, cancel_config);
@@ -165,9 +172,13 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
   }
 }
 
-UBYTE UIIsBlocking() { return ui_block == TRUE; }
+UBYTE UIIsBlocking() {
+  return ui_block == TRUE;
+}
 
-UBYTE UIIsClosed() { return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y; }
+UBYTE UIIsClosed() {
+  return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y;
+}
 
 void UIDrawMenuCursor() {
   PUSH_BANK(UI_BANK);
@@ -181,7 +192,9 @@ void UIOnInteract() {
   POP_BANK;
 }
 
-UBYTE UIAtDest() { return win_pos_x == win_dest_pos_x && win_pos_y == win_dest_pos_y; }
+UBYTE UIAtDest() {
+  return win_pos_x == win_dest_pos_x && win_pos_y == win_dest_pos_y;
+}
 
 void UISetColor(UBYTE color) {
   PUSH_BANK(UI_BANK);

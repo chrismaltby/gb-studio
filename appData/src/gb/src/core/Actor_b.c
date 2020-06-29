@@ -48,7 +48,7 @@ void UpdateActors_b() {
   UINT16 screen_x;
   UINT16 screen_y;
   UBYTE del_count = 0;
-  Actor *actor;
+  Actor* actor;
 
   k = 0;
 
@@ -65,7 +65,7 @@ void UpdateActors_b() {
       continue;
     }
 
-    if(actor->pinned) {
+    if (actor->pinned) {
       screen_x = 8u + actor->pos.x;
       screen_y = 8u + actor->pos.y;
     } else {
@@ -112,23 +112,23 @@ void UpdateActors_b() {
           actor->frame_offset);
 
       if (flip) {
-        #ifdef CGB
-          set_sprite_prop(k, actor->palette_index | S_FLIPX);
-          set_sprite_prop(k + 1, actor->palette_index | S_FLIPX);
-        #else
-          set_sprite_prop(k, S_FLIPX);
-          set_sprite_prop(k + 1, S_FLIPX);        
-        #endif
+#ifdef CGB
+        set_sprite_prop(k, actor->palette_index | S_FLIPX);
+        set_sprite_prop(k + 1, actor->palette_index | S_FLIPX);
+#else
+        set_sprite_prop(k, S_FLIPX);
+        set_sprite_prop(k + 1, S_FLIPX);
+#endif
         set_sprite_tile(k, frame + 2);
         set_sprite_tile(k + 1, frame);
       } else {
-        #ifdef CGB
-          set_sprite_prop(k, actor->palette_index);
-          set_sprite_prop(k + 1, actor->palette_index);
-        #else
-          set_sprite_prop(k, 0);
-          set_sprite_prop(k + 1, 0);        
-        #endif
+#ifdef CGB
+        set_sprite_prop(k, actor->palette_index);
+        set_sprite_prop(k + 1, actor->palette_index);
+#else
+        set_sprite_prop(k, 0);
+        set_sprite_prop(k + 1, 0);
+#endif
         set_sprite_tile(k, frame);
         set_sprite_tile(k + 1, frame + 2);
       }
@@ -185,7 +185,7 @@ void ActivateActor_b(UBYTE i) {
   actors[i].rerender = TRUE;
   actors[i].moving = FALSE;
 
-  if(actors[i].movement_ptr.bank) {
+  if (actors[i].movement_ptr.bank) {
     // ScriptStartBg(&actors[i].movement_ptr);
     actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr, i);
     LOG("BG_SCRIPT START owner=%u ctx=%u\n", i, actors[i].movement_ctx);
@@ -224,7 +224,7 @@ void DeactivateActor_b(UBYTE i) {
   if (a) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
-    if(actors[i].movement_ctx) {
+    if (actors[i].movement_ctx) {
       LOG("BG_SCRIPT STOP owner=%u ctx=%u\n", i, actors[i].movement_ctx);
       ScriptCtxPoolReturn(actors[i].movement_ctx, i);
     }
@@ -345,9 +345,8 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
   switch (check_dir) {
     case CHECK_DIR_LEFT:  // Check left
       while (start_x != end_tile) {
-        if (TileAt2x2(start_x - 1, start_y - 1) ||  // Tile left
-            ActorAt1x3Tile(start_x - 2, start_y - 1, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor left
+        if (TileAt2x2(start_x - 1, start_y - 1) ||                                // Tile left
+            ActorAt1x3Tile(start_x - 2, start_y - 1, FALSE) != NO_ACTOR_COLLISON  // Actor left
         ) {
           return start_x;
         }
@@ -356,9 +355,8 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
       return end_tile;
     case CHECK_DIR_RIGHT:  // Check right
       while (start_x != end_tile) {
-        if (TileAt2x2(start_x + 1, start_y - 1) ||  // Tile right
-            ActorAt1x3Tile(start_x + 2, start_y - 1, FALSE) !=
-                NO_ACTOR_COLLISON  // Actor right
+        if (TileAt2x2(start_x + 1, start_y - 1) ||                                // Tile right
+            ActorAt1x3Tile(start_x + 2, start_y - 1, FALSE) != NO_ACTOR_COLLISON  // Actor right
         ) {
           return start_x;
         }
@@ -367,9 +365,8 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
       return end_tile;
     case CHECK_DIR_UP:  // Check up
       while (start_y != end_tile) {
-        if (TileAt2x2(start_x, start_y - 2) ||  // Tile up
-            (ActorAt3x1Tile(start_x - 1, start_y - 2, FALSE) !=
-             NO_ACTOR_COLLISON)  // Actor up
+        if (TileAt2x2(start_x, start_y - 2) ||                                      // Tile up
+            (ActorAt3x1Tile(start_x - 1, start_y - 2, FALSE) != NO_ACTOR_COLLISON)  // Actor up
         ) {
           return start_y;
         }
@@ -380,7 +377,7 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
       while (start_y != end_tile) {
         if (TileAt2x2(start_x, start_y) ||  // Tile down
             ActorAt3x1Tile(start_x - 1, start_y + 1, FALSE) !=
-                NO_ACTOR_COLLISON || // Actor down 1 tile       
+                NO_ACTOR_COLLISON ||  // Actor down 1 tile
             ActorAt3x1Tile(start_x - 1, start_y + 2, FALSE) !=
                 NO_ACTOR_COLLISON  // Actor down 2 tiles
         ) {
@@ -390,7 +387,7 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
       }
       return end_tile;
   }
-} 
+}
 
 UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
@@ -495,15 +492,13 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
       continue;
     }
 
-    if ((player.pos.x + 16 >= actors[a].pos.x) &&
-        (player.pos.x <= actors[a].pos.x + 16) &&
-        (player.pos.y + 8 >= actors[a].pos.y) &&
-        (player.pos.y <= actors[a].pos.y + 8)) {
+    if ((player.pos.x + 16 >= actors[a].pos.x) && (player.pos.x <= actors[a].pos.x + 16) &&
+        (player.pos.y + 8 >= actors[a].pos.y) && (player.pos.y <= actors[a].pos.y + 8)) {
       return a;
     }
   }
 
-  return NO_ACTOR_COLLISON;  
+  return NO_ACTOR_COLLISON;
 }
 
 void InitPlayer_b() {
@@ -533,33 +528,33 @@ void InitPlayer_b() {
 }
 
 void ActorRunCollisionScripts_b() {
-  Actor *actor;
+  Actor* actor;
 
-  if(player_iframes == 0 && player.hit_actor != NO_ACTOR_COLLISON) {
+  if (player_iframes == 0 && player.hit_actor != NO_ACTOR_COLLISON) {
     actor = &actors[player.hit_actor];
-    
-    if(actor->collision_group) {
-      if(actor->collision_group == 2) {
-        if(player.hit_1_ptr.bank) {
+
+    if (actor->collision_group) {
+      if (actor->collision_group == 2) {
+        if (player.hit_1_ptr.bank) {
           ScriptStartBg(&player.hit_1_ptr, 0);
         }
         if (actor->events_ptr.bank) {
           ScriptStartBg(&actor->events_ptr, player.hit_actor);
         }
-      } else if(actor->collision_group == 4) {
-        if(player.hit_2_ptr.bank) {
+      } else if (actor->collision_group == 4) {
+        if (player.hit_2_ptr.bank) {
           ScriptStartBg(&player.hit_2_ptr, 0);
         }
         if (actor->events_ptr.bank) {
           ScriptStartBg(&actor->events_ptr, player.hit_actor);
-        }        
-      } else if(actor->collision_group == 8) {
-        if(player.hit_3_ptr.bank) {
+        }
+      } else if (actor->collision_group == 8) {
+        if (player.hit_3_ptr.bank) {
           ScriptStartBg(&player.hit_3_ptr, 0);
         }
         if (actor->events_ptr.bank) {
           ScriptStartBg(&actor->events_ptr, player.hit_actor);
-        }        
+        }
       }
       player_iframes = 10;
       player.hit_actor = NO_ACTOR_COLLISON;

@@ -3,9 +3,9 @@
 #include "BankManager.h"
 #include "Collision.h"
 #include "GameTime.h"
+#include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
-#include "ScriptRunner.h"
 
 void UpdateActors_b();
 void MoveActors_b();
@@ -110,7 +110,9 @@ void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
   POP_BANK;
 }
 
-void ActorStopMovement(UBYTE i) { actors[i].moving = FALSE; }
+void ActorStopMovement(UBYTE i) {
+  actors[i].moving = FALSE;
+}
 
 UBYTE ActorInFrontOfActor(UBYTE i) {
   UBYTE hit_actor = FALSE;
@@ -124,7 +126,7 @@ UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UB
   UBYTE tile;
   PUSH_BANK(ACTOR_BANK);
   tile = CheckCollisionInDirection_b(start_x, start_y, end_tile, check_dir);
-  POP_BANK;  
+  POP_BANK;
   return tile;
 }
 
@@ -149,5 +151,5 @@ void ActorRunScript(UBYTE i) {
 void ActorRunCollisionScripts() {
   PUSH_BANK(ACTOR_BANK);
   ActorRunCollisionScripts_b();
-  POP_BANK;  
+  POP_BANK;
 }

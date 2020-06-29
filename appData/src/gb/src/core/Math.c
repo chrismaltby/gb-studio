@@ -3,7 +3,9 @@
 #include <gb/gb.h>
 #include <rand.h>
 
-INT16 DespRight(INT16 a, INT16 b) { return a >> b; }
+INT16 DespRight(INT16 a, INT16 b) {
+  return a >> b;
+}
 
 UBYTE Lt16(UINT16 a, UINT16 b) {
   UBYTE a_hi = a >> 8;
@@ -23,6 +25,6 @@ UBYTE Gt16(UINT16 a, UINT16 b) {
 
 void SeedRand() {
   UBYTE rnd;
-  rnd = *((UBYTE *)0xFF04);
+  rnd = *((UBYTE*)0xFF04);
   initrand(rnd);
 }

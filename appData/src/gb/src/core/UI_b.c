@@ -100,7 +100,7 @@ const unsigned char win_tiles[] = {
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
 
 void UIInit_b() {
-  UBYTE *ptr;
+  UBYTE* ptr;
 
 #ifdef CGB
   VBK_REG = 1;
@@ -187,7 +187,9 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   }
 }
 
-void UIDrawDialogueFrame_b(UBYTE h) { UIDrawFrame_b(0, 0, 19, h); }
+void UIDrawDialogueFrame_b(UBYTE h) {
+  UIDrawFrame_b(0, 0, 19, h);
+}
 
 void UISetColor_b(UBYTE color) {
   UINT16 id = 0;
@@ -290,7 +292,7 @@ void UIDrawTextBufferChar_b() {
   UBYTE i, text_remaining, word_len;
   UBYTE text_size = strlen(text_lines);
   UBYTE tile;
-  UBYTE *ptr;
+  UBYTE* ptr;
   UINT16 id;
 
   if (text_wait > 0) {
@@ -426,7 +428,10 @@ void UIOnInteract_b() {
   }
 }
 
-void UIShowMenu_b(UWORD flag_index, UBYTE bank, UWORD bank_offset, UBYTE layout,
+void UIShowMenu_b(UWORD flag_index,
+                  UBYTE bank,
+                  UWORD bank_offset,
+                  UBYTE layout,
                   UBYTE cancel_config) {
   menu_index = 0;
   menu_flag = flag_index;

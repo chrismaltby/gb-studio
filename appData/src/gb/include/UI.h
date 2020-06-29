@@ -68,5 +68,4 @@ void UIDrawMenuCursor();
  */
 UBYTE UIIsBlocking();
 
-
 #endif

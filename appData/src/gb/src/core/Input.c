@@ -12,7 +12,7 @@ BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
 void HandleInputScripts() {
   UBYTE input_index, input_joy;
 
-  if(input_wait != 0) {
+  if (input_wait != 0) {
     input_wait--;
     return;
   }

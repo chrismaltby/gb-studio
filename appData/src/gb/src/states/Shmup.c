@@ -24,7 +24,7 @@ void Reset_Shmup();
 void Start_Shmup() {
   // Set camera to follow player
   camera_target = &player.pos;
-  
+
   camera_offset.x = 0;
   camera_offset.y = 0;
 
@@ -61,17 +61,17 @@ void Update_Shmup() {
   }
 
   if (shooter_horizontal) {
-
     // Check input to set player movement
     if (INPUT_RECENT_UP && Gt16(player.pos.y, 8) && !TileAt(tile_x, tile_y - 1)) {
       player.dir.y = -1;
-    } else if (INPUT_RECENT_DOWN && Lt16(player.pos.y, (image_height - 8)) && !TileAt(tile_x, tile_y + 1)) {
+    } else if (INPUT_RECENT_DOWN && Lt16(player.pos.y, (image_height - 8)) &&
+               !TileAt(tile_x, tile_y + 1)) {
       player.dir.y = 1;
     } else {
       player.dir.y = 0;
     }
 
-    if(shooter_direction == 1) {
+    if (shooter_direction == 1) {
       // Left to right
       if (Lt16(player.pos.x, image_width - SCREEN_WIDTH_HALF - 64)) {
         player.dir.x = shooter_direction;
@@ -96,20 +96,20 @@ void Update_Shmup() {
         } else {
           player.pos.x -= player.move_speed * shooter_direction;
         }
-      }      
+      }
     }
   } else {
-
     // Check input to set player movement[]
     if (INPUT_RECENT_LEFT && (player.pos.x > 0) && !TileAt(tile_x, tile_y)) {
       player.dir.x = -1;
-    } else if (INPUT_RECENT_RIGHT && Lt16(player.pos.x, image_width - 16) && !TileAt(tile_x + 2, tile_y)) {
+    } else if (INPUT_RECENT_RIGHT && Lt16(player.pos.x, image_width - 16) &&
+               !TileAt(tile_x + 2, tile_y)) {
       player.dir.x = 1;
     } else {
       player.dir.x = 0;
     }
 
-    if(shooter_direction == 1) { 
+    if (shooter_direction == 1) {
       // Top to bottom
       if (Lt16(player.pos.y, image_height - SCREEN_WIDTH_HALF - 40)) {
         // player.pos.y++;
@@ -136,7 +136,7 @@ void Update_Shmup() {
         } else {
           player.pos.y -= player.move_speed * shooter_direction;
         }
-      }      
+      }
     }
   }
 
@@ -145,7 +145,7 @@ void Update_Shmup() {
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if(actors[hit_actor].collision_group) {
+    if (actors[hit_actor].collision_group) {
       player.hit_actor = 0;
       player.hit_actor = hit_actor;
     } else {

@@ -43,9 +43,9 @@ void MusicUpdate() {
 #endif
   REFRESH_BANK;
 
-  if(tone_frames != 0) {
+  if (tone_frames != 0) {
     tone_frames--;
-    if(tone_frames == 0) {
+    if (tone_frames == 0) {
       SoundStopTone();
     }
   }
@@ -70,7 +70,6 @@ void SoundPlayTone(UWORD tone, UBYTE frames) {
   // enable channel 1
   NR51_REG |= 0x11;
 }
-
 
 void SoundStopTone() {
   // stop tone on channel 1

@@ -14,11 +14,7 @@
 typedef void (*SCRIPT_CMD_FN)();
 typedef UBYTE (*SCRIPT_UPDATE_FN)();
 
-typedef enum {
-  MOVE_HORIZONTAL = 0,
-  MOVE_VERTICAL,
-  MOVE_DIAGONAL
-} MOVEMENT_TYPE;
+typedef enum { MOVE_HORIZONTAL = 0, MOVE_VERTICAL, MOVE_DIAGONAL } MOVEMENT_TYPE;
 
 typedef struct _SCRIPT_CMD {
   SCRIPT_CMD_FN fn;
@@ -33,10 +29,10 @@ typedef struct _SCENE_STATE {
 
 typedef struct {
   UINT16 actor_move_dest_x;
-  UINT16 actor_move_dest_y;  
+  UINT16 actor_move_dest_y;
   SCRIPT_UPDATE_FN script_update_fn;
-  UBYTE *script_start_ptr;
-  UBYTE *script_ptr;
+  UBYTE* script_start_ptr;
+  UBYTE* script_ptr;
   UWORD script_ptr_x;
   UWORD script_ptr_y;
   UBYTE script_ptr_bank;
@@ -57,11 +53,11 @@ extern UINT8 script_ctx_pool[];
 // extern ScriptContext *main_script_ctx;
 
 extern UBYTE script_ptr_bank;
-extern UBYTE *script_start_ptr;
+extern UBYTE* script_start_ptr;
 extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
 extern const SCRIPT_CMD script_cmds[];
-extern UBYTE *script_ptr;
+extern UBYTE* script_ptr;
 extern UWORD script_ptr_x;
 extern UWORD script_ptr_y;
 extern UBYTE script_await_next_frame;
@@ -78,9 +74,9 @@ extern SCRIPT_UPDATE_FN script_update_fn;
 
 // Max call stack depth
 #define STACK_SIZE 8
-extern UBYTE *script_stack[STACK_SIZE];
+extern UBYTE* script_stack[STACK_SIZE];
 extern UBYTE script_bank_stack[STACK_SIZE];
-extern UBYTE *script_start_stack[STACK_SIZE];
+extern UBYTE* script_start_stack[STACK_SIZE];
 extern UBYTE script_stack_ptr;
 
 // Timer script
@@ -89,8 +85,8 @@ extern UBYTE timer_script_time;
 extern BankPtr timer_script_ptr;
 
 void ScriptRunnerInit();
-void ScriptStart(BankPtr *events_ptr);
-UBYTE ScriptStartBg(BankPtr *events_ptr, UBYTE owner);
+void ScriptStart(BankPtr* events_ptr);
+UBYTE ScriptStartBg(BankPtr* events_ptr, UBYTE owner);
 void ScriptRunnerUpdate();
 void ScriptTimerUpdate();
 void ScriptRestoreCtx(UBYTE i);
