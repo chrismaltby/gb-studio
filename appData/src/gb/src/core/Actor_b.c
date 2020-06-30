@@ -100,16 +100,11 @@ void UpdateActors_b() {
         }
         // Facing left so flip sprite
         if (IS_NEG(actor->dir.x)) {
-          LOG("AUR FLIP DIR X0\n");
           flip = TRUE;
         }
       }
 
-      LOG("RERENDER actor a=%u\n", a);
-
       frame = MUL_4(actor->sprite + actor->frame + fo);
-      LOG("RERENDER actor a=%u with FRAME %u  [ %u + %u ] \n", a, frame, actor->sprite,
-          actor->frame_offset);
 
       if (flip) {
 #ifdef CGB
