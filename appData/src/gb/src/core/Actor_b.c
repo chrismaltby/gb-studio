@@ -184,6 +184,7 @@ void ActivateActor_b(UBYTE i) {
   actors[i].frame_offset = 0;
   actors[i].rerender = TRUE;
   actors[i].moving = FALSE;
+  actors[i].script_control = FALSE;
 
   if (actors[i].movement_ptr.bank) {
     // ScriptStartBg(&actors[i].movement_ptr);
