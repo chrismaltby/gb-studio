@@ -29,6 +29,8 @@ import {
   EVENT_SET_INPUT_SCRIPT,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
+  EVENT_PALETTE_SET_BACKGROUND,
+  EVENT_PALETTE_SET_UI
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
@@ -124,6 +126,7 @@ const compile = async (
               backgrounds: precompiled.usedBackgrounds,
               strings: precompiled.strings,
               variables: precompiled.variables,
+              eventPaletteIndexes: precompiled.eventPaletteIndexes,
               labels: {},
               subScripts,
               entityType,
@@ -159,6 +162,7 @@ const compile = async (
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
         variables: precompiled.variables,
+        eventPaletteIndexes: precompiled.eventPaletteIndexes,
         labels: {},
         subScripts,
         entityType,
@@ -646,7 +650,7 @@ const precompile = async (
     }
   );
 
-  const { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes } = await precompilePalettes(
+  const { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes, eventPaletteIndexes } = await precompilePalettes(
     projectData.scenes,
     projectData.settings,
     projectData.palettes,
@@ -676,7 +680,8 @@ const precompile = async (
     usedPalettes,
     scenePaletteIndexes,
     sceneActorPaletteIndexes,
-    actorPaletteIndexes
+    actorPaletteIndexes,
+    eventPaletteIndexes
   };
 };
 
@@ -807,6 +812,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
   const usedPalettesCache = {};
   const scenePaletteIndexes = {};
   const sceneActorPaletteIndexes = {};
+  const eventPaletteIndexes = {};
   const actorPaletteIndexes = {};
   const MAX_ACTOR_PALETTES = 7;
 
@@ -947,9 +953,66 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
         actorPaletteIndexes[actor.id] = actorPaletteIndex;
       }
     }
+
+    // Event palettes
+
+    walkScenesEvents(scenes, (event) => {
+      if(event.args && event.command === EVENT_PALETTE_SET_BACKGROUND) {
+
+        const eventPalette = [
+          palettesLookup[event.args.palette0] ||
+            palettesLookup[defaultBackgroundPaletteIds[0]] ||
+            DMG_PALETTE,
+          palettesLookup[event.args.palette1] ||
+            palettesLookup[defaultBackgroundPaletteIds[1]] ||
+            DMG_PALETTE,
+          palettesLookup[event.args.palette2] ||
+            palettesLookup[defaultBackgroundPaletteIds[2]] ||
+            DMG_PALETTE,
+          palettesLookup[event.args.palette3] ||
+            palettesLookup[defaultBackgroundPaletteIds[3]] ||
+            DMG_PALETTE,
+          palettesLookup[event.args.palette4] ||
+            palettesLookup[defaultBackgroundPaletteIds[4]] ||
+            DMG_PALETTE,
+          palettesLookup[event.args.palette5] ||
+            palettesLookup[defaultBackgroundPaletteIds[5]] ||
+            DMG_PALETTE,
+        ].map((p) => p.colors);
+
+        const eventPaletteKey = JSON.stringify(eventPalette);
+        if(usedPalettesCache[eventPaletteKey] === undefined) {
+          // New palette
+          const paletteIndex = usedPalettes.length;
+          usedPalettes.push(eventPalette);
+          usedPalettesCache[eventPaletteKey] = paletteIndex;
+          eventPaletteIndexes[event.id] = paletteIndex;
+        } else {
+          // Already used palette
+          eventPaletteIndexes[event.id] = usedPalettesCache[eventPaletteKey];
+        }
+      } else if (event.args && event.command === EVENT_PALETTE_SET_UI) {
+        const eventPalette = [
+          palettesLookup[event.args.palette] ||
+          palettesLookup[defaultUIPaletteId] ||
+          DMG_PALETTE 
+        ].map((p) => p.colors);
+        const eventPaletteKey = JSON.stringify(eventPalette);
+        if(usedPalettesCache[eventPaletteKey] === undefined) {
+          // New palette
+          const paletteIndex = usedPalettes.length;
+          usedPalettes.push(eventPalette);
+          usedPalettesCache[eventPaletteKey] = paletteIndex;
+          eventPaletteIndexes[event.id] = paletteIndex;
+        } else {
+          // Already used palette
+          eventPaletteIndexes[event.id] = usedPalettesCache[eventPaletteKey];
+        }
+      }
+    })
   }
 
-  return { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes };
+  return { usedPalettes, scenePaletteIndexes, sceneActorPaletteIndexes, actorPaletteIndexes, eventPaletteIndexes };
 }
 
 export const precompileUIImages = async (

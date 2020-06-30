@@ -89,7 +89,10 @@ import {
   ACTOR_SET_SPRITE,
   IF_ACTOR_RELATIVE_TO_ACTOR,
   PLAYER_BOUNCE,
-  WEAPON_ATTACK
+  WEAPON_ATTACK,
+  PALETTE_SET_BACKGROUND,
+  PALETTE_SET_ACTOR,
+  PALETTE_SET_UI
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -329,6 +332,35 @@ class ScriptBuilder {
     output.push(moveSpeedDec(speed));
     output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
   }
+
+  // Palette
+
+  paletteSetBackground = (eventId) => {
+    const output = this.output;
+    const { eventPaletteIndexes } = this.options;
+    const paletteIndex = eventPaletteIndexes[eventId];
+    output.push(cmd(PALETTE_SET_BACKGROUND));
+    output.push(hi(paletteIndex));
+    output.push(lo(paletteIndex));
+  }
+
+  paletteSetActor = (eventId) => {
+    const output = this.output;
+    const { eventPaletteIndexes } = this.options;
+    const paletteIndex = eventPaletteIndexes[eventId];
+    output.push(cmd(PALETTE_SET_ACTOR));
+    output.push(hi(paletteIndex));
+    output.push(lo(paletteIndex));
+  }
+
+  paletteSetUI = (eventId) => {
+    const output = this.output;
+    const { eventPaletteIndexes } = this.options;
+    const paletteIndex = eventPaletteIndexes[eventId];
+    output.push(cmd(PALETTE_SET_UI));
+    output.push(hi(paletteIndex));
+    output.push(lo(paletteIndex));
+  }  
 
   // Text
 

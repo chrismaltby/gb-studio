@@ -360,6 +360,8 @@
   "EVENT_ACTOR_SET_SPRITE": "Actor: Set Sprite Sheet",
   "EVENT_PLAYER_BOUNCE": "Actor: Player Bounce",
   "EVENT_WEAPON_ATTACK": "Weapon: Attack",
+  "EVENT_PALETTE_SET_BACKGROUND": "Palette: Set Background Palette",
+  "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   
   "// 10": "Menu -----------------------------------------------------",
 

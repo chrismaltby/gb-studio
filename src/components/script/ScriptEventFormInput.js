@@ -11,6 +11,7 @@ import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import PaletteSelect from "../forms/PaletteSelect";
 import ActorSelect from "../forms/ActorSelect";
 import EmoteSelect from "../forms/EmoteSelect";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
@@ -154,6 +155,11 @@ class ScriptEventFormInput extends Component {
     if (type === "background") {
       return (
         <BackgroundSelect id={id} value={value} onChange={this.onChange} />
+      );
+    }
+    if (type === "palette") {
+      return (
+        <PaletteSelect id={id} value={value} onChange={this.onChange} />
       );
     }
     if (type === "sprite") {

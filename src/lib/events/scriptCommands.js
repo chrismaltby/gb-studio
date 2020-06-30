@@ -98,6 +98,9 @@ export const ACTOR_SET_SPRITE = "ACTOR_SET_SPRITE";
 export const IF_ACTOR_RELATIVE_TO_ACTOR = "IF_ACTOR_RELATIVE_TO_ACTOR";
 export const PLAYER_BOUNCE = "PLAYER_BOUNCE";
 export const WEAPON_ATTACK = "WEAPON_ATTACK";
+export const PALETTE_SET_BACKGROUND = "PALETTE_SET_BACKGROUND";
+export const PALETTE_SET_ACTOR = "PALETTE_SET_ACTOR";
+export const PALETTE_SET_UI = "PALETTE_SET_UI";
 
 export const scriptCommands = [
   END,
@@ -200,6 +203,9 @@ export const scriptCommands = [
   IF_ACTOR_RELATIVE_TO_ACTOR,
   PLAYER_BOUNCE,
   WEAPON_ATTACK,
+  PALETTE_SET_BACKGROUND,
+  PALETTE_SET_ACTOR,
+  PALETTE_SET_UI
 ];
 
 export const commandIndex = key => {

@@ -95,3 +95,12 @@ void FadeUpdate_b() {
     fade_frame++;
   }
 }
+
+void ApplyPaletteChange_b() {
+#ifdef CGB
+  if (_cpu == CGB_TYPE) {
+    ApplyPaletteChangeColor(5);
+  } else
+#endif
+    ApplyPaletteChangeDMG(5);
+}
