@@ -66,24 +66,10 @@ void LoadImage(UINT16 index) {
 }
 
 void LoadImageAttr(UINT16 index) {
-#ifdef CGB
-  UBYTE i;
-#endif
-
   PUSH_BANK(DATA_PTRS_BANK);
   image_attr_bank = background_attr_bank_ptrs[index].bank;
   image_attr_ptr =
       (unsigned char*)(background_attr_bank_ptrs[index].offset + (BankDataPtr(image_attr_bank)));
-  POP_BANK;
-
-  PUSH_BANK(image_attr_bank);
-#ifdef CGB
-  VBK_REG = 1;
-  for (i = 0; i != 21; i++) {
-    set_bkg_tiles(0, i, 22, 1, image_attr_ptr + (i * image_tile_width));
-  }
-  VBK_REG = 0;
-#endif
   POP_BANK;
 }
 
@@ -98,8 +84,6 @@ void LoadPalette(UINT16 index) {
 
   PUSH_BANK(bank);
   memcpy(BkgPalette, data_ptr, 48);
-  // data_ptr += 64;
-  // memcpy(SprPalette, data_ptr, 64);
   POP_BANK;
 }
 
