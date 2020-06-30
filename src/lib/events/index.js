@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from "glob";
-// import plugins, { pluginEmitter } from "../plugins/plugins";
+import plugins, { pluginEmitter } from "../plugins/plugins";
 import { eventsRoot } from "../../consts";
 import fs from "fs";
 import * as l10n from "../../lib/helpers/l10n";
@@ -42,20 +42,20 @@ const eventHandlers = {
       ...memo,
       [handler.id]: handler
     };
-  }, {})
-  // ...plugins.events
+  }, {}),
+  ...plugins.events
 };
 
-// pluginEmitter.on("update-event", plugin => {
-//   eventHandlers[plugin.id] = plugin;
-// });
+pluginEmitter.on("update-event", plugin => {
+  eventHandlers[plugin.id] = plugin;
+});
 
-// pluginEmitter.on("add-event", plugin => {
-//   eventHandlers[plugin.id] = plugin;
-// });
+pluginEmitter.on("add-event", plugin => {
+  eventHandlers[plugin.id] = plugin;
+});
 
-// pluginEmitter.on("remove-event", plugin => {
-//   delete eventHandlers[plugin.id];
-// });
+pluginEmitter.on("remove-event", plugin => {
+  delete eventHandlers[plugin.id];
+});
 
 export default eventHandlers;
