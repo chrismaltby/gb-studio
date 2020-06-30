@@ -26,8 +26,13 @@ const watchProject = async (
   const pluginsRoot = `${projectRoot}/plugins`;
 
   const awaitWriteFinish = {
-    stabilityThreshold: 200,
-    pollInterval: 50
+    stabilityThreshold: 1000,
+    pollInterval: 100
+  };
+
+  const musicAwaitWriteFinish = {
+    stabilityThreshold: 5000,
+    pollInterval: 100
   };
 
   const pluginSubfolder = filename => {
@@ -72,7 +77,7 @@ const watchProject = async (
       ignored: /^.*\.(?!mod$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      awaitWriteFinish
+      musicAwaitWriteFinish
     })
     .on("add", onAddMusic)
     .on("change", onChangedMusic)
