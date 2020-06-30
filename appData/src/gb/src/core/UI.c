@@ -12,6 +12,7 @@
 
 void UIInit_b();
 void UIUpdate_b();
+void UIReset_b();
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame_b(UBYTE h);
 void UIDrawTextBufferChar_b();
@@ -68,6 +69,12 @@ void UIInit() {
 void UIUpdate() {
   PUSH_BANK(UI_BANK);
   UIUpdate_b();
+  POP_BANK;
+}
+
+void UIReset() {
+  PUSH_BANK(UI_BANK);
+  UIReset_b();
   POP_BANK;
 }
 

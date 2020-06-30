@@ -57,7 +57,11 @@ void vbl_update() {
 
 void lcd_update() {
   if (LYC_REG == 0x0) {
-    SHOW_SPRITES;
+    if(WY_REG == 0x0) {
+      HIDE_SPRITES;
+    } else {
+      SHOW_SPRITES;
+    }
 
     // If UI is open cause lcd interupt
     // to fire again when first line of

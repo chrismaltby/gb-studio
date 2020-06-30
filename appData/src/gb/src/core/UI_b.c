@@ -121,6 +121,10 @@ void UIInit_b() {
   SetBankedBkgData(CURSOR_BANK, 0xCB, 1, ptr);
 }
 
+void UIReset_b() {
+  UISetPos(160, 144);
+}
+
 void UIUpdate_b() {
   UBYTE interval;
 
