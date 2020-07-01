@@ -24,7 +24,16 @@ const pluginEmitter = new EventEmitter();
 
 const vm = new NodeVM({
   timeout: 1000,
-  sandbox: {}
+  sandbox: {},
+  compiler: (code) => {
+    // Convert es6 style modules to commonjs
+    let moduleCode = code;
+    moduleCode = code.replace(/(^|\n)(\S\s)*export /g, "");
+    if(moduleCode.indexOf("module.exports") === -1) {
+      moduleCode += `\nmodule.exports = { id, name, fields, compile };`
+    }
+    return moduleCode;
+  }
 });
 
 const loadPlugin = path => {
