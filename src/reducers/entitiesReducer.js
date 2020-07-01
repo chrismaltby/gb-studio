@@ -428,7 +428,8 @@ const addScene = (state, action) => {
       backgroundId,
       width: background.width,
       height: background.height,
-      collisions: []
+      collisions: [],
+      tileColors: []
     },
     action.defaults || {},
     script && { script },
@@ -462,6 +463,7 @@ const editScene = (state, action) => {
   // the correct size
   let newState = state;
   let newCollisions;
+  let newTileColors;
   let newBackground;
 
   if (action.values.backgroundId) {
@@ -476,16 +478,19 @@ const editScene = (state, action) => {
 
     if (otherScene) {
       newCollisions = otherScene.collisions;
+      newTileColors = otherScene.tileColors;
     } else if (oldBackground.width == background.width){
       const collisionsSize = Math.ceil(
         (background.width * background.height) / 8
       );
-        newCollisions = (scene.collisions.slice(0,collisionsSize));
+      newCollisions = (scene.collisions.slice(0,collisionsSize));
+      newTileColors = [];
     } else {
       const collisionsSize = Math.ceil(
         (background.width * background.height) / 8
       );
       newCollisions = [];
+      newTileColors = [];
       for (let i = 0; i < collisionsSize; i++) {
         newCollisions[i] = 0;
       }
@@ -533,6 +538,7 @@ const editScene = (state, action) => {
       action.values,
       action.values.backgroundId && {
         collisions: newCollisions || [],
+        tileColors: newTileColors || [],
         width: newBackground.width,
         height: newBackground.height
       }
