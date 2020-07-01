@@ -43,12 +43,25 @@ class SceneEditor extends Component {
     const initialSecondaryTab = secondaryTabs.includes(props.lastScriptTabSecondary) ? props.lastScriptTabSecondary : secondaryTabs[0];
 
     this.state = {
+      showHiddenSceneTypes: false,
       clipboardActor: null,
       clipboardScene: null,
       clipboardTrigger: null,
       scriptMode: initialTab,
       scriptModeSecondary: initialSecondaryTab
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.detectHiddenMode);
+    window.addEventListener("keyup", this.detectHiddenMode);
+    window.addEventListener("blur", this.onBlur);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.detectHiddenMode);
+    window.removeEventListener("keyup", this.detectHiddenMode);
+    window.removeEventListener("blur", this.onBlur);
   }
 
   onSetScriptMode = (mode) => {
@@ -109,6 +122,14 @@ class SceneEditor extends Component {
   onEditPlayerHit2Script = this.onEdit("playerHit2Script");
 
   onEditPlayerHit3Script = this.onEdit("playerHit3Script");
+
+  detectHiddenMode = e => {
+    this.setState({ showHiddenSceneTypes: e.shiftKey });
+  };
+
+  onBlur = e => {
+    this.setState({ showHiddenSceneTypes: false });
+  };
 
   readClipboard = (e) => {
     try {
@@ -177,7 +198,8 @@ class SceneEditor extends Component {
       clipboardActor,
       clipboardTrigger,
       scriptMode,
-      scriptModeSecondary
+      scriptModeSecondary,
+      showHiddenSceneTypes
     } = this.state;
 
     const scripts = {
@@ -291,7 +313,9 @@ class SceneEditor extends Component {
                 >
                   <option value="0">Top Down 2D</option>
                   <option value="1">Platformer</option>
-                  <option value="2">Adventure</option>
+                  {(showHiddenSceneTypes || scene.type === "2") &&
+                    <option value="2">Adventure (Work in Progress)</option>
+                  }
                   <option value="3">Shoot Em' Up</option>
                   <option value="4">Point and Click</option>
                 </select>
