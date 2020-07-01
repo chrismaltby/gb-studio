@@ -311,13 +311,13 @@ class SceneEditor extends Component {
                   value={scene.type}
                   onChange={this.onEdit("type")}
                 >
-                  <option value="0">Top Down 2D</option>
-                  <option value="1">Platformer</option>
+                  <option value="0">{l10n("GAMETYPE_TOP_DOWN")}</option>
+                  <option value="1">{l10n("GAMETYPE_PLATFORMER")}</option>
                   {(showHiddenSceneTypes || scene.type === "2") &&
-                    <option value="2">Adventure (Work in Progress)</option>
+                    <option value="2">{l10n("GAMETYPE_ADVENTURE")} ({l10n("FIELD_WORK_IN_PROGRESS")})</option>
                   }
-                  <option value="3">Shoot Em' Up</option>
-                  <option value="4">Point and Click</option>
+                  <option value="3">{l10n("GAMETYPE_SHMUP")}</option>
+                  <option value="4">{l10n("GAMETYPE_POINT_N_CLICK")}</option>
                 </select>
               </label>
             </FormField>

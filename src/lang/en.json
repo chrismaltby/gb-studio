@@ -245,6 +245,7 @@
   "FIELD_HIGH": "High",
   "FIELD_BOUNCE_NOTE": "Affects Platform scenes only",
   "FIELD_WEAPON_SPRITE": "Weapon Sprite Sheet",
+  "FIELD_WORK_IN_PROGRESS": "Work in Progress",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -546,5 +547,14 @@
   "ERROR_TITLE": "GB Studio encountered an error",
   "ERROR_WHAT_CAN_I_DO": "What can I do?",
   "ERROR_VIEW_STACK_TRACE": "View Stack Trace",
-  "ERROR_CLOSE": "Close"
+  "ERROR_CLOSE": "Close",
+
+  "// 19 ": "Game Type --------------------------------------------------",
+
+  "GAMETYPE_TOP_DOWN": "Top Down 2D",
+  "GAMETYPE_PLATFORMER": "Platformer",
+  "GAMETYPE_ADVENTURE": "Adventure",
+  "GAMETYPE_SHMUP": "Shoot Em' Up",
+  "GAMETYPE_POINT_N_CLICK": "Point and Click"
+
 }
