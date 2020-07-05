@@ -10,6 +10,8 @@ import {
 } from "../../reducers/entitiesReducer";
 import { createCacheFunction } from "../../lib/helpers/cache";
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 const cachedObj = createCacheFunction();
 
 const filterOption = ({ label }, string) => {
@@ -91,6 +93,7 @@ class SceneSelect extends Component {
           Option,
         }}
         menuPlacement="auto"
+        menuPortalTarget={menuPortalEl}
       />
     );
   }
