@@ -34,7 +34,6 @@ UBYTE current_script_ctx = 0;
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
-UBYTE script_complete = FALSE;
 UINT16 actor_move_dest_x = 0;
 UINT16 actor_move_dest_y = 0;
 UBYTE wait_time = 0;

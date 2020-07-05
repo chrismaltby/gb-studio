@@ -184,13 +184,6 @@ void game_loop() {
       POP_BANK;
     }
 
-    if (script_complete) {
-      // Only allow script complete to be TRUE
-      // for a single frame so that scene update
-      // fn can use it to clean up
-      script_complete = FALSE;
-    }
-
     ScriptTimerUpdate();
 
     ScriptRestoreCtx(0);
