@@ -8,8 +8,16 @@ import {
   getBackgroundsLookup,
   getSceneIds,
 } from "../../reducers/entitiesReducer";
+import { createCacheFunction } from "../../lib/helpers/cache";
 
-const DropdownIndicator = ({ filename, ...props }) => {
+const cachedObj = createCacheFunction();
+
+const filterOption = ({ label }, string) => {
+  return label.toUpperCase().indexOf(string.toUpperCase()) > -1;
+};
+
+const DropdownIndicator = ({ selectProps, ...props }) => {
+  const filename = selectProps.value.filename;
   return (
     <components.DropdownIndicator {...props}>
       {filename && (
@@ -25,28 +33,14 @@ const DropdownIndicator = ({ filename, ...props }) => {
 };
 
 DropdownIndicator.propTypes = {
-  filename: PropTypes.string.isRequired,
+  selectProps: PropTypes.shape({
+    value: PropTypes.shape({
+      filename: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
 };
 
-const DropdownIndicatorWithData = (value) =>
-  connect((state) => {
-    const projectRoot = state.document && state.document.root;
-    const scenesLookup = getScenesLookup(state);
-    const backgroundsLookup = getBackgroundsLookup(state);
-    const filename =
-      scenesLookup[value] &&
-      backgroundsLookup[scenesLookup[value].backgroundId] &&
-      `${assetFilename(
-        projectRoot,
-        "backgrounds",
-        backgroundsLookup[scenesLookup[value].backgroundId]
-      )}?_v=${backgroundsLookup[scenesLookup[value].backgroundId]._v}`;
-    return {
-      filename,
-    };
-  })(DropdownIndicator);
-
-const Option = ({ label, value, filename, ...props }) => {
+const Option = ({ label, value, data: { filename }, ...props }) => {
   return (
     <components.Option {...props}>
       <div style={{ display: "flex" }}>
@@ -67,52 +61,34 @@ const Option = ({ label, value, filename, ...props }) => {
 Option.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  filename: PropTypes.string.isRequired
+  data: PropTypes.shape({
+    filename: PropTypes.string.isRequired,
+  }).isRequired,
 };
-
-const OptionWithData = connect((state, ownProps) => {
-  const projectRoot = state.document && state.document.root;
-  const scenesLookup = getScenesLookup(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
-  const { value, label: sceneIndex } = ownProps;
-  const scene = scenesLookup[value];
-  const label = scene.name || `Scene ${sceneIndex + 1}`;
-  const filename =
-    scenesLookup[value] &&
-    backgroundsLookup[scenesLookup[value].backgroundId] &&
-    `${assetFilename(
-      projectRoot,
-      "backgrounds",
-      backgroundsLookup[scenesLookup[value].backgroundId]
-    )}?_v=${backgroundsLookup[scenesLookup[value].backgroundId]._v}`;
-  return {
-    label,
-    filename,
-  };
-})(Option);
 
 class SceneSelect extends Component {
   render() {
-    const { sceneIds, id, label, value, onChange } = this.props;
-
-    const options = sceneIds.map((sceneId, sceneIndex) => ({
-      value: sceneId,
-      label: sceneIndex,
-    }));
-
+    const {
+      options,
+      selectedIndex,
+      id,
+      onChange,
+    } = this.props;
+    const selectedOption = options[selectedIndex] || {};
     return (
       <Select
         id={id}
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
         options={options}
-        value={{ label }}
+        value={selectedOption}
         onChange={(data) => {
           onChange(data.value);
         }}
+        filterOption={filterOption}
         components={{
-          DropdownIndicator: DropdownIndicatorWithData(value),
-          Option: OptionWithData,
+          DropdownIndicator,
+          Option,
         }}
         menuPlacement="auto"
       />
@@ -120,29 +96,51 @@ class SceneSelect extends Component {
   }
 }
 
+const OptionShape = PropTypes.shape({
+  value: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  filename: PropTypes.string.isRequired,
+});
+
 SceneSelect.propTypes = {
   id: PropTypes.string,
-  value: PropTypes.string,
-  label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  sceneIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  options: PropTypes.arrayOf(OptionShape.isRequired).isRequired,
+  selectedIndex: PropTypes.number.isRequired,
 };
 
 SceneSelect.defaultProps = {
   id: undefined,
-  value: "",
 };
 
 function mapStateToProps(state, ownProps) {
+  const projectRoot = state.document && state.document.root;
   const scenesLookup = getScenesLookup(state);
+  const backgroundsLookup = getBackgroundsLookup(state);
   const sceneIds = getSceneIds(state);
-  const sceneIndex = sceneIds.indexOf(ownProps.value);
-  const scene = scenesLookup[ownProps.value];
-  const label = scene ? scene.name || `Scene ${sceneIndex + 1}` : "";
+  const selectedIndex = sceneIds.indexOf(ownProps.value);
+  const options = cachedObj(
+    sceneIds.map((sceneId, sceneIndex) => {
+      const scene = scenesLookup[sceneId];
+      const filename =
+        scene &&
+        backgroundsLookup[scene.backgroundId] &&
+        `${assetFilename(
+          projectRoot,
+          "backgrounds",
+          backgroundsLookup[scene.backgroundId]
+        )}?_v=${backgroundsLookup[scene.backgroundId]._v}`;
 
+      return {
+        value: sceneId,
+        label: scenesLookup[sceneId].name || `Scene ${sceneIndex + 1}`,
+        filename,
+      };
+    })
+  );
   return {
-    sceneIds,
-    label,
+    options,
+    selectedIndex,
   };
 }
 
