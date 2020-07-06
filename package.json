@@ -113,6 +113,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.2",
     "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "git-revision-webpack-plugin": "^3.0.6",
     "jest": "^24.9.0",
     "jest-extended": "^0.11.1",
     "node-loader": "^0.6.0",
