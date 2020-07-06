@@ -8,6 +8,7 @@
 #include "Math.h"
 #include "ASMHelpers.h"
 #include "Input.h"
+#include "data_ptrs.h"
 #include <string.h>
 
 #define FRAME_CENTER_OFFSET 64
@@ -454,6 +455,6 @@ void UIDrawMenuCursor_b() {
   UBYTE i;
   for (i = 0; i < menu_num_options; i++) {
     set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
-                  menu_index == i ? ui_cursor_tiles : ui_bg_tiles);
+                  menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
   }
 }

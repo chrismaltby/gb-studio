@@ -485,6 +485,7 @@ const compile = async (
   output[`data_ptrs.h`] =
     `${
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
+      `#include "BankData.h"\n` +
       `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
       `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
       `#define START_SCENE_X ${decHex(startX || 0)}\n` +
@@ -532,7 +533,7 @@ const compile = async (
     `#endif\n\n` +
     Object.keys(dataPtrs)
       .map((name) => {
-        return `const BANK_PTR ${name}[] = {\n${dataPtrs[name]
+        return `const BankPtr ${name}[] = {\n${dataPtrs[name]
           .map((dataPtr) => {
             return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
           })
