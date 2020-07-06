@@ -19,7 +19,6 @@ UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 void MoveActors_b() {
   UBYTE i, a;
   UBYTE actor_time;
-
   actor_time = game_time >> 2;
 
   for (i = 0; i != actors_active_size; i++) {
@@ -29,12 +28,12 @@ void MoveActors_b() {
       if (actors[a].move_speed == 0) {
         // Half speed only move every other frame
         if (IS_FRAME_2) {
-          actors[a].pos.x += actors[a].dir.x;
-          actors[a].pos.y += actors[a].dir.y;
+          actors[a].pos.x += (WORD)actors[a].dir.x;
+          actors[a].pos.y += (WORD)actors[a].dir.y;
         }
       } else {
-        actors[a].pos.x += actors[a].dir.x * actors[a].move_speed;
-        actors[a].pos.y += actors[a].dir.y * actors[a].move_speed;
+        actors[a].pos.x += (WORD)(actors[a].dir.x * actors[a].move_speed);
+        actors[a].pos.y += (WORD)(actors[a].dir.y * actors[a].move_speed);        
       }
     }
   }

@@ -60,7 +60,7 @@ typedef struct {
   UBYTE frame_offset;
   UBYTE rerender;
   UBYTE moving;
-  BYTE move_speed;
+  UBYTE move_speed;
   UBYTE anim_speed;
   UBYTE pinned;
   UBYTE collisionsEnabled;
