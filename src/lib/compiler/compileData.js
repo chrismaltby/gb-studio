@@ -523,7 +523,7 @@ const compile = async (
       })
       .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
-    `#pragma bank=${DATA_PTRS_BANK}\n` +
+    `#pragma bank ${DATA_PTRS_BANK}\n` +
     `#include "data_ptrs.h"\n` +
     `#include "banks.h"\n\n` +
     `#ifdef __EMSCRIPTEN__\n` +
@@ -552,7 +552,7 @@ const compile = async (
   output[`banks.h`] = bankHeader;
 
   bankData.forEach((bankDataBank, index) => {
-    const bank = bankDataBank.match(/pragma bank=([0-9]+)/)[1];
+    const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
     output[`bank_${bank}.c`] = bankDataBank;
   });
 

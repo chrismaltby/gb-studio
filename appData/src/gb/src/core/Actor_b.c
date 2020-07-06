@@ -1,6 +1,4 @@
-// clang-format off
-#pragma bank=1
-// clang-format on
+#pragma bank 1
 
 #include "Actor.h"
 #include "Sprite.h"

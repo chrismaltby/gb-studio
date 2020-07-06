@@ -1,5 +1,5 @@
 // clang-format off
-#pragma bank=3
+#pragma bank 3
 // clang-format on
 
 #include "UI.h"
