@@ -15,16 +15,16 @@ void UpdateCamera_b() {
   }
 
   // Clamp Camera X
-  if (camera_pos.x > image_width - SCREEN_WIDTH_HALF) {
+  if (U_LESS_THAN(image_width - SCREEN_WIDTH_HALF, camera_pos.x)) {
     camera_pos.x = image_width - SCREEN_WIDTH_HALF;
-  } else if (camera_pos.x < SCREEN_WIDTH_HALF) {
+  } else if (U_LESS_THAN(camera_pos.x, SCREEN_WIDTH_HALF)) {
     camera_pos.x = SCREEN_WIDTH_HALF;
   }
 
   // Clamp Camera Y
-  if (camera_pos.y > image_height - SCREEN_HEIGHT_HALF) {
+  if (U_LESS_THAN(image_height - SCREEN_HEIGHT_HALF, camera_pos.y)) {
     camera_pos.y = image_height - SCREEN_HEIGHT_HALF;
-  } else if (camera_pos.y < SCREEN_HEIGHT_HALF) {
+  } else if (U_LESS_THAN(camera_pos.y, SCREEN_HEIGHT_HALF)) {
     camera_pos.y = SCREEN_HEIGHT_HALF;
   }
 }
