@@ -84,7 +84,7 @@ class CustomControlsPicker extends Component {
       this.setState({ input: "" });
       this.inputRef.current.blur();
 
-      if (e.key === "Backspace") {
+      if ((e.key === "Backspace" || e.key === "Delete")) {
         editProjectSettings({
           [inputKey]: []
         });
