@@ -1,38 +1,18 @@
 SRC = main.c bank2.c bank3.c
 BIN = banked.gb
 
-TOPDIR = ../../..
-GBLIB = $(TOPDIR)/lib/medium/rgbds
-
-LIB = $(GBLIB)/gbz80/gbz80.lib $(GBLIB)/gb/gb.lib
-CRT0 = $(GBLIB)/gb/crt0.o
-
 OBJ = $(SRC:.c=.o)
 
-CC = $(TOPDIR)/bin/sdcc -mgbz80 --asm=rgbds -I $(TOPDIR)/include
+CC	= ../../../bin/lcc -Wa-l -Wl-m -Wl-j
 
 all: $(BIN)
 
 clean:
 	rm $(OBJ)
 
-%.o: %.s
-
 $(BIN): $(OBJ)
-	$(CC) -v $(CRT0) $(OBJ) $(LIB)
-	rgbfix -p -v a.gb
+	$(CC) -Wl-yt2 -Wl-yo4 -Wl-ya4 -o $@ $(OBJ)
 
-$(LIB): $(LIBOBJ)
-	xlib $@ a $(LIBOBJ)
+%.o:	%.c
+	$(CC) -c -o $@ $<
 
-%.o: %.c
-	$(CC) -c $<
-
-%.asm: %.s
-	astorgb.pl $< > $@
-
-%.o: %.asm
-	rgbasm -o$@ $<
-
-%.s: %.ms
-	maccer -o $@ $<

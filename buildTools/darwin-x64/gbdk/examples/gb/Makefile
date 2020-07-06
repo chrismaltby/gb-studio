@@ -11,7 +11,9 @@ BINS	= galaxy.gb \
 	ram_fn.gb \
 	fonts.gb \
 	samptest.gb \
-	banks.gb
+	banks.gb \
+	new_banks.gb \
+	farptr.gb
 
 # sound.gb: Cant do bitfields
 OTHER = sound.gb \
@@ -19,8 +21,8 @@ OTHER = sound.gb \
 all:	$(BINS)
 
 make.bat: Makefile
-	echo "REM Automatically generated from Makefile" > make.bat
-	make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+	@echo "REM Automatically generated from Makefile" > make.bat
+	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
 
 %.o:	%.c
 	$(CC) -c -o $@ $<
@@ -76,7 +78,25 @@ banks.gb:	banks.o bank_0.o bank_1.o bank_2.o bank_3.o
 	$(CC) -Wl-yt2 -Wl-yo4 -Wl-ya4 -o $@ banks.o bank_0.o bank_1.o bank_2.o bank_3.o
 
 ############################################################
+# Far pointers example
+
+bank1code.o:	bank1code.c
+	$(CC) -Wf-bo1 -c -o $@ $<
+
+farptr.gb:	farptr.o bank1code.o
+	$(CC) -Wl-yt1 -Wl-yo4 -o $@ bank1code.o farptr.o
+
+############################################################
+# Multiple banks NEW example
+
+new_banks.gb: MBC1_RAM_INIT.o new_banks.o
+	$(CC) -Wl-yt2 -Wl-yo4 -Wl-ya4 -o $@ MBC1_RAM_INIT.o new_banks.o
+
+############################################################
 # RAM function example
+
+ram_fn.o:	ram_fn.c
+	$(CC) -D_inc_ram=0xD000 -D_inc_hiram=0xFFA0 -c -o $@ $<
 
 ram_fn.gb:	ram_fn.o
 	$(CC) -Wl-g_inc_ram=0xD000 -Wl-g_inc_hiram=0xFFA0 -o $@ ram_fn.o

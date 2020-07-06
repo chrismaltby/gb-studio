@@ -70,10 +70,10 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char* ptr) {
 //   strcpy(to, buffer);
 // }
 
-void ReadBankedBankPtr(UBYTE bank, BANK_PTR* to, unsigned char* from) {
-  BANK_PTR bank_ptr;
+void ReadBankedBankPtr(UBYTE bank, BankPtr* to, unsigned char* from) {
+  BankPtr bank_ptr;
   PUSH_BANK(bank);
-  memcpy(&bank_ptr, from, sizeof(BANK_PTR));
+  memcpy(&bank_ptr, from, sizeof(BankPtr));
   POP_BANK;
-  memcpy(to, &bank_ptr, sizeof(BANK_PTR));
+  memcpy(to, &bank_ptr, sizeof(BankPtr));
 }

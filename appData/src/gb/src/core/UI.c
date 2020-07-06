@@ -107,7 +107,7 @@ void UIShowText(UBYTE bank, UWORD bank_offset) {
 }
 
 void UIShowAvatar(UBYTE avatar_index) {
-  BANK_PTR avatar_bank_ptr;
+  BankPtr avatar_bank_ptr;
   UBYTE* avatar_ptr;
   UBYTE avatar_len;
   UBYTE tile1, tile2, tile3, tile4;

@@ -4,6 +4,8 @@
 #ifndef _GB_H
 #define _GB_H
 
+#define __GBDK_VERSION 312
+
 #include <types.h>
 #include <gb/hardware.h>
 #include <gb/sgb.h>
@@ -179,6 +181,16 @@ add_SIO(int_handler h) NONBANKED;
 */
 void
 add_JOY(int_handler h) NONBANKED;
+
+/** Interrupt handler chain terminator that don't wait for .STAT
+
+    You must add this handler the last in every interrupt handler 
+    chain if you want to change the default interrupt handler 
+    behaviour that waits for LCD controller mode to become 1 or 0
+    before return from the interrupt.
+*/
+void 
+nowait_int_handler(void) NONBANKED;
 
 /* ************************************************************ */
 
@@ -457,6 +469,13 @@ set_bkg_data(UINT8 first_tile,
 	     UINT8 nb_tiles,
 	     unsigned char *data) NONBANKED;
 
+void
+get_bkg_data(UINT8 first_tile,
+	     UINT8 nb_tiles,
+	     unsigned char *data) NONBANKED;
+
+
+
 /** Sets the tiles in the background tile table.
     Starting at position x,y in tiles and writing across for w tiles
     and down for h tiles. Taking the values starting from the pointer
@@ -510,6 +529,11 @@ scroll_bkg(INT8 x,
 */
 void
 set_win_data(UINT8 first_tile,
+	     UINT8 nb_tiles,
+	     unsigned char *data) NONBANKED;
+
+void
+get_win_data(UINT8 first_tile,
 	     UINT8 nb_tiles,
 	     unsigned char *data) NONBANKED;
 
@@ -612,9 +636,9 @@ get_sprite_tile(UINT8 nb) NONBANKED;
     Where the bits in p represent:
     Bit 7 - 	Priority flag. When this is set the sprites appear behind the
 		background and window layer. 0: infront, 1: behind.
-    Bit 6 - 	GBC only. Vertical flip. Dictates which way up the sprite is drawn
+    Bit 6 - 	Vertical flip. Dictates which way up the sprite is drawn
 		vertically. 0: normal, 1:upside down.
-    Bit 5 - 	GBC only. Horizontal flip. Dictates which way up the sprite is
+    Bit 5 - 	Horizontal flip. Dictates which way up the sprite is
     drawn horizontally. 0: normal, 1:back to front.
     Bit 4 - 	DMG only. Assigns either one of the two b/w palettes to the sprite.
 		0: OBJ palette 0, 1: OBJ palette 1.

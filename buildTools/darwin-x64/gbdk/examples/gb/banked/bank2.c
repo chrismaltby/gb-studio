@@ -1,5 +1,5 @@
 #include "bank.h"
-#pragma bank=2
+#pragma bank 2
 
 
 int bank2(int i) BANKED

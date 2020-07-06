@@ -485,10 +485,6 @@ const compile = async (
   output[`data_ptrs.h`] =
     `${
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-      `typedef struct _BANK_PTR {\n` +
-      `  unsigned char bank;\n` +
-      `  unsigned int offset;\n` +
-      `} BANK_PTR;\n\n` +
       `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
       `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
       `#define START_SCENE_X ${decHex(startX || 0)}\n` +
@@ -512,7 +508,7 @@ const compile = async (
       `\n`
     }${Object.keys(dataPtrs)
       .map((name) => {
-        return `extern const BANK_PTR ${name}[];`;
+        return `extern const BankPtr ${name}[];`;
       })
       .join(`\n`)}\n` +
     `extern const unsigned int bank_data_ptrs[];\n` +

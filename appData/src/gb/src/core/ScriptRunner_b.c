@@ -18,6 +18,7 @@
 #include "Sprite.h"
 #include "Scroll.h"
 #include "Camera.h"
+#include "data_ptrs.h"
 #include "Projectiles.h"
 #include "states/Platform.h"
 #include <rand.h>
@@ -1081,7 +1082,7 @@ void Script_ActorSetSprite_b() {
  * Change sprite used by player
  */
 void Script_PlayerSetSprite_b() {
-  BANK_PTR sprite_bank_ptr;
+  BankPtr sprite_bank_ptr;
   UBYTE* sprite_ptr;
   UWORD sprite_index;
   UBYTE sprite_frames, sprite_len;

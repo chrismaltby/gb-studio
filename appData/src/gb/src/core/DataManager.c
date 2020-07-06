@@ -13,7 +13,7 @@
 #include "UI.h"
 #include "data_ptrs.h"
 
-BANK_PTR bank_ptr;
+BankPtr bank_ptr;
 UBYTE image_bank;
 UBYTE image_attr_bank;
 UBYTE collision_bank;

@@ -383,6 +383,7 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
       }
       return end_tile;
   }
+  return end_tile;
 }
 
 UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
