@@ -13,6 +13,8 @@
 #include "Camera.h"
 #include "rand.h"
 
+#define POINT_N_CLICK_CAMERA_DEADZONE 24
+
 UBYTE last_hit_trigger = MAX_TRIGGERS;
 
 void Start_PointNClick() {
@@ -20,6 +22,9 @@ void Start_PointNClick() {
   camera_target = &player.pos;
   camera_offset.x = 0;
   camera_offset.y = 0;
+  camera_deadzone.x = POINT_N_CLICK_CAMERA_DEADZONE;
+  camera_deadzone.y = POINT_N_CLICK_CAMERA_DEADZONE;
+
   player.sprite_type = SPRITE_STATIC;
   player.dir.x = 0;
   player.dir.y = 1;

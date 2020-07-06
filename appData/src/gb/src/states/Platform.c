@@ -30,7 +30,8 @@
 #define HOLD_GRAV 0x200
 #define GRAV 0x700
 #define MAX_FALL_VEL 0x4E20
-#define PLATFORM_CAMERA_OFFSET_Y 32
+#define PLATFORM_CAMERA_DEADZONE_X 24
+#define PLATFORM_CAMERA_DEADZONE_Y 32
 
 UBYTE grounded = FALSE;
 WORD pl_vel_x = 0;
@@ -57,7 +58,10 @@ void Start_Platform() {
 
   camera_target = &player.pos;
   camera_offset.x = 0;
-  camera_offset.y = PLATFORM_CAMERA_OFFSET_Y;
+  camera_offset.y = 0;
+  camera_deadzone.x = PLATFORM_CAMERA_DEADZONE_X;
+  camera_deadzone.y = PLATFORM_CAMERA_DEADZONE_Y;
+
   game_time = 0;
   LOG("END START PLATFORM\n");
 }

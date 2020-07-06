@@ -10,8 +10,19 @@
 void UpdateCamera_b() {
   // Lock Camera to Target
   if ((camera_settings & CAMERA_LOCK_FLAG) == CAMERA_LOCK_FLAG) {
-    camera_pos.x = camera_target->x - camera_offset.x;
-    camera_pos.y = camera_target->y - camera_offset.y;
+    WORD diff_x = camera_pos.x - (camera_target->x - camera_offset.x);
+    WORD diff_y = camera_pos.y - (camera_target->y - camera_offset.y);
+
+    if(diff_x > camera_deadzone.x) {
+      camera_pos.x = camera_target->x - camera_offset.x + camera_deadzone.x;
+    } else if (diff_x < -camera_deadzone.x) {
+      camera_pos.x = camera_target->x - camera_offset.x - camera_deadzone.x;
+    }
+    if(diff_y > camera_deadzone.y) {
+      camera_pos.y = camera_target->y - camera_offset.y + camera_deadzone.y;
+    } else if (diff_y < -camera_deadzone.y) {
+      camera_pos.y = camera_target->y - camera_offset.y - camera_deadzone.y;
+    }
   }
 
   // Clamp Camera X
