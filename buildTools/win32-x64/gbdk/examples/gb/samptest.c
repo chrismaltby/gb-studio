@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #define SAMPLES 25768
-extern UBYTE sample[];
+extern const UBYTE sample[];
 
 void main()
 {

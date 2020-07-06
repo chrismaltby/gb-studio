@@ -457,13 +457,13 @@ void door()
   if(doorstate == OPENING) {
     doorpos++;
     /* Draw the door in the window */
-    set_win_tiles(2, 2, 12, 6, film[doorpos]);
+    set_win_tiles(2, 2, 12, 6, (unsigned char*)film[doorpos]);
     if(doorpos == NBDFRAMES)
       doorstate = OPENED;
   } else if(doorstate == CLOSING) {
     doorpos--;
     /* Draw the door in the window */
-    set_win_tiles(2, 2, 12, 6, film[doorpos]);
+    set_win_tiles(2, 2, 12, 6, (unsigned char*)film[doorpos]);
     if(doorpos == 0)
       doorstate = CLOSED;
   }
