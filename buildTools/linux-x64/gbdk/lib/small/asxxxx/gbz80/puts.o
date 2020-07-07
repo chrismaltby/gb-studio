@@ -1,20 +1,28 @@
-XL
-H 9 areas 2 global symbols
+XL2
+H 7 areas 3 global symbols
 M puts
+O -mgbz80
 S _putchar Ref0000
-A _CODE size 0 flags 0
-A _DATA size 0 flags 0
-A _OVERLAY size 0 flags 0
-A _ISEG size 0 flags 0
-A _BSEG size 0 flags 0
-A _XSEG size 0 flags 0
-A _GSINIT size 0 flags 0
-A _GSFINAL size 0 flags 0
-A _HOME size 2A flags 0
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 1D flags 0 addr 0
 S _puts Def0000
-T 00 00 E8 FF F8 03 4E 23 46 0A F8 00 77 AF B6 CA
-R 00 00 08 00
-T 0E 00 1E 00 03 C5 7E F5 33 CD 00 00 E8 01 C1 C3
-R 00 00 08 00 00 02 08 00 02 0A 00 00
-T 1C 00 07 00 3E 0A F5 33 CD 00 00 E8 01 E8 01 C9
-R 00 00 08 00 00 02 08 00 02 09 00 00
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 03 00
+T 00 00 F8 02 2A 4F 46
+R 00 00 03 00
+T 05 00
+R 00 00 03 00
+T 05 00 0A B7 28 0B 03 C5 F5 33 CD 00 00 33 C1 18
+R 00 00 03 00 02 0B 00 00
+T 13 00 F1
+R 00 00 03 00
+T 14 00
+R 00 00 03 00
+T 14 00 3E 0A F5 33 CD 00 00 33 C9
+R 00 00 03 00 02 07 00 00

@@ -34,6 +34,10 @@ int strcmp(const char *s1, const char *s2) NONBANKED;
 */    
 void *memcpy(void *dest, const void *src, size_t len) NONBANKED;
 
+/** Fills the memory region s of size n with c 
+*/
+void *memset (void *s, int c, size_t n);
+
 /** Reverses the characters in the string.  
     For example 'abcdefg' will become 'gfedcba'.  Banked as the string
     must be modifiable.
