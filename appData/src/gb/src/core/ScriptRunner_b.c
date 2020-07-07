@@ -1770,8 +1770,15 @@ void Script_TextSetAnimSpeed_b() {
  * Invoke Actor script
  */
 void Script_ActorInvoke_b() {
+  BankPtr* events_ptr;
+
   Script_StackPush_b();
-  ScriptStart(&actors[script_actor].events_ptr);
+
+  events_ptr = &actors[script_actor].events_ptr;
+  script_ptr_bank = events_ptr->bank;
+  script_ptr = (BankDataPtr(script_ctxs[ctx].script_ptr_bank)) + events_ptr->offset;
+  script_update_fn = FALSE;
+  script_start_ptr = script_ptr;
 }
 
 /*
