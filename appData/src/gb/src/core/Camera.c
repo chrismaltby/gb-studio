@@ -8,6 +8,7 @@ Pos* camera_target = 0;
 Pos camera_offset;
 UBYTE camera_speed;
 UBYTE camera_settings = CAMERA_LOCK_FLAG;
+Vector2D camera_deadzone;
 
 void UpdateCamera_b();
 
