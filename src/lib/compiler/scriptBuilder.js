@@ -94,7 +94,9 @@ import {
   PALETTE_SET_ACTOR,
   PALETTE_SET_UI,
   ACTOR_STOP_UPDATE,
-  ACTOR_SET_ANIMATE
+  ACTOR_SET_ANIMATE,
+  CUSTOM_EVENT_INVOKE,
+  ACTOR_SET_ACTIVE_VAR
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -134,13 +136,19 @@ class ScriptBuilder {
 
   actorSetActive = (id) => {
     const output = this.output;
-    const { scene, entity } = this.options;
-    const index =
-      id === "$self$"
+    const { scene, entity, entityType, variables } = this.options;
+    if (entityType === "customEvent") {
+      const variableIndex = this.getVariableIndex(`${entity.id}__A${id}`, variables);
+      output.push(cmd(ACTOR_SET_ACTIVE_VAR));
+      output.push(hi(variableIndex));
+      output.push(lo(variableIndex));  
+    } else {
+      const index = id === "$self$"
         ? getActorIndex(entity.id, scene)
         : getActorIndex(id, scene);
-    output.push(cmd(ACTOR_SET_ACTIVE));
-    output.push(index);
+      output.push(cmd(ACTOR_SET_ACTIVE));
+      output.push(index);
+    }
   };
 
   actorMoveTo = (x = 0, y = 0, useCollisions = false, moveType) => {
@@ -381,8 +389,8 @@ class ScriptBuilder {
 
   textDialogue = (inputText = " ", avatarId) => {
     const output = this.output;
-    const { strings, avatars, variables, event } = this.options;
-    const text = this.replaceVariables(inputText, variables, event);
+    const { strings, avatars, variables, entity } = this.options;
+    const text = this.replaceVariables(inputText, variables, entity);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -405,9 +413,9 @@ class ScriptBuilder {
 
   textChoice = (setVariable, args) => {
     const output = this.output;
-    const { strings, variables, event } = this.options;
+    const { strings, variables, entity } = this.options;
     const choiceText = combineMultipleChoiceText(args);
-    const text = this.replaceVariables(choiceText, variables, event);
+    const text = this.replaceVariables(choiceText, variables, entity);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -430,11 +438,11 @@ class ScriptBuilder {
     cancelOnB = false
   ) => {
     const output = this.output;
-    const { strings, variables, event } = this.options;
+    const { strings, variables, entity } = this.options;
     const menuText = options
       .map((option, index) => option || `Item ${index + 1}`)
       .join("\n");
-    const text = this.replaceVariables(menuText, variables, event);
+    const text = this.replaceVariables(menuText, variables, entity);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -487,8 +495,11 @@ class ScriptBuilder {
   // Variables
 
   getVariableIndex = (variable = "0", variables) => {
+    const { entity } = this.options;
     if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
-      const { entity } = this.options;
+      return getVariableIndex(`${entity.id}__${variable}`, variables);
+    }
+    if (["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"].indexOf(variable) > -1) {
       return getVariableIndex(`${entity.id}__${variable}`, variables);
     }
     return getVariableIndex(variable, variables);
@@ -1179,6 +1190,20 @@ class ScriptBuilder {
     output.push(cmd(TIMER_DISABLE));
   };
 
+  // Custom Events
+  customEventInvoke = (eventId, eventName) => {
+    const output = this.output;
+    const { customEvents } = this.options;
+    const customEventIndex = customEvents.findIndex(e => e.id === eventId);
+
+    if (customEventIndex === -1) {
+      throw new Error(`Custom Event ${eventName} not found`);
+    }
+    
+    output.push(cmd(CUSTOM_EVENT_INVOKE));
+    output.push(customEventIndex || 0);
+  };
+  
   // Helpers
 
   getSprite = (name, plugin = "") => {
@@ -1221,7 +1246,7 @@ class ScriptBuilder {
     return id === "$self$" ? getActor(entity.id, scene) : getActor(id, scene);
   };
 
-  replaceVariables = (string, variables, event) => {
+  replaceVariables = (string, variables, entity) => {
     const getVariableSymbol = (index) => `$${String(index).padStart(2, "0")}$`;
     const getVariableCharSymbol = (index) => `#${String(index).padStart(2, "0")}#`;
 
@@ -1244,8 +1269,7 @@ class ScriptBuilder {
         })   
         // Replace Custom Event variables
         .replace(/\$V([0-9])\$/g, (match, customVariable) => {
-          const mappedVariable = event.args[`$variable[${customVariable}]$`];
-          const index = this.getVariableIndex(mappedVariable, variables);
+          const index = this.getVariableIndex(`${entity.id}__V${customVariable}`, variables);
           return getVariableSymbol(index);
         })
         // Replace Global variable characters

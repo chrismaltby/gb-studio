@@ -153,11 +153,11 @@ export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
 
 export const replaceInvalidCustomEventVariables = (variable) => {
   const getValidVariableIndex = (v) => {
-    const variableIndex = parseInt(String(v).replace(/^L|^T/, ""), 10);
+    const variableIndex = parseInt(String(v).replace(/^L|^T|^V/, ""), 10);
     if (variableIndex >= 10 || isNaN(variableIndex)) {
-      return "0";
+      return "V0";
     }
-    return String(variableIndex);  
+    return `V${variableIndex}`;
   }
 
   // Support the case for "union" values

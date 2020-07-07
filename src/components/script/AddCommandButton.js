@@ -168,9 +168,6 @@ class AddCommandButton extends Component {
             customEventId: customEvent.id,
             __name: customEventName
           },
-          children: {
-            script: customEvent.script
-          },
           name,
           searchName,
           key: `EVENT_CALL_CUSTOM_EVENT_${index}`

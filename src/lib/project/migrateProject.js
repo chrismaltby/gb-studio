@@ -4,6 +4,7 @@ import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
 import { COLLISION_ALL } from "../../consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_GROUP, EVENT_COMMENT } from "../compiler/eventTypes";
 
 const indexById = indexBy("id");
 
@@ -34,6 +35,7 @@ const migrateProject = project => {
     data = migrateFrom120To200Actors(data);
     data = migrateFrom120To200Events(data);
     data = migrateFrom120To200Collisions(data);
+    data = migrateFrom120To200CustomEvents(data);
     version = "2.0.0";
     release = "2";    
   }
@@ -47,6 +49,7 @@ const migrateProject = project => {
   if (process.env.NODE_ENV !== "production") {
     if (version === "2.0.0") {
       data = migrateFrom120To200Collisions(data);
+      data = migrateFrom120To200CustomEvents(data);
     }
   }
 
@@ -580,6 +583,107 @@ export const migrateFrom120To200Collisions = data => {
       };
     })
   };
+}
+  
+export const migrateFrom120To200CustomEvents = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom120To200CallCustomEvent(data.customEvents)),
+    ...data.customEvents && { customEvents: data.customEvents.map(migrateFrom120To200CustomEventsVariables) }
+  };
+};
+
+const migrateFrom120To200CallCustomEvent = (customEvents) => event => {
+  try {
+    let newEvent = event;
+    
+    if (event.command === EVENT_CALL_CUSTOM_EVENT) {
+      const newArgs = {};
+
+      const customEvent = customEvents.find((e) => event.args.customEventId === e.id);
+      if (!customEvent) {
+        newEvent = {
+          command: EVENT_GROUP,
+          id: event.id,
+          args: {
+            __label: event.args.__name
+          },
+          children: {
+            true: [
+              {
+                command: EVENT_COMMENT,
+                args: {
+                  text: "This Event Group was created during the migration to 2.0.0. It contains the script of a Custom Event that doesn't exist in this project anymore.",
+                  __collapse: true
+                }
+              },
+              ...event.children.script
+            ]
+          },
+        };  
+
+      } else {
+        if (event.args.customEventId) {
+          newArgs.customEventId = event.args.customEventId;
+        }
+        if (event.args.__name) {
+          newArgs.__name = event.args.__name;
+        }
+
+        Object.keys(event.args).forEach((k) => {
+          if (k.startsWith("$variable[")) {
+            const id = k.match(/[0-9]/)[0];
+            newArgs[`__parameter_V${id}`] = event.args[k];
+          }
+          if (k.startsWith("$actor[")) {
+            const id = k.match(/[0-9]/);
+            if (id && id[0]) {
+              newArgs[`__parameter_A${id[0]}`] = event.args[k];
+            }
+          }
+        });
+
+        newEvent = {
+          command: event.command,
+          id: event.id,
+          args: newArgs,
+          children: {},
+        };  
+      }
+    }
+    return newEvent;
+  } catch (e) {
+    console.error(e);
+    return event;
+  }
+};
+
+const migrateFrom120To200CustomEventsVariables = event => {
+  const newEvent = {
+    ...event,
+    script: mapEvents(event.script, e => {
+      const newArgs = {};
+      if (e.args && e.args.variable) {
+        newArgs.variable = `V${e.args.variable}`;
+      }
+      if (e.args && e.args.vectorX) {
+        newArgs.vectorX = `V${e.args.vectorX}`;
+      }
+      if (e.args && e.args.vectorY) {
+        newArgs.vectorY = `V${e.args.vectorY}`;
+      }
+      return {
+        ...e,
+        ...e.args && { 
+          args: {
+            ...e.args,
+            ...newArgs
+          }
+        }
+      };
+    })
+  }
+  return newEvent
 };
 
 /*

@@ -9,7 +9,8 @@ import {
   EVENT_TEXT,
   EVENT_IF_TRUE,
   EVENT_SET_TRUE,
-  EVENT_END
+  EVENT_END,
+  EVENT_CALL_CUSTOM_EVENT
 } from "../../../src/lib/compiler/eventTypes";
 
 test("should compile simple project into files object", async () => {
@@ -82,8 +83,24 @@ test("should compile simple project into files object", async () => {
                 args: {
                   text: "TRIGGER TEST"
                 }
+              },
+              {
+                command: EVENT_CALL_CUSTOM_EVENT,
+                args: {
+                  customEventId: "CE1",
+                  __name: "Test"
+                }
               }
             ]
+          }
+        ],
+        script: [
+          {
+            command: EVENT_CALL_CUSTOM_EVENT,
+            args: {
+              customEventId: "CE1",
+              __name: "Test"
+            }
           }
         ]
       },
@@ -262,7 +279,16 @@ test("should compile simple project into files object", async () => {
         filename: "sprite_3.png"
       }
     ],
-    music: []
+    music: [],
+    customEvents: [
+      {
+        id: "CE1",
+        variables: {},
+        actors: {},
+        name: "Test",
+        description: "Test"
+      }
+    ]  
   };
   const compiled = await compile(project, {
     projectRoot: `${__dirname}/_files`

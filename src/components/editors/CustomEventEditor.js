@@ -124,7 +124,7 @@ class CustomEventEditor extends Component {
               return (
                 <FormField key={variable.id}>
                   <input
-                    id={`variable[${i}]`}
+                    id={`__parameter_V${variable.id}`}
                     value={variable.name}
                     placeholder="Variable Name"
                     onChange={this.onEditVariableName(variable.id)}
@@ -141,7 +141,7 @@ class CustomEventEditor extends Component {
               return (
                 <FormField key={actor.id}>
                   <input
-                    id={`actor[${i}]`}
+                    id={`__parameter_A${actor.id}`}
                     value={actor.name}
                     placeholder="Actor Name"
                     onChange={this.onEditActorName(actor.id)}

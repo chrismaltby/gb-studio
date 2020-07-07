@@ -149,6 +149,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_PalSetUI_b, 2},            // 0x66
     {Script_ActorStopUpdate_b, 0},     // 0x67
     {Script_ActorSetAnimate_b, 1},     // 0x68
+    {Script_CustomScriptInvoke_b, 1},  // 0x69
+    {Script_ActorActivateVar_b, 2}     // 0x6A
 };
 
 void ScriptTimerUpdate_b() {
@@ -545,6 +547,21 @@ void Script_ActorActivate_b() {
   if (active_script_ctx_index == 0) {
     ActivateActor(active_script_ctx.script_actor);
   }
+}
+
+/*
+ * Command: ActorActivate
+ * ----------------------------
+ * Set active actor.
+ *
+ *   arg0: High 8 bits for variable index
+ *   arg1: Low 8 bits for variable index
+ */
+void Script_ActorActivateVar_b()
+{
+  UWORD ptr = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  active_script_ctx.script_actor = script_variables[ptr];
+  ActivateActor(active_script_ctx.script_actor);
 }
 
 /*
@@ -1863,6 +1880,27 @@ void Script_ActorInvoke_b() {
   events_ptr = &actors[active_script_ctx.script_actor].events_ptr;
   active_script_ctx.script_ptr_bank = events_ptr->bank;
   active_script_ctx.script_ptr = (BankDataPtr(script_ctxs[ctx].active_script_ctx.script_ptr_bank)) + events_ptr->offset;
+  active_script_ctx.script_update_fn = FALSE;
+  active_script_ctx.script_start_ptr = active_script_ctx.script_ptr;
+}
+
+/*
+ * Command: CustomScriptInvoke
+ * ----------------------------
+ * Invoke Custom script
+ * 
+ *  arg0: Custom Event index
+ */
+void Script_CustomScriptInvoke_b()
+{
+  UBYTE index = script_cmd_args[0];
+  BankPtr bank_ptr;
+
+  Script_StackPush_b();
+
+  ReadBankedBankPtr(DATA_PTRS_BANK, &bank_ptr, &custom_events_bank_ptrs[index]);
+  active_script_ctx.script_ptr_bank = bank_ptr.bank;
+  active_script_ctx.script_ptr = (BankDataPtr(script_ctxs[ctx].script_ptr_bank)) + bank_ptr.offset;
   active_script_ctx.script_update_fn = FALSE;
   active_script_ctx.script_start_ptr = active_script_ctx.script_ptr;
 }

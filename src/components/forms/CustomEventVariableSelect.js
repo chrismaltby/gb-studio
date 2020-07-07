@@ -6,25 +6,26 @@ import { VariableShape } from "../../reducers/stateShape";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
-const allVariables = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const allVariables = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
 
 class CustomEventVariableSelect extends Component {
-  variableName = index => {
+  variableName = variable => {
     const { variables } = this.props;
+    const index = allVariables.findIndex(v => v === variable);
     const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(index, 10));
     return variables[index] ? variables[index].name : `Variable ${letter}`;
   };
 
-  variableLabel = index => {
-    return `$V${index}$ : ${this.variableName(index)}`;
+  variableLabel = variable => {
+    return `$${variable}$ : ${this.variableName(variable)}`;
   };
 
   render() {
     const { id, value, onChange } = this.props;
     const options = allVariables.map((variable, index) => {
       return {
-        value: String(index),
-        label: this.variableLabel(index)
+        value: variable,
+        label: this.variableLabel(variable, index)
       };
     });
     let val = options.find((o) => o.value === value) || options[0];
@@ -53,7 +54,7 @@ CustomEventVariableSelect.propTypes = {
 
 CustomEventVariableSelect.defaultProps = {
   id: undefined,
-  value: "0"
+  value: "V0"
 };
 
 function mapStateToProps(state) {

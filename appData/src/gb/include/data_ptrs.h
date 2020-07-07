@@ -33,6 +33,7 @@ extern const BankPtr sprite_bank_ptrs[];
 extern const BankPtr scene_bank_ptrs[];
 extern const BankPtr collision_bank_ptrs[];
 extern const BankPtr avatar_bank_ptrs[];
+extern const BankPtr custom_events_bank_ptrs[];
 extern const unsigned int bank_data_ptrs[];
 extern const unsigned int music_tracks[];
 extern const unsigned char music_banks[];

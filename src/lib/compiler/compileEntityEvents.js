@@ -48,7 +48,10 @@ const compileEntityEvents = (input = [], options = {}) => {
     },
     entityType === "trigger" && {
       actor: entity.name || `Trigger ${entityIndex + 1}`,
-    }
+    },
+    entityType === "customEvent" && {
+      customEvent: entity.name || `Event ${entityIndex + 1}`
+    },
   );
 
   const scriptBuilder = new ScriptBuilder(output, helpers);

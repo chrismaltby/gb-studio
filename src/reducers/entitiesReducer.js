@@ -653,7 +653,7 @@ const editCustomEvent = (state, action) => {
                 : `Variable ${letter}`
             };  
           }
-          const variable = args[arg];
+          const variable = args[arg][1];
           if (variable != null && variable.type === "variable") {
             addVariable(variable.value);
           } else {
@@ -736,6 +736,7 @@ const editCustomEvent = (state, action) => {
 };
 
 const patchEntityScripts = (state, type, entities, patchFn) => {
+
   let newState = state;
   Object.values(entities).forEach(entity => {
     if (!entity ||
@@ -779,9 +780,10 @@ const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
 };
 
 const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
-  const { script, variables, actors } = patch;
-  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
-  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
+  const { variables, actors } = patch;
+  const usedVariables = Object.keys(variables).map((i) => `__parameter_V${i}`);
+  const usedActors = Object.keys(actors).map((i) => `__parameter_A${i}`); 
+  
   const patchCustomEventScript = event => {
     if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
       return event;
@@ -789,9 +791,9 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
     if (event.args.customEventId !== id) {
       return event;
     }
-    const newArgs = Object.assign({ ...event.args });
+    const newArgs = {...event.args};
     Object.keys(newArgs).forEach((k) => {
-      if (k.startsWith("$") &&
+      if (k.startsWith("__parameter_") &&
         !usedVariables.find((v) => v === k) &&
         !usedActors.find((a) => a === k)) {
         delete newArgs[k];
@@ -799,10 +801,7 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
     });
     return {
       ...event,
-      args: newArgs,
-      children: {
-        script: [...script]
-      }
+      args: newArgs
     };
   };
   return patchEntityScripts(state, type, entities, patchCustomEventScript);

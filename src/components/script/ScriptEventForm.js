@@ -35,7 +35,7 @@ class ScriptEventForm extends Component {
           return {
             label: `${v.name}`,
             defaultValue: "LAST_VARIABLE",
-            key: `$variable[${v.id}]$`,
+            key: `__parameter_V${v.id}`,
             type: "variable"
           };
         }) || [];
@@ -44,7 +44,7 @@ class ScriptEventForm extends Component {
           return {
             label: `${a.name}`,
             defaultValue: "player",
-            key: `$actor[${a.id}]$`,
+            key: `__parameter_A${a.id}`,
             type: "actor"
           };
         }) || [];

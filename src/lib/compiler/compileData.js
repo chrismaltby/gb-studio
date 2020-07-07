@@ -28,7 +28,8 @@ import {
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_PALETTE_SET_BACKGROUND,
-  EVENT_PALETTE_SET_UI
+  EVENT_PALETTE_SET_UI,
+  EVENT_CALL_CUSTOM_EVENT
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
@@ -107,6 +108,59 @@ const compile = async (
   const cursorImagePtr = banked.push(precompiled.cursorTiles);
   const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
+  const compileSceneScript = (scene, sceneIndex) => (
+    script,
+    entityType,
+    entity,
+    entityIndex,
+    loop,
+    alreadyCompiled,
+  ) => {
+    return compileEntityEvents(script, {
+      scene,
+      sceneIndex,
+      scenes: precompiled.sceneData,
+      music: precompiled.usedMusic,
+      sprites: precompiled.usedSprites,
+      avatars: precompiled.usedAvatars,
+      backgrounds: precompiled.usedBackgrounds,
+      strings: precompiled.strings,
+      variables: precompiled.variables,
+      customEvents: precompiled.customEvents,
+      eventPaletteIndexes: precompiled.eventPaletteIndexes,
+      labels: {},
+      entityType,
+      entityIndex,
+      entity,
+      banked,
+      warnings,
+      loop,
+      output: alreadyCompiled || [],
+    });
+  };
+
+  const customEventsPtrs = precompiled.customEvents.map((event, eventIndex) => {
+    const scene = {
+      actors: Object.values(event.actors)
+    };
+    const sceneIndex = -1;
+    const compileScript = compileSceneScript(scene, sceneIndex);
+
+    const bankEntityEvents = (entityType, entityScriptField = "script") => (entity, entityIndex) => {
+      if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
+        return {
+          bank: 0,
+          offset: 0
+        };
+      }
+      return banked.push(
+        compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
+      );
+    };
+
+    return bankEntityEvents("customEvent")(event, eventIndex);
+  });
+ 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
   // Can maybe move some of the compilation into workers to prevent this
@@ -114,36 +168,8 @@ const compile = async (
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const compileScript = (
-      script,
-      entityType,
-      entity,
-      entityIndex,
-      loop,
-      alreadyCompiled,
-    ) => {
-      return compileEntityEvents(script, {
-        scene,
-        sceneIndex,
-        scenes: precompiled.sceneData,
-        music: precompiled.usedMusic,
-        sprites: precompiled.usedSprites,
-        avatars: precompiled.usedAvatars,
-        backgrounds: precompiled.usedBackgrounds,
-        strings: precompiled.strings,
-        variables: precompiled.variables,
-        eventPaletteIndexes: precompiled.eventPaletteIndexes,
-        labels: {},
-        entityType,
-        entityIndex,
-        entity,
-        banked,
-        warnings,
-        loop,
-        output: alreadyCompiled || [],
-      });
-    };
-
+    const compileScript = compileSceneScript(scene, sceneIndex);
+    
     const bankSceneEvents = (scene, sceneIndex) => {
       const compiledSceneScript = [];
 
@@ -405,6 +431,7 @@ const compile = async (
     scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
     collision_bank_ptrs: fixEmptyDataPtrs(collisionPtrs),
     avatar_bank_ptrs: fixEmptyDataPtrs(avatarPtrs),
+    custom_events_bank_ptrs: fixEmptyDataPtrs(customEventsPtrs),
   };
 
   const bankHeader = banked.exportCHeader(bankOffset);
@@ -556,6 +583,9 @@ const precompile = async (
   progress(EVENT_MSG_PRE_STRINGS);
   const strings = precompileStrings(projectData.scenes);
 
+  progress(EVENT_MSG_PRE_EVENTS);
+  const customEvents = precompileCustomEvents(projectData.customEvents, projectData.scenes);
+
   progress(EVENT_MSG_PRE_IMAGES);
   const {
     usedBackgrounds,
@@ -632,6 +662,7 @@ const precompile = async (
   return {
     variables,
     strings,
+    customEvents,
     usedBackgrounds,
     backgroundLookup,
     usedTilesets,
@@ -715,6 +746,19 @@ export const precompileStrings = (scenes) => {
     return ["NOSTRINGS"];
   }
   return strings;
+};
+
+export const precompileCustomEvents = (events, scenes) => {
+  const customEventIds = [];
+  walkScenesEvents(scenes, cmd => {
+    if (cmd.command === EVENT_CALL_CUSTOM_EVENT) {
+      customEventIds.push(cmd.args.customEventId);
+    }
+  });
+  const usedEvents = events.filter(event => 
+    customEventIds.indexOf(event.id) > -1
+  );
+  return usedEvents;
 };
 
 export const precompileBackgrounds = async (
