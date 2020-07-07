@@ -33,3 +33,10 @@ void HandleInputScripts() {
     }
   }
 }
+
+void RemoveInputScripts() {
+  UBYTE i;
+  for (i = 0; i != 8; ++i) {
+    input_script_ptrs[i].bank = 0;
+  }
+}
