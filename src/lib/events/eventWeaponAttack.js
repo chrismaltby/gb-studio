@@ -4,16 +4,17 @@ const id = "EVENT_WEAPON_ATTACK";
 
 const fields = [
   {
-    key: "actorId",
-    type: "actor",
-    defaultValue: "player",
-  },
-  {
     key: "spriteSheetId",
     type: "sprite",
-    label: l10n("FIELD_WEAPON_SPRITE"),
+    label: l10n("FIELD_SPRITE_SHEET"),
     defaultValue: "LAST_SPRITE",
   },
+  {
+    key: "actorId",
+    type: "actor",
+    label: l10n("FIELD_SOURCE"),
+    defaultValue: "player",
+  },  
   {
     key: "collisionGroup",
     label: l10n("FIELD_COLLISION_GROUP"),
