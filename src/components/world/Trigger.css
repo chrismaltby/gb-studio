@@ -4,6 +4,7 @@
   height: 8px;
   background-color: rgba(255, 120, 0, 0.5);
   outline: 1px solid rgba(255, 120, 0, 1);
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .Trigger--Selected {

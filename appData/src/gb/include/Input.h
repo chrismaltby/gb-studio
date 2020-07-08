@@ -77,5 +77,6 @@ extern UBYTE await_input;
 extern BankPtr input_script_ptrs[NUM_INPUTS];
 
 void HandleInputScripts();
+void RemoveInputScripts();
 
 #endif

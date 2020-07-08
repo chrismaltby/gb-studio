@@ -11,6 +11,7 @@
 #include "Sprite.h"
 #include "Trigger.h"
 #include "UI.h"
+#include "Input.h"
 #include "data_ptrs.h"
 
 BankPtr bank_ptr;
@@ -170,6 +171,7 @@ void LoadScene(UINT16 index) {
   LoadPlayerSpritePalette(0);
   LoadUIPalette(1);
   UIReset();
+  RemoveInputScripts();
 
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = (*(data_ptr++)) + 1;

@@ -483,7 +483,8 @@ const off = (event, fn) => {
 
 const openAbout = () => {
   return openAboutWindow({
-    icon_path: `${assetsRoot}/app/icon/app_icon.png`
+    icon_path: `${assetsRoot}/app/icon/app_icon.png`,
+    bug_link_text: `Report bug (git: ${COMMITHASH})`
   });
 };
 

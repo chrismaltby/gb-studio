@@ -6,6 +6,7 @@ import buildMakeBat from "./buildMakeBat";
 import { hexDec } from "../helpers/8bit";
 import getTmp from "../helpers/getTmp";
 import { isMBC1 } from "./helpers";
+import { cacheObjData, fetchCachedObjData } from "./objCache";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -83,6 +84,8 @@ const makeBuild = async ({
       overwrite: firstBuild,
     });
   }
+
+  await fetchCachedObjData(buildRoot);
 
   firstBuild = false;
 
@@ -189,6 +192,7 @@ const makeBuild = async ({
           `${buildRoot}/build/rom/game.gb`,
           data.name.toUpperCase()
         );
+        await cacheObjData(buildRoot);
         resolve();
       } else reject(code);
     });

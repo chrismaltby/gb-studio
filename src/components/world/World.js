@@ -139,7 +139,7 @@ class World extends Component {
       return;
     }
     const { removeSelectedEntity, focus } = this.props;
-    if (focus && e.key === "Backspace") {
+    if (focus && (e.key === "Backspace" || e.key === "Delete")) {
       removeSelectedEntity();
     }
   };
