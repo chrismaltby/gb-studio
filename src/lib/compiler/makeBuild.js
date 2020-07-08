@@ -85,8 +85,6 @@ const makeBuild = async ({
     });
   }
 
-  await fetchCachedObjData(buildRoot);
-
   firstBuild = false;
 
   env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
@@ -146,6 +144,8 @@ const makeBuild = async ({
     await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
   }
 
+  await fetchCachedObjData(buildRoot, env);
+
   const makeBat = await buildMakeBat(buildRoot, {
     CART_TYPE: env.CART_TYPE,
     CART_SIZE: env.CART_SIZE,
@@ -192,7 +192,7 @@ const makeBuild = async ({
           `${buildRoot}/build/rom/game.gb`,
           data.name.toUpperCase()
         );
-        await cacheObjData(buildRoot);
+        await cacheObjData(buildRoot, env);
         resolve();
       } else reject(code);
     });

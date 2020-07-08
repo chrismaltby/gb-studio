@@ -9,7 +9,7 @@ const globAsync = promisify(glob);
 
 export const objCache = {};
 
-export const cacheObjData = async (buildRoot) => {
+export const cacheObjData = async (buildRoot, env) => {
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/obj`);
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
@@ -23,6 +23,8 @@ export const cacheObjData = async (buildRoot) => {
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
+
+  const envChecksum = checksumString(JSON.stringify(env));
 
   for (let i = 0; i < objFiles.length; i++) {
     const objFilePath = objFiles[i];
@@ -39,14 +41,15 @@ export const cacheObjData = async (buildRoot) => {
 
       if (matchingSrc) {
         const checksum = await checksumFile(matchingSrc);
-        const outFile = `${cacheRoot}/${includeChecksum}_${checksum}`;
+        const cacheFilename = checksumString(`${envChecksum}_${includeChecksum}_${checksum}`);
+        const outFile = `${cacheRoot}/${cacheFilename}`;
         await copyFile(objFilePath, outFile);
       }
     }
   }
 };
 
-export const fetchCachedObjData = async (buildRoot) => {
+export const fetchCachedObjData = async (buildRoot, env) => {
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/obj`);
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
@@ -58,11 +61,14 @@ export const fetchCachedObjData = async (buildRoot) => {
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
 
+  const envChecksum = checksumString(JSON.stringify(env));
+
   for (let i = 0; i < srcFiles.length; i++) {
     const srcFilePath = srcFiles[i];
     const fileName = Path.basename(srcFilePath).replace(/\.(s|c)$/, "");
     const checksum = await checksumFile(srcFilePath);
-    const cacheFile = `${cacheRoot}/${includeChecksum}_${checksum}`;
+    const cacheFilename = checksumString(`${envChecksum}_${includeChecksum}_${checksum}`);
+    const cacheFile = `${cacheRoot}/${cacheFilename}`;
 
     if (await pathExists(cacheFile)) {
       const outFile = `${buildObjRoot}/${fileName}.o`;
@@ -79,6 +85,12 @@ const checksumFile = (path) => {
     stream.on("data", (chunk) => hash.update(chunk));
     stream.on("end", () => resolve(hash.digest("hex")));
   });
+};
+
+const checksumString = (string) => {
+  const hash = crypto.createHash("sha1");
+  hash.update(string);
+  return hash.digest("hex");
 };
 
 const mergeChecksums = (checksums) => {
