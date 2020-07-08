@@ -69,6 +69,7 @@ export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
+
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
@@ -103,6 +104,12 @@ const compile = async (
     bankOffset,
     bankController: isMBC1(cartType) ? MBC1 : MBC5,
   });
+
+  // Add UI data
+  const fontImagePtr = banked.push(precompiled.fontTiles);
+  const frameImagePtr = banked.push(precompiled.frameTiles);
+  const cursorImagePtr = banked.push(precompiled.cursorTiles);
+  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -279,13 +286,6 @@ const compile = async (
       )
     );
   });
-
-
-  // Add UI data
-  const fontImagePtr = banked.push(precompiled.fontTiles);
-  const frameImagePtr = banked.push(precompiled.frameTiles);
-  const cursorImagePtr = banked.push(precompiled.cursorTiles);
-  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map((sprite) => {
