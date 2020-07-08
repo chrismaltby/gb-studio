@@ -356,11 +356,11 @@
   "EVENT_MENU": "Text: Display Menu",
   "EVENT_ACTOR_COLLISIONS_ENABLE": "Actor: Collisions Enable",
   "EVENT_ACTOR_COLLISIONS_DISABLE": "Actor: Collisions Disable",
-  "EVENT_LAUNCH_PROJECTILE": "Weapon: Launch Projectile",
+  "EVENT_LAUNCH_PROJECTILE": "Item: Launch Projectile",
   "EVENT_IF_ACTOR_RELATIVE_TO_ACTOR": "If Actor Relative To Actor",
   "EVENT_ACTOR_SET_SPRITE": "Actor: Set Sprite Sheet",
   "EVENT_PLAYER_BOUNCE": "Actor: Player Bounce",
-  "EVENT_WEAPON_ATTACK": "Weapon: Attack",
+  "EVENT_WEAPON_ATTACK": "Item: Attack",
   "EVENT_PALETTE_SET_BACKGROUND": "Palette: Set Background Palette",
   "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   
