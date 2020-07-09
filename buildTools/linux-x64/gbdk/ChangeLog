@@ -1,3 +1,24 @@
+gbdk3-3.1
+	- Banked functions are working! 
+		- Check this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=700) for more info
+		- Check the examples/gb/banked code for basic usage
+	- USE_SFR_FOR_REG is the default now [check here why](https://gbdev.gg8.se/forums/viewtopic.php?id=697)
+	- Fixed examples that were not compiling in the previous version and some improvements in a few of them. Removed all warnings caused by changing to the new SDCC
+	- Fixed bug in lcc that was causing some files in the temp folder not being deleted
+	- Removed as-gbz80 (the lib is now compiled with sdasgb thanks to this [workaround](https://github.com/Zal0/gbdk-2020/commit/d2caafa4a66eb08998a14b258cb66af041a0e5c8))
+	- Profile support with bgb emulator 
+		- Basic support including <gb/bgb_emu.h> and using the macros BGB_PROFILE_BEGIN and BGB_PROFILE_END. More info in this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=703)
+		- For full profiling [check this repo](https://github.com/untoxa/bgb_profiling_toolkit/blob/master/readme.md) and this [post](https://gbdev.gg8.se/forums/viewtopic.php?id=710) 
+
+gbdk3-3.00
+	Updated SDCC to v4.0
+	The new linker is not working so the old version is still there
+	There is an issue with sdagb compiling drawing.s (the JP in 
+	line 32 after ".org .MODE_TABLE+4*.G_MODE" it's writing more
+	than 4 bytes invading some addresses required by input.s:41)
+	Because of this, all .s files in libc have been assembled 
+	with the old as-gbz80 and that's why it is still included
+
 gbdk3-2.96
 	* Many changes.  Code generated is now much more reliable and
 	passes all of sdcc's regression suite.  Added support for large

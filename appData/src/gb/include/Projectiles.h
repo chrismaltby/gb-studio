@@ -22,7 +22,7 @@ typedef struct _PROJECTILE {
   UBYTE frame;
   UBYTE frames_len;
   UBYTE animate;
-  BYTE move_speed;
+  UBYTE move_speed;
   UBYTE sprite_index;
   UBYTE time;
   UBYTE life_time;

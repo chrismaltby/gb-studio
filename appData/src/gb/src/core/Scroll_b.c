@@ -1,5 +1,5 @@
 // clang-format off
-#pragma bank=1
+#pragma bank 1
 // clang-format on
 
 #include "Scroll.h"

@@ -8,24 +8,24 @@
 #error gbz80 only.
 #endif
 
-#define NONBANKED	nonbanked
-#define BANKED		banked
+#define NONBANKED		__nonbanked
+#define BANKED			__banked
 
 /** Signed eight bit.
  */
-typedef char          	INT8;
+typedef signed char     INT8;
 /** Unsigned eight bit.
  */
 typedef unsigned char 	UINT8;
 /** Signed sixteen bit.
  */
-typedef int           	INT16;
+typedef signed int      INT16;
 /** Unsigned sixteen bit.
  */
 typedef unsigned int  	UINT16;
 /** Signed 32 bit.
  */
-typedef long          	INT32;
+typedef signed long     INT32;
 /** Unsigned 32 bit.
  */
 typedef unsigned long 	UINT32;

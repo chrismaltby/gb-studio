@@ -20,7 +20,7 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank) {
     PUSH_BANK(return_bank);
 #ifndef __EMSCRIPTEN__
     PUSH_BANK(DATA_PTRS_BANK);
-    gbt_play(music_tracks[index], music_bank, 7);
+    gbt_play((void*)music_tracks[index], music_bank, 7);
     gbt_loop(loop);
     POP_BANK;
 #endif
@@ -59,10 +59,10 @@ void SoundPlayTone(UWORD tone, UBYTE frames) {
 
   // play tone on channel 1
   NR10_REG = 0x00;
-  NR11_REG = (0x00 << 6) | 0x01;
-  NR12_REG = (0x0F << 4) | 0x00;
+  NR11_REG = (0x0U << 6U) | 0x01U;
+  NR12_REG = (0x0FU << 4U) | 0x00U;
   NR13_REG = (tone & 0x00FF);
-  NR14_REG = 0x80 | ((tone & 0x0700) >> 8);
+  NR14_REG = 0x80 | ((tone & 0x0700) >> 8U);
 
   // enable volume
   NR50_REG = 0x77;
@@ -82,7 +82,7 @@ void SoundPlayBeep(UBYTE pitch) {
 
   // play beep sound on channel 4
   NR41_REG = 0x01;
-  NR42_REG = (0x0F << 4);
+  NR42_REG = (0x0FU << 4U);
   NR43_REG = 0x20 | 0x08 | pitch;
   NR44_REG = 0x80 | 0x40;
 
@@ -101,7 +101,7 @@ void SoundPlayCrash() {
 
   // play crash sound on channel 4
   NR41_REG = 0x01;
-  NR42_REG = (0x0F << 4) | 0x02;
+  NR42_REG = (0x0FU << 4U) | 0x02U;
   NR43_REG = 0x13;
   NR44_REG = 0x80;
 

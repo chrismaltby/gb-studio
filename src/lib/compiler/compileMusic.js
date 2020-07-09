@@ -109,7 +109,7 @@ const compileMusic = async ({
     // Build music bank file with combined data for all
     // tracks in this bank
     let fileData =
-      `#pragma bank=${musicBank.bank}\n\n` +
+      `#pragma bank ${musicBank.bank}\n\n` +
       `const unsigned char bank_${musicBank.bank}_data[] = {\n` +
       musicBank.tracks.map((track) => track.patterns.join(",")).join(",") +
       `};\n\n`;

@@ -1,4 +1,5 @@
 arand.o
+bgb_emu.o
 cgb.o
 cpy_data.o
 crt0.o
@@ -9,6 +10,7 @@ f_ibm_sh.o
 f_italic.o
 f_min.o
 f_spect.o
+far_ptr.o
 font.o
 get_bk_t.o
 get_data.o
@@ -28,6 +30,7 @@ input.o
 mv_bkg.o
 mv_spr.o
 mv_win.o
+nowait.o
 pad.o
 rand.o
 sample.o

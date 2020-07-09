@@ -1,11 +1,16 @@
+__sdcc_call_hl.o
 _divslong.o
 _divulong.o
 _modslong.o
 _modulong.o
 _mullong.o
 abs.o
+asm_string.o
 atoi.o
 atol.o
+atomic_flag_clear.o
+atomic_flag_test_and_set.o
+bsearch.o
 crt0_rle.o
 div.o
 isalpha.o
@@ -18,8 +23,10 @@ labs.o
 mul.o
 printf.o
 puts.o
+qsort.o
 reverse.o
 scanf.o
+setjmp.o
 shift.o
 strcat.o
 string.o

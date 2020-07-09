@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Math.h"
 #include "UI.h"
+#include "data_ptrs.h"
 
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
 // UINT8 script_ctx_active_pool[MAX_SCRIPT_CONTEXTS];
@@ -17,10 +18,10 @@ UBYTE script_await_next_frame;
 UBYTE script_actor;
 UBYTE script_main_ctx_actor;
 UBYTE script_ptr_bank = 0;
-UBYTE* script_ptr = 0;
+UBYTE* script_ptr = {0};
 UWORD script_ptr_x = 0;
 UWORD script_ptr_y = 0;
-UBYTE* script_start_ptr = 0;
+UBYTE* script_start_ptr = {0};
 UBYTE script_cmd_args[7] = {0};
 UBYTE script_cmd_args_len;
 UBYTE (*script_update_fn)();
@@ -28,7 +29,7 @@ UBYTE script_stack_ptr = 0;
 UBYTE* script_stack[STACK_SIZE] = {0};
 UBYTE script_bank_stack[STACK_SIZE] = {0};
 UBYTE* script_start_stack[STACK_SIZE] = {0};
-ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS] = {0};
+ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS] = {{0}};
 UBYTE current_script_ctx = 0;
 // ScriptContext *main_script_ctx;
 UBYTE timer_script_duration = 0;

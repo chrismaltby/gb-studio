@@ -6,6 +6,10 @@
 
 #include <types.h>
 
+#if !defined(__SDCC_mcs51) && !defined(__SDCC_ds390) && !defined(__SDCC_ds400) && !defined(__SDCC_hc08) && !defined(__SDCC_s08) && !defined(__SDCC_pic14) && !defined(__SDCC_pic16) && !defined(__SDCC_pdk13) && !defined(__SDCC_pdk14) && !defined(__SDCC_pdk15)
+#define __reentrant
+#endif
+
 /** Causes normal program termination and the value of status is
     returned to the parent.
     All open streams are flushed and closed.
@@ -40,5 +44,9 @@ char *itoa(int n, char *s);
 /** Converts a long into a base 10 ASCII string.
  */
 char *ltoa(long n, char *s);
+
+/* Searching and sorting utilities (ISO C11 7.22.5) */
+extern void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
+extern void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
 
 #endif

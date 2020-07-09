@@ -17,6 +17,7 @@
 #include "Sprite.h"
 #include "UI.h"
 #include "gbt_player.h"
+#include "data_ptrs.h"
 #include "main.h"
 
 #ifdef __EMSCRIPTEN__
@@ -115,7 +116,7 @@ int core_start() {
 
   // Position Window Layer
   WX_REG = 7;
-  WY_REG = MAXWNDPOSY + 1;
+  WY_REG = MAXWNDPOSY + 1U;
 
   // Initialise Player
   player.sprite = 0;
@@ -236,8 +237,8 @@ void game_loop() {
     // Disable timer script
     timer_script_duration = 0;
 
-    BGP_REG = PAL_DEF(0, 1, 2, 3);
-    OBP0_REG = OBP1_REG = PAL_DEF(0, 0, 1, 3);
+    BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
+    OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
     LoadScene(current_state);
 

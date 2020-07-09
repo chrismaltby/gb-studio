@@ -1,0 +1,70 @@
+XL2
+H 4 areas 1E global symbols
+S .add_int Ref0000
+S _main Ref0000
+S __cpu Ref0000
+S .OAM Ref0000
+S .wait_vbl_done Ref0000
+S __io_in Ref0000
+S __io_out Ref0000
+S banked_ret Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S .refresh_OAM Ref0000
+S __io_status Ref0000
+S .add_VBL Ref0000
+S .__.ABS. Def0000
+S .add_TIM Ref0000
+S banked_call Ref0000
+S .add_SIO Ref0000
+S .init Ref0000
+S .STACK Ref0000
+S .remove_int Ref0000
+S .add_JOY Ref0000
+S .int_0x48 Ref0000
+S __current_bank Ref0000
+S .call_hl Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 0 flags 0 addr 0
+A _HEADER_LCD size 0 flags 8 addr 0
+A _HEADER_LCD0 size 3 flags 8 addr 48
+A _BASE size 48 flags 0 addr 0
+S .add_LCD Def0031
+S _remove_LCD Def0037
+S .remove_LCD Def0042
+S _add_LCD Def0026
+T 48 00
+R 00 00 02 00
+T 48 00
+R 00 00 02 00
+T 48 00 C3 00 00
+R 00 00 02 00 00 03 03 00
+T 00 00
+R 00 00 03 00
+T 00 00 F5 E5 C5 D5 21 00 00 E5 2A 66 6F E7 21
+R 00 00 03 00 02 07 15 00
+T 0D 00 02 00 2A 66 6F B4 28 0B E7 21 04 00 2A 66
+R 00 00 03 00 02 02 15 00 02 0C 15 00
+T 1B 00 6F B4 C4 00 00
+R 00 00 03 00 02 05 17 00
+T 20 00
+R 00 00 03 00
+T 20 00 E1 D1 C1 E1 F1 D9
+R 00 00 03 00
+T 26 00
+R 00 00 03 00
+T 26 00 C5 F8 04 4E 23 46 CD 31 00 C1 C9
+R 00 00 03 00 00 09 03 00
+T 31 00
+R 00 00 03 00
+T 31 00 21 00 00 C3 00 00
+R 00 00 03 00 02 03 15 00 02 06 00 00
+T 37 00
+R 00 00 03 00
+T 37 00 C5 F8 04 4E 23 46 CD 42 00 C1 C9
+R 00 00 03 00 00 09 03 00
+T 42 00
+R 00 00 03 00
+T 42 00 21 00 00 C3 00 00
+R 00 00 03 00 02 03 15 00 02 06 13 00

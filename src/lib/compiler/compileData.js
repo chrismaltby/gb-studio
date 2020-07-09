@@ -485,10 +485,7 @@ const compile = async (
   output[`data_ptrs.h`] =
     `${
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-      `typedef struct _BANK_PTR {\n` +
-      `  unsigned char bank;\n` +
-      `  unsigned int offset;\n` +
-      `} BANK_PTR;\n\n` +
+      `#include "BankData.h"\n` +
       `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
       `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
       `#define START_SCENE_X ${decHex(startX || 0)}\n` +
@@ -512,7 +509,7 @@ const compile = async (
       `\n`
     }${Object.keys(dataPtrs)
       .map((name) => {
-        return `extern const BANK_PTR ${name}[];`;
+        return `extern const BankPtr ${name}[];`;
       })
       .join(`\n`)}\n` +
     `extern const unsigned int bank_data_ptrs[];\n` +
@@ -526,7 +523,7 @@ const compile = async (
       })
       .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
-    `#pragma bank=${DATA_PTRS_BANK}\n` +
+    `#pragma bank ${DATA_PTRS_BANK}\n` +
     `#include "data_ptrs.h"\n` +
     `#include "banks.h"\n\n` +
     `#ifdef __EMSCRIPTEN__\n` +
@@ -536,7 +533,7 @@ const compile = async (
     `#endif\n\n` +
     Object.keys(dataPtrs)
       .map((name) => {
-        return `const BANK_PTR ${name}[] = {\n${dataPtrs[name]
+        return `const BankPtr ${name}[] = {\n${dataPtrs[name]
           .map((dataPtr) => {
             return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
           })
@@ -555,7 +552,7 @@ const compile = async (
   output[`banks.h`] = bankHeader;
 
   bankData.forEach((bankDataBank, index) => {
-    const bank = bankDataBank.match(/pragma bank=([0-9]+)/)[1];
+    const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
     output[`bank_${bank}.c`] = bankDataBank;
   });
 

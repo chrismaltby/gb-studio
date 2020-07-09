@@ -1,5 +1,5 @@
 // clang-format off
-#pragma bank=5
+#pragma bank 5
 // clang-format on
 
 #include "states/TopDown.h"

@@ -1,9 +1,12 @@
-XL
-H 2 areas 1 global symbols
+XL2
+H 2 areas 2 global symbols
 M font_min
-A _CODE size 0 flags 0
-A _BASE size 1AA flags 0
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _BASE size 1AA flags 0 addr 0
 S _font_min Def0000
+T 00 00
+R 00 00 01 00
 T 00 00 05 25 00 00 00 00 00 00 00 00 00 00 00 00
 R 00 00 01 00
 T 0E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

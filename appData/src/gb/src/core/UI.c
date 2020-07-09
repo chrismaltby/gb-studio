@@ -107,7 +107,7 @@ void UIShowText(UBYTE bank, UWORD bank_offset) {
 }
 
 void UIShowAvatar(UBYTE avatar_index) {
-  BANK_PTR avatar_bank_ptr;
+  BankPtr avatar_bank_ptr;
   UBYTE* avatar_ptr;
   UBYTE avatar_len;
   UBYTE tile1, tile2, tile3, tile4;
@@ -121,12 +121,12 @@ void UIShowAvatar(UBYTE avatar_index) {
   PUSH_BANK(avatar_bank_ptr.bank);
   memcpy(tmp_avatar_ptr, avatar_ptr + 1, avatar_len * 16);
   POP_BANK
-  SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START, avatar_len, tmp_avatar_ptr);
+  SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START, avatar_len, (unsigned char *)tmp_avatar_ptr);
 
   tile1 = TEXT_BUFFER_START;
-  tile2 = TEXT_BUFFER_START + 1;
-  tile3 = TEXT_BUFFER_START + 2;
-  tile4 = TEXT_BUFFER_START + 3;
+  tile2 = TEXT_BUFFER_START + 1U;
+  tile3 = TEXT_BUFFER_START + 2U;
+  tile4 = TEXT_BUFFER_START + 3U;
 
   set_win_tiles(1, 1, 1, 1, &tile1);
   set_win_tiles(2, 1, 1, 1, &tile2);

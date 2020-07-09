@@ -89,7 +89,7 @@ class BankedData {
     return this.data
       .map((data, index) => {
         const bank = this.dataWriteBanks[index];
-        return `#pragma bank=${bank}\n\n${cIntArray(
+        return `#pragma bank ${bank}\n\n${cIntArray(
           `bank_${bank}_data`,
           data
         )}\n`;
@@ -116,7 +116,7 @@ A _HOME size 0 flags 0
 A _CODE_${bank} size ${wrap16Bit(data.length).toString(16)} flags 0
 S _bank_${bank}_data Def0000
 ${objectIntArray(data)}`;
-        // return `#pragma bank=${bank}\n\n${cIntArray(
+        // return `#pragma bank ${bank}\n\n${cIntArray(
         //   `bank_${bank}_data`,
         //   data
         // )}\n`;
