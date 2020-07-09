@@ -11,45 +11,40 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-typedef struct _BANK_PTR {
-  unsigned char bank;
-  unsigned int offset;
-} BANK_PTR;
-
+#include "BankData.h"
 #define DATA_PTRS_BANK 5
-#define START_SCENE_INDEX 0x0002
-#define START_SCENE_X 0x07
-#define START_SCENE_Y 0x07
-#define START_SCENE_DIR_X 1
-#define START_SCENE_DIR_Y 0
-#define START_PLAYER_SPRITE 9
-#define START_PLAYER_MOVE_SPEED 1
-#define START_PLAYER_ANIM_SPEED 3
-#define FONT_BANK 7
+#define FONT_BANK 6
 #define FONT_BANK_OFFSET 0
-#define FRAME_BANK 7
+#define FRAME_BANK 6
 #define FRAME_BANK_OFFSET 3584
-#define CURSOR_BANK 7
+#define CURSOR_BANK 6
 #define CURSOR_BANK_OFFSET 3728
-#define EMOTES_SPRITE_BANK 7
+#define EMOTES_SPRITE_BANK 6
 #define EMOTES_SPRITE_BANK_OFFSET 3744
-#define NUM_VARIABLES 130
-#define TMP_VAR_1 102
-#define TMP_VAR_2 103
+#define NUM_VARIABLES 113
+#define TMP_VAR_1 100
+#define TMP_VAR_2 102
 
-extern const BANK_PTR tileset_bank_ptrs[];
-extern const BANK_PTR background_bank_ptrs[];
-extern const BANK_PTR background_attr_bank_ptrs[];
-extern const BANK_PTR palette_bank_ptrs[];
-extern const BANK_PTR sprite_bank_ptrs[];
-extern const BANK_PTR scene_bank_ptrs[];
-extern const BANK_PTR collision_bank_ptrs[];
-extern const BANK_PTR string_bank_ptrs[];
-extern const BANK_PTR avatar_bank_ptrs[];
+extern const BankPtr tileset_bank_ptrs[];
+extern const BankPtr background_bank_ptrs[];
+extern const BankPtr background_attr_bank_ptrs[];
+extern const BankPtr palette_bank_ptrs[];
+extern const BankPtr sprite_bank_ptrs[];
+extern const BankPtr scene_bank_ptrs[];
+extern const BankPtr collision_bank_ptrs[];
+extern const BankPtr avatar_bank_ptrs[];
 extern const unsigned int bank_data_ptrs[];
 extern const unsigned int music_tracks[];
 extern const unsigned char music_banks[];
-extern unsigned char script_variables[16];
-extern const unsigned char *music_8fbb75bd0_Data[];
+extern unsigned int start_scene_index;
+extern int start_scene_x;
+extern int start_scene_y;
+extern char start_scene_dir_x;
+extern char start_scene_dir_y;
+extern unsigned int start_player_sprite;
+extern unsigned char start_player_move_speed;
+extern unsigned char start_player_anim_speed;
+extern unsigned char script_variables[114];
+extern const unsigned int music_track_101__Data[];
 
 #endif

@@ -123,17 +123,17 @@ int core_start() {
   player.moving = TRUE;
   player.frame = 0;
   player.frames_len = 2;
-  map_next_pos.x = player.pos.x = (START_SCENE_X << 3);
-  map_next_pos.y = player.pos.y = (START_SCENE_Y << 3);
-  map_next_dir.x = player.dir.x = START_SCENE_DIR_X;
-  map_next_dir.y = player.dir.y = START_SCENE_DIR_Y;
-  map_next_sprite = START_PLAYER_SPRITE;
+  map_next_pos.x = start_scene_x;
+  map_next_pos.y = start_scene_y;
+  map_next_dir.x = player.dir.x = start_scene_dir_x;
+  map_next_dir.y = player.dir.y = start_scene_dir_y;
+  map_next_sprite = start_player_sprite;
   player.enabled = TRUE;
-  player.move_speed = START_PLAYER_MOVE_SPEED;
-  player.anim_speed = START_PLAYER_ANIM_SPEED;
+  player.move_speed = start_player_move_speed;
+  player.anim_speed = start_player_anim_speed;
 
   state_running = 0;
-  next_state = START_SCENE_INDEX;
+  next_state = start_scene_index;
   game_time = 0;
   scene_type = 0;
 
