@@ -136,6 +136,7 @@ void ScriptRunnerUpdate() {
   if (!script_ptr_bank || script_update_fn) {
     // LOG("STOPPED SCRIPT FOR NOW\n");
     ScriptSaveCtx();
+    script_ptr = 0;
     return;
   }
 
@@ -148,6 +149,7 @@ void ScriptRunnerUpdate() {
       Script_StackPop_b();
       POP_BANK;
       ScriptSaveCtx();
+      script_ptr = 0;
       return;
     }
     LOG("SCRIPT FINISHED\n");

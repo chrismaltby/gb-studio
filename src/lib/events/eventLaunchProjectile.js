@@ -6,6 +6,7 @@ const fields = [
   {
     key: "spriteSheetId",
     type: "sprite",
+    label: l10n("FIELD_SPRITE_SHEET"),
     defaultValue: "LAST_SPRITE",
   },
   {
