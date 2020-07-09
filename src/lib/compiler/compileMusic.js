@@ -1,5 +1,6 @@
 import childProcess from "child_process";
-import fs from "fs-extra";
+import Path from "path";
+import fs, { ensureDir, copy, pathExists } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { assetFilename } from "../helpers/gbstudio";
 import { GB_MAX_BANK_SIZE } from "./bankedData";
@@ -7,6 +8,8 @@ import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
 import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
+import getTmp from "../helpers/getTmp";
+import { checksumFile } from "../helpers/checksum";
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -23,7 +26,10 @@ const compileMusic = async ({
   warnings = () => {},
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
-  await fs.ensureDir(`${buildRoot}/src/music`);
+  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);
+
+  await ensureDir(`${buildRoot}/src/music`);
+  await ensureDir(cacheRoot);
 
   // Raw music track data organised into banks
   const bankedData = [
@@ -50,6 +56,7 @@ const compileMusic = async ({
         buildRoot,
         buildToolsPath,
         projectRoot,
+        cacheRoot,
         progress,
         warnings,
       });
@@ -280,6 +287,7 @@ const compileTrack = async (
     buildRoot = "/tmp",
     buildToolsPath,
     projectRoot,
+    cacheRoot,
     progress = () => {},
     warnings = () => {},
   }
@@ -293,6 +301,17 @@ const compileTrack = async (
       : "mod2gbt";
 
   const modPath = assetFilename(projectRoot, "music", track, true);
+
+  const checksum = await checksumFile(modPath);
+
+  const compiledFilePath = `${buildRoot}/src/music/${track.dataName}.c`;
+  const cachedFilePath = `${cacheRoot}/${checksum}`;
+
+  if(await pathExists(cachedFilePath)) {
+    await copy(cachedFilePath, compiledFilePath);
+    return;
+  }
+
   const outputFile = process.platform === "win32" ? "output.c" : "music.c";
   const args = [`"${modPath}"`, track.dataName, "-c", 8]; // Replace bank 8 later
   progress(`Convert "${modPath}" to "${track.dataName}"`);
@@ -332,9 +351,11 @@ const compileTrack = async (
     });
   });
 
+  await copy(`${buildRoot}/${outputFile}`, cachedFilePath);
+
   await fs.move(
     `${buildRoot}/${outputFile}`,
-    `${buildRoot}/src/music/${track.dataName}.c`
+    compiledFilePath
   );
 };
 

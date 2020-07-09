@@ -1,9 +1,9 @@
 import glob from "glob";
 import Path from "path";
-import crypto from "crypto";
 import { promisify } from "util";
-import { ensureDir, createReadStream, copyFile, pathExists } from "fs-extra";
+import { ensureDir, copyFile, pathExists } from "fs-extra";
 import getTmp from "../helpers/getTmp";
+import { checksumFile, mergeChecksums, checksumString } from "../helpers/checksum";
 
 const globAsync = promisify(glob);
 
@@ -75,30 +75,4 @@ export const fetchCachedObjData = async (buildRoot, env) => {
       await copyFile(cacheFile, outFile);
     }
   }
-};
-
-const checksumFile = (path) => {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash("sha1");
-    const stream = createReadStream(path);
-    stream.on("error", (err) => reject(err));
-    stream.on("data", (chunk) => hash.update(chunk));
-    stream.on("end", () => resolve(hash.digest("hex")));
-  });
-};
-
-const checksumString = (string) => {
-  const hash = crypto.createHash("sha1");
-  hash.update(string);
-  return hash.digest("hex");
-};
-
-const mergeChecksums = (checksums) => {
-  const hash = crypto.createHash("sha1");
-
-  for (let i = 0; i < checksums.length; i++) {
-    hash.update(checksums[i]);
-  }
-
-  return hash.digest("hex");
 };
