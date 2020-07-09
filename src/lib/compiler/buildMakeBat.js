@@ -1,5 +1,6 @@
 import glob from "glob";
 import { promisify } from "util";
+import { pathExists } from "fs-extra";
 
 const globAsync = promisify(glob);
 
@@ -23,9 +24,16 @@ export default async (
   const buildFiles = await globAsync(srcRoot);
 
   for (const file of buildFiles) {
-    const objFile = `${file.replace(/src.*\//, "obj/").replace(/\.[cs]$/, "")}.o`;
-    if(file.indexOf("data/bank_") == -1 && file.indexOf("music/music_bank_") == -1) {
-     cmds.push(`${CC} ${CFLAGS} -c -o ${objFile} ${file}`);
+    const objFile = `${file
+      .replace(/src.*\//, "obj/")
+      .replace(/\.[cs]$/, "")}.o`;
+    if (
+      file.indexOf("data/bank_") === -1 &&
+      file.indexOf("music/music_bank_") === -1
+    ) {
+      if (!(await pathExists(objFile))) {
+        cmds.push(`${CC} ${CFLAGS} -c -o ${objFile} ${file}`);
+      }
     }
     objFiles.push(objFile);
   }
