@@ -69,6 +69,7 @@ export const EVENT_MSG_PRE_AVATARS = "Preparing avatars...";
 export const EVENT_MSG_PRE_SCENES = "Preparing scenes...";
 export const EVENT_MSG_PRE_EVENTS = "Preparing events...";
 export const EVENT_MSG_PRE_MUSIC = "Preparing music...";
+
 export const EVENT_MSG_PRE_COMPLETE = "Preparation complete";
 export const EVENT_MSG_COMPILING_EVENTS = "Compiling events...";
 
@@ -103,6 +104,12 @@ const compile = async (
     bankOffset,
     bankController: isMBC1(cartType) ? MBC1 : MBC5,
   });
+
+  // Add UI data
+  const fontImagePtr = banked.push(precompiled.fontTiles);
+  const frameImagePtr = banked.push(precompiled.frameTiles);
+  const cursorImagePtr = banked.push(precompiled.cursorTiles);
+  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -279,13 +286,6 @@ const compile = async (
       )
     );
   });
-
-
-  // Add UI data
-  const fontImagePtr = banked.push(precompiled.fontTiles);
-  const frameImagePtr = banked.push(precompiled.frameTiles);
-  const cursorImagePtr = banked.push(precompiled.cursorTiles);
-  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map((sprite) => {
@@ -487,14 +487,6 @@ const compile = async (
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
       `#include "BankData.h"\n` +
       `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
-      `#define START_SCENE_INDEX ${decHex16(startSceneIndex)}\n` +
-      `#define START_SCENE_X ${decHex(startX || 0)}\n` +
-      `#define START_SCENE_Y ${decHex(startY || 0)}\n` +
-      `#define START_SCENE_DIR_X ${startDirectionX}\n` +
-      `#define START_SCENE_DIR_Y ${startDirectionY}\n` +
-      `#define START_PLAYER_SPRITE ${playerSpriteIndex}\n` +
-      `#define START_PLAYER_MOVE_SPEED ${moveSpeedDec(startMoveSpeed)}\n` +
-      `#define START_PLAYER_ANIM_SPEED ${animSpeedDec(startAnimSpeed)}\n` +
       `#define FONT_BANK ${fontImagePtr.bank}\n` +
       `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
       `#define FRAME_BANK ${frameImagePtr.bank}\n` +
@@ -515,6 +507,14 @@ const compile = async (
     `extern const unsigned int bank_data_ptrs[];\n` +
     `extern const unsigned int music_tracks[];\n` +
     `extern const unsigned char music_banks[];\n` +
+    `extern unsigned int start_scene_index;\n` +
+    `extern int start_scene_x;\n` +
+    `extern int start_scene_y;\n` +
+    `extern char start_scene_dir_x;\n` +
+    `extern char start_scene_dir_y;\n` +
+    `extern unsigned int start_player_sprite;\n` +
+    `extern unsigned char start_player_move_speed;\n` +
+    `extern unsigned char start_player_anim_speed;\n` +
     `extern unsigned char script_variables[${
       precompiled.variables.length + 1
     }];\n${music
@@ -545,6 +545,14 @@ const compile = async (
     `\n};\n\n` +
     `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
+    `unsigned int start_scene_index = ${decHex16(startSceneIndex)};\n` +
+    `int start_scene_x = ${decHex((startX || 0) * 8)};\n` +
+    `int start_scene_y = ${decHex((startY || 0) * 8)};\n\n` +
+    `char start_scene_dir_x = ${startDirectionX};\n` +
+    `char start_scene_dir_y = ${startDirectionY};\n` +
+    `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +
+    `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
+    `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
     `unsigned char script_variables[${
       precompiled.variables.length + 1
     }] = { 0 };\n`;
