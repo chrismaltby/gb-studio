@@ -2,7 +2,6 @@
 #define BANK_DATA_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #ifdef __EMSCRIPTEN__
 #define BankDataPtr(bank) ((UBYTE *)bank_data_ptrs[(bank)])

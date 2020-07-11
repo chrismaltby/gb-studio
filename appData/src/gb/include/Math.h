@@ -2,7 +2,6 @@
 #define MATH_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #include "asm/types.h"
 

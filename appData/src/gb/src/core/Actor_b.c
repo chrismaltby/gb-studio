@@ -181,7 +181,6 @@ void ActivateActor_b(UBYTE i) {
   if (actors[i].movement_ptr.bank) {
     // ScriptStartBg(&actors[i].movement_ptr);
     actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr, i);
-    LOG("BG_SCRIPT START owner=%u ctx=%u\n", i, actors[i].movement_ctx);
   } else {
     actors[i].movement_ctx = 0;
   }
@@ -218,7 +217,6 @@ void DeactivateActor_b(UBYTE i) {
     SpritePoolReturn(actors[i].sprite_index);
     actors[i].sprite_index = 0;
     if (actors[i].movement_ctx) {
-      LOG("BG_SCRIPT STOP owner=%u ctx=%u\n", i, actors[i].movement_ctx);
       ScriptCtxPoolReturn(actors[i].movement_ctx, i);
     }
     actors_active[a] = actors_active[--actors_active_size];
@@ -283,7 +281,6 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_down = tile_y + 1;
       actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
       hit_actor = actors[i].hit_actor;
-      LOG("DIR DOWN %u [%u, %u]\n", hit_actor, tile_x, tile_down + 1);
       if (!TileAt2x2(tile_x, tile_down - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
         if (hit_actor == NO_ACTOR_COLLISON || hit_actor == i) {
@@ -304,25 +301,13 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
   tile_y = actors[i].pos.y >> 3;
 
   if (actors[i].dir.y == -1) {
-    LOG("CHECK HIT UP\n");
-    LOG_VALUE("check_x", tile_x);
-    LOG_VALUE("check_y", tile_y - 1);
     hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, TRUE);
   } else if (actors[i].dir.y == 1) {
-    LOG("CHECK HIT DOWN\n");
-    LOG_VALUE("check_x", tile_x);
-    LOG_VALUE("check_y", tile_y + 2);
     hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y + 2, TRUE);
   } else {
     if (actors[i].dir.x == -1) {
-      LOG("CHECK HIT LEFT\n");
-      LOG_VALUE("check_x", tile_x - 1);
-      LOG_VALUE("check_y", tile_y);
       hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
     } else if (actors[i].dir.x == 1) {
-      LOG("CHECK HIT RIGHT\n");
-      LOG_VALUE("check_x", tile_x + 2);
-      LOG_VALUE("check_y", tile_y);
       hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, TRUE);
     }
   }
@@ -449,29 +434,23 @@ UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
 UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   UBYTE i;
 
-  LOG("ActorAt3x1Tile [%u, %u] - %u\n", tx, ty, inc_noclip);
   for (i = actors_active_size - 1; i != 0xFF; i--) {
     UBYTE a = actors_active[i];
     UBYTE a_tx, a_ty;
-    LOG("ActorAt3x1Tile:1 %u %u\n", i, a);
 
     if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
       continue;
     }
 
-    LOG("ActorAt3x1Tile:2 %u %u\n", i, a);
 
     a_tx = DIV_8(actors[a].pos.x);
     a_ty = DIV_8(actors[a].pos.y);
 
-    LOG("ty=%u a_ty=%u tx=%u a_tx=%u\n", ty, a_ty, tx, a_tx);
 
     if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) {
-      LOG("ActorAt3x1Tile:3 %u %u\n", i, a);
       return a;
     }
   }
-  LOG("ActorAt3x1Tile:4 %u %u\n", i);
 
   return NO_ACTOR_COLLISON;
 }

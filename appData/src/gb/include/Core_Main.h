@@ -2,7 +2,6 @@
 #define CORE_MAIN_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 int core_start();
 void SetScene(UINT16 state);

@@ -20,10 +20,6 @@
 #include "data_ptrs.h"
 #include "main.h"
 
-#ifdef __EMSCRIPTEN__
-void game_loop();
-#endif
-
 UBYTE game_time;
 UINT16 next_state;
 UINT8 delta_time;
@@ -46,14 +42,12 @@ void vbl_update() {
   SCX_REG = scroll_x;
   SCY_REG = scroll_y;
 
-#ifndef __EMSCRIPTEN__
   if (music_mute_frames != 0) {
     music_mute_frames--;
     if (music_mute_frames == 0) {
       gbt_enable_channels(0xF);
     }
   }
-#endif
 }
 
 void lcd_update() {
@@ -79,6 +73,7 @@ void lcd_update() {
 }
 
 int core_start() {
+
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
     cpu_fast();
@@ -141,19 +136,8 @@ int core_start() {
   FadeInit();
   ScriptRunnerInit();
 
-#ifdef __EMSCRIPTEN__
-  emscripten_set_main_loop(game_loop, 60, 1);
-}
-
-void game_loop() {
-  emscripten_update_registers(SCX_REG, SCY_REG, WX_REG, WY_REG, LYC_REG, LCDC_REG, BGP_REG,
-                              OBP0_REG, OBP1_REG);
-
-  if (state_running) {
-#else
   while (1) {
     while (state_running) {
-#endif
 
     /* Game Core Loop Start *********************************/
 
@@ -212,9 +196,7 @@ void game_loop() {
 
     /* Game Core Loop End ***********************************/
   }
-#ifdef __EMSCRIPTEN__
-  else {
-#endif
+
 
     //  Switch Scene
 

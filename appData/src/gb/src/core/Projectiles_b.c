@@ -135,7 +135,6 @@ void UpdateProjectiles_b() {
   UINT16 screen_y;
 
   for (i = 0; i != MAX_PROJECTILES; i++) {
-    LOG("PROJECTILE::: i=%u life=%u\n", i, projectiles[i].life_time);
 
     if (projectiles[i].life_time != 0) {
       // Determine if projectile hit any actors

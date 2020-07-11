@@ -1115,7 +1115,7 @@ void Script_ActorPush_b() {
     return;
   }
 
-  LOG("PUSH1 Script_ActorPush_b\n");
+  
 
   if (script_cmd_args[0]) {
     // If pushing until collision set destination at scene bounds
@@ -1154,8 +1154,8 @@ void Script_ActorPush_b() {
 
   script_update_fn = ScriptUpdate_MoveActor;
 
-  LOG("DEST_X =%u\n", dest_x);
-  LOG("DEST_Y =%u\n", dest_y);
+  
+  
 }
 
 /*
@@ -1292,15 +1292,11 @@ void Script_ClearData_b() {
 void Script_IfSavedData_b() {
   UBYTE jump;
 
-#ifdef __EMSCRIPTEN__
-  jump = 0;
-#else
   ENABLE_RAM;
   RAMPtr = (UBYTE*)RAM_START_PTR;
   jump = 0;
   jump = *RAMPtr == TRUE;
   DISABLE_RAM;
-#endif
 
   if (jump) {  // True path, jump to position specified by ptr
     script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
@@ -1975,7 +1971,7 @@ void Script_TextMulti_b() {
   UBYTE mode;
   mode = script_cmd_args[0];
 
-  LOG("Script_TextMulti_b\n");
+  
 
   if (mode == 0) {
     tmp_text_out_speed = text_out_speed;
@@ -1990,7 +1986,7 @@ void Script_TextMulti_b() {
     text_out_speed = tmp_text_out_speed;
   }
 
-  LOG("Script_TextMulti_b DONE\n");
+  
 }
 
 /*

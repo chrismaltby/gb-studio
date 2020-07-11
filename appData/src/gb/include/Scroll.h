@@ -2,7 +2,6 @@
 #define SCROLL_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #include "Math.h"
 

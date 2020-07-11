@@ -40,7 +40,7 @@ WORD pl_pos_x = 16512;
 WORD pl_pos_y = 1024;
 
 void Start_Platform() {
-  LOG("START PLATFORM\n");
+  
 
   player.moving = FALSE;
   pl_pos_x = (player.pos.x + 4u) << 4;
@@ -63,7 +63,7 @@ void Start_Platform() {
   camera_deadzone.y = PLATFORM_CAMERA_DEADZONE_Y;
 
   game_time = 0;
-  LOG("END START PLATFORM\n");
+  
 }
 
 void Update_Platform() {

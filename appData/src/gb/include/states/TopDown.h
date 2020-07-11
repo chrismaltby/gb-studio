@@ -2,7 +2,6 @@
 #define STATE_TOP_DOWN_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 void Start_TopDown();
 void Update_TopDown();

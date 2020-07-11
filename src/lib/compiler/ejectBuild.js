@@ -34,10 +34,7 @@ const ejectBuild = async ({
   }
 
   await fs.ensureDir(`${outputRoot}/src/data`);
-  await fs.ensureDir(`${outputRoot}/node_modules`);
   await fs.ensureDir(`${outputRoot}/obj`);
-  await fs.ensureDir(`${outputRoot}/obj/music`);
-  await fs.ensureDir(`${outputRoot}/obj/data`);
   await fs.ensureDir(`${outputRoot}/build/rom`);
 
   for (const filename in compiledData.files) {

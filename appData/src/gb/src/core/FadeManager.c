@@ -19,14 +19,12 @@ void FadeInit() {
 }
 
 void FadeIn() {
-  LOG("FadeIn\n");
   PUSH_BANK(FADE_BANK);
   FadeIn_b();
   POP_BANK;
 }
 
 void FadeOut() {
-  LOG("FadeOut\n");
   PUSH_BANK(FADE_BANK);
   FadeOut_b();
   POP_BANK;

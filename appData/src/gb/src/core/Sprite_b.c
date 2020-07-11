@@ -48,6 +48,6 @@ void SpritePoolReturn_b(UINT8 i) {
 UINT8 SpritePoolNext_b() {
   UINT8 next = StackPop(sprite_pool);
   sprite_active_pool[sprite_active_pool_size++] = next;
-  LOG("SPRITE:: gotfrompool %u\n", next);
+  
   return next;
 }

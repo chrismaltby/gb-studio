@@ -61,7 +61,7 @@ void ScriptStart(BankPtr* events_ptr) {
   //   actors[a].moving = FALSE;
   // }
 
-  LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
+  
 
   script_variables[TMP_VAR_1] = 0;
   script_variables[TMP_VAR_2] = 0;
@@ -114,27 +114,27 @@ void ScriptRunnerUpdate() {
   script_await_next_frame = FALSE;
 
   if (script_update_fn) {
-    LOG("Has script_update_fn\n");
+    
     PUSH_BANK(SCRIPT_RUNNER_BANK);
     // player.pos.x = 0;
-    LOG("Has script_update_fn 1\n");
+    
 
     update_complete = (*(script_update_fn))();
-    LOG("Has script_update_fn 2 -- %d\n", update_complete);
+    
 
     // update_complete = TRUE;
     if (update_complete) {
-      LOG("Has script_update_fn 3\n");
+      
 
       script_update_fn = FALSE;
     }
-    LOG("Has script_update_fn 4\n");
+    
 
     POP_BANK;
   }
 
   if (!script_ptr_bank || script_update_fn) {
-    // LOG("STOPPED SCRIPT FOR NOW\n");
+    // 
     ScriptSaveCtx();
     script_ptr = 0;
     return;
@@ -152,7 +152,7 @@ void ScriptRunnerUpdate() {
       script_ptr = 0;
       return;
     }
-    LOG("SCRIPT FINISHED\n");
+    
     script_ptr_bank = 0;
     script_ptr = 0;
     script_actor = 0;
@@ -171,12 +171,12 @@ void ScriptRunnerUpdate() {
 
   // script_cmd_fn = script_cmds[script_cmd_index].fn;
 
-  // LOG("SCRIPT cmd [%u - %u] = %u (%u)\n", script_ptr_bank, script_ptr, script_cmd_index,
+  // 
   //     script_cmd_args_len);
 
   for (i = 0; i != script_cmd_args_len; i++) {
     script_cmd_args[i] = ReadBankedUBYTE(script_ptr_bank, script_ptr + i + 1);
-    // LOG("SCRIPT ARG-%u = %u\n", i, script_cmd_args[i]);
+    // 
   }
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
@@ -188,11 +188,11 @@ void ScriptRunnerUpdate() {
   }
   POP_BANK;
 
-  // LOG("script_await_next_frame = %u script_update_fn = %d\n", script_await_next_frame,
+  // 
   //     script_update_fn);
 
   if (!script_await_next_frame && !script_update_fn && ctx_cmd_remaining != 0) {
-    LOG("CONTINUE!\n");
+    
     ctx_cmd_remaining--;
     ScriptRunnerUpdate();
     return;
@@ -236,8 +236,6 @@ void ScriptRestoreCtx(UBYTE i) {
   if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
-  LOG("- UPDATE CTX=%u script_ctxs[i].owner=%u script_main_ctx_actor=%u\n", i, script_ctxs[i].owner,
-      script_main_ctx_actor);
   if (i == 0) {
     ctx_cmd_remaining = 255;
   } else {

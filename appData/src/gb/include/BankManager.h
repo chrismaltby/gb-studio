@@ -1,8 +1,6 @@
 #ifndef BANK_MANAGER_H
 #define BANK_MANAGER_H
 
-#include <gbdkjs.h>
-
 #include "Stack.h"
 
 #define SWITCH_ROM SWITCH_ROM_MBC5

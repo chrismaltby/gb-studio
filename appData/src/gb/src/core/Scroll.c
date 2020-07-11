@@ -80,7 +80,7 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
   pending_w_map = image_ptr + image_tile_width * y + x;
 
   for (i = 1; i != actors_len; i++) {
-    // LOG("CHECK ROW %u - %d - %u - %u\n", i, y, actors[i].pos.y, actors[i].pos.y >> 3);
+    // 
     if (actors[i].pos.y >> 3 == y) {
       ActivateActor(i);
     }
@@ -104,7 +104,7 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 
   PUSH_BANK(image_bank);
 
-  LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
+  
 
   screen_x = x;
   screen_y = MOD_32(y);

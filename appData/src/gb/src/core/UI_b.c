@@ -221,10 +221,10 @@ void UIShowText_b() {
 
   ui_block = TRUE;
 
-  LOG("UIShowText 6\n");
+  
 
   for (i = 1, k = 0; i < 81; i++) {
-    LOG("LOOP TEXT %i %i (%c)\n", i, tmp_text_lines[i], tmp_text_lines[i]);
+    
     // Replace variable references in text
     if (tmp_text_lines[i] == '$') {
       if (tmp_text_lines[i + 3] == '$') {
@@ -275,15 +275,15 @@ void UIShowText_b() {
     UISetPos(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y);
     UIMoveTo(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   } else {
-    LOG("tmp_text_lines = %u - %u - %u\n", tmp_text_lines[0], tmp_text_lines[1], tmp_text_lines[2]);
+    
     text_num_lines = MIN(tmp_text_lines[0], 4);
-    LOG("text_num_lines = %u \n", text_num_lines);
+    
     UIDrawDialogueFrame(text_num_lines);
     UISetPos(0, MENU_CLOSED_Y);
     UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
 
-  LOG("UIShowText 100\n");
+  
 
   text_drawn = FALSE;
   text_x = 0;
