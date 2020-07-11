@@ -785,20 +785,35 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
   const usedActors = Object.keys(actors).map((i) => `__parameter_A${i}`); 
   
   const patchCustomEventScript = event => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+    if (event.command !== EVENT_CALL_CUSTOM_EVENT ||
+      event.args.customEventId !== id) {
       return event;
     }
-    if (event.args.customEventId !== id) {
-      return event;
-    }
-    const newArgs = {...event.args};
+    const newArgs = {
+      ...event.args,
+    };
+
+    usedVariables.forEach((v) => {
+      // If the variable already exists in the arguments
+      // use the existing value
+      newArgs[v] = event.args[v] || 0;
+    });
+
+    usedActors.forEach((a) => {
+      // If the actor already exists in the arguments
+      // use the existing value
+      newArgs[a] = event.args[a] || "player"
+    });
+
     Object.keys(newArgs).forEach((k) => {
+      // If the argument isn't used, delete it
       if (k.startsWith("__parameter_") &&
         !usedVariables.find((v) => v === k) &&
         !usedActors.find((a) => a === k)) {
         delete newArgs[k];
       }
     });
+
     return {
       ...event,
       args: newArgs
