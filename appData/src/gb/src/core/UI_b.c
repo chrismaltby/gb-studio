@@ -101,6 +101,8 @@ const unsigned char win_tiles[] = {
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
 
+void UIDrawTextBufferChar_b();
+
 void UIInit_b() {
   UBYTE* ptr;
 
@@ -158,8 +160,8 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else {
-    UIDrawTextBuffer();
+  } else if(IS_FRAME_2 && !text_drawn) {
+    UIDrawTextBufferChar_b();
   }
 
   WX_REG = win_pos_x + 7;
