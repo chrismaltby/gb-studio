@@ -44,13 +44,18 @@ class BuildPage extends Component {
     deleteBuildCache();
   }
 
+  onToggleProfiling = () => {
+    const { setProfiling, profile } = this.props;
+    setProfiling(!profile);
+  }
+
   scrollToBottom = () => {
     const scrollEl = this.scrollRef.current;
     scrollEl.scrollTop = scrollEl.scrollHeight;
   };
 
   render() {
-    const { output, warnings, status } = this.props;
+    const { output, warnings, status, profile } = this.props;
 
     // Only show the latest 100 lines during build
     // show full output on complete
@@ -64,7 +69,7 @@ class BuildPage extends Component {
           width: "100%",
           height: "calc(100vh - 38px)",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <div
@@ -76,7 +81,7 @@ class BuildPage extends Component {
             padding: 20,
             fontFamily: "monospace",
             overflow: "auto",
-            userSelect: "text"
+            userSelect: "text",
           }}
         >
           {outputLines.map((out, index) => (
@@ -113,7 +118,21 @@ class BuildPage extends Component {
             </Button>
             <Button onClick={this.onDeleteCache}>
               {l10n("BUILD_EMPTY_BUILD_CACHE")}
-            </Button>            
+            </Button>
+            {process.env.NODE_ENV !== "production" && (
+              <>
+                <ButtonToolbarFixedSpacer style={{ width: 10 }} />
+                <label htmlFor="enableProfile">
+                  <input
+                    id="enableProfile"
+                    type="checkbox"
+                    checked={profile}
+                    onClick={this.onToggleProfiling}
+                  />{" "}
+                  Enable BGB Profiling
+                </label>
+              </>
+            )}
             <ButtonToolbarSpacer />
             <Button onClick={this.onClear}>{l10n("BUILD_CLEAR")}</Button>
           </ButtonToolbar>
@@ -124,6 +143,7 @@ class BuildPage extends Component {
 }
 
 BuildPage.propTypes = {
+  profile: PropTypes.bool.isRequired,
   status: PropTypes.string.isRequired,
   output: PropTypes.arrayOf(
     PropTypes.shape({
@@ -138,21 +158,25 @@ BuildPage.propTypes = {
     })
   ).isRequired,
   buildGame: PropTypes.func.isRequired,
-  consoleClear: PropTypes.func.isRequired
+  consoleClear: PropTypes.func.isRequired,
+  deleteBuildCache: PropTypes.func.isRequired,
+  setProfiling: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     status: state.console.status,
     output: state.console.output,
-    warnings: state.console.warnings
+    warnings: state.console.warnings,
+    profile: state.editor.profile
   };
 }
 
 const mapDispatchToProps = {
   consoleClear: actions.consoleClear,
   buildGame: actions.buildGame,
-  deleteBuildCache: actions.deleteBuildCache
+  deleteBuildCache: actions.deleteBuildCache,
+  setProfiling: actions.setProfiling,
 };
 
 export default connect(

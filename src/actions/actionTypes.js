@@ -131,7 +131,7 @@ export const OPEN_HELP = "OPEN_HELP";
 export const OPEN_FOLDER = "OPEN_FOLDER";
 export const BUILD_GAME = "BUILD_GAME";
 export const DELETE_BUILD_CACHE = "DELETE_BUILD_CACHE";
-
+export const SET_PROFILING = "SET_PROFILING";
 export const PLAY_MUSIC = "PLAY_MUSIC";
 export const PAUSE_MUSIC = "PAUSE_MUSIC";
 

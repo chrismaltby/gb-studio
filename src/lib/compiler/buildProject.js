@@ -14,6 +14,7 @@ const buildProject = async (
     buildType = "rom",
     projectRoot = "/tmp",
     tmpPath = "/tmp",
+    profile = false,
     outputRoot = "/tmp/testing",
     progress = (_msg) => {},
     warnings = (_msg) => {},
@@ -65,6 +66,7 @@ const buildProject = async (
     buildType,
     cartSize,
     data,
+    profile,
     progress,
     warnings,
   });

@@ -46,7 +46,8 @@ export default {
     showLayers: true,
     lastScriptTab: "",
     lastScriptTabScene: "",
-    lastScriptTabSecondary: ""
+    lastScriptTabSecondary: "",
+    profile: false
   },
   navigation: {
     section: "world",

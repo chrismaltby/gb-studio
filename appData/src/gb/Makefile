@@ -10,6 +10,10 @@ CFLAGS += -DCGB
 LFLAGS += -Wl-yp0x143=0x80
 endif
 
+ifdef PROFILE
+CFLAGS += -Wf--profile
+endif
+
 ASM = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.s))) 
 CLASSES = $(foreach dir,src,$(notdir $(wildcard $(dir)/*.c))) 
 CORE_CLASSES = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.c))) 

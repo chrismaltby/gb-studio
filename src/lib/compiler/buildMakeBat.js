@@ -6,7 +6,7 @@ const globAsync = promisify(glob);
 
 export default async (
   buildRoot,
-  { CART_TYPE, CART_SIZE, customColorsEnabled }
+  { CART_TYPE, CART_SIZE, customColorsEnabled, profile }
 ) => {
   const cmds = ["set __COMPAT_LAYER=WIN7RTM"];
   const objFiles = [];
@@ -18,6 +18,10 @@ export default async (
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
     LFLAGS += " -Wl-yp0x143=0x80";
+  }
+
+  if (profile) {
+    CFLAGS += " -Wf--profile";
   }
 
   const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;

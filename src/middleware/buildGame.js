@@ -43,6 +43,7 @@ export default store => next => async action => {
         buildType,
         outputRoot,
         tmpPath: getTmp(),
+        profile: state.editor.profile,
         progress: (message) => {
           if (
             message !== "'" &&

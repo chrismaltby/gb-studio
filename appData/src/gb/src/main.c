@@ -15,11 +15,6 @@ const Void_Func_Void updateFuncs[] = {0, Update_TopDown, Update_Platform, Update
 const UBYTE stateBanks[] = {0, 5, 5, 5, 5, 5};
 
 int main() {
-    
-    BGB_PROFILE_BEGIN();
-    __asm__("nop");
-    BGB_PROFILE_END(NOP TIME);
-
     core_start();
     return 0;
 }
