@@ -13,6 +13,10 @@ void SeedRand();
 #define IS_NEG(a) ((UBYTE)(a)&0x80)
 
 #define U_LESS_THAN(A, B) ((A) - (B)&0x8000u)
+#define UBYTE_LESS_THAN(A, B) ((A) - (B)&0x80u)
+
+#define U_GT_THAN(A, B) ((B) - (A)&0x8000u)
+#define UBYTE_GT_THAN(A, B) ((B) - (A)&0x80u)
 
 #define DISTANCE(A, B) (U_LESS_THAN(A, B) ? (B - A) : (A - B))
 

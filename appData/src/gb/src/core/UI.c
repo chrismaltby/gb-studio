@@ -62,6 +62,7 @@ unsigned char tmp_text_lines[80] = "";
 void UIInit() {
   PUSH_BANK(UI_BANK);
   ui_block = FALSE;
+  text_drawn = TRUE;
   UIInit_b();
   POP_BANK;
 }
@@ -155,7 +156,7 @@ void UIShowMenu(UWORD flag_index,
 
 void UIDrawTextBuffer() {
   PUSH_BANK(UI_BANK);
-  if (IS_FRAME_2) {
+  if (IS_FRAME_2 && !text_drawn) {
     UIDrawTextBufferChar_b();
   }
   POP_BANK;
