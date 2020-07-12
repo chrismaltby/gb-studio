@@ -39,6 +39,11 @@ class BuildPage extends Component {
     buildGame({ buildType, exportBuild: true });
   };
 
+  onDeleteCache = () => {
+    const { deleteBuildCache } = this.props;
+    deleteBuildCache();
+  }
+
   scrollToBottom = () => {
     const scrollEl = this.scrollRef.current;
     scrollEl.scrollTop = scrollEl.scrollHeight;
@@ -106,6 +111,9 @@ class BuildPage extends Component {
             <Button onClick={this.onBuild("web")}>
               {l10n("BUILD_EXPORT_WEB")}
             </Button>
+            <Button onClick={this.onDeleteCache}>
+              {l10n("BUILD_EMPTY_BUILD_CACHE")}
+            </Button>            
             <ButtonToolbarSpacer />
             <Button onClick={this.onClear}>{l10n("BUILD_CLEAR")}</Button>
           </ButtonToolbar>
@@ -143,7 +151,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   consoleClear: actions.consoleClear,
-  buildGame: actions.buildGame
+  buildGame: actions.buildGame,
+  deleteBuildCache: actions.deleteBuildCache
 };
 
 export default connect(
