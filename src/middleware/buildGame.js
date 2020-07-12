@@ -1,5 +1,4 @@
 import { ipcRenderer, remote } from "electron";
-import uuid from "uuid/v4";
 import Path from "path";
 import {
   BUILD_GAME,
@@ -18,7 +17,7 @@ import { promisify } from "util";
 
 const rmdir = promisify(rimraf);
 
-const buildUUID = uuid();
+const buildUUID = "_gbsbuild";
 
 export default store => next => async action => {
   if (action.type === BUILD_GAME) {
