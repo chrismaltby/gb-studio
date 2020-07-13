@@ -19,6 +19,7 @@
 #include "gbt_player.h"
 #include "data_ptrs.h"
 #include "main.h"
+#include <gb/bgb_emu.h>
 
 UBYTE game_time;
 UINT16 next_state;
@@ -188,7 +189,12 @@ int core_start() {
       ScriptRestoreCtx(11);
 
       // Reposition actors and check for collisions
-      MoveActors();
+      __critical {
+        BGB_PROFILE_BEGIN();
+        MoveActors();
+        BGB_PROFILE_END(MOVE_ACTORS);
+      }
+
       ActorRunCollisionScripts();
     }
 

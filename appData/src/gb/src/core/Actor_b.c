@@ -16,7 +16,7 @@
 
 UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 
-void MoveActors_b() {
+void MoveActors_bc() {
   UBYTE i, a;
   UBYTE actor_time;
   actor_time = game_time >> 2;
