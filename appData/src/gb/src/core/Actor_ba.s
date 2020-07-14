@@ -1,3 +1,5 @@
+.area _CODE_1
+
 .macro _signed_add_a regH regL ?lbl
         ; If A is negative, we need
         ; to substract $100 from HL
@@ -16,416 +18,155 @@
         ld    regH, a
 .endm
 
-.macro _load16 regH regL ptr
-    ; Load position into de (little endian)
-        ld hl, ptr
-        ld regL, (hl)
-        inc hl
-        ld regH, (hl)
+.macro _add_a regH regL
+        ; Then do addition as usual
+        ; (to handle the "lower byte")
+        add   a, regL
+        ld    regL, a
+        adc   a, regH
+        sub   regL
+        ld    regH, a
 .endm
 
 _MoveActors_b::
+    ; b=loop index
+        ld b, #0                                ;; b = 0
+    loop_cond:
+    ; If b == actors_active_size * 2 (each array item is 2 byte addr)
+        ld hl, #_actors_active_size             ;; hl = *actors_active_size
+        ld a, (hl)                              ;; a = actors_active_size
+        add a, a                                ;; a = actors_active_size * 2
+        cp b                                    ;; compare a and b
+        jp z, loop_exit                         ;; if b == a goto loop_exit
+        push bc                                 ;; store loop index
 
-    ; ; Debug set win pos to top left
-    ;     ; ld	hl, #_win_pos_x
-    ;     ; ld	(hl), #0x00
-    ;     ; ld	hl, #_win_pos_y
-    ;     ; ld	(hl), #0x00
+    ; Set hl to actor_ptrs
+        ld hl, #_actor_ptrs
 
-    ;     ld b, #0                                ;; b = 0
-    ; loop_cond:
-    ;     ld hl, #_actors_active_size             ;; hl = *actors_active_size
-    ;     ld a, (hl)                              ;; a = actors_active_size
-    ;     cp b                                    ;; compare a and b
-    ;     jp z, loop_exit                         ;; if b == a goto loop_exit
+    ; Add index offset to hl
+        ld a, b
+        _add_a h l 
 
+    ; Load current actor addr into bc
+        ld b, (hl)
+        inc hl
+        ld c, (hl)
 
-    ; ; Load actor index
-    ;     ld 
+    ; Set hl to current actor addr and store on stack
+        ld h, c
+        ld l, b
+        push hl
 
-
-    ;     inc b                                   ;; b++
-    ;     jp loop_cond                            ;; goto loop_cond
-    ; loop_exit:
-
-        ; ld 
-
-
-    ; Debug set win pos x to b
-        ; ld	hl, #_win_pos_x
-        ; ld	(hl), b
-
-
-    ; Debug reposition player
-
-    ; Load moving into hl
-        ld hl, #(_actors + 7)
+    ; Load moving into a
+        ld a, #7
+        _add_a h l
         ld a, (hl)
+
+    ; If not moving skip to next active actor
         cp a, #0
-        jp z, not_moving
+        jp z, next_actor
+
+    ; Load movespeed into a
+        pop hl
+        push hl
+        ld a, #4
+        _add_a h l
+        ld a, (hl)
+
+    ; If movespeed isn't zero carry on to movement
+        cp a, #0
+        jp nz, move_start
+
+    ; If move speed is 0 and not frame 2 skip this movement
+        ld hl, #_is_frame_2
+        add a, (hl)
+        cp a, #0
+        jp nz, next_actor
+
+    ; Set move speed to 1 if moving this frame
+        ld a, #1
+
+    move_start:
+    ; Store current move speed in c
+        ld c, a
 
     move_x:
+    ; Reset hl to struct start
+        pop hl
+        push hl
 
     ; Load dirx into a
-        ld hl, #(_actors + 5)        
+        inc hl      
+        inc hl  
+        inc hl  
+        inc hl  
+        inc hl
         ld a, (hl)        
 
     ; If not moving x skip to y
         cp a, #0
         jp z, move_y
 
-    ; ; Load position into de (little endian)
-    ;     ld hl, #_actors
-    ;     ld e, (hl)
-    ;     inc hl
-    ;     ld d, (hl)
+    ; Load current pos x into de
+        pop hl
+        push hl
+        ld e, (hl)
+        inc hl
+        ld d, (hl)
 
-        _load16 d e ^/#(_actors)/
-
-
-
-
-    ; 
-
-    ; ; Increment position
-        ; inc de
-
-        ; ld hl, (hl)
-
-    ;     ; ld	(hl), #0x80
-        ; ld a, #1
-
-    
-    ; Add a to hl
-        ; add   a, e    ; A = A+L
-        ; ld    e, a    ; L = A+L
-        ; adc   a, d    ; A = A+L+H+carry
-        ; sub   e       ; A = H+carry
-        ; ld    d, a    ; H = H+carry
-
-    ; add   a, e    ; A = A+L
-    ; ld    e, a    ; L = A+L
-    ; adc   a, d    ; A = A+L+H+carry
-    ; sub   e       ; A = H+carry
-    ; ld    d, a    ; H = H+carry
-
-
-
-    ; If A is negative, we need
-    ; to substract $100 from HL
-    ; (since A's "upper byte" is
-    ; $FF00)
-;         bit 7, a                ; set z if a signed bit is 0
-;         jp z, positive          ; if z is set jump to positive
-;         dec   d                 ; if negative decrement upper byte
-;     positive:
-    
-; ;     ; Then do addition as usual
-; ;     ; (to handle the "lower byte")
-;     add   a, e
-;     ld    e, a
-;     adc   a, d
-;     sub   e
-;     ld    d, a
-
-
+    ; Add dirx to posx
         _signed_add_a d e
 
-    ; Set player position from de
-        ld hl, #_actors
-        ld (hl), e
-        inc hl
+    ; Set player x position from de
         ld (hl), d
+        dec hl
+        ld (hl), e
 
     move_y:
-    ; Load dir into a
-        ld hl, #(_actors + 6)        
-        ld a, (hl)
+    ; Reset hl to struct start
+        pop hl
+        push hl
+
+    ; Load diry into a
+        ld a, #6
+        _add_a h l
+        ld a, (hl)   
 
     ; If not moving y skip to end
         cp a, #0
-        jp z, not_moving
+        jp z, move_check
 
+    ; Load current pos y into de
+        pop hl
+        push hl
+        inc hl
+        inc hl        
+        ld e, (hl)
+        inc hl
+        ld d, (hl)
 
-        ; ld a, #-1
-; 
-        _load16 d e ^/#(_actors + 2)/
-
+    ; Add diry to posy
         _signed_add_a d e
 
-    ; Set player position from de
-        ld hl, #(_actors + 2)
-        ld (hl), e
-        inc hl
+    ; Set player y position from de
         ld (hl), d
+        dec hl
+        ld (hl), e
 
-    not_moving:
+    move_check:
+    ; If move speed (in c) was > 1 repeat move cmds until c reaches 0
+        dec c
+        ld a, c
+        cp a, #0
+        jp nz, move_x
 
+    next_actor:
+    ; Clear current actor from stack
+        pop hl
+    ; Restore loop index from stack
+        pop bc                                  ;; retreive b as loop index
+        inc b                                   ;; b++
+        inc b                                   ;; b++
+        jp loop_cond                            ;; goto loop_cond
+    loop_exit:
         ret
-
-; 	add	sp, #-14
-; ;src/core/Actor_b.c:26: for (i = 0; i != actors_active_size; i++) {
-; 	xor	a, a
-; 	ldhl	sp,	#13
-; 	ld	(hl), a
-; 00110$:
-; 	ld	hl, #_actors_active_size
-; 	ld	a, (hl)
-; 	ldhl	sp,	#13
-; 	sub	a, (hl)
-; 	jp	Z,00112$
-; ;src/core/Actor_b.c:27: a = actors_active[i];
-; 	ld	de, #_actors_active
-; 	ldhl	sp,	#13
-; 	ld	l, (hl)
-; 	ld	h, #0x00
-; 	add	hl, de
-; 	ld	c, l
-; 	ld	b, h
-; 	ld	a, (bc)
-; ;src/core/Actor_b.c:29: if (actors[a].moving) {
-; 	ld	c, a
-; 	ld	b, #0x00
-; 	ld	l, c
-; 	ld	h, b
-; 	add	hl, hl
-; 	add	hl, bc
-; 	add	hl, hl
-; 	add	hl, hl
-; 	add	hl, hl
-; 	add	hl, hl
-; 	ld	c, l
-; 	ld	b, h
-; 	ld	hl, #_actors
-; 	add	hl, bc
-; 	ld	c, l
-; 	ld	b, h
-; 	ld	hl, #0x0015
-; 	add	hl, bc
-; 	ld	a, l
-; 	ld	d, h
-; 	ldhl	sp,	#11
-; 	ld	(hl+), a
-; 	ld	(hl), d
-; 	dec	hl
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	or	a, a
-; 	jp	Z, 00111$
-; ;src/core/Actor_b.c:30: if (actors[a].move_speed == 0) {
-; 	ld	hl, #0x0016
-; 	add	hl, bc
-; 	inc	sp
-; 	inc	sp
-; 	push	hl
-; 	pop	de
-; 	push	de
-; 	ld	a,(de)
-; 	ldhl	sp,	#2
-; 	ld	(hl), a
-; ;src/core/Actor_b.c:33: actors[a].pos.x += (WORD)actors[a].dir.x;
-; 	ld	hl, #0x0003
-; 	add	hl, bc
-; 	ld	a, l
-; 	ld	d, h
-; 	ldhl	sp,	#3
-; 	ld	(hl+), a
-; 	ld	(hl), d
-; 	ld	hl, #0x000d
-; 	add	hl, bc
-; 	ld	a, l
-; 	ld	d, h
-; 	ldhl	sp,	#5
-; 	ld	(hl+), a
-; 	ld	(hl), d
-; ;src/core/Actor_b.c:34: actors[a].pos.y += (WORD)actors[a].dir.y;
-; 	ld	hl, #0x0005
-; 	add	hl, bc
-; 	ld	a, l
-; 	ld	d, h
-; 	ldhl	sp,	#7
-; 	ld	(hl+), a
-; 	ld	(hl), d
-; 	ld	hl, #0x000e
-; 	add	hl, bc
-; 	ld	a, l
-; 	ld	d, h
-; 	ldhl	sp,	#9
-; 	ld	(hl+), a
-; 	ld	(hl), d
-; ;src/core/Actor_b.c:30: if (actors[a].move_speed == 0) {
-; 	ldhl	sp,	#2
-; 	ld	a, (hl)
-; 	or	a, a
-; 	jp	NZ, 00104$
-; ;src/core/Actor_b.c:32: if (IS_FRAME_2) {
-; 	ld	hl, #_game_time
-; 	ld	a, (hl)
-; 	rrca
-; 	jp	C,00111$
-; ;src/core/Actor_b.c:33: actors[a].pos.x += (WORD)actors[a].dir.x;
-; 	ldhl	sp,#(4 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ldhl	sp,	#11
-; 	ld	(hl+), a
-; 	inc	de
-; 	ld	a, (de)
-; 	ld	(hl), a
-; 	ldhl	sp,#(6 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ld	c, a
-; 	rla
-; 	sbc	a, a
-; 	ld	b, a
-; 	ldhl	sp,	#11
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	add	hl, bc
-; 	ld	c, l
-; 	ld	b, h
-; 	ldhl	sp,	#3
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	ld	(hl), c
-; 	inc	hl
-; 	ld	(hl), b
-; ;src/core/Actor_b.c:34: actors[a].pos.y += (WORD)actors[a].dir.y;
-; 	ldhl	sp,#(8 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ldhl	sp,	#11
-; 	ld	(hl+), a
-; 	inc	de
-; 	ld	a, (de)
-; 	ld	(hl-), a
-; 	dec	hl
-; 	dec	hl
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ld	c, a
-; 	rla
-; 	sbc	a, a
-; 	ld	b, a
-; 	inc	hl
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	add	hl, bc
-; 	ld	c, l
-; 	ld	b, h
-; 	ldhl	sp,	#7
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	ld	(hl), c
-; 	inc	hl
-; 	ld	(hl), b
-; 	jp	00111$
-; 00104$:
-; ;src/core/Actor_b.c:37: actors[a].pos.x += (WORD)(actors[a].dir.x * actors[a].move_speed);
-; 	ldhl	sp,#(4 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ldhl	sp,	#11
-; 	ld	(hl+), a
-; 	inc	de
-; 	ld	a, (de)
-; 	ld	(hl), a
-; 	ldhl	sp,#(6 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ld	b, a
-; 	ldhl	sp,	#2
-; 	ld	a, (hl)
-; 	push	af
-; 	inc	sp
-; 	push	bc
-; 	inc	sp
-; 	call	__muluschar
-; 	add	sp, #2
-; 	ld	c, e
-; 	ld	b, d
-; 	ldhl	sp,	#11
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	add	hl, bc
-; 	ld	c, l
-; 	ld	b, h
-; 	ldhl	sp,	#3
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	ld	(hl), c
-; 	inc	hl
-; 	ld	(hl), b
-; ;src/core/Actor_b.c:38: actors[a].pos.y += (WORD)(actors[a].dir.y * actors[a].move_speed);        
-; 	ldhl	sp,#(8 - 1)
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ldhl	sp,	#11
-; 	ld	(hl+), a
-; 	inc	de
-; 	ld	a, (de)
-; 	ld	(hl-), a
-; 	dec	hl
-; 	dec	hl
-; 	ld	e, (hl)
-; 	inc	hl
-; 	ld	d, (hl)
-; 	ld	a,(de)
-; 	ld	b, a
-; 	pop	de
-; 	push	de
-; 	ld	a,(de)
-; 	push	af
-; 	inc	sp
-; 	push	bc
-; 	inc	sp
-; 	call	__muluschar
-; 	add	sp, #2
-; 	ld	c, e
-; 	ld	b, d
-; 	ldhl	sp,	#11
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	add	hl, bc
-; 	ld	c, l
-; 	ld	b, h
-; 	ldhl	sp,	#7
-; 	ld	a, (hl+)
-; 	ld	h, (hl)
-; 	ld	l, a
-; 	ld	(hl), c
-; 	inc	hl
-; 	ld	(hl), b
-; 00111$:
-; ;src/core/Actor_b.c:26: for (i = 0; i != actors_active_size; i++) {
-; 	ldhl	sp,	#13
-; 	inc	(hl)
-; 	jp	00110$
-; 00112$:
-; ;src/core/Actor_b.c:42: }
-; 	add	sp, #14
-; 	ret

@@ -42,8 +42,6 @@
 #define PlayerOnTile16() (ActorOnTile16(0))
 #define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
-
-
 typedef struct {
   Pos pos;  // 0
   UBYTE move_speed; // 4
@@ -73,9 +71,11 @@ typedef struct {
   BankPtr hit_2_ptr; // 39
   BankPtr hit_3_ptr; // 42  
   UBYTE movement_ctx; // 45
-} Actor; // 46
+} Actor;
 
 extern Actor actors[MAX_ACTORS];
+extern Actor* actor_ptrs[MAX_ACTORS];
+
 extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
@@ -84,6 +84,8 @@ extern UWORD map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
 extern UBYTE player_iframes;
+
+void ActorsInit();
 
 /**
  * Move all actors positions based on their current velocities

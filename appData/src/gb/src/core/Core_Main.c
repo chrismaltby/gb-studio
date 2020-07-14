@@ -22,6 +22,7 @@
 #include <gb/bgb_emu.h>
 
 UBYTE game_time;
+UBYTE is_frame_2;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
@@ -136,6 +137,7 @@ int core_start() {
   UIInit();
   FadeInit();
   ScriptRunnerInit();
+  ActorsInit();
 
   while (1) {
     while (state_running) {
@@ -154,6 +156,8 @@ int core_start() {
       // https://stackoverflow.com/a/50705674
       recent_joy = joy & ~last_joy;
     }
+
+    is_frame_2 = IS_FRAME_2;
 
     UpdateCamera();
     RefreshScroll();

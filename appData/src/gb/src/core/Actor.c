@@ -25,6 +25,7 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip);
 void ActorRunCollisionScripts_b();
 
 Actor actors[MAX_ACTORS];
+Actor* actor_ptrs[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_size = 0;
 UBYTE actor_move_settings;
@@ -33,6 +34,13 @@ Pos map_next_pos;
 Vector2D map_next_dir;
 UWORD map_next_sprite = 0;
 UBYTE player_iframes;
+
+void ActorsInit() {
+  UBYTE i;
+  for (i = 0; i != MAX_ACTORS; i++) {
+    actor_ptrs[i] = &actors[i];
+  }
+}
 
 void MoveActors() {
   PUSH_BANK(ACTOR_BANK);

@@ -14,5 +14,6 @@
 #define IS_FRAME_ODD ((game_time & 0x1) == 1)
 
 extern UBYTE game_time;
+extern UBYTE is_frame_2;
 
 #endif
