@@ -157,7 +157,6 @@ int core_start() {
       recent_joy = joy & ~last_joy;
     }
 
-    is_frame_2 = IS_FRAME_2;
 
     UpdateCamera();
     RefreshScroll();
@@ -167,7 +166,7 @@ int core_start() {
     UIUpdate();
     FadeUpdate();
 
-    if (!script_ctxs[0].script_ptr_bank && !UIIsBlocking()) {
+    if (!script_ctxs[0].script_ptr_bank && !ui_block) {
       HandleInputScripts();
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
@@ -178,7 +177,7 @@ int core_start() {
 
     ScriptRestoreCtx(0);
 
-    if (!UIIsBlocking()) {
+    if (!ui_block) {
       // Run background scripts
       ScriptRestoreCtx(1);
       ScriptRestoreCtx(2);
@@ -203,6 +202,7 @@ int core_start() {
     }
 
     game_time++;
+    is_frame_2 = IS_FRAME_2;
 
     /* Game Core Loop End ***********************************/
   }
