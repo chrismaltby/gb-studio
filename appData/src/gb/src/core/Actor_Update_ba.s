@@ -31,12 +31,44 @@ _UpdateActors_b::
         push hl
 
     check_if_pinned:
+        ld a, #22
+        _add_a h, l
+        ld a, (hl)
+        cp a, #0
+        jp z, handle_unpinned
 
+    handle_pinned:
+    
         ; load pos y push to stack
         ; load pos x push to stack
         ; jp move_sprite_pair
 
+    ; Load current pos in de (only lowest bytes)
+        pop hl
+        push hl
+        ld a, (hl)
+        add a, #8
+        ld e, a
+        inc hl
+        inc hl
+        ld a, (hl)
+        add a, #8
+        ld d, a
+        push de
+
+    ; Get sprite index into a
+        ld a, #7 ; ptr currently at actor.pos.y(2)
+        _add_a h, l
+        ld a, (hl)
+        push	af
+        inc	sp
+
+        jp move_sprite_pair
+
     handle_unpinned:
+
+        pop hl
+        push hl
 
     ; Load current pos y in e (only lowest byte)
         inc hl
