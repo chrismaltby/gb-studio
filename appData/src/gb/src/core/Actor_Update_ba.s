@@ -1,5 +1,9 @@
 .include "asm.macros.s"
 
+    .PINNED_OFFSET = 0x16
+    .SPRITE_INDEX_OFFSET = 0x09
+    .RERENDER_OFFSET = 0x14
+
 _UpdateActors_b::
 
     ; b=loop index
@@ -31,7 +35,7 @@ _UpdateActors_b::
         push hl
 
     check_if_pinned:
-        ld a, #22
+        ld a, #.PINNED_OFFSET
         _add_a h, l
         ld a, (hl)
         cp a, #0
@@ -53,7 +57,7 @@ _UpdateActors_b::
         push de
 
     ; Get sprite index into a
-        ld a, #7 ; ptr currently at actor.pos.y(2)
+        ld a, #(.SPRITE_INDEX_OFFSET - 2) ; ptr currently at actor.pos.y(2)
         _add_a h, l
         ld a, (hl)
         push	af
@@ -103,7 +107,7 @@ _UpdateActors_b::
         inc	sp
 
     ; Get sprite index into a
-        ld a, #9
+        ld a, #.SPRITE_INDEX_OFFSET
         _add_a h, l
         ld a, (hl)
         push	af
@@ -133,7 +137,35 @@ _UpdateActors_b::
 
     handle_anim_update:
 
+        ; pop hl
+        ; push hl
 
+    ; Check if frame is 8 
+        ld hl, #_is_frame_8
+        ld a, (hl)
+        cp a, #0
+        jp nz, check_rerender
+    
+    ; Handle animation update
+
+    ; =======
+    ; @todo update frame here
+    ; ========
+
+    check_rerender:
+
+        pop hl
+        push hl
+
+    ; Get rerender value into a
+        ld a, #.RERENDER_OFFSET
+        _add_a h, l
+        ld a, (hl)  
+        cp a, #1
+        jp nz, skip_rerender
+
+    ; Clear rerender value
+        ld (hl), #0
 
     handle_rerender:
 
@@ -141,13 +173,16 @@ _UpdateActors_b::
         push hl
 
     ; Get sprite index into c
-        ld a, #9
+        ld a, #.SPRITE_INDEX_OFFSET
         _add_a h, l
         ld c, (hl)
 
     ; Get tile_index into b
         dec hl
         ld a, (hl)
+    ; =======
+    ; @todo also include frame offsets here
+    ; ========
         add a, a
         add a, a        
         ld b, a
@@ -165,143 +200,11 @@ _UpdateActors_b::
         call _set_sprite_tile
         add	sp, #2
 
+    ; =======
+    ; @todo set sprite props
+    ; ========
+
     skip_rerender:
-
-
-
-        ; ldhl sp, #0
-        ; ld	a, (hl)
-
-
-
-
-
-
-    ; ldhl	sp,	#4
-    ; ld	a, (hl)
-    ; push	af
-    ; inc	sp
-    ; dec	hl
-    ; ld	a, (hl)
-    ; push	af
-    ; inc	sp
-    ; dec	hl
-    ; ld	a, (hl)
-    ; push	af
-    ; inc	sp
-    ; call	_move_sprite
-    ; add	sp, #3
-
-
-
-
-        ; ldhl	sp,	#-3
-        ; ld a, (hl)
-        ; ld a, #0x50
-
-        ; push	af
-        ; inc	sp
-        ; dec hl
-
-        ; ld a, (hl)
-        ; ld a, #0x20
-        ; push	af
-        ; inc	sp
-        ; dec hl
-
-        ; ld a, (hl)
-        ; ; inc a
-        ; ; add a, #2
-        ; ; ld a, #2
-        ; push	af
-        ; inc	sp        
-        ; dec hl
-
-        ; call	_move_sprite
-        ; add	sp, #3
-
-
-        ; ld hl, #0x0000
-        ; dec sp
-        ; pop af
-        ; dec sp
-        ; pop af
-        ; dec sp
-        ; dec sp
-        ; dec sp
-        ; pop af        
-        ; pop a
-
-        
-
-
-        ; ; lda hl, (sp)
-        ; ; lda	hl,1(sp)
-        ; ; add	sp, #1
-        ; ; Increase sprite offset by 1
-        ; inc sp
-        ; ; lda hl, (sp)
-        ; ; lda 
-        ; ld hl, #0x0030
-        ; ld (sp), hl
-
-        ; inc sp
-
-
-        ; inc sp
-        
-
-    ; ; Move sprite (right) using gbdk fn
-    ;     ld	a, #0x60
-    ;     push	af
-    ;     inc	sp
-    ;     ld	a, c
-    ;     add a, #0x08        
-    ;     push	af
-    ;     inc	sp
-    ;     ld	a, #0x02
-    ;     push	af
-    ;     inc	sp
-    ;     call	_move_sprite
-    ;     add	sp, #3
-
-        ; pop hl
-
-
-
-
-    ; Move sprite manually - doesn't work because need to be in vblank
-    ; https://www.chibiakumas.com/z80/platform3.php#LessonP30
-        ; ld hl, #(0xFE00 + 36)
-        ; ld (hl), #0x30
-        ; inc hl
-        ; ld (hl), #0x20
-
-
-        ; ld	a, #0x09
-        ; push	af
-        ; inc	sp
-        ; ld	a, #0x20
-        ; push	af
-        ; inc	sp
-        ; ld	a, #0x20
-        ; push	af
-        ; inc	sp
-        ; call	_move_sprite
-        ; add	sp, #3
-
-
-;    0000 3E 07                77 	ld	a, #0x07
-;    0002 F5                   78 	push	af
-;    0003 33                   79 	inc	sp
-;    0004 3E 05                80 	ld	a, #0x05
-;    0006 F5                   81 	push	af
-;    0007 33                   82 	inc	sp
-;    0008 3E 09                83 	ld	a, #0x09
-;    000A F5                   84 	push	af
-;    000B 33                   85 	inc	sp
-;    000C CDr00r00             86 	call	_move_sprite
-;    000F E8 03                87 	add	sp, #3
 
 
     next_actor:

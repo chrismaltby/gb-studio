@@ -15,5 +15,6 @@
 
 extern UBYTE game_time;
 extern UBYTE is_frame_2;
+extern UBYTE is_frame_8;
 
 #endif
