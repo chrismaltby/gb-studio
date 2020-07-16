@@ -39,7 +39,7 @@ void MoveActors_bc() {
   }
 }
 
-void UpdateActors_b() {
+void UpdateActors_bc() {
   UBYTE i, k, a, flip, frame;
   UBYTE fo = 0;
   UINT16 screen_x;
