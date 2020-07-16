@@ -39,10 +39,6 @@ _UpdateActors_b::
 
     handle_pinned:
     
-        ; load pos y push to stack
-        ; load pos x push to stack
-        ; jp move_sprite_pair
-
     ; Load current pos in de (only lowest bytes)
         pop hl
         push hl
@@ -141,6 +137,33 @@ _UpdateActors_b::
 
     handle_rerender:
 
+        pop hl
+        push hl
+
+    ; Get sprite index into c
+        ld a, #9
+        _add_a h, l
+        ld c, (hl)
+
+    ; Get tile_index into b
+        dec hl
+        ld a, (hl)
+        add a, a
+        add a, a        
+        ld b, a
+
+    ; Set sprite tile left b=tile_index c=sprite_index
+        push bc
+        call _set_sprite_tile
+        pop bc
+
+    ; Set sprite tile right
+        inc b
+        inc b
+        inc c
+        push bc
+        call _set_sprite_tile
+        add	sp, #2
 
     skip_rerender:
 
