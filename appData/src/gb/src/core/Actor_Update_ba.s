@@ -119,8 +119,48 @@ _UpdateActors_b::
         ld	a, e
         add a, #8
         sub a, b        
-        push	af
+        push af
         inc	sp
+
+    ; If WX_REG == 7 - Move sprite
+        push hl
+        ld hl, #0xFF4B ; WX_REG
+        ld a, (hl)
+        pop hl
+        cp a, #0x7
+        jp z, move_sprite
+
+    ; If WX_REG > screen_x - Move sprite
+        push hl
+        ldhl sp, #2 ; screen_x in stack
+        ld e, a
+        ld a, (hl)
+        pop hl
+        cp a, e
+        jp c, move_sprite
+
+    ; If WY_REG < screen_y - 16px - Move sprite
+        push hl
+        ld hl, #0xFF4A ; WY_REG
+        ld e, (hl)
+        ldhl sp, #3; screen_y in stack
+        ld a, (hl)
+        sub a, #16; screen_y - 16px
+        pop hl
+        cp a, e
+        jp c, move_sprite
+
+    hide_sprite:
+    ; Reset stack
+        add	sp, #2
+
+    ; Get sprite index into a
+        ld a, #.SPRITE_INDEX_OFFSET
+        _add_a h, l
+        ld a, (hl)
+        jp hide_sprite_pair
+
+    move_sprite:
 
     ; Get sprite index into a
         ld a, #.SPRITE_INDEX_OFFSET
@@ -128,6 +168,7 @@ _UpdateActors_b::
         ld a, (hl)
         push	af
         inc	sp
+
 
     move_sprite_pair:
 
@@ -450,6 +491,26 @@ _UpdateActors_b::
         ld a, #.RERENDER_OFFSET
         _add_a h, l        
         ld (hl), #1
+        jp next_actor
+
+    hide_sprite_pair:
+
+        ld b, #0
+        ld c, #0
+        push bc
+        push af
+        inc sp
+
+    ; Move sprite (left) using gbdk fn
+        call	_move_sprite
+
+    ; Move sprite (right)
+    ; Reuse previous sprite value incrementing by 1
+        pop bc
+        inc c
+        push bc
+        call	_move_sprite
+        add	sp, #3
 
     next_actor:
     ; Clear current actor from stack
