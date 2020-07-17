@@ -1,5 +1,7 @@
 .include "asm.macros.s"
 
+    GBC = 1
+
     .POS_Y_OFFSET = 0x02
     .DIR_X_OFFSET = 0x05
     .DIR_Y_OFFSET = 0x06
@@ -7,6 +9,7 @@
     .PINNED_OFFSET = 0x16
     .SPRITE_OFFSET = 0x08
     .SPRITE_INDEX_OFFSET = 0x09
+    .PALETTE_INDEX_OFFSET = 0x0A
     .FRAME_OFFSET = 0x0F
     .FRAMES_LEN_OFFSET = 0x10
     .ANIMATE_OFFSET = 0x11
@@ -19,6 +22,7 @@
     .SPRITE_ACTOR_ANIMATED = 0x2
 
     .FLIP_BIT = 0x5
+
 
 _UpdateActors_b::
 
@@ -217,19 +221,33 @@ _UpdateActors_b::
         _add_a h, l
         ld c, (hl)
 
-    ; Get tile_index into b
+    ; Get tile_index into b - .SPRITE_OFFSET
         dec hl
         ld b, (hl)
-    
+
+.if GBC
+    ; Store sprite props in e
+        ld a, #(.PALETTE_INDEX_OFFSET - .SPRITE_OFFSET)
+        _add_a h, l
+        ld e, (hl)
+
+    ; Add frame offset
+        ld a, #(.FRAME_OFFSET - .PALETTE_INDEX_OFFSET)
+        _add_a h, l
+        ld a, (hl)
+        add a, b
+        ld b, a
+.else
+    ; Store sprite props in e
+        ld e, #0
+
     ; Add frame offset
         ld a, #(.FRAME_OFFSET - .SPRITE_OFFSET)
         _add_a h, l
         ld a, (hl)
         add a, b
         ld b, a
-
-    ; Store flipped value in e
-        ld e, #0
+.endif 
 
     ; Check sprite type - if static skip direction offset
         ld a, #(.SPRITE_TYPE_OFFSET - .FRAME_OFFSET)
