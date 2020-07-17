@@ -112,7 +112,7 @@ void UIInit_b() {
   VBK_REG = 0;
 #endif
 
-  UISetPos(160, 144);
+  UISetPos(0, 144);
 
   // Load frame tiles from data bank
   ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
@@ -126,7 +126,7 @@ void UIInit_b() {
 }
 
 void UIReset_b() {
-  UISetPos(160, 144);
+  UISetPos(0, 144);
 }
 
 void UIUpdate_b() {
