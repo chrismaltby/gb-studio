@@ -620,28 +620,35 @@ _UpdateActors::
 
     loop_exit:
 
+    ;; Deactivate Offscreen Actors ----------------------------------------------
 
+    ; b=loop index
+        ld b, #0                                ;; b = 0
+    delete_loop_cond:
+    ; If b == actors_active_size
+        ld hl, #_actors_active_delete_count    
+        ld a, (hl)                              ;; a = actors_active_delete_count
+        cp b                                    ;; compare a and b
+        jp z, delete_loop_exit                  ;; if b == a goto loop_exit
+        push bc                                 ;; store loop index
 
-    ; ; b=loop index
-    ;     ld b, #0                                ;; b = 0
-    ; delete_loop_cond:
-    ; ; If b == actors_active_size
-    ;     ld hl, #_actors_active_delete_count    
-    ;     ld a, (hl)                              ;; a = actors_active_delete_count
-    ;     cp b                                    ;; compare a and b
-    ;     jp z, delete_loop_exit                         ;; if b == a goto loop_exit
+    ; Load actor index into a
+        ld hl, #_actors_active_delete
+        ld a, b
+        _add_a h l         
+        ld a, (hl)
 
+    ; Call DeactivateActiveActor(a)
+        push af
+        inc sp
+        call _DeactivateActiveActor
+        inc sp
 
-    ;     ld a, #1
-    ;     push bc
-    ;     push af
-    ;     inc sp
-    ;     call _DeactivateActiveActor
+    ; Restore loop index from stack
+        pop bc                                  ;; retreive b as loop index
+        inc b                                   ;; b++
+        jp delete_loop_cond                     ;; goto loop_cond
 
-    ;     jp delete_loop_cond                            ;; goto loop_cond
-
-
-    ; delete_loop_exit:
-
+    delete_loop_exit:
 
         ret
