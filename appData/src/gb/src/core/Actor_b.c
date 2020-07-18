@@ -17,7 +17,11 @@
 UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_delete_count = 0;
 
-void MoveActors_bc() {
+/*
+// This function has been replaced in Actor_ba.s
+// but should be functionally identical to the following
+
+void MoveActors_b() {
   UBYTE i, a;
   UBYTE actor_time;
   actor_time = game_time >> 2;
@@ -39,16 +43,21 @@ void MoveActors_bc() {
     }
   }
 }
+*/
 
-void UpdateActors_bc() {
+/*
+// This function has been replaced in Actor_Update_ba.s
+// but should be functionally identical to the following
+
+void UpdateActors_b() {
   UBYTE i, k, a, flip, frame;
   UBYTE fo = 0;
   UINT16 screen_x;
   UINT16 screen_y;
-  UBYTE del_count = 0;
   Actor* actor;
 
   k = 0;
+  actors_active_delete_count = 0;
 
   for (i = 0; i != actors_active_size; i++) {
     a = actors_active[i];
@@ -56,12 +65,6 @@ void UpdateActors_bc() {
     k = actors[a].sprite_index;
     flip = FALSE;
     fo = 0;
-
-    if (!actor->enabled) {
-      move_sprite(k, 0, 0);
-      move_sprite(k + 1, 0, 0);
-      continue;
-    }
 
     if (actor->pinned) {
       screen_x = 8u + actor->pos.x;
@@ -145,18 +148,19 @@ void UpdateActors_bc() {
       if (((UINT16)(screen_x + 32u) >= SCREENWIDTH_PLUS_64) ||
           ((UINT16)(screen_y + 32u) >= SCREENHEIGHT_PLUS_64)) {
         // Mark off screen actor for removal
-        actors_active_delete[del_count] = a;
-        del_count++;
+        actors_active_delete[actors_active_delete_count] = i;
+        actors_active_delete_count++;
       }
     }
   }
 
   // Remove all offscreen actors
-  for (i = 0; i != del_count; i++) {
+  for (i = 0; i != actors_active_delete_count; i++) {
     a = actors_active_delete[i];
-    DeactivateActor(a);
+    DeactivateActiveActor(a);
   }
 }
+*/
 
 void ActivateActor_b(UBYTE i) {
   UBYTE j;
