@@ -6,19 +6,24 @@ _MoveActors_b::
     ; b=loop index
         ld b, #0                                ;; b = 0
     loop_cond:
-    ; If b == actors_active_size * 2 (each array item is 2 byte addr)
+    ; If b == actors_active_size
         ld hl, #_actors_active_size             ;; hl = *actors_active_size
         ld a, (hl)                              ;; a = actors_active_size
-        add a, a                                ;; a = actors_active_size * 2
         cp b                                    ;; compare a and b
         jp z, loop_exit                         ;; if b == a goto loop_exit
         push bc                                 ;; store loop index
+
+    ; Load actor index into a
+        ld hl, #_actors_active
+        ld a, b
+        _add_a h l         
+        ld a, (hl)
 
     ; Set hl to actor_ptrs
         ld hl, #_actor_ptrs
 
     ; Add index offset to hl
-        ld a, b
+        add a, a ; each item is 2 bytes
         _add_a h l 
 
     ; Load current actor addr into bc
@@ -142,7 +147,7 @@ _MoveActors_b::
     ; Restore loop index from stack
         pop bc                                  ;; retreive b as loop index
         inc b                                   ;; b++
-        inc b                                   ;; b++
         jp loop_cond                            ;; goto loop_cond
+
     loop_exit:
         ret
