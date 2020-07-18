@@ -42,16 +42,16 @@ void ActorsInit() {
   }
 }
 
-void MoveActors() {
-  PUSH_BANK(ACTOR_BANK);
-  MoveActors_b();
-  POP_BANK;
+void MoveActorsc() {
+  // PUSH_BANK(ACTOR_BANK);
+  // MoveActors_b();
+  // POP_BANK;
 }
 
-void UpdateActors() {
-  PUSH_BANK(ACTOR_BANK);
-  UpdateActors_b();
-  POP_BANK;
+void UpdateActorsc() {
+  // PUSH_BANK(ACTOR_BANK);
+  // UpdateActors_b();
+  // POP_BANK;
 }
 
 void ActivateActor(UBYTE i) {
@@ -70,6 +70,21 @@ void DeactivateActor(UBYTE i) {
   PUSH_BANK(ACTOR_BANK);
   DeactivateActor_b(i);
   POP_BANK;
+}
+
+void DeactivateActiveActor(UBYTE i) {
+  if(UBYTE_LESS_THAN(i, actors_active_size)) {
+    UBYTE a = actors_active[i];
+    if (a == 0) {
+      return;
+    }
+    SpritePoolReturn(actors[a].sprite_index);
+    actors[a].sprite_index = 0;
+    if (actors[a].movement_ctx) {
+      ScriptCtxPoolReturn(actors[a].movement_ctx, a);
+    }
+    actors_active[i] = actors_active[--actors_active_size];     
+  }
 }
 
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {

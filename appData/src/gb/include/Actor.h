@@ -76,6 +76,9 @@ typedef struct {
 extern Actor actors[MAX_ACTORS];
 extern Actor* actor_ptrs[MAX_ACTORS];
 
+extern UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
+extern UBYTE actors_active_delete_count;
+
 extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
@@ -167,6 +170,13 @@ void ActivateActor(UBYTE i);
  * @param i index of actor in actors array
  */
 void DeactivateActor(UBYTE i);
+
+/**
+ * Deactivate the actor from active actors array at given index
+ *
+ * @param i index of actor in active actors array
+ */
+void DeactivateActiveActor(UBYTE i);
 
 UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
 

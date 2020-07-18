@@ -15,6 +15,7 @@
 #define SCREENHEIGHT_PLUS_64 208  // 144 + 64
 
 UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
+UBYTE actors_active_delete_count = 0;
 
 void MoveActors_bc() {
   UBYTE i, a;

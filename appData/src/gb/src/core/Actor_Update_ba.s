@@ -23,8 +23,14 @@
 
     .FLIP_BIT = 0x5
 
+    .SCREENWIDTH_PLUS_64 = 224
+    .SCREENHEIGHT_PLUS_64 = 208
 
-_UpdateActors_b::
+_UpdateActors::
+
+    ; Reset delete counter
+        xor a
+        ld (#_actors_active_delete_count), a
 
     ; b=loop index
         ld b, #0                                ;; b = 0
@@ -95,41 +101,92 @@ _UpdateActors_b::
         pop hl
         push hl
 
-    ; Load current pos y in e (only lowest byte)
-        inc hl
-        inc hl
-        ld e, (hl)
+    check_is_onscreen_y:
 
-    ; Get scroll_offset_y
-        push hl
+    ; Load current pos y in de
+        inc hl
+        inc hl
+        ld a, (hl+)
+        ld e, a
+        ld d, (hl)
+
+    ; Load scroll y in hl
         ld hl, #(_scroll_y)
-        ld b, (hl) ; Only need lowest bit as screen wraps at 256px
-        pop hl
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+        
+    ; sub scroll_y from pos_y
+        _sub16 d e h l
 
-    ; Calculate screen y and push
+    ; Set dc to scroll_y + 32 for onscreen check
+        ld c, e
+        ld a, #32
+        _add_a d, c
+
+    ; If screen y > max_y hide
+        _if_lt_u16 d, c, #0, #.SCREENHEIGHT_PLUS_64, is_onscreen_y
+
+        jp queue_deactivate_actor
+
+    is_onscreen_y: 
+
+    ; Add y pos to stack ready for move call
         ld	a, e
         add a, #8
-        sub a, b
-        push	af  
+        push	af 
         inc	sp
 
-    ; Load current pos x into e (only lowest byte)
-        dec hl
-        dec hl
-        ld e, (hl)
+    ; Restore hl to actor memory offset
+        ldhl sp, #1
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
 
-    ; Get scroll_offset_x
-        push hl
+    check_is_onscreen_x:
+
+    ; Load current pos x in de
+        ld a, (hl+)
+        ld e, a
+        ld d, (hl)
+
+    ; Load scroll x in hl
         ld hl, #(_scroll_x)
-        ld b, (hl) ; Only need lowest bit as screen wraps at 256px
-        pop hl
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
 
-    ; Calculate screen x and push
+    ; sub scroll_x from pos_x
+        _sub16 d e h l
+
+    ; Set dc to scroll_x + 32 for onscreen check
+        ld c, e
+        ld a, #32
+        _add_a d, c    
+
+    ; If screen y > max_y hide
+        _if_lt_u16 d, c, #0, #.SCREENWIDTH_PLUS_64, is_onscreen_x
+
+    ; Remove y value from stack
+        inc	sp
+
+        jp queue_deactivate_actor
+
+    is_onscreen_x: 
+
+    ; Add x pos to stack ready for move call
         ld	a, e
         add a, #8
-        sub a, b        
-        push af
+        push	af 
         inc	sp
+
+    ; Restore hl to actor memory offset
+        ldhl sp, #2
+        ld a, (hl+)
+        ld h, (hl)
+        ld l, a
+
+    check_under_win:
 
     ; If WX_REG == 7 - Move sprite
         push hl
@@ -177,7 +234,6 @@ _UpdateActors_b::
         ld a, (hl)
         push	af
         inc	sp
-
 
     move_sprite_pair:
 
@@ -308,8 +364,6 @@ _UpdateActors_b::
         ld a, d
         add a, b
         ld b, a
-
-    ; ========
 
     update_tile:
 
@@ -516,8 +570,29 @@ _UpdateActors_b::
         ld (hl), #1
         jp next_actor
 
-    hide_sprite_pair:
+    queue_deactivate_actor:
+        
+    ; Load active actor index into b
+        ldhl sp, #3
+        ld b, (hl)
 
+    ; Load delete counter into c
+        ld hl, #_actors_active_delete_count
+        ld c, (hl)
+
+    ; Add current active actor index into delete list
+        ld hl, #_actors_active_delete
+        ld a, c
+        _add_a h, l
+        ld (hl), b
+
+    ; Increment delete counter
+        ld hl, #_actors_active_delete_count
+        inc (hl)
+
+        jp next_actor
+
+    hide_sprite_pair:
         ld b, #0
         ld c, #0
         push bc
@@ -544,4 +619,29 @@ _UpdateActors_b::
         jp loop_cond                            ;; goto loop_cond
 
     loop_exit:
+
+
+
+    ; ; b=loop index
+    ;     ld b, #0                                ;; b = 0
+    ; delete_loop_cond:
+    ; ; If b == actors_active_size
+    ;     ld hl, #_actors_active_delete_count    
+    ;     ld a, (hl)                              ;; a = actors_active_delete_count
+    ;     cp b                                    ;; compare a and b
+    ;     jp z, delete_loop_exit                         ;; if b == a goto loop_exit
+
+
+    ;     ld a, #1
+    ;     push bc
+    ;     push af
+    ;     inc sp
+    ;     call _DeactivateActiveActor
+
+    ;     jp delete_loop_cond                            ;; goto loop_cond
+
+
+    ; delete_loop_exit:
+
+
         ret

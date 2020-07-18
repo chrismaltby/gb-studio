@@ -1,8 +1,8 @@
-.area _CODE_1
+; .area _CODE_1
 
 .include "asm.macros.s"
 
-_MoveActors_b::
+_MoveActors::
     ; b=loop index
         ld b, #0                                ;; b = 0
     loop_cond:

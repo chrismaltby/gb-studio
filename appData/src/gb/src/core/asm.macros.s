@@ -87,6 +87,14 @@
         jr	Z, lbl    
 .endm
 
+.macro _if_lt_u16 h1 l1 h2 l2 lbl
+        ld	a, l1
+        sub	a, l2
+        ld	a, h1
+        sbc	a, h2
+        jr	c, lbl
+.endm
+
 .macro _if_gt_16 h1 l1 h2 l2 tmp lbl
         ld a, l1
         sub a, l2
