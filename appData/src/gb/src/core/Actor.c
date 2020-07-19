@@ -76,6 +76,7 @@ void DeactivateActiveActor(UBYTE i) {
   if(UBYTE_LESS_THAN(i, actors_active_size)) {
     UBYTE a = actors_active[i];
     if (a == 0) {
+      // Don't delete player
       return;
     }
     SpritePoolReturn(actors[a].sprite_index);

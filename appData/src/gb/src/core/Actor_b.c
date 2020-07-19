@@ -66,6 +66,12 @@ void UpdateActors_b() {
     flip = FALSE;
     fo = 0;
 
+    if (!actor->enabled) {
+      move_sprite(k, 0, 0);
+      move_sprite(k + 1, 0, 0);
+      continue;
+    }
+
     if (actor->pinned) {
       screen_x = 8u + actor->pos.x;
       screen_y = 8u + actor->pos.y;

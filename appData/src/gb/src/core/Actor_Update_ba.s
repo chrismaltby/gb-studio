@@ -13,6 +13,7 @@
     .FRAME_OFFSET = 0x0F
     .FRAMES_LEN_OFFSET = 0x10
     .ANIMATE_OFFSET = 0x11
+    .ENABLED_OFFSET = 0x12
     .RERENDER_OFFSET = 0x14
     .ANIM_SPEED_OFFSET = 0x15
     .SPRITE_TYPE_OFFSET = 0x19
@@ -185,6 +186,15 @@ _UpdateActors::
         ld a, (hl+)
         ld h, (hl)
         ld l, a
+
+    check_enabled:
+        push hl
+        ld a, #.ENABLED_OFFSET
+        _add_a h, l
+        ld a, (hl)
+        pop hl
+        cp a, #0
+        jp z, hide_sprite
 
     check_under_win:
 
