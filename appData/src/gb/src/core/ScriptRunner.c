@@ -9,6 +9,7 @@
 #include "Math.h"
 #include "UI.h"
 #include "data_ptrs.h"
+#include <gb/bgb_emu.h>
 
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
 // UINT8 script_ctx_active_pool[MAX_SCRIPT_CONTEXTS];
@@ -31,7 +32,7 @@ UBYTE script_bank_stack[STACK_SIZE] = {0};
 UBYTE* script_start_stack[STACK_SIZE] = {0};
 ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS] = {{0}};
 UBYTE current_script_ctx = 0;
-// ScriptContext *main_script_ctx;
+ScriptContext* script_ctx_ptr;
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
@@ -175,8 +176,10 @@ void ScriptRunnerUpdate() {
   //     script_cmd_args_len);
 
   for (i = 0; i != script_cmd_args_len; i++) {
+    BGB_PROFILE_BEGIN();
     script_cmd_args[i] = ReadBankedUBYTE(script_ptr_bank, script_ptr + i + 1);
     // 
+    BGB_PROFILE_END(RanScriptCommand);
   }
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
@@ -208,34 +211,39 @@ void ScriptTimerUpdate() {
 }
 
 void ScriptSaveCtx() {
-  script_ctxs[current_script_ctx].script_ptr_bank = 0;  // @wtf
-  script_ctxs[current_script_ctx].script_actor = 0;     // @wtf
-  script_ctxs[current_script_ctx].wait_time = 0;        // @wtf
-  script_ctxs[current_script_ctx].actor_move_cols = 0;  // @wtf
-  script_ctxs[current_script_ctx].actor_move_type = 0;  // @wtf
-  script_ctxs[current_script_ctx].tmp_1 = 0;            // @wtf
-  script_ctxs[current_script_ctx].tmp_2 = 0;            // @wtf
-  script_ctxs[current_script_ctx].actor_move_dest_x = actor_move_dest_x;
-  script_ctxs[current_script_ctx].actor_move_dest_y = actor_move_dest_y;
-  script_ctxs[current_script_ctx].actor_move_cols = actor_move_cols;
-  script_ctxs[current_script_ctx].actor_move_type = actor_move_type;
-  script_ctxs[current_script_ctx].script_update_fn = script_update_fn;
-  script_ctxs[current_script_ctx].script_start_ptr = script_start_ptr;
-  script_ctxs[current_script_ctx].script_ptr = script_ptr;
-  script_ctxs[current_script_ctx].script_ptr_x = script_ptr_x;
-  script_ctxs[current_script_ctx].script_ptr_y = script_ptr_y;
-  script_ctxs[current_script_ctx].script_ptr_bank = script_ptr_bank;
-  script_ctxs[current_script_ctx].wait_time = wait_time;
-  script_ctxs[current_script_ctx].script_await_next_frame = script_await_next_frame;
-  script_ctxs[current_script_ctx].script_actor = script_actor;
-  script_ctxs[current_script_ctx].tmp_1 = script_variables[TMP_VAR_1];
-  script_ctxs[current_script_ctx].tmp_2 = script_variables[TMP_VAR_2];
+  BGB_PROFILE_BEGIN();
+  // store current struct pointer as index mult was slow
+  script_ctx_ptr = &script_ctxs[current_script_ctx];
+  (*script_ctx_ptr).script_ptr_bank = 0;  // @wtf
+  (*script_ctx_ptr).script_actor = 0;     // @wtf
+  (*script_ctx_ptr).wait_time = 0;        // @wtf
+  (*script_ctx_ptr).actor_move_cols = 0;  // @wtf
+  (*script_ctx_ptr).actor_move_type = 0;  // @wtf
+  (*script_ctx_ptr).tmp_1 = 0;            // @wtf
+  (*script_ctx_ptr).tmp_2 = 0;            // @wtf
+  (*script_ctx_ptr).actor_move_dest_x = actor_move_dest_x;
+  (*script_ctx_ptr).actor_move_dest_y = actor_move_dest_y;
+  (*script_ctx_ptr).actor_move_cols = actor_move_cols;
+  (*script_ctx_ptr).actor_move_type = actor_move_type;
+  (*script_ctx_ptr).script_update_fn = script_update_fn;
+  (*script_ctx_ptr).script_start_ptr = script_start_ptr;
+  (*script_ctx_ptr).script_ptr = script_ptr;
+  (*script_ctx_ptr).script_ptr_x = script_ptr_x;
+  (*script_ctx_ptr).script_ptr_y = script_ptr_y;
+  (*script_ctx_ptr).script_ptr_bank = script_ptr_bank;
+  (*script_ctx_ptr).wait_time = wait_time;
+  (*script_ctx_ptr).script_await_next_frame = script_await_next_frame;
+  (*script_ctx_ptr).script_actor = script_actor;
+  (*script_ctx_ptr).tmp_1 = script_variables[TMP_VAR_1];
+  (*script_ctx_ptr).tmp_2 = script_variables[TMP_VAR_2];
+  BGB_PROFILE_END(ScriptSaveCTX);
 }
 
 void ScriptRestoreCtx(UBYTE i) {
   if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
+  BGB_PROFILE_BEGIN();
   if (i == 0) {
     ctx_cmd_remaining = 255;
   } else {
@@ -257,6 +265,7 @@ void ScriptRestoreCtx(UBYTE i) {
   script_actor = script_ctxs[i].script_actor;
   script_variables[TMP_VAR_1] = script_ctxs[i].tmp_1;
   script_variables[TMP_VAR_2] = script_ctxs[i].tmp_2;
+  BGB_PROFILE_END(RESTORECTX);
   ScriptRunnerUpdate();
 }
 
