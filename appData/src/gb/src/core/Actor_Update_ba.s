@@ -92,6 +92,8 @@ _UpdateActors::
         ld a, #(.SPRITE_INDEX_OFFSET - .POS_Y_OFFSET) ; ptr currently at actor.pos.y(2)
         _add_a h, l
         ld a, (hl)
+        pop bc  ; Restore bc from stack so x can be incremented by 8 for second call
+        push bc        
         push	af
         inc	sp
 
@@ -242,28 +244,28 @@ _UpdateActors::
         ld a, #.SPRITE_INDEX_OFFSET
         _add_a h, l
         ld a, (hl)
-        push	af
+        pop bc  ; Restore bc from stack so x can be incremented by 8 for second call
+        push bc
+        push af
         inc	sp
 
     move_sprite_pair:
 
+    ; Build second call data
+        ld d, a
+        inc d       ; sprite_index + 1
+        ld a, c
+        add a, #8   ; x + 8
+        ld c, a
+        push bc
+        push de
+        inc	sp
+
     ; Move sprite (left) using gbdk fn
         call	_move_sprite
+        add	sp, #3
 
     ; Move sprite (right) using gbdk fn
-    ; Reuse y from previous call
-        add sp, #2
-
-    ; Reuse previous x value adding 8px
-    ; and previous sprite value incrementing by 1
-        ldhl sp, #-1
-        ld	a, (hl)
-        add a, #8
-        ld b, a
-        dec hl
-        ld	c, (hl)
-        inc c
-        push	bc
         call	_move_sprite
         add	sp, #3
 
@@ -609,14 +611,17 @@ _UpdateActors::
         push af
         inc sp
 
+    ; Push second call data (sprite value incrementing by 1)
+        inc a
+        push bc
+        push af
+        inc sp
+
     ; Move sprite (left) using gbdk fn
         call	_move_sprite
+        add	sp, #3
 
-    ; Move sprite (right)
-    ; Reuse previous sprite value incrementing by 1
-        pop bc
-        inc c
-        push bc
+    ; Move sprite (right) using gbdk fn
         call	_move_sprite
         add	sp, #3
 
