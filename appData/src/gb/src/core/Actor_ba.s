@@ -58,8 +58,9 @@ _MoveActors::
         jp nz, move_start
 
     ; If move speed is 0 and not frame 2 skip this movement
-        ld hl, #_is_frame_2
-        add a, (hl)
+        ld hl, #_game_time
+        ld a, (hl)
+        and a, #0x1
         cp a, #0
         jp nz, next_actor
 

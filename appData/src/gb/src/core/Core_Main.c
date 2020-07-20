@@ -22,8 +22,6 @@
 #include <gb/bgb_emu.h>
 
 UBYTE game_time;
-UBYTE is_frame_2;
-UBYTE is_frame_8;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
@@ -203,8 +201,6 @@ int core_start() {
     }
 
     game_time++;
-    is_frame_2 = IS_FRAME_2;
-    is_frame_8 = IS_FRAME_8;
 
     /* Game Core Loop End ***********************************/
   }
