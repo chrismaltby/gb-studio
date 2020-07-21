@@ -167,7 +167,7 @@ _UpdateActors::
         ld a, #32
         _add_a d, c    
 
-    ; If screen y > max_y hide
+    ; If screen x > max_x hide
         _if_lt_u16 d, c, #0, #.SCREENWIDTH_PLUS_64, is_onscreen_x
 
     ; Remove y value from stack
