@@ -12,8 +12,6 @@
 #include <gb/bgb_emu.h>
 
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
-// UINT8 script_ctx_active_pool[MAX_SCRIPT_CONTEXTS];
-// UBYTE script_ctx_active_pool_size = 0;
 
 UBYTE script_await_next_frame;
 UBYTE script_actor;
@@ -40,7 +38,6 @@ UINT16 actor_move_dest_x = 0;
 UINT16 actor_move_dest_y = 0;
 UBYTE wait_time = 0;
 UBYTE ctx_cmd_remaining = 5;
-// UBYTE ctx_inc = 0;
 
 void ScriptTimerUpdate_b();
 
@@ -53,17 +50,6 @@ void ScriptStart(BankPtr* events_ptr) {
 
   PlayerStopMovement();
 
-  // current_script_ctx = &script_ctxs[0];
-  // main_script_ctx = &script_ctxs[0];
-
-  // // Stop all actor movement
-  // for (i = 0; i != actors_active_size; i++) {
-  //   a = actors_active[i];
-  //   actors[a].moving = FALSE;
-  // }
-
-  
-
   script_variables[TMP_VAR_1] = 0;
   script_variables[TMP_VAR_2] = 0;
 
@@ -71,12 +57,6 @@ void ScriptStart(BankPtr* events_ptr) {
   script_ctxs[0].script_ptr = (BankDataPtr(script_ctxs[0].script_ptr_bank)) + events_ptr->offset;
   script_ctxs[0].script_update_fn = FALSE;
   script_ctxs[0].script_start_ptr = script_ctxs[0].script_ptr;
-  // script_ptr_bank = events_ptr->bank;
-  // script_ptr = (BankDataPtr(script_ptr_bank)) + events_ptr->offset;
-  // script_update_fn = FALSE;
-
-  // script_start_ptr = script_ptr;
-  // ctx_inc++;
 }
 
 UBYTE ScriptStartBg(BankPtr* events_ptr, UBYTE owner) {
@@ -117,25 +97,16 @@ void ScriptRunnerUpdate() {
   if (script_update_fn) {
     
     PUSH_BANK(SCRIPT_RUNNER_BANK);
-    // player.pos.x = 0;
     
-
     update_complete = (*(script_update_fn))();
     
-
-    // update_complete = TRUE;
     if (update_complete) {
-      
-
       script_update_fn = FALSE;
     }
-    
-
     POP_BANK;
   }
 
   if (!script_ptr_bank || script_update_fn) {
-    // 
     ScriptSaveCtx();
     script_ptr = 0;
     return;
@@ -170,16 +141,8 @@ void ScriptRunnerUpdate() {
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   POP_BANK;
 
-  // script_cmd_fn = script_cmds[script_cmd_index].fn;
-
-  // 
-  //     script_cmd_args_len);
-
   for (i = 0; i != script_cmd_args_len; i++) {
-    BGB_PROFILE_BEGIN();
     script_cmd_args[i] = ReadBankedUBYTE(script_ptr_bank, script_ptr + i + 1);
-    // 
-    BGB_PROFILE_END(RanScriptCommand);
   }
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
@@ -191,11 +154,7 @@ void ScriptRunnerUpdate() {
   }
   POP_BANK;
 
-  // 
-  //     script_update_fn);
-
-  if (!script_await_next_frame && !script_update_fn && ctx_cmd_remaining != 0) {
-    
+  if (!script_await_next_frame && !script_update_fn && ctx_cmd_remaining != 0) {    
     ctx_cmd_remaining--;
     ScriptRunnerUpdate();
     return;
@@ -262,7 +221,6 @@ UINT8 ScriptCtxPoolNext() {
   UINT8 next;
   if (StackSize(script_ctx_pool)) {
     next = StackPop(script_ctx_pool);
-    // script_ctx_active_pool[script_ctx_active_pool_size++] = next;
     return next;
   }
   return 0;
