@@ -214,13 +214,6 @@ void ScriptSaveCtx() {
   BGB_PROFILE_BEGIN();
   // store current struct pointer as index mult was slow
   script_ctx_ptr = &script_ctxs[current_script_ctx];
-  (*script_ctx_ptr).script_ptr_bank = 0;  // @wtf
-  (*script_ctx_ptr).script_actor = 0;     // @wtf
-  (*script_ctx_ptr).wait_time = 0;        // @wtf
-  (*script_ctx_ptr).actor_move_cols = 0;  // @wtf
-  (*script_ctx_ptr).actor_move_type = 0;  // @wtf
-  (*script_ctx_ptr).tmp_1 = 0;            // @wtf
-  (*script_ctx_ptr).tmp_2 = 0;            // @wtf
   (*script_ctx_ptr).actor_move_dest_x = actor_move_dest_x;
   (*script_ctx_ptr).actor_move_dest_y = actor_move_dest_y;
   (*script_ctx_ptr).actor_move_cols = actor_move_cols;
