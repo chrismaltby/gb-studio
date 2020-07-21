@@ -71,7 +71,7 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl)
         cp a, #0
-        jp z, handle_unpinned
+        jr z, handle_unpinned
 
     handle_pinned:
     
@@ -196,7 +196,7 @@ _UpdateActors::
         ld a, (hl)
         pop hl
         cp a, #0
-        jp z, hide_sprite
+        jr z, hide_sprite
 
     check_under_win:
 
@@ -206,7 +206,7 @@ _UpdateActors::
         ld a, (hl)
         pop hl
         cp a, #0x7
-        jp z, move_sprite
+        jr z, move_sprite
 
     ; If WX_REG > screen_x - Move sprite
         push hl
@@ -215,7 +215,7 @@ _UpdateActors::
         ld a, (hl)
         pop hl
         cp a, e
-        jp c, move_sprite
+        jr c, move_sprite
 
     ; If WY_REG < screen_y - 16px - Move sprite
         push hl
@@ -226,7 +226,7 @@ _UpdateActors::
         sub a, #16; screen_y - 16px
         pop hl
         cp a, e
-        jp c, move_sprite
+        jr c, move_sprite
 
     hide_sprite:
     ; Reset stack
@@ -327,12 +327,12 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl)
         cp a, #.SPRITE_STATIC
-        jp z, update_tile
+        jr z, update_tile
 
     ; If sprite type is actor only add 1 frame per dir
         ld d, #1
         cp a, #.SPRITE_ACTOR
-        jp z, check_dir_offset
+        jr z, check_dir_offset
 
     ; If sprite type is actor animated add two frames per dir
         inc d
@@ -389,7 +389,7 @@ _UpdateActors::
 
     ; Render reversed if flipped
         bit .FLIP_BIT, e
-        jp nz, update_tile_flipped
+        jr nz, update_tile_flipped
 
     ; Set sprite tile left b=tile_index*4 c=sprite_index
         push bc
@@ -420,7 +420,7 @@ _UpdateActors::
         pop bc
         pop bc
 
-        jp finished_rerender
+        jr finished_rerender
 
     update_tile_flipped:
     ; Set sprite tile right
@@ -473,14 +473,14 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl) 
         cp a, #0
-        jp nz, check_anim_speed
+        jr nz, check_anim_speed
 
     ; Or if is animating
         ld a, #(.ANIMATE_OFFSET - .MOVING_OFFSET)
         _add_a h, l
         ld a, (hl) 
         cp a, #0
-        jp nz, check_anim_speed
+        jr nz, check_anim_speed
 
     ; Else not animating right now so skip
         jp next_actor
@@ -495,54 +495,54 @@ _UpdateActors::
 
     ; Anim speed == 3
         cp a, #3
-        jp z, check_is_frame_16
+        jr z, check_is_frame_16
 
     ; Anim speed == 4
         cp a, #4
-        jp z, update_anim_frames
+        jr z, update_anim_frames
 
     ; Anim speed == 2
         cp a, #2
-        jp z, check_is_frame_32
+        jr z, check_is_frame_32
 
     ; Anim speed == 1
         cp a, #1
-        jp z, check_is_frame_64
+        jr z, check_is_frame_64
 
     ; Anim speed == 0
-        jp check_is_frame_128
+        jr check_is_frame_128
 
     check_is_frame_16:
         ld hl, #_game_time
         ld a, (hl)
         and a, #0xF
         cp a, #0xF
-        jp z, update_anim_frames
-        jp next_actor
+        jr z, update_anim_frames
+        jr next_actor
 
     check_is_frame_32:
         ld hl, #_game_time
         ld a, (hl)
         and a, #0x1F
         cp a, #0x1F
-        jp z, update_anim_frames
-        jp next_actor
+        jr z, update_anim_frames
+        jr next_actor
 
     check_is_frame_64:
         ld hl, #_game_time
         ld a, (hl)
         and a, #0x3F
         cp a, #0x3F
-        jp z, update_anim_frames
-        jp next_actor
+        jr z, update_anim_frames
+        jr next_actor
 
     check_is_frame_128:
         ld hl, #_game_time
         ld a, (hl)
         and a, #0x7F
         cp a, #0x7F
-        jp z, update_anim_frames
-        jp next_actor
+        jr z, update_anim_frames
+        jr next_actor
 
     update_anim_frames:
 
@@ -562,12 +562,12 @@ _UpdateActors::
     ; If frame != frames_len - 1
         dec a
         cp a, b
-        jp nz, inc_frame
+        jr nz, inc_frame
 
     reset_frame_to_zero:
         dec hl
         ld (hl), #0
-        jp set_rerender_next_frame
+        jr set_rerender_next_frame
 
     inc_frame:
         dec hl
@@ -580,7 +580,7 @@ _UpdateActors::
         ld a, #.RERENDER_OFFSET
         _add_a h, l        
         ld (hl), #1
-        jp next_actor
+        jr next_actor
 
     queue_deactivate_actor:
         
@@ -602,7 +602,7 @@ _UpdateActors::
         ld hl, #_actors_active_delete_count
         inc (hl)
 
-        jp next_actor
+        jr next_actor
 
     hide_sprite_pair:
         ld b, #0
@@ -644,7 +644,7 @@ _UpdateActors::
         ld hl, #_actors_active_delete_count    
         ld a, (hl)                              ;; a = actors_active_delete_count
         cp b                                    ;; compare a and b
-        jp z, delete_loop_exit                  ;; if b == a goto loop_exit
+        jr z, delete_loop_exit                  ;; if b == a goto loop_exit
         push bc                                 ;; store loop index
 
     ; Load actor index into a
@@ -662,7 +662,7 @@ _UpdateActors::
     ; Restore loop index from stack
         pop bc                                  ;; retreive b as loop index
         inc b                                   ;; b++
-        jp delete_loop_cond                     ;; goto loop_cond
+        jr delete_loop_cond                     ;; goto loop_cond
 
     delete_loop_exit:
 
