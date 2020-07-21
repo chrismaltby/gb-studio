@@ -217,8 +217,8 @@ void RefreshScroll() {
 void InitScroll() {
   pending_w_i = 0;
   pending_h_i = 0;
-  RefreshScroll();
-  RenderScreen();
+  scroll_x = 0xF000;
+  scroll_y = 0xF000;  
 }
 
 void RenderScreen() {
