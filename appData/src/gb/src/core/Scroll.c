@@ -9,6 +9,8 @@
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
+UINT16 scroll_x_max = 0;
+UINT16 scroll_y_max = 0;
 
 INT16 scroll_offset_x = 0;
 
