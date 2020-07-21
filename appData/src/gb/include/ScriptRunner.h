@@ -44,6 +44,7 @@ typedef struct {
   MOVEMENT_TYPE actor_move_type;
   UBYTE tmp_1;
   UBYTE tmp_2;
+  UBYTE dummy24byte; // even struct faster index multiplication
 } ScriptContext;
 
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
