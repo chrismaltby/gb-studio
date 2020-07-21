@@ -211,7 +211,6 @@ void ScriptTimerUpdate() {
 }
 
 void ScriptSaveCtx() {
-  BGB_PROFILE_BEGIN();
   // store current struct pointer as index mult was slow
   script_ctx_ptr = &script_ctxs[current_script_ctx];
   (*script_ctx_ptr).actor_move_dest_x = actor_move_dest_x;
@@ -229,14 +228,12 @@ void ScriptSaveCtx() {
   (*script_ctx_ptr).script_actor = script_actor;
   (*script_ctx_ptr).tmp_1 = script_variables[TMP_VAR_1];
   (*script_ctx_ptr).tmp_2 = script_variables[TMP_VAR_2];
-  BGB_PROFILE_END(ScriptSaveCTX);
 }
 
 void ScriptRestoreCtx(UBYTE i) {
   if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
-  BGB_PROFILE_BEGIN();
   if (i == 0) {
     ctx_cmd_remaining = 255;
   } else {
@@ -258,7 +255,6 @@ void ScriptRestoreCtx(UBYTE i) {
   script_actor = script_ctxs[i].script_actor;
   script_variables[TMP_VAR_1] = script_ctxs[i].tmp_1;
   script_variables[TMP_VAR_2] = script_ctxs[i].tmp_2;
-  BGB_PROFILE_END(RESTORECTX);
   ScriptRunnerUpdate();
 }
 
