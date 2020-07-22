@@ -31,6 +31,13 @@ var ScripTracker = function() {
   this.sampleCount = 0; // Number of samples processed for the current tick.
   this.sampleStepping = 0; // Base sample step based on 125 / 6.
   this.isPlaying = false; // Is the player currently playing?
+  this.notePeriodsGB = [
+    44, 156, 262, 363, 457, 547, 631, 710, 786, 854, 923, 986, // C3 to B3
+  1046,1102,1155,1205,1253,1297,1339,1379,1417,1452,1486,1517, // C4 to B4
+  1546,1575,1602,1627,1650,1673,1694,1714,1732,1750,1767,1783, // C5 to B5
+  1798,1812,1825,1837,1849,1860,1871,1881,1890,1899,1907,1915, // C6 to B6
+  1923,1930,1936,1943,1949,1954,1959,1964,1969,1974,1978,1982, // C7 to B7
+  1985,1988,1992,1995,1998,2001,2004,2006,2009,2011,2013,2015];// C8 to B8
 
   this.masterVolume = 0.6; // The master volume multiplier.
   this.masterVolSlide = 0; // Master volume delta per tick.
@@ -266,11 +273,9 @@ ScripTracker.prototype.processTick = function() {
 
           // Update sample frequency according to new note if we have a sample loaded.
           if (registers.sample.sample !== null) {
-            registers.period =
-              7680 -
-              (note - 26 - registers.sample.sample.basePeriod) * 64 -
-              registers.sample.sample.fineTune / 2;
-            var freq = 8363 * Math.pow(2, (4608 - registers.period) / 768);
+            registers.period =  //replace with gb lookup
+                this.notePeriodsGB[note];
+            var freq = ((131072*1.8)/(2048-registers.period));//131072/(2048
 
             registers.sample.position = registers.sample.restart; // Restart sample from restart position (can be changed by sample offset efect!).
             //registers.volume.sampleVolume = registers.sample.sample.volume; // Reset sample volume. Disabled for GBT
@@ -300,13 +305,17 @@ ScripTracker.prototype.processTick = function() {
       registers.tremor.muted = false; // Reset tremor on each new row.
       if (volume >= 0 && volume <= 64) {
         // Change channel volume.
-        registers.volume.channelVolume = volume / 64;
-        registers.volume.sampleVolume = registers.volume.channelVolume;
+        //registers.volume.channelVolume = volume / 64;
+        //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
+        console.log(registers.volume.channelVolume,registers.volume.channelVolumeSet);
       } else if (note < 97 && instrIndex !== 0) {
-        if (registers.volume.channelVolumeSlide !== 0) {
-          registers.volume.channelVolume = registers.volume.sampleVolume; 
-          //Disabled for GBT, samples do not set volume unless using envelope.
-        }
+        //if (registers.volume.channelVolumeSlide !== 0) {
+          registers.volume.channelVolumeSlide = registers.volume.channelVolumeSlideSet; // note = trigger
+          registers.volume.channelVolume = registers.volume.channelVolumeSet; 
+          //registers.volume.sampleVolume = registers.volume.channelVolumeSet;
+          //console.log("Channel:",c,"volSet:",registers.volume.channelVolumeSet);
+          //Changed for GBT, Volume set to channelSet on new notes, even when using envelope.
+        //}
       }
 
       if (effect !== Effects.NONE) {
@@ -320,27 +329,6 @@ ScripTracker.prototype.processTick = function() {
           effectParam
         );
       }
-
-      //Copy of Volume slide to process every tick, Compatability with GBT
-      if (registers.volume.channelVolumeSlide !== 0) {
-				if ((registers.volume.channelVolumeSlide & 0xF0) === 0xF0 && (registers.volume.channelVolumeSlide & 0x0F) !== 0x00) {
-					// Fine volume slide down only on tick 1.
-					if (tick === 1) {
-						var slide = (registers.volume.channelVolumeSlide & 0x0F) / 64.0;
-						registers.volume.channelVolume = Math.max(0.0, registers.volume.channelVolume - slide);
-					}
-				} else if ((registers.volume.channelVolumeSlide & 0x0F) === 0x0F && (registers.volume.channelVolumeSlide & 0xF0) !== 0x00) {
-					// Fine volume slide up.
-					if (tick === 1) {
-						var slide = ((registers.volume.channelVolumeSlide & 0xF0) >> 4) / 64.0;
-						registers.volume.channelVolume = Math.min(1.0, registers.volume.channelVolume + slide);
-					}
-				} else {
-					// Normal volume slide.
-					var slide = (((registers.volume.channelVolumeSlide & 0xF0) != 0) ? (registers.volume.channelVolumeSlide & 0xF0) >> 4 : -(registers.volume.channelVolumeSlide & 0x0F)) / 64.0;
-					registers.volume.channelVolume = Math.max(0.0, Math.min(registers.volume.channelVolume + slide, 1.0));
-				}
-      }
     }
 
     // Handle volume column effects and regular effects.
@@ -353,6 +341,12 @@ ScripTracker.prototype.processTick = function() {
         this
       );
     effect.handler(registers, effectParam, this.currentTick, c, this);
+    //Copy of Volume slide to process every tick, Compatability with GBT
+    if (registers.volume.channelVolumeSlide !== 0) {
+        // Normal volume slide.
+        var slide = registers.volume.channelVolumeSlide / 256;
+        registers.volume.channelVolume = Math.max(0.0, Math.min(registers.volume.channelVolume + slide, 1.0));
+    }
   }
 };
 

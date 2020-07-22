@@ -27,13 +27,14 @@ var Effects = {
 			if (tick % 3 === 0) {
 				arpeggio = 0;
 			} else if (tick  % 3 === 1) {
-				arpeggio = ((param & 0xF0) >> 4) * 64;
+				arpeggio = ((param & 0xF0) >> 4);
 			} else if (tick  % 3 === 2) {
-				arpeggio = (param & 0x0F) * 64;
+				arpeggio = (param & 0x0F);
 			}
 
 			// Calculate new frequency.
-			var freq = 8363 * Math.pow(2, (4608 - registers.period + arpeggio) / 768);
+			var freq = ((131072*1.8)/(2048-(player.notePeriodsGB[registers.note + 1 + arpeggio])))
+			//var freq = 8363 * Math.pow(2, (4608 - registers.period + arpeggio) / 768);
 			registers.sample.step = freq / player.sampleStepping;
 		}
 	},
@@ -45,22 +46,23 @@ var Effects = {
 			if (tick === 0 && param !== 0) {
 				registers.porta.step = param;
 			} else if (tick > 0) {
-				registers.period -= registers.porta.step * player.ticksPerRow;
-				var freq = 8363 * Math.pow(2, (4608 - registers.period) / 768);
-				registers.sample.step = freq / player.sampleStepping;
+				registers.period = Math.min(2047,registers.period + registers.porta.step);
+				var freq = (131072*1.8)/(2048-registers.period);				
+				registers.sample.step = Math.min(64,freq / player.sampleStepping);
+				console.log(registers.sample.step);
 			}
 		}
 	},
 
-	// Note porta down. The porta rate is being quadruppled.
+	// Note porta down. The porta rate is being quadruppled? clamp min
 	PORTA_DOWN: {
 		representation: "2",
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0 && param !== 0) {
 				registers.porta.step = param;
 			} else if (tick > 0) {
-				registers.period += registers.porta.step * player.ticksPerRow;
-				var freq = 8363 * Math.pow(2, (4608 - registers.period) / 768);
+				registers.period = Math.max(2,registers.period - registers.porta.step);
+            	var freq = ((131072*1.8)/(2048-registers.period));
 				registers.sample.step = freq / player.sampleStepping;
 			}
 		}
@@ -231,28 +233,77 @@ var Effects = {
 	},
 
 	// Set sample offset in words.
-	SAMPLE_OFFSET: {
+	SET_VOLUME_AND_SLIDE: {// was SAMPLE_OFFSET
 		representation: "9",
 		handler: function(registers, param, tick, channel, player) {
+			// Direct hardware accsess, NRx2 VVVV APPP Volume, Add mode, wait Period.
 			if (tick === 0) {
-				registers.sample.restart   = param * 256;
-				registers.sample.position  = param * 256;
-				registers.sample.remain   -= param * 256;
+				var slide = (param & 0x7); 
+				switch(slide) {
+					default:
+					case 0:		slide = 0; 	  break;	// Disable 1/0
+					case 1:		slide = 2.28; break;	// Slow 1/7
+					case 2:		slide = 2.6;  break;	// 1/6
+					case 3:		slide = 3.2;  break;	// 1/5
+					case 4:		slide = 4; 	  break;	// 1/4
+					case 5:		slide = 5.3;  break;	// 1/3
+					case 6:		slide = 8; 	  break;	// 1/2
+					case 7:		slide = 16;   break;	// fastest 1/1
+				}
+				if( (param & 0x8) === 1) {  // Volume envelope add Up!
+					param = (slide);
+				}
+				else {	// Volume envelope Down!
+					param = 0 - slide;
+				}
+				registers.volume.channelVolumeSlideSet = param;
+				// Set Volume
+				registers.volume.channelVolumeSet = (param & 0xF0) / 240;
+				registers.volume.channelVolume = registers.volume.channelVolumeSet; // Not untill new note
+				registers.volume.sampleVolume = registers.volume.channelVolume; // Not untill new note
 			}
 		}
 	},
 
-	// Slide the volume up or down on every tick except the first. Parameter values > 127 will slide up, lower
-	// values slide down.
+	// Slide the volume up or down on every tick except the first. 
+	// Parameter values > 127 will slide up, lower values slide down.
 	VOLUME_SLIDE: {
 		representation: "A",
 		handler: function(registers, param, tick, channel, player) {
 			// On tick 0 copy parameter if set.
-			if (tick === 0 && param !== 0) {
-				registers.volume.channelVolumeSlide = param;
+			if (tick === 0) {	//removed so 0 resets, had && param !== 0
+				if(param > 0xF) {  // Volume envelope Up!
+					var slide = ((param & 0xF0) >> 4);
+				}
+				else {   // Volume envelope Down!
+					var slide = ((param & 0xF) );
+				}
+				// On gameboy, this is a timer to +-1/16th every tick, to every 7 ticks
+				// 64 tick / 50 hz tick mult 1.28
+				// 16, 8, 5.3, 4, 3.2, 2.6, 2.28
+				switch(slide) {
+					default:
+					case 0:			slide = 0; break;	// Disable 1/0
+					case 1: case 2:	slide = 2.28; break;	// Slow 1/7
+					case 3:			slide = 2.6; break;	// 1/6
+					case 4:			slide = 3.2; break;	// 1/5
+					case 5:			slide = 4; break;	// 1/4
+					case 6:			slide = 5.3; break;	// 1/3
+					case 7: case 8: slide = 8; break;	// 1/2
+					case 9:  case 10: case 11: case 12: case 13: case 14: 
+					case 15:		slide = 16; break;	// fastest 1/1
+				}
+				if(param > 0xF) {  // Volume envelope Up!
+					param = (slide);
+				}
+				else {	// Volume envelope Down!
+					param = 0 - slide;
+				}
+				registers.volume.channelVolumeSlideSet = param;
+				//console.log("Channel:",channel,"Slide:",registers.volume.channelVolumeSlide);
 			}
 			
-			if (tick > 0 && registers.volume.channelVolumeSlide !== 0) {
+		/*	if (tick > 0 && registers.volume.channelVolumeSlide !== 0) {
 				if ((registers.volume.channelVolumeSlide & 0xF0) === 0xF0 && (registers.volume.channelVolumeSlide & 0x0F) !== 0x00) {
 					// Fine volume slide down only on tick 1.
 					if (tick === 1) {
@@ -271,7 +322,7 @@ var Effects = {
 					registers.volume.channelVolume = Math.max(0.0, Math.min(registers.volume.channelVolume + slide, 1.0));
 				}
 			}
-		}
+		*/}
 	},
 
 	// After this row jump to row 1 of the given order.
@@ -290,11 +341,14 @@ var Effects = {
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0) {
 				if ( channel === 2 ) {
-					registers.volume.channelVolume = Math.max(0.0, Math.min(Math.round(param / 16.0) / 4.0, 1.0));
+					registers.volume.channelVolumeSet = Math.max(0.0, Math.min(Math.round(param / 16.0) / 4.0, 1.0));
 				} else {
-					registers.volume.channelVolume = Math.max(0.0, Math.min(Math.round(param / 4.0) / 16.0, 1.0));
+					registers.volume.channelVolumeSet = Math.max(0.0, Math.min(Math.round(param / 4.0) / 16.0, 1.0));
 				}
+				registers.volume.channelVolume = registers.volume.channelVolumeSet; //GBT Take max volume from set vol
 				registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
+				registers.volume.channelVolumeSlide = 0;
+				registers.volume.channelVolumeSlideSet = 0; // GBT volume = trigger & no slide
 			}
 		}
 	},
@@ -509,22 +563,21 @@ var Effects = {
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0) {
 				if (param <= 32) {
+					var tempo = 128
 					switch (param) { // Compensate for GBT Speed Conversion
-						case 1:	case 2: case 3:
-							Effects.SET_TEMPO.handler (registers, 154, tick, channel, player); 
-							break;
-						case 4:
-							Effects.SET_TEMPO.handler (registers, 149, tick, channel, player); 
-							break;
-						case 5: 
-							Effects.SET_TEMPO.handler (registers, 124, tick, channel, player); 
-							break;
-						case 6: 
-							Effects.SET_TEMPO.handler (registers, 128, tick, channel, player); 
-							break;
-						default: 
-							Effects.SET_TEMPO.handler (registers, 125, tick, channel, player);
+						case 1:			tempo = 154; break;
+						case 2: case 3:	tempo = 150; break;
+						case 4:			tempo = 149; break;
+						case 5:			tempo = 124; break;
+						case 6:			tempo = 127.5; break;
+						case 7:			tempo = 131; break;
+						case 8:			tempo = 134; break;
+						case 9:			tempo = 135; break;
+						case 10:		tempo = 125; break;
+						case 11:		tempo = 127; break;
+						default:		tempo = 128; break;
 					}
+					Effects.SET_TEMPO.handler (registers, tempo, tick, channel, player);
 					Effects.SET_SPEED.handler (registers, param, tick, channel, player);
 				} else {
 					Effects.SET_TEMPO.handler (registers, param, tick, channel, player);
