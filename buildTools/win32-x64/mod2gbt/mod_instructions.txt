@@ -29,7 +29,7 @@ Cnn - Sets the volume to nn (in hexadecimal). Valid values from 00h to 40h.
 Dnn - Ends this pattern and jumps to position nn (in decimal) in next pattern.
       If used the last step of a pattern it will jump two patterns, not one!
 
-E8n - Sets the panning to n (in hexadecimal). 
+E8n - Sets the panning to n (in hexadecimal).
       Left --- Both --- Right
       0123   456789AB    CDEF
 

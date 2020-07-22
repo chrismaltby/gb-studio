@@ -313,7 +313,7 @@ const compileTrack = async (
   }
 
   const outputFile = process.platform === "win32" ? "output.c" : "music.c";
-  const args = [`"${modPath}"`, track.dataName, "-c", 8]; // Replace bank 8 later
+  const args = [`"${modPath}"`, track.dataName, 8]; // Replace bank 8 later
   progress(`Convert "${modPath}" to "${track.dataName}"`);
 
   const options = {
