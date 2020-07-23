@@ -191,7 +191,7 @@ var ModModule = function(fileData) {
 				} else if ((byte3 & 0x0F) == 9) {
 					pattern.effect[r][c] = Effects.SET_VOLUME_AND_SLIDE;//Effects.SAMPLE_OFFSET;
 				} else if ((byte3 & 0x0F) == 10) {
-					pattern.effect[r][c] = Effects.VOLUME_SLIDE;
+					pattern.effect[r][c] = Effects.NONE; //Depricated VOLUME_SLIDE; for 9xx
 				} else if ((byte3 & 0x0F) == 11) {
 					pattern.effect[r][c] = Effects.POSITION_JUMP;
 				} else if ((byte3 & 0x0F) == 12) {

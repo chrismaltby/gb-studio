@@ -237,30 +237,33 @@ var Effects = {
 		representation: "9",
 		handler: function(registers, param, tick, channel, player) {
 			// Direct hardware accsess, NRx2 VVVV APPP Volume, Add mode, wait Period.
-			if (tick === 0) {
+			if (tick === 0) {//&& channel !== 2
+				var vol = (param & 0xF0) >> 4;
 				var slide = (param & 0x7); 
 				switch(slide) {
 					default:
 					case 0:		slide = 0; 	  break;	// Disable 1/0
-					case 1:		slide = 2.28; break;	// Slow 1/7
-					case 2:		slide = 2.6;  break;	// 1/6
-					case 3:		slide = 3.2;  break;	// 1/5
+					case 1:		slide = 16;   break;	// fastest 1/1 FLIPED!!!
+					case 2:		slide = 8; 	  break;	// 1/2
+					case 3:		slide = 5.3;  break;	// 1/3
 					case 4:		slide = 4; 	  break;	// 1/4
-					case 5:		slide = 5.3;  break;	// 1/3
-					case 6:		slide = 8; 	  break;	// 1/2
-					case 7:		slide = 16;   break;	// fastest 1/1
+					case 5:		slide = 3.2;  break;	// 1/5
+					case 6:		slide = 2.6;  break;	// 1/6
+					case 7:		slide = 2.28; break;	// Slow 1/7					
 				}
-				if( (param & 0x8) === 1) {  // Volume envelope add Up!
-					param = (slide);
+				if((param & 0x08) === 0x08) {  // Volume envelope add Up!
+					slide = slide;
 				}
 				else {	// Volume envelope Down!
-					param = 0 - slide;
+					slide = 0 - slide;
 				}
-				registers.volume.channelVolumeSlideSet = param;
+				registers.volume.channelVolumeSlideSet = slide;
+				//registers.volume.channelVolumeSlide = slide;
 				// Set Volume
-				registers.volume.channelVolumeSet = (param & 0xF0) / 240;
-				registers.volume.channelVolume = registers.volume.channelVolumeSet; // Not untill new note
-				registers.volume.sampleVolume = registers.volume.channelVolume; // Not untill new note
+				registers.volume.channelVolumeSet = Math.max(0.0, Math.min(vol / 16.0, 1.0));
+				registers.volume.channelVolume = registers.volume.channelVolumeSet; //GBT Take max volume from set vol
+				registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
+				//console.log("ch " + channel + " param " + param + " slide " + slide + " vol " + vol);
 			}
 		}
 	},
