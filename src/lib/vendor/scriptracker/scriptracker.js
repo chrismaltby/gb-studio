@@ -51,7 +51,7 @@ var ScripTracker = function() {
   this.audioContext = null; // AudioContext for output.
   this.audioSource = null; // Source object for audio.
   this.audioScriptNode = null; // Audio processing object.
-  this.bufferSize = 4096; // Size of the audio buffer.
+  this.bufferSize = 2048; // Size of the audio buffer.
 
   this.eventHandlers = {
     SONG_LOADED: [],
