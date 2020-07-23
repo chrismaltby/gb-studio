@@ -482,6 +482,13 @@ const compile = async (
   const startDirectionX = dirToXDec(startDirection);
   const startDirectionY = dirToYDec(startDirection);
 
+  // Set variables len to be slightly higher than needed
+  // rounding to nearest 50 vars to prevent frequent
+  // changes to data_ptrs.h which would invalidate build cache
+  const variablesLen = Math.max(
+    (Math.ceil(precompiled.variables.length / 50) * 50) + 50
+  , 500);
+
   output[`data_ptrs.h`] =
     `${
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
@@ -495,7 +502,7 @@ const compile = async (
       `#define CURSOR_BANK_OFFSET ${cursorImagePtr.offset}\n` +
       `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
       `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
-      `#define NUM_VARIABLES ${precompiled.variables.length}\n` +
+      `#define NUM_VARIABLES ${variablesLen}\n` +
       `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
       `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n` + 
       `\n`
@@ -515,9 +522,7 @@ const compile = async (
     `extern unsigned int start_player_sprite;\n` +
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
-    `extern unsigned char script_variables[${
-      precompiled.variables.length + 1
-    }];\n${music
+    `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
@@ -553,9 +558,7 @@ const compile = async (
     `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
-    `unsigned char script_variables[${
-      precompiled.variables.length + 1
-    }] = { 0 };\n`;
+    `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
 
