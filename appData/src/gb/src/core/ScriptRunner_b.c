@@ -181,6 +181,9 @@ void ScriptTimerUpdate_b() {
 }
 
 UBYTE ScriptUpdate_MoveActor() {
+  BYTE new_dir_x = 0;
+  BYTE new_dir_y = 0;
+
   // Actor reached destination
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
@@ -194,30 +197,43 @@ UBYTE ScriptUpdate_MoveActor() {
     }
     return TRUE;
   }
+
   actors[script_actor].moving = TRUE;
+
   // Actor not at horizontal destination
   if (actors[script_actor].pos.x != actor_move_dest_x &&
       (!actor_move_type || (actors[script_actor].pos.y == actor_move_dest_y))) {
-    actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].dir.x = 1;
+      new_dir_x = 1;
     } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].dir.x = -1;
+      new_dir_x = -1;
     }
   } else {
     // Actor not at vertical destination
     actors[script_actor].dir.x = 0;
     if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].dir.y = 1;
+      new_dir_y = 1;
     } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].dir.y = -1;
+      new_dir_y = -1;
     }
   }
+
+  // If changed direction, trigger actor rerender
+  if((actors[script_actor].dir.x != new_dir_x) ||
+     (actors[script_actor].dir.y != new_dir_y)) {
+       actors[script_actor].rerender = TRUE;
+  }
+
+  actors[script_actor].dir.x = new_dir_x;
+  actors[script_actor].dir.y = new_dir_y;
 
   return FALSE;
 }
 
 UBYTE ScriptUpdate_MoveActorDiag() {
+  BYTE new_dir_x = 0;
+  BYTE new_dir_y = 0;
+
   // Actor reached destination
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
@@ -237,24 +253,29 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   if (actors[script_actor].pos.x != actor_move_dest_x) {
     // actors[script_actor].dir.y = 0;
     if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].dir.x = 1;
+      new_dir_x = 1;
     } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
-      actors[script_actor].dir.x = -1;
+      new_dir_x = -1;
     }
-  } else {
-    actors[script_actor].dir.x = 0;
   }
 
   // Actor not at vertical destination
   if (actors[script_actor].pos.y != actor_move_dest_y) {
     if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].dir.y = 1;
+      new_dir_y = 1;
     } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
-      actors[script_actor].dir.y = -1;
+      new_dir_y = -1;
     }
-  } else {
-    actors[script_actor].dir.y = 0;
   }
+
+  // If changed direction, trigger actor rerender
+  if((actors[script_actor].dir.x != new_dir_x) ||
+     (actors[script_actor].dir.y != new_dir_y)) {
+       actors[script_actor].rerender = TRUE;
+  }
+
+  actors[script_actor].dir.x = new_dir_x;
+  actors[script_actor].dir.y = new_dir_y;
 
   return FALSE;
 }
