@@ -47,30 +47,15 @@ typedef struct {
   UBYTE dummy24byte; // even struct faster index multiplication
 } ScriptContext;
 
+extern ScriptContext main_script_ctx;
+
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
 extern UBYTE current_script_ctx;
 extern UINT8 script_ctx_pool[];
-
-// extern ScriptContext *main_script_ctx;
-
-extern UBYTE script_ptr_bank;
-extern UBYTE* script_start_ptr;
 extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
 extern const SCRIPT_CMD script_cmds[];
-extern UBYTE* script_ptr;
-extern UWORD script_ptr_x;
-extern UWORD script_ptr_y;
-extern UBYTE script_await_next_frame;
-extern UBYTE script_actor;
 extern UBYTE script_main_ctx_actor;
-extern UINT16 actor_move_dest_x;
-extern UINT16 actor_move_dest_y;
-extern UBYTE actor_move_cols;
-extern MOVEMENT_TYPE actor_move_type;
-extern UBYTE wait_time;
-
-extern SCRIPT_UPDATE_FN script_update_fn;
 
 // Max call stack depth
 #define STACK_SIZE 8
