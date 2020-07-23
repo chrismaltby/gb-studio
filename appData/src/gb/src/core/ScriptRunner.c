@@ -175,10 +175,10 @@ void ScriptSaveCtx() {
 }
 
 void ScriptRestoreCtx(UBYTE i) {
-  BGB_PROFILE_BEGIN();  
   if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
+  BGB_PROFILE_BEGIN();  
   if (i == 0) {
     ctx_cmd_remaining = 255;
   } else {
@@ -191,9 +191,9 @@ void ScriptRestoreCtx(UBYTE i) {
   script_variables[TMP_VAR_1] = script_ctxs[i].tmp_1;
   script_variables[TMP_VAR_2] = script_ctxs[i].tmp_2;
 
-  ScriptRunnerUpdate();
-
   BGB_PROFILE_END(RESTORECTX);
+
+  ScriptRunnerUpdate();
 }
 
 UINT8 ScriptCtxPoolNext() {
