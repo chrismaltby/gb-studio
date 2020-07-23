@@ -80,9 +80,13 @@ gbt_channel3_loaded_instrument:: ; current loaded instrument ($FF if none)
 gbt_arpeggio_freq_index::
 	.ds 3*3 ; { base index, base index + x, base index + y } * 3
 gbt_arpeggio_enabled::
-	.ds 3*1 ; if 0, disabled
+	.ds 3*1 ; if 0, disabled, if 1, arp, if 2, sweep
 gbt_arpeggio_tick::
 	.ds	3*1
+
+; Porta Pitch Sweep -> Ch 1-3
+gbt_sweep::
+	.ds 3*1 ; bit 7 is subtract mode, bit 0-6 is how much.
 
 ; Cut note
 gbt_cut_note_tick::

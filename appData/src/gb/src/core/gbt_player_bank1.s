@@ -46,12 +46,12 @@ gbt_wave: ; 8 sounds
 	.DB	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 ; square 50%
 	.DB	0x79,0xBC,0xDE,0xEF,0xFF,0xEE,0xDC,0xB9,0x75,0x43,0x21,0x10,0x00,0x11,0x23,0x45 ; sine
 
-gbt_noise: ; 16 sounds
-	; 7 bit
-	.DB	0x5F,0x5B,0x4B,0x2F,0x3B,0x58,0x1F,0x0F
+; gbt_noise: ; Moved to Mod2GBT for better note range & performance
+	; 7 bit, can adjust with pitch C D# F# A# C
+	;.DB	0x5F,0x4E,0x3E,0x2F,0x2E,0x2C,0x1F,0x0F
 	; 15 bit
-	.DB	0x90,0x80,0x70,0x50,0x00
-	.DB	0x67,0x63,0x53
+	;.DB	0x64,0x54,0x44,0x24,0x00
+	;.DB	0x67,0x56,0x46
 
 gbt_frequencies:
 	.DW	  44,  156,  262,  363,  457,  547,  631,  710,  786,  854,  923,  986
@@ -142,7 +142,7 @@ ch1_just_set_volume$:
 	swap	a
 	ld	(gbt_vol+0),a
 
-	jr	refresh_channel1_regs$
+	jr	refresh_channel1_regs_trig$
 
 ch1_instr_effects$:
 
@@ -161,7 +161,9 @@ ch1_instr_effects$:
 
 	call	gbt_channel_1_set_effect
 
-	jr	refresh_channel1_regs$
+	and a,a
+	ret	z ; if 0, don't refresh registers
+	jr	refresh_channel1_regs_notrig$
 
 ch1_has_frequency$:
 
@@ -199,7 +201,7 @@ ch1_has_frequency$:
 	swap	a
 	ld	(gbt_vol+0),a
 
-	jr	refresh_channel1_regs$
+	jr	refresh_channel1_regs_trig$
 
 ch1_freq_instr_and_effect$:
 
@@ -218,15 +220,16 @@ ch1_freq_instr_and_effect$:
 
 	call	gbt_channel_1_set_effect
 
-	;jr	refresh_channel1_regs$
+	;jr	refresh_channel1_regs_trig$
 
-refresh_channel1_regs$:
 
 	; fall through!
 
 ; -----------------
 
-channel1_refresh_registers:
+refresh_channel1_regs_trig$:
+
+channel1_refresh_registers_trig:
 
 	xor	a,a
 	ld	(#.NR10),a
@@ -238,6 +241,21 @@ channel1_refresh_registers:
 	ld	(#.NR13),a
 	ld	a,(gbt_freq+0*2+1)
 	or	a,#0x80 ; start
+	ld	(#.NR14),a
+
+	ret
+
+refresh_channel1_regs_notrig$:
+
+channel1_refresh_registers_notrig:
+
+	xor	a,a
+	ld	(#.NR10),a
+	ld	a,(gbt_instr+0)
+	ld	(#.NR11),a
+	ld	a,(gbt_freq+0*2+0)
+	ld	(#.NR13),a
+	ld	a,(gbt_freq+0*2+1)
 	ld	(#.NR14),a
 
 	ret
@@ -264,12 +282,16 @@ channel1_update_effects: ; returns 1 in a if it is needed to update sound regist
 
 ch1_dont_cut$:
 
-	; Arpeggio
+	; Arpeggio or Sweep
 	; --------
 
 	ld	a,(gbt_arpeggio_enabled+0)
 	and	a,a
 	ret	z ; a is 0, return 0
+
+	; Check if Sweep or Arpeggio (4-5 cycles)
+	and a,#1
+	jr z,gbt_ch1_sweep_run$
 
 	; If enabled arpeggio, handle it
 
@@ -334,6 +356,54 @@ ch1_not_tick_1$:
 	inc	a
 	ret ; ret 1
 
+gbt_ch1_sweep_run$:
+
+	; PortA Pitch Sweep
+	; -----------
+	ld	hl,#(gbt_freq+0*2+0)
+	ld	a,(gbt_sweep+0)
+	bit 7,a ; bit 7, if nz, sweep up.
+	jr  z,gbt_ch1_sweep_up$
+
+	; Sweep down -
+	sub	a,#0x80
+	ld	b,a
+	ld	a,(hl)		; Get frequency small (gbt_freq+0*2+0)
+	sub	a,b			; subtract b from a
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	ld	a,#1
+	jr	c,gbt_ch1_sweep_dec$
+	ret				; ret 1, update without trigger
+	; Sweep down --
+gbt_ch1_sweep_dec$:
+	dec	(hl)		; DEC frequency large (gbt_freq+0*2+1) 3cy
+	ld	a,(hl)
+	inc a			; find if decremented past 0 to exactly 255
+	ret	nz			; ret/update unless 0
+	ld	(hl-),a		; fix frequency large 0x0
+	ld	(hl),a		; fix frequency small 0x0
+	ld	(gbt_arpeggio_enabled+0),a	; disable sweep
+	ret				; ret 0, no update
+
+	; Sweep up +
+gbt_ch1_sweep_up$:
+	add	a,(hl)		; add frequency small (gbt_freq+0*2+0)
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	jr	c,gbt_ch1_sweep_inc$
+	ld	a,#1
+	ret				; ret 1, update without trigger
+	; Sweep up ++
+gbt_ch1_sweep_inc$:
+	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
+	ld	a,(hl-)
+	and	a,#0x07		; check if wrapped to 0x08 00001000
+	ret;	nz			; ret/update unless 0
+	ld	(gbt_arpeggio_enabled+0),a	; disable sweep
+	dec	a			; wrap around to 0xFF
+	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
+	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
+	ret 			; ret 1, update without trigger
+
 ; -----------------
 
 ; returns a = 1 if needed to update registers, 0 if not
@@ -359,7 +429,7 @@ gbt_ch1_jump_table$:
 	.DW	gbt_ch1_arpeggio$
 	.DW	gbt_ch1_cut_note$
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch1_sweep$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -370,7 +440,7 @@ gbt_ch1_jump_table$:
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch1_NRx2_VolEnv$
 
 gbt_ch1_pan$:
 	and	a,#0x11
@@ -407,6 +477,18 @@ gbt_ch1_arpeggio$:
 gbt_ch1_cut_note$:
 	ld	(gbt_cut_note_tick+0),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch1_NRx2_VolEnv$:	; Raw data into volume, VVVV APPP, bits 4-7 vol
+	ld	(gbt_vol+0),a	; bit 3 true = add, bits 0-2 wait period 
+	xor	a,a	; ret 0		; 0xF1 = max volume, sub 1 every 1 tick.
+	ret					; 0x0A = min volume, add 1 every 2 ticks.
+
+gbt_ch1_sweep$:
+	ld 	(gbt_sweep+0),a
+	ld	a,#2
+	ld	(gbt_arpeggio_enabled+0),a
+	xor	a,a	; ret 0
 	ret
 
 ;-------------------------------------------------------------------------------
@@ -477,7 +559,7 @@ ch2_just_set_volume$:
 	swap	a
 	ld	(gbt_vol+1),a
 
-	jr	refresh_channel2_regs$
+	jr	refresh_channel2_regs_trig$
 
 ch2_instr_effects$:
 
@@ -496,7 +578,9 @@ ch2_instr_effects$:
 
 	call	gbt_channel_2_set_effect
 
-	jr	refresh_channel2_regs$
+	and a,a
+	ret	z ; if 0, don't refresh registers
+	jr	refresh_channel2_regs_notrig$
 
 ch2_has_frequency$:
 
@@ -534,7 +618,7 @@ ch2_has_frequency$:
 	swap	a
 	ld	(gbt_vol+1),a
 
-	jr	refresh_channel2_regs$
+	jr	refresh_channel2_regs_trig$
 
 ch2_freq_instr_and_effect$:
 
@@ -553,15 +637,15 @@ ch2_freq_instr_and_effect$:
 
 	call	gbt_channel_2_set_effect
 
-	;jr	.refresh_channel2_regs
-
-refresh_channel2_regs$:
+	;jr	.refresh_channel2_regs_trig
 
 	; fall through!
 
 ; -----------------
 
-channel2_refresh_registers:
+refresh_channel2_regs_trig$:
+
+channel2_refresh_registers_trig:
 
 	ld	a,(gbt_instr+1)
 	ld	(#.NR21),a
@@ -571,6 +655,19 @@ channel2_refresh_registers:
 	ld	(#.NR23),a
 	ld	a,(gbt_freq+1*2+1)
 	or	a,#0x80 ; start
+	ld	(#.NR24),a
+
+	ret
+
+refresh_channel2_regs_notrig$:
+
+channel2_refresh_registers_notrig:
+
+	ld	a,(gbt_instr+1)
+	ld	(#.NR21),a
+	ld	a,(gbt_freq+1*2+0)
+	ld	(#.NR23),a
+	ld	a,(gbt_freq+1*2+1)
 	ld	(#.NR24),a
 
 	ret
@@ -597,13 +694,16 @@ channel2_update_effects: ; returns 1 in a if it is needed to update sound regs
 
 ch2_dont_cut$:
 
-	; Arpeggio
+	; Arpeggio or Sweep
 	; --------
 
 	ld	a,(gbt_arpeggio_enabled+1)
 	and	a,a
 	ret	z ; a is 0, return 0
 
+	; Check if Sweep or Arpeggio (5-6 cycles)
+	and a,#1
+	jr z,gbt_ch2_sweep_run$
 	; If enabled arpeggio, handle it
 
 	ld	a,(gbt_arpeggio_tick+1)
@@ -667,6 +767,54 @@ ch2_not_tick_1$:
 	inc	a
 	ret ; ret 1
 
+gbt_ch2_sweep_run$:
+
+	; PortA Pitch Sweep
+	; -----------
+	ld	hl,#(gbt_freq+1*2+0)
+	ld	a,(gbt_sweep+1)
+	bit 7,a ; bit 7, if nz, sweep up.
+	jr  z,gbt_ch2_sweep_up$
+
+	; Sweep down -
+	sub	a,#0x80
+	ld	b,a
+	ld	a,(hl)		; Get frequency small (gbt_freq+0*2+0)
+	sub	a,b			; subtract b from a
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	ld	a,#1
+	jr	c,gbt_ch2_sweep_dec$
+	ret				; ret 1, update without trigger
+	; Sweep down --
+gbt_ch2_sweep_dec$:
+	dec	(hl)		; DEC frequency large (gbt_freq+0*2+1) 3cy
+	ld	a,(hl)
+	inc a			; find if decremented past 0 to exactly 255
+	ret	nz			; ret/update unless 0
+	ld	(hl-),a		; fix frequency large 0x0
+	ld	(hl),a		; fix frequency small 0x0
+	ld	(gbt_arpeggio_enabled+1),a	; disable sweep
+	ret				; ret 0, no update
+
+	; Sweep up +
+gbt_ch2_sweep_up$:
+	add	a,(hl)		; add frequency small (gbt_freq+0*2+0)
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	jr	c,gbt_ch2_sweep_inc$
+	ld	a,#1
+	ret				; ret 1, update without trigger
+	; Sweep up ++
+gbt_ch2_sweep_inc$:
+	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
+	ld	a,(hl-)
+	and	a,#0x07		; check if wrapped to 0x08 00001000
+	ret;	nz			; ret/update unless 0
+	ld	(gbt_arpeggio_enabled+1),a	; disable sweep
+	dec	a			; wrap around to 0xFF
+	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
+	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
+	ret 			; ret 1, update without trigger
+
 ; -----------------
 
 ; returns a = 1 if needed to update registers, 0 if not
@@ -692,7 +840,7 @@ gbt_ch2_jump_table$:
 	.DW	gbt_ch2_arpeggio$
 	.DW	gbt_ch2_cut_note$
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch2_sweep$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -703,7 +851,7 @@ gbt_ch2_jump_table$:
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch2_NRx2_VolEnv$
 
 gbt_ch2_pan$:
 	and	a,#0x22
@@ -740,6 +888,18 @@ gbt_ch2_arpeggio$:
 gbt_ch2_cut_note$:
 	ld	(gbt_cut_note_tick+1),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch2_NRx2_VolEnv$:	; raw volumeEnv, VVVV APPP, bits 7-4 vol
+	ld	(gbt_vol+1),a	; bit 3 true = add, bits 2-0 wait period 
+	xor	a,a	; ret 0		; 0xF1 = max volume, sub 1 every 1 tick.
+	ret					; 0x0A = min volume, add 1 every 2 ticks.
+
+gbt_ch2_sweep$:
+	ld 	(gbt_sweep+1),a
+	ld	a,#2
+	ld	(gbt_arpeggio_enabled+1),a
+	xor	a,a	; ret 0
 	ret
 
 ;-------------------------------------------------------------------------------
@@ -810,7 +970,7 @@ ch3_just_set_volume$:
 	swap	a
 	ld	(gbt_vol+2),a
 
-	jr	refresh_channel3_regs$
+	jr	refresh_channel3_regs_trig$
 
 ch3_effects$:
 
@@ -822,7 +982,7 @@ ch3_effects$:
 	and	a,a
 	ret	z ; if 0, don't refresh registers
 
-	jr	refresh_channel3_regs$
+	jr	refresh_channel3_regs_notrig$
 
 ch3_has_frequency$:
 
@@ -857,7 +1017,7 @@ ch3_has_frequency$:
 	sla	a
 	ld	(gbt_vol+2),a
 
-	jr	refresh_channel3_regs$
+	jr	refresh_channel3_regs_trig$
 
 ch3_freq_instr_and_effect$:
 
@@ -877,13 +1037,12 @@ ch3_freq_instr_and_effect$:
 
 	;jr	.refresh_channel3_regs
 
-refresh_channel3_regs$:
-
 	; fall through!
 
 ; -----------------
+refresh_channel3_regs_trig$:
 
-channel3_refresh_registers:
+channel3_refresh_registers_trig:
 
 	xor	a,a
 	ld	(#.NR30),a ; disable
@@ -909,6 +1068,20 @@ channel3_refresh_registers:
 
 	ret
 
+refresh_channel3_regs_notrig$:
+	; Don't Restart Waveform!
+channel3_refresh_registers_notrig:
+
+	xor	a,a
+	ld	(#.NR31),a
+	ld	a,(gbt_vol+2)
+	ld	(#.NR32),a
+	ld	a,(gbt_freq+2*2+0)
+	ld	(#.NR33),a
+	ld	a,(gbt_freq+2*2+1)
+	ld	(#.NR34),a
+
+	ret
 ; ------------------
 
 gbt_channel3_load_instrument:
@@ -957,12 +1130,16 @@ channel3_update_effects: ; returns 1 in a if it is needed to update sound regs
 
 ch3_dont_cut$:
 
-	; Arpeggio
+	; Arpeggio or Sweep
 	; --------
 
 	ld	a,(gbt_arpeggio_enabled+2)
 	and	a,a
 	ret	z ; a is 0, return 0
+
+	; Check if Sweep or Arpeggio (5-6 cycles)
+	and a,#1
+	jp z,gbt_ch3_sweep_run$
 
 	; If enabled arpeggio, handle it
 
@@ -1027,6 +1204,54 @@ ch3_not_tick_1$:
 	inc	a
 	ret ; ret 1
 
+gbt_ch3_sweep_run$:
+
+	; PortA Pitch Sweep
+	; -----------
+	ld	hl,#(gbt_freq+2*2+0)
+	ld	a,(gbt_sweep+2)
+	bit 7,a ; bit 7, if nz, sweep up.
+	jr  z,gbt_ch3_sweep_up$
+
+	; Sweep down -
+	sub	a,#0x80
+	ld	b,a
+	ld	a,(hl)		; Get frequency small (gbt_freq+0*2+0)
+	sub	a,b			; subtract b from a
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	ld	a,#1
+	jr	c,gbt_ch3_sweep_dec$
+	ret				; ret 1, update without trigger
+	; Sweep down --
+gbt_ch3_sweep_dec$:
+	dec	(hl)		; DEC frequency large (gbt_freq+0*2+1) 3cy
+	ld	a,(hl)
+	inc a			; find if decremented past 0 to exactly 255
+	ret	nz			; ret/update unless 0
+	ld	(hl-),a		; fix frequency large 0x0
+	ld	(hl),a		; fix frequency small 0x0
+	ld	(gbt_arpeggio_enabled+2),a	; disable sweep
+	ret				; ret 0, no update
+
+	; Sweep up +
+gbt_ch3_sweep_up$:
+	add	a,(hl)		; add frequency small (gbt_freq+0*2+0)
+	ld	(hl+),a		; Set frequency small (gbt_freq+0*2+0)
+	jr	c,gbt_ch3_sweep_inc$
+	ld	a,#1
+	ret				; ret 1, update without trigger
+	; Sweep up ++
+gbt_ch3_sweep_inc$:
+	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
+	ld	a,(hl-)
+	and	a,#0x07		; check if wrapped to 0x08 00001000
+	ret;	nz			; ret/update unless 0
+	ld	(gbt_arpeggio_enabled+2),a	; disable sweep
+	dec	a			; wrap around to 0xFF
+	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
+	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
+	ret 			; ret 1, update without trigger
+
 ; -----------------
 
 ; returns a = 1 if needed to update registers, 0 if not
@@ -1052,7 +1277,7 @@ gbt_ch3_jump_table$:
 	.DW	gbt_ch3_arpeggio$
 	.DW	gbt_ch3_cut_note$
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch3_sweep$
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
@@ -1100,6 +1325,13 @@ gbt_ch3_arpeggio$:
 gbt_ch3_cut_note$:
 	ld	(gbt_cut_note_tick+2),a
 	xor	a,a ; ret 0
+	ret
+
+gbt_ch3_sweep$:
+	ld 	(gbt_sweep+2),a
+	ld	a,#2
+	ld	(gbt_arpeggio_enabled+2),a
+	xor	a,a	; ret 0
 	ret
 
 ;-------------------------------------------------------------------------------
@@ -1186,20 +1418,19 @@ ch4_effects$:
 
 ch4_has_instrument$:
 
-	; Has instrument
+	; Has instrument raw frequency data
 
-	and	a,#0x1F
-	ld	hl,#gbt_noise
-	ld	c,a
-	ld	b,#0
-	add	hl,bc
-	ld	a,(hl) ; a = instrument data
+	and	a,#0x7F ; mask out bit 7
+	ld	b,a
 
-	ld	(gbt_instr+3),a
-
-	ld	a,(de)
+	ld	a,(de)	; load next byte
 	inc	de
-
+	ld	c,a
+	rla
+	and a,#0x80	; Mask only bit 7
+	or	a,b		; Append noise bit
+	ld	(gbt_instr+3),a
+	ld	a,c		; restore byte2
 	bit	7,a
 	jr	nz,ch4_instr_and_effect$
 
@@ -1302,7 +1533,7 @@ gbt_ch4_jump_table$:
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
 	.DW	gbt_ch1234_nop
-	.DW	gbt_ch1234_nop
+	.DW	gbt_ch4_NRx2_VolEnv$
 
 gbt_ch4_pan$:
 	and	a,#0x88
@@ -1314,6 +1545,11 @@ gbt_ch4_cut_note$:
 	ld	(gbt_cut_note_tick+3),a
 	xor	a,a ; ret 0
 	ret
+
+gbt_ch4_NRx2_VolEnv$:	; Raw data into volume, VVVV APPP, bits 4-7 vol
+	ld	(gbt_vol+3),a	; bit 3 true = add, bits 0-2 wait period 
+	xor	a,a	; ret 0		; 0xF1 = max volume, sub 1 every 1 tick.
+	ret					; 0x0A = min volume, add 1 every 2 ticks.
 
 ;-------------------------------------------------------------------------------
 
@@ -1387,15 +1623,15 @@ gbt_update_effects_bank1::
 
 	call	channel1_update_effects
 	and	a,a
-	call	nz,channel1_refresh_registers
+	call	nz,channel1_refresh_registers_notrig
 
 	call	channel2_update_effects
 	and	a,a
-	call	nz,channel2_refresh_registers
+	call	nz,channel2_refresh_registers_notrig
 
 	call	channel3_update_effects
 	and	a,a
-	call	nz,channel3_refresh_registers
+	call	nz,channel3_refresh_registers_notrig
 
 	call	channel4_update_effects
 	and	a,a
