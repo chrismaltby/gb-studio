@@ -167,7 +167,7 @@ void ScriptSaveCtx() {
   script_ctx_ptr = &script_ctxs[current_script_ctx];
 
   // Copy main context into store
-  memcpy(script_ctx_ptr, &main_script_ctx, sizeof(ScriptContext));
+  memcpy(script_ctx_ptr, &main_script_ctx, sizeof(ScriptContext)-3);
   (*script_ctx_ptr).tmp_1 = script_variables[TMP_VAR_1];
   (*script_ctx_ptr).tmp_2 = script_variables[TMP_VAR_2];
 
@@ -187,7 +187,7 @@ void ScriptRestoreCtx(UBYTE i) {
   current_script_ctx = i;
 
   // Copy stored context into main context
-  memcpy(&main_script_ctx, &script_ctxs[i], sizeof(ScriptContext));
+  memcpy(&main_script_ctx, &script_ctxs[i], sizeof(ScriptContext)-3);
   script_variables[TMP_VAR_1] = script_ctxs[i].tmp_1;
   script_variables[TMP_VAR_2] = script_ctxs[i].tmp_2;
 
