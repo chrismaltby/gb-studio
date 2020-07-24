@@ -178,7 +178,7 @@ void ScriptTimerUpdate_b() {
 UBYTE ScriptUpdate_MoveActor() {
   BYTE new_dir_x = 0;
   BYTE new_dir_y = 0;
-  BGB_PROFILE_BEGIN();
+  //BGB_PROFILE_BEGIN();
   tmp_actor = &actors[main_script_ctx.script_actor];
 
   // Actor reached destination
@@ -223,7 +223,7 @@ UBYTE ScriptUpdate_MoveActor() {
 
   (*tmp_actor).dir.x = new_dir_x;
   (*tmp_actor).dir.y = new_dir_y;
-  BGB_PROFILE_END(SUMoveActor);
+  //BGB_PROFILE_END(SUMoveActor);
   return FALSE;
 }
 
@@ -273,7 +273,7 @@ UBYTE ScriptUpdate_MoveActorDiag() {
 
   actors[main_script_ctx.script_actor].dir.x = new_dir_x;
   actors[main_script_ctx.script_actor].dir.y = new_dir_y;
-
+  BGB_PROFILE_END(SUMoveActorDiag);
   return FALSE;
 }
 
@@ -673,7 +673,10 @@ void Script_ActorSetPos_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorMoveTo_b() {
+  BGB_PROFILE_BEGIN(ActorMoveTo_b);
+  
   if (actors[main_script_ctx.script_actor].script_control) {
+    BGB_PROFILE_END(EARLY OUT);
     return;
   }
   main_script_ctx.actor_move_dest_x = 0;  // @wtf-but-needed
@@ -683,11 +686,14 @@ void Script_ActorMoveTo_b() {
   main_script_ctx.actor_move_cols = script_cmd_args[2];
   main_script_ctx.actor_move_type = script_cmd_args[3];
 
-  actors[main_script_ctx.script_actor].script_control = TRUE;
-
+  actors[main_script_ctx.script_actor].script_control = TRUE; // @wtf Should already be true?
+  BGB_PROFILE_END(ActorMoveTo_b);
   if (main_script_ctx.actor_move_cols) {
+    BGB_PROFILE_BEGIN();
     ScriptHelper_CalcDest();
+    BGB_PROFILE_END(CalcDest);
   }
+
   if (main_script_ctx.actor_move_type == MOVE_DIAGONAL) {
     main_script_ctx.script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
@@ -1127,9 +1133,12 @@ void Script_PlayerSetSprite_b() {
  * Push actor in direction player is facing
  */
 void Script_ActorPush_b() {
+  BGB_PROFILE_BEGIN(ActorPush_b);
   UINT16 dest_x, dest_y;
+  
 
   if (actors[main_script_ctx.script_actor].script_control) {
+    BGB_PROFILE_END(EARLY OUT);
     return;
   }
 
@@ -1166,7 +1175,10 @@ void Script_ActorPush_b() {
   main_script_ctx.actor_move_dest_y = dest_y;
   actors[main_script_ctx.script_actor].script_control = TRUE;
 
+  BGB_PROFILE_END(ActorPush_b);
+  BGB_PROFILE_BEGIN();
   ScriptHelper_CalcDest();
+  BGB_PROFILE_END(CalcDest);
 
   main_script_ctx.script_update_fn = ScriptUpdate_MoveActor;
 
@@ -1418,6 +1430,8 @@ void Script_ActorSetPosToVal_b() {
  * Set Actor position from variables
  */
 void Script_ActorMoveToVal_b() {
+  BGB_PROFILE_BEGIN(ActorMoveToVal_b);
+  
   if (actors[main_script_ctx.script_actor].script_control) {
     return;
   }
@@ -1429,10 +1443,15 @@ void Script_ActorMoveToVal_b() {
   main_script_ctx.actor_move_dest_y = script_variables[main_script_ctx.script_ptr_y] * 8;
   main_script_ctx.actor_move_cols = script_cmd_args[0];
   main_script_ctx.actor_move_type = script_cmd_args[1];
-  actors[main_script_ctx.script_actor].script_control = TRUE;
+  actors[main_script_ctx.script_actor].script_control = TRUE; // @wtf should already be True?
+
+  BGB_PROFILE_END(ActorMoveToVal_b);
   if (main_script_ctx.actor_move_cols) {
+    BGB_PROFILE_BEGIN();
     ScriptHelper_CalcDest();
+    BGB_PROFILE_END(CalcDest);
   }
+
   if (main_script_ctx.actor_move_type == MOVE_DIAGONAL) {
     main_script_ctx.script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
@@ -1449,7 +1468,10 @@ void Script_ActorMoveToVal_b() {
  *   arg1: Offset Y Pos
  */
 void Script_ActorMoveRel_b() {
+  BGB_PROFILE_BEGIN(ActorMoveRel_b);
+    
   if (actors[main_script_ctx.script_actor].script_control) {
+    BGB_PROFILE_END(EARLY OUT);
     return;
   }
   actor_move_settings |= ACTOR_MOVE_ENABLED;
@@ -1499,8 +1521,11 @@ void Script_ActorMoveRel_b() {
 
   actors[main_script_ctx.script_actor].script_control = TRUE;
 
+  BGB_PROFILE_END(ActorMoveRel_b);
   if (main_script_ctx.actor_move_cols) {
+    BGB_PROFILE_BEGIN();
     ScriptHelper_CalcDest();
+    BGB_PROFILE_END(CalcDest);
   }
 
   if (main_script_ctx.actor_move_type == MOVE_DIAGONAL) {
