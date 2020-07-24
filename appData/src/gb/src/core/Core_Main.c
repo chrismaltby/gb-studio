@@ -162,7 +162,6 @@ int core_start() {
     UpdateProjectiles();
     UIOnInteract();
     UIUpdate();
-    FadeUpdate();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
       HandleInputScripts();

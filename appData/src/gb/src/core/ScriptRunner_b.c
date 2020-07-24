@@ -281,6 +281,7 @@ UBYTE ScriptUpdate_MoveActorDiag() {
 }
 
 UBYTE ScriptUpdate_AwaitFade() {
+  FadeUpdate();
   return !IsFading();
 }
 
