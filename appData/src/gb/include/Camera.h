@@ -18,7 +18,6 @@
 
 extern Pos camera_pos;
 extern Pos camera_dest;
-extern Pos* camera_target;
 extern Vector2D camera_offset;
 extern Vector2D camera_deadzone;
 extern UBYTE camera_settings;

@@ -18,8 +18,6 @@
 UBYTE last_hit_trigger = MAX_TRIGGERS;
 
 void Start_PointNClick() {
-  // Set camera to follow player
-  camera_target = &player.pos;
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = POINT_N_CLICK_CAMERA_DEADZONE;
