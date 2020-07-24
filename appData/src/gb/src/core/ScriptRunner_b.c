@@ -20,6 +20,7 @@
 #include "Projectiles.h"
 #include "states/Platform.h"
 #include <rand.h>
+#include <gb/bgb_emu.h>
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
@@ -176,6 +177,7 @@ void ScriptTimerUpdate_b() {
 UBYTE ScriptUpdate_MoveActor() {
   BYTE new_dir_x = 0;
   BYTE new_dir_y = 0;
+  BGB_PROFILE_BEGIN();
 
   // Actor reached destination
   if (actors[main_script_ctx.script_actor].pos.x == main_script_ctx.actor_move_dest_x &&
@@ -220,6 +222,7 @@ UBYTE ScriptUpdate_MoveActor() {
   actors[main_script_ctx.script_actor].dir.x = new_dir_x;
   actors[main_script_ctx.script_actor].dir.y = new_dir_y;
 
+  BGB_PROFILE_END(SUMoveActor);
   return FALSE;
 }
 
