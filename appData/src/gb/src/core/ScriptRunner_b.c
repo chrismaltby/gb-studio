@@ -188,8 +188,6 @@ UBYTE ScriptUpdate_MoveActor() {
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
     actors[script_actor].moving = FALSE;
-    actors[script_actor].dir.x = 0;
-    actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
     if (script_actor == 0) {
       pl_vel_x = 0;
@@ -238,8 +236,6 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   if (actors[script_actor].pos.x == actor_move_dest_x &&
       actors[script_actor].pos.y == actor_move_dest_y) {
     actors[script_actor].moving = FALSE;
-    actors[script_actor].dir.x = 0;
-    actors[script_actor].dir.y = 0;
     actors[script_actor].script_control = FALSE;
     if (script_actor == 0) {
       pl_vel_x = 0;
