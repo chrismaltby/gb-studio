@@ -127,17 +127,14 @@ void ScriptRunnerUpdate() {
     return;
   }
 
-  PUSH_BANK(SCRIPT_RUNNER_BANK);
-  script_cmd_args_len = script_cmds[script_cmd_index].args_len;
-  POP_BANK;
-
   // Fetch script_cmd_args using inlined MemcpyBanked
   PUSH_BANK(main_script_ctx.script_ptr_bank);
-  memcpy(script_cmd_args, main_script_ctx.script_ptr + 1, script_cmd_args_len);
+  memcpy(script_cmd_args, main_script_ctx.script_ptr + 1, 7);
   POP_BANK;
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
   initial_script_ptr = main_script_ctx.script_ptr;
+  script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   script_cmds[script_cmd_index].fn();
   if (initial_script_ptr == main_script_ctx.script_ptr) {
     // Increment script_ptr unless already modified by script_cmd (e.g by conditional/jump)
