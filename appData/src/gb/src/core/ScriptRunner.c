@@ -131,9 +131,10 @@ void ScriptRunnerUpdate() {
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   POP_BANK;
 
-  for (i = 0; i != script_cmd_args_len; i++) {
-    script_cmd_args[i] = ReadBankedUBYTE(main_script_ctx.script_ptr_bank, main_script_ctx.script_ptr + i + 1);
-  }
+  // Fetch script_cmd_args using inlined MemcpyBanked
+  PUSH_BANK(main_script_ctx.script_ptr_bank);
+  memcpy(script_cmd_args, main_script_ctx.script_ptr + 1, script_cmd_args_len);
+  POP_BANK;
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
   initial_script_ptr = main_script_ctx.script_ptr;
