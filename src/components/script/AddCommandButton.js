@@ -53,7 +53,12 @@ class AddCommandButton extends Component {
     this.setState({ pasteMode: false });
   };
 
-  onOpen = () => {
+  onOpen = (e) => {
+    if (e.altKey) {
+      const { onPaste } = this.props;
+      onPaste();
+      return;
+    }
     this.setState({
       open: true,
       query: ""
