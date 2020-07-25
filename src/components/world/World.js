@@ -35,7 +35,7 @@ class World extends Component {
     window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", this.onMouseWheel);
+    window.addEventListener("mousewheel", this.onMouseWheel, { passive: false });
     window.addEventListener("resize", this.onWindowResize);
 
     const viewContents = this.scrollContentsRef.current;
@@ -190,10 +190,6 @@ class World extends Component {
       } else {
         zoomOut("world", e.deltaY * 0.5);
       }
-
-      // Don't allow scene to scroll during zoom
-      this.scrollRef.current.style.overflow = "hidden";
-      this.restoreScroll();
     } else {
       // Don't allow mousehwheel zoom while scrolling
       clearTimeout(this.blockWheelZoom);
@@ -202,12 +198,6 @@ class World extends Component {
       }, 60);
     }
   };
-
-  restoreScroll = debounce(() => {
-    if(this.scrollRef.current) {
-      this.scrollRef.current.style.overflow = "auto";
-    }
-  }, 60);
 
   startWorldDrag = e => {
     this.worldDragging = true;
