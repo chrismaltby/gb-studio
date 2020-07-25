@@ -46,7 +46,7 @@ class AddCommandButton extends Component {
     if (e.target.nodeName !== "BODY") {
       return;
     }
-    this.setState({ pasteMode: e.altKey });
+    this.setState({ pasteMode: e.altKey || e.ctrlKey });
   };
 
   onBlur = e => {
@@ -54,7 +54,7 @@ class AddCommandButton extends Component {
   };
 
   onOpen = (e) => {
-    if (e.altKey) {
+    if (e.altKey || e.ctrlKey) {
       const { onPaste } = this.props;
       onPaste();
       return;
