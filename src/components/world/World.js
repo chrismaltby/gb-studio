@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -182,15 +183,31 @@ class World extends Component {
 
   onMouseWheel = e => {
     const { zoomIn, zoomOut } = this.props;
-    if (e.ctrlKey) {
+    if (e.ctrlKey && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
         zoomIn("world", e.deltaY * 0.5);
       } else {
         zoomOut("world", e.deltaY * 0.5);
       }
+
+      // Don't allow scene to scroll during zoom
+      this.scrollRef.current.style.overflow = "hidden";
+      this.restoreScroll();
+    } else {
+      // Don't allow mousehwheel zoom while scrolling
+      clearTimeout(this.blockWheelZoom);
+      this.blockWheelZoom = setTimeout(() => {
+        this.blockWheelZoom = null;
+      }, 60);
     }
   };
+
+  restoreScroll = debounce(() => {
+    if(this.scrollRef.current) {
+      this.scrollRef.current.style.overflow = "auto";
+    }
+  }, 60);
 
   startWorldDrag = e => {
     this.worldDragging = true;
