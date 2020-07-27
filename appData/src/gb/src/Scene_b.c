@@ -463,6 +463,7 @@ void SceneUpdateActors_b()
   {
     if (IS_FRAME_64)
     {
+      initrand(DIV_REG);
       r = rand();
 
       if (time == 0 || time == 128)
@@ -484,7 +485,7 @@ void SceneUpdateActors_b()
             SceneRenderActor_b(i);
             ++r;
           }
-          else if (actors[i].movement_type == AI_RANDOM_WALK)
+          else if (actors[i].movement_type == AI_RANDOM_WALK && ACTOR_ON_TILE(i))
           {
             update_dir = directions[r & 3];
             SceneUpdateActorMovement_b(i);
@@ -511,7 +512,7 @@ void SceneUpdateActors_b()
             SceneRenderActor_b(i);
             ++r;
           }
-          else if (actors[i].movement_type == AI_RANDOM_WALK)
+          else if (actors[i].movement_type == AI_RANDOM_WALK && ACTOR_ON_TILE(i))
           {
             update_dir = directions[r & 3];
             SceneUpdateActorMovement_b(i);
