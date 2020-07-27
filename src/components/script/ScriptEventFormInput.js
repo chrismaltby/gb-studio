@@ -160,7 +160,7 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "palette") {
       return (
-        <PaletteSelect id={id} value={value} onChange={this.onChange} />
+        <PaletteSelect id={id} value={value} onChange={this.onChange} optional />
       );
     }
     if (type === "sprite") {

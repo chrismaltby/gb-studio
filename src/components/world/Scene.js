@@ -386,26 +386,23 @@ function mapStateToProps(state, props) {
     settings.defaultBackgroundPaletteIds || [];
   const sceneBackgroundPaletteIds = scene.paletteIds || [];
 
+  const getPalette = (paletteIndex) => {
+    if(sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
+      return DMG_PALETTE;
+    }
+    return palettesLookup[sceneBackgroundPaletteIds[paletteIndex]]
+      || palettesLookup[defaultBackgroundPaletteIds[paletteIndex]]
+      || DMG_PALETTE;
+  }
+
   const palettes = gbcEnabled
     ? getCachedObject([
-        palettesLookup[sceneBackgroundPaletteIds[0]] ||
-          palettesLookup[defaultBackgroundPaletteIds[0]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[1]] ||
-          palettesLookup[defaultBackgroundPaletteIds[1]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[2]] ||
-          palettesLookup[defaultBackgroundPaletteIds[2]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[3]] ||
-          palettesLookup[defaultBackgroundPaletteIds[3]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[4]] ||
-          palettesLookup[defaultBackgroundPaletteIds[4]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[5]] ||
-          palettesLookup[defaultBackgroundPaletteIds[5]] ||
-          DMG_PALETTE,
+        getPalette(0),
+        getPalette(1),
+        getPalette(2),
+        getPalette(3),
+        getPalette(4),
+        getPalette(5),
       ])
     : dmgPalettes;
 

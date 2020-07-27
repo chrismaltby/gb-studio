@@ -831,9 +831,18 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
     const defaultSpritePaletteId = settings.defaultSpritePaletteId;
     const defaultUIPaletteId = settings.defaultUIPaletteId;
 
+    const getPalette = (id, fallbackId) => {
+      if(id === "dmg") {
+        return DMG_PALETTE;
+      }
+      return palettesLookup[id]
+        || palettesLookup[fallbackId]
+        || DMG_PALETTE;
+    }    
+
     // Player palettes
 
-    const playerPalette = [[].concat((palettesLookup[settings.playerPaletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors)];
+    const playerPalette = [[].concat(getPalette(settings.playerPaletteId, defaultSpritePaletteId).colors)];
     playerPalette[0][2] = playerPalette[0][1];
     playerPalette[0][1] = playerPalette[0][0];
     const playerPaletteKey = JSON.stringify(playerPalette);
@@ -844,8 +853,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
     // UI palettes
 
     const uiPalette = [
-      palettesLookup[defaultUIPaletteId] ||
-      DMG_PALETTE 
+      getPalette(defaultUIPaletteId)
     ].map((p) => p.colors);
     const uiPaletteKey = JSON.stringify(uiPalette);
     const uiPaletteIndex = usedPalettes.length;
@@ -857,25 +865,14 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
     for(let i=0; i<scenes.length; i++) {
       const scene = scenes[i];
       const sceneBackgroundPaletteIds = scene.paletteIds || [];
+
       const scenePalette = [
-        palettesLookup[sceneBackgroundPaletteIds[0]] ||
-          palettesLookup[defaultBackgroundPaletteIds[0]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[1]] ||
-          palettesLookup[defaultBackgroundPaletteIds[1]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[2]] ||
-          palettesLookup[defaultBackgroundPaletteIds[2]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[3]] ||
-          palettesLookup[defaultBackgroundPaletteIds[3]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[4]] ||
-          palettesLookup[defaultBackgroundPaletteIds[4]] ||
-          DMG_PALETTE,
-        palettesLookup[sceneBackgroundPaletteIds[5]] ||
-          palettesLookup[defaultBackgroundPaletteIds[5]] ||
-          DMG_PALETTE,
+        getPalette(sceneBackgroundPaletteIds[0], defaultBackgroundPaletteIds[0]),
+        getPalette(sceneBackgroundPaletteIds[1], defaultBackgroundPaletteIds[1]),
+        getPalette(sceneBackgroundPaletteIds[2], defaultBackgroundPaletteIds[2]),
+        getPalette(sceneBackgroundPaletteIds[3], defaultBackgroundPaletteIds[3]),
+        getPalette(sceneBackgroundPaletteIds[4], defaultBackgroundPaletteIds[4]),
+        getPalette(sceneBackgroundPaletteIds[5], defaultBackgroundPaletteIds[5]),
       ].map((p) => p.colors);
 
       const scenePaletteKey = JSON.stringify(scenePalette);
@@ -899,7 +896,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       for(let a=0; a<scene.actors.length; a++) {
         const actor = scene.actors[a];
 
-        const actorPalette = [].concat((palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors);
+        const actorPalette = [].concat(getPalette(actor.paletteId, defaultSpritePaletteId).colors);
         actorPalette[2] = actorPalette[1];
         actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
@@ -953,7 +950,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       //  based on the sorted and cropped color palette
       for(let a=0; a<scene.actors.length; a++) {
         const actor = scene.actors[a];
-        const actorPalette = [].concat((palettesLookup[actor.paletteId] || palettesLookup[defaultSpritePaletteId] || DMG_PALETTE).colors);
+        const actorPalette = [].concat(getPalette(actor.paletteId, defaultSpritePaletteId).colors);
         actorPalette[2] = actorPalette[1];
         actorPalette[1] = actorPalette[0];
         const actorPaletteKey = JSON.stringify(actorPalette);
@@ -968,24 +965,12 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
       if(event.args && event.command === EVENT_PALETTE_SET_BACKGROUND) {
 
         const eventPalette = [
-          palettesLookup[event.args.palette0] ||
-            palettesLookup[defaultBackgroundPaletteIds[0]] ||
-            DMG_PALETTE,
-          palettesLookup[event.args.palette1] ||
-            palettesLookup[defaultBackgroundPaletteIds[1]] ||
-            DMG_PALETTE,
-          palettesLookup[event.args.palette2] ||
-            palettesLookup[defaultBackgroundPaletteIds[2]] ||
-            DMG_PALETTE,
-          palettesLookup[event.args.palette3] ||
-            palettesLookup[defaultBackgroundPaletteIds[3]] ||
-            DMG_PALETTE,
-          palettesLookup[event.args.palette4] ||
-            palettesLookup[defaultBackgroundPaletteIds[4]] ||
-            DMG_PALETTE,
-          palettesLookup[event.args.palette5] ||
-            palettesLookup[defaultBackgroundPaletteIds[5]] ||
-            DMG_PALETTE,
+          getPalette(event.args.palette0, defaultBackgroundPaletteIds[0]),
+          getPalette(event.args.palette1, defaultBackgroundPaletteIds[1]),
+          getPalette(event.args.palette2, defaultBackgroundPaletteIds[2]),
+          getPalette(event.args.palette3, defaultBackgroundPaletteIds[3]),
+          getPalette(event.args.palette4, defaultBackgroundPaletteIds[4]),
+          getPalette(event.args.palette5, defaultBackgroundPaletteIds[5]),
         ].map((p) => p.colors);
 
         const eventPaletteKey = JSON.stringify(eventPalette);
@@ -1001,9 +986,7 @@ export const precompilePalettes = async (scenes, settings, palettes, { warnings 
         }
       } else if (event.args && event.command === EVENT_PALETTE_SET_UI) {
         const eventPalette = [
-          palettesLookup[event.args.palette] ||
-          palettesLookup[defaultUIPaletteId] ||
-          DMG_PALETTE 
+          getPalette(event.args.palette, defaultUIPaletteId)
         ].map((p) => p.colors);
         const eventPaletteKey = JSON.stringify(eventPalette);
         if(usedPalettesCache[eventPaletteKey] === undefined) {

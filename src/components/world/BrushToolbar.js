@@ -158,6 +158,8 @@ class BrushToolbar extends Component {
       palettes,
       setSection,
       setNavigationId,
+      scenePaletteIds,
+      defaultBackgroundPaletteIds,
     } = this.props;
     const { modalColorIndex } = this.state;
 
@@ -235,11 +237,12 @@ class BrushToolbar extends Component {
             >
               <FormField>
                 <PaletteSelect
-                  value={
-                    (palettes[modalColorIndex] &&
-                      palettes[modalColorIndex].id) ||
-                    ""
+                  value={(scenePaletteIds && scenePaletteIds[modalColorIndex]) || ""}
+                  optional
+                  optionalDefaultPaletteId={
+                    defaultBackgroundPaletteIds[modalColorIndex] || ""
                   }
+                  optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
                   prefix={`${modalColorIndex + 1}: `}
                   onChange={this.onChangePalette}
                 />
@@ -309,27 +312,26 @@ function mapStateToProps(state) {
   const sceneBackgroundPaletteIds =
     (scenesLookup[sceneId] && scenesLookup[sceneId].paletteIds) || [];
 
-  const palettes = getCachedObject([
-    palettesLookup[sceneBackgroundPaletteIds[0]] ||
-      palettesLookup[defaultBackgroundPaletteIds[0]] ||
-      DMG_PALETTE,
-    palettesLookup[sceneBackgroundPaletteIds[1]] ||
-      palettesLookup[defaultBackgroundPaletteIds[1]] ||
-      DMG_PALETTE,
-    palettesLookup[sceneBackgroundPaletteIds[2]] ||
-      palettesLookup[defaultBackgroundPaletteIds[2]] ||
-      DMG_PALETTE,
-    palettesLookup[sceneBackgroundPaletteIds[3]] ||
-      palettesLookup[defaultBackgroundPaletteIds[3]] ||
-      DMG_PALETTE,
-    palettesLookup[sceneBackgroundPaletteIds[4]] ||
-      palettesLookup[defaultBackgroundPaletteIds[4]] ||
-      DMG_PALETTE,
-    palettesLookup[sceneBackgroundPaletteIds[5]] ||
-      palettesLookup[defaultBackgroundPaletteIds[5]] ||
-      DMG_PALETTE,
-  ]);
+  const scenePaletteIds = scenesLookup[sceneId] && scenesLookup[sceneId].paletteIds;
 
+  const getPalette = (paletteIndex) => {
+    if(sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
+      return DMG_PALETTE;
+    }
+    return palettesLookup[sceneBackgroundPaletteIds[paletteIndex]]
+      || palettesLookup[defaultBackgroundPaletteIds[paletteIndex]]
+      || DMG_PALETTE;
+  }
+
+  const palettes = getCachedObject([
+    getPalette(0),
+    getPalette(1),
+    getPalette(2),
+    getPalette(3),
+    getPalette(4),
+    getPalette(5),
+  ]);
+  
   return {
     selectedPalette,
     selectedBrush,
@@ -339,6 +341,7 @@ function mapStateToProps(state) {
     palettes,
     sceneId,
     defaultBackgroundPaletteIds,
+    scenePaletteIds,
     sceneBackgroundPaletteIds,
   };
 }
