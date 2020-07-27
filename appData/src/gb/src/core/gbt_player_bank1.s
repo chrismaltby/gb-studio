@@ -397,12 +397,12 @@ gbt_ch1_sweep_inc$:
 	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
 	ld	a,(hl-)
 	and	a,#0x07		; check if wrapped to 0x08 00001000
-	ret;	nz			; ret/update unless 0
+	ret	nz			; ret/update unless 0
 	ld	(gbt_arpeggio_enabled+0),a	; disable sweep
-	dec	a			; wrap around to 0xFF
-	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
-	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
-	ret 			; ret 1, update without trigger
+	ld	(#.NR12),a ; vol = 0
+	ld	a,#0x80 ; start
+	ld	(#.NR14),a
+	ret 			; ret 0x80, update without trigger
 
 ; -----------------
 
@@ -808,12 +808,12 @@ gbt_ch2_sweep_inc$:
 	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
 	ld	a,(hl-)
 	and	a,#0x07		; check if wrapped to 0x08 00001000
-	ret;	nz			; ret/update unless 0
+	ret nz			; ret/update unless 0
 	ld	(gbt_arpeggio_enabled+1),a	; disable sweep
-	dec	a			; wrap around to 0xFF
-	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
-	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
-	ret 			; ret 1, update without trigger
+	ld	(#.NR22),a ; vol = 0
+	ld	a,#0x80 ; start
+	ld	(#.NR24),a
+	ret 			; ret 0x80, update without trigger
 
 ; -----------------
 
@@ -1072,10 +1072,6 @@ refresh_channel3_regs_notrig$:
 	; Don't Restart Waveform!
 channel3_refresh_registers_notrig:
 
-	xor	a,a
-	ld	(#.NR31),a
-	ld	a,(gbt_vol+2)
-	ld	(#.NR32),a
 	ld	a,(gbt_freq+2*2+0)
 	ld	(#.NR33),a
 	ld	a,(gbt_freq+2*2+1)
@@ -1120,10 +1116,8 @@ channel3_update_effects: ; returns 1 in a if it is needed to update sound regs
 	dec	a ; a = 0xFF
 	ld	(gbt_cut_note_tick+2),a ; disable cut note
 
-	ld	a,#0x80
-	ld	(#.NR30),a ; enable
-
 	xor	a,a ; vol = 0
+	ld	(#.NR30),a ; disable
 	ld	(#.NR32),a
 	ld	a,#0x80 ; start
 	ld	(#.NR34),a
@@ -1245,11 +1239,11 @@ gbt_ch3_sweep_inc$:
 	inc	(hl)		; inc frequency large (gbt_freq+0*2+1) 2cy
 	ld	a,(hl-)
 	and	a,#0x07		; check if wrapped to 0x08 00001000
-	ret;	nz			; ret/update unless 0
+	ret	nz			; ret/update unless 0
 	ld	(gbt_arpeggio_enabled+2),a	; disable sweep
-	dec	a			; wrap around to 0xFF
-	ld	(hl+),a		; (gbt_freq+0*2+0) fix frequency small
-	ld	(hl),#0x07	; (gbt_freq+0*2+1) fix frequency large
+	ld	(#.NR32),a ; vol = 0
+	ld	a,#0x80 ; start
+	ld	(#.NR34),a
 	ret 			; ret 1, update without trigger
 
 ; -----------------
