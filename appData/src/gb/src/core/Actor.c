@@ -25,6 +25,7 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip);
 void ActorRunCollisionScripts_b();
 
 Actor actors[MAX_ACTORS];
+Actor* actor_ptrs[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_size = 0;
 UBYTE actor_move_settings;
@@ -34,16 +35,23 @@ Vector2D map_next_dir;
 UWORD map_next_sprite = 0;
 UBYTE player_iframes;
 
-void MoveActors() {
-  PUSH_BANK(ACTOR_BANK);
-  MoveActors_b();
-  POP_BANK;
+void ActorsInit() {
+  UBYTE i;
+  for (i = 0; i != MAX_ACTORS; i++) {
+    actor_ptrs[i] = &actors[i];
+  }
 }
 
-void UpdateActors() {
-  PUSH_BANK(ACTOR_BANK);
-  UpdateActors_b();
-  POP_BANK;
+void MoveActorsc() {
+  // PUSH_BANK(ACTOR_BANK);
+  // MoveActors_b();
+  // POP_BANK;
+}
+
+void UpdateActorsc() {
+  // PUSH_BANK(ACTOR_BANK);
+  // UpdateActors_b();
+  // POP_BANK;
 }
 
 void ActivateActor(UBYTE i) {
@@ -62,6 +70,22 @@ void DeactivateActor(UBYTE i) {
   PUSH_BANK(ACTOR_BANK);
   DeactivateActor_b(i);
   POP_BANK;
+}
+
+void DeactivateActiveActor(UBYTE i) {
+  if(UBYTE_LESS_THAN(i, actors_active_size)) {
+    UBYTE a = actors_active[i];
+    if (a == 0) {
+      // Don't delete player
+      return;
+    }
+    SpritePoolReturn(actors[a].sprite_index);
+    actors[a].sprite_index = 0;
+    if (actors[a].movement_ctx) {
+      ScriptCtxPoolReturn(actors[a].movement_ctx, a);
+    }
+    actors_active[i] = actors_active[--actors_active_size];     
+  }
 }
 
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {

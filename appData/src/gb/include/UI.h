@@ -2,7 +2,6 @@
 #define UI_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #define UI_BANK 3
 #define MENU_OPEN_Y 112
@@ -50,7 +49,6 @@ void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame(UBYTE h);
 void UIShowText(UBYTE bank, UWORD bank_offset);
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset);
-void UIDrawTextBuffer();
 void UISetPos(UBYTE x, UBYTE y);
 void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed);
 UBYTE UIIsClosed();

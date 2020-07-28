@@ -2,7 +2,6 @@
 #define PROJECTILE_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #include "Actor.h"
 #include "BankData.h"

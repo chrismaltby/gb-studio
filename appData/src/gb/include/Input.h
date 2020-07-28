@@ -2,7 +2,6 @@
 #define INPUT_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #include "BankData.h"
 

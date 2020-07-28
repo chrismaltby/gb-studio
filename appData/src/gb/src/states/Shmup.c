@@ -22,9 +22,6 @@ BYTE shooter_direction = 0;
 void Reset_Shmup();
 
 void Start_Shmup() {
-  // Set camera to follow player
-  camera_target = &player.pos;
-
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = 0;

@@ -9,6 +9,8 @@
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
+UINT16 scroll_x_max = 0;
+UINT16 scroll_y_max = 0;
 
 INT16 scroll_offset_x = 0;
 
@@ -79,10 +81,13 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
   pending_w_i = SCREEN_TILE_REFRES_W;
   pending_w_map = image_ptr + image_tile_width * y + x;
 
+  // Activate Actors in Row
   for (i = 1; i != actors_len; i++) {
-    // LOG("CHECK ROW %u - %d - %u - %u\n", i, y, actors[i].pos.y, actors[i].pos.y >> 3);
     if (actors[i].pos.y >> 3 == y) {
-      ActivateActor(i);
+      INT16 tx = actors[i].pos.x >> 3;
+      if (U_LESS_THAN(x, tx) && U_LESS_THAN(tx, x + SCREEN_TILE_REFRES_W)) {
+        ActivateActor(i);
+      }
     }
   }
 
@@ -90,7 +95,6 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
   pending_w_cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
 
-  // ActivateActor(2);
 }
 
 void ScrollUpdateRow(INT16 x, INT16 y) {
@@ -104,7 +108,7 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 
   PUSH_BANK(image_bank);
 
-  LOG("INIT ScrollUpdateRow [%d, %d]\n", x, y);
+  
 
   screen_x = x;
   screen_y = MOD_32(y);
@@ -126,7 +130,7 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
   for (i = 1; i != actors_len; i++) {
     if (actors[i].pos.y >> 3 == y) {
       INT16 tx = actors[i].pos.x >> 3;
-      if (tx >= x && tx <= x + 23) {
+      if (U_LESS_THAN(x, tx) && U_LESS_THAN(tx, x + 24)) {
         ActivateActor(i);
       }
     }
@@ -184,9 +188,13 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
     ScrollUpdateColumnR();
   }
 
+  // Activate Actors in Column
   for (i = 1; i != actors_len; i++) {
     if (actors[i].pos.x >> 3 == x) {
-      ActivateActor(i);
+      INT16 ty = actors[i].pos.y >> 3;
+      if (U_LESS_THAN(y, ty) && U_LESS_THAN(ty, y + SCREEN_TILE_REFRES_H)) {
+        ActivateActor(i);
+      }
     }
   }
 
@@ -209,8 +217,8 @@ void RefreshScroll() {
 void InitScroll() {
   pending_w_i = 0;
   pending_h_i = 0;
-  RefreshScroll();
-  RenderScreen();
+  scroll_x = 0x7FFF;
+  scroll_y = 0x7FFF;  
 }
 
 void RenderScreen() {
@@ -231,7 +239,6 @@ void RenderScreen() {
   POP_BANK;
 
   game_time = 0;
-  UpdateActors();
 
   DISPLAY_ON;
 }

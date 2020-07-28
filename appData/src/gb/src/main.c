@@ -6,6 +6,7 @@
 #include "states/Shmup.h"
 #include "states/TopDown.h"
 #include "states/PointNClick.h"
+#include <gb/bgb_emu.h>
 
 const Void_Func_Void startFuncs[] = {0, Start_TopDown, Start_Platform, Start_Adventure,
                                      Start_Shmup, Start_PointNClick};

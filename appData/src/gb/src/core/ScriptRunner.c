@@ -9,10 +9,9 @@
 #include "Math.h"
 #include "UI.h"
 #include "data_ptrs.h"
+#include <gb/bgb_emu.h>
 
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
-// UINT8 script_ctx_active_pool[MAX_SCRIPT_CONTEXTS];
-// UBYTE script_ctx_active_pool_size = 0;
 
 UBYTE script_await_next_frame;
 UBYTE script_actor;
@@ -31,7 +30,7 @@ UBYTE script_bank_stack[STACK_SIZE] = {0};
 UBYTE* script_start_stack[STACK_SIZE] = {0};
 ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS] = {{0}};
 UBYTE current_script_ctx = 0;
-// ScriptContext *main_script_ctx;
+ScriptContext* script_ctx_ptr;
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
@@ -39,7 +38,6 @@ UINT16 actor_move_dest_x = 0;
 UINT16 actor_move_dest_y = 0;
 UBYTE wait_time = 0;
 UBYTE ctx_cmd_remaining = 5;
-// UBYTE ctx_inc = 0;
 
 void ScriptTimerUpdate_b();
 
@@ -52,17 +50,6 @@ void ScriptStart(BankPtr* events_ptr) {
 
   PlayerStopMovement();
 
-  // current_script_ctx = &script_ctxs[0];
-  // main_script_ctx = &script_ctxs[0];
-
-  // // Stop all actor movement
-  // for (i = 0; i != actors_active_size; i++) {
-  //   a = actors_active[i];
-  //   actors[a].moving = FALSE;
-  // }
-
-  LOG("ScriptStart bank=%u offset=%d\n", events_ptr->bank, events_ptr->offset);
-
   script_variables[TMP_VAR_1] = 0;
   script_variables[TMP_VAR_2] = 0;
 
@@ -70,12 +57,6 @@ void ScriptStart(BankPtr* events_ptr) {
   script_ctxs[0].script_ptr = (BankDataPtr(script_ctxs[0].script_ptr_bank)) + events_ptr->offset;
   script_ctxs[0].script_update_fn = FALSE;
   script_ctxs[0].script_start_ptr = script_ctxs[0].script_ptr;
-  // script_ptr_bank = events_ptr->bank;
-  // script_ptr = (BankDataPtr(script_ptr_bank)) + events_ptr->offset;
-  // script_update_fn = FALSE;
-
-  // script_start_ptr = script_ptr;
-  // ctx_inc++;
 }
 
 UBYTE ScriptStartBg(BankPtr* events_ptr, UBYTE owner) {
@@ -114,27 +95,18 @@ void ScriptRunnerUpdate() {
   script_await_next_frame = FALSE;
 
   if (script_update_fn) {
-    LOG("Has script_update_fn\n");
+    
     PUSH_BANK(SCRIPT_RUNNER_BANK);
-    // player.pos.x = 0;
-    LOG("Has script_update_fn 1\n");
-
+    
     update_complete = (*(script_update_fn))();
-    LOG("Has script_update_fn 2 -- %d\n", update_complete);
-
-    // update_complete = TRUE;
+    
     if (update_complete) {
-      LOG("Has script_update_fn 3\n");
-
       script_update_fn = FALSE;
     }
-    LOG("Has script_update_fn 4\n");
-
     POP_BANK;
   }
 
   if (!script_ptr_bank || script_update_fn) {
-    // LOG("STOPPED SCRIPT FOR NOW\n");
     ScriptSaveCtx();
     script_ptr = 0;
     return;
@@ -152,7 +124,7 @@ void ScriptRunnerUpdate() {
       script_ptr = 0;
       return;
     }
-    LOG("SCRIPT FINISHED\n");
+    
     script_ptr_bank = 0;
     script_ptr = 0;
     script_actor = 0;
@@ -169,14 +141,8 @@ void ScriptRunnerUpdate() {
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   POP_BANK;
 
-  // script_cmd_fn = script_cmds[script_cmd_index].fn;
-
-  // LOG("SCRIPT cmd [%u - %u] = %u (%u)\n", script_ptr_bank, script_ptr, script_cmd_index,
-  //     script_cmd_args_len);
-
   for (i = 0; i != script_cmd_args_len; i++) {
     script_cmd_args[i] = ReadBankedUBYTE(script_ptr_bank, script_ptr + i + 1);
-    // LOG("SCRIPT ARG-%u = %u\n", i, script_cmd_args[i]);
   }
 
   PUSH_BANK(SCRIPT_RUNNER_BANK);
@@ -188,11 +154,7 @@ void ScriptRunnerUpdate() {
   }
   POP_BANK;
 
-  // LOG("script_await_next_frame = %u script_update_fn = %d\n", script_await_next_frame,
-  //     script_update_fn);
-
-  if (!script_await_next_frame && !script_update_fn && ctx_cmd_remaining != 0) {
-    LOG("CONTINUE!\n");
+  if (!script_await_next_frame && !script_update_fn && ctx_cmd_remaining != 0) {    
     ctx_cmd_remaining--;
     ScriptRunnerUpdate();
     return;
@@ -208,36 +170,29 @@ void ScriptTimerUpdate() {
 }
 
 void ScriptSaveCtx() {
-  script_ctxs[current_script_ctx].script_ptr_bank = 0;  // @wtf
-  script_ctxs[current_script_ctx].script_actor = 0;     // @wtf
-  script_ctxs[current_script_ctx].wait_time = 0;        // @wtf
-  script_ctxs[current_script_ctx].actor_move_cols = 0;  // @wtf
-  script_ctxs[current_script_ctx].actor_move_type = 0;  // @wtf
-  script_ctxs[current_script_ctx].tmp_1 = 0;            // @wtf
-  script_ctxs[current_script_ctx].tmp_2 = 0;            // @wtf
-  script_ctxs[current_script_ctx].actor_move_dest_x = actor_move_dest_x;
-  script_ctxs[current_script_ctx].actor_move_dest_y = actor_move_dest_y;
-  script_ctxs[current_script_ctx].actor_move_cols = actor_move_cols;
-  script_ctxs[current_script_ctx].actor_move_type = actor_move_type;
-  script_ctxs[current_script_ctx].script_update_fn = script_update_fn;
-  script_ctxs[current_script_ctx].script_start_ptr = script_start_ptr;
-  script_ctxs[current_script_ctx].script_ptr = script_ptr;
-  script_ctxs[current_script_ctx].script_ptr_x = script_ptr_x;
-  script_ctxs[current_script_ctx].script_ptr_y = script_ptr_y;
-  script_ctxs[current_script_ctx].script_ptr_bank = script_ptr_bank;
-  script_ctxs[current_script_ctx].wait_time = wait_time;
-  script_ctxs[current_script_ctx].script_await_next_frame = script_await_next_frame;
-  script_ctxs[current_script_ctx].script_actor = script_actor;
-  script_ctxs[current_script_ctx].tmp_1 = script_variables[TMP_VAR_1];
-  script_ctxs[current_script_ctx].tmp_2 = script_variables[TMP_VAR_2];
+  // store current struct pointer as index mult was slow
+  script_ctx_ptr = &script_ctxs[current_script_ctx];
+  (*script_ctx_ptr).actor_move_dest_x = actor_move_dest_x;
+  (*script_ctx_ptr).actor_move_dest_y = actor_move_dest_y;
+  (*script_ctx_ptr).actor_move_cols = actor_move_cols;
+  (*script_ctx_ptr).actor_move_type = actor_move_type;
+  (*script_ctx_ptr).script_update_fn = script_update_fn;
+  (*script_ctx_ptr).script_start_ptr = script_start_ptr;
+  (*script_ctx_ptr).script_ptr = script_ptr;
+  (*script_ctx_ptr).script_ptr_x = script_ptr_x;
+  (*script_ctx_ptr).script_ptr_y = script_ptr_y;
+  (*script_ctx_ptr).script_ptr_bank = script_ptr_bank;
+  (*script_ctx_ptr).wait_time = wait_time;
+  (*script_ctx_ptr).script_await_next_frame = script_await_next_frame;
+  (*script_ctx_ptr).script_actor = script_actor;
+  (*script_ctx_ptr).tmp_1 = script_variables[TMP_VAR_1];
+  (*script_ctx_ptr).tmp_2 = script_variables[TMP_VAR_2];
 }
 
 void ScriptRestoreCtx(UBYTE i) {
   if (!script_ctxs[i].script_ptr_bank || (i != 0 && script_ctxs[0].script_ptr_bank)) {
     return;
   }
-  LOG("- UPDATE CTX=%u script_ctxs[i].owner=%u script_main_ctx_actor=%u\n", i, script_ctxs[i].owner,
-      script_main_ctx_actor);
   if (i == 0) {
     ctx_cmd_remaining = 255;
   } else {
@@ -266,7 +221,6 @@ UINT8 ScriptCtxPoolNext() {
   UINT8 next;
   if (StackSize(script_ctx_pool)) {
     next = StackPop(script_ctx_pool);
-    // script_ctx_active_pool[script_ctx_active_pool_size++] = next;
     return next;
   }
   return 0;

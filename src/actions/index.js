@@ -746,6 +746,14 @@ export const ejectEngine = () => {
   return { type: types.EJECT_ENGINE };
 };
 
+export const deleteBuildCache = () => {
+  return { type: types.DELETE_BUILD_CACHE };
+};
+
+export const setProfiling = (enabled) => {
+  return { type: types.SET_PROFILING, enabled };
+};
+
 export const buildGame = ({
   buildType = "web",
   exportBuild = false,

@@ -62,6 +62,7 @@ const makeBuild = async ({
   buildRoot = "/tmp",
   data = {},
   cartSize = 64,
+  profile = false,
   progress = () => {},
   warnings = () => {},
 } = {}) => {
@@ -96,6 +97,9 @@ const makeBuild = async ({
   env.TEMP = getTmp();
   if (settings.customColorsEnabled) {
     env.COLOR = true;
+  }
+  if (profile) {
+    env.PROFILE = true;
   }
 
   // Modify game.h to overide color palette
@@ -151,6 +155,7 @@ const makeBuild = async ({
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
+    profile
   });
   await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
 

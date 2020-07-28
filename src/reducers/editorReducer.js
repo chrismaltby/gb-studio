@@ -58,6 +58,7 @@ import {
   SET_SCRIPT_TAB,
   SET_SCRIPT_TAB_SCENE,
   SET_SCRIPT_TAB_SECONDARY,
+  SET_PROFILING
 } from "../actions/actionTypes";
 import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
@@ -498,7 +499,12 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         lastScriptTabSecondary: action.tab
-      }              
+      }     
+    case SET_PROFILING:
+      return {
+        ...state,
+        profile: action.enabled
+      }         
     default:
       return state;
   }

@@ -2,7 +2,6 @@
 #define COLLISIONS_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #define OUT_OF_BOUNDS 255
 

@@ -257,6 +257,7 @@
   "BUILD_EXPORT_ROM": "Export ROM",
   "BUILD_EXPORT_WEB": "Export Web",
   "BUILD_CLEAR": "Clear",
+  "BUILD_EMPTY_BUILD_CACHE": "Empty Build Cache",
 
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_SWITCH_SCENE": "Scene: Change Scene",

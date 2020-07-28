@@ -2,7 +2,6 @@
 #define FADE_MANAGER_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #define FADE_BANK 1
 #define FADE_SPEED_MASK 0x3F

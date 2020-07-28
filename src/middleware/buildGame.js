@@ -1,5 +1,4 @@
 import { ipcRenderer, remote } from "electron";
-import uuid from "uuid/v4";
 import Path from "path";
 import {
   BUILD_GAME,
@@ -8,7 +7,8 @@ import {
   CMD_COMPLETE,
   CMD_STD_OUT,
   CMD_STD_ERR,
-  CMD_CLEAR
+  CMD_CLEAR,
+  DELETE_BUILD_CACHE
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
@@ -18,7 +18,7 @@ import { promisify } from "util";
 
 const rmdir = promisify(rimraf);
 
-const buildUUID = uuid();
+const buildUUID = "_gbsbuild";
 
 export default store => next => async action => {
   if (action.type === BUILD_GAME) {
@@ -43,6 +43,7 @@ export default store => next => async action => {
         buildType,
         outputRoot,
         tmpPath: getTmp(),
+        profile: state.editor.profile,
         progress: (message) => {
           if (
             message !== "'" &&
@@ -130,9 +131,19 @@ export default store => next => async action => {
       });
     }    
   }
+  else if (action.type === DELETE_BUILD_CACHE) {
+    const dispatch = store.dispatch.bind(store);
+    const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
+    await rmdir(cacheRoot);
+    dispatch({
+      type: CMD_CLEAR
+    });
+    dispatch({
+      type: CMD_STD_OUT,
+      text: "Cleared GB Studio caches"
+    });      
+  }
 
-
-  
   return next(action);
 };
 

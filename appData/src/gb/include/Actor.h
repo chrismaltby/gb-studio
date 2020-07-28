@@ -2,7 +2,6 @@
 #define ACTOR_H
 
 #include <gb/gb.h>
-#include <gbdkjs.h>
 
 #include "BankData.h"
 #include "Math.h"
@@ -43,41 +42,43 @@
 #define PlayerOnTile16() (ActorOnTile16(0))
 #define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
-
-
 typedef struct {
-  UBYTE sprite;        // Offset into scene sprites image data
-  UBYTE sprite_index;  // Sprite pool index
-  UBYTE palette_index;
-  Pos pos;
-  Pos start_pos;
-  Vector2D vel;
-  Vector2D dir;
-  UBYTE frame;
-  UBYTE frames_len;
-  UBYTE animate;
-  UBYTE enabled;
-  UBYTE frame_offset;
-  UBYTE rerender;
-  UBYTE moving;
-  UBYTE move_speed;
-  UBYTE anim_speed;
-  UBYTE pinned;
-  UBYTE collisionsEnabled;
-  UBYTE collision_group;
-  SPRITE_TYPE sprite_type;
-  UBYTE hit_actor;
-  UBYTE script_control;
-  UWORD script_ptr;
-  BankPtr events_ptr;
-  BankPtr movement_ptr;
-  BankPtr hit_1_ptr;
-  BankPtr hit_2_ptr;
-  BankPtr hit_3_ptr;        
-  UBYTE movement_ctx;
+  Pos pos;  // 0
+  UBYTE move_speed; // 4
+  Vector2D dir; // 5
+  UBYTE moving; // 7
+  UBYTE sprite; // 8       // Offset into scene sprites image data
+  UBYTE sprite_index; // 9  // Sprite pool index
+  UBYTE palette_index; // 10
+  Pos start_pos; // 11
+  UBYTE frame; // 15
+  UBYTE frames_len; // 16
+  UBYTE animate; // 17
+  UBYTE enabled; // 18
+  UBYTE frame_offset; // 19
+  UBYTE rerender; // 20
+  UBYTE anim_speed; // 21
+  UBYTE pinned; // 22
+  UBYTE collisionsEnabled; // 23
+  UBYTE collision_group; // 24
+  SPRITE_TYPE sprite_type; // 25
+  UBYTE hit_actor; // 26
+  UBYTE script_control; // 27
+  UWORD script_ptr; // 28
+  BankPtr events_ptr; // 30
+  BankPtr movement_ptr; // 33
+  BankPtr hit_1_ptr; // 36
+  BankPtr hit_2_ptr; // 39
+  BankPtr hit_3_ptr; // 42  
+  UBYTE movement_ctx; // 45
 } Actor;
 
 extern Actor actors[MAX_ACTORS];
+extern Actor* actor_ptrs[MAX_ACTORS];
+
+extern UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
+extern UBYTE actors_active_delete_count;
+
 extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
@@ -86,6 +87,8 @@ extern UWORD map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
 extern UBYTE player_iframes;
+
+void ActorsInit();
 
 /**
  * Move all actors positions based on their current velocities
@@ -167,6 +170,13 @@ void ActivateActor(UBYTE i);
  * @param i index of actor in actors array
  */
 void DeactivateActor(UBYTE i);
+
+/**
+ * Deactivate the actor from active actors array at given index
+ *
+ * @param i index of actor in active actors array
+ */
+void DeactivateActiveActor(UBYTE i);
 
 UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
 

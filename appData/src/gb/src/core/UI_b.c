@@ -9,6 +9,7 @@
 #include "ASMHelpers.h"
 #include "Input.h"
 #include "data_ptrs.h"
+#include "Math.h"
 #include <string.h>
 
 #define FRAME_CENTER_OFFSET 64
@@ -100,6 +101,8 @@ const unsigned char win_tiles[] = {
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
 
+void UIDrawTextBufferChar_b();
+
 void UIInit_b() {
   UBYTE* ptr;
 
@@ -109,7 +112,7 @@ void UIInit_b() {
   VBK_REG = 0;
 #endif
 
-  UISetPos(160, 144);
+  UISetPos(0, 144);
 
   // Load frame tiles from data bank
   ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
@@ -123,7 +126,7 @@ void UIInit_b() {
 }
 
 void UIReset_b() {
-  UISetPos(160, 144);
+  UISetPos(0, 144);
 }
 
 void UIUpdate_b() {
@@ -157,8 +160,8 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else {
-    UIDrawTextBuffer();
+  } else if(IS_FRAME_2 && !text_drawn) {
+    UIDrawTextBufferChar_b();
   }
 
   WX_REG = win_pos_x + 7;
@@ -221,10 +224,8 @@ void UIShowText_b() {
 
   ui_block = TRUE;
 
-  LOG("UIShowText 6\n");
-
-  for (i = 1, k = 0; i < 81; i++) {
-    LOG("LOOP TEXT %i %i (%c)\n", i, tmp_text_lines[i], tmp_text_lines[i]);
+  for (i = 1, k = 0; i != 81u; i++) {
+    
     // Replace variable references in text
     if (tmp_text_lines[i] == '$') {
       if (tmp_text_lines[i + 3] == '$') {
@@ -275,15 +276,15 @@ void UIShowText_b() {
     UISetPos(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y);
     UIMoveTo(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   } else {
-    LOG("tmp_text_lines = %u - %u - %u\n", tmp_text_lines[0], tmp_text_lines[1], tmp_text_lines[2]);
+    
     text_num_lines = MIN(tmp_text_lines[0], 4);
-    LOG("text_num_lines = %u \n", text_num_lines);
+    
     UIDrawDialogueFrame(text_num_lines);
     UISetPos(0, MENU_CLOSED_Y);
     UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
 
-  LOG("UIShowText 100\n");
+  
 
   text_drawn = FALSE;
   text_x = 0;
@@ -295,18 +296,19 @@ void UIShowText_b() {
 void UIDrawTextBufferChar_b() {
   UBYTE letter;
   UBYTE i, text_remaining, word_len;
-  UBYTE text_size = strlen(text_lines);
+  UBYTE text_size;
   UBYTE tile;
   UBYTE* ptr;
   UINT16 id;
 
-  if (text_wait > 0) {
+  if (text_wait != 0) {
     text_wait--;
     return;
   }
 
-  if (text_count < text_size) {
-    // win_speed = text_draw_speed;
+  text_size = strlen(text_lines);
+
+  if (UBYTE_LESS_THAN(text_count, text_size)) {
     text_drawn = FALSE;
 
     if (text_count == 0) {
@@ -328,7 +330,7 @@ void UIDrawTextBufferChar_b() {
       }
       word_len++;
     }
-    if (word_len > text_remaining && word_len < 18) {
+    if (UBYTE_LESS_THAN(text_remaining, word_len) && UBYTE_LESS_THAN(word_len, 18u)) {
       text_x = 0;
       text_y++;
     }
@@ -361,7 +363,7 @@ void UIDrawTextBufferChar_b() {
       text_x = 0;
       text_y++;
       text_count++;
-    } else if (text_x > 17) {
+    } else if (UBYTE_GT_THAN(text_x, 17u)) {
       text_x = 0;
       text_y++;
     }
@@ -453,7 +455,7 @@ void UIShowMenu_b(UWORD flag_index,
 
 void UIDrawMenuCursor_b() {
   UBYTE i;
-  for (i = 0; i < menu_num_options; i++) {
+  for (i = 0; i != menu_num_options; i++) {
     set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
                   menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
   }

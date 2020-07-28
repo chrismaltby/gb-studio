@@ -1,21 +1,17 @@
-SHELL_FILE = node_modules/gbdkjs/shell_debug/build/index.html
-EMCC = emcc -O2 -Wno-implicit-function-declaration -Inode_modules/gbdkjs/include -Inode_modules/gbdkjs/gbdk/include -Iinclude -Lsrc -Lsrc/core -Lsrc/data -Lsrc/states --js-library node_modules/gbdkjs/emscripten_bindings.js -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1 -s DETERMINISTIC=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
-
 CC = lcc
-
 ROM_BUILD_DIR = build/rom
-WEB_BUILD_DIR = build/debug
-
 OBJDIR = obj
-
 CFLAGS = -Wa-l -Iinclude
-
 LFLAGS_NBANKS += -Wl-yo$(CART_SIZE)
-LFLAGS = $(LFLAGS_NBANKS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Wl-ya4 -Wl-yt27
+LFLAGS = $(LFLAGS_NBANKS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Wl-ya4
 
 ifdef COLOR
 CFLAGS += -DCGB
 LFLAGS += -Wl-yp0x143=0x80
+endif
+
+ifdef PROFILE
+CFLAGS += -Wf--profile
 endif
 
 ASM = $(foreach dir,src/core,$(notdir $(wildcard $(dir)/*.s))) 
@@ -26,11 +22,10 @@ DATA = $(foreach dir,src/data,$(notdir $(wildcard $(dir)/*.c)))
 MUSIC = $(foreach dir,src/music,$(notdir $(wildcard $(dir)/*.c))) 
 
 OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o) $(MUSIC:%.c=$(OBJDIR)/%.o) 
-WEB_OBJS = $(CLASSES:%.c=$(OBJDIR)/%.bc) $(CORE_CLASSES:%.c=$(OBJDIR)/%.bc) $(STATE_CLASSES:%.c=$(OBJDIR)/%.bc) $(DATA:%.c=$(OBJDIR)/%.bc) $(MUSIC:%.c=$(OBJDIR)/%.bc) 
 
 all:	$(ROM_BUILD_DIR)/game.gb
 
-.SECONDARY: $(OBJS) $(WEB_OBJS)
+.SECONDARY: $(OBJS) 
 
 $(OBJDIR)/%.o:	src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -53,29 +48,9 @@ $(OBJDIR)/%.s:	src/%.c
 $(OBJDIR)/%.o:	src/core/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(OBJDIR)/%.bc:	src/%.c
-	$(EMCC) -o $@ -c $<
-
-$(OBJDIR)/%.bc:	src/core/%.c
-	$(EMCC) -o $@ -c $<
-
-$(OBJDIR)/%.bc:	src/states/%.c
-	$(EMCC) -o $@ -c $<
-
-$(OBJDIR)/%.bc:	src/data/%.c
-	$(EMCC) -o $@ -c $<	
-
-$(OBJDIR)/%.bc:	src/music/%.c
-	$(EMCC) -o $@ -c $<		
-
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
 	$(CC) $(LFLAGS) -Iinclude -o $@ $^	
-
-$(WEB_BUILD_DIR)/%.html:	$(WEB_OBJS)
-	mkdir -p $(WEB_BUILD_DIR)
-	cp -r node_modules/gbdkjs/shell_debug/build/static $(WEB_BUILD_DIR)
-	$(EMCC) --shell-file $(SHELL_FILE) -s ASSERTIONS=1 -o $@ $^
 
 clean:
 	echo $(dir)
@@ -87,6 +62,3 @@ clean:
 	rm -rf build
 
 rom: $(ROM_BUILD_DIR)/game.gb
-
-debug: $(WEB_BUILD_DIR)/game.html
-	mv $(WEB_BUILD_DIR)/game.html $(WEB_BUILD_DIR)/index.html

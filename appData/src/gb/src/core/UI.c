@@ -15,7 +15,6 @@ void UIUpdate_b();
 void UIReset_b();
 void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame_b(UBYTE h);
-void UIDrawTextBufferChar_b();
 void UISetColor_b(UWORD image_index);
 void UIShowText_b();
 void UIOnInteract_b();
@@ -62,6 +61,7 @@ unsigned char tmp_text_lines[80] = "";
 void UIInit() {
   PUSH_BANK(UI_BANK);
   ui_block = FALSE;
+  text_drawn = TRUE;
   UIInit_b();
   POP_BANK;
 }
@@ -150,14 +150,6 @@ void UIShowMenu(UWORD flag_index,
                 UBYTE cancel_config) {
   PUSH_BANK(UI_BANK);
   UIShowMenu_b(flag_index, bank, bank_offset, layout, cancel_config);
-  POP_BANK;
-}
-
-void UIDrawTextBuffer() {
-  PUSH_BANK(UI_BANK);
-  if (IS_FRAME_2) {
-    UIDrawTextBufferChar_b();
-  }
   POP_BANK;
 }
 

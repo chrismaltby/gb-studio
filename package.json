@@ -122,6 +122,7 @@
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.0",
     "webpack-bundle-analyzer": "^3.7.0",
+    "webpack-cli": "^3.3.12",
     "worker-loader": "^2.0.0"
   }
 }

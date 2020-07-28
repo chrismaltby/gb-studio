@@ -551,8 +551,8 @@ const compile = async (
     `const unsigned char music_banks[] = {\n` +
     `\n};\n\n` +
     `unsigned int start_scene_index = ${decHex16(startSceneIndex)};\n` +
-    `int start_scene_x = ${decHex((startX || 0) * 8)};\n` +
-    `int start_scene_y = ${decHex((startY || 0) * 8)};\n\n` +
+    `int start_scene_x = ${decHex16((startX || 0) * 8)};\n` +
+    `int start_scene_y = ${decHex16((startY || 0) * 8)};\n\n` +
     `char start_scene_dir_x = ${startDirectionX};\n` +
     `char start_scene_dir_y = ${startDirectionY};\n` +
     `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +

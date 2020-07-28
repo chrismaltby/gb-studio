@@ -14,19 +14,18 @@ void RefreshScroll_b() {
   x = scroll_target->x - (SCREENWIDTH >> 1);
   y = scroll_target->y - (SCREENHEIGHT >> 1);
 
-  // PUSH_BANK(image_bank);
-
   if (U_LESS_THAN(x, 0u)) {
     x = 0u;
   }
   if (U_LESS_THAN(y, 0u)) {
     y = 0u;
   }
-  if (x > (image_width - ((UINT16)SCREENWIDTH))) {
-    x = (image_width - (SCREENWIDTH));
+
+  if(x > scroll_x_max) {
+    x = scroll_x_max;
   }
-  if (y > (image_height - ((UINT16)SCREENHEIGHT))) {
-    y = (image_height - (SCREENHEIGHT));
+  if(y > scroll_y_max) {
+    y = scroll_y_max;
   }
 
   current_column = scroll_x >> 3;
