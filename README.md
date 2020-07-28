@@ -3,7 +3,7 @@
 
 [![CircleCI](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop.svg?style=shield)](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop)
 
-Copyright (c) 2019 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
+Copyright (c) 2020 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 
 Twitter: [@maltby](https://www.twitter.com/maltby) 
 
