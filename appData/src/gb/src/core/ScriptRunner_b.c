@@ -823,7 +823,7 @@ void Script_ActorSetCollisions_b() {
  */
 void Script_ActorSetEmote_b() {
   unsigned char* emote_ptr;
-  UBYTE palette = actors[script_actor].palette_index;
+  UBYTE palette = actors[main_script_ctx.script_actor].palette_index;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
   main_script_ctx.script_update_fn = ScriptUpdate_Emote;
