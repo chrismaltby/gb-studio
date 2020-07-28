@@ -56,7 +56,6 @@ void Start_Platform() {
 
   grounded = FALSE;
 
-  camera_target = &player.pos;
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = PLATFORM_CAMERA_DEADZONE_X;

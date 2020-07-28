@@ -36,7 +36,7 @@ const ActorCanvas = ({
 
 ActorCanvas.propTypes = {
   spriteSheetId: PropTypes.string.isRequired,
-  spriteType: PropTypes.string.isRequired,
+  spriteType: PropTypes.string,
   direction: PropTypes.string,
   overrideDirection: PropTypes.string,
   frame: PropTypes.number,
@@ -50,6 +50,7 @@ ActorCanvas.defaultProps = {
   frame: undefined,
   totalFrames: 1,
   palette: undefined,
+  spriteType: SPRITE_TYPE_STATIC
 };
 
 function mapStateToProps(state, props) {

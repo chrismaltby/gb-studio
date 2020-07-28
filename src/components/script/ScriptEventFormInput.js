@@ -25,9 +25,10 @@ import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
+import { EventValueShape, EventDefaultValueShape } from "../../reducers/stateShape";
 
 const argValue = (arg) => {
-  if(arg && arg.value) {
+  if(arg && arg.value !== undefined) {
     if(arg.type === "variable" || arg.type === "property") {
       return undefined;
     }
@@ -82,7 +83,7 @@ class ScriptEventFormInput extends Component {
   }  
 
   render() {
-    const { type, id, value, defaultValue, args, field, entityId, allowRename } = this.props;
+    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope } = this.props;
 
     if (type === "textarea") {
       return (
@@ -159,7 +160,7 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "palette") {
       return (
-        <PaletteSelect id={id} value={value} onChange={this.onChange} />
+        <PaletteSelect id={id} value={value} onChange={this.onChange} optional />
       );
     }
     if (type === "sprite") {
@@ -280,6 +281,7 @@ class ScriptEventFormInput extends Component {
               allowRename={false}
               args={args}
               onChange={this.onChangeUnionValue}
+              scope={scope}
             />
           </div>
           <DropdownButton
@@ -308,14 +310,8 @@ ScriptEventFormInput.propTypes = {
   type: PropTypes.string,
   field: PropTypes.shape().isRequired,
   args: PropTypes.shape(),
-  value: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-    PropTypes.bool,
-    PropTypes.arrayOf(PropTypes.number),
-    PropTypes.arrayOf(PropTypes.string),
-    PropTypes.arrayOf(PropTypes.bool)
-  ]),
+  value: EventValueShape,
+  defaultValue: EventDefaultValueShape,
   allowRename: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   scope: PropTypes.string.isRequired
@@ -325,6 +321,7 @@ ScriptEventFormInput.defaultProps = {
   id: undefined,
   index: undefined,
   value: "",
+  defaultValue: undefined,
   args: {},
   type: "",
   allowRename: true

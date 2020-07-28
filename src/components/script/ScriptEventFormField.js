@@ -170,9 +170,17 @@ ScriptEventFormField.propTypes = {
     PropTypes.bool,
     PropTypes.arrayOf(PropTypes.number),
     PropTypes.arrayOf(PropTypes.string),
-    PropTypes.arrayOf(PropTypes.bool)
+    PropTypes.arrayOf(PropTypes.bool),
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string,
+        PropTypes.bool,
+      ]),
+    }),
   ]),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
 ScriptEventFormField.defaultProps = {

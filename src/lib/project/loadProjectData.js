@@ -129,7 +129,7 @@ const loadProject = async (projectPath) => {
     {
       id: "default-bg-5",
       name: "Default BG 5",
-      colors: ["F8F8b8", "90C8C8", "486878", "082048"],
+      colors: ["F8F8B8", "90C8C8", "486878", "082048"],
     },
     {
       id: "default-bg-6",
@@ -139,12 +139,12 @@ const loadProject = async (projectPath) => {
     {
       id: "default-sprite",
       name: "Default Sprites",
-      colors: ["D8D8C0", "C8B070", "B05010", "000000"],
+      colors: ["F8F0E0", "D88078", "B05010", "000000"],
     },
     {
       id: "default-ui",
       name: "Default UI",
-      colors: ["F8C0F8", "E89850", "983860", "383898"],
+      colors: ["F8F8B8", "90C8C8", "486878", "082048"],
     },
   ];
 

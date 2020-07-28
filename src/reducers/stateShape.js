@@ -87,3 +87,35 @@ export const ErrorShape = PropTypes.shape({
   line: PropTypes.number,
   col: PropTypes.number
 });
+
+export const EventValueShape = PropTypes.oneOfType([
+  PropTypes.number,
+  PropTypes.string,
+  PropTypes.bool,
+  PropTypes.arrayOf(PropTypes.number),
+  PropTypes.arrayOf(PropTypes.string),
+  PropTypes.arrayOf(PropTypes.bool),
+  PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.bool,
+    ]),
+  }),
+]);
+
+export const EventDefaultValueShape = PropTypes.oneOfType([
+  PropTypes.number,
+  PropTypes.string,
+  PropTypes.bool,
+  PropTypes.arrayOf(PropTypes.number),
+  PropTypes.arrayOf(PropTypes.string),
+  PropTypes.arrayOf(PropTypes.bool),
+  PropTypes.shape({
+    number: PropTypes.number,
+    variable: PropTypes.string,
+    property: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+]);

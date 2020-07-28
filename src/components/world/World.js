@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -34,7 +35,7 @@ class World extends Component {
     window.addEventListener("paste", this.onPaste);
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("mousewheel", this.onMouseWheel);
+    window.addEventListener("mousewheel", this.onMouseWheel, { passive: false });
     window.addEventListener("resize", this.onWindowResize);
 
     const viewContents = this.scrollContentsRef.current;
@@ -182,13 +183,19 @@ class World extends Component {
 
   onMouseWheel = e => {
     const { zoomIn, zoomOut } = this.props;
-    if (e.ctrlKey) {
+    if (e.ctrlKey && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
         zoomIn("world", e.deltaY * 0.5);
       } else {
         zoomOut("world", e.deltaY * 0.5);
       }
+    } else {
+      // Don't allow mousehwheel zoom while scrolling
+      clearTimeout(this.blockWheelZoom);
+      this.blockWheelZoom = setTimeout(() => {
+        this.blockWheelZoom = null;
+      }, 60);
     }
   };
 

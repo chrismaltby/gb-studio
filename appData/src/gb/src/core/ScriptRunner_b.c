@@ -185,8 +185,6 @@ UBYTE ScriptUpdate_MoveActor() {
   if ((*tmp_actor).pos.x == main_script_ctx.actor_move_dest_x &&
       (*tmp_actor).pos.y == main_script_ctx.actor_move_dest_y) {
     (*tmp_actor).moving = FALSE;
-    (*tmp_actor).dir.x = 0;
-    (*tmp_actor).dir.y = 0;
     (*tmp_actor).script_control = FALSE;
     if (main_script_ctx.script_actor == 0) {
       pl_vel_x = 0;
@@ -235,8 +233,6 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   if (actors[main_script_ctx.script_actor].pos.x == main_script_ctx.actor_move_dest_x &&
       actors[main_script_ctx.script_actor].pos.y == main_script_ctx.actor_move_dest_y) {
     actors[main_script_ctx.script_actor].moving = FALSE;
-    actors[main_script_ctx.script_actor].dir.x = 0;
-    actors[main_script_ctx.script_actor].dir.y = 0;
     actors[main_script_ctx.script_actor].script_control = FALSE;
     if (main_script_ctx.script_actor == 0) {
       pl_vel_x = 0;
@@ -278,6 +274,7 @@ UBYTE ScriptUpdate_MoveActorDiag() {
 }
 
 UBYTE ScriptUpdate_AwaitFade() {
+  FadeUpdate();
   return !IsFading();
 }
 
@@ -826,14 +823,15 @@ void Script_ActorSetCollisions_b() {
  */
 void Script_ActorSetEmote_b() {
   unsigned char* emote_ptr;
+  UBYTE palette = actors[script_actor].palette_index;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
   main_script_ctx.script_update_fn = ScriptUpdate_Emote;
   emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
                       emote_ptr + ((UWORD)script_cmd_args[0] * 64));
-  set_sprite_prop(emote_sprite, 0);
-  set_sprite_prop(emote_sprite + 1, 0);
+  set_sprite_prop(emote_sprite, palette);
+  set_sprite_prop(emote_sprite + 1, palette);
   set_sprite_tile(emote_sprite, EMOTE_SPRITE);
   set_sprite_tile(emote_sprite + 1, EMOTE_SPRITE + 2);
 }
