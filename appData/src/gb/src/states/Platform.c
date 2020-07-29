@@ -127,8 +127,9 @@ void Update_Platform() {
 
   // Jump
   if (INPUT_B_PRESSED && grounded) {
-    if (!(TileAt(tile_x, tile_y - 2) ||                                         // Left Edge
-          (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2)))) {  // Right edge
+    if (!(TileAt(tile_x, tile_y - 2) == TILE_SOLID ||  // Left Edge
+          (((pl_pos_x >> 4) & 0x7) != 0 &&
+           TileAt(tile_x + 1, tile_y - 2) == TILE_SOLID))) {  // Right edge
       pl_vel_y = -JUMP_VEL;
       grounded = FALSE;
     }
@@ -147,7 +148,7 @@ void Update_Platform() {
 
   // Left Collision
   if (pl_vel_x < 0) {
-    if (TileAt(tile_x, tile_y) || TileAt(tile_x, tile_y - 1)) {
+    if (TileAt(tile_x, tile_y) == TILE_SOLID || TileAt(tile_x, tile_y - 1) == TILE_SOLID) {
       pl_vel_x = 0;
       pl_pos_x = ((tile_x + 1) * 8) << 4;
       tile_x = pl_pos_x >> 7;
@@ -156,7 +157,7 @@ void Update_Platform() {
 
   // Right Collision
   if (pl_vel_x > 0) {
-    if (TileAt(tile_x + 1, tile_y) || TileAt(tile_x + 1, tile_y - 1)) {
+    if (TileAt(tile_x + 1, tile_y) == TILE_SOLID || TileAt(tile_x + 1, tile_y - 1) == TILE_SOLID) {
       pl_vel_x = 0;
       pl_pos_x = (tile_x * 8) << 4;
       tile_x = pl_pos_x >> 7;
@@ -176,8 +177,9 @@ void Update_Platform() {
 
     // Ceiling Collision
     if (pl_vel_y < 0) {
-      if (TileAt(tile_x, tile_y - 2) ||                                     // Left Edge
-          (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 2))  // Right edge
+      if (TileAt(tile_x, tile_y - 2) == TILE_SOLID ||  // Left Edge
+          (((pl_pos_x >> 4) & 0x7) != 0 &&
+           TileAt(tile_x + 1, tile_y - 2) == TILE_SOLID)  // Right edge
       ) {
         if (MOD_128(pl_pos_y) < 32) {
           pl_vel_y = 0;

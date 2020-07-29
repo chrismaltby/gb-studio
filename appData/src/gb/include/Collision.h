@@ -4,6 +4,8 @@
 #include <gb/gb.h>
 
 #define OUT_OF_BOUNDS 255
+#define TILE_SOLID 1
+#define TILE_PLATFORM 2
 
 /**
  * Return collision tile value at given tile x,y coordinate.

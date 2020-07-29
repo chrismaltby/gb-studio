@@ -313,6 +313,10 @@ export const setSelectedPalette = paletteIndex => {
   return { type: types.SET_SELECTED_PALETTE, paletteIndex }
 };
 
+export const setSelectedTileType = tileType => {
+  return { type: types.SET_SELECTED_TILE_TYPE, tileType }
+};
+
 export const setSelectedBrush = brush => {
   return { type: types.SET_SELECTED_BRUSH, brush }
 };

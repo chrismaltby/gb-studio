@@ -35,6 +35,7 @@ import { getCachedObject } from "../../lib/helpers/cache";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
+const tileTypes = ["solid", "platform"];
 
 class BrushToolbar extends Component {
   constructor(props) {
@@ -96,9 +97,14 @@ class BrushToolbar extends Component {
     setSelectedBrush(brush);
   };
 
-  setSelectedPalette = (paletteIndex) => (e) => {
-    const { setSelectedPalette } = this.props;
-    setSelectedPalette(paletteIndex);
+  setSelectedPalette = (index) => (e) => {
+    const { setSelectedPalette, setSelectedTileType, showPalettes, showTileTypes } = this.props;
+    if(showPalettes){
+      setSelectedPalette(index);
+    }
+    if (showTileTypes) {
+      setSelectedTileType(index + 1)
+    }
   };
 
   startReplacePalette = (paletteIndex) => (e) => {
@@ -151,9 +157,11 @@ class BrushToolbar extends Component {
   render() {
     const {
       selectedPalette,
+      selectedTileType,
       selectedBrush,
       visible,
       showPalettes,
+      showTileTypes,
       showLayers,
       palettes,
       setSection,
@@ -214,6 +222,22 @@ class BrushToolbar extends Component {
               </div>
             ))}
           {showPalettes && <div className="BrushToolbar__Divider" />}
+          {showTileTypes &&
+            tileTypes.map((tileType, collisionTypeIndex) => (
+              <div
+                key={tileType}
+                onClick={this.setSelectedPalette(collisionTypeIndex)}
+                onMouseDown={this.startReplacePalette(collisionTypeIndex)}
+                className={cx("BrushToolbar__Item", {
+                  "BrushToolbar__Item--Selected":
+                  collisionTypeIndex + 1 === selectedTileType,
+                })}
+                title={`${tileType} (${collisionTypeIndex + 1})`}
+              >
+                <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType}`)} />
+              </div>
+            ))}
+          {showTileTypes && <div className="BrushToolbar__Divider" />}          
           <div
             onClick={this.toggleShowLayers}
             className={cx("BrushToolbar__Item", {
@@ -276,9 +300,11 @@ BrushToolbar.propTypes = {
     .isRequired,
   showLayers: PropTypes.bool.isRequired,
   showPalettes: PropTypes.bool.isRequired,
+  showTileTypes: PropTypes.bool.isRequired,
   selectedPalette: PropTypes.number.isRequired,
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
+  setSelectedTileType: PropTypes.func.isRequired,
   setSelectedBrush: PropTypes.func.isRequired,
   setShowLayers: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
@@ -295,10 +321,11 @@ BrushToolbar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { selectedPalette, selectedBrush, showLayers } = state.editor;
+  const { selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const selectedTool = state.tools.selected;
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
+  const showTileTypes = selectedTool === TOOL_COLLISIONS;
 
   const settings = getSettings(state);
   const palettesLookup = getPalettesLookup(state);
@@ -334,9 +361,11 @@ function mapStateToProps(state) {
   
   return {
     selectedPalette,
+    selectedTileType,
     selectedBrush,
     visible,
     showPalettes,
+    showTileTypes,
     showLayers,
     palettes,
     sceneId,
@@ -348,6 +377,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setSelectedPalette: actions.setSelectedPalette,
+  setSelectedTileType: actions.setSelectedTileType,
   setSelectedBrush: actions.setSelectedBrush,
   setShowLayers: actions.setShowLayers,
   setSection: actions.setSection,

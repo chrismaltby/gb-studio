@@ -305,9 +305,7 @@ const compile = async (
     const collisions = Array(collisionsLength)
       .fill(0)
       .map((_, index) => {
-        // Uncompress collisions
-        const t = scene.collisions[Math.floor(index / 8)];
-        return t & (1 << (index & 7)) ? 1 : 0;
+        return (scene.collisions && scene.collisions[index]) || 0;
       });
 
     return banked.push(collisions);

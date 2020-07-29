@@ -42,6 +42,7 @@ export default {
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
+    selectedTileType: 1,    
     selectedBrush: BRUSH_8PX,
     showLayers: true,
     lastScriptTab: "",

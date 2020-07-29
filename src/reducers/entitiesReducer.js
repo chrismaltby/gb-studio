@@ -481,13 +481,13 @@ const editScene = (state, action) => {
       newTileColors = otherScene.tileColors;
     } else if (oldBackground.width == background.width){
       const collisionsSize = Math.ceil(
-        (background.width * background.height) / 8
+        (background.width * background.height)
       );
       newCollisions = (scene.collisions.slice(0,collisionsSize));
       newTileColors = [];
     } else {
       const collisionsSize = Math.ceil(
-        (background.width * background.height) / 8
+        (background.width * background.height)
       );
       newCollisions = [];
       newTileColors = [];
@@ -1058,7 +1058,7 @@ const paintCollision = (state, action) => {
     return state;
   }
 
-  const collisionsSize = Math.ceil((background.width * background.height) / 8);
+  const collisionsSize = Math.ceil((background.width * background.height));
   const collisions = scene.collisions.slice(0, collisionsSize);
 
   if (collisions.length < collisionsSize) {
@@ -1068,23 +1068,13 @@ const paintCollision = (state, action) => {
   }
 
   const getValue = (x, y) => {
-    const collisionIndex = background.width * y + x;
-    const collisionByteIndex = collisionIndex >> 3;
-    const collisionByteOffset = collisionIndex & 7;
-    const collisionByteMask = 1 << collisionByteOffset;
-    return !!(collisions[collisionByteIndex] & collisionByteMask);
+    const tileIndex = (background.width * y) + x;
+    return collisions[tileIndex];
   }
 
-  const setValue = (x, y, value) => {   
-    const collisionIndex = background.width * y + x;
-    const collisionByteIndex = collisionIndex >> 3;
-    const collisionByteOffset = collisionIndex & 7;
-    const collisionByteMask = 1 << collisionByteOffset;
-    if(value) {
-      collisions[collisionByteIndex] |= collisionByteMask;
-    } else {
-      collisions[collisionByteIndex] &= ~collisionByteMask;
-    }
+  const setValue = (x, y, value) => {
+    const tileIndex = (background.width * y) + x;
+    collisions[tileIndex] = value;
   }
 
   const isInBounds = (x, y) => {
