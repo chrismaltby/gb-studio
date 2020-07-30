@@ -125,19 +125,13 @@ u8 mod_get_index_from_period(u16 period, int pattern, int step, int channel)
     {
         if (period < mod_period[(6 * 12) - 1])
         {
-            if (channel != 4) // Pitch ignored for noise channel
-            {
-                printf("\nPattern %d, Step %d, Channel %d. Note too high!\n",
-                       pattern, step, channel);
-            }
+            printf("\nPattern %d, Step %d, Channel %d. Note too high!\n",
+                   pattern, step, channel);
         }
         else if (period > mod_period[0])
         {
-            if (channel != 4) // Pitch ignored for noise channel
-            {
-                printf("\nPattern %d, Step %d, Channel %d. Note too low!\n",
-                       pattern, step, channel);
-            }
+            printf("\nPattern %d, Step %d, Channel %d. Note too low!\n",
+                   pattern, step, channel);
         }
     }
     else
@@ -168,6 +162,21 @@ u8 mod_get_index_from_period(u16 period, int pattern, int step, int channel)
 
     return nearest_index;
 }
+
+const u8 gbt_noise[16] = {
+	// 7 bit
+	0x5F,0x4E,0x3E,0x2F,0x2E,0x2C,0x1F,0x0F,
+	// 15 bit
+	0x64,0x54,0x44,0x24,0x00,
+	0x67,0x56,0x46
+};
+/*const u8 gbt_noise[16] = { // Old, Substituted for mathematical matches.
+	// 7 bit
+	0x5F,0x5B,0x4B,0x2F,0x3B,0x58,0x1F,0x0F,
+	// 15 bit
+	0x90,0x80,0x70,0x50,0x00,
+	0x67,0x63,0x53
+};*/
 
 //------------------------------------------------------------------------------
 //--                                                                          --
@@ -276,8 +285,64 @@ int effect_mod_to_gb(u8 pattern_number, u8 step_number, u8 channel,
     {
         case 0x0: // Arpeggio
         {
-            *converted_num = 1;
+            if (effectparams != 0) // Arp has any data
+            {
+                *converted_num = 1;
+                *converted_params = effectparams;
+                return 1;
+            } else  {               // Mistook no effets for arp 000, 
+                *converted_num = 7;  // use No Op NOP trigger effect instead.
+                *converted_params = 1;
+                return 1;
+            }
+        }
+        case 0x1:   // Ch1,2,3 Pitch Slide UP
+        {
+            *converted_num = 4;
+            *converted_params = (effectparams & 0x7F);
+            return 1;
+        }
+        case 0x2:   // Ch1,2,3 Pitch Slide DOWN
+        {
+            *converted_num = 4;
+            *converted_params = ( (effectparams & 0x7F) | 0x80 );
+            return 1;
+        }
+        case 0x9:   // Ch1,2,4 Volume + envelope, direct NRx2, was Offset
+        {
+            *converted_num = 15;
             *converted_params = effectparams;
+            return 1;
+        }
+        case 0xA:   // Volume Slide (Volume envelope)
+        {
+            u8 increase = 0;    // 0 is Decrease, 1 is Increase,    bits 1---
+            u8 period = 0;      // Higher is slow so swap around,   bits -111
+            if(effectparams > 0xF)  // Volume envelope Up!
+            {
+                increase = 1;
+                period = ((effectparams & 0xF0) >> 4); // Needs inverting
+            }
+            else    // Volume envelope Down!
+            {
+                increase = 0;
+                period = ((effectparams & 0xF) ); // Needs inverting
+            }
+            switch(period)  // inverts and remaps period
+            {
+                default:
+                case 0:         period = 0x0; break; // Disable
+                case 1: case 2: period = 0x7; break; // Slow
+                case 3:         period = 0x6; break;
+                case 4:         period = 0x5; break;
+                case 5:         period = 0x4; break;
+                case 6:         period = 0x3; break;
+                case 7: case 8: period = 0x2; break;
+                case 9:  case 10: case 11: case 12: case 13: case 14: case 15:  
+                                period = 0x1; break; // fastest
+            }
+            *converted_num = 14;
+            *converted_params = ( (increase << 3) | period );
             return 1;
         }
         case 0xB: // Jump
@@ -380,6 +445,12 @@ void convert_channel1(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum > 4)
+        {
+            printf("\nWarning: Channel 1 must use Pulse waves 1-4, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
 
     if (note_index > (6 * 12 - 1)) // Not valid note -> check if any effect
     {
@@ -483,6 +554,13 @@ void convert_channel2(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum > 4)
+        {
+            printf("\nWarning: Channel 2 must use Pulse waves 1-4, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+                    
+        }
 
     if (note_index > (6 * 12 - 1)) // Not valid note -> check if any effect
     {
@@ -633,6 +711,16 @@ void convert_channel3(u8 pattern_number, u8 step_number, u8 note_index,
     else // New note
     {
         u8 instrument = (samplenum - 8) & 15; // Only 0-7 implemented
+        if (samplenum < 8)          // 1-7 is now 8-15, tb implemented
+        {
+            instrument = (samplenum + 7) & 15;
+        }
+        if (samplenum > 16)
+        {
+            printf("\nWarning: Channel 3 must use Waves 8-15, "
+                    "but found Instument %d, at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
 
         u8 converted_num, converted_params;
         if (effectnum == 0xC)
@@ -743,16 +831,37 @@ void convert_channel4(u8 pattern_number, u8 step_number, u8 note_index,
             command_len = 1;
         }
     }
-    else // New note (not a real note...)
+    else // New note (noise) NR43 SSSS WDDD Clock Shift, Width mode of LFSR, Divisor code
     {
-        u8 instrument = (samplenum - 16) & 0x1F; // Only 0 - 0xF implemented
+        u8 instrument = gbt_noise[((samplenum - 16) & 0x1F)]; // Only 0 - 0xF implemented
+        u8 noise_break = 0;
+        u8 noise = 0;
+        if (samplenum < 16)
+        {
+            printf("\nWarning: Channel 4 must use Noises 16-31, "
+                    "but found Instument %d at Pattern %d, step %d.",
+                    samplenum, pattern_number, step_number);
+        }
+        // This makes a smooth Ramp of every noise type, inspired by Pigu-A's Cherry Blossom Dive
+        // SSSS WDDD, preserve Width bit, combine Shift + Divisor (ignore bit 0100), add pitch.
+        // Divisor 4,5,6,7 can make any noise found in 0,1,2,3 unless with 0 Clock Shift.
+        // Solution, add 4, add note, if less than 4, set bit 0x04 to 0, and remove 4 again.
+        // Notes will pitch correctly using C D# F# A# C, scale has been divided by 3.
+        if (samplenum < 32 && samplenum > 16) // Noise
+        {   
+            noise_break = ( (instrument & 0x03) | (((instrument & 0xF0) >> 2) + 4) );
+            noise_break = noise_break - (((note_index + 1) / 3) - 8);
+            noise = ( (noise_break & 0x03) | 
+            ((((noise_break - 4) < 0 ? 0x0 : (noise_break - 4)) & 0x3C) << 2) |
+             (noise_break > 3 ? 0x04 : 0x0) ) | (instrument & 0x08);
+        }
 
         u8 converted_num, converted_params;
         if (effectnum == 0xC)
         {
             // Note + Volume
-            result[0] = BIT(7) | instrument;
-            result[1] = volume_mod_to_gb(effectparams);
+            result[0] = BIT(7) | (0x7F & noise);
+            result[1] = ( (noise & BIT(7)) << 1 ) | volume_mod_to_gb(effectparams);
             command_len = 2;
         }
         else
@@ -762,8 +871,8 @@ void convert_channel4(u8 pattern_number, u8 step_number, u8 note_index,
                                  &converted_params) == 1)
             {
                 // Note + Effect
-                result[0] = BIT(7) | instrument;
-                result[1] = BIT(7) | converted_num;
+                result[0] = BIT(7) | (0x7F & noise);
+                result[1] = BIT(7) | ( (noise & BIT(7)) << 1 ) | converted_num;
                 result[2] = converted_params;
                 command_len = 3;
             }
@@ -873,8 +982,8 @@ int main(int argc, char *argv[])
 {
     int i;
 
-    printf("mod2gbt v2.2 (part of GBT Player)\n");
-    printf("Copyright (c) 2009-2018 Antonio Niño Díaz "
+    printf("mod2gbt v2.3 (part of GBT Player)\n");
+    printf("Copyright (c) 2009-2020 Antonio Niño Díaz "
            "<antonio_nd@outlook.com>\n");
     printf("All rights reserved\n");
     printf("\n");
