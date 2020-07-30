@@ -1,6 +1,6 @@
 import childProcess from "child_process";
 import Path from "path";
-import fs, { ensureDir, copy, pathExists } from "fs-extra";
+import fs, { readFile, ensureDir, copy, pathExists } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { assetFilename } from "../helpers/gbstudio";
 import { GB_MAX_BANK_SIZE } from "./bankedData";
@@ -9,7 +9,7 @@ import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import getTmp from "../helpers/getTmp";
-import { checksumFile } from "../helpers/checksum";
+import { checksumFile, checksumString } from "../helpers/checksum";
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -27,6 +27,7 @@ const compileMusic = async ({
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);
+  const buildToolsVersion = await readFile(`${buildToolsPath}/tools_version`, "utf8");
 
   await ensureDir(`${buildRoot}/src/music`);
   await ensureDir(cacheRoot);
@@ -57,6 +58,7 @@ const compileMusic = async ({
         buildToolsPath,
         projectRoot,
         cacheRoot,
+        buildToolsVersion,
         progress,
         warnings,
       });
@@ -288,6 +290,7 @@ const compileTrack = async (
     buildToolsPath,
     projectRoot,
     cacheRoot,
+    buildToolsVersion,
     progress = () => {},
     warnings = () => {},
   }
@@ -303,9 +306,10 @@ const compileTrack = async (
   const modPath = assetFilename(projectRoot, "music", track, true);
 
   const checksum = await checksumFile(modPath);
+  const buildChecksum = checksumString(checksum + buildToolsVersion);
 
   const compiledFilePath = `${buildRoot}/src/music/${track.dataName}.c`;
-  const cachedFilePath = `${cacheRoot}/${checksum}`;
+  const cachedFilePath = `${cacheRoot}/${buildChecksum}`;
 
   if(await pathExists(cachedFilePath)) {
     await copy(cachedFilePath, compiledFilePath);
