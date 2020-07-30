@@ -101,13 +101,12 @@ void ScriptRunnerUpdate() {
     main_script_ctx.script_ptr = 0;
     return;
   }
-  BGB_PROFILE_BEGIN();
+
   PUSH_BANK(main_script_ctx.script_ptr_bank);
   script_cmd_index = *main_script_ctx.script_ptr;
 
   if (!script_cmd_index) {
     POP_BANK;
-    BGB_PROFILE_END(NoData);
     if (script_stack_ptr) {
       // Return from Actor Invocation
       PUSH_BANK(SCRIPT_RUNNER_BANK);
@@ -133,7 +132,7 @@ void ScriptRunnerUpdate() {
   // Fetch script_cmd_args using inlined MemcpyBanked
   memcpy(script_cmd_args, main_script_ctx.script_ptr + 1, 7);
   POP_BANK;
-  BGB_PROFILE_END(WeGotData);
+
   PUSH_BANK(SCRIPT_RUNNER_BANK);
   initial_script_ptr = main_script_ctx.script_ptr;
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
