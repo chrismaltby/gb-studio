@@ -154,7 +154,7 @@ _UpdateActors::
         ld d, (hl)
 
     ; Load scroll x in hl
-        ld hl, #(_scroll_x)
+        ld hl, #(_draw_scroll_x)
         ld a, (hl+)
         ld h, (hl)
         ld l, a

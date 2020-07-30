@@ -25,7 +25,7 @@ void RefreshScroll_b() {
     y = scroll_y_max;
   }
 
-  current_column = (scroll_x - scroll_offset_x) >> 3;
+  current_column = scroll_x >> 3;
   new_column = x >> 3;
   current_row = scroll_y >> 3;
   new_row = y >> 3;
@@ -56,8 +56,9 @@ void RefreshScroll_b() {
     render = TRUE;
   }
 
-  scroll_x = x + scroll_offset_x;
+  scroll_x = x;
   scroll_y = y;
+  draw_scroll_x = x + scroll_offset_x;
 
   if (render) {
     RenderScreen();
