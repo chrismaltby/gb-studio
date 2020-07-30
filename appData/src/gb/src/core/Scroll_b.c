@@ -14,17 +14,14 @@ void RefreshScroll_b() {
   x = scroll_target->x - (SCREENWIDTH >> 1);
   y = scroll_target->y - (SCREENHEIGHT >> 1);
 
-  if (U_LESS_THAN(x, 0u)) {
+  if (x&0x8000u) { // check for negative signed bit
     x = 0u;
-  }
-  if (U_LESS_THAN(y, 0u)) {
-    y = 0u;
-  }
-
-  if(x > scroll_x_max) {
+  } else if (x > scroll_x_max) {
     x = scroll_x_max;
   }
-  if(y > scroll_y_max) {
+  if (y&0x8000u) {
+    y = 0u;
+  } else if (y > scroll_y_max) {
     y = scroll_y_max;
   }
 
