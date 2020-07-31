@@ -39,7 +39,7 @@ void vbl_update() {
 
   // Update background scroll in vbl
   // interupt to prevent tearing
-  SCX_REG = scroll_x;
+  SCX_REG = draw_scroll_x;
   SCY_REG = scroll_y;
 
   if (music_mute_frames != 0) {
