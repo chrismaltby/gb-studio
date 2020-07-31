@@ -317,7 +317,7 @@ const compileTrack = async (
   }
 
   const outputFile = "output.c";
-  const args = [`"${modPath}"`, track.dataName, 8]; // Replace bank 8 later
+  const args = [`"${modPath}"`, track.dataName, 8, "-speed"]; // Replace bank 8 later
   progress(`Convert "${modPath}" to "${track.dataName}"`);
 
   const options = {
