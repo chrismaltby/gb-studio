@@ -19,6 +19,12 @@ import {
   BRUSH_16PX,
   BRUSH_FILL,
   DMG_PALETTE,
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_LEFT,
+  COLLISION_RIGHT,
+  COLLISION_ALL,
+  TILE_PROP_LADDER
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import {
@@ -35,7 +41,31 @@ import { getCachedObject } from "../../lib/helpers/cache";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
-const tileTypes = ["solid", "platform"];
+const tileTypes = [{
+  key: "solid",
+  name: "Solid",
+  flag: COLLISION_ALL,
+},{
+  key: "top",
+  name: "Collision Top",
+  flag: COLLISION_TOP,
+},{
+  key: "bottom", 
+  name: "Collision Bottom",
+  flag: COLLISION_BOTTOM,
+},{
+  key: "left",
+  name: "Collision Left",
+  flag: COLLISION_LEFT,
+},{
+  key: "right",
+  name: "Collision Right",
+  flag: COLLISION_RIGHT,
+},{
+  key: "ladder",
+  name: "Ladder",
+  flag: TILE_PROP_LADDER
+}]
 
 class BrushToolbar extends Component {
   constructor(props) {
@@ -102,8 +132,21 @@ class BrushToolbar extends Component {
     if(showPalettes){
       setSelectedPalette(index);
     }
-    if (showTileTypes) {
-      setSelectedTileType(index + 1)
+    if (showTileTypes && tileTypes[index]) {
+      const { selectedTileType } = this.props;
+      if (tileTypes[index].flag === COLLISION_ALL) {
+        setSelectedTileType(tileTypes[index].flag)
+      } else if (selectedTileType === COLLISION_ALL) {
+        setSelectedTileType(tileTypes[index].flag);
+      } else if (e.shiftKey) {
+        if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
+          setSelectedTileType(selectedTileType & ~tileTypes[index].flag);
+        } else {
+          setSelectedTileType(selectedTileType | tileTypes[index].flag);
+        }
+      } else {
+        setSelectedTileType(tileTypes[index].flag);
+      }
     }
   };
 
@@ -225,16 +268,17 @@ class BrushToolbar extends Component {
           {showTileTypes &&
             tileTypes.map((tileType, collisionTypeIndex) => (
               <div
-                key={tileType}
+                key={tileType.name}
                 onClick={this.setSelectedPalette(collisionTypeIndex)}
-                onMouseDown={this.startReplacePalette(collisionTypeIndex)}
                 className={cx("BrushToolbar__Item", {
                   "BrushToolbar__Item--Selected":
-                  collisionTypeIndex + 1 === selectedTileType,
+                  tileType.flag === COLLISION_ALL
+                    ? selectedTileType === tileType.flag
+                    : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
                 })}
-                title={`${tileType} (${collisionTypeIndex + 1})`}
+                title={`${tileType.name} (${collisionTypeIndex + 1})`}
               >
-                <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType}`)} />
+                <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
               </div>
             ))}
           {showTileTypes && <div className="BrushToolbar__Divider" />}          
