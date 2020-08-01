@@ -338,7 +338,7 @@ class ScriptBuilder {
   paletteSetBackground = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_BACKGROUND));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
@@ -347,7 +347,7 @@ class ScriptBuilder {
   paletteSetActor = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_ACTOR));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
@@ -356,7 +356,7 @@ class ScriptBuilder {
   paletteSetUI = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_UI));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
