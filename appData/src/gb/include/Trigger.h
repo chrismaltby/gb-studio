@@ -22,8 +22,11 @@ extern Trigger triggers[MAX_TRIGGERS];
 extern UBYTE triggers_active[MAX_ACTIVE_TRIGGERS];
 extern UBYTE triggers_active_size;
 extern UBYTE triggers_len;
+extern UBYTE last_trigger_tx;
+extern UBYTE last_trigger_ty;
 
 UBYTE TriggerAtTile(UBYTE tx_a, UBYTE ty_a);
 void TriggerRunScript(UBYTE i);
+UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty);
 
 #endif

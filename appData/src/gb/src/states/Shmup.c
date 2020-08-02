@@ -53,11 +53,9 @@ void Update_Shmup() {
   tile_y = (player.pos.y) >> 3;
 
   // Check for trigger collisions
-  hit_trigger = TriggerAtTile(tile_x, tile_y);
-  if (hit_trigger != MAX_TRIGGERS) {
-    // Run trigger script
-    ScriptStart(&triggers[hit_trigger].events_ptr);
-  }
+  if (ActivateTriggerAt(tile_x, tile_y)) {
+    return;
+  };
 
   if (shooter_horizontal) {
     // Check input to set player movement

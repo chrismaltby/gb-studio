@@ -31,13 +31,9 @@ void Update_TopDown() {
     // If player was moving on the previous frame
     if (player.moving) {
       // Check for trigger collisions
-      hit_trigger = TriggerAtTile(tile_x, tile_y);
-      if (hit_trigger != MAX_TRIGGERS) {
-        // Stop player from moving
+      if (ActivateTriggerAt(tile_x, tile_y)) {
+        // Landed on a trigger
         PlayerStopMovement();
-
-        // Run trigger script
-        TriggerRunScript(hit_trigger);
         return;
       }
     }
