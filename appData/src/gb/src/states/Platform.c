@@ -264,10 +264,8 @@ void Update_Platform() {
   }
 
   // Check for trigger collisions
-  hit_trigger = TriggerAtTile(tile_x, tile_y);
-  if (hit_trigger != MAX_TRIGGERS) {
-    // Run trigger script
-    ScriptStart(&triggers[hit_trigger].events_ptr);
+  if (ActivateTriggerAt(tile_x, tile_y)) {
+    // Landed on a trigger
     player.moving = FALSE;
     return;
   }
