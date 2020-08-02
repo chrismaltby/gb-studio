@@ -204,8 +204,15 @@ void Update_Platform() {
 
     UBYTE tile_below;
     if(!(TileAt(tile_x, tile_y) & TILE_PROP_LADDER)) {
-      pl_pos_y -= pl_vel_y >> 8;
-      pl_vel_y = 0; // Jump up to platform
+      if (INPUT_DOWN) {
+        on_ladder = FALSE;
+        player.dir.x = 1;
+        player.dir.y = 0;        
+        player.rerender = TRUE;
+      } else {
+        pl_pos_y -= pl_vel_y >> 8;
+        pl_vel_y = 0;
+      }
     }
 
     // Check if can pass through ground collision (ground also contains ladder)
