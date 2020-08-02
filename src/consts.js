@@ -46,6 +46,7 @@ export const COLLISION_LEFT = 0x4;
 export const COLLISION_RIGHT = 0x8;
 export const COLLISION_ALL = 0xF;
 export const TILE_PROP_LADDER = 0x10;
+export const TILE_PROPS = 0xF0;
 
 export const DMG_PALETTE = {
   id: "dmg",

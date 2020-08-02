@@ -449,16 +449,16 @@ export const selectScriptEvent = eventId => {
   return { type: types.SELECT_SCRIPT_EVENT, eventId };
 };
 
-export const paintCollisionTile = (sceneId, x, y, value, brushSize) => {
-  return { type: types.PAINT_COLLISION_TILE, sceneId, x, y, value, brushSize };
+export const paintCollisionTile = (sceneId, x, y, value, brushSize, isTileProp) => {
+  return { type: types.PAINT_COLLISION_TILE, sceneId, x, y, value, brushSize, isTileProp };
 };
 
-export const paintCollisionLine = (sceneId, startX, startY, endX, endY, value, brushSize) => {
-  return { type: types.PAINT_COLLISION_LINE, sceneId, startX, startY, endX, endY, value, brushSize };
+export const paintCollisionLine = (sceneId, startX, startY, endX, endY, value, brushSize, isTileProp) => {
+  return { type: types.PAINT_COLLISION_LINE, sceneId, startX, startY, endX, endY, value, brushSize, isTileProp };
 };
 
-export const paintCollisionFill = (sceneId, x, y, value) => {
-  return { type: types.PAINT_COLLISION_FILL, sceneId, x, y, value };
+export const paintCollisionFill = (sceneId, x, y, value, isTileProp) => {
+  return { type: types.PAINT_COLLISION_FILL, sceneId, x, y, value, isTileProp };
 };
 
 export const paintColorTile = (sceneId, x, y, paletteIndex, brushSize) => {

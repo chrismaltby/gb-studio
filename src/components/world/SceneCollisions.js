@@ -28,7 +28,7 @@ class SceneCollisions extends Component {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
           const tile = collisions[collisionIndex];
-          if (tile === COLLISION_ALL) {
+          if ((tile & COLLISION_ALL) === COLLISION_ALL) {
             ctx.fillStyle = "rgba(250,40,40,0.6)";
             ctx.fillRect(xi * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE, TILE_SIZE);
           } else if (tile !== 0) {
@@ -47,14 +47,14 @@ class SceneCollisions extends Component {
             if (tile & COLLISION_RIGHT) {
               ctx.fillStyle = "rgba(40,250,250,0.6)";
               ctx.fillRect((xi + 0.6) * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE * 0.4, TILE_SIZE);
-            }
-            if (tile & TILE_PROP_LADDER) {
-              ctx.fillStyle = "rgba(0,128,0,0.6)";
-              ctx.fillRect((xi + 0.0) * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE * 0.2, TILE_SIZE);
-              ctx.fillRect((xi + 0.8) * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE * 0.2, TILE_SIZE);
-              ctx.fillRect(xi * TILE_SIZE, (yi + 0.4) * TILE_SIZE, TILE_SIZE, TILE_SIZE * 0.2);
-            }                                    
+            }                   
           }
+          if (tile & TILE_PROP_LADDER) {
+            ctx.fillStyle = "rgba(0,128,0,0.6)";
+            ctx.fillRect((xi + 0.0) * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE * 0.2, TILE_SIZE);
+            ctx.fillRect((xi + 0.8) * TILE_SIZE, yi * TILE_SIZE, TILE_SIZE * 0.2, TILE_SIZE);
+            ctx.fillRect(xi * TILE_SIZE, (yi + 0.4) * TILE_SIZE, TILE_SIZE, TILE_SIZE * 0.2);
+          }             
         }
       }
     }

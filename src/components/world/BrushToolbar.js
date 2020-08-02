@@ -65,7 +65,9 @@ const tileTypes = [{
   key: "ladder",
   name: "Ladder",
   flag: TILE_PROP_LADDER
-}]
+}];
+
+const collisionDirectionFlags = [COLLISION_TOP, COLLISION_BOTTOM, COLLISION_LEFT, COLLISION_RIGHT];
 
 class BrushToolbar extends Component {
   constructor(props) {
@@ -134,15 +136,12 @@ class BrushToolbar extends Component {
     }
     if (showTileTypes && tileTypes[index]) {
       const { selectedTileType } = this.props;
-      if (tileTypes[index].flag === COLLISION_ALL) {
-        setSelectedTileType(tileTypes[index].flag)
-      } else if (selectedTileType === COLLISION_ALL) {
-        setSelectedTileType(tileTypes[index].flag);
-      } else if (e.shiftKey) {
+
+      if (e.shiftKey && collisionDirectionFlags.includes(tileTypes[index].flag)) {
         if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
-          setSelectedTileType(selectedTileType & ~tileTypes[index].flag);
+          setSelectedTileType(selectedTileType & COLLISION_ALL & ~tileTypes[index].flag);
         } else {
-          setSelectedTileType(selectedTileType | tileTypes[index].flag);
+          setSelectedTileType(selectedTileType & COLLISION_ALL | tileTypes[index].flag);
         }
       } else {
         setSelectedTileType(tileTypes[index].flag);
@@ -266,22 +265,41 @@ class BrushToolbar extends Component {
             ))}
           {showPalettes && <div className="BrushToolbar__Divider" />}
           {showTileTypes &&
-            tileTypes.map((tileType, collisionTypeIndex) => (
-              <div
-                key={tileType.name}
-                onClick={this.setSelectedPalette(collisionTypeIndex)}
-                className={cx("BrushToolbar__Item", {
-                  "BrushToolbar__Item--Selected":
-                  tileType.flag === COLLISION_ALL
-                    ? selectedTileType === tileType.flag
-                    : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
-                })}
-                title={`${tileType.name} (${collisionTypeIndex + 1})`}
-              >
-                <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
-              </div>
-            ))}
-          {showTileTypes && <div className="BrushToolbar__Divider" />}          
+            <>
+              {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
+                <div
+                  key={tileType.name}
+                  onClick={this.setSelectedPalette(tileTypeIndex)}
+                  className={cx("BrushToolbar__Item", {
+                    "BrushToolbar__Item--Selected":
+                    tileType.flag === COLLISION_ALL
+                      ? selectedTileType === tileType.flag
+                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                  })}
+                  title={`${tileType.name} (${tileTypeIndex + 1})`}
+                >
+                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                </div>
+              ))}
+              <div className="BrushToolbar__Divider" />
+              {tileTypes.slice(5).map((tileType, tileTypeIndex) => (
+                <div
+                  key={tileType.name}
+                  onClick={this.setSelectedPalette(tileTypeIndex + 5)}
+                  className={cx("BrushToolbar__Item", {
+                    "BrushToolbar__Item--Selected":
+                    tileType.flag === COLLISION_ALL
+                      ? selectedTileType === tileType.flag
+                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                  })}
+                  title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
+                >
+                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                </div>
+              ))}   
+              <div className="BrushToolbar__Divider" />
+            </>
+          }  
           <div
             onClick={this.toggleShowLayers}
             className={cx("BrushToolbar__Item", {
@@ -346,6 +364,7 @@ BrushToolbar.propTypes = {
   showPalettes: PropTypes.bool.isRequired,
   showTileTypes: PropTypes.bool.isRequired,
   selectedPalette: PropTypes.number.isRequired,
+  selectedTileType: PropTypes.number.isRequired,
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
   setSelectedTileType: PropTypes.func.isRequired,

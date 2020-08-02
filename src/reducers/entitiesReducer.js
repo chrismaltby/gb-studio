@@ -59,7 +59,7 @@ import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, TILE_PROPS, COLLISION_ALL } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -1053,6 +1053,7 @@ const removeTriggerAt = (state, action) => {
 const paintCollision = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const background = state.entities.backgrounds[scene.backgroundId];
+  const isTileProp = action.isTileProp;
 
   if (!background) {
     return state;
@@ -1074,7 +1075,15 @@ const paintCollision = (state, action) => {
 
   const setValue = (x, y, value) => {
     const tileIndex = (background.width * y) + x;
-    collisions[tileIndex] = value;
+    let newValue = value;
+    if (isTileProp) {
+      // If is prop keep previous collision value
+      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+    } else if (value !== 0) {
+      // If is collision keep prop unless erasing
+      newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
+    }
+    collisions[tileIndex] = newValue;
   }
 
   const isInBounds = (x, y) => {
