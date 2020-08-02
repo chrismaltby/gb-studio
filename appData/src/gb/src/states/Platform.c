@@ -81,6 +81,7 @@ void Update_Platform() {
   if (on_ladder) {
     player.dir.x = 0;
     player.dir.y = -1;
+    pl_vel_x = 0;
     if (INPUT_UP) {
       pl_vel_y = -MAX_WALK_VEL;
     } else if (INPUT_DOWN) {
