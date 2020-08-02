@@ -966,7 +966,6 @@ ch3_just_set_volume$:
 
 	; Set volume
 
-	and	a,#0x0F
 	swap	a
 	ld	(gbt_vol+2),a
 
@@ -1571,7 +1570,7 @@ gbt_ch1234_jump_position:
 	; Check to see if jump puts us past end of song
 	ld	a,(hl)
 	call	gbt_get_pattern_ptr_banked
-	ld	a,#1
+	ld	a,#1 ; tell gbt_player.s to do this next cycle
 	ld	(gbt_update_pattern_pointers),a
 	xor	a,a ;ret 0
 	ret

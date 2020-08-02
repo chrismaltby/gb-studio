@@ -145,15 +145,32 @@ gbt_get_pattern_ptr: ; a = pattern number
 
 gbt_get_pattern_ptr_banked:: ; a = pattern number
 
-	call gbt_get_pattern_ptr
-	ld	hl,#gbt_current_step_data_ptr
+	; loads a pointer to pattern a into gbt_current_step_data_ptr
+
+	ld	c,a
+	ld	b,#0
+
+	ld	a,(gbt_bank)
+	ld	(#0x2000),a ; MBC1, MBC3, MBC5 - Set bank
+
+	ld	hl,#gbt_song
 	ld	a,(hl+)
-	ld	b,a
-	ld	a,(hl)
+	ld	l,(hl)
+	ld	h,a
+
+	; hl = pointer to list of pointers
+	; de = pattern number
+
+	add	hl,bc
+	add	hl,bc
+
+	; hl = pointer to pattern a pointer
+
+	ld	a,(hl+)
+	ld	b,(hl)
 	or	a,b
 	jr	nz,dont_loop$
-	xor	a,a
-	ld	(gbt_current_pattern), a
+	ld	(gbt_current_pattern), a ; a = 0
 dont_loop$:
 	ld	a,#0x01
 	ld	(#0x2000),a ; MBC1, MBC3, MBC5 - Set bank
