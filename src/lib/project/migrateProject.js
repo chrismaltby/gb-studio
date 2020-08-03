@@ -35,6 +35,12 @@ const migrateProject = project => {
     version = "2.0.0";
   }
 
+  if (process.env.NODE_ENV !== "production") {
+    if (version === "2.0.0") {
+      data = migrateFrom120To200Collisions(data);
+    }
+  }
+
   data._version = version;
   return data;
 };
@@ -487,6 +493,15 @@ export const migrateFrom120To200Collisions = data => {
         ? Math.ceil(background.width * background.height)
         : 0;
       const oldCollisions = scene.collisions || [];
+
+      // If collisions already migrated for this scene don't migrate them again
+      if (oldCollisions.length === collisionsSize) {
+        return {
+          ...scene,
+          collisions: oldCollisions
+        }
+      }
+
       const collisions = [];
 
       if (background && oldCollisions.length === (collisionsSize / 8)) {
