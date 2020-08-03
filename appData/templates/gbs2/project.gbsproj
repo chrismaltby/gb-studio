@@ -1657,7 +1657,7 @@
                     "command": "EVENT_CALL_CUSTOM_EVENT",
                     "args": {
                         "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
-                        "__name": "Configure Menu"
+                        "__name": "Init Menu"
                     },
                     "children": {
                         "script": [
@@ -2311,7 +2311,7 @@
                     "command": "EVENT_CALL_CUSTOM_EVENT",
                     "args": {
                         "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
-                        "__name": "Configure Menu"
+                        "__name": "Init Menu"
                     },
                     "children": {
                         "script": [
@@ -3003,7 +3003,7 @@
                     "command": "EVENT_CALL_CUSTOM_EVENT",
                     "args": {
                         "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
-                        "__name": "Configure Menu"
+                        "__name": "Init Menu"
                     },
                     "children": {
                         "script": [
@@ -4914,7 +4914,7 @@
                     "command": "EVENT_CALL_CUSTOM_EVENT",
                     "args": {
                         "customEventId": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
-                        "__name": "Configure Menu"
+                        "__name": "Init Menu"
                     },
                     "children": {
                         "script": [
@@ -6342,7 +6342,7 @@
                     "command": "EVENT_CALL_CUSTOM_EVENT",
                     "args": {
                         "customEventId": "a02c8ee7-1478-4317-80d7-1c3fc9704e8d",
-                        "__name": "Configure Weapons"
+                        "__name": "Init Weapons"
                     },
                     "children": {
                         "script": [
@@ -7066,7 +7066,7 @@
             "id": "bc9f67e9-b6f2-4216-b8b6-63505f3b7118",
             "variables": {},
             "actors": {},
-            "name": "Configure Menu",
+            "name": "Init Menu",
             "description": "Attach Quest Menu to Start Button",
             "script": [
                 {
@@ -7112,7 +7112,7 @@
             "id": "a02c8ee7-1478-4317-80d7-1c3fc9704e8d",
             "variables": {},
             "actors": {},
-            "name": "Configure Weapons",
+            "name": "Init Weapons",
             "script": [
                 {
                     "id": "72f90b54-19db-4794-9cdd-e89647b95af0",
