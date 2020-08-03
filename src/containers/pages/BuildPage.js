@@ -127,7 +127,7 @@ class BuildPage extends Component {
                     id="enableProfile"
                     type="checkbox"
                     checked={profile}
-                    onClick={this.onToggleProfiling}
+                    onChange={this.onToggleProfiling}
                   />{" "}
                   Enable BGB Profiling
                 </label>
