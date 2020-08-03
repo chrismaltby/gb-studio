@@ -265,17 +265,15 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_left = tile_x - 1;
       actors[i].hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
       hit_actor = actors[i].hit_actor;
-      if (!TileAt2x1(tile_left, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+      if (!(TileAt2x1(tile_left, tile_y) & COLLISION_RIGHT) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
       // Move right
     } else if (dir_x == 1) {
       UBYTE tile_right = tile_x + 1;
-      // hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
-      // actors[i].hit_actor = hit_actor;
       actors[i].hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
       hit_actor = actors[i].hit_actor;
-      if (!TileAt2x1(tile_right, tile_y) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+      if (!(TileAt2x1(tile_right, tile_y) & COLLISION_LEFT) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
     }
@@ -284,7 +282,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_up = tile_y - 1;
       actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
       hit_actor = actors[i].hit_actor;
-      if (!TileAt2x1(tile_x, tile_up) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+      if (!(TileAt2x1(tile_x, tile_up) & COLLISION_BOTTOM) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         actors[i].moving = TRUE;
       }
       // Move down
@@ -292,7 +290,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
       UBYTE tile_down = tile_y + 1;
       actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
       hit_actor = actors[i].hit_actor;
-      if (!TileAt2x2(tile_x, tile_down - 1) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
+      if (!(TileAt2x2(tile_x, tile_down - 1) & COLLISION_TOP) && (hit_actor == NO_ACTOR_COLLISON || hit_actor == i)) {
         hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
         if (hit_actor == NO_ACTOR_COLLISON || hit_actor == i) {
           actors[i].moving = TRUE;

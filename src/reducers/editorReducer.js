@@ -53,6 +53,7 @@ import {
   SCROLL_WORLD_THROTTLED,  
   RESIZE_WORLD_VIEW,
   SET_SELECTED_PALETTE,
+  SET_SELECTED_TILE_TYPE,  
   SET_SELECTED_BRUSH,
   SET_SHOW_LAYERS,
   SET_SCRIPT_TAB,
@@ -475,6 +476,11 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         selectedPalette: action.paletteIndex
       }
+    case SET_SELECTED_TILE_TYPE:
+      return {
+        ...state,
+        selectedTileType: action.tileType
+      }      
     case SET_SELECTED_BRUSH:
       return {
         ...state,

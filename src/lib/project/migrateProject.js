@@ -3,6 +3,7 @@ import { indexBy } from "../helpers/array";
 import { mapScenesEvents, mapEvents } from "../helpers/eventSystem";
 import generateRandomWalkScript from "../movement/generateRandomWalkScript";
 import generateRandomLookScript from "../movement/generateRandomLookScript";
+import { COLLISION_ALL } from "../../consts";
 
 const indexById = indexBy("id");
 
@@ -30,7 +31,14 @@ const migrateProject = project => {
     data = migrateFrom120To200Scenes(data);
     data = migrateFrom120To200Actors(data);
     data = migrateFrom120To200Events(data);
+    data = migrateFrom120To200Collisions(data);
     version = "2.0.0";
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    if (version === "2.0.0") {
+      data = migrateFrom120To200Collisions(data);
+    }
   }
 
   data._version = version;
@@ -464,6 +472,58 @@ const migrateFrom120To200Events = data => {
         ...customEvent,
         script: mapEvents(customEvent.script, migrateFrom120To200Event)
       }
+    })
+  };
+};
+
+/*
+ * In version 1.2.0 and below scenes collisions where stored as one bit per tile
+ * since version 2.0.0 these are now stored as a byte per tile allowing single
+ * direction collisions and tile props like ladders. A solid collision is represented
+ * as the value 0xF
+ */
+export const migrateFrom120To200Collisions = data => {
+  const backgroundLookup = indexById(data.backgrounds);
+
+  return {
+    ...data,
+    scenes: data.scenes.map(scene => {
+      const background = backgroundLookup[scene.backgroundId];
+      const collisionsSize = background
+        ? Math.ceil(background.width * background.height)
+        : 0;
+      const oldCollisions = scene.collisions || [];
+
+      // If collisions already migrated for this scene don't migrate them again
+      if (oldCollisions.length === collisionsSize) {
+        return {
+          ...scene,
+          collisions: oldCollisions
+        }
+      }
+
+      const collisions = [];
+
+      if (background && oldCollisions.length === (collisionsSize / 8)) {
+        for (let x = 0; x < background.width; x++) {
+          for (let y = 0; y < background.height; y++) {
+            const i = x + (y * background.width);
+            const byteIndex = i >> 3;
+            const byteOffset = i & 7;
+            const byteMask = 1 << byteOffset;          
+            if(oldCollisions[byteIndex] & byteMask) {
+              collisions[i] = COLLISION_ALL;
+            } else {
+              collisions[i] = 0;
+            }
+          }
+        }
+      }
+
+      return {
+        ...scene,
+        collisions: collisions.slice(0, collisionsSize)
+      };
     })
   };
 };

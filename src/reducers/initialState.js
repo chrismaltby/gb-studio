@@ -1,4 +1,4 @@
-import { TOOL_SELECT, BRUSH_8PX } from "../consts";
+import { TOOL_SELECT, BRUSH_8PX, COLLISION_ALL } from "../consts";
 
 export default {
   tools: {
@@ -42,6 +42,7 @@ export default {
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
+    selectedTileType: COLLISION_ALL,    
     selectedBrush: BRUSH_8PX,
     showLayers: true,
     lastScriptTab: "",

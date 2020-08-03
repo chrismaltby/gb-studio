@@ -6,7 +6,7 @@ import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../librar
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { SceneShape } from "../../reducers/stateShape";
-import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT } from "../../consts";
+import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
 class SceneCursor extends Component {
   constructor() {
@@ -68,6 +68,7 @@ class SceneCursor extends Component {
       tool,
       setTool,
       selectedPalette,
+      selectedTileType,
       selectedBrush,
       addActor,
       addTrigger,
@@ -107,36 +108,46 @@ class SceneCursor extends Component {
       window.addEventListener("mousemove", this.onResizeTrigger);
       window.addEventListener("mouseup", this.onResizeTriggerStop);
     } else if (tool === "collisions") {
-
       if(!this.drawLine || this.startX === undefined || this.startY === undefined) {
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-        this.remove = true;
+        this.drawTile = 0;
+        this.isTileProp = selectedTileType & TILE_PROPS;
+
         // If any tile under brush is currently not filled then
         // paint collisions rather than remove them
         for(let xi=x; xi<x + brushSize; xi++) {
           for(let yi=y; yi<y + brushSize; yi++) {
             const collisionIndex = scene.width * yi + xi;
-            const collisionByteIndex = collisionIndex >> 3;
-            const collisionByteOffset = collisionIndex & 7;
-            const collisionByteMask = 1 << collisionByteOffset;          
-            if(!(scene.collisions[collisionByteIndex] & collisionByteMask)) {
-              this.remove = false; 
+            if (selectedTileType & COLLISION_ALL) {
+              // If drawing collisions replace existing collision if selected is different
+              if ((scene.collisions[collisionIndex] & COLLISION_ALL) !== (selectedTileType & COLLISION_ALL)) {
+                this.drawTile = selectedTileType;
+              }
+            } else if (selectedTileType & TILE_PROPS) {
+              // If drawing props replace but keep collisions
+              const tileProp = selectedTileType & TILE_PROPS;
+              const currentProp = scene.collisions[collisionIndex] & TILE_PROPS;
+              if (currentProp !== tileProp) {
+                this.drawTile = tileProp;
+              } else {
+                this.drawTile = (scene.collisions[collisionIndex] & COLLISION_ALL);
+              }
             }
           }
         }
       }
       if(selectedBrush === BRUSH_FILL) {
-        paintCollisionFill(sceneId, x, y, !this.remove);
+        paintCollisionFill(sceneId, x, y, this.drawTile, this.isTileProp);
       } else {
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintCollisionLine(sceneId, this.startX, this.startY, x, y, !this.remove, brushSize);
+          paintCollisionLine(sceneId, this.startX, this.startY, x, y, this.drawTile, brushSize, this.isTileProp);
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintCollisionTile(sceneId, x, y, !this.remove, brushSize);
+          paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
         }
         window.addEventListener("mousemove", this.onCollisionsMove);
         window.addEventListener("mouseup", this.onCollisionsStop);
@@ -160,19 +171,20 @@ class SceneCursor extends Component {
       }
     } else if (tool === "eraser") {
       if (showCollisions) {
-        this.remove = true;
+        this.drawTile = 0;
+        this.isTileProp = false;
         if(selectedBrush === BRUSH_FILL) {
-          paintCollisionFill(sceneId, x, y, !this.remove);
+          paintCollisionFill(sceneId, x, y, 0, this.isTileProp);
         } else {
           const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
           if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-            paintCollisionLine(sceneId, this.startX, this.startY, x, y, !this.remove, brushSize);
+            paintCollisionLine(sceneId, this.startX, this.startY, x, y, 0, brushSize, this.isTileProp);
             this.startX = x;
             this.startY = y;
           } else {
             this.startX = x;
             this.startY = y;          
-            paintCollisionTile(sceneId, x, y, !this.remove, brushSize);
+            paintCollisionTile(sceneId, x, y, 0, brushSize, this.isTileProp);
           }
           window.addEventListener("mousemove", this.onCollisionsMove);
           window.addEventListener("mouseup", this.onCollisionsStop);
@@ -243,11 +255,11 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, !this.remove, brushSize);        
+        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);        
         this.startX = x1;
         this.startY = y1;
       } else {
-        paintCollisionTile(sceneId, x, y, !this.remove, brushSize);
+        paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
       }
       this.currentX = x;
       this.currentY = y;
@@ -376,7 +388,7 @@ SceneCursor.defaultProps = {
 function mapStateToProps(state, props) {
   const { selected: tool, prefab } = state.tools;
   const { x, y } = state.editor.hover;
-  const { type: editorType, entityId, selectedPalette, selectedBrush, showLayers } = state.editor;
+  const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
   const scenesLookup = getScenesLookup(state);
   const scene = scenesLookup[props.sceneId];
@@ -385,6 +397,7 @@ function mapStateToProps(state, props) {
     y: y || 0,
     tool,
     selectedPalette,
+    selectedTileType,
     selectedBrush,
     prefab,
     editorType,
