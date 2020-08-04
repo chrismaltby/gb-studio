@@ -22,20 +22,17 @@ UBYTE TileAt(UINT16 tx, UINT16 ty) {
 }
 
 UBYTE TileAt2x1(UINT16 tx, UINT16 ty) {
-  UWORD y_offset;
+  UBYTE*  collision_ptr_tmp;
   UBYTE tile;
   // Check tile outside of bounds
   if (tx == MAX_UINT16 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT16) {
     return OUT_OF_BOUNDS;
   }
 
-  y_offset = ty * (UINT16)image_tile_width;
+  collision_ptr_tmp = ty * (UINT16)image_tile_width + tx + collision_ptr;
   
   PUSH_BANK(collision_bank);
-  tile = (UBYTE) * (collision_ptr + y_offset + tx);
-  if (!tile) {
-    tile = (UBYTE) * (collision_ptr + y_offset + (tx + 1U));
-  }
+  tile = (UBYTE) * collision_ptr_tmp | (UBYTE) *(collision_ptr_tmp + 1U);
   POP_BANK;
   return tile;
 }
