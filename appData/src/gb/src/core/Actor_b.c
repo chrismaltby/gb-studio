@@ -189,8 +189,7 @@ void ActivateActor_b(UBYTE i) {
   actors[i].moving = FALSE;
   actors[i].script_control = FALSE;
 
-  if (actors[i].movement_ptr.bank) {
-    // ScriptStartBg(&actors[i].movement_ptr);
+  if (actors[i].movement_ptr.bank && actors[i].enabled) {
     actors[i].movement_ctx = ScriptStartBg(&actors[i].movement_ptr, i);
   } else {
     actors[i].movement_ctx = 0;
