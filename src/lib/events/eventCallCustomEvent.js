@@ -23,7 +23,7 @@ const compile = (input, helpers) => {
     if (!e.args) return;
 
     if (e.args.actorId && e.args.actordId !== "player") {
-      e.args.actorId = input[`$actor[${e.args.actorId}]$`];
+      e.args.actorId = input[`$actor[${e.args.actorId}]$`] || "$self$";
     }
     if (e.args.otherActorId && e.args.otherActorId !== "player") {
       e.args.otherActorId = input[`$actor[${e.args.otherActorId}]$`];
