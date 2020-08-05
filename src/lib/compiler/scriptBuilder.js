@@ -967,7 +967,7 @@ class ScriptBuilder {
     output.push(inputDec(input));
   };
 
-  inputScriptSet = (input, script) => {
+  inputScriptSet = (input, persist, script) => {
     const output = this.output;
     const { compileEvents, banked } = this.options;
 
@@ -983,6 +983,7 @@ class ScriptBuilder {
 
     output.push(cmd(SET_INPUT_SCRIPT));
     output.push(inputDec(input));
+    output.push(persist ? 1 : 0);    
     output.push(bankPtr.bank);
     output.push(hi(bankPtr.offset));
     output.push(lo(bankPtr.offset));

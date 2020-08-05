@@ -127,7 +127,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_StackPop_b, 0},            // 0x49
     {Script_SceneResetStack_b, 0},     // 0x4A
     {Script_ScenePopAllState_b, 1},    // 0x4B
-    {Script_SetInputScript_b, 4},      // 0x4C
+    {Script_SetInputScript_b, 5},      // 0x4C
     {Script_RemoveInputScript_b, 1},   // 0x4D
     {Script_ActorSetFrame_b, 1},       // 0x4E
     {Script_ActorSetFlip_b, 1},        // 0x4F
@@ -1934,14 +1934,20 @@ void Script_SetInputScript_b() {
 
   input = script_cmd_args[0];
 
+  if (script_cmd_args[1]) {
+    SET_BIT_MASK(input_script_persist, input);
+  } else {
+    UNSET_BIT_MASK(input_script_persist, input);
+  }
+
   index = 0;
   while (!(input & 1) && input != 0) {
     index += 1;
     input = input >> 1;
   }
 
-  input_script_ptrs[index].bank = script_cmd_args[1];
-  input_script_ptrs[index].offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  input_script_ptrs[index].bank = script_cmd_args[2];
+  input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
 }
 
 /*
