@@ -60,6 +60,9 @@ void Update_Adventure() {
     player.dir.x = 0;
   }
 
+  backup_dir.x = player.dir.x;
+  backup_dir.y = player.dir.y;
+
   tile_x = (player.pos.x + 4 + player.dir.x) >> 3; // Add Left right Bias for Moving=True
   tile_y = (player.pos.y + 7) >> 3;
 
@@ -106,6 +109,16 @@ void Update_Adventure() {
     ) {
       player.pos.y = (tile_y << 3);
       player.dir.y = 0;
+    }
+  }
+
+  if (player.moving)
+  {
+    if (!(player.dir.x > 0 | player.dir.x < 0 | player.dir.y > 0 | player.dir.y < 0))
+    {
+      player.moving = FALSE;
+      player.dir.x = backup_dir.x;
+      player.dir.y = backup_dir.y;
     }
   }
 
