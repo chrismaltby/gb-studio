@@ -13,7 +13,7 @@
 #include "Camera.h"
 #include "rand.h"
 
-#define ADVENTURE_CAMERA_DEADZONE 24
+#define ADVENTURE_CAMERA_DEADZONE 8
 
 void Start_Adventure() {
   // Set camera to follow player
