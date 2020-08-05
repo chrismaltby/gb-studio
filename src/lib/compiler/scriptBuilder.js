@@ -93,7 +93,8 @@ import {
   PALETTE_SET_BACKGROUND,
   PALETTE_SET_ACTOR,
   PALETTE_SET_UI,
-  ACTOR_STOP_UPDATE
+  ACTOR_STOP_UPDATE,
+  ACTOR_SET_ANIMATE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -273,6 +274,12 @@ class ScriptBuilder {
     output.push(cmd(ACTOR_SET_COLLISIONS));
     output.push(enabled ? 1 : 0);
   };
+
+  actorSetAnimate = (enabled) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_ANIMATE));
+    output.push(enabled ? 1 : 0);
+  }
 
   actorSetSprite = (spriteSheetId) => {
     const output = this.output;

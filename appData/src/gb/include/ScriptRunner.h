@@ -199,5 +199,6 @@ void Script_PalSetBackground_b();
 void Script_PalSetSprite_b();
 void Script_PalSetUI_b();
 void Script_ActorStopUpdate_b();
+void Script_ActorSetAnimate_b();
 
 #endif

@@ -155,6 +155,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_PalSetSprite_b, 2},        // 0x65
     {Script_PalSetUI_b, 2},            // 0x66
     {Script_ActorStopUpdate_b, 0},     // 0x67
+    {Script_ActorSetAnimate_b, 1},     // 0x68
 };
 
 void ScriptTimerUpdate_b() {
@@ -2190,4 +2191,8 @@ void Script_ActorStopUpdate_b() {
   if (actors[script_actor].movement_ctx) {
     ScriptCtxPoolReturn(actors[script_actor].movement_ctx, script_actor);
   }
+}
+
+void Script_ActorSetAnimate_b() {
+  actors[script_actor].animate = script_cmd_args[0];
 }

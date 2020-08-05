@@ -102,6 +102,7 @@ export const PALETTE_SET_BACKGROUND = "PALETTE_SET_BACKGROUND";
 export const PALETTE_SET_ACTOR = "PALETTE_SET_ACTOR";
 export const PALETTE_SET_UI = "PALETTE_SET_UI";
 export const ACTOR_STOP_UPDATE = "ACTOR_STOP_UPDATE";
+export const ACTOR_SET_ANIMATE = "ACTOR_SET_ANIMATE";
 
 export const scriptCommands = [
   END,
@@ -207,7 +208,8 @@ export const scriptCommands = [
   PALETTE_SET_BACKGROUND,
   PALETTE_SET_ACTOR,
   PALETTE_SET_UI,
-  ACTOR_STOP_UPDATE
+  ACTOR_STOP_UPDATE,
+  ACTOR_SET_ANIMATE
 ];
 
 export const commandIndex = key => {

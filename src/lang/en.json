@@ -365,6 +365,7 @@
   "EVENT_PALETTE_SET_BACKGROUND": "Palette: Set Background Palette",
   "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   "EVENT_ACTOR_STOP_UPDATE": "Actor: Stop \"On Update\" Script",
+  "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
   
   "// 10": "Menu -----------------------------------------------------",
 
