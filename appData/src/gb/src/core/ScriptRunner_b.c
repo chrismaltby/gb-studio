@@ -568,10 +568,25 @@ void Script_CameraLock_b() {
   } else {
     camera_pos.x = camera_dest.x;
     camera_pos.y = camera_dest.y;
+    camera_settings = camera_settings | CAMERA_LOCK_FLAG;
   }
 }
 
 void ScriptHelper_ClampCamDest() {
+  // Clamp Camera Current X
+  if (U_LESS_THAN(image_width - SCREEN_WIDTH_HALF, camera_pos.x)) {
+    camera_pos.x = image_width - SCREEN_WIDTH_HALF;
+  } else if (U_LESS_THAN(camera_pos.x, SCREEN_WIDTH_HALF)) {
+    camera_pos.x = SCREEN_WIDTH_HALF;
+  }
+
+  // Clamp Camera Current Y
+  if (U_LESS_THAN(image_height - SCREEN_HEIGHT_HALF, camera_pos.y)) {
+    camera_pos.y = image_height - SCREEN_HEIGHT_HALF;
+  } else if (U_LESS_THAN(camera_pos.y, SCREEN_HEIGHT_HALF)) {
+    camera_pos.y = SCREEN_HEIGHT_HALF;
+  }
+
   // Clamp Camera Destination
   if (Gt16(camera_dest.x, image_width - SCREEN_WIDTH_HALF)) {
     camera_dest.x = image_width - SCREEN_WIDTH_HALF;

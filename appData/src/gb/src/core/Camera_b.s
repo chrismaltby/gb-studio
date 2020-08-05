@@ -4,6 +4,12 @@
 
 _UpdateCamera::
 
+        ld hl, #_camera_settings
+        ld a, (hl)
+        bit 4, a
+        jr nz, handle_x
+        ret
+
     handle_x:
 
     ; Load player x into de
