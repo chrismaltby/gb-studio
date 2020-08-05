@@ -154,6 +154,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_PalSetBackground_b, 2},    // 0x64
     {Script_PalSetSprite_b, 2},        // 0x65
     {Script_PalSetUI_b, 2},            // 0x66
+    {Script_ActorStopUpdate_b, 0},     // 0x67
 };
 
 void ScriptTimerUpdate_b() {
@@ -2182,4 +2183,11 @@ void Script_PalSetSprite_b() {
 void Script_PalSetUI_b() {
   LoadUIPalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
   ApplyPaletteChange();
+}
+
+void Script_ActorStopUpdate_b() {
+  actors[script_actor].moving = FALSE;
+  if (actors[script_actor].movement_ctx) {
+    ScriptCtxPoolReturn(actors[script_actor].movement_ctx, script_actor);
+  }
 }

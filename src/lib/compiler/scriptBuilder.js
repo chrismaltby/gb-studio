@@ -92,7 +92,8 @@ import {
   WEAPON_ATTACK,
   PALETTE_SET_BACKGROUND,
   PALETTE_SET_ACTOR,
-  PALETTE_SET_UI
+  PALETTE_SET_UI,
+  ACTOR_STOP_UPDATE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -261,6 +262,11 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(ACTOR_HIDE));
   };
+
+  actorStopUpdate = () => {
+    const output = this.output;
+    output.push(cmd(ACTOR_STOP_UPDATE));
+  };  
 
   actorSetCollisions = (enabled) => {
     const output = this.output;
