@@ -717,40 +717,51 @@ const editCustomEvent = (state, action) => {
   return editEntity(newState, "customEvents", action.id, patch);
 };
 
-const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
+const patchEntityScripts = (state, type, entities, patchFn) => {
   let newState = state;
-
   Object.values(entities).forEach(entity => {
-    if (!entity || !entity.script) {
+    if (!entity ||
+      (!entity.script && !entity.startScript && !entity.updateScript && !entity.playerHit1Script && !entity.playerHit2Script && !entity.playerHit3Script && !entity.hit1Script && !entity.hit2Script && !entity.hit3Script)) {
       return;
     }
     const patchEntity = {
       ...entity,
-      script: mapEvents(entity.script, event => {
-        if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-          return event;
-        }
-        if (event.args.customEventId !== id) {
-          return event;
-        }
-        return {
-          ...event,
-          args: {
-            ...event.args,
-            __name: name
-          }
-        };
-      })
+      ...entity.script && { script: mapEvents(entity.script, patchFn) },
+      ...entity.startScript && { startScript: mapEvents(entity.startScript, patchFn) },
+      ...entity.updateScript && { updateScript: mapEvents(entity.updateScript, patchFn) },
+      ...entity.playerHit1Script && { playerHit1Script: mapEvents(entity.playerHit1Script, patchFn) },
+      ...entity.playerHit2Script && { playerHit2Script: mapEvents(entity.playerHit2Script, patchFn) },
+      ...entity.playerHit3Script && { playerHit3Script: mapEvents(entity.playerHit3Script, patchFn) },
+      ...entity.hit1Script && { hit1Script: mapEvents(entity.hit1Script, patchFn) },
+      ...entity.hit2Script && { hit2Script: mapEvents(entity.hit2Script, patchFn) },
+      ...entity.hit3Script && { hit3Script: mapEvents(entity.hit3Script, patchFn) }
     };
     newState = editEntity(newState, type, entity.id, patchEntity);
   });
-
   return newState;
+};
+
+const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
+  const patchCustomEventName = event => {
+    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+      return event;
+    }
+    if (event.args.customEventId !== id) {
+      return event;
+    }
+    return {
+      ...event,
+      args: {
+        ...event.args,
+        __name: name
+      }
+    };
+  };
+  return patchEntityScripts(state, type, entities, patchCustomEventName);
 };
 
 const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
   const { script, variables, actors } = patch;
-  let newState = state;
   const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
   const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
   const patchCustomEventScript = event => {
@@ -776,18 +787,7 @@ const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
       }
     };
   };
-  Object.values(entities).forEach(entity => {
-    if (!entity || (!entity.script && !entity.startScript)) {
-      return;
-    }
-    const patchEntity = {
-      ...entity,
-      ...entity.script && { script: mapEvents(entity.script, patchCustomEventScript) },
-      ...entity.startScript && { startScript: mapEvents(entity.startScript, patchCustomEventScript) }   
-    };
-    newState = editEntity(newState, type, entity.id, patchEntity);
-  });
-  return newState;
+  return patchEntityScripts(state, type, entities, patchCustomEventScript);
 };
 
 const removeCustomEvent = (state, action) => {

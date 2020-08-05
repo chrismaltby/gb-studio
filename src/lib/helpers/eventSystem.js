@@ -116,7 +116,6 @@ const normalizedWalkSceneEvents = (
   scene.actors.forEach(actorId => {
     const actor = actorsLookup[actorId];
     walkEvents(actor.script, callback);
-    walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
     walkEvents(actor.updateScript, callback);
     walkEvents(actor.hit1Script, callback);
