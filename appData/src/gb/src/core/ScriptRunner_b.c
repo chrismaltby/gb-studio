@@ -2217,12 +2217,12 @@ void Script_PalSetUI_b() {
 }
 
 void Script_ActorStopUpdate_b() {
-  actors[script_actor].moving = FALSE;
-  if (actors[script_actor].movement_ctx) {
-    ScriptCtxPoolReturn(actors[script_actor].movement_ctx, script_actor);
+  actors[main_script_ctx.script_actor].moving = FALSE;
+  if (actors[main_script_ctx.script_actor].movement_ctx) {
+    ScriptCtxPoolReturn(actors[main_script_ctx.script_actor].movement_ctx, main_script_ctx.script_actor);
   }
 }
 
 void Script_ActorSetAnimate_b() {
-  actors[script_actor].animate = script_cmd_args[0];
+  actors[main_script_ctx.script_actor].animate = script_cmd_args[0];
 }
