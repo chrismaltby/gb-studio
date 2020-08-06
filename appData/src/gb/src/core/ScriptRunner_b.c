@@ -122,7 +122,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_StackPop_b, 0},            // 0x49
     {Script_SceneResetStack_b, 0},     // 0x4A
     {Script_ScenePopAllState_b, 1},    // 0x4B
-    {Script_SetInputScript_b, 4},      // 0x4C
+    {Script_SetInputScript_b, 5},      // 0x4C
     {Script_RemoveInputScript_b, 1},   // 0x4D
     {Script_ActorSetFrame_b, 1},       // 0x4E
     {Script_ActorSetFlip_b, 1},        // 0x4F
@@ -149,6 +149,8 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_PalSetBackground_b, 2},    // 0x64
     {Script_PalSetSprite_b, 2},        // 0x65
     {Script_PalSetUI_b, 2},            // 0x66
+    {Script_ActorStopUpdate_b, 0},     // 0x67
+    {Script_ActorSetAnimate_b, 1},     // 0x68
 };
 
 void ScriptTimerUpdate_b() {
@@ -565,10 +567,25 @@ void Script_CameraLock_b() {
   } else {
     camera_pos.x = camera_dest.x;
     camera_pos.y = camera_dest.y;
+    camera_settings = camera_settings | CAMERA_LOCK_FLAG;
   }
 }
 
 void ScriptHelper_ClampCamDest() {
+  // Clamp Camera Current X
+  if (U_LESS_THAN(image_width - SCREEN_WIDTH_HALF, camera_pos.x)) {
+    camera_pos.x = image_width - SCREEN_WIDTH_HALF;
+  } else if (U_LESS_THAN(camera_pos.x, SCREEN_WIDTH_HALF)) {
+    camera_pos.x = SCREEN_WIDTH_HALF;
+  }
+
+  // Clamp Camera Current Y
+  if (U_LESS_THAN(image_height - SCREEN_HEIGHT_HALF, camera_pos.y)) {
+    camera_pos.y = image_height - SCREEN_HEIGHT_HALF;
+  } else if (U_LESS_THAN(camera_pos.y, SCREEN_HEIGHT_HALF)) {
+    camera_pos.y = SCREEN_HEIGHT_HALF;
+  }
+
   // Clamp Camera Destination
   if (Gt16(camera_dest.x, image_width - SCREEN_WIDTH_HALF)) {
     camera_dest.x = image_width - SCREEN_WIDTH_HALF;
@@ -1941,14 +1958,20 @@ void Script_SetInputScript_b() {
 
   input = script_cmd_args[0];
 
+  if (script_cmd_args[1]) {
+    SET_BIT_MASK(input_script_persist, input);
+  } else {
+    UNSET_BIT_MASK(input_script_persist, input);
+  }
+
   index = 0;
   while (!(input & 1) && input != 0) {
     index += 1;
     input = input >> 1;
   }
 
-  input_script_ptrs[index].bank = script_cmd_args[1];
-  input_script_ptrs[index].offset = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  input_script_ptrs[index].bank = script_cmd_args[2];
+  input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
 }
 
 /*
@@ -2191,4 +2214,15 @@ void Script_PalSetSprite_b() {
 void Script_PalSetUI_b() {
   LoadUIPalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
   ApplyPaletteChange();
+}
+
+void Script_ActorStopUpdate_b() {
+  actors[script_actor].moving = FALSE;
+  if (actors[script_actor].movement_ctx) {
+    ScriptCtxPoolReturn(actors[script_actor].movement_ctx, script_actor);
+  }
+}
+
+void Script_ActorSetAnimate_b() {
+  actors[script_actor].animate = script_cmd_args[0];
 }

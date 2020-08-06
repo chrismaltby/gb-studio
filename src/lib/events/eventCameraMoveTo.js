@@ -8,7 +8,7 @@ const fields = [
     label: l10n("FIELD_X"),
     type: "number",
     min: 0,
-    max: 12,
+    max: 255,
     width: "50%",
     defaultValue: 0
   },
@@ -17,7 +17,7 @@ const fields = [
     label: l10n("FIELD_Y"),
     type: "number",
     min: 0,
-    max: 14,
+    max: 255,
     width: "50%",
     defaultValue: 0
   },

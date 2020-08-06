@@ -26,7 +26,7 @@ void SeedRand();
 
 #define SET_BIT(N, POS) N |= 1 << POS
 #define UNSET_BIT(N, POS) N &= ~(1 << POS)
-#define GET_BIT(N, POS) (1 & DespRight(N, POS))
+#define GET_BIT(N, POS) ((N & (1 << POS)) != 0)
 
 #define SET_BIT_MASK(N, MASK) N |= MASK
 #define UNSET_BIT_MASK(N, MASK) N &= ~MASK

@@ -109,8 +109,19 @@ const normalizedWalkSceneEvents = (
   callback
 ) => {
   walkEvents(scene.script, callback);
+  walkEvents(scene.playerHit1Script, callback);
+  walkEvents(scene.playerHit2Script, callback);
+  walkEvents(scene.playerHit3Script, callback);
+
   scene.actors.forEach(actorId => {
-    walkEvents(actorsLookup[actorId].script, callback);
+    const actor = actorsLookup[actorId];
+    walkEvents(actor.script, callback);
+    walkEvents(actor.script, callback);
+    walkEvents(actor.startScript, callback);
+    walkEvents(actor.updateScript, callback);
+    walkEvents(actor.hit1Script, callback);
+    walkEvents(actor.hit2Script, callback);
+    walkEvents(actor.hit3Script, callback);
   });
   scene.triggers.forEach(triggerId => {
     walkEvents(triggersLookup[triggerId].script, callback);

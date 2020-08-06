@@ -10,6 +10,21 @@ const fields = [
     defaultValue: "b"
   },
   {
+    key: "persist",
+    label: l10n("FIELD_PERSIST_BETWEEN_SCENES"),
+    type: "checkbox",
+    defaultValue: false
+  },
+  {
+    label: l10n("FIELD_PERSIST_BETWEEN_SCENES_WARNING"),
+    conditions: [
+      {
+        key: "persist",
+        eq: true
+      }
+    ]
+  },  
+  {
     key: "true",
     type: "events"
   }
@@ -17,7 +32,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { inputScriptSet } = helpers;
-  inputScriptSet(input.input, input.true);
+  inputScriptSet(input.input, input.persist, input.true);
 };
 
 module.exports = {

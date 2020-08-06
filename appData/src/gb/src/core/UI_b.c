@@ -276,15 +276,16 @@ void UIShowText_b() {
     UISetPos(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y);
     UIMoveTo(MENU_LAYOUT_INITIAL_X, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   } else {
-    
     text_num_lines = MIN(tmp_text_lines[0], 4);
-    
     UIDrawDialogueFrame(text_num_lines);
     UISetPos(0, MENU_CLOSED_Y);
     UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
 
-  
+  // If draw set to instant start drawing characters straight away
+  if (text_draw_speed == 0) {
+    UIDrawTextBufferChar_b();
+  }
 
   text_drawn = FALSE;
   text_x = 0;
@@ -373,9 +374,6 @@ void UIDrawTextBufferChar_b() {
     }
   } else {
     text_drawn = TRUE;
-    // restore the user selected text draw speed as it
-    // might have been override in UIShowMenu
-    text_draw_speed = tmp_text_draw_speed;
   }
 }
 
@@ -440,6 +438,9 @@ void UIShowMenu_b(UWORD flag_index,
                   UWORD bank_offset,
                   UBYTE layout,
                   UBYTE cancel_config) {
+
+  UBYTE tmp_text_draw_speed;
+
   menu_index = 0;
   menu_flag = flag_index;
   menu_enabled = TRUE;
@@ -448,8 +449,12 @@ void UIShowMenu_b(UWORD flag_index,
   menu_layout = layout;
   tmp_text_draw_speed = text_draw_speed;
   text_draw_speed = 0;
+
   UIShowText(bank, bank_offset);
+
+  text_draw_speed = tmp_text_draw_speed;
   menu_num_options = tmp_text_lines[0];
+
   UIDrawMenuCursor();
 }
 

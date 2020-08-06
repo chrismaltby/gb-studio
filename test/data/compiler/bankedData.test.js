@@ -106,11 +106,11 @@ test("Should construct C data from input", async () => {
   banked.push([0]);
   banked.push([1, 2]);
   expect(banked.exportCData()).toEqual([
-    `#pragma bank=${MIN_DATA_BANK}\n\n${cIntArray(
+    `#pragma bank ${MIN_DATA_BANK}\n\n${cIntArray(
       `bank_${MIN_DATA_BANK}_data`,
       [0]
     )}\n`,
-    `#pragma bank=${MIN_DATA_BANK + 1}\n\n${cIntArray(
+    `#pragma bank ${MIN_DATA_BANK + 1}\n\n${cIntArray(
       `bank_${MIN_DATA_BANK + 1}_data`,
       [1, 2]
     )}\n`
@@ -122,8 +122,8 @@ test("Should construct C data from input with offset", async () => {
   banked.push([0]);
   banked.push([1, 2]);
   expect(banked.exportCData()).toEqual([
-    `#pragma bank=100\n\n${cIntArray("bank_100_data", [0])}\n`,
-    `#pragma bank=101\n\n${cIntArray("bank_101_data", [1, 2])}\n`
+    `#pragma bank 100\n\n${cIntArray("bank_100_data", [0])}\n`,
+    `#pragma bank 101\n\n${cIntArray("bank_101_data", [1, 2])}\n`
   ]);
 });
 

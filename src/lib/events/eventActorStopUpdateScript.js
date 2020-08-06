@@ -1,22 +1,17 @@
-const id = "EVENT_ACTOR_SET_MOVEMENT_SPEED";
+const id = "EVENT_ACTOR_STOP_UPDATE";
 
 const fields = [
   {
     key: "actorId",
     type: "actor",
     defaultValue: "$self$"
-  },
-  {
-    key: "speed",
-    type: "moveSpeed",
-    defaultValue: "1"
   }
 ];
 
 const compile = (input, helpers) => {
-  const { actorSetActive, actorSetMovementSpeed } = helpers;
+  const { actorSetActive, actorStopUpdate } = helpers;
   actorSetActive(input.actorId);
-  actorSetMovementSpeed(input.speed);
+  actorStopUpdate();
 };
 
 module.exports = {

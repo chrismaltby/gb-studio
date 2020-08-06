@@ -59,7 +59,7 @@ import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, TILE_PROPS, COLLISION_ALL } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -481,13 +481,13 @@ const editScene = (state, action) => {
       newTileColors = otherScene.tileColors;
     } else if (oldBackground.width == background.width){
       const collisionsSize = Math.ceil(
-        (background.width * background.height) / 8
+        (background.width * background.height)
       );
       newCollisions = (scene.collisions.slice(0,collisionsSize));
       newTileColors = [];
     } else {
       const collisionsSize = Math.ceil(
-        (background.width * background.height) / 8
+        (background.width * background.height)
       );
       newCollisions = [];
       newTileColors = [];
@@ -1053,12 +1053,13 @@ const removeTriggerAt = (state, action) => {
 const paintCollision = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
   const background = state.entities.backgrounds[scene.backgroundId];
+  const isTileProp = action.isTileProp;
 
   if (!background) {
     return state;
   }
 
-  const collisionsSize = Math.ceil((background.width * background.height) / 8);
+  const collisionsSize = Math.ceil((background.width * background.height));
   const collisions = scene.collisions.slice(0, collisionsSize);
 
   if (collisions.length < collisionsSize) {
@@ -1068,23 +1069,21 @@ const paintCollision = (state, action) => {
   }
 
   const getValue = (x, y) => {
-    const collisionIndex = background.width * y + x;
-    const collisionByteIndex = collisionIndex >> 3;
-    const collisionByteOffset = collisionIndex & 7;
-    const collisionByteMask = 1 << collisionByteOffset;
-    return !!(collisions[collisionByteIndex] & collisionByteMask);
+    const tileIndex = (background.width * y) + x;
+    return collisions[tileIndex];
   }
 
-  const setValue = (x, y, value) => {   
-    const collisionIndex = background.width * y + x;
-    const collisionByteIndex = collisionIndex >> 3;
-    const collisionByteOffset = collisionIndex & 7;
-    const collisionByteMask = 1 << collisionByteOffset;
-    if(value) {
-      collisions[collisionByteIndex] |= collisionByteMask;
-    } else {
-      collisions[collisionByteIndex] &= ~collisionByteMask;
+  const setValue = (x, y, value) => {
+    const tileIndex = (background.width * y) + x;
+    let newValue = value;
+    if (isTileProp) {
+      // If is prop keep previous collision value
+      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
+    } else if (value !== 0) {
+      // If is collision keep prop unless erasing
+      newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
     }
+    collisions[tileIndex] = newValue;
   }
 
   const isInBounds = (x, y) => {

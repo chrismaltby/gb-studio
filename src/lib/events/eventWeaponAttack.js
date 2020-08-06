@@ -13,7 +13,7 @@ const fields = [
     key: "actorId",
     type: "actor",
     label: l10n("FIELD_SOURCE"),
-    defaultValue: "player",
+    defaultValue: "$self$",
   },  
   {
     key: "collisionGroup",

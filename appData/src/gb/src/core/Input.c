@@ -8,6 +8,7 @@ UBYTE recent_joy;
 UBYTE await_input;
 UBYTE input_wait;
 BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
+UBYTE input_script_persist;
 
 void HandleInputScripts() {
   UBYTE input_index, input_joy;
@@ -37,6 +38,8 @@ void HandleInputScripts() {
 void RemoveInputScripts() {
   UBYTE i;
   for (i = 0; i != 8; ++i) {
-    input_script_ptrs[i].bank = 0;
+    if (!GET_BIT(input_script_persist, i)) {
+      input_script_ptrs[i].bank = 0;
+    }
   }
 }

@@ -19,6 +19,12 @@ import {
   BRUSH_16PX,
   BRUSH_FILL,
   DMG_PALETTE,
+  COLLISION_TOP,
+  COLLISION_BOTTOM,
+  COLLISION_LEFT,
+  COLLISION_RIGHT,
+  COLLISION_ALL,
+  TILE_PROP_LADDER
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
 import {
@@ -35,6 +41,33 @@ import { getCachedObject } from "../../lib/helpers/cache";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
+const tileTypes = [{
+  key: "solid",
+  name: "Solid",
+  flag: COLLISION_ALL,
+},{
+  key: "top",
+  name: "Collision Top",
+  flag: COLLISION_TOP,
+},{
+  key: "bottom", 
+  name: "Collision Bottom",
+  flag: COLLISION_BOTTOM,
+},{
+  key: "left",
+  name: "Collision Left",
+  flag: COLLISION_LEFT,
+},{
+  key: "right",
+  name: "Collision Right",
+  flag: COLLISION_RIGHT,
+},{
+  key: "ladder",
+  name: "Ladder",
+  flag: TILE_PROP_LADDER
+}];
+
+const collisionDirectionFlags = [COLLISION_TOP, COLLISION_BOTTOM, COLLISION_LEFT, COLLISION_RIGHT];
 
 class BrushToolbar extends Component {
   constructor(props) {
@@ -96,9 +129,24 @@ class BrushToolbar extends Component {
     setSelectedBrush(brush);
   };
 
-  setSelectedPalette = (paletteIndex) => (e) => {
-    const { setSelectedPalette } = this.props;
-    setSelectedPalette(paletteIndex);
+  setSelectedPalette = (index) => (e) => {
+    const { setSelectedPalette, setSelectedTileType, showPalettes, showTileTypes } = this.props;
+    if(showPalettes){
+      setSelectedPalette(index);
+    }
+    if (showTileTypes && tileTypes[index]) {
+      const { selectedTileType } = this.props;
+
+      if (e.shiftKey && collisionDirectionFlags.includes(tileTypes[index].flag)) {
+        if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
+          setSelectedTileType(selectedTileType & COLLISION_ALL & ~tileTypes[index].flag);
+        } else {
+          setSelectedTileType(selectedTileType & COLLISION_ALL | tileTypes[index].flag);
+        }
+      } else {
+        setSelectedTileType(tileTypes[index].flag);
+      }
+    }
   };
 
   startReplacePalette = (paletteIndex) => (e) => {
@@ -151,9 +199,11 @@ class BrushToolbar extends Component {
   render() {
     const {
       selectedPalette,
+      selectedTileType,
       selectedBrush,
       visible,
       showPalettes,
+      showTileTypes,
       showLayers,
       palettes,
       setSection,
@@ -214,6 +264,42 @@ class BrushToolbar extends Component {
               </div>
             ))}
           {showPalettes && <div className="BrushToolbar__Divider" />}
+          {showTileTypes &&
+            <>
+              {tileTypes.slice(0, 5).map((tileType, tileTypeIndex) => (
+                <div
+                  key={tileType.name}
+                  onClick={this.setSelectedPalette(tileTypeIndex)}
+                  className={cx("BrushToolbar__Item", {
+                    "BrushToolbar__Item--Selected":
+                    tileType.flag === COLLISION_ALL
+                      ? selectedTileType === tileType.flag
+                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                  })}
+                  title={`${tileType.name} (${tileTypeIndex + 1})`}
+                >
+                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                </div>
+              ))}
+              <div className="BrushToolbar__Divider" />
+              {tileTypes.slice(5).map((tileType, tileTypeIndex) => (
+                <div
+                  key={tileType.name}
+                  onClick={this.setSelectedPalette(tileTypeIndex + 5)}
+                  className={cx("BrushToolbar__Item", {
+                    "BrushToolbar__Item--Selected":
+                    tileType.flag === COLLISION_ALL
+                      ? selectedTileType === tileType.flag
+                      : selectedTileType !== COLLISION_ALL && selectedTileType & tileType.flag,
+                  })}
+                  title={`${tileType.name} (${tileTypeIndex + 5 + 1})`}
+                >
+                  <div className={cx("BrushToolbar__Tile", `BrushToolbar__Tile--${tileType.key}`)} />
+                </div>
+              ))}   
+              <div className="BrushToolbar__Divider" />
+            </>
+          }  
           <div
             onClick={this.toggleShowLayers}
             className={cx("BrushToolbar__Item", {
@@ -276,9 +362,12 @@ BrushToolbar.propTypes = {
     .isRequired,
   showLayers: PropTypes.bool.isRequired,
   showPalettes: PropTypes.bool.isRequired,
+  showTileTypes: PropTypes.bool.isRequired,
   selectedPalette: PropTypes.number.isRequired,
+  selectedTileType: PropTypes.number.isRequired,
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
+  setSelectedTileType: PropTypes.func.isRequired,
   setSelectedBrush: PropTypes.func.isRequired,
   setShowLayers: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
@@ -295,10 +384,11 @@ BrushToolbar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { selectedPalette, selectedBrush, showLayers } = state.editor;
+  const { selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const selectedTool = state.tools.selected;
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
+  const showTileTypes = selectedTool === TOOL_COLLISIONS;
 
   const settings = getSettings(state);
   const palettesLookup = getPalettesLookup(state);
@@ -334,9 +424,11 @@ function mapStateToProps(state) {
   
   return {
     selectedPalette,
+    selectedTileType,
     selectedBrush,
     visible,
     showPalettes,
+    showTileTypes,
     showLayers,
     palettes,
     sceneId,
@@ -348,6 +440,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setSelectedPalette: actions.setSelectedPalette,
+  setSelectedTileType: actions.setSelectedTileType,
   setSelectedBrush: actions.setSelectedBrush,
   setShowLayers: actions.setShowLayers,
   setSection: actions.setSection,

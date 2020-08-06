@@ -43,7 +43,6 @@ UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
 UBYTE tmp_text_in_speed = 1;
 UBYTE tmp_text_out_speed = 1;
-UBYTE tmp_text_draw_speed = 1;
 UBYTE text_num_lines = 0;
 
 UBYTE avatar_enabled = 0;

@@ -74,6 +74,7 @@ extern UBYTE last_joy;
 extern UBYTE recent_joy;
 extern UBYTE await_input;
 extern BankPtr input_script_ptrs[NUM_INPUTS];
+extern UBYTE input_script_persist;
 
 void HandleInputScripts();
 void RemoveInputScripts();

@@ -40,6 +40,14 @@ export const SPRITE_TYPE_ACTOR = "actor";
 export const SPRITE_TYPE_ACTOR_ANIMATED = "actor_animated";
 export const SPRITE_TYPE_ANIMATED = "animated";
 
+export const COLLISION_TOP = 0x1;
+export const COLLISION_BOTTOM = 0x2;
+export const COLLISION_LEFT = 0x4;
+export const COLLISION_RIGHT = 0x8;
+export const COLLISION_ALL = 0xF;
+export const TILE_PROP_LADDER = 0x10;
+export const TILE_PROPS = 0xF0;
+
 export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",

@@ -5,6 +5,13 @@
 
 #define OUT_OF_BOUNDS 255
 
+#define COLLISION_TOP 0x1
+#define COLLISION_BOTTOM 0x2
+#define COLLISION_LEFT 0x4
+#define COLLISION_RIGHT 0x8
+#define COLLISION_ALL 0xF
+#define TILE_PROP_LADDER 0x10
+
 /**
  * Return collision tile value at given tile x,y coordinate.
  *

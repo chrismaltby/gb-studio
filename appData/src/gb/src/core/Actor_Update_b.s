@@ -154,7 +154,7 @@ _UpdateActors::
         ld d, (hl)
 
     ; Load scroll x in hl
-        ld hl, #(_scroll_x)
+        ld hl, #(_draw_scroll_x)
         ld a, (hl+)
         ld h, (hl)
         ld l, a
@@ -466,22 +466,32 @@ _UpdateActors::
         cp a, #7
         jp nz, next_actor
     
-    ; If is moving
+    ; If is animating
+        pop hl
+        push hl    
+        ld a, #.ANIMATE_OFFSET
+        _add_a h, l
+        ld a, (hl) 
+        cp a, #0
+        jr nz, check_anim_speed
+
+    ; Or if is moving
         pop hl
         push hl     
         ld a, #.MOVING_OFFSET
         _add_a h, l
         ld a, (hl) 
         cp a, #0
-        jr nz, check_anim_speed
+        jr z, not_animating
 
-    ; Or if is animating
-        ld a, #(.ANIMATE_OFFSET - .MOVING_OFFSET)
+    ; And is not static
+        ld a, #(.SPRITE_TYPE_OFFSET - .MOVING_OFFSET)
         _add_a h, l
         ld a, (hl) 
         cp a, #0
-        jr nz, check_anim_speed
+        jr nz, check_anim_speed        
 
+    not_animating:
     ; Else not animating right now so skip
         jp next_actor
 

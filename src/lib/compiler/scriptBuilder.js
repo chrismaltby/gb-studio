@@ -92,7 +92,9 @@ import {
   WEAPON_ATTACK,
   PALETTE_SET_BACKGROUND,
   PALETTE_SET_ACTOR,
-  PALETTE_SET_UI
+  PALETTE_SET_UI,
+  ACTOR_STOP_UPDATE,
+  ACTOR_SET_ANIMATE
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -262,11 +264,22 @@ class ScriptBuilder {
     output.push(cmd(ACTOR_HIDE));
   };
 
+  actorStopUpdate = () => {
+    const output = this.output;
+    output.push(cmd(ACTOR_STOP_UPDATE));
+  };  
+
   actorSetCollisions = (enabled) => {
     const output = this.output;
     output.push(cmd(ACTOR_SET_COLLISIONS));
     output.push(enabled ? 1 : 0);
   };
+
+  actorSetAnimate = (enabled) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_SET_ANIMATE));
+    output.push(enabled ? 1 : 0);
+  }
 
   actorSetSprite = (spriteSheetId) => {
     const output = this.output;
@@ -338,7 +351,7 @@ class ScriptBuilder {
   paletteSetBackground = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_BACKGROUND));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
@@ -347,7 +360,7 @@ class ScriptBuilder {
   paletteSetActor = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_ACTOR));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
@@ -356,7 +369,7 @@ class ScriptBuilder {
   paletteSetUI = (eventId) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
-    const paletteIndex = eventPaletteIndexes[eventId];
+    const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_UI));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
@@ -954,7 +967,7 @@ class ScriptBuilder {
     output.push(inputDec(input));
   };
 
-  inputScriptSet = (input, script) => {
+  inputScriptSet = (input, persist, script) => {
     const output = this.output;
     const { compileEvents, banked } = this.options;
 
@@ -970,6 +983,7 @@ class ScriptBuilder {
 
     output.push(cmd(SET_INPUT_SCRIPT));
     output.push(inputDec(input));
+    output.push(persist ? 1 : 0);    
     output.push(bankPtr.bank);
     output.push(hi(bankPtr.offset));
     output.push(lo(bankPtr.offset));

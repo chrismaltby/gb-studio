@@ -53,18 +53,16 @@ void Update_Shmup() {
   tile_y = (player.pos.y) >> 3;
 
   // Check for trigger collisions
-  hit_trigger = TriggerAtTile(tile_x, tile_y);
-  if (hit_trigger != MAX_TRIGGERS) {
-    // Run trigger script
-    ScriptStart(&triggers[hit_trigger].events_ptr);
-  }
+  if (ActivateTriggerAt(tile_x, tile_y)) {
+    return;
+  };
 
   if (shooter_horizontal) {
     // Check input to set player movement
-    if (INPUT_RECENT_UP && Gt16(player.pos.y, 8) && !TileAt(tile_x, tile_y - 1)) {
+    if (INPUT_RECENT_UP && Gt16(player.pos.y, 8) && !(TileAt(tile_x, tile_y - 1) & COLLISION_BOTTOM)) {
       player.dir.y = -1;
     } else if (INPUT_RECENT_DOWN && Lt16(player.pos.y, (image_height - 8)) &&
-               !TileAt(tile_x, tile_y + 1)) {
+               !(TileAt(tile_x, tile_y + 1) & COLLISION_TOP)) {
       player.dir.y = 1;
     } else {
       player.dir.y = 0;
@@ -99,10 +97,10 @@ void Update_Shmup() {
     }
   } else {
     // Check input to set player movement[]
-    if (INPUT_RECENT_LEFT && (player.pos.x > 0) && !TileAt(tile_x, tile_y)) {
+    if (INPUT_RECENT_LEFT && (player.pos.x > 0) && !(TileAt(tile_x, tile_y) & COLLISION_RIGHT)) {
       player.dir.x = -1;
     } else if (INPUT_RECENT_RIGHT && Lt16(player.pos.x, image_width - 16) &&
-               !TileAt(tile_x + 2, tile_y)) {
+               !(TileAt(tile_x + 2, tile_y) & COLLISION_LEFT)) {
       player.dir.x = 1;
     } else {
       player.dir.x = 0;

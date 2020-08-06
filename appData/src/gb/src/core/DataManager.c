@@ -269,6 +269,10 @@ void LoadScene(UINT16 index) {
   InitScroll();
   ProjectilesInit();
 
+  // Reset last trigger
+  last_trigger_tx = 0xFF;
+  last_trigger_ty = 0xFF;
+
   player.hit_1_ptr.bank = *(data_ptr++);
   player.hit_1_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
