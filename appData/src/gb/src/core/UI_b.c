@@ -282,16 +282,16 @@ void UIShowText_b() {
     UIMoveTo(0, MENU_CLOSED_Y - ((text_num_lines + 2) << 3), text_in_speed);
   }
 
-  // If draw set to instant start drawing characters straight away
-  if (text_draw_speed == 0) {
-    UIDrawTextBufferChar_b();
-  }
-
   text_drawn = FALSE;
   text_x = 0;
   text_y = 0;
   text_count = 0;
   text_tile_count = 0;
+
+  // If draw set to instant start drawing characters straight away
+  if (text_draw_speed == 0) {
+    UIDrawTextBufferChar_b();
+  }
 }
 
 void UIDrawTextBufferChar_b() {
