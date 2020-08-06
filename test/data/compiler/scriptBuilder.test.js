@@ -964,7 +964,7 @@ test("Should be able to add input script", () => {
     }
   });
   sb.inputScriptSet("b", []);
-  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 1, 99, 0, 200]);
 });
 
 test("Should be able to add input script as function", () => {
@@ -985,7 +985,7 @@ test("Should be able to add input script as function", () => {
   sb.inputScriptSet("b", () => {
     sb.spritesHide();
   });
-  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 99, 0, 200]);
+  expect(output).toEqual([cmd(SET_INPUT_SCRIPT), inputDec(["b"]), 1, 99, 0, 200]);
 });
 
 test("Should be able to remove input script", () => {

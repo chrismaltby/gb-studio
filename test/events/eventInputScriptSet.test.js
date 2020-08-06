@@ -7,11 +7,12 @@ test("Should be able to set an input script", () => {
   compile(
     {
       input: ["a", "b"],
+      persist: true,
       true: truePath
     },
     {
       inputScriptSet: mockInputScriptSet
     }
   );
-  expect(mockInputScriptSet).toBeCalledWith(["a", "b"], truePath);
+  expect(mockInputScriptSet).toBeCalledWith(["a", "b"], true, truePath);
 });

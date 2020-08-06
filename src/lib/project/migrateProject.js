@@ -459,7 +459,16 @@ export const migrateFrom120To200Event = event => {
       }
     }
   }
-
+  if(event.args && event.command === "EVENT_SET_INPUT_SCRIPT") {
+    return {
+      ...event,
+      args: {
+        ...event.args,
+        persist: true
+      }
+    }
+  }
+  
   return event;
 };
 

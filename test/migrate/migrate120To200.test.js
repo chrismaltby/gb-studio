@@ -1,4 +1,4 @@
-import { migrateFrom120To200Collisions } from "../../src/lib/project/migrateProject";
+import { migrateFrom120To200Collisions, migrateFrom120To200Event } from "../../src/lib/project/migrateProject";
 
 test("should migrate collisions from 1.2.0 to 2.0.0", () => {
   const oldProject = {
@@ -131,3 +131,23 @@ test("should empty collisions when migrating from 1.2.0 to 2.0.0 if old collisio
     ],
   });
 });
+
+test("should migrate input scripts with persist=true to match old default", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_SET_INPUT_SCRIPT",
+    args: {
+      input: "b",
+      true: []
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_SET_INPUT_SCRIPT",
+    args: {
+      input: "b",
+      persist: true,
+      true: []
+    }    
+  })
+})
