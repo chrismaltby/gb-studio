@@ -6,7 +6,7 @@ import { VariableShape } from "../../reducers/stateShape";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
-const allVariables = Array.from(Array(10).keys());
+const allVariables = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 class CustomEventVariableSelect extends Component {
   variableName = index => {
@@ -27,15 +27,13 @@ class CustomEventVariableSelect extends Component {
         label: this.variableLabel(index)
       };
     });
+    let val = options.find((o) => o.value === value) || options[0];
     return (
       <Select
         id={id}
         className="ReactSelectContainer"
         classNamePrefix="ReactSelect"
-        value={{
-          value,
-          label: this.variableLabel(value)
-        }}
+        value={val}
         onChange={onChange}
         options={options}
         menuPlacement="auto"
