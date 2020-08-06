@@ -33,7 +33,6 @@ extern UBYTE text_drawn;
 extern UBYTE text_count;
 extern UBYTE text_tile_count;
 extern UBYTE text_wait;
-extern UBYTE tmp_text_draw_speed;
 extern UBYTE avatar_enabled;
 extern UBYTE menu_enabled;
 extern UBYTE menu_cancel_on_last_option;
