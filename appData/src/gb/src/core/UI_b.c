@@ -160,7 +160,7 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else if(IS_FRAME_2 && !text_drawn) {
+  } else if( ((game_time & text_draw_speed) == 0) && !text_drawn) {
     UIDrawTextBufferChar_b();
   }
 

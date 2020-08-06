@@ -22,6 +22,8 @@ extern UBYTE win_dest_pos_y;
 extern UBYTE win_speed;
 extern UBYTE text_in_speed;
 extern UBYTE text_out_speed;
+// Instant = 0, Every frame = 0x0, IS_FRAME_2 = 0x1 (default)
+// IS_FRAME_4 = 0x3, IS_FRAME_8 = 0x7, IS_FRAME_16 = 15u
 extern UBYTE text_draw_speed;
 extern UBYTE tmp_text_in_speed;
 extern UBYTE tmp_text_out_speed;
