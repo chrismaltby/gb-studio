@@ -2131,6 +2131,7 @@ void Script_RemoveTimerScript_b() {
  *   arg2: Spritesheet to use as the dialogue avatar
  */
 void Script_TextWithAvatar_b() {
+  avatar_enabled = TRUE;
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
   script_update_fn = ScriptUpdate_AwaitUIClosed;

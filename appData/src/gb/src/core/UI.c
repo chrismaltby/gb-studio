@@ -132,7 +132,7 @@ void UIShowAvatar(UBYTE avatar_index) {
   set_win_tiles(1, 2, 1, 1, &tile3);
   set_win_tiles(2, 2, 1, 1, &tile4);
 
-  avatar_enabled = TRUE;
+  //avatar_enabled = TRUE; // Set before UIShowText in case instant
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
