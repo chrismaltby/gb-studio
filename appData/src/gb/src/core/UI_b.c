@@ -236,10 +236,10 @@ void UIShowText_b() {
   for (i = 1, k = 0; i != 81u; i++) {
     
     // Replace variable references in text
-    if (tmp_text_lines[i] == '$') {
-      if (tmp_text_lines[i + 3] == '$') {
+    if (tmp_text_lines[i] == '$' || tmp_text_lines[i] == '#') {
+      if (tmp_text_lines[i + 3] == '$' || tmp_text_lines[i + 3] == '#') {
         var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
-      } else if (tmp_text_lines[i + 4] == '$') {
+      } else if (tmp_text_lines[i + 4] == '$' || tmp_text_lines[i + 4] == '#') {
         var_index = (100 * (tmp_text_lines[i + 1] - '0')) + (10 * (tmp_text_lines[i + 2] - '0')) +
                     (tmp_text_lines[i + 3] - '0');
       } else {
@@ -251,22 +251,29 @@ void UIShowText_b() {
       value = script_variables[var_index];
       j = 0;
 
-      if (value == 0) {
-        text_lines[k] = '0';
+      // Treat value as ASCII character
+      if (tmp_text_lines[i] == '#') {
+        text_lines[k] = value;
       } else {
-        // itoa implementation
-        while (value != 0) {
-          value_string[j++] = '0' + (value % 10);
-          value /= 10;
-        }
-        j--;
-        while (j != 255) {
-          text_lines[k] = value_string[j];
-          k++;
+        // Treat value as 8-bit int
+        if (value == 0) {
+          text_lines[k] = '0';
+        } else {
+          // itoa implementation
+          while (value != 0) {
+            value_string[j++] = '0' + (value % 10);
+            value /= 10;
+          }
           j--;
+          while (j != 255) {
+            text_lines[k] = value_string[j];
+            k++;
+            j--;
+          }
+          k--;
         }
-        k--;
-      }
+      } 
+
       // Jump though input past variable placeholder
       if (var_index >= 100) {
         i += 4;
