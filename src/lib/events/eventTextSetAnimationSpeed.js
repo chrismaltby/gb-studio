@@ -22,6 +22,12 @@ const fields = [
     key: "speed",
     type: "cameraSpeed",
     defaultValue: 1
+  },
+  {
+    type: "checkbox",
+    label: "Increase text draw speed if 'B' Held",
+    key: "joypadFF",
+    defaultValue: 1
   }
 ];
 
@@ -37,8 +43,8 @@ const compile = (input, helpers) => {
     case 5: speedText = 0x1F; break;
     default: speedText = 0x1; break;
   }
-  console.log(speedText);
-  textSetAnimSpeed(input.speedIn, input.speedOut, speedText);
+  let joypadFF = (input.joypadFF ? 0x20 : 0x0);
+  textSetAnimSpeed(input.speedIn, input.speedOut, speedText, joypadFF);
 };
 
 module.exports = {

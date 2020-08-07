@@ -473,12 +473,13 @@ class ScriptBuilder {
     output.push(2);
   };
 
-  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1) => {
+  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1, joypadFF) => {
     const output = this.output;
     output.push(cmd(TEXT_SET_ANIM_SPEED));
     output.push(speedIn);
     output.push(speedOut);
     output.push(textSpeed);
+    output.push(joypadFF);
   };
 
   // Variables
