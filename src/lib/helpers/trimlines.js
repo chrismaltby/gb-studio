@@ -3,12 +3,12 @@ const LINE_MIN = 2;
 const CHARS_PER_LINE = 18;
 const CHARS_MAX_TOTAL = 18 + 18 + 16;
 
-const varRegex = new RegExp("\\$[VLT][0-9]+\\$", "g");
-const varCharRegex = new RegExp("#[VLT][0-9]+#", "g");
+const varRegex = new RegExp("\\$[VLT]?[0-9]+\\$", "g");
+const varCharRegex = new RegExp("#[VLT]?[0-9]+#", "g");
 const commandRegex = new RegExp("\\!S[0-5]\\!", "g");
 
-const startsWithVarRegex = new RegExp("^\\$[VLT][0-9]+\\$");
-const startsWithVarCharRegex = new RegExp("^#[VLT][0-9]+#");
+const startsWithVarRegex = new RegExp("^\\$[VLT]?[0-9]+\\$");
+const startsWithVarCharRegex = new RegExp("^#[VLT]?[0-9]+#");
 const startsWithCommandRegex = new RegExp("^\\!S[0-5]\\!");
 
 export const lineLength = (line) => {
