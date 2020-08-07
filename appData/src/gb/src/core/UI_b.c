@@ -100,6 +100,12 @@ const unsigned char win_tiles[] = {
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
+const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
+
+// The current in progress text speed.
+// Reset to global value from text_speed each time a dialogue window is opened but can be controlled
+// by using '!S[text-speed]!' commands in text, such as '!S0!' for instant '!S5!' for slow text.
+UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
 
@@ -160,7 +166,7 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else if( ((game_time & text_draw_speed) == 0) && !text_drawn) {
+  } else if (!text_drawn && ((game_time & current_text_speed) == 0)) {
     UIDrawTextBufferChar_b();
   }
 
@@ -223,6 +229,7 @@ void UIShowText_b() {
   unsigned char value_string[6];
 
   ui_block = TRUE;
+  current_text_speed = text_draw_speed;
 
   for (i = 1, k = 0; i != 81u; i++) {
     
@@ -262,6 +269,12 @@ void UIShowText_b() {
       if (var_index >= 100) {
         i += 4;
       } else {
+        i += 3;
+      }
+    } else if (tmp_text_lines[i] == '!' && tmp_text_lines[i+3] == '!') {
+      if (tmp_text_lines[i + 1] == 'S') {
+        value = (tmp_text_lines[i + 2] - '0');
+        text_lines[k] = 0x10 + value;  
         i += 3;
       }
     } else {
@@ -326,7 +339,8 @@ void UIDrawTextBufferChar_b() {
     text_remaining = 18 - text_x;
     word_len = 0;
     for (i = text_count; i != text_size; i++) {
-      if (text_lines[i] == ' ' || text_lines[i] == '\n' || text_lines[i] == '\0') {
+      // Skip special characters when calculating word length
+      if (text_lines[i] < ' ') {
         break;
       }
       word_len++;
@@ -336,14 +350,12 @@ void UIDrawTextBufferChar_b() {
       text_y++;
     }
 
-    if (text_lines[text_count] != '\b' && text_lines[text_count] != '\n') {
+    // Skip special characters when drawing text
+    if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
-      // set_win_tiles(
-      //     text_x + 1 + avatar_enabled * 2 + menu_enabled + (text_y >= text_num_lines ? 9 : 0),
-      //     (text_y % text_num_lines) + 1, 1, 1, &tile);
       id = 0x9C00 +
            MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +
                    (text_y >= text_num_lines ? 9 : 0))) +
@@ -353,9 +365,10 @@ void UIDrawTextBufferChar_b() {
       text_tile_count++;
     }
 
-    if (text_lines[text_count] == '\b') {
+    // Dynamic switch text speed
+    if (text_lines[text_count] >= 0x10 && text_lines[text_count] < 0x16) {
+      current_text_speed = text_draw_speeds[text_lines[text_count] - 0x10];
       text_x--;
-      text_wait = 10;
     }
 
     text_count++;
@@ -369,7 +382,7 @@ void UIDrawTextBufferChar_b() {
       text_y++;
     }
 
-    if (text_draw_speed == 0) {
+    if (current_text_speed == 0) {
       UIDrawTextBufferChar_b();
     }
   } else {
