@@ -25,6 +25,7 @@ extern UBYTE text_out_speed;
 // Instant = 0, Every frame = 0x0, IS_FRAME_2 = 0x1 (default)
 // IS_FRAME_4 = 0x3, IS_FRAME_8 = 0x7, IS_FRAME_16 = 15u
 extern UBYTE text_draw_speed;
+extern UBYTE text_ff_joypad;
 extern UBYTE tmp_text_in_speed;
 extern UBYTE tmp_text_out_speed;
 extern UBYTE menu_layout;
@@ -45,6 +46,7 @@ extern UBYTE menu_cancel_on_b;
 
 void UIInit();
 void UIUpdate();
+void UIInteract_Update();
 void UIReset();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame(UBYTE h);

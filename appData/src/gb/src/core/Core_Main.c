@@ -160,8 +160,7 @@ int core_start() {
     RefreshScroll();
     UpdateActors();
     UpdateProjectiles();
-    UIOnInteract();
-    UIUpdate();
+    UIInteract_Update();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
       HandleInputScripts();

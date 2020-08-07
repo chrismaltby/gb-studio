@@ -41,6 +41,7 @@ UBYTE text_wait;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
+UBYTE text_ff_joypad = J_B;
 UBYTE tmp_text_in_speed = 1;
 UBYTE tmp_text_out_speed = 1;
 UBYTE text_num_lines = 0;
@@ -197,5 +198,12 @@ UBYTE UIAtDest() {
 void UISetColor(UBYTE color) {
   PUSH_BANK(UI_BANK);
   UISetColor_b(color);
+  POP_BANK;
+}
+
+void UIInteract_Update() {
+  PUSH_BANK(UI_BANK);
+  UIOnInteract_b();
+  UIUpdate_b();
   POP_BANK;
 }
