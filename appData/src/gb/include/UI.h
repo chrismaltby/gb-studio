@@ -45,6 +45,7 @@ extern UBYTE menu_cancel_on_b;
 
 void UIInit();
 void UIUpdate();
+void UIInteract_Update();
 void UIReset();
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
 void UIDrawDialogueFrame(UBYTE h);

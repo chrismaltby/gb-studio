@@ -199,3 +199,10 @@ void UISetColor(UBYTE color) {
   UISetColor_b(color);
   POP_BANK;
 }
+
+void UIInteract_Update() {
+  PUSH_BANK(UI_BANK);
+  UIOnInteract_b();
+  UIUpdate_b();
+  POP_BANK;
+}
