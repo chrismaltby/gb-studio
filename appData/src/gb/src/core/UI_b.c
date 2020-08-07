@@ -160,8 +160,10 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else if( ((game_time & text_draw_speed) == 0) && !text_drawn) {
-    UIDrawTextBufferChar_b();
+  } else if(!text_drawn) {
+    if ( (joy & J_B) | ((game_time & text_draw_speed) == 0) ) {
+      UIDrawTextBufferChar_b();
+    }
   }
 
   WX_REG = win_pos_x + 7;
