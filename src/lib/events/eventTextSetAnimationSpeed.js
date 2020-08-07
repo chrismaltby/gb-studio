@@ -27,18 +27,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
-  let speedText = 10;
-  switch(Math.round(input.speed)) {
-    case 0: speedText = 0x0;  break;
-    case 1: speedText = 0x1;  break;
-    case 2: speedText = 0x3;  break;
-    case 3: speedText = 0x7;  break;
-    case 4: speedText = 0xF;  break;
-    case 5: speedText = 0x1F; break;
-    default: speedText = 0x1; break;
-  }
-  console.log(speedText);
-  textSetAnimSpeed(input.speedIn, input.speedOut, speedText);
+  textSetAnimSpeed(input.speedIn, input.speedOut, input.speed);
 };
 
 module.exports = {

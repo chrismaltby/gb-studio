@@ -120,7 +120,8 @@ import {
   moveTypeDec,
   heightDec,
   actorFramesPerDir,
-  spriteTypeDec
+  spriteTypeDec,
+  textSpeedDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
@@ -478,7 +479,7 @@ class ScriptBuilder {
     output.push(cmd(TEXT_SET_ANIM_SPEED));
     output.push(speedIn);
     output.push(speedOut);
-    output.push(textSpeed);
+    output.push(textSpeedDec(textSpeed));
   };
 
   // Variables
