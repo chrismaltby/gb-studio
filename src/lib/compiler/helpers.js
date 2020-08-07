@@ -142,11 +142,22 @@ export const combineMultipleChoiceText = (args) => {
 export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
 
 export const replaceInvalidCustomEventVariables = (variable) => {
-  const variableIndex = parseInt(String(variable).replace(/^L|^T/, ""), 10);
-  if (variableIndex >= 10 || isNaN(variableIndex)) {
-    return "0";
+  const getValidVariableIndex = (v) => {
+    const variableIndex = parseInt(String(v).replace(/^L|^T/, ""), 10);
+    if (variableIndex >= 10 || isNaN(variableIndex)) {
+      return "0";
+    }
+    return String(variableIndex);  
   }
-  return String(variableIndex);
+
+  // Support the case for "union" values
+  if (variable !== null && variable.type === "variable") {
+    return {
+      ...variable,
+      value: getValidVariableIndex(variable.value)
+    }
+  }
+  return getValidVariableIndex(variable);
 };
 
 export const replaceInvalidCustomEventActors = (actor) => {

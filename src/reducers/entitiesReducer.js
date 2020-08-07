@@ -53,7 +53,8 @@ import {
   patchEvents,
   regenerateEventIds,
   mapEvents,
-  walkEvents
+  walkEvents,
+  isVariableField
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
@@ -573,16 +574,28 @@ const editCustomEvent = (state, action) => {
     const fix = replaceInvalidCustomEventVariables;
     const fixActor = replaceInvalidCustomEventActors;
     patch.script = mapEvents(patch.script, event => {
-      return {
-        ...event,
-        args: event.args && {
-          ...event.args,
-          variable: event.args.variable && fix(event.args.variable),
-          vectorX: event.args.vectorX && fix(event.args.vectorX),
-          vectorY: event.args.vectorY && fix(event.args.vectorY),
-          actorId: event.args.actorId && fixActor(event.args.actorId)
-        }
-      };
+      if (event.args) {
+        const fixedEventVariableArgs = Object.keys(event.args).reduce((memo, arg) => {
+          const fixedVarArgs = memo;
+          if (isVariableField(event.command, arg, event.args[arg])) {
+            fixedVarArgs[arg] = fix(event.args[arg]);
+          } else {
+            fixedVarArgs[arg] = event.args[arg];
+          }
+          return fixedVarArgs;
+        }, {});
+
+        return {
+          ...event,
+          args: {
+            ...event.args,
+            ...fixedEventVariableArgs,
+            actorId: event.args.actorId && fixActor(event.args.actorId),
+            otherActorId: event.args.otherActorId && fixActor(event.args.otherActorId)
+          }
+        };
+      }
+      return event;
     });
 
     const variables = {};
@@ -608,42 +621,40 @@ const editCustomEvent = (state, action) => {
         };
       }
 
-      if (args.variable) {
-        const variable = args.variable;
+      if (args.otherActorId && args.otherActorId !== "player") {
         const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(variable)
+          "A".charCodeAt(0) + parseInt(args.otherActorId)
         );
-        variables[variable] = {
-          id: variable,
-          name: oldVariables[variable]
-            ? oldVariables[variable].name
-            : `Variable ${letter}`
+        actors[args.otherActorId] = {
+          id: args.otherActorId,
+          name: oldActors[args.otherActorId]
+            ? oldActors[args.otherActorId].name
+            : `Actor ${letter}`
         };
       }
-      if (args.vectorX) {
-        const variable = args.vectorX;
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(variable, 10)
-        ).toUpperCase();
-        variables[variable] = {
-          id: variable,
-          name: oldVariables[variable]
-            ? oldVariables[variable].name
-            : `Variable ${letter}`
-        };
-      }
-      if (args.vectorY) {
-        const variable = args.vectorY;
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(variable, 10)
-        ).toUpperCase();
-        variables[variable] = {
-          id: variable,
-          name: oldVariables[variable]
-            ? oldVariables[variable].name
-            : `Variable ${letter}`
-        };
-      }
+
+      Object.keys(args).forEach(arg => {
+        if (isVariableField(e.command, arg, args[arg])) {
+          const addVariable = (variable) => {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(variable)
+            );
+            variables[variable] = {
+              id: variable,
+              name: oldVariables[variable]
+                ? oldVariables[variable].name
+                : `Variable ${letter}`
+            };  
+          }
+          const variable = args[arg];
+          if (variable != null && variable.type === "variable") {
+            addVariable(variable.value);
+          } else {
+            addVariable(variable);
+          }
+        }
+      });
+
       if (args.text) {
         const text = Array.isArray(args.text) ? args.text.join() : args.text;
         const variablePtrs = text.match(/\$V[0-9]\$/g);
