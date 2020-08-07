@@ -25,16 +25,15 @@ const fields = [
   },
   {
     type: "checkbox",
-    label: "Increase text draw speed if 'B' Held",
-    key: "joypadFF",
-    defaultValue: 1
+    label: l10n("FIELD_ALLOW_FASTFORWARD"),
+    key: "allowFastForward",
+    defaultValue: true
   }
 ];
 
 const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
-  const joypadFF = (input.joypadFF ? 0x20 : 0x0);
-  textSetAnimSpeed(input.speedIn, input.speedOut, input.speed, joypadFF);
+  textSetAnimSpeed(input.speedIn, input.speedOut, input.speed, input.allowFastForward);
 };
 
 module.exports = {

@@ -248,6 +248,7 @@
   "FIELD_WORK_IN_PROGRESS": "Work in Progress",
   "FIELD_PERSIST_BETWEEN_SCENES": "Persist Between Scenes",
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Note: Some events like projectiles and sprite sheet changes currently don't work when used in an input script that is persisted between scenes.",
+  "FIELD_ALLOW_FASTFORWARD": "Fast forward text while buttons held",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

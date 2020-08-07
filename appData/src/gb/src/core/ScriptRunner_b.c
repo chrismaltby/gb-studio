@@ -1793,7 +1793,7 @@ void Script_TextSetAnimSpeed_b() {
   text_in_speed = script_cmd_args[0];
   text_out_speed = script_cmd_args[1];
   text_draw_speed = script_cmd_args[2];
-  text_ff_joypad = script_cmd_args[3];
+  text_ff_joypad = script_cmd_args[3] ? (J_A | J_B) : 0;
 }
 
 /*

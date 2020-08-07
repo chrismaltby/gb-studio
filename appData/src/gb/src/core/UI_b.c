@@ -167,7 +167,7 @@ void UIUpdate_b() {
       win_pos_y -= interval;
     }
   } else if(!text_drawn) {
-    if ( (joy & text_ff_joypad) | ((game_time & text_draw_speed) == 0) ) {
+    if ( (joy & text_ff_joypad) | ((game_time & current_text_speed) == 0) ) {
       UIDrawTextBufferChar_b();
     }
   }
