@@ -36,12 +36,7 @@ class SceneCursor extends Component {
       return;
     }
     if(e.shiftKey) {
-      if (this.drawLine === true) {
-        return;
-      }
-      this.drawLine = true;    
-      this.startX = undefined;
-      this.startY = undefined;      
+      this.drawLine = true;
     }
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
