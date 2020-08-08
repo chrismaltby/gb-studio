@@ -136,6 +136,15 @@ class World extends Component {
     if (e.target.nodeName !== "BODY") {
       return;
     }
+    if (e.code === "KeyZ" && e.ctrlKey) {
+      if (e.shiftKey) {
+        event.preventDefault();
+        console.log("caught Shift Z" + event);
+      } else {
+        event.preventDefault();
+        console.log("caught Z" + event);
+      }
+    }
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
     }
