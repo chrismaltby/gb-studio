@@ -18,6 +18,8 @@ const MOVEMENT_LOOKUP = {
 
 const MOVEMENT_SPEED_LOOKUP = [0, 1, 2, 4, 8];
 
+const TEXT_SPEED_LOOKUP = [0x0, 0x1, 0x3, 0x7, 0xF, 0x1F];
+
 const OPERATOR_LOOKUP = {
   "==": 1,
   "!=": 2,
@@ -222,3 +224,7 @@ export const heightDec = (type) => {
   }
   return 1;
 }
+
+export const textSpeedDec = (speed) => TEXT_SPEED_LOOKUP[speed] !== undefined
+  ? TEXT_SPEED_LOOKUP[speed]
+  : 0x1;

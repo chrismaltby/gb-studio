@@ -100,6 +100,12 @@ const unsigned char win_tiles[] = {
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
     0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
+const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
+
+// The current in progress text speed.
+// Reset to global value from text_speed each time a dialogue window is opened but can be controlled
+// by using '!S[text-speed]!' commands in text, such as '!S0!' for instant '!S5!' for slow text.
+UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
 
@@ -160,8 +166,10 @@ void UIUpdate_b() {
     } else {
       win_pos_y -= interval;
     }
-  } else if(IS_FRAME_2 && !text_drawn) {
-    UIDrawTextBufferChar_b();
+  } else if(!text_drawn) {
+    if ( (joy & text_ff_joypad) | ((game_time & current_text_speed) == 0) ) {
+      UIDrawTextBufferChar_b();
+    }
   }
 
   WX_REG = win_pos_x + 7;
@@ -223,14 +231,15 @@ void UIShowText_b() {
   unsigned char value_string[6];
 
   ui_block = TRUE;
+  current_text_speed = text_draw_speed;
 
   for (i = 1, k = 0; i != 81u; i++) {
     
     // Replace variable references in text
-    if (tmp_text_lines[i] == '$') {
-      if (tmp_text_lines[i + 3] == '$') {
+    if (tmp_text_lines[i] == '$' || tmp_text_lines[i] == '#') {
+      if (tmp_text_lines[i + 3] == '$' || tmp_text_lines[i + 3] == '#') {
         var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
-      } else if (tmp_text_lines[i + 4] == '$') {
+      } else if (tmp_text_lines[i + 4] == '$' || tmp_text_lines[i + 4] == '#') {
         var_index = (100 * (tmp_text_lines[i + 1] - '0')) + (10 * (tmp_text_lines[i + 2] - '0')) +
                     (tmp_text_lines[i + 3] - '0');
       } else {
@@ -242,26 +251,39 @@ void UIShowText_b() {
       value = script_variables[var_index];
       j = 0;
 
-      if (value == 0) {
-        text_lines[k] = '0';
+      // Treat value as lookup in ascii.png
+      if (tmp_text_lines[i] == '#') {
+        text_lines[k] = value + 32u;
       } else {
-        // itoa implementation
-        while (value != 0) {
-          value_string[j++] = '0' + (value % 10);
-          value /= 10;
-        }
-        j--;
-        while (j != 255) {
-          text_lines[k] = value_string[j];
-          k++;
+        // Treat value as 8-bit int
+        if (value == 0) {
+          text_lines[k] = '0';
+        } else {
+          // itoa implementation
+          while (value != 0) {
+            value_string[j++] = '0' + (value % 10);
+            value /= 10;
+          }
           j--;
+          while (j != 255) {
+            text_lines[k] = value_string[j];
+            k++;
+            j--;
+          }
+          k--;
         }
-        k--;
-      }
+      } 
+
       // Jump though input past variable placeholder
       if (var_index >= 100) {
         i += 4;
       } else {
+        i += 3;
+      }
+    } else if (tmp_text_lines[i] == '!' && tmp_text_lines[i+3] == '!') {
+      if (tmp_text_lines[i + 1] == 'S') {
+        value = (tmp_text_lines[i + 2] - '0');
+        text_lines[k] = 0x10 + value;  
         i += 3;
       }
     } else {
@@ -326,7 +348,8 @@ void UIDrawTextBufferChar_b() {
     text_remaining = 18 - text_x;
     word_len = 0;
     for (i = text_count; i != text_size; i++) {
-      if (text_lines[i] == ' ' || text_lines[i] == '\n' || text_lines[i] == '\0') {
+      // Skip special characters when calculating word length
+      if (text_lines[i] < ' ') {
         break;
       }
       word_len++;
@@ -336,14 +359,12 @@ void UIDrawTextBufferChar_b() {
       text_y++;
     }
 
-    if (text_lines[text_count] != '\b' && text_lines[text_count] != '\n') {
+    // Skip special characters when drawing text
+    if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
       SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
       tile = TEXT_BUFFER_START + i;
-      // set_win_tiles(
-      //     text_x + 1 + avatar_enabled * 2 + menu_enabled + (text_y >= text_num_lines ? 9 : 0),
-      //     (text_y % text_num_lines) + 1, 1, 1, &tile);
       id = 0x9C00 +
            MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +
                    (text_y >= text_num_lines ? 9 : 0))) +
@@ -353,9 +374,10 @@ void UIDrawTextBufferChar_b() {
       text_tile_count++;
     }
 
-    if (text_lines[text_count] == '\b') {
+    // Dynamic switch text speed
+    if (text_lines[text_count] >= 0x10 && text_lines[text_count] < 0x16) {
+      current_text_speed = text_draw_speeds[text_lines[text_count] - 0x10];
       text_x--;
-      text_wait = 10;
     }
 
     text_count++;
@@ -369,7 +391,7 @@ void UIDrawTextBufferChar_b() {
       text_y++;
     }
 
-    if (text_draw_speed == 0) {
+    if (current_text_speed == 0) {
       UIDrawTextBufferChar_b();
     }
   } else {

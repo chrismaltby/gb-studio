@@ -114,7 +114,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_LoadVectors_b, 4},         // 0x41
     {Script_ActorSetMoveSpeed_b, 1},   // 0x42
     {Script_ActorSetAnimSpeed_b, 1},   // 0x43
-    {Script_TextSetAnimSpeed_b, 3},    // 0x44
+    {Script_TextSetAnimSpeed_b, 4},    // 0x44
     {Script_ScenePushState_b, 0},      // 0x45
     {Script_ScenePopState_b, 1},       // 0x46
     {Script_ActorInvoke_b, 0},         // 0x47
@@ -516,7 +516,9 @@ void Script_ActorSetDir_b() {
  */
 void Script_ActorActivate_b() {
   main_script_ctx.script_actor = script_cmd_args[0];
-  ActivateActor(main_script_ctx.script_actor);
+  if (current_script_ctx == 0) {
+    ActivateActor(main_script_ctx.script_actor);
+  }
 }
 
 /*
@@ -1817,6 +1819,7 @@ void Script_TextSetAnimSpeed_b() {
   text_in_speed = script_cmd_args[0];
   text_out_speed = script_cmd_args[1];
   text_draw_speed = script_cmd_args[2];
+  text_ff_joypad = script_cmd_args[3] ? (J_A | J_B) : 0;
 }
 
 /*
@@ -2155,6 +2158,7 @@ void Script_RemoveTimerScript_b() {
  *   arg2: Spritesheet to use as the dialogue avatar
  */
 void Script_TextWithAvatar_b() {
+  avatar_enabled = TRUE;
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
   main_script_ctx.script_update_fn = ScriptUpdate_AwaitUIClosed;

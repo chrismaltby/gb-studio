@@ -41,6 +41,7 @@ UBYTE text_wait;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
 UBYTE text_draw_speed = 1;
+UBYTE text_ff_joypad = J_A | J_B;
 UBYTE tmp_text_in_speed = 1;
 UBYTE tmp_text_out_speed = 1;
 UBYTE text_num_lines = 0;
@@ -132,7 +133,7 @@ void UIShowAvatar(UBYTE avatar_index) {
   set_win_tiles(1, 2, 1, 1, &tile3);
   set_win_tiles(2, 2, 1, 1, &tile4);
 
-  avatar_enabled = TRUE;
+  //avatar_enabled = TRUE; // Set before UIShowText in case instant
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
@@ -197,5 +198,12 @@ UBYTE UIAtDest() {
 void UISetColor(UBYTE color) {
   PUSH_BANK(UI_BANK);
   UISetColor_b(color);
+  POP_BANK;
+}
+
+void UIInteract_Update() {
+  PUSH_BANK(UI_BANK);
+  UIOnInteract_b();
+  UIUpdate_b();
   POP_BANK;
 }

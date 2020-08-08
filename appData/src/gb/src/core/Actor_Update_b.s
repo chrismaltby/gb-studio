@@ -18,6 +18,8 @@
     .ANIM_SPEED_OFFSET = 0x15
     .SPRITE_TYPE_OFFSET = 0x19
 
+    .SCRIPT_ACTOR_OFFSET = 0x11
+
     .SPRITE_STATIC = 0x0
     .SPRITE_ACTOR = 0x1
     .SPRITE_ACTOR_ANIMATED = 0x2
@@ -594,9 +596,17 @@ _UpdateActors::
 
     queue_deactivate_actor:
         
+    ; Load current main script actor into a
+        ld hl, #(_script_ctxs + .SCRIPT_ACTOR_OFFSET)
+        ld a, (hl)
+
     ; Load active actor index into b
         ldhl sp, #3
         ld b, (hl)
+
+    ; If main script actor is active actor then don't deactivate
+        cp a, b
+        jr z, next_actor
 
     ; Load delete counter into c
         ld hl, #_actors_active_delete_count

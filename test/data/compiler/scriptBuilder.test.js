@@ -471,7 +471,7 @@ test("Should be able to set text animation speeds", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
   sb.textSetAnimSpeed(1, 2, 3);
-  expect(output).toEqual([cmd(TEXT_SET_ANIM_SPEED), 1, 2, 3]);
+  expect(output).toEqual([cmd(TEXT_SET_ANIM_SPEED), 1, 2, 7, 1]);
 });
 
 test("Should be able to restore text box close speed", () => {
