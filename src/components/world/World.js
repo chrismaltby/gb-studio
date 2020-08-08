@@ -207,6 +207,7 @@ class World extends Component {
 
   startWorldDragIfAltOrMiddleClick = e => {
     if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
+      event.preventDefault();
       this.worldDragging = true;
       e.stopPropagation();
     }
