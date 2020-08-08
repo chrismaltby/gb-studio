@@ -468,6 +468,15 @@ export const migrateFrom120To200Event = event => {
       }
     }
   }
+  if(event.args && event.command === "EVENT_TEXT_SET_ANIMATION_SPEED") {
+    return {
+      ...event,
+      args: {
+        ...event.args,
+        allowFastForward: true
+      }
+    }
+  }  
   
   return event;
 };

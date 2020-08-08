@@ -151,3 +151,25 @@ test("should migrate input scripts with persist=true to match old default", () =
     }    
   })
 })
+
+test("should migrate text animation speed events with allowFastForward=true", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+    args: {
+      speedIn: 1,
+      speedOut: 1,
+      textSpeed: 1,
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_TEXT_SET_ANIMATION_SPEED",
+    args: {
+      speedIn: 1,
+      speedOut: 1,
+      textSpeed: 1,
+      allowFastForward: true
+    }   
+  })
+});
