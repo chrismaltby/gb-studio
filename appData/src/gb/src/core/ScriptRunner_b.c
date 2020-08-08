@@ -519,7 +519,9 @@ void Script_ActorSetDir_b() {
  */
 void Script_ActorActivate_b() {
   script_actor = script_cmd_args[0];
-  ActivateActor(script_actor);
+  if (current_script_ctx == 0) {
+    ActivateActor(script_actor);
+  }
 }
 
 /*
