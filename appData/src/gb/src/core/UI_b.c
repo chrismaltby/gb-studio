@@ -251,9 +251,9 @@ void UIShowText_b() {
       value = script_variables[var_index];
       j = 0;
 
-      // Treat value as ASCII character
+      // Treat value as lookup in ascii.png
       if (tmp_text_lines[i] == '#') {
-        text_lines[k] = value;
+        text_lines[k] = value + 32u;
       } else {
         // Treat value as 8-bit int
         if (value == 0) {
