@@ -1,4 +1,4 @@
-import { migrateFrom120To200Collisions, migrateFrom120To200Event } from "../../src/lib/project/migrateProject";
+import { migrateFrom120To200Collisions, migrateFrom120To200Event, migrateFrom120To200Actors } from "../../src/lib/project/migrateProject";
 
 test("should migrate collisions from 1.2.0 to 2.0.0", () => {
   const oldProject = {
@@ -172,4 +172,82 @@ test("should migrate text animation speed events with allowFastForward=true", ()
       allowFastForward: true
     }   
   })
+});
+
+test("should migrate actors with movementType=static and animate=false to have animSpeed none", () => {
+  const oldProject = {
+    scenes: [
+      {
+        actors: [{
+          movementType: "static",
+          animate: false,
+          animSpeed: "3"
+        }, {
+          movementType: "static",
+          animSpeed: "2"
+        }]
+      },
+    ]
+  };
+
+  const newProject = migrateFrom120To200Actors(oldProject);
+
+  expect(newProject).toEqual({
+    scenes: [
+      {
+        actors: [{
+          spriteType: "static",
+          movementType: "static",
+          animate: false,
+          animSpeed: "",
+          updateScript: undefined
+        }, {
+          spriteType: "static",
+          movementType: "static",
+          animSpeed: "",
+          updateScript: undefined
+        }]
+      },
+    ],
+  });
+});
+
+test("should migrate actors with movementType=static and animate=true should keep original animSpeed", () => {
+  const oldProject = {
+    scenes: [
+      {
+        actors: [{
+          movementType: "static",
+          animate: true,
+          animSpeed: "3"
+        }, {
+          movementType: "static",
+          animate: true,
+          animSpeed: "2"
+        }]
+      },
+    ]
+  };
+
+  const newProject = migrateFrom120To200Actors(oldProject);
+
+  expect(newProject).toEqual({
+    scenes: [
+      {
+        actors: [{
+          spriteType: "static",
+          movementType: "static",
+          animate: true,
+          animSpeed: "3",
+          updateScript: undefined
+        }, {
+          spriteType: "static",
+          movementType: "static",
+          animate: true,
+          animSpeed: "2",
+          updateScript: undefined
+        }]
+      },
+    ],
+  });
 });

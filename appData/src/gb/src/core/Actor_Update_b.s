@@ -484,14 +484,7 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl) 
         cp a, #0
-        jr z, not_animating
-
-    ; And is not static
-        ld a, #(.SPRITE_TYPE_OFFSET - .MOVING_OFFSET)
-        _add_a h, l
-        ld a, (hl) 
-        cp a, #0
-        jr nz, check_anim_speed        
+        jr nz, check_anim_speed
 
     not_animating:
     ; Else not animating right now so skip
@@ -508,6 +501,10 @@ _UpdateActors::
     ; Anim speed == 3
         cp a, #3
         jr z, check_is_frame_16
+
+    ; Anim speed == 255 (None)
+        cp a, #255
+        jp z, next_actor
 
     ; Anim speed == 4
         cp a, #4

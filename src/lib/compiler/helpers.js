@@ -101,7 +101,15 @@ export const moveSpeedDec = (moveSpeed) =>
     ? MOVEMENT_SPEED_LOOKUP[moveSpeed]
     : 1;
 
-export const animSpeedDec = (animSpeed) => (animSpeed !== undefined ? animSpeed : 3);
+export const animSpeedDec = (animSpeed) => {
+  if (animSpeed === "") {
+    return 255;
+  }
+  if (animSpeed === undefined) {
+    return 3;
+  }
+  return animSpeed;
+}
 
 export const operatorDec = (operator) => OPERATOR_LOOKUP[operator] || 1;
 

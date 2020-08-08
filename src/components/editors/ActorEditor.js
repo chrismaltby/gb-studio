@@ -53,11 +53,19 @@ class ActorEditor extends Component {
   constructor(props) {
     super(props);
 
-    const tabs = Object.keys((props.actor && props.actor.collisionGroup) ?  collisionTabs : defaultTabs);
+    const tabs = Object.keys(
+      props.actor && props.actor.collisionGroup ? collisionTabs : defaultTabs
+    );
     const secondaryTabs = Object.keys(hitTabs);
 
-    const initialTab = tabs.includes(props.lastScriptTab) ? props.lastScriptTab : tabs[0];
-    const initialSecondaryTab = secondaryTabs.includes(props.lastScriptTabSecondary) ? props.lastScriptTabSecondary : secondaryTabs[0];
+    const initialTab = tabs.includes(props.lastScriptTab)
+      ? props.lastScriptTab
+      : tabs[0];
+    const initialSecondaryTab = secondaryTabs.includes(
+      props.lastScriptTabSecondary
+    )
+      ? props.lastScriptTabSecondary
+      : secondaryTabs[0];
 
     this.state = {
       clipboardActor: null,
@@ -86,10 +94,10 @@ class ActorEditor extends Component {
     const { editActor, sceneId, actor } = this.props;
     const { scriptMode } = this.state;
 
-    if(key === "collisionGroup" && scriptMode === "hit" && !e) {
+    if (key === "collisionGroup" && scriptMode === "hit" && !e) {
       this.onSetScriptMode("interact");
     }
-    if(key === "collisionGroup" && scriptMode === "interact" && e) {
+    if (key === "collisionGroup" && scriptMode === "interact" && e) {
       this.onSetScriptMode("hit");
     }
 
@@ -167,6 +175,7 @@ class ActorEditor extends Component {
       actor.spriteType === SPRITE_TYPE_STATIC;
 
     const showAnimatedCheckbox =
+      actor.animSpeed !== "" &&
       spriteSheet &&
       spriteSheet.numFrames > 1 &&
       (actor.spriteType === SPRITE_TYPE_STATIC ||
@@ -174,11 +183,11 @@ class ActorEditor extends Component {
 
     const showAnimSpeed =
       spriteSheet &&
-      ((spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED &&
-        actor.spriteType !== SPRITE_TYPE_STATIC) ||
-        (actor.animate &&
-          (actor.spriteType === SPRITE_TYPE_STATIC ||
-            spriteSheet.type !== SPRITE_TYPE_ACTOR)));
+      (spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED ||
+        (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
+
+    const showCollisionGroup =
+      !actor.isPinned;
 
     const scripts = {
       start: {
@@ -378,13 +387,12 @@ class ActorEditor extends Component {
                     onChange={this.onEdit("animate")}
                   />
                   <div className="FormCheckbox" />
-                  {actor.spriteType !== SPRITE_TYPE_STATIC &&
-                  spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED
-                    ? l10n("FIELD_ANIMATE_WHEN_STATIONARY")
-                    : l10n("FIELD_ANIMATE_FRAMES")}
+                  {l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
                 </label>
               </FormField>
             )}
+
+            <div />
 
             <FormField halfWidth>
               <label htmlFor="actorMoveSpeed">
@@ -412,16 +420,20 @@ class ActorEditor extends Component {
               </FormField>
             )}
 
-            <FormField halfWidth>
-              <label htmlFor="actorCollisionGroup">
-                {l10n("FIELD_COLLISION_GROUP")}
-                <CollisionMaskPicker
-                  id="actorCollisionGroup"
-                  value={actor.collisionGroup}
-                  onChange={this.onEdit("collisionGroup")}
-                />
-              </label>
-            </FormField>
+            <div />
+
+            {showCollisionGroup && (
+              <FormField halfWidth>
+                <label htmlFor="actorCollisionGroup">
+                  {l10n("FIELD_COLLISION_GROUP")}
+                  <CollisionMaskPicker
+                    id="actorCollisionGroup"
+                    value={actor.collisionGroup}
+                    onChange={this.onEdit("collisionGroup")}
+                  />
+                </label>
+              </FormField>
+            )}
 
             <FormField>
               <label htmlFor="actorIsPinned">
@@ -498,7 +510,7 @@ class ActorEditor extends Component {
                   />
                 }
               />
-            )}       
+            )}
             {scripts[scriptMode] && !scripts[scriptMode].tabs && (
               <ScriptEditor
                 value={scripts[scriptMode].value}
@@ -507,14 +519,16 @@ class ActorEditor extends Component {
                 entityId={actor.id}
               />
             )}
-            {scripts[scriptMode] && scripts[scriptMode].tabs && scripts[scriptMode][scriptModeSecondary] && (
-              <ScriptEditor
-                value={scripts[scriptMode][scriptModeSecondary].value}
-                type="actor"
-                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
-                entityId={actor.id}
-              />
-            )}     
+            {scripts[scriptMode] &&
+              scripts[scriptMode].tabs &&
+              scripts[scriptMode][scriptModeSecondary] && (
+                <ScriptEditor
+                  value={scripts[scriptMode][scriptModeSecondary].value}
+                  type="actor"
+                  onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+                  entityId={actor.id}
+                />
+              )}
           </div>
         </SidebarColumn>
       </Sidebar>
@@ -539,7 +553,7 @@ ActorEditor.propTypes = {
   selectScene: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
   setScriptTab: PropTypes.func.isRequired,
-  setScriptTabSecondary: PropTypes.func.isRequired
+  setScriptTabSecondary: PropTypes.func.isRequired,
 };
 
 ActorEditor.defaultProps = {
@@ -567,7 +581,7 @@ function mapStateToProps(state, props) {
     colorsEnabled,
     defaultSpritePaletteId,
     lastScriptTab,
-    lastScriptTabSecondary
+    lastScriptTabSecondary,
   };
 }
 
@@ -579,7 +593,7 @@ const mapDispatchToProps = {
   selectScene: actions.selectScene,
   selectSidebar: actions.selectSidebar,
   setScriptTab: actions.setScriptTab,
-  setScriptTabSecondary: actions.setScriptTabSecondary
+  setScriptTabSecondary: actions.setScriptTabSecondary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

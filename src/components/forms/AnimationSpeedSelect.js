@@ -9,6 +9,7 @@ class AnimationSpeedSelect extends Component {
     const { id, value, onChange } = this.props;
     return (
       <select id={id} value={value} onChange={onChange}>
+        <option value="">None</option>
         {speeds.map((speed, index) => (
           <option key={speed} value={speed}>
             {l10n("FIELD_SPEED")} {speed}{" "}

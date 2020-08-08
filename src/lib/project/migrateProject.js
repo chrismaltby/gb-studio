@@ -287,8 +287,10 @@ const migrateFrom120To200Scenes = (data) => {
  * In version 1.2.0 Actors had a movementType field, in 2.0.0 movement
  * is now handled with movement scripts and whether an actor treats it's
  * spritesheet as static or an actor sprite is set using the spriteType field
+ * Also actors using static spritesheets now animate while moving unless
+ * animation speed is set to "None", this script migrates actors to preserve old default.
  */
-const migrateFrom120To200Actors = (data) => {
+export const migrateFrom120To200Actors = (data) => {
   return {
     ...data,
     scenes: data.scenes.map((scene) => {
@@ -296,14 +298,18 @@ const migrateFrom120To200Actors = (data) => {
         ...scene,
         actors: scene.actors.map((actor) => {
           let updateScript;
+          let animSpeed = actor.animSpeed;
           if(actor.movementType === "randomFace") {
             updateScript = generateRandomLookScript();
           } else if (actor.movementType === "randomWalk") {
             updateScript = generateRandomWalkScript();
+          } else if (actor.movementType === "static" && actor.animate !== true) {
+            animSpeed = "";
           }
           return {
             ...actor,
             spriteType: actor.movementType === "static" ? "static" : "actor",
+            animSpeed,
             updateScript
           };
         }),
