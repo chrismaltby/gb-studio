@@ -257,7 +257,15 @@ class SceneCursor extends Component {
         this.startX = x1;
         this.startY = y1;
       } else {
-        paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
+        if(this.startX === undefined || this.startY === undefined) {
+          this.startX = x;
+          this.startY = y;
+        }
+        let x1 = x;
+        let y1 = y;
+        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);
+        this.startX = x1;
+        this.startY = y1;
       }
       this.currentX = x;
       this.currentY = y;
