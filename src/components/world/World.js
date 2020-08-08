@@ -4,6 +4,7 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
+import { ActionCreators } from "redux-undo";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -138,11 +139,13 @@ class World extends Component {
     }
     if (e.code === "KeyZ" && e.ctrlKey) {
       if (e.shiftKey) {
-        event.preventDefault();
-        console.log("caught Shift Z" + event);
+        const { redo } = this.props;
+        e.preventDefault();
+        redo();
       } else {
-        event.preventDefault();
-        console.log("caught Z" + event);
+        const { undo } = this.props;
+        e.preventDefault();
+        undo();
       }
     }
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
@@ -341,6 +344,8 @@ World.propTypes = {
   copySelectedEntity: PropTypes.func.isRequired,
   pasteClipboardEntity: PropTypes.func.isRequired,
   scrollWorld: PropTypes.func.isRequired,
+  undo: PropTypes.func.isRequired,
+  redo: PropTypes.func.isRequired,
   onlyMatchingScene: SceneShape
 };
 
@@ -422,7 +427,9 @@ const mapDispatchToProps = {
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   scrollWorld: actions.scrollWorld,
-  resizeWorldView: actions.resizeWorldView
+  resizeWorldView: actions.resizeWorldView,
+  undo: ActionCreators.undo,
+  redo: ActionCreators.redo
 };
 
 export default connect(
