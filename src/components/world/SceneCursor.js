@@ -313,7 +313,15 @@ class SceneCursor extends Component {
         this.startX = x1;
         this.startY = y1;
       } else {
-        paintColorTile(sceneId, x, y, selectedPalette, brushSize);
+        if(this.startX === undefined || this.startY === undefined) {
+          this.startX = x;
+          this.startY = y;
+        }
+        let x1 = x;
+        let y1 = y;
+        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);
+        this.startX = x1;
+        this.startY = y1;
       }
       this.currentX = x;
       this.currentY = y;
