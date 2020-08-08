@@ -1,4 +1,9 @@
+const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
+
+const trimMenuItem = (string) => {
+  return trimlines(string, 6);
+};
 
 const id = "EVENT_MENU";
 
@@ -26,7 +31,7 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -39,7 +44,7 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -56,7 +61,7 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: 0 }),
         type: "text",
-        maxLength: 6,
+        updateFn: trimMenuItem,
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: 0 }),
         conditions: [
