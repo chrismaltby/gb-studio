@@ -34,3 +34,45 @@ test("should allow 52 characters to be distributed any way across the three line
     trimlines("01234567890123456\n01234567890123456\n012345678901234567")
   ).toBe("01234567890123456\n01234567890123456\n012345678901234567", 18);
 });
+
+test("should not include command codes in character limits", () => {
+  expect(
+    trimlines("Hello\nWorld", 5)
+  ).toBe("Hello\nWorld");
+  expect(
+    trimlines("!S0!Hello\nWorld", 5)
+  ).toBe("!S0!Hello\nWorld");
+  expect(
+    trimlines("!S0!HelloTa\nWorld", 5)
+  ).toBe("!S0!Hello\nWorld");  
+  expect(
+    trimlines("!S0!!S0!!S0!!S0!!S0!!S0!!S0!HelloTa\nWorld", 5)
+  ).toBe("!S0!!S0!!S0!!S0!!S0!!S0!!S0!Hello\nWorld"); 
+  expect(
+    trimlines("Hello!S5!\nWorld", 5)
+  ).toBe("Hello!S5!\nWorld"); 
+});
+
+test("should treat variables as length=3 in character limits", () => {
+  expect(
+    trimlines("$L0$Hello\nWorld", 5)
+  ).toBe("$L0$He\nWorld");  
+  expect(
+    trimlines("He$L0$\nWorld", 5)
+  ).toBe("He$L0$\nWorld");    
+  expect(
+    trimlines("Hello$L0$\nWorld", 5)
+  ).toBe("Hello\nWorld");   
+});
+
+test("should treat variable characters as length=1 in character limits", () => {
+  expect(
+    trimlines("#L0#Hello\nWorld", 5)
+  ).toBe("#L0#Hell\nWorld");  
+  expect(
+    trimlines("Hello#L0#\nWorld", 5)
+  ).toBe("Hello\nWorld");   
+  expect(
+    trimlines("Hell#L0#\nWorld", 5)
+  ).toBe("Hell#L0#\nWorld");   
+});

@@ -22,12 +22,18 @@ const fields = [
     key: "speed",
     type: "cameraSpeed",
     defaultValue: 1
+  },
+  {
+    type: "checkbox",
+    label: l10n("FIELD_ALLOW_FASTFORWARD"),
+    key: "allowFastForward",
+    defaultValue: true
   }
 ];
 
 const compile = (input, helpers) => {
   const { textSetAnimSpeed } = helpers;
-  textSetAnimSpeed(input.speedIn, input.speedOut, input.speed);
+  textSetAnimSpeed(input.speedIn, input.speedOut, input.speed, input.allowFastForward);
 };
 
 module.exports = {

@@ -120,7 +120,8 @@ import {
   moveTypeDec,
   heightDec,
   actorFramesPerDir,
-  spriteTypeDec
+  spriteTypeDec,
+  textSpeedDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
@@ -473,12 +474,13 @@ class ScriptBuilder {
     output.push(2);
   };
 
-  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1) => {
+  textSetAnimSpeed = (speedIn, speedOut, textSpeed = 1, allowFastForward = true) => {
     const output = this.output;
     output.push(cmd(TEXT_SET_ANIM_SPEED));
     output.push(speedIn);
     output.push(speedOut);
-    output.push(textSpeed);
+    output.push(textSpeedDec(textSpeed));
+    output.push(allowFastForward ? 1 : 0);
   };
 
   // Variables
@@ -1217,6 +1219,7 @@ class ScriptBuilder {
 
   replaceVariables = (string, variables, event) => {
     const getVariableSymbol = (index) => `$${String(index).padStart(2, "0")}$`;
+    const getVariableCharSymbol = (index) => `#${String(index).padStart(2, "0")}#`;
 
     return (
       string
@@ -1234,13 +1237,34 @@ class ScriptBuilder {
         .replace(/\$(T[0-9])\$/g, (match, tempVariable) => {
           const index = this.getVariableIndex(tempVariable, variables);
           return getVariableSymbol(index);
-        })        
+        })   
         // Replace Custom Event variables
         .replace(/\$V([0-9])\$/g, (match, customVariable) => {
           const mappedVariable = event.args[`$variable[${customVariable}]$`];
           const index = this.getVariableIndex(mappedVariable, variables);
           return getVariableSymbol(index);
         })
+        // Replace Global variable characters
+        .replace(/#([0-9]+)#/g, (match, globalVariable) => {
+          const index = this.getVariableIndex(globalVariable, variables);
+          return getVariableCharSymbol(index);
+        })
+        // Replace Local variable characters
+        .replace(/#(L[0-9])#/g, (match, localVariable) => {
+          const index = this.getVariableIndex(localVariable, variables);
+          return getVariableCharSymbol(index);
+        })
+        // Replace Temp variable characters
+        .replace(/#(T[0-9])#/g, (match, tempVariable) => {
+          const index = this.getVariableIndex(tempVariable, variables);
+          return getVariableCharSymbol(index);
+        })   
+        // Replace Custom Event variable characters
+        .replace(/#V([0-9])#/g, (match, customVariable) => {
+          const mappedVariable = event.args[`$variable[${customVariable}]$`];
+          const index = this.getVariableIndex(mappedVariable, variables);
+          return getVariableCharSymbol(index);
+        })        
     );
   };
 }
