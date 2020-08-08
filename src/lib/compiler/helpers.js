@@ -136,8 +136,8 @@ export const actorFramesPerDir = (spriteType, numFrames) => {
 };
 
 export const combineMultipleChoiceText = (args) => {
-  const trueText = args.trueText.slice(0, 17) || "Choice A";
-  const falseText = args.falseText.slice(0, 17) || "Choice B";
+  const trueText = args.trueText || "Choice A";
+  const falseText = args.falseText || "Choice B";
   return `${trueText}\n${falseText}`;
 };
 
