@@ -47,10 +47,10 @@ typedef struct {
   UBYTE dummy24byte; // even struct faster index multiplication
 } ScriptContext;
 
-extern ScriptContext main_script_ctx;
-
 extern ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
-extern UBYTE current_script_ctx;
+extern ScriptContext active_script_ctx;
+extern UBYTE active_script_ctx_index;
+
 extern UINT8 script_ctx_pool[];
 extern UBYTE script_cmd_args[7];
 extern UBYTE script_cmd_args_len;
