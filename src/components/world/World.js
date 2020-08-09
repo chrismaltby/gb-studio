@@ -134,10 +134,8 @@ class World extends Component {
   };
 
   onKeyDown = e => {
-    if (e.target.nodeName !== "BODY") {
-      return;
-    }
     if (e.code === "KeyZ" && e.ctrlKey) {
+      // Overide Accelerator undo for windows, fixes chrome undo conflict
       if (e.shiftKey) {
         const { redo } = this.props;
         e.preventDefault();
@@ -147,6 +145,9 @@ class World extends Component {
         e.preventDefault();
         undo();
       }
+    }
+    if (e.target.nodeName !== "BODY") {
+      return;
     }
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
