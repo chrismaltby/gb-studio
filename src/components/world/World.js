@@ -4,7 +4,6 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { ActionCreators } from "redux-undo";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -134,18 +133,6 @@ class World extends Component {
   };
 
   onKeyDown = e => {
-    if (e.code === "KeyZ" && e.ctrlKey) {
-      // Overide Accelerator undo for windows, fixes chrome undo conflict
-      if (e.shiftKey) {
-        const { redo } = this.props;
-        e.preventDefault();
-        redo();
-      } else {
-        const { undo } = this.props;
-        e.preventDefault();
-        undo();
-      }
-    }
     if (e.target.nodeName !== "BODY") {
       return;
     }
@@ -345,8 +332,6 @@ World.propTypes = {
   copySelectedEntity: PropTypes.func.isRequired,
   pasteClipboardEntity: PropTypes.func.isRequired,
   scrollWorld: PropTypes.func.isRequired,
-  undo: PropTypes.func.isRequired,
-  redo: PropTypes.func.isRequired,
   onlyMatchingScene: SceneShape
 };
 
@@ -429,8 +414,6 @@ const mapDispatchToProps = {
   pasteClipboardEntity: actions.pasteClipboardEntity,
   scrollWorld: actions.scrollWorld,
   resizeWorldView: actions.resizeWorldView,
-  undo: ActionCreators.undo,
-  redo: ActionCreators.redo
 };
 
 export default connect(
