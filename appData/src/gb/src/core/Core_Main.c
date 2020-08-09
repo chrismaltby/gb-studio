@@ -211,7 +211,10 @@ int core_start() {
       wait_vbl_done();
       FadeUpdate();
     }
-    DISPLAY_OFF
+    if (!fade_black)
+    {
+      DISPLAY_OFF
+    }
 
     state_running = 1;
     current_state = next_state;
@@ -224,8 +227,8 @@ int core_start() {
     // Disable timer script
     timer_script_duration = 0;
 
-    BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
-    OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
+    //BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
+    //OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
     UIInit();
     LoadScene(current_state);

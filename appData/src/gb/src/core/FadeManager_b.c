@@ -6,13 +6,20 @@
 #include "Math.h"
 
 static UBYTE fade_frame;
-static UBYTE fade_timer;
 static FADE_DIRECTION fade_direction;
 
-static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
-static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
+static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x40, 0x80, 0x90, 0xD0, 0xD0};
+static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4, 0xE4};
 
-UWORD UpdateColor(UINT8 i, UWORD col) {
+static const UBYTE obj_fade_black_vals[] = {0xFF, 0xFF, 0xF8, 0xE4, 0xD4, 0xD0, 0xD0};
+static const UBYTE bgp_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 0xE4};
+
+UWORD UpdateColorBlack(UINT8 i, UWORD col) {
+  return RGB2(DespRight(PAL_RED(col), 6 - i),  DespRight(PAL_GREEN(col), 6 - i),
+              DespRight(PAL_BLUE(col), 6 - i));
+}
+
+UWORD UpdateColorWhite(UINT8 i, UWORD col) {
   return RGB2(PAL_RED(col) | DespRight(0x1F, i - 1), PAL_GREEN(col) | DespRight(0x1F, i - 1),
               PAL_BLUE(col) | DespRight(0x1F, i - 1));
 }
@@ -28,19 +35,36 @@ void ApplyPaletteChangeColor(UBYTE index) {
     index = 1;
   }
 
-  for (pal = 0; pal < 8; pal++) {
-    for (c = 0; c < 4; ++c, ++col, ++col_s) {
-      palette[c] = UpdateColor(index, *col);
-      palette_s[c] = UpdateColor(index, *col_s);
-    };
-    set_bkg_palette(pal, 1, palette);
-    set_sprite_palette(pal, 1, palette_s);
+  if (fade_black) {
+    for (pal = 0; pal != 8; pal++) {
+      for (c = 0; c != 4; ++c, ++col, ++col_s) {
+        palette[c] = UpdateColorBlack(index, *col);
+        palette_s[c] = UpdateColorBlack(index, *col_s);
+      };
+      set_bkg_palette(pal, 1, palette);
+      set_sprite_palette(pal, 1, palette_s);
+    }
+  } else { 
+    for (pal = 0; pal != 8; pal++) {
+      for (c = 0; c != 4; ++c, ++col, ++col_s) {
+        palette[c] = UpdateColorWhite(index, *col);
+        palette_s[c] = UpdateColorWhite(index, *col_s);
+      };
+      set_bkg_palette(pal, 1, palette);
+      set_sprite_palette(pal, 1, palette_s);
+    }
   }
 }
 
 void ApplyPaletteChangeDMG(UBYTE index) {
-  OBP0_REG = obj_fade_vals[index];
-  BGP_REG = bgp_fade_vals[index];
+  if (!fade_black) {
+    OBP0_REG = obj_fade_vals[index];
+    BGP_REG = bgp_fade_vals[index];
+  }
+  else {
+    OBP0_REG = obj_fade_black_vals[index];
+    BGP_REG = bgp_fade_black_vals[index];
+  }
 }
 
 void FadeIn_b() {
@@ -74,7 +98,7 @@ void FadeUpdate_b() {
     if ((fade_frame & fade_frames_per_step) == 0) {
       if (fade_direction == FADE_IN) {
         fade_timer++;
-        if (fade_timer == 5) {
+        if (fade_timer == 6) {
           fade_running = FALSE;
         }
       } else {
@@ -97,8 +121,17 @@ void FadeUpdate_b() {
 void ApplyPaletteChange_b() {
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
-    ApplyPaletteChangeColor(5);
+    ApplyPaletteChangeColor(6);
   } else
 #endif
-    ApplyPaletteChangeDMG(5);
+    ApplyPaletteChangeDMG(6);
+}
+
+void ForcePaletteFade_b() {
+#ifdef CGB
+  if (_cpu == CGB_TYPE) {
+    ApplyPaletteChangeColor(0);
+  } else
+#endif
+    ApplyPaletteChangeDMG(0);
 }

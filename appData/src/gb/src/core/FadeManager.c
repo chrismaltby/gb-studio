@@ -4,6 +4,8 @@
 
 UBYTE fade_running;
 UBYTE fade_frames_per_step;
+UBYTE fade_black = 1;
+UBYTE fade_timer = 0;
 
 const UBYTE fade_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F};
 // static const UBYTE obj_fade_to_black_vals[] = {0xF3, 0xF3, 0xE3, 0xE2, 0xD2, 0xD2};
@@ -39,6 +41,12 @@ void FadeUpdate() {
 void ApplyPaletteChange() {
   PUSH_BANK(FADE_BANK);
   ApplyPaletteChange_b();
+  POP_BANK;  
+}
+
+void ForcePaletteFade() {
+  PUSH_BANK(FADE_BANK);
+  ForcePaletteFade_b();
   POP_BANK;  
 }
 

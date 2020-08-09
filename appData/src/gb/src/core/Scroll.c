@@ -5,6 +5,7 @@
 #include "Core_Main.h"
 #include "DataManager.h"
 #include "GameTime.h"
+#include "FadeManager.h"
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
@@ -222,7 +223,14 @@ void RenderScreen() {
   UINT8 i;
   INT16 y;
 
-  DISPLAY_OFF;
+  if (!fade_black)
+  {
+    DISPLAY_OFF
+  } else if (!fade_timer == 0)
+  {
+    // Look at set frame black / set frame clear
+    ForcePaletteFade();
+  }
 
   // Clear pending rows/ columns
   pending_w_i = 0;
@@ -238,4 +246,8 @@ void RenderScreen() {
   game_time = 0;
 
   DISPLAY_ON;
+  if (!fade_timer == 0) {
+    // Screen palate to nornmal if not fading
+    ApplyPaletteChange();
+  }
 }
