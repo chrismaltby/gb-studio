@@ -207,6 +207,7 @@ class World extends Component {
 
   startWorldDragIfAltOrMiddleClick = e => {
     if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
+      event.preventDefault();
       this.worldDragging = true;
       e.stopPropagation();
     }
@@ -412,7 +413,7 @@ const mapDispatchToProps = {
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   scrollWorld: actions.scrollWorld,
-  resizeWorldView: actions.resizeWorldView
+  resizeWorldView: actions.resizeWorldView,
 };
 
 export default connect(

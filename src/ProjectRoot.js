@@ -186,6 +186,19 @@ window.addEventListener("resize", debounce(() => {
   store.dispatch(actions.resizeFilesSidebar(state.settings.filesSidebarWidth));
 }, 500));
 
+// Overide Accelerator undo for windows, fixes chrome undo conflict
+window.addEventListener("keydown", (e) => {
+  if (e.code === "KeyZ" && e.ctrlKey) {
+    if (e.shiftKey) {
+      e.preventDefault();
+      onRedo();
+    } else {
+      e.preventDefault();
+      onUndo();
+    }
+  }
+});
+
 // Prevent mousewheel from accidentally changing focused number fields 
 document.body.addEventListener("mousewheel", () => {
   if(document.activeElement.type === "number"){

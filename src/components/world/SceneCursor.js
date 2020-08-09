@@ -36,9 +36,7 @@ class SceneCursor extends Component {
       return;
     }
     if(e.shiftKey) {
-      this.drawLine = true;    
-      this.startX = undefined;
-      this.startY = undefined;      
+      this.drawLine = true;
     }
     if (e.ctrlKey || e.shiftKey || e.metaKey) {
       return;
@@ -259,7 +257,15 @@ class SceneCursor extends Component {
         this.startX = x1;
         this.startY = y1;
       } else {
-        paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
+        if(this.startX === undefined || this.startY === undefined) {
+          this.startX = x;
+          this.startY = y;
+        }
+        let x1 = x;
+        let y1 = y;
+        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);
+        this.startX = x1;
+        this.startY = y1;
       }
       this.currentX = x;
       this.currentY = y;
@@ -307,7 +313,15 @@ class SceneCursor extends Component {
         this.startX = x1;
         this.startY = y1;
       } else {
-        paintColorTile(sceneId, x, y, selectedPalette, brushSize);
+        if(this.startX === undefined || this.startY === undefined) {
+          this.startX = x;
+          this.startY = y;
+        }
+        let x1 = x;
+        let y1 = y;
+        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);
+        this.startX = x1;
+        this.startY = y1;
       }
       this.currentX = x;
       this.currentY = y;
