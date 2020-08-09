@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { PlusIcon } from "../library/Icons";
+import { HelpIcon } from "../library/Icons";
 import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
@@ -94,8 +94,8 @@ class FilesSidebar extends Component {
               value={query}
             />
             {onAdd && (
-              <Button onClick={onAdd} title={l10n("ASSET_ADD")}>
-                <PlusIcon />
+              <Button onClick={onAdd} title={l10n("MENU_DOCUMENTATION")}>
+                <HelpIcon />
               </Button>
             )}
           </div>
