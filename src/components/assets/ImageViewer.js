@@ -7,6 +7,10 @@ import l10n from "../../lib/helpers/l10n";
 import { divisibleBy8 } from "../../lib/helpers/8bit";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 
+const MAX_IMAGE_WIDTH = 2040;
+const MAX_IMAGE_HEIGHT = 2040;
+const MAX_PIXELS = 16380 * 64;
+
 class ImageViewer extends Component {
   componentDidMount() {
     window.addEventListener("mousewheel", this.onMouseWheel);
@@ -40,8 +44,14 @@ class ImageViewer extends Component {
       if (file.imageWidth < 160 || file.imageHeight < 144) {
         warnings.push(l10n("WARNING_BACKGROUND_TOO_SMALL"));
       }
-      if (file.imageWidth > 256 || file.imageHeight > 256) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_LARGE"));
+      if (file.imageWidth > MAX_IMAGE_WIDTH) {
+        warnings.push(l10n("WARNING_BACKGROUND_TOO_WIDE", {width: file.imageWidth, maxWidth: MAX_IMAGE_WIDTH }));
+      }
+      if (file.imageHeight > MAX_IMAGE_HEIGHT) {
+        warnings.push(l10n("WARNING_BACKGROUND_TOO_TALL", {height: file.imageHeight, maxHeight: MAX_IMAGE_HEIGHT }));
+      }
+      if ((file.imageWidth * file.imageHeight) > MAX_PIXELS) {
+        warnings.push(l10n("WARNING_BACKGROUND_TOO_MANY_PIXELS", {width: file.imageWidth, height: file.imageHeight, numPixels: file.imageWidth * file.imageHeight, maxPixels: MAX_PIXELS}));
       }
       if (!divisibleBy8(file.imageWidth) || !divisibleBy8(file.imageHeight)) {
         warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
