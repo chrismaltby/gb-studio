@@ -5,6 +5,7 @@ import electronMiddleware from "../middleware/electron";
 import buildGameMiddleware from "../middleware/buildGame";
 import musicMiddleware from "../middleware/music";
 import soundFxMiddleware from "../middleware/soundfx";
+import warningsMiddleware from "../middleware/warnings";
 import loggerMiddleware from "../middleware/logger";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -16,7 +17,8 @@ let middleware = [
   electronMiddleware,
   buildGameMiddleware,
   musicMiddleware,
-  soundFxMiddleware
+  soundFxMiddleware,
+  warningsMiddleware
 ];
 
 if (process.env.NODE_ENV !== "production" && DEBUG) {

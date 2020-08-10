@@ -758,6 +758,22 @@ export const setProfiling = (enabled) => {
   return { type: types.SET_PROFILING, enabled };
 };
 
+export const checkBackgroundWarnings = (id) => {
+  return { type: types.CHECK_BACKGROUND_WARNINGS, id };
+}
+
+export const setBackgroundWarnings = (id, warnings) => {
+  return { type: types.SET_BACKGROUND_WARNINGS, id, warnings };
+}
+
+export const checkSpriteWarnings = (id) => {
+  return { type: types.CHECK_SPRITE_WARNINGS, id };
+}
+
+export const setSpriteWarnings = (id, warnings) => {
+  return { type: types.SET_SPRITE_WARNINGS, id, warnings };
+}
+
 export const buildGame = ({
   buildType = "web",
   exportBuild = false,

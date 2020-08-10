@@ -454,11 +454,12 @@
 
   "WARNING_BACKGROUND_TOO_SMALL": "Background is too small, must be at least 160px x 144px",
   "WARNING_BACKGROUND_TOO_LARGE": "Background is too large, must be at most 256px x 256px",
-  "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "Background dimensions are not a multiple of 8",
+  "WARNING_BACKGROUND_NOT_MULTIPLE_OF_8": "Background width or height is not a multiple of 8px",
   "WARNING_BACKGROUND_TOO_WIDE": "Background is too wide, was {width}px wide when maximum is {maxWidth}px",
   "WARNING_BACKGROUND_TOO_TALL": "Background is too tall, was {height}px tall when maximum is {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Background contains too many pixels, {numPixels} ({width}px * {height}px) when maximum is {maxPixels}",
-
+  "WARNING_BACKGROUND_TOO_MANY_TILES": "Background contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly. Consider reducing the amount of detail in this image.",
+  
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Please enter a project name",

@@ -788,15 +788,8 @@ export const precompileBackgrounds = async (
     usedTilesetLookup[tileKey] = usedTilesets.length;
     usedTilesets.push(backgroundData.tilesets[tileKey]);
   });
+
   const usedBackgroundsWithData = usedBackgrounds.map((background) => {
-    if (
-      background.imageWidth / 8 !== background.width ||
-      background.imageHeight / 8 !== background.height
-    ) {
-      warnings(
-        `Background '${background.filename}' has invalid dimensions and may not appear correctly. Width and height must be multiples of 8px and no larger than 256px.`
-      );
-    }
     return {
       ...background,
       tilesetIndex:

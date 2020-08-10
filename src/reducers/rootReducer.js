@@ -9,6 +9,7 @@ import music from "./musicReducer";
 import entities from "./entitiesReducer";
 import settings from "./settingsReducer";
 import error from "./errorReducer";
+import warnings from "./warningsReducer";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -37,7 +38,8 @@ const rootReducer = combineReducers({
     ]
   }),
   settings,
-  error
+  error,
+  warnings
 });
 
 export default rootReducer;

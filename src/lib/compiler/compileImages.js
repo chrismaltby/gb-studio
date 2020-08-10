@@ -1,5 +1,6 @@
 import { assetFilename } from "../helpers/gbstudio";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
+import { getBackgroundWarnings } from "../helpers/validation";
 
 const ggbgfx = require("./ggbgfx");
 
@@ -42,12 +43,14 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
 
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
-    if (tilesetLength > MAX_TILESET_TILES) {
-      warnings(
-        `Background '${img.filename}' contains too many unique 8x8px tiles (${tilesetLength} where limit is ${MAX_TILESET_TILES}) meaning it may not display correctly. ` +
-          `Consider reducing the amount of detail in this image.`
-      );
-    }
+
+    const backgroundWarnings = await getBackgroundWarnings(img, projectPath, tilesetLength);
+    if (backgroundWarnings.length > 0) {
+      backgroundWarnings.forEach((warning) => {
+        warnings(`${img.filename}: ${warning}`)
+      })
+    }    
+
     tilesetLookups.push(tilesetLookup);
   }
 

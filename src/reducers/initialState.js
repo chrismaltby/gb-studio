@@ -117,4 +117,8 @@ export default {
     line: 0,
     col: 0,
   },
+  warnings: {
+    backgrounds: {},
+    sprites: {}
+  }
 };

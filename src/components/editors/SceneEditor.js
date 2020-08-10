@@ -20,6 +20,7 @@ import { getSettings } from "../../reducers/entitiesReducer";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import BackgroundWarnings from "../world/BackgroundWarnings";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -331,6 +332,7 @@ class SceneEditor extends Component {
                   onChange={this.onEdit("backgroundId")}
                 />
               </label>
+              <BackgroundWarnings id={scene.backgroundId} />
             </FormField>
 
             {colorsEnabled && (

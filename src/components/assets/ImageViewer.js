@@ -4,14 +4,11 @@ import { connect } from "react-redux";
 import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
-import { divisibleBy8 } from "../../lib/helpers/8bit";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
-
-const MAX_IMAGE_WIDTH = 2040;
-const MAX_IMAGE_HEIGHT = 2040;
-const MAX_PIXELS = 16380 * 64;
+import BackgroundWarnings from "../world/BackgroundWarnings";
 
 class ImageViewer extends Component {
+
   componentDidMount() {
     window.addEventListener("mousewheel", this.onMouseWheel);
   }
@@ -37,32 +34,8 @@ class ImageViewer extends Component {
     openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
   };
 
-  getWarnings = () => {
-    const { file, folder } = this.props;
-    const warnings = [];
-    if (file && folder === "backgrounds") {
-      if (file.imageWidth < 160 || file.imageHeight < 144) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_SMALL"));
-      }
-      if (file.imageWidth > MAX_IMAGE_WIDTH) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_WIDE", {width: file.imageWidth, maxWidth: MAX_IMAGE_WIDTH }));
-      }
-      if (file.imageHeight > MAX_IMAGE_HEIGHT) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_TALL", {height: file.imageHeight, maxHeight: MAX_IMAGE_HEIGHT }));
-      }
-      if ((file.imageWidth * file.imageHeight) > MAX_PIXELS) {
-        warnings.push(l10n("WARNING_BACKGROUND_TOO_MANY_PIXELS", {width: file.imageWidth, height: file.imageHeight, numPixels: file.imageWidth * file.imageHeight, maxPixels: MAX_PIXELS}));
-      }
-      if (!divisibleBy8(file.imageWidth) || !divisibleBy8(file.imageHeight)) {
-        warnings.push(l10n("WARNING_BACKGROUND_NOT_MULTIPLE_OF_8"));
-      }
-    }
-    return warnings;
-  };
-
   render() {
     const { projectRoot, file, folder, zoom, sidebarWidth } = this.props;
-    const warnings = this.getWarnings();
     return (
       <div className="ImageViewer" style={{ right: sidebarWidth }}>
         <div className="ImageViewer__Content">
@@ -90,14 +63,9 @@ class ImageViewer extends Component {
             <Button onClick={this.onOpen}>{l10n("ASSET_EDIT")}</Button>
           </div>
         )}
-        {warnings.length > 0 && (
-          <div className="ImageViewer__Warning">
-            <ul>
-              {warnings.map((warning, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <li key={index}>{warning}</li>
-              ))}
-            </ul>
+        {file && folder === "backgrounds" && (
+          <div className="ImageViewer__Warning" style={{ right: sidebarWidth + 10 }}>
+            <BackgroundWarnings id={file.id} />
           </div>
         )}
       </div>
@@ -117,14 +85,14 @@ ImageViewer.propTypes = {
   sidebarWidth: PropTypes.number.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired
+  openFolder: PropTypes.func.isRequired,
 };
 
 ImageViewer.defaultProps = {
   file: {}
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);
