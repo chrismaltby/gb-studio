@@ -77,3 +77,9 @@ void ReadBankedBankPtr(UBYTE bank, BankPtr* to, BankPtr* from) {
   POP_BANK;
   memcpy(to, &bank_ptr, sizeof(BankPtr));
 }
+
+void MemcpyBanked(UBYTE bank, void* to, void* from, size_t n) {
+  PUSH_BANK(bank);
+  memcpy(to, from, n);
+  POP_BANK;
+}

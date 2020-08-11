@@ -23,5 +23,6 @@ void ReadBankedUBYTEArray(UBYTE bank, unsigned char *out, unsigned char *ptr, UB
 UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr);
 void StrCpyBanked(UBYTE bank, char *to, char *from);
 void ReadBankedBankPtr(UBYTE bank, BankPtr *to, BankPtr *from);
+void MemcpyBanked(UBYTE bank, void* to, void* from, size_t n);
 
 #endif

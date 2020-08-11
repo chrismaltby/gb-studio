@@ -32,19 +32,13 @@ void ScriptHelper_CalcDest();
 void ScriptHelper_ClampCamDest();
 
 UBYTE* RAMPtr;
-// UINT16 actor_move_dest_x = 0;
-// UINT16 actor_move_dest_y = 0;
-BYTE actor_move_dir_x = 0;
-BYTE actor_move_dir_y = 0;
-UBYTE actor_move_cols = FALSE;
-MOVEMENT_TYPE actor_move_type = MOVE_HORIZONTAL;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
-// UBYTE wait_time = 0;
 UBYTE emote_sprite = 0;
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
 UBYTE after_lock_camera = FALSE;
+Actor* tmp_actor;
 
 const BYTE emote_offsets[] = {2, 1, 0, -1, -2, -3, -4, -5, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0,
                               0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0,
@@ -160,7 +154,7 @@ const SCRIPT_CMD script_cmds[] = {
 
 void ScriptTimerUpdate_b() {
   // Don't update timer while script is running
-  if (script_ptr != 0) {
+  if (active_script_ctx.script_ptr != 0) {
     return;
   }
 
@@ -186,46 +180,48 @@ UBYTE ScriptUpdate_MoveActor() {
   BYTE new_dir_x = 0;
   BYTE new_dir_y = 0;
 
+  tmp_actor = &actors[active_script_ctx.script_actor];
+
   // Actor reached destination
-  if (actors[script_actor].pos.x == actor_move_dest_x &&
-      actors[script_actor].pos.y == actor_move_dest_y) {
-    actors[script_actor].moving = FALSE;
-    actors[script_actor].script_control = FALSE;
-    if (script_actor == 0) {
+  if ((*tmp_actor).pos.x == active_script_ctx.actor_move_dest_x &&
+      (*tmp_actor).pos.y == active_script_ctx.actor_move_dest_y) {
+    (*tmp_actor).moving = FALSE;
+    (*tmp_actor).script_control = FALSE;
+    if (active_script_ctx.script_actor == 0) {
       pl_vel_x = 0;
       pl_vel_y = 0;
     }
     return TRUE;
   }
 
-  actors[script_actor].moving = TRUE;
+  (*tmp_actor).moving = TRUE;
 
   // Actor not at horizontal destination
-  if (actors[script_actor].pos.x != actor_move_dest_x &&
-      (!actor_move_type || (actors[script_actor].pos.y == actor_move_dest_y))) {
-    if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+  if ( (*tmp_actor).pos.x != active_script_ctx.actor_move_dest_x &&
+      (!active_script_ctx.actor_move_type || ((*tmp_actor).pos.y == active_script_ctx.actor_move_dest_y)) ) {
+    if (Lt16((*tmp_actor).pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = 1;
-    } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+    } else if (Gt16((*tmp_actor).pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = -1;
     }
   } else {
     // Actor not at vertical destination
-    actors[script_actor].dir.x = 0;
-    if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+    (*tmp_actor).dir.x = 0;
+    if (Lt16((*tmp_actor).pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = 1;
-    } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+    } else if (Gt16((*tmp_actor).pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = -1;
     }
   }
 
   // If changed direction, trigger actor rerender
-  if((actors[script_actor].dir.x != new_dir_x) ||
-     (actors[script_actor].dir.y != new_dir_y)) {
-       actors[script_actor].rerender = TRUE;
+  if(((*tmp_actor).dir.x != new_dir_x) ||
+     ((*tmp_actor).dir.y != new_dir_y) ) {
+       (*tmp_actor).rerender = TRUE;
   }
 
-  actors[script_actor].dir.x = new_dir_x;
-  actors[script_actor].dir.y = new_dir_y;
+  (*tmp_actor).dir.x = new_dir_x;
+  (*tmp_actor).dir.y = new_dir_y;
 
   return FALSE;
 }
@@ -235,45 +231,45 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   BYTE new_dir_y = 0;
 
   // Actor reached destination
-  if (actors[script_actor].pos.x == actor_move_dest_x &&
-      actors[script_actor].pos.y == actor_move_dest_y) {
-    actors[script_actor].moving = FALSE;
-    actors[script_actor].script_control = FALSE;
-    if (script_actor == 0) {
+  if (actors[active_script_ctx.script_actor].pos.x == active_script_ctx.actor_move_dest_x &&
+      actors[active_script_ctx.script_actor].pos.y == active_script_ctx.actor_move_dest_y) {
+    actors[active_script_ctx.script_actor].moving = FALSE;
+    actors[active_script_ctx.script_actor].script_control = FALSE;
+    if (active_script_ctx.script_actor == 0) {
       pl_vel_x = 0;
       pl_vel_y = 0;
     }
     return TRUE;
   }
-  actors[script_actor].moving = TRUE;
+  actors[active_script_ctx.script_actor].moving = TRUE;
 
   // Actor not at horizontal destination
-  if (actors[script_actor].pos.x != actor_move_dest_x) {
-    // actors[script_actor].dir.y = 0;
-    if (Lt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+  if (actors[active_script_ctx.script_actor].pos.x != active_script_ctx.actor_move_dest_x) {
+    // actors[active_script_ctx.script_actor].dir.y = 0;
+    if (Lt16(actors[active_script_ctx.script_actor].pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = 1;
-    } else if (Gt16(actors[script_actor].pos.x, actor_move_dest_x)) {
+    } else if (Gt16(actors[active_script_ctx.script_actor].pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = -1;
     }
   }
 
   // Actor not at vertical destination
-  if (actors[script_actor].pos.y != actor_move_dest_y) {
-    if (Lt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+  if (actors[active_script_ctx.script_actor].pos.y != active_script_ctx.actor_move_dest_y) {
+    if (Lt16(actors[active_script_ctx.script_actor].pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = 1;
-    } else if (Gt16(actors[script_actor].pos.y, actor_move_dest_y)) {
+    } else if (Gt16(actors[active_script_ctx.script_actor].pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = -1;
     }
   }
 
   // If changed direction, trigger actor rerender
-  if((actors[script_actor].dir.x != new_dir_x) ||
-     (actors[script_actor].dir.y != new_dir_y)) {
-       actors[script_actor].rerender = TRUE;
+  if((actors[active_script_ctx.script_actor].dir.x != new_dir_x) ||
+     (actors[active_script_ctx.script_actor].dir.y != new_dir_y)) {
+       actors[active_script_ctx.script_actor].rerender = TRUE;
   }
 
-  actors[script_actor].dir.x = new_dir_x;
-  actors[script_actor].dir.y = new_dir_y;
+  actors[active_script_ctx.script_actor].dir.x = new_dir_x;
+  actors[active_script_ctx.script_actor].dir.y = new_dir_y;
 
   return FALSE;
 }
@@ -296,10 +292,10 @@ UBYTE ScriptUpdate_AwaitInputPres() {
 }
 
 UBYTE ScriptUpdate_Wait() {
-  if (wait_time == 0) {
+  if (active_script_ctx.wait_time == 0) {
     return TRUE;
   }
-  wait_time--;
+  active_script_ctx.wait_time--;
   return FALSE;
 }
 
@@ -311,8 +307,8 @@ UBYTE ScriptUpdate_Emote() {
     SpritePoolReturn(emote_sprite);
     return TRUE;
   } else {
-    screen_x = 8u + actors[script_actor].pos.x - scroll_x;
-    screen_y = 8u + actors[script_actor].pos.y - scroll_y;
+    screen_x = 8u + actors[active_script_ctx.script_actor].pos.x - scroll_x;
+    screen_y = 8u + actors[active_script_ctx.script_actor].pos.y - scroll_y;
 
     if (emote_timer < BUBBLE_ANIMATION_FRAMES) {
       screen_y += emote_offsets[emote_timer];
@@ -379,8 +375,8 @@ void Script_Noop_b() {}
  * Stop current script from running and reset script pointer.
  */
 void Script_End_b() {
-  script_ptr_bank = 0;
-  script_ptr = 0;
+  active_script_ctx.script_ptr_bank = 0;
+  active_script_ctx.script_ptr = 0;
 }
 
 /*
@@ -393,7 +389,7 @@ void Script_End_b() {
  */
 void Script_Text_b() {
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
-  script_update_fn = ScriptUpdate_AwaitUIClosed;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -405,7 +401,7 @@ void Script_Text_b() {
  *   arg1: Low 8 bits for new pointer
  */
 void Script_Goto_b() {
-  script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
 }
 
 /*
@@ -421,7 +417,7 @@ void Script_Goto_b() {
 void Script_IfFlag_b() {
   if (script_variables[(script_cmd_args[0] * 256) +
                        script_cmd_args[1]]) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
 }
 
@@ -467,7 +463,7 @@ void Script_IfValue_b() {
   }
 
   if (match) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
   }
 }
 
@@ -505,9 +501,9 @@ void Script_ClearFlag_b() {
  *   arg0: Direction for active actor to face
  */
 void Script_ActorSetDir_b() {
-  actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
-  actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
-  actors[script_actor].rerender = TRUE;
+  actors[active_script_ctx.script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
+  actors[active_script_ctx.script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
+  actors[active_script_ctx.script_actor].rerender = TRUE;
 }
 
 /*
@@ -518,9 +514,9 @@ void Script_ActorSetDir_b() {
  *   arg0: Actor index
  */
 void Script_ActorActivate_b() {
-  script_actor = script_cmd_args[0];
-  if (current_script_ctx == 0) {
-    ActivateActor(script_actor);
+  active_script_ctx.script_actor = script_cmd_args[0];
+  if (active_script_ctx_index == 0) {
+    ActivateActor(active_script_ctx.script_actor);
   }
 }
 
@@ -544,7 +540,7 @@ void Script_CameraMoveTo_b() {
 
   if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
     after_lock_camera = FALSE;
-    script_update_fn = ScriptUpdate_MoveCamera;
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveCamera;
   } else {
     camera_pos.x = camera_dest.x;
     camera_pos.y = camera_dest.y;
@@ -568,7 +564,7 @@ void Script_CameraLock_b() {
 
   if ((camera_settings & CAMERA_TRANSITION_FLAG) == CAMERA_TRANSITION_FLAG) {
     after_lock_camera = TRUE;
-    script_update_fn = ScriptUpdate_MoveCamera;
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveCamera;
   } else {
     camera_pos.x = camera_dest.x;
     camera_pos.y = camera_dest.y;
@@ -612,8 +608,8 @@ void ScriptHelper_ClampCamDest() {
  *   arg0: Frames to wait
  */
 void Script_Wait_b() {
-  wait_time = script_cmd_args[0];
-  script_update_fn = ScriptUpdate_Wait;
+  active_script_ctx.wait_time = script_cmd_args[0];
+  active_script_ctx.script_update_fn = ScriptUpdate_Wait;
 }
 
 /*
@@ -626,7 +622,7 @@ void Script_Wait_b() {
 void Script_FadeOut_b() {
   FadeOut();
   FadeSetSpeed(script_cmd_args[0]);
-  script_update_fn = ScriptUpdate_AwaitFade;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -639,7 +635,7 @@ void Script_FadeOut_b() {
 void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
-  script_update_fn = ScriptUpdate_AwaitFade;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -667,7 +663,7 @@ void Script_LoadScene_b() {
   SetScene(scene_next_index);
   FadeSetSpeed(script_cmd_args[5]);
 
-  script_update_fn = ScriptUpdate_AwaitFade;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
 }
 
 /*
@@ -679,8 +675,8 @@ void Script_LoadScene_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorSetPos_b() {
-  actors[script_actor].pos.x = script_cmd_args[0] * 8;
-  actors[script_actor].pos.y = script_cmd_args[1] * 8;
+  actors[active_script_ctx.script_actor].pos.x = script_cmd_args[0] * 8;
+  actors[active_script_ctx.script_actor].pos.y = script_cmd_args[1] * 8;
 }
 
 /*
@@ -692,89 +688,93 @@ void Script_ActorSetPos_b() {
  *   arg1: New Y Pos
  */
 void Script_ActorMoveTo_b() {
-  if (actors[script_actor].script_control) {
+  tmp_actor = &actors[active_script_ctx.script_actor];
+  
+  if ((*tmp_actor).script_control) {
     return;
   }
-  actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = (script_cmd_args[0] * 8);
-  actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = (script_cmd_args[1] * 8);
-  actor_move_cols = script_cmd_args[2];
-  actor_move_type = script_cmd_args[3];
 
-  actors[script_actor].script_control = TRUE;
+  active_script_ctx.actor_move_dest_x = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_x = (script_cmd_args[0] * 8);
+  active_script_ctx.actor_move_dest_y = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_y = (script_cmd_args[1] * 8);
+  active_script_ctx.actor_move_cols = script_cmd_args[2];
+  active_script_ctx.actor_move_type = script_cmd_args[3];
 
-  if (actor_move_cols) {
+  (*tmp_actor).script_control = TRUE; // @wtf Should already be true?
+
+  if (active_script_ctx.actor_move_cols) {
     ScriptHelper_CalcDest();
   }
-  if (actor_move_type == MOVE_DIAGONAL) {
-    script_update_fn = ScriptUpdate_MoveActorDiag;
+
+  if (active_script_ctx.actor_move_type == MOVE_DIAGONAL) {
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
-    script_update_fn = ScriptUpdate_MoveActor;
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActor;
   }
 }
 
 void ScriptHelper_CalcDest() {
   UBYTE check_dir = CHECK_DIR_LEFT;
   UWORD new_dest;
-  if (actor_move_type) {
-    if (actor_move_dest_y != actors[script_actor].pos.y) {
+  if (active_script_ctx.actor_move_type) {
+    if (active_script_ctx.actor_move_dest_y != (*tmp_actor).pos.y) {
       // Check vertical collisions in path
-      if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
+      if (Lt16(active_script_ctx.actor_move_dest_y, (*tmp_actor).pos.y)) {
         check_dir = CHECK_DIR_UP;
       } else {
         check_dir = CHECK_DIR_DOWN;
       }
-      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x),
-                                           DIV_8(actors[script_actor].pos.y),
-                                           DIV_8(actor_move_dest_y), check_dir) *
+      new_dest = CheckCollisionInDirection(DIV_8((*tmp_actor).pos.x),
+                                           DIV_8((*tmp_actor).pos.y),
+                                           DIV_8(active_script_ctx.actor_move_dest_y), check_dir) *
                  8u;
-      if (new_dest != actor_move_dest_y) {
-        actor_move_dest_y = new_dest;
+      if (new_dest != active_script_ctx.actor_move_dest_y) {
+        active_script_ctx.actor_move_dest_y = new_dest;
       }
     }
     // Check horizontal collisions in path
-    if (Lt16(actor_move_dest_x, actors[script_actor].pos.x)) {
+    if (Lt16(active_script_ctx.actor_move_dest_x, (*tmp_actor).pos.x)) {
       check_dir = CHECK_DIR_LEFT;
     } else {
       check_dir = CHECK_DIR_RIGHT;
     }
     new_dest =
-        CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x), DIV_8(actor_move_dest_y),
-                                  DIV_8(actor_move_dest_x), check_dir) *
+        CheckCollisionInDirection(DIV_8((*tmp_actor).pos.x), DIV_8(active_script_ctx.actor_move_dest_y),
+                                  DIV_8(active_script_ctx.actor_move_dest_x), check_dir) *
         8u;
-    if (new_dest != actor_move_dest_x) {
-      actor_move_dest_x = new_dest;
+    if (new_dest != active_script_ctx.actor_move_dest_x) {
+      active_script_ctx.actor_move_dest_x = new_dest;
       return;
     }
   } else {
     // Check horizontal collisions in path
-    if (actor_move_dest_x != actors[script_actor].pos.x) {
-      if (Lt16(actor_move_dest_x, actors[script_actor].pos.x)) {
+    if (active_script_ctx.actor_move_dest_x != (*tmp_actor).pos.x) {
+      if (Lt16(active_script_ctx.actor_move_dest_x, (*tmp_actor).pos.x)) {
         check_dir = CHECK_DIR_LEFT;
       } else {
         check_dir = CHECK_DIR_RIGHT;
       }
-      new_dest = CheckCollisionInDirection(DIV_8(actors[script_actor].pos.x),
-                                           DIV_8(actors[script_actor].pos.y),
-                                           DIV_8(actor_move_dest_x), check_dir) *
+      new_dest = CheckCollisionInDirection(DIV_8((*tmp_actor).pos.x),
+                                           DIV_8((*tmp_actor).pos.y),
+                                           DIV_8(active_script_ctx.actor_move_dest_x), check_dir) *
                  8u;
-      if (new_dest != actor_move_dest_x) {
-        actor_move_dest_x = new_dest;
+      if (new_dest != active_script_ctx.actor_move_dest_x) {
+        active_script_ctx.actor_move_dest_x = new_dest;
       }
     }
     // Check vertical collisions in path
-    if (Lt16(actor_move_dest_y, actors[script_actor].pos.y)) {
+    if (Lt16(active_script_ctx.actor_move_dest_y, (*tmp_actor).pos.y)) {
       check_dir = CHECK_DIR_UP;
     } else {
       check_dir = CHECK_DIR_DOWN;
     }
     new_dest =
-        CheckCollisionInDirection(DIV_8(actor_move_dest_x), DIV_8(actors[script_actor].pos.y),
-                                  DIV_8(actor_move_dest_y), check_dir) *
+        CheckCollisionInDirection(DIV_8(active_script_ctx.actor_move_dest_x), DIV_8((*tmp_actor).pos.y),
+                                  DIV_8(active_script_ctx.actor_move_dest_y), check_dir) *
         8;
-    if (new_dest != actor_move_dest_y) {
-      actor_move_dest_y = new_dest;
+    if (new_dest != active_script_ctx.actor_move_dest_y) {
+      active_script_ctx.actor_move_dest_y = new_dest;
       return;
     }
   }
@@ -804,8 +804,8 @@ void Script_HideSprites_b() {
  * Unhide actor
  */
 void Script_ActorShow_b() {
-  actors[script_actor].enabled = TRUE;
-  ActivateActor(script_actor);
+  actors[active_script_ctx.script_actor].enabled = TRUE;
+  ActivateActor(active_script_ctx.script_actor);
 }
 
 /*
@@ -814,8 +814,8 @@ void Script_ActorShow_b() {
  * Hide actor
  */
 void Script_ActorHide_b() {
-  actors[script_actor].enabled = FALSE;
-  DeactivateActor(script_actor);
+  actors[active_script_ctx.script_actor].enabled = FALSE;
+  DeactivateActor(active_script_ctx.script_actor);
 }
 
 /*
@@ -826,7 +826,7 @@ void Script_ActorHide_b() {
  *   arg0: Enabled
  */
 void Script_ActorSetCollisions_b() {
-  actors[script_actor].collisionsEnabled = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].collisionsEnabled = script_cmd_args[0];
 }
 
 /*
@@ -838,10 +838,10 @@ void Script_ActorSetCollisions_b() {
  */
 void Script_ActorSetEmote_b() {
   unsigned char* emote_ptr;
-  UBYTE palette = actors[script_actor].palette_index;
+  UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
   emote_sprite = SpritePoolNext();
   emote_timer = 1;
-  script_update_fn = ScriptUpdate_Emote;
+  active_script_ctx.script_update_fn = ScriptUpdate_Emote;
   emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
                       emote_ptr + ((UWORD)script_cmd_args[0] * 64));
@@ -860,7 +860,7 @@ void Script_ActorSetEmote_b() {
  */
 void Script_CameraShake_b() {
   shake_time = script_cmd_args[0];
-  script_update_fn = ScriptUpdate_CamShake;
+  active_script_ctx.script_update_fn = ScriptUpdate_CamShake;
 }
 
 /*
@@ -898,7 +898,7 @@ void Script_OverlaySetPos_b() {
  */
 void Script_OverlayMoveTo_b() {
   UIMoveTo(script_cmd_args[0] << 3, script_cmd_args[1] << 3, script_cmd_args[2]);
-  script_update_fn = ScriptUpdate_AwaitUIAtDest;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitUIAtDest;
 }
 
 /*
@@ -908,7 +908,7 @@ void Script_OverlayMoveTo_b() {
  */
 void Script_AwaitInput_b() {
   await_input = script_cmd_args[0];
-  script_update_fn = ScriptUpdate_AwaitInputPres;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitInputPres;
 }
 
 /*
@@ -947,7 +947,7 @@ void Script_ResetVariables_b() {
  * Wait until next frame
  */
 void Script_NextFrame_b() {
-  script_await_next_frame = TRUE;
+  active_script_ctx.script_await_next_frame = TRUE;
 }
 
 /*
@@ -1044,7 +1044,7 @@ void Script_IfInput_b() {
   mask = 0;
   mask = script_cmd_args[0];
   if ((joy & mask) != 0) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -1056,7 +1056,7 @@ void Script_IfInput_b() {
 void Script_Choice_b() {
   UIShowChoice((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
                (script_cmd_args[3] * 256) + script_cmd_args[4]);
-  script_update_fn = ScriptUpdate_AwaitUIClosed;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -1068,7 +1068,7 @@ void Script_TextMenu_b() {
   UIShowMenu((script_cmd_args[0] * 256) + script_cmd_args[1], script_cmd_args[2],
              (script_cmd_args[3] * 256) + script_cmd_args[4], script_cmd_args[5],
              script_cmd_args[6]);
-  script_update_fn = ScriptUpdate_AwaitUIClosed;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 /*
@@ -1094,7 +1094,7 @@ void Script_PlayerBounce_b() {
 void Script_ActorSetSprite_b() {
   UBYTE sprite_frames;
 
-  if (script_actor == 0) {
+  if (active_script_ctx.script_actor == 0) {
     // Don't allow ActorSetSprite to be used for the player
     // Should use PlayerSetSprite instead. Events should
     // handle this automatically
@@ -1103,13 +1103,13 @@ void Script_ActorSetSprite_b() {
 
   sprite_frames = script_cmd_args[1];
 
-  actors[script_actor].sprite = script_cmd_args[0];
-  actors[script_actor].frame = 0;
-  actors[script_actor].sprite_type = sprite_frames == 6
+  actors[active_script_ctx.script_actor].sprite = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].frame = 0;
+  actors[active_script_ctx.script_actor].sprite_type = sprite_frames == 6
                                          ? SPRITE_ACTOR_ANIMATED
                                          : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[script_actor].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
-  actors[script_actor].rerender = TRUE;
+  actors[active_script_ctx.script_actor].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  actors[active_script_ctx.script_actor].rerender = TRUE;
 }
 
 /*
@@ -1148,12 +1148,11 @@ void Script_PlayerSetSprite_b() {
  */
 void Script_ActorPush_b() {
   UINT16 dest_x, dest_y;
-
-  if (actors[script_actor].script_control) {
+  tmp_actor = &actors[active_script_ctx.script_actor];
+  
+  if ((*tmp_actor).script_control) {
     return;
   }
-
-  
 
   if (script_cmd_args[0]) {
     // If pushing until collision set destination at scene bounds
@@ -1163,37 +1162,32 @@ void Script_ActorPush_b() {
     } else if (actors[0].dir.x > 0) {
       dest_x = image_width;
     } else {
-      dest_x = actors[script_actor].pos.x;
+      dest_x = (*tmp_actor).pos.x;
     }
     if (actors[0].dir.y < 0) {
       dest_y = 0;
     } else if (actors[0].dir.y > 0) {
       dest_y = image_height;
     } else {
-      dest_y = actors[script_actor].pos.y;
+      dest_y = (*tmp_actor).pos.y;
     }
   } else {
     // If not continuing until collision just push on 16px tile
-    dest_x = actors[script_actor].pos.x + (actors[0].dir.x * 16);
-    dest_y = actors[script_actor].pos.y + (actors[0].dir.y * 16);
+    dest_x = (*tmp_actor).pos.x + (actors[0].dir.x * 16);
+    dest_y = (*tmp_actor).pos.y + (actors[0].dir.y * 16);
   }
 
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings &= ~ACTOR_NOCLIP;
-  actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = dest_x;
-  actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = dest_y;
-  actor_move_dir_x = actors[0].dir.x;
-  actor_move_dir_y = actors[0].dir.y;
-  actors[script_actor].script_control = TRUE;
+  active_script_ctx.actor_move_dest_x = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_x = dest_x;
+  active_script_ctx.actor_move_dest_y = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_y = dest_y;
+  (*tmp_actor).script_control = TRUE;
 
   ScriptHelper_CalcDest();
 
-  script_update_fn = ScriptUpdate_MoveActor;
-
-  
-  
+  active_script_ctx.script_update_fn = ScriptUpdate_MoveActor;
 }
 
 /*
@@ -1209,11 +1203,11 @@ void Script_ActorPush_b() {
  */
 void Script_IfActorPos_b() {
   UBYTE tile_x, tile_y;
-  tile_x = actors[script_actor].pos.x >> 3;
-  tile_y = actors[script_actor].pos.y >> 3;
+  tile_x = actors[active_script_ctx.script_actor].pos.x >> 3;
+  tile_y = actors[active_script_ctx.script_actor].pos.y >> 3;
   if ((script_cmd_args[0] == tile_x) &&
       (script_cmd_args[1] == tile_y)) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
   }
 }
 
@@ -1301,7 +1295,7 @@ void Script_LoadData_b() {
     SetScene(scene_next_index);
     FadeSetSpeed(2);
 
-    script_update_fn = ScriptUpdate_AwaitFade;
+    active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
   }
 
   DISABLE_RAM;
@@ -1337,7 +1331,7 @@ void Script_IfSavedData_b() {
   DISABLE_RAM;
 
   if (jump) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
   }
 }
 
@@ -1352,12 +1346,12 @@ void Script_IfSavedData_b() {
  *   arg3: Low 8 bits for new pointer
  */
 void Script_IfActorDirection_b() {
-  if ((actors[script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
-       actors[script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
-      (actors[script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
-       actors[script_actor].dir.y == -1 &&
+  if ((actors[active_script_ctx.script_actor].dir.x == 1 && script_cmd_args[0] == 4 ||
+       actors[active_script_ctx.script_actor].dir.x == -1 && script_cmd_args[0] == 2) ||
+      (actors[active_script_ctx.script_actor].dir.y == 1 && script_cmd_args[0] == 1 ||
+       actors[active_script_ctx.script_actor].dir.y == -1 &&
            script_cmd_args[0] == 8)) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -1374,20 +1368,20 @@ void Script_IfActorDirection_b() {
  */
 void Script_IfActorRelActor_b() {
   if (script_cmd_args[0] == 0) {  // Above
-    if (Lt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
-      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    if (Lt16(actors[active_script_ctx.script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+      active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
   } else if (script_cmd_args[0] == 1) {  // Down
-    if (Gt16(actors[script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
-      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    if (Gt16(actors[active_script_ctx.script_actor].pos.y, actors[script_cmd_args[1]].pos.y)) {
+      active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
   } else if (script_cmd_args[0] == 2) {  // Left
-    if (Lt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
-      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    if (Lt16(actors[active_script_ctx.script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+      active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
   } else if (script_cmd_args[0] == 3) {  // Right
-    if (Gt16(actors[script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
-      script_ptr = script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
+    if (Gt16(actors[active_script_ctx.script_actor].pos.x, actors[script_cmd_args[1]].pos.x)) {
+      active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[2] * 256) + script_cmd_args[3];
     }
   }
 }
@@ -1418,8 +1412,8 @@ void Script_SetFlagRandomValue_b() {
  * Store Actor position in variables
  */
 void Script_ActorGetPos_b() {
-  script_variables[script_ptr_x] = actors[script_actor].pos.x >> 3;
-  script_variables[script_ptr_y] = actors[script_actor].pos.y >> 3;
+  script_variables[active_script_ctx.script_ptr_x] = actors[active_script_ctx.script_actor].pos.x >> 3;
+  script_variables[active_script_ctx.script_ptr_y] = actors[active_script_ctx.script_actor].pos.y >> 3;
 }
 
 /*
@@ -1428,10 +1422,10 @@ void Script_ActorGetPos_b() {
  * Set Actor position from variables
  */
 void Script_ActorSetPosToVal_b() {
-  actors[script_actor].pos.x = 0;  // @wtf-but-needed
-  actors[script_actor].pos.x = script_variables[script_ptr_x] * 8;
-  actors[script_actor].pos.y = 0;  // @wtf-but-needed
-  actors[script_actor].pos.y = script_variables[script_ptr_y] * 8;
+  actors[active_script_ctx.script_actor].pos.x = 0;  // @wtf-but-needed
+  actors[active_script_ctx.script_actor].pos.x = script_variables[active_script_ctx.script_ptr_x] * 8;
+  actors[active_script_ctx.script_actor].pos.y = 0;  // @wtf-but-needed
+  actors[active_script_ctx.script_actor].pos.y = script_variables[active_script_ctx.script_ptr_y] * 8;
 }
 
 /*
@@ -1439,26 +1433,29 @@ void Script_ActorSetPosToVal_b() {
  * ----------------------------
  * Set Actor position from variables
  */
-void Script_ActorMoveToVal_b() {
-  if (actors[script_actor].script_control) {
+void Script_ActorMoveToVal_b() {  
+  tmp_actor = &actors[active_script_ctx.script_actor];
+  if (actors[active_script_ctx.script_actor].script_control) {
     return;
   }
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
-  actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = script_variables[script_ptr_x] * 8;
-  actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = script_variables[script_ptr_y] * 8;
-  actor_move_cols = script_cmd_args[0];
-  actor_move_type = script_cmd_args[1];
-  actors[script_actor].script_control = TRUE;
-  if (actor_move_cols) {
+  active_script_ctx.actor_move_dest_x = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_x = script_variables[active_script_ctx.script_ptr_x] * 8;
+  active_script_ctx.actor_move_dest_y = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_y = script_variables[active_script_ctx.script_ptr_y] * 8;
+  active_script_ctx.actor_move_cols = script_cmd_args[0];
+  active_script_ctx.actor_move_type = script_cmd_args[1];
+  (*tmp_actor).script_control = TRUE; // @wtf should already be True?
+
+  if (active_script_ctx.actor_move_cols) {
     ScriptHelper_CalcDest();
   }
-  if (actor_move_type == MOVE_DIAGONAL) {
-    script_update_fn = ScriptUpdate_MoveActorDiag;
+
+  if (active_script_ctx.actor_move_type == MOVE_DIAGONAL) {
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
-    script_update_fn = ScriptUpdate_MoveActor;
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActor;
   }
 }
 
@@ -1471,64 +1468,67 @@ void Script_ActorMoveToVal_b() {
  *   arg1: Offset Y Pos
  */
 void Script_ActorMoveRel_b() {
-  if (actors[script_actor].script_control) {
+  tmp_actor = &actors[active_script_ctx.script_actor];  
+    
+  if ((*tmp_actor).script_control) {
     return;
   }
+
   actor_move_settings |= ACTOR_MOVE_ENABLED;
   actor_move_settings |= ACTOR_NOCLIP;
-  actor_move_dest_x = 0;  // @wtf-but-needed
-  actor_move_dest_x = actors[script_actor].pos.x;
+  active_script_ctx.actor_move_dest_x = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_x = (*tmp_actor).pos.x;
   if (script_cmd_args[0] != 0) {
     if (script_cmd_args[1] == 1) {
-      actor_move_dest_x = actor_move_dest_x - (script_cmd_args[0] * 8);
+      active_script_ctx.actor_move_dest_x = active_script_ctx.actor_move_dest_x - (script_cmd_args[0] * 8);
       // If destination wrapped past left edge set to min X
-      if (U_LESS_THAN(actors[script_actor].pos.x, actor_move_dest_x)) {
-        actor_move_dest_x = ACTOR_MIN_X;
-      } else if (U_LESS_THAN(actor_move_dest_x, ACTOR_MIN_X)) {
-        actor_move_dest_x = ACTOR_MIN_X;
+      if (U_LESS_THAN((*tmp_actor).pos.x, active_script_ctx.actor_move_dest_x)) {
+        active_script_ctx.actor_move_dest_x = ACTOR_MIN_X;
+      } else if (U_LESS_THAN(active_script_ctx.actor_move_dest_x, ACTOR_MIN_X)) {
+        active_script_ctx.actor_move_dest_x = ACTOR_MIN_X;
       }
     } else {
-      actor_move_dest_x = actor_move_dest_x + (script_cmd_args[0] * 8);
+      active_script_ctx.actor_move_dest_x = active_script_ctx.actor_move_dest_x + (script_cmd_args[0] * 8);
       // If destination beyond max X set to max X
-      if (actor_move_dest_x > image_width - 16) {
-        actor_move_dest_x = image_width - 16;
+      if (active_script_ctx.actor_move_dest_x > image_width - 16) {
+        active_script_ctx.actor_move_dest_x = image_width - 16;
       }
     }
   }
 
-  actor_move_dest_y = 0;  // @wtf-but-needed
-  actor_move_dest_y = actors[script_actor].pos.y;
+  active_script_ctx.actor_move_dest_y = 0;  // @wtf-but-needed
+  active_script_ctx.actor_move_dest_y = (*tmp_actor).pos.y;
   if (script_cmd_args[2] != 0) {
     if (script_cmd_args[3] == 1) {
-      actor_move_dest_y = actor_move_dest_y - (script_cmd_args[2] * 8);
+      active_script_ctx.actor_move_dest_y = active_script_ctx.actor_move_dest_y - (script_cmd_args[2] * 8);
       // If destination wrapped past top edge set to min Y
-      if (actor_move_dest_y > actors[script_actor].pos.y) {
-        actor_move_dest_y = ACTOR_MIN_Y;
-      } else if (actor_move_dest_y < ACTOR_MIN_Y) {
-        actor_move_dest_y = ACTOR_MIN_Y;
+      if (active_script_ctx.actor_move_dest_y > (*tmp_actor).pos.y) {
+        active_script_ctx.actor_move_dest_y = ACTOR_MIN_Y;
+      } else if (active_script_ctx.actor_move_dest_y < ACTOR_MIN_Y) {
+        active_script_ctx.actor_move_dest_y = ACTOR_MIN_Y;
       }
     } else {
-      actor_move_dest_y = actor_move_dest_y + (script_cmd_args[2] * 8);
+      active_script_ctx.actor_move_dest_y = active_script_ctx.actor_move_dest_y + (script_cmd_args[2] * 8);
       // If destination beyond max Y set to max Y
-      if (actor_move_dest_y > image_height - 8) {
-        actor_move_dest_y = image_height - 8;
+      if (active_script_ctx.actor_move_dest_y > image_height - 8) {
+        active_script_ctx.actor_move_dest_y = image_height - 8;
       }
     }
   }
 
-  actor_move_cols = script_cmd_args[4];
-  actor_move_type = script_cmd_args[5];
+  active_script_ctx.actor_move_cols = script_cmd_args[4];
+  active_script_ctx.actor_move_type = script_cmd_args[5];
 
-  actors[script_actor].script_control = TRUE;
+  (*tmp_actor).script_control = TRUE;
 
-  if (actor_move_cols) {
+  if (active_script_ctx.actor_move_cols) {
     ScriptHelper_CalcDest();
   }
 
-  if (actor_move_type == MOVE_DIAGONAL) {
-    script_update_fn = ScriptUpdate_MoveActorDiag;
+  if (active_script_ctx.actor_move_type == MOVE_DIAGONAL) {
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActorDiag;
   } else {
-    script_update_fn = ScriptUpdate_MoveActor;
+    active_script_ctx.script_update_fn = ScriptUpdate_MoveActor;
   }
 }
 
@@ -1543,17 +1543,17 @@ void Script_ActorMoveRel_b() {
 void Script_ActorSetPosRel_b() {
   if (script_cmd_args[0] != 0) {
     if (script_cmd_args[1]) {
-      actors[script_actor].pos.x = actors[script_actor].pos.x - (script_cmd_args[0] * 8);
+      actors[active_script_ctx.script_actor].pos.x = actors[active_script_ctx.script_actor].pos.x - (script_cmd_args[0] * 8);
     } else {
-      actors[script_actor].pos.x = actors[script_actor].pos.x + (script_cmd_args[0] * 8);
+      actors[active_script_ctx.script_actor].pos.x = actors[active_script_ctx.script_actor].pos.x + (script_cmd_args[0] * 8);
     }
   }
 
   if (script_cmd_args[2] != 0) {
     if (script_cmd_args[3]) {
-      actors[script_actor].pos.y = actors[script_actor].pos.y - (script_cmd_args[2] * 8);
+      actors[active_script_ctx.script_actor].pos.y = actors[active_script_ctx.script_actor].pos.y - (script_cmd_args[2] * 8);
     } else {
-      actors[script_actor].pos.y = actors[script_actor].pos.y + (script_cmd_args[2] * 8);
+      actors[active_script_ctx.script_actor].pos.y = actors[active_script_ctx.script_actor].pos.y + (script_cmd_args[2] * 8);
     }
   }
 }
@@ -1644,9 +1644,9 @@ void Script_MathMod_b() {
  * Add value from flag to flag
  */
 void Script_MathAddVal_b() {
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = a + b;
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = a + b;
 }
 
 /*
@@ -1655,9 +1655,9 @@ void Script_MathAddVal_b() {
  * Subtract value from flag to flag
  */
 void Script_MathSubVal_b() {
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = a - b;
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = a - b;
 }
 
 /*
@@ -1666,9 +1666,9 @@ void Script_MathSubVal_b() {
  * Multiply value from flag to flag
  */
 void Script_MathMulVal_b() {
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = a * b;
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = a * b;
 }
 
 /*
@@ -1677,9 +1677,9 @@ void Script_MathMulVal_b() {
  * Divide value from flag to flag
  */
 void Script_MathDivVal_b() {
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = a / b;
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = a / b;
 }
 
 /*
@@ -1688,9 +1688,9 @@ void Script_MathDivVal_b() {
  * Modulo value from flag to flag
  */
 void Script_MathModVal_b() {
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = a % b;
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = a % b;
 }
 
 /*
@@ -1699,8 +1699,8 @@ void Script_MathModVal_b() {
  * Copy value from flag to flag
  */
 void Script_CopyVal_b() {
-  UBYTE value = script_variables[script_ptr_y];
-  script_variables[script_ptr_x] = value;
+  UBYTE value = script_variables[active_script_ctx.script_ptr_y];
+  script_variables[active_script_ctx.script_ptr_x] = value;
 }
 
 /*
@@ -1715,8 +1715,8 @@ void Script_CopyVal_b() {
  */
 void Script_IfValueCompare_b() {
   UBYTE match;
-  UBYTE a = script_variables[script_ptr_x];
-  UBYTE b = script_variables[script_ptr_y];
+  UBYTE a = script_variables[active_script_ctx.script_ptr_x];
+  UBYTE b = script_variables[active_script_ctx.script_ptr_y];
 
   switch (script_cmd_args[0]) {
     case OPERATOR_EQ:
@@ -1742,7 +1742,7 @@ void Script_IfValueCompare_b() {
   }
 
   if (match) {  // True path, jump to position specified by ptr
-    script_ptr = script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[1] * 256) + script_cmd_args[2];
   }
 }
 
@@ -1757,8 +1757,8 @@ void Script_IfValueCompare_b() {
  *   arg3: Low 8 bits for second pointer
  */
 void Script_LoadVectors_b() {
-  script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
+  active_script_ctx.script_ptr_x = (script_cmd_args[0] * 256) + script_cmd_args[1];
+  active_script_ctx.script_ptr_y = (script_cmd_args[2] * 256) + script_cmd_args[3];
 }
 
 /*
@@ -1769,7 +1769,7 @@ void Script_LoadVectors_b() {
  *   arg0: Movement speed to use
  */
 void Script_ActorSetMoveSpeed_b() {
-  actors[script_actor].move_speed = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].move_speed = script_cmd_args[0];
 }
 
 /*
@@ -1780,7 +1780,7 @@ void Script_ActorSetMoveSpeed_b() {
  *   arg0: Animation speed to use
  */
 void Script_ActorSetAnimSpeed_b() {
-  actors[script_actor].anim_speed = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].anim_speed = script_cmd_args[0];
 }
 
 /*
@@ -1808,11 +1808,11 @@ void Script_ActorInvoke_b() {
 
   Script_StackPush_b();
 
-  events_ptr = &actors[script_actor].events_ptr;
-  script_ptr_bank = events_ptr->bank;
-  script_ptr = (BankDataPtr(script_ctxs[ctx].script_ptr_bank)) + events_ptr->offset;
-  script_update_fn = FALSE;
-  script_start_ptr = script_ptr;
+  events_ptr = &actors[active_script_ctx.script_actor].events_ptr;
+  active_script_ctx.script_ptr_bank = events_ptr->bank;
+  active_script_ctx.script_ptr = (BankDataPtr(script_ctxs[ctx].active_script_ctx.script_ptr_bank)) + events_ptr->offset;
+  active_script_ctx.script_update_fn = FALSE;
+  active_script_ctx.script_start_ptr = active_script_ctx.script_ptr;
 }
 
 /*
@@ -1822,9 +1822,9 @@ void Script_ActorInvoke_b() {
  * Store script start ptr for if statements, script bank for long scripts.
  */
 void Script_StackPush_b() {
-  script_bank_stack[script_stack_ptr] = script_ptr_bank;
-  script_stack[script_stack_ptr] = script_ptr;
-  script_start_stack[script_stack_ptr] = script_start_ptr;
+  script_bank_stack[script_stack_ptr] = active_script_ctx.script_ptr_bank;
+  script_stack[script_stack_ptr] = active_script_ctx.script_ptr;
+  script_start_stack[script_stack_ptr] = active_script_ctx.script_start_ptr;
   script_stack[script_stack_ptr] += 1 + script_cmd_args_len;
   script_stack_ptr++;
 }
@@ -1837,9 +1837,9 @@ void Script_StackPush_b() {
  */
 void Script_StackPop_b() {
   script_stack_ptr--;
-  script_ptr_bank = script_bank_stack[script_stack_ptr];
-  script_ptr = script_stack[script_stack_ptr];
-  script_start_ptr = script_start_stack[script_stack_ptr];
+  active_script_ctx.script_ptr_bank = script_bank_stack[script_stack_ptr];
+  active_script_ctx.script_ptr = script_stack[script_stack_ptr];
+  active_script_ctx.script_start_ptr = script_start_stack[script_stack_ptr];
 }
 
 /*
@@ -1884,7 +1884,7 @@ void Script_ScenePopState_b() {
 
     SetScene(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
-    script_update_fn = ScriptUpdate_AwaitFade;
+    active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
 
     return;
   }
@@ -1921,7 +1921,7 @@ void Script_ScenePopAllState_b() {
 
     SetScene(scene_next_index);
     FadeSetSpeed(script_cmd_args[0]);
-    script_update_fn = ScriptUpdate_AwaitFade;
+    active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
 
     return;
   }
@@ -1978,9 +1978,9 @@ void Script_RemoveInputScript_b() {
  * Set animation frame of current actor
  */
 void Script_ActorSetFrame_b() {
-  actors[script_actor].frame = 0;
-  actors[script_actor].frame = script_cmd_args[0] % actors[script_actor].frames_len;
-  actors[script_actor].rerender = TRUE;
+  actors[active_script_ctx.script_actor].frame = 0;
+  actors[active_script_ctx.script_actor].frame = script_cmd_args[0] % actors[active_script_ctx.script_actor].frames_len;
+  actors[active_script_ctx.script_actor].rerender = TRUE;
 }
 
 /*
@@ -1989,10 +1989,10 @@ void Script_ActorSetFrame_b() {
  * Set animation frame of current actor using variable
  */
 void Script_ActorSetFrameToVal_b() {
-  actors[script_actor].frame = 0;
-  actors[script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] %
-                               actors[script_actor].frames_len;
-  actors[script_actor].rerender = TRUE;
+  actors[active_script_ctx.script_actor].frame = 0;
+  actors[active_script_ctx.script_actor].frame = script_variables[(script_cmd_args[0] * 256) + script_cmd_args[1]] %
+                               actors[active_script_ctx.script_actor].frames_len;
+  actors[active_script_ctx.script_actor].rerender = TRUE;
 }
 
 /*
@@ -2137,7 +2137,7 @@ void Script_TextWithAvatar_b() {
   avatar_enabled = TRUE;
   UIShowText(script_cmd_args[0], (script_cmd_args[1] * 256) + script_cmd_args[2]);
   UIShowAvatar(script_cmd_args[3]);
-  script_update_fn = ScriptUpdate_AwaitUIClosed;
+  active_script_ctx.script_update_fn = ScriptUpdate_AwaitUIClosed;
 }
 
 void Script_LaunchProjectile_b() {
@@ -2163,8 +2163,8 @@ void Script_LaunchProjectile_b() {
   }
 
   ProjectileLaunch(script_cmd_args[0],                         // Sprite
-                   actors[script_actor].pos.x + (dir_x * 16),  // Launch X
-                   actors[script_actor].pos.y + (dir_y * 16),  // Launch Y
+                   actors[active_script_ctx.script_actor].pos.x + (dir_x * 16),  // Launch X
+                   actors[active_script_ctx.script_actor].pos.y + (dir_y * 16),  // Launch Y
                    dir_x,                                      // Dir x
                    dir_y,                                      // Dir y
                    1,                                          // Moving
@@ -2176,7 +2176,7 @@ void Script_LaunchProjectile_b() {
 
 void Script_WeaponAttack_b() {
   WeaponAttack(script_cmd_args[0],  // Sprite
-               script_actor,
+               active_script_ctx.script_actor,
                script_cmd_args[1] & 0xF,  // Collision group
                script_cmd_args[1] >> 4);  // Collision mask
 }
@@ -2197,12 +2197,12 @@ void Script_PalSetUI_b() {
 }
 
 void Script_ActorStopUpdate_b() {
-  actors[script_actor].moving = FALSE;
-  if (actors[script_actor].movement_ctx) {
-    ScriptCtxPoolReturn(actors[script_actor].movement_ctx, script_actor);
+  actors[active_script_ctx.script_actor].moving = FALSE;
+  if (actors[active_script_ctx.script_actor].movement_ctx) {
+    ScriptCtxPoolReturn(actors[active_script_ctx.script_actor].movement_ctx, active_script_ctx.script_actor);
   }
 }
 
 void Script_ActorSetAnimate_b() {
-  actors[script_actor].animate = script_cmd_args[0];
+  actors[active_script_ctx.script_actor].animate = script_cmd_args[0];
 }
