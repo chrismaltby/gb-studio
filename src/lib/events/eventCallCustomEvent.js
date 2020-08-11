@@ -27,7 +27,7 @@ const compile = (input, helpers) => {
       e.args.actorId = input[`$actor[${e.args.actorId}]$`] || "$self$";
     }
     if (e.args.otherActorId && e.args.otherActorId !== "player") {
-      e.args.otherActorId = input[`$actor[${e.args.otherActorId}]$`];
+      e.args.otherActorId = input[`$actor[${e.args.otherActorId}]$`] || "$self$";
     }
 
     Object.keys(e.args).forEach((arg) => {
