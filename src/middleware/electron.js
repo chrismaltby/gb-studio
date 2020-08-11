@@ -26,11 +26,12 @@ import {
   getScenes,
   getScenesLookup,
   getCustomEvents,
+  getCustomEventsLookup,
   getActorsLookup,
   getTriggersLookup,
   getSettings
 } from "../reducers/entitiesReducer";
-import { walkEvents, filterEvents } from "../lib/helpers/eventSystem";
+import { walkEvents, filterEvents, getCustomEventIdsInEvents } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { editScene, editActor, editTrigger, editProjectSettings } from "../actions";
 import l10n from "../lib/helpers/l10n";
@@ -88,22 +89,32 @@ export default store => next => action => {
       )
     );
   } else if (action.type === COPY_EVENT) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = getCustomEventIdsInEvents([action.event]);
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
           ...action.event,
-          __type: "event"
+          __type: "event",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
       )
     );
   } else if (action.type === COPY_SCRIPT) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = getCustomEventIdsInEvents(action.script);
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
     clipboard.writeText(
       JSON.stringify(
         {
           script: action.script,
-          __type: "script"
+          __type: "script",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4

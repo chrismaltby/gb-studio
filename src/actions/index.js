@@ -533,8 +533,8 @@ export const selectCustomEvent = id => {
   return { type: types.SELECT_CUSTOM_EVENT, id };
 };
 
-export const addCustomEvent = () => {
-  return { type: types.ADD_CUSTOM_EVENT, id: uuid() };
+export const addCustomEvent = id => {
+  return { type: types.ADD_CUSTOM_EVENT, id: id || uuid() };
 };
 
 export const editWorld = values => {

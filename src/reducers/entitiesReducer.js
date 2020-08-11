@@ -569,6 +569,12 @@ const editCustomEvent = (state, action) => {
   const patch = { ...action.values };
   let newState = state;
 
+  const oldEvent = newState.entities.customEvents[action.id];
+
+  if (!oldEvent) {
+    newState = addCustomEvent(state, action);
+  }
+
   if (patch.script) {
     // Fix invalid variables in script
     const fix = replaceInvalidCustomEventVariables;

@@ -1,4 +1,5 @@
 import uuid from "uuid/v4";
+import { EVENT_CALL_CUSTOM_EVENT } from "../compiler/eventTypes";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
@@ -328,6 +329,16 @@ const isVariableField = (cmd, fieldName, fieldValue) => {
   )
 };
 
+const getCustomEventIdsInEvents = (events) => {
+  const customEventIds = [];
+  walkEvents(events, (event) => {
+    if (event.command === EVENT_CALL_CUSTOM_EVENT) {
+      customEventIds.push(event.args.customEventId);
+    }
+  });
+  return customEventIds;
+}
+
 
 export {
   mapEvents,
@@ -348,5 +359,6 @@ export {
   filterEvents,
   findEvent,
   eventHasArg,
-  isVariableField
+  isVariableField,
+  getCustomEventIdsInEvents
 };
