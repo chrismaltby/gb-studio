@@ -52,7 +52,7 @@ const createSplash = async (forceNew = false) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 700,
-    height: 432,
+    height: 450,
     resizable: false,
     maximizable: false,
     fullscreenable: false,
