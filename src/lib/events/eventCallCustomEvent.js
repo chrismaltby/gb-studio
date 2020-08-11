@@ -23,7 +23,7 @@ const compile = (input, helpers) => {
   walkEvents(script, e => {
     if (!e.args) return;
 
-    if (e.args.actorId && e.args.actordId !== "player") {
+    if (e.args.actorId && e.args.actorId !== "player") {
       e.args.actorId = input[`$actor[${e.args.actorId}]$`] || "$self$";
     }
     if (e.args.otherActorId && e.args.otherActorId !== "player") {
