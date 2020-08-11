@@ -78,7 +78,7 @@ UBYTE ScriptStartBg(BankPtr* events_ptr, UBYTE owner) {
 
 void ScriptRunnerUpdate() {
   UBYTE* initial_script_ptr;
-  UBYTE i, script_cmd_index;
+  UBYTE script_cmd_index;
   UBYTE update_complete = FALSE;
 
   active_script_ctx.script_await_next_frame = FALSE;
