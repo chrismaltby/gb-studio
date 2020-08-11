@@ -231,7 +231,7 @@ class Splash extends Component {
 
         {tab === "info" && (
           <div className="Splash__Content">
-            <h2>🎉 Welcome to GB Studio 2 Open Beta! 🎉</h2>
+            <h2>🎉 Welcome to the GB Studio 2 Open Beta! 🎉</h2>
             <p>
               This version is very much work in progress so things will break. Watch out for bugs, make regular backups,
               and if you spot anything wrong please report it at{" "}
