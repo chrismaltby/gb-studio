@@ -19,7 +19,7 @@ class TriggerEditor extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardTrigger: null
+      clipboardData: null
     };
   }
 
@@ -35,10 +35,10 @@ class TriggerEditor extends Component {
     copyTrigger(trigger);
   };
 
-  onPaste = e => {
-    const { setTriggerPrefab } = this.props;
-    const { clipboardTrigger } = this.state;
-    setTriggerPrefab(clipboardTrigger);
+  onPaste = (e) => {
+    const { pasteClipboardEntity } = this.props;
+    const { clipboardData } = this.state;
+    pasteClipboardEntity(clipboardData);
   };
 
   onRemove = e => {
@@ -46,16 +46,12 @@ class TriggerEditor extends Component {
     removeTrigger(sceneId, trigger.id);
   };
 
-  readClipboard = e => {
+  readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__type === "trigger") {
-        this.setState({ clipboardTrigger: clipboardData });
-      } else {
-        this.setState({ clipboardTrigger: null });
-      }
+      this.setState({ clipboardData });
     } catch (err) {
-      this.setState({ clipboardTrigger: null });
+      this.setState({ clipboardData: null });
     }
   };
 
@@ -66,7 +62,7 @@ class TriggerEditor extends Component {
       return <WorldEditor />;
     }
 
-    const { clipboardTrigger } = this.state;
+    const { clipboardData } = this.state;
 
     return (
       <Sidebar onMouseDown={selectSidebar}>
@@ -83,7 +79,7 @@ class TriggerEditor extends Component {
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
-                {clipboardTrigger && (
+                {clipboardData && clipboardData.__type === "trigger" && (
                   <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_TRIGGER")}
                   </MenuItem>
@@ -229,7 +225,7 @@ TriggerEditor.propTypes = {
   editTrigger: PropTypes.func.isRequired,
   removeTrigger: PropTypes.func.isRequired,
   copyTrigger: PropTypes.func.isRequired,
-  setTriggerPrefab: PropTypes.func.isRequired,
+  pasteClipboardEntity: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired
 };
@@ -254,7 +250,7 @@ const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
-  setTriggerPrefab: actions.setTriggerPrefab,
+  pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: actions.selectScene,
   selectSidebar: actions.selectSidebar
 };

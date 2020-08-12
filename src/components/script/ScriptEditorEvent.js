@@ -159,8 +159,8 @@ class ScriptEditorEvent extends Component {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
-        this.setState({ clipboardEvent: clipboardData });
-        return clipboardData;
+        this.setState({ clipboardEvent: clipboardData.event });
+        return clipboardData.event;
       }
       if (clipboardData.__type === "script") {
         this.setState({ clipboardEvent: clipboardData.script });
@@ -388,7 +388,6 @@ class ScriptEditorEvent extends Component {
                         onSelectCustomEvent={onSelectCustomEvent}
                         onMouseEnter={onMouseEnter}
                         onMouseLeave={onMouseLeave}
-                        clipboardEvent={clipboardEvent}
                       />
                     ))}
                     <div

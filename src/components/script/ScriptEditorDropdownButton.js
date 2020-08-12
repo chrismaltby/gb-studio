@@ -15,18 +15,15 @@ class ScriptEditorDropdownButton extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardEvent: null,
-      clipboardCustomEvents: null
+      clipboardEvent: null
     };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     const { value } = this.props;
-    const { clipboardEvent, clipboardCustomEvents } = this.state;
+    const { clipboardEvent } = this.state;
     return (
-      nextProps.value !== value ||
-      nextState.clipboardEvent !== clipboardEvent ||
-      nextState.clipboardCustomEvents !== clipboardCustomEvents
+      nextProps.value !== value || nextState.clipboardEvent !== clipboardEvent
     );
   }
 
@@ -53,7 +50,8 @@ class ScriptEditorDropdownButton extends Component {
   onReplaceScript = (e) => {
     const { clipboardEvent } = this.state;
     if (clipboardEvent) {
-      this.onPasteCustomEvents();
+      const { pasteCustomEvents } = this.props;
+      pasteCustomEvents();
       this.onChange(
         []
           .concat(
@@ -77,7 +75,8 @@ class ScriptEditorDropdownButton extends Component {
       ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(clipboardEvent);
     if (clipboardEvent) {
-      this.onPasteCustomEvents();
+      const { pasteCustomEvents } = this.props;
+      pasteCustomEvents();
       if (before) {
         this.onChange([].concat(newEvent, value));
       } else {
@@ -86,28 +85,18 @@ class ScriptEditorDropdownButton extends Component {
     }
   };
 
-  onPasteCustomEvents = () => {
-    const { clipboardCustomEvents } = this.state;
-    if (clipboardCustomEvents) {
-      clipboardCustomEvents.forEach((customEvent) => {
-        const { editCustomEvent } = this.props;
-        editCustomEvent(customEvent.id, customEvent);
-      })
-    }    
-  }
-
   readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
-        this.setState({ clipboardEvent: clipboardData, clipboardCustomEvents: clipboardData.__customEvents });
+        this.setState({ clipboardEvent: clipboardData.event });
       } else if (clipboardData.__type === "script") {
-        this.setState({ clipboardEvent: clipboardData.script, clipboardCustomEvents: clipboardData.__customEvents });
+        this.setState({ clipboardEvent: clipboardData.script });
       } else {
-        this.setState({ clipboardEvent: null, clipboardCustomEvents: null });
+        this.setState({ clipboardEvent: null });
       }
     } catch (err) {
-      this.setState({ clipboardEvent: null, clipboardCustomEvents: null });
+      this.setState({ clipboardEvent: null });
     }
   };
 
@@ -149,7 +138,7 @@ ScriptEditorDropdownButton.propTypes = {
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
   copyScript: PropTypes.func.isRequired,
-  editCustomEvent: PropTypes.func.isRequired,
+  pasteCustomEvents: PropTypes.func.isRequired,
 };
 
 ScriptEditorDropdownButton.defaultProps = Object.create(
@@ -177,7 +166,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   copyScript: actions.copyScript,
-  editCustomEvent: actions.editCustomEvent
+  pasteCustomEvents: actions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditorDropdownButton);

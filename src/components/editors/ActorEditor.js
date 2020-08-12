@@ -60,7 +60,7 @@ class ActorEditor extends Component {
     const initialSecondaryTab = secondaryTabs.includes(props.lastScriptTabSecondary) ? props.lastScriptTabSecondary : secondaryTabs[0];
 
     this.state = {
-      clipboardActor: null,
+      clipboardData: null,
       scriptMode: initialTab,
       scriptModeSecondary: initialSecondaryTab,
     };
@@ -116,9 +116,9 @@ class ActorEditor extends Component {
   };
 
   onPaste = (e) => {
-    const { setActorPrefab } = this.props;
-    const { clipboardActor } = this.state;
-    setActorPrefab(clipboardActor);
+    const { pasteClipboardEntity } = this.props;
+    const { clipboardData } = this.state;
+    pasteClipboardEntity(clipboardData);
   };
 
   onRemove = (e) => {
@@ -129,13 +129,9 @@ class ActorEditor extends Component {
   readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__type === "actor") {
-        this.setState({ clipboardActor: clipboardData });
-      } else {
-        this.setState({ clipboardActor: null });
-      }
+      this.setState({ clipboardData });
     } catch (err) {
-      this.setState({ clipboardActor: null });
+      this.setState({ clipboardData: null });
     }
   };
 
@@ -149,7 +145,7 @@ class ActorEditor extends Component {
       colorsEnabled,
       defaultSpritePaletteId,
     } = this.props;
-    const { clipboardActor, scriptMode, scriptModeSecondary } = this.state;
+    const { clipboardData, scriptMode, scriptModeSecondary } = this.state;
 
     if (!actor) {
       return <WorldEditor />;
@@ -229,7 +225,7 @@ class ActorEditor extends Component {
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_ACTOR")}
                 </MenuItem>
-                {clipboardActor && (
+                {clipboardData && clipboardData.__type === "actor" && (
                   <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_ACTOR")}
                   </MenuItem>
@@ -535,7 +531,7 @@ ActorEditor.propTypes = {
   editActor: PropTypes.func.isRequired,
   removeActor: PropTypes.func.isRequired,
   copyActor: PropTypes.func.isRequired,
-  setActorPrefab: PropTypes.func.isRequired,
+  pasteClipboardEntity: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
   setScriptTab: PropTypes.func.isRequired,
@@ -575,7 +571,7 @@ const mapDispatchToProps = {
   editActor: actions.editActor,
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
-  setActorPrefab: actions.setActorPrefab,
+  pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: actions.selectScene,
   selectSidebar: actions.selectSidebar,
   setScriptTab: actions.setScriptTab,

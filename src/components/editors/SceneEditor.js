@@ -44,9 +44,7 @@ class SceneEditor extends Component {
 
     this.state = {
       showHiddenSceneTypes: false,
-      clipboardActor: null,
-      clipboardScene: null,
-      clipboardTrigger: null,
+      clipboardData: null,
       scriptMode: initialTab,
       scriptModeSecondary: initialSecondaryTab
     };
@@ -98,21 +96,9 @@ class SceneEditor extends Component {
   };
 
   onPaste = (e) => {
-    const { setScenePrefab } = this.props;
-    const { clipboardScene } = this.state;
-    setScenePrefab(clipboardScene);
-  };
-
-  onPasteActor = (e) => {
-    const { setActorPrefab } = this.props;
-    const { clipboardActor } = this.state;
-    setActorPrefab(clipboardActor);
-  };
-
-  onPasteTrigger = (e) => {
-    const { setTriggerPrefab } = this.props;
-    const { clipboardTrigger } = this.state;
-    setTriggerPrefab(clipboardTrigger);
+    const { pasteClipboardEntity } = this.props;
+    const { clipboardData } = this.state;
+    pasteClipboardEntity(clipboardData);
   };
 
   onEditScript = this.onEdit("script");
@@ -134,37 +120,9 @@ class SceneEditor extends Component {
   readClipboard = (e) => {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__type === "actor") {
-        this.setState({
-          clipboardActor: clipboardData,
-          clipboardTrigger: null,
-          clipboardScene: null,
-        });
-      } else if (clipboardData.__type === "trigger") {
-        this.setState({
-          clipboardActor: null,
-          clipboardTrigger: clipboardData,
-          clipboardScene: null,
-        });
-      } else if (clipboardData.__type === "scene") {
-        this.setState({
-          clipboardActor: null,
-          clipboardTrigger: null,
-          clipboardScene: clipboardData,
-        });
-      } else {
-        this.setState({
-          clipboardActor: null,
-          clipboardTrigger: null,
-          clipboardScene: null,
-        });
-      }
+      this.setState({ clipboardData });
     } catch (err) {
-      this.setState({
-        clipboardActor: null,
-        clipboardTrigger: null,
-        clipboardScene: null,
-      });
+      this.setState({ clipboardData: null });
     }
   };
 
@@ -194,9 +152,7 @@ class SceneEditor extends Component {
     }
 
     const {
-      clipboardScene,
-      clipboardActor,
-      clipboardTrigger,
+      clipboardData,
       scriptMode,
       scriptModeSecondary,
       showHiddenSceneTypes
@@ -268,18 +224,18 @@ class SceneEditor extends Component {
                 <MenuItem onClick={this.onCopy}>
                   {l10n("MENU_COPY_SCENE")}
                 </MenuItem>
-                {clipboardScene && (
+                {clipboardData && clipboardData.__type === "scene" && (
                   <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_SCENE")}
                   </MenuItem>
                 )}
-                {clipboardActor && (
-                  <MenuItem onClick={this.onPasteActor}>
+                {clipboardData && clipboardData.__type === "actor" && (
+                  <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_ACTOR")}
                   </MenuItem>
                 )}
-                {clipboardTrigger && (
-                  <MenuItem onClick={this.onPasteTrigger}>
+                {clipboardData && clipboardData.__type === "trigger" && (
+                  <MenuItem onClick={this.onPaste}>
                     {l10n("MENU_PASTE_TRIGGER")}
                   </MenuItem>
                 )}
@@ -439,9 +395,7 @@ SceneEditor.propTypes = {
   editScene: PropTypes.func.isRequired,
   removeScene: PropTypes.func.isRequired,
   copyScene: PropTypes.func.isRequired,
-  setScenePrefab: PropTypes.func.isRequired,
-  setActorPrefab: PropTypes.func.isRequired,
-  setTriggerPrefab: PropTypes.func.isRequired,
+  pasteClipboardEntity: PropTypes.func.isRequired,
   selectSidebar: PropTypes.func.isRequired,
   setScriptTab: PropTypes.func.isRequired,
   setScriptTabSecondary: PropTypes.func.isRequired  
@@ -475,9 +429,7 @@ const mapDispatchToProps = {
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
   copyScene: actions.copyScene,
-  setScenePrefab: actions.setScenePrefab,
-  setActorPrefab: actions.setActorPrefab,
-  setTriggerPrefab: actions.setTriggerPrefab,
+  pasteClipboardEntity: actions.pasteClipboardEntity,
   selectSidebar: actions.selectSidebar,
   setScriptTab: actions.setScriptTabScene,
   setScriptTabSecondary: actions.setScriptTabSecondary  

@@ -17,9 +17,11 @@ import {
   PROJECT_LOAD_FAILURE,
   REMOVE_CUSTOM_EVENT,
   EJECT_ENGINE,
-  SET_TOOL
+  SET_TOOL,
+  PASTE_CUSTOM_EVENTS
 } from "../actions/actionTypes";
 import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
+import confirmReplaceCustomEvent from "../lib/electron/dialog/confirmReplaceCustomEvent";
 import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEnableColorDialog from "../lib/electron/dialog/confirmEnableColorDialog";
 import {
@@ -31,9 +33,9 @@ import {
   getTriggersLookup,
   getSettings
 } from "../reducers/entitiesReducer";
-import { walkEvents, filterEvents, getCustomEventIdsInEvents } from "../lib/helpers/eventSystem";
+import { walkEvents, filterEvents, getCustomEventIdsInEvents, getCustomEventIdsInActor, getCustomEventIdsInScene } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { editScene, editActor, editTrigger, editProjectSettings } from "../actions";
+import { editScene, editActor, editTrigger, editProjectSettings, editCustomEvent } from "../actions";
 import l10n from "../lib/helpers/l10n";
 import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
@@ -51,22 +53,32 @@ export default store => next => action => {
   } else if (action.type === SIDEBAR_FILES_RESIZE) {
     settings.set("filesSidebarWidth", action.width);
   } else if (action.type === COPY_ACTOR) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.actor));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.actor,
-          __type: "actor"
+          actor: action.actor,
+          __type: "actor",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
       )
     );
   } else if (action.type === COPY_TRIGGER) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.trigger.script));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.trigger,
-          __type: "trigger"
+          trigger: action.trigger,
+          __type: "trigger",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
@@ -74,15 +86,24 @@ export default store => next => action => {
     );
   } else if (action.type === COPY_SCENE) {
     const state = store.getState();
-    const { scene } = action;
     const { actors, triggers } = state.entities.present.entities;
+
+    const scene = {
+      ...action.scene,
+      actors: action.scene.actors.map(actorId => actors[actorId]),
+      triggers: action.scene.triggers.map(triggerId => triggers[triggerId]),  
+    }
+
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInScene(scene));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+
     clipboard.writeText(
       JSON.stringify(
         {
-          ...scene,
-          actors: scene.actors.map(actorId => actors[actorId]),
-          triggers: scene.triggers.map(triggerId => triggers[triggerId]),
-          __type: "scene"
+          scene,
+          __type: "scene",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
@@ -91,12 +112,12 @@ export default store => next => action => {
   } else if (action.type === COPY_EVENT) {
     const state = store.getState();
     const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = getCustomEventIdsInEvents([action.event]);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents([action.event]));
     const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.event,
+          event: action.event,
           __type: "event",
           __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
@@ -107,7 +128,7 @@ export default store => next => action => {
   } else if (action.type === COPY_SCRIPT) {
     const state = store.getState();
     const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = getCustomEventIdsInEvents(action.script);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.script));
     const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
     clipboard.writeText(
       JSON.stringify(
@@ -244,6 +265,39 @@ export default store => next => action => {
     ejectEngineToDir(outputDir).then(() => {
       remote.shell.openItem(outputDir);
     });
+
+  } else if (action.type === PASTE_CUSTOM_EVENTS) {
+
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__customEvents) {
+        const state = store.getState();
+
+        clipboardData.__customEvents.forEach((customEvent) => {
+          const customEventsLookup = getCustomEventsLookup(state);
+          const existingCustomEvent = customEventsLookup[customEvent.id];
+
+          if (existingCustomEvent) {
+            if (JSON.stringify(customEvent) === JSON.stringify(existingCustomEvent)) {
+              // Already have this custom event
+              return;
+            }
+
+            // Display confirmation and stop replace if cancelled
+            const cancel = confirmReplaceCustomEvent(
+              existingCustomEvent.name,
+            );
+            if (cancel) {
+              return;
+            }
+          }
+
+          store.dispatch(editCustomEvent(customEvent.id, customEvent))
+        });
+      }
+    } catch (err) {
+      // Ignore
+    }
 
   } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
     const state = store.getState();

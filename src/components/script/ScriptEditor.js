@@ -29,7 +29,6 @@ class ScriptEditor extends Component {
     this.scriptBottomRef = React.createRef();
     this.state = {
       clipboardEvent: null,
-      clipboardCustomEvents: null,
       limit: 10
     };
     this.debouncedLoadMore = debounce(this.loadMore, 10);
@@ -178,15 +177,14 @@ class ScriptEditor extends Component {
   };
 
   onPaste = (id, event, before) => {
-    console.log("ON PASTE")
-    const { value } = this.props;
+    const { value, pasteCustomEvents } = this.props;
     const newEvent = Array.isArray(event)
       ? event.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(event);
     const input = before
       ? prependEvent(value, id, newEvent)
       : appendEvent(value, id, newEvent);
-    this.onPasteCustomEvents();
+    pasteCustomEvents(); 
     this.onChange(input);
   };
 
@@ -203,34 +201,6 @@ class ScriptEditor extends Component {
   onSelectCustomEvent = id => {
     const { selectCustomEvent } = this.props;
     selectCustomEvent(id);
-  };
-
-  onPasteCustomEvents = () => {
-    const { clipboardCustomEvents } = this.state;
-    console.log(clipboardCustomEvents)
-    if (clipboardCustomEvents) {
-      clipboardCustomEvents.forEach((customEvent) => {
-        const { editCustomEvent } = this.props;
-        editCustomEvent(customEvent.id, customEvent);
-      })
-    }    
-  }  
-
-  readClipboard = e => {
-    try {
-      const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__type === "event") {
-        console.log(clipboardData);
-        this.setState({ clipboardEvent: clipboardData, clipboardCustomEvents: clipboardData.__customEvents });
-      } else if (clipboardData.__type === "script") {
-        console.log(clipboardData);
-        this.setState({ clipboardEvent: clipboardData.script, clipboardCustomEvents: clipboardData.__customEvents });
-      } else {
-        this.setState({ clipboardEvent: null, clipboardCustomEvents: null });
-      }
-    } catch (err) {
-      this.setState({ clipboardEvent: null, clipboardCustomEvents: null });
-    }
   };
 
   render() {
@@ -255,7 +225,6 @@ class ScriptEditor extends Component {
             onSelectCustomEvent={this.onSelectCustomEvent}
             onMouseEnter={this.onEnter}
             onMouseLeave={this.onLeave}
-            clipboardEvent={clipboardEvent}
           />
         ))}
         {limit < value.length &&
@@ -282,7 +251,7 @@ ScriptEditor.propTypes = {
   selectCustomEvent: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
   scope: PropTypes.string.isRequired,
-  editCustomEvent: PropTypes.string.isRequired
+  pasteCustomEvents: PropTypes.string.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create(
@@ -319,7 +288,7 @@ const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
   selectCustomEvent: actions.selectCustomEvent,
-  editCustomEvent: actions.editCustomEvent
+  pasteCustomEvents: actions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);
