@@ -116,7 +116,6 @@ const normalizedWalkSceneEvents = (
   scene.actors.forEach(actorId => {
     const actor = actorsLookup[actorId];
     walkEvents(actor.script, callback);
-    walkEvents(actor.script, callback);
     walkEvents(actor.startScript, callback);
     walkEvents(actor.updateScript, callback);
     walkEvents(actor.hit1Script, callback);
@@ -315,6 +314,21 @@ const eventHasArg = (event, argName) => {
   );
 };
 
+const events = require("../events").default;
+
+const isVariableField = (cmd, fieldName, fieldValue) => {
+  const event = events[cmd];
+  if (!event) return false;
+  const field = event.fields.find((f) => f.key === fieldName)
+  return (
+    field && (
+      field.type === "variable" ||
+      (field.type === "union" && fieldValue.type === "variable")
+    )
+  )
+};
+
+
 export {
   mapEvents,
   mapScenesEvents,
@@ -333,5 +347,6 @@ export {
   removeEventIds,
   filterEvents,
   findEvent,
-  eventHasArg
+  eventHasArg,
+  isVariableField
 };

@@ -677,6 +677,7 @@ class ScriptBuilder {
     }
     if(unionValue.type === "variable") {
       this.variableCopy(variable, unionValue.value);
+      return variable;
     }
     throw new Error(`Union type "${unionValue.type}" unknown.`);    
   }
