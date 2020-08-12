@@ -85,22 +85,20 @@ const walkScenesEvents = (scenes, callback) => {
 };
 
 const walkSceneEvents = (scene, callback) => {
-  walkEvents(scene.script, callback);
-  walkEvents(scene.playerHit1Script, callback);
-  walkEvents(scene.playerHit2Script, callback);
-  walkEvents(scene.playerHit3Script, callback);
-
+  walkSceneSpecificEvents(scene, callback);
   scene.actors.forEach(actor => {
-    walkEvents(actor.script, callback);
-    walkEvents(actor.startScript, callback);
-    walkEvents(actor.updateScript, callback);
-    walkEvents(actor.hit1Script, callback);
-    walkEvents(actor.hit2Script, callback);
-    walkEvents(actor.hit3Script, callback);
+    walkActorEvents(actor, callback);
   });
   scene.triggers.forEach(trigger => {
     walkEvents(trigger.script, callback);
   });
+};
+
+const walkSceneSpecificEvents = (scene, callback) => {
+  walkEvents(scene.script, callback);
+  walkEvents(scene.playerHit1Script, callback);
+  walkEvents(scene.playerHit2Script, callback);
+  walkEvents(scene.playerHit3Script, callback);
 };
 
 const walkActorEvents = (actor, callback) => {
@@ -288,14 +286,14 @@ const regenerateEventIds = event => {
   );
 };
 
-const filterEvents = (data, id) => {
+const filterEvents = (data, fn) => {
   return data.reduce((memo, o) => {
-    if (o.id !== id) {
+    if (fn(o)) {
       memo.push({
         ...o,
         children:
           o.children &&
-          mapValues(o.children, childEvents => filterEvents(childEvents, id))
+          mapValues(o.children, childEvents => filterEvents(childEvents, fn))
       });
     }
     return memo;
@@ -378,6 +376,7 @@ export {
   walkEventsDepthFirst,
   walkScenesEvents,
   walkSceneEvents,
+  walkSceneSpecificEvents,
   walkActorEvents,
   findSceneEvent,
   normalizedWalkSceneEvents,

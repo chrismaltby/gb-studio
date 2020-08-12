@@ -75,7 +75,7 @@ class ScriptEditor extends Component {
     if (a === b) {
       return;
     }
-    const input = prependEvent(filterEvents(root, a), b, findEvent(root, a));
+    const input = prependEvent(filterEvents(root, (e) => e.id !== a), b, findEvent(root, a));
     this.onChange(input);
   };
 
@@ -161,7 +161,7 @@ class ScriptEditor extends Component {
 
   onRemove = id => () => {
     const { value } = this.props;
-    const input = filterEvents(value, id);
+    const input = filterEvents(value, (e) => e.id !== id);
     this.onChange(input);
   };
 
