@@ -260,7 +260,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
 
   if (actors[i].collisionsEnabled) {
     // Move left
-    if (dir_x == -1) {
+    if (dir_x == -1 && tile_x != 0) {
       UBYTE tile_left = tile_x - 1;
       actors[i].hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
       hit_actor = actors[i].hit_actor;
@@ -268,7 +268,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
         actors[i].moving = TRUE;
       }
       // Move right
-    } else if (dir_x == 1) {
+    } else if (dir_x == 1 && tile_x != image_tile_width - 2) {
       UBYTE tile_right = tile_x + 1;
       actors[i].hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
       hit_actor = actors[i].hit_actor;
@@ -277,7 +277,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
       }
     }
     // Move up
-    if (dir_y == -1) {
+    if (dir_y == -1 && tile_y != 0) {
       UBYTE tile_up = tile_y - 1;
       actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
       hit_actor = actors[i].hit_actor;
@@ -285,7 +285,7 @@ void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y) {
         actors[i].moving = TRUE;
       }
       // Move down
-    } else if (dir_y == 1) {
+    } else if (dir_y == 1 && tile_y != image_tile_height - 1) {
       UBYTE tile_down = tile_y + 1;
       actors[i].hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
       hit_actor = actors[i].hit_actor;
