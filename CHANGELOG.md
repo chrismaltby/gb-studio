@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add full color support, each scene can contain up to six 4-color palette (24 colors per scene) and seven different sprite palettes.
 - Add additional genres to Scene Type dropdown, "Platformer", "Shoot Em' Up", "Point and Click" and "Adventure", each one affects player handling in that scene. A single project can use any/all genres as required
 - Add "On Update" script to actors which calls on each frame allowing movement to be controlled manually.
+- Add event to stop any actors's "On Update" script
 - Add event to dynamically switch color palettes used in a scene
 - Add palettes section for editing and creating color palettes  
 - Add scene search functionality to World editor toolbar, if only a single scene matches view will scroll to center on that scene
@@ -20,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for larger background images, up to 2040px in either dimension, maximum width * height of image must be under 1,048,320
 - Increase number of allowed actors and triggers per scene to 30. Up to 10 actors will be visible on screen at the same time.
 - Add ability to pin actors to screen to use as simple HUD elements
+- Add event to switch any actor's sprite sheet dynamically
+- Add event to toggle if an actor should animate while stationary
+- Add event to bounce player while in platform scenes
 - Add ability to create collisions tiles that only affect a single direction e.g. for platforms that you can jump through from below.
 - Add ability to mark tiles as Ladders (only affects Platform scenes)
 - Add choice of 8px or 16px brush sizes when drawing collisions or coloring background
@@ -51,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pushing actors now uses a 16px x 16px collision box rather than 16px x 8px, this will make Sokoban puzzles work better but could cause issues if you depended on the old behaviour
 - Scene connections now by default only shows connections to/from the currently selected scene. The old default is available in "View/Show Connections/All"
 - When not in color mode the Game World section will display images in the same palette as the emulator
+- Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
 
 ### Removed
 
