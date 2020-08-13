@@ -11,7 +11,7 @@ export default async (
   const cmds = ["set __COMPAT_LAYER=WIN7RTM"];
   const objFiles = [];
 
-  const CC = `..\\_gbs\\gbdk\\bin\\lcc`;
+  const CC = `..\\_gbstools\\gbdk\\bin\\lcc`;
   let CFLAGS = `-Wa-l -Iinclude`;
   let LFLAGS = `-Wl-yo${CART_SIZE} -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
 

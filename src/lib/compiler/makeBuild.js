@@ -73,7 +73,7 @@ const makeBuild = async ({
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
 
   const tmpPath = getTmp();
-  const tmpBuildToolsPath = `${tmpPath}/_gbs`;
+  const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
 
   // Symlink build tools so that path doesn't contain any spaces
   // GBDKDIR doesn't work if path has spaces :-(
