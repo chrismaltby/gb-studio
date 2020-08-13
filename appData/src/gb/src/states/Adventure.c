@@ -139,13 +139,17 @@ void Update_Adventure() {
 
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
-  if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if (actors[hit_actor].collision_group) {
-      player.hit_actor = 0;
-      player.hit_actor = hit_actor;
-    } else {
-      player_iframes = 10;
-      //ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
+  if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
+    if (hit_actor == ActorInFrontOfPlayer()) {
+      player.moving = FALSE;
+    }
+    if (player_iframes == 0) {
+      if (actors[hit_actor].collision_group) {
+        player.hit_actor = 0;
+        player.hit_actor = hit_actor;
+      } else {
+        player_iframes = 10;
+      }
     }
   }
 }
