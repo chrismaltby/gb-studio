@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add button to jump from Dialogue Review section to corresponding scene in Game World 
 - Add color labels for identifying and grouping scenes
 - Add support for larger background images, up to 2040px in either dimension, maximum width * height of image must be under 1,048,320
-- Increase number of allowed actors and triggers per scene to 30.
+- Increase number of allowed actors and triggers per scene to 30. Up to 10 actors will be visible on screen at the same time.
 - Add ability to pin actors to screen to use as simple HUD elements
 - Add ability to create collisions tiles that only affect a single direction e.g. for platforms that you can jump through from below.
 - Add ability to mark tiles as Ladders (only affects Platform scenes)
@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix bug where deleting a custom event definition that was used multiple times in a single script would only delete the first instance of the event
+- Fixed Ctrl + Z and Middle click behavior on Windows [@RichardULZ](https://github.com/RichardULZ) 
 - Fix custom events issue where some events wouldn't show their variables in the custom event parameters [@pau-tomas](https://github.com/pau-tomas)
 - Lots of bug fixes / helping get the open beta build ready [@pau-tomas](https://github.com/pau-tomas) and [@RichardULZ](https://github.com/RichardULZ)
 
