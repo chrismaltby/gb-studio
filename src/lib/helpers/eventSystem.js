@@ -1,4 +1,5 @@
 import uuid from "uuid/v4";
+import { EVENT_CALL_CUSTOM_EVENT } from "../compiler/eventTypes";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
@@ -84,23 +85,30 @@ const walkScenesEvents = (scenes, callback) => {
 };
 
 const walkSceneEvents = (scene, callback) => {
-  walkEvents(scene.script, callback);
-  walkEvents(scene.playerHit1Script, callback);
-  walkEvents(scene.playerHit2Script, callback);
-  walkEvents(scene.playerHit3Script, callback);
-
+  walkSceneSpecificEvents(scene, callback);
   scene.actors.forEach(actor => {
-    walkEvents(actor.script, callback);
-    walkEvents(actor.startScript, callback);
-    walkEvents(actor.updateScript, callback);
-    walkEvents(actor.hit1Script, callback);
-    walkEvents(actor.hit2Script, callback);
-    walkEvents(actor.hit3Script, callback);
+    walkActorEvents(actor, callback);
   });
   scene.triggers.forEach(trigger => {
     walkEvents(trigger.script, callback);
   });
 };
+
+const walkSceneSpecificEvents = (scene, callback) => {
+  walkEvents(scene.script, callback);
+  walkEvents(scene.playerHit1Script, callback);
+  walkEvents(scene.playerHit2Script, callback);
+  walkEvents(scene.playerHit3Script, callback);
+};
+
+const walkActorEvents = (actor, callback) => {
+  walkEvents(actor.script, callback);
+  walkEvents(actor.startScript, callback);
+  walkEvents(actor.updateScript, callback);
+  walkEvents(actor.hit1Script, callback);
+  walkEvents(actor.hit2Script, callback);
+  walkEvents(actor.hit3Script, callback);
+}
 
 const normalizedWalkSceneEvents = (
   scene,
@@ -266,7 +274,9 @@ const regenerateEventIds = event => {
     {},
     event,
     {
-      id: uuid()
+      id: uuid(),
+      __type: undefined,
+      __customEvents: undefined
     },
     event.children && {
       children: mapValues(event.children, childEvents =>
@@ -276,14 +286,14 @@ const regenerateEventIds = event => {
   );
 };
 
-const filterEvents = (data, id) => {
+const filterEvents = (data, fn) => {
   return data.reduce((memo, o) => {
-    if (o.id !== id) {
+    if (fn(o)) {
       memo.push({
         ...o,
         children:
           o.children &&
-          mapValues(o.children, childEvents => filterEvents(childEvents, id))
+          mapValues(o.children, childEvents => filterEvents(childEvents, fn))
       });
     }
     return memo;
@@ -328,6 +338,35 @@ const isVariableField = (cmd, fieldName, fieldValue) => {
   )
 };
 
+const getCustomEventIdsInEvents = (events) => {
+  const customEventIds = [];
+  walkEvents(events, (event) => {
+    if (event.command === EVENT_CALL_CUSTOM_EVENT) {
+      customEventIds.push(event.args.customEventId);
+    }
+  });
+  return customEventIds;
+}
+
+const getCustomEventIdsInScene = (scene) => {
+  const customEventIds = [];
+  walkSceneEvents(scene, (event) => {
+    if (event.command === EVENT_CALL_CUSTOM_EVENT) {
+      customEventIds.push(event.args.customEventId);
+    }
+  });
+  return customEventIds;
+}
+
+const getCustomEventIdsInActor = (actor) => {
+  const customEventIds = [];
+  walkActorEvents(actor, (event) => {
+    if (event.command === EVENT_CALL_CUSTOM_EVENT) {
+      customEventIds.push(event.args.customEventId);
+    }
+  });
+  return customEventIds;
+}
 
 export {
   mapEvents,
@@ -337,6 +376,8 @@ export {
   walkEventsDepthFirst,
   walkScenesEvents,
   walkSceneEvents,
+  walkSceneSpecificEvents,
+  walkActorEvents,
   findSceneEvent,
   normalizedWalkSceneEvents,
   normalizedFindSceneEvent,
@@ -348,5 +389,8 @@ export {
   filterEvents,
   findEvent,
   eventHasArg,
-  isVariableField
+  isVariableField,
+  getCustomEventIdsInEvents,
+  getCustomEventIdsInScene,
+  getCustomEventIdsInActor
 };

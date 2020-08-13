@@ -507,6 +507,8 @@
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Cancel",
   "DIALOG_DELETE": "Delete",
+  "DIALOG_REPLACE": "Replace",
+  "DIALOG_KEEP": "Keep Existing",
   "DIALOG_UPDATE_AVAILABLE": "Update available",
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} available. Would you like to update?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Dont ask me again",
@@ -533,6 +535,8 @@
   "DIALOG_ENABLE_COLOR_MODE": "Enable Color Mode?",
   "DIALOG_ENABLE_COLOR_MODE_DESCRIPTION": "Your project current has color mode disabled, would you like to enable it?",
   "DIALOG_ENABLE_COLOR": "Enable Color",
+  "DIALOG_REPLACE_CUSTOM_EVENT": "Replace Custom Event \"{name}\"?",
+  "DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION": "The pasted script contains a modified version of an existing custom event. Would you like to replace the custom event with the version on your clipboard or keep your existing custom event?",
 
   "// 16": "Settings ----------------------------------------------------",
 

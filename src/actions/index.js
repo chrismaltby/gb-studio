@@ -533,8 +533,8 @@ export const selectCustomEvent = id => {
   return { type: types.SELECT_CUSTOM_EVENT, id };
 };
 
-export const addCustomEvent = () => {
-  return { type: types.ADD_CUSTOM_EVENT, id: uuid() };
+export const addCustomEvent = id => {
+  return { type: types.ADD_CUSTOM_EVENT, id: id || uuid() };
 };
 
 export const editWorld = values => {
@@ -674,11 +674,17 @@ export const copySelectedEntity = () => (dispatch, getState) => {
 
 export const pasteClipboardEntity = clipboardData => dispatch => {
   if (clipboardData.__type === "scene") {
-    dispatch(setScenePrefab(clipboardData));
+    const clipboardScene = clipboardData.scene;
+    dispatch(pasteCustomEvents());    
+    dispatch(setScenePrefab(clipboardScene));
   } else if (clipboardData.__type === "actor") {
-    dispatch(setActorPrefab(clipboardData));
+    const clipboardActor = clipboardData.actor;
+    dispatch(pasteCustomEvents());    
+    dispatch(setActorPrefab(clipboardActor));
   } else if (clipboardData.__type === "trigger") {
-    dispatch(setTriggerPrefab(clipboardData));
+    const clipboardTrigger = clipboardData.trigger;
+    dispatch(pasteCustomEvents());
+    dispatch(setTriggerPrefab(clipboardTrigger));
   }
 };
 
@@ -686,16 +692,26 @@ export const pasteClipboardEntityInPlace = (clipboardData) => (dispatch, getStat
   const state = getState();
   const { scene: sceneId } = state.editor;
   if (clipboardData.__type === "scene") {
-    dispatch(addScene(clipboardData.x, clipboardData.y, clipboardData));
+    const clipboardScene = clipboardData.scene;
+    dispatch(pasteCustomEvents());
+    dispatch(addScene(clipboardScene.x, clipboardScene.y, clipboardScene));
   } else if (sceneId && clipboardData.__type === "actor") {
+    const clipboardActor = clipboardData.actor;
+    dispatch(pasteCustomEvents());
     dispatch(
-      addActor(sceneId, clipboardData.x, clipboardData.y, clipboardData)
+      addActor(sceneId, clipboardActor.x, clipboardActor.y, clipboardActor)
     );
   } else if (sceneId && clipboardData.__type === "trigger") {
+    const clipboardTrigger = clipboardData.trigger;
+    dispatch(pasteCustomEvents());
     dispatch(
-      addTrigger(sceneId, clipboardData.x, clipboardData.y, clipboardData.width, clipboardData.height, clipboardData)
+      addTrigger(sceneId, clipboardTrigger.x, clipboardTrigger.y, clipboardTrigger.width, clipboardTrigger.height, clipboardTrigger)
     );
   }
+};
+
+export const pasteCustomEvents = () => {
+  return { type: types.PASTE_CUSTOM_EVENTS };
 };
 
 export const zoomIn = (section, delta) => {

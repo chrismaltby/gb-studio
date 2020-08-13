@@ -17,22 +17,25 @@ import {
   PROJECT_LOAD_FAILURE,
   REMOVE_CUSTOM_EVENT,
   EJECT_ENGINE,
-  SET_TOOL
+  SET_TOOL,
+  PASTE_CUSTOM_EVENTS
 } from "../actions/actionTypes";
 import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
+import confirmReplaceCustomEvent from "../lib/electron/dialog/confirmReplaceCustomEvent";
 import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEnableColorDialog from "../lib/electron/dialog/confirmEnableColorDialog";
 import {
   getScenes,
   getScenesLookup,
   getCustomEvents,
+  getCustomEventsLookup,
   getActorsLookup,
   getTriggersLookup,
   getSettings
 } from "../reducers/entitiesReducer";
-import { walkEvents, filterEvents } from "../lib/helpers/eventSystem";
+import { walkEvents, walkSceneSpecificEvents, walkActorEvents, filterEvents, getCustomEventIdsInEvents, getCustomEventIdsInActor, getCustomEventIdsInScene } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { editScene, editActor, editTrigger, editProjectSettings } from "../actions";
+import { editScene, editActor, editTrigger, editProjectSettings, editCustomEvent } from "../actions";
 import l10n from "../lib/helpers/l10n";
 import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
@@ -50,22 +53,32 @@ export default store => next => action => {
   } else if (action.type === SIDEBAR_FILES_RESIZE) {
     settings.set("filesSidebarWidth", action.width);
   } else if (action.type === COPY_ACTOR) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.actor));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.actor,
-          __type: "actor"
+          actor: action.actor,
+          __type: "actor",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
       )
     );
   } else if (action.type === COPY_TRIGGER) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.trigger.script));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.trigger,
-          __type: "trigger"
+          trigger: action.trigger,
+          __type: "trigger",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
@@ -73,37 +86,56 @@ export default store => next => action => {
     );
   } else if (action.type === COPY_SCENE) {
     const state = store.getState();
-    const { scene } = action;
     const { actors, triggers } = state.entities.present.entities;
+
+    const scene = {
+      ...action.scene,
+      actors: action.scene.actors.map(actorId => actors[actorId]),
+      triggers: action.scene.triggers.map(triggerId => triggers[triggerId]),  
+    }
+
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInScene(scene));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+
     clipboard.writeText(
       JSON.stringify(
         {
-          ...scene,
-          actors: scene.actors.map(actorId => actors[actorId]),
-          triggers: scene.triggers.map(triggerId => triggers[triggerId]),
-          __type: "scene"
+          scene,
+          __type: "scene",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
       )
     );
   } else if (action.type === COPY_EVENT) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents([action.event]));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
-          ...action.event,
-          __type: "event"
+          event: action.event,
+          __type: "event",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
       )
     );
   } else if (action.type === COPY_SCRIPT) {
+    const state = store.getState();
+    const customEventsLookup = getCustomEventsLookup(state);
+    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.script));
+    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
     clipboard.writeText(
       JSON.stringify(
         {
           script: action.script,
-          __type: "script"
+          __type: "script",
+          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
         },
         null,
         4
@@ -123,9 +155,10 @@ export default store => next => action => {
     const scenesLookup = getScenesLookup(state);
     const actorsLookup = getActorsLookup(state);
     const triggersLookup = getTriggersLookup(state);
-    const usedScenes = [];
-    const usedActors = [];
-    const usedTriggers = [];
+    const usedScenes = {};
+    const usedActors = {};
+    const usedTriggers = {};
+    const usedSceneIds = [];
 
     const isThisEvent = event =>
       event.command === EVENT_CALL_CUSTOM_EVENT &&
@@ -139,35 +172,53 @@ export default store => next => action => {
 
     // Check for uses of this custom event in project
     scenes.forEach(scene => {
-      walkEvents(scene.script, event => {
+      walkSceneSpecificEvents(scene, event => {
         if (isThisEvent(event)) {
-          usedScenes.push([scene.id, event.id]);
+          if (!usedScenes[scene.id]) {
+            usedScenes[scene.id] = {
+              sceneId: scene.id,
+              eventIds: []
+            };
+          }
+          usedScenes[scene.id].eventIds.push(event.id);
+          usedSceneIds.push(scene.id);
         }
       });
       scene.actors.forEach(actorId => {
-        walkEvents(actorsLookup[actorId].script, event => {
+        walkActorEvents(actorsLookup[actorId], event => {
           if (isThisEvent(event)) {
-            usedActors.push([scene.id, actorId, event.id]);
+            if (!usedActors[actorId]) {
+              usedActors[actorId] = {
+                sceneId: scene.id,
+                eventIds: []
+              };
+            }            
+            usedActors[actorId].eventIds.push(event.id);
+            usedSceneIds.push(scene.id);
           }
         });
       });
       scene.triggers.forEach(triggerId => {
         walkEvents(triggersLookup[triggerId].script, event => {
           if (isThisEvent(event)) {
-            usedTriggers.push([scene.id, triggerId, event.id]);
+            if (!usedTriggers[triggerId]) {
+              usedTriggers[triggerId] = {
+                sceneId: scene.id,
+                eventIds: []
+              };
+            }              
+            usedTriggers[triggerId].eventIds.push(event.id);
+            usedSceneIds.push(scene.id);
           }
         });
       });
     });
 
-    const usedTotal =
-      usedScenes.length + usedActors.length + usedTriggers.length;
+    const usedTotal = usedSceneIds.length;
 
     if (usedTotal > 0) {
       const sceneNames = uniq(
-        []
-          .concat([], usedScenes, usedActors, usedTriggers)
-          .map(([sceneId]) => sceneName(sceneId))
+        usedSceneIds.map((sceneId) => sceneName(sceneId))
       ).sort();
 
       // Display confirmation and stop delete if cancelled
@@ -181,26 +232,48 @@ export default store => next => action => {
       }
 
       // Remove used instances in scenes
-      usedScenes.forEach(([sceneId, eventId]) => {
+      Object.keys(usedScenes).forEach((sceneId) => {
+        const eventIds = usedScenes[sceneId].eventIds;
+        
+        const filter = (event) => !eventIds.includes(event.id)
+
         store.dispatch(
           editScene(sceneId, {
-            script: filterEvents(scenesLookup[sceneId].script, eventId)
+            script: filterEvents(scenesLookup[sceneId].script || [], filter),
+            playerHit1Script: filterEvents(scenesLookup[sceneId].playerHit1Script || [], filter),
+            playerHit2Script: filterEvents(scenesLookup[sceneId].playerHit2Script || [], filter),
+            playerHit3Script: filterEvents(scenesLookup[sceneId].playerHit3Script || [], filter),
           })
         );
       });
       // Remove used instances in actors
-      usedActors.forEach(([sceneId, actorId, eventId]) => {
+      Object.keys(usedActors).forEach((actorId) => {
+        const eventIds = usedActors[actorId].eventIds;
+        const sceneId = usedActors[actorId].sceneId;
+
+        const filter = (event) => !eventIds.includes(event.id)
+
         store.dispatch(
           editActor(sceneId, actorId, {
-            script: filterEvents(actorsLookup[actorId].script, eventId)
+            script: filterEvents(actorsLookup[actorId].script || [], filter),
+            startScript: filterEvents(actorsLookup[actorId].startScript || [], filter),
+            updateScript: filterEvents(actorsLookup[actorId].updateScript || [], filter),
+            hit1Script: filterEvents(actorsLookup[actorId].hit1Script || [], filter),
+            hit2Script: filterEvents(actorsLookup[actorId].hit2Script || [], filter),
+            hit3Script: filterEvents(actorsLookup[actorId].hit3Script || [], filter),
           })
         );
       });
       // Remove used instances in triggers
-      usedTriggers.forEach(([sceneId, triggerId, eventId]) => {
+      Object.keys(usedTriggers).forEach((triggerId) => {
+        const eventIds = usedTriggers[triggerId].eventIds;
+        const sceneId = usedTriggers[triggerId].sceneId;
+
+        const filter = (event) => !eventIds.includes(event.id)
+
         store.dispatch(
           editTrigger(sceneId, triggerId, {
-            script: filterEvents(triggersLookup[triggerId].script, eventId)
+            script: filterEvents(triggersLookup[triggerId].script || [], filter)
           })
         );
       });
@@ -233,6 +306,39 @@ export default store => next => action => {
     ejectEngineToDir(outputDir).then(() => {
       remote.shell.openItem(outputDir);
     });
+
+  } else if (action.type === PASTE_CUSTOM_EVENTS) {
+
+    try {
+      const clipboardData = JSON.parse(clipboard.readText());
+      if (clipboardData.__customEvents) {
+        const state = store.getState();
+
+        clipboardData.__customEvents.forEach((customEvent) => {
+          const customEventsLookup = getCustomEventsLookup(state);
+          const existingCustomEvent = customEventsLookup[customEvent.id];
+
+          if (existingCustomEvent) {
+            if (JSON.stringify(customEvent) === JSON.stringify(existingCustomEvent)) {
+              // Already have this custom event
+              return;
+            }
+
+            // Display confirmation and stop replace if cancelled
+            const cancel = confirmReplaceCustomEvent(
+              existingCustomEvent.name,
+            );
+            if (cancel) {
+              return;
+            }
+          }
+
+          store.dispatch(editCustomEvent(customEvent.id, customEvent))
+        });
+      }
+    } catch (err) {
+      // Ignore
+    }
 
   } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
     const state = store.getState();

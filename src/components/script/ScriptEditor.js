@@ -75,7 +75,7 @@ class ScriptEditor extends Component {
     if (a === b) {
       return;
     }
-    const input = prependEvent(filterEvents(root, a), b, findEvent(root, a));
+    const input = prependEvent(filterEvents(root, (e) => e.id !== a), b, findEvent(root, a));
     this.onChange(input);
   };
 
@@ -161,7 +161,7 @@ class ScriptEditor extends Component {
 
   onRemove = id => () => {
     const { value } = this.props;
-    const input = filterEvents(value, id);
+    const input = filterEvents(value, (e) => e.id !== id);
     this.onChange(input);
   };
 
@@ -177,13 +177,14 @@ class ScriptEditor extends Component {
   };
 
   onPaste = (id, event, before) => {
-    const { value } = this.props;
+    const { value, pasteCustomEvents } = this.props;
     const newEvent = Array.isArray(event)
       ? event.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(event);
     const input = before
       ? prependEvent(value, id, newEvent)
       : appendEvent(value, id, newEvent);
+    pasteCustomEvents(); 
     this.onChange(input);
   };
 
@@ -200,21 +201,6 @@ class ScriptEditor extends Component {
   onSelectCustomEvent = id => {
     const { selectCustomEvent } = this.props;
     selectCustomEvent(id);
-  };
-
-  readClipboard = e => {
-    try {
-      const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__type === "event") {
-        this.setState({ clipboardEvent: clipboardData });
-      } else if (clipboardData.__type === "script") {
-        this.setState({ clipboardEvent: clipboardData.script });
-      } else {
-        this.setState({ clipboardEvent: null });
-      }
-    } catch (err) {
-      this.setState({ clipboardEvent: null });
-    }
   };
 
   render() {
@@ -239,7 +225,6 @@ class ScriptEditor extends Component {
             onSelectCustomEvent={this.onSelectCustomEvent}
             onMouseEnter={this.onEnter}
             onMouseLeave={this.onLeave}
-            clipboardEvent={clipboardEvent}
           />
         ))}
         {limit < value.length &&
@@ -265,7 +250,8 @@ ScriptEditor.propTypes = {
   copyEvent: PropTypes.func.isRequired,
   selectCustomEvent: PropTypes.func.isRequired,
   entityId: PropTypes.string.isRequired,
-  scope: PropTypes.string.isRequired
+  scope: PropTypes.string.isRequired,
+  pasteCustomEvents: PropTypes.string.isRequired
 };
 
 ScriptEditor.defaultProps = Object.create(
@@ -301,7 +287,8 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
-  selectCustomEvent: actions.selectCustomEvent
+  selectCustomEvent: actions.selectCustomEvent,
+  pasteCustomEvents: actions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);

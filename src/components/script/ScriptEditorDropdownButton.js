@@ -15,7 +15,7 @@ class ScriptEditorDropdownButton extends Component {
   constructor() {
     super();
     this.state = {
-      clipboardEvent: null,
+      clipboardEvent: null
     };
   }
 
@@ -50,6 +50,8 @@ class ScriptEditorDropdownButton extends Component {
   onReplaceScript = (e) => {
     const { clipboardEvent } = this.state;
     if (clipboardEvent) {
+      const { pasteCustomEvents } = this.props;
+      pasteCustomEvents();
       this.onChange(
         []
           .concat(
@@ -73,6 +75,8 @@ class ScriptEditorDropdownButton extends Component {
       ? clipboardEvent.slice(0, -1).map(regenerateEventIds)
       : regenerateEventIds(clipboardEvent);
     if (clipboardEvent) {
+      const { pasteCustomEvents } = this.props;
+      pasteCustomEvents();
       if (before) {
         this.onChange([].concat(newEvent, value));
       } else {
@@ -85,7 +89,7 @@ class ScriptEditorDropdownButton extends Component {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__type === "event") {
-        this.setState({ clipboardEvent: clipboardData });
+        this.setState({ clipboardEvent: clipboardData.event });
       } else if (clipboardData.__type === "script") {
         this.setState({ clipboardEvent: clipboardData.script });
       } else {
@@ -134,6 +138,7 @@ ScriptEditorDropdownButton.propTypes = {
   value: PropTypes.arrayOf(PropTypes.shape({})),
   onChange: PropTypes.func.isRequired,
   copyScript: PropTypes.func.isRequired,
+  pasteCustomEvents: PropTypes.func.isRequired,
 };
 
 ScriptEditorDropdownButton.defaultProps = Object.create(
@@ -155,12 +160,13 @@ ScriptEditorDropdownButton.defaultProps = Object.create(
 
 function mapStateToProps(state, props) {
   return {
-    value: props.value && props.value.length > 0 ? props.value : undefined,
+    value: props.value && props.value.length > 0 ? props.value : undefined
   };
 }
 
 const mapDispatchToProps = {
   copyScript: actions.copyScript,
+  pasteCustomEvents: actions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditorDropdownButton);
