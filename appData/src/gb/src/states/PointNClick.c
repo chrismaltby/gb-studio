@@ -11,6 +11,7 @@
 #include "GameTime.h"
 #include "ScriptRunner.h"
 #include "Camera.h"
+#include "DataManager.h"
 #include "rand.h"
 
 #define POINT_N_CLICK_CAMERA_DEADZONE 24
@@ -43,14 +44,14 @@ void Update_PointNClick() {
   dir_y = 0;
 
   // Move
-  if (INPUT_LEFT) {
+  if (INPUT_LEFT && Gt16(player.pos.x, 0)) {
     dir_x = -1;
-  } else if (INPUT_RIGHT) {
+  } else if (INPUT_RIGHT && Lt16(player.pos.x, image_width - 8)) {
     dir_x = 1;
   }
-  if (INPUT_UP) {
+  if (INPUT_UP && Gt16(player.pos.y, 8)) {
     dir_y = -1;
-  } else if (INPUT_DOWN) {
+  } else if (INPUT_DOWN && Lt16(player.pos.y, image_height)) {
     dir_y = 1;
   }
 
