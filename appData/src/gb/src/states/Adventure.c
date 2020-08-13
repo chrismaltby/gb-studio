@@ -13,7 +13,7 @@
 #include "Camera.h"
 #include "rand.h"
 
-#define ADVENTURE_CAMERA_DEADZONE 24
+#define ADVENTURE_CAMERA_DEADZONE 8
 
 void Start_Adventure() {
   // Set camera to follow player
@@ -27,6 +27,7 @@ void Update_Adventure() {
   WORD tile_x, tile_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
+  Vector2D backup_dir;
 
   player.moving = FALSE;
 
@@ -59,8 +60,11 @@ void Update_Adventure() {
     player.dir.x = 0;
   }
 
-  tile_x = (player.pos.x + 4) >> 3;
-  tile_y = (player.pos.y) >> 3;
+  backup_dir.x = player.dir.x;
+  backup_dir.y = player.dir.y;
+
+  tile_x = (player.pos.x + 4 + player.dir.x) >> 3; // Add Left right Bias for Moving=True
+  tile_y = (player.pos.y + 7) >> 3;
 
   if (INPUT_A_PRESSED) {
     hit_actor = ActorInFrontOfPlayer();
@@ -71,43 +75,55 @@ void Update_Adventure() {
 
   // Left Collision
   if (player.dir.x < 0) {
-    if (TileAt(tile_x, tile_y) || TileAt(tile_x, tile_y - 1)) {
-      player.moving = FALSE;
-      player.pos.x = (tile_x * 8) - (5 * player.dir.x);
-      tile_x = (player.pos.x + 4) >> 3;
-    }
+    if ( TileAt(tile_x, tile_y)) {
+      player.pos.x = (tile_x << 3) + 4;
+      player.dir.x = 0;
+    }  else if (TileAt(tile_x, (player.pos.y) >> 3)) {    player.dir.y = 1;    }
   }
 
   // Right Collision
   if (player.dir.x > 0) {
-    if (TileAt(tile_x + 1, tile_y) || TileAt(tile_x + 1, tile_y - 1)) {
-      player.moving = FALSE;
-      player.pos.x = (tile_x * 8) - (5 * player.dir.x);
-      tile_x = (player.pos.x + 4) >> 3;
-    }
+    if (TileAt(tile_x + 1, tile_y)) {
+      player.pos.x = (tile_x << 3) - 5;
+      player.dir.x = 0;
+    } else if (TileAt(tile_x + 1, (player.pos.y) >> 3)) {   player.dir.y = 1;    }
   }
+
+  tile_x = (player.pos.x + 4 - player.dir.x) >> 3; // Remove LeftRight Bias to not stick
+  tile_y = (player.pos.y + player.dir.y) >> 3;
 
   // Up Collision
   if (player.dir.y < 0) {
-    if (TileAt(tile_x, tile_y - 1) ||                                    // Left Edge
-        (((player.pos.x) & 0x7) != 0 && TileAt(tile_x + 1, tile_y - 1))  // Right edge
+    if (TileAt(tile_x, tile_y) ||      // Left Edge
+        ( TileAt(tile_x + 1, tile_y))  // Right edge
     ) {
-      player.moving = FALSE;
-      player.pos.y = (tile_y * 8);
-      tile_y = player.pos.y >> 3;
+      player.pos.y = (tile_y + 1 << 3);
+      player.dir.y = 0;
     }
   }
 
   // Down Collision
   if (player.dir.y > 0) {
-    if (TileAt(tile_x, tile_y + 1) ||                                    // Left Edge
-        (((player.pos.x) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1))  // Right edge
+    if (TileAt(tile_x, tile_y + 1) ||      // Left Edge
+        ( TileAt(tile_x + 1, tile_y + 1))  // Right edge
     ) {
-      player.moving = FALSE;
-      player.pos.y = (tile_y * 8);
-      tile_y = player.pos.y >> 3;
+      player.pos.y = (tile_y << 3);
+      player.dir.y = 0;
     }
   }
+
+  if (player.moving)
+  {
+    if (!(player.dir.x > 0 | player.dir.x < 0 | player.dir.y > 0 | player.dir.y < 0))
+    {
+      player.moving = FALSE;
+      player.dir.x = backup_dir.x;
+      player.dir.y = backup_dir.y;
+    }
+  }
+
+  tile_x = (player.pos.x + 4) >> 3; 
+  tile_y = (player.pos.y) >> 3;
 
   // If player was moving on the previous frame
   if (!player.moving) {
@@ -123,13 +139,17 @@ void Update_Adventure() {
 
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
-  if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
-    if (actors[hit_actor].collision_group) {
-      player.hit_actor = 0;
-      player.hit_actor = hit_actor;
-    } else {
-      player_iframes = 10;
-      ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
+  if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
+    if (hit_actor == ActorInFrontOfPlayer()) {
+      player.moving = FALSE;
+    }
+    if (player_iframes == 0) {
+      if (actors[hit_actor].collision_group) {
+        player.hit_actor = 0;
+        player.hit_actor = hit_actor;
+      } else {
+        player_iframes = 10;
+      }
     }
   }
 }
