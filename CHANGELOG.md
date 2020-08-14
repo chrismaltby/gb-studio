@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add full color support, each scene can contain up to six 4-color palette (24 colors per scene) and seven different sprite palettes.
 - Add additional genres to Scene Type dropdown, "Platformer", "Shoot Em' Up", "Point and Click" and "Adventure", each one affects player handling in that scene. A single project can use any/all genres as required
 - Add "On Update" script to actors which calls on each frame allowing movement to be controlled manually.
+- Add checkbox to handle collision detection in "Move To" event
+- Add choice on "Move To" to move horizontally first, vertically first or to use diagonal movement. Default is horizontal to match previous functionality
 - Add event to stop any actors's "On Update" script
 - Add event to dynamically switch color palettes used in a scene
 - Add palettes section for editing and creating color palettes  
@@ -42,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New engine performance optimisation [@RichardULZ](https://github.com/RichardULZ) 
 - Merge events where the only difference was values being hard coded or coming from a variable like "Move To" and "Move To Using Variables" by adding button next to input that allows switching between variable, value or a new property type. Also allows mix of hard coded and variable values in single event. Feature known internally as union types
 - Custom events updated to support union types [@pau-tomas](https://github.com/pau-tomas)
+- Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
+- Add support for macOS full screen mode
 
 ### Fixed
 
@@ -56,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scene connections now by default only shows connections to/from the currently selected scene. The old default is available in "View/Show Connections/All"
 - When not in color mode the Game World section will display images in the same palette as the emulator
 - Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
+- Top Down scenes now use the last pressed direction button for current movement direction improving controls when using a keyboard
 
 ### Removed
 
