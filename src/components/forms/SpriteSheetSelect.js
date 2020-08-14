@@ -119,6 +119,7 @@ class SpriteSheetSelect extends Component {
           Option: this.renderOption
         }}
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }

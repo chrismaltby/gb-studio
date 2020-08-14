@@ -101,6 +101,7 @@ class BackgroundSelect extends Component {
           Option: this.renderOption
         }}
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }

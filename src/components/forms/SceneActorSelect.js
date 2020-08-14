@@ -146,6 +146,7 @@ class SceneActorSelect extends Component {
         }}
         menuPlacement="auto"
         menuPortalTarget={menuPortalEl}
+        blurInputOnSelect
       />
     );
   }

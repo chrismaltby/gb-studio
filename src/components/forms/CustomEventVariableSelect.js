@@ -38,6 +38,7 @@ class CustomEventVariableSelect extends Component {
         options={options}
         menuPlacement="auto"
         menuPortalTarget={menuPortalEl}
+        blurInputOnSelect
       />
     );
   }

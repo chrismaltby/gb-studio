@@ -101,6 +101,7 @@ class SoundEffectSelect extends Component {
           Option: this.renderOption
         }}
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }

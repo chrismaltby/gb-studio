@@ -182,6 +182,7 @@ class ScenePropertySelect extends Component {
         grouped
         menuPlacement="auto"
         menuPortalTarget={menuPortalEl}
+        blurInputOnSelect
       />
     );
   }

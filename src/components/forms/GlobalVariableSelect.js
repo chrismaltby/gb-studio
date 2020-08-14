@@ -127,6 +127,7 @@ class GlobalVariableSelect extends Component {
         allowRename={allowRename && !valueIsTemp}
         grouped
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }

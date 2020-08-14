@@ -304,6 +304,7 @@ export class SelectRenamable extends Component {
             reduceOptions={grouped ? reduceGroupedOptions : undefined}
             menuPlacement="auto"
             menuPortalTarget={menuPortalEl}
+            blurInputOnSelect
           />
         )}
         {allowRename && (edit ? (

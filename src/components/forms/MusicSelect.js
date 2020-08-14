@@ -129,6 +129,7 @@ class MusicSelect extends Component {
           Option: this.renderOption
         }}
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }

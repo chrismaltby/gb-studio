@@ -110,6 +110,7 @@ class CustomEventActorSelect extends Component {
           Option: this.renderOption
         }}
         menuPlacement="auto"
+        blurInputOnSelect
       />
     );
   }
