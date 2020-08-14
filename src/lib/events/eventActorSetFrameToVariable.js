@@ -4,7 +4,7 @@ const fields = [
   {
     key: "actorId",
     type: "actor",
-    defaultValue: "LAST_ACTOR"
+    defaultValue: "$self$"
   },
   {
     key: "variable",
