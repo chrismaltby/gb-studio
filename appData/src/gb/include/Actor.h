@@ -22,8 +22,6 @@
 
 #define player (actors[0])
 
-#define PlayerSetMovement(dir_x, dir_y) (ActorSetMovement(0, dir_x, dir_y))
-#define PlayerStopMovement() (ActorStopMovement(0))
 #define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
 
 #define ActorOnTileX(i) ((actors[(i)].pos.x & 7) == 0)
@@ -151,9 +149,6 @@ UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a, UBYTE inc_noclip);
  * @return index of overlapping actor in actors array
  */
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
-
-void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y);
-void ActorStopMovement(UBYTE i);
 
 UBYTE ActorInFrontOfActor(UBYTE i);
 

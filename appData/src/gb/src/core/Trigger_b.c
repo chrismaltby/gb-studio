@@ -1,6 +1,5 @@
-// clang-format off
 #pragma bank 1
-// clang-format on
+
 #include "Trigger.h"
 
 UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) {
@@ -12,12 +11,10 @@ UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) {
     tx_c = tx_b + triggers[i].w - 1;
     ty_c = ty_b + triggers[i].h - 1;
 
-    
-
     if ((tx_a + 1) >= tx_b && tx_a <= tx_c && ty_a >= ty_b && ty_a <= ty_c) {
       return i;
     }
   }
 
-  return MAX_TRIGGERS;
+  return NO_TRIGGER_COLLISON;
 }

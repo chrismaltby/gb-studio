@@ -36,7 +36,7 @@ UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty) {
   last_trigger_tx = tx;
   last_trigger_ty = ty;
 
-  if (hit_trigger != MAX_TRIGGERS) {
+  if (hit_trigger != NO_TRIGGER_COLLISON) {
     TriggerRunScript(hit_trigger);
     return TRUE;
   }

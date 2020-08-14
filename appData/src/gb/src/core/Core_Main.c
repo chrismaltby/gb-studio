@@ -155,7 +155,6 @@ int core_start() {
       recent_joy = joy & ~last_joy;
     }
 
-
     UpdateCamera();
     RefreshScroll();
     UpdateActors();
@@ -188,7 +187,6 @@ int core_start() {
       ScriptRestoreCtx(11);
 
       // Reposition actors and check for collisions
-      MoveActors();
       ActorRunCollisionScripts();
     }
 
@@ -241,7 +239,6 @@ int core_start() {
     ScriptStart(&scene_events_start_ptr);
     ScriptRestoreCtx(0);
 
-    MoveActors();
     UpdateCamera();
     RefreshScroll();
     UpdateActors();

@@ -1,20 +1,15 @@
-// clang-format off
 #pragma bank 5
-// clang-format on
 
 #include "states/TopDown.h"
-#include "Scroll.h"
-#include "Input.h"
-#include "Collision.h"
 #include "Actor.h"
-#include "Trigger.h"
-#include "GameTime.h"
-#include "ScriptRunner.h"
 #include "Camera.h"
-#include "rand.h"
+#include "Collision.h"
+#include "DataManager.h"
+#include "GameTime.h"
+#include "Input.h"
+#include "Trigger.h"
 
 void Start_TopDown() {
-  // Set camera to follow player
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = 0;
@@ -24,33 +19,86 @@ void Start_TopDown() {
 void Update_TopDown() {
   UBYTE tile_x, tile_y, hit_actor, hit_trigger;
 
-  tile_x = player.pos.x >> 3;
-  tile_y = player.pos.y >> 3;
+  tile_x = DIV_8(player.pos.x);
+  tile_y = DIV_8(player.pos.y);
 
-  if (PlayerOnTile()) {
-    // If player was moving on the previous frame
-    if (player.moving) {
-      // Check for trigger collisions
-      if (ActivateTriggerAt(tile_x, tile_y)) {
-        // Landed on a trigger
-        PlayerStopMovement();
-        return;
-      }
-    }
-
+  // Is player on an 8x8px tile?
+  if (MOD_8(player.pos.x) == 0 && MOD_8(player.pos.y) == 0) {
     // Player landed on an 8x8px tile
     // so stop movement for now
-    PlayerStopMovement();
+    player.moving = FALSE;
+
+    // Check for trigger collisions
+    if (ActivateTriggerAt(tile_x, tile_y)) {
+      // If landed on a trigger don't update movement this frame
+      return;
+    }
 
     // Check input to set player movement
     if (INPUT_RECENT_LEFT) {
-      PlayerSetMovement(-1, 0);
+      UBYTE tile_left = tile_x - 1;
+
+      player.dir.x = -1;
+      player.dir.y = 0;
+      player.rerender = TRUE;
+
+      // Check for collisions to left of player
+      hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
+      if (tile_x != 0 && !(TileAt2x1(tile_left, tile_y) & COLLISION_RIGHT) &&
+          (hit_actor == NO_ACTOR_COLLISON)) {
+        player.moving = TRUE;
+      }
+
+      player.hit_actor = hit_actor;
+
     } else if (INPUT_RECENT_RIGHT) {
-      PlayerSetMovement(1, 0);
+      UBYTE tile_right = tile_x + 1;
+
+      player.dir.x = 1;
+      player.dir.y = 0;
+      player.rerender = TRUE;
+
+      // Check for collisions to right of player
+      hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
+      if (tile_x != image_tile_width - 2 && !(TileAt2x1(tile_right, tile_y) & COLLISION_LEFT) &&
+          (hit_actor == NO_ACTOR_COLLISON)) {
+        player.moving = TRUE;
+      }
+
+      player.hit_actor = hit_actor;
+
     } else if (INPUT_RECENT_UP) {
-      PlayerSetMovement(0, -1);
+      UBYTE tile_up = tile_y - 1;
+
+      player.dir.x = 0;
+      player.dir.y = -1;
+      player.rerender = TRUE;
+
+      // Check for collisions above player
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
+      if (tile_y != 0 && !(TileAt2x1(tile_x, tile_up) & COLLISION_BOTTOM) && (hit_actor == NO_ACTOR_COLLISON)) {
+        player.moving = TRUE;
+      }
+
+      player.hit_actor = hit_actor;
+
     } else if (INPUT_RECENT_DOWN) {
-      PlayerSetMovement(0, 1);
+      UBYTE tile_down = tile_y + 1;
+
+      player.dir.x = 0;
+      player.dir.y = 1;
+      player.rerender = TRUE;
+
+      // Check for collisions below player
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
+      if (tile_y != image_tile_height - 1 && !(TileAt2x1(tile_x, tile_down) & COLLISION_TOP) && (hit_actor == NO_ACTOR_COLLISON)) {
+        hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
+        if (hit_actor == NO_ACTOR_COLLISON) {
+          player.moving = TRUE;
+        }
+      }
+
+      player.hit_actor = hit_actor;
     }
 
     if (INPUT_A_PRESSED) {
@@ -64,11 +112,26 @@ void Update_TopDown() {
         actors[hit_actor].rerender = TRUE;
 
         // Stop player from moving
-        PlayerStopMovement();
+        player.moving = FALSE;
 
         // Run actors interact script
         ActorRunScript(hit_actor);
       }
+    }
+  }
+
+  // Move player
+  if (player.moving) {
+    // Move actor
+    if (player.move_speed == 0) {
+      // Half speed only move every other frame
+      if (IS_FRAME_2) {
+        player.pos.x += (WORD)player.dir.x;
+        player.pos.y += (WORD)player.dir.y;
+      }
+    } else {
+      player.pos.x += (WORD)(player.dir.x * player.move_speed);
+      player.pos.y += (WORD)(player.dir.y * player.move_speed);
     }
   }
 }

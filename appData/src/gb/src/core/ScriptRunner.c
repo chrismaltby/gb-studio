@@ -37,7 +37,7 @@ void ScriptRunnerInit() {
 void ScriptStart(BankPtr* events_ptr) {
   SeedRand();
 
-  PlayerStopMovement();
+  player.moving = FALSE;
 
   script_variables[TMP_VAR_1] = 0;
   script_variables[TMP_VAR_2] = 0;

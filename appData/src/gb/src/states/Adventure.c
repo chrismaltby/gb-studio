@@ -125,16 +125,10 @@ void Update_Adventure() {
   tile_x = (player.pos.x + 4) >> 3; 
   tile_y = (player.pos.y) >> 3;
 
-  // If player was moving on the previous frame
-  if (!player.moving) {
-    // Check for trigger collisions
-    hit_trigger = TriggerAtTile(tile_x, tile_y);
-    if (hit_trigger != MAX_TRIGGERS) {
-      // Run trigger script
-      ScriptStart(&triggers[hit_trigger].events_ptr);
-      player.moving = FALSE;
-      return;
-    }
+  // Check for trigger collisions
+  if (ActivateTriggerAt(tile_x, tile_y)) {
+    // Landed on a trigger
+    return;
   }
 
   // Actor Collisions
@@ -152,4 +146,20 @@ void Update_Adventure() {
       }
     }
   }
+
+  // Move player
+  if (player.moving) {
+    // Move actor
+    if (player.move_speed == 0) {
+      // Half speed only move every other frame
+      if (IS_FRAME_2) {
+        player.pos.x += (WORD)player.dir.x;
+        player.pos.y += (WORD)player.dir.y;
+      }
+    } else {
+      player.pos.x += (WORD)(player.dir.x * player.move_speed);
+      player.pos.y += (WORD)(player.dir.y * player.move_speed);
+    }
+  }  
+
 }

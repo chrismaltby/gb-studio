@@ -19,10 +19,10 @@
  * @param ty Top tile
  * @return Tile value, 0 if no collisions, 255 if out of bounds
  */
-UBYTE TileAt(UINT16 tx, UINT16 ty);
+UBYTE TileAt(UBYTE tx, UBYTE ty);
 
-UBYTE TileAt2x1(UINT16 tx, UINT16 ty);
+UBYTE TileAt2x1(UBYTE tx, UBYTE ty);
 
-UBYTE TileAt2x2(UINT16 tx, UINT16 ty);
+UBYTE TileAt2x2(UBYTE tx, UBYTE ty);
 
 #endif

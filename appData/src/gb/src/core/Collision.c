@@ -5,7 +5,7 @@
 
 #define MAX_UINT16 0xFFFF
 
-UBYTE TileAt(UINT16 tx, UINT16 ty) {
+UBYTE TileAt(UBYTE tx, UBYTE ty) {
   UWORD y_offset;
   UBYTE tile;
   // Check tile outside of bounds
@@ -21,7 +21,7 @@ UBYTE TileAt(UINT16 tx, UINT16 ty) {
   return tile;
 }
 
-UBYTE TileAt2x1(UINT16 tx, UINT16 ty) {
+UBYTE TileAt2x1(UBYTE tx, UBYTE ty) {
   UBYTE*  collision_ptr_tmp;
   UBYTE tile;
   // Check tile outside of bounds
@@ -38,7 +38,7 @@ UBYTE TileAt2x1(UINT16 tx, UINT16 ty) {
   return tile;
 }
 
-UBYTE TileAt2x2(UINT16 tx, UINT16 ty) {
+UBYTE TileAt2x2(UBYTE tx, UBYTE ty) {
   UBYTE*  collision_ptr_tmp;
   UBYTE tile;
   // Check tile outside of bounds

@@ -223,6 +223,18 @@ UBYTE ScriptUpdate_MoveActor() {
   (*tmp_actor).dir.x = new_dir_x;
   (*tmp_actor).dir.y = new_dir_y;
 
+  // Move actor
+  if ((*tmp_actor).move_speed == 0) {
+    // Half speed only move every other frame
+    if (IS_FRAME_2) {
+      (*tmp_actor).pos.x += (WORD)new_dir_x;
+      (*tmp_actor).pos.y += (WORD)new_dir_y;
+    }
+  } else {
+    (*tmp_actor).pos.x += (WORD)(new_dir_x * (*tmp_actor).move_speed);
+    (*tmp_actor).pos.y += (WORD)(new_dir_y * (*tmp_actor).move_speed);        
+  }
+
   return FALSE;
 }
 
@@ -230,46 +242,59 @@ UBYTE ScriptUpdate_MoveActorDiag() {
   BYTE new_dir_x = 0;
   BYTE new_dir_y = 0;
 
+  tmp_actor = &actors[active_script_ctx.script_actor];
+
   // Actor reached destination
-  if (actors[active_script_ctx.script_actor].pos.x == active_script_ctx.actor_move_dest_x &&
-      actors[active_script_ctx.script_actor].pos.y == active_script_ctx.actor_move_dest_y) {
-    actors[active_script_ctx.script_actor].moving = FALSE;
-    actors[active_script_ctx.script_actor].script_control = FALSE;
+  if ((*tmp_actor).pos.x == active_script_ctx.actor_move_dest_x &&
+      (*tmp_actor).pos.y == active_script_ctx.actor_move_dest_y) {
+    (*tmp_actor).moving = FALSE;
+    (*tmp_actor).script_control = FALSE;
     if (active_script_ctx.script_actor == 0) {
       pl_vel_x = 0;
       pl_vel_y = 0;
     }
     return TRUE;
   }
-  actors[active_script_ctx.script_actor].moving = TRUE;
+  (*tmp_actor).moving = TRUE;
 
   // Actor not at horizontal destination
-  if (actors[active_script_ctx.script_actor].pos.x != active_script_ctx.actor_move_dest_x) {
-    // actors[active_script_ctx.script_actor].dir.y = 0;
-    if (Lt16(actors[active_script_ctx.script_actor].pos.x, active_script_ctx.actor_move_dest_x)) {
+  if ((*tmp_actor).pos.x != active_script_ctx.actor_move_dest_x) {
+    if (Lt16((*tmp_actor).pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = 1;
-    } else if (Gt16(actors[active_script_ctx.script_actor].pos.x, active_script_ctx.actor_move_dest_x)) {
+    } else if (Gt16((*tmp_actor).pos.x, active_script_ctx.actor_move_dest_x)) {
       new_dir_x = -1;
     }
   }
 
   // Actor not at vertical destination
-  if (actors[active_script_ctx.script_actor].pos.y != active_script_ctx.actor_move_dest_y) {
-    if (Lt16(actors[active_script_ctx.script_actor].pos.y, active_script_ctx.actor_move_dest_y)) {
+  if ((*tmp_actor).pos.y != active_script_ctx.actor_move_dest_y) {
+    if (Lt16((*tmp_actor).pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = 1;
-    } else if (Gt16(actors[active_script_ctx.script_actor].pos.y, active_script_ctx.actor_move_dest_y)) {
+    } else if (Gt16((*tmp_actor).pos.y, active_script_ctx.actor_move_dest_y)) {
       new_dir_y = -1;
     }
   }
 
   // If changed direction, trigger actor rerender
-  if((actors[active_script_ctx.script_actor].dir.x != new_dir_x) ||
-     (actors[active_script_ctx.script_actor].dir.y != new_dir_y)) {
-       actors[active_script_ctx.script_actor].rerender = TRUE;
+  if(((*tmp_actor).dir.x != new_dir_x) ||
+     ((*tmp_actor).dir.y != new_dir_y)) {
+       (*tmp_actor).rerender = TRUE;
   }
 
-  actors[active_script_ctx.script_actor].dir.x = new_dir_x;
-  actors[active_script_ctx.script_actor].dir.y = new_dir_y;
+  (*tmp_actor).dir.x = new_dir_x;
+  (*tmp_actor).dir.y = new_dir_y;
+
+  // Move actor
+  if ((*tmp_actor).move_speed == 0) {
+    // Half speed only move every other frame
+    if (IS_FRAME_2) {
+      (*tmp_actor).pos.x += (WORD)new_dir_x;
+      (*tmp_actor).pos.y += (WORD)new_dir_y;
+    }
+  } else {
+    (*tmp_actor).pos.x += (WORD)(new_dir_x * (*tmp_actor).move_speed);
+    (*tmp_actor).pos.y += (WORD)(new_dir_y * (*tmp_actor).move_speed);        
+  }
 
   return FALSE;
 }

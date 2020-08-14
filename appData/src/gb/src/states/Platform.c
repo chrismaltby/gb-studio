@@ -41,9 +41,8 @@ WORD pl_pos_x = 16512;
 WORD pl_pos_y = 1024;
 
 void Start_Platform() {
-  
+  UBYTE tile_x, tile_y;
 
-  player.moving = FALSE;
   pl_pos_x = (player.pos.x + 4u) << 4;
   pl_pos_y = player.pos.y << 4;
   pl_vel_x = 0;
@@ -55,7 +54,16 @@ void Start_Platform() {
     player.rerender = TRUE;
   }
 
+  tile_x = DIV_8(player.pos.x);
+  tile_y = DIV_8(player.pos.y);
+
   grounded = FALSE;
+  // If starting tile was a ladder start scene attached to it
+  if (TileAt(tile_x, tile_y) & TILE_PROP_LADDER) {
+    on_ladder = TRUE;
+    player.dir.x = 0;
+    player.dir.y = -1;
+  }
 
   camera_offset.x = 0;
   camera_offset.y = 0;
@@ -63,19 +71,19 @@ void Start_Platform() {
   camera_deadzone.y = PLATFORM_CAMERA_DEADZONE_Y;
 
   game_time = 0;
-  
 }
 
 void Update_Platform() {
-  WORD tile_x, tile_y;
+  UBYTE tile_x, tile_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;
 
-  // Update scene pos from player pos
+  // Update scene pos from player pos (incase was moved by a script)
   pl_pos_x = ((player.pos.x + 4u) << 4) + (pl_pos_x & 0xF);
   pl_pos_y = ((player.pos.y) << 4) + (pl_pos_y & 0xF);
 
-  player.moving = FALSE;
+  tile_x = DIV_8(player.pos.x);
+  tile_y = DIV_8(player.pos.y);
 
   // Move
   if (on_ladder) {
@@ -103,7 +111,7 @@ void Update_Platform() {
   } else {
     player.dir.y = 0;
 
-    if ((INPUT_UP || INPUT_DOWN) && ((TileAt(pl_pos_x >> 7, pl_pos_y >> 7) & TILE_PROP_LADDER))) {
+    if ((INPUT_UP || INPUT_DOWN) && ((TileAt(tile_x, tile_y) & TILE_PROP_LADDER))) {
       on_ladder = TRUE;
       pl_vel_x = 0;
       player.dir.x = 0;
@@ -143,7 +151,6 @@ void Update_Platform() {
     }
   }
   
-
   pl_pos_x += pl_vel_x >> 8;
   tile_x = pl_pos_x >> 7;
   tile_y = pl_pos_y >> 7;
@@ -266,7 +273,6 @@ void Update_Platform() {
   // Check for trigger collisions
   if (ActivateTriggerAt(tile_x, tile_y)) {
     // Landed on a trigger
-    player.moving = FALSE;
     return;
   }
 

@@ -12,8 +12,6 @@ void MoveActors_b();
 void ActivateActor_b(UBYTE i);
 void ActivateActorColumn_b(UBYTE tx_a, UBYTE ty_a);
 void DeactivateActor_b(UBYTE i);
-void ActorsUnstick_b();
-void ActorSetMovement_b(UBYTE i, BYTE dir_x, BYTE dir_y);
 UBYTE ActorInFrontOfActor_b(UBYTE i);
 UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
 void InitPlayer_b();
@@ -40,12 +38,6 @@ void ActorsInit() {
   for (i = 0; i != MAX_ACTORS; i++) {
     actor_ptrs[i] = &actors[i];
   }
-}
-
-void MoveActorsc() {
-  // PUSH_BANK(ACTOR_BANK);
-  // MoveActors_b();
-  // POP_BANK;
 }
 
 void UpdateActorsc() {
@@ -128,16 +120,6 @@ UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
   return hit_actor;
 }
 
-void ActorSetMovement(UBYTE i, BYTE dir_x, BYTE dir_y) {
-  PUSH_BANK(ACTOR_BANK);
-  ActorSetMovement_b(i, dir_x, dir_y);
-  POP_BANK;
-}
-
-void ActorStopMovement(UBYTE i) {
-  actors[i].moving = FALSE;
-}
-
 UBYTE ActorInFrontOfActor(UBYTE i) {
   UBYTE hit_actor = FALSE;
   PUSH_BANK(ACTOR_BANK);
@@ -152,12 +134,6 @@ UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UB
   tile = CheckCollisionInDirection_b(start_x, start_y, end_tile, check_dir);
   POP_BANK;
   return tile;
-}
-
-void ActorsUnstick() {
-  PUSH_BANK(ACTOR_BANK);
-  ActorsUnstick_b();
-  POP_BANK;
 }
 
 void InitPlayer() {
