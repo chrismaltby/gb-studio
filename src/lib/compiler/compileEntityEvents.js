@@ -56,6 +56,21 @@ const compileEntityEvents = (input = [], options = {}) => {
       continue;
     }
     if (events[command]) {
+      if (command === "EVENT_PLAYER_SET_SPRITE") {
+        if (input[i].args && input[i].args.spriteSheetId) {
+          const sprite = options.sprites.find(
+            (s) => s.id === input[i].args.spriteSheetId
+          );
+          if (sprite && sprite.numFrames > 6) {
+            warnings(
+              `Used "Set Player Sprite Sheet" event with a sprite sheet containing more than 6 frames. This may cause graphics corruption. ${JSON.stringify({
+                ...location,
+                filename: sprite.filename
+              })}`
+            );
+          }
+        }
+      }
       try {
         events[command].compile(
           { ...input[i].args, ...input[i].children },
