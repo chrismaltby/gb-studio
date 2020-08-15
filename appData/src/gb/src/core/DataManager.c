@@ -14,6 +14,8 @@
 #include "Input.h"
 #include "data_ptrs.h"
 
+#define MAX_PLAYER_SPRITE_SIZE 24
+
 BankPtr bank_ptr;
 UBYTE image_bank;
 UBYTE image_attr_bank;
@@ -133,7 +135,7 @@ void LoadPlayerSpritePalette(UINT16 index) {
 }
 
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
-  UBYTE bank, size;
+  UBYTE bank, sprite_frames, size, load_size;
   UBYTE* data_ptr;
 
   PUSH_BANK(DATA_PTRS_BANK);
@@ -142,8 +144,16 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
   POP_BANK;
 
   PUSH_BANK(bank);
-  size = *(data_ptr++) * 4;
-  set_sprite_data(sprite_offset, size, data_ptr);
+  sprite_frames = *(data_ptr++);
+  size = sprite_frames * 4;
+
+  if (sprite_offset == 0 && sprite_frames > 6) {
+    load_size = MAX_PLAYER_SPRITE_SIZE;
+  } else {
+    load_size = size;
+  }
+
+  set_sprite_data(sprite_offset, load_size, data_ptr);
   POP_BANK;
 
   return size;

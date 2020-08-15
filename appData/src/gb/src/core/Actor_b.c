@@ -497,9 +497,20 @@ void InitPlayer_b() {
   player.start_pos.y = player.pos.y;
   player.dir.x = map_next_dir.x;
   player.dir.y = map_next_dir.y;
-  player.sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
-                                          : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  player.frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+  if (sprite_frames > 6) {
+    // Limit player to 6 frames to prevent overflow into scene actor vram
+    player.sprite_type = SPRITE_STATIC;
+    player.frames_len = 6;
+  } else if (sprite_frames == 6) {
+    player.sprite_type = SPRITE_ACTOR_ANIMATED;
+    player.frames_len = 2;
+  } else if (sprite_frames == 3) {
+    player.sprite_type = SPRITE_ACTOR;
+    player.frames_len = 1;    
+  } else {
+    player.sprite_type = SPRITE_STATIC;
+    player.frames_len = sprite_frames;    
+  }
   player.sprite_index = SpritePoolNext();
   player.rerender = TRUE;
   player.moving = FALSE;
