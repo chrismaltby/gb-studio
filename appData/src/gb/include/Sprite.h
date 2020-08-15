@@ -19,6 +19,7 @@ typedef struct _SPRITEINFO {
 
 extern SpriteInfo sprites_info[MAX_FRAMES];
 extern UINT8 sprite_pool[];
+extern UBYTE hide_sprites;
 
 /**
  * Reposition active sprites and rerender any that have changed frame or flipped

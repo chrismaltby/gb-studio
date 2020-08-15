@@ -786,6 +786,7 @@ void ScriptHelper_CalcDest() {
  * Make all sprites visible
  */
 void Script_ShowSprites_b() {
+  hide_sprites = FALSE;
   SHOW_SPRITES;
 }
 
@@ -795,6 +796,7 @@ void Script_ShowSprites_b() {
  * Hide all sprites
  */
 void Script_HideSprites_b() {
+  hide_sprites = TRUE;
   HIDE_SPRITES;
 }
 
