@@ -221,19 +221,40 @@ void SceneInit_b5()
 {
   BANK_PTR sprite_bank_ptr;
   UWORD sprite_ptr;
-  UBYTE sprite_frames, sprite_len;
+  UBYTE sprite_frames, sprite_len, load_size;
 
   // Load Player Sprite
   ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, &sprite_bank_ptrs[map_next_sprite]);
   sprite_ptr = ((UWORD)bank_data_ptrs[sprite_bank_ptr.bank]) + sprite_bank_ptr.offset;
   sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
   sprite_len = MUL_4(sprite_frames);
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
+
+  if (sprite_frames > 6) {
+    load_size = 24;
+  } else {
+    load_size = sprite_len;
+  }
+
+  SetBankedSpriteData(sprite_bank_ptr.bank, 0, load_size, sprite_ptr + 1);
   actors[0].sprite = 0;
   actors[0].frame = 0;
   actors[0].animate = FALSE;
-  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
+
+ if (sprite_frames > 6) {
+    // Limit player to 6 frames to prevent overflow into scene actor vram
+    actors[0].sprite_type = SPRITE_STATIC;
+    actors[0].frames_len = 6;
+  } else if (sprite_frames == 6) {
+    actors[0].sprite_type = SPRITE_ACTOR_ANIMATED;
+    actors[0].frames_len = 2;
+  } else if (sprite_frames == 3) {
+    actors[0].sprite_type = SPRITE_ACTOR;
+    actors[0].frames_len = 1;    
+  } else {
+    actors[0].sprite_type = SPRITE_STATIC;
+    actors[0].frames_len = sprite_frames;    
+  }
+
   SceneRenderActor_b(0);
 }
 
