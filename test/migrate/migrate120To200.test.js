@@ -174,6 +174,99 @@ test("should migrate text animation speed events with allowFastForward=true", ()
   })
 });
 
+test("should migrate move to using variables events to move to using union type", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO_VALUE",
+    args: {
+      actorId: "player",
+      vectorX: "1",
+      vectorY: "2",
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "variable",
+        value: "1"
+      },
+      y: {
+        type: "variable",
+        value: "2"
+      },
+      useCollisions: false,
+      verticalFirst: false,
+    }   
+  });
+});
+
+test("should keep comment state when migrating move to event", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO_VALUE",
+    args: {
+      actorId: "player",
+      vectorX: "1",
+      vectorY: "2",
+      __comment: true
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "variable",
+        value: "1"
+      },
+      y: {
+        type: "variable",
+        value: "2"
+      },
+      useCollisions: false,
+      verticalFirst: false,
+      __comment: true      
+    }   
+  });
+});
+
+
+test("should keep rename state when migrating move to event", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO_VALUE",
+    args: {
+      actorId: "player",
+      vectorX: "1",
+      vectorY: "2",
+      __label: "Label"
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_ACTOR_MOVE_TO",
+    args: {
+      actorId: "player",
+      x: {
+        type: "variable",
+        value: "1"
+      },
+      y: {
+        type: "variable",
+        value: "2"
+      },
+      useCollisions: false,
+      verticalFirst: false,
+      __label: "Label"
+    }   
+  });
+});
+
+
 test("should migrate actors with movementType=static and animate=false to have animSpeed none", () => {
   const oldProject = {
     scenes: [

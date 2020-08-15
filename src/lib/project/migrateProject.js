@@ -324,17 +324,27 @@ export const migrateFrom120To200Actors = (data) => {
  * needs to be added to all sound scripts to make old functionality the default
  */
 export const migrateFrom120To200Event = event => {
-  if (event.args && event.command === "EVENT_SOUND_PLAY_EFFECT") {
+  const migrateMeta = (newEvent) => {
     return {
-      ...event,
+      ...newEvent,
       args: {
-        ...event.args,
-        wait: true
+        ...newEvent.args,
+        __comment: event.args.__comment,
+        __label: event.args.__label        
       }
     }
   }
+  if (event.args && event.command === "EVENT_SOUND_PLAY_EFFECT") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        wait: true,      
+      }
+    });
+  }
   if(event.args && event.command === "EVENT_ACTOR_MOVE_TO_VALUE") {
-    return {
+    return migrateMeta({
       ...event,
       command: "EVENT_ACTOR_MOVE_TO",
       args: {
@@ -350,10 +360,10 @@ export const migrateFrom120To200Event = event => {
         useCollisions: false,
         verticalFirst: false,
       }
-    };
+    });
   }
   if(event.args && event.command === "EVENT_ACTOR_MOVE_TO") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         actorId: event.args.actorId,
@@ -366,12 +376,12 @@ export const migrateFrom120To200Event = event => {
           value: event.args.y,
         },
         useCollisions: false,
-        verticalFirst: false,
+        verticalFirst: false, 
       }
-    };
+    });
   } 
   if(event.args && event.command === "EVENT_ACTOR_SET_POSITION_TO_VALUE") {
-    return {
+    return migrateMeta({
       ...event,
       command: "EVENT_ACTOR_SET_POSITION",
       args: {
@@ -383,12 +393,12 @@ export const migrateFrom120To200Event = event => {
         y: {
           type: "variable",
           value: event.args.vectorY,
-        }
+        },   
       }
-    };
+    });
   }
   if(event.args && event.command === "EVENT_ACTOR_SET_POSITION") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         actorId: event.args.actorId,
@@ -399,12 +409,12 @@ export const migrateFrom120To200Event = event => {
         y: {
           type: "number",
           value: event.args.y,
-        }
+        },    
       }
-    };
+    });
   }  
   if(event.args && event.command === "EVENT_ACTOR_SET_DIRECTION_TO_VALUE") {
-    return {
+    return migrateMeta({
       ...event,
       command: "EVENT_ACTOR_SET_DIRECTION",
       args: {
@@ -414,10 +424,10 @@ export const migrateFrom120To200Event = event => {
           value: event.args.variable,
         }
       }
-    };
+    });
   }  
   if(event.args && event.command === "EVENT_ACTOR_SET_DIRECTION") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         actorId: event.args.actorId,
@@ -426,10 +436,10 @@ export const migrateFrom120To200Event = event => {
           value: event.args.direction,
         }
       }
-    };
+    });
   }
   if(event.args && event.command === "EVENT_ACTOR_SET_FRAME_TO_VALUE") {
-    return {
+    return migrateMeta({
       ...event,
       command: "EVENT_ACTOR_SET_FRAME",
       args: {
@@ -439,10 +449,10 @@ export const migrateFrom120To200Event = event => {
           value: event.args.variable,
         }
       }
-    };
+    });
   }  
   if(event.args && event.command === "EVENT_ACTOR_SET_FRAME") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         actorId: event.args.actorId,
@@ -451,10 +461,10 @@ export const migrateFrom120To200Event = event => {
           value: event.args.frame,
         }
       }
-    };
+    });
   }
   if(event.args && event.command === "EVENT_SET_VALUE") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         variable: event.args.variable,
@@ -463,25 +473,25 @@ export const migrateFrom120To200Event = event => {
           value: event.args.value,          
         }
       }
-    }
+    });
   }
   if(event.args && event.command === "EVENT_SET_INPUT_SCRIPT") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         ...event.args,
         persist: true
       }
-    }
+    });
   }
   if(event.args && event.command === "EVENT_TEXT_SET_ANIMATION_SPEED") {
-    return {
+    return migrateMeta({
       ...event,
       args: {
         ...event.args,
         allowFastForward: true
       }
-    }
+    });
   }  
   
   return event;
