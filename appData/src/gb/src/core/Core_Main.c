@@ -48,16 +48,18 @@ void vbl_update() {
       gbt_enable_channels(0xF);
     }
   }
+
+  if (!hide_sprites) {
+    SHOW_SPRITES;
+  }
 }
 
 void lcd_update() {
   if (LYC_REG == 0x0) {
     if(WY_REG == 0x0) {
       HIDE_SPRITES;
-    } else {
-      SHOW_SPRITES;
     }
-
+    
     // If UI is open cause lcd interupt
     // to fire again when first line of
     // window is being drawn

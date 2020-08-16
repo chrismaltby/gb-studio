@@ -811,6 +811,7 @@ void ScriptHelper_CalcDest() {
  * Make all sprites visible
  */
 void Script_ShowSprites_b() {
+  hide_sprites = FALSE;
   SHOW_SPRITES;
 }
 
@@ -820,6 +821,7 @@ void Script_ShowSprites_b() {
  * Hide all sprites
  */
 void Script_HideSprites_b() {
+  hide_sprites = TRUE;
   HIDE_SPRITES;
 }
 
@@ -1143,24 +1145,33 @@ void Script_ActorSetSprite_b() {
  * Change sprite used by player
  */
 void Script_PlayerSetSprite_b() {
-  BankPtr sprite_bank_ptr;
-  UBYTE* sprite_ptr;
   UWORD sprite_index;
-  UBYTE sprite_frames, sprite_len;
+  UBYTE sprite_frames;
 
   // Load Player Sprite
   sprite_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
-  ReadBankedBankPtr(DATA_PTRS_BANK, &sprite_bank_ptr, (BankPtr*)&sprite_bank_ptrs[sprite_index]);
-  sprite_ptr = (BankDataPtr(sprite_bank_ptr.bank)) + sprite_bank_ptr.offset;
-  sprite_frames = ReadBankedUBYTE(sprite_bank_ptr.bank, sprite_ptr);
-  sprite_len = MUL_4(sprite_frames);
-  SetBankedSpriteData(sprite_bank_ptr.bank, 0, sprite_len, sprite_ptr + 1);
-  actors[0].sprite = 0;
-  actors[0].frame = 0;
-  actors[0].sprite_type = sprite_frames == 6 ? SPRITE_ACTOR_ANIMATED
-                                             : sprite_frames == 3 ? SPRITE_ACTOR : SPRITE_STATIC;
-  actors[0].frames_len = sprite_frames == 6 ? 2 : sprite_frames == 3 ? 1 : sprite_frames;
-  actors[0].rerender = TRUE;
+
+  sprite_frames = DIV_4(LoadSprite(sprite_index, 0));
+
+  player.sprite = 0;
+  player.frame = 0;
+
+ if (sprite_frames > 6) {
+    // Limit player to 6 frames to prevent overflow into scene actor vram
+    player.sprite_type = SPRITE_STATIC;
+    player.frames_len = 6;
+  } else if (sprite_frames == 6) {
+    player.sprite_type = SPRITE_ACTOR_ANIMATED;
+    player.frames_len = 2;
+  } else if (sprite_frames == 3) {
+    player.sprite_type = SPRITE_ACTOR;
+    player.frames_len = 1;    
+  } else {
+    player.sprite_type = SPRITE_STATIC;
+    player.frames_len = sprite_frames;    
+  }
+
+  player.rerender = TRUE;
 
   // Keep new sprite when switching scene
   map_next_sprite = sprite_index;

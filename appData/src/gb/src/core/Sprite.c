@@ -5,6 +5,7 @@
 
 SpriteInfo sprites_info[MAX_FRAMES];
 DECLARE_STACK(sprite_pool, MAX_SPRITES);
+UBYTE hide_sprites = FALSE;
 
 void SpritePoolReset_b();
 void SpritePoolReturn_b(UINT8 i);
