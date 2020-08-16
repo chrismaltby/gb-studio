@@ -209,7 +209,6 @@ void Update_Platform() {
 
   if (on_ladder) {
     // Ladder vertical collision
-
     UBYTE tile_below;
     if(!(TileAt(tile_x, tile_y) & TILE_PROP_LADDER)) {
       if (INPUT_DOWN) {
@@ -235,7 +234,6 @@ void Update_Platform() {
 
   } else {
     // Ground Collision
-
     if (pl_vel_y >= 0 &&
         (TileAt(tile_x, tile_y + 1) & COLLISION_TOP||                                      // Left Edge
         (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1) & COLLISION_TOP))  // Right edge
@@ -252,23 +250,40 @@ void Update_Platform() {
             (((pl_pos_x >> 4) & 0x7) != 0 &&
             TileAt(tile_x + 1, tile_y - 2) & COLLISION_BOTTOM)  // Right edge
         ) {
-          if (MOD_128(pl_pos_y) < 32) {
             pl_vel_y = 0;
             pl_pos_y = ((tile_y * 8) << 4);
-          }
         }
       }
     }
   }
 
-  if (!player.script_control) {
-    player.pos.x = (pl_pos_x >> 4) - 4u;
-    player.pos.y = pl_pos_y >> 4;
-    player.animate = (grounded && pl_vel_x != 0) || (on_ladder && pl_vel_y != 0);
-  } else {
+  // Position player sprite using precision coordinates
+  player.pos.x = (pl_pos_x >> 4) - 4u;
+  player.pos.y = pl_pos_y >> 4;
+
+  // Clamp to screen
+  if (player.pos.x < 0) {
+    player.pos.x = 0;
+    pl_pos_x = 0;
     pl_vel_x = 0;
-    pl_vel_y = 0;
+  } else if (player.pos.x > image_width - 16) {
+    player.pos.x = image_width - 16;
+    pl_pos_x = 0;
+    pl_vel_x = 0;
   }
+
+  if (player.pos.y < 0) {
+    player.pos.y = 0;
+    pl_pos_y = 0;
+    pl_vel_y = 0;
+  } else if (player.pos.y > image_height - 8) {
+    player.pos.y = image_height - 8;
+    pl_pos_y = 0;
+    pl_vel_y = 0;
+    grounded = TRUE;
+  }
+
+  player.animate = (grounded && pl_vel_x != 0) || (on_ladder && pl_vel_y != 0);
 
   // Check for trigger collisions
   if (ActivateTriggerAt(tile_x, tile_y)) {

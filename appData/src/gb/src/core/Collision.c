@@ -3,13 +3,14 @@
 #include "BankManager.h"
 #include "DataManager.h"
 
-#define MAX_UINT16 0xFFFF
+#define MAX_UINT8 0xFF
 
 UBYTE TileAt(UBYTE tx, UBYTE ty) {
   UWORD y_offset;
   UBYTE tile;
+
   // Check tile outside of bounds
-  if (tx == MAX_UINT16 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT16) {
+  if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
     return OUT_OF_BOUNDS;
   }
 
@@ -24,8 +25,9 @@ UBYTE TileAt(UBYTE tx, UBYTE ty) {
 UBYTE TileAt2x1(UBYTE tx, UBYTE ty) {
   UBYTE*  collision_ptr_tmp;
   UBYTE tile;
+
   // Check tile outside of bounds
-  if (tx == MAX_UINT16 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT16) {
+  if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
     return OUT_OF_BOUNDS;
   }
 
@@ -41,8 +43,9 @@ UBYTE TileAt2x1(UBYTE tx, UBYTE ty) {
 UBYTE TileAt2x2(UBYTE tx, UBYTE ty) {
   UBYTE*  collision_ptr_tmp;
   UBYTE tile;
+
   // Check tile outside of bounds
-  if (tx == MAX_UINT16 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT16) {
+  if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
     return OUT_OF_BOUNDS;
   }
 
