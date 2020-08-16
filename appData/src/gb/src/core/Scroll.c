@@ -127,7 +127,7 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
   for (i = 1; i != actors_len; i++) {
     if (actors[i].pos.y >> 3 == y) {
       INT16 tx = actors[i].pos.x >> 3;
-      if (U_LESS_THAN(x, tx) && U_LESS_THAN(tx, x + 24)) {
+      if (U_LESS_THAN(x, tx + 1) && U_LESS_THAN(tx, x + 24)) {
         ActivateActor(i);
       }
     }
