@@ -54,6 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix custom events issue where some events wouldn't show their variables in the custom event parameters [@pau-tomas](https://github.com/pau-tomas)
 - Lots of bug fixes / helping get the open beta build ready [@pau-tomas](https://github.com/pau-tomas) and [@RichardULZ](https://github.com/RichardULZ)
 - Prevent actor sprites from overlapping dialogue boxes
+- Fix issues when trying to use more than 256 sprites in a single game
+- Fix issues when saving progress if project contained more than 256 scenes
 
 ### Changed
 
