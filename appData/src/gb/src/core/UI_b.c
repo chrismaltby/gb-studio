@@ -106,6 +106,7 @@ const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
+void UIDrawMenuCursor_b();
 
 void UIInit_b() {
   UBYTE* ptr;
