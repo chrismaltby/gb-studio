@@ -45,4 +45,18 @@ void RefreshScroll_b();
  */
 void RenderScreen();
 
+/**
+ * Set vram tile at memory location to a value from a second memory location
+ * 
+ * @param r address of tile to write to
+ * @param t address of new tile value
+ */
+void SetTile(UINT16 r, UINT8 t);
+
+/**
+ * Wait for LCD controller mode 1 or 0 (Can access OAM)
+ */
+void WaitForMode0Or1();
+
+
 #endif
