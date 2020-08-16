@@ -17,7 +17,7 @@ void Start_TopDown() {
 }
 
 void Update_TopDown() {
-  UBYTE tile_x, tile_y, hit_actor, hit_trigger;
+  UBYTE tile_x, tile_y, hit_actor;
 
   tile_x = DIV_8(player.pos.x);
   tile_y = DIV_8(player.pos.y);

@@ -23,7 +23,6 @@ void UIShowMenu_b(UWORD flag_index,
                   UWORD bank_offset,
                   UBYTE layout,
                   UBYTE cancel_config);
-void UIDrawMenuCursor_b();
 
 UBYTE ui_block = FALSE;
 UBYTE win_pos_x;
@@ -132,8 +131,6 @@ void UIShowAvatar(UBYTE avatar_index) {
   set_win_tiles(2, 1, 1, 1, &tile2);
   set_win_tiles(1, 2, 1, 1, &tile3);
   set_win_tiles(2, 2, 1, 1, &tile4);
-
-  //avatar_enabled = TRUE; // Set before UIShowText in case instant
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
@@ -171,18 +168,8 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
   }
 }
 
-UBYTE UIIsBlocking() {
-  return ui_block == TRUE;
-}
-
 UBYTE UIIsClosed() {
   return win_pos_y == MENU_CLOSED_Y && win_dest_pos_y == MENU_CLOSED_Y;
-}
-
-void UIDrawMenuCursor() {
-  PUSH_BANK(UI_BANK);
-  UIDrawMenuCursor_b();
-  POP_BANK;
 }
 
 void UIOnInteract() {
@@ -198,12 +185,5 @@ UBYTE UIAtDest() {
 void UISetColor(UBYTE color) {
   PUSH_BANK(UI_BANK);
   UISetColor_b(color);
-  POP_BANK;
-}
-
-void UIInteract_Update() {
-  PUSH_BANK(UI_BANK);
-  UIOnInteract_b();
-  UIUpdate_b();
   POP_BANK;
 }

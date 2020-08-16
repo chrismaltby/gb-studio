@@ -23,6 +23,9 @@ extern Vector2D camera_deadzone;
 extern UBYTE camera_settings;
 extern UBYTE camera_speed;
 
+/**
+ * Update camera position based on scroll target and deadzone settings
+ */
 void UpdateCamera();
 
 #endif

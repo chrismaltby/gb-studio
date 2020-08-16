@@ -1,10 +1,13 @@
-// clang-format off
 #pragma bank 1
-// clang-format on
 
-#include "Scroll.h"
 #include "DataManager.h"
 #include "GameTime.h"
+#include "Scroll.h"
+
+void ScrollUpdateRowWithDelay(INT16 x, INT16 y);
+void ScrollUpdateColumnWithDelay(INT16 x, INT16 y);
+void ScrollUpdateRowR();
+void ScrollUpdateColumnR();
 
 void RefreshScroll_b() {
   INT16 x, y;
@@ -14,12 +17,12 @@ void RefreshScroll_b() {
   x = scroll_target->x - (SCREENWIDTH >> 1);
   y = scroll_target->y - (SCREENHEIGHT >> 1);
 
-  if (x&0x8000u) { // check for negative signed bit
+  if (x & 0x8000u) {  // check for negative signed bit
     x = 0u;
   } else if (x > scroll_x_max) {
     x = scroll_x_max;
   }
-  if (y&0x8000u) {
+  if (y & 0x8000u) {
     y = 0u;
   } else if (y > scroll_y_max) {
     y = scroll_y_max;

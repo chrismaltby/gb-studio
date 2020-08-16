@@ -147,21 +147,24 @@ int core_start() {
     if (!vbl_count) {
       wait_vbl_done();
     }
+    
     delta_time = vbl_count == 1u ? 0u : 1u;
     vbl_count = 0;
 
     last_joy = joy;
     joy = joypad();
     if ((joy & INPUT_DPAD) != (last_joy & INPUT_DPAD)) {
-      // https://stackoverflow.com/a/50705674
       recent_joy = joy & ~last_joy;
     }
 
+    PUSH_BANK(1);
+
     UpdateCamera();
-    RefreshScroll();
+    RefreshScroll_b();
     UpdateActors();
-    UpdateProjectiles();
-    UIInteract_Update();
+    UpdateProjectiles_b();
+    UIOnInteract_b();
+    UIUpdate_b();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
       HandleInputScripts();
@@ -193,6 +196,8 @@ int core_start() {
     }
 
     game_time++;
+
+    POP_BANK;
 
     /* Game Core Loop End ***********************************/
   }

@@ -1,5 +1,3 @@
-; .area _CODE_1
-
 .include "asm.macros.s"
 
 _UpdateCamera::

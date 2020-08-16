@@ -10,15 +10,47 @@
 
 typedef enum { FADE_IN, FADE_OUT } FADE_DIRECTION;
 
-void FadeInit();
-void FadeIn();
-void FadeOut();
-void FadeUpdate();
-void ApplyPaletteChange();
-void FadeSetSpeed(UBYTE speed);
-UBYTE IsFading();
-
 extern UBYTE fade_running;
 extern UBYTE fade_frames_per_step;
+
+/**
+ * Initialise fade variables
+ */
+void FadeInit();
+
+/**
+ * Start Fade In
+ */
+void FadeIn();
+
+/**
+ * Start Fade Out
+ */
+void FadeOut();
+
+/**
+ * Update current fade
+ */
+void FadeUpdate();
+
+/**
+ * Refresh tile coloring to reflect changes in palette
+ * Call after LoadPalette etc.
+ */
+void ApplyPaletteChange();
+
+/**
+ * Change current fade speed
+ * 
+ * @param speed new fade speed
+ */
+void FadeSetSpeed(UBYTE speed);
+
+/**
+ * Check if fade is currently running
+ * 
+ * @return TRUE if fade is currently running
+ */
+UBYTE IsFading();
 
 #endif

@@ -1,6 +1,4 @@
-// clang-format off
 #pragma bank 1
-// clang-format on
 
 #include "Projectiles.h"
 
@@ -29,20 +27,6 @@ void ProjectilesInit_b() {
 
 void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
-    projectiles[current_projectile].life_time = 0;
-    projectiles[current_projectile].moving = 0;
-    projectiles[current_projectile].pos.x = 0;
-    projectiles[current_projectile].pos.y = 0;
-    projectiles[current_projectile].dir.x = 0;
-    projectiles[current_projectile].dir.y = 0;
-    projectiles[current_projectile].move_speed = 0;
-    projectiles[current_projectile].life_time = 0;
-    projectiles[current_projectile].col_group = 0;
-    projectiles[current_projectile].col_mask = 0;
-    projectiles[current_projectile].pin_actor = 0;
-    projectiles[current_projectile].sprite = 0;
-    projectiles[current_projectile].sprite_type = 0;
-
     projectiles[current_projectile].moving = FALSE;
     projectiles[current_projectile].dir.x = actors[actor].dir.x;
     projectiles[current_projectile].dir.y = actors[actor].dir.y;
@@ -88,25 +72,7 @@ void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE col_group,
                         UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
-    // set_sprite_prop(projectiles[current_projectile].sprite_index, 0);
-    // set_sprite_prop(projectiles[current_projectile].sprite_index + 1, 0);
-    // set_sprite_tile(projectiles[current_projectile].sprite_index, sprite * 4);
-    // set_sprite_tile(projectiles[current_projectile].sprite_index + 1, (sprite * 4) + 2);
-
-    projectiles[current_projectile].life_time = 0;
-    projectiles[current_projectile].moving = 0;
-    projectiles[current_projectile].pos.x = 0;
-    projectiles[current_projectile].pos.y = 0;
-    projectiles[current_projectile].dir.x = 0;
-    projectiles[current_projectile].dir.y = 0;
-    projectiles[current_projectile].move_speed = 0;
-    projectiles[current_projectile].life_time = 0;
-    projectiles[current_projectile].col_group = 0;
-    projectiles[current_projectile].col_mask = 0;
     projectiles[current_projectile].pin_actor = NO_ACTOR_PINNED;
-    projectiles[current_projectile].sprite = 0;
-    projectiles[current_projectile].sprite_type = 0;
-
     projectiles[current_projectile].moving = moving;
     projectiles[current_projectile].pos.x = x;
     projectiles[current_projectile].pos.y = y;
@@ -120,7 +86,6 @@ void ProjectileLaunch_b(UBYTE sprite,
     projectiles[current_projectile].time = 1;
     projectiles[current_projectile].frame = 0;
     projectiles[current_projectile].frames_len = 2;
-
     projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
     projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
     projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;

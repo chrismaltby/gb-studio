@@ -8,12 +8,10 @@
 #include "Sprite.h"
 
 void UpdateActors_b();
-void MoveActors_b();
 void ActivateActor_b(UBYTE i);
-void ActivateActorColumn_b(UBYTE tx_a, UBYTE ty_a);
 void DeactivateActor_b(UBYTE i);
 UBYTE ActorInFrontOfActor_b(UBYTE i);
-UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
+UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir);
 void InitPlayer_b();
 UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
@@ -40,21 +38,9 @@ void ActorsInit() {
   }
 }
 
-void UpdateActorsc() {
-  // PUSH_BANK(ACTOR_BANK);
-  // UpdateActors_b();
-  // POP_BANK;
-}
-
 void ActivateActor(UBYTE i) {
   PUSH_BANK(ACTOR_BANK);
   ActivateActor_b(i);
-  POP_BANK;
-}
-
-void ActivateActorColumn(UBYTE tx, UBYTE ty) {
-  PUSH_BANK(ACTOR_BANK);
-  ActivateActorColumn_b(tx, ty);
   POP_BANK;
 }
 
@@ -128,7 +114,7 @@ UBYTE ActorInFrontOfActor(UBYTE i) {
   return hit_actor;
 }
 
-UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir) {
+UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir) {
   UBYTE tile;
   PUSH_BANK(ACTOR_BANK);
   tile = CheckCollisionInDirection_b(start_x, start_y, end_tile, check_dir);

@@ -3,26 +3,59 @@
 
 #include <gb/gb.h>
 
-#ifdef __EMSCRIPTEN__
-#define BankDataPtr(bank) ((UBYTE *)bank_data_ptrs[(bank)])
-#else
 #define BankDataPtr(bank) ((UBYTE *)0x4000)
-#endif
 
 typedef struct _BankPtr {
   UBYTE bank;
   UWORD offset;
 } BankPtr;
 
+/**
+ * Call set_bkg_data with data stored in banked memory
+ * 
+ * @param bank bank to read from
+ * @param i first tile to write to
+ * @param l number of tiles to write
+ * @param ptr memory address of tile data within bank
+ */
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
-void SetBankedBkgTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned char *ptr);
-void SetBankedWinTiles(UBYTE bank, UBYTE x, UBYTE y, UBYTE w, UBYTE h, unsigned char *ptr);
+
+/**
+ * Call set_sprite_data with data stored in banked memory
+ * 
+ * @param bank bank to read from
+ * @param i first tile to write to
+ * @param l number of tiles to write
+ * @param ptr memory address of tile data within bank
+ */
 void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
+
+/**
+ * Read UBYTE from banked memory location
+ * 
+ * @param bank bank to read from
+ * @param ptr memory address of data within bank
+ * @return value stored in banked location
+ */
 UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char *ptr);
-void ReadBankedUBYTEArray(UBYTE bank, unsigned char *out, unsigned char *ptr, UBYTE size);
-UWORD ReadBankedUWORD(UBYTE bank, unsigned char *ptr);
-void StrCpyBanked(UBYTE bank, char *to, char *from);
+
+/**
+ * Read Bank Pointer from banked memory location
+ * 
+ * @param bank bank to read from
+ * @param to memory address of Bank Pointer to store fetched data
+ * @param ptr memory address of Bank Pointer data within bank
+ */
 void ReadBankedBankPtr(UBYTE bank, BankPtr *to, BankPtr *from);
+
+/**
+ * memcpy data from banked memory location
+ * 
+ * @param bank bank to read from
+ * @param to destination to write fetched data
+ * @param from memory address of data within bank
+ * @param n number of bytes to fetch from bank
+ */
 void MemcpyBanked(UBYTE bank, void* to, void* from, size_t n);
 
 #endif

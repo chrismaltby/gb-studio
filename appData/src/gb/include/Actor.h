@@ -10,35 +10,17 @@
 #define ACTOR_BANK 1
 #define MAX_ACTORS 31
 #define MAX_ACTIVE_ACTORS 11
+
 #define ACTOR_MOVE_ENABLED 0x80
 #define ACTOR_NOCLIP 0x40
+
 #define ACTOR_MIN_X 0
 #define ACTOR_MIN_Y 8
+
 #define NO_ACTOR_COLLISON 0xFF
-#define CHECK_DIR_LEFT 1
-#define CHECK_DIR_RIGHT 2
-#define CHECK_DIR_UP 3
-#define CHECK_DIR_DOWN 4
 
 #define player (actors[0])
-
 #define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
-
-#define ActorOnTileX(i) ((actors[(i)].pos.x & 7) == 0)
-#define ActorOnTileY(i) (((actors[(i)].pos.y & 7) == 0))
-#define ActorOnTile(i) ((ActorOnTileX(i)) && (ActorOnTileY(i)))
-#define ActorBetweenTiles(i) (((actors[(i)].pos.x & 7) != 0) || ((actors[(i)].pos.y & 7) != 0))
-#define PlayerOnTile() (ActorOnTile(0))
-#define PlayerOnTileX() (ActorOnTileX(0))
-#define PlayerOnTileY() (ActorOnTileY(0))
-#define PlayerBetweenTiles() (ActorBetweenTiles(0))
-
-#define ActorOnTileX16(i) ((actors[(i)].pos.x & 15) == 0)
-#define ActorOnTileY16(i) (((actors[(i)].pos.y & 15) == 0))
-#define ActorOnTile16(i) ((ActorOnTileX16(i)) && (ActorOnTileY16(i)))
-#define ActorBetweenTiles16(i) (((actors[(i)].pos.x & 15) != 0) || ((actors[(i)].pos.y & 15) != 0))
-#define PlayerOnTile16() (ActorOnTile16(0))
-#define PlayerBetweenTiles16() (ActorBetweenTiles16(0))
 
 typedef struct {
   Pos pos;  // 0
@@ -71,12 +53,17 @@ typedef struct {
   UBYTE movement_ctx; // 45
 } Actor;
 
+typedef enum {
+  CHECK_DIR_LEFT = 1,
+  CHECK_DIR_RIGHT,
+  CHECK_DIR_UP,
+  CHECK_DIR_DOWN,
+} COL_CHECK_DIR;
+
 extern Actor actors[MAX_ACTORS];
 extern Actor* actor_ptrs[MAX_ACTORS];
-
 extern UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_delete_count;
-
 extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
@@ -86,15 +73,19 @@ extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
 extern UBYTE player_iframes;
 
+/**
+ * Initialise actor pointers
+ */
 void ActorsInit();
 
 /**
- * Move all actors positions based on their current velocities
+ * Initialise player actor ready for new scene
  */
-void MoveActors();
+void InitPlayer();
 
 /**
  * Update all actors frames and their corresponding sprites
+ * (defined in Actor_b.s)
  */
 void UpdateActors();
 
@@ -104,14 +95,6 @@ void UpdateActors();
  * @param i index of actor
  */
 void ActivateActor(UBYTE i);
-
-/**
- * Activate all actors within the column [tx, ty] to [tx, ty + 20]
- *
- * @param tx Left tile
- * @param ty Top tile
- */
-void ActivateActorColumn(UBYTE tx, UBYTE ty);
 
 /**
  * Deactivate currently active actor
@@ -129,27 +112,46 @@ void DeactivateActiveActor(UBYTE i);
  */
 UBYTE ActorAtTile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
-UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
-UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
-UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
-UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
-
 /**
- * Return index of actor that would overlap an actor at the given tile coordinates
+ * Return index of actor at given tile coordinates (check 1 tile wide, 3 tiles high)
  *
  * @param tx Left tile
  * @param ty Top tile
  * @return index of actor at tile in actors array
  */
-UBYTE ActorOverlapsActorTile(UBYTE tx_a, UBYTE ty_a, UBYTE inc_noclip);
+UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
 /**
- * Return index of actor overlapping player
+ * Return index of actor at given tile coordinates (check 3 tiles wide, 1 tile high)
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+
+/**
+ * Return index of actor at given tile coordinates (check 1 tile wide, 2 tiles high)
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+
+/**
+ * Return index of actor currently overlapping player
  *
  * @return index of overlapping actor in actors array
  */
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
 
+/**
+ * Return index of actor in front of given actor relative to the actor's current direction
+ *
+ * @param i index of actor in actors array
+ * @return index of in front actor in actors array
+ */
 UBYTE ActorInFrontOfActor(UBYTE i);
 
 /**
@@ -173,14 +175,27 @@ void DeactivateActor(UBYTE i);
  */
 void DeactivateActiveActor(UBYTE i);
 
-UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, UBYTE check_dir);
+/**
+ * Check for tile or actor collisions in specified direction from a starting tile
+ * 
+ * @param start_x Left tile
+ * @param start_y Top tile
+ * @param end_tile Destination x or y tile depending on check direction
+ * @param check_dir One of CHECK_DIR_LEFT/CHECK_DIR_RIGHT/CHECK_DIR_UP/CHECK_DIR_DOWN
+ */
+UBYTE CheckCollisionInDirection(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir);
 
-void ActorsUnstick();
-
-void InitPlayer();
-
+/**
+ * Run the script for the selected actor on the main script context
+ *
+ * @param i index of actor in actors array
+ */
 void ActorRunScript(UBYTE i);
 
+/**
+ * Check if player has collided with any actors since last call and if so
+ * start all relevant collision scripts
+ */
 void ActorRunCollisionScripts();
 
 #endif

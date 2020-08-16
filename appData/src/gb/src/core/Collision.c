@@ -11,7 +11,7 @@ UBYTE TileAt(UBYTE tx, UBYTE ty) {
 
   // Check tile outside of bounds
   if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
-    return OUT_OF_BOUNDS;
+    return COLLISION_ALL;
   }
 
   y_offset = ty * (UINT16)image_tile_width;
@@ -28,7 +28,7 @@ UBYTE TileAt2x1(UBYTE tx, UBYTE ty) {
 
   // Check tile outside of bounds
   if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
-    return OUT_OF_BOUNDS;
+    return COLLISION_ALL;
   }
 
   // Get y_offset with ty * width. Then add tx + collision_ptr offset
@@ -46,7 +46,7 @@ UBYTE TileAt2x2(UBYTE tx, UBYTE ty) {
 
   // Check tile outside of bounds
   if (tx == MAX_UINT8 || tx == image_tile_width || ty == image_tile_height || ty == MAX_UINT8) {
-    return OUT_OF_BOUNDS;
+    return COLLISION_ALL;
   }
 
   // Get y_offset with ty * width. Then add tx + collision_ptr offset

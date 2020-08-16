@@ -95,7 +95,6 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
 #ifdef CGB
   pending_w_cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
-
 }
 
 void ScrollUpdateRow(INT16 x, INT16 y) {
@@ -108,8 +107,6 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
 #endif
 
   PUSH_BANK(image_bank);
-
-  
 
   screen_x = x;
   screen_y = MOD_32(y);
@@ -219,7 +216,7 @@ void InitScroll() {
   pending_w_i = 0;
   pending_h_i = 0;
   scroll_x = 0x7FFF;
-  scroll_y = 0x7FFF;  
+  scroll_y = 0x7FFF;
 }
 
 void RenderScreen() {

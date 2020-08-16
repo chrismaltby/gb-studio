@@ -1,6 +1,4 @@
-// clang-format off
-#pragma bank 3
-// clang-format on
+#pragma bank 1
 
 #include "UI.h"
 #include "BankData.h"
@@ -430,24 +428,24 @@ void UIOnInteract_b() {
   } else if (menu_enabled) {
     if (INPUT_UP_PRESSED) {
       menu_index = MAX(menu_index - 1, 0);
-      UIDrawMenuCursor();
+      UIDrawMenuCursor_b();
     } else if (INPUT_DOWN_PRESSED) {
       menu_index = MIN(menu_index + 1, menu_num_options - 1);
-      UIDrawMenuCursor();
+      UIDrawMenuCursor_b();
     } else if (INPUT_LEFT_PRESSED) {
       if (menu_layout == 0) {
         menu_index = MAX(menu_index - 4, 0);
       } else {
         menu_index = 0;
       }
-      UIDrawMenuCursor();
+      UIDrawMenuCursor_b();
     } else if (INPUT_RIGHT_PRESSED) {
       if (menu_layout == 0) {
         menu_index = MIN(menu_index + 4, menu_num_options - 1);
       } else {
         menu_index = menu_num_options - 1;
       }
-      UIDrawMenuCursor();
+      UIDrawMenuCursor_b();
     } else if (menu_cancel_on_b && INPUT_B_PRESSED) {
       script_variables[menu_flag] = 0;
       UICloseDialogue_b();
@@ -477,7 +475,7 @@ void UIShowMenu_b(UWORD flag_index,
   text_draw_speed = tmp_text_draw_speed;
   menu_num_options = tmp_text_lines[0];
 
-  UIDrawMenuCursor();
+  UIDrawMenuCursor_b();
 }
 
 void UIDrawMenuCursor_b() {

@@ -1,6 +1,4 @@
-// clang-format off
 #pragma bank 1
-// clang-format on
 
 #include "Sprite.h"
 #include "Stack.h"

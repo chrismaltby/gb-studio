@@ -1,6 +1,4 @@
-// clang-formatoff
 #pragma bank 1
-// clang-format on
 
 #include "FadeManager.h"
 #include <gb/cgb.h>

@@ -1,6 +1,4 @@
-// clang-format off
 #pragma bank 5
-// clang-format on
 
 #include "states/Platform.h"
 #include "Actor.h"
@@ -115,7 +113,7 @@ void Update_Platform() {
       on_ladder = TRUE;
       pl_vel_x = 0;
       player.dir.x = 0;
-      player.dir.y = -1;      
+      player.dir.y = -1;
       player.rerender = TRUE;
     }
     if (INPUT_LEFT) {
@@ -150,7 +148,7 @@ void Update_Platform() {
       }
     }
   }
-  
+
   pl_pos_x += pl_vel_x >> 8;
   tile_x = pl_pos_x >> 7;
   tile_y = pl_pos_y >> 7;
@@ -200,7 +198,8 @@ void Update_Platform() {
 
   // Right Collision
   if (pl_vel_x > 0) {
-    if (TileAt(tile_x + 1, tile_y) & COLLISION_LEFT || TileAt(tile_x + 1, tile_y - 1) & COLLISION_LEFT) {
+    if (TileAt(tile_x + 1, tile_y) & COLLISION_LEFT ||
+        TileAt(tile_x + 1, tile_y - 1) & COLLISION_LEFT) {
       pl_vel_x = 0;
       pl_pos_x = (tile_x * 8) << 4;
       tile_x = pl_pos_x >> 7;
@@ -210,11 +209,11 @@ void Update_Platform() {
   if (on_ladder) {
     // Ladder vertical collision
     UBYTE tile_below;
-    if(!(TileAt(tile_x, tile_y) & TILE_PROP_LADDER)) {
+    if (!(TileAt(tile_x, tile_y) & TILE_PROP_LADDER)) {
       if (INPUT_DOWN) {
         on_ladder = FALSE;
         player.dir.x = 1;
-        player.dir.y = 0;        
+        player.dir.y = 0;
         player.rerender = TRUE;
       } else {
         pl_pos_y -= pl_vel_y >> 8;
@@ -225,7 +224,7 @@ void Update_Platform() {
     // Check if can pass through ground collision (ground also contains ladder)
     tile_below = TileAt(tile_x, tile_y + 1);
     if (pl_vel_y >= 0) {
-      if((tile_below & COLLISION_TOP) && !(tile_below & TILE_PROP_LADDER)) {
+      if ((tile_below & COLLISION_TOP) && !(tile_below & TILE_PROP_LADDER)) {
         grounded = TRUE;
         pl_vel_y = 0;
         pl_pos_y = (tile_y * 8) << 4;
@@ -234,9 +233,9 @@ void Update_Platform() {
 
   } else {
     // Ground Collision
-    if (pl_vel_y >= 0 &&
-        (TileAt(tile_x, tile_y + 1) & COLLISION_TOP||                                      // Left Edge
-        (((pl_pos_x >> 4) & 0x7) != 0 && TileAt(tile_x + 1, tile_y + 1) & COLLISION_TOP))  // Right edge
+    if (pl_vel_y >= 0 && (TileAt(tile_x, tile_y + 1) & COLLISION_TOP ||  // Left Edge
+                          (((pl_pos_x >> 4) & 0x7) != 0 &&
+                           TileAt(tile_x + 1, tile_y + 1) & COLLISION_TOP))  // Right edge
     ) {
       grounded = TRUE;
       pl_vel_y = 0;
@@ -248,10 +247,10 @@ void Update_Platform() {
       if (pl_vel_y < 0) {
         if (TileAt(tile_x, tile_y - 2) & COLLISION_BOTTOM ||  // Left Edge
             (((pl_pos_x >> 4) & 0x7) != 0 &&
-            TileAt(tile_x + 1, tile_y - 2) & COLLISION_BOTTOM)  // Right edge
+             TileAt(tile_x + 1, tile_y - 2) & COLLISION_BOTTOM)  // Right edge
         ) {
-            pl_vel_y = 0;
-            pl_pos_y = ((tile_y * 8) << 4);
+          pl_vel_y = 0;
+          pl_pos_y = ((tile_y * 8) << 4);
         }
       }
     }

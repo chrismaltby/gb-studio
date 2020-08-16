@@ -102,40 +102,12 @@ const makeBuild = async ({
     env.PROFILE = true;
   }
 
-  // Modify game.h to overide color palette
-  let gameHeader = await fs.readFile(`${buildRoot}/include/game.h`, "utf8");
-  if (settings.customColorsEnabled) {
-    gameHeader = gameHeader
-      .replace(
-        /RGB\(29, 31, 28\)/g,
-        convertHexTo15BitRGB(settings.customColorsWhite)
-      )
-      .replace(
-        /RGB\(22, 30, 17\)/g,
-        convertHexTo15BitRGB(settings.customColorsLight)
-      )
-      .replace(
-        /RGB\(10, 19, 15\)/g,
-        convertHexTo15BitRGB(settings.customColorsDark)
-      )
-      .replace(
-        /RGB\(4, 5, 10\)/g,
-        convertHexTo15BitRGB(settings.customColorsBlack)
-      );
-  }
-  if (!(settings.customColorsEnabled || settings.gbcFastCPUEnabled)) {
-    gameHeader = gameHeader.replace(/#define CUSTOM_COLORS/g, "");
-  }
-  if (!settings.gbcFastCPUEnabled) {
-    gameHeader = gameHeader.replace(/#define FAST_CPU/g, "");
-  }
-  if (settings.customColorsEnabled) {
-    gameHeader = gameHeader.replace(/#define CGB/g, "");
-  }
+  // Modify BankManager.h to set MBC1 memory controller
   if (isMBC1(settings.cartType)) {
-    gameHeader = gameHeader.replace(/_MBC5/g, "_MBC1");
+    let bankHeader = await fs.readFile(`${buildRoot}/include/BankManager.h`, "utf8");
+    bankHeader = bankHeader.replace(/_MBC5/g, "_MBC1");
+    await fs.writeFile(`${buildRoot}/include/BankManager.h`, bankHeader, "utf8");
   }
-  await fs.writeFile(`${buildRoot}/include/game.h`, gameHeader, "utf8");
 
   // Remove GBC Rombyte Offset from Makefile (OSX/Linux) if custom colors and fast CPU are not enabled
   if (

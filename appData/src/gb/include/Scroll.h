@@ -16,28 +16,33 @@
 #define SCREEN_TILE_REFRES_H (SCREEN_TILES_H + SCREEN_PAD_TOP + SCREEN_PAD_BOTTOM)
 
 extern Pos* scroll_target;
-extern UINT16 scroll_tiles_w;
 extern INT16 scroll_x;
 extern INT16 scroll_y;
 extern INT16 draw_scroll_x;
 extern UINT16 scroll_x_max;
 extern UINT16 scroll_y_max;
 extern INT16 scroll_offset_x;
-extern UINT16 scroll_w;
-extern UINT16 scroll_h;
-extern UBYTE player_x;
 extern UINT8 pending_w_i;
 extern UINT8 pending_h_i;
 
-void MoveScroll(INT16 x, INT16 y);
-void ScrollUpdateRowWithDelay(INT16 x, INT16 y);
-void ScrollUpdateColumnWithDelay(INT16 x, INT16 y);
-
-void ScrollUpdateRowR();
-void ScrollUpdateColumnR();
-
-void RefreshScroll();
+/**
+ * Initialise scroll variables, call on scene load
+ */
 void InitScroll();
+
+/**
+ * Update scroll position and load in any newly visible background tiles and actors
+ */
+void RefreshScroll();
+
+/**
+ * Same as RefreshScroll() but requires manually switching to bank 1 first
+ */
+void RefreshScroll_b();
+
+/**
+ * Rerender all onscreen tiles and load all onscreen actors
+ */
 void RenderScreen();
 
 #endif

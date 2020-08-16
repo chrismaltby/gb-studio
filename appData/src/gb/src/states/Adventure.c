@@ -1,16 +1,14 @@
-// clang-format off
 #pragma bank 5
-// clang-format on
 
 #include "states/Adventure.h"
-#include "Scroll.h"
-#include "Input.h"
-#include "Collision.h"
 #include "Actor.h"
-#include "Trigger.h"
-#include "GameTime.h"
-#include "ScriptRunner.h"
 #include "Camera.h"
+#include "Collision.h"
+#include "GameTime.h"
+#include "Input.h"
+#include "ScriptRunner.h"
+#include "Scroll.h"
+#include "Trigger.h"
 #include "rand.h"
 
 #define ADVENTURE_CAMERA_DEADZONE 8
@@ -63,7 +61,7 @@ void Update_Adventure() {
   backup_dir.x = player.dir.x;
   backup_dir.y = player.dir.y;
 
-  tile_x = (player.pos.x + 4 + player.dir.x) >> 3; // Add Left right Bias for Moving=True
+  tile_x = (player.pos.x + 4 + player.dir.x) >> 3;  // Add Left right Bias for Moving=True
   tile_y = (player.pos.y + 7) >> 3;
 
   if (INPUT_A_PRESSED) {
@@ -75,10 +73,12 @@ void Update_Adventure() {
 
   // Left Collision
   if (player.dir.x < 0) {
-    if ( TileAt(tile_x, tile_y)) {
+    if (TileAt(tile_x, tile_y)) {
       player.pos.x = (tile_x << 3) + 4;
       player.dir.x = 0;
-    }  else if (TileAt(tile_x, (player.pos.y) >> 3)) {    player.dir.y = 1;    }
+    } else if (TileAt(tile_x, (player.pos.y) >> 3)) {
+      player.dir.y = 1;
+    }
   }
 
   // Right Collision
@@ -86,16 +86,18 @@ void Update_Adventure() {
     if (TileAt(tile_x + 1, tile_y)) {
       player.pos.x = (tile_x << 3) - 5;
       player.dir.x = 0;
-    } else if (TileAt(tile_x + 1, (player.pos.y) >> 3)) {   player.dir.y = 1;    }
+    } else if (TileAt(tile_x + 1, (player.pos.y) >> 3)) {
+      player.dir.y = 1;
+    }
   }
 
-  tile_x = (player.pos.x + 4 - player.dir.x) >> 3; // Remove LeftRight Bias to not stick
+  tile_x = (player.pos.x + 4 - player.dir.x) >> 3;  // Remove LeftRight Bias to not stick
   tile_y = (player.pos.y + player.dir.y) >> 3;
 
   // Up Collision
   if (player.dir.y < 0) {
-    if (TileAt(tile_x, tile_y) ||      // Left Edge
-        ( TileAt(tile_x + 1, tile_y))  // Right edge
+    if (TileAt(tile_x, tile_y) ||     // Left Edge
+        (TileAt(tile_x + 1, tile_y))  // Right edge
     ) {
       player.pos.y = (tile_y + 1 << 3);
       player.dir.y = 0;
@@ -104,25 +106,23 @@ void Update_Adventure() {
 
   // Down Collision
   if (player.dir.y > 0) {
-    if (TileAt(tile_x, tile_y + 1) ||      // Left Edge
-        ( TileAt(tile_x + 1, tile_y + 1))  // Right edge
+    if (TileAt(tile_x, tile_y + 1) ||     // Left Edge
+        (TileAt(tile_x + 1, tile_y + 1))  // Right edge
     ) {
       player.pos.y = (tile_y << 3);
       player.dir.y = 0;
     }
   }
 
-  if (player.moving)
-  {
-    if (!(player.dir.x > 0 | player.dir.x < 0 | player.dir.y > 0 | player.dir.y < 0))
-    {
+  if (player.moving) {
+    if (!(player.dir.x > 0 | player.dir.x<0 | player.dir.y> 0 | player.dir.y < 0)) {
       player.moving = FALSE;
       player.dir.x = backup_dir.x;
       player.dir.y = backup_dir.y;
     }
   }
 
-  tile_x = (player.pos.x + 4) >> 3; 
+  tile_x = (player.pos.x + 4) >> 3;
   tile_y = (player.pos.y) >> 3;
 
   // Check for trigger collisions
@@ -160,6 +160,5 @@ void Update_Adventure() {
       player.pos.x += (WORD)(player.dir.x * player.move_speed);
       player.pos.y += (WORD)(player.dir.y * player.move_speed);
     }
-  }  
-
+  }
 }

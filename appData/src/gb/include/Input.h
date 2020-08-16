@@ -76,7 +76,14 @@ extern UBYTE await_input;
 extern BankPtr input_script_ptrs[NUM_INPUTS];
 extern UBYTE input_script_persist;
 
+/**
+ * Check joypad values and run input scripts if required
+ */
 void HandleInputScripts();
+
+/**
+ * Remove all attached input scripts
+ */
 void RemoveInputScripts();
 
 #endif
