@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "ASMHelpers.h"
 #include "BankManager.h"
+#include "Scroll.h"
 
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char* ptr) {
   PUSH_BANK(bank);

@@ -4,7 +4,7 @@
 #include "BankData.h"
 #include "GameTime.h"
 #include "Math.h"
-#include "ASMHelpers.h"
+#include "Scroll.h"
 #include "Input.h"
 #include "data_ptrs.h"
 #include "Math.h"
