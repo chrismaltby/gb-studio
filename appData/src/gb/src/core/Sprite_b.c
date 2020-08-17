@@ -9,12 +9,13 @@ UBYTE sprite_active_pool_size = 0;
 void SpritePoolReset_b() {
   UBYTE i, k;
   for (i = 0; i != MAX_SPRITES; i++) {
-    k = i << 1;
-    sprite_pool[i] = k;
+    // Reverse order of sprites so newer
+    // sprites will appear behind player/projectiles
+    k = (MAX_SPRITES - i) << 1;
+    StackPush(sprite_pool, k);
     move_sprite(k, 0, 0);
     move_sprite(k + 1, 0, 0);
   }
-  sprite_pool[0] = MAX_SPRITES;
   sprite_active_pool[0] = 0;
   sprite_active_pool_size = 0;
 }

@@ -185,6 +185,9 @@ void LoadScene(UINT16 index) {
   UIReset();
   RemoveInputScripts();
 
+  ProjectilesInit();
+  InitPlayer();
+  
   scene_type = (*(data_ptr++)) + 1;
   sprites_len = (*(data_ptr++)) + 1;
   actors_len = (*(data_ptr++)) + 1;
@@ -275,9 +278,8 @@ void LoadScene(UINT16 index) {
   }
 
   // Initialise scene
-  InitPlayer();
+
   InitScroll();
-  ProjectilesInit();
 
   // Reset last trigger
   last_trigger_tx = 0xFF;

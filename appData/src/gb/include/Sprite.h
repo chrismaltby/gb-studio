@@ -6,7 +6,7 @@
 #include "Math.h"
 
 #define SPRITE_BANK 1
-#define MAX_SPRITES 20
+#define MAX_SPRITES 19
 #define MAX_FRAMES 25
 
 typedef enum { SPRITE_STATIC = 0, SPRITE_ACTOR, SPRITE_ACTOR_ANIMATED } SPRITE_TYPE;

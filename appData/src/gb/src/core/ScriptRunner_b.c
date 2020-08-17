@@ -34,7 +34,6 @@ void ScriptHelper_ClampCamDest();
 UBYTE* RAMPtr;
 UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
-UBYTE emote_sprite = 0;
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
 UBYTE after_lock_camera = FALSE;
@@ -329,7 +328,8 @@ UBYTE ScriptUpdate_Emote() {
   UINT16 screen_y;
 
   if (emote_timer == BUBBLE_TOTAL_FRAMES) {
-    SpritePoolReturn(emote_sprite);
+    move_sprite(0, 0, 0);
+    move_sprite(1, 0, 0);    
     return TRUE;
   } else {
     screen_x = 8u + actors[active_script_ctx.script_actor].pos.x - scroll_x;
@@ -339,8 +339,8 @@ UBYTE ScriptUpdate_Emote() {
       screen_y += emote_offsets[emote_timer];
     }
 
-    move_sprite(emote_sprite, screen_x, screen_y - 16u);
-    move_sprite(emote_sprite + 1, screen_x + 8u, screen_y - 16u);
+    move_sprite(0, screen_x, screen_y - 16u);
+    move_sprite(1, screen_x + 8u, screen_y - 16u);
 
     emote_timer++;
     return FALSE;
@@ -866,16 +866,15 @@ void Script_ActorSetCollisions_b() {
 void Script_ActorSetEmote_b() {
   unsigned char* emote_ptr;
   UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
-  emote_sprite = SpritePoolNext();
   emote_timer = 1;
   active_script_ctx.script_update_fn = ScriptUpdate_Emote;
   emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
   SetBankedSpriteData(EMOTES_SPRITE_BANK, EMOTE_SPRITE, 4,
                       emote_ptr + ((UWORD)script_cmd_args[0] * 64));
-  set_sprite_prop(emote_sprite, palette);
-  set_sprite_prop(emote_sprite + 1, palette);
-  set_sprite_tile(emote_sprite, EMOTE_SPRITE);
-  set_sprite_tile(emote_sprite + 1, EMOTE_SPRITE + 2);
+  set_sprite_prop(0, palette);
+  set_sprite_prop(1, palette);
+  set_sprite_tile(0, EMOTE_SPRITE);
+  set_sprite_tile(1, EMOTE_SPRITE + 2);
 }
 
 /*
