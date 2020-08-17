@@ -2179,6 +2179,7 @@ void Script_TextWithAvatar_b() {
 void Script_LaunchProjectile_b() {
   UBYTE dir_value;
   BYTE dir_x, dir_y;
+  UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
 
   dir_x = 0;
   dir_y = 0;
@@ -2199,6 +2200,7 @@ void Script_LaunchProjectile_b() {
   }
 
   ProjectileLaunch(script_cmd_args[0],                         // Sprite
+                   palette,                                    // Palette index
                    actors[active_script_ctx.script_actor].pos.x + (dir_x * 16),  // Launch X
                    actors[active_script_ctx.script_actor].pos.y + (dir_y * 16),  // Launch Y
                    dir_x,                                      // Dir x
@@ -2211,7 +2213,9 @@ void Script_LaunchProjectile_b() {
 }
 
 void Script_WeaponAttack_b() {
+  UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
   WeaponAttack(script_cmd_args[0],  // Sprite
+               palette,             // Palette index
                active_script_ctx.script_actor,
                script_cmd_args[1] & 0xF,  // Collision group
                script_cmd_args[1] >> 4);  // Collision mask

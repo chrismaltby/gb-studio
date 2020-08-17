@@ -17,6 +17,7 @@ typedef struct _PROJECTILE {
   UBYTE moving;
   UBYTE pin_actor;
   UBYTE sprite;
+  UBYTE palette_index;
   SPRITE_TYPE sprite_type;
   UBYTE frame;
   UBYTE frames_len;
@@ -50,16 +51,18 @@ void UpdateProjectiles_b();
  * Create weapon attack projectile infront of specified actor relative to their facing direction
  * 
  * @param sprite Index of in vram of sprite to use
+ * @param palette Palette index for sprite color
  * @param actor Index of actor that will attack
  * @param col_group Collision group that attack belongs to
  * @param col_mask Collision mask to collide with
  */
-void WeaponAttack(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask);
+void WeaponAttack(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask);
 
 /**
  * Launch projectile from location
  * 
  * @param sprite Index of in vram of sprite to use
+ * @param palette Palette index for sprite color
  * @param x X Coordinate of launch
  * @param y Y Coordinate of launch
  * @param dir_x X direction to move projectile
@@ -71,6 +74,7 @@ void WeaponAttack(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask);
  * @param col_mask Collision mask to collide with
  */
 void ProjectileLaunch(UBYTE sprite,
+                      UBYTE palette,
                       WORD x,
                       WORD y,
                       BYTE dir_x,
@@ -80,7 +84,5 @@ void ProjectileLaunch(UBYTE sprite,
                       UBYTE life_time,
                       UBYTE col_group,
                       UBYTE col_mask);
-
-
 
 #endif

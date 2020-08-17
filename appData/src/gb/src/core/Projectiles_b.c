@@ -25,7 +25,7 @@ void ProjectilesInit_b() {
   }
 }
 
-void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
+void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
   if (projectiles[current_projectile].life_time == 0) {
     projectiles[current_projectile].moving = FALSE;
     projectiles[current_projectile].dir.x = actors[actor].dir.x;
@@ -52,7 +52,7 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
     projectiles[current_projectile].col_mask = col_mask;
     projectiles[current_projectile].time = 1;
     projectiles[current_projectile].frame = 0;
-
+    projectiles[current_projectile].palette_index = palette;
     projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
     projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
     projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;
@@ -62,6 +62,7 @@ void WeaponAttack_b(UBYTE sprite, UBYTE actor, UBYTE col_group, UBYTE col_mask) 
 }
 
 void ProjectileLaunch_b(UBYTE sprite,
+                        UBYTE palette,
                         WORD x,
                         WORD y,
                         BYTE dir_x,
@@ -86,6 +87,7 @@ void ProjectileLaunch_b(UBYTE sprite,
     projectiles[current_projectile].time = 1;
     projectiles[current_projectile].frame = 0;
     projectiles[current_projectile].frames_len = 2;
+    projectiles[current_projectile].palette_index = palette;
     projectiles[current_projectile].sprite = sprites_info[sprite].sprite_offset;
     projectiles[current_projectile].sprite_type = sprites_info[sprite].sprite_type;
     projectiles[current_projectile].frames_len = sprites_info[sprite].frames_len;
@@ -179,13 +181,23 @@ void UpdateProjectiles_b() {
 
       // Update GB Sprite tile and props
       if (flip) {
+#ifdef CGB        
+        set_sprite_prop(k, projectiles[i].palette_index | S_FLIPX);
+        set_sprite_prop(k + 1, projectiles[i].palette_index | S_FLIPX);
+#else
         set_sprite_prop(k, S_FLIPX);
         set_sprite_prop(k + 1, S_FLIPX);
+#endif
         set_sprite_tile(k, frame + 2);
         set_sprite_tile(k + 1, frame);
       } else {
+#ifdef CGB        
+        set_sprite_prop(k, projectiles[i].palette_index);
+        set_sprite_prop(k + 1, projectiles[i].palette_index);
+#else
         set_sprite_prop(k, 0);
         set_sprite_prop(k + 1, 0);
+#endif
         set_sprite_tile(k, frame);
         set_sprite_tile(k + 1, frame + 2);
       }
