@@ -29,7 +29,7 @@ void Update_TopDown() {
     player.moving = FALSE;
 
     // Check for trigger collisions
-    if (ActivateTriggerAt(tile_x, tile_y)) {
+    if (ActivateTriggerAt(tile_x, tile_y, FALSE)) {
       // If landed on a trigger don't update movement this frame
       return;
     }

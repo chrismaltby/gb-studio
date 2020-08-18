@@ -126,7 +126,7 @@ void Update_Adventure() {
   tile_y = (player.pos.y) >> 3;
 
   // Check for trigger collisions
-  if (ActivateTriggerAt(tile_x, tile_y)) {
+  if (ActivateTriggerAt(tile_x, tile_y, FALSE)) {
     // Landed on a trigger
     return;
   }
