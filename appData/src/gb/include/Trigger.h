@@ -49,7 +49,8 @@ void TriggerRunScript(UBYTE i);
  *
  * @param tx Left tile
  * @param ty Top tile
+ * @param force Force trigger to activate without changing tile
  */
-UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty);
+UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty, UBYTE force);
 
 #endif

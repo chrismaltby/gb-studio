@@ -2,6 +2,7 @@
 
 #include "BankManager.h"
 #include "ScriptRunner.h"
+#include "Input.h"
 
 Trigger triggers[MAX_TRIGGERS];
 UBYTE triggers_active[MAX_ACTIVE_TRIGGERS];
@@ -24,11 +25,11 @@ void TriggerRunScript(UBYTE i) {
   ScriptStart(&triggers[i].events_ptr);
 }
 
-UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty) {
+UBYTE ActivateTriggerAt(UBYTE tx, UBYTE ty, UBYTE force) {
   UBYTE hit_trigger;
 
   // Don't reactivate trigger if not changed tile
-  if ((tx == last_trigger_tx) && (ty == last_trigger_ty)) {
+  if (!force && ((tx == last_trigger_tx) && (ty == last_trigger_ty))) {
     return FALSE;
   }
 

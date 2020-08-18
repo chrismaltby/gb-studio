@@ -59,7 +59,7 @@ void Update_Shmup() {
   tile_y = DIV_8(player.pos.y);
 
   // Check for trigger collisions
-  if (ActivateTriggerAt(tile_x, tile_y)) {
+  if (ActivateTriggerAt(tile_x, tile_y, FALSE)) {
     return;
   };
 
