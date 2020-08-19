@@ -18,7 +18,7 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { isVariableField } = helpers;
+  const { isVariableField, isPropertyField } = helpers;
   const script = JSON.parse(JSON.stringify(input.script));
   walkEvents(script, e => {
     if (!e.args) return;
@@ -40,6 +40,26 @@ const compile = (input, helpers) => {
           }
         } else {
           e.args[arg] = input[`$variable[${argValue}]$`];
+        }
+      }
+
+      if (isPropertyField(e.command, arg, argValue)) {
+        const replacePropertyValueActor = (p) => {
+          const actorValue = p.replace(/:.*/, "");
+          if (actorValue === "player") {
+            return p;
+          }
+          const newActorValue = input[`$actor[${actorValue}]$`];
+          return p.replace(/.*:/, `${newActorValue}:`);
+        }
+
+        if (argValue !== null && argValue.type === "property") {
+          e.args[arg] = {
+            ...argValue,
+            value: replacePropertyValueActor(argValue.value)
+          }
+        } else {
+          e.args[arg] = replacePropertyValueActor(argValue);          
         }
       }
     });
