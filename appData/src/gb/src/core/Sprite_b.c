@@ -8,6 +8,7 @@ UBYTE sprite_active_pool_size = 0;
 
 void SpritePoolReset_b() {
   UBYTE i, k;
+  sprite_pool[0] = 0;
   for (i = 0; i != MAX_SPRITES; i++) {
     // Reverse order of sprites so newer
     // sprites will appear behind player/projectiles
