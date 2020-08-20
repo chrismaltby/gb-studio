@@ -18,7 +18,7 @@ const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
 const MAX_TILESET_TILES = 16 * 12;
 
-export const getBackgroundWarnings = async (background: IBackground, projectPath: string, precalculatedTilesetLength?: number): string[] => {
+export const getBackgroundWarnings = async (background: IBackground, projectPath: string, precalculatedTilesetLength?: number): Promise<string[]> => {
   const errors: string[] = [];
 
   let tilesetLength = precalculatedTilesetLength;
