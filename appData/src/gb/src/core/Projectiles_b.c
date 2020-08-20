@@ -22,6 +22,7 @@ void ProjectilesInit_b() {
   UBYTE i;
   for (i = 0; i != MAX_PROJECTILES; i++) {
     projectiles[i].sprite_index = SpritePoolNext();
+    projectiles[i].life_time = 0;
   }
 }
 
