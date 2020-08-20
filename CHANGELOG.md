@@ -5,9 +5,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-beta1]
+
+### Added
+
+- Add full color support, each scene can contain up to six 4-color palette (24 colors per scene) and seven different sprite palettes.
+- Add additional genres to Scene Type dropdown, "Platformer", "Shoot Em' Up", "Point and Click" and "Adventure", each one affects player handling in that scene. A single project can use any/all genres as required
+- Add "On Update" script to actors which calls on each frame allowing movement to be controlled manually.
+- Add checkbox to handle collision detection in "Move To" event
+- Add choice on "Move To" to move horizontally first, vertically first or to use diagonal movement. Default is horizontal to match previous functionality
+- Add event to stop any actors's "On Update" script
+- Add event to dynamically switch color palettes used in a scene
+- Add palettes section for editing and creating color palettes  
+- Add scene search functionality to World editor toolbar, if only a single scene matches view will scroll to center on that scene
+- Add button to jump from Dialogue Review section to corresponding scene in Game World 
+- Add color labels for identifying and grouping scenes
+- Add support for larger background images, up to 2040px in either dimension, maximum width * height of image must be under 1,048,320
+- Increase number of allowed actors and triggers per scene to 30. Up to 10 actors will be visible on screen at the same time.
+- Add ability to pin actors to screen to use as simple HUD elements
+- Add event to switch any actor's sprite sheet dynamically
+- Add event to toggle if an actor should animate while stationary
+- Add event to bounce player while in platform scenes
+- Add ability to create collisions tiles that only affect a single direction e.g. for platforms that you can jump through from below.
+- Add ability to mark tiles as Ladders (only affects Platform scenes)
+- Add choice of 8px or 16px brush sizes when drawing collisions or coloring background
+- Add ability to draw lines when drawing collisions or coloring background by holding shift and clicking
+- Image errors such as too many unique tiles, image too large etc. are now displayed underneath image dropdown in World editor
+- Cache compiled files as much as possible to reduce time required for repeated builds
+- Add projectile and attack events to add weapons to the player or actors
+- Add collision groups to actors/attacks/projectiles with collision scripts to run when an actor collides with a specific group (only player to actor and projectile/attack to actor supported, actor to actor collisions not supported)
+- Add ability to eject game engine, allowing per project overriding of any project source file
+- Migrated compiler to use [GBDK 2020](https://github.com/Zal0/gbdk-2020)
+- Copy/Paste also includes any referenced custom events allowing easier movement between projects
+- Commit hash included in About Window allowing easier identication of which version you are currently using [@pau-tomas](https://github.com/pau-tomas)
+- Improve text drawing animation and add ability to fast forward text boxes by holding a button [@RichardULZ](https://github.com/RichardULZ) / [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to dynamically change text draw speed mid text field using commands "!S0!" for instant draw and "!S5!" for speed = 5 etc
+- Game engine completely rewritten to make less top down rpg genre specific
+- New engine performance optimisation [@RichardULZ](https://github.com/RichardULZ) 
+- Merge events where the only difference was values being hard coded or coming from a variable like "Move To" and "Move To Using Variables" by adding button next to input that allows switching between variable, value or a new property type. Also allows mix of hard coded and variable values in single event. Feature known internally as union types
+- Custom events updated to support union types [@pau-tomas](https://github.com/pau-tomas)
+- Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
+- Add support for macOS full screen mode
+
+### Fixed
+
+- Fix bug where deleting a custom event definition that was used multiple times in a single script would only delete the first instance of the event
+- Fixed Ctrl + Z and Middle click behavior on Windows [@RichardULZ](https://github.com/RichardULZ) 
+- Fix custom events issue where some events wouldn't show their variables in the custom event parameters [@pau-tomas](https://github.com/pau-tomas)
+- Lots of bug fixes / helping get the open beta build ready [@pau-tomas](https://github.com/pau-tomas) and [@RichardULZ](https://github.com/RichardULZ)
+- Prevent actor sprites from overlapping dialogue boxes
+- Fix issues when trying to use more than 256 sprites in a single game
+- Fix issues when saving progress if project contained more than 256 scenes
+
+### Changed
+
+- Pushing actors now uses a 16px x 16px collision box rather than 16px x 8px, this will make Sokoban puzzles work better but could cause issues if you depended on the old behaviour
+- Scene connections now by default only shows connections to/from the currently selected scene. The old default is available in "View/Show Connections/All"
+- When not in color mode the Game World section will display images in the same palette as the emulator
+- Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
+- Top Down scenes now use the last pressed direction button for current movement direction improving controls when using a keyboard
+
+### Removed
+
+- Remove "Double Speed Mode" settings checkbox, when Color is enabled this is now enabled automatically
+- Remove actor "Movement Type" dropdown, replaced with "On Update" script. Existing actors set to Random Walk / Random Rotation will be migrated automatically
+
 ## [1.2.1]
 
 ### Added
+
 - Allow variables to be used in choice and menu events. [@pau-tomas](https://github.com/pau-tomas)
 - Switching scene background will keep current collisions if image hasn't had collisions set already. [@RichardULZ](https://github.com/RichardULZ)
 
