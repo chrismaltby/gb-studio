@@ -148,6 +148,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:win32":
           requires:
             - checkout
@@ -156,6 +157,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:win64":
           requires:
             - checkout
@@ -164,6 +166,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "make:linux":
           requires:
             - checkout
@@ -172,6 +175,7 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
       - "upload_artifacts":
           requires:
             - "make:mac"
@@ -183,3 +187,4 @@ workflows:
               only:
                 - develop
                 - master
+                - v2beta
