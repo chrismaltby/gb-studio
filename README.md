@@ -1,4 +1,4 @@
-# GB Studio
+# GB Studio 2 Beta
 
 
 [![CircleCI](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop.svg?style=shield)](https://circleci.com/gh/chrismaltby/gb-studio/tree/develop)
@@ -18,21 +18,6 @@ For more information see the [GB Studio](https://www.gbstudio.dev) site
 
 GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/), music is provided by [GBT Player](https://github.com/AntonioND/gbt-player)
 
-## Installation
-
-Download a release for your operating system from the [GB Studio Downloads](https://www.gbstudio.dev/download) page.
-
-Or to run from source, clone this repo then:
-
-```bash
-$ yarn
-$ npm start
-```
-
-## Documentation
-
-[GB Studio Documentation](https://www.gbstudio.dev/docs)
-
 ## Beta builds
 
 These builds reflects the latest changes from the `v2beta` branch and are updated automatically. It is recommended to make a backup of your project before using any of these versions.
@@ -50,3 +35,22 @@ These builds reflects the latest changes from the `v2beta` branch and are update
 
 [![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86_64.zip?branch=v2beta&filter=successful)
 [![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-v2beta-windows_x86.zip?branch=v2beta&filter=successful)
+
+
+## Installation
+
+Download a release for your operating system from the [GB Studio Downloads](https://www.gbstudio.dev/download) page.
+
+Or to run from source, clone this repo then:
+
+```bash
+$ yarn
+$ npm start
+```
+
+## Documentation
+
+Documentation is not yet available for the v2 beta, for previous builds refer to the following:
+
+[GB Studio Documentation](https://www.gbstudio.dev/docs)
+
