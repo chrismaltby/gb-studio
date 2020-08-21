@@ -432,7 +432,7 @@ test("should walk all scene events to build list of strings", () => {
 test("should precompile image data", async () => {
   const backgrounds = [
     {
-      id: "2",
+      id: "2b",
       name: "test_img",
       width: 20,
       height: 18,
@@ -441,7 +441,7 @@ test("should precompile image data", async () => {
       filename: "test_img.png"
     },
     {
-      id: "3",
+      id: "3b",
       name: "test_img2",
       width: 20,
       height: 18,
@@ -454,7 +454,7 @@ test("should precompile image data", async () => {
     {
       id: "1",
       name: "first_scene",
-      backgroundId: "2",
+      backgroundId: "2b",
       actors: [],
       triggers: []
     }
@@ -466,8 +466,8 @@ test("should precompile image data", async () => {
     `${__dirname}/_tmp`
   );
   expect(usedBackgrounds).toHaveLength(1);
-  expect(backgroundLookup["2"]).toBe(backgrounds[0]);
-  expect(backgroundLookup["3"]).toBeUndefined();
+  expect(backgroundLookup["2b"]).toBe(backgrounds[0]);
+  expect(backgroundLookup["3b"]).toBeUndefined();
 });
 
 test("should precompile scenes", async () => {
