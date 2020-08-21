@@ -3,7 +3,7 @@ version: 2
 jobs:
   checkout:
     docker:
-      - image: circleci/node:lts-buster-buster
+      - image: circleci/node:lts-buster
     working_directory: ~/repo
     steps:
       - restore_cache:
