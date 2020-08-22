@@ -1,6 +1,6 @@
 ;-------------------------------------------------------------------------------
 ;
-; GBT Player v2.1.3
+; GBT Player v2.2.0
 ;
 ; SPDX-License-Identifier: MIT
 ;
@@ -140,6 +140,12 @@ ch1_just_set_volume$:
 
 	and	a,#0x0F
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+0)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+0),a
 
 	jr	refresh_channel1_regs_trig$
@@ -199,6 +205,12 @@ ch1_has_frequency$:
 	and	a,#0x0F ; a = volume
 
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+0)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+0),a
 
 	jr	refresh_channel1_regs_trig$
@@ -557,6 +569,12 @@ ch2_just_set_volume$:
 
 	and	a,#0x0F
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+1)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+1),a
 
 	jr	refresh_channel2_regs_trig$
@@ -616,6 +634,12 @@ ch2_has_frequency$:
 	and	a,#0x0F ; a = volume
 
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+1)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+1),a
 
 	jr	refresh_channel2_regs_trig$
@@ -1393,6 +1417,12 @@ ch4_just_set_volume$:
 
 	and	a,#0x0F
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+3)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+3),a
 
 	jr	refresh_channel4_regs$
@@ -1432,6 +1462,12 @@ ch4_has_instrument$:
 	and	a,#0x0F ; a = volume
 
 	swap	a
+	; Preserve envelope data
+	ld	b,a			; save byte
+	ld	a,(gbt_vol+3)
+	and	a,#0x0F		; mask envelope
+	or	a,b
+
 	ld	(gbt_vol+3),a
 
 	jr	refresh_channel4_regs$
