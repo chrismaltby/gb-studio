@@ -188,9 +188,11 @@ void Script_ClearFlag_b()
  */
 void Script_ActorSetDir_b()
 {
-  actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
-  actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
-  SceneRenderActor(script_actor);
+  if (ACTOR_ON_TILE(script_actor)) {
+    actors[script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
+    actors[script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
+    SceneRenderActor(script_actor);
+  }
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
 }
