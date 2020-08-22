@@ -17,6 +17,10 @@
 #define ACTOR_MIN_X 0
 #define ACTOR_MIN_Y 8
 
+#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
+#define ACTOR_ON_TILE_Y(i) (((actors[(i)].pos.y & 7) == 0) || (actors[(i)].pos.y == 254))
+#define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
+
 #define NO_ACTOR_COLLISON 0xFF
 
 #define player (actors[0])
