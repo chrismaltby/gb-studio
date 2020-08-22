@@ -371,6 +371,10 @@ menu.on("open", async () => {
   openProjectPicker();
 });
 
+menu.on("project", async () => {
+  switchProject();
+});
+
 menu.on("save", async () => {
   mainWindow && mainWindow.webContents.send("save-project");
 });
@@ -472,6 +476,18 @@ const openProjectPicker = async () => {
   });
   if (files && files[0]) {
     openProject(files[0]);
+  }
+};
+
+const switchProject = async () => {
+  if (splashWindow) {
+    splashWindow.close();
+    await createSplash(false);
+  } else {
+    await createSplash(false);
+    if (mainWindow) {
+      mainWindow.close();
+    }
   }
 };
 
