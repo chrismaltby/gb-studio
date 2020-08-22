@@ -526,11 +526,9 @@ void Script_ClearFlag_b() {
  *   arg0: Direction for active actor to face
  */
 void Script_ActorSetDir_b() {
-  if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
-    actors[active_script_ctx.script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
-    actors[active_script_ctx.script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
-    actors[active_script_ctx.script_actor].rerender = TRUE;
-  }
+  actors[active_script_ctx.script_actor].dir.x = script_cmd_args[0] == 2 ? -1 : script_cmd_args[0] == 4 ? 1 : 0;
+  actors[active_script_ctx.script_actor].dir.y = script_cmd_args[0] == 8 ? -1 : script_cmd_args[0] == 1 ? 1 : 0;
+  actors[active_script_ctx.script_actor].rerender = TRUE;
 }
 
 /*
