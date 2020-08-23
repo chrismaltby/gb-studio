@@ -81,7 +81,7 @@ void Update_Platform() {
   pl_pos_y = ((player.pos.y) << 4) + (pl_pos_y & 0xF);
 
   tile_x = DIV_8(player.pos.x);
-  tile_x_mid = tile_x + 1;
+  tile_x_mid = DIV_8(player.pos.x+4u);
   tile_y = DIV_8(player.pos.y);
 
   // Move
