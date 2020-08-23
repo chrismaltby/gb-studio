@@ -6,7 +6,7 @@ import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import * as actions from "./actions";
-import configureStore from "./store/configureStore";
+import store from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";
 import App from "./components/app/App";
 import "./lib/electron/handleFullScreen";
@@ -15,8 +15,6 @@ import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
-
-const store = configureStore();
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");

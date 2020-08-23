@@ -9,7 +9,7 @@ import music from "./musicReducer";
 import entities from "./entitiesReducer";
 import settings from "./settingsReducer";
 import error from "./errorReducer";
-import warnings from "./warningsReducer";
+import warnings from "../store/features/warnings/warningsSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;

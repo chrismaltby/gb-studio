@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Alert, { AlertItem } from "../library/Alert";
-import * as actions from "../../actions";
+import { checkBackgroundWarnings } from "../../store/features/warnings/warningsSlice";
 import { getBackgroundsLookup } from "../../reducers/entitiesReducer";
 
 class BackgroundWarnings extends Component {
@@ -60,7 +60,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  checkBackgroundWarnings: actions.checkBackgroundWarnings,
+  checkBackgroundWarnings,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BackgroundWarnings);

@@ -3,7 +3,7 @@ import { divisibleBy8 } from "./8bit";
 import { assetFilename } from "./gbstudio";
 import ggbgfx from "../compiler/ggbgfx";
 
-interface IBackground {
+export interface IBackground {
   id: string;
   width: number;
   height: number;

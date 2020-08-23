@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import rootReducer from "../reducers/rootReducer";
 import electronMiddleware from "../middleware/electron";
@@ -7,8 +7,6 @@ import musicMiddleware from "../middleware/music";
 import soundFxMiddleware from "../middleware/soundfx";
 import warningsMiddleware from "../middleware/warnings";
 import loggerMiddleware from "../middleware/logger";
-
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const DEBUG = false;
 
@@ -25,9 +23,12 @@ if (process.env.NODE_ENV !== "production" && DEBUG) {
   middleware = [...middleware, loggerMiddleware];
 }
 
-export default function configureStore() {
-  return createStore(
-    rootReducer,
-    composeEnhancers(applyMiddleware(...middleware))
-  );
-}
+export type RootState = ReturnType<typeof rootReducer>
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware
+})
+
+export type AppDispatch = typeof store.dispatch
+export default store;

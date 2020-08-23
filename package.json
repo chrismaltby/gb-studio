@@ -37,6 +37,7 @@
     "3x3-equation-solver": "^1.2.18",
     "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
+    "@reduxjs/toolkit": "^1.4.0",
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
