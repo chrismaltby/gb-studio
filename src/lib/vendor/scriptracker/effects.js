@@ -232,7 +232,7 @@ var Effects = {
 		}
 	},
 
-	// Set sample offset in words.
+	// Set sample offset in words. 9xx 9ve 
 	SET_VOLUME_AND_SLIDE: {// was SAMPLE_OFFSET
 		representation: "9",
 		handler: function(registers, param, tick, channel, player) {
@@ -257,12 +257,16 @@ var Effects = {
 				else {	// Volume envelope Down!
 					slide = 0 - slide;
 				}
+				// Set slide
 				registers.volume.channelVolumeSlideSet = slide;
-				//registers.volume.channelVolumeSlide = slide;
 				// Set Volume
 				registers.volume.channelVolumeSet = Math.max(0.0, Math.min(vol / 16.0, 1.0));
-				registers.volume.channelVolume = registers.volume.channelVolumeSet; //GBT Take max volume from set vol
 				registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
+				// If we have a note this row, use volume and slide immediately
+				if (registers.rowNote !== 0) {
+					registers.volume.channelVolumeSlide = registers.volume.channelVolumeSlideSet;
+					registers.volume.channelVolume = registers.volume.channelVolumeSet;
+				}
 				//console.log("ch " + channel + " param " + param + " slide " + slide + " vol " + vol);
 			}
 		}
@@ -270,6 +274,7 @@ var Effects = {
 
 	// Slide the volume up or down on every tick except the first. 
 	// Parameter values > 127 will slide up, lower values slide down.
+	//	Depricated from GBT! Ignore this effect!
 	VOLUME_SLIDE: {
 		representation: "A",
 		handler: function(registers, param, tick, channel, player) {
@@ -349,9 +354,8 @@ var Effects = {
 					registers.volume.channelVolumeSet = Math.max(0.0, Math.min(Math.round(param / 4.0) / 16.0, 1.0));
 				}
 				registers.volume.channelVolume = registers.volume.channelVolumeSet; //GBT Take max volume from set vol
-				registers.volume.sampleVolume = registers.volume.channelVolume; //Patch for GBT envelopes
-				registers.volume.channelVolumeSlide = 0;
-				registers.volume.channelVolumeSlideSet = 0; // GBT volume = trigger & no slide
+				registers.volume.sampleVolume = registers.volume.channelVolume; // causes a trigger for GBT envelopes
+				registers.volume.channelVolumeSlide = registers.volume.channelVolumeSlideSet;
 			}
 		}
 	},

@@ -102,6 +102,7 @@ Channel.prototype.reset = function() {
 	this.isMuted      = false;
 	this.tremorMute   = false;
 	this.note         = 0;
+	this.rowNote	  = 0;
 	this.period       = 0;
 	this.noteDelay    = 0;
 	this.loopMark     = 0;

@@ -181,7 +181,7 @@ var ModModule = function(fileData) {
 				} else if ((byte3 & 0x0F) == 4) {
 					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO;
 				} else if ((byte3 & 0x0F) == 5) {
-					pattern.effect[r][c] = Effects.TONE_PORTA_VOL_SLIDE;
+					pattern.effect[r][c] = Effects.NONE;//TONE_PORTA_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 6) {
 					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 7) {

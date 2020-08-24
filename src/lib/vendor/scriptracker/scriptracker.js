@@ -258,6 +258,8 @@ ScripTracker.prototype.processTick = function() {
         }
       }
 
+      // Make the row note accessible from effects
+      registers.rowNote = note;
       // This row contains a note and we are not doing a slide to note.
       if (
         note !== 0 &&
