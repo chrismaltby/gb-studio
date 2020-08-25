@@ -22,6 +22,10 @@
 #define player (actors[0])
 #define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
 
+#define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
+#define ACTOR_ON_TILE_Y(i) ((actors[(i)].pos.y & 7) == 0)
+#define ACTOR_ON_TILE(i) ((ACTOR_ON_TILE_X(i)) && (ACTOR_ON_TILE_Y(i)))
+
 typedef struct {
   Pos pos;  // 0
   UBYTE move_speed; // 4
