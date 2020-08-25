@@ -34,9 +34,13 @@ const setLastUsedTab = (tab) => {
 class Splash extends Component {
   constructor() {
     super();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceTab = urlParams.get("tab");
+
     this.state = {
       blur: false,
-      tab: "info",
+      tab: forceTab || getLastUsedTab() || "info",
       name: l10n("SPLASH_DEFAULT_PROJECT_NAME"),
       target: "gbs2",
       path: getLastUsedPath(),
@@ -52,13 +56,10 @@ class Splash extends Component {
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("keydown", this.onKeyDown);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const forceNew = urlParams.get("new");
     ipcRenderer.send("request-recent-projects");
     ipcRenderer.once("recent-projects", (event, projectPaths) => {
       if (projectPaths && projectPaths.length > 0) {
         this.setState({
-          tab: forceNew === "true" ? "new" : getLastUsedTab(),
           recentProjects: projectPaths.reverse(),
         });
       }
