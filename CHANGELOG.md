@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When not in color mode the Game World section will display images in the same palette as the emulator
 - Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
 - Top Down scenes now use the last pressed direction button for current movement direction improving controls when using a keyboard
+- Improved error message when player sprite sheet isn't set [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
