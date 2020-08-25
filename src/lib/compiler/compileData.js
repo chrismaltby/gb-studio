@@ -1040,6 +1040,9 @@ export const precompileSprites = async (
 
   if(playerSpriteSheetId) {
     const spriteSheet = spriteLookup[playerSpriteSheetId];
+    if (!spriteSheet) {
+      warnings(`Player Sprite Sheet isn't set. Please, make sure to select a Sprite Sheet in the Project editor.`);
+    }
     usedSprites.push(spriteSheet);
     usedSpriteLookup[playerSpriteSheetId] = spriteSheet;    
   }
