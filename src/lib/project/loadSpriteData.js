@@ -19,7 +19,7 @@ const loadSpriteData = projectRoot => async filename => {
     return {
       id: uuidv4(),
       plugin,
-      name: file.replace(".png", ""),
+      name: file.replace(/.png/i, ""),
       numFrames,
       type: spriteTypeFromNumFrames(numFrames),
       filename: file,
@@ -32,9 +32,9 @@ const loadSpriteData = projectRoot => async filename => {
 };
 
 const loadAllSpriteData = async projectRoot => {
-  const spritePaths = await globAsync(`${projectRoot}/assets/sprites/**/*.png`);
+  const spritePaths = await globAsync(`${projectRoot}/assets/sprites/**/@(*.png|*.PNG)`);
   const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/sprites/**/*.png`
+    `${projectRoot}/plugins/*/sprites/**/@(*.png|*.PNG)`,
   );
   const spriteData = (
     await Promise.all(
