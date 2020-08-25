@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
+import { triggerSelectors } from "../../store/features/entities/entitiesSlice";
 
 class Trigger extends Component {
   onMouseDown = e => {
@@ -56,7 +57,9 @@ Trigger.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
-  const trigger = state.entities.present.entities.triggers[props.id];
+
+  const trigger = triggerSelectors.selectById(state.project.present.entities, props.id);
+
   const { x, y, width, height } = trigger;
   const selected =
     editorType === "triggers" &&

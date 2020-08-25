@@ -6,6 +6,7 @@ import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -22,16 +23,16 @@ class MusicViewer extends Component {
   };
 
   onPlay = () => {
-    const { projectRoot, file, playMusic } = this.props;
+    const { projectRoot, file, play } = this.props;
     if (file) {
       const filename = assetFilename(projectRoot, "music", file);
-      playMusic(filename);
+      play({filename});
     }
   };
 
   onPause = () => {
-    const { pauseMusic } = this.props;
-    pauseMusic();
+    const { pause } = this.props;
+    pause();
   };
 
   onKeyDown = e => {
@@ -84,8 +85,8 @@ MusicViewer.propTypes = {
   }),
   sidebarWidth: PropTypes.number.isRequired,
   playing: PropTypes.bool.isRequired,
-  playMusic: PropTypes.func.isRequired,
-  pauseMusic: PropTypes.func.isRequired,
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
   openFolder: PropTypes.func.isRequired
 };
 
@@ -103,8 +104,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  playMusic: actions.playMusic,
-  pauseMusic: actions.pauseMusic,
+  play: playMusic,
+  pause: pauseMusic,
   openFolder: actions.openFolder
 };
 

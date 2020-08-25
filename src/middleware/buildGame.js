@@ -1,20 +1,17 @@
 import { ipcRenderer, remote } from "electron";
 import Path from "path";
+import rimraf from "rimraf";
+import { promisify } from "util";
 import {
   BUILD_GAME,
   SET_SECTION,
-  CMD_START,
-  CMD_COMPLETE,
-  CMD_STD_OUT,
-  CMD_STD_ERR,
-  CMD_CLEAR,
   DELETE_BUILD_CACHE
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
 import getTmp from "../lib/helpers/getTmp";
-import rimraf from "rimraf";
-import { promisify } from "util";
+
+import { startConsole, stdOut, clearConsole, stdErr, completeConsole } from "../store/features/console/consoleSlice";
 
 const rmdir = promisify(rimraf);
 
@@ -26,7 +23,7 @@ export default store => next => async action => {
     const dispatch = store.dispatch.bind(store);
     const buildStartTime = Date.now();
 
-    dispatch({ type: CMD_START });
+    dispatch(startConsole());
 
     try {
       const state = store.getState();
@@ -49,11 +46,11 @@ export default store => next => async action => {
             message !== "'" &&
             message.indexOf("unknown or unsupported #pragma") === -1
           ) {
-            dispatch({ type: CMD_STD_OUT, text: message });
+            dispatch(stdOut(message));
           }
         },
         warnings: (message) => {
-          dispatch({ type: CMD_STD_ERR, text: message });
+          dispatch(stdErr(message));
         },
       });
   
@@ -63,36 +60,25 @@ export default store => next => async action => {
           `${projectRoot}/build/${buildType}`
         );
         remote.shell.openItem(`${projectRoot}/build/${buildType}`);
-        dispatch({
-          type: CMD_STD_OUT,
-          text: "-"
-        });
-        dispatch({
-          type: CMD_STD_OUT,
-          text: `Success! ${
-            buildType === "web"
-              ? `Site is ready at ${Path.normalize(
-                  `${projectRoot}/build/web/index.html`
-                )}`
-              : `ROM is ready at ${Path.normalize(
-                  `${projectRoot}/build/rom/game.gb`
-                )}`
-          }`
-        });
+        dispatch(stdOut("-"))
+        dispatch(stdOut(`Success! ${
+          buildType === "web"
+            ? `Site is ready at ${Path.normalize(
+                `${projectRoot}/build/web/index.html`
+              )}`
+            : `ROM is ready at ${Path.normalize(
+                `${projectRoot}/build/rom/game.gb`
+              )}`
+        }`));
       } else if (ejectBuild) {
         await copy(`${outputRoot}`, `${projectRoot}/build/src`);
         remote.shell.openItem(`${projectRoot}/build/src`);
       }
 
       if (buildType === "web" && !exportBuild && !ejectBuild) {
-        dispatch({
-          type: CMD_STD_OUT,
-          text: "-"
-        });
-        dispatch({
-          type: CMD_STD_OUT,
-          text: "Success! Starting emulator..."
-        });
+        dispatch(stdOut("-"))
+        dispatch(stdOut("Success! Starting emulator..."))
+
         ipcRenderer.send(
           "open-play",
           `file://${outputRoot}/build/web/index.html`
@@ -101,33 +87,25 @@ export default store => next => async action => {
   
       const buildTime = Date.now() - buildStartTime;
 
-      dispatch({
-        type: CMD_STD_OUT,
-        text: `Build Time: ${buildTime}ms`
-      });
+      dispatch(stdOut(`Build Time: ${buildTime}ms`))
+      dispatch(completeConsole());
 
-      dispatch({ type: CMD_COMPLETE });      
     } catch (e) {
       if (typeof e === "string") {
         dispatch({ type: SET_SECTION, section: "build" });
-        dispatch({ type: CMD_STD_ERR, text: e });
+        dispatch(stdErr(e));
       } else {
         dispatch({ type: SET_SECTION, section: "build" });
-        dispatch({ type: CMD_STD_ERR, text: e.toString() });
+        dispatch(stdErr(e.toString()));
       }
-      dispatch({ type: CMD_COMPLETE });
+      dispatch(completeConsole());
       throw e;
     }
 
     if(module.hot) {  
       module.hot.accept("../lib/compiler/buildProject", () => {
-        dispatch({
-          type: CMD_CLEAR
-        });
-        dispatch({
-          type: CMD_STD_OUT,
-          text: "Reloaded GB Studio Compiler"
-        });        
+        dispatch(clearConsole());
+        dispatch(stdOut("Reloaded GB Studio Compiler"));     
       });
     }    
   }
@@ -135,13 +113,8 @@ export default store => next => async action => {
     const dispatch = store.dispatch.bind(store);
     const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
     await rmdir(cacheRoot);
-    dispatch({
-      type: CMD_CLEAR
-    });
-    dispatch({
-      type: CMD_STD_OUT,
-      text: "Cleared GB Studio caches"
-    });      
+    dispatch(clearConsole());
+    dispatch(stdOut("Cleared GB Studio caches"));
   }
 
   return next(action);

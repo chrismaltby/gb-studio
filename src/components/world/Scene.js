@@ -34,6 +34,7 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
+import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 const TILE_SIZE = 8;
 
@@ -113,7 +114,7 @@ class Scene extends Component {
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      moveScene(id, x + dragDeltaX, y + dragDeltaY);
+      moveScene({sceneId: id, x: x + dragDeltaX, y: y + dragDeltaY});
     }
   };
 
@@ -297,13 +298,13 @@ Scene.defaultProps = {
 function mapStateToProps(state, props) {
   const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
-  const scenesLookup = getScenesLookup(state);
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
   const backgroundsLookup = getBackgroundsLookup(state);
   const settings = getSettings(state);
 
-  const scene = scenesLookup[props.id];
+  const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
+
   const image = backgroundsLookup[scene.backgroundId];
 
   const sceneEventVisible =
@@ -431,7 +432,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  moveScene: actions.moveScene,
+  moveScene: entityActions.moveScene,
   selectScene: actions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
   sceneHover: actions.sceneHover,

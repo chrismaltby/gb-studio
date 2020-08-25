@@ -16,6 +16,7 @@ import {
   getTriggersLookup,
   getActorsLookup,
 } from "../../reducers/entitiesReducer";
+import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
 
 const scriptMapTransition = (script) => {
   const sceneTransitions = [];
@@ -121,7 +122,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -129,7 +130,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -137,7 +138,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -145,7 +146,7 @@ class Connections extends Component {
         <polygon
           points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -331,8 +332,11 @@ Connections.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scenes = getScenes(state);
-  const scenesLookup = getScenesLookup(state);
+  const scenes = sceneSelectors.selectAll(state.project.present.entities);
+  const scenesLookup = sceneSelectors.selectEntities(
+    state.project.present.entities
+  );
+
   const actorsLookup = getActorsLookup(state);
   const triggersLookup = getTriggersLookup(state);
   const {

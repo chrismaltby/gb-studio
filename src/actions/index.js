@@ -18,6 +18,7 @@ import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
+import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
 
 const asyncAction = async (
   dispatch,
@@ -112,6 +113,7 @@ export const loadProject = path => async dispatch => {
         throw new Error("Cancelled opening project");
       }
       const data = await loadProjectData(path);
+      dispatch(entitiesLoadProject(data));
       return {
         data,
         path
@@ -212,19 +214,6 @@ export const removeMusic = filename => async (dispatch, getState) => {
       plugin
     }
   });
-};
-
-export const playMusic = filename => {
-  return {
-    type: types.PLAY_MUSIC,
-    filename
-  };
-};
-
-export const pauseMusic = () => {
-  return {
-    type: types.PAUSE_MUSIC
-  };
 };
 
 export const playSoundFxBeep = pitch => {

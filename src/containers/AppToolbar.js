@@ -252,7 +252,7 @@ function mapStateToProps(state) {
   const loaded = state.document.loaded;
   return {
     projectRoot: state.document && state.document.root,
-    modified: state.document && state.document.modified,
+    modified: state.project.present.document.modified,
     name: state.entities.present.result.name,
     section,
     zoom,

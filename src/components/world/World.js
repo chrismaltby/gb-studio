@@ -15,6 +15,7 @@ import {
 } from "../../reducers/entitiesReducer";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 import { SceneShape } from "../../reducers/stateShape";
+import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
 
 class World extends Component {
   constructor(props) {
@@ -342,7 +343,8 @@ World.defaultProps = {
 
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
-  const scenes = state.entities.present.result.scenes;
+  const scenes = sceneSelectors.selectIds(state.project.present.entities)
+
   const scenesLookup = getScenesLookup(state);
   const {
     showConnections

@@ -1,20 +1,20 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CachedWarnings {
-  id: string
-  warnings: string[]
-  timestamp: number
+  id: string;
+  warnings: string[];
+  timestamp: number;
 }
 
 interface WarningsState {
-  backgroundsLoading: boolean
-  backgrounds: Record<string, CachedWarnings>
+  backgroundsLoading: boolean;
+  backgrounds: Record<string, CachedWarnings>;
 }
 
 const initialState: WarningsState = {
   backgroundsLoading: false,
-  backgrounds: {}
-}
+  backgrounds: {},
+};
 
 const warningsSlice = createSlice({
   name: "warnings",
@@ -23,18 +23,21 @@ const warningsSlice = createSlice({
     checkBackgroundWarnings: (state, _action) => {
       state.backgroundsLoading = true;
     },
-    setBackgroundWarnings: (state, action: PayloadAction<{id: string, warnings: string[]}>) => {
+    setBackgroundWarnings: (
+      state,
+      action: PayloadAction<{ id: string; warnings: string[] }>
+    ) => {
       state.backgrounds[action.payload.id] = {
         id: action.payload.id,
         warnings: action.payload.warnings,
-        timestamp: Date.now()
-      }
-    }
-  }
+        timestamp: Date.now(),
+      };
+    },
+  },
 });
 
-const { actions, reducer } = warningsSlice
+const { actions, reducer } = warningsSlice;
 
-export const { checkBackgroundWarnings, setBackgroundWarnings } = actions
+export const { checkBackgroundWarnings, setBackgroundWarnings } = actions;
 
 export default reducer;

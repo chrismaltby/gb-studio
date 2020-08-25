@@ -122,19 +122,11 @@ export const SCROLL_WORLD_THROTTLED = "SCROLL_WORLD_THROTTLED";
 export const RESIZE_WORLD_VIEW = "RESIZE_WORLD_VIEW";
 export const EDIT_SEARCH_TERM = "EDIT_SEARCH_TERM";
 
-export const CMD_CLEAR = "CMD_CLEAR";
-export const CMD_START = "CMD_START";
-export const CMD_STD_OUT = "CMD_STD_OUT";
-export const CMD_STD_ERR = "CMD_STD_ERR";
-export const CMD_COMPLETE = "CMD_COMPLETE";
-
 export const OPEN_HELP = "OPEN_HELP";
 export const OPEN_FOLDER = "OPEN_FOLDER";
 export const BUILD_GAME = "BUILD_GAME";
 export const DELETE_BUILD_CACHE = "DELETE_BUILD_CACHE";
 export const SET_PROFILING = "SET_PROFILING";
-export const PLAY_MUSIC = "PLAY_MUSIC";
-export const PAUSE_MUSIC = "PAUSE_MUSIC";
 
 export const EJECT_ENGINE = "EJECT_ENGINE";
 

@@ -3,9 +3,9 @@ import thunk from "redux-thunk";
 import rootReducer from "../reducers/rootReducer";
 import electronMiddleware from "../middleware/electron";
 import buildGameMiddleware from "../middleware/buildGame";
-import musicMiddleware from "../middleware/music";
+import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "../middleware/soundfx";
-import warningsMiddleware from "../middleware/warnings";
+import warningsMiddleware from "./features/warnings/warningsMiddleware";
 import loggerMiddleware from "../middleware/logger";
 
 const DEBUG = false;
@@ -16,19 +16,19 @@ let middleware = [
   buildGameMiddleware,
   musicMiddleware,
   soundFxMiddleware,
-  warningsMiddleware
+  warningsMiddleware,
 ];
 
 if (process.env.NODE_ENV !== "production" && DEBUG) {
   middleware = [...middleware, loggerMiddleware];
 }
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>;
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware
-})
+  middleware,
+});
 
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;
 export default store;

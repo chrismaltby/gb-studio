@@ -2,30 +2,30 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import * as actions from "../../actions";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import Button from "../library/Button";
 import { MusicShape } from "../../reducers/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { getMusic } from "../../reducers/entitiesReducer";
+import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
 
 const groupByPlugin = groupBy("plugin");
 
 class MusicSelect extends Component {
   onPlay = id => {
-    const { projectRoot, music, value, playMusic } = this.props;
+    const { projectRoot, music, value, play } = this.props;
     const playId = id || value;
     const file = music.find(track => track.id === playId) || music[0];
     if (file) {
       const filename = assetFilename(projectRoot, "music", file);
-      playMusic(filename);
+      play({filename});
     }
   };
 
   onPause = () => {
-    const { pauseMusic } = this.props;
-    pauseMusic();
+    const { pause } = this.props;
+    pause();
   };
 
   renderDropdownIndicator = props => {
@@ -142,8 +142,8 @@ MusicSelect.propTypes = {
   music: PropTypes.arrayOf(MusicShape).isRequired,
   projectRoot: PropTypes.string.isRequired,
   playing: PropTypes.bool.isRequired,
-  playMusic: PropTypes.func.isRequired,
-  pauseMusic: PropTypes.func.isRequired
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired
 };
 
 MusicSelect.defaultProps = {
@@ -160,8 +160,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  playMusic: actions.playMusic,
-  pauseMusic: actions.pauseMusic
+  play: playMusic,
+  pause: pauseMusic
 };
 
 export default connect(

@@ -1,15 +1,16 @@
-import ScripTracker from "../lib/vendor/scriptracker/scriptracker";
+import { Middleware } from "@reduxjs/toolkit";
+import ScripTracker from "../../../lib/vendor/scriptracker/scriptracker";
+import { playMusic, pauseMusic } from "./musicSlice";
 import {
-  PLAY_MUSIC,
-  PAUSE_MUSIC,
   PLAY_SOUNDFX_BEEP,
   PLAY_SOUNDFX_TONE,
   PLAY_SOUNDFX_CRASH,
   SET_SECTION,
-  SET_NAVIGATION_ID
-} from "../actions/actionTypes";
+  SET_NAVIGATION_ID,
+} from "../../../actions/actionTypes";
+import { RootState } from "../../configureStore";
 
-let modPlayer;
+let modPlayer: ScripTracker;
 
 function initMusic() {
   modPlayer = new ScripTracker();
@@ -23,11 +24,11 @@ window.addEventListener("click", initMusic);
 window.addEventListener("keydown", initMusic);
 window.addEventListener("blur", pause);
 
-function onSongLoaded(player) {
+function onSongLoaded(player: ScripTracker) {
   player.play();
 }
 
-function play(filename) {
+function play(filename: string) {
   if (modPlayer) {
     modPlayer.loadModule(`file://${filename}`);
   }
@@ -39,21 +40,25 @@ function pause() {
   }
 }
 
-export default store => next => action => {
-  if (action.type === PLAY_MUSIC) {
-    play(action.filename);
-  } else if (action.type === PAUSE_MUSIC) {
+const musicMiddleware: Middleware<{}, RootState> = (store) => (next) => (
+  action
+) => {
+  if (playMusic.match(action)) {
+    play(action.payload.filename);
+  } else if (pauseMusic.match(action)) {
     pause();
   } else if (
     action.type === PLAY_SOUNDFX_BEEP ||
     action.type === PLAY_SOUNDFX_TONE ||
-    action.type === PLAY_SOUNDFX_CRASH
+    action.type === PLAY_SOUNDFX_CRASH ||
+    action.type === SET_SECTION ||
+    action.type === SET_NAVIGATION_ID
   ) {
-    pause();
-  } else if (action.type === SET_SECTION) {
-    pause();
-  } else if (action.type === SET_NAVIGATION_ID) {
-    pause();
+    console.log("PAUSE MUSIC")!;
+    store.dispatch(pauseMusic());
   }
+
   return next(action);
 };
+
+export default musicMiddleware;
