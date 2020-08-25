@@ -15,6 +15,8 @@ declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
 
+type SplashTab = "info" | "new" | "recent";
+
 // Stop app launching during squirrel install
 // eslint-disable-next-line global-require
 if (require("electron-squirrel-startup")) {
@@ -48,7 +50,7 @@ const validProjectExt = [".json", ".gbsproj"];
 //   );
 // });
 
-const createSplash = async (forceNew = false) => {
+const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
     width: 700,
@@ -67,7 +69,7 @@ const createSplash = async (forceNew = false) => {
 
   splashWindow.setMenu(null);
   splashWindow.loadURL(
-    `${SPLASH_WINDOW_WEBPACK_ENTRY}?new=${forceNew}`
+    `${SPLASH_WINDOW_WEBPACK_ENTRY}?tab=${forceTab || ""}`
   );
 
   splashWindow.webContents.on("did-finish-load", () => {
@@ -371,6 +373,10 @@ menu.on("open", async () => {
   openProjectPicker();
 });
 
+menu.on("project", async () => {
+  switchProject();
+});
+
 menu.on("save", async () => {
   mainWindow && mainWindow.webContents.send("save-project");
 });
@@ -451,12 +457,10 @@ menu.on("updateSetting", (setting: string, value: any) => {
 const newProject = async () => {
   if (splashWindow) {
     splashWindow.close();
-    await createSplash(true);
-  } else {
-    await createSplash(true);
-    if (mainWindow) {
-      mainWindow.close();
-    }
+  }
+  await createSplash("new");
+  if (mainWindow) {
+    mainWindow.close();
   }
 };
 
@@ -472,6 +476,16 @@ const openProjectPicker = async () => {
   });
   if (files && files[0]) {
     openProject(files[0]);
+  }
+};
+
+const switchProject = async () => {
+  if (splashWindow) {
+    splashWindow.close();
+  }
+  await createSplash("recent");
+  if (mainWindow) {
+    mainWindow.close();
   }
 };
 
