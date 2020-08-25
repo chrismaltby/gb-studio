@@ -52,7 +52,7 @@
     "ggbgfx": "^1.0.0",
     "glob": "^7.1.4",
     "image-size": "^0.7.1",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "normalizr": "^3.4.0",
     "prop-types": "^15.7.2",
     "react": "^16.3.2",
