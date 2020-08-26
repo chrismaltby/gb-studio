@@ -105,6 +105,7 @@
   "FIELD_VALUE": "Value",
   "FIELD_MIN_VALUE": "Min value",
   "FIELD_MAX_VALUE": "Max value",
+  "FIELD_NO_WRAP": "No Wrap",
   "FIELD_RENAME": "Rename",
   "FIELD_SAVE": "Save",
   "FIELD_VARIABLE_NAME": "Variable Name",

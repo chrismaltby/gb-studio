@@ -90,6 +90,18 @@ const fields = [
     width: "50%"
   },
   {
+    key: "noWrap",
+    type: "checkbox",
+    label: l10n("FIELD_NO_WRAP"),
+    conditions: [
+      {
+        key: "operation",
+        in: ["add", "sub"],
+      }
+    ],
+    defaultValue: false,
+  },
+  {
     label: l10n("FIELD_MATH_NOTE")
   }
 ];
@@ -131,10 +143,10 @@ const compile = (input, helpers) => {
   }
   switch (input.operation) {
     case "add":
-      variablesAdd(input.vectorX, tmp1);
+      variablesAdd(input.vectorX, tmp1, input.noWrap);
       break;
     case "sub":
-      variablesSub(input.vectorX, tmp1);
+      variablesSub(input.vectorX, tmp1, input.noWrap);
       break;
     case "mul":
       variablesMul(input.vectorX, tmp1);

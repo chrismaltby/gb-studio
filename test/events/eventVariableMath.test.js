@@ -133,6 +133,7 @@ test("Should be able to add value to variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
+      noWrap: true,
       operation: "add"
     },
     {
@@ -142,7 +143,7 @@ test("Should be able to add value to variable", () => {
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
-  expect(mockVariablesAdd).toBeCalledWith("2", "tmp1");
+  expect(mockVariablesAdd).toBeCalledWith("2", "tmp1", true);
 });
 
 test("Should be able to subtract value from variable", () => {
@@ -154,6 +155,7 @@ test("Should be able to subtract value from variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
+      noWrap: true,
       operation: "sub"
     },
     {
@@ -163,7 +165,7 @@ test("Should be able to subtract value from variable", () => {
     }
   );
   expect(mockVariableSetToValue).toBeCalledWith("tmp1", 5);
-  expect(mockVariablesSub).toBeCalledWith("2", "tmp1");
+  expect(mockVariablesSub).toBeCalledWith("2", "tmp1", true);
 });
 
 test("Should be able to multiply variable by value", () => {
