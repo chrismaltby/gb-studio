@@ -26815,7 +26815,8 @@
                     "id": "f50ee3e6-09a8-4507-a531-ed6297e2208a",
                     "command": "EVENT_PLAYER_SET_SPRITE",
                     "args": {
-                        "spriteSheetId": "2f2d492c-dba2-434c-93c9-d1301e88d5e9"
+                        "spriteSheetId": "2f2d492c-dba2-434c-93c9-d1301e88d5e9",
+                        "persist": false
                     }
                 },
                 {
@@ -27610,7 +27611,8 @@
                     "id": "43c8491f-9604-4041-9678-bb2ab3445972",
                     "command": "EVENT_PLAYER_SET_SPRITE",
                     "args": {
-                        "spriteSheetId": "a827b612-578f-4cb9-a2bf-fd54b197b83f"
+                        "spriteSheetId": "a827b612-578f-4cb9-a2bf-fd54b197b83f",
+                        "persist": false
                     }
                 },
                 {
@@ -35613,14 +35615,6 @@
                     }
                 },
                 {
-                    "id": "84f05843-4602-4888-873a-1ce94000b962",
-                    "command": "EVENT_PLAYER_SET_SPRITE",
-                    "args": {
-                        "spriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
-                        "__collapse": false
-                    }
-                },
-                {
                     "id": "8ee11d7f-7d70-47b2-b1a2-9866c27011d2",
                     "command": "EVENT_SET_VALUE",
                     "args": {
@@ -37021,13 +37015,6 @@
                                 "command": "EVENT_END"
                             }
                         ]
-                    }
-                },
-                {
-                    "id": "3f805f9b-8fd6-4f80-bfcc-d58e50b94cae",
-                    "command": "EVENT_PLAYER_SET_SPRITE",
-                    "args": {
-                        "spriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
                     }
                 },
                 {

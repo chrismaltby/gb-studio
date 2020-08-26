@@ -493,6 +493,15 @@ export const migrateFrom120To200Event = event => {
       }
     });
   }  
+  if(event.args && event.command === "EVENT_PLAYER_SET_SPRITE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        persist: true
+      }
+    });
+  }
   
   return event;
 };

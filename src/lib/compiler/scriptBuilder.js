@@ -294,13 +294,14 @@ class ScriptBuilder {
 
   // Player
 
-  playerSetSprite = (spriteSheetId) => {
+  playerSetSprite = (spriteSheetId, persist) => {
     const output = this.output;
     const { sprites } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
     output.push(cmd(PLAYER_SET_SPRITE));
     output.push(hi(spriteIndex));
     output.push(lo(spriteIndex));
+    output.push(persist ? 1 : 0);
   };
 
   playerBounce = (height) => {

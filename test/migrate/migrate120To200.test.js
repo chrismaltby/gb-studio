@@ -344,3 +344,21 @@ test("should migrate actors with movementType=static and animate=true should kee
     ],
   });
 });
+
+test("should migrate player set sprite with persist=true to match old default", () => {
+  const oldEvent = {
+    id: "abc",
+    command: "EVENT_PLAYER_SET_SPRITE",
+    args: {
+      spriteSheetId: "def"
+    }
+  };
+  expect(migrateFrom120To200Event(oldEvent)).toEqual({
+    id: "abc",
+    command: "EVENT_PLAYER_SET_SPRITE",
+    args: {
+      spriteSheetId: "def",
+      persist: true,
+    }    
+  })
+})

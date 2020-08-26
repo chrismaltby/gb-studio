@@ -321,13 +321,22 @@ test("Should be able to show active actor", () => {
   expect(output).toEqual([cmd(ACTOR_SHOW)]);
 });
 
-test("Should be able to change player sprite", () => {
+test("Should be able to change player sprite without persist", () => {
   const output = [];
   const sb = new ScriptBuilder(output, {
     sprites: [{ id: "def" }]
   });
-  sb.playerSetSprite("def");
-  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0]);
+  sb.playerSetSprite("def", false);
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0, 0]);
+});
+
+test("Should be able to change player sprite with persist", () => {
+  const output = [];
+  const sb = new ScriptBuilder(output, {
+    sprites: [{ id: "def" }]
+  });
+  sb.playerSetSprite("def", true);
+  expect(output).toEqual([cmd(PLAYER_SET_SPRITE), 0, 0, 1]);
 });
 
 test("Should be able to hide all sprites", () => {

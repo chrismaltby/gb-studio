@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
 - Add support for macOS full screen mode
 - Add menu item and keyboard shortcut to switch project, opening the recent projects list [@patrickmollohan](https://github.com/patrickmollohan)
+- Add option to persist player sprite changes between scenes (was previously always persisted) unchecking this will cause the sprite change to only be temporary for the current scene, useful for menus or switching genre
 
 ### Fixed
 
