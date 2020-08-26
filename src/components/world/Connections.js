@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { EVENT_SWITCH_SCENE } from "../../lib/compiler/eventTypes";
-import { walkEvents } from "../../lib/helpers/eventSystem";
+import { walkActorEvents, walkTriggerEvents, walkSceneSpecificEvents } from "../../lib/helpers/eventSystem";
 import {
   SceneShape,
   ActorShape,
@@ -17,9 +17,9 @@ import {
   getActorsLookup,
 } from "../../reducers/entitiesReducer";
 
-const scriptMapTransition = (script) => {
+const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];
-  walkEvents(script, (action) => {
+  walkEventsFn(script, (action) => {
     if (action.command === EVENT_SWITCH_SCENE) {
       sceneTransitions.push(action);
     }
@@ -174,7 +174,7 @@ class Connections extends Component {
       // Actor Transitions
       scene.actors.forEach((entityId, entityIndex) => {
         const entity = actorsLookup[entityId];
-        const transitionEvents = scriptMapTransition(entity.script || []);
+        const transitionEvents = scriptMapTransition(walkActorEvents)(entity);
         transitionEvents.forEach((event) => {
           if (
             showConnections === "all" ||
@@ -205,7 +205,7 @@ class Connections extends Component {
       // Trigger Transitions
       scene.triggers.forEach((entityId, entityIndex) => {
         const entity = triggersLookup[entityId];
-        const transitionEvents = scriptMapTransition(entity.script || []);
+        const transitionEvents = scriptMapTransition(walkTriggerEvents)(entity);
         transitionEvents.forEach((event) => {
           if (
             showConnections === "all" ||
@@ -234,7 +234,7 @@ class Connections extends Component {
       });
 
       // Scene Event Transitions
-      const sceneTransitionEvents = scriptMapTransition(scene.script || []);
+      const sceneTransitionEvents = scriptMapTransition(walkSceneSpecificEvents)(scene);
       sceneTransitionEvents.forEach((event) => {
         if (
           showConnections === "all" ||

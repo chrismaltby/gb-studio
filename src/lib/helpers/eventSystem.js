@@ -110,6 +110,10 @@ const walkActorEvents = (actor, callback) => {
   walkEvents(actor.hit3Script, callback);
 }
 
+const walkTriggerEvents = (trigger, callback) => {
+  walkEvents(trigger.script, callback);
+}
+
 const normalizedWalkSceneEvents = (
   scene,
   actorsLookup,
@@ -378,6 +382,7 @@ export {
   walkSceneEvents,
   walkSceneSpecificEvents,
   walkActorEvents,
+  walkTriggerEvents,
   findSceneEvent,
   normalizedWalkSceneEvents,
   normalizedFindSceneEvent,
