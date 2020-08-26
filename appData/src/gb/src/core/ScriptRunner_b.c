@@ -1683,9 +1683,9 @@ void Script_MathMod_b() {
 void Script_MathAddVal_b() {
   UBYTE a = script_variables[active_script_ctx.script_ptr_x];
   UBYTE b = script_variables[active_script_ctx.script_ptr_y];
-  UBYTE noWrap = script_cmd_args[0];
+  UBYTE clamp = script_cmd_args[0];
 
-  if (!noWrap || a < 255 - b) {
+  if (!clamp || a < 255 - b) {
     script_variables[active_script_ctx.script_ptr_x] = a + b;
   } else {
     script_variables[active_script_ctx.script_ptr_x] = 255;
@@ -1701,9 +1701,9 @@ void Script_MathAddVal_b() {
 void Script_MathSubVal_b() {
   UBYTE a = script_variables[active_script_ctx.script_ptr_x];
   UBYTE b = script_variables[active_script_ctx.script_ptr_y];
-  UBYTE noWrap = script_cmd_args[0];
+  UBYTE clamp = script_cmd_args[0];
 
-  if (!noWrap || a > b) {
+  if (!clamp || a > b) {
     script_variables[active_script_ctx.script_ptr_x] = a - b;
   } else {
     script_variables[active_script_ctx.script_ptr_x] = 0;

@@ -133,7 +133,7 @@ test("Should be able to add value to variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
-      noWrap: true,
+      clamp: true,
       operation: "add"
     },
     {
@@ -155,7 +155,7 @@ test("Should be able to subtract value from variable", () => {
       vectorX: "2",
       other: "val",
       value: 5,
-      noWrap: true,
+      clamp: true,
       operation: "sub"
     },
     {

@@ -518,14 +518,14 @@ test("Should be able to set variable to random number", () => {
 
 test("Should be able to add variables", () => {
   const output = [];
-  const sb = new ScriptBuilder(output, { variables: ["0", "1"], noWrap: true });
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"], clamp: true });
   sb.variablesAdd("0", "1", true);
   expect(output).toEqual([cmd(LOAD_VECTORS), 0, 0, 0, 1, cmd(MATH_ADD_VALUE), 1]);
 });
 
 test("Should be able to subtract variables", () => {
   const output = [];
-  const sb = new ScriptBuilder(output, { variables: ["0", "1"], noWrap: true });
+  const sb = new ScriptBuilder(output, { variables: ["0", "1"], clamp: true });
   sb.variablesSub("1", "0", true);
   expect(output).toEqual([cmd(LOAD_VECTORS), 0, 1, 0, 0, cmd(MATH_SUB_VALUE), 1]);
 });
