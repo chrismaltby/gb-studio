@@ -316,7 +316,8 @@ const fixSceneCollisions = state => {
             ...scene,
             width: background ? background.width : 32,
             height: background ? background.height: 32,
-            collisions: []
+            collisions: [],
+            tileColors: []
           };
         } else {
           // eslint-disable-next-line no-param-reassign
