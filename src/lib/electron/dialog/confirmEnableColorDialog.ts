@@ -1,6 +1,7 @@
 import electron from "electron";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
+const win = electron.remote.getCurrentWindow();
 
 export default () => {
     // eslint-disable-next-line global-require
@@ -15,5 +16,5 @@ export default () => {
         detail: l10n("DIALOG_ENABLE_COLOR_MODE_DESCRIPTION")
     };
 
-    return dialog.showMessageBoxSync(dialogOptions);
+    return dialog.showMessageBoxSync(win, dialogOptions);
 };
