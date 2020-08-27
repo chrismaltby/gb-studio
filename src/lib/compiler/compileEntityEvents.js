@@ -32,6 +32,7 @@ const compileEntityEvents = (input = [], options = {}) => {
         ...options,
         output: eventOutput || output,
         branch: eventBranch,
+        labels: eventBranch ? options.labels : {}
       }),
   };
   const location = Object.assign(
