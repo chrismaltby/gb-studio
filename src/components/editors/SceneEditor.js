@@ -21,6 +21,7 @@ import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
+import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -86,9 +87,9 @@ class SceneEditor extends Component {
 
   onEdit = (key) => (e) => {
     const { editScene, scene } = this.props;
-    editScene(scene.id, {
+    editScene({sceneId: scene.id, changes: {
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onCopy = (e) => {
@@ -408,8 +409,8 @@ SceneEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = state.entities.present.entities.scenes[props.id];
-  const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
+  const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
+  const sceneIndex = sceneSelectors.selectIds(state.project.present.entities).indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;
   const defaultBackgroundPaletteIds =
@@ -426,7 +427,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editScene: actions.editScene,
+  editScene: entityActions.editScene,
   removeScene: actions.removeScene,
   selectActor: actions.selectActor,
   selectTrigger: actions.selectTrigger,
