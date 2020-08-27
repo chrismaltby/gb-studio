@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
 - Add support for macOS full screen mode
 - Add menu item and keyboard shortcut to switch project, opening the recent projects list [@patrickmollohan](https://github.com/patrickmollohan)
+- Add ability to clamp value between 0 and 255 when adding or subtracting with Math Functions [@Jarod-Lee](https://github.com/Jarod-Lee)
 
 ### Fixed
 
