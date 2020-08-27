@@ -40480,6 +40480,7 @@
         }
     ],
     "_version": "2.0.0",
+    "_release": "2",
     "author": "___AUTHOR___",
     "name": "___PROJECT_NAME___",
     "variables": [
