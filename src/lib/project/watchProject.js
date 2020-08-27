@@ -41,7 +41,7 @@ const watchProject = async (
 
   const spriteWatcher = chokidar
     .watch(spritesRoot, {
-      ignored: /^.*\.(?!png$)[^.]+$/,
+      ignored: /^.*\.(?!(png|PNG)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish
@@ -52,7 +52,7 @@ const watchProject = async (
 
   const backgroundWatcher = chokidar
     .watch(backgroundsRoot, {
-      ignored: /^.*\.(?!png$)[^.]+$/,
+      ignored: /^.*\.(?!(png|PNG)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish
@@ -74,7 +74,7 @@ const watchProject = async (
 
   const musicWatcher = chokidar
     .watch(musicRoot, {
-      ignored: /^.*\.(?!mod$)[^.]+$/,
+      ignored: /^.*\.(?!(mod|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       musicAwaitWriteFinish
@@ -85,7 +85,7 @@ const watchProject = async (
 
   const pluginsWatcher = chokidar
     .watch(pluginsRoot, {
-      ignored: /^.*\.(?!(png|mod)$)[^.]+$/,
+      ignored: /^.*\.(?!(png|mod|PNG|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish

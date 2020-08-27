@@ -369,13 +369,14 @@
   "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   "EVENT_ACTOR_STOP_UPDATE": "Actor: Stop \"On Update\" Script",
   "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
-  
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "File",
   "MENU_NEW_PROJECT": "New Project",
   "MENU_OPEN": "Open...",
   "MENU_SAVE": "Save",
+  "MENU_SWITCH_PROJECT": "Switch Project",
   "MENU_SAVE_AS": "Save As...",
   "MENU_EDIT": "Edit",
   "MENU_UNDO": "Undo",
@@ -459,7 +460,7 @@
   "WARNING_BACKGROUND_TOO_TALL": "Background is too tall, was {height}px tall when maximum is {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Background contains too many pixels, {numPixels} ({width}px * {height}px) when maximum is {maxPixels}",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "Background contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly. Consider reducing the amount of detail in this image.",
-  
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Please enter a project name",

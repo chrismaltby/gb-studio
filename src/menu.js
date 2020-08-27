@@ -33,6 +33,13 @@ const buildMenu = async (plugins = []) => {
           }
         },
         {
+          label: l10n("MENU_SWITCH_PROJECT"),
+          accelerator: "CommandOrControl+P",
+          click: () => {
+            notifyListeners("project");
+          }
+        },
+        {
           label: l10n("MENU_SAVE"),
           accelerator: "CommandOrControl+S",
           click: () => {
@@ -185,7 +192,7 @@ const buildMenu = async (plugins = []) => {
           click: () => {
             notifyListeners("section", "palettes");
           }
-        },        
+        },
         {
           label: l10n("MENU_DIALOGUE_REVIEW"),
           accelerator: "CommandOrControl+7",
@@ -451,6 +458,7 @@ app.on("ready", () => buildMenu([]));
 const listeners = {
   new: [],
   open: [],
+  project: [],
   save: [],
   saveAs: [],
   checkUpdates: [],

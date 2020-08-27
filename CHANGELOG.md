@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom events updated to support union types [@pau-tomas](https://github.com/pau-tomas)
 - Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
 - Add support for macOS full screen mode
+- Add menu item and keyboard shortcut to switch project, opening the recent projects list [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Fixed
 
@@ -56,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent actor sprites from overlapping dialogue boxes
 - Fix issues when trying to use more than 256 sprites in a single game
 - Fix issues when saving progress if project contained more than 256 scenes
+- Fix issues using image and music assets with uppercase file extensions [@zdurgan](https://github.com/zdurgan)
 
 ### Changed
 
@@ -64,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When not in color mode the Game World section will display images in the same palette as the emulator
 - Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
 - Top Down scenes now use the last pressed direction button for current movement direction improving controls when using a keyboard
+- Improved error message when player sprite sheet isn't set [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 
