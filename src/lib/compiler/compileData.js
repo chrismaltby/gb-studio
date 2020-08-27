@@ -7,7 +7,6 @@ import BankedData, {
 } from "./bankedData";
 import {
   walkScenesEvents,
-  walkEventsDepthFirst,
   eventHasArg,
   walkSceneEvents,
 } from "../helpers/eventSystem";
@@ -26,7 +25,6 @@ import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
   EVENT_CHOICE,
-  EVENT_SET_INPUT_SCRIPT,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_PALETTE_SET_BACKGROUND,
@@ -38,7 +36,6 @@ import {
   dirDec,
   dirToXDec,
   dirToYDec,
-  moveDec,
   moveSpeedDec,
   animSpeedDec,
   spriteTypeDec,
@@ -47,7 +44,6 @@ import {
   collisionGroupDec,
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
-import { assetFilename } from "../helpers/gbstudio";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 
@@ -118,39 +114,6 @@ const compile = async (
 
   // Add event data
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const subScripts = {};
-    const bankEntitySubScripts = (entityType) => (entity, entityIndex) => {
-      walkEventsDepthFirst(entity.script, (cmd) => {
-        if (cmd.command === EVENT_SET_INPUT_SCRIPT) {
-          subScripts[cmd.id] = banked.push(
-            compileEntityEvents(cmd.true, {
-              scene,
-              sceneIndex,
-              scenes: precompiled.sceneData,
-              music: precompiled.usedMusic,
-              sprites: precompiled.usedSprites,
-              avatars: precompiled.usedAvatars,
-              backgrounds: precompiled.usedBackgrounds,
-              strings: precompiled.strings,
-              variables: precompiled.variables,
-              eventPaletteIndexes: precompiled.eventPaletteIndexes,
-              labels: {},
-              subScripts,
-              entityType,
-              entityIndex,
-              entity,
-              banked,
-              warnings,
-            })
-          );
-        }
-      });
-    };
-
-    bankEntitySubScripts("scene")(scene);
-    scene.actors.map(bankEntitySubScripts("actor"));
-    scene.triggers.map(bankEntitySubScripts("trigger"));
-
     const compileScript = (
       script,
       entityType,
@@ -171,7 +134,6 @@ const compile = async (
         variables: precompiled.variables,
         eventPaletteIndexes: precompiled.eventPaletteIndexes,
         labels: {},
-        subScripts,
         entityType,
         entityIndex,
         entity,
