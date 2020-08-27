@@ -12,6 +12,8 @@ export const LATEST_PROJECT_VERSION = "2.0.0";
 const migrateProject = project => {
   let data = { ...project };
   let version = project._version || "1.0.0";
+  let release = project._release || "1";
+
   if (version === "1") {
     version = "1.0.0";
   }
@@ -33,6 +35,13 @@ const migrateProject = project => {
     data = migrateFrom120To200Events(data);
     data = migrateFrom120To200Collisions(data);
     version = "2.0.0";
+    release = "2";    
+  }
+  if (version === "2.0.0") {
+    if (release === "1") {
+      data = migrateFrom200r1To200r2Events(data);
+      release = "2";
+    }
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -42,6 +51,8 @@ const migrateProject = project => {
   }
 
   data._version = version;
+  data._release = release;
+
   return data;
 };
 
@@ -493,6 +504,15 @@ export const migrateFrom120To200Event = event => {
       }
     });
   }  
+  if(event.args && event.command === "EVENT_PLAYER_SET_SPRITE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        persist: true
+      }
+    });
+  }
   
   return event;
 };
@@ -558,6 +578,48 @@ export const migrateFrom120To200Collisions = data => {
         ...scene,
         collisions: collisions.slice(0, collisionsSize)
       };
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r1 had no persist field on EVENT_PLAYER_SET_SPRITE
+ * this migration updates already migrated events from that release 
+ * to use the new default
+ */
+export const migrateFrom200r1To200r2Event = (event) => {
+  const migrateMeta = (newEvent) => {
+    return {
+      ...newEvent,
+      args: {
+        ...newEvent.args,
+        __comment: event.args.__comment,
+        __label: event.args.__label,
+      },
+    };
+  };
+  if (event.args && event.command === "EVENT_PLAYER_SET_SPRITE") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        persist: true,
+      },
+    });
+  }
+
+  return event;
+};
+
+const migrateFrom200r1To200r2Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r1To200r2Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r1To200r2Event)
+      }
     })
   };
 };

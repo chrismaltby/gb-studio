@@ -63,7 +63,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorMoveTo_b, 4},         // 0x10
     {Script_ShowSprites_b, 0},         // 0x11
     {Script_HideSprites_b, 0},         // 0x12
-    {Script_PlayerSetSprite_b, 2},     // 0x13
+    {Script_PlayerSetSprite_b, 3},     // 0x13
     {Script_ActorShow_b, 0},           // 0x14
     {Script_ActorHide_b, 0},           // 0x15
     {Script_ActorSetEmote_b, 1},       // 0x16
@@ -1175,7 +1175,9 @@ void Script_PlayerSetSprite_b() {
   player.rerender = TRUE;
 
   // Keep new sprite when switching scene
-  map_next_sprite = sprite_index;
+  if (script_cmd_args[2]) {
+    map_next_sprite = sprite_index;
+  }
 }
 
 /*
