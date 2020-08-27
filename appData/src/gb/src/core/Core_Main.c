@@ -227,6 +227,7 @@ int core_start() {
     BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
     OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
+    UIInit();
     LoadScene(current_state);
 
     // Run scene type init function
