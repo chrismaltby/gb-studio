@@ -71,7 +71,8 @@ class ScriptEventForm extends Component {
             (!condition.gt || keyValue > condition.gt) &&
             (!condition.gte || keyValue >= condition.gte) &&
             (!condition.lt || keyValue > condition.lt) &&
-            (!condition.lte || keyValue >= condition.lte)
+            (!condition.lte || keyValue >= condition.lte) &&
+            (!condition.in || condition.in.indexOf(keyValue) >= 0)
           );
         }, true);
         if (!showField) {

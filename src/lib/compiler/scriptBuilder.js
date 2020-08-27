@@ -565,16 +565,18 @@ class ScriptBuilder {
     output.push(range);
   };
 
-  variablesAdd = (setVariable, otherVariable) => {
+  variablesAdd = (setVariable, otherVariable, clamp) => {
     const output = this.output;
     this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_ADD_VALUE));
+    output.push(clamp ? 1 : 0);
   };
 
-  variablesSub = (setVariable, otherVariable) => {
+  variablesSub = (setVariable, otherVariable, clamp) => {
     const output = this.output;
     this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_SUB_VALUE));
+    output.push(clamp ? 1 : 0);
   };
 
   variablesMul = (setVariable, otherVariable) => {
