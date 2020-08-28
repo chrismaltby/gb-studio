@@ -101,6 +101,14 @@ void Update_TopDown() {
       player.hit_actor = hit_actor;
     }
 
+    hit_actor = ActorOverlapsPlayer(FALSE);
+    if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
+      if (actors[hit_actor].collision_group) {
+        player.hit_actor = 0;
+        player.hit_actor = hit_actor;
+      }
+    }
+
     if (INPUT_A_PRESSED) {
       // Find actor in front of player
       hit_actor = ActorInFrontOfPlayer();
