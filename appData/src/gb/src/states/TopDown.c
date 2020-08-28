@@ -102,7 +102,7 @@ void Update_TopDown() {
     }
 
     hit_actor = ActorOverlapsPlayer(FALSE);
-    if (hit_actor && hit_actor != NO_ACTOR_COLLISON && player_iframes == 0) {
+    if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
       if (actors[hit_actor].collision_group) {
         player.hit_actor = 0;
         player.hit_actor = hit_actor;
