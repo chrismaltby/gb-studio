@@ -342,6 +342,18 @@ const isVariableField = (cmd, fieldName, fieldValue) => {
   )
 };
 
+const isPropertyField = (cmd, fieldName, fieldValue) => {
+  const event = events[cmd];
+  if (!event) return false;
+  const field = event.fields.find((f) => f.key === fieldName)
+  return (
+    field && (
+      field.type === "property" ||
+      (field.type === "union" && fieldValue.type === "property")
+    )
+  )
+};
+
 const getCustomEventIdsInEvents = (events) => {
   const customEventIds = [];
   walkEvents(events, (event) => {
@@ -395,6 +407,7 @@ export {
   findEvent,
   eventHasArg,
   isVariableField,
+  isPropertyField,
   getCustomEventIdsInEvents,
   getCustomEventIdsInScene,
   getCustomEventIdsInActor

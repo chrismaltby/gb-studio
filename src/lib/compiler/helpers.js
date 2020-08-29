@@ -177,6 +177,22 @@ export const replaceInvalidCustomEventActors = (actor) => {
   return actor;
 };
 
+export const replaceInvalidCustomEventProperties = (property) => {
+  const getValidPropertyValue = (p) => {
+    const actorValue = p.replace(/:.*/, "");
+    return p.replace(/.*:/, `${replaceInvalidCustomEventActors(actorValue)}:`);
+  }
+
+  // Support the case for "union" values
+  if (property !== null && property.type === "property") {
+    return {
+      ...property,
+      value: getValidPropertyValue(property.value)
+    }
+  }
+  return getValidPropertyValue(property);
+}
+
 export const collisionGroupDec = (group) => {
   if(group === "player") {
     return 1;

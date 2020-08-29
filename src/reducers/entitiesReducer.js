@@ -54,11 +54,12 @@ import {
   regenerateEventIds,
   mapEvents,
   walkEvents,
-  isVariableField
+  isVariableField,
+  isPropertyField
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
+import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors, replaceInvalidCustomEventProperties } from "../lib/compiler/helpers";
 import { paint, paintLine, floodFill } from "../lib/helpers/paint";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, TILE_PROPS, COLLISION_ALL } from "../consts";
 
@@ -580,23 +581,31 @@ const editCustomEvent = (state, action) => {
     // Fix invalid variables in script
     const fix = replaceInvalidCustomEventVariables;
     const fixActor = replaceInvalidCustomEventActors;
+    const fixProperty = replaceInvalidCustomEventProperties;
     patch.script = mapEvents(patch.script, event => {
       if (event.args) {
-        const fixedEventVariableArgs = Object.keys(event.args).reduce((memo, arg) => {
-          const fixedVarArgs = memo;
+        const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
+          const fixedArgs = memo;
           if (isVariableField(event.command, arg, event.args[arg])) {
-            fixedVarArgs[arg] = fix(event.args[arg]);
+            fixedArgs[arg] = fix(event.args[arg]);
           } else {
-            fixedVarArgs[arg] = event.args[arg];
+            fixedArgs[arg] = event.args[arg];
           }
-          return fixedVarArgs;
+
+          if (isPropertyField(event.command, arg, event.args[arg])) {
+            fixedArgs[arg] = fixProperty(event.args[arg]);
+          } else {
+            fixedArgs[arg] = event.args[arg];
+          }
+
+          return fixedArgs;
         }, {});
 
         return {
           ...event,
           args: {
             ...event.args,
-            ...fixedEventVariableArgs,
+            ...fixedEventArgs,
             actorId: event.args.actorId && fixActor(event.args.actorId),
             otherActorId: event.args.otherActorId && fixActor(event.args.otherActorId)
           }
@@ -658,6 +667,29 @@ const editCustomEvent = (state, action) => {
             addVariable(variable.value);
           } else {
             addVariable(variable);
+          }
+        }
+
+        if (isPropertyField(e.command, arg, args[arg])) {
+          const addPropertyActor = (property) => {
+            const actor = property && property.replace(/:.*/, "");
+            if (actor !== "player") {
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(actor)
+              );
+              actors[actor] = {
+                id: actor,
+                name: oldActors[actor]
+                  ? oldActors[actor].name
+                  : `Actor ${letter}`
+              };
+            }
+          }
+          const property = args[arg];
+          if (property != null && property.type === "property") {
+            addPropertyActor(property.value);
+          } else {
+            addPropertyActor(property);
           }
         }
       });
