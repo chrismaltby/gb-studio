@@ -38,6 +38,7 @@ import Button from "../library/Button";
 import PaletteSelect from "../forms/PaletteSelect";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -125,8 +126,8 @@ class BrushToolbar extends Component {
 
   setBrush = (brush) => (e) => {
     e.stopPropagation();
-    const { setSelectedBrush } = this.props;
-    setSelectedBrush(brush);
+    const { setBrush } = this.props;
+    setBrush({brush});
   };
 
   setSelectedPalette = (index) => (e) => {
@@ -368,7 +369,7 @@ BrushToolbar.propTypes = {
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
   setSelectedTileType: PropTypes.func.isRequired,
-  setSelectedBrush: PropTypes.func.isRequired,
+  setBrush: PropTypes.func.isRequired,
   setShowLayers: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
   defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
@@ -385,7 +386,7 @@ BrushToolbar.defaultProps = {
 
 function mapStateToProps(state) {
   const { selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
-  const selectedTool = state.tools.selected;
+  const selectedTool = state.editor.tool;
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
@@ -441,7 +442,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   setSelectedPalette: actions.setSelectedPalette,
   setSelectedTileType: actions.setSelectedTileType,
-  setSelectedBrush: actions.setSelectedBrush,
+  setBrush: editorActions.setBrush,
   setShowLayers: actions.setShowLayers,
   setSection: actions.setSection,
   setNavigationId: actions.setNavigationId,

@@ -10,7 +10,14 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type EditorSelection = "world" | "scene" | "actor" | "trigger" | "customEvent";
+export type Brush = "8px" | "16px" | "fill";
+
+export type EditorSelection =
+  | "world"
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 interface EditorState {
   tool: Tool;
@@ -43,7 +50,7 @@ interface EditorState {
   worldViewHeight: number;
   selectedPalette: number;
   selectedTileType: number;
-  selectedBrush: "8px" | "16px" | "fill";
+  selectedBrush: Brush;
   showLayers: boolean;
   lastScriptTab: string;
   lastScriptTabScene: string;
@@ -94,21 +101,21 @@ const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    setTool:(
-      state,
-      action: PayloadAction<{tool: Tool}>
-    ) => {
+    setTool: (state, action: PayloadAction<{ tool: Tool }>) => {
       state.tool = action.payload.tool;
     },
 
-    resizeWorldView:(
+    setBrush: (state, action: PayloadAction<{ brush: Brush }>) => {
+      state.selectedBrush = action.payload.brush;
+    },
+
+    resizeWorldView: (
       state,
-      action: PayloadAction<{width: number, height: number}>
+      action: PayloadAction<{ width: number; height: number }>
     ) => {
       state.worldViewWidth = action.payload.width;
       state.worldViewHeight = action.payload.height;
-    }
-
+    },
   },
 });
 
