@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
 import {
   getSettings,
 } from "../../reducers/entitiesReducer";
@@ -77,51 +76,33 @@ const GroupWithData = connect((state, ownProps) => {
   };
 })(Group);
 
-// Dropdown Indicator ---------------------------------------------------------
-
-const DropdownIndicator = ({ actor, ...props }) => {
-  if (!actor) {
-    return <components.DropdownIndicator {...props} />;
-  }
-  return (
-    <components.DropdownIndicator {...props}>
-      <ActorCanvas actor={actor} />
-    </components.DropdownIndicator>
-  );
-};
-
-DropdownIndicator.propTypes = {
-  actor: ActorShape,
-  direction: PropTypes.string,
-  frame: PropTypes.number,
-};
-
-DropdownIndicator.defaultProps = {
-  actor: undefined,
-  direction: undefined,
-  frame: undefined,
-};
-
-const DropdownIndicatorWithData = (actorId) =>
-  connect((state) => {
-    const customEventId = state.editor.entityId;
-    const actorsLookup = state.entities.present.entities.customEvents[customEventId].actors;
-    const settings = getSettings(state);
-    const playerSpriteSheetId = settings.playerSpriteSheetId;
-    const actor =
-      actorsLookup[actorId] || allCustomEventActors[actorId] ||
-      getCachedObject({
-        id: "player",
-        spriteSheetId: playerSpriteSheetId,
-      });
-    return {
-      actor,
-    };
-  })(DropdownIndicator);
-
 // Select -------------------------------------------------------------------
 
 class CustomEventPropertySelect extends Component {
+
+  defaultValue = () => {
+    const { playerSpriteSheetId } = this.props;
+    return {
+      name: "Player",
+      spriteSheetId: playerSpriteSheetId
+    };
+  };
+
+  renderDropdownIndicator = props => {
+    const { value } = this.props;
+    const actorValue = value && value.replace(/:.*/, "");
+    const actor =
+      allCustomEventActors.find(a => a.id === actorValue) || this.defaultValue();
+    if (!actor || (actor && !actor.spriteSheetId)) {
+      return <components.DropdownIndicator {...props} />;
+    }
+    return (
+      <components.DropdownIndicator {...props}>
+        <ActorCanvas actor={actor} />
+      </components.DropdownIndicator>
+    );
+  };
+
   render() {
     const {
       actorIds,
@@ -131,16 +112,12 @@ class CustomEventPropertySelect extends Component {
       onChange,
     } = this.props;
 
-    const actorValue = value && value.replace(/:.*/, "");
-
     const generateActorOptions = (id) => {
       return Object.keys(properties).map((property) => ({
         label: properties[property],
         value: `${id}:${property}`,
       }));
     };
-
-    const selectedActorId = actorValue;
 
     const options = [].concat(
       {
@@ -167,7 +144,7 @@ class CustomEventPropertySelect extends Component {
           onChange(data.value);
         }}
         components={{
-          DropdownIndicator: DropdownIndicatorWithData(selectedActorId),
+          DropdownIndicator: this.renderDropdownIndicator,
           Group: GroupWithData,
         }}
         grouped
@@ -184,16 +161,19 @@ CustomEventPropertySelect.propTypes = {
   value: PropTypes.string,
   label: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  actorIds: PropTypes.arrayOf(PropTypes.string).isRequired
+  actorIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  playerSpriteSheetId: PropTypes.string,
 };
 
 CustomEventPropertySelect.defaultProps = {
   id: "",
   label: "",
   value: "",
+  playerSpriteSheetId: "",
 };
 
 function mapStateToProps(state, ownProps) {
+  const settings = state.entities.present.result.settings;
   const customEventId = state.editor.entityId;
   const actorsLookup = state.entities.present.entities.customEvents[customEventId].actors;
   const actorIds = allCustomEventActors.map((a) => a.id);
@@ -203,23 +183,23 @@ function mapStateToProps(state, ownProps) {
   const propertyValue = value && value.replace(/.*:/, "");
 
   const actorId = actorValue;
-  console.log(actorValue, actorsLookup);
   const actor =
     actorsLookup[actorId] || allCustomEventActors[actorId] ||
     getCachedObject({
       id: "player",
     });
-  console.log(actor);
   const actorName = actor ? actor.name : "";
   let actorLabel = actorName;
   if (actorValue === "player") {
     actorLabel = "Player";
   }
   const label = `${properties[propertyValue]} : ${actorLabel}`;
+  const playerSpriteSheetId = settings.playerSpriteSheetId;
 
   return {
     label,
     actorIds,
+    playerSpriteSheetId
   };
 }
 
