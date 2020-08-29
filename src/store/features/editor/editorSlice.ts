@@ -19,11 +19,12 @@ export type EditorSelection =
   | "trigger"
   | "customEvent";
 
-interface EditorState {
+export interface EditorState {
   tool: Tool;
   type: EditorSelection;
   worldFocus: boolean;
   scene: string;
+  entityId: string;
   index: number;
   zoom: number;
   zoomSprite: number;
@@ -58,11 +59,12 @@ interface EditorState {
   profile: boolean;
 }
 
-const initialState: EditorState = {
+export const initialState: EditorState = {
   tool: "select",
   type: "world",
   worldFocus: false,
   scene: "",
+  entityId: "",
   index: 0,
   zoom: 100,
   zoomSprite: 400,
@@ -125,6 +127,17 @@ const editorSlice = createSlice({
       state.type = "scene";
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
+    },
+
+    selectTrigger: (
+      state,
+      action: PayloadAction<{ triggerId: string; sceneId: string }>
+    ) => {
+      state.type = "trigger";
+      state.scene = action.payload.sceneId;
+      state.entityId = action.payload.triggerId;
+      state.worldFocus = true;
+      state.tool = "select";
     },
   },
 });
