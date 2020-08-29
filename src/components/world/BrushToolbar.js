@@ -194,7 +194,7 @@ class BrushToolbar extends Component {
 
   toggleShowLayers = (e) => {
     const { setShowLayers, showLayers } = this.props;
-    setShowLayers(!showLayers);
+    setShowLayers({showLayers: !showLayers});
   };
 
   render() {
@@ -443,7 +443,7 @@ const mapDispatchToProps = {
   setSelectedPalette: actions.setSelectedPalette,
   setSelectedTileType: actions.setSelectedTileType,
   setBrush: editorActions.setBrush,
-  setShowLayers: actions.setShowLayers,
+  setShowLayers: editorActions.setShowLayers,
   setSection: actions.setSection,
   setNavigationId: actions.setNavigationId,
   editProjectSettings: actions.editProjectSettings,

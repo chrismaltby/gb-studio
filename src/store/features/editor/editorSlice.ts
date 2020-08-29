@@ -109,6 +109,10 @@ const editorSlice = createSlice({
       state.selectedBrush = action.payload.brush;
     },
 
+    setShowLayers: (state, action: PayloadAction<{ showLayers: boolean }>) => {
+      state.showLayers = action.payload.showLayers;
+    },
+
     resizeWorldView: (
       state,
       action: PayloadAction<{ width: number; height: number }>
