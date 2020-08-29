@@ -135,7 +135,7 @@ void ScriptStart(BANK_PTR *events_ptr)
 
 void ScriptRunnerUpdate()
 {
-  UBYTE i, script_cmd_index;
+  UBYTE script_cmd_index;
   // SCRIPT_CMD_FN script_cmd_fn;
 
   if (!script_action_complete)
@@ -148,12 +148,12 @@ void ScriptRunnerUpdate()
     return;
   }
 
-  script_cmd_index = ReadBankedUBYTE(script_ptr_bank, script_ptr);
-
-  LOG("SCRIPT CMD INDEX WAS %u not=%u, zero=%u\n", script_cmd_index, !script_cmd_index, script_cmd_index == 0);
+  PUSH_BANK(script_ptr_bank);
+  script_cmd_index = *(UBYTE *)script_ptr;
 
   if (!script_cmd_index)
-  {
+  { 
+  POP_BANK;
     if (script_stack_ptr)
     {
       // Return from Actor Invocation
@@ -162,7 +162,6 @@ void ScriptRunnerUpdate()
       POP_BANK;
       return;
     }
-    LOG("SCRIPT FINISHED\n");
     script_ptr_bank = 0;
     script_ptr = 0;
     return;
@@ -171,13 +170,8 @@ void ScriptRunnerUpdate()
   script_cmd_args_len = script_cmds[script_cmd_index].args_len;
   // script_cmd_fn = script_cmds[script_cmd_index].fn;
 
-  LOG("SCRIPT cmd [%u - %u] = %u (%u)\n", script_ptr_bank, script_ptr, script_cmd_index, script_cmd_args_len);
-
-  for (i = 0; i != script_cmd_args_len; i++)
-  {
-    script_cmd_args[i] = ReadBankedUBYTE(script_ptr_bank, script_ptr + i + 1);
-    LOG("SCRIPT ARG-%u = %u\n", i, script_cmd_args[i]);
-  }
+  memcpy(script_cmd_args, script_ptr + 1, 7);
+  POP_BANK;
 
   PUSH_BANK(scriptrunner_bank);
   // if(script_cmd_fn) {
