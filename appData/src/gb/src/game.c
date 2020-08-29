@@ -26,10 +26,17 @@ UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 
 void game_loop();
+UINT8 music_mute_frames = 0;
 
 void vbl_update() {
   SCX_REG = scroll_x;
   SCY_REG = scroll_y;
+  if(music_mute_frames != 0) {
+		music_mute_frames --;
+		if(music_mute_frames == 0) {
+			gbt_enable_channels(0xF);
+		}
+	}
 }
 
 int main()
