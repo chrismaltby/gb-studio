@@ -29,6 +29,7 @@ import {
   SPRITE_TYPE_ANIMATED,
 } from "../../consts";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { actorSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -91,7 +92,7 @@ class ActorEditor extends Component {
   };
 
   onEdit = (key) => (e) => {
-    const { editActor, sceneId, actor } = this.props;
+    const { editActor, actor } = this.props;
     const { scriptMode } = this.state;
 
     if (key === "collisionGroup" && scriptMode === "hit" && !e) {
@@ -101,9 +102,9 @@ class ActorEditor extends Component {
       this.onSetScriptMode("hit");
     }
 
-    editActor(sceneId, actor.id, {
+    editActor({actorId: actor.id, changes:{
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onEditScript = this.onEdit("script");
@@ -559,8 +560,8 @@ ActorEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const actor = state.entities.present.entities.actors[props.id];
-  const scene = state.entities.present.entities.scenes[props.sceneId];
+  const actor = actorSelectors.selectById(state.project.present.entities, props.id);
+  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);
   const spriteSheet =
     actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
   const index = scene.actors.indexOf(props.id);
@@ -582,7 +583,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: actions.editActor,
+  editActor: entityActions.editActor,
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
   pasteClipboardEntity: actions.pasteClipboardEntity,

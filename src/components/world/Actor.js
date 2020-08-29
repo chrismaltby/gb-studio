@@ -8,6 +8,7 @@ import * as actions from "../../actions";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { actorSelectors } from "../../store/features/entities/entitiesSlice";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -72,7 +73,9 @@ Actor.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
-  const actor = state.entities.present.entities.actors[props.id];
+
+  const actor = actorSelectors.selectById(state.project.present.entities, props.id);
+
   const selected =
     editorType === "actors" &&
     sceneId === props.sceneId &&

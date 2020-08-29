@@ -5,11 +5,27 @@ import {
   EntityState,
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
+import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../../../consts";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 
-type Actor = { id: string; name: string; x: number; y: number };
+type ActorDirection = "up" | "down" | "left" | "right";
+type ActorSpriteType = "static" | "actor";
+type SpriteType = "static" | "animated" | "actor" | "actor_animated";
+
+type Actor = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  spriteSheetId: string;
+  spriteType: ActorSpriteType;
+  frame: number;
+  direction: ActorDirection;
+  animate: boolean;
+};
+
 type Trigger = {
   id: string;
   name: string;
@@ -27,6 +43,14 @@ type Background = {
   height: number;
   imageWidth: number;
   imageHeight: number;
+};
+
+type SpriteSheet = {
+  id: string;
+  name: string;
+  filename: string;
+  type: SpriteType;
+  numFrames: number;
 };
 
 type Scene = {
@@ -48,6 +72,7 @@ type SceneData = Omit<Scene, "actors" | "triggers"> & {
 type ProjectData = {
   scenes: SceneData[];
   backgrounds: Background[];
+  spriteSheets: SpriteSheet[];
 };
 
 interface EntitiesState {
@@ -55,18 +80,21 @@ interface EntitiesState {
   triggers: EntityState<Trigger>;
   scenes: EntityState<Scene>;
   backgrounds: EntityState<Background>;
+  spriteSheets: EntityState<SpriteSheet>;
 }
 
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
 const backgroundsAdapter = createEntityAdapter<Background>();
+const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>();
 
 const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
+  spriteSheets: spriteSheetsAdapter.getInitialState(),
 };
 
 const entitiesSlice = createSlice({
@@ -86,11 +114,13 @@ const entitiesSlice = createSlice({
         triggers: scene.triggers.map((trigger) => trigger.id),
       }));
       const backgrounds = action.payload.backgrounds;
+      const spriteSheets = action.payload.spriteSheets;
 
       actorsAdapter.setAll(state.actors, actors);
       triggersAdapter.setAll(state.triggers, triggers);
       scenesAdapter.setAll(state.scenes, scenes);
       backgroundsAdapter.setAll(state.backgrounds, backgrounds);
+      spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
     },
 
     moveScene: (
@@ -118,7 +148,6 @@ const entitiesSlice = createSlice({
       }
 
       if (patch.backgroundId) {
-
         const otherScene = sceneSelectors.selectAll(state).find((s) => {
           return s.backgroundId === patch.backgroundId;
         });
@@ -197,11 +226,70 @@ const entitiesSlice = createSlice({
         changes: patch,
       });
     },
+
+    editActor: (
+      state,
+      action: PayloadAction<{ actorId: string; changes: Partial<Actor> }>
+    ) => {
+      const actor = actorSelectors.selectById(state, action.payload.actorId);
+      let patch = { ...action.payload.changes };
+
+      if (!actor) {
+        return;
+      }
+
+      // If changed spriteSheetId
+      if (patch.spriteSheetId) {
+        const newSprite = spriteSheetSelectors.selectById(
+          state,
+          patch.spriteSheetId
+        );
+
+        if (newSprite) {
+          // If new sprite not an actor then reset sprite type back to static
+          if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
+            patch.spriteType = SPRITE_TYPE_STATIC;
+          }
+          const oldSprite = spriteSheetSelectors.selectById(
+            state,
+            actor.spriteSheetId
+          );
+          // If new sprite is an actor and old one wasn't reset sprite type to actor
+          if (
+            oldSprite &&
+            newSprite &&
+            oldSprite.id !== newSprite.id &&
+            oldSprite.numFrames !== 3 &&
+            oldSprite.numFrames !== 6 &&
+            (newSprite.numFrames === 3 || newSprite.numFrames === 6)
+          ) {
+            patch.spriteType = SPRITE_TYPE_ACTOR;
+          }
+
+          if (newSprite && newSprite.numFrames <= actor.frame) {
+            patch.frame = 0;
+          }
+        }
+      }
+      // If static and cycling frames start from frame 1 (facing downwards)
+      if (
+        (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
+        patch.spriteType === SPRITE_TYPE_STATIC
+      ) {
+        patch.direction = "down";
+      }
+
+      actorsAdapter.updateOne(state.actors, {
+        id: action.payload.actorId,
+        changes: patch,
+      });
+    },
   },
 });
 
 export const { actions, reducer } = entitiesSlice;
-export const { loadProject, editScene } = actions;
+export const { loadProject, editScene, editActor } = actions;
+
 export const actorSelectors = actorsAdapter.getSelectors(
   (state: EntitiesState) => state.actors
 );
@@ -210,6 +298,9 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 );
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: EntitiesState) => state.scenes
+);
+export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
+  (state: EntitiesState) => state.spriteSheets
 );
 
 export default reducer;
