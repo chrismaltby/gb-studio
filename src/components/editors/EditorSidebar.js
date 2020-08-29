@@ -16,7 +16,7 @@ class EditorSidebar extends Component {
     if (type === "actors") {
       return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
     }
-    if (type === "scenes") {
+    if (type === "scene") {
       return <SceneEditor key={sceneId} id={sceneId} />;
     }
     if (type === "world") {

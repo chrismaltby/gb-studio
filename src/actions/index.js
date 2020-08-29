@@ -338,14 +338,6 @@ export const addScene = (x, y, defaults) => {
   return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
 };
 
-export const selectScene = sceneId => {
-  return { type: types.SELECT_SCENE, sceneId };
-};
-
-export const moveScene = (sceneId, x, y) => {
-  return { type: types.MOVE_SCENE, sceneId, x, y };
-};
-
 export const dragScene = (moveX, moveY) => {
   return { type: types.DRAG_SCENE, moveX, moveY };
 };

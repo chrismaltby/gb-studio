@@ -7,6 +7,8 @@ import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../librar
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
+
 import { SceneShape } from "../../reducers/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
@@ -203,7 +205,7 @@ class SceneCursor extends Component {
         }
       }
     } else if (tool === "select") {
-      selectScene(sceneId);
+      selectScene({ sceneId });
     }
   };
 
@@ -437,7 +439,7 @@ const mapDispatchToProps = {
   addTrigger: entityActions.addTrigger,
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
-  selectScene: actions.selectScene,
+  selectScene: editorActions.selectScene,
   setTool: actions.setTool,
   editPlayerStartAt: actions.editPlayerStartAt,
   editDestinationPosition: actions.editDestinationPosition,

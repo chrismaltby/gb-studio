@@ -35,6 +35,7 @@ import {
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
 import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const TILE_SIZE = 8;
 
@@ -99,7 +100,7 @@ class Scene extends Component {
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
 
-    selectScene(id);
+    selectScene({ sceneId: id });
 
     this.dragging = true;
   };
@@ -433,7 +434,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   moveScene: entityActions.moveScene,
-  selectScene: actions.selectScene,
+  selectScene: editorActions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
   sceneHover: actions.sceneHover,
 };

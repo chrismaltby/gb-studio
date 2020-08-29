@@ -120,6 +120,12 @@ const editorSlice = createSlice({
       state.worldViewWidth = action.payload.width;
       state.worldViewHeight = action.payload.height;
     },
+
+    selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
+      state.type = "scene";
+      state.scene = action.payload.sceneId;
+      state.worldFocus = true;
+    },
   },
 });
 
