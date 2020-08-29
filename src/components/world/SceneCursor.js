@@ -101,7 +101,7 @@ class SceneCursor extends Component {
       addActor({actorId: uuid(), sceneId, x, y, defaults: prefab});
       setTool("select");
     } else if (tool === "triggers") {
-      addTrigger(sceneId, x, y, 1, 1, prefab);
+      addTrigger({triggerId: uuid(), sceneId, x, y, width: 1, height: 1, defaults: prefab});
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -433,7 +433,7 @@ const mapDispatchToProps = {
   paintColorTile: actions.paintColorTile,
   paintColorLine: actions.paintColorLine,
   paintColorFill: actions.paintColorFill,
-  addTrigger: actions.addTrigger,
+  addTrigger: entityActions.addTrigger,
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
   selectScene: actions.selectScene,

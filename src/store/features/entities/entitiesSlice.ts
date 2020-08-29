@@ -261,7 +261,6 @@ const entitiesSlice = createSlice({
         defaults?: Partial<Actor>;
       }>
     ) => {
-
       const scene = sceneSelectors.selectById(state, action.payload.sceneId);
       if (!scene) {
         return;
@@ -376,6 +375,63 @@ const entitiesSlice = createSlice({
     /**************************************************************************
      * Triggers
      */
+
+    addTrigger: (
+      state,
+      action: PayloadAction<{
+        triggerId: string;
+        sceneId: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        defaults?: Partial<Trigger>;
+      }>
+    ) => {
+      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      if (!scene) {
+        return;
+      }
+
+      const width = Math.min(action.payload.width, scene.width);
+      const height = Math.min(action.payload.height, scene.height);
+
+      const script: ScriptEvent[] | undefined =
+        action.payload.defaults &&
+        action.payload.defaults.script &&
+        action.payload.defaults.script.map(regenerateEventIds);
+
+      const newTrigger: Trigger = Object.assign(
+        {
+          name: "",
+          trigger: "walk",
+        },
+        action.payload.defaults || {},
+        script && {
+          script,
+        },
+        {
+          id: action.payload.triggerId,
+          x: clamp(action.payload.x, 0, scene.width - width),
+          y: clamp(action.payload.y, 0, scene.height - height),
+          width,
+          height,
+        }
+      );
+
+      // Add to scene
+      scenesAdapter.updateOne(state.scenes, {
+        id: action.payload.sceneId,
+        changes: {
+          triggers: ([] as string[]).concat(
+            scene.triggers,
+            action.payload.triggerId
+          ),
+        },
+      });
+
+      triggersAdapter.addOne(state.triggers, newTrigger);
+    },
 
     editTrigger: (
       state,
