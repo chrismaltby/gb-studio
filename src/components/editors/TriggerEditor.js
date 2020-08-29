@@ -14,6 +14,7 @@ import { SceneIcon } from "../library/Icons";
 import { TriggerShape, SceneShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { triggerSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -24,10 +25,10 @@ class TriggerEditor extends Component {
   }
 
   onEdit = key => e => {
-    const { editTrigger, sceneId, trigger } = this.props;
-    editTrigger(sceneId, trigger.id, {
+    const { editTrigger, trigger } = this.props;
+    editTrigger({triggerId: trigger.id, changes: {
       [key]: castEventValue(e)
-    });
+    }});
   };
 
   onCopy = e => {
@@ -236,8 +237,8 @@ TriggerEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const trigger = state.entities.present.entities.triggers[props.id];
-  const scene = state.entities.present.entities.scenes[props.sceneId];
+  const trigger = triggerSelectors.selectById(state.project.present.entities, props.id)  
+  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);
   const index = scene.triggers.indexOf(props.id);
   return {
     index,
@@ -247,7 +248,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editTrigger: actions.editTrigger,
+  editTrigger: entityActions.editTrigger,
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
   pasteClipboardEntity: actions.pasteClipboardEntity,

@@ -123,6 +123,10 @@ const entitiesSlice = createSlice({
       spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
     },
 
+    /**************************************************************************
+     * Scenes
+     */
+
     moveScene: (
       state,
       action: PayloadAction<{ sceneId: string; x: number; y: number }>
@@ -227,6 +231,10 @@ const entitiesSlice = createSlice({
       });
     },
 
+    /**************************************************************************
+     * Actors
+     */
+
     editActor: (
       state,
       action: PayloadAction<{ actorId: string; changes: Partial<Actor> }>
@@ -281,6 +289,22 @@ const entitiesSlice = createSlice({
 
       actorsAdapter.updateOne(state.actors, {
         id: action.payload.actorId,
+        changes: patch,
+      });
+    },
+
+    /**************************************************************************
+     * Triggers
+     */
+
+    editTrigger: (
+      state,
+      action: PayloadAction<{ triggerId: string; changes: Partial<Trigger> }>
+    ) => {
+      let patch = { ...action.payload.changes };
+
+      triggersAdapter.updateOne(state.triggers, {
+        id: action.payload.triggerId,
         changes: patch,
       });
     },
