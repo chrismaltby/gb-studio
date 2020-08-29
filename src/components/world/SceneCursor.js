@@ -402,12 +402,13 @@ SceneCursor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const { selected: tool, prefab } = state.tools;
+  const { tool } = state.editor;
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const showCollisions = state.entities.present.result.settings.showCollisions;
   const scenesLookup = getScenesLookup(state);
   const scene = scenesLookup[props.sceneId];
+  const prefab = undefined;
   return {
     x: x || 0,
     y: y || 0,

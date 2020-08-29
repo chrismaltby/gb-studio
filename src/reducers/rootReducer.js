@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import undoable from "redux-undo";
-import tools from "./toolsReducer";
 import editor from "./editorReducer";
 import navigation from "./navigationReducer";
 import document from "./documentReducer";
@@ -19,7 +18,6 @@ const UNDO_THROTTLE = 300;
 
 const rootReducer = combineReducers({
   editor: editorNew,
-  tools,
   editorOld: editor,
   document,
   navigation,

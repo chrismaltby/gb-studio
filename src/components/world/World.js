@@ -378,7 +378,8 @@ function mapStateToProps(state) {
   const onlyMatchingScene = (matchingScenes.length === 1
     && scenesLookup[matchingScenes[0]]) || null;
 
-  const { selected: tool, prefab } = state.tools;
+  const prefab = undefined;
+  const { tool } = state.editor;
 
   return {
     scenes,

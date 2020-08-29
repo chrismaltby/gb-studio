@@ -322,7 +322,7 @@ function mapStateToProps(state, props) {
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
-  const tool = state.tools.selected;
+  const tool = state.editor.tool;
 
   const { worldSidebarWidth: sidebarWidth } = state.settings;
 
@@ -411,7 +411,7 @@ function mapStateToProps(state, props) {
     scene,
     visible,
     projectRoot: state.document && state.document.root,
-    prefab: state.tools.prefab,
+    prefab: undefined,
     event,
     image,
     width: image ? image.width : 32,
