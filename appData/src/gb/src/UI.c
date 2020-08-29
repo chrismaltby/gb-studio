@@ -250,7 +250,7 @@ void UISetTextBuffer(unsigned char *text)
 
 void UIDrawTextBuffer()
 {
-  if ((time & 0x1) == 0)
+  if ( (joy & J_B) | ((time & 0x1) == 0))
   {
     UIDrawTextBufferChar();
   }
