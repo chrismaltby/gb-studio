@@ -271,10 +271,15 @@ const entitiesSlice = createSlice({
         return;
       }
 
-      const script: ScriptEvent[] | undefined =
-        action.payload.defaults &&
-        action.payload.defaults.script &&
-        action.payload.defaults.script.map(regenerateEventIds);
+      const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
+        return events.map(regenerateEventIds);
+      }
+
+      const script = regenerateEvents(action.payload.defaults?.script);
+      const startScript = regenerateEvents(action.payload.defaults?.startScript);
+      const hit1Script = regenerateEvents(action.payload.defaults?.hit1Script);
+      const hit2Script = regenerateEvents(action.payload.defaults?.hit2Script);
+      const hit3Script = regenerateEvents(action.payload.defaults?.hit3Script);
 
       const newActor: Actor = Object.assign(
         {
@@ -286,15 +291,14 @@ const entitiesSlice = createSlice({
           direction: "down",
           moveSpeed: "1",
           animSpeed: "3",
-          script: [],
-          startScript: [],
-          hit1Script: [],
-          hit2Script: [],
-          hit3Script: [],
         },
         action.payload.defaults || {},
-        script && {
+        {
           script,
+          startScript,
+          hit1Script,
+          hit2Script,
+          hit3Script,
         },
         {
           id: action.payload.actorId,
