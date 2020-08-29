@@ -16,7 +16,7 @@ import {
   getTriggersLookup,
   getActorsLookup,
 } from "../../reducers/entitiesReducer";
-import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];
@@ -337,8 +337,9 @@ function mapStateToProps(state) {
     state.project.present.entities
   );
 
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
+  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
+
   const {
     showConnections,
     startSceneId,

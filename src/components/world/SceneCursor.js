@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
+import uuid from "uuid/v4";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
+import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
 import { SceneShape } from "../../reducers/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
@@ -96,7 +98,7 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor(sceneId, x, y, prefab);
+      addActor({actorId: uuid(), sceneId, x, y, defaults: prefab});
       setTool("select");
     } else if (tool === "triggers") {
       addTrigger(sceneId, x, y, 1, 1, prefab);
@@ -423,7 +425,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  addActor: actions.addActor,
+  addActor: entityActions.addActor,
   removeActorAt: actions.removeActorAt,
   paintCollisionTile: actions.paintCollisionTile,
   paintCollisionLine: actions.paintCollisionLine,

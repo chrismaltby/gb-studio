@@ -6,6 +6,8 @@ import {
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../../../consts";
+import { regenerateEventIds } from "../../../lib/helpers/eventSystem";
+import clamp from "../../../lib/helpers/clamp";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -13,6 +15,12 @@ const MIN_SCENE_Y = 30;
 type ActorDirection = "up" | "down" | "left" | "right";
 type ActorSpriteType = "static" | "actor";
 type SpriteType = "static" | "animated" | "actor" | "actor_animated";
+
+type ScriptEvent = {
+  id: string;
+  command: string;
+  args: any;
+};
 
 type Actor = {
   id: string;
@@ -24,6 +32,11 @@ type Actor = {
   frame: number;
   direction: ActorDirection;
   animate: boolean;
+  script: ScriptEvent[];
+  startScript: ScriptEvent[];
+  hit1Script: ScriptEvent[];
+  hit2Script: ScriptEvent[];
+  hit3Script: ScriptEvent[];
 };
 
 type Trigger = {
@@ -33,6 +46,7 @@ type Trigger = {
   y: number;
   width: number;
   height: number;
+  script: ScriptEvent[];
 };
 
 type Background = {
@@ -57,6 +71,8 @@ type Scene = {
   name: string;
   x: number;
   y: number;
+  width: number;
+  height: number;
   backgroundId: string;
   collisions: number[];
   tileColors: number[];
@@ -234,6 +250,70 @@ const entitiesSlice = createSlice({
     /**************************************************************************
      * Actors
      */
+
+    addActor: (
+      state,
+      action: PayloadAction<{
+        actorId: string;
+        sceneId: string;
+        x: number;
+        y: number;
+        defaults?: Partial<Actor>;
+      }>
+    ) => {
+
+      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      if (!scene) {
+        return;
+      }
+
+      const spriteSheetId = spriteSheetSelectors.selectAll(state)[0];
+      if (!spriteSheetId) {
+        return;
+      }
+
+      const script: ScriptEvent[] | undefined =
+        action.payload.defaults &&
+        action.payload.defaults.script &&
+        action.payload.defaults.script.map(regenerateEventIds);
+
+      const newActor: Actor = Object.assign(
+        {
+          name: "",
+          frame: 0,
+          animate: false,
+          spriteSheetId,
+          spriteType: SPRITE_TYPE_STATIC,
+          direction: "down",
+          moveSpeed: "1",
+          animSpeed: "3",
+          script: [],
+          startScript: [],
+          hit1Script: [],
+          hit2Script: [],
+          hit3Script: [],
+        },
+        action.payload.defaults || {},
+        script && {
+          script,
+        },
+        {
+          id: action.payload.actorId,
+          x: clamp(action.payload.x, 0, scene.width - 2),
+          y: clamp(action.payload.y, 0, scene.height - 1),
+        }
+      );
+
+      // Add to scene
+      scenesAdapter.updateOne(state.scenes, {
+        id: action.payload.sceneId,
+        changes: {
+          actors: ([] as string[]).concat(scene.actors, action.payload.actorId),
+        },
+      });
+
+      actorsAdapter.addOne(state.actors, newActor);
+    },
 
     editActor: (
       state,
