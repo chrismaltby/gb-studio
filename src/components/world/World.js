@@ -16,6 +16,7 @@ import {
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 import { SceneShape } from "../../reducers/stateShape";
 import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class World extends Component {
   constructor(props) {
@@ -53,7 +54,7 @@ class World extends Component {
     }
 
     const { resizeWorldView } = this.props;
-    resizeWorldView(window.innerWidth, window.innerHeight);    
+    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
   }
 
   componentDidUpdate(prevProps) {
@@ -233,7 +234,7 @@ class World extends Component {
 
   onWindowResize = e => {
     const { resizeWorldView } = this.props;
-    resizeWorldView(window.innerWidth, window.innerHeight);
+    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
   }
 
   onAddScene = e => {
@@ -415,7 +416,7 @@ const mapDispatchToProps = {
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   scrollWorld: actions.scrollWorld,
-  resizeWorldView: actions.resizeWorldView,
+  resizeWorldView: editorActions.resizeWorldView,
 };
 
 export default connect(

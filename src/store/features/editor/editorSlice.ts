@@ -99,7 +99,16 @@ const editorSlice = createSlice({
       action: PayloadAction<{tool: Tool}>
     ) => {
       state.tool = action.payload.tool;
+    },
+
+    resizeWorldView:(
+      state,
+      action: PayloadAction<{width: number, height: number}>
+    ) => {
+      state.worldViewWidth = action.payload.width;
+      state.worldViewHeight = action.payload.height;
     }
+
   },
 });
 
