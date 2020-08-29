@@ -273,10 +273,12 @@ const entitiesSlice = createSlice({
 
       const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
         return events.map(regenerateEventIds);
-      }
+      };
 
       const script = regenerateEvents(action.payload.defaults?.script);
-      const startScript = regenerateEvents(action.payload.defaults?.startScript);
+      const startScript = regenerateEvents(
+        action.payload.defaults?.startScript
+      );
       const hit1Script = regenerateEvents(action.payload.defaults?.hit1Script);
       const hit2Script = regenerateEvents(action.payload.defaults?.hit2Script);
       const hit3Script = regenerateEvents(action.payload.defaults?.hit3Script);
@@ -373,6 +375,64 @@ const entitiesSlice = createSlice({
       actorsAdapter.updateOne(state.actors, {
         id: action.payload.actorId,
         changes: patch,
+      });
+    },
+
+    moveActor: (
+      state,
+      action: PayloadAction<{
+        actorId: string;
+        sceneId: string;
+        newSceneId: string;
+        x: number;
+        y: number;
+      }>
+    ) => {
+      const newScene = sceneSelectors.selectById(
+        state,
+        action.payload.newSceneId
+      );
+      if (!newScene) {
+        return;
+      }
+
+      if (action.payload.sceneId !== action.payload.newSceneId) {
+        const prevScene = sceneSelectors.selectById(
+          state,
+          action.payload.sceneId
+        );
+        if (!prevScene) {
+          return;
+        }
+
+        // Remove from previous scene
+        scenesAdapter.updateOne(state.scenes, {
+          id: action.payload.sceneId,
+          changes: {
+            actors: prevScene.actors.filter((actorId) => {
+              return actorId !== action.payload.actorId;
+            }),
+          },
+        });
+
+        // Add to new scene
+        scenesAdapter.updateOne(state.scenes, {
+          id: action.payload.newSceneId,
+          changes: {
+            actors: ([] as string[]).concat(
+              newScene.actors,
+              action.payload.actorId
+            ),
+          },
+        });
+      }
+
+      actorsAdapter.updateOne(state.actors, {
+        id: action.payload.actorId,
+        changes: {
+          x: clamp(action.payload.x, 0, newScene.width - 2),
+          y: clamp(action.payload.y, 0, newScene.height - 1),
+        },
       });
     },
 

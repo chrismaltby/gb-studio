@@ -18,7 +18,7 @@ import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
-import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
+import { loadProject as entitiesLoadProject, actions as entityActions } from "../store/features/entities/entitiesSlice";
 
 const asyncAction = async (
   dispatch,
@@ -358,10 +358,6 @@ export const dragSceneStop = () => {
   return { type: types.DRAG_SCENE_STOP };
 };
 
-export const editScene = (sceneId, values) => {
-  return { type: types.EDIT_SCENE, sceneId, values };
-};
-
 export const removeScene = sceneId => {
   return { type: types.REMOVE_SCENE, sceneId };
 };
@@ -396,7 +392,7 @@ export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
       )
     );
   } else if (dragging === DRAG_ACTOR) {
-    dispatch(moveActor(scene, entityId, sceneId, x, y));
+    dispatch(entityActions.moveActor({actorId: entityId, sceneId: scene, newSceneId: sceneId, x, y}));
   } else if (dragging === DRAG_TRIGGER) {
     dispatch(moveTrigger(scene, entityId, sceneId, x, y));
   }
@@ -414,9 +410,6 @@ export const removeSelectedEntity = () => (dispatch, getState) => {
   }
 };
 
-export const moveActor = (sceneId, id, newSceneId, x, y) => {
-  return { type: types.MOVE_ACTOR, sceneId, id, newSceneId, x, y };
-};
 
 export const selectActor = (sceneId, id) => {
   return { type: types.SELECT_ACTOR, sceneId, id };
@@ -428,10 +421,6 @@ export const removeActor = (sceneId, id) => {
 
 export const removeActorAt = (sceneId, x, y) => {
   return { type: types.REMOVE_ACTOR_AT, sceneId, x, y };
-};
-
-export const editActor = (sceneId, id, values) => {
-  return { type: types.EDIT_ACTOR, sceneId, id, values };
 };
 
 export const selectScriptEvent = eventId => {

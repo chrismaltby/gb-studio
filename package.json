@@ -38,6 +38,8 @@
     "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^1.4.0",
+    "@types/classnames": "^2.2.10",
+    "@types/react-redux": "^7.1.9",
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
