@@ -44,8 +44,6 @@ import {
   REMOVE_CUSTOM_EVENT,
   RELOAD_ASSETS,
   RENAME_VARIABLE,
-  SCROLL_WORLD,
-  SCROLL_WORLD_THROTTLED,  
   RESIZE_WORLD_VIEW,
   SET_SELECTED_PALETTE,
   SET_SELECTED_TILE_TYPE,  
@@ -334,19 +332,7 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         searchTerm: action.searchTerm
-      };
-    case SCROLL_WORLD:
-      return {
-        ...state,
-        worldScrollX: action.x,
-        worldScrollY: action.y,
-      }
-      case SCROLL_WORLD_THROTTLED:
-        return {
-          ...state,
-          worldScrollThrottledX: action.x,
-          worldScrollThrottledY: action.y,
-        }      
+      };  
     case RESIZE_WORLD_VIEW:
       return {
         ...state,

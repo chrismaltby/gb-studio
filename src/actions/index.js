@@ -19,6 +19,7 @@ import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
 import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
+import { actions as settingsActions } from "../store/features/settings/settingsSlice";
 
 const asyncAction = async (
   dispatch,
@@ -63,14 +64,6 @@ export const resizeFilesSidebar = width => {
   };
 };
 
-export const scrollWorldThottled = debounce((dispatch, x, y) => {
-  dispatch({
-    type: types.SCROLL_WORLD_THROTTLED,
-    x,
-    y,
-  });
-}, 60);
-
 export const resizeWorldView = (width, height) => {
   return {
     type: types.RESIZE_WORLD_VIEW,
@@ -104,7 +97,10 @@ export const loadProject = path => async dispatch => {
         throw new Error("Cancelled opening project");
       }
       const data = await loadProjectData(path);
+      
       dispatch(entitiesLoadProject(data));
+      dispatch(settingsActions.editSettings(data.settings));
+
       return {
         data,
         path
@@ -462,46 +458,12 @@ export const editProject = values => {
   return { type: types.EDIT_PROJECT, values };
 };
 
-export const editProjectSettings = values => {
-  return { type: types.EDIT_PROJECT_SETTINGS, values };
-};
-
 export const editCustomEvent = (id, values) => {
   return { type: types.EDIT_CUSTOM_EVENT, id, values };
 };
 
 export const removeCustomEvent = customEventId => {
   return { type: types.REMOVE_CUSTOM_EVENT, customEventId };
-};
-
-export const editPlayerStartAt = (sceneId, x, y) => {
-  return { type: types.EDIT_PLAYER_START_AT, sceneId, x, y };
-};
-
-export const dragPlayerStart = () => {
-  return { type: types.DRAG_PLAYER_START };
-};
-
-export const dragPlayerStop = () => {
-  return { type: types.DRAG_PLAYER_STOP };
-};
-
-export const dragTriggerStart = (sceneId, id) => {
-  return { type: types.DRAG_TRIGGER_START, sceneId, id };
-};
-
-export const dragTriggerStop = () => {
-  return { type: types.DRAG_TRIGGER_STOP };
-};
-
-export const dragDestinationStart = (eventId, sceneId, selectionType, id) => {
-  return {
-    type: types.DRAG_DESTINATION_START,
-    eventId,
-    sceneId,
-    selectionType,
-    id
-  };
 };
 
 export const copyEvent = event => {
