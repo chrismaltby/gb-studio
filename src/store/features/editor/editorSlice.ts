@@ -25,6 +25,7 @@ export interface EditorState {
   worldFocus: boolean;
   scene: string;
   entityId: string;
+  eventId: string;
   index: number;
   zoom: number;
   zoomSprite: number;
@@ -65,6 +66,7 @@ export const initialState: EditorState = {
   worldFocus: false,
   scene: "",
   entityId: "",
+  eventId: "",
   index: 0,
   zoom: 100,
   zoomSprite: 400,
@@ -121,6 +123,19 @@ const editorSlice = createSlice({
     ) => {
       state.worldViewWidth = action.payload.width;
       state.worldViewHeight = action.payload.height;
+    },
+
+    sceneHover: (
+      state,
+      action: PayloadAction<{ sceneId: string; x: number; y: number;}>
+    ) => {
+      state.hover = {
+        ...state.hover,
+        sceneId: action.payload.sceneId,
+        x: action.payload.x,
+        y: action.payload.y
+      },
+     state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {

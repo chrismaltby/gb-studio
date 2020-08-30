@@ -82,7 +82,7 @@ class Scene extends Component {
 
     if (tX !== this.lastTX || tY !== this.lastTY || !hovered) {
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
-        sceneHover(id, tX, tY);
+        sceneHover({sceneId: id, x: tX, y: tY});
         moveSelectedEntity(id, tX, tY);
       }
       this.lastTX = tX;
@@ -92,7 +92,7 @@ class Scene extends Component {
 
   onMouseLeave = (e) => {
     const { sceneHover } = this.props;
-    sceneHover("", this.lastTX, this.lastTY);
+    sceneHover({sceneId: "", x: this.lastTX, y: this.lastTY});
   };
 
   onStartDrag = (e) => {
@@ -436,7 +436,7 @@ const mapDispatchToProps = {
   moveScene: entityActions.moveScene,
   selectScene: editorActions.selectScene,
   moveSelectedEntity: actions.moveSelectedEntity,
-  sceneHover: actions.sceneHover,
+  sceneHover: editorActions.sceneHover,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scene);
