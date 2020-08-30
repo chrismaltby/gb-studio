@@ -63,15 +63,6 @@ export const resizeFilesSidebar = width => {
   };
 };
 
-export const scrollWorld = (x, y) => (dispatch) => {
-  scrollWorldThottled(dispatch, x, y);
-  dispatch({
-    type: types.SCROLL_WORLD,
-    x,
-    y,
-  });
-};
-
 export const scrollWorldThottled = debounce((dispatch, x, y) => {
   dispatch({
     type: types.SCROLL_WORLD_THROTTLED,
@@ -662,18 +653,6 @@ export const pasteClipboardEntityInPlace = (clipboardData) => (dispatch, getStat
 
 export const pasteCustomEvents = () => {
   return { type: types.PASTE_CUSTOM_EVENTS };
-};
-
-export const zoomIn = (section, delta) => {
-  return { type: types.ZOOM_IN, section, delta };
-};
-
-export const zoomOut = (section, delta) => {
-  return { type: types.ZOOM_OUT, section, delta };
-};
-
-export const zoomReset = section => {
-  return { type: types.ZOOM_RESET, section };
 };
 
 export const setScriptTab = tab => {

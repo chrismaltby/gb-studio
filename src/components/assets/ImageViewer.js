@@ -6,6 +6,7 @@ import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 import BackgroundWarnings from "../world/BackgroundWarnings";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class ImageViewer extends Component {
 
@@ -22,9 +23,9 @@ class ImageViewer extends Component {
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn(section, e.deltaY * 0.5);
+        zoomIn({section, delta:e.deltaY * 0.5});
       } else {
-        zoomOut(section, e.deltaY * 0.5);
+        zoomOut({section, delta:e.deltaY * 0.5});
       }
     }
   };
@@ -108,8 +109,8 @@ function mapStateToProps(state, ownProps) {
 
 const mapDispatchToProps = {
   openFolder: actions.openFolder,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut
 };
 
 export default connect(

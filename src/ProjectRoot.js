@@ -15,6 +15,7 @@ import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
+import { actions as editorActions } from "./store/features/editor/editorSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -107,11 +108,11 @@ const onBuildStdErr = (event, message) => {
 const onZoom = (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {
-    store.dispatch(actions.zoomIn(state.navigation.section));
+    store.dispatch(editorActions.zoomIn({ section: state.navigation.section }));
   } else if (zoomType === "out") {
-    store.dispatch(actions.zoomOut(state.navigation.section));
+    store.dispatch(editorActions.zoomOut({ section: state.navigation.section }));
   } else {
-    store.dispatch(actions.zoomReset(state.navigation.section));
+    store.dispatch(editorActions.zoomReset({ section: state.navigation.section }));
   }
 }
 

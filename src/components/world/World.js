@@ -188,9 +188,9 @@ class World extends Component {
     if (e.ctrlKey && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn("world", e.deltaY * 0.5);
+        zoomIn({section: "world", delta: e.deltaY * 0.5});
       } else {
-        zoomOut("world", e.deltaY * 0.5);
+        zoomOut({section: "world", delta: e.deltaY * 0.5});
       }
     } else {
       // Don't allow mousehwheel zoom while scrolling
@@ -412,8 +412,8 @@ const mapDispatchToProps = {
   copyScene: actions.copyScene,
   copyActor: actions.copyActor,
   copyTrigger: actions.copyTrigger,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut,
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   scrollWorld: editorActions.scrollWorld,

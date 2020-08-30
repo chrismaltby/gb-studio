@@ -24,6 +24,7 @@ import {
 import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
+import { actions as editorActions } from "../store/features/editor/editorSlice";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -58,21 +59,21 @@ class AppToolbar extends Component {
     e.preventDefault();
     e.stopPropagation();
     const { zoomIn, section } = this.props;
-    zoomIn(section);
+    zoomIn({section});
   };
 
   onZoomOut = e => {
     e.preventDefault();
     e.stopPropagation();
     const { zoomOut, section } = this.props;
-    zoomOut(section);
+    zoomOut({section});
   };
 
   onZoomReset = e => {
     e.preventDefault();
     e.stopPropagation();
     const { zoomReset, section } = this.props;
-    zoomReset(section);
+    zoomReset({section});
   };
 
   onRun = async e => {
@@ -266,9 +267,9 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setSection: actions.setSection,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut,
-  zoomReset: actions.zoomReset,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut,
+  zoomReset: editorActions.zoomReset,
   editSearchTerm: actions.editSearchTerm,
   buildGame: actions.buildGame,
   openFolder: actions.openFolder

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BRUSH_8PX, COLLISION_ALL } from "../../../consts";
+import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
 
 export type Tool =
   | "triggers"
@@ -12,16 +13,18 @@ export type Tool =
 
 export type Brush = "8px" | "16px" | "fill";
 
-export type EditorSelection =
+export type EditorSection =
   | "world"
   | "scene"
   | "actor"
   | "trigger"
   | "customEvent";
 
+export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
+
 export interface EditorState {
   tool: Tool;
-  type: EditorSelection;
+  type: EditorSection;
   worldFocus: boolean;
   scene: string;
   entityId: string;
@@ -131,10 +134,7 @@ const editorSlice = createSlice({
       state.showLayers = action.payload.showLayers;
     },
 
-    scrollWorld: (
-      state,
-      action: PayloadAction<{ x: number; y: number }>
-    ) => {
+    scrollWorld: (state, action: PayloadAction<{ x: number; y: number }>) => {
       state.worldScrollX = action.payload.x;
       state.worldScrollY = action.payload.y;
     },
@@ -186,6 +186,95 @@ const editorSlice = createSlice({
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
     },
+
+    zoomIn: (
+      state,
+      action: PayloadAction<{ section: ZoomSection; delta?: number }>
+    ) => {
+      const calculateZoomIn = (oldZoom: number) => {
+        return Math.min(
+          800,
+          action.payload.delta !== undefined
+            ? oldZoom + -action.payload.delta
+            : zoomIn(oldZoom)
+        );
+      };
+      switch (action.payload.section) {
+        case "world": {
+          state.zoom = calculateZoomIn(state.zoom);
+          break;
+        }
+        case "sprites": {
+          state.zoomSprite = calculateZoomIn(state.zoomSprite);
+          break;
+        }
+        case "backgrounds": {
+          state.zoomImage = calculateZoomIn(state.zoomImage);
+          break;
+        }
+        case "ui": {
+          state.zoomUI = calculateZoomIn(state.zoomUI);
+          break;
+        }
+      }
+    },
+
+    zoomOut: (
+      state,
+      action: PayloadAction<{ section: ZoomSection; delta?: number }>
+    ) => {
+      const calculateZoomOut = (oldZoom: number) => {
+        return Math.max(
+          25,
+          action.payload.delta !== undefined
+            ? oldZoom - action.payload.delta
+            : zoomOut(oldZoom)
+        );
+      };
+      switch (action.payload.section) {
+        case "world": {
+          state.zoom = calculateZoomOut(state.zoom);
+          break;
+        }
+        case "sprites": {
+          state.zoomSprite = calculateZoomOut(state.zoomSprite);
+          break;
+        }
+        case "backgrounds": {
+          state.zoomImage = calculateZoomOut(state.zoomImage);
+          break;
+        }
+        case "ui": {
+          state.zoomUI = calculateZoomOut(state.zoomUI);
+          break;
+        }
+      }
+    },
+
+    zoomReset: (
+      state,
+      action: PayloadAction<{ section: ZoomSection; }>
+    ) => {
+      switch (action.payload.section) {
+        case "world": {
+          state.zoom = 100;
+          break;
+        }
+        case "sprites": {
+          state.zoomSprite = 100;
+          break;
+        }
+        case "backgrounds": {
+          state.zoomImage = 100;
+          break;
+        }
+        case "ui": {
+          state.zoomUI = 100;
+          break;
+        }
+      }
+    },    
+
   },
 });
 
