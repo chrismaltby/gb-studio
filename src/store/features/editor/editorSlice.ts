@@ -131,6 +131,14 @@ const editorSlice = createSlice({
       state.showLayers = action.payload.showLayers;
     },
 
+    scrollWorld: (
+      state,
+      action: PayloadAction<{ x: number; y: number }>
+    ) => {
+      state.worldScrollX = action.payload.x;
+      state.worldScrollY = action.payload.y;
+    },
+
     resizeWorldView: (
       state,
       action: PayloadAction<{ width: number; height: number }>

@@ -229,7 +229,7 @@ class World extends Component {
 
   onScrollThrottled = throttle((left, top) => {
     const { scrollWorld } = this.props;
-    scrollWorld(left, top);
+    scrollWorld({x:left, y:top});
   }, 50);
 
   onWindowResize = e => {
@@ -241,7 +241,7 @@ class World extends Component {
     const { addScene, setTool, prefab } = this.props;
     const { hoverX, hoverY } = this.state;
     addScene(hoverX, hoverY, prefab);
-    setTool("select");
+    setTool({tool:"select"});
     this.setState({ hover: false });
   };
 
@@ -400,7 +400,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   addScene: actions.addScene,
-  setTool: actions.setTool,
+  setTool: editorActions.setTool,
   selectWorld: actions.selectWorld,
   removeSelectedEntity: actions.removeSelectedEntity,
   dragPlayerStart: actions.dragPlayerStart,
@@ -416,7 +416,7 @@ const mapDispatchToProps = {
   zoomOut: actions.zoomOut,
   copySelectedEntity: actions.copySelectedEntity,
   pasteClipboardEntity: actions.pasteClipboardEntity,
-  scrollWorld: actions.scrollWorld,
+  scrollWorld: editorActions.scrollWorld,
   resizeWorldView: editorActions.resizeWorldView,
 };
 

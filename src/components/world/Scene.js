@@ -93,6 +93,7 @@ class Scene extends Component {
   onMouseLeave = (e) => {
     const { sceneHover } = this.props;
     sceneHover({sceneId: "", x: this.lastTX, y: this.lastTY});
+
   };
 
   onStartDrag = (e) => {
@@ -138,7 +139,6 @@ class Scene extends Component {
       hovered,
       palettes,
       sceneFiltered,
-      simplifiedRender,
       showEntities,
       showCollisions,
       labelOffsetLeft,
@@ -216,7 +216,7 @@ class Scene extends Component {
               palettes={palettes}
             />
           )}
-          {!simplifiedRender && showCollisions && (
+          {showCollisions && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
@@ -230,23 +230,21 @@ class Scene extends Component {
             enabled={hovered}
             sceneFiltered={sceneFiltered}
           />
-          {!simplifiedRender &&
-            showEntities &&
+          {showEntities &&
             triggers.map((triggerId) => (
               <Trigger key={triggerId} id={triggerId} sceneId={id} />
             ))}
-          {!simplifiedRender &&
-            showEntities &&
+          {showEntities &&
             actors.map((actorId) => (
               <Actor key={actorId} id={actorId} sceneId={id} />
             ))}
-          {!simplifiedRender && event && (
+          {event && (
             <div className="Scene__EventHelper">
               <EventHelper event={event} scene={scene} />
             </div>
           )}
         </div>
-        {selected && !simplifiedRender && (
+        {selected && (
           <div
             className="Scene__Info"
             onMouseDown={this.onStartDrag}
@@ -285,7 +283,6 @@ Scene.propTypes = {
   sceneHover: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
-  simplifiedRender: PropTypes.bool.isRequired,
   labelOffsetLeft: PropTypes.number.isRequired,
   labelOffsetRight: PropTypes.number.isRequired
 };
@@ -332,8 +329,6 @@ function mapStateToProps(state, props) {
     worldScrollY,
     worldViewWidth,
     worldViewHeight,
-    worldScrollThrottledX,
-    worldScrollThrottledY,
     zoom,
   } = state.editor;
   const zoomRatio = zoom / 100;
@@ -343,22 +338,11 @@ function mapStateToProps(state, props) {
   const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
   const viewBoundsHeight = worldViewHeight / zoomRatio;
 
-  const viewBoundsThrottledX = worldScrollThrottledX / zoomRatio;
-  const viewBoundsThrottledY = worldScrollThrottledY / zoomRatio;
-  const viewBoundsThrottledWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
-  const viewBoundsThrottledHeight = worldViewHeight / zoomRatio;
-
   const visible =
     scene.x + scene.width * 8 > viewBoundsX &&
     scene.x < viewBoundsX + viewBoundsWidth &&
     scene.y + scene.height * 8 + 50 > viewBoundsY &&
     scene.y < viewBoundsY + viewBoundsHeight;
-
-  const fullRender =
-    scene.x + scene.width * 8 > viewBoundsThrottledX &&
-    scene.x < viewBoundsThrottledX + viewBoundsThrottledWidth &&
-    scene.y + scene.height * 8 + 50 > viewBoundsThrottledY &&
-    scene.y < viewBoundsThrottledY + viewBoundsThrottledHeight;
 
   const offsetLabels = (scene.width * 8) > viewBoundsWidth / 2;
   const labelOffsetLeft = offsetLabels ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), (scene.width * 8) - 100) : 0;
@@ -423,7 +407,6 @@ function mapStateToProps(state, props) {
     hovered,
     sceneName,
     sceneFiltered,
-    simplifiedRender: !fullRender,
     palettes,
     showEntities,
     showCollisions,
