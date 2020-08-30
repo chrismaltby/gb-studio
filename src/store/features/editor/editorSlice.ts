@@ -143,13 +143,13 @@ const editorSlice = createSlice({
       state,
       action: PayloadAction<{ sceneId: string; x: number; y: number }>
     ) => {
-      (state.hover = {
+      state.hover = {
         ...state.hover,
         sceneId: action.payload.sceneId,
         x: action.payload.x,
         y: action.payload.y,
-      }),
-        (state.eventId = state.dragging === "" ? "" : state.eventId);
+      };
+      state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
