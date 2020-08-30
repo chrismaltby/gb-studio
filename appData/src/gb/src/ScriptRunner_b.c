@@ -12,9 +12,12 @@
 #include "Macros.h"
 #include "game.h"
 #include "Math.h"
+#include "gbt_player.h"
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
+
+extern UINT8 music_mute_frames;
 
 UINT8 scriptrunner_bank = 4;
 
@@ -1800,6 +1803,14 @@ void Script_SoundStartTone_b()
   // enable sound
   NR52_REG = 0x80;
 
+  if (music_mute_frames != 0) {
+	  // mute music on channel 1 & 4
+	  gbt_enable_channels(0x6);
+  } else {
+	  // mute music on channel 1
+	  gbt_enable_channels(0xE);
+  }
+
   // play tone on channel 1
   NR10_REG = 0x00;
   NR11_REG = (0x00 << 6) | 0x01;
@@ -1825,6 +1836,15 @@ void Script_SoundStopTone_b()
 {
   // stop tone on channel 1
   NR12_REG = 0x00;
+  
+  if (music_mute_frames != 0) {
+	  // keem mute music on channel 4
+	  gbt_enable_channels(0x7);
+  } else {
+	// Unmute music on all ch
+  gbt_enable_channels(0xF);
+  }
+  
 
   script_ptr += 1 + script_cmd_args_len;
   script_continue = TRUE;
@@ -1840,6 +1860,10 @@ void Script_SoundPlayBeep_b()
 
   // enable sound
   NR52_REG = 0x80;
+
+  // mute music on channel 4  
+  music_mute_frames = 15u;
+  gbt_enable_channels(0x7);
 
   // play beep sound on channel 4
   NR41_REG = 0x01;
@@ -1866,6 +1890,10 @@ void Script_SoundPlayCrash_b()
 {
   // enable sound
   NR52_REG = 0x80;
+
+  // mute music on channel 4
+  music_mute_frames = 28u;
+  gbt_enable_channels(0x7);
 
   // play crash sound on channel 4
   NR41_REG = 0x01;

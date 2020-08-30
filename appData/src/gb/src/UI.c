@@ -4,6 +4,7 @@
 #include "data_ptrs.h"
 #include "Macros.h"
 #include "BankData.h"
+#include "gbt_player.h"
 
 void UIInit_b();
 void UIUpdate_b();
@@ -164,6 +165,7 @@ void UIShowText(UBYTE bank, UWORD bank_offset)
     }
     ++k;
   }
+  gbt_update();
 
   if (menu_layout)
   {
@@ -248,7 +250,7 @@ void UISetTextBuffer(unsigned char *text)
 
 void UIDrawTextBuffer()
 {
-  if ((time & 0x1) == 0)
+  if ( (joy & J_B) | ((time & 0x1) == 0))
   {
     UIDrawTextBufferChar();
   }
