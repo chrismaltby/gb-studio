@@ -168,7 +168,7 @@ ch1_instr_effects$:
 	call	gbt_channel_1_set_effect
 
 	and a,a
-	ret	z ; if 0, don't refresh registers
+	;ret	z ; if 0, don't refresh registers, Disabled to set instrument
 	jr	refresh_channel1_regs_notrig$
 
 ch1_has_frequency$:
@@ -604,7 +604,7 @@ ch2_instr_effects$:
 	call	gbt_channel_2_set_effect
 
 	and a,a
-	ret	z ; if 0, don't refresh registers
+	;ret	z ; if 0, don't refresh registers, Disabled to set instrument
 	jr	refresh_channel2_regs_notrig$
 
 ch2_has_frequency$:
