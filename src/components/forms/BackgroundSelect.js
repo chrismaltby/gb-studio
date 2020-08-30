@@ -9,6 +9,7 @@ import {
   getBackgrounds,
   getBackgroundsLookup
 } from "../../reducers/entitiesReducer";
+import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -122,8 +123,8 @@ BackgroundSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const backgrounds = getBackgrounds(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
+  const backgrounds = backgroundSelectors.selectAll(state.project.present.entities);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
   return {
     backgrounds,
     backgroundsLookup,

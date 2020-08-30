@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import Alert, { AlertItem } from "../library/Alert";
 import { checkBackgroundWarnings } from "../../store/features/warnings/warningsSlice";
 import { getBackgroundsLookup } from "../../reducers/entitiesReducer";
+import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
 class BackgroundWarnings extends Component {
   componentDidMount() {
@@ -47,7 +48,7 @@ BackgroundWarnings.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const backgroundsLookup = getBackgroundsLookup(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
   const backgroundWarningsLookup = state.warnings.backgrounds;
   const savedWarnings = backgroundWarningsLookup[props.id];
   const warnings = savedWarnings ? savedWarnings.warnings : [];

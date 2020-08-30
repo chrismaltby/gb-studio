@@ -18,6 +18,7 @@ import {
   getTriggersLookup
 } from "../../reducers/entitiesReducer";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actorSelectors, triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 
 class SceneNavigation extends Component {
   render() {
@@ -77,9 +78,9 @@ SceneNavigation.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = state.entities.present.entities.scenes[props.sceneId];
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);  
+  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
+  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
   return { scene, actorsLookup, triggersLookup };
 }
 

@@ -411,7 +411,7 @@ SceneEditor.defaultProps = {
 function mapStateToProps(state, props) {
   const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
   const sceneIndex = sceneSelectors.selectIds(state.project.present.entities).indexOf(props.id);
-  const settings = getSettings(state);
+  const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
