@@ -173,16 +173,16 @@ const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");
 
 if (worldSidebarWidth) {
-  store.dispatch(actions.resizeWorldSidebar(worldSidebarWidth));
+  store.dispatch(editorActions.resizeWorldSidebar(worldSidebarWidth));
 }
 if (filesSidebarWidth) {
-  store.dispatch(actions.resizeFilesSidebar(filesSidebarWidth));
+  store.dispatch(editorActions.resizeFilesSidebar(filesSidebarWidth));
 }
 
 window.addEventListener("resize", debounce(() => {
   const state = store.getState();
-  store.dispatch(actions.resizeWorldSidebar(state.settings.worldSidebarWidth));
-  store.dispatch(actions.resizeFilesSidebar(state.settings.filesSidebarWidth));
+  store.dispatch(editorActions.resizeWorldSidebar(state.settings.worldSidebarWidth));
+  store.dispatch(editorActions.resizeFilesSidebar(state.settings.filesSidebarWidth));
 }, 500));
 
 // Overide Accelerator undo for windows, fixes chrome undo conflict

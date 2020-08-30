@@ -7,6 +7,7 @@ import Button from "../library/Button";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { groupBy } from "../../lib/helpers/array";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -147,7 +148,7 @@ FilesSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: width } = state.settings;
+  const { filesSidebarWidth: width } = state.editor;
   return {
     width
   };
@@ -155,7 +156,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizeFilesSidebar: actions.resizeFilesSidebar
+  resizeFilesSidebar: editorActions.resizeFilesSidebar
 };
 
 export default connect(

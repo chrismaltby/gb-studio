@@ -97,7 +97,7 @@ function mapStateToProps(state, ownProps) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     folder,

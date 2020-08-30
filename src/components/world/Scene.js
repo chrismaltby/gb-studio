@@ -322,7 +322,7 @@ function mapStateToProps(state, props) {
   const hovered = state.editor.hover.sceneId === props.id;
   const tool = state.editor.tool;
 
-  const { worldSidebarWidth: sidebarWidth } = state.settings;
+  const { worldSidebarWidth: sidebarWidth } = state.editor;
 
   const {
     worldScrollX,

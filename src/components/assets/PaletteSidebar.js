@@ -9,6 +9,7 @@ import l10n from "../../lib/helpers/l10n";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getPalettes } from "../../reducers/entitiesReducer";
 import PaletteBlock from "../library/PaletteBlock";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class PaletteSidebar extends Component {
   constructor(props) {
@@ -189,7 +190,7 @@ PaletteSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: width } = state.settings;
+  const { filesSidebarWidth: width } = state.editor;
   return {
     width,
   };
@@ -197,7 +198,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   setNavigationId: actions.setNavigationId,
-  resizeFilesSidebar: actions.resizeFilesSidebar,
+  resizeFilesSidebar: editorActions.resizeFilesSidebar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaletteSidebar);

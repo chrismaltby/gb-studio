@@ -95,7 +95,7 @@ MusicViewer.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,

@@ -67,6 +67,8 @@ export interface EditorState {
   lastScriptTab: string;
   lastScriptTabScene: string;
   lastScriptTabSecondary: string;
+  worldSidebarWidth: number;
+  filesSidebarWidth: number;
   profile: boolean;
 }
 
@@ -109,6 +111,8 @@ export const initialState: EditorState = {
   lastScriptTabScene: "",
   lastScriptTabSecondary: "",
   profile: false,
+  worldSidebarWidth: 300,
+  filesSidebarWidth: 300,
 };
 
 const editorSlice = createSlice({
@@ -323,6 +327,20 @@ const editorSlice = createSlice({
           break;
         }
       }
+    },
+
+    resizeWorldSidebar: (state, action: PayloadAction<number>) => {
+      state.worldSidebarWidth = Math.min(
+        window.innerWidth - 70,
+        Math.max(300, action.payload)
+      );
+    },
+
+    resizeFilesSidebar: (state, action: PayloadAction<number>) => {
+      state.filesSidebarWidth = Math.min(
+        window.innerWidth - 70,
+        Math.max(300, action.payload)
+      );
     },
   },
   extraReducers: (builder) =>

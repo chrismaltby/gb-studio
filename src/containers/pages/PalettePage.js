@@ -173,7 +173,7 @@ PalettePage.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   const palettesLookup = getPalettesLookup(state);
   const palettes = getPalettes(state);
   const { id } = state.navigation;

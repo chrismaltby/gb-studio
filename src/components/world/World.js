@@ -356,7 +356,7 @@ function mapStateToProps(state) {
     showLayers
   } = state.editor;
   
-  const { worldSidebarWidth: sidebarWidth } = state.settings;
+  const { worldSidebarWidth: sidebarWidth } = state.editor;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;

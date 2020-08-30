@@ -40,6 +40,7 @@ import l10n from "../lib/helpers/l10n";
 import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import { TOOL_COLORS } from "../consts";
+import { actions as editorActions } from "../store/features/editor/editorSlice";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {
@@ -48,10 +49,10 @@ export default store => next => action => {
     remote.shell.openItem(action.path);
   } else if (action.type === PROJECT_LOAD_SUCCESS) {
     ipcRenderer.send("project-loaded", action.data.settings);
-  } else if (action.type === SIDEBAR_WORLD_RESIZE) {
-    settings.set("worldSidebarWidth", action.width);
-  } else if (action.type === SIDEBAR_FILES_RESIZE) {
-    settings.set("filesSidebarWidth", action.width);
+  } else if (editorActions.resizeWorldSidebar.match(action)) {
+    settings.set("worldSidebarWidth", action.payload);
+  } else if (editorActions.resizeFilesSidebar.match(action)) {
+    settings.set("filesSidebarWidth", action.payload);
   } else if (action.type === COPY_ACTOR) {
     const state = store.getState();
     const customEventsLookup = getCustomEventsLookup(state);
