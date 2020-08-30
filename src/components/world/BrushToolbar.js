@@ -39,6 +39,7 @@ import PaletteSelect from "../forms/PaletteSelect";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -133,19 +134,19 @@ class BrushToolbar extends Component {
   setSelectedPalette = (index) => (e) => {
     const { setSelectedPalette, setSelectedTileType, showPalettes, showTileTypes } = this.props;
     if(showPalettes){
-      setSelectedPalette(index);
+      setSelectedPalette({paletteIndex:index});
     }
     if (showTileTypes && tileTypes[index]) {
       const { selectedTileType } = this.props;
 
       if (e.shiftKey && collisionDirectionFlags.includes(tileTypes[index].flag)) {
         if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
-          setSelectedTileType(selectedTileType & COLLISION_ALL & ~tileTypes[index].flag);
+          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL & ~tileTypes[index].flag});
         } else {
-          setSelectedTileType(selectedTileType & COLLISION_ALL | tileTypes[index].flag);
+          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL | tileTypes[index].flag});
         }
       } else {
-        setSelectedTileType(tileTypes[index].flag);
+        setSelectedTileType({tileType:tileTypes[index].flag});
       }
     }
   };
@@ -175,9 +176,9 @@ class BrushToolbar extends Component {
     if (sceneId) {
       const newIds = [].concat(sceneBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
-      editScene(sceneId, {
+      editScene({sceneId, changes:{
         paletteIds: newIds,
-      });
+      }});
     } else {
       const newIds = [].concat(defaultBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
@@ -440,14 +441,14 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setSelectedPalette: actions.setSelectedPalette,
-  setSelectedTileType: actions.setSelectedTileType,
+  setSelectedPalette: editorActions.setSelectedPalette,
+  setSelectedTileType: editorActions.setSelectedTileType,
   setBrush: editorActions.setBrush,
   setShowLayers: editorActions.setShowLayers,
   setSection: actions.setSection,
   setNavigationId: actions.setNavigationId,
   editProjectSettings: actions.editProjectSettings,
-  editScene: actions.editScene,
+  editScene: entityActions.editScene,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BrushToolbar);

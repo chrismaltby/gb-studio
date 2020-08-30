@@ -113,6 +113,20 @@ const editorSlice = createSlice({
       state.selectedBrush = action.payload.brush;
     },
 
+    setSelectedPalette: (
+      state,
+      action: PayloadAction<{ paletteIndex: number }>
+    ) => {
+      state.selectedPalette = action.payload.paletteIndex;
+    },
+
+    setSelectedTileType: (
+      state,
+      action: PayloadAction<{ tileType: number }>
+    ) => {
+      state.selectedTileType = action.payload.tileType;
+    },
+
     setShowLayers: (state, action: PayloadAction<{ showLayers: boolean }>) => {
       state.showLayers = action.payload.showLayers;
     },
@@ -163,7 +177,7 @@ const editorSlice = createSlice({
       state.dragging = "DRAG_TRIGGER";
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
-    }
+    },
   },
 });
 
