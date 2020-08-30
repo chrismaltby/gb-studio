@@ -7,6 +7,7 @@ import * as actions from "../../actions";
 import GBControlsPreview from "../library/GBControlsPreview";
 import { FormField } from "../library/Forms";
 import Button from "../library/Button";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 const directions = [
   {
@@ -239,15 +240,14 @@ CustomControlsPicker.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const { settings } = project;
+  const settings = state.project.present.settings;
   return {
     settings
   };
 }
 
 const mapDispatchToProps = {
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: settingsActions.editSettings
 };
 
 export default connect(

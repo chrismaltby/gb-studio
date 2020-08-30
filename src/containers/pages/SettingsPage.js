@@ -23,6 +23,7 @@ import {
   SettingsShape,
   SceneShape,
 } from "../../reducers/stateShape";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {
@@ -213,7 +214,7 @@ SettingsPage.propTypes = {
 
 function mapStateToProps(state) {
   const project = state.entities.present.result;
-  const settings = project ? project.settings : {};
+  const settings = state.project.present.settings;
   const scenesLookup = getScenesLookup(state);
 
   return {
@@ -225,7 +226,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings,
+  editProjectSettings: settingsActions.editSettings,
   setSection: actions.setSection,
 };
 

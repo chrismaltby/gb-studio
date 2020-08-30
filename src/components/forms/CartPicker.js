@@ -6,6 +6,7 @@ import l10n from "../../lib/helpers/l10n";
 import * as actions from "../../actions";
 import Button from "../library/Button";
 import CartPreview from "../library/CartPreview";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 const cartTypes = [
   {
@@ -77,15 +78,14 @@ CustomControlsPicker.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const { settings } = project;
+  const settings = state.project.present.settings;
   return {
     settings
   };
 }
 
 const mapDispatchToProps = {
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: settingsActions.editSettings
 };
 
 export default connect(
