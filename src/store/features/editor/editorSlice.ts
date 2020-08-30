@@ -127,15 +127,15 @@ const editorSlice = createSlice({
 
     sceneHover: (
       state,
-      action: PayloadAction<{ sceneId: string; x: number; y: number;}>
+      action: PayloadAction<{ sceneId: string; x: number; y: number }>
     ) => {
-      state.hover = {
+      (state.hover = {
         ...state.hover,
         sceneId: action.payload.sceneId,
         x: action.payload.x,
-        y: action.payload.y
-      },
-     state.eventId = state.dragging === "" ? "" : state.eventId;
+        y: action.payload.y,
+      }),
+        (state.eventId = state.dragging === "" ? "" : state.eventId);
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
@@ -154,6 +154,16 @@ const editorSlice = createSlice({
       state.worldFocus = true;
       state.tool = "select";
     },
+
+    dragTriggerStart: (
+      state,
+      action: PayloadAction<{ triggerId: string; sceneId: string }>
+    ) => {
+      state.type = "trigger";
+      state.dragging = "DRAG_TRIGGER";
+      state.entityId = action.payload.triggerId;
+      state.scene = action.payload.sceneId;
+    }
   },
 });
 

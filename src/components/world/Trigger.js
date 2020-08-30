@@ -3,14 +3,15 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import { triggerSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions} from "../../store/features/editor/editorSlice";
+import { triggerSelectors} from "../../store/features/entities/entitiesSlice";
 
 class Trigger extends Component {
   onMouseDown = e => {
     e.stopPropagation();
     e.preventDefault();
     const { id, sceneId, dragTriggerStart, setTool } = this.props;
-    dragTriggerStart(sceneId, id);
+    dragTriggerStart({sceneId, triggerId:id});
     setTool("select");
     window.addEventListener("mouseup", this.onMouseUp);
   };
@@ -75,7 +76,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  dragTriggerStart: actions.dragTriggerStart,
+  dragTriggerStart: editorActions.dragTriggerStart,
   dragTriggerStop: actions.dragTriggerStop,
   setTool: actions.setTool
 };
