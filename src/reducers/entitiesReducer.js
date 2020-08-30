@@ -10,7 +10,6 @@ import {
   BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
   EDIT_PROJECT,
-  EDIT_PROJECT_SETTINGS,
   EDIT_CUSTOM_EVENT,
   ADD_SCENE,
   MOVE_SCENE,
@@ -1383,8 +1382,6 @@ export default function project(state = initialState.entities, action) {
       return saveAsProject(state, action);
     case EDIT_PROJECT:
       return editProject(state, action);
-    case EDIT_PROJECT_SETTINGS:
-      return editProjectSettings(state, action);
     case EDIT_CUSTOM_EVENT:
       return editCustomEvent(state, action);
     case REMOVE_CUSTOM_EVENT:

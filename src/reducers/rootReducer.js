@@ -6,13 +6,13 @@ import document from "./documentReducer";
 import console from "../store/features/console/consoleSlice";
 import music from "../store/features/music/musicSlice";
 import entities from "./entitiesReducer";
-import settings from "./settingsReducer";
 import error from "./errorReducer";
 import warnings from "../store/features/warnings/warningsSlice";
 import entitiesNew from "../store/features/entities/entitiesSlice";
 import documentNew from "../store/features/document/documentSlice";
 import editorNew from "../store/features/editor/editorSlice";
-import settingsNew from "../store/features/settings/settingsSlice";
+import settings from "../store/features/settings/settingsSlice";
+import metadata from "../store/features/metadata/metadataSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -25,7 +25,7 @@ const rootReducer = combineReducers({
   console,
   music,
   project: undoable(
-    combineReducers({ entities: entitiesNew, document: documentNew, settings: settingsNew }),
+    combineReducers({ entities: entitiesNew, document: documentNew, settings, metadata }),
     {
       limit: 20,
       filter: (_action, currentState, previousHistory) => {
@@ -40,20 +40,6 @@ const rootReducer = combineReducers({
       initTypes: ["@@redux/INIT", "@@INIT"],
     }
   ),
-  entities: undoable(entities, {
-    limit: 20,
-    filter: (_action, currentState, previousHistory) => {
-      const shouldStoreUndo =
-        currentState !== previousHistory.present &&
-        Date.now() > lastEntityUndoStateTime + UNDO_THROTTLE;
-      if (shouldStoreUndo) {
-        lastEntityUndoStateTime = Date.now();
-      }
-      return shouldStoreUndo;
-    },
-    initTypes: ["@@redux/INIT", "@@INIT"],
-  }),
-  settings,
   error,
   warnings,
 });

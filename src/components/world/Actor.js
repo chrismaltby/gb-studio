@@ -8,7 +8,7 @@ import * as actions from "../../actions";
 import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
-import { actorSelectors } from "../../store/features/entities/entitiesSlice";
+import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class Actor extends Component {
@@ -82,8 +82,8 @@ function mapStateToProps(state, props) {
     sceneId === props.sceneId &&
     entityId === props.id;
   const showSprite = state.editor.zoom > 80;
-  const settings = getSettings(state);
-  const palettesLookup = getPalettesLookup(state);
+  const settings = state.project.present.settings;
+  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
   const gbcEnabled = settings.customColorsEnabled;
   const palette = gbcEnabled
     ? getCachedObject(

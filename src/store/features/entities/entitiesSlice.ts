@@ -6,6 +6,7 @@ import {
   createAsyncThunk,
   ThunkDispatch,
   AnyAction,
+  createSelector,
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../../../consts";
@@ -22,6 +23,7 @@ import {
   DRAG_TRIGGER,
 } from "../../../reducers/editorReducer";
 import { actions as settingsActions } from "../settings/settingsSlice";
+import { Dictionary } from "lodash";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -63,7 +65,7 @@ type Trigger = {
   script: ScriptEvent[];
 };
 
-type Background = {
+export type Background = {
   id: string;
   name: string;
   filename: string;
@@ -71,7 +73,35 @@ type Background = {
   height: number;
   imageWidth: number;
   imageHeight: number;
+  _v: number;
 };
+
+type Palette = {
+  id: string;
+  name: string;
+  colors: [string, string, string, string];
+  defaultName?: string;
+  defaultColors?: [string, string, string, string];
+}
+
+type CustomEventVariable = {
+  id: string;
+  name: string;
+}
+
+type CustomEventActor = {
+  id: string;
+  name: string;
+}
+
+type CustomEvent = {
+  id: string;
+  name: string;
+  description: string;
+  variables: Dictionary<CustomEventVariable>;
+  actors: Dictionary<CustomEventActor>;
+  script: ScriptEvent[];
+}
 
 type SpriteSheet = {
   id: string;
@@ -107,6 +137,8 @@ type ProjectData = {
   scenes: SceneData[];
   backgrounds: Background[];
   spriteSheets: SpriteSheet[];
+  palettes: Palette[];
+  customEvents: CustomEvent[];
 };
 
 interface EntitiesState {
@@ -115,6 +147,8 @@ interface EntitiesState {
   scenes: EntityState<Scene>;
   backgrounds: EntityState<Background>;
   spriteSheets: EntityState<SpriteSheet>;
+  palettes: EntityState<Palette>;
+  customEvents: EntityState<CustomEvent>;
 }
 
 const actorsAdapter = createEntityAdapter<Actor>();
@@ -122,6 +156,8 @@ const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
 const backgroundsAdapter = createEntityAdapter<Background>();
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>();
+const palettesAdapter = createEntityAdapter<Palette>();
+const customEventsAdapter = createEntityAdapter<CustomEvent>();
 
 const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
@@ -129,6 +165,8 @@ const initialState: EntitiesState = {
   scenes: scenesAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
+  palettes: palettesAdapter.getInitialState(),
+  customEvents: customEventsAdapter.getInitialState()
 };
 
 const moveSelectedEntity = ({
@@ -236,12 +274,14 @@ const entitiesSlice = createSlice({
       }));
       const backgrounds = action.payload.backgrounds;
       const spriteSheets = action.payload.spriteSheets;
+      const palettes = action.payload.palettes;
 
       actorsAdapter.setAll(state.actors, actors);
       triggersAdapter.setAll(state.triggers, triggers);
       scenesAdapter.setAll(state.scenes, scenes);
       backgroundsAdapter.setAll(state.backgrounds, backgrounds);
       spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
+      palettesAdapter.setAll(state.palettes, palettes);
     },
 
     /**************************************************************************
@@ -784,6 +824,39 @@ export const sceneSelectors = scenesAdapter.getSelectors(
 );
 export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
   (state: EntitiesState) => state.spriteSheets
+);
+export const backgroundSelectors = backgroundsAdapter.getSelectors(
+  (state: EntitiesState) => state.backgrounds
+);
+export const paletteSelectors = palettesAdapter.getSelectors(
+  (state: EntitiesState) => state.palettes
+);
+export const customEventSelectors = customEventsAdapter.getSelectors(
+  (state: EntitiesState) => state.customEvents
+);
+
+export const getMaxSceneRight = createSelector(
+  [sceneSelectors.selectAll],
+  (scenes) =>
+    scenes.reduce((memo, scene) => {
+      const sceneRight = scene.x + scene.width * 8;
+      if (sceneRight > memo) {
+        return sceneRight;
+      }
+      return memo;
+    }, 0)
+);
+
+export const getMaxSceneBottom = createSelector(
+  [sceneSelectors.selectAll],
+  (scenes) =>
+    scenes.reduce((memo, scene) => {
+      const sceneBottom = scene.y + scene.height * 8;
+      if (sceneBottom > memo) {
+        return sceneBottom;
+      }
+      return memo;
+    }, 0)
 );
 
 export default reducer;

@@ -16,6 +16,7 @@ import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 import { actions as editorActions } from "./store/features/editor/editorSlice";
+import { actions as settingsActions } from "./store/features/settings/settingsSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -82,7 +83,7 @@ const onReloadAssets = () => {
 
 const onUpdateSetting = (event, setting, value) => {
   store.dispatch(
-    actions.editProjectSettings({
+    settingsActions.editSettings({
       [setting]: value
     })
   );

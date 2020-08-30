@@ -34,7 +34,7 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
-import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, actions as entityActions, actorSelectors, triggerSelectors, backgroundSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const TILE_SIZE = 8;
@@ -296,10 +296,10 @@ Scene.defaultProps = {
 function mapStateToProps(state, props) {
   const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
-  const settings = getSettings(state);
+  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
+  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
+  const settings = state.project.present.settings;
 
   const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
 
@@ -367,7 +367,7 @@ function mapStateToProps(state, props) {
     (tool !== TOOL_COLORS || showLayers) &&
     (settings.showCollisions || tool === TOOL_COLLISIONS);
 
-  const palettesLookup = getPalettesLookup(state);
+  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
   const sceneBackgroundPaletteIds = scene.paletteIds || [];

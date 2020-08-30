@@ -39,7 +39,8 @@ import PaletteSelect from "../forms/PaletteSelect";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as entityActions, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -392,9 +393,9 @@ function mapStateToProps(state) {
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
 
-  const settings = getSettings(state);
-  const palettesLookup = getPalettesLookup(state);
-  const scenesLookup = getScenesLookup(state);
+  const settings = state.project.present.settings;
+  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
+  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
 
   const { scene: sceneId } = state.editor;
 
@@ -447,7 +448,7 @@ const mapDispatchToProps = {
   setShowLayers: editorActions.setShowLayers,
   setSection: actions.setSection,
   setNavigationId: actions.setNavigationId,
-  editProjectSettings: actions.editProjectSettings,
+  editProjectSettings: settingsActions.editSettings,
   editScene: entityActions.editScene,
 };
 

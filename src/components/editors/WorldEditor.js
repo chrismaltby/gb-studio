@@ -15,10 +15,11 @@ import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
 import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
-import { getSettings } from "../../reducers/entitiesReducer";
 import { DMG_PALETTE } from "../../consts";
 import PaletteSelect from "../forms/PaletteSelect";
 import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
+import { actions as metadataActions } from "../../store/features/metadata/metadataSlice";
+import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -36,13 +37,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, settings, selectSidebar, addCustomEvent, colorsEnabled } = this.props;
+    const { project, settings, selectSidebar, addCustomEvent, colorsEnabled, scenesLength } = this.props;
 
-    if (!project || !project.scenes || !project.customEvents) {
-      return <div />;
-    }
-
-    const { name, author, notes, scenes } = project;
+    const { name, author, notes } = project;
     const {
       startSceneId,
       playerPaletteId,
@@ -101,7 +98,7 @@ class WorldEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          {scenes.length > 0 && (
+          {scenesLength > 0 && (
             <div>
               <SidebarHeading title={l10n("SIDEBAR_STARTING_SCENE")} />
 
@@ -232,6 +229,7 @@ class WorldEditor extends Component {
 
 WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
+  scenesLength: PropTypes.number.isRequired,
   settings: SettingsShape.isRequired,
   defaultSpritePaletteId: PropTypes.string.isRequired,
   colorsEnabled: PropTypes.bool.isRequired, 
@@ -242,12 +240,14 @@ WorldEditor.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
+  const project = state.project.present.metadata;
   const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
+  const scenesLength = sceneSelectors.selectTotal(state.project.present.entities);
   return {
     project,
+    scenesLength,
     settings,
     colorsEnabled,
     defaultSpritePaletteId    
@@ -256,7 +256,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar,
-  editProject: actions.editProject,
+  editProject: metadataActions.editMetadata,
   editProjectSettings: settingsActions.editSettings,
   addCustomEvent: actions.addCustomEvent
 };

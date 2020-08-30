@@ -6,7 +6,7 @@ import uuid from "uuid/v4";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
 import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
-import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as entityActions, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 import { SceneShape } from "../../reducers/stateShape";
@@ -407,8 +407,8 @@ function mapStateToProps(state, props) {
   const { tool } = state.editor;
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
-  const showCollisions = state.entities.present.result.settings.showCollisions;
-  const scenesLookup = getScenesLookup(state);
+  const showCollisions = state.project.present.settings.showCollisions;
+  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
   const scene = scenesLookup[props.sceneId];
   const prefab = undefined;
   return {

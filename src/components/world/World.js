@@ -8,14 +8,9 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import * as actions from "../../actions";
-import {
-  getMaxSceneRight,
-  getMaxSceneBottom,
-  getScenesLookup
-} from "../../reducers/entitiesReducer";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 import { SceneShape } from "../../reducers/stateShape";
-import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class World extends Component {
@@ -345,11 +340,11 @@ World.defaultProps = {
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
   const scenes = sceneSelectors.selectIds(state.project.present.entities)
+  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
 
-  const scenesLookup = getScenesLookup(state);
   const {
     showConnections
-  } = state.entities.present.result.settings;
+  } = state.project.present.settings;
   const {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
@@ -361,8 +356,8 @@ function mapStateToProps(state) {
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;
 
-  const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state) + 20);
-  const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state) + 60);
+  const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state.project.present.entities) + 20);
+  const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state.project.present.entities) + 60);
 
   const focus = state.editor.worldFocus;
 

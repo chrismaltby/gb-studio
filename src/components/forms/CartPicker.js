@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import cx from "classnames";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
 import Button from "../library/Button";
 import CartPreview from "../library/CartPreview";
 import { actions as settingsActions } from "../../store/features/settings/settingsSlice";

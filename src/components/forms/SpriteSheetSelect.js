@@ -7,6 +7,7 @@ import l10n from "../../lib/helpers/l10n";
 import { SpriteShape } from "../../reducers/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { getSpriteSheets } from "../../reducers/entitiesReducer";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -142,7 +143,7 @@ SpriteSheetSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const spriteSheets = getSpriteSheets(state);
+  const spriteSheets = spriteSheetSelectors.selectAll(state.project.present.entities);
   return {
     spriteSheets
   };

@@ -9,6 +9,7 @@ import {
   getSceneIds,
 } from "../../reducers/entitiesReducer";
 import { createCacheFunction } from "../../lib/helpers/cache";
+import { sceneSelectors, backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -119,9 +120,9 @@ SceneSelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const projectRoot = state.document && state.document.root;
-  const scenesLookup = getScenesLookup(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
-  const sceneIds = getSceneIds(state);
+  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
+  const sceneIds = sceneSelectors.selectIds(state.project.present.entities);
   const selectedIndex = sceneIds.indexOf(ownProps.value);
   const options = cachedObj(
     sceneIds.map((sceneId, sceneIndex) => {

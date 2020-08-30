@@ -5,6 +5,7 @@ import { CustomEventShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
 import { getCustomEvents } from "../../reducers/entitiesReducer";
 import { CodeIcon } from "../library/Icons";
+import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 class CustomEventNavigation extends Component {
   render() {
@@ -41,7 +42,7 @@ CustomEventNavigation.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = getCustomEvents(state);
+  const customEvents = customEventSelectors.selectAll(state.project.present.entities);
   return { customEvents };
 }
 

@@ -20,6 +20,7 @@ import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
 import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "../store/features/settings/settingsSlice";
+import { actions as metadataActions } from "../store/features/metadata/metadataSlice";
 
 const asyncAction = async (
   dispatch,
@@ -47,20 +48,6 @@ export const setGlobalError = (message, filename, line, col, stackTrace) => {
     line,
     col,
     stackTrace
-  };
-};
-
-export const resizeWorldSidebar = width => {
-  return {
-    type: types.SIDEBAR_WORLD_RESIZE,
-    width
-  };
-};
-
-export const resizeFilesSidebar = width => {
-  return {
-    type: types.SIDEBAR_FILES_RESIZE,
-    width
   };
 };
 
@@ -100,6 +87,7 @@ export const loadProject = path => async dispatch => {
       
       dispatch(entitiesLoadProject(data));
       dispatch(settingsActions.editSettings(data.settings));
+      dispatch(metadataActions.editMetadata(data))
 
       return {
         data,

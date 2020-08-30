@@ -1,23 +1,20 @@
 import { Middleware, Action } from "@reduxjs/toolkit";
-import {
-  getBackgroundWarnings,
-  IBackground,
-} from "../../../lib/helpers/validation";
+import { getBackgroundWarnings } from "../../../lib/helpers/validation";
 import {
   setBackgroundWarnings,
   checkBackgroundWarnings,
 } from "./warningsSlice";
 import { RootState } from "../../configureStore";
-
-type BackgroundLookup = Record<string, IBackground | undefined>;
+import { backgroundSelectors } from "../entities/entitiesSlice";
 
 const warningsMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action: Action
 ) => {
   if (checkBackgroundWarnings.match(action)) {
     const state = store.getState();
-    const backgroundsLookup: BackgroundLookup =
-      state.entities.present.entities.backgrounds;
+    const backgroundsLookup = backgroundSelectors.selectEntities(
+      state.project.present.entities
+    );
     const background = backgroundsLookup[action.payload];
     const projectRoot = state.document.root;
 
