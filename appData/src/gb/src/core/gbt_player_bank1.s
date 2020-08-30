@@ -1,6 +1,6 @@
 ;-------------------------------------------------------------------------------
 ;
-; GBT Player v2.2.0
+; GBT Player v2.2.1 rulz
 ;
 ; SPDX-License-Identifier: MIT
 ;
@@ -488,6 +488,13 @@ gbt_ch1_arpeggio$:
 
 gbt_ch1_cut_note$:
 	ld	(gbt_cut_note_tick+0),a
+	or	a,a
+	jr nz, gbt_ch1_cut_note_nz$
+	xor	a,a  ; vol = 0
+	ld	(#.NR12),a
+	ld	a,#0x80 ; start
+	ld	(#.NR14),a
+gbt_ch1_cut_note_nz$:
 	xor	a,a ; ret 0
 	ret
 
@@ -911,6 +918,13 @@ gbt_ch2_arpeggio$:
 
 gbt_ch2_cut_note$:
 	ld	(gbt_cut_note_tick+1),a
+	or	a,a
+	jr nz, gbt_ch2_cut_note_nz$
+	xor	a,a  ; vol = 0
+	ld	(#.NR22),a
+	ld	a,#0x80 ; start
+	ld	(#.NR24),a
+gbt_ch2_cut_note_nz$:
 	xor	a,a ; ret 0
 	ret
 
@@ -1341,6 +1355,14 @@ gbt_ch3_arpeggio$:
 
 gbt_ch3_cut_note$:
 	ld	(gbt_cut_note_tick+2),a
+	or	a,a
+	jr nz, gbt_ch3_cut_note_nz$
+	xor	a,a ; vol = 0
+	ld	(#.NR30),a ; disable
+	ld	(#.NR32),a
+	ld	a,#0x80 ; start
+	ld	(#.NR34),a
+gbt_ch3_cut_note_nz$:
 	xor	a,a ; ret 0
 	ret
 
@@ -1572,6 +1594,13 @@ gbt_ch4_pan$:
 
 gbt_ch4_cut_note$:
 	ld	(gbt_cut_note_tick+3),a
+	or	a,a
+	jr nz, gbt_ch4_cut_note_nz$
+	xor	a,a  ; vol = 0
+	ld	(#.NR42),a
+	ld	a,#0x80 ; start
+	ld	(#.NR44),a
+gbt_ch4_cut_note_nz$:
 	xor	a,a ; ret 0
 	ret
 
