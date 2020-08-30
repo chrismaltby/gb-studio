@@ -442,7 +442,7 @@ const mapDispatchToProps = {
   selectScene: editorActions.selectScene,
   setTool: editorActions.setTool,
   editPlayerStartAt: actions.editPlayerStartAt,
-  editDestinationPosition: actions.editDestinationPosition,
+  editDestinationPosition: entityActions.editDestinationPosition,
   editSearchTerm: actions.editSearchTerm
 };
 

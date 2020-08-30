@@ -17,16 +17,11 @@ import {
   DRAG_PLAYER_STOP,
   DRAG_DESTINATION_START,
   DRAG_DESTINATION_STOP,
-  DRAG_ACTOR_START,
-  DRAG_ACTOR_STOP,
   DRAG_TRIGGER_START,
   DRAG_TRIGGER_STOP,
   SCENE_HOVER,
   ACTOR_HOVER,
   SELECT_WORLD,
-  ZOOM_IN,
-  ZOOM_OUT,
-  ZOOM_RESET,
   EDIT_SEARCH_TERM,
   REMOVE_SCENE,
   REMOVE_ACTOR,
@@ -61,7 +56,6 @@ import {
   SET_SCRIPT_TAB_SECONDARY,
   SET_PROFILING
 } from "../actions/actionTypes";
-import { zoomIn, zoomOut } from "../lib/helpers/zoom";
 
 export const DRAG_PLAYER = "DRAG_PLAYER";
 export const DRAG_DESTINATION = "DRAG_DESTINATION";
@@ -237,24 +231,6 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         eventId: null,
-        dragging: ""
-      };
-    }
-    case DRAG_ACTOR_START: {
-      return {
-        ...state,
-        type: "actors",
-        actorDragging: true,
-        dragging: DRAG_ACTOR,
-        entityId: action.id,
-        scene: action.sceneId,
-        worldFocus: true
-      };
-    }
-    case DRAG_ACTOR_STOP: {
-      return {
-        ...state,
-        actorDragging: null,
         dragging: ""
       };
     }

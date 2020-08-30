@@ -83,7 +83,7 @@ class Scene extends Component {
     if (tX !== this.lastTX || tY !== this.lastTY || !hovered) {
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
         sceneHover({sceneId: id, x: tX, y: tY});
-        moveSelectedEntity(id, tX, tY);
+        moveSelectedEntity({sceneId: id, x: tX, y: tY});
       }
       this.lastTX = tX;
       this.lastTY = tY;
@@ -418,7 +418,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   moveScene: entityActions.moveScene,
   selectScene: editorActions.selectScene,
-  moveSelectedEntity: actions.moveSelectedEntity,
+  moveSelectedEntity: entityActions.moveSelectedEntity,
   sceneHover: editorActions.sceneHover,
 };
 

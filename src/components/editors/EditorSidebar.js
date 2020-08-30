@@ -13,7 +13,7 @@ class EditorSidebar extends Component {
     if (type === "trigger") {
       return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
     }
-    if (type === "actors") {
+    if (type === "actor") {
       return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
     }
     if (type === "scene") {

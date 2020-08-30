@@ -17,6 +17,7 @@ import {
   getActorsLookup,
 } from "../../reducers/entitiesReducer";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];
@@ -93,7 +94,7 @@ class Connections extends Component {
     e.stopPropagation();
     e.preventDefault();
     const { dragDestinationStart } = this.props;
-    dragDestinationStart(eventId, sceneId, selectionType, id);
+    dragDestinationStart({eventId, sceneId, selectionType, entityId: id});
     window.addEventListener("mouseup", this.onDragDestinationStop);
   };
 
@@ -346,7 +347,7 @@ function mapStateToProps(state) {
     startX,
     startY,
     startDirection,
-  } = state.entities.present.result.settings;
+  } = state.project.present.settings;
   const { scene: selectedSceneId } = state.editor;
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;
@@ -367,10 +368,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  dragPlayerStart: actions.dragPlayerStart,
-  dragPlayerStop: actions.dragPlayerStop,
-  dragDestinationStart: actions.dragDestinationStart,
-  dragDestinationStop: actions.dragDestinationStop,
+  dragPlayerStart: editorActions.dragPlayerStart,
+  dragPlayerStop: editorActions.dragPlayerStop,
+  dragDestinationStart: editorActions.dragDestinationStart,
+  dragDestinationStop: editorActions.dragDestinationStop,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Connections);

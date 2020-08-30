@@ -12,12 +12,13 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape } from "../../reducers/stateShape";
+import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
 import { getSettings } from "../../reducers/entitiesReducer";
 import { DMG_PALETTE } from "../../consts";
 import PaletteSelect from "../forms/PaletteSelect";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -35,13 +36,13 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar, addCustomEvent, colorsEnabled } = this.props;
+    const { project, settings, selectSidebar, addCustomEvent, colorsEnabled } = this.props;
 
     if (!project || !project.scenes || !project.customEvents) {
       return <div />;
     }
 
-    const { name, author, notes, scenes, settings } = project;
+    const { name, author, notes, scenes } = project;
     const {
       startSceneId,
       playerPaletteId,
@@ -231,6 +232,7 @@ class WorldEditor extends Component {
 
 WorldEditor.propTypes = {
   project: ProjectShape.isRequired,
+  settings: SettingsShape.isRequired,
   defaultSpritePaletteId: PropTypes.string.isRequired,
   colorsEnabled: PropTypes.bool.isRequired, 
   editProject: PropTypes.func.isRequired,
@@ -241,11 +243,12 @@ WorldEditor.propTypes = {
 
 function mapStateToProps(state) {
   const project = state.entities.present.result;
-  const settings = getSettings(state); 
+  const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
   return {
     project,
+    settings,
     colorsEnabled,
     defaultSpritePaletteId    
   };
@@ -254,7 +257,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   selectSidebar: actions.selectSidebar,
   editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings,
+  editProjectSettings: settingsActions.editSettings,
   addCustomEvent: actions.addCustomEvent
 };
 

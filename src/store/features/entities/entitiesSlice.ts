@@ -3,11 +3,25 @@ import {
   createSlice,
   PayloadAction,
   EntityState,
+  createAsyncThunk,
+  ThunkDispatch,
+  AnyAction,
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../../../consts";
-import { regenerateEventIds } from "../../../lib/helpers/eventSystem";
+import {
+  regenerateEventIds,
+  patchEvents,
+} from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
+import { RootState } from "../../configureStore";
+import {
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_ACTOR,
+  DRAG_TRIGGER,
+} from "../../../reducers/editorReducer";
+import { actions as settingsActions } from "../settings/settingsSlice";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -78,6 +92,10 @@ type Scene = {
   tileColors: number[];
   actors: string[];
   triggers: string[];
+  script: ScriptEvent[];
+  playerHit1Script: ScriptEvent[];
+  playerHit2Script: ScriptEvent[];
+  playerHit3Script: ScriptEvent[];
 };
 
 type SceneData = Omit<Scene, "actors" | "triggers"> & {
@@ -111,6 +129,93 @@ const initialState: EntitiesState = {
   scenes: scenesAdapter.getInitialState(),
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
+};
+
+const moveSelectedEntity = ({
+  sceneId,
+  x,
+  y,
+}: {
+  sceneId: string;
+  x: number;
+  y: number;
+}) => (
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const { dragging, scene, eventId, entityId, type: editorType } = state.editor;
+  if (dragging === DRAG_PLAYER) {
+    dispatch(settingsActions.editPlayerStartAt({ sceneId, x, y }));
+  } else if (dragging === DRAG_DESTINATION) {
+    dispatch(
+      editDestinationPosition(
+        eventId,
+        scene,
+        editorType,
+        entityId,
+        sceneId,
+        x,
+        y
+      )
+    );
+  } else if (dragging === DRAG_ACTOR) {
+    dispatch(
+      actions.moveActor({
+        actorId: entityId,
+        sceneId: scene,
+        newSceneId: sceneId,
+        x,
+        y,
+      })
+    );
+  } else if (dragging === DRAG_TRIGGER) {
+    dispatch(
+      actions.moveTrigger({
+        sceneId: scene,
+        triggerId: entityId,
+        newSceneId: sceneId,
+        x,
+        y,
+      })
+    );
+  }
+};
+
+const editDestinationPosition = (
+  eventId: string,
+  sceneId: string,
+  selectionType: string,
+  id: string,
+  destSceneId: string,
+  x: number,
+  y: number
+) => {
+  if (selectionType === "actors") {
+    return actions.editActorEventDestinationPosition({
+      eventId,
+      actorId: id,
+      destSceneId,
+      x,
+      y,
+    });
+  }
+  if (selectionType === "triggers") {
+    return actions.editTriggerEventDestinationPosition({
+      eventId,
+      triggerId: id,
+      destSceneId,
+      x,
+      y,
+    });
+  }
+  return actions.editSceneEventDestinationPosition({
+    eventId,
+    sceneId,
+    destSceneId,
+    x,
+    y,
+  });
 };
 
 const entitiesSlice = createSlice({
@@ -244,6 +349,32 @@ const entitiesSlice = createSlice({
       scenesAdapter.updateOne(state.scenes, {
         id: action.payload.sceneId,
         changes: patch,
+      });
+    },
+
+    editSceneEventDestinationPosition: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        eventId: string;
+        destSceneId: string;
+        x: number;
+        y: number;
+      }>
+    ) => {
+      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      if (!scene) {
+        return;
+      }
+      scenesAdapter.updateOne(state.scenes, {
+        id: action.payload.sceneId,
+        changes: {
+          script: patchEvents(scene.script, action.payload.eventId, {
+            sceneId: action.payload.destSceneId,
+            x: action.payload.x,
+            y: action.payload.y,
+          }),
+        },
       });
     },
 
@@ -436,6 +567,32 @@ const entitiesSlice = createSlice({
       });
     },
 
+    editActorEventDestinationPosition: (
+      state,
+      action: PayloadAction<{
+        actorId: string;
+        eventId: string;
+        destSceneId: string;
+        x: number;
+        y: number;
+      }>
+    ) => {
+      const actor = actorSelectors.selectById(state, action.payload.actorId);
+      if (!actor) {
+        return;
+      }
+      actorsAdapter.updateOne(state.actors, {
+        id: action.payload.actorId,
+        changes: {
+          script: patchEvents(actor.script, action.payload.eventId, {
+            sceneId: action.payload.destSceneId,
+            x: action.payload.x,
+            y: action.payload.y,
+          }),
+        },
+      });
+    },
+
     /**************************************************************************
      * Triggers
      */
@@ -508,10 +665,112 @@ const entitiesSlice = createSlice({
         changes: patch,
       });
     },
+
+    moveTrigger: (
+      state,
+      action: PayloadAction<{
+        triggerId: string;
+        sceneId: string;
+        newSceneId: string;
+        x: number;
+        y: number;
+      }>
+    ) => {
+      const trigger = triggerSelectors.selectById(
+        state,
+        action.payload.triggerId
+      );
+      if (!trigger) {
+        return;
+      }
+
+      const newScene = sceneSelectors.selectById(
+        state,
+        action.payload.newSceneId
+      );
+      if (!newScene) {
+        return;
+      }
+
+      if (action.payload.sceneId !== action.payload.newSceneId) {
+        const prevScene = sceneSelectors.selectById(
+          state,
+          action.payload.sceneId
+        );
+        if (!prevScene) {
+          return;
+        }
+
+        // Remove from previous scene
+        scenesAdapter.updateOne(state.scenes, {
+          id: action.payload.sceneId,
+          changes: {
+            triggers: prevScene.triggers.filter((triggerId) => {
+              return triggerId !== action.payload.triggerId;
+            }),
+          },
+        });
+
+        // Add to new scene
+        scenesAdapter.updateOne(state.scenes, {
+          id: action.payload.newSceneId,
+          changes: {
+            triggers: ([] as string[]).concat(
+              newScene.triggers,
+              action.payload.triggerId
+            ),
+          },
+        });
+      }
+
+      triggersAdapter.updateOne(state.triggers, {
+        id: action.payload.triggerId,
+        changes: {
+          x: clamp(action.payload.x, 0, newScene.width - trigger.width),
+          y: clamp(action.payload.y, 0, newScene.height - trigger.height),
+        },
+      });
+    },
+
+    editTriggerEventDestinationPosition: (
+      state,
+      action: PayloadAction<{
+        triggerId: string;
+        eventId: string;
+        destSceneId: string;
+        x: number;
+        y: number;
+      }>
+    ) => {
+      const trigger = triggerSelectors.selectById(
+        state,
+        action.payload.triggerId
+      );
+      if (!trigger) {
+        return;
+      }
+      triggersAdapter.updateOne(state.triggers, {
+        id: action.payload.triggerId,
+        changes: {
+          script: patchEvents(trigger.script, action.payload.eventId, {
+            sceneId: action.payload.destSceneId,
+            x: action.payload.x,
+            y: action.payload.y,
+          }),
+        },
+      });
+    },
   },
 });
 
-export const { actions, reducer } = entitiesSlice;
+export const { reducer } = entitiesSlice;
+
+export const actions = {
+  ...entitiesSlice.actions,
+  moveSelectedEntity,
+  editDestinationPosition,
+};
+
 export const { loadProject, editScene, editActor } = actions;
 
 export const actorSelectors = actorsAdapter.getSelectors(

@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BRUSH_8PX, COLLISION_ALL } from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
+import {
+  DRAG_ACTOR,
+  DRAG_TRIGGER,
+  DRAG_DESTINATION,
+  DRAG_PLAYER,
+} from "../../../reducers/editorReducer";
+import { actions as entityActions } from "../entities/entitiesSlice";
 
 export type Tool =
   | "triggers"
@@ -182,9 +189,55 @@ const editorSlice = createSlice({
       action: PayloadAction<{ triggerId: string; sceneId: string }>
     ) => {
       state.type = "trigger";
-      state.dragging = "DRAG_TRIGGER";
+      state.dragging = DRAG_TRIGGER;
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
+    },
+
+    dragActorStart: (
+      state,
+      action: PayloadAction<{ actorId: string; sceneId: string }>
+    ) => {
+      state.type = "actor";
+      state.dragging = DRAG_ACTOR;
+      state.entityId = action.payload.actorId;
+      state.scene = action.payload.sceneId;
+      state.worldFocus = true;
+    },
+
+    dragActorStop: (state, _action) => {
+      state.dragging = "";
+    },
+
+    dragDestinationStart: (
+      state,
+      action: PayloadAction<{
+        eventId: string;
+        selectionType: EditorSection;
+        entityId: string;
+        sceneId: string;
+      }>
+    ) => {
+      state.eventId = action.payload.eventId;
+      state.dragging = DRAG_DESTINATION;
+      state.type = action.payload.selectionType;
+      state.entityId = action.payload.entityId;
+      state.scene = action.payload.sceneId;
+      state.worldFocus = true;
+    },
+
+    dragDestinationStop: (state, _action) => {
+      state.eventId = "";
+      state.dragging = "";
+    },
+
+    dragPlayerStart: (state, action) => {
+      state.dragging = DRAG_PLAYER;
+      state.worldFocus = true;
+    },
+
+    dragPlayerStop: (state, _action) => {
+      state.dragging = "";
     },
 
     zoomIn: (
@@ -251,10 +304,7 @@ const editorSlice = createSlice({
       }
     },
 
-    zoomReset: (
-      state,
-      action: PayloadAction<{ section: ZoomSection; }>
-    ) => {
+    zoomReset: (state, action: PayloadAction<{ section: ZoomSection }>) => {
       switch (action.payload.section) {
         case "world": {
           state.zoom = 100;
@@ -273,9 +323,22 @@ const editorSlice = createSlice({
           break;
         }
       }
-    },    
-
+    },
   },
+  extraReducers: (builder) =>
+    builder
+      .addCase(entityActions.moveActor, (state, action) => {
+        if (state.scene !== action.payload.newSceneId) {
+          state.scene = action.payload.newSceneId;
+          state.worldFocus = true;
+        }
+      })
+      .addCase(entityActions.moveTrigger, (state, action) => {
+        if (state.scene !== action.payload.newSceneId) {
+          state.scene = action.payload.newSceneId;
+          state.worldFocus = true;
+        }
+      }),
 });
 
 export const { actions, reducer } = editorSlice;

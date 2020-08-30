@@ -16,7 +16,7 @@ class Actor extends Component {
     e.stopPropagation();
     e.preventDefault();
     const { actor, sceneId, dragActorStart, setTool } = this.props;
-    dragActorStart(sceneId, actor.id);
+    dragActorStart({sceneId, actorId:actor.id});
     setTool({tool:"select"});
     window.addEventListener("mouseup", this.onMouseUp);
   };
@@ -101,8 +101,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  dragActorStart: actions.dragActorStart,
-  dragActorStop: actions.dragActorStop,
+  dragActorStart: editorActions.dragActorStart,
+  dragActorStop: editorActions.dragActorStop,
   setTool: editorActions.setTool,
 };
 

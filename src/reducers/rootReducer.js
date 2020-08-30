@@ -12,6 +12,7 @@ import warnings from "../store/features/warnings/warningsSlice";
 import entitiesNew from "../store/features/entities/entitiesSlice";
 import documentNew from "../store/features/document/documentSlice";
 import editorNew from "../store/features/editor/editorSlice";
+import settingsNew from "../store/features/settings/settingsSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
@@ -24,7 +25,7 @@ const rootReducer = combineReducers({
   console,
   music,
   project: undoable(
-    combineReducers({ entities: entitiesNew, document: documentNew }),
+    combineReducers({ entities: entitiesNew, document: documentNew, settings: settingsNew }),
     {
       limit: 20,
       filter: (_action, currentState, previousHistory) => {

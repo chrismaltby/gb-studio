@@ -18,7 +18,7 @@ import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
 import debounce from "lodash/debounce";
-import { loadProject as entitiesLoadProject, actions as entityActions } from "../store/features/entities/entitiesSlice";
+import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
 
 const asyncAction = async (
   dispatch,
@@ -341,30 +341,6 @@ export const actorHover = (sceneId, id, x, y) => {
   return { type: types.ACTOR_HOVER, sceneId, id, x, y };
 };
 
-export const moveSelectedEntity = (sceneId, x, y) => (dispatch, getState) => {
-  const state = getState();
-  const { dragging, scene, eventId, entityId, type: editorType } = state.editor;
-  if (dragging === DRAG_PLAYER) {
-    dispatch(editPlayerStartAt(sceneId, x, y));
-  } else if (dragging === DRAG_DESTINATION) {
-    dispatch(
-      editDestinationPosition(
-        eventId,
-        scene,
-        editorType,
-        entityId,
-        sceneId,
-        x,
-        y
-      )
-    );
-  } else if (dragging === DRAG_ACTOR) {
-    dispatch(entityActions.moveActor({actorId: entityId, sceneId: scene, newSceneId: sceneId, x, y}));
-  } else if (dragging === DRAG_TRIGGER) {
-    dispatch(moveTrigger(scene, entityId, sceneId, x, y));
-  }
-};
-
 export const removeSelectedEntity = () => (dispatch, getState) => {
   const state = getState();
   const { scene, entityId, type: editorType } = state.editor;
@@ -510,14 +486,6 @@ export const dragPlayerStop = () => {
   return { type: types.DRAG_PLAYER_STOP };
 };
 
-export const dragActorStart = (sceneId, id) => {
-  return { type: types.DRAG_ACTOR_START, sceneId, id };
-};
-
-export const dragActorStop = () => {
-  return { type: types.DRAG_ACTOR_STOP };
-};
-
 export const dragTriggerStart = (sceneId, id) => {
   return { type: types.DRAG_TRIGGER_START, sceneId, id };
 };
@@ -534,51 +502,6 @@ export const dragDestinationStart = (eventId, sceneId, selectionType, id) => {
     selectionType,
     id
   };
-};
-
-export const editDestinationPosition = (
-  eventId,
-  sceneId,
-  selectionType,
-  id,
-  destSceneId,
-  x,
-  y
-) => {
-  if (selectionType === "actors") {
-    return {
-      type: types.EDIT_ACTOR_EVENT_DESTINATION_POSITION,
-      eventId,
-      sceneId,
-      id,
-      destSceneId,
-      x,
-      y
-    };
-  }
-  if (selectionType === "triggers") {
-    return {
-      type: types.EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-      eventId,
-      sceneId,
-      id,
-      destSceneId,
-      x,
-      y
-    };
-  }
-  return {
-    type: types.EDIT_SCENE_EVENT_DESTINATION_POSITION,
-    eventId,
-    sceneId,
-    destSceneId,
-    x,
-    y
-  };
-};
-
-export const dragDestinationStop = () => {
-  return { type: types.DRAG_DESTINATION_STOP };
 };
 
 export const copyEvent = event => {
