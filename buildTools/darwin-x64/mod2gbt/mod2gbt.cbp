@@ -11,7 +11,7 @@
 				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="template.mod template -a 3" />
+				<Option parameters="template.mod template 3" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -24,7 +24,7 @@
 				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="template.mod template -a 3" />
+				<Option parameters="template.mod template 3" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
