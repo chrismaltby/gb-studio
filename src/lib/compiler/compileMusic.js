@@ -29,6 +29,9 @@ const compileMusic = async ({
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);
   const buildToolsVersion = await readFile(`${buildToolsPath}/tools_version`, "utf8");
 
+  if(!await pathExists(`${buildRoot}/src/music`)) {
+    trackBuildCache = {}; // Clear memory copy of chache music
+  }
   await ensureDir(`${buildRoot}/src/music`);
   await ensureDir(cacheRoot);
 
