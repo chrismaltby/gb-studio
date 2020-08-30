@@ -1,5 +1,5 @@
 /*
- * mod2gbt v2.4 (Part of GBT Player)
+ * mod2gbt v2.5 rulz (Part of GBT Player)
  *
  * SPDX-License-Identifier: MIT
  *
@@ -20,6 +20,8 @@ typedef unsigned char u8;
 typedef signed   char s8;
 typedef unsigned short int u16;
 typedef signed   short int s16;
+u8 ch1_inst_preserve = 0;
+u8 ch2_inst_preserve = 0;
 
 #define abs(x) (((x) > 0) ? (x) : -(x))
 #define BIT(n) (1 << (n))
@@ -423,6 +425,11 @@ void convert_channel1(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum == 0) {
+        instrument = ch1_inst_preserve;
+        // printf("\nReplaced ch1 Instument %d with %d", samplenum, instrument);
+    }
+    ch1_inst_preserve = instrument;
     if (samplenum > 4)
         {
             printf("\nWarning: Channel 1 must use Pulse waves 1-4, "
@@ -533,6 +540,11 @@ void convert_channel2(u8 pattern_number, u8 step_number, u8 note_index,
     int command_len = 1; // NOP
 
     u8 instrument = samplenum & 3;
+    if (samplenum == 0) {
+        instrument = ch2_inst_preserve;
+        // printf("\nReplaced ch2 Instument %d with %d", samplenum, instrument);
+    }
+    ch2_inst_preserve = instrument;
     if (samplenum > 4)
         {
             printf("\nWarning: Channel 2 must use Pulse waves 1-4, "
@@ -964,7 +976,7 @@ int main(int argc, char *argv[])
 {
     int i;
 
-    printf("mod2gbt v2.4 (part of GBT Player)\n");
+    printf("mod2gbt v2.5 rulz (part of GBT Player)\n");
     printf("Copyright (c) 2009-2020 Antonio Niño Díaz "
            "<antonio_nd@outlook.com>\n");
     printf("All rights reserved\n");
