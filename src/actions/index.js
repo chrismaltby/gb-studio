@@ -471,10 +471,6 @@ export const editTrigger = (sceneId, id, values) => {
   return { type: types.EDIT_TRIGGER, sceneId, id, values };
 };
 
-export const selectTrigger = (sceneId, id) => {
-  return { type: types.SELECT_TRIGGER, sceneId, id };
-};
-
 export const renameVariable = (variableId, name) => {
   return { type: types.RENAME_VARIABLE, variableId, name };
 };

@@ -17,6 +17,7 @@ import {
   getActorsLookup,
   getTriggersLookup
 } from "../../reducers/entitiesReducer";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class SceneNavigation extends Component {
   render() {
@@ -50,7 +51,7 @@ class SceneNavigation extends Component {
                 key={triggerId}
                 onClick={() => {
                   const { selectTrigger } = this.props;
-                  selectTrigger(scene.id, triggerId);
+                  selectTrigger({sceneId: scene.id, triggerId});
                 }}
                 className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
               >
@@ -84,7 +85,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   selectActor: actions.selectActor,
-  selectTrigger: actions.selectTrigger
+  selectTrigger: editorActions.selectTrigger
 };
 
 export default connect(
