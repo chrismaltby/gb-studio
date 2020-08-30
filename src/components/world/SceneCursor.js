@@ -49,7 +49,7 @@ class SceneCursor extends Component {
       const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
       if (enabled) {
         editPlayerStartAt(sceneId, x, y);
-        setTool(TOOL_SELECT);
+        setTool({tool:TOOL_SELECT});
       }
     }
   };
@@ -220,7 +220,7 @@ class SceneCursor extends Component {
 
   onResizeTriggerStop = e => {
     const { setTool } = this.props;
-    setTool("select");
+    setTool({tool:"select"});
     this.setState({ resize: false });
     window.removeEventListener("mousemove", this.onResizeTrigger);
     window.removeEventListener("mouseup", this.onResizeTriggerStop);
@@ -440,7 +440,7 @@ const mapDispatchToProps = {
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
   selectScene: editorActions.selectScene,
-  setTool: actions.setTool,
+  setTool: editorActions.setTool,
   editPlayerStartAt: actions.editPlayerStartAt,
   editDestinationPosition: actions.editDestinationPosition,
   editSearchTerm: actions.editSearchTerm

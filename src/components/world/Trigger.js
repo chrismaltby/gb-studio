@@ -12,7 +12,7 @@ class Trigger extends Component {
     e.preventDefault();
     const { id, sceneId, dragTriggerStart, setTool } = this.props;
     dragTriggerStart({sceneId, triggerId:id});
-    setTool("select");
+    setTool({tool:"select"});
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
@@ -78,7 +78,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   dragTriggerStart: editorActions.dragTriggerStart,
   dragTriggerStop: actions.dragTriggerStop,
-  setTool: actions.setTool
+  setTool: editorActions.setTool
 };
 
 export default connect(

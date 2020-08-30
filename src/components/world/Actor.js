@@ -9,6 +9,7 @@ import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 import { actorSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -16,7 +17,7 @@ class Actor extends Component {
     e.preventDefault();
     const { actor, sceneId, dragActorStart, setTool } = this.props;
     dragActorStart(sceneId, actor.id);
-    setTool("select");
+    setTool({tool:"select"});
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
@@ -102,7 +103,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   dragActorStart: actions.dragActorStart,
   dragActorStop: actions.dragActorStop,
-  setTool: actions.setTool,
+  setTool: editorActions.setTool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Actor);
