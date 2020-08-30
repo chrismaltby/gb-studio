@@ -43,13 +43,13 @@ var Effects = {
 	PORTA_UP: {
 		representation: "1",
 		handler: function(registers, param, tick, channel, player) {
-			if (tick === 0 && param !== 0) {
+			if (tick === 0) {// && param !== 0 00 use last not supported
 				registers.porta.step = param;
 			} else if (tick > 0) {
 				registers.period = Math.min(2047,registers.period + registers.porta.step);
 				var freq = (131072*1.8)/(2048-registers.period);				
 				registers.sample.step = Math.min(64,freq / player.sampleStepping);
-				console.log(registers.sample.step);
+				//console.log(registers.sample.step);
 			}
 		}
 	},
@@ -58,7 +58,7 @@ var Effects = {
 	PORTA_DOWN: {
 		representation: "2",
 		handler: function(registers, param, tick, channel, player) {
-			if (tick === 0 && param !== 0) {
+			if (tick === 0) {// && param !== 0 00 use last not supported
 				registers.porta.step = param;
 			} else if (tick > 0) {
 				registers.period = Math.max(2,registers.period - registers.porta.step);

@@ -213,7 +213,7 @@ ScripTracker.prototype.processTick = function() {
     if (this.currentTick === 0) {
       // Change instrument and retrigger current note.
       // but only if the instrument changed or has a note
-      if ((instrIndex !== 0) & ((instrIndex != registers.instrument) | (note != 0)) ) {
+      if ((instrIndex !== 0) && ((instrIndex != registers.instrument) || (note != 0) || (c > 2)) ) {
         registers.instrument = instrIndex;
         this.dispatchEvent(
           ScripTracker.Events.instrument,

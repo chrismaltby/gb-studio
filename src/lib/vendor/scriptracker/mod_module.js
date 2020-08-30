@@ -82,7 +82,7 @@ var ModModule = function(fileData) {
 
 		if (sample.fineTune > 7) sample.fineTune -= 16;
 		sample.fineTune *= 16;
-		if (i == 27 ) sample.fineTune = 8000; //sample 28 faster noise
+		if (i == 27 ) sample.fineTune = 2000; //sample 28 faster noise
 		
 		instrument.name = sample.name;
 		instrument.samples.push(sample);
@@ -141,7 +141,7 @@ var ModModule = function(fileData) {
 						}
 					}
 				}
-				if (c == 3) { // Noise, round to 23=A#4 25=c5 28=D#5 31=F#5 35=A#5 37=c6 etc
+				if (c == 3 && period != 0) { // Noise, round to 23=A#4 25=c5 28=D#5 31=F#5 35=A#5 37=c6 etc
 					// 25/3 = 8.3, floor 8 * 3 = 24 +1 25. 
 					// 23/3 = 7.6, floor 7, if 7%4 = 3, +2, else +1 
 					var noisenote = Math.floor(pattern.note[r][c] / 3);
