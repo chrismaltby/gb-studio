@@ -20,7 +20,7 @@ export type Tool =
 
 export type Brush = "8px" | "16px" | "fill";
 
-export type EditorSection =
+export type EditorSelectionType =
   | "world"
   | "scene"
   | "actor"
@@ -31,7 +31,7 @@ export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
 
 export interface EditorState {
   tool: Tool;
-  type: EditorSection;
+  type: EditorSelectionType;
   worldFocus: boolean;
   scene: string;
   entityId: string;
@@ -223,7 +223,7 @@ const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         eventId: string;
-        selectionType: EditorSection;
+        selectionType: EditorSelectionType;
         entityId: string;
         sceneId: string;
       }>
