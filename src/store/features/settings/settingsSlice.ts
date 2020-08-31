@@ -40,6 +40,13 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
+    loadSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
+
     editSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
       return {
         ...state,
@@ -61,5 +68,7 @@ const settingsSlice = createSlice({
 export const getSettings = (state: RootState) => state.project.present.settings;
 
 export const { actions, reducer } = settingsSlice;
+
+export const { loadSettings } = actions;
 
 export default reducer;

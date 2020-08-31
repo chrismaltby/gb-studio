@@ -76,8 +76,8 @@ export const loadProject = path => async dispatch => {
       const data = await loadProjectData(path);
       
       dispatch(entitiesLoadProject(data));
-      dispatch(settingsActions.editSettings(data.settings));
-      dispatch(metadataActions.editMetadata(data))
+      dispatch(settingsActions.loadSettings(data.settings));
+      dispatch(metadataActions.loadMetadata(data))
 
       return {
         data,
