@@ -79,6 +79,12 @@ export const ProjectShape = PropTypes.shape({
   palettes: PropTypes.arrayOf(PropTypes.string)
 });
 
+export const ProjectMetadataShape = PropTypes.shape({
+  name: PropTypes.string,
+  author: PropTypes.string,
+  notes: PropTypes.string,
+});
+
 export const ErrorShape = PropTypes.shape({
   visible: PropTypes.boolean,
   message: PropTypes.string,

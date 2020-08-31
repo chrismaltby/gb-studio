@@ -1,5 +1,5 @@
-import { createSlice, AnyAction, PayloadAction } from "@reduxjs/toolkit";
-import { string, number } from "prop-types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../../configureStore";
 
 interface SettingsState {
   startSceneId: string;
@@ -57,6 +57,8 @@ const settingsSlice = createSlice({
     },
   },
 });
+
+export const getSettings = (state: RootState) => state.project.present.settings;
 
 export const { actions, reducer } = settingsSlice;
 

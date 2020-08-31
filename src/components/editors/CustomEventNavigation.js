@@ -42,7 +42,7 @@ CustomEventNavigation.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = customEventSelectors.selectAll(state.project.present.entities);
+  const customEvents = customEventSelectors.selectAll(state);
   return { customEvents };
 }
 

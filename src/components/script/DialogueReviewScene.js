@@ -15,6 +15,7 @@ import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
@@ -111,9 +112,9 @@ DialogueReviewScene.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
   const scene = scenesLookup[props.id];
   const sceneIndex = props.sceneIndex;
 

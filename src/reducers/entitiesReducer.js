@@ -1290,8 +1290,6 @@ export const getSpriteSheetsLookup = state =>
   state.entities.present.entities.spriteSheets;
 export const getSpriteSheetIds = state =>
   state.entities.present.result.spriteSheets;
-export const getSceneActorIds = (state, props) =>
-  state.entities.present.entities.scenes[props.id].actors;
 export const getSceneTriggerIds = (state, props) =>
   state.entities.present.entities.scenes[props.id].triggers;  
 export const getScene = (state, props) =>
@@ -1335,11 +1333,6 @@ export const getMaxSceneBottom = createSelector(
       }
       return memo;
     }, 0)
-);
-
-export const getSceneActors = createSelector(
-  [getSceneActorIds, getActorsLookup],
-  (actorIds, actors) => actorIds.map(actorId => actors[actorId])
 );
 
 export const getMusic = createSelector(

@@ -296,12 +296,12 @@ Scene.defaultProps = {
 function mapStateToProps(state, props) {
   const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
-  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
-  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
-  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
   const settings = state.project.present.settings;
 
-  const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
+  const scene = sceneSelectors.selectById(state, props.id);
 
   const image = backgroundsLookup[scene.backgroundId];
 
@@ -367,7 +367,7 @@ function mapStateToProps(state, props) {
     (tool !== TOOL_COLORS || showLayers) &&
     (settings.showCollisions || tool === TOOL_COLLISIONS);
 
-  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
+  const palettesLookup = paletteSelectors.selectEntities(state);
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
   const sceneBackgroundPaletteIds = scene.paletteIds || [];

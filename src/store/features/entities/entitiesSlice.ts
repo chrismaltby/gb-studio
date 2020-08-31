@@ -76,12 +76,24 @@ export type Background = {
   _v: number;
 };
 
+export type Music = {
+  id: string;
+  name: string;
+  filename: string;
+  _v: number;
+};
+
 type Palette = {
   id: string;
   name: string;
   colors: [string, string, string, string];
   defaultName?: string;
   defaultColors?: [string, string, string, string];
+}
+
+type Variable = {
+  id: string;
+  name: string;
 }
 
 type CustomEventVariable = {
@@ -139,6 +151,8 @@ type ProjectData = {
   spriteSheets: SpriteSheet[];
   palettes: Palette[];
   customEvents: CustomEvent[];
+  music: Music[];
+  variables: Variable[];
 };
 
 interface EntitiesState {
@@ -149,6 +163,8 @@ interface EntitiesState {
   spriteSheets: EntityState<SpriteSheet>;
   palettes: EntityState<Palette>;
   customEvents: EntityState<CustomEvent>;
+  music: EntityState<Music>;
+  variables: EntityState<Variable>;
 }
 
 const actorsAdapter = createEntityAdapter<Actor>();
@@ -158,6 +174,8 @@ const backgroundsAdapter = createEntityAdapter<Background>();
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>();
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
+const musicAdapter = createEntityAdapter<Music>();
+const variablesAdapter = createEntityAdapter<Variable>();
 
 const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
@@ -166,7 +184,9 @@ const initialState: EntitiesState = {
   backgrounds: backgroundsAdapter.getInitialState(),
   spriteSheets: spriteSheetsAdapter.getInitialState(),
   palettes: palettesAdapter.getInitialState(),
-  customEvents: customEventsAdapter.getInitialState()
+  customEvents: customEventsAdapter.getInitialState(),
+  music: musicAdapter.getInitialState(),
+  variables: variablesAdapter.getInitialState()
 };
 
 const moveSelectedEntity = ({
@@ -275,6 +295,9 @@ const entitiesSlice = createSlice({
       const backgrounds = action.payload.backgrounds;
       const spriteSheets = action.payload.spriteSheets;
       const palettes = action.payload.palettes;
+      const music = action.payload.music;
+      const customEvents = action.payload.customEvents;
+      const variables = action.payload.variables;
 
       actorsAdapter.setAll(state.actors, actors);
       triggersAdapter.setAll(state.triggers, triggers);
@@ -282,6 +305,9 @@ const entitiesSlice = createSlice({
       backgroundsAdapter.setAll(state.backgrounds, backgrounds);
       spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
       palettesAdapter.setAll(state.palettes, palettes);
+      musicAdapter.setAll(state.music, music);
+      customEventsAdapter.setAll(state.customEvents, customEvents);
+      variablesAdapter.setAll(state.variables, variables);
     },
 
     /**************************************************************************
@@ -313,12 +339,12 @@ const entitiesSlice = createSlice({
       }
 
       if (patch.backgroundId) {
-        const otherScene = sceneSelectors.selectAll(state).find((s) => {
+        const otherScene = localSceneSelectors.selectAll(state).find((s) => {
           return s.backgroundId === patch.backgroundId;
         });
 
-        const actors = actorSelectors.selectEntities(state);
-        const triggers = triggerSelectors.selectEntities(state);
+        const actors = localActorSelectors.selectEntities(state);
+        const triggers = localTriggerSelectors.selectEntities(state);
 
         const oldBackground =
           scene && state.backgrounds.entities[scene.backgroundId];
@@ -402,7 +428,7 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
       if (!scene) {
         return;
       }
@@ -432,12 +458,12 @@ const entitiesSlice = createSlice({
         defaults?: Partial<Actor>;
       }>
     ) => {
-      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
       if (!scene) {
         return;
       }
 
-      const spriteSheetId = spriteSheetSelectors.selectAll(state)[0];
+      const spriteSheetId = localSpriteSheetSelectors.selectAll(state)[0];
       if (!spriteSheetId) {
         return;
       }
@@ -495,7 +521,7 @@ const entitiesSlice = createSlice({
       state,
       action: PayloadAction<{ actorId: string; changes: Partial<Actor> }>
     ) => {
-      const actor = actorSelectors.selectById(state, action.payload.actorId);
+      const actor = localActorSelectors.selectById(state, action.payload.actorId);
       let patch = { ...action.payload.changes };
 
       if (!actor) {
@@ -504,7 +530,7 @@ const entitiesSlice = createSlice({
 
       // If changed spriteSheetId
       if (patch.spriteSheetId) {
-        const newSprite = spriteSheetSelectors.selectById(
+        const newSprite = localSpriteSheetSelectors.selectById(
           state,
           patch.spriteSheetId
         );
@@ -514,7 +540,7 @@ const entitiesSlice = createSlice({
           if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
             patch.spriteType = SPRITE_TYPE_STATIC;
           }
-          const oldSprite = spriteSheetSelectors.selectById(
+          const oldSprite = localSpriteSheetSelectors.selectById(
             state,
             actor.spriteSheetId
           );
@@ -559,7 +585,7 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const newScene = sceneSelectors.selectById(
+      const newScene = localSceneSelectors.selectById(
         state,
         action.payload.newSceneId
       );
@@ -568,7 +594,7 @@ const entitiesSlice = createSlice({
       }
 
       if (action.payload.sceneId !== action.payload.newSceneId) {
-        const prevScene = sceneSelectors.selectById(
+        const prevScene = localSceneSelectors.selectById(
           state,
           action.payload.sceneId
         );
@@ -617,7 +643,7 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const actor = actorSelectors.selectById(state, action.payload.actorId);
+      const actor = localActorSelectors.selectById(state, action.payload.actorId);
       if (!actor) {
         return;
       }
@@ -649,7 +675,7 @@ const entitiesSlice = createSlice({
         defaults?: Partial<Trigger>;
       }>
     ) => {
-      const scene = sceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
       if (!scene) {
         return;
       }
@@ -716,7 +742,7 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const trigger = triggerSelectors.selectById(
+      const trigger = localTriggerSelectors.selectById(
         state,
         action.payload.triggerId
       );
@@ -724,7 +750,7 @@ const entitiesSlice = createSlice({
         return;
       }
 
-      const newScene = sceneSelectors.selectById(
+      const newScene = localSceneSelectors.selectById(
         state,
         action.payload.newSceneId
       );
@@ -733,7 +759,7 @@ const entitiesSlice = createSlice({
       }
 
       if (action.payload.sceneId !== action.payload.newSceneId) {
-        const prevScene = sceneSelectors.selectById(
+        const prevScene = localSceneSelectors.selectById(
           state,
           action.payload.sceneId
         );
@@ -782,7 +808,7 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const trigger = triggerSelectors.selectById(
+      const trigger = localTriggerSelectors.selectById(
         state,
         action.payload.triggerId
       );
@@ -813,26 +839,54 @@ export const actions = {
 
 export const { loadProject, editScene, editActor } = actions;
 
-export const actorSelectors = actorsAdapter.getSelectors(
+const localActorSelectors = actorsAdapter.getSelectors(
   (state: EntitiesState) => state.actors
 );
-export const triggerSelectors = triggersAdapter.getSelectors(
+const localTriggerSelectors = triggersAdapter.getSelectors(
   (state: EntitiesState) => state.triggers
 );
-export const sceneSelectors = scenesAdapter.getSelectors(
+const localSceneSelectors = scenesAdapter.getSelectors(
   (state: EntitiesState) => state.scenes
 );
-export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
+const localSpriteSheetSelectors = spriteSheetsAdapter.getSelectors(
   (state: EntitiesState) => state.spriteSheets
 );
-export const backgroundSelectors = backgroundsAdapter.getSelectors(
+const localBackgroundSelectors = backgroundsAdapter.getSelectors(
   (state: EntitiesState) => state.backgrounds
 );
-export const paletteSelectors = palettesAdapter.getSelectors(
+const localPaletteSelectors = palettesAdapter.getSelectors(
   (state: EntitiesState) => state.palettes
 );
-export const customEventSelectors = customEventsAdapter.getSelectors(
+const localCustomEventSelectors = customEventsAdapter.getSelectors(
   (state: EntitiesState) => state.customEvents
+);
+
+export const actorSelectors = actorsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.actors
+);
+export const triggerSelectors = triggersAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.triggers
+);
+export const sceneSelectors = scenesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.scenes
+);
+export const spriteSheetSelectors = spriteSheetsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.spriteSheets
+);
+export const backgroundSelectors = backgroundsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.backgrounds
+);
+export const paletteSelectors = palettesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.palettes
+);
+export const customEventSelectors = customEventsAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.customEvents
+);
+export const musicSelectors = musicAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.music
+);
+export const variableSelectors = variablesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.variables
 );
 
 export const getMaxSceneRight = createSelector(
@@ -858,5 +912,8 @@ export const getMaxSceneBottom = createSelector(
       return memo;
     }, 0)
 );
+
+export const getSceneActorIds = (state: RootState, { id }: {id: string}) =>
+    sceneSelectors.selectById(state, id)?.actors
 
 export default reducer;

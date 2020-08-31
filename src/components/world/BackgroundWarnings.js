@@ -48,7 +48,7 @@ BackgroundWarnings.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
   const backgroundWarningsLookup = state.warnings.backgrounds;
   const savedWarnings = backgroundWarningsLookup[props.id];
   const warnings = savedWarnings ? savedWarnings.warnings : [];

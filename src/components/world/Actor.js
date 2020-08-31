@@ -5,11 +5,11 @@ import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "../../reducers/stateShape";
 import * as actions from "../../actions";
-import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
 import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { getSettings } from "../../store/features/settings/settingsSlice";
 
 class Actor extends Component {
   onMouseDown = (e) => {
@@ -75,15 +75,15 @@ Actor.defaultProps = {
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
 
-  const actor = actorSelectors.selectById(state.project.present.entities, props.id);
+  const actor = actorSelectors.selectById(state, props.id);
 
   const selected =
     editorType === "actors" &&
     sceneId === props.sceneId &&
     entityId === props.id;
   const showSprite = state.editor.zoom > 80;
-  const settings = state.project.present.settings;
-  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
+  const settings = getSettings(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
   const gbcEnabled = settings.customColorsEnabled;
   const palette = gbcEnabled
     ? getCachedObject(

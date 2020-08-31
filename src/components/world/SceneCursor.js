@@ -4,10 +4,10 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
-import { getScenesLookup } from "../../reducers/entitiesReducer";
 import * as actions from "../../actions";
 import { actions as entityActions, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
 import { SceneShape } from "../../reducers/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
@@ -48,7 +48,7 @@ class SceneCursor extends Component {
     if (e.code === "KeyP") {
       const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
       if (enabled) {
-        editPlayerStartAt(sceneId, x, y);
+        editPlayerStartAt({sceneId, x, y});
         setTool({tool:TOOL_SELECT});
       }
     }
@@ -408,7 +408,7 @@ function mapStateToProps(state, props) {
   const { x, y } = state.editor.hover;
   const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const showCollisions = state.project.present.settings.showCollisions;
-  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
+  const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
   const prefab = undefined;
   return {
@@ -441,7 +441,7 @@ const mapDispatchToProps = {
   resizeTrigger: actions.resizeTrigger,
   selectScene: editorActions.selectScene,
   setTool: editorActions.setTool,
-  editPlayerStartAt: actions.editPlayerStartAt,
+  editPlayerStartAt: settingsActions.editPlayerStartAt,
   editDestinationPosition: entityActions.editDestinationPosition,
   editSearchTerm: actions.editSearchTerm
 };

@@ -12,7 +12,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape, SettingsShape } from "../../reducers/stateShape";
+import { ProjectShape, SettingsShape, ProjectMetadataShape } from "../../reducers/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
 import { DMG_PALETTE } from "../../consts";
@@ -37,9 +37,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, settings, selectSidebar, addCustomEvent, colorsEnabled, scenesLength } = this.props;
+    const { metadata, settings, selectSidebar, addCustomEvent, colorsEnabled, scenesLength } = this.props;
 
-    const { name, author, notes } = project;
+    const { name, author, notes } = metadata;
     const {
       startSceneId,
       playerPaletteId,
@@ -228,7 +228,7 @@ class WorldEditor extends Component {
 }
 
 WorldEditor.propTypes = {
-  project: ProjectShape.isRequired,
+  metadata: ProjectMetadataShape.isRequired,
   scenesLength: PropTypes.number.isRequired,
   settings: SettingsShape.isRequired,
   defaultSpritePaletteId: PropTypes.string.isRequired,
@@ -240,13 +240,13 @@ WorldEditor.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.project.present.metadata;
+  const metadata = state.project.present.metadata;
   const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
-  const scenesLength = sceneSelectors.selectTotal(state.project.present.entities);
+  const scenesLength = sceneSelectors.selectTotal(state);
   return {
-    project,
+    metadata,
     scenesLength,
     settings,
     colorsEnabled,

@@ -132,7 +132,7 @@ SpriteSheetCanvas.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const spriteSheet = spriteSheetSelectors.selectById(state.project.present.entities, props.spriteSheetId);
+  const spriteSheet = spriteSheetSelectors.selectById(state, props.spriteSheetId);
   return {
     spriteSheet,
     projectRoot: state.document && state.document.root

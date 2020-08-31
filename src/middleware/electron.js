@@ -31,7 +31,6 @@ import {
   getCustomEventsLookup,
   getActorsLookup,
   getTriggersLookup,
-  getSettings
 } from "../reducers/entitiesReducer";
 import { walkEvents, walkSceneSpecificEvents, walkActorEvents, filterEvents, getCustomEventIdsInEvents, getCustomEventIdsInActor, getCustomEventIdsInScene } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
@@ -41,6 +40,7 @@ import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import { TOOL_COLORS } from "../consts";
 import { actions as editorActions } from "../store/features/editor/editorSlice";
+import { getSettings } from "../store/features/settings/settingsSlice";
 
 export default store => next => action => {
   if (action.type === OPEN_HELP) {

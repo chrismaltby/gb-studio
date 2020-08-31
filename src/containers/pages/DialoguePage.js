@@ -13,6 +13,7 @@ import {
   getTriggersLookup,
 } from "../../reducers/entitiesReducer";
 import DialogueReviewScene from "../../components/script/DialogueReviewScene";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 
 class DialoguePage extends Component {
   constructor(props) {
@@ -127,9 +128,9 @@ DialoguePage.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const scenes = getScenes(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scenes = sceneSelectors.selectAll(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
 
   const dialogueLines = scenes.reduce((memo, scene, sceneIndex) => {
     scene.actors.forEach((actorId, actorIndex) => {

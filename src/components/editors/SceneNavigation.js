@@ -78,9 +78,9 @@ SceneNavigation.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);  
-  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
-  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
+  const scene = sceneSelectors.selectById(state, props.sceneId);  
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
   return { scene, actorsLookup, triggersLookup };
 }
 

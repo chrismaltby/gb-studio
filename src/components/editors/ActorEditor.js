@@ -21,7 +21,7 @@ import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
-import { getSettings } from "../../reducers/entitiesReducer";
+import { getSettings } from "../../store/features/settings/settingsSlice";
 import {
   SPRITE_TYPE_STATIC,
   SPRITE_TYPE_ACTOR,
@@ -29,7 +29,7 @@ import {
   SPRITE_TYPE_ANIMATED,
 } from "../../consts";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { actorSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actorSelectors, sceneSelectors, actions as entityActions, spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -560,10 +560,9 @@ ActorEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const actor = actorSelectors.selectById(state.project.present.entities, props.id);
-  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);
-  const spriteSheet =
-    actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+  const actor = actorSelectors.selectById(state, props.id);
+  const scene = sceneSelectors.selectById(state, props.sceneId);
+  const spriteSheet = actor && spriteSheetSelectors.selectById(state, actor.spriteSheetId);
   const index = scene.actors.indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;

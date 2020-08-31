@@ -27,11 +27,6 @@ import {
   TILE_PROP_LADDER
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
-import {
-  getSettings,
-  getPalettesLookup,
-  getScenesLookup,
-} from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
@@ -40,7 +35,7 @@ import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as entityActions, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
+import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -393,9 +388,9 @@ function mapStateToProps(state) {
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
 
-  const settings = state.project.present.settings;
-  const palettesLookup = paletteSelectors.selectEntities(state.project.present.entities);
-  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
+  const settings = getSettings(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
 
   const { scene: sceneId } = state.editor;
 

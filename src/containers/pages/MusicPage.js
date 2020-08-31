@@ -5,6 +5,7 @@ import FilesSidebar from "../../components/assets/FilesSidebar";
 import MusicViewer from "../../components/assets/MusicViewer";
 import * as actions from "../../actions";
 import { getMusic } from "../../reducers/entitiesReducer";
+import { musicSelectors } from "../../store/features/entities/entitiesSlice";
 
 class MusicPage extends Component {
   constructor(props) {
@@ -66,7 +67,7 @@ MusicPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getMusic(state);
+  const files = musicSelectors.selectAll(state);
   return {
     files,
     id

@@ -54,8 +54,8 @@ StatusBar.defaultProps = {
 
 function mapStateToProps(state) {
   const { sceneId, actorId, x, y } = state.editor.hover;
-  const scene = sceneSelectors.selectById(state.project.present.entities, sceneId);
-  const actor = actorSelectors.selectById(state.project.present.entities, actorId);
+  const scene = sceneSelectors.selectById(state, sceneId);
+  const actor = actorSelectors.selectById(state, actorId);
   return {
     sceneName: scene && scene.name,
     actor: actor && actor.name,

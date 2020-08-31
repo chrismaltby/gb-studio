@@ -5,6 +5,7 @@ import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
 import * as actions from "../../actions";
 import { getSpriteSheets } from "../../reducers/entitiesReducer";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
 
 class SpritesPage extends Component {
   constructor(props) {
@@ -66,7 +67,7 @@ SpritesPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getSpriteSheets(state);
+  const files = spriteSheetSelectors.selectAll(state);
   return {
     files,
     id

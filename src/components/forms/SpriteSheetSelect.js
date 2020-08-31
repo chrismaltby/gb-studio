@@ -143,7 +143,7 @@ SpriteSheetSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const spriteSheets = spriteSheetSelectors.selectAll(state.project.present.entities);
+  const spriteSheets = spriteSheetSelectors.selectAll(state);
   return {
     spriteSheets
   };

@@ -333,13 +333,10 @@ Connections.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scenes = sceneSelectors.selectAll(state.project.present.entities);
-  const scenesLookup = sceneSelectors.selectEntities(
-    state.project.present.entities
-  );
-
-  const actorsLookup = actorSelectors.selectEntities(state.project.present.entities);
-  const triggersLookup = triggerSelectors.selectEntities(state.project.present.entities);
+  const scenes = sceneSelectors.selectAll(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
 
   const {
     showConnections,

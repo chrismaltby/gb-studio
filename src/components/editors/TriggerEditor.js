@@ -15,6 +15,7 @@ import { TriggerShape, SceneShape } from "../../reducers/stateShape";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { triggerSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -237,8 +238,8 @@ TriggerEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const trigger = triggerSelectors.selectById(state.project.present.entities, props.id)  
-  const scene = sceneSelectors.selectById(state.project.present.entities, props.sceneId);
+  const trigger = triggerSelectors.selectById(state, props.id)  
+  const scene = sceneSelectors.selectById(state, props.sceneId);
   const index = scene.triggers.indexOf(props.id);
   return {
     index,
@@ -252,7 +253,7 @@ const mapDispatchToProps = {
   removeTrigger: actions.removeTrigger,
   copyTrigger: actions.copyTrigger,
   pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectScene: actions.selectScene,
+  selectScene: editorActions.selectScene,
   selectSidebar: actions.selectSidebar
 };
 

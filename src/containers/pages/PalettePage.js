@@ -13,6 +13,7 @@ import * as actions from "../../actions";
 import PaletteSidebar from "../../components/assets/PaletteSidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../../components/library/Button";
+import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
 
 class PalettePage extends Component {
   constructor(props) {
@@ -174,8 +175,8 @@ PalettePage.defaultProps = {
 
 function mapStateToProps(state) {
   const { filesSidebarWidth: sidebarWidth } = state.editor;
-  const palettesLookup = getPalettesLookup(state);
-  const palettes = getPalettes(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
+  const palettes = paletteSelectors.selectAll(state);
   const { id } = state.navigation;
 
   return {

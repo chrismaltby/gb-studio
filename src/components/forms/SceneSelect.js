@@ -120,9 +120,9 @@ SceneSelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const projectRoot = state.document && state.document.root;
-  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
-  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
-  const sceneIds = sceneSelectors.selectIds(state.project.present.entities);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
+  const sceneIds = sceneSelectors.selectIds(state);
   const selectedIndex = sceneIds.indexOf(ownProps.value);
   const options = cachedObj(
     sceneIds.map((sceneId, sceneIndex) => {

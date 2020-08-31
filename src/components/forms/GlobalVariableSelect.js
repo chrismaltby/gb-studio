@@ -7,6 +7,7 @@ import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
+import { variableSelectors } from "../../store/features/entities/entitiesSlice";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
@@ -149,7 +150,7 @@ GlobalVariableSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const variables = state.entities.present.entities.variables;
+  const variables = variableSelectors.selectEntities(state);
   const variablesVersion = state.editor.variableVersion;
   return {
     variables,

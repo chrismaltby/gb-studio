@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../../configureStore";
 
 interface MetadataState {
   name: string;
@@ -28,6 +29,8 @@ const metadataSlice = createSlice({
     },
   },
 });
+
+export const getMetadata = (state: RootState) => state.project.present.metadata;
 
 export const { actions, reducer } = metadataSlice;
 

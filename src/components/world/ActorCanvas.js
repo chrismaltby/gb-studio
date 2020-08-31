@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { framesPerDirection } from "../../lib/helpers/gbstudio";
-import { getPalettesLookup, getSettings } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { spriteSheetSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
+import { getSettings } from "../../store/features/settings/settingsSlice";
 
 const ActorCanvas = ({
   spriteSheetId,
@@ -62,12 +63,11 @@ function mapStateToProps(state, props) {
     paletteId,
   } = props.actor;
 
-  const spriteSheet =
-    state.entities.present.entities.spriteSheets[spriteSheetId];
+  const spriteSheet = spriteSheetSelectors.selectById(state, spriteSheetId);
   const spriteFrames = spriteSheet ? spriteSheet.numFrames : 0;
   const totalFrames = framesPerDirection(spriteType, spriteFrames);
   const settings = getSettings(state);
-  const palettesLookup = getPalettesLookup(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
   const gbcEnabled = settings.customColorsEnabled;
   const palette = gbcEnabled
     ? getCachedObject(

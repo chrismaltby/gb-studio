@@ -123,8 +123,8 @@ BackgroundSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const backgrounds = backgroundSelectors.selectAll(state.project.present.entities);
-  const backgroundsLookup = backgroundSelectors.selectEntities(state.project.present.entities);
+  const backgrounds = backgroundSelectors.selectAll(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
   return {
     backgrounds,
     backgroundsLookup,

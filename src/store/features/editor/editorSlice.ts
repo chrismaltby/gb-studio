@@ -198,6 +198,10 @@ const editorSlice = createSlice({
       state.scene = action.payload.sceneId;
     },
 
+    dragTriggerStop: (state, _action) => {
+      state.dragging = "";
+    },
+
     dragActorStart: (
       state,
       action: PayloadAction<{ actorId: string; sceneId: string }>

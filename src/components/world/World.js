@@ -339,8 +339,8 @@ World.defaultProps = {
 
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
-  const scenes = sceneSelectors.selectIds(state.project.present.entities)
-  const scenesLookup = sceneSelectors.selectEntities(state.project.present.entities);
+  const scenes = sceneSelectors.selectIds(state)
+  const scenesLookup = sceneSelectors.selectEntities(state);
 
   const {
     showConnections
@@ -356,8 +356,8 @@ function mapStateToProps(state) {
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;
 
-  const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state.project.present.entities) + 20);
-  const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state.project.present.entities) + 60);
+  const scrollWidth = Math.max(viewportWidth, getMaxSceneRight(state) + 20);
+  const scrollHeight = Math.max(viewportHeight, getMaxSceneBottom(state) + 60);
 
   const focus = state.editor.worldFocus;
 

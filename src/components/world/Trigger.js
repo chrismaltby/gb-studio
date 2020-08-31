@@ -59,7 +59,7 @@ Trigger.defaultProps = {
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
 
-  const trigger = triggerSelectors.selectById(state.project.present.entities, props.id);
+  const trigger = triggerSelectors.selectById(state, props.id);
 
   const { x, y, width, height } = trigger;
   const selected =
@@ -77,7 +77,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   dragTriggerStart: editorActions.dragTriggerStart,
-  dragTriggerStop: actions.dragTriggerStop,
+  dragTriggerStop: editorActions.dragTriggerStop,
   setTool: editorActions.setTool
 };
 

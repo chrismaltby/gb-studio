@@ -12,9 +12,7 @@ const warningsMiddleware: Middleware<{}, RootState> = (store) => (next) => (
 ) => {
   if (checkBackgroundWarnings.match(action)) {
     const state = store.getState();
-    const backgroundsLookup = backgroundSelectors.selectEntities(
-      state.project.present.entities
-    );
+    const backgroundsLookup = backgroundSelectors.selectEntities(state);
     const background = backgroundsLookup[action.payload];
     const projectRoot = state.document.root;
 

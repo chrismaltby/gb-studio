@@ -16,8 +16,6 @@ import { SceneShape } from "../../reducers/stateShape";
 import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
-import { getSettings } from "../../reducers/entitiesReducer";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
@@ -409,8 +407,8 @@ SceneEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = sceneSelectors.selectById(state.project.present.entities, props.id);
-  const sceneIndex = sceneSelectors.selectIds(state.project.present.entities).indexOf(props.id);
+  const scene = sceneSelectors.selectById(state, props.id);
+  const sceneIndex = sceneSelectors.selectIds(state).indexOf(props.id);
   const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultBackgroundPaletteIds =

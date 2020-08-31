@@ -7,6 +7,7 @@ import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape } from "../../reducers/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
+import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -125,7 +126,7 @@ ScriptEventForm.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = state.entities.present.entities.customEvents || {};
+  const customEvents = customEventSelectors.selectEntities(state);
   return {
     customEvents
   };

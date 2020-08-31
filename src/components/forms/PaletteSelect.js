@@ -5,6 +5,7 @@ import Select, { components } from "react-select";
 import { PaletteShape } from "../../reducers/stateShape";
 import { getPalettes } from "../../reducers/entitiesReducer";
 import PaletteBlock from "../library/PaletteBlock.tsx";
+import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
 
 export const DMG_PALETTE = {
     id: "dmg",
@@ -136,7 +137,7 @@ PaletteSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const palettes = getPalettes(state)
+  const palettes = paletteSelectors.selectAll(state);
   return {
     palettes
   };

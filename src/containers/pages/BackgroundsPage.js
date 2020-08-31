@@ -5,6 +5,7 @@ import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
 import * as actions from "../../actions";
 import { getBackgrounds } from "../../reducers/entitiesReducer";
+import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
 class ImagesPage extends Component {
   constructor(props) {
@@ -66,7 +67,7 @@ ImagesPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getBackgrounds(state);
+  const files = backgroundSelectors.selectAll(state);
   return {
     files,
     id

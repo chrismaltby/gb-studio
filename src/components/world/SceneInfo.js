@@ -18,6 +18,7 @@ import {
 } from "../../reducers/stateShape";
 import { walkSceneEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_PLAYER_SET_SPRITE } from "../../lib/compiler/eventTypes";
+import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
 
 class SceneInfo extends Component {
   constructor(props) {
@@ -160,11 +161,10 @@ SceneInfo.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
-  const spriteSheetsLookup = getSpriteSheetsLookup(state);
-  const scene = scenesLookup[props.id];
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+  const spriteSheetsLookup = spriteSheetSelectors.selectEntities(state);
+  const scene = sceneSelectors.selectById(state, props.id);
 
   return {
     scene,

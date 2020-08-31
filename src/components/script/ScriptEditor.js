@@ -20,6 +20,7 @@ import * as actions from "../../actions";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
+import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesSlice";
 
 class ScriptEditor extends Component {
 
@@ -272,13 +273,17 @@ ScriptEditor.defaultProps = Object.create(
 );
 
 function mapStateToProps(state, props) {
-  const { result, entities } = state.entities.present;
   const { type: scope } = state.editor;
+  const scene = sceneSelectors.selectById(state, state.editor.scene);
+  const sceneIds = sceneSelectors.selectIds(state);
+  const musicIds = musicSelectors.selectIds(state);
+  const spriteSheetIds = spriteSheetSelectors.selectIds(state);
+
   return {
-    sceneIds: result.scenes,
-    actorIds: props.actors || entities.scenes[state.editor.scene].actors,
-    musicIds: result.music,
-    spriteSheetIds: result.spriteSheets,
+    sceneIds,
+    actorIds: props.actors || (scene && scene.actors) || [],
+    musicIds,
+    spriteSheetIds,
     value: props.value && props.value.length > 0 ? props.value : undefined,
     scope
   };

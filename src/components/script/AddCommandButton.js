@@ -16,6 +16,7 @@ import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
 import { CustomEventShape } from "../../reducers/stateShape";
 import { getCustomEvents } from "../../reducers/entitiesReducer";
+import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 class AddCommandButton extends Component {
   constructor(props) {
@@ -313,7 +314,7 @@ AddCommandButton.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = getCustomEvents(state);
+  const customEvents = customEventSelectors.selectAll(state);
   return {
     customEvents
   };

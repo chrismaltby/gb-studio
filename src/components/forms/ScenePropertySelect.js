@@ -4,13 +4,10 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../reducers/stateShape";
-import {
-  getSceneActorIds,
-  getActorsLookup,
-  getSettings,
-} from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import l10n from "../../lib/helpers/l10n";
+import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesSlice";
+import { getSettings } from "../../store/features/settings/settingsSlice";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -102,7 +99,7 @@ DropdownIndicator.defaultProps = {
 
 const DropdownIndicatorWithData = (actorId) =>
   connect((state) => {
-    const actorsLookup = getActorsLookup(state);
+    const actorsLookup = actorSelectors.selectEntities(state);
     const settings = getSettings(state);
     const playerSpriteSheetId = settings.playerSpriteSheetId;
     const actor =
@@ -206,7 +203,7 @@ ScenePropertySelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const actorIds = getSceneActorIds(state, { id: state.editor.scene });
-  const actorsLookup = getActorsLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
 
   const contextType = state.editor.type;
   const contextEntityId = state.editor.entityId;

@@ -7,9 +7,9 @@ import { clipboard } from "electron";
 import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
-import { getPalettesLookup } from "../../reducers/entitiesReducer";
 import { PaletteShape } from "../../reducers/stateShape";
 import ColorSlider from "./ColorSlider";
+import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -639,7 +639,7 @@ CustomPalettePicker.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { paletteId } = props;
-  const palette = getPalettesLookup(state)[paletteId];
+  const palette = paletteSelectors.selectById(state, paletteId)
   return {
     palette,
   };
