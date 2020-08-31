@@ -41,14 +41,6 @@ const asyncAction = async (
   }
 };
 
-export const resizeWorldView = (width, height) => {
-  return {
-    type: types.RESIZE_WORLD_VIEW,
-    width,
-    height
-  }
-};
-
 export const loadProject = path => async dispatch => {
   await asyncAction(
     dispatch,

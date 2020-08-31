@@ -56,8 +56,6 @@ export interface EditorState {
   };
   worldScrollX: number;
   worldScrollY: number;
-  worldScrollThrottledX: number;
-  worldScrollThrottledY: number;
   worldViewWidth: number;
   worldViewHeight: number;
   selectedPalette: number;
@@ -99,8 +97,6 @@ export const initialState: EditorState = {
   },
   worldScrollX: 0,
   worldScrollY: 0,
-  worldScrollThrottledX: 0,
-  worldScrollThrottledY: 0,
   worldViewWidth: 0,
   worldViewHeight: 0,
   selectedPalette: 0,

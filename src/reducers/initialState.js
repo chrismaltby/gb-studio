@@ -37,8 +37,6 @@ export default {
     },
     worldScrollX: 0,
     worldScrollY: 0,
-    worldScrollThrottledX: 0,
-    worldScrollThrottledY: 0,
     worldViewWidth: 0,
     worldViewHeight: 0,
     selectedPalette: 0,
