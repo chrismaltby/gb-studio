@@ -253,7 +253,7 @@ function mapStateToProps(state) {
   const loaded = state.document.loaded;
   return {
     projectRoot: state.document && state.document.root,
-    modified: state.project.present.document.modified,
+    modified: state.document.modified,
     name: state.project.present.metadata.name,
     section,
     zoom,
