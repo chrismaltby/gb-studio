@@ -158,6 +158,12 @@ const editorSlice = createSlice({
       state.worldViewHeight = action.payload.height;
     },
 
+    selectWorld: (state, _action) => {
+      state.scene = "";
+      state.type = "world";
+      state.worldFocus = true;
+    },
+
     sceneHover: (
       state,
       action: PayloadAction<{ sceneId: string; x: number; y: number }>

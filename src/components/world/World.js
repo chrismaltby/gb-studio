@@ -396,7 +396,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addScene: actions.addScene,
   setTool: editorActions.setTool,
-  selectWorld: actions.selectWorld,
+  selectWorld: editorActions.selectWorld,
   removeSelectedEntity: actions.removeSelectedEntity,
   copyScene: actions.copyScene,
   copyActor: actions.copyActor,

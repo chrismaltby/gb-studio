@@ -46,10 +46,11 @@ class SceneCursor extends Component {
       return;
     }
     if (e.code === "KeyP") {
-      const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
+      const { x, y, enabled, sceneId, editPlayerStartAt, setTool, selectWorld } = this.props;
       if (enabled) {
         editPlayerStartAt({sceneId, x, y});
         setTool({tool:TOOL_SELECT});
+        selectWorld();
       }
     }
   };
@@ -390,6 +391,7 @@ SceneCursor.propTypes = {
   tool: PropTypes.string.isRequired,
   setTool: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
+  selectWorld: PropTypes.func.isRequired,
   addActor: PropTypes.func.isRequired,
   addTrigger: PropTypes.func.isRequired,
   editPlayerStartAt: PropTypes.func.isRequired,
@@ -440,6 +442,7 @@ const mapDispatchToProps = {
   removeTriggerAt: actions.removeTriggerAt,
   resizeTrigger: actions.resizeTrigger,
   selectScene: editorActions.selectScene,
+  selectWorld: editorActions.selectWorld,
   setTool: editorActions.setTool,
   editPlayerStartAt: settingsActions.editPlayerStartAt,
   editDestinationPosition: entityActions.editDestinationPosition,

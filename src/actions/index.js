@@ -416,10 +416,6 @@ export const setStatus = status => {
   return { type: types.SET_STATUS, status };
 };
 
-export const selectWorld = () => {
-  return { type: types.SELECT_WORLD };
-};
-
 export const selectCustomEvent = id => {
   return { type: types.SELECT_CUSTOM_EVENT, id };
 };
