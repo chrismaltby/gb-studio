@@ -27,6 +27,8 @@ import { Dictionary } from "lodash";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
+const MIN_SCENE_WIDTH = 20;
+const MIN_SCENE_HEIGHT = 18;
 
 type ActorDirection = "up" | "down" | "left" | "right";
 type ActorSpriteType = "static" | "actor";
@@ -89,22 +91,22 @@ type Palette = {
   colors: [string, string, string, string];
   defaultName?: string;
   defaultColors?: [string, string, string, string];
-}
+};
 
 type Variable = {
   id: string;
   name: string;
-}
+};
 
 type CustomEventVariable = {
   id: string;
   name: string;
-}
+};
 
 type CustomEventActor = {
   id: string;
   name: string;
-}
+};
 
 type CustomEvent = {
   id: string;
@@ -113,7 +115,7 @@ type CustomEvent = {
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
   script: ScriptEvent[];
-}
+};
 
 type SpriteSheet = {
   id: string;
@@ -186,7 +188,7 @@ const initialState: EntitiesState = {
   palettes: palettesAdapter.getInitialState(),
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
-  variables: variablesAdapter.getInitialState()
+  variables: variablesAdapter.getInitialState(),
 };
 
 const moveSelectedEntity = ({
@@ -276,6 +278,10 @@ const editDestinationPosition = (
   });
 };
 
+const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
+  return events.map(regenerateEventIds);
+};
+
 const entitiesSlice = createSlice({
   name: "entities",
   initialState,
@@ -313,6 +319,61 @@ const entitiesSlice = createSlice({
     /**************************************************************************
      * Scenes
      */
+
+    addScene: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        x: number;
+        y: number;
+        defaults?: Partial<SceneData>;
+      }>
+    ) => {
+      const scenesTotal = localSceneSelectors.selectTotal(state);
+      const backgroundId = localBackgroundSelectors.selectIds(state)[0];
+      const background = localBackgroundSelectors.selectById(
+        state,
+        backgroundId
+      );
+
+      const script = regenerateEvents(action.payload.defaults?.script);
+      const playerHit1Script = regenerateEvents(
+        action.payload.defaults?.playerHit1Script
+      );
+      const playerHit2Script = regenerateEvents(
+        action.payload.defaults?.playerHit2Script
+      );
+      const playerHit3Script = regenerateEvents(
+        action.payload.defaults?.playerHit3Script
+      );
+
+      const newScene: Scene = Object.assign(
+        {
+          name: `Scene ${scenesTotal + 1}`,
+          backgroundId,
+          width: Math.max(MIN_SCENE_WIDTH, background?.width || 0),
+          height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
+          collisions: [],
+          tileColors: [],
+        },
+        action.payload.defaults || {},
+        {
+          script,
+          playerHit1Script,
+          playerHit2Script,
+          playerHit3Script,
+        },
+        {
+          id: action.payload.sceneId,
+          x: Math.max(MIN_SCENE_X, action.payload.x),
+          y: Math.max(MIN_SCENE_Y, action.payload.y),
+          actors: [],
+          triggers: [],
+        }
+      );
+
+      scenesAdapter.addOne(state.scenes, newScene);
+    },
 
     moveScene: (
       state,
@@ -428,7 +489,10 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(
+        state,
+        action.payload.sceneId
+      );
       if (!scene) {
         return;
       }
@@ -458,7 +522,10 @@ const entitiesSlice = createSlice({
         defaults?: Partial<Actor>;
       }>
     ) => {
-      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(
+        state,
+        action.payload.sceneId
+      );
       if (!scene) {
         return;
       }
@@ -467,10 +534,6 @@ const entitiesSlice = createSlice({
       if (!spriteSheetId) {
         return;
       }
-
-      const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
-        return events.map(regenerateEventIds);
-      };
 
       const script = regenerateEvents(action.payload.defaults?.script);
       const startScript = regenerateEvents(
@@ -521,7 +584,10 @@ const entitiesSlice = createSlice({
       state,
       action: PayloadAction<{ actorId: string; changes: Partial<Actor> }>
     ) => {
-      const actor = localActorSelectors.selectById(state, action.payload.actorId);
+      const actor = localActorSelectors.selectById(
+        state,
+        action.payload.actorId
+      );
       let patch = { ...action.payload.changes };
 
       if (!actor) {
@@ -643,7 +709,10 @@ const entitiesSlice = createSlice({
         y: number;
       }>
     ) => {
-      const actor = localActorSelectors.selectById(state, action.payload.actorId);
+      const actor = localActorSelectors.selectById(
+        state,
+        action.payload.actorId
+      );
       if (!actor) {
         return;
       }
@@ -675,7 +744,10 @@ const entitiesSlice = createSlice({
         defaults?: Partial<Trigger>;
       }>
     ) => {
-      const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+      const scene = localSceneSelectors.selectById(
+        state,
+        action.payload.sceneId
+      );
       if (!scene) {
         return;
       }
@@ -913,7 +985,7 @@ export const getMaxSceneBottom = createSelector(
     }, 0)
 );
 
-export const getSceneActorIds = (state: RootState, { id }: {id: string}) =>
-    sceneSelectors.selectById(state, id)?.actors
+export const getSceneActorIds = (state: RootState, { id }: { id: string }) =>
+  sceneSelectors.selectById(state, id)?.actors;
 
 export default reducer;

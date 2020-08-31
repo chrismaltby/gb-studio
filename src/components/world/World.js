@@ -4,6 +4,7 @@ import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
+import uuid from "uuid/v4";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
@@ -12,6 +13,7 @@ import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../c
 import { SceneShape } from "../../reducers/stateShape";
 import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class World extends Component {
   constructor(props) {
@@ -235,7 +237,7 @@ class World extends Component {
   onAddScene = e => {
     const { addScene, setTool, prefab } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene(hoverX, hoverY, prefab);
+    addScene({sceneId: uuid(), x: hoverX, y: hoverY, defaults: prefab});
     setTool({tool:"select"});
     this.setState({ hover: false });
   };
@@ -394,7 +396,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  addScene: actions.addScene,
+  addScene: entityActions.addScene,
   setTool: editorActions.setTool,
   selectWorld: editorActions.selectWorld,
   removeSelectedEntity: actions.removeSelectedEntity,

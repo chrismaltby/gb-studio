@@ -351,6 +351,11 @@ const editorSlice = createSlice({
   },
   extraReducers: (builder) =>
     builder
+      .addCase(entityActions.addScene, (state, action) => {
+        state.type = "scene";
+        state.scene = action.payload.sceneId;
+        state.worldFocus = true;
+      })
       .addCase(entityActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
