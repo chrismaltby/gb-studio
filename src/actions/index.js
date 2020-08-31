@@ -66,7 +66,7 @@ export const loadProject = path => async dispatch => {
             filename: error.filename,
             line: error.lineno,
             col: error.colno,
-            stacktrace: error.stack
+            stackTrace: error.stack
           })
         );
       }
