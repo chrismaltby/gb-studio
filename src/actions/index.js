@@ -21,6 +21,7 @@ import debounce from "lodash/debounce";
 import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "../store/features/settings/settingsSlice";
 import { actions as metadataActions } from "../store/features/metadata/metadataSlice";
+import { setGlobalError } from "../store/features/error/errorSlice";
 
 const asyncAction = async (
   dispatch,
@@ -38,17 +39,6 @@ const asyncAction = async (
     console.error(e);
     dispatch({ type: failureType });
   }
-};
-
-export const setGlobalError = (message, filename, line, col, stackTrace) => {
-  return {
-    type: types.SET_GLOBAL_ERROR,
-    message,
-    filename,
-    line,
-    col,
-    stackTrace
-  };
 };
 
 export const resizeWorldView = (width, height) => {
@@ -71,13 +61,13 @@ export const loadProject = path => async dispatch => {
         shouldOpenProject = await migrateWarning(path);
       } catch (error) {
         dispatch(
-          setGlobalError(
-            error.message,
-            error.filename,
-            error.lineno,
-            error.colno,
-            error.stack
-          )
+          setGlobalError({
+            message: error.message,
+            filename: error.filename,
+            line: error.lineno,
+            col: error.colno,
+            stacktrace: error.stack
+          })
         );
       }
       if (!shouldOpenProject) {

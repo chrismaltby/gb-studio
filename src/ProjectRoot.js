@@ -17,6 +17,7 @@ import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 import { actions as editorActions } from "./store/features/editor/editorSlice";
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
+import { setGlobalError } from "./store/features/error/errorSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -48,7 +49,13 @@ window.addEventListener("error", (error) => {
   error.stopPropagation();
   error.preventDefault();
   console.error(error);
-  store.dispatch(actions.setGlobalError(error.message, error.filename, error.lineno, error.colno, error.error.stack));
+  store.dispatch(setGlobalError({
+    message: error.message,
+    filename: error.filename,
+    line: error.lineno,
+    col: error.colno,
+    stackTrace: error.error.stack
+  }));
   return false;
 });
 

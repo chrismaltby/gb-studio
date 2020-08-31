@@ -6,13 +6,13 @@ import document from "./documentReducer";
 import console from "../store/features/console/consoleSlice";
 import music from "../store/features/music/musicSlice";
 import entities from "./entitiesReducer";
-import error from "./errorReducer";
 import warnings from "../store/features/warnings/warningsSlice";
 import entitiesNew from "../store/features/entities/entitiesSlice";
 import documentNew from "../store/features/document/documentSlice";
 import editorNew from "../store/features/editor/editorSlice";
 import settings from "../store/features/settings/settingsSlice";
 import metadata from "../store/features/metadata/metadataSlice";
+import error from "../store/features/error/errorSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
