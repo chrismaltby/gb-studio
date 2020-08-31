@@ -408,7 +408,7 @@ SceneCursor.defaultProps = {
 function mapStateToProps(state, props) {
   const { tool } = state.editor;
   const { x, y } = state.editor.hover;
-  const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
+  const { entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
   const showCollisions = state.project.present.settings.showCollisions;
   const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
@@ -421,7 +421,6 @@ function mapStateToProps(state, props) {
     selectedTileType,
     selectedBrush,
     prefab,
-    editorType,
     entityId,
     showCollisions,
     scene,

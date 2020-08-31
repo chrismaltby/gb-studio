@@ -78,7 +78,7 @@ function mapStateToProps(state, props) {
   const actor = actorSelectors.selectById(state, props.id);
 
   const selected =
-    editorType === "actors" &&
+    editorType === "actor" &&
     sceneId === props.sceneId &&
     entityId === props.id;
   const showSprite = state.editor.zoom > 80;

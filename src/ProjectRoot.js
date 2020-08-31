@@ -48,6 +48,7 @@ window.addEventListener("error", (error) => {
   }  
   error.stopPropagation();
   error.preventDefault();
+  // eslint-disable-next-line no-console
   console.error(error);
   store.dispatch(setGlobalError({
     message: error.message,
@@ -139,7 +140,6 @@ const onBuild = (event, buildType, eject) => {
 }
 
 const onEjectEngine = () => {
-  console.log("GOT EJECT ENGINE FROM MAIN 12 3")
   store.dispatch(actions.ejectEngine());
 }
 

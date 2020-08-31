@@ -63,7 +63,7 @@ function mapStateToProps(state, props) {
 
   const { x, y, width, height } = trigger;
   const selected =
-    editorType === "triggers" &&
+    editorType === "trigger" &&
     sceneId === props.sceneId &&
     entityId === props.id;
   return {
