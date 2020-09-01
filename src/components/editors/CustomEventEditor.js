@@ -16,7 +16,7 @@ import {
 } from "../../reducers/entitiesReducer";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
+import { customEventSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -26,7 +26,7 @@ class CustomEventEditor extends Component {
 
   onEditVariableName = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       variables: {
         ...customEvent.variables,
         [key]: {
@@ -34,12 +34,12 @@ class CustomEventEditor extends Component {
           name: castEventValue(e)
         }
       }
-    });
+    }});
   };
 
   onEditActorName = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       actors: {
         ...customEvent.actors,
         [key]: {
@@ -47,14 +47,14 @@ class CustomEventEditor extends Component {
           name: castEventValue(e)
         }
       }
-    });
+    }});
   };
 
   onEdit = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       [key]: castEventValue(e)
-    });
+    }});
   };
 
   onRemove = () => () => {
@@ -201,8 +201,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editCustomEvent: actions.editCustomEvent,
-  removeCustomEvent: actions.removeCustomEvent,
+  editCustomEvent: entityActions.editCustomEvent,
+  removeCustomEvent: entityActions.removeCustomEvent,
   selectSidebar: actions.selectSidebar
 };
 

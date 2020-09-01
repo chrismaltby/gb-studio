@@ -3,16 +3,22 @@ import {
   createSlice,
   PayloadAction,
   EntityState,
-  createAsyncThunk,
   ThunkDispatch,
   AnyAction,
   createSelector,
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, DMG_PALETTE } from "../../../consts";
+import {
+  SPRITE_TYPE_STATIC,
+  SPRITE_TYPE_ACTOR,
+  DMG_PALETTE,
+} from "../../../consts";
 import {
   regenerateEventIds,
   patchEvents,
+  mapEvents,
+  isVariableField,
+  walkEvents,
 } from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
@@ -25,6 +31,11 @@ import {
 import { actions as settingsActions } from "../settings/settingsSlice";
 import { Dictionary } from "lodash";
 import uuid from "uuid";
+import {
+  replaceInvalidCustomEventVariables,
+  replaceInvalidCustomEventActors,
+} from "../../../lib/compiler/helpers";
+import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -39,6 +50,7 @@ type ScriptEvent = {
   id: string;
   command: string;
   args: any;
+  children: Dictionary<ScriptEvent[]>;
 };
 
 type Actor = {
@@ -281,6 +293,121 @@ const editDestinationPosition = (
 
 const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
   return events.map(regenerateEventIds);
+};
+
+const mapActorEvents = (
+  actor: Actor,
+  fn: (event: ScriptEvent) => ScriptEvent
+): Actor => {
+  return {
+    ...actor,
+    script: mapEvents(actor.script || [], fn),
+    startScript: mapEvents(actor.startScript || [], fn),
+    hit1Script: mapEvents(actor.hit1Script || [], fn),
+    hit2Script: mapEvents(actor.hit2Script || [], fn),
+    hit3Script: mapEvents(actor.hit3Script || [], fn),
+  };
+};
+
+const mapTriggerEvents = (
+  trigger: Trigger,
+  fn: (event: ScriptEvent) => ScriptEvent
+): Trigger => {
+  return {
+    ...trigger,
+    script: mapEvents(trigger.script || [], fn),
+  };
+};
+
+const mapSceneEvents = (
+  scene: Scene,
+  fn: (event: ScriptEvent) => ScriptEvent
+): Scene => {
+  return {
+    ...scene,
+    script: mapEvents(scene.script || [], fn),
+    playerHit1Script: mapEvents(scene.playerHit1Script || [], fn),
+    playerHit2Script: mapEvents(scene.playerHit2Script || [], fn),
+    playerHit3Script: mapEvents(scene.playerHit3Script || [], fn),
+  };
+};
+
+const mapActorsEvents = (
+  actors: Actor[],
+  fn: (event: ScriptEvent) => ScriptEvent
+): Actor[] => {
+  return actors.map((actor) => mapActorEvents(actor, fn));
+};
+
+const mapTriggersEvents = (
+  triggers: Trigger[],
+  fn: (event: ScriptEvent) => ScriptEvent
+): Trigger[] => {
+  return triggers.map((trigger) => mapTriggerEvents(trigger, fn));
+};
+
+const mapScenesEvents = (
+  scenes: Scene[],
+  fn: (event: ScriptEvent) => ScriptEvent
+): Scene[] => {
+  return scenes.map((scene) => mapSceneEvents(scene, fn));
+};
+
+const patchCustomEventCallArgs = (
+  customEventId: string,
+  script: ScriptEvent[],
+  variables: Dictionary<CustomEventVariable>,
+  actors: Dictionary<CustomEventActor>
+) => {
+  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
+  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
+
+  return (event: ScriptEvent): ScriptEvent => {
+    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+      return event;
+    }
+    if (event.args.customEventId !== customEventId) {
+      return event;
+    }
+    const newArgs = Object.assign({ ...event.args, __name: name });
+    Object.keys(newArgs).forEach((k) => {
+      if (
+        k.startsWith("$") &&
+        !usedVariables.find((v) => v === k) &&
+        !usedActors.find((a) => a === k)
+      ) {
+        delete newArgs[k];
+      }
+    });
+    return {
+      ...event,
+      args: newArgs,
+      children: {
+        script: [...script],
+      },
+    };
+  };
+};
+
+const patchCustomEventCallName = (
+  customEventId: string,
+  name: string,
+) => {
+  return (event: ScriptEvent): ScriptEvent => {
+    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
+      return event;
+    }
+    if (event.args.customEventId !== customEventId) {
+      return event;
+    }
+    return {
+      ...event,
+      args: {
+        ...event.args,
+        __name: name
+      },
+    };
+  };
 };
 
 const entitiesSlice = createSlice({
@@ -909,7 +1036,12 @@ const entitiesSlice = createSlice({
         const newPalette: Palette = {
           id: action.payload.paletteId,
           name: `Palette ${localPaletteSelectors.selectTotal(state) + 1}`,
-          colors: [DMG_PALETTE.colors[0], DMG_PALETTE.colors[1], DMG_PALETTE.colors[2], DMG_PALETTE.colors[3]]
+          colors: [
+            DMG_PALETTE.colors[0],
+            DMG_PALETTE.colors[1],
+            DMG_PALETTE.colors[2],
+            DMG_PALETTE.colors[3],
+          ],
         };
         palettesAdapter.addOne(state.palettes, newPalette);
       },
@@ -936,6 +1068,166 @@ const entitiesSlice = createSlice({
 
     removePalette: (state, action: PayloadAction<string>) => {
       palettesAdapter.removeOne(state.palettes, action.payload);
+    },
+
+    /**************************************************************************
+     * Custom Events
+     */
+
+    editCustomEvent: (
+      state,
+      action: PayloadAction<{
+        customEventId: string;
+        changes: Partial<CustomEvent>;
+      }>
+    ) => {
+      const oldEvent =
+        state.customEvents.entities[action.payload.customEventId];
+
+      let patch = { ...action.payload.changes };
+
+      if (!oldEvent) {
+        return;
+      }
+
+      if (patch.script) {
+        // Fix invalid variables in script
+        const fix = replaceInvalidCustomEventVariables;
+        const fixActor = replaceInvalidCustomEventActors;
+        patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
+          if (event.args) {
+            const fixedEventVariableArgs = Object.keys(event.args).reduce(
+              (memo, arg) => {
+                const fixedVarArgs = memo;
+                if (isVariableField(event.command, arg, event.args[arg])) {
+                  fixedVarArgs[arg] = fix(event.args[arg]);
+                } else {
+                  fixedVarArgs[arg] = event.args[arg];
+                }
+                return fixedVarArgs;
+              },
+              {} as Dictionary<any>
+            );
+
+            return {
+              ...event,
+              args: {
+                ...event.args,
+                ...fixedEventVariableArgs,
+                actorId: event.args.actorId && fixActor(event.args.actorId),
+                otherActorId:
+                  event.args.otherActorId && fixActor(event.args.otherActorId),
+              },
+            };
+          }
+          return event;
+        });
+
+        const variables = {} as Dictionary<CustomEventVariable>;
+        const actors = {} as Dictionary<CustomEventActor>;
+
+        const oldVariables = oldEvent ? oldEvent.variables : {};
+        const oldActors = oldEvent ? oldEvent.actors : {};
+
+        walkEvents(patch.script, (e: ScriptEvent) => {
+          const args = e.args;
+
+          if (!args) return;
+
+          if (args.actorId && args.actorId !== "player") {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(args.actorId)
+            );
+            actors[args.actorId] = {
+              id: args.actorId,
+              name: oldActors[args.actorId]
+                ? oldActors[args.actorId].name
+                : `Actor ${letter}`,
+            };
+          }
+
+          if (args.otherActorId && args.otherActorId !== "player") {
+            const letter = String.fromCharCode(
+              "A".charCodeAt(0) + parseInt(args.otherActorId)
+            );
+            actors[args.otherActorId] = {
+              id: args.otherActorId,
+              name: oldActors[args.otherActorId]
+                ? oldActors[args.otherActorId].name
+                : `Actor ${letter}`,
+            };
+          }
+
+          Object.keys(args).forEach((arg) => {
+            if (isVariableField(e.command, arg, args[arg])) {
+              const addVariable = (variable: string) => {
+                const letter = String.fromCharCode(
+                  "A".charCodeAt(0) + parseInt(variable)
+                );
+                variables[variable] = {
+                  id: variable,
+                  name: oldVariables[variable]
+                    ? oldVariables[variable].name
+                    : `Variable ${letter}`,
+                };
+              };
+              const variable = args[arg];
+              if (variable != null && variable.type === "variable") {
+                addVariable(variable.value);
+              } else {
+                addVariable(variable);
+              }
+            }
+          });
+
+          if (args.text) {
+            const text = Array.isArray(args.text)
+              ? args.text.join()
+              : args.text;
+            const variablePtrs = text.match(/\$V[0-9]\$/g);
+            if (variablePtrs) {
+              variablePtrs.forEach((variablePtr: string) => {
+                const variable = variablePtr[2];
+                const letter = String.fromCharCode(
+                  "A".charCodeAt(0) + parseInt(variable, 10)
+                ).toUpperCase();
+                variables[variable] = {
+                  id: variable,
+                  name: oldVariables[variable]
+                    ? oldVariables[variable].name
+                    : `Variable ${letter}`,
+                };
+              });
+            }
+          }
+        });
+
+        patch.variables = { ...variables };
+        patch.actors = { ...actors };
+
+        const patchEventCallFn = patchCustomEventCallArgs(action.payload.customEventId, patch.script, patch.variables, patch.actors);
+        const patchedActors = mapActorsEvents(localActorSelectors.selectAll(state), patchEventCallFn);
+        const patchedTriggers = mapTriggersEvents(localTriggerSelectors.selectAll(state), patchEventCallFn);
+        const patchedScenes = mapScenesEvents(localSceneSelectors.selectAll(state), patchEventCallFn);
+        actorsAdapter.setAll(state.actors, patchedActors);
+        triggersAdapter.setAll(state.triggers, patchedTriggers);
+        scenesAdapter.setAll(state.scenes, patchedScenes);
+      }
+
+      if (patch.name) {
+       const patchEventCallFn = patchCustomEventCallName(action.payload.customEventId, patch.name);
+       const patchedActors = mapActorsEvents(localActorSelectors.selectAll(state), patchEventCallFn);
+       const patchedTriggers = mapTriggersEvents(localTriggerSelectors.selectAll(state), patchEventCallFn);
+       const patchedScenes = mapScenesEvents(localSceneSelectors.selectAll(state), patchEventCallFn);
+       actorsAdapter.setAll(state.actors, patchedActors);
+       triggersAdapter.setAll(state.triggers, patchedTriggers);
+       scenesAdapter.setAll(state.scenes, patchedScenes);
+      }
+
+      customEventsAdapter.updateOne(state.customEvents, {
+        id: action.payload.customEventId,
+        changes: patch,
+      });
     },
   },
 });

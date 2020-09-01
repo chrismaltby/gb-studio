@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select from "react-select";
 import { VariableShape } from "../../reducers/stateShape";
+import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -58,8 +59,8 @@ CustomEventVariableSelect.defaultProps = {
 
 function mapStateToProps(state) {
   const entityId = state.editor.entityId;
-  const variables =
-    state.entities.present.entities.customEvents[entityId].variables;
+  const customEvent = customEventSelectors.selectById(state, entityId);
+  const variables = customEvent && customEvent.variables;
   return {
     variables
   };

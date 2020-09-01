@@ -408,10 +408,6 @@ export const setStatus = status => {
   return { type: types.SET_STATUS, status };
 };
 
-export const selectCustomEvent = id => {
-  return { type: types.SELECT_CUSTOM_EVENT, id };
-};
-
 export const addCustomEvent = id => {
   return { type: types.ADD_CUSTOM_EVENT, id: id || uuid() };
 };
@@ -422,10 +418,6 @@ export const editWorld = values => {
 
 export const editProject = values => {
   return { type: types.EDIT_PROJECT, values };
-};
-
-export const editCustomEvent = (id, values) => {
-  return { type: types.EDIT_CUSTOM_EVENT, id, values };
 };
 
 export const removeCustomEvent = customEventId => {
