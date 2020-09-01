@@ -9,6 +9,7 @@ import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { getMusic } from "../../reducers/entitiesReducer";
 import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
+import { musicSelectors } from "../../store/features/entities/entitiesSlice";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -153,7 +154,7 @@ MusicSelect.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    music: getMusic(state),
+    music: musicSelectors.selectAll(state),
     projectRoot: state.document.root,
     playing: state.music.playing
   };

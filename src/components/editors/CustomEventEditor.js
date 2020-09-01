@@ -16,6 +16,7 @@ import {
 } from "../../reducers/entitiesReducer";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -190,9 +191,8 @@ CustomEventEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const customEvents = getCustomEvents(state);
-  const customEventsLookup = getCustomEventsLookup(state);
-  const customEvent = customEventsLookup[props.id];
+  const customEvents = customEventSelectors.selectAll(state);
+  const customEvent = customEventSelectors.selectById(state, props.id);
   const index = customEvents.findIndex(p => p.id === props.id);
   return {
     customEvent,

@@ -328,7 +328,7 @@ ScriptEventFormInput.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scope = state.editor.type === "customEvents"
+  const scope = state.editor.type === "customEvent"
     ? "customEvent"
     : "global";
   return {

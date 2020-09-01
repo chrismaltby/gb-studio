@@ -17,6 +17,7 @@ import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 import { actions as editorActions } from "./store/features/editor/editorSlice";
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
+import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
 import { setGlobalError } from "./store/features/error/errorSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -82,7 +83,7 @@ const onRedo = () => {
 }
 
 const onSetSection =  (event, section) => {
-  store.dispatch(actions.setSection(section));
+  store.dispatch(navigationActions.setSection(section));
 }
 
 const onReloadAssets = () => {

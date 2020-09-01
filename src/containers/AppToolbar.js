@@ -25,6 +25,7 @@ import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
 import { actions as editorActions } from "../store/features/editor/editorSlice";
+import { actions as navigationActions } from "../store/features/navigation/navigationSlice";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -266,7 +267,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setSection: actions.setSection,
+  setSection: navigationActions.setSection,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut,
   zoomReset: editorActions.zoomReset,

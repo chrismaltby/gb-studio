@@ -30,6 +30,7 @@ import {
 } from "../../consts";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { actorSelectors, sceneSelectors, actions as entityActions, spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -467,7 +468,7 @@ class ActorEditor extends Component {
             <li
               onClick={() => {
                 const { selectScene } = this.props;
-                selectScene(scene.id);
+                selectScene({sceneId: scene.id});
               }}
             >
               <div className="EditorSidebar__Icon">
@@ -586,7 +587,7 @@ const mapDispatchToProps = {
   removeActor: actions.removeActor,
   copyActor: actions.copyActor,
   pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectScene: actions.selectScene,
+  selectScene: editorActions.selectScene,
   selectSidebar: actions.selectSidebar,
   setScriptTab: actions.setScriptTab,
   setScriptTabSecondary: actions.setScriptTabSecondary,

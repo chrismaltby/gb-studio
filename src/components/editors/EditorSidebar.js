@@ -22,7 +22,7 @@ class EditorSidebar extends Component {
     if (type === "world") {
       return <WorldEditor />;
     }
-    if (type === "customEvents") {
+    if (type === "customEvent") {
       return <CustomEventEditor key="entityId" id={entityId} />;
     }
     return <div />;

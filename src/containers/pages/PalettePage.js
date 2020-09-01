@@ -13,7 +13,7 @@ import * as actions from "../../actions";
 import PaletteSidebar from "../../components/assets/PaletteSidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../../components/library/Button";
-import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
+import { paletteSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class PalettePage extends Component {
   constructor(props) {
@@ -55,17 +55,17 @@ class PalettePage extends Component {
   onEdit = (key) => (e) => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette(palette.id, {
+    editPalette({paletteId: palette.id, changes: {
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onReset = () => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette(palette.id, {
+    editPalette({paletteId: palette.id, changes: {
       colors: palette.defaultColors || [] 
-    });    
+    }});
   }
 
   onRemove = () => {
@@ -188,9 +188,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  editPalette: actions.editPalette,
-  addPalette: actions.addPalette,
-  removePalette: actions.removePalette,
+  editPalette: entityActions.editPalette,
+  addPalette: entityActions.addPalette,
+  removePalette: entityActions.removePalette,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PalettePage);

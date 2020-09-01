@@ -36,6 +36,7 @@ import { getCachedObject } from "../../lib/helpers/cache";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as entityActions, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
+import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -441,8 +442,8 @@ const mapDispatchToProps = {
   setSelectedTileType: editorActions.setSelectedTileType,
   setBrush: editorActions.setBrush,
   setShowLayers: editorActions.setShowLayers,
-  setSection: actions.setSection,
-  setNavigationId: actions.setNavigationId,
+  setSection: navigationActions.setSection,
+  setNavigationId: navigationActions.setNavigationId,
   editProjectSettings: settingsActions.editSettings,
   editScene: entityActions.editScene,
 };

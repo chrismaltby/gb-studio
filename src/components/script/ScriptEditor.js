@@ -21,6 +21,7 @@ import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
 import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class ScriptEditor extends Component {
 
@@ -201,7 +202,7 @@ class ScriptEditor extends Component {
 
   onSelectCustomEvent = id => {
     const { selectCustomEvent } = this.props;
-    selectCustomEvent(id);
+    selectCustomEvent({customEventId: id});
   };
 
   render() {
@@ -292,7 +293,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
   copyEvent: actions.copyEvent,
-  selectCustomEvent: actions.selectCustomEvent,
+  selectCustomEvent: editorActions.selectCustomEvent,
   pasteCustomEvents: actions.pasteCustomEvents
 };
 

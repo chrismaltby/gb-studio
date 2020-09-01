@@ -6,6 +6,7 @@ import * as actions from "../../actions";
 import { getCustomEvents } from "../../reducers/entitiesReducer";
 import { CodeIcon } from "../library/Icons";
 import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class CustomEventNavigation extends Component {
   render() {
@@ -20,7 +21,7 @@ class CustomEventNavigation extends Component {
                 <li
                   key={customEvent.id}
                   onClick={() => {
-                    selectCustomEvent(customEvent.id);
+                    selectCustomEvent({customEventId: customEvent.id});
                   }}
                 >
                   <div className="EditorSidebar__Icon">
@@ -47,7 +48,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  selectCustomEvent: actions.selectCustomEvent
+  selectCustomEvent: editorActions.selectCustomEvent
 };
 
 export default connect(

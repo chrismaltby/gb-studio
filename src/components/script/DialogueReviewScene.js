@@ -16,6 +16,7 @@ import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
@@ -176,7 +177,7 @@ const mapDispatchToProps = {
   editTrigger: actions.editTrigger,
   editScene: actions.editScene,
   editSearchTerm: actions.editSearchTerm,
-  setSection: actions.setSection,
+  setSection: navigationActions.setSection,
 };
 
 export default connect(

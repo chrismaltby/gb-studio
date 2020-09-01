@@ -8,6 +8,7 @@ import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { groupBy } from "../../lib/helpers/array";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -155,7 +156,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setNavigationId: actions.setNavigationId,
+  setNavigationId: navigationActions.setNavigationId,
   resizeFilesSidebar: editorActions.resizeFilesSidebar
 };
 

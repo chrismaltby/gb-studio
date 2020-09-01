@@ -34,7 +34,7 @@ class SceneNavigation extends Component {
                 key={actorId}
                 onClick={() => {
                   const { selectActor } = this.props;
-                  selectActor(scene.id, actorId);
+                  selectActor({sceneId: scene.id, actorId});
                 }}
                 className={cx({ Navigation__Error: index >= MAX_ACTORS })}
               >
@@ -85,7 +85,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  selectActor: actions.selectActor,
+  selectActor: editorActions.selectActor,
   selectTrigger: editorActions.selectTrigger
 };
 

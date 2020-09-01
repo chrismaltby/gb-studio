@@ -179,6 +179,20 @@ const editorSlice = createSlice({
       state.worldFocus = true;
     },
 
+    selectCustomEvent: (state, action: PayloadAction<{ customEventId: string }>) => {
+      state.type = "customEvent";
+      state.scene = "";
+      state.entityId = action.payload.customEventId
+    },
+
+    selectActor: (state, action: PayloadAction<{ actorId: string; sceneId: string }>) => {
+      state.type = "actor";
+      state.scene = action.payload.sceneId;
+      state.entityId = action.payload.actorId;
+      state.worldFocus = true;
+      state.tool = "select";
+    },
+
     selectTrigger: (
       state,
       action: PayloadAction<{ triggerId: string; sceneId: string }>

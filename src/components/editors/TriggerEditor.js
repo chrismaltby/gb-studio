@@ -184,7 +184,7 @@ class TriggerEditor extends Component {
 
           <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
           <ul>
-            <li onClick={() => selectScene(scene.id)}>
+            <li onClick={() => selectScene({sceneId: scene.id})}>
               <div className="EditorSidebar__Icon">
                 <SceneIcon />
               </div>

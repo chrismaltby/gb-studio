@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import undoable from "redux-undo";
-import navigation from "./navigationReducer";
 import console from "../store/features/console/consoleSlice";
 import music from "../store/features/music/musicSlice";
 import warnings from "../store/features/warnings/warningsSlice";
@@ -10,15 +9,16 @@ import editorNew from "../store/features/editor/editorSlice";
 import settings from "../store/features/settings/settingsSlice";
 import metadata from "../store/features/metadata/metadataSlice";
 import error from "../store/features/error/errorSlice";
+import navigation from "../store/features/navigation/navigationSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
 
 const rootReducer = combineReducers({
   editor: editorNew,
-  navigation,
   console,
   music,
+  navigation,
   document,
   project: undoable(
     combineReducers({ entities: entitiesNew, settings, metadata }),

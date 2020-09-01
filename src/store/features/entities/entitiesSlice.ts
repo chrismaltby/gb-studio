@@ -9,7 +9,7 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import flatten from "lodash/flatten";
-import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../../../consts";
+import { SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, DMG_PALETTE } from "../../../consts";
 import {
   regenerateEventIds,
   patchEvents,
@@ -24,6 +24,7 @@ import {
 } from "../../../reducers/editorReducer";
 import { actions as settingsActions } from "../settings/settingsSlice";
 import { Dictionary } from "lodash";
+import uuid from "uuid";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -898,6 +899,44 @@ const entitiesSlice = createSlice({
         },
       });
     },
+
+    /**************************************************************************
+     * Palettes
+     */
+
+    addPalette: {
+      reducer: (state, action: PayloadAction<{ paletteId: string }>) => {
+        const newPalette: Palette = {
+          id: action.payload.paletteId,
+          name: `Palette ${localPaletteSelectors.selectTotal(state) + 1}`,
+          colors: [DMG_PALETTE.colors[0], DMG_PALETTE.colors[1], DMG_PALETTE.colors[2], DMG_PALETTE.colors[3]]
+        };
+        palettesAdapter.addOne(state.palettes, newPalette);
+      },
+      prepare: () => {
+        return {
+          payload: {
+            paletteId: uuid(),
+          },
+        };
+      },
+    },
+
+    editPalette: (
+      state,
+      action: PayloadAction<{ paletteId: string; changes: Partial<Palette> }>
+    ) => {
+      let patch = { ...action.payload.changes };
+
+      palettesAdapter.updateOne(state.palettes, {
+        id: action.payload.paletteId,
+        changes: patch,
+      });
+    },
+
+    removePalette: (state, action: PayloadAction<string>) => {
+      palettesAdapter.removeOne(state.palettes, action.payload);
+    },
   },
 });
 
@@ -909,7 +948,7 @@ export const actions = {
   editDestinationPosition,
 };
 
-export const { loadProject, editScene, editActor } = actions;
+export const { loadProject, editScene, editActor, addPalette } = actions;
 
 const localActorSelectors = actorsAdapter.getSelectors(
   (state: EntitiesState) => state.actors

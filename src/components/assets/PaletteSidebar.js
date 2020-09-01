@@ -4,12 +4,11 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { PaletteShape } from "../../reducers/stateShape";
-import { getPalettes } from "../../reducers/entitiesReducer";
 import PaletteBlock from "../library/PaletteBlock";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 
 class PaletteSidebar extends Component {
   constructor(props) {
@@ -197,7 +196,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setNavigationId: actions.setNavigationId,
+  setNavigationId: navigationActions.setNavigationId,
   resizeFilesSidebar: editorActions.resizeFilesSidebar,
 };
 
