@@ -256,10 +256,6 @@ export const setScenePrefab = scene => {
   return { type: types.SET_SCENE_PREFAB, scene };
 };
 
-export const setSection = section => {
-  return { type: types.SET_SECTION, section };
-};
-
 export const setNavigationId = id => {
   return { type: types.SET_NAVIGATION_ID, id };
 };
@@ -270,18 +266,6 @@ export const selectSidebar = () => {
 
 export const addScene = (x, y, defaults) => {
   return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
-};
-
-export const dragScene = (moveX, moveY) => {
-  return { type: types.DRAG_SCENE, moveX, moveY };
-};
-
-export const dragSceneStart = () => {
-  return { type: types.DRAG_SCENE_START };
-};
-
-export const dragSceneStop = () => {
-  return { type: types.DRAG_SCENE_STOP };
 };
 
 export const removeScene = sceneId => {
@@ -497,26 +481,6 @@ export const ejectEngine = () => {
 export const deleteBuildCache = () => {
   return { type: types.DELETE_BUILD_CACHE };
 };
-
-export const setProfiling = (enabled) => {
-  return { type: types.SET_PROFILING, enabled };
-};
-
-export const checkBackgroundWarnings = (id) => {
-  return { type: types.CHECK_BACKGROUND_WARNINGS, id };
-}
-
-export const setBackgroundWarnings = (id, warnings) => {
-  return { type: types.SET_BACKGROUND_WARNINGS, id, warnings };
-}
-
-export const checkSpriteWarnings = (id) => {
-  return { type: types.CHECK_SPRITE_WARNINGS, id };
-}
-
-export const setSpriteWarnings = (id, warnings) => {
-  return { type: types.SET_SPRITE_WARNINGS, id, warnings };
-}
 
 export const buildGame = ({
   buildType = "web",

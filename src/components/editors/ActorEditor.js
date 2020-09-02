@@ -133,7 +133,7 @@ class ActorEditor extends Component {
 
   onRemove = (e) => {
     const { removeActor, sceneId, actor } = this.props;
-    removeActor(sceneId, actor.id);
+    removeActor({ sceneId, actorId: actor.id });
   };
 
   readClipboard = (e) => {
@@ -584,7 +584,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   editActor: entityActions.editActor,
-  removeActor: actions.removeActor,
+  removeActor: entityActions.removeActor,
   copyActor: actions.copyActor,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,

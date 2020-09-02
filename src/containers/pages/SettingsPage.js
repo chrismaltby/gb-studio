@@ -9,7 +9,6 @@ import l10n from "../../lib/helpers/l10n";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import castEventValue from "../../lib/helpers/castEventValue";
-import * as actions from "../../actions";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
 import PaletteSelect from "../../components/forms/PaletteSelect";
@@ -21,18 +20,12 @@ import {
 import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
 import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { getMetadata } from "../../store/features/metadata/metadataSlice";
+import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {
     const { editProjectSettings } = this.props;
     editProjectSettings({
-      [key]: castEventValue(e),
-    });
-  };
-
-  onEditProject = (key) => (e) => {
-    const { editProject } = this.props;
-    editProject({
       [key]: castEventValue(e),
     });
   };
@@ -198,7 +191,6 @@ SettingsPage.propTypes = {
   scenes: PropTypes.arrayOf(SceneShape).isRequired,
   settings: SettingsShape.isRequired,
   scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
-  editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
   setSection: PropTypes.func.isRequired,
 };
@@ -218,9 +210,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  editProject: actions.editProject,
   editProjectSettings: settingsActions.editSettings,
-  setSection: actions.setSection,
+  setSection: navigationActions.setSection,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);

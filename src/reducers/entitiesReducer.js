@@ -1,4 +1,3 @@
-import uuid from "uuid/v4";
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
 import deepmerge from "deepmerge";
@@ -10,11 +9,6 @@ import {
   BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
   EDIT_PROJECT,
-  EDIT_CUSTOM_EVENT,
-  ADD_SCENE,
-  MOVE_SCENE,
-  EDIT_SCENE,
-  REMOVE_SCENE,
   ADD_ACTOR,
   EDIT_ACTOR,
   MOVE_ACTOR,
@@ -24,34 +18,19 @@ import {
   EDIT_TRIGGER,
   REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,  
-  EDIT_PLAYER_START_AT,
-  EDIT_SCENE_EVENT_DESTINATION_POSITION,
-  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
   ADD_TRIGGER,
   RESIZE_TRIGGER,
   RENAME_VARIABLE,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
-  ADD_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT,
-  RELOAD_ASSETS,
-  ADD_PALETTE,
-  EDIT_PALETTE,
-  REMOVE_PALETTE
 } from "../actions/actionTypes";
 import clamp from "../lib/helpers/clamp";
 import {
   patchEvents,
   regenerateEventIds,
-  mapEvents,
-  walkEvents,
-  isVariableField
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
 
 const addEntity = (state, type, data) => {
@@ -333,474 +312,6 @@ const fixDefaultPalettes = (state) => {
       },
     }
   }
-};
-
-const addScene = (state, action) => {
-  const defaults = action.defaults || {};
-  const defaultActors = defaults.actors || [];
-  const defaultTriggers = defaults.triggers || [];
-
-  const actorNewIdLookup = defaultActors.reduce((memo, actor) => {
-    return { ...memo, [actor.id]: uuid() };
-  }, {});
-  const triggerNewIdLookup = defaultTriggers.reduce((memo, actor) => {
-    return { ...memo, [actor.id]: uuid() };
-  }, {});
-  const newIdsLookup = Object.assign({}, actorNewIdLookup, triggerNewIdLookup);
-
-  const fixScript = script =>
-    script &&
-    mapEvents(script.map(regenerateEventIds), event => {
-      return {
-        ...event,
-        args: mapValues(event.args, arg => {
-          if (newIdsLookup[arg]) {
-            return newIdsLookup[arg];
-          }
-          return arg;
-        })
-      };
-    });
-
-  const script = fixScript(defaults.script);
-  const backgroundId = state.result.backgrounds[0];
-  const background = state.entities.backgrounds[backgroundId];
-
-  const newActorIds = [];
-  const newTriggerIds = [];
-
-  let nextState = state;
-
-  // Copy default/prefab actors to new scene
-  for (let i = 0; i < defaultActors.length; i++) {
-    const actorData = defaultActors[i];
-    const actorId = actorNewIdLookup[actorData.id];
-    const actorScript = fixScript(actorData.script);
-    newActorIds.push(actorId);
-    nextState = addEntity(
-      nextState,
-      "actors",
-      Object.assign(
-        {},
-        actorData,
-        actorScript && {
-          script: actorScript
-        },
-        {
-          id: actorId
-        }
-      )
-    );
-  }
-
-  // Copy default/prefab triggers to new scene
-  for (let i = 0; i < defaultTriggers.length; i++) {
-    const triggerData = defaultTriggers[i];
-    const triggerId = triggerNewIdLookup[triggerData.id];
-    const triggerScript = fixScript(triggerData.script);
-    newTriggerIds.push(triggerId);
-    nextState = addEntity(
-      nextState,
-      "triggers",
-      Object.assign(
-        {},
-        triggerData,
-        triggerScript && {
-          script: triggerScript
-        },
-        {
-          id: triggerId
-        }
-      )
-    );
-  }
-
-  const newScene = Object.assign(
-    {
-      name: `Scene ${state.result.scenes.length + 1}`,
-      backgroundId,
-      width: background.width,
-      height: background.height,
-      collisions: [],
-      tileColors: []
-    },
-    action.defaults || {},
-    script && { script },
-    {
-      id: action.id,
-      x: Math.max(MIN_SCENE_X, action.x),
-      y: Math.max(MIN_SCENE_Y, action.y),
-      actors: newActorIds,
-      triggers: newTriggerIds
-    }
-  );
-  return addEntity(nextState, "scenes", newScene);
-};
-
-const moveScene = (state, action) => {
-  return editEntity(state, "scenes", action.sceneId, {
-    x: Math.max(MIN_SCENE_X, action.x),
-    y: Math.max(MIN_SCENE_Y, action.y)
-  });
-};
-
-const editScene = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const actors = state.entities.actors;
-  const triggers = state.entities.triggers;
-
-  // If switched background use collisions from another
-  // scene using the background already if available
-  // otherwise keep old collisions if same width
-  // otherwise make empty collisions array of
-  // the correct size
-  let newState = state;
-  let newCollisions;
-  let newTileColors;
-  let newBackground;
-
-  if (action.values.backgroundId) {
-    const sceneIds = state.result.scenes;
-    const scenesLookup = state.entities.scenes;
-    const scenes = sceneIds.map(id => scenesLookup[id]);
-    const otherScene = scenes.find(s => {
-      return s.backgroundId === action.values.backgroundId;
-    });
-    const oldBackground = state.entities.backgrounds[scene.backgroundId];
-    const background = state.entities.backgrounds[action.values.backgroundId];
-
-    if (otherScene) {
-      newCollisions = otherScene.collisions;
-      newTileColors = otherScene.tileColors;
-    } else if (oldBackground.width === background.width){
-      const collisionsSize = Math.ceil(
-        (background.width * background.height)
-      );
-      newCollisions = (scene.collisions.slice(0,collisionsSize));
-      newTileColors = [];
-    } else {
-      const collisionsSize = Math.ceil(
-        (background.width * background.height)
-      );
-      newCollisions = [];
-      newTileColors = [];
-      for (let i = 0; i < collisionsSize; i++) {
-        newCollisions[i] = 0;
-      }
-    }
-
-    scene.actors.forEach(actorId => {
-      const actor = actors[actorId];
-      const x = Math.min(actor.x, background.width - 2);
-      const y = Math.min(actor.y, background.height - 1);
-      if (actor.x !== x || actor.y !== y) {
-        newState = editEntity(newState, "actors", actor.id, { x, y });
-      }
-    });
-
-    scene.triggers.forEach(triggerId => {
-      const trigger = triggers[triggerId];
-      const x = Math.min(trigger.x, background.width - 1);
-      const y = Math.min(trigger.y, background.height - 1);
-      const width = Math.min(trigger.width, background.width - x);
-      const height = Math.min(trigger.height, background.height - y);
-      if (
-        trigger.x !== x ||
-        trigger.y !== y ||
-        trigger.width !== width ||
-        trigger.height !== height
-      ) {
-        newState = editEntity(newState, "triggers", trigger.id, {
-          x,
-          y,
-          width,
-          height
-        });
-      }
-    });
-
-    newBackground = background;
-  }
-
-  return editEntity(
-    newState,
-    "scenes",
-    action.sceneId,
-    Object.assign(
-      {},
-      action.values,
-      action.values.backgroundId && {
-        collisions: newCollisions || [],
-        tileColors: newTileColors || [],
-        width: newBackground.width,
-        height: newBackground.height
-      }
-    )
-  );
-};
-
-const removeScene = (state, action) => {
-  return removeEntity(state, "scenes", action.sceneId);
-};
-
-const addCustomEvent = (state, action) => {
-  const newCustomEvent = Object.assign(
-    {
-      id: action.id,
-      variables: {},
-      actors: {}
-    },
-    action.script && {
-      script: action.script
-    }
-  );
-  return addEntity(state, "customEvents", newCustomEvent);
-};
-
-const editCustomEvent = (state, action) => {
-  const patch = { ...action.values };
-  let newState = state;
-
-  const oldEvent = newState.entities.customEvents[action.id];
-
-  if (!oldEvent) {
-    newState = addCustomEvent(state, action);
-  }
-
-  if (patch.script) {
-    // Fix invalid variables in script
-    const fix = replaceInvalidCustomEventVariables;
-    const fixActor = replaceInvalidCustomEventActors;
-    patch.script = mapEvents(patch.script, event => {
-      if (event.args) {
-        const fixedEventVariableArgs = Object.keys(event.args).reduce((memo, arg) => {
-          const fixedVarArgs = memo;
-          if (isVariableField(event.command, arg, event.args[arg])) {
-            fixedVarArgs[arg] = fix(event.args[arg]);
-          } else {
-            fixedVarArgs[arg] = event.args[arg];
-          }
-          return fixedVarArgs;
-        }, {});
-
-        return {
-          ...event,
-          args: {
-            ...event.args,
-            ...fixedEventVariableArgs,
-            actorId: event.args.actorId && fixActor(event.args.actorId),
-            otherActorId: event.args.otherActorId && fixActor(event.args.otherActorId)
-          }
-        };
-      }
-      return event;
-    });
-
-    const variables = {};
-    const actors = {};
-
-    const oldVariables = newState.entities.customEvents[action.id].variables;
-    const oldActors = newState.entities.customEvents[action.id].actors;
-
-    walkEvents(patch.script, e => {
-      const args = e.args;
-
-      if (!args) return;
-
-      if (args.actorId && args.actorId !== "player") {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.actorId)
-        );
-        actors[args.actorId] = {
-          id: args.actorId,
-          name: oldActors[args.actorId]
-            ? oldActors[args.actorId].name
-            : `Actor ${letter}`
-        };
-      }
-
-      if (args.otherActorId && args.otherActorId !== "player") {
-        const letter = String.fromCharCode(
-          "A".charCodeAt(0) + parseInt(args.otherActorId)
-        );
-        actors[args.otherActorId] = {
-          id: args.otherActorId,
-          name: oldActors[args.otherActorId]
-            ? oldActors[args.otherActorId].name
-            : `Actor ${letter}`
-        };
-      }
-
-      Object.keys(args).forEach(arg => {
-        if (isVariableField(e.command, arg, args[arg])) {
-          const addVariable = (variable) => {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable)
-            );
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]
-                ? oldVariables[variable].name
-                : `Variable ${letter}`
-            };  
-          }
-          const variable = args[arg];
-          if (variable != null && variable.type === "variable") {
-            addVariable(variable.value);
-          } else {
-            addVariable(variable);
-          }
-        }
-      });
-
-      if (args.text) {
-        const text = Array.isArray(args.text) ? args.text.join() : args.text;
-        const variablePtrs = text.match(/\$V[0-9]\$/g);
-        if (variablePtrs) {
-          variablePtrs.forEach(variablePtr => {
-            const variable = variablePtr[2];
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(variable, 10)
-            ).toUpperCase();
-            variables[variable] = {
-              id: variable,
-              name: oldVariables[variable]
-                ? oldVariables[variable].name
-                : `Variable ${letter}`
-            };
-          });
-        }
-      }
-    });
-
-    patch.variables = { ...variables };
-    patch.actors = { ...actors };
-
-    newState = updateEntitiesCustomEventScript(
-      newState,
-      "scenes",
-      action.id,
-      newState.entities.scenes,
-      patch
-    );
-    newState = updateEntitiesCustomEventScript(
-      newState,
-      "actors",
-      action.id,
-      newState.entities.actors,
-      patch
-    );
-    newState = updateEntitiesCustomEventScript(
-      newState,
-      "triggers",
-      action.id,
-      newState.entities.triggers,
-      patch
-    );
-  }
-
-  if (patch.name) {
-    newState = updateEntitiesCustomEventName(
-      newState,
-      "scenes",
-      action.id,
-      newState.entities.scenes,
-      patch.name
-    );
-    newState = updateEntitiesCustomEventName(
-      newState,
-      "actors",
-      action.id,
-      newState.entities.actors,
-      patch.name
-    );
-    newState = updateEntitiesCustomEventName(
-      newState,
-      "triggers",
-      action.id,
-      newState.entities.triggers,
-      patch.name
-    );
-  }
-
-  return editEntity(newState, "customEvents", action.id, patch);
-};
-
-const patchEntityScripts = (state, type, entities, patchFn) => {
-  let newState = state;
-  Object.values(entities).forEach(entity => {
-    if (!entity ||
-      (!entity.script && !entity.startScript && !entity.updateScript && !entity.playerHit1Script && !entity.playerHit2Script && !entity.playerHit3Script && !entity.hit1Script && !entity.hit2Script && !entity.hit3Script)) {
-      return;
-    }
-    const patchEntity = {
-      ...entity,
-      ...entity.script && { script: mapEvents(entity.script, patchFn) },
-      ...entity.startScript && { startScript: mapEvents(entity.startScript, patchFn) },
-      ...entity.updateScript && { updateScript: mapEvents(entity.updateScript, patchFn) },
-      ...entity.playerHit1Script && { playerHit1Script: mapEvents(entity.playerHit1Script, patchFn) },
-      ...entity.playerHit2Script && { playerHit2Script: mapEvents(entity.playerHit2Script, patchFn) },
-      ...entity.playerHit3Script && { playerHit3Script: mapEvents(entity.playerHit3Script, patchFn) },
-      ...entity.hit1Script && { hit1Script: mapEvents(entity.hit1Script, patchFn) },
-      ...entity.hit2Script && { hit2Script: mapEvents(entity.hit2Script, patchFn) },
-      ...entity.hit3Script && { hit3Script: mapEvents(entity.hit3Script, patchFn) }
-    };
-    newState = editEntity(newState, type, entity.id, patchEntity);
-  });
-  return newState;
-};
-
-const updateEntitiesCustomEventName = (state, type, id, entities, name) => {
-  const patchCustomEventName = event => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args.customEventId !== id) {
-      return event;
-    }
-    return {
-      ...event,
-      args: {
-        ...event.args,
-        __name: name
-      }
-    };
-  };
-  return patchEntityScripts(state, type, entities, patchCustomEventName);
-};
-
-const updateEntitiesCustomEventScript = (state, type, id, entities, patch) => {
-  const { script, variables, actors } = patch;
-  const usedVariables = Object.keys(variables).map((i) => `$variable[${i}]$`);
-  const usedActors = Object.keys(actors).map((i) => `$actor[${i}]$`);
-  const patchCustomEventScript = event => {
-    if (event.command !== EVENT_CALL_CUSTOM_EVENT) {
-      return event;
-    }
-    if (event.args.customEventId !== id) {
-      return event;
-    }
-    const newArgs = Object.assign({ ...event.args });
-    Object.keys(newArgs).forEach((k) => {
-      if (k.startsWith("$") &&
-        !usedVariables.find((v) => v === k) &&
-        !usedActors.find((a) => a === k)) {
-        delete newArgs[k];
-      }
-    });
-    return {
-      ...event,
-      args: newArgs,
-      children: {
-        script: [...script]
-      }
-    };
-  };
-  return patchEntityScripts(state, type, entities, patchCustomEventScript);
-};
-
-const removeCustomEvent = (state, action) => {
-  return removeEntity(state, "customEvents", action.customEventId);
 };
 
 const addActor = (state, action) => {
@@ -1267,10 +778,6 @@ export default function project(state = initialState.entities, action) {
       return saveAsProject(state, action);
     case EDIT_PROJECT:
       return editProject(state, action);
-    case EDIT_CUSTOM_EVENT:
-      return editCustomEvent(state, action);
-    case REMOVE_CUSTOM_EVENT:
-      return removeCustomEvent(state, action);
     case SPRITE_LOAD_SUCCESS:
       return loadSprite(state, action);
     case SPRITE_REMOVE:
@@ -1283,16 +790,6 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
-    case ADD_CUSTOM_EVENT:
-      return addCustomEvent(state, action);
-    case ADD_SCENE:
-      return addScene(state, action);
-    case MOVE_SCENE:
-      return moveScene(state, action);
-    case EDIT_SCENE:
-      return editScene(state, action);
-    case REMOVE_SCENE:
-      return removeScene(state, action);
     case ADD_ACTOR:
       return addActor(state, action);
     case EDIT_ACTOR:
@@ -1314,25 +811,9 @@ export default function project(state = initialState.entities, action) {
     case REMOVE_TRIGGER:
       return removeTrigger(state, action);
     case REMOVE_TRIGGER_AT:
-      return removeTriggerAt(state, action);        
-    case EDIT_PLAYER_START_AT:
-      return editPlayerStartAt(state, action);
-    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
-      return editSceneEventDestinationPosition(state, action);
-    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
-      return editActorEventDestinationPosition(state, action);
-    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
-      return editTriggerEventDestinationPosition(state, action);
+      return removeTriggerAt(state, action);
     case RENAME_VARIABLE:
       return renameVariable(state, action);
-    case ADD_PALETTE:
-      return addPalette(state, action);
-    case EDIT_PALETTE:
-      return editPalette(state, action);
-    case REMOVE_PALETTE:
-      return removePalette(state, action);      
-    case RELOAD_ASSETS:
-      return reloadAssets(state, action);
     default:
       return state;
   }

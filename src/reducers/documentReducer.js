@@ -9,34 +9,6 @@ import {
   PROJECT_SAVE_AS_REQUEST,
   PROJECT_SAVE_AS_SUCCESS,
   PROJECT_SAVE_AS_FAILURE,
-  ADD_SCENE,
-  MOVE_SCENE,
-  EDIT_SCENE,
-  REMOVE_SCENE,
-  ADD_ACTOR,
-  MOVE_ACTOR,
-  EDIT_ACTOR,
-  REMOVE_ACTOR,
-  REMOVE_ACTOR_AT,
-  ADD_TRIGGER,
-  RESIZE_TRIGGER,
-  MOVE_TRIGGER,
-  REMOVE_TRIGGER,
-  REMOVE_TRIGGER_AT,
-  EDIT_TRIGGER,
-  RENAME_VARIABLE,
-  EDIT_WORLD,
-  EDIT_PROJECT,
-  EDIT_CUSTOM_EVENT,
-  REMOVE_CUSTOM_EVENT,
-  EDIT_SCENE_EVENT_DESTINATION_POSITION,
-  EDIT_ACTOR_EVENT_DESTINATION_POSITION,
-  EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
-  EDIT_PLAYER_START_AT,
-  ADD_CUSTOM_EVENT,
-  ADD_PALETTE,
-  EDIT_PALETTE,
-  REMOVE_PALETTE  
 } from "../actions/actionTypes";
 
 export default function modified(state = initialState.document, action) {
@@ -87,38 +59,6 @@ export default function modified(state = initialState.document, action) {
       return {
         ...state,
         saving: false
-      };
-    case MOVE_SCENE:
-    case EDIT_SCENE:
-    case REMOVE_SCENE:
-    case ADD_ACTOR:
-    case ADD_SCENE:
-    case MOVE_ACTOR:
-    case EDIT_ACTOR:
-    case REMOVE_ACTOR:
-    case REMOVE_ACTOR_AT:
-    case ADD_TRIGGER:
-    case RESIZE_TRIGGER:
-    case MOVE_TRIGGER:
-    case REMOVE_TRIGGER:
-    case REMOVE_TRIGGER_AT:
-    case EDIT_TRIGGER:
-    case RENAME_VARIABLE:
-    case ADD_PALETTE:
-    case EDIT_PALETTE:
-    case REMOVE_PALETTE:      
-    case EDIT_WORLD:
-    case EDIT_PROJECT:
-    case ADD_CUSTOM_EVENT:
-    case EDIT_CUSTOM_EVENT:
-    case REMOVE_CUSTOM_EVENT:
-    case EDIT_SCENE_EVENT_DESTINATION_POSITION:
-    case EDIT_ACTOR_EVENT_DESTINATION_POSITION:
-    case EDIT_TRIGGER_EVENT_DESTINATION_POSITION:
-    case EDIT_PLAYER_START_AT:
-      return {
-        ...state,
-        modified: true
       };
     default:
       return state;

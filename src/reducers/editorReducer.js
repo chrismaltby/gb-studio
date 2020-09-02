@@ -2,19 +2,7 @@ import initialState from "./initialState";
 import {
   PROJECT_LOAD_SUCCESS,
   SET_SECTION,
-  SELECT_SCENE,
-  ADD_TRIGGER,
-  SELECT_TRIGGER,
-  ADD_ACTOR,
-  SELECT_ACTOR,
   SELECT_SCRIPT_EVENT,
-  ADD_SCENE,
-  MOVE_SCENE,
-  DRAG_SCENE,
-  DRAG_SCENE_START,
-  DRAG_SCENE_STOP,
-  DRAG_PLAYER_START,
-  DRAG_PLAYER_STOP,
   DRAG_DESTINATION_START,
   DRAG_DESTINATION_STOP,
   DRAG_TRIGGER_START,
@@ -46,7 +34,6 @@ import {
   SET_SCRIPT_TAB,
   SET_SCRIPT_TAB_SCENE,
   SET_SCRIPT_TAB_SECONDARY,
-  SET_PROFILING
 } from "../actions/actionTypes";
 
 export const DRAG_PLAYER = "DRAG_PLAYER";
@@ -90,65 +77,6 @@ export default function editor(state = initialState.editor, action) {
         worldFocus: false
       };
     }
-    case MOVE_SCENE: {
-      return {
-        ...state,
-        type: "scenes",
-        scene: action.sceneId,
-        worldFocus: true
-      };
-    }
-    case SELECT_SCENE: {
-      return {
-        ...state,
-        type: "scenes",
-        scene: action.sceneId,
-        worldFocus: true
-      };
-    }
-    case ADD_SCENE: {
-      return {
-        ...state,
-        type: "scenes",
-        scene: action.id,
-        worldFocus: true
-      };
-    }
-    case ADD_TRIGGER: {
-      return {
-        ...state,
-        type: "triggers",
-        scene: action.sceneId,
-        entityId: action.id,
-        worldFocus: true
-      };
-    }
-    case SELECT_TRIGGER: {
-      return {
-        ...state,
-        type: "triggers",
-        scene: action.sceneId,
-        entityId: action.id,
-        worldFocus: true
-      };
-    }
-    case ADD_ACTOR: {
-      return {
-        ...state,
-        type: "actors",
-        scene: action.sceneId,
-        entityId: action.id,
-        worldFocus: true
-      };
-    }
-    case SELECT_ACTOR: {
-      return {
-        ...state,
-        type: "actors",
-        scene: action.sceneId,
-        entityId: action.id
-      };
-    }
     case SELECT_SCRIPT_EVENT: {
       return {
         ...state,
@@ -168,44 +96,6 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         type: "customEvents",
         entityId: action.id
-      };
-    }
-    case DRAG_SCENE_START: {
-      return {
-        ...state,
-        sceneDragging: true,
-        sceneDragX: 0,
-        sceneDragY: 0
-      };
-    }
-    case DRAG_SCENE_STOP: {
-      return {
-        ...state,
-        sceneDragging: false,
-        sceneDragX: 0,
-        sceneDragY: 0
-      };
-    }
-    case DRAG_SCENE: {
-      return {
-        ...state,
-        sceneDragX: action.moveX,
-        sceneDragY: action.moveY
-      };
-    }
-    case DRAG_PLAYER_START: {
-      return {
-        ...state,
-        playerDragging: true,
-        dragging: DRAG_PLAYER,
-        worldFocus: true
-      };
-    }
-    case DRAG_PLAYER_STOP: {
-      return {
-        ...state,
-        playerDragging: false,
-        dragging: ""
       };
     }
     case DRAG_DESTINATION_START: {
@@ -354,11 +244,6 @@ export default function editor(state = initialState.editor, action) {
       return {
         ...state,
         lastScriptTabSecondary: action.tab
-      }     
-    case SET_PROFILING:
-      return {
-        ...state,
-        profile: action.enabled
       }         
     default:
       return state;

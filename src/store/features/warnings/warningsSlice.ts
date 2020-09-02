@@ -27,6 +27,7 @@ const warningsSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; warnings: string[] }>
     ) => {
+      state.backgroundsLoading = false;
       state.backgrounds[action.payload.id] = {
         id: action.payload.id,
         warnings: action.payload.warnings,
