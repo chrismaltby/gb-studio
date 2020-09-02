@@ -26,6 +26,7 @@ import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
 import { actions as editorActions } from "../store/features/editor/editorSlice";
 import { actions as navigationActions } from "../store/features/navigation/navigationSlice";
+import { actions as electronActions } from "../store/features/electron/electronMiddleware";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -273,7 +274,7 @@ const mapDispatchToProps = {
   zoomReset: editorActions.zoomReset,
   editSearchTerm: actions.editSearchTerm,
   buildGame: actions.buildGame,
-  openFolder: actions.openFolder
+  openFolder: electronActions.openFolder
 };
 
 export default connect(

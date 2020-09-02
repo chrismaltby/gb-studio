@@ -19,12 +19,14 @@ import { actions as editorActions } from "./store/features/editor/editorSlice";
 import { actions as entityActions } from "./store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
 import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
+import { actions as projectActions } from "./store/features/project/projectActions";
 import { setGlobalError } from "./store/features/error/errorSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
-store.dispatch(actions.loadProject(projectPath));
+store.dispatch(projectActions.loadProject(projectPath));
+
 watchProject(projectPath, {
   onAddSprite: f => store.dispatch(actions.loadSprite(f)),
   onAddBackground: f => store.dispatch(actions.loadBackground(f)),

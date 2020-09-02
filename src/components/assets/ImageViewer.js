@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
 class ImageViewer extends Component {
 
@@ -108,7 +108,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 const mapDispatchToProps = {
-  openFolder: actions.openFolder,
+  openFolder: electronActions.openFolder,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut
 };

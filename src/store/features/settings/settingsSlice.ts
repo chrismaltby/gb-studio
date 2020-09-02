@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
+import { actions as projectActions } from "../project/projectActions";
 
-interface SettingsState {
+export type SettingsState = {
   startSceneId: string;
   startX: number;
   startY: number;
@@ -10,6 +11,7 @@ interface SettingsState {
   worldScrollX: number;
   worldScrollY: number;
   zoom: number;
+  customColorsEnabled: boolean;
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
@@ -24,6 +26,7 @@ const initialState: SettingsState = {
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
+  customColorsEnabled: true,
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",
@@ -63,6 +66,13 @@ const settingsSlice = createSlice({
       state.startY = action.payload.y;
     },
   },
+  extraReducers: (builder) =>
+    builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
+      return {
+        ...state,
+        ...action.payload.data.settings
+      };
+    }),  
 });
 
 export const getSettings = (state: RootState) => state.project.present.settings;

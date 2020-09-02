@@ -6,6 +6,7 @@ import MusicViewer from "../../components/assets/MusicViewer";
 import * as actions from "../../actions";
 import { getMusic } from "../../reducers/entitiesReducer";
 import { musicSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
 class MusicPage extends Component {
   constructor(props) {
@@ -75,7 +76,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(

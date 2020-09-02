@@ -3,6 +3,7 @@ import { createSlice, AnyAction } from "@reduxjs/toolkit";
 import { actions as entityActions } from "../entities/entitiesSlice";
 import { loadMetadata } from "../metadata/metadataSlice";
 import { loadSettings } from "../settings/settingsSlice";
+import { actions as projectActions } from "../project/projectActions";
 
 interface DocumentState {
   modified: boolean;
@@ -26,15 +27,12 @@ const documentSlice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-    .addMatcher(
-      (action: AnyAction): action is AnyAction => action.type === "PROJECT_LOAD_SUCCESS",
-      (state, action) => {
-        state.path = action.path,
-        state.root = path.dirname(action.path);
-        state.modified = false;
-        state.loaded = true;
-      }
-    )
+    .addCase(projectActions.loadProject.fulfilled, (state, action) => {
+      state.path = action.payload.path,
+      state.root = path.dirname(action.payload.path);
+      state.modified = false;
+      state.loaded = true;
+    })
     .addMatcher(
       (action: AnyAction): action is AnyAction =>
         (action.type.startsWith("entities/") ||

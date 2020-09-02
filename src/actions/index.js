@@ -458,18 +458,6 @@ export const editUI = () => {
   return { type: types.EDIT_UI };
 };
 
-export const openHelp = page => {
-  return { type: types.OPEN_HELP, page };
-};
-
-export const openFolder = path => {
-  return { type: types.OPEN_FOLDER, path };
-};
-
-export const reloadAssets = () => {
-  return { type: types.RELOAD_ASSETS };
-};
-
 export const consoleClear = () => {
   return { type: types.CMD_CLEAR };
 };

@@ -8,6 +8,7 @@ import {
   createSelector,
   CaseReducer,
 } from "@reduxjs/toolkit";
+import { normalize, denormalize, schema } from "normalizr";
 import flatten from "lodash/flatten";
 import {
   SPRITE_TYPE_STATIC,
@@ -41,24 +42,25 @@ import {
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorSlice";
+import { actions as projectActions } from "../project/projectActions";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
-type ActorDirection = "up" | "down" | "left" | "right";
-type ActorSpriteType = "static" | "actor";
-type SpriteType = "static" | "animated" | "actor" | "actor_animated";
+export type ActorDirection = "up" | "down" | "left" | "right";
+export type ActorSpriteType = "static" | "actor";
+export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
 
-type ScriptEvent = {
+export type ScriptEvent = {
   id: string;
   command: string;
   args: any;
   children: Dictionary<ScriptEvent[]>;
 };
 
-type Actor = {
+export type Actor = {
   id: string;
   name: string;
   x: number;
@@ -75,7 +77,7 @@ type Actor = {
   hit3Script: ScriptEvent[];
 };
 
-type Trigger = {
+export type Trigger = {
   id: string;
   name: string;
   x: number;
@@ -103,7 +105,7 @@ export type Music = {
   _v: number;
 };
 
-type Palette = {
+export type Palette = {
   id: string;
   name: string;
   colors: [string, string, string, string];
@@ -111,22 +113,22 @@ type Palette = {
   defaultColors?: [string, string, string, string];
 };
 
-type Variable = {
+export type Variable = {
   id: string;
   name: string;
 };
 
-type CustomEventVariable = {
+export type CustomEventVariable = {
   id: string;
   name: string;
 };
 
-type CustomEventActor = {
+export type CustomEventActor = {
   id: string;
   name: string;
 };
 
-type CustomEvent = {
+export type CustomEvent = {
   id: string;
   name: string;
   description: string;
@@ -135,7 +137,7 @@ type CustomEvent = {
   script: ScriptEvent[];
 };
 
-type SpriteSheet = {
+export type SpriteSheet = {
   id: string;
   name: string;
   filename: string;
@@ -144,7 +146,7 @@ type SpriteSheet = {
   _v: number;
 };
 
-type Scene = {
+export type Scene = {
   name: string;
   x: number;
   y: number;
@@ -161,7 +163,7 @@ type Scene = {
   playerHit3Script: ScriptEvent[];
 };
 
-type SceneData = Omit<Scene, "actors" | "triggers"> & {
+export type SceneData = Omit<Scene, "actors" | "triggers"> & {
   actors: Actor[];
   triggers: Trigger[];
 };
@@ -434,6 +436,139 @@ const patchCustomEventCallName = (customEventId: string, name: string) => {
       },
     };
   };
+};
+
+/**************************************************************************
+ * Schema
+ */
+
+const backgroundSchema = new schema.Entity("backgrounds");
+const musicSchema = new schema.Entity("music");
+const actorSchema = new schema.Entity("actors");
+const triggerSchema = new schema.Entity("triggers");
+/*
+// Normalise events
+const eventSchema = new schema.Entity("events");
+eventSchema.define({
+  children: {
+    true: [eventSchema],
+    false: [eventSchema],
+    script: [eventSchema]
+  }
+});
+*/
+const spriteSheetsSchema = new schema.Entity("spriteSheets");
+const variablesSchema = new schema.Entity("variables");
+const sceneSchema = new schema.Entity("scenes", {
+  actors: [actorSchema],
+  triggers: [triggerSchema],
+  // script: [eventSchema],
+});
+const customEventsSchema = new schema.Entity("customEvents");
+const palettesSchema = new schema.Entity("palettes");
+
+const projectSchema = {
+  scenes: [sceneSchema],
+  backgrounds: [backgroundSchema],
+  music: [musicSchema],
+  spriteSheets: [spriteSheetsSchema],
+  variables: [variablesSchema],
+  customEvents: [customEventsSchema],
+  palettes: [palettesSchema],
+};
+
+export const normalizeProject = (projectData: ProjectData) => {
+  return normalize(projectData, projectSchema);
+};
+
+export const denormalizeProject = (projectData: any) => {
+  return denormalize(projectData.result, projectSchema, projectData.entities);
+};
+
+/**************************************************************************
+ * Project
+ */
+
+const loadProject: CaseReducer<
+EntitiesState,
+PayloadAction<{
+  data: ProjectData
+}>
+> = (state, action) => {
+  const data = normalizeProject(action.payload.data);
+  const fixedData = fixDefaultPalettes(fixSceneCollisions(data));
+  const entities = fixedData.entities;
+  console.log({fixedData})
+
+  // const actors = flatten(
+  //   action.payload.scenes.map((scene) => scene.actors)
+  // );
+  // const triggers = flatten(
+  //   action.payload.scenes.map((scene) => scene.triggers)
+  // );
+  // const scenes = action.payload.scenes.map((scene) => ({
+  //   ...scene,
+  //   actors: scene.actors.map((actor) => actor.id),
+  //   triggers: scene.triggers.map((trigger) => trigger.id),
+  // }));
+  // const backgrounds = action.payload.backgrounds;
+  // const spriteSheets = action.payload.spriteSheets;
+  // const palettes = action.payload.palettes;
+  // const music = action.payload.music;
+  // const customEvents = action.payload.customEvents;
+  // const variables = action.payload.variables;
+
+  actorsAdapter.setAll(state.actors, entities.actors);
+  triggersAdapter.setAll(state.triggers, entities.triggers);
+  scenesAdapter.setAll(state.scenes, entities.scenes);
+  backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds);
+  spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets);
+  palettesAdapter.setAll(state.palettes, entities.palettes);
+  musicAdapter.setAll(state.music, entities.music);
+  customEventsAdapter.setAll(state.customEvents, entities.customEvents);
+  variablesAdapter.setAll(state.variables, entities.variables);
+}
+
+const fixSceneCollisions = (state: any) => {
+  return {
+    ...state,
+    entities: {
+      ...state.entities,
+      scenes: Object.keys(state.entities.scenes).reduce((memo, sceneId) => {
+        const scene = state.entities.scenes[sceneId];
+        const background = state.entities.backgrounds[scene.backgroundId];
+
+        if (!background || scene.width !== background.width || scene.height !== background.height) {
+          // eslint-disable-next-line no-param-reassign
+          memo[sceneId] = {
+            ...scene,
+            width: background ? background.width : 32,
+            height: background ? background.height: 32,
+            collisions: []
+          };
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          memo[sceneId] = scene;
+        }
+        return memo;
+      }, {} as any)
+    }
+  };
+};
+
+const fixDefaultPalettes = (state: any) => {
+  return {
+    ...state,
+    result: {
+      ...state.result,
+      settings: {
+        ...state.result.settings,
+        defaultBackgroundPaletteIds: state.result.settings.defaultBackgroundPaletteIds
+          ? state.result.settings.defaultBackgroundPaletteIds.slice(-6)
+          : [],
+      },
+    }
+  }
 };
 
 /**************************************************************************
@@ -1572,33 +1707,33 @@ const entitiesSlice = createSlice({
   initialState,
   reducers: {
     loadProject: (state, action: PayloadAction<ProjectData>) => {
-      const actors = flatten(
-        action.payload.scenes.map((scene) => scene.actors)
-      );
-      const triggers = flatten(
-        action.payload.scenes.map((scene) => scene.triggers)
-      );
-      const scenes = action.payload.scenes.map((scene) => ({
-        ...scene,
-        actors: scene.actors.map((actor) => actor.id),
-        triggers: scene.triggers.map((trigger) => trigger.id),
-      }));
-      const backgrounds = action.payload.backgrounds;
-      const spriteSheets = action.payload.spriteSheets;
-      const palettes = action.payload.palettes;
-      const music = action.payload.music;
-      const customEvents = action.payload.customEvents;
-      const variables = action.payload.variables;
+      // const actors = flatten(
+      //   action.payload.scenes.map((scene) => scene.actors)
+      // );
+      // const triggers = flatten(
+      //   action.payload.scenes.map((scene) => scene.triggers)
+      // );
+      // const scenes = action.payload.scenes.map((scene) => ({
+      //   ...scene,
+      //   actors: scene.actors.map((actor) => actor.id),
+      //   triggers: scene.triggers.map((trigger) => trigger.id),
+      // }));
+      // const backgrounds = action.payload.backgrounds;
+      // const spriteSheets = action.payload.spriteSheets;
+      // const palettes = action.payload.palettes;
+      // const music = action.payload.music;
+      // const customEvents = action.payload.customEvents;
+      // const variables = action.payload.variables;
 
-      actorsAdapter.setAll(state.actors, actors);
-      triggersAdapter.setAll(state.triggers, triggers);
-      scenesAdapter.setAll(state.scenes, scenes);
-      backgroundsAdapter.setAll(state.backgrounds, backgrounds);
-      spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
-      palettesAdapter.setAll(state.palettes, palettes);
-      musicAdapter.setAll(state.music, music);
-      customEventsAdapter.setAll(state.customEvents, customEvents);
-      variablesAdapter.setAll(state.variables, variables);
+      // actorsAdapter.setAll(state.actors, actors);
+      // triggersAdapter.setAll(state.triggers, triggers);
+      // scenesAdapter.setAll(state.scenes, scenes);
+      // backgroundsAdapter.setAll(state.backgrounds, backgrounds);
+      // spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
+      // palettesAdapter.setAll(state.palettes, palettes);
+      // musicAdapter.setAll(state.music, music);
+      // customEventsAdapter.setAll(state.customEvents, customEvents);
+      // variablesAdapter.setAll(state.variables, variables);
     },
 
     /**************************************************************************
@@ -1723,6 +1858,8 @@ const entitiesSlice = createSlice({
      */
     reloadAssets,
   },
+  extraReducers: (builder) =>
+    builder.addCase(projectActions.loadProject.fulfilled, loadProject)
 });
 
 export const { reducer } = entitiesSlice;

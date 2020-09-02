@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import rootReducer from "../reducers/rootReducer";
-import electronMiddleware from "../middleware/electron";
+import electronMiddleware from "./features/electron/electronMiddleware";
 import buildGameMiddleware from "../middleware/buildGame";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "../middleware/soundfx";

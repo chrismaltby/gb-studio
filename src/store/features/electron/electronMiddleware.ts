@@ -4,7 +4,6 @@ import uniq from "lodash/uniq";
 import Path from "path";
 import { statSync } from "fs-extra";
 import {
-  OPEN_FOLDER,
   PROJECT_LOAD_SUCCESS,
   COPY_ACTOR,
   COPY_TRIGGER,
@@ -16,13 +15,12 @@ import {
   PROJECT_LOAD_FAILURE,
   REMOVE_CUSTOM_EVENT,
   EJECT_ENGINE,
-  SET_TOOL,
-  PASTE_CUSTOM_EVENTS
-} from "../actions/actionTypes";
-import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
-import confirmReplaceCustomEvent from "../lib/electron/dialog/confirmReplaceCustomEvent";
-import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
-import confirmEnableColorDialog from "../lib/electron/dialog/confirmEnableColorDialog";
+  PASTE_CUSTOM_EVENTS,
+} from "../../../actions/actionTypes";
+import confirmDeleteCustomEvent from "../../../lib/electron/dialog/confirmDeleteCustomEvent";
+import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
+import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
+import confirmEnableColorDialog from "../../../lib/electron/dialog/confirmEnableColorDialog";
 import {
   getScenes,
   getScenesLookup,
@@ -30,26 +28,65 @@ import {
   getCustomEventsLookup,
   getActorsLookup,
   getTriggersLookup,
-} from "../reducers/entitiesReducer";
-import { walkEvents, walkSceneSpecificEvents, walkActorEvents, filterEvents, getCustomEventIdsInEvents, getCustomEventIdsInActor, getCustomEventIdsInScene } from "../lib/helpers/eventSystem";
-import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { editScene, editActor, editTrigger, editProjectSettings, editCustomEvent } from "../actions";
-import l10n from "../lib/helpers/l10n";
-import ejectEngineToDir from "../lib/project/ejectEngineToDir";
-import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
-import { TOOL_COLORS } from "../consts";
-import { actions as editorActions } from "../store/features/editor/editorSlice";
-import { getSettings } from "../store/features/settings/settingsSlice";
+} from "../../../reducers/entitiesReducer";
+import {
+  walkEvents,
+  walkSceneSpecificEvents,
+  walkActorEvents,
+  filterEvents,
+  getCustomEventIdsInEvents,
+  getCustomEventIdsInActor,
+  getCustomEventIdsInScene,
+} from "../../../lib/helpers/eventSystem";
+import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
+import { editTrigger } from "../../../actions";
+import l10n from "../../../lib/helpers/l10n";
+import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
+import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import { TOOL_COLORS } from "../../../consts";
+import { actions as editorActions } from "../../../store/features/editor/editorSlice";
+import {
+  getSettings,
+  actions as settingsActions,
+} from "../../../store/features/settings/settingsSlice";
+import { Middleware, createAction } from "@reduxjs/toolkit";
+import { RootState } from "../../configureStore";
 
-export default store => next => action => {
-  if (action.type === OPEN_FOLDER) {
-    remote.shell.openItem(action.path);
-  } else if (action.type === PROJECT_LOAD_SUCCESS) {
-    ipcRenderer.send("project-loaded", action.data.settings);
+const openHelp = createAction<string>("electron/openHelp");
+const openFolder = createAction<string>("electron/openFolder");
+
+const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
+  action
+) => {
+  if (openHelp.match(action)) {
+    ipcRenderer.send("open-help", action.payload);
+  } else if (openFolder.match(action)) {
+    remote.shell.openItem(action.payload);
   } else if (editorActions.resizeWorldSidebar.match(action)) {
     settings.set("worldSidebarWidth", action.payload);
   } else if (editorActions.resizeFilesSidebar.match(action)) {
     settings.set("filesSidebarWidth", action.payload);
+  } else if (
+    editorActions.setTool.match(action) &&
+    action.payload.tool === "colors"
+  ) {
+    const state = store.getState();
+    const projectSettings = getSettings(state);
+    if (!projectSettings.customColorsEnabled) {
+      const cancel = confirmEnableColorDialog();
+      if (cancel) {
+        return;
+      }
+      store.dispatch(
+        settingsActions.editSettings({
+          customColorsEnabled: true,
+        })
+      );
+    }
+  }
+  /*
+  if (action.type === PROJECT_LOAD_SUCCESS) {
+    ipcRenderer.send("project-loaded", action.data.settings);
   } else if (action.type === COPY_ACTOR) {
     const state = store.getState();
     const customEventsLookup = getCustomEventsLookup(state);
@@ -338,19 +375,14 @@ export default store => next => action => {
       // Ignore
     }
 
-  } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
-    const state = store.getState();
-    const projectSettings = getSettings(state);
-    if(!projectSettings.customColorsEnabled) {
-      const cancel = confirmEnableColorDialog();
-      if (cancel) {
-        return;
-      }
-      store.dispatch(editProjectSettings({
-        customColorsEnabled: true
-      }));
-    }
   }
-
+*/
   next(action);
 };
+
+export const actions = {
+  openHelp,
+  openFolder,
+};
+
+export default electronMiddleware;

@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
-import * as actions from "../../actions";
-import { getBackgrounds } from "../../reducers/entitiesReducer";
 import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
 class ImagesPage extends Component {
   constructor(props) {
@@ -75,7 +74,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
+import { actions as projectActions } from "../project/projectActions";
 
 interface MetadataState {
   name: string;
@@ -10,11 +11,11 @@ interface MetadataState {
 }
 
 const initialState: MetadataState = {
-    name: "",
-    author: "",
-    notes: "",
-    _version: "",
-    _release: ""
+  name: "",
+  author: "",
+  notes: "",
+  _version: "",
+  _release: "",
 };
 
 const metadataSlice = createSlice({
@@ -34,6 +35,18 @@ const metadataSlice = createSlice({
       };
     },
   },
+  extraReducers: (builder) =>
+    builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
+      const { name, author, notes, _version, _release } = action.payload.data;
+      return {
+        ...state,
+        name,
+        author,
+        notes,
+        _version,
+        _release,
+      };
+    }),
 });
 
 export const getMetadata = (state: RootState) => state.project.present.metadata;

@@ -101,8 +101,6 @@ export const EDIT_PROJECT = "EDIT_PROJECT";
 export const RESIZE_WORLD_VIEW = "RESIZE_WORLD_VIEW";
 export const EDIT_SEARCH_TERM = "EDIT_SEARCH_TERM";
 
-export const OPEN_HELP = "OPEN_HELP";
-export const OPEN_FOLDER = "OPEN_FOLDER";
 export const BUILD_GAME = "BUILD_GAME";
 export const DELETE_BUILD_CACHE = "DELETE_BUILD_CACHE";
 

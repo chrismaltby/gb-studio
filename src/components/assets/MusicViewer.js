@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
+import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -106,7 +106,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   play: playMusic,
   pause: pauseMusic,
-  openFolder: actions.openFolder
+  openFolder: electronActions.openFolder
 };
 
 export default connect(
