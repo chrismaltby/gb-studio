@@ -56,10 +56,10 @@ class CustomEventEditor extends Component {
       [key]: castEventValue(e)
     }});
   };
-
+ 
   onRemove = () => () => {
     const { removeCustomEvent, customEvent } = this.props;
-    removeCustomEvent(customEvent.id);
+    removeCustomEvent({customEventId: customEvent.id});
   };
 
   render() {

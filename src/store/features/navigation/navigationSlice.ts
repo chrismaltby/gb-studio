@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addPalette } from "../entities/entitiesSlice";
-import { stdErr } from "../console/consoleSlice";
+import { actions as entityActions } from "../entities/entitiesSlice";
+import { actions as consoleActions } from "../console/consoleSlice";
 
 type NavigationSection =
   | "world"
@@ -37,11 +37,11 @@ const navigationSlice = createSlice({
   extraReducers: (builder) =>
     builder
       // Select newly created palette in sidebar
-      .addCase(addPalette, (state, action) => {
+      .addCase(entityActions.addPalette, (state, action) => {
         state.id = action.payload.paletteId;
       })
       // Switch to build screen on any errors
-      .addCase(stdErr, (state, action) => {
+      .addCase(consoleActions.stdErr, (state, action) => {
         state.section = "build";
       }),
 });

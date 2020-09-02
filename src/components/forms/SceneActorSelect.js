@@ -185,7 +185,7 @@ function mapStateToProps(state, ownProps) {
 
   const options = cachedObj(
     [].concat(
-      contextType === "actors"
+      contextType === "actor"
         ? {
             value: "$self$",
             label: `Self (${selfActorName})`,

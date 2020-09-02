@@ -137,12 +137,12 @@ class ScenePropertySelect extends Component {
     };
 
     const selectedActorId =
-      actorValue === "$self$" && contextType === "actors"
+      actorValue === "$self$" && contextType === "actor"
         ? contextEntityId
         : actorValue;
 
     const options = [].concat(
-      contextType === "actors"
+      contextType === "actor"
         ? {
             actorId: "$self$",
             contextEntityId,
@@ -223,7 +223,7 @@ function mapStateToProps(state, ownProps) {
   let actorLabel = actorName;
   if (
     actorValue === "player" ||
-    (actorValue === "$self$" && contextType !== "actors")
+    (actorValue === "$self$" && contextType !== "actor")
   ) {
     actorLabel = "Player";
   } else if (actorValue === "$self$") {

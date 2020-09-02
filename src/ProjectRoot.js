@@ -16,6 +16,7 @@ import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 import { actions as editorActions } from "./store/features/editor/editorSlice";
+import { actions as entityActions } from "./store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
 import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
 import { setGlobalError } from "./store/features/error/errorSlice";
@@ -87,7 +88,7 @@ const onSetSection =  (event, section) => {
 }
 
 const onReloadAssets = () => {
-  store.dispatch(actions.reloadAssets());
+  store.dispatch(entityActions.reloadAssets());
 }
 
 const onUpdateSetting = (event, setting, value) => {
@@ -190,8 +191,8 @@ if (filesSidebarWidth) {
 
 window.addEventListener("resize", debounce(() => {
   const state = store.getState();
-  store.dispatch(editorActions.resizeWorldSidebar(state.settings.worldSidebarWidth));
-  store.dispatch(editorActions.resizeFilesSidebar(state.settings.filesSidebarWidth));
+  store.dispatch(editorActions.resizeWorldSidebar(state.editor.worldSidebarWidth));
+  store.dispatch(editorActions.resizeFilesSidebar(state.editor.filesSidebarWidth));
 }, 500));
 
 // Overide Accelerator undo for windows, fixes chrome undo conflict

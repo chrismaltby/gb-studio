@@ -7,18 +7,11 @@ import saveAsProjectData from "../lib/project/saveAsProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
-import {
-  DRAG_PLAYER,
-  DRAG_DESTINATION,
-  DRAG_TRIGGER,
-  DRAG_ACTOR
-} from "../reducers/editorReducer";
 import { denormalizeProject } from "../reducers/entitiesReducer";
 import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 import { ActionCreators } from "redux-undo";
-import debounce from "lodash/debounce";
-import { loadProject as entitiesLoadProject } from "../store/features/entities/entitiesSlice";
+import { actions as entityActions } from "../store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "../store/features/settings/settingsSlice";
 import { actions as metadataActions } from "../store/features/metadata/metadataSlice";
 import { setGlobalError } from "../store/features/error/errorSlice";
@@ -67,7 +60,7 @@ export const loadProject = path => async dispatch => {
       }
       const data = await loadProjectData(path);
       
-      dispatch(entitiesLoadProject(data));
+      dispatch(entityActions.loadProject(data));
       dispatch(settingsActions.loadSettings(data.settings));
       dispatch(metadataActions.loadMetadata(data))
 
@@ -307,19 +300,6 @@ export const actorHover = (sceneId, id, x, y) => {
   return { type: types.ACTOR_HOVER, sceneId, id, x, y };
 };
 
-export const removeSelectedEntity = () => (dispatch, getState) => {
-  const state = getState();
-  const { scene, entityId, type: editorType } = state.editor;
-  if (editorType === "scenes") {
-    dispatch(removeScene(scene));
-  } else if (editorType === "triggers") {
-    dispatch(removeTrigger(scene, entityId));
-  } else if (editorType === "actors") {
-    dispatch(removeActor(scene, entityId));
-  }
-};
-
-
 export const selectActor = (sceneId, id) => {
   return { type: types.SELECT_ACTOR, sceneId, id };
 };
@@ -334,30 +314,6 @@ export const removeActorAt = (sceneId, x, y) => {
 
 export const selectScriptEvent = eventId => {
   return { type: types.SELECT_SCRIPT_EVENT, eventId };
-};
-
-export const paintCollisionTile = (sceneId, x, y, value, brushSize, isTileProp) => {
-  return { type: types.PAINT_COLLISION_TILE, sceneId, x, y, value, brushSize, isTileProp };
-};
-
-export const paintCollisionLine = (sceneId, startX, startY, endX, endY, value, brushSize, isTileProp) => {
-  return { type: types.PAINT_COLLISION_LINE, sceneId, startX, startY, endX, endY, value, brushSize, isTileProp };
-};
-
-export const paintCollisionFill = (sceneId, x, y, value, isTileProp) => {
-  return { type: types.PAINT_COLLISION_FILL, sceneId, x, y, value, isTileProp };
-};
-
-export const paintColorTile = (sceneId, x, y, paletteIndex, brushSize) => {
-  return { type: types.PAINT_COLOR_TILE, sceneId, x, y, paletteIndex, brushSize };
-};
-
-export const paintColorLine = (sceneId, startX, startY, endX, endY, paletteIndex, brushSize) => {
-  return { type: types.PAINT_COLOR_LINE, sceneId, startX, startY, endX, endY, paletteIndex, brushSize };
-};
-
-export const paintColorFill = (sceneId, x, y, paletteIndex) => {
-  return { type: types.PAINT_COLOR_FILL, sceneId, x, y, paletteIndex };
 };
 
 export const setShowLayers = (showLayers) => {

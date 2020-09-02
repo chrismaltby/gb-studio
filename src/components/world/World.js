@@ -139,7 +139,9 @@ class World extends Component {
       return;
     }
     const { removeSelectedEntity, focus } = this.props;
+    console.log({focus, removeSelectedEntity})
     if (focus && (e.key === "Backspace" || e.key === "Delete")) {
+      console.log("HERE REMOVE SELECTED", removeSelectedEntity)
       removeSelectedEntity();
     }
   };
@@ -399,7 +401,7 @@ const mapDispatchToProps = {
   addScene: entityActions.addScene,
   setTool: editorActions.setTool,
   selectWorld: editorActions.selectWorld,
-  removeSelectedEntity: actions.removeSelectedEntity,
+  removeSelectedEntity: entityActions.removeSelectedEntity,
   copyScene: actions.copyScene,
   copyActor: actions.copyActor,
   copyTrigger: actions.copyTrigger,

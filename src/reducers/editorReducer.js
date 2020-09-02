@@ -33,12 +33,6 @@ import {
   EDIT_PLAYER_START_AT,
   EDIT_UI,
   SELECT_SIDEBAR,
-  PAINT_COLLISION_TILE,
-  PAINT_COLLISION_LINE,
-  PAINT_COLLISION_FILL,
-  PAINT_COLOR_TILE,
-  PAINT_COLOR_LINE,
-  PAINT_COLOR_FILL,    
   SELECT_CUSTOM_EVENT,
   ADD_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
@@ -299,19 +293,6 @@ export default function editor(state = initialState.editor, action) {
         ...state,
         scene: "",
         type: "world",
-        worldFocus: true
-      };
-    }
-    case PAINT_COLLISION_TILE:
-    case PAINT_COLLISION_LINE:
-    case PAINT_COLLISION_FILL:
-    case PAINT_COLOR_TILE:
-    case PAINT_COLOR_LINE:
-    case PAINT_COLOR_FILL: {
-      return {
-        ...state,
-        type: "scenes",
-        scene: action.sceneId,
         worldFocus: true
       };
     }

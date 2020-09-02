@@ -1,6 +1,6 @@
 import path from "path";
 import { createSlice, AnyAction } from "@reduxjs/toolkit";
-import { loadProject } from "../entities/entitiesSlice";
+import { actions as entityActions } from "../entities/entitiesSlice";
 import { loadMetadata } from "../metadata/metadataSlice";
 import { loadSettings } from "../settings/settingsSlice";
 
@@ -40,7 +40,7 @@ const documentSlice = createSlice({
         (action.type.startsWith("entities/") ||
           action.type.startsWith("metadata/") ||
           action.type.startsWith("settings/")) &&
-        !loadProject.match(action) && !loadMetadata.match(action) && !loadSettings.match(action),
+        !entityActions.loadProject.match(action) && !loadMetadata.match(action) && !loadSettings.match(action),
       (state, _action) => {
         state.modified = true;
       }

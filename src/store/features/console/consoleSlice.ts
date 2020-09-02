@@ -63,7 +63,7 @@ const consoleSlice = createSlice({
   },
 });
 
-const { actions, reducer } = consoleSlice;
+export const { actions, reducer } = consoleSlice;
 
 export const {
   clearConsole,

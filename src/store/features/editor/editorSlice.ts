@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, AnyAction } from "@reduxjs/toolkit";
 import { BRUSH_8PX, COLLISION_ALL } from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
 import {
@@ -179,13 +179,19 @@ const editorSlice = createSlice({
       state.worldFocus = true;
     },
 
-    selectCustomEvent: (state, action: PayloadAction<{ customEventId: string }>) => {
+    selectCustomEvent: (
+      state,
+      action: PayloadAction<{ customEventId: string }>
+    ) => {
       state.type = "customEvent";
       state.scene = "";
-      state.entityId = action.payload.customEventId
+      state.entityId = action.payload.customEventId;
     },
 
-    selectActor: (state, action: PayloadAction<{ actorId: string; sceneId: string }>) => {
+    selectActor: (
+      state,
+      action: PayloadAction<{ actorId: string; sceneId: string }>
+    ) => {
       state.type = "actor";
       state.scene = action.payload.sceneId;
       state.entityId = action.payload.actorId;
@@ -212,6 +218,7 @@ const editorSlice = createSlice({
       state.dragging = DRAG_TRIGGER;
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
+      state.worldFocus = true;
     },
 
     dragTriggerStop: (state, _action) => {
@@ -370,6 +377,23 @@ const editorSlice = createSlice({
         state.scene = action.payload.sceneId;
         state.worldFocus = true;
       })
+      .addCase(entityActions.addActor, (state, action) => {
+        state.type = "actor";
+        state.scene = action.payload.sceneId;
+        state.entityId = action.payload.actorId;
+        state.worldFocus = true;
+      })
+      .addCase(entityActions.addTrigger, (state, action) => {
+        state.type = "trigger";
+        state.scene = action.payload.sceneId;
+        state.entityId = action.payload.triggerId;
+        state.worldFocus = true;
+      })
+      .addCase(entityActions.addCustomEvent, (state, action) => {
+        state.type = "customEvent";
+        state.scene = "";
+        state.entityId = action.payload.customEventId;
+      })
       .addCase(entityActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
@@ -381,7 +405,18 @@ const editorSlice = createSlice({
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;
         }
-      }),
+      })
+      // When painting collisions or tiles select scene being drawn on
+      .addMatcher(
+        (action): action is PayloadAction<{sceneId: string}> =>
+          entityActions.paintCollision.match(action) ||
+          entityActions.paintColor.match(action),
+        (state, action) => {
+          state.type = "scene";
+          state.scene = action.payload.sceneId;
+          state.worldFocus = true;
+        }
+      ),
 });
 
 export const { actions, reducer } = editorSlice;

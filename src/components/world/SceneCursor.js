@@ -81,12 +81,8 @@ class SceneCursor extends Component {
       selectScene,
       showCollisions,
       showLayers,
-      paintCollisionTile,
-      paintCollisionLine,
-      paintCollisionFill,
-      paintColorTile,
-      paintColorLine,
-      paintColorFill,
+      paintCollision,
+      paintColor,
       removeActorAt,
       removeTriggerAt,
       sceneFiltered,
@@ -140,34 +136,32 @@ class SceneCursor extends Component {
         }
       }
       if(selectedBrush === BRUSH_FILL) {
-        paintCollisionFill(sceneId, x, y, this.drawTile, this.isTileProp);
+        paintCollision({ brush: selectedBrush, sceneId, x, y, value: this.drawTile, isTileProp: this.isTileProp });
       } else {
-        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintCollisionLine(sceneId, this.startX, this.startY, x, y, this.drawTile, brushSize, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x, y, value: this.drawTile, isTileProp: this.isTileProp });
         }
         window.addEventListener("mousemove", this.onCollisionsMove);
         window.addEventListener("mouseup", this.onCollisionsStop);
       }
     } else if (tool === "colors") {
       if(selectedBrush === BRUSH_FILL) {
-        paintColorFill(sceneId, x, y, selectedPalette);
+        paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
       } else {
-        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintColorLine(sceneId, this.startX, this.startY, x, y, selectedPalette, brushSize);
+          paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintColorTile(sceneId, x, y, selectedPalette, brushSize);
+          paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
         }
         window.addEventListener("mousemove", this.onColorsMove);
         window.addEventListener("mouseup", this.onColorsStop);
@@ -177,17 +171,16 @@ class SceneCursor extends Component {
         this.drawTile = 0;
         this.isTileProp = false;
         if(selectedBrush === BRUSH_FILL) {
-          paintCollisionFill(sceneId, x, y, 0, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x, y, value: 0, isTileProp: this.isTileProp });
         } else {
-          const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
           if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-            paintCollisionLine(sceneId, this.startX, this.startY, x, y, 0, brushSize, this.isTileProp);
+            paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, value: 0, isTileProp: this.isTileProp, drawLine: true });
             this.startX = x;
             this.startY = y;
           } else {
             this.startX = x;
             this.startY = y;          
-            paintCollisionTile(sceneId, x, y, 0, brushSize, this.isTileProp);
+            paintCollision({ brush: selectedBrush, sceneId, x, y, value: 0, isTileProp: this.isTileProp });
           }
           window.addEventListener("mousemove", this.onCollisionsMove);
           window.addEventListener("mouseup", this.onCollisionsStop);
@@ -213,7 +206,7 @@ class SceneCursor extends Component {
   onResizeTrigger = e => {
     const { x, y, sceneId, entityId, resizeTrigger } = this.props;
     if (entityId && (this.currentX !== x || this.currentY !== y)) {
-      resizeTrigger(sceneId, entityId, this.startX, this.startY, x, y);
+      resizeTrigger({sceneId, triggerId: entityId, startX: this.startX, startY: this.startY, x, y});
       this.currentX = x;
       this.currentY = y;
     }
@@ -234,12 +227,9 @@ class SceneCursor extends Component {
       enabled,
       sceneId,
       selectedBrush,
-      paintCollisionTile,
-      paintCollisionLine
+      paintCollision,
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
           this.startX = x;
@@ -258,7 +248,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);        
+        paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -266,9 +256,9 @@ class SceneCursor extends Component {
           this.startX = x;
           this.startY = y;
         }
-        let x1 = x;
-        let y1 = y;
-        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);
+        const x1 = x;
+        const y1 = y;
+        paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }
@@ -290,12 +280,9 @@ class SceneCursor extends Component {
       sceneId,
       selectedPalette,
       selectedBrush,
-      paintColorTile,
-      paintColorLine
+      paintColor
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
           this.startX = x;
@@ -314,7 +301,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);        
+        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -322,9 +309,9 @@ class SceneCursor extends Component {
           this.startX = x;
           this.startY = y;
         }
-        let x1 = x;
-        let y1 = y;
-        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);
+        const x1 = x;
+        const y1 = y;
+        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }
@@ -397,7 +384,11 @@ SceneCursor.propTypes = {
   editPlayerStartAt: PropTypes.func.isRequired,
   resizeTrigger: PropTypes.func.isRequired,
   removeActorAt: PropTypes.func.isRequired,
-  removeTriggerAt: PropTypes.func.isRequired
+  removeTriggerAt: PropTypes.func.isRequired,
+  paintCollision: PropTypes.func.isRequired,
+  paintColor: PropTypes.func.isRequired,
+  selectedBrush: PropTypes.string.isRequired,
+  selectedPalette: PropTypes.number.isRequired
 };
 
 SceneCursor.defaultProps = {
@@ -431,15 +422,11 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   addActor: entityActions.addActor,
   removeActorAt: actions.removeActorAt,
-  paintCollisionTile: actions.paintCollisionTile,
-  paintCollisionLine: actions.paintCollisionLine,
-  paintCollisionFill: actions.paintCollisionFill,
-  paintColorTile: actions.paintColorTile,
-  paintColorLine: actions.paintColorLine,
-  paintColorFill: actions.paintColorFill,
+  paintCollision: entityActions.paintCollision,
+  paintColor: entityActions.paintColor,
   addTrigger: entityActions.addTrigger,
   removeTriggerAt: actions.removeTriggerAt,
-  resizeTrigger: actions.resizeTrigger,
+  resizeTrigger: entityActions.resizeTrigger,
   selectScene: editorActions.selectScene,
   selectWorld: editorActions.selectWorld,
   setTool: editorActions.setTool,

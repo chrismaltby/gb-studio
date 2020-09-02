@@ -18,12 +18,6 @@ import {
   EDIT_ACTOR,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
-  PAINT_COLLISION_TILE,
-  PAINT_COLLISION_LINE,  
-  PAINT_COLLISION_FILL,   
-  PAINT_COLOR_TILE,
-  PAINT_COLOR_LINE,  
-  PAINT_COLOR_FILL,  
   ADD_TRIGGER,
   RESIZE_TRIGGER,
   MOVE_TRIGGER,
@@ -103,12 +97,6 @@ export default function modified(state = initialState.document, action) {
     case EDIT_ACTOR:
     case REMOVE_ACTOR:
     case REMOVE_ACTOR_AT:
-    case PAINT_COLLISION_TILE:
-    case PAINT_COLLISION_LINE:
-    case PAINT_COLLISION_FILL:
-    case PAINT_COLOR_TILE:
-    case PAINT_COLOR_LINE:
-    case PAINT_COLOR_FILL:
     case ADD_TRIGGER:
     case RESIZE_TRIGGER:
     case MOVE_TRIGGER:

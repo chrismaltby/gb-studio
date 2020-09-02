@@ -23,13 +23,7 @@ import {
   MOVE_TRIGGER,
   EDIT_TRIGGER,
   REMOVE_TRIGGER,
-  REMOVE_TRIGGER_AT,
-  PAINT_COLLISION_TILE,
-  PAINT_COLLISION_LINE,
-  PAINT_COLLISION_FILL,  
-  PAINT_COLOR_TILE,
-  PAINT_COLOR_LINE,
-  PAINT_COLOR_FILL,    
+  REMOVE_TRIGGER_AT,  
   EDIT_PLAYER_START_AT,
   EDIT_SCENE_EVENT_DESTINATION_POSITION,
   EDIT_TRIGGER_EVENT_DESTINATION_POSITION,
@@ -58,8 +52,7 @@ import {
 import initialState from "./initialState";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
 import { replaceInvalidCustomEventVariables, replaceInvalidCustomEventActors } from "../lib/compiler/helpers";
-import { paint, paintLine, floodFill } from "../lib/helpers/paint";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR, TILE_PROPS, COLLISION_ALL } from "../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -479,7 +472,7 @@ const editScene = (state, action) => {
     if (otherScene) {
       newCollisions = otherScene.collisions;
       newTileColors = otherScene.tileColors;
-    } else if (oldBackground.width == background.width){
+    } else if (oldBackground.width === background.width){
       const collisionsSize = Math.ceil(
         (background.width * background.height)
       );
@@ -1066,107 +1059,6 @@ const removeTriggerAt = (state, action) => {
   return state;
 };
 
-const paintCollision = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const background = state.entities.backgrounds[scene.backgroundId];
-  const isTileProp = action.isTileProp;
-
-  if (!background) {
-    return state;
-  }
-
-  const collisionsSize = Math.ceil((background.width * background.height));
-  const collisions = scene.collisions.slice(0, collisionsSize);
-
-  if (collisions.length < collisionsSize) {
-    for (let i = collisions.length; i < collisionsSize; i++) {
-      collisions[i] = 0;
-    }
-  }
-
-  const getValue = (x, y) => {
-    const tileIndex = (background.width * y) + x;
-    return collisions[tileIndex];
-  }
-
-  const setValue = (x, y, value) => {
-    const tileIndex = (background.width * y) + x;
-    let newValue = value;
-    if (isTileProp) {
-      // If is prop keep previous collision value
-      newValue = (collisions[tileIndex] & COLLISION_ALL) + (value & TILE_PROPS);
-    } else if (value !== 0) {
-      // If is collision keep prop unless erasing
-      newValue = (value & COLLISION_ALL) + (collisions[tileIndex] & TILE_PROPS);
-    }
-    collisions[tileIndex] = newValue;
-  }
-
-  const isInBounds = (x, y) => {
-    return x >= 0 && x < background.width && y >= 0 && y < background.height;
-  }
-
-  const equal = (a, b) => a === b;
-
-  if(action.type === PAINT_COLLISION_TILE) {
-    paint(action.x, action.y, action.brushSize, action.value, setValue, isInBounds);
-  } else if (action.type === PAINT_COLLISION_LINE) {
-    paintLine(action.startX, action.startY, action.endX, action.endY, action.brushSize, action.value, setValue, isInBounds);
-  } else if (action.type === PAINT_COLLISION_FILL) {
-    floodFill(action.x, action.y, action.value, getValue, setValue, isInBounds, equal);
-  }
-
-  return editEntity(state, "scenes", scene.id, {
-    collisions
-  });
-};
-
-const paintColor = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const background = state.entities.backgrounds[scene.backgroundId];
-
-  if (!background) {
-    return state;
-  }
-
-  const tileColorsSize = Math.ceil((background.width * background.height));
-  const tileColors = (scene.tileColors || []).slice(0, tileColorsSize);
-
-  if (tileColors.length < tileColorsSize) {
-    for (let i = tileColors.length; i < tileColorsSize; i++) {
-      tileColors[i] = 0;
-    }
-  }
-
-  const getValue = (x, y) => {
-    const tileColorIndex = (background.width * y) + x;
-    return tileColors[tileColorIndex];    
-  }
-
-  const setValue = (x, y, value) => {
-    const tileColorIndex = (background.width * y) + x;
-    tileColors[tileColorIndex] = value;    
-  }
-
-  const isInBounds = (x, y) => {
-    return x >= 0 && x < background.width && y >= 0 && y < background.height;
-  }
-
-  const equal = (a, b) => a === b;
-
-  if(action.type === PAINT_COLOR_TILE) {
-    paint(action.x, action.y, action.brushSize, action.paletteIndex, setValue, isInBounds);
-  } else if (action.type === PAINT_COLOR_LINE) {
-    paintLine(action.startX, action.startY, action.endX, action.endY, action.brushSize, action.paletteIndex, setValue, isInBounds);
-  } else if (action.type === PAINT_COLOR_FILL) {
-    floodFill(action.x, action.y, action.paletteIndex, getValue, setValue, isInBounds, equal);
-  }
-
-  return editEntity(state, "scenes", scene.id, {
-    tileColors
-  });
-};
-
 const editPlayerStartAt = (state, action) => {
   return editProjectSettings(state, {
     values: {
@@ -1422,19 +1314,7 @@ export default function project(state = initialState.entities, action) {
     case REMOVE_TRIGGER:
       return removeTrigger(state, action);
     case REMOVE_TRIGGER_AT:
-      return removeTriggerAt(state, action);
-    case PAINT_COLLISION_TILE:
-      return paintCollision(state, action);
-    case PAINT_COLLISION_LINE:
-      return paintCollision(state, action);
-    case PAINT_COLLISION_FILL:
-      return paintCollision(state, action);         
-    case PAINT_COLOR_TILE:
-      return paintColor(state, action);
-    case PAINT_COLOR_LINE:
-      return paintColor(state, action);
-    case PAINT_COLOR_FILL:
-      return paintColor(state, action);              
+      return removeTriggerAt(state, action);        
     case EDIT_PLAYER_START_AT:
       return editPlayerStartAt(state, action);
     case EDIT_SCENE_EVENT_DESTINATION_POSITION:
