@@ -187,7 +187,7 @@ class Connections extends Component {
             if (destScene) {
               memo.push(
                 calculateTransitionCoords({
-                  type: "actors",
+                  type: "actor",
                   event,
                   scene,
                   destScene,
@@ -218,7 +218,7 @@ class Connections extends Component {
             if (destScene) {
               memo.push(
                 calculateTransitionCoords({
-                  type: "triggers",
+                  type: "trigger",
                   event,
                   scene,
                   destScene,
@@ -247,7 +247,7 @@ class Connections extends Component {
           if (destScene) {
             memo.push(
               calculateTransitionCoords({
-                type: "scenes",
+                type: "scene",
                 event,
                 scene,
                 destScene,

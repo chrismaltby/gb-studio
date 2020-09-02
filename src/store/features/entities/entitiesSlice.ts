@@ -40,7 +40,7 @@ import {
 } from "../../../lib/compiler/helpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
-import { Brush } from "../editor/editorSlice";
+import { Brush, EditorSelectionType } from "../editor/editorSlice";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -280,13 +280,13 @@ const removeSelectedEntity = () => (
 const editDestinationPosition = (
   eventId: string,
   sceneId: string,
-  selectionType: string,
+  selectionType: EditorSelectionType,
   id: string,
   destSceneId: string,
   x: number,
   y: number
 ) => {
-  if (selectionType === "actors") {
+  if (selectionType === "actor") {
     return actions.editActorEventDestinationPosition({
       eventId,
       actorId: id,
@@ -295,7 +295,7 @@ const editDestinationPosition = (
       y,
     });
   }
-  if (selectionType === "triggers") {
+  if (selectionType === "trigger") {
     return actions.editTriggerEventDestinationPosition({
       eventId,
       triggerId: id,
