@@ -369,6 +369,10 @@ const editorSlice = createSlice({
         Math.max(300, action.payload)
       );
     },
+
+    setProfiling: (state, action: PayloadAction<boolean>) => {
+      state.profile = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -408,7 +412,7 @@ const editorSlice = createSlice({
       })
       // When painting collisions or tiles select scene being drawn on
       .addMatcher(
-        (action): action is PayloadAction<{sceneId: string}> =>
+        (action): action is PayloadAction<{ sceneId: string }> =>
           entityActions.paintCollision.match(action) ||
           entityActions.paintColor.match(action),
         (state, action) => {

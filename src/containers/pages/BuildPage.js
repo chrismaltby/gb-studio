@@ -9,6 +9,7 @@ import Button, {
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class BuildPage extends Component {
   constructor(props) {
@@ -176,7 +177,7 @@ const mapDispatchToProps = {
   consoleClear: actions.consoleClear,
   buildGame: actions.buildGame,
   deleteBuildCache: actions.deleteBuildCache,
-  setProfiling: actions.setProfiling,
+  setProfiling: editorActions.setProfiling,
 };
 
 export default connect(
