@@ -1708,34 +1708,6 @@ const entitiesSlice = createSlice({
   name: "entities",
   initialState,
   reducers: {
-    loadProject: (state, action: PayloadAction<ProjectData>) => {
-      // const actors = flatten(
-      //   action.payload.scenes.map((scene) => scene.actors)
-      // );
-      // const triggers = flatten(
-      //   action.payload.scenes.map((scene) => scene.triggers)
-      // );
-      // const scenes = action.payload.scenes.map((scene) => ({
-      //   ...scene,
-      //   actors: scene.actors.map((actor) => actor.id),
-      //   triggers: scene.triggers.map((trigger) => trigger.id),
-      // }));
-      // const backgrounds = action.payload.backgrounds;
-      // const spriteSheets = action.payload.spriteSheets;
-      // const palettes = action.payload.palettes;
-      // const music = action.payload.music;
-      // const customEvents = action.payload.customEvents;
-      // const variables = action.payload.variables;
-      // actorsAdapter.setAll(state.actors, actors);
-      // triggersAdapter.setAll(state.triggers, triggers);
-      // scenesAdapter.setAll(state.scenes, scenes);
-      // backgroundsAdapter.setAll(state.backgrounds, backgrounds);
-      // spriteSheetsAdapter.setAll(state.spriteSheets, spriteSheets);
-      // palettesAdapter.setAll(state.palettes, palettes);
-      // musicAdapter.setAll(state.music, music);
-      // customEventsAdapter.setAll(state.customEvents, customEvents);
-      // variablesAdapter.setAll(state.variables, variables);
-    },
 
     /**************************************************************************
      * Scenes

@@ -51,6 +51,7 @@ import {
 } from "../../../store/features/settings/settingsSlice";
 import { Middleware, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
+import { actions as projectActions } from "../project/projectActions";
 
 const openHelp = createAction<string>("electron/openHelp");
 const openFolder = createAction<string>("electron/openFolder");
@@ -83,11 +84,18 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         })
       );
     }
+  } else if (projectActions.loadProject.fulfilled.match(action)) {
+    ipcRenderer.send("project-loaded", action.payload.data.settings);
+  } else if (projectActions.loadProject.rejected.match(action)) {
+    const window = remote.getCurrentWindow();
+    window.close();
   }
+
+
+
+
   /*
-  if (action.type === PROJECT_LOAD_SUCCESS) {
-    ipcRenderer.send("project-loaded", action.data.settings);
-  } else if (action.type === COPY_ACTOR) {
+  if (action.type === COPY_ACTOR) {
     const state = store.getState();
     const customEventsLookup = getCustomEventsLookup(state);
     const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.actor));
@@ -176,10 +184,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         4
       )
     );
-  } else if (action.type === PROJECT_LOAD_FAILURE) {
-    const window = remote.getCurrentWindow();
-    window.close();
-  } else if (action.type === REMOVE_CUSTOM_EVENT) {
+  }  else if (action.type === REMOVE_CUSTOM_EVENT) {
     const state = store.getState();
     const customEvent =
       state.entities.present.entities.customEvents[action.customEventId];
