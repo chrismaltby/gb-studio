@@ -12,11 +12,6 @@ import {
 } from "../../reducers/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
-import {
-  getActorsLookup,
-  getTriggersLookup
-} from "../../reducers/entitiesReducer";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actorSelectors, triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 

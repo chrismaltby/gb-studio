@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Solver from "3x3-equation-solver";
 import cx from "classnames";
 import { clipboard } from "electron";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import { PaletteShape } from "../../reducers/stateShape";

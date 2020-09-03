@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import * as actions from "../../actions";
 import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
@@ -17,14 +16,6 @@ import {
 } from "../../reducers/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
-import {
-  getActorsLookup,
-  getTriggersLookup,
-  getScenesLookup,
-  getBackgroundsLookup,
-  getSettings,
-  getPalettesLookup,
-} from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
 import {
   TOOL_COLORS,

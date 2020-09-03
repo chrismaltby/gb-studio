@@ -9,13 +9,6 @@ import {
   ActorShape,
   TriggerShape,
 } from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import {
-  getScenes,
-  getScenesLookup,
-  getTriggersLookup,
-  getActorsLookup,
-} from "../../reducers/entitiesReducer";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 

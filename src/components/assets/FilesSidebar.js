@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import { HelpIcon } from "../library/Icons";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { groupBy } from "../../lib/helpers/array";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";

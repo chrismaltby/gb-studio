@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { CustomEventShape } from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import { getCustomEvents } from "../../reducers/entitiesReducer";
 import { CodeIcon } from "../library/Icons";
 import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";

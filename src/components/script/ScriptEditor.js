@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { clipboard } from "electron";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import debounce from "lodash/debounce";

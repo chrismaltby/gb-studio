@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
-import * as actions from "../../actions";
 import { FormField } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarColumn, SidebarHeading } from "./Sidebar";
@@ -10,10 +9,6 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { CustomEventShape } from "../../reducers/stateShape";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
-import {
-  getCustomEvents,
-  getCustomEventsLookup
-} from "../../reducers/entitiesReducer";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { customEventSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";

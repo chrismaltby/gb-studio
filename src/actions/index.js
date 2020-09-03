@@ -8,13 +8,7 @@ import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
 import { denormalizeProject } from "../reducers/entitiesReducer";
-import migrateWarning from "../lib/project/migrateWarning";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
-import { ActionCreators } from "redux-undo";
-import { actions as entityActions } from "../store/features/entities/entitiesSlice";
-import { actions as settingsActions } from "../store/features/settings/settingsSlice";
-import { actions as metadataActions } from "../store/features/metadata/metadataSlice";
-import { setGlobalError } from "../store/features/error/errorSlice";
 
 const asyncAction = async (
   dispatch,
@@ -32,45 +26,6 @@ const asyncAction = async (
     console.error(e);
     dispatch({ type: failureType });
   }
-};
-
-export const loadProject = path => async dispatch => {
-  await asyncAction(
-    dispatch,
-    types.PROJECT_LOAD_REQUEST,
-    types.PROJECT_LOAD_SUCCESS,
-    types.PROJECT_LOAD_FAILURE,
-    async () => {
-      let shouldOpenProject = false;
-      try {
-        shouldOpenProject = await migrateWarning(path);
-      } catch (error) {
-        dispatch(
-          setGlobalError({
-            message: error.message,
-            filename: error.filename,
-            line: error.lineno,
-            col: error.colno,
-            stackTrace: error.stack
-          })
-        );
-      }
-      if (!shouldOpenProject) {
-        throw new Error("Cancelled opening project");
-      }
-      const data = await loadProjectData(path);
-      
-      dispatch(entityActions.loadProject(data));
-      dispatch(settingsActions.loadSettings(data.settings));
-      dispatch(metadataActions.loadMetadata(data))
-
-      return {
-        data,
-        path
-      };
-    }
-  );
-  dispatch(ActionCreators.clearHistory())
 };
 
 export const loadSprite = filename => async (dispatch, getState) => {

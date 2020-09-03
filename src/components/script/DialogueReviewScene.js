@@ -4,21 +4,14 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import {
-  getScenesLookup,
-  getActorsLookup,
-  getTriggersLookup,
-} from "../../reducers/entitiesReducer";
 import { ArrowIcon, SearchIcon } from "../library/Icons";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as entityActions, sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {

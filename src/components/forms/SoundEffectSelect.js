@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import * as actions from "../../actions";
 import { PlayIcon } from "../library/Icons";
 import Button from "../library/Button";
 import l10n from "../../lib/helpers/l10n";

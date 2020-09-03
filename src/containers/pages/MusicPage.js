@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import MusicViewer from "../../components/assets/MusicViewer";
-import * as actions from "../../actions";
-import { getMusic } from "../../reducers/entitiesReducer";
 import { musicSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
