@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
 import Button from "./Button";
-import * as actions from "../../actions";
 import { ErrorShape } from "../../reducers/stateShape";
 import { SadIcon } from "./Icons";
+import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
 
 class GlobalError extends Component {
   constructor() {
@@ -90,7 +90,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(
