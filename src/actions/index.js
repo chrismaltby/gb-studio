@@ -166,33 +166,6 @@ export const removeMusic = filename => async (dispatch, getState) => {
   });
 };
 
-export const playSoundFxBeep = pitch => {
-  return {
-    type: types.PLAY_SOUNDFX_BEEP,
-    pitch
-  };
-};
-
-export const playSoundFxTone = (frequency, duration) => {
-  return {
-    type: types.PLAY_SOUNDFX_TONE,
-    frequency,
-    duration
-  };
-};
-
-export const playSoundFxCrash = () => {
-  return {
-    type: types.PLAY_SOUNDFX_CRASH
-  };
-};
-
-export const pauseSoundFx = () => {
-  return {
-    type: types.PAUSE_SOUNDFX
-  };
-};
-
 export const saveProject = () => async (dispatch, getState) => {
   const state = getState();
   if (
@@ -256,32 +229,12 @@ export const setScenePrefab = scene => {
   return { type: types.SET_SCENE_PREFAB, scene };
 };
 
-export const setNavigationId = id => {
-  return { type: types.SET_NAVIGATION_ID, id };
-};
-
-export const selectSidebar = () => {
-  return { type: types.SELECT_SIDEBAR };
-};
-
-export const addScene = (x, y, defaults) => {
-  return { type: types.ADD_SCENE, x, y, id: uuid(), defaults };
-};
-
 export const removeScene = sceneId => {
   return { type: types.REMOVE_SCENE, sceneId };
 };
 
 export const addActor = (sceneId, x, y, defaults) => {
   return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
-};
-
-export const sceneHover = (sceneId, x, y) => {
-  return { type: types.SCENE_HOVER, sceneId, x, y };
-};
-
-export const actorHover = (sceneId, id, x, y) => {
-  return { type: types.ACTOR_HOVER, sceneId, id, x, y };
 };
 
 export const selectActor = (sceneId, id) => {
@@ -300,18 +253,6 @@ export const selectScriptEvent = eventId => {
   return { type: types.SELECT_SCRIPT_EVENT, eventId };
 };
 
-export const setShowLayers = (showLayers) => {
-  return { type: types.SET_SHOW_LAYERS, showLayers };
-}
-
-export const addTrigger = (sceneId, x, y, width, height, defaults) => {
-  return { type: types.ADD_TRIGGER, sceneId, x, y, width, height, id: uuid(), defaults };
-};
-
-export const removeTrigger = (sceneId, id) => {
-  return { type: types.REMOVE_TRIGGER, sceneId, id };
-};
-
 export const removeTriggerAt = (sceneId, x, y) => {
   return { type: types.REMOVE_TRIGGER_AT, sceneId, x, y };
 };
@@ -326,38 +267,6 @@ export const moveTrigger = (sceneId, id, newSceneId, x, y) => {
 
 export const editTrigger = (sceneId, id, values) => {
   return { type: types.EDIT_TRIGGER, sceneId, id, values };
-};
-
-export const renameVariable = (variableId, name) => {
-  return { type: types.RENAME_VARIABLE, variableId, name };
-};
-
-export const addPalette = () => {
-  return { type: types.ADD_PALETTE, id: uuid() };
-}
-
-export const editPalette = (paletteId, colors) => {
-  return { type: types.EDIT_PALETTE, paletteId, colors}
-}
-
-export const removePalette = (paletteId) => {
-  return { type: types.REMOVE_PALETTE, paletteId}
-}
-
-export const setStatus = status => {
-  return { type: types.SET_STATUS, status };
-};
-
-export const addCustomEvent = id => {
-  return { type: types.ADD_CUSTOM_EVENT, id: id || uuid() };
-};
-
-export const editWorld = values => {
-  return { type: types.EDIT_WORLD, values };
-};
-
-export const editProject = values => {
-  return { type: types.EDIT_PROJECT, values };
 };
 
 export const removeCustomEvent = customEventId => {
@@ -450,16 +359,8 @@ export const setScriptTabSecondary = tab => {
   return { type: types.SET_SCRIPT_TAB_SECONDARY, tab };
 };
 
-export const editSearchTerm = searchTerm => {
-  return { type: types.EDIT_SEARCH_TERM, searchTerm };
-}
-
 export const editUI = () => {
   return { type: types.EDIT_UI };
-};
-
-export const consoleClear = () => {
-  return { type: types.CMD_CLEAR };
 };
 
 export const ejectEngine = () => {

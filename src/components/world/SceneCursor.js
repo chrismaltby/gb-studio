@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
 import * as actions from "../../actions";
 import { actions as entityActions, sceneSelectors } from "../../store/features/entities/entitiesSlice";
@@ -97,10 +96,10 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor({actorId: uuid(), sceneId, x, y, defaults: prefab});
+      addActor({sceneId, x, y, defaults: prefab});
       setTool("select");
     } else if (tool === "triggers") {
-      addTrigger({triggerId: uuid(), sceneId, x, y, width: 1, height: 1, defaults: prefab});
+      addTrigger({sceneId, x, y, width: 1, height: 1, defaults: prefab});
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -432,7 +431,7 @@ const mapDispatchToProps = {
   setTool: editorActions.setTool,
   editPlayerStartAt: settingsActions.editPlayerStartAt,
   editDestinationPosition: entityActions.editDestinationPosition,
-  editSearchTerm: actions.editSearchTerm
+  editSearchTerm: editorActions.editSearchTerm
 };
 
 export default connect(

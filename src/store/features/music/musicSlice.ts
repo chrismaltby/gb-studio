@@ -21,7 +21,7 @@ const musicSlice = createSlice({
   },
 });
 
-const { actions, reducer } = musicSlice;
+export const { actions, reducer } = musicSlice;
 
 export const { playMusic, pauseMusic } = actions;
 

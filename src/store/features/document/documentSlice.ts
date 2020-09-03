@@ -27,6 +27,9 @@ const documentSlice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
+    .addCase(projectActions.loadProject.pending, (state, _action) => {
+      state.loaded = false;
+    })
     .addCase(projectActions.loadProject.fulfilled, (state, action) => {
       state.path = action.payload.path,
       state.root = path.dirname(action.payload.path);

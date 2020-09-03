@@ -45,7 +45,7 @@ class TriggerEditor extends Component {
 
   onRemove = e => {
     const { removeTrigger, sceneId, trigger } = this.props;
-    removeTrigger(sceneId, trigger.id);
+    removeTrigger({sceneId, triggerId: trigger.id});
   };
 
   readClipboard = (e) => {
@@ -250,11 +250,11 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   editTrigger: entityActions.editTrigger,
-  removeTrigger: actions.removeTrigger,
+  removeTrigger: entityActions.removeTrigger,
   copyTrigger: actions.copyTrigger,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,
-  selectSidebar: actions.selectSidebar
+  selectSidebar: editorActions.selectSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TriggerEditor);

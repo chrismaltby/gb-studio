@@ -588,9 +588,9 @@ const mapDispatchToProps = {
   copyActor: actions.copyActor,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,
-  selectSidebar: actions.selectSidebar,
-  setScriptTab: actions.setScriptTab,
-  setScriptTabSecondary: actions.setScriptTabSecondary,
+  selectSidebar: editorActions.selectSidebar,
+  setScriptTab: editorActions.setScriptTab,
+  setScriptTabSecondary: editorActions.setScriptTabSecondary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

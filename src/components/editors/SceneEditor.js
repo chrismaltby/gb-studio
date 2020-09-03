@@ -20,6 +20,7 @@ import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -128,7 +129,7 @@ class SceneEditor extends Component {
 
   onRemove = (e) => {
     const { removeScene, scene } = this.props;
-    removeScene(scene.id);
+    removeScene({sceneId: scene.id});
   };
   
   onEditPaletteId = (index) => (e) => {
@@ -426,13 +427,13 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   editScene: entityActions.editScene,
-  removeScene: actions.removeScene,
+  removeScene: entityActions.removeScene,
   selectActor: actions.selectActor,
   copyScene: actions.copyScene,
   pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectSidebar: actions.selectSidebar,
-  setScriptTab: actions.setScriptTabScene,
-  setScriptTabSecondary: actions.setScriptTabSecondary  
+  selectSidebar: editorActions.selectSidebar,
+  setScriptTab: editorActions.setScriptTabScene,
+  setScriptTabSecondary: editorActions.setScriptTabSecondary  
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);

@@ -9,18 +9,8 @@ import {
   BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
   EDIT_PROJECT,
-  ADD_ACTOR,
-  EDIT_ACTOR,
-  MOVE_ACTOR,
-  REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
-  MOVE_TRIGGER,
-  EDIT_TRIGGER,
-  REMOVE_TRIGGER,
   REMOVE_TRIGGER_AT,  
-  ADD_TRIGGER,
-  RESIZE_TRIGGER,
-  RENAME_VARIABLE,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
@@ -314,156 +304,6 @@ const fixDefaultPalettes = (state) => {
   }
 };
 
-const addActor = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const spriteSheetId = state.result.spriteSheets[0];
-  const script =
-    action.defaults &&
-    action.defaults.script &&
-    action.defaults.script.map(regenerateEventIds);
-  const newActor = Object.assign(
-    {
-      spriteSheetId,
-      spriteType: SPRITE_TYPE_STATIC,
-      direction: "down",
-      moveSpeed: "1",
-      animSpeed: "3"
-    },
-    action.defaults || {},
-    script && {
-      script
-    },
-    {
-      id: action.id,
-      x: clamp(action.x, 0, scene.width - 2),
-      y: clamp(action.y, 0, scene.height - 1)
-    }
-  );
-
-  // Add to scene
-  const nextState = editEntity(state, "scenes", action.sceneId, {
-    actors: [].concat(scene.actors, action.id)
-  });
-
-  return addEntity(nextState, "actors", newActor);
-};
-
-const moveActor = (state, action) => {
-  const newScene = state.entities.scenes[action.newSceneId];
-
-  let nextState = state;
-
-  // If changed scene
-  if (action.sceneId !== action.newSceneId) {
-    const prevScene = state.entities.scenes[action.sceneId];
-
-    // Remove from previous scene
-    nextState = editEntity(nextState, "scenes", action.sceneId, {
-      actors: prevScene.actors.filter(actorId => {
-        return actorId !== action.id;
-      })
-    });
-
-    // Add to new scene
-    nextState = editEntity(nextState, "scenes", action.newSceneId, {
-      actors: [].concat(newScene.actors, action.id)
-    });
-  }
-
-  return editEntity(nextState, "actors", action.id, {
-    x: clamp(action.x, 0, newScene.width - 2),
-    y: clamp(action.y, 0, newScene.height - 1)
-  });
-};
-
-const moveTrigger = (state, action) => {
-  const newScene = state.entities.scenes[action.newSceneId];
-  const trigger = state.entities.triggers[action.id];
-
-  let nextState = state;
-
-  // If changed scene
-  if (action.sceneId !== action.newSceneId) {
-    const prevScene = state.entities.scenes[action.sceneId];
-
-    // Remove from previous scene
-    nextState = editEntity(nextState, "scenes", action.sceneId, {
-      triggers: prevScene.triggers.filter(actorId => {
-        return actorId !== action.id;
-      })
-    });
-
-    // Add to new scene
-    nextState = editEntity(nextState, "scenes", action.newSceneId, {
-      triggers: [].concat(newScene.triggers, action.id)
-    });
-  }
-
-  return editEntity(nextState, "triggers", action.id, {
-    x: clamp(action.x, 0, newScene.width - trigger.width),
-    y: clamp(action.y, 0, newScene.height - trigger.height)
-  });
-};
-
-const resizeTrigger = (state, action) => {
-  return editEntity(state, "triggers", action.id, {
-    x: Math.min(action.x, action.startX),
-    y: Math.min(action.y, action.startY),
-    width: Math.abs(action.x - action.startX) + 1,
-    height: Math.abs(action.y - action.startY) + 1
-  });
-};
-
-const editActor = (state, action) => {
-  const actor = state.entities.actors[action.id];
-  const patch = { ...action.values };
-
-  // If changed spriteSheetId
-  if (patch.spriteSheetId) {
-    const newSprite = state.entities.spriteSheets[patch.spriteSheetId];
-    // If new sprite not an actor then reset sprite type back to static
-    if (newSprite.numFrames !== 3 && newSprite.numFrames !== 6) {
-      patch.spriteType = SPRITE_TYPE_STATIC;
-    }
-    const oldSprite = state.entities.spriteSheets[actor.spriteSheetId];
-    // If new sprite is an actor and old one wasn't reset sprite type to actor
-    if (
-      oldSprite &&
-      newSprite &&
-      oldSprite.id !== newSprite.id &&
-      (oldSprite.numFrames !== 3 && oldSprite.numFrames !== 6) &&
-      (newSprite.numFrames === 3 || newSprite.numFrames === 6)
-    ) {
-      patch.spriteType = SPRITE_TYPE_ACTOR;
-    }
-
-    if (newSprite && newSprite.numFrames <= actor.frame) {
-      patch.frame = 0;
-    }
-  }
-  // If static and cycling frames start from frame 1 (facing downwards)
-  if (
-    (patch.animate && actor.spriteType === SPRITE_TYPE_STATIC) ||
-    patch.spriteType === SPRITE_TYPE_STATIC
-  ) {
-    patch.direction = "down";
-  }
-  return editEntity(state, "actors", actor.id, patch);
-};
-
-const removeActor = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-
-  // Remove from scene
-  const nextState = editEntity(state, "scenes", action.sceneId, {
-    actors: scene.actors.filter(actorId => {
-      return actorId !== action.id;
-    })
-  });
-
-  return removeEntity(nextState, "actors", action.id);
-};
-
 const removeActorAt = (state, action) => {
   const scene = state.entities.scenes[action.sceneId];
 
@@ -487,60 +327,6 @@ const removeActorAt = (state, action) => {
   }
 
   return state;
-};
-
-const addTrigger = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  const script =
-    action.defaults &&
-    action.defaults.script &&
-    action.defaults.script.map(regenerateEventIds);
-
-  const width = Math.min(action.width || 1, scene.width);
-  const height = Math.min(action.height || 1, scene.height);
-
-  const newTrigger = Object.assign(
-    {
-      trigger: "walk"
-    },
-    action.defaults || {},
-    script && {
-      script
-    },
-    {
-      id: action.id,
-      x: clamp(action.x, 0, scene.width - width),
-      y: clamp(action.y, 0, scene.height - height),
-      width,
-      height
-    }
-  );
-
-  // Add to scene
-  const nextState = editEntity(state, "scenes", action.sceneId, {
-    triggers: [].concat(scene.triggers, action.id)
-  });
-
-  return addEntity(nextState, "triggers", newTrigger);
-};
-
-const editTrigger = (state, action) => {
-  const trigger = state.entities.triggers[action.id];
-  const patch = { ...action.values };
-  return editEntity(state, "triggers", trigger.id, patch);
-};
-
-const removeTrigger = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-
-  // Remove from scene
-  const nextState = editEntity(state, "scenes", action.sceneId, {
-    triggers: scene.triggers.filter(triggerId => {
-      return triggerId !== action.id;
-    })
-  });
-
-  return removeEntity(nextState, "triggers", action.id);
 };
 
 const removeTriggerAt = (state, action) => {
@@ -611,22 +397,6 @@ const editTriggerEventDestinationPosition = (state, action) => {
       y: action.y
     })
   });
-};
-
-const renameVariable = (state, action) => {
-  if (action.name) {
-    const currentVariable = state.entities.variables[action.variableId];
-    if (currentVariable) {
-      return editEntity(state, "variables", action.variableId, {
-        name: action.name
-      });
-    }
-    return addEntity(state, "variables", {
-      id: action.variableId,
-      name: action.name
-    });
-  }
-  return removeEntity(state, "variables", action.variableId);
 };
 
 const addPalette = (state, action) => {
@@ -790,30 +560,10 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
-    case ADD_ACTOR:
-      return addActor(state, action);
-    case EDIT_ACTOR:
-      return editActor(state, action);
-    case MOVE_ACTOR:
-      return moveActor(state, action);
-    case REMOVE_ACTOR:
-      return removeActor(state, action);
     case REMOVE_ACTOR_AT:
       return removeActorAt(state, action);
-    case ADD_TRIGGER:
-      return addTrigger(state, action);
-    case EDIT_TRIGGER:
-      return editTrigger(state, action);
-    case MOVE_TRIGGER:
-      return moveTrigger(state, action);
-    case RESIZE_TRIGGER:
-      return resizeTrigger(state, action);
-    case REMOVE_TRIGGER:
-      return removeTrigger(state, action);
     case REMOVE_TRIGGER_AT:
       return removeTriggerAt(state, action);
-    case RENAME_VARIABLE:
-      return renameVariable(state, action);
     default:
       return state;
   }

@@ -269,7 +269,6 @@ const removeSelectedEntity = () => (
 ) => {
   const state = getState();
   const { scene, entityId, type: editorType } = state.editor;
-  console.log("removeSelectedEntity", scene, entityId, editorType);
   if (editorType === "scene") {
     dispatch(actions.removeScene({ sceneId: scene }));
   } else if (editorType === "trigger") {
@@ -490,34 +489,14 @@ export const denormalizeProject = (projectData: any) => {
  */
 
 const loadProject: CaseReducer<
-EntitiesState,
-PayloadAction<{
-  data: ProjectData
-}>
+  EntitiesState,
+  PayloadAction<{
+    data: ProjectData;
+  }>
 > = (state, action) => {
   const data = normalizeProject(action.payload.data);
   const fixedData = fixDefaultPalettes(fixSceneCollisions(data));
   const entities = fixedData.entities;
-  console.log({fixedData})
-
-  // const actors = flatten(
-  //   action.payload.scenes.map((scene) => scene.actors)
-  // );
-  // const triggers = flatten(
-  //   action.payload.scenes.map((scene) => scene.triggers)
-  // );
-  // const scenes = action.payload.scenes.map((scene) => ({
-  //   ...scene,
-  //   actors: scene.actors.map((actor) => actor.id),
-  //   triggers: scene.triggers.map((trigger) => trigger.id),
-  // }));
-  // const backgrounds = action.payload.backgrounds;
-  // const spriteSheets = action.payload.spriteSheets;
-  // const palettes = action.payload.palettes;
-  // const music = action.payload.music;
-  // const customEvents = action.payload.customEvents;
-  // const variables = action.payload.variables;
-
   actorsAdapter.setAll(state.actors, entities.actors);
   triggersAdapter.setAll(state.triggers, entities.triggers);
   scenesAdapter.setAll(state.scenes, entities.scenes);
@@ -527,7 +506,7 @@ PayloadAction<{
   musicAdapter.setAll(state.music, entities.music);
   customEventsAdapter.setAll(state.customEvents, entities.customEvents);
   variablesAdapter.setAll(state.variables, entities.variables);
-}
+};
 
 const fixSceneCollisions = (state: any) => {
   return {
@@ -538,21 +517,25 @@ const fixSceneCollisions = (state: any) => {
         const scene = state.entities.scenes[sceneId];
         const background = state.entities.backgrounds[scene.backgroundId];
 
-        if (!background || scene.width !== background.width || scene.height !== background.height) {
+        if (
+          !background ||
+          scene.width !== background.width ||
+          scene.height !== background.height
+        ) {
           // eslint-disable-next-line no-param-reassign
           memo[sceneId] = {
             ...scene,
             width: background ? background.width : 32,
-            height: background ? background.height: 32,
-            collisions: []
+            height: background ? background.height : 32,
+            collisions: [],
           };
         } else {
           // eslint-disable-next-line no-param-reassign
           memo[sceneId] = scene;
         }
         return memo;
-      }, {} as any)
-    }
+      }, {} as any),
+    },
   };
 };
 
@@ -563,12 +546,13 @@ const fixDefaultPalettes = (state: any) => {
       ...state.result,
       settings: {
         ...state.result.settings,
-        defaultBackgroundPaletteIds: state.result.settings.defaultBackgroundPaletteIds
+        defaultBackgroundPaletteIds: state.result.settings
+          .defaultBackgroundPaletteIds
           ? state.result.settings.defaultBackgroundPaletteIds.slice(-6)
           : [],
       },
-    }
-  }
+    },
+  };
 };
 
 /**************************************************************************
@@ -1428,6 +1412,24 @@ const paintColor: CaseReducer<
 };
 
 /**************************************************************************
+ * Variables
+ */
+
+const renameVariable: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; name: string }>
+> = (state, action) => {
+  if (action.payload.name) {
+    variablesAdapter.upsertOne(state.variables, {
+      id: action.payload.variableId,
+      name: action.payload.name,
+    });
+  } else {
+    variablesAdapter.removeOne(state.variables, action.payload.variableId);
+  }
+};
+
+/**************************************************************************
  * Palettes
  */
 
@@ -1724,7 +1726,6 @@ const entitiesSlice = createSlice({
       // const music = action.payload.music;
       // const customEvents = action.payload.customEvents;
       // const variables = action.payload.variables;
-
       // actorsAdapter.setAll(state.actors, actors);
       // triggersAdapter.setAll(state.triggers, triggers);
       // scenesAdapter.setAll(state.scenes, scenes);
@@ -1819,6 +1820,12 @@ const entitiesSlice = createSlice({
     editTriggerEventDestinationPosition,
 
     /**************************************************************************
+     * Variables
+     */
+
+    renameVariable,
+
+    /**************************************************************************
      * Palettes
      */
 
@@ -1859,7 +1866,7 @@ const entitiesSlice = createSlice({
     reloadAssets,
   },
   extraReducers: (builder) =>
-    builder.addCase(projectActions.loadProject.fulfilled, loadProject)
+    builder.addCase(projectActions.loadProject.fulfilled, loadProject),
 });
 
 export const { reducer } = entitiesSlice;

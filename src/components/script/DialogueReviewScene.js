@@ -17,6 +17,8 @@ import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as entityActions } from "../../store/features/entities/entitiesSlice";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
@@ -25,17 +27,17 @@ class DialogueReviewScene extends Component {
       text: value,
     });
     if (type === "scene") {
-      editScene(sceneId, {
+      editScene({sceneId, changes: {
         script: newData,
-      });
+      }});
     } else if (type === "actor") {
-      editActor(sceneId, entityIndex, {
+      editActor({sceneId, actorId: entityIndex, changes: {
         script: newData,
-      });
+      }});
     } else if (type === "trigger") {
-      editTrigger(sceneId, entityIndex, {
+      editTrigger({sceneId, triggerId: entityIndex, changes: {
         script: newData,
-      });
+      }});
     }
   };
 
@@ -173,10 +175,10 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: actions.editActor,
-  editTrigger: actions.editTrigger,
-  editScene: actions.editScene,
-  editSearchTerm: actions.editSearchTerm,
+  editActor: entityActions.editActor,
+  editTrigger: entityActions.editTrigger,
+  editScene: entityActions.editScene,
+  editSearchTerm: editorActions.editSearchTerm,
   setSection: navigationActions.setSection,
 };
 

@@ -272,7 +272,7 @@ const mapDispatchToProps = {
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut,
   zoomReset: editorActions.zoomReset,
-  editSearchTerm: actions.editSearchTerm,
+  editSearchTerm: editorActions.editSearchTerm,
   buildGame: actions.buildGame,
   openFolder: electronActions.openFolder
 };

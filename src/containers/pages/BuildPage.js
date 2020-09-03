@@ -10,6 +10,7 @@ import Button, {
 import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as consoleActions } from "../../store/features/console/consoleSlice";
 
 class BuildPage extends Component {
   constructor(props) {
@@ -26,8 +27,8 @@ class BuildPage extends Component {
   }
 
   onClear = () => {
-    const { consoleClear } = this.props;
-    consoleClear();
+    const { clearConsole } = this.props;
+    clearConsole();
   };
 
   onRun = e => {
@@ -159,7 +160,7 @@ BuildPage.propTypes = {
     })
   ).isRequired,
   buildGame: PropTypes.func.isRequired,
-  consoleClear: PropTypes.func.isRequired,
+  clearConsole: PropTypes.func.isRequired,
   deleteBuildCache: PropTypes.func.isRequired,
   setProfiling: PropTypes.func.isRequired,
 };
@@ -174,7 +175,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  consoleClear: actions.consoleClear,
+  clearConsole: consoleActions.clearConsole,
   buildGame: actions.buildGame,
   deleteBuildCache: actions.deleteBuildCache,
   setProfiling: editorActions.setProfiling,

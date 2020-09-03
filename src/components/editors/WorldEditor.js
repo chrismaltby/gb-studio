@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -20,6 +19,7 @@ import PaletteSelect from "../forms/PaletteSelect";
 import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 import { actions as metadataActions } from "../../store/features/metadata/metadataSlice";
 import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { actions as editorActions } from "../../store/features/editor/editorSlice";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -255,7 +255,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  selectSidebar: actions.selectSidebar,
+  selectSidebar: editorActions.selectSidebar,
   editProject: metadataActions.editMetadata,
   editProjectSettings: settingsActions.editSettings,
   addCustomEvent: entityActions.addCustomEvent

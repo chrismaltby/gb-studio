@@ -8,6 +8,8 @@ import {
   DRAG_PLAYER,
 } from "../../../reducers/editorReducer";
 import { actions as entityActions } from "../entities/entitiesSlice";
+import { actions as navigationActions } from "../navigation/navigationSlice";
+import { actions as projectActions } from "../project/projectActions";
 
 export type Tool =
   | "triggers"
@@ -158,6 +160,10 @@ const editorSlice = createSlice({
       state.scene = "";
       state.type = "world";
       state.worldFocus = true;
+    },
+
+    selectSidebar: (state, _action) => {
+      state.worldFocus = false;
     },
 
     sceneHover: (
@@ -370,6 +376,22 @@ const editorSlice = createSlice({
       );
     },
 
+    editSearchTerm: (state, action: PayloadAction<string>) => {
+      state.searchTerm = action.payload;
+    },
+
+    setScriptTab: (state, action: PayloadAction<string>) => {
+      state.lastScriptTab = action.payload;
+    },
+
+    setScriptTabScene: (state, action: PayloadAction<string>) => {
+      state.lastScriptTabScene = action.payload;
+    },   
+
+    setScriptTabSecondary: (state, action: PayloadAction<string>) => {
+      state.lastScriptTabSecondary = action.payload;
+    },
+
     setProfiling: (state, action: PayloadAction<boolean>) => {
       state.profile = action.payload;
     },
@@ -409,6 +431,22 @@ const editorSlice = createSlice({
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;
         }
+      })
+      // Force React Select dropdowns to reload with new name
+      .addCase(entityActions.renameVariable, (state, action) => {
+        state.variableVersion = state.variableVersion + 1;
+      })
+      // Remove world focus when switching section
+      .addCase(navigationActions.setSection, (state, _action) => {
+        state.worldFocus = false;
+        state.eventId = "";
+      })
+      // Remove world focus when loading project and set scroll settings from project
+      .addCase(projectActions.loadProject.fulfilled, (state, action) => {
+        state.worldFocus = false;
+        state.zoom = action.payload.data.settings?.zoom || state.zoom;
+        state.worldScrollX = action.payload.data.settings?.worldScrollX || state.worldScrollX;
+        state.worldScrollY = action.payload.data.settings?.worldScrollY || state.worldScrollY;
       })
       // When painting collisions or tiles select scene being drawn on
       .addMatcher(

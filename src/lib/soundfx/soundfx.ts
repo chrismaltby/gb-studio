@@ -1,6 +1,6 @@
-let globalAudioCtx = null;
+let globalAudioCtx: AudioContext | undefined = undefined;
 
-export const playTone = (frequency, duration) => {
+export const playTone = (frequency: number, duration: number) => {
   const audioCtx = getAudioCtx();
   const gainNode = audioCtx.createGain();
   const oscillator = audioCtx.createOscillator();
@@ -22,16 +22,16 @@ export const playTone = (frequency, duration) => {
   return oscillator;
 };
 
-export const stopTone = oscillator => {
+export const stopTone = (oscillator: OscillatorNode) => {
   oscillator.stop();
 };
 
-export const decodeAudioData = buffer => {
+export const decodeAudioData = (buffer: ArrayBuffer) => {
   const audioCtx = getAudioCtx();
   return audioCtx.decodeAudioData(buffer);
 };
 
-export const playBuffer = audioBuffer => {
+export const playBuffer = (audioBuffer: AudioBuffer) => {
   const audioCtx = getAudioCtx();
   const source = audioCtx.createBufferSource();
   source.buffer = audioBuffer;
@@ -43,13 +43,13 @@ export const playBuffer = audioBuffer => {
   return source;
 };
 
-export const stopBuffer = bufferSource => {
+export const stopBuffer = (bufferSource: AudioBufferSourceNode) => {
   bufferSource.stop();
 };
 
 const getAudioCtx = () => {
   if (!globalAudioCtx) {
-    globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    globalAudioCtx = new window.AudioContext();
   }
   return globalAudioCtx;
 };

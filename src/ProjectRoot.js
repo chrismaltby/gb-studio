@@ -14,7 +14,6 @@ import AppContainerDnD from "./components/app/AppContainerDnD";
 import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
-import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
 import { actions as editorActions } from "./store/features/editor/editorSlice";
 import { actions as entityActions } from "./store/features/entities/entitiesSlice";
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
@@ -101,23 +100,6 @@ const onUpdateSetting = (event, setting, value) => {
   );
 }
 
-const onBuildStart = () => {
-  store.dispatch({ type: CMD_START });
-}
-
-const onBuildComplete = () => {
-  store.dispatch({ type: CMD_COMPLETE });
-}
-
-const onBuildStdOut = (event, message) => {
-  store.dispatch({ type: CMD_STD_OUT, text: message });
-}
-
-const onBuildStdErr = (event, message) => {
-  store.dispatch({ type: CMD_STD_ERR, text: message });
-  store.dispatch({ type: SET_SECTION, section: "build" });
-}
-
 const onZoom = (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {
@@ -170,10 +152,6 @@ ipcRenderer.on("redo", onRedo);
 ipcRenderer.on("section", onSetSection);
 ipcRenderer.on("reloadAssets", onReloadAssets);
 ipcRenderer.on("updateSetting", onUpdateSetting);
-ipcRenderer.on("build-start", onBuildStart);
-ipcRenderer.on("build-complete", onBuildComplete);
-ipcRenderer.on("build-stdout", onBuildStdOut);
-ipcRenderer.on("build-stderr", onBuildStdErr);
 ipcRenderer.on("zoom", onZoom);
 ipcRenderer.on("run", onRun);
 ipcRenderer.on("build", onBuild);

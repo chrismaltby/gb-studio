@@ -7,7 +7,7 @@ import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../reducers/stateShape";
 import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
-import { variableSelectors } from "../../store/features/entities/entitiesSlice";
+import { actions as enitityActions, variableSelectors } from "../../store/features/entities/entitiesSlice";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
@@ -26,9 +26,9 @@ class GlobalVariableSelect extends Component {
     const { renameVariable, value, entityId } = this.props;
     const valueIsLocal = localVariables.indexOf(value) > -1;
     if (valueIsLocal) {
-      renameVariable(`${entityId}__${value}`, name);
+      renameVariable({variableId: `${entityId}__${value}`, name});
     } else {
-      renameVariable(value || "0", name);
+      renameVariable({variableId: value || "0", name});
     }
   };
 
@@ -159,7 +159,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  renameVariable: actions.renameVariable
+  renameVariable: enitityActions.renameVariable
 };
 
 export default connect(
