@@ -6,6 +6,7 @@ import buildGameMiddleware from "../middleware/buildGame";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import warningsMiddleware from "./features/warnings/warningsMiddleware";
+import undoMiddleware from "./features/undo/undoMiddleware";
 import loggerMiddleware from "../middleware/logger";
 
 const DEBUG = false;
@@ -17,6 +18,7 @@ let middleware = [
   musicMiddleware,
   soundFxMiddleware,
   warningsMiddleware,
+  undoMiddleware
 ];
 
 if (process.env.NODE_ENV !== "production" && DEBUG) {
