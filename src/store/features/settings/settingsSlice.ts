@@ -26,7 +26,7 @@ const initialState: SettingsState = {
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
-  customColorsEnabled: true,
+  customColorsEnabled: false,
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",
