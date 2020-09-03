@@ -497,15 +497,15 @@ const loadProject: CaseReducer<
   const data = normalizeProject(action.payload.data);
   const fixedData = fixDefaultPalettes(fixSceneCollisions(data));
   const entities = fixedData.entities;
-  actorsAdapter.setAll(state.actors, entities.actors);
-  triggersAdapter.setAll(state.triggers, entities.triggers);
-  scenesAdapter.setAll(state.scenes, entities.scenes);
-  backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds);
-  spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets);
-  palettesAdapter.setAll(state.palettes, entities.palettes);
-  musicAdapter.setAll(state.music, entities.music);
-  customEventsAdapter.setAll(state.customEvents, entities.customEvents);
-  variablesAdapter.setAll(state.variables, entities.variables);
+  actorsAdapter.setAll(state.actors, entities.actors || {});
+  triggersAdapter.setAll(state.triggers, entities.triggers || {});
+  scenesAdapter.setAll(state.scenes, entities.scenes || {});
+  backgroundsAdapter.setAll(state.backgrounds, entities.backgrounds || {});
+  spriteSheetsAdapter.setAll(state.spriteSheets, entities.spriteSheets || {});
+  palettesAdapter.setAll(state.palettes, entities.palettes || {});
+  musicAdapter.setAll(state.music, entities.music || {});
+  customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
+  variablesAdapter.setAll(state.variables, entities.variables || {});
 };
 
 const fixSceneCollisions = (state: any) => {
