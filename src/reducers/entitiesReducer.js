@@ -304,58 +304,6 @@ const fixDefaultPalettes = (state) => {
   }
 };
 
-const removeActorAt = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-
-  const removeActorId = scene.actors.find(actorId => {
-    const actor = state.entities.actors[actorId];
-    return (
-      (actor.x === action.x || actor.x === action.x - 1) &&
-      (actor.y === action.y || actor.y === action.y + 1)
-    );
-  });
-
-  if (removeActorId) {
-    // Remove from scene
-    const nextState = editEntity(state, "scenes", action.sceneId, {
-      actors: scene.actors.filter(actorId => {
-        return actorId !== removeActorId;
-      })
-    });
-
-    return removeEntity(nextState, "actors", removeActorId);
-  }
-
-  return state;
-};
-
-const removeTriggerAt = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-
-  const removeTriggerId = scene.triggers.find(triggerId => {
-    const trigger = state.entities.triggers[triggerId];
-    return (
-      action.x >= trigger.x &&
-      action.x < trigger.x + trigger.width &&
-      action.y >= trigger.y &&
-      action.y < trigger.y + trigger.height
-    );
-  });
-
-  if (removeTriggerId) {
-    // Remove from scene
-    const nextState = editEntity(state, "scenes", action.sceneId, {
-      triggers: scene.triggers.filter(triggerId => {
-        return triggerId !== removeTriggerId;
-      })
-    });
-
-    return removeEntity(nextState, "triggers", removeTriggerId);
-  }
-
-  return state;
-};
-
 const editPlayerStartAt = (state, action) => {
   return editProjectSettings(state, {
     values: {
@@ -560,10 +508,6 @@ export default function project(state = initialState.entities, action) {
       return loadMusic(state, action);
     case MUSIC_REMOVE:
       return removeMusic(state, action);
-    case REMOVE_ACTOR_AT:
-      return removeActorAt(state, action);
-    case REMOVE_TRIGGER_AT:
-      return removeTriggerAt(state, action);
     default:
       return state;
   }

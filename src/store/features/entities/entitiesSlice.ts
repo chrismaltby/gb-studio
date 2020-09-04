@@ -1000,6 +1000,43 @@ const removeActor: CaseReducer<
   actorsAdapter.removeOne(state.actors, action.payload.actorId);
 };
 
+const removeActorAt: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+
+  const removeActorId = scene.actors.find((actorId) => {
+    const actor = localActorSelectors.selectById(state, actorId);
+    return (
+      actor &&
+      (actor.x === action.payload.x || actor.x === action.payload.x - 1) &&
+      (actor.y === action.payload.y || actor.y === action.payload.y + 1)
+    );
+  });
+
+  if (removeActorId) {
+    // Remove from scene
+    scenesAdapter.updateOne(state.scenes, {
+      id: action.payload.sceneId,
+      changes: {
+        actors: scene.actors.filter((actorId) => {
+          return actorId !== removeActorId;
+        }),
+      },
+    });
+    // Remove actor
+    actorsAdapter.removeOne(state.actors, removeActorId);
+  }
+};
+
 /**************************************************************************
  * Triggers
  */
@@ -1212,6 +1249,44 @@ const removeTrigger: CaseReducer<
   });
 
   triggersAdapter.removeOne(state.triggers, action.payload.triggerId);
+};
+
+const removeTriggerAt: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const removeTriggerId = scene.triggers.find((triggerId) => {
+    const trigger = localTriggerSelectors.selectById(state, triggerId);
+    return (
+      trigger &&
+      action.payload.x >= trigger.x &&
+      action.payload.x < trigger.x + trigger.width &&
+      action.payload.y >= trigger.y &&
+      action.payload.y < trigger.y + trigger.height
+    );
+  });
+
+  if (removeTriggerId) {
+    // Remove from scene
+    scenesAdapter.updateOne(state.scenes, {
+      id: action.payload.sceneId,
+      changes: {
+        triggers: scene.triggers.filter((triggerId) => {
+          return triggerId !== removeTriggerId;
+        }),
+      },
+    });
+
+    triggersAdapter.removeOne(state.triggers, removeTriggerId);
+  }
 };
 
 /**************************************************************************
@@ -1759,6 +1834,7 @@ const entitiesSlice = createSlice({
 
     editActor,
     removeActor,
+    removeActorAt,
     moveActor,
     editActorEventDestinationPosition,
 
@@ -1787,6 +1863,7 @@ const entitiesSlice = createSlice({
 
     editTrigger,
     removeTrigger,
+    removeTriggerAt,
     moveTrigger,
     resizeTrigger,
     editTriggerEventDestinationPosition,

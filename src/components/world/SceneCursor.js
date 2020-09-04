@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
-import * as actions from "../../actions";
 import { actions as entityActions, sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
@@ -186,15 +185,15 @@ class SceneCursor extends Component {
         }
       }
       if(showLayers) {
-        removeActorAt(sceneId, x, y);
-        removeTriggerAt(sceneId, x, y);
-        if(selectedBrush === BRUSH_16PX) {
-          removeActorAt(sceneId, x + 1, y);
-          removeTriggerAt(sceneId, x + 1, y);
-          removeActorAt(sceneId, x, y + 1);
-          removeTriggerAt(sceneId, x, y + 1);
-          removeActorAt(sceneId, x + 1, y + 1);
-          removeTriggerAt(sceneId, x + 1, y + 1);                              
+        removeActorAt({ sceneId, x, y });
+        removeTriggerAt({ sceneId, x, y });
+        if (selectedBrush === BRUSH_16PX) {
+          removeActorAt({ sceneId, x: x + 1, y });
+          removeTriggerAt({ sceneId, x: x + 1, y });
+          removeActorAt({ sceneId, x, y: y + 1 });
+          removeTriggerAt({ sceneId, x, y: y + 1 });
+          removeActorAt({ sceneId, x: x + 1, y: y + 1 });
+          removeTriggerAt({ sceneId, x: x + 1, y: y + 1 });
         }
       }
     } else if (tool === "select") {
@@ -420,11 +419,11 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   addActor: entityActions.addActor,
-  removeActorAt: actions.removeActorAt,
+  removeActorAt: entityActions.removeActorAt,
   paintCollision: entityActions.paintCollision,
   paintColor: entityActions.paintColor,
   addTrigger: entityActions.addTrigger,
-  removeTriggerAt: actions.removeTriggerAt,
+  removeTriggerAt: entityActions.removeTriggerAt,
   resizeTrigger: entityActions.resizeTrigger,
   selectScene: editorActions.selectScene,
   selectWorld: editorActions.selectWorld,
