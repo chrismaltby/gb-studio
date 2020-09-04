@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { normalize, denormalize, schema } from "normalizr";
 import {
   Scene,
   Background,
@@ -10,9 +9,9 @@ import {
   Actor,
   Trigger,
   CustomEvent,
+  denormalizeEntities,
 } from "../entities/entitiesSlice";
 import migrateWarning from "../../../lib/project/migrateWarning";
-import { actions as errorActions } from "../error/errorSlice";
 import { RootState, AppDispatch } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
 import saveProjectData from "../../../lib/project/saveProjectData";
@@ -21,6 +20,8 @@ import { loadSpriteData } from "../../../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../../../lib/project/loadBackgroundData";
 import { loadMusicData } from "../../../lib/project/loadMusicData";
 import { SettingsState } from "../settings/settingsSlice";
+
+let saving: boolean = false;
 
 type ProjectData = {
   name: string;
@@ -61,6 +62,53 @@ const loadProject = createAsyncThunk<
   };
 });
 
+const saveProject = createAsyncThunk<void, string | undefined>(
+  "project/saveProject",
+  async (newPath, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    if (!state.document.loaded) {
+      throw new Error("Cannot save project that has not finished loading");
+    }
+    if (saving) {
+      throw new Error("Cannot save project while already saving");
+    }
+    if (!newPath && !state.document.modified) {
+      throw new Error("Cannot save unmodified project");
+    }
+
+    saving = true;
+
+    try {
+      const entitiesData = denormalizeEntities(state.project.present.entities);
+
+      const data = {
+        ...state.project.present.metadata,
+        ...entitiesData,
+        settings: {
+          ...state.project.present.settings,
+          zoom: state.editor.zoom,
+          worldScrollX: state.editor.worldScrollX,
+          worldScrollY: state.editor.worldScrollY,
+        },
+      };
+
+      if (newPath) {
+        // Save As
+        await saveAsProjectData(state.document.path, newPath, data);
+      } else {
+        // Save
+        await saveProjectData(state.document.path, data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    saving = false;
+  }
+);
+
 export const actions = {
   loadProject,
+  saveProject,
 };

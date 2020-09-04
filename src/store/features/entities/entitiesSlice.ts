@@ -7,6 +7,7 @@ import {
   AnyAction,
   createSelector,
   CaseReducer,
+  EntityId,
 } from "@reduxjs/toolkit";
 import { normalize, denormalize, schema } from "normalizr";
 import flatten from "lodash/flatten";
@@ -168,7 +169,7 @@ export type SceneData = Omit<Scene, "actors" | "triggers"> & {
   triggers: Trigger[];
 };
 
-type ProjectData = {
+export type ProjectEntitiesData = {
   scenes: SceneData[];
   backgrounds: Background[];
   spriteSheets: SpriteSheet[];
@@ -189,6 +190,8 @@ interface EntitiesState {
   music: EntityState<Music>;
   variables: EntityState<Variable>;
 }
+
+type EntityKey = keyof EntitiesState;
 
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
@@ -476,12 +479,36 @@ const projectSchema = {
   palettes: [palettesSchema],
 };
 
-export const normalizeProject = (projectData: ProjectData) => {
+type ProjectSchemaKey = keyof typeof projectSchema;
+
+export const normalizeEntities = (projectData: ProjectEntitiesData) => {
   return normalize(projectData, projectSchema);
 };
 
-export const denormalizeProject = (projectData: any) => {
-  return denormalize(projectData.result, projectSchema, projectData.entities);
+export const denormalizeEntities = (
+  state: EntitiesState
+): ProjectEntitiesData => {
+  const input: Record<ProjectSchemaKey, EntityId[]> = {
+    scenes: state.scenes.ids,
+    backgrounds: state.backgrounds.ids,
+    spriteSheets: state.spriteSheets.ids,
+    palettes: state.palettes.ids,
+    customEvents: state.customEvents.ids,
+    music: state.music.ids,
+    variables: state.variables.ids,
+  };
+  const entities: Record<EntityKey, Dictionary<any>> = {
+    actors: state.actors.entities,
+    triggers: state.triggers.entities,
+    scenes: state.scenes.entities,
+    backgrounds: state.backgrounds.entities,
+    spriteSheets: state.spriteSheets.entities,
+    palettes: state.palettes.entities,
+    customEvents: state.customEvents.entities,
+    music: state.music.entities,
+    variables: state.variables.entities,
+  };
+  return denormalize(input, projectSchema, entities);
 };
 
 /**************************************************************************
@@ -491,10 +518,10 @@ export const denormalizeProject = (projectData: any) => {
 const loadProject: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: ProjectData;
+    data: ProjectEntitiesData;
   }>
 > = (state, action) => {
-  const data = normalizeProject(action.payload.data);
+  const data = normalizeEntities(action.payload.data);
   const fixedData = fixDefaultPalettes(fixSceneCollisions(data));
   const entities = fixedData.entities;
   actorsAdapter.setAll(state.actors, entities.actors || {});
@@ -1783,7 +1810,6 @@ const entitiesSlice = createSlice({
   name: "entities",
   initialState,
   reducers: {
-
     /**************************************************************************
      * Scenes
      */

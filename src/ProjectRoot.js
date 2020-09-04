@@ -64,16 +64,16 @@ window.addEventListener("error", (error) => {
 });
 
 const onSaveProject = () => {
-  store.dispatch(actions.saveProject());  
+  store.dispatch(projectActions.saveProject());  
 }
 
 const onSaveAndCloseProject = async () => {
-  await store.dispatch(actions.saveProject());
+  await store.dispatch(projectActions.saveProject());
   window.close();  
 }
 
 const onSaveProjectAs = (event, pathName) => {
-  store.dispatch(actions.saveAsProjectAction(pathName));
+  store.dispatch(projectActions.saveProject(pathName));
 }
 
 const onUndo = () => {
