@@ -10,6 +10,7 @@ import {
 import { actions as entityActions } from "../entities/entitiesSlice";
 import { actions as navigationActions } from "../navigation/navigationSlice";
 import { actions as projectActions } from "../project/projectActions";
+import { actions as settingsActions } from "../settings/settingsSlice";
 
 export type Tool =
   | "triggers"
@@ -432,6 +433,12 @@ const editorSlice = createSlice({
           state.worldFocus = true;
         }
       })
+      // Set to world editor when moving player start position
+      .addCase(settingsActions.editPlayerStartAt, (state, _action) => {
+        state.scene = "";
+        state.type = "world";
+        state.worldFocus = true;
+      }) 
       // Force React Select dropdowns to reload with new name
       .addCase(entityActions.renameVariable, (state, action) => {
         state.variableVersion = state.variableVersion + 1;
