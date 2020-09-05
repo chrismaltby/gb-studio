@@ -11,6 +11,8 @@ import createProject, {
 import l10n from "../../lib/helpers/l10n";
 import "../../lib/helpers/handleFirstTab";
 
+const {dialog} = require('electron').remote;
+
 const getLastUsedPath = () => {
   const storedPath = localStorage.getItem("__lastUsedPath");
   if (storedPath) {
@@ -108,9 +110,12 @@ class Splash extends Component {
     }
   };
 
-  onSelectFolder = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const newPath = Path.normalize(`${e.target.files[0].path}/`);
+  onSelectFolder = async () => {
+    const path = await dialog.showOpenDialog({
+        properties: ['openDirectory']
+    });
+    if (path.filePaths[0]) {
+      const newPath = Path.normalize(`${path.filePaths}/`);
       setLastUsedPath(newPath);
       this.setState({
         path: newPath,
@@ -322,11 +327,8 @@ class Splash extends Component {
                   <DotsIcon />
                 </div>
                 <input
-                  type="file"
-                  directory=""
-                  webkitdirectory=""
                   className="Splash__InputButton"
-                  onChange={this.onSelectFolder}
+                  onClick={this.onSelectFolder}
                 />
               </label>
             </div>
