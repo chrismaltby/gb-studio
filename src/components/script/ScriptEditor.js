@@ -21,6 +21,7 @@ import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
 import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
 
 class ScriptEditor extends Component {
 
@@ -291,7 +292,7 @@ function mapStateToProps(state, props) {
 
 const mapDispatchToProps = {
   selectScriptEvent: actions.selectScriptEvent,
-  copyEvent: actions.copyEvent,
+  copyEvent: clipboardActions.copyEvent,
   selectCustomEvent: editorActions.selectCustomEvent,
   pasteCustomEvents: actions.pasteCustomEvents
 };

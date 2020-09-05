@@ -95,96 +95,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
 
 
   /*
-  if (action.type === COPY_ACTOR) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.actor));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          actor: action.actor,
-          __type: "actor",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_TRIGGER) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.trigger.script));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          trigger: action.trigger,
-          __type: "trigger",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_SCENE) {
-    const state = store.getState();
-    const { actors, triggers } = state.entities.present.entities;
-
-    const scene = {
-      ...action.scene,
-      actors: action.scene.actors.map(actorId => actors[actorId]),
-      triggers: action.scene.triggers.map(triggerId => triggers[triggerId]),  
-    }
-
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInScene(scene));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          scene,
-          __type: "scene",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_EVENT) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents([action.event]));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          event: action.event,
-          __type: "event",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_SCRIPT) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.script));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          script: action.script,
-          __type: "script",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  }  else if (action.type === REMOVE_CUSTOM_EVENT) {
+  if (action.type === REMOVE_CUSTOM_EVENT) {
     const state = store.getState();
     const customEvent =
       state.entities.present.entities.customEvents[action.customEventId];
@@ -347,40 +258,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       remote.shell.openItem(outputDir);
     });
 
-  } else if (action.type === PASTE_CUSTOM_EVENTS) {
-
-    try {
-      const clipboardData = JSON.parse(clipboard.readText());
-      if (clipboardData.__customEvents) {
-        const state = store.getState();
-
-        clipboardData.__customEvents.forEach((customEvent) => {
-          const customEventsLookup = getCustomEventsLookup(state);
-          const existingCustomEvent = customEventsLookup[customEvent.id];
-
-          if (existingCustomEvent) {
-            if (JSON.stringify(customEvent) === JSON.stringify(existingCustomEvent)) {
-              // Already have this custom event
-              return;
-            }
-
-            // Display confirmation and stop replace if cancelled
-            const cancel = confirmReplaceCustomEvent(
-              existingCustomEvent.name,
-            );
-            if (cancel) {
-              return;
-            }
-          }
-
-          store.dispatch(editCustomEvent(customEvent.id, customEvent))
-        });
-      }
-    } catch (err) {
-      // Ignore
-    }
-
-  }
+  } 
 */
   next(action);
 };

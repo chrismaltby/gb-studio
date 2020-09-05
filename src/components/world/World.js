@@ -11,6 +11,7 @@ import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../c
 import { SceneShape } from "../../reducers/stateShape";
 import { actions as entityActions, sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
 
 class World extends Component {
   constructor(props) {
@@ -399,9 +400,6 @@ const mapDispatchToProps = {
   setTool: editorActions.setTool,
   selectWorld: editorActions.selectWorld,
   removeSelectedEntity: entityActions.removeSelectedEntity,
-  copyScene: actions.copyScene,
-  copyActor: actions.copyActor,
-  copyTrigger: actions.copyTrigger,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut,
   copySelectedEntity: actions.copySelectedEntity,

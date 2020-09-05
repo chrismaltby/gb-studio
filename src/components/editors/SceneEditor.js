@@ -21,6 +21,7 @@ import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -428,8 +429,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   editScene: entityActions.editScene,
   removeScene: entityActions.removeScene,
-  selectActor: actions.selectActor,
-  copyScene: actions.copyScene,
+  copyScene: clipboardActions.copyScene,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   selectSidebar: editorActions.selectSidebar,
   setScriptTab: editorActions.setScriptTabScene,

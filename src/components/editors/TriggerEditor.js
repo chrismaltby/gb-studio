@@ -16,6 +16,7 @@ import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { triggerSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -251,7 +252,7 @@ function mapStateToProps(state, props) {
 const mapDispatchToProps = {
   editTrigger: entityActions.editTrigger,
   removeTrigger: entityActions.removeTrigger,
-  copyTrigger: actions.copyTrigger,
+  copyTrigger: clipboardActions.copyTrigger,
   pasteClipboardEntity: actions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,
   selectSidebar: editorActions.selectSidebar

@@ -10,6 +10,7 @@ import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
 
 class ScriptEditorDropdownButton extends Component {
   constructor() {
@@ -165,7 +166,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  copyScript: actions.copyScript,
+  copyScript: clipboardActions.copyScript,
   pasteCustomEvents: actions.pasteCustomEvents
 };
 
