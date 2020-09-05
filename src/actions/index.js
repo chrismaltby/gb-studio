@@ -128,10 +128,6 @@ export const setScenePrefab = scene => {
   return { type: types.SET_SCENE_PREFAB, scene };
 };
 
-export const removeScene = sceneId => {
-  return { type: types.REMOVE_SCENE, sceneId };
-};
-
 export const addActor = (sceneId, x, y, defaults) => {
   return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
 };
@@ -140,28 +136,8 @@ export const selectActor = (sceneId, id) => {
   return { type: types.SELECT_ACTOR, sceneId, id };
 };
 
-export const removeActor = (sceneId, id) => {
-  return { type: types.REMOVE_ACTOR, sceneId, id };
-};
-
-export const removeActorAt = (sceneId, x, y) => {
-  return { type: types.REMOVE_ACTOR_AT, sceneId, x, y };
-};
-
 export const selectScriptEvent = eventId => {
   return { type: types.SELECT_SCRIPT_EVENT, eventId };
-};
-
-export const removeTriggerAt = (sceneId, x, y) => {
-  return { type: types.REMOVE_TRIGGER_AT, sceneId, x, y };
-};
-
-export const resizeTrigger = (sceneId, id, startX, startY, x, y) => {
-  return { type: types.RESIZE_TRIGGER, sceneId, id, startX, startY, x, y };
-};
-
-export const moveTrigger = (sceneId, id, newSceneId, x, y) => {
-  return { type: types.MOVE_TRIGGER, sceneId, id, newSceneId, x, y };
 };
 
 export const editTrigger = (sceneId, id, values) => {
@@ -226,41 +202,10 @@ export const pasteCustomEvents = () => {
   return { type: types.PASTE_CUSTOM_EVENTS };
 };
 
-export const setScriptTab = tab => {
-  return { type: types.SET_SCRIPT_TAB, tab };
-};
-
-export const setScriptTabScene = tab => {
-  return { type: types.SET_SCRIPT_TAB_SCENE, tab };
-};
-
-export const setScriptTabSecondary = tab => {
-  return { type: types.SET_SCRIPT_TAB_SECONDARY, tab };
-};
-
 export const editUI = () => {
   return { type: types.EDIT_UI };
 };
 
 export const ejectEngine = () => {
   return { type: types.EJECT_ENGINE };
-};
-
-export const buildGame = ({
-  buildType = "web",
-  exportBuild = false,
-  ejectBuild = false
-} = {}) => async (dispatch, getState) => {
-  const state = getState();
-  if (!state.document.loaded || state.console.status === "running") {
-    // Can't build while previous build still in progress
-    // or loading project
-    return;
-  }
-  dispatch({
-    type: types.BUILD_GAME,
-    buildType,
-    exportBuild,
-    ejectBuild
-  });
 };
