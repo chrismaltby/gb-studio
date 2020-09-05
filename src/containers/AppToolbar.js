@@ -21,7 +21,6 @@ import {
   FolderIcon,
   LoadingIcon
 } from "../components/library/Icons";
-import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
 import { actions as editorActions } from "../store/features/editor/editorSlice";

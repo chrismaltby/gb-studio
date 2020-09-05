@@ -192,12 +192,12 @@ class ScriptEditor extends Component {
 
   onEnter = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent(id);
+    selectScriptEvent({eventId: id});
   };
 
   onLeave = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent("");
+    selectScriptEvent({eventId: ""});
   };
 
   onSelectCustomEvent = id => {
@@ -207,7 +207,7 @@ class ScriptEditor extends Component {
 
   render() {
     const { type, value, entityId } = this.props;
-    const { clipboardEvent, limit } = this.state;
+    const { limit } = this.state;
 
     return (
       <div className="ScriptEditor">
@@ -291,7 +291,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  selectScriptEvent: actions.selectScriptEvent,
+  selectScriptEvent: editorActions.selectScriptEvent,
   copyEvent: clipboardActions.copyEvent,
   selectCustomEvent: editorActions.selectCustomEvent,
   pasteCustomEvents: actions.pasteCustomEvents

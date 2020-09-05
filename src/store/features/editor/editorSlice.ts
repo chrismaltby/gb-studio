@@ -180,6 +180,13 @@ const editorSlice = createSlice({
       state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
+    selectScriptEvent: (
+      state,
+      action: PayloadAction<{ eventId: string }>
+    ) => {
+      state.eventId = action.payload.eventId
+    },
+
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
       state.type = "scene";
       state.scene = action.payload.sceneId;
