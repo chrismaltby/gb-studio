@@ -1,34 +1,12 @@
-import { ipcRenderer, clipboard, remote } from "electron";
+import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
 import uniq from "lodash/uniq";
 import Path from "path";
 import { statSync } from "fs-extra";
-import {
-  PROJECT_LOAD_SUCCESS,
-  COPY_ACTOR,
-  COPY_TRIGGER,
-  COPY_SCENE,
-  COPY_EVENT,
-  COPY_SCRIPT,
-  SIDEBAR_WORLD_RESIZE,
-  SIDEBAR_FILES_RESIZE,
-  PROJECT_LOAD_FAILURE,
-  REMOVE_CUSTOM_EVENT,
-  EJECT_ENGINE,
-  PASTE_CUSTOM_EVENTS,
-} from "../../../actions/actionTypes";
 import confirmDeleteCustomEvent from "../../../lib/electron/dialog/confirmDeleteCustomEvent";
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
 import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEnableColorDialog from "../../../lib/electron/dialog/confirmEnableColorDialog";
-import {
-  getScenes,
-  getScenesLookup,
-  getCustomEvents,
-  getCustomEventsLookup,
-  getActorsLookup,
-  getTriggersLookup,
-} from "../../../reducers/entitiesReducer";
 import {
   walkEvents,
   walkSceneSpecificEvents,
@@ -43,7 +21,6 @@ import { editTrigger } from "../../../actions";
 import l10n from "../../../lib/helpers/l10n";
 import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
-import { TOOL_COLORS } from "../../../consts";
 import { actions as editorActions } from "../../../store/features/editor/editorSlice";
 import {
   getSettings,

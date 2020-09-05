@@ -1,28 +1,15 @@
-import { ipcRenderer, clipboard, remote } from "electron";
-import settings from "electron-settings";
+import { clipboard, remote } from "electron";
 import uniq from "lodash/uniq";
 import Path from "path";
 import { statSync } from "fs-extra";
 import {
-  OPEN_FOLDER,
-  PROJECT_LOAD_SUCCESS,
-  COPY_ACTOR,
-  COPY_TRIGGER,
-  COPY_SCENE,
-  COPY_EVENT,
-  COPY_SCRIPT,
-  SIDEBAR_WORLD_RESIZE,
-  SIDEBAR_FILES_RESIZE,
-  PROJECT_LOAD_FAILURE,
   REMOVE_CUSTOM_EVENT,
   EJECT_ENGINE,
-  SET_TOOL,
   PASTE_CUSTOM_EVENTS
 } from "../actions/actionTypes";
 import confirmDeleteCustomEvent from "../lib/electron/dialog/confirmDeleteCustomEvent";
 import confirmReplaceCustomEvent from "../lib/electron/dialog/confirmReplaceCustomEvent";
 import confirmEjectEngineDialog from "../lib/electron/dialog/confirmEjectEngineDialog";
-import confirmEnableColorDialog from "../lib/electron/dialog/confirmEnableColorDialog";
 import {
   getScenes,
   getScenesLookup,
@@ -31,118 +18,15 @@ import {
   getActorsLookup,
   getTriggersLookup,
 } from "../reducers/entitiesReducer";
-import { walkEvents, walkSceneSpecificEvents, walkActorEvents, filterEvents, getCustomEventIdsInEvents, getCustomEventIdsInActor, getCustomEventIdsInScene } from "../lib/helpers/eventSystem";
+import { walkEvents, walkSceneSpecificEvents, walkActorEvents, filterEvents } from "../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../lib/compiler/eventTypes";
-import { editScene, editActor, editTrigger, editProjectSettings, editCustomEvent } from "../actions";
+import { editScene, editActor, editTrigger, editCustomEvent } from "../actions";
 import l10n from "../lib/helpers/l10n";
 import ejectEngineToDir from "../lib/project/ejectEngineToDir";
 import confirmEjectEngineReplaceDialog from "../lib/electron/dialog/confirmEjectEngineReplaceDialog";
-import { TOOL_COLORS } from "../consts";
-import { actions as editorActions } from "../store/features/editor/editorSlice";
-import { getSettings } from "../store/features/settings/settingsSlice";
 
 export default store => next => action => {
-  if (action.type === OPEN_FOLDER) {
-    remote.shell.openItem(action.path);
-  } else if (action.type === PROJECT_LOAD_SUCCESS) {
-    ipcRenderer.send("project-loaded", action.data.settings);
-  } else if (editorActions.resizeWorldSidebar.match(action)) {
-    settings.set("worldSidebarWidth", action.payload);
-  } else if (editorActions.resizeFilesSidebar.match(action)) {
-    settings.set("filesSidebarWidth", action.payload);
-  } else if (action.type === COPY_ACTOR) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.actor));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          actor: action.actor,
-          __type: "actor",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_TRIGGER) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.trigger.script));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          trigger: action.trigger,
-          __type: "trigger",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_SCENE) {
-    const state = store.getState();
-    const { actors, triggers } = state.entities.present.entities;
-
-    const scene = {
-      ...action.scene,
-      actors: action.scene.actors.map(actorId => actors[actorId]),
-      triggers: action.scene.triggers.map(triggerId => triggers[triggerId]),  
-    }
-
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInScene(scene));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          scene,
-          __type: "scene",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_EVENT) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents([action.event]));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          event: action.event,
-          __type: "event",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === COPY_SCRIPT) {
-    const state = store.getState();
-    const customEventsLookup = getCustomEventsLookup(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.script));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
-    clipboard.writeText(
-      JSON.stringify(
-        {
-          script: action.script,
-          __type: "script",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
-        },
-        null,
-        4
-      )
-    );
-  } else if (action.type === PROJECT_LOAD_FAILURE) {
-    const window = remote.getCurrentWindow();
-    window.close();
-  } else if (action.type === REMOVE_CUSTOM_EVENT) {
+  if (action.type === REMOVE_CUSTOM_EVENT) {
     const state = store.getState();
     const customEvent =
       state.entities.present.entities.customEvents[action.customEventId];
@@ -338,19 +222,7 @@ export default store => next => action => {
       // Ignore
     }
 
-  } else if (action.type === SET_TOOL && action.tool === TOOL_COLORS) {
-    const state = store.getState();
-    const projectSettings = getSettings(state);
-    if(!projectSettings.customColorsEnabled) {
-      const cancel = confirmEnableColorDialog();
-      if (cancel) {
-        return;
-      }
-      store.dispatch(editProjectSettings({
-        customColorsEnabled: true
-      }));
-    }
-  }
+  } 
 
   next(action);
 };

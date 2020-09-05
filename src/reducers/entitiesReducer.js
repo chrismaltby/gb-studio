@@ -1,16 +1,10 @@
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
-import deepmerge from "deepmerge";
 import mapValues from "lodash/mapValues";
 import {
-  PROJECT_LOAD_SUCCESS,
-  PROJECT_SAVE_AS_SUCCESS,
   SPRITE_LOAD_SUCCESS,
   BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
-  EDIT_PROJECT,
-  REMOVE_ACTOR_AT,
-  REMOVE_TRIGGER_AT,  
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
   MUSIC_REMOVE,
@@ -18,10 +12,9 @@ import {
 import clamp from "../lib/helpers/clamp";
 import {
   patchEvents,
-  regenerateEventIds,
 } from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC, SPRITE_TYPE_ACTOR } from "../consts";
+import { DMG_PALETTE } from "../consts";
 
 const addEntity = (state, type, data) => {
   return {
@@ -102,13 +95,6 @@ const sortByFilename = (a, b) => {
   return 0;
 };
 
-// const notMatchAsset = assetA => assetB => {
-//   return assetA.filename !== assetB.filename || assetA.plugin !== assetB.plugin;
-// };
-
-const MIN_SCENE_X = 60;
-const MIN_SCENE_Y = 30;
-
 // Schema ----------------------------------------------------------------------
 
 const backgroundSchema = new schema.Entity("backgrounds");
@@ -142,39 +128,6 @@ export const denormalizeProject = projectData => {
 };
 
 // Mutations -------------------------------------------------------------------
-
-const loadProject = (state, action) => {
-  const data = normalizeProject(action.data);
-  return fixDefaultPalettes(fixSceneCollisions(deepmerge(state, data)));
-};
-
-const saveAsProject = (state, action) => {
-  const data = normalizeProject(action.data);
-  return deepmerge({}, data);
-};
-
-const editProject = (state, action) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      ...action.values
-    }
-  };
-};
-
-const editProjectSettings = (state, action) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      settings: {
-        ...state.result.settings,
-        ...action.values
-      }
-    }
-  };
-};
 
 const loadSprite = (state, action) => {
   const existingAsset = state.result.spriteSheets
@@ -289,107 +242,6 @@ const fixSceneCollisions = state => {
   };
 };
 
-const fixDefaultPalettes = (state) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      settings: {
-        ...state.result.settings,
-        defaultBackgroundPaletteIds: state.result.settings.defaultBackgroundPaletteIds
-          ? state.result.settings.defaultBackgroundPaletteIds.slice(-6)
-          : [],
-      },
-    }
-  }
-};
-
-const editPlayerStartAt = (state, action) => {
-  return editProjectSettings(state, {
-    values: {
-      startSceneId: action.sceneId,
-      startX: action.x,
-      startY: action.y
-    }
-  });
-};
-
-const editSceneEventDestinationPosition = (state, action) => {
-  const scene = state.entities.scenes[action.sceneId];
-  return editEntity(state, "scenes", action.sceneId, {
-    script: patchEvents(scene.script, action.eventId, {
-      sceneId: action.destSceneId,
-      x: action.x,
-      y: action.y
-    })
-  });
-};
-
-const editActorEventDestinationPosition = (state, action) => {
-  const actor = state.entities.actors[action.id];
-  return editEntity(state, "actors", action.id, {
-    script: patchEvents(actor.script, action.eventId, {
-      sceneId: action.destSceneId,
-      x: action.x,
-      y: action.y
-    })
-  });
-};
-
-const editTriggerEventDestinationPosition = (state, action) => {
-  const trigger = state.entities.triggers[action.id];
-  return editEntity(state, "triggers", action.id, {
-    script: patchEvents(trigger.script, action.eventId, {
-      sceneId: action.destSceneId,
-      x: action.x,
-      y: action.y
-    })
-  });
-};
-
-const addPalette = (state, action) => {
-  const newPalette = {
-    id: action.id,
-    name: `Palette ${state.result.palettes.length + 1}`,
-    colors: DMG_PALETTE.colors
-  }
-  return addEntity(state, "palettes", newPalette);
-};
-
-const editPalette = (state, action) => {
-  const palette = state.entities.palettes[action.paletteId];
-  return editEntity(state, "palettes", action.paletteId, {
-    ...palette, 
-    ...action.colors
-  })
-};
-
-const removePalette = (state, action) => {
-  return removeEntity(state, "palettes", action.paletteId);
-};
-
-const reloadAssets = (state, action) => {
-  const now = Date.now();
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      backgrounds: mapValues(state.entities.backgrounds, e => ({
-        ...e,
-        _v: now
-      })),
-      spriteSheets: mapValues(state.entities.spriteSheets, e => ({
-        ...e,
-        _v: now
-      })),
-      music: mapValues(state.entities.music, e => ({
-        ...e,
-        _v: now
-      }))
-    }
-  };
-};
-
 // Selectors -------------------------------------------------------------------
 
 export const getScenesLookup = state => state.entities.present.entities.scenes;
@@ -490,12 +342,6 @@ export const getPalettes = createSelector(
 
 export default function project(state = initialState.entities, action) {
   switch (action.type) {
-    case PROJECT_LOAD_SUCCESS:
-      return loadProject(state, action);
-    case PROJECT_SAVE_AS_SUCCESS:
-      return saveAsProject(state, action);
-    case EDIT_PROJECT:
-      return editProject(state, action);
     case SPRITE_LOAD_SUCCESS:
       return loadSprite(state, action);
     case SPRITE_REMOVE:

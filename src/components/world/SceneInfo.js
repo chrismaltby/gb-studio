@@ -5,12 +5,6 @@ import cx from "classnames";
 import debounce from "lodash/debounce";
 import { MAX_ACTORS, MAX_FRAMES, MAX_TRIGGERS } from "../../consts";
 import {
-  getScenesLookup,
-  getActorsLookup,
-  getTriggersLookup,
-  getSpriteSheetsLookup,
-} from "../../reducers/entitiesReducer";
-import {
   SceneShape,
   ActorShape,
   TriggerShape,

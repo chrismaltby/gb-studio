@@ -1,13 +1,8 @@
 import uuid from "uuid/v4";
-import Path from "path";
 import * as types from "./actionTypes";
-import loadProjectData from "../lib/project/loadProjectData";
-import saveProjectData from "../lib/project/saveProjectData";
-import saveAsProjectData from "../lib/project/saveAsProjectData";
 import { loadSpriteData } from "../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../lib/project/loadBackgroundData";
 import { loadMusicData } from "../lib/project/loadMusicData";
-import { denormalizeProject } from "../reducers/entitiesReducer";
 import parseAssetPath from "../lib/helpers/path/parseAssetPath";
 
 const asyncAction = async (
@@ -121,57 +116,6 @@ export const removeMusic = filename => async (dispatch, getState) => {
   });
 };
 
-export const saveProject = () => async (dispatch, getState) => {
-  const state = getState();
-  if (
-    !state.document.loaded ||
-    state.document.saving ||
-    !state.document.modified
-  ) {
-    return;
-  }
-  await asyncAction(
-    dispatch,
-    types.PROJECT_SAVE_REQUEST,
-    types.PROJECT_SAVE_SUCCESS,
-    types.PROJECT_SAVE_FAILURE,
-    async () => {
-      const data = denormalizeProject(state.entities.present);
-      data.settings.zoom = state.editor.zoom;
-      data.settings.worldScrollX = state.editor.worldScrollX;
-      data.settings.worldScrollY = state.editor.worldScrollY;
-      await saveProjectData(state.document.path, data);
-    }
-  );
-};
-
-export const saveAsProjectAction = path => async (dispatch, getState) => {
-  const state = getState();
-  if (
-      !state.document.loaded ||
-      state.document.saving
-  ) {
-    return;
-  }
-  await asyncAction(
-      dispatch,
-      types.PROJECT_SAVE_AS_REQUEST,
-      types.PROJECT_SAVE_AS_SUCCESS,
-      types.PROJECT_SAVE_AS_FAILURE,
-      async () => {
-        const saveData = denormalizeProject(state.entities.present);
-        saveData.settings.zoom = state.editor.zoom;
-        saveData.name = Path.parse(path).name;
-        await saveAsProjectData(state.document.path, path, saveData);
-        const data = await loadProjectData(path);
-        return {
-          data,
-          path
-        }
-      }
-  );
-};
-
 export const setActorPrefab = actor => {
   return { type: types.SET_ACTOR_PREFAB, actor };
 };
@@ -226,26 +170,6 @@ export const editTrigger = (sceneId, id, values) => {
 
 export const removeCustomEvent = customEventId => {
   return { type: types.REMOVE_CUSTOM_EVENT, customEventId };
-};
-
-export const copyEvent = event => {
-  return { type: types.COPY_EVENT, event };
-};
-
-export const copyScript = script => {
-  return { type: types.COPY_SCRIPT, script };
-};
-
-export const copyActor = actor => {
-  return { type: types.COPY_ACTOR, actor };
-};
-
-export const copyTrigger = trigger => {
-  return { type: types.COPY_TRIGGER, trigger };
-};
-
-export const copyScene = scene => {
-  return { type: types.COPY_SCENE, scene };
 };
 
 export const copySelectedEntity = () => (dispatch, getState) => {

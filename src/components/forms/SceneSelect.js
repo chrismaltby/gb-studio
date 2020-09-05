@@ -3,11 +3,6 @@ import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import {
-  getScenesLookup,
-  getBackgroundsLookup,
-  getSceneIds,
-} from "../../reducers/entitiesReducer";
 import { createCacheFunction } from "../../lib/helpers/cache";
 import { sceneSelectors, backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
