@@ -28,17 +28,17 @@ const consoleSlice = createSlice({
   name: "console",
   initialState,
   reducers: {
-    clearConsole: (state, _action) => {
+    clearConsole: (state, _action: PayloadAction<void>) => {
       state.status = "idle";
       state.output = [];
       state.warnings = [];
     },
-    startConsole: (state, _action) => {
+    startConsole: (state, _action: PayloadAction<void>) => {
       state.status = "running";
       state.output = [];
       state.warnings = [];
     },
-    completeConsole: (state, _action) => {
+    completeConsole: (state, _action: PayloadAction<void>) => {
       state.status = "complete";
     },
     stdOut: (state, action: PayloadAction<string>) => {

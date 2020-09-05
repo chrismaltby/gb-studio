@@ -11,6 +11,7 @@ import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as consoleActions } from "../../store/features/console/consoleSlice";
+import { actions as buildGameActions } from "../../store/features/buildGame/buildGameMiddleware";
 
 class BuildPage extends Component {
   constructor(props) {
@@ -177,7 +178,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   clearConsole: consoleActions.clearConsole,
   buildGame: actions.buildGame,
-  deleteBuildCache: actions.deleteBuildCache,
+  deleteBuildCache: buildGameActions.deleteBuildCache,
   setProfiling: editorActions.setProfiling,
 };
 

@@ -4,8 +4,7 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import {
   BUILD_GAME,
-  SET_SECTION,
-  DELETE_BUILD_CACHE
+  SET_SECTION
 } from "../actions/actionTypes";
 import copy from "../lib/helpers/fsCopy";
 import { denormalizeProject } from "../reducers/entitiesReducer";
@@ -108,13 +107,6 @@ export default store => next => async action => {
         dispatch(stdOut("Reloaded GB Studio Compiler"));     
       });
     }    
-  }
-  else if (action.type === DELETE_BUILD_CACHE) {
-    const dispatch = store.dispatch.bind(store);
-    const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
-    await rmdir(cacheRoot);
-    dispatch(clearConsole());
-    dispatch(stdOut("Cleared GB Studio caches"));
   }
 
   return next(action);
