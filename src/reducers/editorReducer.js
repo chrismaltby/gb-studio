@@ -1,8 +1,6 @@
 import initialState from "./initialState";
 import {
   SELECT_SCRIPT_EVENT,
-  DRAG_DESTINATION_START,
-  DRAG_DESTINATION_STOP,
   REMOVE_SCENE,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
@@ -36,24 +34,6 @@ export default function editor(state = initialState.editor, action) {
         type: "customEvents",
         scene: "",
         entityId: action.id
-      };
-    }
-    case DRAG_DESTINATION_START: {
-      return {
-        ...state,
-        eventId: action.eventId,
-        dragging: DRAG_DESTINATION,
-        type: action.selectionType,
-        entityId: action.id,
-        scene: action.sceneId,
-        worldFocus: true
-      };
-    }
-    case DRAG_DESTINATION_STOP: {
-      return {
-        ...state,
-        eventId: null,
-        dragging: ""
       };
     }
     case MOVE_ACTOR: {

@@ -128,18 +128,6 @@ export const setScenePrefab = scene => {
   return { type: types.SET_SCENE_PREFAB, scene };
 };
 
-export const addActor = (sceneId, x, y, defaults) => {
-  return { type: types.ADD_ACTOR, sceneId, x, y, id: uuid(), defaults };
-};
-
-export const selectActor = (sceneId, id) => {
-  return { type: types.SELECT_ACTOR, sceneId, id };
-};
-
-export const selectScriptEvent = eventId => {
-  return { type: types.SELECT_SCRIPT_EVENT, eventId };
-};
-
 export const editTrigger = (sceneId, id, values) => {
   return { type: types.EDIT_TRIGGER, sceneId, id, values };
 };
