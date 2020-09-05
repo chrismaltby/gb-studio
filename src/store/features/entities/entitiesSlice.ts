@@ -179,7 +179,7 @@ export type ProjectEntitiesData = {
   variables: Variable[];
 };
 
-interface EntitiesState {
+export interface EntitiesState {
   actors: EntityState<Actor>;
   triggers: EntityState<Trigger>;
   scenes: EntityState<Scene>;

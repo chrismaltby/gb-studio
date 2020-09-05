@@ -177,7 +177,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   clearConsole: consoleActions.clearConsole,
-  buildGame: actions.buildGame,
+  buildGame: buildGameActions.buildGame,
   deleteBuildCache: buildGameActions.deleteBuildCache,
   setProfiling: editorActions.setProfiling,
 };

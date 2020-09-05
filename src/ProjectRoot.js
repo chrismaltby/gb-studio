@@ -19,6 +19,8 @@ import { actions as entityActions } from "./store/features/entities/entitiesSlic
 import { actions as settingsActions } from "./store/features/settings/settingsSlice";
 import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
 import { actions as projectActions } from "./store/features/project/projectActions";
+import { actions as buildGameActions } from "./store/features/buildGame/buildGameMiddleware";
+
 import { setGlobalError } from "./store/features/error/errorSlice";
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -112,12 +114,12 @@ const onZoom = (event, zoomType) => {
 }
 
 const onRun = () => {
-  store.dispatch(actions.buildGame());
+  store.dispatch(buildGameActions.buildGame());
 }
 
 const onBuild = (event, buildType, eject) => {
   store.dispatch(
-    actions.buildGame({
+    buildGameActions.buildGame({
       buildType,
       exportBuild: !eject,
       ejectBuild: eject

@@ -27,6 +27,7 @@ import { zoomForSection } from "../lib/helpers/gbstudio";
 import { actions as editorActions } from "../store/features/editor/editorSlice";
 import { actions as navigationActions } from "../store/features/navigation/navigationSlice";
 import { actions as electronActions } from "../store/features/electron/electronMiddleware";
+import { actions as buildGameActions } from "../store/features/buildGame/buildGameMiddleware";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -273,7 +274,7 @@ const mapDispatchToProps = {
   zoomOut: editorActions.zoomOut,
   zoomReset: editorActions.zoomReset,
   editSearchTerm: editorActions.editSearchTerm,
-  buildGame: actions.buildGame,
+  buildGame: buildGameActions.buildGame,
   openFolder: electronActions.openFolder
 };
 

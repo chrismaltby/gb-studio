@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import { actions as projectActions } from "../project/projectActions";
 
-interface MetadataState {
+export interface MetadataState {
   name: string;
   author: string;
   notes: string;

@@ -10,6 +10,7 @@ import {
   Trigger,
   CustomEvent,
   denormalizeEntities,
+  EntitiesState,
 } from "../entities/entitiesSlice";
 import migrateWarning from "../../../lib/project/migrateWarning";
 import { RootState, AppDispatch } from "../../configureStore";
@@ -20,6 +21,7 @@ import { loadSpriteData } from "../../../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../../../lib/project/loadBackgroundData";
 import { loadMusicData } from "../../../lib/project/loadMusicData";
 import { SettingsState } from "../settings/settingsSlice";
+import { MetadataState } from "../metadata/metadataSlice";
 
 let saving: boolean = false;
 
@@ -42,6 +44,19 @@ type ProjectData = {
 type SceneData = Omit<Scene, "actors" | "triggers"> & {
   actors: Actor[];
   triggers: Trigger[];
+};
+
+export const denormalizeProject = (project: {
+  entities: EntitiesState;
+  settings: SettingsState;
+  metadata: MetadataState;
+}): ProjectData => {
+  const entitiesData = denormalizeEntities(project.entities);
+  return JSON.parse(JSON.stringify({
+    ...project.metadata,
+    ...entitiesData,
+    settings: project.settings
+  }));
 };
 
 const loadProject = createAsyncThunk<
@@ -80,13 +95,12 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     saving = true;
 
     try {
-      const entitiesData = denormalizeEntities(state.project.present.entities);
+      const normalizedProject = denormalizeProject(state.project.present);
 
       const data = {
-        ...state.project.present.metadata,
-        ...entitiesData,
+        ...normalizedProject,
         settings: {
-          ...state.project.present.settings,
+          ...normalizedProject.settings,
           zoom: state.editor.zoom,
           worldScrollX: state.editor.worldScrollX,
           worldScrollY: state.editor.worldScrollY,
