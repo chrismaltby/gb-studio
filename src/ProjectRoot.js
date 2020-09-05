@@ -128,7 +128,7 @@ const onBuild = (event, buildType, eject) => {
 }
 
 const onEjectEngine = () => {
-  store.dispatch(actions.ejectEngine());
+  store.dispatch(buildGameActions.ejectEngine());
 }
 
 const onPluginRun = (event, pluginId) => {

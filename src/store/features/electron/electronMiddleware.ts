@@ -5,7 +5,6 @@ import Path from "path";
 import { statSync } from "fs-extra";
 import confirmDeleteCustomEvent from "../../../lib/electron/dialog/confirmDeleteCustomEvent";
 import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
-import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEnableColorDialog from "../../../lib/electron/dialog/confirmEnableColorDialog";
 import {
   walkEvents,
@@ -19,8 +18,6 @@ import {
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { editTrigger } from "../../../actions";
 import l10n from "../../../lib/helpers/l10n";
-import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
-import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import { actions as editorActions } from "../../../store/features/editor/editorSlice";
 import {
   getSettings,
@@ -206,36 +203,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         );
       });
     }
-  } else if (action.type === EJECT_ENGINE) {
-    const cancel = confirmEjectEngineDialog();
-
-    if (cancel) {
-      return;
-    }
-
-    const state = store.getState();
-    const outputDir = Path.join(state.document.root, "assets", "engine");
-
-    let ejectedEngineExists;
-    try {
-      statSync(outputDir);
-      ejectedEngineExists = true;
-    } catch (e) {
-      ejectedEngineExists = false;
-    }
-
-    if (ejectedEngineExists) {
-      const cancel2 = confirmEjectEngineReplaceDialog();
-      if (cancel2) {
-        return;
-      }
-    }
-
-    ejectEngineToDir(outputDir).then(() => {
-      remote.shell.openItem(outputDir);
-    });
-
-  } 
+  }
 */
   next(action);
 };

@@ -36,8 +36,6 @@ export const EDIT_CUSTOM_EVENT = "EDIT_CUSTOM_EVENT";
 export const REMOVE_CUSTOM_EVENT = "REMOVE_CUSTOM_EVENT";
 export const SELECT_CUSTOM_EVENT = "SELECT_CUSTOM_EVENT";
 
-export const EJECT_ENGINE = "EJECT_ENGINE";
-
 export const EDIT_UI = "EDIT_UI";
 
 export const PASTE_ACTOR = "PASTE_ACTOR";

@@ -193,7 +193,3 @@ export const pasteCustomEvents = () => {
 export const editUI = () => {
   return { type: types.EDIT_UI };
 };
-
-export const ejectEngine = () => {
-  return { type: types.EJECT_ENGINE };
-};

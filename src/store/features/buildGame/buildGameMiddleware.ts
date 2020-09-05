@@ -9,6 +9,10 @@ import copy from "../../../lib/helpers/fsCopy";
 import { actions as consoleActions } from "../console/consoleSlice";
 import { actions as navigationActions } from "../navigation/navigationSlice";
 import { denormalizeProject } from "../project/projectActions";
+import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
+import { statSync } from "fs-extra";
+import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
+import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
 
 const rmdir = promisify(rimraf);
 
@@ -151,8 +155,37 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
     await rmdir(cacheRoot);
     dispatch(consoleActions.clearConsole());
     dispatch(consoleActions.stdOut("Cleared GB Studio caches"));
+    
   } else if (ejectEngine.match(action)) {
-    //
+
+    const cancel = confirmEjectEngineDialog();
+
+    if (cancel) {
+      return;
+    }
+
+    const state = store.getState();
+    const outputDir = Path.join(state.document.root, "assets", "engine");
+
+    let ejectedEngineExists;
+    try {
+      statSync(outputDir);
+      ejectedEngineExists = true;
+    } catch (e) {
+      ejectedEngineExists = false;
+    }
+
+    if (ejectedEngineExists) {
+      const cancel2 = confirmEjectEngineReplaceDialog();
+      if (cancel2) {
+        return;
+      }
+    }
+
+    ejectEngineToDir(outputDir).then(() => {
+      remote.shell.openItem(outputDir);
+    });
+
   }
 
   return next(action);
@@ -165,3 +198,7 @@ export const actions = {
 };
 
 export default buildGameMiddleware;
+
+if (module.hot) {
+  module.hot.accept("../../../lib/compiler/buildProject");
+}
