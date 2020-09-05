@@ -14,47 +14,47 @@ static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4, 0xE4};
 static const UBYTE obj_fade_black_vals[] = {0xFF, 0xFF, 0xF8, 0xE4, 0xD4, 0xD0, 0xD0};
 static const UBYTE bgp_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 0xE4};
 
+#ifdef CGB
 UWORD UpdateColorBlack(UINT8 i, UWORD col) {
   return RGB2(DespRight(PAL_RED(col), 6 - i),  DespRight(PAL_GREEN(col), 6 - i),
               DespRight(PAL_BLUE(col), 6 - i));
 }
 
-UWORD UpdateColorWhite(UINT8 i, UWORD col) {
-  return RGB2(PAL_RED(col) | DespRight(0x1F, i - 1), PAL_GREEN(col) | DespRight(0x1F, i - 1),
-              PAL_BLUE(col) | DespRight(0x1F, i - 1));
-}
-
 void ApplyPaletteChangeColor(UBYTE index) {
-  UINT8 pal, c;
-  UWORD palette[4];
-  UWORD palette_s[4];
+  UINT8 c;
+  UWORD palette[32];
+  UWORD paletteWhite;
   UWORD* col = BkgPalette;
-  UWORD* col_s = SprPalette;
 
   if (index == 0) {
     index = 1;
   }
 
   if (fade_black) {
-    for (pal = 0; pal != 8; pal++) {
-      for (c = 0; c != 4; ++c, ++col, ++col_s) {
-        palette[c] = UpdateColorBlack(index, *col);
-        palette_s[c] = UpdateColorBlack(index, *col_s);
-      };
-      set_bkg_palette(pal, 1, palette);
-      set_sprite_palette(pal, 1, palette_s);
+    for (c = 0; c != 32; ++c, ++col) {
+      palette[c] = UpdateColorBlack(index, *col);
     }
+    set_bkg_palette(0, 8, palette);
+    col = SprPalette;
+    for (c = 0; c != 32; c++, ++col) {
+      palette[c] = UpdateColorBlack(index, *col);
+    }
+    set_sprite_palette(0, 8, palette);
   } else { 
-    for (pal = 0; pal != 8; pal++) {
-      for (c = 0; c != 4; ++c, ++col, ++col_s) {
-        palette[c] = UpdateColorWhite(index, *col);
-        palette_s[c] = UpdateColorWhite(index, *col_s);
-      };
-      set_bkg_palette(pal, 1, palette);
-      set_sprite_palette(pal, 1, palette_s);
+    paletteWhite = RGB2(DespRight(0x1F, index - 1), DespRight(0x1F, index - 1), 
+                      DespRight(0x1F, index - 1));
+    for (c = 0; c != 32; ++c, ++col) {
+      palette[c] = (UWORD)*col | paletteWhite;
     }
+    set_bkg_palette(0, 8, palette);
+    col = SprPalette;
+    for (c = 0; c != 32; ++c, ++col) {
+      palette[c] = (UWORD)*col | paletteWhite;
+    }
+    set_sprite_palette(0, 8, palette);
   }
 }
+#endif
 
 void ApplyPaletteChangeDMG(UBYTE index) {
   if (!fade_black) {
