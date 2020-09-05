@@ -284,6 +284,8 @@ void UIShowText_b() {
         value = (tmp_text_lines[i + 2] - '0');
         text_lines[k] = 0x10 + value;  
         i += 3;
+      } else {
+        text_lines[k] = tmp_text_lines[i];
       }
     } else {
       text_lines[k] = tmp_text_lines[i];
