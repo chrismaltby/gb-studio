@@ -25,6 +25,12 @@ import {
   sceneSelectors,
 } from "../entities/entitiesSlice";
 import { actions as editorActions } from "../editor/editorSlice";
+import {
+  actions as entityActions,
+  CustomEvent,
+} from "../entities/entitiesSlice";
+
+import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
 
 const copyActor = createAction<Actor>("clipboard/copyActor");
 const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
@@ -188,44 +194,45 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         4
       )
     );
-  }
-
-  /*
-  if (action.type === PASTE_CUSTOM_EVENTS) {
-
+  } else if (pasteCustomEvents.match(action)) {
     try {
       const clipboardData = JSON.parse(clipboard.readText());
       if (clipboardData.__customEvents) {
         const state = store.getState();
 
-        clipboardData.__customEvents.forEach((customEvent) => {
-          const customEventsLookup = getCustomEventsLookup(state);
+        clipboardData.__customEvents.forEach((customEvent: CustomEvent) => {
+          const customEventsLookup = customEventSelectors.selectEntities(state);
           const existingCustomEvent = customEventsLookup[customEvent.id];
 
           if (existingCustomEvent) {
-            if (JSON.stringify(customEvent) === JSON.stringify(existingCustomEvent)) {
+            if (
+              JSON.stringify(customEvent) ===
+              JSON.stringify(existingCustomEvent)
+            ) {
               // Already have this custom event
               return;
             }
 
             // Display confirmation and stop replace if cancelled
-            const cancel = confirmReplaceCustomEvent(
-              existingCustomEvent.name,
-            );
+            const cancel = confirmReplaceCustomEvent(existingCustomEvent.name);
             if (cancel) {
               return;
             }
           }
 
-          store.dispatch(editCustomEvent(customEvent.id, customEvent))
+          store.dispatch(
+            entityActions.editCustomEvent({
+              customEventId: customEvent.id,
+              changes: customEvent,
+            })
+          );
         });
       }
     } catch (err) {
       // Ignore
     }
-
   }
-*/
+
   next(action);
 };
 

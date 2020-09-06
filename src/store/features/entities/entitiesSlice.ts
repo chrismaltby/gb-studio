@@ -1715,7 +1715,15 @@ const editCustomEvent: CaseReducer<
   let patch = { ...action.payload.changes };
 
   if (!oldEvent) {
-    return;
+    const newCustomEvent: CustomEvent = {
+      id: action.payload.customEventId,
+      name: "",
+      description: "",
+      variables: {},
+      actors: {},
+      script: [],
+    };
+    customEventsAdapter.addOne(state.customEvents, newCustomEvent);
   }
 
   if (patch.script) {
