@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import {
   Scene,
   Background,
@@ -192,6 +192,13 @@ const removeMusic = createAsyncThunk<
 });
 
 /**************************************************************************
+ * UI
+ */
+
+const loadUI = createAction("project/loadUI");
+const reloadAssets = createAction("project/reloadAssets");
+
+/**************************************************************************
  * Save
  */
 
@@ -248,5 +255,7 @@ export const actions = {
   removeSprite,
   loadMusic,
   removeMusic,
+  loadUI,
+  reloadAssets,
   saveProject,
 };

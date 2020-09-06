@@ -462,6 +462,13 @@ const editorSlice = createSlice({
         state.worldScrollX = action.payload.data.settings?.worldScrollX || state.worldScrollX;
         state.worldScrollY = action.payload.data.settings?.worldScrollY || state.worldScrollY;
       })
+      // When UI changes increment UI version number
+      .addMatcher(
+        (action): action is AnyAction => projectActions.loadUI.match(action) || projectActions.reloadAssets.match(action),
+        (state) => {
+          state.uiVersion = state.uiVersion + 1;
+        }
+      )   
       // When painting collisions or tiles select scene being drawn on
       .addMatcher(
         (action): action is PayloadAction<{ sceneId: string }> =>

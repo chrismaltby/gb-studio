@@ -1,98 +1,6 @@
 import { normalize, denormalize, schema } from "normalizr";
 import { createSelector } from "reselect";
-import mapValues from "lodash/mapValues";
-import {
-  SPRITE_LOAD_SUCCESS,
-  SPRITE_REMOVE,
-  BACKGROUND_REMOVE,
-  MUSIC_LOAD_SUCCESS,
-  MUSIC_REMOVE,
-} from "../actions/actionTypes";
-import clamp from "../lib/helpers/clamp";
-import {
-  patchEvents,
-} from "../lib/helpers/eventSystem";
 import initialState from "./initialState";
-import { DMG_PALETTE } from "../consts";
-
-const addEntity = (state, type, data) => {
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      [type]: {
-        ...state.entities[type],
-        [data.id]: data
-      }
-    },
-    result: Object.assign(
-      {},
-      state.result,
-      state.result[type] && {
-        [type]: [].concat(state.result[type], data.id)
-      }
-    )
-  };
-};
-
-const editEntity = (state, type, id, data) => {
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      [type]: {
-        ...state.entities[type],
-        [id]: {
-          ...state.entities[type][id],
-          ...data
-        }
-      }
-    },
-    result: state.result
-  };
-};
-
-const removeEntity = (state, type, id) => {
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      [type]: {
-        ...state.entities[type],
-        [id]: undefined
-      }
-    },
-    result: Object.assign(
-      {},
-      state.result,
-      state.result[type] && {
-        [type]: state.result[type].filter(entityId => entityId !== id)
-      }
-    )
-  };
-};
-
-const sortEntities = (state, type, sortFn) => {
-  return {
-    ...state,
-    result: {
-      ...state.result,
-      [type]: [].concat(state.result[type]).sort((a, b) => {
-        return sortFn(state.entities[type][a], state.entities[type][b]);
-      })
-    }
-  };
-};
-
-const matchAsset = assetA => assetB => {
-  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
-};
-
-const sortByFilename = (a, b) => {
-  if (a.filename > b.filename) return 1;
-  if (a.filename < b.filename) return -1;
-  return 0;
-};
 
 // Schema ----------------------------------------------------------------------
 
@@ -124,35 +32,6 @@ export const normalizeProject = projectData => {
 
 export const denormalizeProject = projectData => {
   return denormalize(projectData.result, projectSchema, projectData.entities);
-};
-
-// Mutations -------------------------------------------------------------------
-
-const fixSceneCollisions = state => {
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      scenes: Object.keys(state.entities.scenes).reduce((memo, sceneId) => {
-        const scene = state.entities.scenes[sceneId];
-        const background = state.entities.backgrounds[scene.backgroundId];
-
-        if (!background || scene.width !== background.width || scene.height !== background.height) {
-          // eslint-disable-next-line no-param-reassign
-          memo[sceneId] = {
-            ...scene,
-            width: background ? background.width : 32,
-            height: background ? background.height: 32,
-            collisions: []
-          };
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          memo[sceneId] = scene;
-        }
-        return memo;
-      }, {})
-    }
-  };
 };
 
 // Selectors -------------------------------------------------------------------

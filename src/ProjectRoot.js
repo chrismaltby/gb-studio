@@ -38,7 +38,7 @@ watchProject(projectPath, {
   onRemoveSprite: f => store.dispatch(projectActions.removeSprite(f)),
   onRemoveBackground: f => store.dispatch(projectActions.removeBackground(f)),
   onRemoveMusic: f => store.dispatch(projectActions.removeMusic(f)),
-  onChangedUI: f => store.dispatch(actions.editUI())
+  onChangedUI: f => store.dispatch(projectActions.loadUI())
 });
 
 window.ActionCreators = ActionCreators;
@@ -91,7 +91,7 @@ const onSetSection =  (event, section) => {
 }
 
 const onReloadAssets = () => {
-  store.dispatch(entityActions.reloadAssets());
+  store.dispatch(projectActions.reloadAssets());
 }
 
 const onUpdateSetting = (event, setting, value) => {

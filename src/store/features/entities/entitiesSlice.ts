@@ -2058,10 +2058,6 @@ const entitiesSlice = createSlice({
     editCustomEvent,
     removeCustomEvent,
 
-    /**************************************************************************
-     * General Assets
-     */
-    reloadAssets,
   },
   extraReducers: (builder) =>
     builder
@@ -2071,7 +2067,8 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.loadSprite.fulfilled, loadSprite)
       .addCase(projectActions.removeSprite.fulfilled, removeSprite)
       .addCase(projectActions.loadMusic.fulfilled, loadMusic)
-      .addCase(projectActions.removeMusic.fulfilled, removeMusic),
+      .addCase(projectActions.removeMusic.fulfilled, removeMusic)
+      .addCase(projectActions.reloadAssets, reloadAssets)
 });
 
 export const { reducer } = entitiesSlice;

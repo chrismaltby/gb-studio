@@ -1,27 +1,4 @@
-import uuid from "uuid/v4";
 import * as types from "./actionTypes";
-import { loadSpriteData } from "../lib/project/loadSpriteData";
-import { loadBackgroundData } from "../lib/project/loadBackgroundData";
-import { loadMusicData } from "../lib/project/loadMusicData";
-import parseAssetPath from "../lib/helpers/path/parseAssetPath";
-
-const asyncAction = async (
-  dispatch,
-  requestType,
-  successType,
-  failureType,
-  fn
-) => {
-  dispatch({ type: requestType });
-  try {
-    const res = await fn();
-    dispatch({ ...res, type: successType });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    dispatch({ type: failureType });
-  }
-};
 
 export const setActorPrefab = actor => {
   return { type: types.SET_ACTOR_PREFAB, actor };
