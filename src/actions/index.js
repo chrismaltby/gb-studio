@@ -23,37 +23,6 @@ const asyncAction = async (
   }
 };
 
-export const loadSprite = filename => async (dispatch, getState) => {
-  return asyncAction(
-    dispatch,
-    types.SPRITE_LOAD_REQUEST,
-    types.SPRITE_LOAD_SUCCESS,
-    types.SPRITE_LOAD_FAILURE,
-    async () => {
-      const state = getState();
-      const projectRoot = state.document && state.document.root;
-      const data = await loadSpriteData(projectRoot)(filename);
-      return {
-        data
-      };
-    }
-  );
-};
-
-export const removeSprite = filename => async (dispatch, getState) => {
-  const state = getState();
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
-
-  return dispatch({
-    type: types.SPRITE_REMOVE,
-    data: {
-      filename: file,
-      plugin
-    }
-  });
-};
-
 export const loadMusic = filename => async (dispatch, getState) => {
   return asyncAction(
     dispatch,

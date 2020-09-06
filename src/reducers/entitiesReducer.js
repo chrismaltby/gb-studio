@@ -128,34 +128,6 @@ export const denormalizeProject = projectData => {
 
 // Mutations -------------------------------------------------------------------
 
-const loadSprite = (state, action) => {
-  const existingAsset = state.result.spriteSheets
-    .map(spriteSheetId => {
-      return state.entities.spriteSheets[spriteSheetId];
-    })
-    .find(matchAsset(action.data));
-  if (existingAsset) {
-    return editEntity(state, "spriteSheets", existingAsset.id, {
-      ...action.data,
-      id: existingAsset.id
-    });
-  }
-  return sortEntities(
-    addEntity(state, "spriteSheets", action.data),
-    "spriteSheets",
-    sortByFilename
-  );
-};
-
-const removeSprite = (state, action) => {
-  const existingAsset = state.result.spriteSheets
-    .map(spriteSheetId => {
-      return state.entities.spriteSheets[spriteSheetId];
-    })
-    .find(matchAsset(action.data));
-  return removeEntity(state, "spriteSheets", existingAsset.id);
-};
-
 const loadMusic = (state, action) => {
   const existingAsset = state.result.music
     .map(trackId => {
@@ -311,10 +283,6 @@ export const getPalettes = createSelector(
 
 export default function project(state = initialState.entities, action) {
   switch (action.type) {
-    case SPRITE_LOAD_SUCCESS:
-      return loadSprite(state, action);
-    case SPRITE_REMOVE:
-      return removeSprite(state, action);
     case MUSIC_LOAD_SUCCESS:
       return loadMusic(state, action);
     case MUSIC_REMOVE:

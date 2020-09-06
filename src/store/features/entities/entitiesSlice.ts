@@ -584,11 +584,11 @@ const loadBackground: CaseReducer<
 };
 
 const removeBackground: CaseReducer<
-EntitiesState,
-PayloadAction<{
-  filename: string;
-  plugin: string | undefined
-}>
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin: string | undefined;
+  }>
 > = (state, action) => {
   const backgrounds = localBackgroundSelectors.selectAll(state);
   const existingAsset = backgrounds.find(matchAsset(action.payload));
@@ -597,10 +597,49 @@ PayloadAction<{
   }
 };
 
+const loadSprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: SpriteSheet;
+  }>
+> = (state, action) => {
+  const spriteSheets = localSpriteSheetSelectors.selectAll(state);
+  const existingAsset = spriteSheets.find(matchAsset(action.payload.data));
+
+  if (existingAsset) {
+    spriteSheetsAdapter.updateOne(state.spriteSheets, {
+      id: existingAsset.id,
+      changes: {
+        ...action.payload.data,
+        id: existingAsset.id,
+      },
+    });
+  } else {
+    spriteSheetsAdapter.addOne(state.spriteSheets, action.payload.data);
+  }
+};
+
+const removeSprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin: string | undefined;
+  }>
+> = (state, action) => {
+  const spriteSheets = localSpriteSheetSelectors.selectAll(state);
+  const existingAsset = spriteSheets.find(matchAsset(action.payload));
+  if (existingAsset) {
+    spriteSheetsAdapter.removeOne(state.spriteSheets, existingAsset.id);
+  }
+};
+
 const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   const scenes = localSceneSelectors.selectAll(state);
-  for(const scene of scenes) {
-    const background = localBackgroundSelectors.selectById(state, scene.backgroundId);
+  for (const scene of scenes) {
+    const background = localBackgroundSelectors.selectById(
+      state,
+      scene.backgroundId
+    );
     if (
       !background ||
       scene.width !== background.width ||
@@ -612,7 +651,7 @@ const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
       scene.tileColors = [];
     }
   }
-}
+};
 
 const fixDefaultPalettes = (state: any) => {
   return {
@@ -1993,6 +2032,8 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.loadProject.fulfilled, loadProject)
       .addCase(projectActions.loadBackground.fulfilled, loadBackground)
       .addCase(projectActions.removeBackground.fulfilled, removeBackground)
+      .addCase(projectActions.loadSprite.fulfilled, loadSprite)
+      .addCase(projectActions.removeSprite.fulfilled, removeSprite),
 });
 
 export const { reducer } = entitiesSlice;

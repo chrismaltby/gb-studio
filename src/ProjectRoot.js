@@ -29,13 +29,13 @@ const projectPath = urlParams.get("path");
 store.dispatch(projectActions.loadProject(projectPath));
 
 watchProject(projectPath, {
-  onAddSprite: f => store.dispatch(actions.loadSprite(f)),
+  onAddSprite: f => store.dispatch(projectActions.loadSprite(f)),
   onAddBackground: f => store.dispatch(projectActions.loadBackground(f)),
   onAddMusic: f => store.dispatch(actions.loadMusic(f)),
-  onChangedSprite: f => store.dispatch(actions.loadSprite(f)),
+  onChangedSprite: f => store.dispatch(projectActions.loadSprite(f)),
   onChangedBackground: f => store.dispatch(projectActions.loadBackground(f)),
   onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
-  onRemoveSprite: f => store.dispatch(actions.removeSprite(f)),
+  onRemoveSprite: f => store.dispatch(projectActions.removeSprite(f)),
   onRemoveBackground: f => store.dispatch(projectActions.removeBackground(f)),
   onRemoveMusic: f => store.dispatch(actions.removeMusic(f)),
   onChangedUI: f => store.dispatch(actions.editUI())

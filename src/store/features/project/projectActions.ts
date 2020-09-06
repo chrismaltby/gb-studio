@@ -80,7 +80,11 @@ const loadProject = createAsyncThunk<
   };
 });
 
-const loadBackground = createAsyncThunk<{ data: any }, string>(
+/**************************************************************************
+ * Backgrounds
+ */
+
+const loadBackground = createAsyncThunk<{ data: Background }, string>(
   "project/loadBackground",
   async (filename, thunkApi) => {
     const state = thunkApi.getState() as RootState;
@@ -107,6 +111,43 @@ const removeBackground = createAsyncThunk<
   const state = thunkApi.getState() as RootState;
   const projectRoot = state.document && state.document.root;
   const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
+  return {
+    filename: file,
+    plugin,
+  };
+});
+
+/**************************************************************************
+ * Sprites
+ */
+
+const loadSprite = createAsyncThunk<{ data: SpriteSheet }, string>(
+  "project/loadSprite",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadSpriteData(projectRoot)(filename)) as
+      | SpriteSheet
+      | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load sprite sheet");
+    }
+
+    return {
+      data,
+    };
+  }
+);
+
+const removeSprite = createAsyncThunk<
+  { filename: string; plugin: string | undefined },
+  string
+>("project/removeSprite", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "sprites");
   return {
     filename: file,
     plugin,
@@ -162,5 +203,7 @@ export const actions = {
   loadProject,
   loadBackground,
   removeBackground,
+  loadSprite,
+  removeSprite,
   saveProject,
 };
