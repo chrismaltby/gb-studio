@@ -3,7 +3,6 @@ import { createSelector } from "reselect";
 import mapValues from "lodash/mapValues";
 import {
   SPRITE_LOAD_SUCCESS,
-  BACKGROUND_LOAD_SUCCESS,
   SPRITE_REMOVE,
   BACKGROUND_REMOVE,
   MUSIC_LOAD_SUCCESS,
@@ -155,27 +154,6 @@ const removeSprite = (state, action) => {
     })
     .find(matchAsset(action.data));
   return removeEntity(state, "spriteSheets", existingAsset.id);
-};
-
-const loadBackground = (state, action) => {
-  const existingAsset = state.result.backgrounds
-    .map(backgroundId => {
-      return state.entities.backgrounds[backgroundId];
-    })
-    .find(matchAsset(action.data));
-  if (existingAsset) {
-    return fixSceneCollisions(
-      editEntity(state, "backgrounds", existingAsset.id, {
-        ...action.data,
-        id: existingAsset.id
-      })
-    );
-  }
-  return sortEntities(
-    addEntity(state, "backgrounds", action.data),
-    "backgrounds",
-    sortByFilename
-  );
 };
 
 const removeBackground = (state, action) => {
@@ -346,8 +324,6 @@ export default function project(state = initialState.entities, action) {
       return loadSprite(state, action);
     case SPRITE_REMOVE:
       return removeSprite(state, action);
-    case BACKGROUND_LOAD_SUCCESS:
-      return loadBackground(state, action);
     case BACKGROUND_REMOVE:
       return removeBackground(state, action);
     case MUSIC_LOAD_SUCCESS:
