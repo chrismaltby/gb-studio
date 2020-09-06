@@ -1,5 +1,4 @@
-import reducer, { initialState, actions, EditorState } from "../../src/store/features/editor/editorSlice";
-import { SET_TOOL, SELECT_TRIGGER } from "../../src/actions/actionTypes";
+import reducer, { initialState, actions, EditorState } from "../../../../src/store/features/editor/editorState";
 
 test("Should allow setting tool", () => {
   const state: EditorState = {

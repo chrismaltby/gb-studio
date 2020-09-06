@@ -67,6 +67,9 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   } else if (projectActions.loadProject.rejected.match(action)) {
     const window = remote.getCurrentWindow();
     window.close();
+  } else if (projectActions.closeProject.match(action)) {
+    const window = remote.getCurrentWindow();
+    window.close();
   } else if (entitiesActions.removeCustomEvent.match(action)) {
     const state = store.getState();
     const customEvent = customEventSelectors.selectById(

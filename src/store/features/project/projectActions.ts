@@ -12,8 +12,7 @@ import {
   denormalizeEntities,
   EntitiesState,
 } from "../entities/entitiesState";
-import migrateWarning from "../../../lib/project/migrateWarning";
-import { RootState, AppDispatch } from "../../configureStore";
+import { RootState } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
 import saveProjectData from "../../../lib/project/saveProjectData";
 import saveAsProjectData from "../../../lib/project/saveAsProjectData";
@@ -62,16 +61,13 @@ export const denormalizeProject = (project: {
   );
 };
 
+const openProject = createAction<string>("project/openProject");
+const closeProject = createAction<void>("project/closeProject");
+
 const loadProject = createAsyncThunk<
   { data: ProjectData; path: string },
   string
->("project/loadProject", async (path, thunkApi) => {
-  const shouldOpenProject = await migrateWarning(path);
-
-  if (!shouldOpenProject) {
-    throw new Error("Cancelled opening project");
-  }
-
+>("project/loadProject", async (path) => {
   const data = (await loadProjectData(path)) as ProjectData;
 
   return {
@@ -248,6 +244,8 @@ const saveProject = createAsyncThunk<void, string | undefined>(
 );
 
 export default {
+  openProject,
+  closeProject,
   loadProject,
   loadBackground,
   removeBackground,

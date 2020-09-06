@@ -7,6 +7,7 @@ import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import warningsMiddleware from "./features/warnings/warningsMiddleware";
 import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
+import projectMiddleware from "./features/project/projectMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -23,6 +24,7 @@ const store = configureStore({
     immutableCheck: false
   }).concat([
     electronMiddleware,
+    projectMiddleware,
     buildGameMiddleware,
     musicMiddleware,
     soundFxMiddleware,

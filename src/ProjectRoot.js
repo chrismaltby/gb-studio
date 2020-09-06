@@ -34,7 +34,7 @@ const actions = {
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
-store.dispatch(projectActions.loadProject(projectPath));
+store.dispatch(projectActions.openProject(projectPath));
 
 watchProject(projectPath, {
   onAddSprite: f => store.dispatch(projectActions.loadSprite(f)),
