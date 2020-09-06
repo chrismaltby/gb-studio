@@ -253,7 +253,7 @@ const mapDispatchToProps = {
   editTrigger: entityActions.editTrigger,
   removeTrigger: entityActions.removeTrigger,
   copyTrigger: clipboardActions.copyTrigger,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,
   selectSidebar: editorActions.selectSidebar
 };

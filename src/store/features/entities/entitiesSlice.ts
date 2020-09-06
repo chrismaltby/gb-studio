@@ -10,7 +10,6 @@ import {
   EntityId,
 } from "@reduxjs/toolkit";
 import { normalize, denormalize, schema } from "normalizr";
-import flatten from "lodash/flatten";
 import {
   SPRITE_TYPE_STATIC,
   SPRITE_TYPE_ACTOR,
@@ -161,6 +160,7 @@ export type SpriteSheet = {
 };
 
 export type Scene = {
+  id: string;
   name: string;
   x: number;
   y: number;
@@ -346,10 +346,6 @@ const first = <T>(array: T[]): T | undefined => {
     return array[0];
   }
   return undefined;
-};
-
-const regenerateEvents = (events: ScriptEvent[] = []): ScriptEvent[] => {
-  return events.map(regenerateEventIds);
 };
 
 const mapActorEvents = (
@@ -722,17 +718,6 @@ const addScene: CaseReducer<
   const backgroundId = localBackgroundSelectors.selectIds(state)[0];
   const background = localBackgroundSelectors.selectById(state, backgroundId);
 
-  const script = regenerateEvents(action.payload.defaults?.script);
-  const playerHit1Script = regenerateEvents(
-    action.payload.defaults?.playerHit1Script
-  );
-  const playerHit2Script = regenerateEvents(
-    action.payload.defaults?.playerHit2Script
-  );
-  const playerHit3Script = regenerateEvents(
-    action.payload.defaults?.playerHit3Script
-  );
-
   const newScene: Scene = Object.assign(
     {
       name: `Scene ${scenesTotal + 1}`,
@@ -741,14 +726,12 @@ const addScene: CaseReducer<
       height: Math.max(MIN_SCENE_HEIGHT, background?.height || 0),
       collisions: [],
       tileColors: [],
+      script: [],
+      playerHit1Script: [],
+      playerHit2Script: [],
+      playerHit3Script: [],
     },
     action.payload.defaults || {},
-    {
-      script,
-      playerHit1Script,
-      playerHit2Script,
-      playerHit3Script,
-    },
     {
       id: action.payload.sceneId,
       x: Math.max(MIN_SCENE_X, action.payload.x),
@@ -758,7 +741,27 @@ const addScene: CaseReducer<
     }
   );
 
-  scenesAdapter.addOne(state.scenes, newScene);
+  const fixedScene = mapSceneEvents(newScene, regenerateEventIds);
+
+  scenesAdapter.addOne(state.scenes, fixedScene);
+
+  if (action.payload.defaults?.actors) {
+    for (let actor of action.payload.defaults.actors) {
+      addActorToScene(state, fixedScene, {
+        ...actor,
+        id: uuid(),
+      });
+    }
+  }
+
+  if (action.payload.defaults?.triggers) {
+    for (let trigger of action.payload.defaults.triggers) {
+      addTriggerToScene(state, fixedScene, {
+        ...trigger,
+        id: uuid(),
+      });
+    }
+  }
 };
 
 const moveScene: CaseReducer<
@@ -920,12 +923,6 @@ const addActor: CaseReducer<
     return;
   }
 
-  const script = regenerateEvents(action.payload.defaults?.script);
-  const startScript = regenerateEvents(action.payload.defaults?.startScript);
-  const hit1Script = regenerateEvents(action.payload.defaults?.hit1Script);
-  const hit2Script = regenerateEvents(action.payload.defaults?.hit2Script);
-  const hit3Script = regenerateEvents(action.payload.defaults?.hit3Script);
-
   const newActor = Object.assign(
     {
       name: "",
@@ -936,15 +933,13 @@ const addActor: CaseReducer<
       direction: "down",
       moveSpeed: "1",
       animSpeed: "3",
+      script: [],
+      startScript: [],
+      hit1Script: [],
+      hit2Script: [],
+      hit3Script: [],
     },
     action.payload.defaults || {},
-    {
-      script,
-      startScript,
-      hit1Script,
-      hit2Script,
-      hit3Script,
-    },
     {
       id: action.payload.actorId,
       x: clamp(action.payload.x, 0, scene.width - 2),
@@ -952,15 +947,15 @@ const addActor: CaseReducer<
     }
   );
 
-  // Add to scene
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: {
-      actors: ([] as string[]).concat(scene.actors, action.payload.actorId),
-    },
-  });
+  addActorToScene(state, scene, newActor);
+};
 
-  actorsAdapter.addOne(state.actors, newActor);
+const addActorToScene = (state: EntitiesState, scene: Scene, actor: Actor) => {
+  const fixedActor = mapActorEvents(actor, regenerateEventIds);
+
+  // Add to scene
+  scene.actors = ([] as string[]).concat(scene.actors, fixedActor.id);
+  actorsAdapter.addOne(state.actors, fixedActor);
 };
 
 const editActor: CaseReducer<
@@ -1211,20 +1206,13 @@ const addTrigger: CaseReducer<
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
 
-  const script: ScriptEvent[] | undefined =
-    action.payload.defaults &&
-    action.payload.defaults.script &&
-    action.payload.defaults.script.map(regenerateEventIds);
-
   const newTrigger: Trigger = Object.assign(
     {
       name: "",
       trigger: "walk",
+      script: [],
     },
     action.payload.defaults || {},
-    script && {
-      script,
-    },
     {
       id: action.payload.triggerId,
       x: clamp(action.payload.x, 0, scene.width - width),
@@ -1235,17 +1223,19 @@ const addTrigger: CaseReducer<
   );
 
   // Add to scene
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: {
-      triggers: ([] as string[]).concat(
-        scene.triggers,
-        action.payload.triggerId
-      ),
-    },
-  });
+  addTriggerToScene(state, scene, newTrigger);
+};
 
-  triggersAdapter.addOne(state.triggers, newTrigger);
+const addTriggerToScene = (
+  state: EntitiesState,
+  scene: Scene,
+  trigger: Trigger
+) => {
+  const fixedActor = mapTriggerEvents(trigger, regenerateEventIds);
+
+  // Add to scene
+  scene.triggers = ([] as string[]).concat(scene.triggers, fixedActor.id);
+  triggersAdapter.addOne(state.triggers, fixedActor);
 };
 
 const editTrigger: CaseReducer<
@@ -2057,7 +2047,6 @@ const entitiesSlice = createSlice({
 
     editCustomEvent,
     removeCustomEvent,
-
   },
   extraReducers: (builder) =>
     builder
@@ -2068,7 +2057,7 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.removeSprite.fulfilled, removeSprite)
       .addCase(projectActions.loadMusic.fulfilled, loadMusic)
       .addCase(projectActions.removeMusic.fulfilled, removeMusic)
-      .addCase(projectActions.reloadAssets, reloadAssets)
+      .addCase(projectActions.reloadAssets, reloadAssets),
 });
 
 export const { reducer } = entitiesSlice;

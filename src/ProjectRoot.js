@@ -20,6 +20,7 @@ import { actions as settingsActions } from "./store/features/settings/settingsSl
 import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
 import { actions as projectActions } from "./store/features/project/projectActions";
 import { actions as buildGameActions } from "./store/features/buildGame/buildGameMiddleware";
+import { actions as clipboardActions } from "./store/features/clipboard/clipboardMiddleware";
 
 import { setGlobalError } from "./store/features/error/errorSlice";
 
@@ -140,7 +141,7 @@ const onPluginRun = (event, pluginId) => {
 const onPasteInPlace = (event) => {
   try {
     const clipboardData = JSON.parse(clipboard.readText());
-    store.dispatch(actions.pasteClipboardEntityInPlace(clipboardData));
+    store.dispatch(clipboardActions.pasteClipboardEntityInPlace(clipboardData));
   } catch (err) {
     // Clipboard isn't pastable, just ignore it
   }

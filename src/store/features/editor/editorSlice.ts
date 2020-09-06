@@ -7,7 +7,7 @@ import {
   DRAG_DESTINATION,
   DRAG_PLAYER,
 } from "../../../reducers/editorReducer";
-import { actions as entityActions } from "../entities/entitiesSlice";
+import { actions as entityActions, Actor, Trigger, SceneData } from "../entities/entitiesSlice";
 import { actions as navigationActions } from "../navigation/navigationSlice";
 import { actions as projectActions } from "../project/projectActions";
 import { actions as settingsActions } from "../settings/settingsSlice";
@@ -34,6 +34,9 @@ export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
 
 export interface EditorState {
   tool: Tool;
+  actorDefaults?: Partial<Actor>;
+  triggerDefaults?: Partial<Trigger>;
+  sceneDefaults?: Partial<SceneData>;
   type: EditorSelectionType;
   worldFocus: boolean;
   scene: string;
@@ -120,6 +123,9 @@ const editorSlice = createSlice({
   reducers: {
     setTool: (state, action: PayloadAction<{ tool: Tool }>) => {
       state.tool = action.payload.tool;
+      state.actorDefaults = undefined;
+      state.triggerDefaults = undefined;
+      state.sceneDefaults = undefined;
     },
 
     setBrush: (state, action: PayloadAction<{ brush: Brush }>) => {
@@ -403,6 +409,21 @@ const editorSlice = createSlice({
     setProfiling: (state, action: PayloadAction<boolean>) => {
       state.profile = action.payload;
     },
+
+    setActorDefaults: (state, action: PayloadAction<Partial<Actor>>) => {
+      state.actorDefaults = action.payload;
+      state.tool = "actors";
+    },
+
+    setTriggerDefaults: (state, action: PayloadAction<Partial<Trigger>>) => {
+      state.triggerDefaults = action.payload;
+      state.tool = "triggers";
+    },
+
+    setSceneDefaults: (state, action: PayloadAction<Partial<SceneData>>) => {
+      state.sceneDefaults = action.payload;
+      state.tool = "scene";
+    }
   },
   extraReducers: (builder) =>
     builder

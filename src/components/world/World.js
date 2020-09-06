@@ -235,9 +235,9 @@ class World extends Component {
   }
 
   onAddScene = e => {
-    const { addScene, setTool, prefab } = this.props;
+    const { addScene, setTool, sceneDefaults } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene({x: hoverX, y: hoverY, defaults: prefab});
+    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults});
     setTool({tool:"select"});
     this.setState({ hover: false });
   };
@@ -317,7 +317,7 @@ World.propTypes = {
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   zoomRatio: PropTypes.number.isRequired,
   focus: PropTypes.bool.isRequired,
-  prefab: PropTypes.shape({}),
+  sceneDefaults: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
@@ -335,7 +335,7 @@ World.propTypes = {
 };
 
 World.defaultProps = {
-  prefab: null,
+  sceneDefaults: null,
   onlyMatchingScene: null
 };
 
@@ -350,7 +350,8 @@ function mapStateToProps(state) {
   const {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
-    showLayers
+    showLayers,
+    sceneDefaults
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.editor;
@@ -375,7 +376,6 @@ function mapStateToProps(state) {
   const onlyMatchingScene = (matchingScenes.length === 1
     && scenesLookup[matchingScenes[0]]) || null;
 
-  const prefab = undefined;
   const { tool } = state.editor;
 
   return {
@@ -385,7 +385,7 @@ function mapStateToProps(state) {
     scrollX,
     scrollY,
     tool,
-    prefab,
+    sceneDefaults,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
     sidebarWidth,
@@ -402,8 +402,8 @@ const mapDispatchToProps = {
   removeSelectedEntity: entityActions.removeSelectedEntity,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut,
-  copySelectedEntity: actions.copySelectedEntity,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
+  copySelectedEntity: clipboardActions.copySelectedEntity,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   scrollWorld: editorActions.scrollWorld,
   resizeWorldView: editorActions.resizeWorldView,
 };

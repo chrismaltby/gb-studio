@@ -1,22 +1,80 @@
 import { clipboard } from "electron";
 import uniq from "lodash/uniq";
-import {
-  PASTE_CUSTOM_EVENTS,
-} from "../../../actions/actionTypes";
+import { PASTE_CUSTOM_EVENTS } from "../../../actions/actionTypes";
 import {
   getCustomEventIdsInEvents,
   getCustomEventIdsInActor,
   getCustomEventIdsInScene,
 } from "../../../lib/helpers/eventSystem";
-import { Middleware, createAction } from "@reduxjs/toolkit";
+import {
+  Middleware,
+  createAction,
+  ThunkDispatch,
+  AnyAction,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
-import { Actor, customEventSelectors, ScriptEvent, Trigger, Scene, actorSelectors, triggerSelectors } from "../entities/entitiesSlice";
+import {
+  Actor,
+  customEventSelectors,
+  ScriptEvent,
+  Trigger,
+  Scene,
+  actorSelectors,
+  triggerSelectors,
+  SceneData,
+  sceneSelectors,
+} from "../entities/entitiesSlice";
+import { actions as editorActions } from "../editor/editorSlice";
 
 const copyActor = createAction<Actor>("clipboard/copyActor");
 const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
 const copyScene = createAction<Scene>("clipboard/copyScene");
 const copyEvent = createAction<ScriptEvent>("clipboard/copyEvent");
 const copyScript = createAction<ScriptEvent[]>("clipboard/copyScript");
+
+const pasteCustomEvents = createAction<void>("clipboard/pasteCustomEvents");
+
+export const copySelectedEntity = () => (
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const { scene: sceneId, entityId, type: editorType } = state.editor;
+  if (editorType === "scene") {
+    const scene = sceneSelectors.selectById(state, sceneId);
+    if (scene) {
+      dispatch(copyScene(scene));
+    }
+  } else if (editorType === "actor") {
+    const actor = actorSelectors.selectById(state, entityId);
+    if (actor) {
+      dispatch(copyActor(actor));
+    }
+  } else if (editorType === "trigger") {
+    const trigger = triggerSelectors.selectById(state, entityId);
+    if (trigger) {
+      dispatch(copyTrigger(trigger));
+    }
+  }
+};
+
+export const pasteClipboardEntity = (clipboardData: any) => (
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>
+) => {
+  if (clipboardData.__type === "scene") {
+    const clipboardScene = clipboardData.scene as Partial<SceneData>;
+    dispatch(pasteCustomEvents());
+    dispatch(editorActions.setSceneDefaults(clipboardScene));
+  } else if (clipboardData.__type === "actor") {
+    const clipboardActor = clipboardData.actor as Partial<Actor>;
+    dispatch(pasteCustomEvents());
+    dispatch(editorActions.setActorDefaults(clipboardActor));
+  } else if (clipboardData.__type === "trigger") {
+    const clipboardTrigger = clipboardData.trigger as Partial<Trigger>;
+    dispatch(pasteCustomEvents());
+    dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
+  }
+};
 
 const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
@@ -25,13 +83,16 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const state = store.getState();
     const customEventsLookup = customEventSelectors.selectEntities(state);
     const usedCustomEventIds = uniq(getCustomEventIdsInActor(action.payload));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+    const usedCustomEvents = usedCustomEventIds
+      .map((id) => customEventsLookup[id])
+      .filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
           actor: action.payload,
           __type: "actor",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
+          __customEvents:
+            usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
         },
         null,
         4
@@ -40,14 +101,19 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   } else if (copyTrigger.match(action)) {
     const state = store.getState();
     const customEventsLookup = customEventSelectors.selectEntities(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.payload.script));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+    const usedCustomEventIds = uniq(
+      getCustomEventIdsInEvents(action.payload.script)
+    );
+    const usedCustomEvents = usedCustomEventIds
+      .map((id) => customEventsLookup[id])
+      .filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
           trigger: action.payload,
           __type: "trigger",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
+          __customEvents:
+            usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
         },
         null,
         4
@@ -60,52 +126,63 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
 
     const scene = {
       ...action.payload,
-      actors: action.payload.actors.map(actorId => actors[actorId]),
-      triggers: action.payload.triggers.map(triggerId => triggers[triggerId]),  
-    }
+      actors: action.payload.actors.map((actorId) => actors[actorId]),
+      triggers: action.payload.triggers.map((triggerId) => triggers[triggerId]),
+    };
 
     const customEventsLookup = customEventSelectors.selectEntities(state);
     const usedCustomEventIds = uniq(getCustomEventIdsInScene(scene));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+    const usedCustomEvents = usedCustomEventIds
+      .map((id) => customEventsLookup[id])
+      .filter((i) => i);
 
     clipboard.writeText(
       JSON.stringify(
         {
           scene,
           __type: "scene",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
+          __customEvents:
+            usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
         },
         null,
         4
       )
-    );  
+    );
   } else if (copyEvent.match(action)) {
     const state = store.getState();
     const customEventsLookup = customEventSelectors.selectEntities(state);
-    const usedCustomEventIds = uniq(getCustomEventIdsInEvents([action.payload]));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);
+    const usedCustomEventIds = uniq(
+      getCustomEventIdsInEvents([action.payload])
+    );
+    const usedCustomEvents = usedCustomEventIds
+      .map((id) => customEventsLookup[id])
+      .filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
           event: action.payload,
           __type: "event",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
+          __customEvents:
+            usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
         },
         null,
         4
       )
-    );    
+    );
   } else if (copyScript.match(action)) {
     const state = store.getState();
     const customEventsLookup = customEventSelectors.selectEntities(state);
     const usedCustomEventIds = uniq(getCustomEventIdsInEvents(action.payload));
-    const usedCustomEvents = usedCustomEventIds.map((id) => customEventsLookup[id]).filter((i) => i);    
+    const usedCustomEvents = usedCustomEventIds
+      .map((id) => customEventsLookup[id])
+      .filter((i) => i);
     clipboard.writeText(
       JSON.stringify(
         {
           script: action.payload,
           __type: "script",
-          __customEvents: usedCustomEvents.length > 0 ? usedCustomEvents : undefined
+          __customEvents:
+            usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
         },
         null,
         4
@@ -157,7 +234,9 @@ export const actions = {
   copyTrigger,
   copyScene,
   copyEvent,
-  copyScript
+  copyScript,
+  copySelectedEntity,
+  pasteClipboardEntity,
 };
 
 export default clipboardMiddleware;

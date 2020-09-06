@@ -20,18 +20,6 @@ export const removeCustomEvent = customEventId => {
   return { type: types.REMOVE_CUSTOM_EVENT, customEventId };
 };
 
-export const copySelectedEntity = () => (dispatch, getState) => {
-  const state = getState();
-  const { scene: sceneId, entityId, type: editorType } = state.editor;
-  if (editorType === "scenes") {
-    dispatch(copyScene(state.entities.present.entities.scenes[sceneId]));
-  } else if (editorType === "actors") {
-    dispatch(copyActor(state.entities.present.entities.actors[entityId]));
-  } else if (editorType === "triggers") {
-    dispatch(copyTrigger(state.entities.present.entities.triggers[entityId]));
-  }
-};
-
 export const pasteClipboardEntity = clipboardData => dispatch => {
   if (clipboardData.__type === "scene") {
     const clipboardScene = clipboardData.scene;
@@ -72,8 +60,4 @@ export const pasteClipboardEntityInPlace = (clipboardData) => (dispatch, getStat
 
 export const pasteCustomEvents = () => {
   return { type: types.PASTE_CUSTOM_EVENTS };
-};
-
-export const editUI = () => {
-  return { type: types.EDIT_UI };
 };

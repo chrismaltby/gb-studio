@@ -430,7 +430,7 @@ const mapDispatchToProps = {
   editScene: entityActions.editScene,
   removeScene: entityActions.removeScene,
   copyScene: clipboardActions.copyScene,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   selectSidebar: editorActions.selectSidebar,
   setScriptTab: editorActions.setScriptTabScene,
   setScriptTabSecondary: editorActions.setScriptTabSecondary  

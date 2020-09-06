@@ -1,5 +1,3 @@
-export const RELOAD_ASSETS = "RELOAD_ASSETS";
-
 export const ADD_ACTOR = "ADD_ACTOR";
 export const MOVE_ACTOR = "MOVE_ACTOR";
 export const REMOVE_ACTOR = "REMOVE_ACTOR";
@@ -16,9 +14,6 @@ export const EDIT_TRIGGER = "EDIT_TRIGGER";
 
 export const EDIT_CUSTOM_EVENT = "EDIT_CUSTOM_EVENT";
 export const REMOVE_CUSTOM_EVENT = "REMOVE_CUSTOM_EVENT";
-export const SELECT_CUSTOM_EVENT = "SELECT_CUSTOM_EVENT";
-
-export const EDIT_UI = "EDIT_UI";
 
 export const PASTE_ACTOR = "PASTE_ACTOR";
 export const PASTE_TRIGGER = "PASTE_TRIGGER";

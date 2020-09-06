@@ -1,6 +1,5 @@
 import initialState from "./initialState";
 import {
-  SELECT_SCRIPT_EVENT,
   REMOVE_SCENE,
   REMOVE_ACTOR,
   REMOVE_ACTOR_AT,
@@ -9,10 +8,7 @@ import {
   REMOVE_TRIGGER_AT,
   MOVE_TRIGGER,
   EDIT_PLAYER_START_AT,
-  EDIT_UI,
-  SELECT_CUSTOM_EVENT,
   REMOVE_CUSTOM_EVENT,
-  RELOAD_ASSETS,
 } from "../actions/actionTypes";
 
 export const DRAG_PLAYER = "DRAG_PLAYER";
@@ -22,20 +18,6 @@ export const DRAG_TRIGGER = "DRAG_TRIGGER";
 
 export default function editor(state = initialState.editor, action) {
   switch (action.type) {
-    case SELECT_SCRIPT_EVENT: {
-      return {
-        ...state,
-        eventId: action.eventId
-      };
-    }
-    case SELECT_CUSTOM_EVENT: {
-      return {
-        ...state,
-        type: "customEvents",
-        scene: "",
-        entityId: action.id
-      };
-    }
     case MOVE_ACTOR: {
       if (state.scene !== action.newSceneId) {
         return {
@@ -66,13 +48,6 @@ export default function editor(state = initialState.editor, action) {
         worldFocus: true
       };
     }
-    case RELOAD_ASSETS:
-    case EDIT_UI: {
-      return {
-        ...state,
-        uiVersion: state.uiVersion + 1
-      };
-    }     
     default:
       return state;
   }

@@ -75,7 +75,8 @@ class SceneCursor extends Component {
       addTrigger,
       sceneId,
       scene,
-      prefab,
+      actorDefaults,
+      triggerDefaults,
       selectScene,
       showCollisions,
       showLayers,
@@ -95,10 +96,10 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor({sceneId, x, y, defaults: prefab});
+      addActor({sceneId, x, y, defaults: actorDefaults});
       setTool("select");
     } else if (tool === "triggers") {
-      addTrigger({sceneId, x, y, width: 1, height: 1, defaults: prefab});
+      addTrigger({sceneId, x, y, width: 1, height: 1, defaults: triggerDefaults});
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -367,7 +368,8 @@ SceneCursor.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
-  prefab: PropTypes.shape(),
+  actorDefaults: PropTypes.shape(),
+  triggerDefaults: PropTypes.shape(),
   sceneId: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   showCollisions: PropTypes.bool.isRequired,
@@ -391,17 +393,17 @@ SceneCursor.propTypes = {
 
 SceneCursor.defaultProps = {
   entityId: null,
-  prefab: {}
+  actorDefaults: {},
+  triggerDefaults: {}
 };
 
 function mapStateToProps(state, props) {
   const { tool } = state.editor;
   const { x, y } = state.editor.hover;
-  const { entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
+  const { entityId, selectedPalette, selectedTileType, selectedBrush, showLayers, actorDefaults, triggerDefaults } = state.editor;
   const showCollisions = state.project.present.settings.showCollisions;
   const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
-  const prefab = undefined;
   return {
     x: x || 0,
     y: y || 0,
@@ -409,7 +411,8 @@ function mapStateToProps(state, props) {
     selectedPalette,
     selectedTileType,
     selectedBrush,
-    prefab,
+    actorDefaults,
+    triggerDefaults,
     entityId,
     showCollisions,
     scene,
