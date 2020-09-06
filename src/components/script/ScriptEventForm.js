@@ -7,7 +7,7 @@ import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 

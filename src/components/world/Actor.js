@@ -6,9 +6,9 @@ import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { ActorShape, PaletteShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
 import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
-import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { getSettings } from "../../store/features/settings/settingsSlice";
+import { actorSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import { getSettings } from "../../store/features/settings/settingsState";
 
 class Actor extends Component {
   onMouseDown = (e) => {

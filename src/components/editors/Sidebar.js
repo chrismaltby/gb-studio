@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import editorActions from "../../store/features/editor/editorActions";
 
 const SidebarTabs = ({ values, value, onChange, buttons, secondary }) => (
   <div className={cx("SidebarTabs", {"SidebarTabs--Secondary": secondary})}>

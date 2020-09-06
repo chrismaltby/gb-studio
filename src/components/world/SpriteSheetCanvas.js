@@ -7,7 +7,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 import SpriteSheetCanasWorker from "./SpriteSheetCanvas.worker";
 import { DMG_PALETTE } from "../../consts";
 import { PaletteShape } from "../../store/stateShape";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 const workerPool = [];
 for(let i=0; i<navigator.hardwareConcurrency; i++) {

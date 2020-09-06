@@ -30,7 +30,7 @@ import {
 } from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
-import { actions as settingsActions } from "../settings/settingsSlice";
+import settingsActions from "../settings/settingsActions";
 import { Dictionary } from "lodash";
 import uuid from "uuid";
 import {
@@ -39,8 +39,8 @@ import {
 } from "../../../lib/compiler/helpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
-import { Brush, EditorSelectionType } from "../editor/editorSlice";
-import { actions as projectActions } from "../project/projectActions";
+import { Brush, EditorSelectionType } from "../editor/editorState";
+import projectActions from "../project/projectActions";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;

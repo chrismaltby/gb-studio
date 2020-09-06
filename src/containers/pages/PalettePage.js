@@ -10,7 +10,8 @@ import { PaletteShape } from "../../store/stateShape";
 import PaletteSidebar from "../../components/assets/PaletteSidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../../components/library/Button";
-import { paletteSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { paletteSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class PalettePage extends Component {
   constructor(props) {
@@ -185,9 +186,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  editPalette: entityActions.editPalette,
-  addPalette: entityActions.addPalette,
-  removePalette: entityActions.removePalette,
+  editPalette: entitiesActions.editPalette,
+  addPalette: entitiesActions.addPalette,
+  removePalette: entitiesActions.removePalette,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PalettePage);

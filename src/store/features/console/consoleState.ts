@@ -65,12 +65,4 @@ const consoleSlice = createSlice({
 
 export const { actions, reducer } = consoleSlice;
 
-export const {
-  clearConsole,
-  startConsole,
-  completeConsole,
-  stdOut,
-  stdErr,
-} = actions;
-
 export default reducer;

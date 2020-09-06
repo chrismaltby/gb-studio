@@ -5,8 +5,8 @@ import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
-import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
+import musicActions from "../../store/features/music/musicActions";
+import electronActions from "../../store/features/electron/electronActions";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -104,8 +104,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  play: playMusic,
-  pause: pauseMusic,
+  play: musicActions.playMusic,
+  pause: musicActions.pauseMusic,
   openFolder: electronActions.openFolder
 };
 

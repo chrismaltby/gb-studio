@@ -23,6 +23,4 @@ const musicSlice = createSlice({
 
 export const { actions, reducer } = musicSlice;
 
-export const { playMusic, pauseMusic } = actions;
-
 export default reducer;

@@ -6,9 +6,9 @@ import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../store/stateShape";
 import {
   getSettings,
-} from "../../store/features/settings/settingsSlice";
+} from "../../store/features/settings/settingsState";
 import { getCachedObject, createCacheFunction } from "../../lib/helpers/cache";
-import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesSlice";
+import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 

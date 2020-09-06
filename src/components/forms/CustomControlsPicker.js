@@ -6,7 +6,7 @@ import l10n from "../../lib/helpers/l10n";
 import GBControlsPreview from "../library/GBControlsPreview";
 import { FormField } from "../library/Forms";
 import Button from "../library/Button";
-import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
+import settingsActions from "../../store/features/settings/settingsActions";
 
 const directions = [
   {

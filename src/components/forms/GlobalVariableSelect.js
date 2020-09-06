@@ -6,7 +6,8 @@ import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { VariableShape } from "../../store/stateShape";
 import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
-import { actions as enitityActions, variableSelectors } from "../../store/features/entities/entitiesSlice";
+import { variableSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
@@ -158,7 +159,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  renameVariable: enitityActions.renameVariable
+  renameVariable: entitiesActions.renameVariable
 };
 
 export default connect(

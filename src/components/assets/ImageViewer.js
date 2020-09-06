@@ -5,8 +5,8 @@ import Button from "../library/Button";
 import l10n from "../../lib/helpers/l10n";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 import BackgroundWarnings from "../world/BackgroundWarnings";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
+import editorActions from "../../store/features/editor/editorActions";
+import electronActions from "../../store/features/electron/electronActions";
 
 class ImageViewer extends Component {
 

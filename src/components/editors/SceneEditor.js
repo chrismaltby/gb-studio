@@ -18,9 +18,10 @@ import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
-import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -426,8 +427,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editScene: entityActions.editScene,
-  removeScene: entityActions.removeScene,
+  editScene: entitiesActions.editScene,
+  removeScene: entitiesActions.removeScene,
   copyScene: clipboardActions.copyScene,
   pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   selectSidebar: editorActions.selectSidebar,

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Alert, { AlertItem } from "../library/Alert";
-import { checkBackgroundWarnings } from "../../store/features/warnings/warningsSlice";
-import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
+import warningsActions from "../../store/features/warnings/warningsActions";
+import { backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 class BackgroundWarnings extends Component {
   componentDidMount() {
@@ -60,7 +60,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  checkBackgroundWarnings,
+  checkBackgroundWarnings: warningsActions.checkBackgroundWarnings
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BackgroundWarnings);

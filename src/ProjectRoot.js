@@ -13,18 +13,18 @@ import AppContainerDnD from "./components/app/AppContainerDnD";
 import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
-import { actions as editorActions } from "./store/features/editor/editorSlice";
-import { actions as entityActions } from "./store/features/entities/entitiesSlice";
-import { actions as settingsActions } from "./store/features/settings/settingsSlice";
-import { actions as navigationActions } from "./store/features/navigation/navigationSlice";
-import { actions as projectActions } from "./store/features/project/projectActions";
-import { actions as buildGameActions } from "./store/features/buildGame/buildGameMiddleware";
-import { actions as clipboardActions } from "./store/features/clipboard/clipboardMiddleware";
-import { setGlobalError } from "./store/features/error/errorSlice";
+import editorActions from "./store/features/editor/editorActions";
+import entitiesActions from "./store/features/entities/entitiesActions";
+import settingsActions from "./store/features/settings/settingsActions";
+import navigationActions from "./store/features/navigation/navigationActions";
+import projectActions from "./store/features/project/projectActions";
+import buildGameActions from "./store/features/buildGame/buildGameActions";
+import clipboardActions from "./store/features/clipboard/clipboardActions";
+import errorActions from "./store/features/error/errorActions";
 
 const actions = {
   ...editorActions,
-  ...entityActions,
+  ...entitiesActions,
   ...settingsActions,
   ...navigationActions,
   ...buildGameActions,
@@ -63,7 +63,7 @@ window.addEventListener("error", (error) => {
   error.preventDefault();
   // eslint-disable-next-line no-console
   console.error(error);
-  store.dispatch(setGlobalError({
+  store.dispatch(errorActions.setGlobalError({
     message: error.message,
     filename: error.filename,
     line: error.lineno,

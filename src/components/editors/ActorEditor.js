@@ -20,7 +20,7 @@ import { SceneIcon } from "../library/Icons";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
-import { getSettings } from "../../store/features/settings/settingsSlice";
+import { getSettings } from "../../store/features/settings/settingsState";
 import {
   SPRITE_TYPE_STATIC,
   SPRITE_TYPE_ACTOR,
@@ -28,9 +28,10 @@ import {
   SPRITE_TYPE_ANIMATED,
 } from "../../consts";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { actorSelectors, sceneSelectors, actions as entityActions, spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -583,8 +584,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: entityActions.editActor,
-  removeActor: entityActions.removeActor,
+  editActor: entitiesActions.editActor,
+  removeActor: entitiesActions.removeActor,
   copyActor: clipboardActions.copyActor,
   pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,

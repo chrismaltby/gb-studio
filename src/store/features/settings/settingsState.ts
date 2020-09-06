@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
-import { actions as projectActions } from "../project/projectActions";
+import projectActions from "../project/projectActions";
 
 export type SettingsState = {
   startSceneId: string;

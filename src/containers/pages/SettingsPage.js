@@ -17,10 +17,11 @@ import {
   SettingsShape,
   SceneShape,
 } from "../../store/stateShape";
-import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
-import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
-import { getMetadata } from "../../store/features/metadata/metadataSlice";
-import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
+import { getSettings } from "../../store/features/settings/settingsState";
+import settingsActions from "../../store/features/settings/settingsActions";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import { getMetadata } from "../../store/features/metadata/metadataState";
+import navigationActions from "../../store/features/navigation/navigationActions";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {

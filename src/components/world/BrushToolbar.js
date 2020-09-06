@@ -32,10 +32,12 @@ import Button from "../library/Button";
 import PaletteSelect from "../forms/PaletteSelect";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as entityActions, paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
-import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
+import editorActions from "../../store/features/editor/editorActions";
+import { paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import { getSettings } from "../../store/features/settings/settingsState";
+import settingsActions from "../../store/features/settings/settingsActions";
+import navigationActions from "../../store/features/navigation/navigationActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -444,7 +446,7 @@ const mapDispatchToProps = {
   setSection: navigationActions.setSection,
   setNavigationId: navigationActions.setNavigationId,
   editProjectSettings: settingsActions.editSettings,
-  editScene: entityActions.editScene,
+  editScene: entitiesActions.editScene,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BrushToolbar);

@@ -12,8 +12,8 @@ import {
 } from "../../store/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import l10n from "../../lib/helpers/l10n";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actorSelectors, triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesSlice";
+import editorActions from "../../store/features/editor/editorActions";
+import { actorSelectors, triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
 
 class SceneNavigation extends Component {
   render() {

@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { CustomEventShape } from "../../store/stateShape";
 import { CodeIcon } from "../library/Icons";
-import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
 
 class CustomEventNavigation extends Component {
   render() {

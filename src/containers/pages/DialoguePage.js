@@ -8,7 +8,7 @@ import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 import DialogueReviewScene from "../../components/script/DialogueReviewScene";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
 
 class DialoguePage extends Component {
   constructor(props) {

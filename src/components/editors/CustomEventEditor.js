@@ -11,8 +11,9 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { customEventSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -197,8 +198,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editCustomEvent: entityActions.editCustomEvent,
-  removeCustomEvent: entityActions.removeCustomEvent,
+  editCustomEvent: entitiesActions.editCustomEvent,
+  removeCustomEvent: entitiesActions.removeCustomEvent,
   selectSidebar: editorActions.selectSidebar
 };
 

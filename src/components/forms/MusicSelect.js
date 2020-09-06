@@ -7,8 +7,8 @@ import Button from "../library/Button";
 import { MusicShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
-import { musicSelectors } from "../../store/features/entities/entitiesSlice";
+import musicActions from "../../store/features/music/musicActions";
+import { musicSelectors } from "../../store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -160,8 +160,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  play: playMusic,
-  pause: pauseMusic
+  play: musicActions.playMusic,
+  pause: musicActions.pauseMusic
 };
 
 export default connect(

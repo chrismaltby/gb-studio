@@ -25,8 +25,9 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
-import { sceneSelectors, actions as entityActions, actorSelectors, triggerSelectors, backgroundSelectors, paletteSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors, backgroundSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const TILE_SIZE = 8;
 
@@ -407,9 +408,9 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  moveScene: entityActions.moveScene,
+  moveScene: entitiesActions.moveScene,
   selectScene: editorActions.selectScene,
-  moveSelectedEntity: entityActions.moveSelectedEntity,
+  moveSelectedEntity: entitiesActions.moveSelectedEntity,
   sceneHover: editorActions.sceneHover,
 };
 

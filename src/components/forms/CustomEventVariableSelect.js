@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select from "react-select";
 import { VariableShape } from "../../store/stateShape";
-import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 

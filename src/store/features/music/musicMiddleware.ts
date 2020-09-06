@@ -1,9 +1,9 @@
 import { Middleware } from "@reduxjs/toolkit";
 import ScripTracker from "../../../lib/vendor/scriptracker/scriptracker";
-import { playMusic, pauseMusic } from "./musicSlice";
 import { RootState } from "../../configureStore";
-import { actions as soundfxActions } from "../soundfx/soundfxMiddleware";
-import { actions as navigationActions } from "../navigation/navigationSlice";
+import soundfxActions from "../soundfx/soundfxActions";
+import navigationActions from "../navigation/navigationActions";
+import actions from "./musicActions";
 
 let modPlayer: ScripTracker;
 
@@ -38,9 +38,9 @@ function pause() {
 const musicMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
 ) => {
-  if (playMusic.match(action)) {
+  if (actions.playMusic.match(action)) {
     play(action.payload.filename);
-  } else if (pauseMusic.match(action)) {
+  } else if (actions.pauseMusic.match(action)) {
     pause();
   } else if (
     soundfxActions.playSoundFxBeep.match(action) ||
@@ -49,7 +49,7 @@ const musicMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     navigationActions.setSection.match(action) ||
     navigationActions.setNavigationId.match(action)
   ) {
-    store.dispatch(pauseMusic());
+    store.dispatch(actions.pauseMusic());
   }
 
   return next(action);

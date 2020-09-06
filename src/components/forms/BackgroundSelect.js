@@ -5,7 +5,7 @@ import Select, { components } from "react-select";
 import { BackgroundShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
+import { backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 

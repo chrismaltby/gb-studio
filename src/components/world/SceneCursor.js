@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
-import { actions as entityActions, sceneSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import settingsActions from "../../store/features/settings/settingsActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 import { SceneShape } from "../../store/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
@@ -421,18 +422,18 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  addActor: entityActions.addActor,
-  removeActorAt: entityActions.removeActorAt,
-  paintCollision: entityActions.paintCollision,
-  paintColor: entityActions.paintColor,
-  addTrigger: entityActions.addTrigger,
-  removeTriggerAt: entityActions.removeTriggerAt,
-  resizeTrigger: entityActions.resizeTrigger,
+  addActor: entitiesActions.addActor,
+  removeActorAt: entitiesActions.removeActorAt,
+  paintCollision: entitiesActions.paintCollision,
+  paintColor: entitiesActions.paintColor,
+  addTrigger: entitiesActions.addTrigger,
+  removeTriggerAt: entitiesActions.removeTriggerAt,
+  resizeTrigger: entitiesActions.resizeTrigger,
   selectScene: editorActions.selectScene,
   selectWorld: editorActions.selectWorld,
   setTool: editorActions.setTool,
   editPlayerStartAt: settingsActions.editPlayerStartAt,
-  editDestinationPosition: entityActions.editDestinationPosition,
+  editDestinationPosition: entitiesActions.editDestinationPosition,
   editSearchTerm: editorActions.editSearchTerm
 };
 

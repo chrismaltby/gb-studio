@@ -4,7 +4,7 @@ import Select, { components } from "react-select";
 import { connect } from "react-redux";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import { createCacheFunction } from "../../lib/helpers/cache";
-import { sceneSelectors, backgroundSelectors } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 

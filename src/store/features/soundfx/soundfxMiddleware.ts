@@ -6,10 +6,11 @@ import {
   decodeAudioData,
 } from "../../../lib/soundfx/soundfx";
 import { assetsRoot } from "../../../consts";
-import { createAction, Middleware } from "@reduxjs/toolkit";
+import { Middleware } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
-import { actions as musicActions } from "../music/musicSlice";
-import { actions as navigationActions } from "../navigation/navigationSlice";
+import musicActions from "../music/musicActions";
+import navigationActions from "../navigation/navigationActions";
+import actions from "./soundfxActions";
 
 let oscillator: OscillatorNode | undefined = undefined;
 let bufferSource: AudioBufferSourceNode | undefined = undefined;
@@ -45,28 +46,21 @@ function pause() {
   }
 }
 
-const playSoundFxBeep = createAction<{ pitch: number }>("soundfx/playBeep");
-const playSoundFxTone = createAction<{ frequency: number; duration: number }>(
-  "soundfx/playTone"
-);
-const playSoundFxCrash = createAction("soundfx/playCrash");
-const pauseSoundFx = createAction("soundfx/pause");
-
 const soundfxMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
 ) => {
-  if (playSoundFxBeep.match(action)) {
+  if (actions.playSoundFxBeep.match(action)) {
     pause();
     play(`effect_beep_${action.payload.pitch}.mp3`);
-  } else if (playSoundFxTone.match(action)) {
+  } else if (actions.playSoundFxTone.match(action)) {
     pause();
     oscillator = playTone(
       action.payload.frequency,
       action.payload.duration * 1000
     );
-  } else if (playSoundFxCrash.match(action)) {
+  } else if (actions.playSoundFxCrash.match(action)) {
     play("effect_crash.mp3");
-  } else if (pauseSoundFx.match(action)) {
+  } else if (actions.pauseSoundFx.match(action)) {
     pause();
   } else if (
     musicActions.playMusic.match(action) ||
@@ -81,13 +75,6 @@ const soundfxMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   }
 
   return next(action);
-};
-
-export const actions = {
-  playSoundFxBeep,
-  playSoundFxTone,
-  playSoundFxCrash,
-  pauseSoundFx,
 };
 
 export default soundfxMiddleware;

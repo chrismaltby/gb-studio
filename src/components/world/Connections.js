@@ -9,8 +9,8 @@ import {
   ActorShape,
   TriggerShape,
 } from "../../store/stateShape";
-import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];

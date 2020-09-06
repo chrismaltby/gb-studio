@@ -16,10 +16,11 @@ import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
 import { DMG_PALETTE } from "../../consts";
 import PaletteSelect from "../forms/PaletteSelect";
-import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
-import { actions as metadataActions } from "../../store/features/metadata/metadataSlice";
-import { sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import settingsActions from "../../store/features/settings/settingsActions";
+import metadataActions from "../../store/features/metadata/metadataActions";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -258,7 +259,7 @@ const mapDispatchToProps = {
   selectSidebar: editorActions.selectSidebar,
   editProject: metadataActions.editMetadata,
   editProjectSettings: settingsActions.editSettings,
-  addCustomEvent: entityActions.addCustomEvent
+  addCustomEvent: entitiesActions.addCustomEvent
 };
 
 export default connect(

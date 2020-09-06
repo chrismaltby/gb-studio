@@ -9,7 +9,7 @@ import { regenerateEventIds } from "../../lib/helpers/eventSystem";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 
 class ScriptEditorDropdownButton extends Component {
   constructor() {

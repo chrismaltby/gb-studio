@@ -5,7 +5,7 @@ import l10n from "../../lib/helpers/l10n";
 import Button from "./Button";
 import { ErrorShape } from "../../store/stateShape";
 import { SadIcon } from "./Icons";
-import { actions as electronActions } from "../../store/features/electron/electronMiddleware";
+import electronActions from "../../store/features/electron/electronActions";
 
 class GlobalError extends Component {
   constructor() {

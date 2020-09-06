@@ -12,7 +12,7 @@ import {
 } from "../../store/stateShape";
 import { walkSceneEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_PLAYER_SET_SPRITE } from "../../lib/compiler/eventTypes";
-import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 class SceneInfo extends Component {
   constructor(props) {

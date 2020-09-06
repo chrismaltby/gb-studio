@@ -6,7 +6,7 @@ import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import l10n from "../../lib/helpers/l10n";
 import { SpriteShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 

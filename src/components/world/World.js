@@ -8,9 +8,10 @@ import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
 import { SceneShape } from "../../store/stateShape";
-import { actions as entityActions, sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class World extends Component {
   constructor(props) {
@@ -393,10 +394,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  addScene: entityActions.addScene,
+  addScene: entitiesActions.addScene,
   setTool: editorActions.setTool,
   selectWorld: editorActions.selectWorld,
-  removeSelectedEntity: entityActions.removeSelectedEntity,
+  removeSelectedEntity: entitiesActions.removeSelectedEntity,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut,
   copySelectedEntity: clipboardActions.copySelectedEntity,

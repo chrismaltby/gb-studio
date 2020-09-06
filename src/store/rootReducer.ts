@@ -1,27 +1,27 @@
 import { combineReducers } from "redux";
 import undoable from "redux-undo";
-import console from "./features/console/consoleSlice";
-import music from "./features/music/musicSlice";
-import warnings from "./features/warnings/warningsSlice";
-import entitiesNew from "./features/entities/entitiesSlice";
-import document from "./features/document/documentSlice";
-import editorNew from "./features/editor/editorSlice";
-import settings from "./features/settings/settingsSlice";
-import metadata from "./features/metadata/metadataSlice";
-import error from "./features/error/errorSlice";
-import navigation from "./features/navigation/navigationSlice";
+import console from "./features/console/consoleState";
+import music from "./features/music/musicState";
+import warnings from "./features/warnings/warningsState";
+import entities from "./features/entities/entitiesState";
+import document from "./features/document/documentState";
+import editor from "./features/editor/editorState";
+import settings from "./features/settings/settingsState";
+import metadata from "./features/metadata/metadataState";
+import error from "./features/error/errorState";
+import navigation from "./features/navigation/navigationState";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;
 
 const rootReducer = combineReducers({
-  editor: editorNew,
+  editor,
   console,
   music,
   navigation,
   document,
   project: undoable(
-    combineReducers({ entities: entitiesNew, settings, metadata }),
+    combineReducers({ entities, settings, metadata }),
     {
       limit: 20,
       filter: (_action, currentState, previousHistory) => {

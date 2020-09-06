@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { PaletteShape } from "../../store/stateShape";
 import PaletteBlock from "../library/PaletteBlock.tsx";
-import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
+import { paletteSelectors } from "../../store/features/entities/entitiesState";
 
 export const DMG_PALETTE = {
     id: "dmg",

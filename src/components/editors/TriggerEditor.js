@@ -13,9 +13,10 @@ import { SceneIcon } from "../library/Icons";
 import { TriggerShape, SceneShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
-import { triggerSelectors, sceneSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import { triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -249,8 +250,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editTrigger: entityActions.editTrigger,
-  removeTrigger: entityActions.removeTrigger,
+  editTrigger: entitiesActions.editTrigger,
+  removeTrigger: entitiesActions.removeTrigger,
   copyTrigger: clipboardActions.copyTrigger,
   pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
   selectScene: editorActions.selectScene,

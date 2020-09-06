@@ -8,9 +8,9 @@ import Button, {
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as consoleActions } from "../../store/features/console/consoleSlice";
-import { actions as buildGameActions } from "../../store/features/buildGame/buildGameMiddleware";
+import editorActions from "../../store/features/editor/editorActions";
+import consoleActions from "../../store/features/console/consoleActions";
+import buildGameActions from "../../store/features/buildGame/buildGameActions";
 
 class BuildPage extends Component {
   constructor(props) {

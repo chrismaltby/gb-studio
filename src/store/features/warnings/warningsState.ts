@@ -37,8 +37,6 @@ const warningsSlice = createSlice({
   },
 });
 
-const { actions, reducer } = warningsSlice;
-
-export const { checkBackgroundWarnings, setBackgroundWarnings } = actions;
+export const { actions, reducer } = warningsSlice;
 
 export default reducer;

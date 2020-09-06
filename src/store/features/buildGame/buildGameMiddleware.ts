@@ -1,59 +1,28 @@
 import { ipcRenderer, remote } from "electron";
-import { createAction, Middleware } from "@reduxjs/toolkit";
+import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import rimraf from "rimraf";
 import { promisify } from "util";
 import getTmp from "../../../lib/helpers/getTmp";
 import { RootState } from "../../configureStore";
 import copy from "../../../lib/helpers/fsCopy";
-import { actions as consoleActions } from "../console/consoleSlice";
-import { actions as navigationActions } from "../navigation/navigationSlice";
+import consoleActions from "../console/consoleActions";
+import navigationActions from "../navigation/navigationActions";
 import { denormalizeProject } from "../project/projectActions";
 import confirmEjectEngineDialog from "../../../lib/electron/dialog/confirmEjectEngineDialog";
 import { statSync } from "fs-extra";
 import confirmEjectEngineReplaceDialog from "../../../lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import ejectEngineToDir from "../../../lib/project/ejectEngineToDir";
+import actions from "./buildGameActions";
 
 const rmdir = promisify(rimraf);
 
 const buildUUID = "_gbsbuild";
 
-export type BuildType = "web" | "rom";
-
-const buildGame = createAction(
-  "buildGame/build",
-  (
-    {
-      buildType = "web",
-      exportBuild = false,
-      ejectBuild = false,
-    }: {
-      buildType?: BuildType;
-      exportBuild?: boolean;
-      ejectBuild?: boolean;
-    } = {
-      buildType: "web",
-      exportBuild: false,
-      ejectBuild: false,
-    }
-  ) => {
-    return {
-      payload: {
-        buildType,
-        exportBuild,
-        ejectBuild,
-      },
-    };
-  }
-);
-
-const deleteBuildCache = createAction("buildGame/deleteCache");
-const ejectEngine = createAction("buildGame/ejectEngine");
-
 const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
   next
 ) => async (action) => {
-  if (buildGame.match(action)) {
+  if (actions.buildGame.match(action)) {
     const { buildType, exportBuild, ejectBuild } = action.payload;
 
     const dispatch = store.dispatch.bind(store);
@@ -149,14 +118,14 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
         dispatch(consoleActions.stdOut("Reloaded GB Studio Compiler"));
       });
     }
-  } else if (deleteBuildCache.match(action)) {
+  } else if (actions.deleteBuildCache.match(action)) {
     const dispatch = store.dispatch.bind(store);
     const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
     await rmdir(cacheRoot);
     dispatch(consoleActions.clearConsole());
     dispatch(consoleActions.stdOut("Cleared GB Studio caches"));
     
-  } else if (ejectEngine.match(action)) {
+  } else if (actions.ejectEngine.match(action)) {
 
     const cancel = confirmEjectEngineDialog();
 
@@ -189,12 +158,6 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
   }
 
   return next(action);
-};
-
-export const actions = {
-  buildGame,
-  deleteBuildCache,
-  ejectEngine,
 };
 
 export default buildGameMiddleware;

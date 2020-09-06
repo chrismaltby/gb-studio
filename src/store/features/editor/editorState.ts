@@ -1,10 +1,22 @@
 import { createSlice, PayloadAction, AnyAction } from "@reduxjs/toolkit";
-import { BRUSH_8PX, COLLISION_ALL, DRAG_ACTOR, DRAG_TRIGGER, DRAG_DESTINATION, DRAG_PLAYER } from "../../../consts";
+import {
+  BRUSH_8PX,
+  COLLISION_ALL,
+  DRAG_ACTOR,
+  DRAG_TRIGGER,
+  DRAG_DESTINATION,
+  DRAG_PLAYER,
+} from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
-import { actions as entityActions, Actor, Trigger, SceneData } from "../entities/entitiesSlice";
-import { actions as navigationActions } from "../navigation/navigationSlice";
-import { actions as projectActions } from "../project/projectActions";
-import { actions as settingsActions } from "../settings/settingsSlice";
+import {
+  Actor,
+  Trigger,
+  SceneData,
+} from "../entities/entitiesState";
+import navigationActions from "../navigation/navigationActions";
+import projectActions from "../project/projectActions";
+import settingsActions from "../settings/settingsActions";
+import entitiesActions from "../entities/entitiesActions";
 
 export type Tool =
   | "triggers"
@@ -180,11 +192,8 @@ const editorSlice = createSlice({
       state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
-    selectScriptEvent: (
-      state,
-      action: PayloadAction<{ eventId: string }>
-    ) => {
-      state.eventId = action.payload.eventId
+    selectScriptEvent: (state, action: PayloadAction<{ eventId: string }>) => {
+      state.eventId = action.payload.eventId;
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
@@ -394,7 +403,7 @@ const editorSlice = createSlice({
 
     setScriptTabScene: (state, action: PayloadAction<string>) => {
       state.lastScriptTabScene = action.payload;
-    },   
+    },
 
     setScriptTabSecondary: (state, action: PayloadAction<string>) => {
       state.lastScriptTabSecondary = action.payload;
@@ -417,39 +426,39 @@ const editorSlice = createSlice({
     setSceneDefaults: (state, action: PayloadAction<Partial<SceneData>>) => {
       state.sceneDefaults = action.payload;
       state.tool = "scene";
-    }
+    },
   },
   extraReducers: (builder) =>
     builder
-      .addCase(entityActions.addScene, (state, action) => {
+      .addCase(entitiesActions.addScene, (state, action) => {
         state.type = "scene";
         state.scene = action.payload.sceneId;
         state.worldFocus = true;
       })
-      .addCase(entityActions.addActor, (state, action) => {
+      .addCase(entitiesActions.addActor, (state, action) => {
         state.type = "actor";
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.actorId;
         state.worldFocus = true;
       })
-      .addCase(entityActions.addTrigger, (state, action) => {
+      .addCase(entitiesActions.addTrigger, (state, action) => {
         state.type = "trigger";
         state.scene = action.payload.sceneId;
         state.entityId = action.payload.triggerId;
         state.worldFocus = true;
       })
-      .addCase(entityActions.addCustomEvent, (state, action) => {
+      .addCase(entitiesActions.addCustomEvent, (state, action) => {
         state.type = "customEvent";
         state.scene = "";
         state.entityId = action.payload.customEventId;
       })
-      .addCase(entityActions.moveActor, (state, action) => {
+      .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;
         }
       })
-      .addCase(entityActions.moveTrigger, (state, action) => {
+      .addCase(entitiesActions.moveTrigger, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;
@@ -460,9 +469,9 @@ const editorSlice = createSlice({
         state.scene = "";
         state.type = "world";
         state.worldFocus = true;
-      }) 
+      })
       // Force React Select dropdowns to reload with new name
-      .addCase(entityActions.renameVariable, (state, action) => {
+      .addCase(entitiesActions.renameVariable, (state, action) => {
         state.variableVersion = state.variableVersion + 1;
       })
       // Remove world focus when switching section
@@ -474,21 +483,25 @@ const editorSlice = createSlice({
       .addCase(projectActions.loadProject.fulfilled, (state, action) => {
         state.worldFocus = false;
         state.zoom = action.payload.data.settings?.zoom || state.zoom;
-        state.worldScrollX = action.payload.data.settings?.worldScrollX || state.worldScrollX;
-        state.worldScrollY = action.payload.data.settings?.worldScrollY || state.worldScrollY;
+        state.worldScrollX =
+          action.payload.data.settings?.worldScrollX || state.worldScrollX;
+        state.worldScrollY =
+          action.payload.data.settings?.worldScrollY || state.worldScrollY;
       })
       // When UI changes increment UI version number
       .addMatcher(
-        (action): action is AnyAction => projectActions.loadUI.match(action) || projectActions.reloadAssets.match(action),
+        (action): action is AnyAction =>
+          projectActions.loadUI.match(action) ||
+          projectActions.reloadAssets.match(action),
         (state) => {
           state.uiVersion = state.uiVersion + 1;
         }
-      )   
+      )
       // When painting collisions or tiles select scene being drawn on
       .addMatcher(
         (action): action is PayloadAction<{ sceneId: string }> =>
-          entityActions.paintCollision.match(action) ||
-          entityActions.paintColor.match(action),
+          entitiesActions.paintCollision.match(action) ||
+          entitiesActions.paintColor.match(action),
         (state, action) => {
           state.type = "scene";
           state.scene = action.payload.sceneId;

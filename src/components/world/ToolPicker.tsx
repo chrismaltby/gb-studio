@@ -11,7 +11,8 @@ import {
 } from "../library/Icons";
 import { Menu, MenuItem, MenuOverlay } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import { Tool, actions as editorActions } from "../../store/features/editor/editorSlice";
+import { Tool } from "../../store/features/editor/editorState";
+import editorActions from "../../store/features/editor/editorActions"
 
 type ToolPickerProps = {
   selected: Tool;

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { actions as editorActions} from "../../store/features/editor/editorSlice";
-import { triggerSelectors} from "../../store/features/entities/entitiesSlice";
+import editorActions from "../../store/features/editor/editorActions";
+import { triggerSelectors } from "../../store/features/entities/entitiesState";
 
 class Trigger extends Component {
   onMouseDown = e => {

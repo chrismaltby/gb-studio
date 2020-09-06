@@ -1,6 +1,6 @@
 import path from "path";
 import { createSlice, AnyAction } from "@reduxjs/toolkit";
-import { actions as projectActions } from "../project/projectActions";
+import projectActions from "../project/projectActions";
 
 interface DocumentState {
   modified: boolean;

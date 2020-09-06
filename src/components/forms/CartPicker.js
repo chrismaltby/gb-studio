@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
 import Button from "../library/Button";
 import CartPreview from "../library/CartPreview";
-import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
+import settingsActions from "../../store/features/settings/settingsActions";
 
 const cartTypes = [
   {

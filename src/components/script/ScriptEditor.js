@@ -18,9 +18,9 @@ import {
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
-import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
-import { actions as clipboardActions } from "../../store/features/clipboard/clipboardMiddleware";
+import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 
 class ScriptEditor extends Component {
 

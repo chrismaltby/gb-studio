@@ -17,33 +17,29 @@ import {
 } from "../../../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import l10n from "../../../lib/helpers/l10n";
-import { actions as editorActions } from "../../../store/features/editor/editorSlice";
-import {
-  getSettings,
-  actions as settingsActions,
-} from "../../../store/features/settings/settingsSlice";
+import editorActions from "../editor/editorActions";
+import { getSettings } from "../settings/settingsState";
+import settingsActions from "../settings/settingsActions";
 import { Middleware, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
-import { actions as projectActions } from "../project/projectActions";
+import projectActions from "../project/projectActions";
 import {
-  actions as entityActions,
   customEventSelectors,
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
   ScriptEvent,
-} from "../entities/entitiesSlice";
+} from "../entities/entitiesState";
+import entitiesActions from "../entities/entitiesActions";
 import { Dictionary } from "lodash";
-
-const openHelp = createAction<string>("electron/openHelp");
-const openFolder = createAction<string>("electron/openFolder");
+import actions from "./electronActions";
 
 const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
 ) => {
-  if (openHelp.match(action)) {
+  if (actions.openHelp.match(action)) {
     ipcRenderer.send("open-help", action.payload);
-  } else if (openFolder.match(action)) {
+  } else if (actions.openFolder.match(action)) {
     remote.shell.openItem(action.payload);
   } else if (editorActions.resizeWorldSidebar.match(action)) {
     settings.set("worldSidebarWidth", action.payload);
@@ -71,7 +67,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   } else if (projectActions.loadProject.rejected.match(action)) {
     const window = remote.getCurrentWindow();
     window.close();
-  } else if (entityActions.removeCustomEvent.match(action)) {
+  } else if (entitiesActions.removeCustomEvent.match(action)) {
     const state = store.getState();
     const customEvent = customEventSelectors.selectById(
       state,
@@ -184,7 +180,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          entityActions.editScene({
+          entitiesActions.editScene({
             sceneId,
             changes: {
               script: filterEvents(scenesLookup[sceneId]?.script || [], filter),
@@ -211,7 +207,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          entityActions.editActor({
+          entitiesActions.editActor({
             actorId,
             changes: {
               script: filterEvents(actorsLookup[actorId]?.script || [], filter),
@@ -246,7 +242,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
         const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          entityActions.editTrigger({
+          entitiesActions.editTrigger({
             triggerId,
             changes: {
               script: filterEvents(
@@ -261,11 +257,6 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   }
 
   next(action);
-};
-
-export const actions = {
-  openHelp,
-  openFolder,
 };
 
 export default electronMiddleware;

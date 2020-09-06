@@ -2,7 +2,7 @@ import l10n from "./l10n";
 import { divisibleBy8 } from "./8bit";
 import { assetFilename } from "./gbstudio";
 import ggbgfx from "../compiler/ggbgfx";
-import { Background } from "../../store/features/entities/entitiesSlice";
+import { Background } from "../../store/features/entities/entitiesState";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;

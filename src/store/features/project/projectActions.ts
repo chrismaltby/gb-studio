@@ -11,7 +11,7 @@ import {
   CustomEvent,
   denormalizeEntities,
   EntitiesState,
-} from "../entities/entitiesSlice";
+} from "../entities/entitiesState";
 import migrateWarning from "../../../lib/project/migrateWarning";
 import { RootState, AppDispatch } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
@@ -20,8 +20,8 @@ import saveAsProjectData from "../../../lib/project/saveAsProjectData";
 import { loadSpriteData } from "../../../lib/project/loadSpriteData";
 import { loadBackgroundData } from "../../../lib/project/loadBackgroundData";
 import { loadMusicData } from "../../../lib/project/loadMusicData";
-import { SettingsState } from "../settings/settingsSlice";
-import { MetadataState } from "../metadata/metadataSlice";
+import { SettingsState } from "../settings/settingsState";
+import { MetadataState } from "../metadata/metadataState";
 import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
 
 let saving: boolean = false;
@@ -247,7 +247,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
   }
 );
 
-export const actions = {
+export default {
   loadProject,
   loadBackground,
   removeBackground,

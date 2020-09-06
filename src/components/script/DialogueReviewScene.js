@@ -9,9 +9,10 @@ import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
-import { actions as entityActions, sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
-import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";
-import { actions as editorActions } from "../../store/features/editor/editorSlice";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import navigationActions from "../../store/features/navigation/navigationActions";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
@@ -168,9 +169,9 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: entityActions.editActor,
-  editTrigger: entityActions.editTrigger,
-  editScene: entityActions.editScene,
+  editActor: entitiesActions.editActor,
+  editTrigger: entitiesActions.editTrigger,
+  editScene: entitiesActions.editScene,
   editSearchTerm: editorActions.editSearchTerm,
   setSection: navigationActions.setSection,
 };

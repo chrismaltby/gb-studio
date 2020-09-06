@@ -5,7 +5,7 @@ import Select, { components } from "react-select";
 import { PlayIcon } from "../library/Icons";
 import Button from "../library/Button";
 import l10n from "../../lib/helpers/l10n";
-import { actions as soundfxActions } from "../../store/features/soundfx/soundfxMiddleware";
+import soundfxActions from "../../store/features/soundfx/soundfxActions";
 
 const options = [
   {

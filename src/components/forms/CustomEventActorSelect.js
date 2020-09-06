@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
 import { ActorShape } from "../../store/stateShape";
-import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
-import { getSettings } from "../../store/features/settings/settingsSlice";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import { getSettings } from "../../store/features/settings/settingsState";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 
 const allCustomEventActors = Array.from(Array(10).keys()).map(i => ({

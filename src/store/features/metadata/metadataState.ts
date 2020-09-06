@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
-import { actions as projectActions } from "../project/projectActions";
+import projectActions from "../project/projectActions";
 
 export interface MetadataState {
   name: string;
@@ -22,12 +22,6 @@ const metadataSlice = createSlice({
   name: "metadata",
   initialState,
   reducers: {
-    loadMetadata: (state, action: PayloadAction<Partial<MetadataState>>) => {
-      return {
-        ...state,
-        ...action.payload,
-      };
-    },
     editMetadata: (state, action: PayloadAction<Partial<MetadataState>>) => {
       return {
         ...state,
@@ -52,7 +46,5 @@ const metadataSlice = createSlice({
 export const getMetadata = (state: RootState) => state.project.present.metadata;
 
 export const { actions, reducer } = metadataSlice;
-
-export const { loadMetadata } = actions;
 
 export default reducer;

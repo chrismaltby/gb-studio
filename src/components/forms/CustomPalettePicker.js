@@ -8,7 +8,8 @@ import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
 import { PaletteShape } from "../../store/stateShape";
 import ColorSlider from "./ColorSlider";
-import { paletteSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
+import { paletteSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -645,7 +646,7 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editPalette: entityActions.editPalette,
+  editPalette: entitiesActions.editPalette,
 };
 
 export default connect(

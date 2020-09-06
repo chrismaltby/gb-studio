@@ -23,10 +23,10 @@ import {
 } from "../components/library/Icons";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
-import { actions as editorActions } from "../store/features/editor/editorSlice";
-import { actions as navigationActions } from "../store/features/navigation/navigationSlice";
-import { actions as electronActions } from "../store/features/electron/electronMiddleware";
-import { actions as buildGameActions } from "../store/features/buildGame/buildGameMiddleware";
+import editorActions from "../store/features/editor/editorActions";
+import navigationActions from "../store/features/navigation/navigationActions";
+import electronActions from "../store/features/electron/electronActions";
+import buildGameActions from "../store/features/buildGame/buildGameActions";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
