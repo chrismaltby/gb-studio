@@ -54,37 +54,6 @@ export const removeSprite = filename => async (dispatch, getState) => {
   });
 };
 
-export const loadBackground = filename => async (dispatch, getState) => {
-  return asyncAction(
-    dispatch,
-    types.BACKGROUND_LOAD_REQUEST,
-    types.BACKGROUND_LOAD_SUCCESS,
-    types.BACKGROUND_LOAD_FAILURE,
-    async () => {
-      const state = getState();
-      const projectRoot = state.document && state.document.root;
-      const data = await loadBackgroundData(projectRoot)(filename);
-      return {
-        data
-      };
-    }
-  );
-};
-
-export const removeBackground = filename => async (dispatch, getState) => {
-  const state = getState();
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
-
-  return dispatch({
-    type: types.BACKGROUND_REMOVE,
-    data: {
-      filename: file,
-      plugin
-    }
-  });
-};
-
 export const loadMusic = filename => async (dispatch, getState) => {
   return asyncAction(
     dispatch,

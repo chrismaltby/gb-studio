@@ -36,7 +36,7 @@ watchProject(projectPath, {
   onChangedBackground: f => store.dispatch(projectActions.loadBackground(f)),
   onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
   onRemoveSprite: f => store.dispatch(actions.removeSprite(f)),
-  onRemoveBackground: f => store.dispatch(actions.removeBackground(f)),
+  onRemoveBackground: f => store.dispatch(projectActions.removeBackground(f)),
   onRemoveMusic: f => store.dispatch(actions.removeMusic(f)),
   onChangedUI: f => store.dispatch(actions.editUI())
 });

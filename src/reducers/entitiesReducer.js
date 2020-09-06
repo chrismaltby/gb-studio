@@ -156,15 +156,6 @@ const removeSprite = (state, action) => {
   return removeEntity(state, "spriteSheets", existingAsset.id);
 };
 
-const removeBackground = (state, action) => {
-  const existingAsset = state.result.backgrounds
-    .map(backgroundId => {
-      return state.entities.backgrounds[backgroundId];
-    })
-    .find(matchAsset(action.data));
-  return removeEntity(state, "backgrounds", existingAsset.id);
-};
-
 const loadMusic = (state, action) => {
   const existingAsset = state.result.music
     .map(trackId => {
@@ -324,8 +315,6 @@ export default function project(state = initialState.entities, action) {
       return loadSprite(state, action);
     case SPRITE_REMOVE:
       return removeSprite(state, action);
-    case BACKGROUND_REMOVE:
-      return removeBackground(state, action);
     case MUSIC_LOAD_SUCCESS:
       return loadMusic(state, action);
     case MUSIC_REMOVE:

@@ -22,6 +22,7 @@ import { loadBackgroundData } from "../../../lib/project/loadBackgroundData";
 import { loadMusicData } from "../../../lib/project/loadMusicData";
 import { SettingsState } from "../settings/settingsSlice";
 import { MetadataState } from "../metadata/metadataSlice";
+import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
 
 let saving: boolean = false;
 
@@ -85,7 +86,9 @@ const loadBackground = createAsyncThunk<{ data: any }, string>(
     const state = thunkApi.getState() as RootState;
 
     const projectRoot = state.document && state.document.root;
-    const data = (await loadBackgroundData(projectRoot)(filename)) as Background | undefined;
+    const data = (await loadBackgroundData(projectRoot)(filename)) as
+      | Background
+      | undefined;
 
     if (!data) {
       throw new Error("Unable to load background");
@@ -96,6 +99,19 @@ const loadBackground = createAsyncThunk<{ data: any }, string>(
     };
   }
 );
+
+const removeBackground = createAsyncThunk<
+  { filename: string; plugin: string | undefined },
+  string
+>("project/removeBackground", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
+  return {
+    filename: file,
+    plugin,
+  };
+});
 
 const saveProject = createAsyncThunk<void, string | undefined>(
   "project/saveProject",
@@ -145,5 +161,6 @@ const saveProject = createAsyncThunk<void, string | undefined>(
 export const actions = {
   loadProject,
   loadBackground,
+  removeBackground,
   saveProject,
 };

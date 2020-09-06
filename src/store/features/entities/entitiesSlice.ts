@@ -204,7 +204,10 @@ export interface EntitiesState {
   variables: EntityState<Variable>;
 }
 
-export type Asset = Background | SpriteSheet | Music;
+export type Asset = {
+  filename: string;
+  plugin?: string;
+};
 
 type EntityKey = keyof EntitiesState;
 
@@ -577,6 +580,20 @@ const loadBackground: CaseReducer<
     fixAllScenesWithModifiedBackgrounds(state);
   } else {
     backgroundsAdapter.addOne(state.backgrounds, action.payload.data);
+  }
+};
+
+const removeBackground: CaseReducer<
+EntitiesState,
+PayloadAction<{
+  filename: string;
+  plugin: string | undefined
+}>
+> = (state, action) => {
+  const backgrounds = localBackgroundSelectors.selectAll(state);
+  const existingAsset = backgrounds.find(matchAsset(action.payload));
+  if (existingAsset) {
+    backgroundsAdapter.removeOne(state.backgrounds, existingAsset.id);
   }
 };
 
@@ -1974,7 +1991,8 @@ const entitiesSlice = createSlice({
   extraReducers: (builder) =>
     builder
       .addCase(projectActions.loadProject.fulfilled, loadProject)
-      .addCase(projectActions.loadBackground.fulfilled, loadBackground),
+      .addCase(projectActions.loadBackground.fulfilled, loadBackground)
+      .addCase(projectActions.removeBackground.fulfilled, removeBackground)
 });
 
 export const { reducer } = entitiesSlice;
