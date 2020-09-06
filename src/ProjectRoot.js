@@ -30,10 +30,10 @@ store.dispatch(projectActions.loadProject(projectPath));
 
 watchProject(projectPath, {
   onAddSprite: f => store.dispatch(actions.loadSprite(f)),
-  onAddBackground: f => store.dispatch(actions.loadBackground(f)),
+  onAddBackground: f => store.dispatch(projectActions.loadBackground(f)),
   onAddMusic: f => store.dispatch(actions.loadMusic(f)),
   onChangedSprite: f => store.dispatch(actions.loadSprite(f)),
-  onChangedBackground: f => store.dispatch(actions.loadBackground(f)),
+  onChangedBackground: f => store.dispatch(projectActions.loadBackground(f)),
   onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
   onRemoveSprite: f => store.dispatch(actions.removeSprite(f)),
   onRemoveBackground: f => store.dispatch(actions.removeBackground(f)),

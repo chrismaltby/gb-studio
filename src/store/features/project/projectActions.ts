@@ -52,11 +52,13 @@ export const denormalizeProject = (project: {
   metadata: MetadataState;
 }): ProjectData => {
   const entitiesData = denormalizeEntities(project.entities);
-  return JSON.parse(JSON.stringify({
-    ...project.metadata,
-    ...entitiesData,
-    settings: project.settings
-  }));
+  return JSON.parse(
+    JSON.stringify({
+      ...project.metadata,
+      ...entitiesData,
+      settings: project.settings,
+    })
+  );
 };
 
 const loadProject = createAsyncThunk<
@@ -76,6 +78,24 @@ const loadProject = createAsyncThunk<
     path,
   };
 });
+
+const loadBackground = createAsyncThunk<{ data: any }, string>(
+  "project/loadBackground",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadBackgroundData(projectRoot)(filename)) as Background | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load background");
+    }
+
+    return {
+      data,
+    };
+  }
+);
 
 const saveProject = createAsyncThunk<void, string | undefined>(
   "project/saveProject",
@@ -124,5 +144,6 @@ const saveProject = createAsyncThunk<void, string | undefined>(
 
 export const actions = {
   loadProject,
+  loadBackground,
   saveProject,
 };

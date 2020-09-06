@@ -50,6 +50,16 @@ const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
+const matchAsset = (assetA: Asset) => (assetB: Asset) => {
+  return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
+};
+
+const sortByFilename = (a: Asset, b: Asset) => {
+  if (a.filename > b.filename) return 1;
+  if (a.filename < b.filename) return -1;
+  return 0;
+};
+
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
@@ -96,6 +106,7 @@ export type Background = {
   height: number;
   imageWidth: number;
   imageHeight: number;
+  plugin?: string;
   _v: number;
 };
 
@@ -103,6 +114,7 @@ export type Music = {
   id: string;
   name: string;
   filename: string;
+  plugin?: string;
   _v: number;
 };
 
@@ -144,6 +156,7 @@ export type SpriteSheet = {
   filename: string;
   type: SpriteType;
   numFrames: number;
+  plugin?: string;
   _v: number;
 };
 
@@ -191,16 +204,24 @@ export interface EntitiesState {
   variables: EntityState<Variable>;
 }
 
+export type Asset = Background | SpriteSheet | Music;
+
 type EntityKey = keyof EntitiesState;
 
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
-const backgroundsAdapter = createEntityAdapter<Background>();
-const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>();
+const backgroundsAdapter = createEntityAdapter<Background>({
+  sortComparer: sortByFilename,
+});
+const spriteSheetsAdapter = createEntityAdapter<SpriteSheet>({
+  sortComparer: sortByFilename,
+});
 const palettesAdapter = createEntityAdapter<Palette>();
 const customEventsAdapter = createEntityAdapter<CustomEvent>();
-const musicAdapter = createEntityAdapter<Music>();
+const musicAdapter = createEntityAdapter<Music>({
+  sortComparer: sortByFilename,
+});
 const variablesAdapter = createEntityAdapter<Variable>();
 
 const initialState: EntitiesState = {
@@ -522,7 +543,7 @@ const loadProject: CaseReducer<
   }>
 > = (state, action) => {
   const data = normalizeEntities(action.payload.data);
-  const fixedData = fixDefaultPalettes(fixSceneCollisions(data));
+  const fixedData = fixDefaultPalettes(data);
   const entities = fixedData.entities;
   actorsAdapter.setAll(state.actors, entities.actors || {});
   triggersAdapter.setAll(state.triggers, entities.triggers || {});
@@ -533,38 +554,48 @@ const loadProject: CaseReducer<
   musicAdapter.setAll(state.music, entities.music || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
+  fixAllScenesWithModifiedBackgrounds(state);
 };
 
-const fixSceneCollisions = (state: any) => {
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      scenes: Object.keys(state.entities.scenes).reduce((memo, sceneId) => {
-        const scene = state.entities.scenes[sceneId];
-        const background = state.entities.backgrounds[scene.backgroundId];
+const loadBackground: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Background;
+  }>
+> = (state, action) => {
+  const backgrounds = localBackgroundSelectors.selectAll(state);
+  const existingAsset = backgrounds.find(matchAsset(action.payload.data));
 
-        if (
-          !background ||
-          scene.width !== background.width ||
-          scene.height !== background.height
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          memo[sceneId] = {
-            ...scene,
-            width: background ? background.width : 32,
-            height: background ? background.height : 32,
-            collisions: [],
-          };
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          memo[sceneId] = scene;
-        }
-        return memo;
-      }, {} as any),
-    },
-  };
+  if (existingAsset) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: existingAsset.id,
+      changes: {
+        ...action.payload.data,
+        id: existingAsset.id,
+      },
+    });
+    fixAllScenesWithModifiedBackgrounds(state);
+  } else {
+    backgroundsAdapter.addOne(state.backgrounds, action.payload.data);
+  }
 };
+
+const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
+  const scenes = localSceneSelectors.selectAll(state);
+  for(const scene of scenes) {
+    const background = localBackgroundSelectors.selectById(state, scene.backgroundId);
+    if (
+      !background ||
+      scene.width !== background.width ||
+      scene.height !== background.height
+    ) {
+      scene.width = background ? background.width : 32;
+      scene.height = background ? background.height : 32;
+      scene.collisions = [];
+      scene.tileColors = [];
+    }
+  }
+}
 
 const fixDefaultPalettes = (state: any) => {
   return {
@@ -1941,7 +1972,9 @@ const entitiesSlice = createSlice({
     reloadAssets,
   },
   extraReducers: (builder) =>
-    builder.addCase(projectActions.loadProject.fulfilled, loadProject),
+    builder
+      .addCase(projectActions.loadProject.fulfilled, loadProject)
+      .addCase(projectActions.loadBackground.fulfilled, loadBackground),
 });
 
 export const { reducer } = entitiesSlice;
