@@ -80,7 +80,7 @@ export type Actor = {
   animate: boolean;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
-  updateScript:  ScriptEvent[];
+  updateScript: ScriptEvent[];
   hit1Script: ScriptEvent[];
   hit2Script: ScriptEvent[];
   hit3Script: ScriptEvent[];
@@ -878,15 +878,34 @@ const editSceneEventDestinationPosition: CaseReducer<
   if (!scene) {
     return;
   }
-  scenesAdapter.updateOne(state.scenes, {
-    id: action.payload.sceneId,
-    changes: {
-      script: patchEvents(scene.script, action.payload.eventId, {
+
+  const updatedScene = mapSceneEvents(scene, (event) => {
+    if (event.id !== action.payload.eventId) {
+      return event;
+    }
+    return {
+      ...event,
+      args: {
+        ...event.args,
         sceneId: action.payload.destSceneId,
         x: action.payload.x,
         y: action.payload.y,
-      }),
-    },
+      },
+    };
+  });
+
+  const patch = (({
+    script,
+    playerHit1Script,
+    playerHit2Script,
+    playerHit3Script,
+  }) => ({ script, playerHit1Script, playerHit2Script, playerHit3Script }))(
+    updatedScene
+  );
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: action.payload.sceneId,
+    changes: patch,
   });
 };
 
@@ -1112,9 +1131,14 @@ const editActorEventDestinationPosition: CaseReducer<
     hit1Script,
     hit2Script,
     hit3Script,
-  }) => ({ script, startScript, updateScript, hit1Script, hit2Script, hit3Script }))(
-    updatedActor
-  );
+  }) => ({
+    script,
+    startScript,
+    updateScript,
+    hit1Script,
+    hit2Script,
+    hit3Script,
+  }))(updatedActor);
 
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
