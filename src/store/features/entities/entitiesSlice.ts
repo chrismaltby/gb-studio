@@ -82,6 +82,7 @@ export type Actor = {
   animate: boolean;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
+  updateScript:  ScriptEvent[];
   hit1Script: ScriptEvent[];
   hit2Script: ScriptEvent[];
   hit3Script: ScriptEvent[];
@@ -356,6 +357,7 @@ const mapActorEvents = (
     ...actor,
     script: mapEvents(actor.script || [], fn),
     startScript: mapEvents(actor.startScript || [], fn),
+    updateScript: mapEvents(actor.updateScript || [], fn),
     hit1Script: mapEvents(actor.hit1Script || [], fn),
     hit2Script: mapEvents(actor.hit2Script || [], fn),
     hit3Script: mapEvents(actor.hit3Script || [], fn),
@@ -935,6 +937,7 @@ const addActor: CaseReducer<
       animSpeed: "3",
       script: [],
       startScript: [],
+      updateScript: [],
       hit1Script: [],
       hit2Script: [],
       hit3Script: [],
@@ -1107,10 +1110,11 @@ const editActorEventDestinationPosition: CaseReducer<
   const patch = (({
     script,
     startScript,
+    updateScript,
     hit1Script,
     hit2Script,
     hit3Script,
-  }) => ({ script, startScript, hit1Script, hit2Script, hit3Script }))(
+  }) => ({ script, startScript, updateScript, hit1Script, hit2Script, hit3Script }))(
     updatedActor
   );
 

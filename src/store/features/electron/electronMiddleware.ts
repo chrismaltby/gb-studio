@@ -16,7 +16,6 @@ import {
   getCustomEventIdsInScene,
 } from "../../../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
-import { editTrigger } from "../../../actions";
 import l10n from "../../../lib/helpers/l10n";
 import { actions as editorActions } from "../../../store/features/editor/editorSlice";
 import {
@@ -26,6 +25,15 @@ import {
 import { Middleware, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import { actions as projectActions } from "../project/projectActions";
+import {
+  actions as entityActions,
+  customEventSelectors,
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+  ScriptEvent,
+} from "../entities/entitiesSlice";
+import { Dictionary } from "lodash";
 
 const openHelp = createAction<string>("electron/openHelp");
 const openFolder = createAction<string>("electron/openFolder");
@@ -63,79 +71,92 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   } else if (projectActions.loadProject.rejected.match(action)) {
     const window = remote.getCurrentWindow();
     window.close();
-  }
-
-
-
-
-  /*
-  if (action.type === REMOVE_CUSTOM_EVENT) {
+  } else if (entityActions.removeCustomEvent.match(action)) {
     const state = store.getState();
-    const customEvent =
-      state.entities.present.entities.customEvents[action.customEventId];
-    const customEventIndex = getCustomEvents(state).indexOf(customEvent);
+    const customEvent = customEventSelectors.selectById(
+      state,
+      action.payload.customEventId
+    );
+
+    if (!customEvent) {
+      return;
+    }
+
+    const allCustomEvents = customEventSelectors.selectAll(state);
+    const customEventIndex = allCustomEvents.indexOf(customEvent);
     const customEventName =
       customEvent.name || `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
-    const scenes = getScenes(state);
-    const scenesLookup = getScenesLookup(state);
-    const actorsLookup = getActorsLookup(state);
-    const triggersLookup = getTriggersLookup(state);
-    const usedScenes = {};
-    const usedActors = {};
-    const usedTriggers = {};
-    const usedSceneIds = [];
+    const scenes = sceneSelectors.selectAll(state);
+    const scenesLookup = sceneSelectors.selectEntities(state);
+    const actorsLookup = actorSelectors.selectEntities(state);
+    const triggersLookup = triggerSelectors.selectEntities(state);
+    const usedScenes = {} as Dictionary<{
+      sceneId: string;
+      eventIds: string[];
+    }>;
+    const usedActors = {} as Dictionary<{
+      sceneId: string;
+      eventIds: string[];
+    }>;
+    const usedTriggers = {} as Dictionary<{
+      sceneId: string;
+      eventIds: string[];
+    }>;
+    const usedSceneIds = [] as string[];
 
-    const isThisEvent = event =>
+    const isThisEvent = (event: ScriptEvent) =>
       event.command === EVENT_CALL_CUSTOM_EVENT &&
-      event.args.customEventId === action.customEventId;
+      event.args.customEventId === action.payload.customEventId;
 
-    const sceneName = sceneId => {
+    const sceneName = (sceneId: string) => {
       const scene = scenesLookup[sceneId];
-      const sceneIndex = scenes.indexOf(scene);
-      return scene.name || `${l10n("SCENE")} ${sceneIndex + 1}`;
+      const sceneIndex = scene ? scenes.indexOf(scene) : 0;
+      return scene?.name || `${l10n("SCENE")} ${sceneIndex + 1}`;
     };
 
     // Check for uses of this custom event in project
-    scenes.forEach(scene => {
-      walkSceneSpecificEvents(scene, event => {
+    scenes.forEach((scene) => {
+      walkSceneSpecificEvents(scene, (event: ScriptEvent) => {
         if (isThisEvent(event)) {
           if (!usedScenes[scene.id]) {
             usedScenes[scene.id] = {
               sceneId: scene.id,
-              eventIds: []
+              eventIds: [],
             };
           }
           usedScenes[scene.id].eventIds.push(event.id);
           usedSceneIds.push(scene.id);
         }
       });
-      scene.actors.forEach(actorId => {
-        walkActorEvents(actorsLookup[actorId], event => {
+      scene.actors.forEach((actorId) => {
+        walkActorEvents(actorsLookup[actorId], (event: ScriptEvent) => {
           if (isThisEvent(event)) {
             if (!usedActors[actorId]) {
               usedActors[actorId] = {
                 sceneId: scene.id,
-                eventIds: []
+                eventIds: [],
               };
-            }            
+            }
             usedActors[actorId].eventIds.push(event.id);
             usedSceneIds.push(scene.id);
           }
         });
       });
-      scene.triggers.forEach(triggerId => {
-        walkEvents(triggersLookup[triggerId].script, event => {
-          if (isThisEvent(event)) {
-            if (!usedTriggers[triggerId]) {
-              usedTriggers[triggerId] = {
-                sceneId: scene.id,
-                eventIds: []
-              };
-            }              
-            usedTriggers[triggerId].eventIds.push(event.id);
-            usedSceneIds.push(scene.id);
-          }
-        });
+      scene.triggers.forEach((triggerId) => {
+        const trigger = triggersLookup[triggerId];
+        trigger &&
+          walkEvents(trigger.script, (event: ScriptEvent) => {
+            if (isThisEvent(event)) {
+              if (!usedTriggers[triggerId]) {
+                usedTriggers[triggerId] = {
+                  sceneId: scene.id,
+                  eventIds: [],
+                };
+              }
+              usedTriggers[triggerId].eventIds.push(event.id);
+              usedSceneIds.push(scene.id);
+            }
+          });
       });
     });
 
@@ -159,52 +180,86 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
       // Remove used instances in scenes
       Object.keys(usedScenes).forEach((sceneId) => {
         const eventIds = usedScenes[sceneId].eventIds;
-        
-        const filter = (event) => !eventIds.includes(event.id)
+
+        const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          editScene(sceneId, {
-            script: filterEvents(scenesLookup[sceneId].script || [], filter),
-            playerHit1Script: filterEvents(scenesLookup[sceneId].playerHit1Script || [], filter),
-            playerHit2Script: filterEvents(scenesLookup[sceneId].playerHit2Script || [], filter),
-            playerHit3Script: filterEvents(scenesLookup[sceneId].playerHit3Script || [], filter),
+          entityActions.editScene({
+            sceneId,
+            changes: {
+              script: filterEvents(scenesLookup[sceneId]?.script || [], filter),
+              playerHit1Script: filterEvents(
+                scenesLookup[sceneId]?.playerHit1Script || [],
+                filter
+              ),
+              playerHit2Script: filterEvents(
+                scenesLookup[sceneId]?.playerHit2Script || [],
+                filter
+              ),
+              playerHit3Script: filterEvents(
+                scenesLookup[sceneId]?.playerHit3Script || [],
+                filter
+              ),
+            },
           })
         );
       });
       // Remove used instances in actors
       Object.keys(usedActors).forEach((actorId) => {
         const eventIds = usedActors[actorId].eventIds;
-        const sceneId = usedActors[actorId].sceneId;
 
-        const filter = (event) => !eventIds.includes(event.id)
+        const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          editActor(sceneId, actorId, {
-            script: filterEvents(actorsLookup[actorId].script || [], filter),
-            startScript: filterEvents(actorsLookup[actorId].startScript || [], filter),
-            updateScript: filterEvents(actorsLookup[actorId].updateScript || [], filter),
-            hit1Script: filterEvents(actorsLookup[actorId].hit1Script || [], filter),
-            hit2Script: filterEvents(actorsLookup[actorId].hit2Script || [], filter),
-            hit3Script: filterEvents(actorsLookup[actorId].hit3Script || [], filter),
+          entityActions.editActor({
+            actorId,
+            changes: {
+              script: filterEvents(actorsLookup[actorId]?.script || [], filter),
+              startScript: filterEvents(
+                actorsLookup[actorId]?.startScript || [],
+                filter
+              ),
+              updateScript: filterEvents(
+                actorsLookup[actorId]?.updateScript || [],
+                filter
+              ),
+              hit1Script: filterEvents(
+                actorsLookup[actorId]?.hit1Script || [],
+                filter
+              ),
+              hit2Script: filterEvents(
+                actorsLookup[actorId]?.hit2Script || [],
+                filter
+              ),
+              hit3Script: filterEvents(
+                actorsLookup[actorId]?.hit3Script || [],
+                filter
+              ),
+            },
           })
         );
       });
       // Remove used instances in triggers
       Object.keys(usedTriggers).forEach((triggerId) => {
         const eventIds = usedTriggers[triggerId].eventIds;
-        const sceneId = usedTriggers[triggerId].sceneId;
 
-        const filter = (event) => !eventIds.includes(event.id)
+        const filter = (event: ScriptEvent) => !eventIds.includes(event.id);
 
         store.dispatch(
-          editTrigger(sceneId, triggerId, {
-            script: filterEvents(triggersLookup[triggerId].script || [], filter)
+          entityActions.editTrigger({
+            triggerId,
+            changes: {
+              script: filterEvents(
+                triggersLookup[triggerId]?.script || [],
+                filter
+              ),
+            },
           })
         );
       });
     }
   }
-*/
+
   next(action);
 };
 
