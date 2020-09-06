@@ -5,7 +5,6 @@ import { ActionCreators } from "redux-undo";
 import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
-import * as actions from "./actions";
 import store from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";
 import App from "./components/app/App";
@@ -21,8 +20,16 @@ import { actions as navigationActions } from "./store/features/navigation/naviga
 import { actions as projectActions } from "./store/features/project/projectActions";
 import { actions as buildGameActions } from "./store/features/buildGame/buildGameMiddleware";
 import { actions as clipboardActions } from "./store/features/clipboard/clipboardMiddleware";
-
 import { setGlobalError } from "./store/features/error/errorSlice";
+
+const actions = {
+  ...editorActions,
+  ...entityActions,
+  ...settingsActions,
+  ...navigationActions,
+  ...buildGameActions,
+  ...clipboardActions
+};
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");

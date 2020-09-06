@@ -86,7 +86,7 @@ export const ProjectMetadataShape = PropTypes.shape({
 });
 
 export const ErrorShape = PropTypes.shape({
-  visible: PropTypes.boolean,
+  visible: PropTypes.bool,
   message: PropTypes.string,
   filename: PropTypes.string,
   stackTrace: PropTypes.string,
