@@ -31,13 +31,13 @@ store.dispatch(projectActions.loadProject(projectPath));
 watchProject(projectPath, {
   onAddSprite: f => store.dispatch(projectActions.loadSprite(f)),
   onAddBackground: f => store.dispatch(projectActions.loadBackground(f)),
-  onAddMusic: f => store.dispatch(actions.loadMusic(f)),
+  onAddMusic: f => store.dispatch(projectActions.loadMusic(f)),
   onChangedSprite: f => store.dispatch(projectActions.loadSprite(f)),
   onChangedBackground: f => store.dispatch(projectActions.loadBackground(f)),
-  onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
+  onChangedMusic: f => store.dispatch(projectActions.loadMusic(f)),
   onRemoveSprite: f => store.dispatch(projectActions.removeSprite(f)),
   onRemoveBackground: f => store.dispatch(projectActions.removeBackground(f)),
-  onRemoveMusic: f => store.dispatch(actions.removeMusic(f)),
+  onRemoveMusic: f => store.dispatch(projectActions.removeMusic(f)),
   onChangedUI: f => store.dispatch(actions.editUI())
 });
 

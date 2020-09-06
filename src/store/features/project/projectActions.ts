@@ -154,6 +154,47 @@ const removeSprite = createAsyncThunk<
   };
 });
 
+/**************************************************************************
+ * Music
+ */
+
+const loadMusic = createAsyncThunk<{ data: Music }, string>(
+  "project/loadMusic",
+  async (filename, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    const projectRoot = state.document && state.document.root;
+    const data = (await loadMusicData(projectRoot)(filename)) as
+      | Music
+      | undefined;
+
+    if (!data) {
+      throw new Error("Unable to load sprite sheet");
+    }
+
+    return {
+      data,
+    };
+  }
+);
+
+const removeMusic = createAsyncThunk<
+  { filename: string; plugin: string | undefined },
+  string
+>("project/removeMusic", async (filename, thunkApi) => {
+  const state = thunkApi.getState() as RootState;
+  const projectRoot = state.document && state.document.root;
+  const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
+  return {
+    filename: file,
+    plugin,
+  };
+});
+
+/**************************************************************************
+ * Save
+ */
+
 const saveProject = createAsyncThunk<void, string | undefined>(
   "project/saveProject",
   async (newPath, thunkApi) => {
@@ -205,5 +246,7 @@ export const actions = {
   removeBackground,
   loadSprite,
   removeSprite,
+  loadMusic,
+  removeMusic,
   saveProject,
 };

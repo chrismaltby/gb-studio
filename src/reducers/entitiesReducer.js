@@ -128,34 +128,6 @@ export const denormalizeProject = projectData => {
 
 // Mutations -------------------------------------------------------------------
 
-const loadMusic = (state, action) => {
-  const existingAsset = state.result.music
-    .map(trackId => {
-      return state.entities.music[trackId];
-    })
-    .find(matchAsset(action.data));
-  if (existingAsset) {
-    return editEntity(state, "music", existingAsset.id, {
-      ...action.data,
-      id: existingAsset.id
-    });
-  }
-  return sortEntities(
-    addEntity(state, "music", action.data),
-    "music",
-    sortByFilename
-  );
-};
-
-const removeMusic = (state, action) => {
-  const existingAsset = state.result.music
-    .map(trackId => {
-      return state.entities.music[trackId];
-    })
-    .find(matchAsset(action.data));
-  return removeEntity(state, "music", existingAsset.id);
-};
-
 const fixSceneCollisions = state => {
   return {
     ...state,
@@ -283,10 +255,6 @@ export const getPalettes = createSelector(
 
 export default function project(state = initialState.entities, action) {
   switch (action.type) {
-    case MUSIC_LOAD_SUCCESS:
-      return loadMusic(state, action);
-    case MUSIC_REMOVE:
-      return removeMusic(state, action);
     default:
       return state;
   }

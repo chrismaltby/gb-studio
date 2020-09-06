@@ -23,37 +23,6 @@ const asyncAction = async (
   }
 };
 
-export const loadMusic = filename => async (dispatch, getState) => {
-  return asyncAction(
-    dispatch,
-    types.MUSIC_LOAD_REQUEST,
-    types.MUSIC_LOAD_SUCCESS,
-    types.MUSIC_LOAD_FAILURE,
-    async () => {
-      const state = getState();
-      const projectRoot = state.document && state.document.root;
-      const data = await loadMusicData(projectRoot)(filename);
-      return {
-        data
-      };
-    }
-  );
-};
-
-export const removeMusic = filename => async (dispatch, getState) => {
-  const state = getState();
-  const projectRoot = state.document && state.document.root;
-  const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
-
-  return dispatch({
-    type: types.MUSIC_REMOVE,
-    data: {
-      filename: file,
-      plugin
-    }
-  });
-};
-
 export const setActorPrefab = actor => {
   return { type: types.SET_ACTOR_PREFAB, actor };
 };

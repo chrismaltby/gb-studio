@@ -633,6 +633,42 @@ const removeSprite: CaseReducer<
   }
 };
 
+const loadMusic: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: Music;
+  }>
+> = (state, action) => {
+  const music = localMusicSelectors.selectAll(state);
+  const existingAsset = music.find(matchAsset(action.payload.data));
+
+  if (existingAsset) {
+    musicAdapter.updateOne(state.music, {
+      id: existingAsset.id,
+      changes: {
+        ...action.payload.data,
+        id: existingAsset.id,
+      },
+    });
+  } else {
+    musicAdapter.addOne(state.music, action.payload.data);
+  }
+};
+
+const removeMusic: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    filename: string;
+    plugin: string | undefined;
+  }>
+> = (state, action) => {
+  const music = localMusicSelectors.selectAll(state);
+  const existingAsset = music.find(matchAsset(action.payload));
+  if (existingAsset) {
+    musicAdapter.removeOne(state.music, existingAsset.id);
+  }
+};
+
 const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   const scenes = localSceneSelectors.selectAll(state);
   for (const scene of scenes) {
@@ -2033,7 +2069,9 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.loadBackground.fulfilled, loadBackground)
       .addCase(projectActions.removeBackground.fulfilled, removeBackground)
       .addCase(projectActions.loadSprite.fulfilled, loadSprite)
-      .addCase(projectActions.removeSprite.fulfilled, removeSprite),
+      .addCase(projectActions.removeSprite.fulfilled, removeSprite)
+      .addCase(projectActions.loadMusic.fulfilled, loadMusic)
+      .addCase(projectActions.removeMusic.fulfilled, removeMusic),
 });
 
 export const { reducer } = entitiesSlice;
