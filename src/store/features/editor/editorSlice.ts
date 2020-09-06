@@ -1,12 +1,6 @@
 import { createSlice, PayloadAction, AnyAction } from "@reduxjs/toolkit";
-import { BRUSH_8PX, COLLISION_ALL } from "../../../consts";
+import { BRUSH_8PX, COLLISION_ALL, DRAG_ACTOR, DRAG_TRIGGER, DRAG_DESTINATION, DRAG_PLAYER } from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
-import {
-  DRAG_ACTOR,
-  DRAG_TRIGGER,
-  DRAG_DESTINATION,
-  DRAG_PLAYER,
-} from "../../../reducers/editorReducer";
 import { actions as entityActions, Actor, Trigger, SceneData } from "../entities/entitiesSlice";
 import { actions as navigationActions } from "../navigation/navigationSlice";
 import { actions as projectActions } from "../project/projectActions";
@@ -282,7 +276,7 @@ const editorSlice = createSlice({
       state.dragging = "";
     },
 
-    dragPlayerStart: (state, action) => {
+    dragPlayerStart: (state, _action) => {
       state.dragging = DRAG_PLAYER;
       state.worldFocus = true;
     },

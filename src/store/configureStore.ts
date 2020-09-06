@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import rootReducer from "../reducers/rootReducer";
+import rootReducer from "./rootReducer";
 import electronMiddleware from "./features/electron/electronMiddleware";
 import buildGameMiddleware from "./features/buildGame/buildGameMiddleware";
 import musicMiddleware from "./features/music/musicMiddleware";

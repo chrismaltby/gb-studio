@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
+import { ActorShape } from "../../store/stateShape";
 import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 import { getSettings } from "../../store/features/settings/settingsSlice";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";

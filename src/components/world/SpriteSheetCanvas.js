@@ -6,7 +6,7 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 // eslint-disable-next-line import/no-unresolved
 import SpriteSheetCanasWorker from "./SpriteSheetCanvas.worker";
 import { DMG_PALETTE } from "../../consts";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import { spriteSheetSelectors } from "../../store/features/entities/entitiesSlice";
 
 const workerPool = [];

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { CustomEventShape } from "../../reducers/stateShape";
+import { CustomEventShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 

@@ -1,15 +1,15 @@
 import { combineReducers } from "redux";
 import undoable from "redux-undo";
-import console from "../store/features/console/consoleSlice";
-import music from "../store/features/music/musicSlice";
-import warnings from "../store/features/warnings/warningsSlice";
-import entitiesNew from "../store/features/entities/entitiesSlice";
-import document from "../store/features/document/documentSlice";
-import editorNew from "../store/features/editor/editorSlice";
-import settings from "../store/features/settings/settingsSlice";
-import metadata from "../store/features/metadata/metadataSlice";
-import error from "../store/features/error/errorSlice";
-import navigation from "../store/features/navigation/navigationSlice";
+import console from "./features/console/consoleSlice";
+import music from "./features/music/musicSlice";
+import warnings from "./features/warnings/warningsSlice";
+import entitiesNew from "./features/entities/entitiesSlice";
+import document from "./features/document/documentSlice";
+import editorNew from "./features/editor/editorSlice";
+import settings from "./features/settings/settingsSlice";
+import metadata from "./features/metadata/metadataSlice";
+import error from "./features/error/errorSlice";
+import navigation from "./features/navigation/navigationSlice";
 
 let lastEntityUndoStateTime = 0;
 const UNDO_THROTTLE = 300;

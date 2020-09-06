@@ -1,6 +1,5 @@
 import { clipboard } from "electron";
 import uniq from "lodash/uniq";
-import { PASTE_CUSTOM_EVENTS } from "../../../actions/actionTypes";
 import {
   getCustomEventIdsInEvents,
   getCustomEventIdsInActor,
@@ -79,6 +78,50 @@ export const pasteClipboardEntity = (clipboardData: any) => (
     const clipboardTrigger = clipboardData.trigger as Partial<Trigger>;
     dispatch(pasteCustomEvents());
     dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
+  }
+};
+
+export const pasteClipboardEntityInPlace = (clipboardData: any) => (
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const { scene: sceneId } = state.editor;
+
+  if (clipboardData.__type === "scene") {
+    const clipboardScene = clipboardData.scene;
+    dispatch(pasteCustomEvents());
+    dispatch(
+      entityActions.addScene({
+        x: clipboardScene.x,
+        y: clipboardScene.y,
+        defaults: clipboardScene,
+      })
+    );
+  } else if (sceneId && clipboardData.__type === "actor") {
+    const clipboardActor = clipboardData.actor;
+    dispatch(pasteCustomEvents());
+    dispatch(
+      entityActions.addActor({
+        sceneId,
+        x: clipboardActor.x,
+        y: clipboardActor.y,
+        defaults: clipboardActor,
+      })
+    );
+  } else if (sceneId && clipboardData.__type === "trigger") {
+    const clipboardTrigger = clipboardData.trigger;
+    dispatch(pasteCustomEvents());
+    dispatch(
+      entityActions.addTrigger({
+        sceneId,
+        x: clipboardTrigger.x,
+        y: clipboardTrigger.y,
+        width: clipboardTrigger.width,
+        height: clipboardTrigger.height,
+        defaults: clipboardTrigger,
+      })
+    );
   }
 };
 
@@ -244,6 +287,7 @@ export const actions = {
   copyScript,
   copySelectedEntity,
   pasteClipboardEntity,
+  pasteClipboardEntityInPlace,
 };
 
 export default clipboardMiddleware;

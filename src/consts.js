@@ -48,6 +48,11 @@ export const COLLISION_ALL = 0xF;
 export const TILE_PROP_LADDER = 0x10;
 export const TILE_PROPS = 0xF0;
 
+export const DRAG_PLAYER = "DRAG_PLAYER";
+export const DRAG_DESTINATION = "DRAG_DESTINATION";
+export const DRAG_ACTOR = "DRAG_ACTOR";
+export const DRAG_TRIGGER = "DRAG_TRIGGER";
+
 export const DMG_PALETTE = {
   id: "dmg",
   name: "DMG (GB Default)",

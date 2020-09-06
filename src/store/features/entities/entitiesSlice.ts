@@ -16,6 +16,10 @@ import {
   DMG_PALETTE,
   COLLISION_ALL,
   TILE_PROPS,
+  DRAG_PLAYER,
+  DRAG_DESTINATION,
+  DRAG_TRIGGER,
+  DRAG_ACTOR,
 } from "../../../consts";
 import {
   regenerateEventIds,
@@ -26,12 +30,6 @@ import {
 } from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
-import {
-  DRAG_PLAYER,
-  DRAG_DESTINATION,
-  DRAG_ACTOR,
-  DRAG_TRIGGER,
-} from "../../../reducers/editorReducer";
 import { actions as settingsActions } from "../settings/settingsSlice";
 import { Dictionary } from "lodash";
 import uuid from "uuid";

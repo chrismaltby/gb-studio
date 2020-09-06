@@ -13,7 +13,7 @@ import {
   EventShape,
   BackgroundShape,
   PaletteShape,
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
 import ColorizedImage from "./ColorizedImage";

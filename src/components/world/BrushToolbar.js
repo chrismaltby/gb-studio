@@ -26,7 +26,7 @@ import {
   TILE_PROP_LADDER
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
 import PaletteSelect from "../forms/PaletteSelect";

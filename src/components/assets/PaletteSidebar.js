@@ -5,7 +5,7 @@ import cx from "classnames";
 import { PlusIcon } from "../library/Icons";
 import Button from "../library/Button";
 import l10n from "../../lib/helpers/l10n";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import PaletteBlock from "../library/PaletteBlock";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as navigationActions } from "../../store/features/navigation/navigationSlice";

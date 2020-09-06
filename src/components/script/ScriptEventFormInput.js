@@ -25,7 +25,7 @@ import { MenuItem } from "../library/Menu";
 import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import { EventValueShape, EventDefaultValueShape } from "../../reducers/stateShape";
+import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {

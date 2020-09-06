@@ -14,8 +14,7 @@ import {
 import l10n from "../../lib/helpers/l10n";
 import trimlines from "../../lib/helpers/trimlines";
 import events from "../../lib/events";
-import { CustomEventShape } from "../../reducers/stateShape";
-import { getCustomEvents } from "../../reducers/entitiesReducer";
+import { CustomEventShape } from "../../store/stateShape";
 import { customEventSelectors } from "../../store/features/entities/entitiesSlice";
 
 class AddCommandButton extends Component {

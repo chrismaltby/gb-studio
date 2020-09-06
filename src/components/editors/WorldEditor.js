@@ -11,7 +11,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape, SettingsShape, ProjectMetadataShape } from "../../reducers/stateShape";
+import { ProjectShape, SettingsShape, ProjectMetadataShape } from "../../store/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
 import { DMG_PALETTE } from "../../consts";

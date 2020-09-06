@@ -7,7 +7,7 @@ import { actions as entityActions, sceneSelectors } from "../../store/features/e
 import { actions as editorActions } from "../../store/features/editor/editorSlice";
 import { actions as settingsActions } from "../../store/features/settings/settingsSlice";
 
-import { SceneShape } from "../../reducers/stateShape";
+import { SceneShape } from "../../store/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
 class SceneCursor extends Component {

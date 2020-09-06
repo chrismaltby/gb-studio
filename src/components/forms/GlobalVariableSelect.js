@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { SelectRenamable } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { VariableShape } from "../../reducers/stateShape";
+import { VariableShape } from "../../store/stateShape";
 import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import { actions as enitityActions, variableSelectors } from "../../store/features/entities/entitiesSlice";
 

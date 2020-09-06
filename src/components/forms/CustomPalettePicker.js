@@ -6,7 +6,7 @@ import cx from "classnames";
 import { clipboard } from "electron";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import ColorSlider from "./ColorSlider";
 import { paletteSelectors, actions as entityActions } from "../../store/features/entities/entitiesSlice";
 

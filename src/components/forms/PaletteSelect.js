@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import { PaletteShape } from "../../reducers/stateShape";
-import { getPalettes } from "../../reducers/entitiesReducer";
+import { PaletteShape } from "../../store/stateShape";
 import PaletteBlock from "../library/PaletteBlock.tsx";
 import { paletteSelectors } from "../../store/features/entities/entitiesSlice";
 

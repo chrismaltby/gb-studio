@@ -6,12 +6,7 @@ import PageContent from "../../components/library/PageContent";
 import { walkEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
-import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
-import {
-  getScenes,
-  getActorsLookup,
-  getTriggersLookup,
-} from "../../reducers/entitiesReducer";
+import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 import DialogueReviewScene from "../../components/script/DialogueReviewScene";
 import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesSlice";
 

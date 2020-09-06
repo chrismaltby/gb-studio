@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
+import { ActorShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
 import l10n from "../../lib/helpers/l10n";
 import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesSlice";

@@ -16,7 +16,7 @@ import Button from "../../components/library/Button";
 import {
   SettingsShape,
   SceneShape,
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { actions as settingsActions, getSettings } from "../../store/features/settings/settingsSlice";
 import { sceneSelectors } from "../../store/features/entities/entitiesSlice";
 import { getMetadata } from "../../store/features/metadata/metadataSlice";

@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Alert, { AlertItem } from "../library/Alert";
 import { checkBackgroundWarnings } from "../../store/features/warnings/warningsSlice";
-import { getBackgroundsLookup } from "../../reducers/entitiesReducer";
 import { backgroundSelectors } from "../../store/features/entities/entitiesSlice";
 
 class BackgroundWarnings extends Component {

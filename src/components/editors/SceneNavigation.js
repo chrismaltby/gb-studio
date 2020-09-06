@@ -9,7 +9,7 @@ import {
   SceneShape,
   ActorShape,
   TriggerShape
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import l10n from "../../lib/helpers/l10n";
 import { actions as editorActions } from "../../store/features/editor/editorSlice";

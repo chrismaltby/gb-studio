@@ -6,7 +6,7 @@ import { FormField } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarColumn, SidebarHeading } from "./Sidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
-import { CustomEventShape } from "../../reducers/stateShape";
+import { CustomEventShape } from "../../store/stateShape";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
 import WorldEditor from "./WorldEditor";

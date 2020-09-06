@@ -4,10 +4,9 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import Button from "../library/Button";
-import { MusicShape } from "../../reducers/stateShape";
+import { MusicShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import { getMusic } from "../../reducers/entitiesReducer";
 import { playMusic, pauseMusic } from "../../store/features/music/musicSlice";
 import { musicSelectors } from "../../store/features/entities/entitiesSlice";
 

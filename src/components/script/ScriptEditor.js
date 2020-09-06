@@ -15,7 +15,6 @@ import {
   appendEvent,
   regenerateEventIds
 } from "../../lib/helpers/eventSystem";
-import * as actions from "../../actions";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
@@ -294,7 +293,7 @@ const mapDispatchToProps = {
   selectScriptEvent: editorActions.selectScriptEvent,
   copyEvent: clipboardActions.copyEvent,
   selectCustomEvent: editorActions.selectCustomEvent,
-  pasteCustomEvents: actions.pasteCustomEvents
+  pasteCustomEvents: clipboardActions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);

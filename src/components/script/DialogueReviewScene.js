@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
+import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 import { ArrowIcon, SearchIcon } from "../library/Icons";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
