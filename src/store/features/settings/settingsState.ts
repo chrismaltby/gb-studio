@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import projectActions from "../project/projectActions";
 
+type ShowConnectionsSetting = "all" | "selected" | true | false
+
 export type SettingsState = {
   startSceneId: string;
   startX: number;
   startY: number;
   showCollisions: boolean;
-  showConnections: boolean;
+  showConnections: ShowConnectionsSetting;
   worldScrollX: number;
   worldScrollY: number;
   zoom: number;
@@ -22,7 +24,7 @@ const initialState: SettingsState = {
   startX: 0,
   startY: 0,
   showCollisions: true,
-  showConnections: true,
+  showConnections: "selected",
   worldScrollX: 0,
   worldScrollY: 0,
   zoom: 100,
