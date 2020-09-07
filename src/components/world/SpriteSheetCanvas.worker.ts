@@ -15,7 +15,7 @@ const indexColour = (g: number) => {
         return 3;
     }
     if (g < 130) {
-        return 2;
+        return 3;
     }
     if (g < 205) {
         return 1;

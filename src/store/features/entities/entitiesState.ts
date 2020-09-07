@@ -26,6 +26,7 @@ import {
   patchEvents,
   mapEvents,
   isVariableField,
+  isPropertyField,
   walkEvents,
 } from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
@@ -36,6 +37,7 @@ import uuid from "uuid";
 import {
   replaceInvalidCustomEventVariables,
   replaceInvalidCustomEventActors,
+  replaceInvalidCustomEventProperties
 } from "../../../lib/compiler/helpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
@@ -1756,26 +1758,32 @@ const editCustomEvent: CaseReducer<
     // Fix invalid variables in script
     const fix = replaceInvalidCustomEventVariables;
     const fixActor = replaceInvalidCustomEventActors;
+    const fixProperty = replaceInvalidCustomEventProperties;
     patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
       if (event.args) {
-        const fixedEventVariableArgs = Object.keys(event.args).reduce(
-          (memo, arg) => {
-            const fixedVarArgs = memo;
-            if (isVariableField(event.command, arg, event.args[arg])) {
-              fixedVarArgs[arg] = fix(event.args[arg]);
-            } else {
-              fixedVarArgs[arg] = event.args[arg];
-            }
-            return fixedVarArgs;
-          },
-          {} as Dictionary<any>
-        );
+
+        const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
+          const fixedArgs = memo;
+          if (isVariableField(event.command, arg, event.args[arg])) {
+            fixedArgs[arg] = fix(event.args[arg]);
+          } else {
+            fixedArgs[arg] = event.args[arg];
+          }
+
+          if (isPropertyField(event.command, arg, event.args[arg])) {
+            fixedArgs[arg] = fixProperty(event.args[arg]);
+          } else {
+            fixedArgs[arg] = event.args[arg];
+          }
+
+          return fixedArgs;
+        }, {}  as Dictionary<any>);
 
         return {
           ...event,
           args: {
             ...event.args,
-            ...fixedEventVariableArgs,
+            ...fixedEventArgs,
             actorId: event.args.actorId && fixActor(event.args.actorId),
             otherActorId:
               event.args.otherActorId && fixActor(event.args.otherActorId),
@@ -1838,6 +1846,29 @@ const editCustomEvent: CaseReducer<
             addVariable(variable.value);
           } else {
             addVariable(variable);
+          }
+        }
+
+        if (isPropertyField(e.command, arg, args[arg])) {
+          const addPropertyActor = (property: string) => {
+            const actor = property && property.replace(/:.*/, "");
+            if (actor !== "player") {
+              const letter = String.fromCharCode(
+                "A".charCodeAt(0) + parseInt(actor)
+              );
+              actors[actor] = {
+                id: actor,
+                name: oldActors[actor]
+                  ? oldActors[actor].name
+                  : `Actor ${letter}`
+              };
+            }
+          }
+          const property = args[arg];
+          if (property != null && property.type === "property") {
+            addPropertyActor(property.value);
+          } else {
+            addPropertyActor(property);
           }
         }
       });

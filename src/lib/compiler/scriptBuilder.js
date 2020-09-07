@@ -294,13 +294,14 @@ class ScriptBuilder {
 
   // Player
 
-  playerSetSprite = (spriteSheetId) => {
+  playerSetSprite = (spriteSheetId, persist) => {
     const output = this.output;
     const { sprites } = this.options;
     const spriteIndex = getSpriteIndex(spriteSheetId, sprites);
     output.push(cmd(PLAYER_SET_SPRITE));
     output.push(hi(spriteIndex));
     output.push(lo(spriteIndex));
+    output.push(persist ? 1 : 0);
   };
 
   playerBounce = (height) => {
@@ -564,16 +565,18 @@ class ScriptBuilder {
     output.push(range);
   };
 
-  variablesAdd = (setVariable, otherVariable) => {
+  variablesAdd = (setVariable, otherVariable, clamp) => {
     const output = this.output;
     this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_ADD_VALUE));
+    output.push(clamp ? 1 : 0);
   };
 
-  variablesSub = (setVariable, otherVariable) => {
+  variablesSub = (setVariable, otherVariable, clamp) => {
     const output = this.output;
     this.vectorsLoad(setVariable, otherVariable);
     output.push(cmd(MATH_SUB_VALUE));
+    output.push(clamp ? 1 : 0);
   };
 
   variablesMul = (setVariable, otherVariable) => {

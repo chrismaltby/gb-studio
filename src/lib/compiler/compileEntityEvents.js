@@ -1,5 +1,5 @@
 import ScriptBuilder from "./scriptBuilder";
-import { isVariableField } from "../helpers/eventSystem";
+import { isVariableField, isPropertyField } from "../helpers/eventSystem";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -27,11 +27,13 @@ const compileEntityEvents = (input = [], options = {}) => {
   const helpers = {
     ...options,
     isVariableField,
+    isPropertyField,
     compileEvents: (childInput, eventOutput = null, eventBranch = true) =>
       compileEntityEvents(childInput, {
         ...options,
         output: eventOutput || output,
         branch: eventBranch,
+        labels: eventBranch ? options.labels : {}
       }),
   };
   const location = Object.assign(
