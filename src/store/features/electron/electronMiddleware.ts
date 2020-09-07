@@ -2,25 +2,20 @@ import { ipcRenderer, remote } from "electron";
 import settings from "electron-settings";
 import uniq from "lodash/uniq";
 import Path from "path";
-import { statSync } from "fs-extra";
 import confirmDeleteCustomEvent from "../../../lib/electron/dialog/confirmDeleteCustomEvent";
-import confirmReplaceCustomEvent from "../../../lib/electron/dialog/confirmReplaceCustomEvent";
 import confirmEnableColorDialog from "../../../lib/electron/dialog/confirmEnableColorDialog";
 import {
   walkEvents,
   walkSceneSpecificEvents,
   walkActorEvents,
   filterEvents,
-  getCustomEventIdsInEvents,
-  getCustomEventIdsInActor,
-  getCustomEventIdsInScene,
 } from "../../../lib/helpers/eventSystem";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import l10n from "../../../lib/helpers/l10n";
 import editorActions from "../editor/editorActions";
 import { getSettings } from "../settings/settingsState";
 import settingsActions from "../settings/settingsActions";
-import { Middleware, createAction } from "@reduxjs/toolkit";
+import { Middleware } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
 import projectActions from "../project/projectActions";
 import {
@@ -28,8 +23,10 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-  ScriptEvent,
 } from "../entities/entitiesState";
+import {
+  ScriptEvent,
+} from "../entities/entitiesTypes";
 import entitiesActions from "../entities/entitiesActions";
 import { Dictionary } from "lodash";
 import actions from "./electronActions";

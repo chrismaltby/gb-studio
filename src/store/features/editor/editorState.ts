@@ -12,7 +12,7 @@ import {
   Actor,
   Trigger,
   SceneData,
-} from "../entities/entitiesState";
+} from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";

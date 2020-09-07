@@ -2,7 +2,7 @@ import path from "path";
 import { createSlice, AnyAction } from "@reduxjs/toolkit";
 import projectActions from "../project/projectActions";
 
-interface DocumentState {
+export interface DocumentState {
   modified: boolean;
   loaded: boolean;
   saving: boolean;
@@ -10,7 +10,7 @@ interface DocumentState {
   root: string;
 }
 
-const initialState: DocumentState = {
+export const initialState: DocumentState = {
   modified: false,
   loaded: false,
   saving: false,

@@ -14,7 +14,7 @@ import {
 } from "../entities/entitiesState";
 import {
   CustomEvent,
-} from "../entities/entitiesState";
+} from "../entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "../entities/entitiesActions";
 

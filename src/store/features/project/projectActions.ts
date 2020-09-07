@@ -9,9 +9,8 @@ import {
   Actor,
   Trigger,
   CustomEvent,
-  denormalizeEntities,
   EntitiesState,
-} from "../entities/entitiesState";
+} from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
 import saveProjectData from "../../../lib/project/saveProjectData";
@@ -22,6 +21,7 @@ import { loadMusicData } from "../../../lib/project/loadMusicData";
 import { SettingsState } from "../settings/settingsState";
 import { MetadataState } from "../metadata/metadataState";
 import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
+import { denormalizeEntities } from "../entities/entitiesHelpers";
 
 let saving: boolean = false;
 

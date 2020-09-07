@@ -3,11 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import {
-  getSettings,
-} from "../../reducers/entitiesReducer";
 import { getCachedObject } from "../../lib/helpers/cache";
 import l10n from "../../lib/helpers/l10n";
+import { getSettings } from "../../store/features/settings/settingsState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 

@@ -8,6 +8,7 @@ import {
   createSelector,
   CaseReducer,
   EntityId,
+  Dictionary,
 } from "@reduxjs/toolkit";
 import { normalize, denormalize, schema } from "normalizr";
 import {
@@ -32,7 +33,6 @@ import {
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
 import settingsActions from "../settings/settingsActions";
-import { Dictionary } from "lodash";
 import uuid from "uuid";
 import {
   replaceInvalidCustomEventVariables,
@@ -43,6 +43,8 @@ import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorState";
 import projectActions from "../project/projectActions";
+import { Asset, EntitiesState, Actor, Trigger, Scene, Background, SpriteSheet, Palette, Music, Variable, CustomEvent, ScriptEvent, CustomEventVariable, CustomEventActor, ProjectEntitiesData, SceneData, EntityKey } from "./entitiesTypes";
+import { normalizeEntities } from "./entitiesHelpers";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -59,158 +61,10 @@ const sortByFilename = (a: Asset, b: Asset) => {
   return 0;
 };
 
-export type ActorDirection = "up" | "down" | "left" | "right";
-export type ActorSpriteType = "static" | "actor";
-export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
 
-export type ScriptEvent = {
-  id: string;
-  command: string;
-  args: any;
-  children: Dictionary<ScriptEvent[]>;
-};
 
-export type Actor = {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  spriteSheetId: string;
-  spriteType: ActorSpriteType;
-  frame: number;
-  direction: ActorDirection;
-  animate: boolean;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
-};
 
-export type Trigger = {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  script: ScriptEvent[];
-};
 
-export type Background = {
-  id: string;
-  name: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  plugin?: string;
-  _v: number;
-};
-
-export type Music = {
-  id: string;
-  name: string;
-  filename: string;
-  plugin?: string;
-  _v: number;
-};
-
-export type Palette = {
-  id: string;
-  name: string;
-  colors: [string, string, string, string];
-  defaultName?: string;
-  defaultColors?: [string, string, string, string];
-};
-
-export type Variable = {
-  id: string;
-  name: string;
-};
-
-export type CustomEventVariable = {
-  id: string;
-  name: string;
-};
-
-export type CustomEventActor = {
-  id: string;
-  name: string;
-};
-
-export type CustomEvent = {
-  id: string;
-  name: string;
-  description: string;
-  variables: Dictionary<CustomEventVariable>;
-  actors: Dictionary<CustomEventActor>;
-  script: ScriptEvent[];
-};
-
-export type SpriteSheet = {
-  id: string;
-  name: string;
-  filename: string;
-  type: SpriteType;
-  numFrames: number;
-  plugin?: string;
-  _v: number;
-};
-
-export type Scene = {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  backgroundId: string;
-  collisions: number[];
-  tileColors: number[];
-  actors: string[];
-  triggers: string[];
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
-};
-
-export type SceneData = Omit<Scene, "actors" | "triggers"> & {
-  actors: Actor[];
-  triggers: Trigger[];
-};
-
-export type ProjectEntitiesData = {
-  scenes: SceneData[];
-  backgrounds: Background[];
-  spriteSheets: SpriteSheet[];
-  palettes: Palette[];
-  customEvents: CustomEvent[];
-  music: Music[];
-  variables: Variable[];
-};
-
-export interface EntitiesState {
-  actors: EntityState<Actor>;
-  triggers: EntityState<Trigger>;
-  scenes: EntityState<Scene>;
-  backgrounds: EntityState<Background>;
-  spriteSheets: EntityState<SpriteSheet>;
-  palettes: EntityState<Palette>;
-  customEvents: EntityState<CustomEvent>;
-  music: EntityState<Music>;
-  variables: EntityState<Variable>;
-}
-
-export type Asset = {
-  filename: string;
-  plugin?: string;
-};
-
-type EntityKey = keyof EntitiesState;
 
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
@@ -460,77 +314,6 @@ const patchCustomEventCallName = (customEventId: string, name: string) => {
       },
     };
   };
-};
-
-/**************************************************************************
- * Schema
- */
-
-const backgroundSchema = new schema.Entity("backgrounds");
-const musicSchema = new schema.Entity("music");
-const actorSchema = new schema.Entity("actors");
-const triggerSchema = new schema.Entity("triggers");
-/*
-// Normalise events
-const eventSchema = new schema.Entity("events");
-eventSchema.define({
-  children: {
-    true: [eventSchema],
-    false: [eventSchema],
-    script: [eventSchema]
-  }
-});
-*/
-const spriteSheetsSchema = new schema.Entity("spriteSheets");
-const variablesSchema = new schema.Entity("variables");
-const sceneSchema = new schema.Entity("scenes", {
-  actors: [actorSchema],
-  triggers: [triggerSchema],
-  // script: [eventSchema],
-});
-const customEventsSchema = new schema.Entity("customEvents");
-const palettesSchema = new schema.Entity("palettes");
-
-const projectSchema = {
-  scenes: [sceneSchema],
-  backgrounds: [backgroundSchema],
-  music: [musicSchema],
-  spriteSheets: [spriteSheetsSchema],
-  variables: [variablesSchema],
-  customEvents: [customEventsSchema],
-  palettes: [palettesSchema],
-};
-
-type ProjectSchemaKey = keyof typeof projectSchema;
-
-export const normalizeEntities = (projectData: ProjectEntitiesData) => {
-  return normalize(projectData, projectSchema);
-};
-
-export const denormalizeEntities = (
-  state: EntitiesState
-): ProjectEntitiesData => {
-  const input: Record<ProjectSchemaKey, EntityId[]> = {
-    scenes: state.scenes.ids,
-    backgrounds: state.backgrounds.ids,
-    spriteSheets: state.spriteSheets.ids,
-    palettes: state.palettes.ids,
-    customEvents: state.customEvents.ids,
-    music: state.music.ids,
-    variables: state.variables.ids,
-  };
-  const entities: Record<EntityKey, Dictionary<any>> = {
-    actors: state.actors.entities,
-    triggers: state.triggers.entities,
-    scenes: state.scenes.entities,
-    backgrounds: state.backgrounds.entities,
-    spriteSheets: state.spriteSheets.entities,
-    palettes: state.palettes.entities,
-    customEvents: state.customEvents.entities,
-    music: state.music.entities,
-    variables: state.variables.entities,
-  };
-  return denormalize(input, projectSchema, entities);
 };
 
 /**************************************************************************
@@ -1810,9 +1593,7 @@ const editCustomEvent: CaseReducer<
         );
         actors[args.actorId] = {
           id: args.actorId,
-          name: oldActors[args.actorId]
-            ? oldActors[args.actorId].name
-            : `Actor ${letter}`,
+          name: oldActors[args.actorId]?.name || `Actor ${letter}`,
         };
       }
 
@@ -1822,9 +1603,7 @@ const editCustomEvent: CaseReducer<
         );
         actors[args.otherActorId] = {
           id: args.otherActorId,
-          name: oldActors[args.otherActorId]
-            ? oldActors[args.otherActorId].name
-            : `Actor ${letter}`,
+          name: oldActors[args.otherActorId]?.name || `Actor ${letter}`,
         };
       }
 
@@ -1836,9 +1615,7 @@ const editCustomEvent: CaseReducer<
             );
             variables[variable] = {
               id: variable,
-              name: oldVariables[variable]
-                ? oldVariables[variable].name
-                : `Variable ${letter}`,
+              name: oldVariables[variable]?.name || `Variable ${letter}`,
             };
           };
           const variable = args[arg];
@@ -1858,9 +1635,7 @@ const editCustomEvent: CaseReducer<
               );
               actors[actor] = {
                 id: actor,
-                name: oldActors[actor]
-                  ? oldActors[actor].name
-                  : `Actor ${letter}`
+                name: oldActors[actor]?.name || `Actor ${letter}`
               };
             }
           }
@@ -1884,9 +1659,7 @@ const editCustomEvent: CaseReducer<
             ).toUpperCase();
             variables[variable] = {
               id: variable,
-              name: oldVariables[variable]
-                ? oldVariables[variable].name
-                : `Variable ${letter}`,
+              name: oldVariables[variable]?.name || `Variable ${letter}`,
             };
           });
         }

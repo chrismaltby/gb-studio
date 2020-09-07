@@ -1,14 +1,16 @@
 import { createAction, AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import {
+  sceneSelectors,
+  actorSelectors,
+  triggerSelectors,
+} from "../entities/entitiesState";
+import {
   Actor,
   Trigger,
   Scene,
   ScriptEvent,
-  sceneSelectors,
-  actorSelectors,
-  triggerSelectors,
   SceneData,
-} from "../entities/entitiesState";
+} from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
