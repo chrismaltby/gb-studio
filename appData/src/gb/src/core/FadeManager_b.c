@@ -16,8 +16,8 @@ static const UBYTE bgp_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 
 
 #ifdef CGB
 UWORD UpdateColorBlack(UINT8 i, UWORD col) {
-  return RGB2(DespRight(PAL_RED(col), 6 - i),  DespRight(PAL_GREEN(col), 6 - i),
-              DespRight(PAL_BLUE(col), 6 - i));
+  return RGB2(DespRight(PAL_RED(col), 5 - i),  DespRight(PAL_GREEN(col), 5 - i),
+              DespRight(PAL_BLUE(col), 5 - i));
 }
 
 void ApplyPaletteChangeColor(UBYTE index) {
@@ -26,10 +26,7 @@ void ApplyPaletteChangeColor(UBYTE index) {
   UWORD paletteWhite;
   UWORD* col = BkgPalette;
 
-  if (index == 0) {
-    index = 1;
-  }
-  if (index == 6) {
+  if (index == 5) {
     set_bkg_palette(0, 8, BkgPalette);
     set_sprite_palette(0, 8, SprPalette);
     return;
@@ -46,8 +43,8 @@ void ApplyPaletteChangeColor(UBYTE index) {
     }
     set_sprite_palette(0, 8, palette);
   } else { 
-    paletteWhite = RGB2(DespRight(0x1F, index - 1), DespRight(0x1F, index - 1), 
-                      DespRight(0x1F, index - 1));
+    paletteWhite = RGB2(DespRight(0x1F, index), DespRight(0x1F, index), 
+                      DespRight(0x1F, index));
     for (c = 0; c != 32; ++c, ++col) {
       palette[c] = (UWORD)*col | paletteWhite;
     }
@@ -103,7 +100,7 @@ void FadeUpdate_b() {
     if ((fade_frame & fade_frames_per_step) == 0) {
       if (fade_direction == FADE_IN) {
         fade_timer++;
-        if (fade_timer == 6) {
+        if (fade_timer == 5) {
           fade_running = FALSE;
         }
       } else {
