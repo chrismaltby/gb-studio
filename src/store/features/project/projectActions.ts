@@ -25,7 +25,7 @@ import { denormalizeEntities } from "../entities/entitiesHelpers";
 
 let saving: boolean = false;
 
-type ProjectData = {
+export type ProjectData = {
   name: string;
   author: string;
   notes: string;

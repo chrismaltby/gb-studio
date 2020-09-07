@@ -37,13 +37,31 @@ import uuid from "uuid";
 import {
   replaceInvalidCustomEventVariables,
   replaceInvalidCustomEventActors,
-  replaceInvalidCustomEventProperties
+  replaceInvalidCustomEventProperties,
 } from "../../../lib/compiler/helpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "../../../lib/compiler/eventTypes";
 import { paint, paintLine, floodFill } from "../../../lib/helpers/paint";
 import { Brush, EditorSelectionType } from "../editor/editorState";
 import projectActions from "../project/projectActions";
-import { Asset, EntitiesState, Actor, Trigger, Scene, Background, SpriteSheet, Palette, Music, Variable, CustomEvent, ScriptEvent, CustomEventVariable, CustomEventActor, ProjectEntitiesData, SceneData, EntityKey } from "./entitiesTypes";
+import {
+  Asset,
+  EntitiesState,
+  Actor,
+  Trigger,
+  Scene,
+  Background,
+  SpriteSheet,
+  Palette,
+  Music,
+  Variable,
+  CustomEvent,
+  ScriptEvent,
+  CustomEventVariable,
+  CustomEventActor,
+  ProjectEntitiesData,
+  SceneData,
+  EntityKey,
+} from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 
 const MIN_SCENE_X = 60;
@@ -61,11 +79,6 @@ const sortByFilename = (a: Asset, b: Asset) => {
   return 0;
 };
 
-
-
-
-
-
 const actorsAdapter = createEntityAdapter<Actor>();
 const triggersAdapter = createEntityAdapter<Trigger>();
 const scenesAdapter = createEntityAdapter<Scene>();
@@ -82,7 +95,7 @@ const musicAdapter = createEntityAdapter<Music>({
 });
 const variablesAdapter = createEntityAdapter<Variable>();
 
-const initialState: EntitiesState = {
+export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
   triggers: triggersAdapter.getInitialState(),
   scenes: scenesAdapter.getInitialState(),
@@ -1544,7 +1557,6 @@ const editCustomEvent: CaseReducer<
     const fixProperty = replaceInvalidCustomEventProperties;
     patch.script = mapEvents(patch.script, (event: ScriptEvent) => {
       if (event.args) {
-
         const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
           const fixedArgs = memo;
           if (isVariableField(event.command, arg, event.args[arg])) {
@@ -1560,7 +1572,7 @@ const editCustomEvent: CaseReducer<
           }
 
           return fixedArgs;
-        }, {}  as Dictionary<any>);
+        }, {} as Dictionary<any>);
 
         return {
           ...event,
@@ -1635,10 +1647,10 @@ const editCustomEvent: CaseReducer<
               );
               actors[actor] = {
                 id: actor,
-                name: oldActors[actor]?.name || `Actor ${letter}`
+                name: oldActors[actor]?.name || `Actor ${letter}`,
               };
             }
-          }
+          };
           const property = args[arg];
           if (property != null && property.type === "property") {
             addPropertyActor(property.value);
