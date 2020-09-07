@@ -461,6 +461,7 @@
   "WARNING_BACKGROUND_TOO_TALL": "Background is too tall, was {height}px tall when maximum is {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Background contains too many pixels, {numPixels} ({width}px * {height}px) when maximum is {maxPixels}",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "Background contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly. Consider reducing the amount of detail in this image.",
+  "WARNING_MUSIC_TOO_LARGE": "Music track {filename} is too large to fit in memory ({bytes} bytes when maximum is {maxBytes}). Consider reducing the number of patterns in the file.",
 
   "// 12": "Errors -------------------------------------------------------",
 

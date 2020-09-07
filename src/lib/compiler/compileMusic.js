@@ -10,6 +10,7 @@ import { objectIntArray } from "../helpers/cGeneration";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import getTmp from "../helpers/getTmp";
 import { checksumFile, checksumString } from "../helpers/checksum";
+import l10n from "../helpers/l10n";
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
@@ -88,6 +89,10 @@ const compileMusic = async ({
     }
 
     progress(`${track.dataName} approx size in bytes: ${musicData.size}`);
+
+    if (musicData.size > GB_MAX_BANK_SIZE) {
+      throw new Error(l10n("WARNING_MUSIC_TOO_LARGE", {filename: track.filename, bytes: musicData.size, maxBytes: GB_MAX_BANK_SIZE}))
+    }
 
     if (
       musicData.size + bankedData[bankedData.length - 1].size <
