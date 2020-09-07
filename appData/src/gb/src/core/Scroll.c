@@ -220,7 +220,7 @@ void InitScroll() {
 }
 
 void RenderScreen() {
-  UINT8 i;
+  UINT8 i, temp;
   INT16 y;
 
   if (!fade_black)
@@ -228,8 +228,11 @@ void RenderScreen() {
     DISPLAY_OFF
   } else if (!fade_timer == 0)
   {
-    // Look at set frame black / set frame clear
-    ForcePaletteFade();
+    // Set palette black if not already, then restore.
+    temp = fade_timer;
+    fade_timer = 0;
+    ApplyPaletteChange();
+    fade_timer = temp;
   }
 
   // Clear pending rows/ columns

@@ -29,6 +29,11 @@ void ApplyPaletteChangeColor(UBYTE index) {
   if (index == 0) {
     index = 1;
   }
+  if (index == 6) {
+    set_bkg_palette(0, 8, BkgPalette);
+    set_sprite_palette(0, 8, SprPalette);
+    return;
+  }
 
   if (fade_black) {
     for (c = 0; c != 32; ++c, ++col) {
@@ -121,17 +126,9 @@ void FadeUpdate_b() {
 void ApplyPaletteChange_b() {
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
-    ApplyPaletteChangeColor(6);
+    ApplyPaletteChangeColor(fade_timer);
   } else
 #endif
-    ApplyPaletteChangeDMG(6);
+    ApplyPaletteChangeDMG(fade_timer);
 }
 
-void ForcePaletteFade_b() {
-#ifdef CGB
-  if (_cpu == CGB_TYPE) {
-    ApplyPaletteChangeColor(0);
-  } else
-#endif
-    ApplyPaletteChangeDMG(0);
-}

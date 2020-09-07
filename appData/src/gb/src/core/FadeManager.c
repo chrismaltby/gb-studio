@@ -42,12 +42,6 @@ void ApplyPaletteChange() {
   POP_BANK;  
 }
 
-void ForcePaletteFade() {
-  PUSH_BANK(FADE_BANK);
-  ForcePaletteFade_b();
-  POP_BANK;  
-}
-
 void FadeSetSpeed(UBYTE speed) {
   fade_frames_per_step = fade_speeds[speed];
 }
