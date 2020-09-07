@@ -6,6 +6,7 @@ import ActorCanvas from "../world/ActorCanvas";
 import { getCachedObject } from "../../lib/helpers/cache";
 import l10n from "../../lib/helpers/l10n";
 import { getSettings } from "../../store/features/settings/settingsState";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -46,7 +47,8 @@ const Group = ({ label, actor, ...props }) => {
 
 const GroupWithData = connect((state, ownProps) => {
   const customEventId = state.editor.entityId;
-  const actorsLookup = state.entities.present.entities.customEvents[customEventId].actors;
+  const customEvent = customEventSelectors.selectById(state, customEventId);
+  const actorsLookup = customEvent.actors;
   const actorIds = allCustomEventActors.map((a) => a.id);
   const settings = getSettings(state);
   const playerSpriteSheetId = settings.playerSpriteSheetId;
@@ -171,9 +173,10 @@ CustomEventPropertySelect.defaultProps = {
 };
 
 function mapStateToProps(state, ownProps) {
-  const settings = state.entities.present.result.settings;
+  const settings = getSettings(state);
   const customEventId = state.editor.entityId;
-  const actorsLookup = state.entities.present.entities.customEvents[customEventId].actors;
+  const customEvent = customEventSelectors.selectById(state, customEventId);
+  const actorsLookup = customEvent.actors;
   const actorIds = allCustomEventActors.map((a) => a.id);
 
   const value = ownProps.value;
