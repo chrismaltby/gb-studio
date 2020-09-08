@@ -19,7 +19,7 @@ export type SettingsState = {
   defaultUIPaletteId: string;
 }
 
-const initialState: SettingsState = {
+export const initialState: SettingsState = {
   startSceneId: "",
   startX: 0,
   startY: 0,

@@ -44,8 +44,8 @@ const documentSlice = createSlice({
         state.modified = false;
         if (action.meta.arg) {
           // If "Save As" set new root path
-          (state.path = action.meta.arg),
-            (state.root = path.dirname(action.meta.arg));
+          state.path = action.meta.arg;
+          state.root = path.dirname(action.meta.arg);
         }
       })
       .addMatcher(

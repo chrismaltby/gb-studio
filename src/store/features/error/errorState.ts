@@ -9,7 +9,7 @@ interface ErrorState {
   stackTrace: string;
 }
 
-const initialState: ErrorState = {
+export const initialState: ErrorState = {
   visible: false,
   message: "",
   filename: "",

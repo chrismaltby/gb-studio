@@ -11,7 +11,7 @@ interface WarningsState {
   backgrounds: Record<string, CachedWarnings>;
 }
 
-const initialState: WarningsState = {
+export const initialState: WarningsState = {
   backgroundsLoading: false,
   backgrounds: {},
 };

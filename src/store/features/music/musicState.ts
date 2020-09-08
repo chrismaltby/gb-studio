@@ -4,7 +4,7 @@ interface MusicState {
   playing: boolean;
 }
 
-const initialState: MusicState = {
+export const initialState: MusicState = {
   playing: false,
 };
 

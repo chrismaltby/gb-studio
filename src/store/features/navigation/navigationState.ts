@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import entitiesActions from "../entities/entitiesActions";
 import consoleActions from "../console/consoleActions";
 
-type NavigationSection =
+export type NavigationSection =
   | "world"
   | "sprites"
   | "backgrounds"
@@ -13,12 +13,12 @@ type NavigationSection =
   | "build"
   | "settings";
 
-interface NavigationState {
+export interface NavigationState {
   section: NavigationSection;
   id: string;
 }
 
-const initialState: NavigationState = {
+export const initialState: NavigationState = {
   section: "world",
   id: "",
 };

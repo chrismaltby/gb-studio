@@ -18,7 +18,7 @@ interface ConsoleState {
   warnings: ConsoleErrorLine[];
 }
 
-const initialState: ConsoleState = {
+export const initialState: ConsoleState = {
   status: "idle",
   output: [],
   warnings: [],

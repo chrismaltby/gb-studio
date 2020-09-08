@@ -10,7 +10,7 @@ export interface MetadataState {
   _release: string;
 }
 
-const initialState: MetadataState = {
+export const initialState: MetadataState = {
   name: "",
   author: "",
   notes: "",

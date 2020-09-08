@@ -3,7 +3,6 @@ import reducer, {
 } from "../../../../src/store/features/entities/entitiesState";
 import {
   EntitiesState,
-  SceneData,
   Background,
   SpriteSheet,
   Music,
@@ -12,80 +11,15 @@ import actions from "../../../../src/store/features/entities/entitiesActions";
 import projectActions, {
   ProjectData,
 } from "../../../../src/store/features/project/projectActions";
-
-const defaultScene: SceneData = {
-  id: "",
-  name: "Scene",
-  backgroundId: "",
-  x: 0,
-  y: 0,
-  width: 20,
-  height: 18,
-  collisions: [0],
-  tileColors: [0],
-  actors: [],
-  triggers: [],
-  script: [],
-  playerHit1Script: [],
-  playerHit2Script: [],
-  playerHit3Script: [],
-};
-
-const defaultBackground: Background = {
-  id: "",
-  name: "",
-  filename: "",
-  width: 1,
-  height: 1,
-  imageWidth: 1,
-  imageHeight: 1,
-  _v: 0,
-};
-
-const defaultSpriteSheet: SpriteSheet = {
-  id: "",
-  name: "",
-  filename: "",
-  numFrames: 1,
-  type: "static",
-  _v: 0,
-};
-
-const defaultMusic: Music = {
-  id: "",
-  name: "",
-  filename: "",
-  _v: 0,
-};
-
-const defaultProjectData: ProjectData = {
-  name: "",
-  _version: "2.0.0",
-  _release: "1",
-  author: "",
-  notes: "",
-  scenes: [],
-  backgrounds: [],
-  spriteSheets: [],
-  palettes: [],
-  customEvents: [],
-  variables: [],
-  music: [],
-  settings: {
-    startSceneId: "",
-    startX: 0,
-    startY: 0,
-    showCollisions: true,
-    showConnections: true,
-    worldScrollX: 0,
-    worldScrollY: 0,
-    zoom: 100,
-    customColorsEnabled: false,
-    defaultBackgroundPaletteIds: ["", "", "", "", "", ""],
-    defaultSpritePaletteId: "",
-    defaultUIPaletteId: "",
-  },
-};
+import {
+  dummyProjectData,
+  dummyScene,
+  dummyBackground,
+  dummySpriteSheet,
+  dummyMusic,
+  dummyActor,
+  dummyTrigger,
+} from "../../../dummydata";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -93,10 +27,10 @@ test("Should fix scene widths if backgrounds has been removed since save", () =>
   };
 
   const loadData: ProjectData = {
-    ...defaultProjectData,
+    ...dummyProjectData,
     scenes: [
       {
-        ...defaultScene,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "missingbg",
         width: 20,
@@ -124,10 +58,10 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
   };
 
   const loadData: ProjectData = {
-    ...defaultProjectData,
+    ...dummyProjectData,
     scenes: [
       {
-        ...defaultScene,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -136,7 +70,7 @@ test("Should fix scene widths if backgrounds have changed dimensions since save"
     ],
     backgrounds: [
       {
-        ...defaultBackground,
+        ...dummyBackground,
         id: "bg1",
         width: 64,
         height: 40,
@@ -163,10 +97,10 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
   };
 
   const loadData: ProjectData = {
-    ...defaultProjectData,
+    ...dummyProjectData,
     scenes: [
       {
-        ...defaultScene,
+        ...dummyScene,
         id: "scene1",
         backgroundId: "bg1",
         width: 20,
@@ -175,7 +109,7 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
     ],
     backgrounds: [
       {
-        ...defaultBackground,
+        ...dummyBackground,
         id: "bg1",
         width: 20,
         height: 18,
@@ -202,7 +136,7 @@ test("Should fix scene widths if background has changed while project is open", 
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           backgroundId: "bg1",
           width: 20,
@@ -216,7 +150,7 @@ test("Should fix scene widths if background has changed while project is open", 
     backgrounds: {
       entities: {
         bg1: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg1",
           width: 20,
           height: 18,
@@ -227,7 +161,7 @@ test("Should fix scene widths if background has changed while project is open", 
   };
 
   const loadBackground: Background = {
-    ...defaultBackground,
+    ...dummyBackground,
     id: "bg1",
     width: 64,
     height: 40,
@@ -254,7 +188,7 @@ test("Should add new background if loaded while project is open", () => {
   };
 
   const loadBackground: Background = {
-    ...defaultBackground,
+    ...dummyBackground,
     id: "bg1",
     width: 20,
     height: 18,
@@ -281,7 +215,7 @@ test("Should remove backgrounds that are deleted while project is open", () => {
     backgrounds: {
       entities: {
         bg1: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg1",
           filename: "bg1.png",
         },
@@ -310,7 +244,7 @@ test("Should add new sprite sheet if loaded while project is open", () => {
   };
 
   const loadSpriteSheet: SpriteSheet = {
-    ...defaultSpriteSheet,
+    ...dummySpriteSheet,
     id: "sprite1",
     numFrames: 6,
   };
@@ -335,7 +269,7 @@ test("Should update sprite sheet if modified while project is open", () => {
     spriteSheets: {
       entities: {
         sprite1: {
-          ...defaultSpriteSheet,
+          ...dummySpriteSheet,
           id: "sprite1",
           filename: "sprite1.png",
         },
@@ -345,7 +279,7 @@ test("Should update sprite sheet if modified while project is open", () => {
   };
 
   const loadSpriteSheet: SpriteSheet = {
-    ...defaultSpriteSheet,
+    ...dummySpriteSheet,
     id: "sprite1",
     filename: "sprite1.png",
     numFrames: 8,
@@ -371,7 +305,7 @@ test("Should remove sprite sheets that are deleted while project is open", () =>
     spriteSheets: {
       entities: {
         sprite1: {
-          ...defaultSpriteSheet,
+          ...dummySpriteSheet,
           id: "sprite1",
           filename: "sprite1.png",
         },
@@ -400,7 +334,7 @@ test("Should add new music track if loaded while project is open", () => {
   };
 
   const loadMusic: Music = {
-    ...defaultMusic,
+    ...dummyMusic,
     id: "track1",
     filename: "track1.mod",
   };
@@ -425,7 +359,7 @@ test("Should update music track if modified while project is open", () => {
     music: {
       entities: {
         track1: {
-          ...defaultMusic,
+          ...dummyMusic,
           id: "track1",
           filename: "track1.mod",
           _v: 0,
@@ -436,7 +370,7 @@ test("Should update music track if modified while project is open", () => {
   };
 
   const loadMusic: Music = {
-    ...defaultMusic,
+    ...dummyMusic,
     id: "track1",
     filename: "track1.mod",
     _v: 1,
@@ -462,7 +396,7 @@ test("Should remove music tracks that are deleted while project is open", () => 
     music: {
       entities: {
         track1: {
-          ...defaultMusic,
+          ...dummyMusic,
           id: "track1",
           filename: "track1.mod",
         },
@@ -508,7 +442,7 @@ test("Should be able to move a scene", () => {
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -535,7 +469,7 @@ test("Should use collisions and colors from other scene if switched to use same 
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           backgroundId: "bg1",
           actors: [],
@@ -544,7 +478,7 @@ test("Should use collisions and colors from other scene if switched to use same 
           tileColors: [4, 5, 6],
         },
         scene2: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene2",
           backgroundId: "bg2",
           actors: [],
@@ -558,11 +492,11 @@ test("Should use collisions and colors from other scene if switched to use same 
     backgrounds: {
       entities: {
         bg1: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg1",
         },
         bg2: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg2",
         },
       },
@@ -584,13 +518,115 @@ test("Should use collisions and colors from other scene if switched to use same 
   expect(newState.scenes.entities["scene2"]?.tileColors).toEqual([4, 5, 6]);
 });
 
+test("Should keep collisions but discard colors if switched to use different background of same width", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          backgroundId: "bg1",
+          actors: [],
+          triggers: [],
+          collisions: [1, 2, 3],
+          tileColors: [4, 5, 6],
+        },
+      },
+      ids: ["scene1"],
+    },
+    backgrounds: {
+      entities: {
+        bg1: {
+          ...dummyBackground,
+          id: "bg1",
+          width: 3,
+        },
+        bg2: {
+          ...dummyBackground,
+          id: "bg2",
+          width: 3,
+        },
+      },
+      ids: ["bg1", "bg2"],
+    },
+  };
+
+  const action = actions.editScene({
+    sceneId: "scene1",
+    changes: {
+      backgroundId: "bg2",
+    },
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.collisions).toEqual([1, 2, 3]);
+  expect(newState.scenes.entities["scene1"]?.tileColors).toEqual([]);
+});
+
+test("Should discard collisions and colors if switched to use different background of different width", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          backgroundId: "bg1",
+          actors: [],
+          triggers: [],
+          collisions: [1, 2, 3],
+          tileColors: [4, 5, 6],
+        },
+      },
+      ids: ["scene1"],
+    },
+    backgrounds: {
+      entities: {
+        bg1: {
+          ...dummyBackground,
+          id: "bg1",
+          width: 3,
+        },
+        bg2: {
+          ...dummyBackground,
+          id: "bg2",
+          width: 4,
+          height: 2,
+        },
+      },
+      ids: ["bg1", "bg2"],
+    },
+  };
+
+  const action = actions.editScene({
+    sceneId: "scene1",
+    changes: {
+      backgroundId: "bg2",
+    },
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.collisions).toEqual([
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ]);
+  expect(newState.scenes.entities["scene1"]?.tileColors).toEqual([]);
+});
+
 test("Should be able to remove a scene", () => {
   const state: EntitiesState = {
     ...initialState,
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           actors: [],
           triggers: [],
@@ -615,7 +651,7 @@ test("Should be able to flood fill collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -629,7 +665,7 @@ test("Should be able to flood fill collisions", () => {
     backgrounds: {
       entities: {
         bg1: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg1",
           width: 10,
           height: 5,
@@ -663,7 +699,7 @@ test("Should be able to paint collisions", () => {
     scenes: {
       entities: {
         scene1: {
-          ...defaultScene,
+          ...dummyScene,
           id: "scene1",
           backgroundId: "bg1",
           width: 10,
@@ -677,7 +713,7 @@ test("Should be able to paint collisions", () => {
     backgrounds: {
       entities: {
         bg1: {
-          ...defaultBackground,
+          ...dummyBackground,
           id: "bg1",
           width: 10,
           height: 5,
@@ -711,57 +747,368 @@ test("Should be able to paint collisions", () => {
 });
 
 test("Should be able to paint collision line", () => {
-    const state: EntitiesState = {
-      ...initialState,
-      scenes: {
-        entities: {
-          scene1: {
-            ...defaultScene,
-            id: "scene1",
-            backgroundId: "bg1",
-            width: 10,
-            height: 5,
-            actors: [],
-            triggers: [],
-          },
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          backgroundId: "bg1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
         },
-        ids: ["scene1"],
       },
-      backgrounds: {
-        entities: {
-          bg1: {
-            ...defaultBackground,
-            id: "bg1",
-            width: 10,
-            height: 5,
-          },
+      ids: ["scene1"],
+    },
+    backgrounds: {
+      entities: {
+        bg1: {
+          ...dummyBackground,
+          id: "bg1",
+          width: 10,
+          height: 5,
         },
-        ids: ["bg1"],
       },
-    };
-  
-    const action = actions.paintCollision({
-      sceneId: "scene1",
-      x: 0,
-      y: 0,
-      endX: 5,
-      endY: 5,
-      value: 2,
-      brush: "8px",
-      isTileProp: false,
-      drawLine: true,
-    });
-  
-    const newState = reducer(state, action);
-  
-    const expectedCols = Array.from(Array(50)).map((i, index) => {
-      if ((index%10) === Math.floor(index/10)) {
-        return 2;
-      }
-      return 0;
-    });
-  
-    expect(newState.scenes.entities["scene1"]?.collisions.length).toBe(50);
-    expect(newState.scenes.entities["scene1"]?.collisions).toEqual(expectedCols);
+      ids: ["bg1"],
+    },
+  };
+
+  const action = actions.paintCollision({
+    sceneId: "scene1",
+    x: 0,
+    y: 0,
+    endX: 5,
+    endY: 5,
+    value: 2,
+    brush: "8px",
+    isTileProp: false,
+    drawLine: true,
   });
-  
+
+  const newState = reducer(state, action);
+
+  const expectedCols = Array.from(Array(50)).map((i, index) => {
+    if (index % 10 === Math.floor(index / 10)) {
+      return 2;
+    }
+    return 0;
+  });
+
+  expect(newState.scenes.entities["scene1"]?.collisions.length).toBe(50);
+  expect(newState.scenes.entities["scene1"]?.collisions).toEqual(expectedCols);
+});
+
+test("Should be able to set a variable's name", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const action = actions.renameVariable({
+    variableId: "1",
+    name: "Var Name",
+  });
+
+  const newState = reducer(state, action);
+
+  expect(newState.variables.entities["1"]?.name).toBe("Var Name");
+});
+
+test("Should be able to delete a variable name by setting blank value", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      entities: {
+        "1": {
+          id: "1",
+          name: "Var Name",
+        },
+      },
+      ids: ["1"],
+    },
+  };
+
+  const action = actions.renameVariable({
+    variableId: "1",
+    name: "",
+  });
+
+  expect(state.variables.entities["1"]).toBeTruthy();
+
+  const newState = reducer(state, action);
+
+  expect(newState.variables.entities["1"]).toBeUndefined();
+});
+
+test("Should be able to add an actor to a scene", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    spriteSheets: {
+      entities: {
+        sprite1: {
+          ...dummySpriteSheet,
+          id: "sprite1",
+          filename: "sprite1.png",
+        },
+      },
+      ids: ["sprite1"],
+    },
+  };
+
+  const action = actions.addActor({ sceneId: "scene1", x: 2, y: 4 });
+
+  const newState = reducer(state, action);
+
+  const newActorId = action.payload.actorId;
+
+  expect(state.actors.ids.length).toBe(0);
+  expect(newState.actors.ids.length).toBe(1);
+  expect(newState.scenes.entities["scene1"]?.actors).toEqual([newActorId]);
+  expect(newState.actors.entities[newActorId]?.x).toBe(2);
+  expect(newState.actors.entities[newActorId]?.y).toBe(4);
+  expect(newState.actors.entities[newActorId]?.spriteSheetId).toBe("sprite1");
+});
+
+test("Should be able to move an actor with a scene", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: ["actor1"],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActor,
+          id: "actor1",
+          x: 5,
+          y: 2,
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.moveActor({
+    actorId: "actor1",
+    sceneId: "scene1",
+    newSceneId: "scene1",
+    x: 1,
+    y: 3,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.actors).toEqual(["actor1"]);
+  expect(newState.actors.entities["actor1"]?.x).toBe(1);
+  expect(newState.actors.entities["actor1"]?.y).toBe(3);
+});
+
+test("Should be able to move an actor between scenes", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: ["actor1"],
+          triggers: [],
+        },
+        scene2: {
+          ...dummyScene,
+          id: "scene2",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1", "scene2"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActor,
+          id: "actor1",
+          x: 5,
+          y: 2,
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.moveActor({
+    actorId: "actor1",
+    sceneId: "scene1",
+    newSceneId: "scene2",
+    x: 4,
+    y: 1,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.actors).toEqual([]);
+  expect(newState.scenes.entities["scene2"]?.actors).toEqual(["actor1"]);
+  expect(newState.actors.entities["actor1"]?.x).toBe(4);
+  expect(newState.actors.entities["actor1"]?.y).toBe(1);
+});
+
+test("Should be able to add a trigger to a scene", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const action = actions.addTrigger({
+    sceneId: "scene1",
+    x: 1,
+    y: 3,
+    width: 4,
+    height: 2,
+  });
+
+  const newState = reducer(state, action);
+
+  const newTriggerId = action.payload.triggerId;
+
+  expect(state.triggers.ids.length).toBe(0);
+  expect(newState.triggers.ids.length).toBe(1);
+  expect(newState.scenes.entities["scene1"]?.triggers).toEqual([newTriggerId]);
+  expect(newState.triggers.entities[newTriggerId]?.x).toBe(1);
+  expect(newState.triggers.entities[newTriggerId]?.y).toBe(3);
+  expect(newState.triggers.entities[newTriggerId]?.width).toBe(4);
+  expect(newState.triggers.entities[newTriggerId]?.height).toBe(2);
+});
+
+test("Should be able to move a trigger with a scene", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: ["trigger1"],
+        },
+      },
+      ids: ["scene1"],
+    },
+    triggers: {
+      entities: {
+        trigger1: {
+          ...dummyTrigger,
+          id: "trigger1",
+          x: 5,
+          y: 2,
+        },
+      },
+      ids: ["trigger1"],
+    },
+  };
+
+  const action = actions.moveTrigger({
+    triggerId: "trigger1",
+    sceneId: "scene1",
+    newSceneId: "scene1",
+    x: 1,
+    y: 3,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.triggers).toEqual(["trigger1"]);
+  expect(newState.triggers.entities["trigger1"]?.x).toBe(1);
+  expect(newState.triggers.entities["trigger1"]?.y).toBe(3);
+});
+
+test("Should be able to move a trigger between scenes", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: ["trigger1"],
+        },
+        scene2: {
+          ...dummyScene,
+          id: "scene2",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1", "scene2"],
+    },
+    triggers: {
+      entities: {
+        trigger1: {
+          ...dummyTrigger,
+          id: "trigger1",
+          x: 5,
+          y: 2,
+        },
+      },
+      ids: ["trigger1"],
+    },
+  };
+
+  const action = actions.moveTrigger({
+    triggerId: "trigger1",
+    sceneId: "scene1",
+    newSceneId: "scene2",
+    x: 4,
+    y: 1,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities["scene1"]?.triggers).toEqual([]);
+  expect(newState.scenes.entities["scene2"]?.triggers).toEqual(["trigger1"]);
+  expect(newState.triggers.entities["trigger1"]?.x).toBe(4);
+  expect(newState.triggers.entities["trigger1"]?.y).toBe(1);
+});
