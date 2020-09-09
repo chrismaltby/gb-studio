@@ -12,7 +12,7 @@ interface ConsoleErrorLine {
   text: string;
 }
 
-interface ConsoleState {
+export interface ConsoleState {
   status: ConsoleStatus;
   output: ConsoleLine[];
   warnings: ConsoleErrorLine[];
