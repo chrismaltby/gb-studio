@@ -14,7 +14,7 @@ const warningsMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const projectRoot = state.document.root;
 
     if (background) {
-      const cachedWarnings = state.warnings.backgrounds[action.payload.id];
+      const cachedWarnings = state.warnings.backgrounds[action.payload];
       if (!cachedWarnings || cachedWarnings.timestamp < background._v) {
         getBackgroundWarnings(background, projectRoot).then((warnings) => {
           store.dispatch(

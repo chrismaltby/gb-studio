@@ -6,7 +6,7 @@ interface CachedWarnings {
   timestamp: number;
 }
 
-interface WarningsState {
+export interface WarningsState {
   backgroundsLoading: boolean;
   backgrounds: Record<string, CachedWarnings>;
 }
@@ -20,7 +20,7 @@ const warningsSlice = createSlice({
   name: "warnings",
   initialState,
   reducers: {
-    checkBackgroundWarnings: (state, _action) => {
+    checkBackgroundWarnings: (state, _action: PayloadAction<string>) => {
       state.backgroundsLoading = true;
     },
     setBackgroundWarnings: (
