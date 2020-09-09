@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface MusicState {
+export interface MusicState {
   playing: boolean;
 }
 
