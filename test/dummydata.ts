@@ -9,10 +9,7 @@ import {
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
 import { initialState as initialEditorState } from "../src/store/features/editor/editorState";
-import {
-  initialState as initialConsoleState,
-  initialState,
-} from "../src/store/features/console/consoleState";
+import { initialState as initialConsoleState } from "../src/store/features/console/consoleState";
 import { initialState as initialMetadataState } from "../src/store/features/metadata/metadataState";
 import { initialState as initialEntitiesState } from "../src/store/features/entities/entitiesState";
 import { initialState as initialSettingsState } from "../src/store/features/settings/settingsState";
