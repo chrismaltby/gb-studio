@@ -62,3 +62,51 @@ test("Should be able to clear console", () => {
   expect(newState.output).toEqual([]);
   expect(newState.warnings).toEqual([]);
 });
+
+test("Should be able to set the build status as running causing console to clear", () => {
+  const state: ConsoleState = {
+    ...initialState,
+    status: "idle",
+    output: [
+      {
+        type: "out",
+        text: "Message 1",
+      },
+    ],
+    warnings: [
+      {
+        type: "err",
+        text: "Message 2",
+      },
+    ],
+  };
+  const action = actions.startConsole();
+  const newState = reducer(state, action);
+  expect(newState.status).toBe("running");
+  expect(newState.output).toEqual([]);
+  expect(newState.warnings).toEqual([]);
+});
+
+test("Should be able to mark the build status as complete", () => {
+  const state: ConsoleState = {
+    ...initialState,
+    status: "running",
+    output: [
+      {
+        type: "out",
+        text: "Message 1",
+      },
+    ],
+    warnings: [
+      {
+        type: "err",
+        text: "Message 2",
+      },
+    ],
+  };
+  const action = actions.completeConsole();
+  const newState = reducer(state, action);
+  expect(newState.status).toBe("complete");
+  expect(newState.output).toEqual(state.output);
+  expect(newState.warnings).toEqual(state.warnings);
+});

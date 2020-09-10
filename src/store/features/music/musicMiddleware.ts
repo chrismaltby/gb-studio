@@ -7,11 +7,12 @@ import actions from "./musicActions";
 
 let modPlayer: ScripTracker;
 
-function initMusic() {
+export function initMusic() {
   modPlayer = new ScripTracker();
   modPlayer.on(ScripTracker.Events.playerReady, onSongLoaded);
   window.removeEventListener("click", initMusic);
   window.removeEventListener("keydown", initMusic);
+  return modPlayer;
 }
 
 // Initialise audio on first click

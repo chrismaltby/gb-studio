@@ -1,4 +1,5 @@
-import reducer, { initialState, actions, EditorState } from "../../../../src/store/features/editor/editorState";
+import reducer, { initialState, EditorState } from "../../../../src/store/features/editor/editorState";
+import actions from "../../../../src/store/features/editor/editorActions";
 
 test("Should allow setting tool", () => {
   const state: EditorState = {
