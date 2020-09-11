@@ -9632,10 +9632,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vm2@^3.8.1:
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.8.2.tgz#7744c40f669c079db4fda44b8edae64afd26cfb0"
-  integrity sha512-FE9slf0o4YoD2Jf7VEjytHTac2SMt2J4ahf9Tw9YLLVqJm0DQiMpmN+I0+RsnOZ0kb7PyeR1rLxathXZWJ23kg==
+vm2@3.9.2:
+  version "3.9.2"
+  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.2.tgz#a4085d2d88a808a1b3c06d5478c2db3222a9cc30"
+  integrity sha512-nzyFmHdy2FMg7mYraRytc2jr4QBaUY3TEGe3q3bK8EgS9WC98wxn2jrPxS/ruWm+JGzrEIIeufKweQzVoQEd+Q==
 
 w3c-hr-time@^1.0.1:
   version "1.0.2"

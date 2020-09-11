@@ -80,7 +80,7 @@
     "semver": "7",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
-    "vm2": "^3.8.1"
+    "vm2": "3.9.2"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.49",

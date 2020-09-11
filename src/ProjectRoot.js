@@ -5,6 +5,7 @@ import { ActionCreators } from "redux-undo";
 import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
+import mapValues from "lodash/mapValues";
 import store from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";
 import App from "./components/app/App";
@@ -28,8 +29,13 @@ const actions = {
   ...settingsActions,
   ...navigationActions,
   ...buildGameActions,
-  ...clipboardActions
+  ...clipboardActions,
 };
+
+const vmActions = mapValues(actions, (fn, key) => {
+  // Strip proxy object from VM2 output
+  return (payload) => actions[key](JSON.parse(JSON.stringify(payload)));
+});
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -141,7 +147,7 @@ const onEjectEngine = () => {
 
 const onPluginRun = (event, pluginId) => {
   if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
-    plugins.menu[pluginId].run(store, actions);
+    plugins.menu[pluginId].run(store, vmActions);
   }
 }
 
