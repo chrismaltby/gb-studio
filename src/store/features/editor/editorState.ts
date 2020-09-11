@@ -244,7 +244,7 @@ const editorSlice = createSlice({
       state.worldFocus = true;
     },
 
-    dragTriggerStop: (state, _action) => {
+    dragTriggerStop: (state, _action: PayloadAction<void>) => {
       state.dragging = "";
     },
 
@@ -259,7 +259,7 @@ const editorSlice = createSlice({
       state.worldFocus = true;
     },
 
-    dragActorStop: (state, _action) => {
+    dragActorStop: (state, _action: PayloadAction<void>) => {
       state.dragging = "";
     },
 
@@ -280,17 +280,17 @@ const editorSlice = createSlice({
       state.worldFocus = true;
     },
 
-    dragDestinationStop: (state, _action) => {
+    dragDestinationStop: (state, _action: PayloadAction<void>) => {
       state.eventId = "";
       state.dragging = "";
     },
 
-    dragPlayerStart: (state, _action) => {
+    dragPlayerStart: (state, _action: PayloadAction<void>) => {
       state.dragging = DRAG_PLAYER;
       state.worldFocus = true;
     },
 
-    dragPlayerStop: (state, _action) => {
+    dragPlayerStop: (state, _action: PayloadAction<void>) => {
       state.dragging = "";
     },
 
