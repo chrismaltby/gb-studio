@@ -98,7 +98,7 @@ class SceneCursor extends Component {
 
     if (tool === "actors") {
       addActor({sceneId, x, y, defaults: actorDefaults});
-      setTool("select");
+      setTool({ tool: "select" });
     } else if (tool === "triggers") {
       addTrigger({sceneId, x, y, width: 1, height: 1, defaults: triggerDefaults});
       this.startX = x;
@@ -214,7 +214,7 @@ class SceneCursor extends Component {
 
   onResizeTriggerStop = e => {
     const { setTool } = this.props;
-    setTool({tool:"select"});
+    setTool({ tool: "select" });
     this.setState({ resize: false });
     window.removeEventListener("mousemove", this.onResizeTrigger);
     window.removeEventListener("mouseup", this.onResizeTriggerStop);
