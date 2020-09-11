@@ -19,7 +19,9 @@ import {
   dummyMusic,
   dummyActor,
   dummyTrigger,
+  dummyPalette,
 } from "../../../dummydata";
+import { DMG_PALETTE } from "../../../../src/consts";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -1111,4 +1113,327 @@ test("Should be able to move a trigger between scenes", () => {
   expect(newState.scenes.entities["scene2"]?.triggers).toEqual(["trigger1"]);
   expect(newState.triggers.entities["trigger1"]?.x).toBe(4);
   expect(newState.triggers.entities["trigger1"]?.y).toBe(1);
+});
+
+test("Should be able to remove an actor by id", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: ["actor1"],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActor,
+          id: "actor1",
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.removeActor({
+    actorId: "actor1",
+    sceneId: "scene1",
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.actors.ids.length).toBe(0);
+  expect(newState.actors.entities["actor1"]).toBeUndefined();
+  expect(newState.scenes.entities["scene1"]?.actors?.length).toBe(0);
+});
+
+test("Should be able to remove an actor at location", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: ["actor1"],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActor,
+          id: "actor1",
+          x: 5,
+          y: 6,
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.removeActorAt({
+    sceneId: "scene1",
+    x: 5,
+    y: 6,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.actors.ids.length).toBe(0);
+  expect(newState.actors.entities["actor1"]).toBeUndefined();
+  expect(newState.scenes.entities["scene1"]?.actors?.length).toBe(0);
+});
+
+test("Should not remove actor outside of delete location", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: ["actor1"],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    actors: {
+      entities: {
+        actor1: {
+          ...dummyActor,
+          id: "actor1",
+          x: 10,
+          y: 6,
+        },
+      },
+      ids: ["actor1"],
+    },
+  };
+
+  const action = actions.removeActorAt({
+    sceneId: "scene1",
+    x: 5,
+    y: 6,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.actors.ids.length).toBe(1);
+  expect(newState.actors.entities["actor1"]).toBe(state.actors.entities.actor1);
+  expect(newState.scenes.entities["scene1"]?.actors?.length).toBe(1);
+});
+
+test("Should be able to remove a trigger by id", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: [],
+          triggers: ["trigger1"],
+        },
+      },
+      ids: ["scene1"],
+    },
+    triggers: {
+      entities: {
+        trigger1: {
+          ...dummyTrigger,
+          id: "trigger1",
+        },
+      },
+      ids: ["trigger1"],
+    },
+  };
+
+  const action = actions.removeTrigger({
+    triggerId: "trigger1",
+    sceneId: "scene1",
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.triggers.ids.length).toBe(0);
+  expect(newState.triggers.entities["trigger1"]).toBeUndefined();
+  expect(newState.scenes.entities["scene1"]?.triggers?.length).toBe(0);
+});
+
+test("Should be able to remove a trigger at location", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: [],
+          triggers: ["trigger1"],
+        },
+      },
+      ids: ["scene1"],
+    },
+    triggers: {
+      entities: {
+        trigger1: {
+          ...dummyTrigger,
+          id: "trigger1",
+          x: 2,
+          y: 3,
+          width: 5,
+          height: 1,
+        },
+      },
+      ids: ["trigger1"],
+    },
+  };
+
+  const action = actions.removeTriggerAt({
+    sceneId: "scene1",
+    x: 4,
+    y: 3,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.triggers.ids.length).toBe(0);
+  expect(newState.triggers.entities["trigger1"]).toBeUndefined();
+  expect(newState.scenes.entities["scene1"]?.triggers?.length).toBe(0);
+});
+
+test("Should not remove trigger outside of delete location", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          actors: [],
+          triggers: ["trigger1"],
+        },
+      },
+      ids: ["scene1"],
+    },
+    triggers: {
+      entities: {
+        trigger1: {
+          ...dummyTrigger,
+          id: "trigger1",
+          x: 2,
+          y: 3,
+          width: 5,
+          height: 1,
+        },
+      },
+      ids: ["trigger1"],
+    },
+  };
+
+  const action = actions.removeTriggerAt({
+    sceneId: "scene1",
+    x: 4,
+    y: 4,
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.triggers.ids.length).toBe(1);
+  expect(newState.triggers.entities["trigger1"]).toBe(
+    state.triggers.entities.trigger1
+  );
+  expect(newState.scenes.entities["scene1"]?.triggers?.length).toBe(1);
+});
+
+test("Should be able to add a palette", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const action = actions.addPalette();
+
+  expect(state.palettes.ids.length).toBe(0);
+  const newState = reducer(state, action);
+  expect(newState.palettes.ids.length).toBe(1);
+  expect(newState.palettes.entities[action.payload.paletteId]?.id).toBe(
+    action.payload.paletteId
+  );
+  expect(newState.palettes.entities[action.payload.paletteId]?.colors).toEqual(
+    DMG_PALETTE.colors
+  );
+});
+
+test("Should be able to edit a palette", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    palettes: {
+      entities: {
+        palette1: {
+          ...dummyPalette,
+          id: "palette1",
+        },
+      },
+      ids: ["palette1"],
+    },
+  };
+
+  const action = actions.editPalette({
+    paletteId: "palette1",
+    changes: {
+      colors: ["ff0000", "00ff00", "0000ff", "ffffff"],
+    },
+  });
+
+  const newState = reducer(state, action);
+  expect(newState.palettes.entities[action.payload.paletteId]?.colors).toEqual([
+    "ff0000",
+    "00ff00",
+    "0000ff",
+    "ffffff",
+  ]);
+});
+
+test("Should be able to remove a palette", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    palettes: {
+      entities: {
+        palette1: {
+          ...dummyPalette,
+          id: "palette1",
+        },
+      },
+      ids: ["palette1"],
+    },
+  };
+
+  const action = actions.removePalette({
+    paletteId: "palette1",
+  });
+
+  expect(state.palettes.ids.length).toBe(1);
+  const newState = reducer(state, action);
+  expect(newState.palettes.ids.length).toBe(0);
+});
+
+test("Should be able to add custom event", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const action = actions.addCustomEvent();
+
+  expect(state.customEvents.ids.length).toBe(0);
+  const newState = reducer(state, action);
+  expect(newState.customEvents.ids.length).toBe(1);
+  expect(
+    newState.customEvents.entities[action.payload.customEventId]?.name
+  ).toBe("");
+  expect(
+    newState.customEvents.entities[action.payload.customEventId]?.script
+  ).toEqual([]);
 });

@@ -1501,11 +1501,11 @@ const editPalette: CaseReducer<
   });
 };
 
-const removePalette: CaseReducer<EntitiesState, PayloadAction<string>> = (
-  state,
-  action
-) => {
-  palettesAdapter.removeOne(state.palettes, action.payload);
+const removePalette: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ paletteId: string }>
+> = (state, action) => {
+  palettesAdapter.removeOne(state.palettes, action.payload.paletteId);
 };
 
 /**************************************************************************

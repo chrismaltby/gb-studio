@@ -5,6 +5,7 @@ import {
   Music,
   Actor,
   Trigger,
+  Palette,
 } from "../src/store/features/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -63,6 +64,12 @@ export const dummyTrigger: Trigger = {
   width: 0,
   height: 0,
   script: [],
+};
+
+export const dummyPalette: Palette = {
+  id: "",
+  name: "",
+  colors: ["", "", "", ""],
 };
 
 export const dummyBackground: Background = {

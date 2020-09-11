@@ -69,7 +69,7 @@ class PalettePage extends Component {
   onRemove = () => {
     const { removePalette } = this.props;
     const palette = this.getCurrentPalette();
-    removePalette(palette.id);
+    removePalette({ paletteId: palette.id });
   };
 
   getFilteredList = () => {
