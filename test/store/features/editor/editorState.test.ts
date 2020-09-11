@@ -97,3 +97,53 @@ test("Should be able to resize world view", () => {
   expect(newState.worldViewWidth).toBe(640);
   expect(newState.worldViewHeight).toBe(480);
 });
+
+test("Should be able to focus on world", () => {
+  const state: EditorState = {
+    ...initialState,
+    type: "scene",
+    scene: "scene1",
+    worldFocus: false
+  };
+  const action = actions.selectWorld();
+  const newState = reducer(state, action);
+  expect(newState.type).toBe("world");
+  expect(newState.scene).toBe("");
+  expect(newState.worldFocus).toBe(true);
+});
+
+test("Should be able to focus on sidebar", () => {
+  const state: EditorState = {
+    ...initialState,
+    type: "scene",
+    scene: "scene1",
+    worldFocus: true
+  };
+  const action = actions.selectSidebar();
+  const newState = reducer(state, action);
+  expect(newState.type).toBe("scene");
+  expect(newState.scene).toBe("scene1");
+  expect(newState.worldFocus).toBe(false);
+});
+
+test("Should be able to hover on scene", () => {
+  const state: EditorState = {
+    ...initialState,
+    hover: {
+      sceneId: "",
+      actorId: "",
+      x: 0,
+      y: 0
+    }
+  };
+
+  const action = actions.sceneHover({
+    sceneId: "scene2",
+    x: 5,
+    y: 7
+  });
+  const newState = reducer(state, action);
+  expect(newState.hover.sceneId).toBe("scene2");
+  expect(newState.hover.x).toBe(5);
+  expect(newState.hover.y).toBe(7);
+});

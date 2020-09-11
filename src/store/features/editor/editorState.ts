@@ -169,13 +169,13 @@ const editorSlice = createSlice({
       state.worldViewHeight = action.payload.height;
     },
 
-    selectWorld: (state, _action) => {
+    selectWorld: (state, _action: PayloadAction<void>) => {
       state.scene = "";
       state.type = "world";
       state.worldFocus = true;
     },
 
-    selectSidebar: (state, _action) => {
+    selectSidebar: (state, _action: PayloadAction<void>) => {
       state.worldFocus = false;
     },
 
