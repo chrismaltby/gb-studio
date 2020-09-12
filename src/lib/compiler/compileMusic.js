@@ -7,7 +7,6 @@ import { GB_MAX_BANK_SIZE } from "./bankedData";
 import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
 import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
-import getFileModifiedTime from "../helpers/fs/getModifiedTime";
 import getTmp from "../helpers/getTmp";
 import { checksumFile, checksumString } from "../helpers/checksum";
 import l10n from "../helpers/l10n";
@@ -15,8 +14,6 @@ import l10n from "../helpers/l10n";
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
 };
-
-const trackBuildCache = {};
 
 const compileMusic = async ({
   music = [],
@@ -30,9 +27,6 @@ const compileMusic = async ({
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);
   const buildToolsVersion = await readFile(`${buildToolsPath}/tools_version`, "utf8");
 
-  if(!await pathExists(`${buildRoot}/src/music`)) {
-    trackBuildCache = {}; // Clear memory copy of chache music
-  }
   await ensureDir(`${buildRoot}/src/music`);
   await ensureDir(cacheRoot);
 
@@ -48,46 +42,32 @@ const compileMusic = async ({
   for (let i = 0; i < music.length; i++) {
     const track = music[i];
 
-    const filename = assetFilename(projectRoot, "music", track, true);
-    const trackModifiedTime = await getFileModifiedTime(filename);
+    // Compile track using mod2gbt
+    await compileTrack(track, {
+      buildRoot,
+      buildToolsPath,
+      projectRoot,
+      cacheRoot,
+      buildToolsVersion,
+      progress,
+      warnings,
+    });
 
-    let musicData;
-    if(trackBuildCache[track.id] && trackBuildCache[track.id].timestamp >= trackModifiedTime) {
-      musicData = trackBuildCache[track.id].data;
-      musicData.name = track.dataName;
-    } else {
-      // Compile track using mod2gbt
-      await compileTrack(track, {
-        buildRoot,
-        buildToolsPath,
-        projectRoot,
-        cacheRoot,
-        buildToolsVersion,
-        progress,
-        warnings,
-      });
+    // Read track's compiled C data
+    const musicTrackTemp = await fs.readFile(
+      `${buildRoot}/src/music/${track.dataName}.c`,
+      "utf8"
+    );
 
-      // Read track's compiled C data
-      let musicTrackTemp = await fs.readFile(
-        `${buildRoot}/src/music/${track.dataName}.c`,
-        "utf8"
-      );
+    // Parse C data into raw pattern and order data
+    const musicData = {
+      name: track.dataName,
+      ...parseMusicFile(musicTrackTemp),
+    };
 
-      // Parse C data into raw pattern and order data
-      musicData = {
-        name: track.dataName,
-        ...parseMusicFile(musicTrackTemp),
-      };
-
-      trackBuildCache[track.id] = {
-        data: musicData,
-        timestamp: trackModifiedTime
-      }
-
-      // Delete mod2gbt compile track, no longer needed
-      await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
-    }
-
+    // Delete mod2gbt compile track, no longer needed
+    await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
+  
     progress(`${track.dataName} approx size in bytes: ${musicData.size}`);
 
     if (musicData.size > GB_MAX_BANK_SIZE) {
@@ -137,7 +117,7 @@ const compileMusic = async ({
       const track = musicBank.tracks[t];
 
       // Calculate memory offsets in bank for each pattern
-      let trackPatternOffsets = [];
+      const trackPatternOffsets = [];
       for (let p = 0; p < track.patterns.length; p++) {
         trackPatternOffsets[p] = maxOffset;
         maxOffset += track.patterns[p].length;
@@ -284,13 +264,6 @@ const parseMusicFile = (string) => {
   };
 };
 
-const getTrackModifiedTime = async (track, {
-    projectRoot,
-}) => {
-  const modPath = assetFilename(projectRoot, "music", track, true);
-  return (await fs.stat(modPath)).mtimeMs;
-}
-
 const compileTrack = async (
   track,
   {
@@ -314,7 +287,7 @@ const compileTrack = async (
   const modPath = assetFilename(projectRoot, "music", track, true);
 
   const checksum = await checksumFile(modPath);
-  const buildChecksum = checksumString(checksum + buildToolsVersion);
+  const buildChecksum = checksumString(checksum + buildToolsVersion + JSON.stringify(track.settings));
 
   const compiledFilePath = `${buildRoot}/src/music/${track.dataName}.c`;
   const cachedFilePath = `${cacheRoot}/${buildChecksum}`;
@@ -326,7 +299,12 @@ const compileTrack = async (
 
   const outputFile = "output.c";
   const args = [`"${modPath}"`, track.dataName, 8]; // Replace bank 8 later
-  progress(`Convert "${modPath}" to "${track.dataName}"`);
+
+  if (track.settings.disableSpeedConversion) {
+    args.push("-speed");
+  }
+
+  progress(`${command} ${args.join(" ")}`);
 
   const options = {
     cwd: buildRoot,
@@ -334,7 +312,7 @@ const compileTrack = async (
     shell: true,
   };
 
-  await new Promise(async (resolve, reject) => {
+  await new Promise((resolve, reject) => {
     const child = childProcess.spawn(command, args, options, {
       encoding: "utf8",
     });

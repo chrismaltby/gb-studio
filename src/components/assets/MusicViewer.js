@@ -7,6 +7,7 @@ import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import musicActions from "../../store/features/music/musicActions";
 import electronActions from "../../store/features/electron/electronActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -46,6 +47,16 @@ class MusicViewer extends Component {
     }
   };
 
+  onChangeSpeedConversion = (e) => {
+    const { file, editMusicSettings } = this.props;
+    editMusicSettings({
+      musicId: file.id,
+      changes: {
+        disableSpeedConversion: e.currentTarget.checked,
+      },
+    });
+  };
+
   render() {
     const { file, playing, sidebarWidth } = this.props;
     return (
@@ -62,6 +73,20 @@ class MusicViewer extends Component {
               </Button>
             )}
             <div className="MusicViewer__Filename">{file.filename}</div>
+            <div className="MusicViewer__Settings">
+              <div className="FormField">
+                <label htmlFor="disableSpeedConversion">
+                  <input
+                    id="disableSpeedConversion"
+                    type="checkbox"
+                    onChange={this.onChangeSpeedConversion}
+                    checked={(file.settings && file.settings.disableSpeedConversion) || false}
+                  />
+                  <div className="FormCheckbox" />
+                  {l10n("FIELD_MUSIC_DISABLE_SPEED_CONVERSION")}
+                </label>
+              </div>
+            </div>
           </div>
         )}
         {file && (
@@ -81,13 +106,17 @@ MusicViewer.propTypes = {
   projectRoot: PropTypes.string.isRequired,
   file: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    filename: PropTypes.string.isRequired
+    filename: PropTypes.string.isRequired,
+    settings: PropTypes.shape({
+      disableSpeedConversion: PropTypes.bool,
+    }),
   }),
   sidebarWidth: PropTypes.number.isRequired,
   playing: PropTypes.bool.isRequired,
   play: PropTypes.func.isRequired,
   pause: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired
+  openFolder: PropTypes.func.isRequired,
+  editMusicSettings: PropTypes.func.isRequired,
 };
 
 MusicViewer.defaultProps = {
@@ -106,7 +135,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   play: musicActions.playMusic,
   pause: musicActions.pauseMusic,
-  openFolder: electronActions.openFolder
+  openFolder: electronActions.openFolder,
+  editMusicSettings: entitiesActions.editMusicSettings,
 };
 
 export default connect(

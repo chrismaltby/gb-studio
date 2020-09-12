@@ -78,6 +78,9 @@ const loadProject = async (projectPath) => {
         return {
           ...track,
           id: oldTrack.id,
+          settings: {
+            ...oldTrack.settings
+          }
         };
       }
       return track;

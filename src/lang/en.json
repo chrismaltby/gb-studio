@@ -251,6 +251,7 @@
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Note: Some events like projectiles and sprite sheet changes currently don't work when used in an input script that is persisted between scenes.",
   "FIELD_ALLOW_FASTFORWARD": "Fast forward text while buttons held",
   "FIELD_IF_COLOR_SUPPORTED": "Run if the game is executing in a device that has color support.",
+  "FIELD_MUSIC_DISABLE_SPEED_CONVERSION": "Disable 50/60 hertz speed conversion",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
