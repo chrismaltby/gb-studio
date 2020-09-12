@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { SelectRenamable } from "../library/Forms";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 // import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { VariableShape } from "../../reducers/stateShape";
+import { VariableShape } from "../../store/stateShape";
 import { TMP_VAR_1, TMP_VAR_2 } from "../../consts";
+import { variableSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const allVariables = Array.from(Array(512).keys()).map(n =>
   String(n).padStart(3, "0")
@@ -25,9 +26,9 @@ class GlobalVariableSelect extends Component {
     const { renameVariable, value, entityId } = this.props;
     const valueIsLocal = localVariables.indexOf(value) > -1;
     if (valueIsLocal) {
-      renameVariable(`${entityId}__${value}`, name);
+      renameVariable({variableId: `${entityId}__${value}`, name});
     } else {
-      renameVariable(value || "0", name);
+      renameVariable({variableId: value || "0", name});
     }
   };
 
@@ -149,7 +150,7 @@ GlobalVariableSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const variables = state.entities.present.entities.variables;
+  const variables = variableSelectors.selectEntities(state);
   const variablesVersion = state.editor.variableVersion;
   return {
     variables,
@@ -158,7 +159,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  renameVariable: actions.renameVariable
+  renameVariable: entitiesActions.renameVariable
 };
 
 export default connect(

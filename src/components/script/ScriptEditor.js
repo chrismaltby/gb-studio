@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { clipboard } from "electron";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import debounce from "lodash/debounce";
@@ -16,10 +15,12 @@ import {
   appendEvent,
   regenerateEventIds
 } from "../../lib/helpers/eventSystem";
-import * as actions from "../../actions";
 import events from "../../lib/events";
 import ScriptEditorEvent from "./ScriptEditorEvent";
 import l10n from "../../lib/helpers/l10n";
+import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 
 class ScriptEditor extends Component {
 
@@ -190,22 +191,22 @@ class ScriptEditor extends Component {
 
   onEnter = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent(id);
+    selectScriptEvent({eventId: id});
   };
 
   onLeave = id => {
     const { selectScriptEvent } = this.props;
-    selectScriptEvent("");
+    selectScriptEvent({eventId: ""});
   };
 
   onSelectCustomEvent = id => {
     const { selectCustomEvent } = this.props;
-    selectCustomEvent(id);
+    selectCustomEvent({customEventId: id});
   };
 
   render() {
     const { type, value, entityId } = this.props;
-    const { clipboardEvent, limit } = this.state;
+    const { limit } = this.state;
 
     return (
       <div className="ScriptEditor">
@@ -272,23 +273,27 @@ ScriptEditor.defaultProps = Object.create(
 );
 
 function mapStateToProps(state, props) {
-  const { result, entities } = state.entities.present;
   const { type: scope } = state.editor;
+  const scene = sceneSelectors.selectById(state, state.editor.scene);
+  const sceneIds = sceneSelectors.selectIds(state);
+  const musicIds = musicSelectors.selectIds(state);
+  const spriteSheetIds = spriteSheetSelectors.selectIds(state);
+
   return {
-    sceneIds: result.scenes,
-    actorIds: props.actors || entities.scenes[state.editor.scene].actors,
-    musicIds: result.music,
-    spriteSheetIds: result.spriteSheets,
+    sceneIds,
+    actorIds: props.actors || (scene && scene.actors) || [],
+    musicIds,
+    spriteSheetIds,
     value: props.value && props.value.length > 0 ? props.value : undefined,
     scope
   };
 }
 
 const mapDispatchToProps = {
-  selectScriptEvent: actions.selectScriptEvent,
-  copyEvent: actions.copyEvent,
-  selectCustomEvent: actions.selectCustomEvent,
-  pasteCustomEvents: actions.pasteCustomEvents
+  selectScriptEvent: editorActions.selectScriptEvent,
+  copyEvent: clipboardActions.copyEvent,
+  selectCustomEvent: editorActions.selectCustomEvent,
+  pasteCustomEvents: clipboardActions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditor);

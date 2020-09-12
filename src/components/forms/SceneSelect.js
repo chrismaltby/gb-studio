@@ -3,12 +3,8 @@ import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import { connect } from "react-redux";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import {
-  getScenesLookup,
-  getBackgroundsLookup,
-  getSceneIds,
-} from "../../reducers/entitiesReducer";
 import { createCacheFunction } from "../../lib/helpers/cache";
+import { sceneSelectors, backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -119,9 +115,9 @@ SceneSelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const projectRoot = state.document && state.document.root;
-  const scenesLookup = getScenesLookup(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
-  const sceneIds = getSceneIds(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
+  const sceneIds = sceneSelectors.selectIds(state);
   const selectedIndex = sceneIds.indexOf(ownProps.value);
   const options = cachedObj(
     sceneIds.map((sceneId, sceneIndex) => {

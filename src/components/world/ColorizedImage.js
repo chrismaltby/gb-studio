@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
 // eslint-disable-next-line import/no-unresolved
 import ColorizedImageWorker from "./ColorizedImage.worker";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import { DMG_PALETTE } from "../../consts";
 
 const workerPool = [];

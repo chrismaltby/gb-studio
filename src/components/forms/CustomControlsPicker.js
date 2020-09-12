@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
 import GBControlsPreview from "../library/GBControlsPreview";
 import { FormField } from "../library/Forms";
 import Button from "../library/Button";
+import settingsActions from "../../store/features/settings/settingsActions";
 
 const directions = [
   {
@@ -239,15 +239,14 @@ CustomControlsPicker.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const { settings } = project;
+  const settings = state.project.present.settings;
   return {
     settings
   };
 }
 
 const mapDispatchToProps = {
-  editProjectSettings: actions.editProjectSettings
+  editProjectSettings: settingsActions.editSettings
 };
 
 export default connect(

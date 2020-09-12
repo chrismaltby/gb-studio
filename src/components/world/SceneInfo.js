@@ -5,19 +5,14 @@ import cx from "classnames";
 import debounce from "lodash/debounce";
 import { MAX_ACTORS, MAX_FRAMES, MAX_TRIGGERS } from "../../consts";
 import {
-  getScenesLookup,
-  getActorsLookup,
-  getTriggersLookup,
-  getSpriteSheetsLookup,
-} from "../../reducers/entitiesReducer";
-import {
   SceneShape,
   ActorShape,
   TriggerShape,
   SpriteShape,
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { walkSceneEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_PLAYER_SET_SPRITE } from "../../lib/compiler/eventTypes";
+import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 class SceneInfo extends Component {
   constructor(props) {
@@ -160,11 +155,10 @@ SceneInfo.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
-  const spriteSheetsLookup = getSpriteSheetsLookup(state);
-  const scene = scenesLookup[props.id];
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+  const spriteSheetsLookup = spriteSheetSelectors.selectEntities(state);
+  const scene = sceneSelectors.selectById(state, props.id);
 
   return {
     scene,

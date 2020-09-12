@@ -4,12 +4,12 @@ import { connect } from "react-redux";
 import Solver from "3x3-equation-solver";
 import cx from "classnames";
 import { clipboard } from "electron";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { FormField } from "../library/Forms";
-import { getPalettesLookup } from "../../reducers/entitiesReducer";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import ColorSlider from "./ColorSlider";
+import { paletteSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -329,24 +329,24 @@ class CustomPalettePicker extends Component {
     const { editPalette, paletteId } = this.props;
     if (selectedColor === 0) {
       this.setState({ whiteHex: newHex });
-      editPalette(paletteId, {
+      editPalette({paletteId, changes: {
         colors: [newHex, lightHex, darkHex, blackHex],
-      });
+      }});
     } else if (selectedColor === 1) {
       this.setState({ lightHex: newHex });
-      editPalette(paletteId, {
+      editPalette({paletteId, changes: {
         colors: [whiteHex, newHex, darkHex, blackHex],
-      });
+      }});
     } else if (selectedColor === 2) {
       this.setState({ darkHex: newHex });
-      editPalette(paletteId, {
+      editPalette({paletteId, changes: {
         colors: [whiteHex, lightHex, newHex, blackHex],
-      });
+      }});
     } else if (selectedColor === 3) {
       this.setState({ blackHex: newHex });
-      editPalette(paletteId, {
+      editPalette({paletteId, changes: {
         colors: [whiteHex, lightHex, darkHex, newHex],
-      });
+      }});
     }
   };
 
@@ -364,9 +364,9 @@ class CustomPalettePicker extends Component {
         currentCustomHex: "",
       },
       () => {
-        editPalette(paletteId, {
+        editPalette({paletteId, changes: {
           colors: [DEFAULT_WHITE, DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_BLACK],
-        });
+        }});
       }
     );
   };
@@ -639,14 +639,14 @@ CustomPalettePicker.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { paletteId } = props;
-  const palette = getPalettesLookup(state)[paletteId];
+  const palette = paletteSelectors.selectById(state, paletteId)
   return {
     palette,
   };
 }
 
 const mapDispatchToProps = {
-  editPalette: actions.editPalette,
+  editPalette: entitiesActions.editPalette,
 };
 
 export default connect(

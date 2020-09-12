@@ -3,18 +3,16 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { SceneShape, ActorShape, EventShape } from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import {
-  getScenesLookup,
-  getActorsLookup,
-  getTriggersLookup,
-} from "../../reducers/entitiesReducer";
+import { SceneShape, ActorShape, EventShape } from "../../store/stateShape";
 import { ArrowIcon, SearchIcon } from "../library/Icons";
 import { walkEvents, patchEvents } from "../../lib/helpers/eventSystem";
 import { EVENT_TEXT } from "../../lib/compiler/eventTypes";
 import DialogueReviewLine from "./DialogueReviewLine";
 import Button from "../library/Button";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import navigationActions from "../../store/features/navigation/navigationActions";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class DialogueReviewScene extends Component {
   onChange = (type, sceneId, entityIndex, currentScript, id) => (value) => {
@@ -23,17 +21,17 @@ class DialogueReviewScene extends Component {
       text: value,
     });
     if (type === "scene") {
-      editScene(sceneId, {
+      editScene({sceneId, changes: {
         script: newData,
-      });
+      }});
     } else if (type === "actor") {
-      editActor(sceneId, entityIndex, {
+      editActor({sceneId, actorId: entityIndex, changes: {
         script: newData,
-      });
+      }});
     } else if (type === "trigger") {
-      editTrigger(sceneId, entityIndex, {
+      editTrigger({sceneId, triggerId: entityIndex, changes: {
         script: newData,
-      });
+      }});
     }
   };
 
@@ -111,9 +109,9 @@ DialogueReviewScene.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
   const scene = scenesLookup[props.id];
   const sceneIndex = props.sceneIndex;
 
@@ -171,11 +169,11 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: actions.editActor,
-  editTrigger: actions.editTrigger,
-  editScene: actions.editScene,
-  editSearchTerm: actions.editSearchTerm,
-  setSection: actions.setSection,
+  editActor: entitiesActions.editActor,
+  editTrigger: entitiesActions.editTrigger,
+  editScene: entitiesActions.editScene,
+  editSearchTerm: editorActions.editSearchTerm,
+  setSection: navigationActions.setSection,
 };
 
 export default connect(

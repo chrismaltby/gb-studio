@@ -6,10 +6,10 @@ import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import { EVENT_END } from "../../lib/compiler/eventTypes";
 import { regenerateEventIds } from "../../lib/helpers/eventSystem";
-import * as actions from "../../actions";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
 
 class ScriptEditorDropdownButton extends Component {
   constructor() {
@@ -165,8 +165,8 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  copyScript: actions.copyScript,
-  pasteCustomEvents: actions.pasteCustomEvents
+  copyScript: clipboardActions.copyScript,
+  pasteCustomEvents: clipboardActions.pasteCustomEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ScriptEditorDropdownButton);

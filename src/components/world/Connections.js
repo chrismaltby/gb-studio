@@ -8,14 +8,9 @@ import {
   SceneShape,
   ActorShape,
   TriggerShape,
-} from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import {
-  getScenes,
-  getScenesLookup,
-  getTriggersLookup,
-  getActorsLookup,
-} from "../../reducers/entitiesReducer";
+} from "../../store/stateShape";
+import { sceneSelectors, actorSelectors, triggerSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
 
 const scriptMapTransition = (walkEventsFn) => (script) => {
   const sceneTransitions = [];
@@ -92,7 +87,7 @@ class Connections extends Component {
     e.stopPropagation();
     e.preventDefault();
     const { dragDestinationStart } = this.props;
-    dragDestinationStart(eventId, sceneId, selectionType, id);
+    dragDestinationStart({eventId, sceneId, selectionType, entityId: id});
     window.addEventListener("mouseup", this.onDragDestinationStop);
   };
 
@@ -121,7 +116,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -129,7 +124,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -137,7 +132,7 @@ class Connections extends Component {
         <polygon
           points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -145,7 +140,7 @@ class Connections extends Component {
         <polygon
           points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
           style={{
-            fill: "#fbe9e7"
+            fill: "#fbe9e7",
           }}
         />
       )}
@@ -185,7 +180,7 @@ class Connections extends Component {
             if (destScene) {
               memo.push(
                 calculateTransitionCoords({
-                  type: "actors",
+                  type: "actor",
                   event,
                   scene,
                   destScene,
@@ -216,7 +211,7 @@ class Connections extends Component {
             if (destScene) {
               memo.push(
                 calculateTransitionCoords({
-                  type: "triggers",
+                  type: "trigger",
                   event,
                   scene,
                   destScene,
@@ -245,7 +240,7 @@ class Connections extends Component {
           if (destScene) {
             memo.push(
               calculateTransitionCoords({
-                type: "scenes",
+                type: "scene",
                 event,
                 scene,
                 destScene,
@@ -331,17 +326,18 @@ Connections.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const scenes = getScenes(state);
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scenes = sceneSelectors.selectAll(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+
   const {
     showConnections,
     startSceneId,
     startX,
     startY,
     startDirection,
-  } = state.entities.present.result.settings;
+  } = state.project.present.settings;
   const { scene: selectedSceneId } = state.editor;
   const startScene = scenesLookup[startSceneId] || scenes[0];
   const { dragging } = state.editor;
@@ -362,10 +358,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  dragPlayerStart: actions.dragPlayerStart,
-  dragPlayerStop: actions.dragPlayerStop,
-  dragDestinationStart: actions.dragDestinationStart,
-  dragDestinationStop: actions.dragDestinationStop,
+  dragPlayerStart: editorActions.dragPlayerStart,
+  dragPlayerStop: editorActions.dragPlayerStop,
+  dragDestinationStart: editorActions.dragDestinationStart,
+  dragDestinationStop: editorActions.dragDestinationStop,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Connections);
