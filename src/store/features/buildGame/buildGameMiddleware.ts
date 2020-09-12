@@ -23,15 +23,20 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
   next
 ) => async (action) => {
   if (actions.buildGame.match(action)) {
-    const { buildType, exportBuild, ejectBuild } = action.payload;
-
+    const state = store.getState();
     const dispatch = store.dispatch.bind(store);
+
+    const { buildType, exportBuild, ejectBuild } = action.payload;
     const buildStartTime = Date.now();
+
+    if (state.console.status === "running") {
+      // Stop build if already building
+      return;
+    }
 
     dispatch(consoleActions.startConsole());
 
     try {
-      const state = store.getState();
       const projectRoot = state.document && state.document.root;
       const project = denormalizeProject(state.project.present);
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
