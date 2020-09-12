@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import ScriptEditor from "../script/ScriptEditor";
@@ -12,15 +11,17 @@ import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
-import { SceneShape } from "../../reducers/stateShape";
+import { SceneShape } from "../../store/stateShape";
 import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
-import { getSettings } from "../../reducers/entitiesReducer";
-import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -86,9 +87,9 @@ class SceneEditor extends Component {
 
   onEdit = (key) => (e) => {
     const { editScene, scene } = this.props;
-    editScene(scene.id, {
+    editScene({sceneId: scene.id, changes: {
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onCopy = (e) => {
@@ -129,7 +130,7 @@ class SceneEditor extends Component {
 
   onRemove = (e) => {
     const { removeScene, scene } = this.props;
-    removeScene(scene.id);
+    removeScene({sceneId: scene.id});
   };
   
   onEditPaletteId = (index) => (e) => {
@@ -408,9 +409,9 @@ SceneEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = state.entities.present.entities.scenes[props.id];
-  const sceneIndex = state.entities.present.result.scenes.indexOf(props.id);
-  const settings = getSettings(state);
+  const scene = sceneSelectors.selectById(state, props.id);
+  const sceneIndex = sceneSelectors.selectIds(state).indexOf(props.id);
+  const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
@@ -426,15 +427,13 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editScene: actions.editScene,
-  removeScene: actions.removeScene,
-  selectActor: actions.selectActor,
-  selectTrigger: actions.selectTrigger,
-  copyScene: actions.copyScene,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectSidebar: actions.selectSidebar,
-  setScriptTab: actions.setScriptTabScene,
-  setScriptTabSecondary: actions.setScriptTabSecondary  
+  editScene: entitiesActions.editScene,
+  removeScene: entitiesActions.removeScene,
+  copyScene: clipboardActions.copyScene,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
+  selectSidebar: editorActions.selectSidebar,
+  setScriptTab: editorActions.setScriptTabScene,
+  setScriptTabSecondary: editorActions.setScriptTabSecondary  
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SceneEditor);

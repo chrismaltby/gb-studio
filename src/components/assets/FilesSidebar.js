@@ -4,9 +4,10 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import { HelpIcon } from "../library/Icons";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { groupBy } from "../../lib/helpers/array";
+import editorActions from "../../store/features/editor/editorActions";
+import navigationActions from "../../store/features/navigation/navigationActions";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -147,15 +148,15 @@ FilesSidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: width } = state.settings;
+  const { filesSidebarWidth: width } = state.editor;
   return {
     width
   };
 }
 
 const mapDispatchToProps = {
-  setNavigationId: actions.setNavigationId,
-  resizeFilesSidebar: actions.resizeFilesSidebar
+  setNavigationId: navigationActions.setNavigationId,
+  resizeFilesSidebar: editorActions.resizeFilesSidebar
 };
 
 export default connect(

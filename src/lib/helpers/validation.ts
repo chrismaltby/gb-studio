@@ -2,23 +2,14 @@ import l10n from "./l10n";
 import { divisibleBy8 } from "./8bit";
 import { assetFilename } from "./gbstudio";
 import ggbgfx from "../compiler/ggbgfx";
-
-interface IBackground {
-  id: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  filename: string;
-  _v: number;
-}
+import { Background } from "../../store/features/entities/entitiesTypes";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
 const MAX_TILESET_TILES = 16 * 12;
 
-export const getBackgroundWarnings = async (background: IBackground, projectPath: string, precalculatedTilesetLength?: number): Promise<string[]> => {
+export const getBackgroundWarnings = async (background: Background, projectPath: string, precalculatedTilesetLength?: number): Promise<string[]> => {
   const errors: string[] = [];
 
   let tilesetLength = precalculatedTilesetLength;

@@ -3,9 +3,12 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { PlusIcon, ResizeIcon, CloseIcon, BrickIcon, PaintIcon } from "../library/Icons";
-import { getScenesLookup } from "../../reducers/entitiesReducer";
-import * as actions from "../../actions";
-import { SceneShape } from "../../reducers/stateShape";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import settingsActions from "../../store/features/settings/settingsActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
+
+import { SceneShape } from "../../store/stateShape";
 import { TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TRIGGERS, TOOL_ACTORS, BRUSH_FILL, BRUSH_16PX, TOOL_SELECT, COLLISION_ALL, TILE_PROPS } from "../../consts";
 
 class SceneCursor extends Component {
@@ -42,10 +45,11 @@ class SceneCursor extends Component {
       return;
     }
     if (e.code === "KeyP") {
-      const { x, y, enabled, sceneId, editPlayerStartAt, setTool } = this.props;
+      const { x, y, enabled, sceneId, editPlayerStartAt, setTool, selectWorld } = this.props;
       if (enabled) {
-        editPlayerStartAt(sceneId, x, y);
-        setTool(TOOL_SELECT);
+        editPlayerStartAt({sceneId, x, y});
+        setTool({tool:TOOL_SELECT});
+        selectWorld();
       }
     }
   };
@@ -72,16 +76,13 @@ class SceneCursor extends Component {
       addTrigger,
       sceneId,
       scene,
-      prefab,
+      actorDefaults,
+      triggerDefaults,
       selectScene,
       showCollisions,
       showLayers,
-      paintCollisionTile,
-      paintCollisionLine,
-      paintCollisionFill,
-      paintColorTile,
-      paintColorLine,
-      paintColorFill,
+      paintCollision,
+      paintColor,
       removeActorAt,
       removeTriggerAt,
       sceneFiltered,
@@ -96,10 +97,10 @@ class SceneCursor extends Component {
     }
 
     if (tool === "actors") {
-      addActor(sceneId, x, y, prefab);
-      setTool("select");
+      addActor({sceneId, x, y, defaults: actorDefaults});
+      setTool({ tool: "select" });
     } else if (tool === "triggers") {
-      addTrigger(sceneId, x, y, 1, 1, prefab);
+      addTrigger({sceneId, x, y, width: 1, height: 1, defaults: triggerDefaults});
       this.startX = x;
       this.startY = y;
       this.setState({ resize: true });
@@ -135,34 +136,32 @@ class SceneCursor extends Component {
         }
       }
       if(selectedBrush === BRUSH_FILL) {
-        paintCollisionFill(sceneId, x, y, this.drawTile, this.isTileProp);
+        paintCollision({ brush: selectedBrush, sceneId, x, y, value: this.drawTile, isTileProp: this.isTileProp });
       } else {
-        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintCollisionLine(sceneId, this.startX, this.startY, x, y, this.drawTile, brushSize, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintCollisionTile(sceneId, x, y, this.drawTile, brushSize, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x, y, value: this.drawTile, isTileProp: this.isTileProp });
         }
         window.addEventListener("mousemove", this.onCollisionsMove);
         window.addEventListener("mouseup", this.onCollisionsStop);
       }
     } else if (tool === "colors") {
       if(selectedBrush === BRUSH_FILL) {
-        paintColorFill(sceneId, x, y, selectedPalette);
+        paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
       } else {
-        const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-          paintColorLine(sceneId, this.startX, this.startY, x, y, selectedPalette, brushSize);
+          paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, paletteIndex: selectedPalette, drawLine: true });
           this.startX = x;
           this.startY = y;
         } else {
           this.startX = x;
           this.startY = y;          
-          paintColorTile(sceneId, x, y, selectedPalette, brushSize);
+          paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
         }
         window.addEventListener("mousemove", this.onColorsMove);
         window.addEventListener("mouseup", this.onColorsStop);
@@ -172,43 +171,42 @@ class SceneCursor extends Component {
         this.drawTile = 0;
         this.isTileProp = false;
         if(selectedBrush === BRUSH_FILL) {
-          paintCollisionFill(sceneId, x, y, 0, this.isTileProp);
+          paintCollision({ brush: selectedBrush, sceneId, x, y, value: 0, isTileProp: this.isTileProp });
         } else {
-          const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
           if(this.drawLine && this.startX !== undefined && this.startY !== undefined) {
-            paintCollisionLine(sceneId, this.startX, this.startY, x, y, 0, brushSize, this.isTileProp);
+            paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x, endY: y, value: 0, isTileProp: this.isTileProp, drawLine: true });
             this.startX = x;
             this.startY = y;
           } else {
             this.startX = x;
             this.startY = y;          
-            paintCollisionTile(sceneId, x, y, 0, brushSize, this.isTileProp);
+            paintCollision({ brush: selectedBrush, sceneId, x, y, value: 0, isTileProp: this.isTileProp });
           }
           window.addEventListener("mousemove", this.onCollisionsMove);
           window.addEventListener("mouseup", this.onCollisionsStop);
         }
       }
       if(showLayers) {
-        removeActorAt(sceneId, x, y);
-        removeTriggerAt(sceneId, x, y);
-        if(selectedBrush === BRUSH_16PX) {
-          removeActorAt(sceneId, x + 1, y);
-          removeTriggerAt(sceneId, x + 1, y);
-          removeActorAt(sceneId, x, y + 1);
-          removeTriggerAt(sceneId, x, y + 1);
-          removeActorAt(sceneId, x + 1, y + 1);
-          removeTriggerAt(sceneId, x + 1, y + 1);                              
+        removeActorAt({ sceneId, x, y });
+        removeTriggerAt({ sceneId, x, y });
+        if (selectedBrush === BRUSH_16PX) {
+          removeActorAt({ sceneId, x: x + 1, y });
+          removeTriggerAt({ sceneId, x: x + 1, y });
+          removeActorAt({ sceneId, x, y: y + 1 });
+          removeTriggerAt({ sceneId, x, y: y + 1 });
+          removeActorAt({ sceneId, x: x + 1, y: y + 1 });
+          removeTriggerAt({ sceneId, x: x + 1, y: y + 1 });
         }
       }
     } else if (tool === "select") {
-      selectScene(sceneId);
+      selectScene({ sceneId });
     }
   };
 
   onResizeTrigger = e => {
     const { x, y, sceneId, entityId, resizeTrigger } = this.props;
     if (entityId && (this.currentX !== x || this.currentY !== y)) {
-      resizeTrigger(sceneId, entityId, this.startX, this.startY, x, y);
+      resizeTrigger({sceneId, triggerId: entityId, startX: this.startX, startY: this.startY, x, y});
       this.currentX = x;
       this.currentY = y;
     }
@@ -216,7 +214,7 @@ class SceneCursor extends Component {
 
   onResizeTriggerStop = e => {
     const { setTool } = this.props;
-    setTool("select");
+    setTool({ tool: "select" });
     this.setState({ resize: false });
     window.removeEventListener("mousemove", this.onResizeTrigger);
     window.removeEventListener("mouseup", this.onResizeTriggerStop);
@@ -229,12 +227,9 @@ class SceneCursor extends Component {
       enabled,
       sceneId,
       selectedBrush,
-      paintCollisionTile,
-      paintCollisionLine
+      paintCollision,
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
           this.startX = x;
@@ -253,7 +248,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);        
+        paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -261,9 +256,9 @@ class SceneCursor extends Component {
           this.startX = x;
           this.startY = y;
         }
-        let x1 = x;
-        let y1 = y;
-        paintCollisionLine(sceneId, this.startX, this.startY, x1, y1, this.drawTile, brushSize, this.isTileProp);
+        const x1 = x;
+        const y1 = y;
+        paintCollision({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, value: this.drawTile, isTileProp: this.isTileProp, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }
@@ -285,12 +280,9 @@ class SceneCursor extends Component {
       sceneId,
       selectedPalette,
       selectedBrush,
-      paintColorTile,
-      paintColorLine
+      paintColor
     } = this.props;
     if (enabled && (this.currentX !== x || this.currentY !== y)) {
-      const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-
       if(this.drawLine) {
         if(this.startX === undefined || this.startY === undefined) {
           this.startX = x;
@@ -309,7 +301,7 @@ class SceneCursor extends Component {
           this.lockX = true;
           x1 = this.startX;
         }
-        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);        
+        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });          
         this.startX = x1;
         this.startY = y1;
       } else {
@@ -317,9 +309,9 @@ class SceneCursor extends Component {
           this.startX = x;
           this.startY = y;
         }
-        let x1 = x;
-        let y1 = y;
-        paintColorLine(sceneId, this.startX, this.startY, x1, y1, selectedPalette, brushSize);
+        const x1 = x;
+        const y1 = y;
+        paintColor({ brush: selectedBrush, sceneId, x: this.startX, y: this.startY, endX: x1, endY: y1, paletteIndex: selectedPalette, drawLine: true });
         this.startX = x1;
         this.startY = y1;
       }
@@ -377,7 +369,8 @@ SceneCursor.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   entityId: PropTypes.string,
-  prefab: PropTypes.shape(),
+  actorDefaults: PropTypes.shape(),
+  triggerDefaults: PropTypes.shape(),
   sceneId: PropTypes.string.isRequired,
   scene: SceneShape.isRequired,
   showCollisions: PropTypes.bool.isRequired,
@@ -386,25 +379,31 @@ SceneCursor.propTypes = {
   tool: PropTypes.string.isRequired,
   setTool: PropTypes.func.isRequired,
   selectScene: PropTypes.func.isRequired,
+  selectWorld: PropTypes.func.isRequired,
   addActor: PropTypes.func.isRequired,
   addTrigger: PropTypes.func.isRequired,
   editPlayerStartAt: PropTypes.func.isRequired,
   resizeTrigger: PropTypes.func.isRequired,
   removeActorAt: PropTypes.func.isRequired,
-  removeTriggerAt: PropTypes.func.isRequired
+  removeTriggerAt: PropTypes.func.isRequired,
+  paintCollision: PropTypes.func.isRequired,
+  paintColor: PropTypes.func.isRequired,
+  selectedBrush: PropTypes.string.isRequired,
+  selectedPalette: PropTypes.number.isRequired
 };
 
 SceneCursor.defaultProps = {
   entityId: null,
-  prefab: {}
+  actorDefaults: {},
+  triggerDefaults: {}
 };
 
 function mapStateToProps(state, props) {
-  const { selected: tool, prefab } = state.tools;
+  const { tool } = state.editor;
   const { x, y } = state.editor.hover;
-  const { type: editorType, entityId, selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
-  const showCollisions = state.entities.present.result.settings.showCollisions;
-  const scenesLookup = getScenesLookup(state);
+  const { entityId, selectedPalette, selectedTileType, selectedBrush, showLayers, actorDefaults, triggerDefaults } = state.editor;
+  const showCollisions = state.project.present.settings.showCollisions;
+  const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
   return {
     x: x || 0,
@@ -413,8 +412,8 @@ function mapStateToProps(state, props) {
     selectedPalette,
     selectedTileType,
     selectedBrush,
-    prefab,
-    editorType,
+    actorDefaults,
+    triggerDefaults,
     entityId,
     showCollisions,
     scene,
@@ -423,22 +422,19 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  addActor: actions.addActor,
-  removeActorAt: actions.removeActorAt,
-  paintCollisionTile: actions.paintCollisionTile,
-  paintCollisionLine: actions.paintCollisionLine,
-  paintCollisionFill: actions.paintCollisionFill,
-  paintColorTile: actions.paintColorTile,
-  paintColorLine: actions.paintColorLine,
-  paintColorFill: actions.paintColorFill,
-  addTrigger: actions.addTrigger,
-  removeTriggerAt: actions.removeTriggerAt,
-  resizeTrigger: actions.resizeTrigger,
-  selectScene: actions.selectScene,
-  setTool: actions.setTool,
-  editPlayerStartAt: actions.editPlayerStartAt,
-  editDestinationPosition: actions.editDestinationPosition,
-  editSearchTerm: actions.editSearchTerm
+  addActor: entitiesActions.addActor,
+  removeActorAt: entitiesActions.removeActorAt,
+  paintCollision: entitiesActions.paintCollision,
+  paintColor: entitiesActions.paintColor,
+  addTrigger: entitiesActions.addTrigger,
+  removeTriggerAt: entitiesActions.removeTriggerAt,
+  resizeTrigger: entitiesActions.resizeTrigger,
+  selectScene: editorActions.selectScene,
+  selectWorld: editorActions.selectWorld,
+  setTool: editorActions.setTool,
+  editPlayerStartAt: settingsActions.editPlayerStartAt,
+  editDestinationPosition: entitiesActions.editDestinationPosition,
+  editSearchTerm: editorActions.editSearchTerm
 };
 
 export default connect(

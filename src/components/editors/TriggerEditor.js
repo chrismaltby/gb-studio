@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import ScriptEditor from "../script/ScriptEditor";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
@@ -11,9 +10,13 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
-import { TriggerShape, SceneShape } from "../../reducers/stateShape";
+import { TriggerShape, SceneShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -24,10 +27,10 @@ class TriggerEditor extends Component {
   }
 
   onEdit = key => e => {
-    const { editTrigger, sceneId, trigger } = this.props;
-    editTrigger(sceneId, trigger.id, {
+    const { editTrigger, trigger } = this.props;
+    editTrigger({triggerId: trigger.id, changes: {
       [key]: castEventValue(e)
-    });
+    }});
   };
 
   onCopy = e => {
@@ -43,7 +46,7 @@ class TriggerEditor extends Component {
 
   onRemove = e => {
     const { removeTrigger, sceneId, trigger } = this.props;
-    removeTrigger(sceneId, trigger.id);
+    removeTrigger({sceneId, triggerId: trigger.id});
   };
 
   readClipboard = (e) => {
@@ -182,7 +185,7 @@ class TriggerEditor extends Component {
 
           <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
           <ul>
-            <li onClick={() => selectScene(scene.id)}>
+            <li onClick={() => selectScene({sceneId: scene.id})}>
               <div className="EditorSidebar__Icon">
                 <SceneIcon />
               </div>
@@ -236,8 +239,8 @@ TriggerEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const trigger = state.entities.present.entities.triggers[props.id];
-  const scene = state.entities.present.entities.scenes[props.sceneId];
+  const trigger = triggerSelectors.selectById(state, props.id)  
+  const scene = sceneSelectors.selectById(state, props.sceneId);
   const index = scene.triggers.indexOf(props.id);
   return {
     index,
@@ -247,12 +250,12 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editTrigger: actions.editTrigger,
-  removeTrigger: actions.removeTrigger,
-  copyTrigger: actions.copyTrigger,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectScene: actions.selectScene,
-  selectSidebar: actions.selectSidebar
+  editTrigger: entitiesActions.editTrigger,
+  removeTrigger: entitiesActions.removeTrigger,
+  copyTrigger: clipboardActions.copyTrigger,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
+  selectScene: editorActions.selectScene,
+  selectSidebar: editorActions.selectSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TriggerEditor);

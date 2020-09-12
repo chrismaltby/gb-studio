@@ -37,6 +37,9 @@
     "3x3-equation-solver": "^1.2.18",
     "@hot-loader/react-dom": "^16.11.0",
     "@octokit/rest": "^16.25.4",
+    "@reduxjs/toolkit": "^1.4.0",
+    "@types/classnames": "^2.2.10",
+    "@types/react-redux": "^7.1.9",
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
@@ -77,7 +80,7 @@
     "semver": "7",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
-    "vm2": "^3.8.1"
+    "vm2": "3.9.2"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.49",
@@ -115,7 +118,7 @@
     "fork-ts-checker-webpack-plugin": "^3.1.1",
     "git-revision-webpack-plugin": "^3.0.6",
     "jest": "^24.9.0",
-    "jest-extended": "^0.11.1",
+    "jest-extended": "^0.11.5",
     "node-loader": "^0.6.0",
     "style-loader": "^0.23.1",
     "ts-jest": "^24.2.0",

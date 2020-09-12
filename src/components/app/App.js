@@ -14,7 +14,7 @@ import MusicPage from "../../containers/pages/MusicPage";
 import PalettePage from "../../containers/pages/PalettePage";
 import SettingsPage from "../../containers/pages/SettingsPage";
 import l10n from "../../lib/helpers/l10n";
-import { ErrorShape } from "../../reducers/stateShape";
+import { ErrorShape } from "../../store/stateShape";
 import LoadingPane from "../library/LoadingPane";
 
 class App extends Component {

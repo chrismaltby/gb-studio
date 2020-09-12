@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Button from "../library/Button";
-import * as actions from "../../actions";
 import l10n from "../../lib/helpers/l10n";
 import { zoomForSection, assetFilename } from "../../lib/helpers/gbstudio";
 import BackgroundWarnings from "../world/BackgroundWarnings";
+import editorActions from "../../store/features/editor/editorActions";
+import electronActions from "../../store/features/electron/electronActions";
 
 class ImageViewer extends Component {
 
@@ -22,9 +23,9 @@ class ImageViewer extends Component {
     if (e.ctrlKey) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn(section, e.deltaY * 0.5);
+        zoomIn({section, delta:e.deltaY * 0.5});
       } else {
-        zoomOut(section, e.deltaY * 0.5);
+        zoomOut({section, delta:e.deltaY * 0.5});
       }
     }
   };
@@ -96,7 +97,7 @@ function mapStateToProps(state, ownProps) {
   const { section } = state.navigation;
   const folder = section;
   const zoom = zoomForSection(section, state.editor);
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     folder,
@@ -107,9 +108,9 @@ function mapStateToProps(state, ownProps) {
 }
 
 const mapDispatchToProps = {
-  openFolder: actions.openFolder,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut
+  openFolder: electronActions.openFolder,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut
 };
 
 export default connect(

@@ -362,6 +362,9 @@ const compile = async (
     if (!isNaN(value)) {
       return value;
     }
+    if (data === null) {
+      return 0;
+    }
     warnings(`Non numeric data found while processing banked data "${data}".`);
     return data;
   });

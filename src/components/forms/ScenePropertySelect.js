@@ -3,14 +3,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
-import {
-  getSceneActorIds,
-  getActorsLookup,
-  getSettings,
-} from "../../reducers/entitiesReducer";
+import { ActorShape } from "../../store/stateShape";
 import { getCachedObject } from "../../lib/helpers/cache";
 import l10n from "../../lib/helpers/l10n";
+import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesState";
+import { getSettings } from "../../store/features/settings/settingsState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -102,7 +99,7 @@ DropdownIndicator.defaultProps = {
 
 const DropdownIndicatorWithData = (actorId) =>
   connect((state) => {
-    const actorsLookup = getActorsLookup(state);
+    const actorsLookup = actorSelectors.selectEntities(state);
     const settings = getSettings(state);
     const playerSpriteSheetId = settings.playerSpriteSheetId;
     const actor =
@@ -140,12 +137,12 @@ class ScenePropertySelect extends Component {
     };
 
     const selectedActorId =
-      actorValue === "$self$" && contextType === "actors"
+      actorValue === "$self$" && contextType === "actor"
         ? contextEntityId
         : actorValue;
 
     const options = [].concat(
-      contextType === "actors"
+      contextType === "actor"
         ? {
             actorId: "$self$",
             contextEntityId,
@@ -206,7 +203,7 @@ ScenePropertySelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const actorIds = getSceneActorIds(state, { id: state.editor.scene });
-  const actorsLookup = getActorsLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
 
   const contextType = state.editor.type;
   const contextEntityId = state.editor.entityId;
@@ -226,7 +223,7 @@ function mapStateToProps(state, ownProps) {
   let actorLabel = actorName;
   if (
     actorValue === "player" ||
-    (actorValue === "$self$" && contextType !== "actors")
+    (actorValue === "$self$" && contextType !== "actor")
   ) {
     actorLabel = "Player";
   } else if (actorValue === "$self$") {

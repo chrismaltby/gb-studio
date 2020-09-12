@@ -4,9 +4,9 @@ import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import SpriteSheetCanvas from "../world/SpriteSheetCanvas";
 import l10n from "../../lib/helpers/l10n";
-import { SpriteShape } from "../../reducers/stateShape";
+import { SpriteShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
-import { getSpriteSheets } from "../../reducers/entitiesReducer";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -142,7 +142,7 @@ SpriteSheetSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const spriteSheets = getSpriteSheets(state);
+  const spriteSheets = spriteSheetSelectors.selectAll(state);
   return {
     spriteSheets
   };

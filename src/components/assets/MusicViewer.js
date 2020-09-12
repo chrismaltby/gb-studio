@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import Button from "../library/Button";
 import { PlayIcon, PauseIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
 import { assetFilename } from "../../lib/helpers/gbstudio";
+import musicActions from "../../store/features/music/musicActions";
+import electronActions from "../../store/features/electron/electronActions";
 
 class MusicViewer extends Component {
   componentDidMount() {
@@ -22,16 +23,16 @@ class MusicViewer extends Component {
   };
 
   onPlay = () => {
-    const { projectRoot, file, playMusic } = this.props;
+    const { projectRoot, file, play } = this.props;
     if (file) {
       const filename = assetFilename(projectRoot, "music", file);
-      playMusic(filename);
+      play({filename});
     }
   };
 
   onPause = () => {
-    const { pauseMusic } = this.props;
-    pauseMusic();
+    const { pause } = this.props;
+    pause();
   };
 
   onKeyDown = e => {
@@ -84,8 +85,8 @@ MusicViewer.propTypes = {
   }),
   sidebarWidth: PropTypes.number.isRequired,
   playing: PropTypes.bool.isRequired,
-  playMusic: PropTypes.func.isRequired,
-  pauseMusic: PropTypes.func.isRequired,
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
   openFolder: PropTypes.func.isRequired
 };
 
@@ -94,7 +95,7 @@ MusicViewer.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
   return {
     projectRoot: state.document && state.document.root,
     playing: state.music.playing,
@@ -103,9 +104,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  playMusic: actions.playMusic,
-  pauseMusic: actions.pauseMusic,
-  openFolder: actions.openFolder
+  play: musicActions.playMusic,
+  pause: musicActions.pauseMusic,
+  openFolder: electronActions.openFolder
 };
 
 export default connect(

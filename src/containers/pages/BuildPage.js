@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import Button, {
   ButtonToolbar,
   ButtonToolbarSpacer,
@@ -9,6 +8,9 @@ import Button, {
 } from "../../components/library/Button";
 import PageContent from "../../components/library/PageContent";
 import l10n from "../../lib/helpers/l10n";
+import editorActions from "../../store/features/editor/editorActions";
+import consoleActions from "../../store/features/console/consoleActions";
+import buildGameActions from "../../store/features/buildGame/buildGameActions";
 
 class BuildPage extends Component {
   constructor(props) {
@@ -25,8 +27,8 @@ class BuildPage extends Component {
   }
 
   onClear = () => {
-    const { consoleClear } = this.props;
-    consoleClear();
+    const { clearConsole } = this.props;
+    clearConsole();
   };
 
   onRun = e => {
@@ -158,7 +160,7 @@ BuildPage.propTypes = {
     })
   ).isRequired,
   buildGame: PropTypes.func.isRequired,
-  consoleClear: PropTypes.func.isRequired,
+  clearConsole: PropTypes.func.isRequired,
   deleteBuildCache: PropTypes.func.isRequired,
   setProfiling: PropTypes.func.isRequired,
 };
@@ -173,10 +175,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  consoleClear: actions.consoleClear,
-  buildGame: actions.buildGame,
-  deleteBuildCache: actions.deleteBuildCache,
-  setProfiling: actions.setProfiling,
+  clearConsole: consoleActions.clearConsole,
+  buildGame: buildGameActions.buildGame,
+  deleteBuildCache: buildGameActions.deleteBuildCache,
+  setProfiling: editorActions.setProfiling,
 };
 
 export default connect(

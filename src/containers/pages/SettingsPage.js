@@ -3,38 +3,30 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   FormField,
-  ToggleableFormField,
   ToggleableCheckBoxField,
 } from "../../components/library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import castEventValue from "../../lib/helpers/castEventValue";
-import * as actions from "../../actions";
-import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
-import { getScenesLookup } from "../../reducers/entitiesReducer";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
 import PaletteSelect from "../../components/forms/PaletteSelect";
-import { DMG_PALETTE } from "../../consts";
 import Button from "../../components/library/Button";
 import {
-  ProjectShape,
   SettingsShape,
   SceneShape,
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
+import { getSettings } from "../../store/features/settings/settingsState";
+import settingsActions from "../../store/features/settings/settingsActions";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import { getMetadata } from "../../store/features/metadata/metadataState";
+import navigationActions from "../../store/features/navigation/navigationActions";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {
     const { editProjectSettings } = this.props;
     editProjectSettings({
-      [key]: castEventValue(e),
-    });
-  };
-
-  onEditProject = (key) => (e) => {
-    const { editProject } = this.props;
-    editProject({
       [key]: castEventValue(e),
     });
   };
@@ -52,13 +44,8 @@ class SettingsPage extends Component {
   };
 
   render() {
-    const { project, settings, scenesLookup, setSection } = this.props;
+    const { scenes, settings, scenesLookup, setSection } = this.props;
 
-    if (!project || !project.scenes) {
-      return <div />;
-    }
-
-    const { scenes } = project;
     const {
       customColorsEnabled,
       customHead,
@@ -68,8 +55,7 @@ class SettingsPage extends Component {
     } = settings;
 
     const scenesLength = scenes.length;
-    const actorsLength = scenes.reduce((memo, sceneId) => {
-      const scene = scenesLookup[sceneId];
+    const actorsLength = scenes.reduce((memo, scene) => {
       return memo + scene.actors.length;
     }, 0);
 
@@ -203,30 +189,30 @@ class SettingsPage extends Component {
 }
 
 SettingsPage.propTypes = {
-  project: ProjectShape.isRequired,
+  scenes: PropTypes.arrayOf(SceneShape).isRequired,
   settings: SettingsShape.isRequired,
   scenesLookup: PropTypes.objectOf(SceneShape).isRequired,
-  editProject: PropTypes.func.isRequired,
   editProjectSettings: PropTypes.func.isRequired,
   setSection: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const settings = project ? project.settings : {};
-  const scenesLookup = getScenesLookup(state);
+  const metadata = getMetadata(state);
+  const settings = getSettings(state);
+  const scenes = sceneSelectors.selectAll(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
 
   return {
-    project,
+    metadata,
     settings,
+    scenes,
     scenesLookup,
   };
 }
 
 const mapDispatchToProps = {
-  editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings,
-  setSection: actions.setSection,
+  editProjectSettings: settingsActions.editSettings,
+  setSection: navigationActions.setSection,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage);

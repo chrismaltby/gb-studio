@@ -250,6 +250,7 @@
   "FIELD_PERSIST_BETWEEN_SCENES": "Persist Between Scenes",
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Note: Some events like projectiles and sprite sheet changes currently don't work when used in an input script that is persisted between scenes.",
   "FIELD_ALLOW_FASTFORWARD": "Fast forward text while buttons held",
+  "FIELD_IF_COLOR_SUPPORTED": "Run if the game is executing in a device that has color support.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -370,6 +371,7 @@
   "EVENT_PALETTE_SET_UI": "Palette: Set UI Palette",
   "EVENT_ACTOR_STOP_UPDATE": "Actor: Stop \"On Update\" Script",
   "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
+  "EVENT_IF_COLOR_SUPPORTED": "If Device Supports Color",
 
   "// 10": "Menu -----------------------------------------------------",
 

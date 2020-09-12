@@ -2,13 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import { BackgroundShape } from "../../reducers/stateShape";
+import { BackgroundShape } from "../../store/stateShape";
 import { groupBy } from "../../lib/helpers/array";
 import { assetFilename } from "../../lib/helpers/gbstudio";
-import {
-  getBackgrounds,
-  getBackgroundsLookup
-} from "../../reducers/entitiesReducer";
+import { backgroundSelectors } from "../../store/features/entities/entitiesState";
 
 const groupByPlugin = groupBy("plugin");
 
@@ -122,8 +119,8 @@ BackgroundSelect.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const backgrounds = getBackgrounds(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
+  const backgrounds = backgroundSelectors.selectAll(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
   return {
     backgrounds,
     backgroundsLookup,

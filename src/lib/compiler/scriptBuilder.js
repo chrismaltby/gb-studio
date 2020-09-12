@@ -94,7 +94,8 @@ import {
   PALETTE_SET_ACTOR,
   PALETTE_SET_UI,
   ACTOR_STOP_UPDATE,
-  ACTOR_SET_ANIMATE
+  ACTOR_SET_ANIMATE,
+  IF_COLOR_SUPPORTED,
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -1178,6 +1179,18 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(TIMER_DISABLE));
   };
+
+  // Device
+
+  ifColorSupported = (truePath = [], falsePath = []) => {
+    const output = this.output;
+    output.push(cmd(IF_COLOR_SUPPORTED));
+    compileConditional(truePath, falsePath, {
+      ...this.options,
+      output,
+    });
+
+  }
 
   // Helpers
 

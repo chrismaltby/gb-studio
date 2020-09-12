@@ -6,13 +6,12 @@ import l10n from "../../lib/helpers/l10n";
 import PageHeader from "../../components/library/PageHeader";
 import PageContent from "../../components/library/PageContent";
 import CustomPalettePicker from "../../components/forms/CustomPalettePicker";
-import { getPalettesLookup, getPalettes } from "../../reducers/entitiesReducer";
-import { PaletteShape } from "../../reducers/stateShape";
-import { FormField } from "../../components/library/Forms";
-import * as actions from "../../actions";
+import { PaletteShape } from "../../store/stateShape";
 import PaletteSidebar from "../../components/assets/PaletteSidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import Button from "../../components/library/Button";
+import { paletteSelectors } from "../../store/features/entities/entitiesState";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class PalettePage extends Component {
   constructor(props) {
@@ -54,23 +53,23 @@ class PalettePage extends Component {
   onEdit = (key) => (e) => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette(palette.id, {
+    editPalette({paletteId: palette.id, changes: {
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onReset = () => {
     const { editPalette } = this.props;
     const palette = this.getCurrentPalette();
-    editPalette(palette.id, {
+    editPalette({paletteId: palette.id, changes: {
       colors: palette.defaultColors || [] 
-    });    
+    }});
   }
 
   onRemove = () => {
     const { removePalette } = this.props;
     const palette = this.getCurrentPalette();
-    removePalette(palette.id);
+    removePalette({ paletteId: palette.id });
   };
 
   getFilteredList = () => {
@@ -173,9 +172,9 @@ PalettePage.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { filesSidebarWidth: sidebarWidth } = state.settings;
-  const palettesLookup = getPalettesLookup(state);
-  const palettes = getPalettes(state);
+  const { filesSidebarWidth: sidebarWidth } = state.editor;
+  const palettesLookup = paletteSelectors.selectEntities(state);
+  const palettes = paletteSelectors.selectAll(state);
   const { id } = state.navigation;
 
   return {
@@ -187,9 +186,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  editPalette: actions.editPalette,
-  addPalette: actions.addPalette,
-  removePalette: actions.removePalette,
+  editPalette: entitiesActions.editPalette,
+  addPalette: entitiesActions.addPalette,
+  removePalette: entitiesActions.removePalette,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PalettePage);

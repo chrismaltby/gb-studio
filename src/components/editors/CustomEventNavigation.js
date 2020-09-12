@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { CustomEventShape } from "../../reducers/stateShape";
-import * as actions from "../../actions";
-import { getCustomEvents } from "../../reducers/entitiesReducer";
+import { CustomEventShape } from "../../store/stateShape";
 import { CodeIcon } from "../library/Icons";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
 
 class CustomEventNavigation extends Component {
   render() {
@@ -19,7 +19,7 @@ class CustomEventNavigation extends Component {
                 <li
                   key={customEvent.id}
                   onClick={() => {
-                    selectCustomEvent(customEvent.id);
+                    selectCustomEvent({customEventId: customEvent.id});
                   }}
                 >
                   <div className="EditorSidebar__Icon">
@@ -41,12 +41,12 @@ CustomEventNavigation.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const customEvents = getCustomEvents(state);
+  const customEvents = customEventSelectors.selectAll(state);
   return { customEvents };
 }
 
 const mapDispatchToProps = {
-  selectCustomEvent: actions.selectCustomEvent
+  selectCustomEvent: editorActions.selectCustomEvent
 };
 
 export default connect(

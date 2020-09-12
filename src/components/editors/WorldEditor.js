@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -12,12 +11,16 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import Sidebar, { SidebarHeading, SidebarColumn } from "./Sidebar";
-import { ProjectShape } from "../../reducers/stateShape";
+import { ProjectShape, SettingsShape, ProjectMetadataShape } from "../../store/stateShape";
 import Button from "../library/Button";
 import CustomEventNavigation from "./CustomEventNavigation";
-import { getSettings } from "../../reducers/entitiesReducer";
 import { DMG_PALETTE } from "../../consts";
 import PaletteSelect from "../forms/PaletteSelect";
+import settingsActions from "../../store/features/settings/settingsActions";
+import metadataActions from "../../store/features/metadata/metadataActions";
+import { sceneSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class WorldEditor extends Component {
   onEditSetting = key => e => {
@@ -35,13 +38,9 @@ class WorldEditor extends Component {
   };
 
   render() {
-    const { project, selectSidebar, addCustomEvent, colorsEnabled } = this.props;
+    const { metadata, settings, selectSidebar, addCustomEvent, colorsEnabled, scenesLength } = this.props;
 
-    if (!project || !project.scenes || !project.customEvents) {
-      return <div />;
-    }
-
-    const { name, author, notes, scenes, settings } = project;
+    const { name, author, notes } = metadata;
     const {
       startSceneId,
       playerPaletteId,
@@ -100,7 +99,7 @@ class WorldEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          {scenes.length > 0 && (
+          {scenesLength > 0 && (
             <div>
               <SidebarHeading title={l10n("SIDEBAR_STARTING_SCENE")} />
 
@@ -230,7 +229,9 @@ class WorldEditor extends Component {
 }
 
 WorldEditor.propTypes = {
-  project: ProjectShape.isRequired,
+  metadata: ProjectMetadataShape.isRequired,
+  scenesLength: PropTypes.number.isRequired,
+  settings: SettingsShape.isRequired,
   defaultSpritePaletteId: PropTypes.string.isRequired,
   colorsEnabled: PropTypes.bool.isRequired, 
   editProject: PropTypes.func.isRequired,
@@ -240,22 +241,25 @@ WorldEditor.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const project = state.entities.present.result;
-  const settings = getSettings(state); 
+  const metadata = state.project.present.metadata;
+  const settings = state.project.present.settings;
   const colorsEnabled = settings.customColorsEnabled;
   const defaultSpritePaletteId = settings.defaultSpritePaletteId || DMG_PALETTE.id;
+  const scenesLength = sceneSelectors.selectTotal(state);
   return {
-    project,
+    metadata,
+    scenesLength,
+    settings,
     colorsEnabled,
     defaultSpritePaletteId    
   };
 }
 
 const mapDispatchToProps = {
-  selectSidebar: actions.selectSidebar,
-  editProject: actions.editProject,
-  editProjectSettings: actions.editProjectSettings,
-  addCustomEvent: actions.addCustomEvent
+  selectSidebar: editorActions.selectSidebar,
+  editProject: metadataActions.editMetadata,
+  editProjectSettings: settingsActions.editSettings,
+  addCustomEvent: entitiesActions.addCustomEvent
 };
 
 export default connect(
