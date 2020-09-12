@@ -4,8 +4,16 @@ import { promisify } from "util";
 import Path from "path";
 import { engineRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
+import ejectEngineChangelog from "../project/ejectEngineChangelog";
+import l10n from "../helpers/l10n";
 
 const rmdir = promisify(rimraf);
+
+const readEngineVersion = async (path) => {
+  return (await fs.readFile(path, "utf8"))
+    .replace(/#.*/g, "")
+    .trim();
+}
 
 const ejectBuild = async ({
   projectType = "gb",
@@ -17,6 +25,7 @@ const ejectBuild = async ({
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
+  const expectedEngineVersionPath = `${corePath}/engine_version`;
 
   progress(`Unlink ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
@@ -24,11 +33,29 @@ const ejectBuild = async ({
   progress("Copy default engine");
 
   await copy(corePath, outputRoot);
+  
+  const expectedEngineVersion = await readEngineVersion(expectedEngineVersionPath);
 
   try {
     progress("Looking for local engine in assets/engine");
     await copy(localCorePath, outputRoot);
     progress("Copy local engine");
+
+    const ejectedEngineVersionPath = `${localCorePath}/engine_version`;
+    let ejectedEngineVersion;
+    try {
+      ejectedEngineVersion = await readEngineVersion(ejectedEngineVersionPath);
+    } catch (e) {
+      ejectedEngineVersion = "2.0.0-e1";
+    }
+    if (ejectedEngineVersion !== expectedEngineVersion) {
+      warnings(
+        `${l10n("WARNING_ENGINE_OUT_OF_DATE", {
+          ejectedEngineVersion,
+          expectedEngineVersion,
+        })}\n\n${ejectEngineChangelog(ejectedEngineVersion)}`
+      );
+    }
   } catch (e) {
     progress("Local engine not found, using default engine");
   }

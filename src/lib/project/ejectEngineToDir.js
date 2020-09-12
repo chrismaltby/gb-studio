@@ -11,8 +11,10 @@ const ejectEngineToDir = async (ejectPath, { projectType = "gb" } = {}) => {
   const enginePath = `${engineRoot}/${projectType}`;
   const engineSrcPath = `${enginePath}/src`;
   const engineIncludePath = `${enginePath}/include`;
+  const engineVersionPath = `${enginePath}/engine_version`;
   const ejectSrcPath = `${ejectPath}/src`;
   const ejectIncludePath = `${ejectPath}/include`;
+  const ejectVersionPath = `${ejectPath}/engine_version`;
 
   await rmdir(ejectPath);
 
@@ -22,6 +24,7 @@ const ejectEngineToDir = async (ejectPath, { projectType = "gb" } = {}) => {
 
   await copy(engineSrcPath, ejectSrcPath);
   await copy(engineIncludePath, ejectIncludePath);
+  await copy(engineVersionPath, ejectVersionPath);
 };
 
 export default ejectEngineToDir;
