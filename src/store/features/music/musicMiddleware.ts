@@ -4,6 +4,9 @@ import { RootState } from "../../configureStore";
 import soundfxActions from "../soundfx/soundfxActions";
 import navigationActions from "../navigation/navigationActions";
 import actions from "./musicActions";
+import { musicSelectors } from "../entities/entitiesState";
+import { assetFilename } from "../../../lib/helpers/gbstudio";
+import { MusicSettings } from "../entities/entitiesTypes";
 
 let modPlayer: ScripTracker;
 
@@ -24,9 +27,9 @@ function onSongLoaded(player: ScripTracker) {
   player.play();
 }
 
-function play(filename: string) {
+function play(filename: string, settings: MusicSettings) {
   if (modPlayer) {
-    modPlayer.loadModule(`file://${filename}`);
+    modPlayer.loadModule(`file://${filename}`, !!settings.disableSpeedConversion);
   }
 }
 
@@ -40,7 +43,13 @@ const musicMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
 ) => {
   if (actions.playMusic.match(action)) {
-    play(action.payload.filename);
+    const state = store.getState();
+    const track = musicSelectors.selectById(state, action.payload.musicId)
+    if (track) {
+      const projectRoot = state.document.root;
+      const filename = assetFilename(projectRoot, "music", track);
+      play(filename, track.settings);
+    }
   } else if (actions.pauseMusic.match(action)) {
     pause();
   } else if (

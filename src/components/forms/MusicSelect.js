@@ -14,12 +14,11 @@ const groupByPlugin = groupBy("plugin");
 
 class MusicSelect extends Component {
   onPlay = id => {
-    const { projectRoot, music, value, play } = this.props;
+    const { music, value, play } = this.props;
     const playId = id || value;
     const file = music.find(track => track.id === playId) || music[0];
     if (file) {
-      const filename = assetFilename(projectRoot, "music", file);
-      play({filename});
+      play({ musicId: file.id });
     }
   };
 

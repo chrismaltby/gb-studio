@@ -82,6 +82,7 @@ class BuildPage extends Component {
             color: "#fff",
             padding: 20,
             fontFamily: "monospace",
+            whiteSpace: "pre-wrap",
             overflow: "auto",
             userSelect: "text",
           }}

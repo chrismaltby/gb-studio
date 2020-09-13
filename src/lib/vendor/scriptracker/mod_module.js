@@ -28,7 +28,17 @@ var ModModule = function(fileData) {
 					   214 , 202 , 190 , 180 , 170 , 160 , 151 , 143 , 135 , 127 , 120, 113,
 					   107 , 101 , 95  , 90  , 85  , 80  , 75  , 71  , 67  , 63  , 60 , 56 , 
 					   53  ,  50 ,  47 ,  45 ,  42 ,  40 ,  37 ,  35 ,  33 ,  31 ,  30 , 28];
-
+	//From C3 to B8  |  A5 = 1750 = 440.00Hz  |  C5 = 1546
+	/*var notePeriodsGB = [
+			  44, 156, 262, 363, 457, 547, 631, 710, 786, 854, 923, 986, // C3 to B3
+			1046,1102,1155,1205,1253,1297,1339,1379,1417,1452,1486,1517, // C4 to B4
+			1546,1575,1602,1627,1650,1673,1694,1714,1732,1750,1767,1783, // C5 to B5
+			1798,1812,1825,1837,1849,1860,1871,1881,1890,1899,1907,1915, // C6 to B6
+			1923,1930,1936,1943,1949,1954,1959,1964,1969,1974,1978,1982, // C7 to B7
+			1985,1988,1992,1995,1998,2001,2004,2006,2009,2011,2013,2015];// C8 to B8
+	*/	
+	//	That means... MOD C0 (period 1712) = GB C3 (freq 44, index 0)
+	//	Anyway, they don't sound the same...]
 	// Find out the number of channels in this mod.
 	switch (Helpers.readString(fileData, 1080, 4)) {
 		case "6CHN":
@@ -72,7 +82,7 @@ var ModModule = function(fileData) {
 
 		if (sample.fineTune > 7) sample.fineTune -= 16;
 		sample.fineTune *= 16;
-		if (i == 27 ) sample.fineTune = 8000; //sample 28 faster noise
+		if (i == 27 ) sample.fineTune = 2000; //sample 28 faster noise
 		
 		instrument.name = sample.name;
 		instrument.samples.push(sample);
@@ -105,9 +115,7 @@ var ModModule = function(fileData) {
 
 				// Find the note number corresponding to the period.
 				var period = ((byte1 & 0x0F) * 256) | byte2;
-				if (c == 3) { // Noise force note to C5
-					pattern.note[r][c] = 25;
-				} else if (period == 0) {
+				if (period == 0) {
 					pattern.note[r][c] = 0;
 				} else if (period > notePeriods[0]) {
 					// Prevent notes that are too low.
@@ -131,6 +139,17 @@ var ModModule = function(fileData) {
 							pattern.note[r][c] = p + 1;
 							break;
 						}
+					}
+				}
+				if (c == 3 && period != 0) { // Noise, round to 23=A#4 25=c5 28=D#5 31=F#5 35=A#5 37=c6 etc
+					// 25/3 = 8.3, floor 8 * 3 = 24 +1 25. 
+					// 23/3 = 7.6, floor 7, if 7%4 = 3, +2, else +1 
+					var noisenote = Math.floor(pattern.note[r][c] / 3);
+					if (noisenote % 4 == 3){
+						pattern.note[r][c] = noisenote * 3 + 2;
+					}
+					else {
+						pattern.note[r][c] = noisenote * 3 + 1;
 					}
 				}
 
@@ -162,7 +181,7 @@ var ModModule = function(fileData) {
 				} else if ((byte3 & 0x0F) == 4) {
 					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO;
 				} else if ((byte3 & 0x0F) == 5) {
-					pattern.effect[r][c] = Effects.TONE_PORTA_VOL_SLIDE;
+					pattern.effect[r][c] = Effects.NONE;//TONE_PORTA_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 6) {
 					pattern.effect[r][c] = Effects.NONE;//Effects.VIBRATO_VOL_SLIDE;
 				} else if ((byte3 & 0x0F) == 7) {
@@ -170,9 +189,9 @@ var ModModule = function(fileData) {
 				} else if ((byte3 & 0x0F) == 8) {
 					pattern.effect[r][c] = Effects.SET_PAN;
 				} else if ((byte3 & 0x0F) == 9) {
-					pattern.effect[r][c] = Effects.NONE;//Effects.SAMPLE_OFFSET;
+					pattern.effect[r][c] = Effects.SET_VOLUME_AND_SLIDE;//Effects.SAMPLE_OFFSET;
 				} else if ((byte3 & 0x0F) == 10) {
-					pattern.effect[r][c] = Effects.VOLUME_SLIDE;
+					pattern.effect[r][c] = Effects.NONE; //Depricated VOLUME_SLIDE; for 9xx
 				} else if ((byte3 & 0x0F) == 11) {
 					pattern.effect[r][c] = Effects.POSITION_JUMP;
 				} else if ((byte3 & 0x0F) == 12) {

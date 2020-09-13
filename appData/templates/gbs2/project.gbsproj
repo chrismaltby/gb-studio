@@ -1,32 +1,8 @@
 {
-    "settings": {
-        "showCollisions": true,
-        "showConnections": true,
-        "worldScrollX": 0,
-        "worldScrollY": 0,
-        "zoom": 100,
-        "customColorsWhite": "E8F8E0",
-        "customColorsLight": "B0F088",
-        "customColorsDark": "509878",
-        "customColorsBlack": "202850",
-        "defaultBackgroundPaletteIds": [
-            "default-bg-1",
-            "default-bg-2",
-            "default-bg-3",
-            "default-bg-4",
-            "default-bg-5",
-            "default-bg-6"
-        ],
-        "defaultSpritePaletteId": "default-sprite",
-        "defaultUIPaletteId": "default-ui",
-        "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
-        "startX": 0,
-        "startY": 0,
-        "startDirection": "right",
-        "startSceneId": "382961a1-e615-4b92-92a7-f1a791b50b7a",
-        "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
-        "customColorsEnabled": true
-    },
+    "name": "___PROJECT_NAME___",
+    "author": "___AUTHOR___",
+    "_version": "2.0.0",
+    "_release": "2",
     "scenes": [
         {
             "id": "94c18861-b352-4f49-a64d-52f2e3415077",
@@ -4727,6 +4703,14 @@
                     }
                 },
                 {
+                    "id": "cd43ac8c-de3e-40c8-878e-0c0b66a9978f",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "180f6b13-2ccc-4af9-8ebf-3e3931f2e824",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "2b55cc71-aac9-479d-8287-067c0bd0faed",
                     "command": "EVENT_END"
                 }
@@ -8528,6 +8512,14 @@
                     "__type": "event"
                 },
                 {
+                    "id": "afa86c47-5acc-498e-9ab0-e8727c7a24dd",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "a98fc4b6-810e-4fb7-93ee-ef17be6ce95a",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "fb5431f6-333d-4714-864c-dcf2955a35e8",
                     "command": "EVENT_END"
                 }
@@ -9590,6 +9582,14 @@
                     "__type": "event"
                 },
                 {
+                    "id": "3ad0968d-0eea-4ead-a5f5-9fb89ed3de7f",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "0f78c331-7318-48ca-8a6c-a57c15ef423a",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "d5a9cbaa-36b4-4a6d-af24-bf820e7d31bc",
                     "command": "EVENT_END"
                 }
@@ -10355,7 +10355,7 @@
                     "args": {
                         "x": 0,
                         "y": 18,
-                        "speed": "2"
+                        "speed": "1"
                     }
                 },
                 {
@@ -10397,6 +10397,14 @@
             "triggers": [],
             "collisions": [],
             "script": [
+                {
+                    "id": "82ba937b-2e7f-4044-a567-50f9c91be84d",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "83b79b0b-6af5-4a01-ac40-2f86fd36ece8",
+                        "loop": false
+                    }
+                },
                 {
                     "id": "ff79b819-b435-4ef8-af20-07302038959f",
                     "command": "EVENT_ACTOR_HIDE",
@@ -12341,6 +12349,14 @@
                     "__type": "event"
                 },
                 {
+                    "id": "119d6f6f-5d19-4f2b-b2c0-5859e8ee2836",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "4f7446cc-f5b4-4749-8fd0-f587afe35747",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "4434a78c-23e6-464a-9b03-916b537343e9",
                     "command": "EVENT_GROUP",
                     "args": {
@@ -13823,6 +13839,14 @@
                     "args": {
                         "actorId": "player",
                         "__collapse": false
+                    }
+                },
+                {
+                    "id": "19f14f5d-7925-459a-992c-ab6cb69b59f8",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "a98fc4b6-810e-4fb7-93ee-ef17be6ce95a",
+                        "loop": true
                     }
                 },
                 {
@@ -26840,6 +26864,14 @@
                     }
                 },
                 {
+                    "id": "66dcc558-b987-49ec-a177-d5f5e10e0b90",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "4653812c-82b6-44ce-93b8-eea1d4b6fa71",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "9fb64342-20eb-4eee-bb72-07ebfee26885",
                     "command": "EVENT_ACTOR_SET_MOVEMENT_SPEED",
                     "args": {
@@ -27605,6 +27637,14 @@
                                 "command": "EVENT_END"
                             }
                         ]
+                    }
+                },
+                {
+                    "id": "646647bb-e8b8-41cb-add9-e9d3531aceac",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "0f78c331-7318-48ca-8a6c-a57c15ef423a",
+                        "loop": true
                     }
                 },
                 {
@@ -29985,12 +30025,12 @@
                 0,
                 15,
                 0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
                 0,
                 0,
                 0,
@@ -35615,6 +35655,14 @@
                     }
                 },
                 {
+                    "id": "ba92680f-9b9b-4b91-acbb-576e259ca0b7",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "180f6b13-2ccc-4af9-8ebf-3e3931f2e824",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "8ee11d7f-7d70-47b2-b1a2-9866c27011d2",
                     "command": "EVENT_SET_VALUE",
                     "args": {
@@ -37018,6 +37066,14 @@
                     }
                 },
                 {
+                    "id": "5e70f3c6-2f91-41e2-aa09-46a6097680cf",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "e571be0d-bbaa-44ae-a411-c2b2e6c5ff24",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "8d64db1d-a81e-4592-9935-4ca1a22705cf",
                     "command": "EVENT_END"
                 }
@@ -38121,6 +38177,14 @@
                             "children": {
                                 "true": [
                                     {
+                                        "id": "b62f7950-b278-49c9-98e8-2760945477eb",
+                                        "command": "EVENT_MUSIC_PLAY",
+                                        "args": {
+                                            "musicId": "be5e3dd0-dc4f-46b3-aefe-9897de0775c3",
+                                            "loop": false
+                                        }
+                                    },
+                                    {
                                         "id": "e551d045-0e7b-4dd6-9a17-11153376fcab",
                                         "command": "EVENT_ACTOR_HIDE",
                                         "args": {
@@ -38322,6 +38386,14 @@
                     }
                 },
                 {
+                    "id": "05562a6d-e1a7-49b8-95fc-c143b4ba166f",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "180f6b13-2ccc-4af9-8ebf-3e3931f2e824",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "7edda098-12d4-45ff-b341-c62b047a6a8a",
                     "command": "EVENT_END"
                 }
@@ -38344,7 +38416,8 @@
                 15,
                 15,
                 16,
-                16,
+                0,
+                15,
                 15,
                 15,
                 15,
@@ -38357,39 +38430,6 @@
                 15,
                 15,
                 15,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                15,
-                0,
-                0,
-                16,
-                16,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
                 15,
                 0,
                 0,
@@ -38408,7 +38448,7 @@
                 0,
                 0,
                 16,
-                16,
+                0,
                 0,
                 0,
                 0,
@@ -38440,7 +38480,39 @@
                 0,
                 0,
                 16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
                 16,
+                0,
                 0,
                 0,
                 0,
@@ -38472,16 +38544,16 @@
                 0,
                 0,
                 16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
                 16,
                 0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
                 0,
                 0,
                 0,
@@ -38513,12 +38585,204 @@
                 15,
                 15,
                 17,
+                1,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                0,
+                15,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                0,
+                0,
+                16,
+                0,
+                0,
+                15,
+                15,
+                0,
+                0,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                0,
+                0,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
                 17,
-                15,
-                15,
-                15,
-                15,
-                15,
+                1,
                 15,
                 15,
                 15,
@@ -38532,39 +38796,12 @@
                 15,
                 0,
                 0,
-                0,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                15,
                 15,
                 0,
                 0,
                 0,
                 0,
                 15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                0,
                 15,
                 0,
                 0,
@@ -38577,172 +38814,7 @@
                 0,
                 0,
                 16,
-                16,
                 0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                0,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                0,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                0,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
-                0,
-                0,
-                0,
-                16,
-                16,
-                0,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                15,
-                17,
-                17,
-                15,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                15,
-                15,
-                0,
-                0,
-                15,
-                0,
-                0,
-                0,
-                0,
-                15,
-                15,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                16,
-                16,
                 0,
                 0,
                 0,
@@ -38774,7 +38846,7 @@
                 0,
                 0,
                 16,
-                16,
+                0,
                 0,
                 0,
                 0,
@@ -38806,7 +38878,7 @@
                 0,
                 0,
                 16,
-                16,
+                0,
                 0,
                 0,
                 0,
@@ -38838,7 +38910,7 @@
                 0,
                 0,
                 16,
-                16,
+                0,
                 0,
                 0,
                 0,
@@ -39691,6 +39763,14 @@
                     }
                 },
                 {
+                    "id": "c2e89ec2-ccd9-40e0-ae35-498fdd72c086",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "4f7446cc-f5b4-4749-8fd0-f587afe35747",
+                        "loop": true
+                    }
+                },
+                {
                     "id": "48bd332d-35cd-4a0c-af73-81640b454fb4",
                     "command": "EVENT_END"
                 }
@@ -40442,6 +40522,14 @@
                     }
                 },
                 {
+                    "id": "cd305da2-f0dc-4063-b4fc-71dafbc15c0b",
+                    "command": "EVENT_MUSIC_PLAY",
+                    "args": {
+                        "musicId": "0f78c331-7318-48ca-8a6c-a57c15ef423a",
+                        "loop": false
+                    }
+                },
+                {
                     "id": "8a9ed399-aa4b-49d0-854d-8752a796d21c",
                     "command": "EVENT_TEXT",
                     "args": {
@@ -40479,104 +40567,6 @@
             ]
         }
     ],
-    "_version": "2.0.0",
-    "_release": "2",
-    "author": "___AUTHOR___",
-    "name": "___PROJECT_NAME___",
-    "variables": [
-        {
-            "id": "0",
-            "name": "Quest1"
-        },
-        {
-            "id": "1",
-            "name": "Quest2"
-        },
-        {
-            "id": "2",
-            "name": "Quest3"
-        },
-        {
-            "id": "3",
-            "name": "Quest4"
-        },
-        {
-            "id": "4",
-            "name": "Quest5"
-        },
-        {
-            "id": "5",
-            "name": "Quest6"
-        },
-        {
-            "id": "6",
-            "name": "Quest7"
-        },
-        {
-            "id": "7",
-            "name": "Quest8"
-        },
-        {
-            "id": "8",
-            "name": "Quest9"
-        },
-        {
-            "id": "9",
-            "name": "Quest10"
-        },
-        {
-            "id": "10",
-            "name": "Quest11"
-        },
-        {
-            "id": "11",
-            "name": "Quest12"
-        },
-        {
-            "id": "871ea302-1cc1-463c-b9d7-530aac38fe81__L0",
-            "name": "Spoken to gardener"
-        },
-        {
-            "id": "13",
-            "name": "Seen Cat"
-        },
-        {
-            "id": "dee20f46-fcaa-4473-94b1-9817dbd99fd8__L0",
-            "name": "Save Choice"
-        },
-        {
-            "id": "14",
-            "name": "Used Radio"
-        },
-        {
-            "id": "15",
-            "name": "Seen Duck"
-        },
-        {
-            "id": "16",
-            "name": "Pushed Ice Block"
-        },
-        {
-            "id": "12",
-            "name": "Turnip Counter"
-        },
-        {
-            "id": "4159e95b-34e4-42e8-bf25-67f2078e804f__L0",
-            "name": "Defeated"
-        },
-        {
-            "id": "2f01ca47-9361-4271-b1f2-75d55e85bf1f__L0",
-            "name": "Defeated"
-        },
-        {
-            "id": "98159e3a-0bfe-44ec-8312-9dcef04c253f__L0",
-            "name": "Defeated"
-        },
-        {
-            "id": "4912bee2-387a-472f-ae4f-6679b6149517__L0",
-            "name": "Menu Choice"
-        }
-    ],
     "backgrounds": [
         {
             "id": "1da35172-aea4-40b4-8215-7992d9245b34",
@@ -40586,7 +40576,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "black.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "6fad1892-bcb2-4924-bd1c-1e4d03dfeabb",
@@ -40596,7 +40586,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "cave.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "481e920a-10b8-4d5b-b6a2-dffa96b57bf0",
@@ -40606,17 +40596,7 @@
             "imageWidth": 256,
             "imageHeight": 144,
             "filename": "hidden_cave.png",
-            "_v": 1598200883992
-        },
-        {
-            "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
-            "name": "house",
-            "width": 20,
-            "height": 18,
-            "imageWidth": 160,
-            "imageHeight": 144,
-            "filename": "house.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "5b192b93-3957-4b76-8c92-423eabbcd285",
@@ -40626,7 +40606,17 @@
             "imageWidth": 256,
             "imageHeight": 144,
             "filename": "house-wide.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
+        },
+        {
+            "id": "b340b9a2-2865-4e05-91c0-148846a693c8",
+            "name": "house",
+            "width": 20,
+            "height": 18,
+            "imageWidth": 160,
+            "imageHeight": 144,
+            "filename": "house.png",
+            "_v": 1600011071075
         },
         {
             "id": "00e9b250-b602-4e5d-998c-fe0c8f23c91d",
@@ -40636,7 +40626,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "launch_site.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "28a8b376-b6c5-4e6d-8d7d-2a409d73cd1b",
@@ -40646,7 +40636,7 @@
             "imageWidth": 2040,
             "imageHeight": 144,
             "filename": "leaving_earth.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "f8b1c7ad-7bb2-44b2-8189-175ae8698f11",
@@ -40656,7 +40646,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "logo.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "b49ea566-b022-478c-979d-ec3ee255fdc5",
@@ -40666,7 +40656,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "menu.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "93d8839f-c19c-4eb2-a386-b0bb77068521",
@@ -40676,7 +40666,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "menu_page1.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "816231e1-2147-462c-99c6-3f73e8535d25",
@@ -40686,7 +40676,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "menu_page2.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "07016701-d5df-4983-8a5a-3930c7f45822",
@@ -40696,7 +40686,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "outside.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "b50cefc6-72dc-44c0-947d-f5d4d533a97a",
@@ -40706,7 +40696,7 @@
             "imageWidth": 1288,
             "imageHeight": 144,
             "filename": "platform_path.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "0af9ba31-7864-4664-9603-b211dc0f3793",
@@ -40716,7 +40706,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "room.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "053f83aa-a4e3-413b-98af-1bb0d0818ddc",
@@ -40726,7 +40716,7 @@
             "imageWidth": 448,
             "imageHeight": 448,
             "filename": "sample_town.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "40fda058-df90-4205-a239-fe77bce4fa79",
@@ -40736,7 +40726,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "stars.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "33ae580b-d809-4804-a558-71c08a3ac495",
@@ -40746,7 +40736,7 @@
             "imageWidth": 2040,
             "imageHeight": 144,
             "filename": "stars_wide.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "f047ff0e-58ad-49fc-bd2b-ec84fc1f7ab3",
@@ -40756,7 +40746,7 @@
             "imageWidth": 160,
             "imageHeight": 144,
             "filename": "titlescreen.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "f3102db4-2273-411d-b33f-4d6f65959c60",
@@ -40766,7 +40756,7 @@
             "imageWidth": 256,
             "imageHeight": 256,
             "filename": "underground.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         }
     ],
     "spriteSheets": [
@@ -40776,7 +40766,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "bullet.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "32c48a4d-6ce6-4aca-a23a-a6300b5c9e3b",
@@ -40784,7 +40774,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "bullet_left.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "450a3571-cc76-41be-8c95-818d60b83c59",
@@ -40792,7 +40782,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "bullet_right.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "1e27bb8e-c805-435a-8b87-05b4f50da4f0",
@@ -40800,7 +40790,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "cat.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "f0c3033d-e82a-407d-9fe2-3d5da4f59c09",
@@ -40808,7 +40798,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "checkbox.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "d4206af4-4d12-4cfd-a4a8-faa11d4aff34",
@@ -40816,7 +40806,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "chest.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "a827b612-578f-4cb9-a2bf-fd54b197b83f",
@@ -40824,7 +40814,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "cursor.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "17219846-cda9-4e84-bdfa-c3ff105d42cc",
@@ -40832,7 +40822,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "dog.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "ede130e6-013a-42d1-a786-1aed3fd3cf32",
@@ -40840,7 +40830,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "duck.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "954ffda3-81b7-40ea-a338-3b11ad4b75fb",
@@ -40848,7 +40838,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "enemy_ship.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "493bdd1e-7e97-4911-b89a-c0677dfdcaaa",
@@ -40856,7 +40846,7 @@
             "numFrames": 4,
             "type": "animated",
             "filename": "explode.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "f2610e3c-8ff9-42fa-a9bb-d1591031fa17",
@@ -40864,7 +40854,7 @@
             "numFrames": 4,
             "type": "animated",
             "filename": "fire.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "81b14fe6-2235-480e-bc3b-a5899aa66afe",
@@ -40872,7 +40862,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "hidden_stairs.png",
-            "_v": 1598200883993
+            "_v": 1600011071075
         },
         {
             "id": "09ad70c6-3ce5-4b97-9e96-466221418a45",
@@ -40880,7 +40870,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "ice.png",
-            "_v": 1598200883992
+            "_v": 1600011071075
         },
         {
             "id": "8cb9c002-1abc-458c-9588-9b55af8efb08",
@@ -40888,7 +40878,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "machine.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "dfa75239-299d-41fe-a6cd-9e9438da1938",
@@ -40896,7 +40886,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc001.png",
-            "_v": 1598200883993
+            "_v": 1600011071075
         },
         {
             "id": "40dcd163-9f72-4861-8131-b01eb9baa000",
@@ -40904,7 +40894,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc002.png",
-            "_v": 1598200883993
+            "_v": 1600011071075
         },
         {
             "id": "52ad34df-f245-4b2a-b94c-a82af1002871",
@@ -40912,7 +40902,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc003.png",
-            "_v": 1598200883993
+            "_v": 1600011071075
         },
         {
             "id": "46a3db76-878e-4896-892b-d1afa7d5e2f0",
@@ -40920,7 +40910,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc004.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "7a27b229-5f3d-4eaa-b20c-07997673324d",
@@ -40928,7 +40918,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc005.png",
-            "_v": 1598200883993
+            "_v": 1600011071075
         },
         {
             "id": "c475c713-9fd8-455a-b9bc-8c62b2b8fd5e",
@@ -40936,7 +40926,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "npc006.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         },
         {
             "id": "2b18f935-85a3-4f38-9f52-e5c4ea20776a",
@@ -40944,7 +40934,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "npc007.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
@@ -40952,7 +40942,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "2f2d492c-dba2-434c-93c9-d1301e88d5e9",
@@ -40960,7 +40950,7 @@
             "numFrames": 6,
             "type": "actor_animated",
             "filename": "player_ship.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "058c0142-0c1e-4762-b5ac-e085d84fc734",
@@ -40968,7 +40958,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "pod_door.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         },
         {
             "id": "94eb6557-0cfc-453e-8e1f-ddb191ac8536",
@@ -40976,7 +40966,7 @@
             "numFrames": 3,
             "type": "actor",
             "filename": "portal.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "a0442b6a-634f-44da-9962-77938e3ed839",
@@ -40984,7 +40974,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "radio.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "3939e8d2-3987-4a22-953e-f1d82134eccf",
@@ -40992,7 +40982,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "rock.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         },
         {
             "id": "e20ce140-53a5-4b1b-9964-138ba0c86925",
@@ -41000,7 +40990,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "sage.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "000a6dde-cb60-436e-b357-30a529daa139",
@@ -41008,7 +40998,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "savepoint.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "30b8266a-0533-4f90-bd33-e97dc1d498ea",
@@ -41016,7 +41006,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "signpost.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "b4845aec-11e3-475b-8a9a-0a01b920c710",
@@ -41024,7 +41014,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "space_mine.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "e9e61bf7-88fd-491d-ae01-4b7f76909108",
@@ -41032,7 +41022,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "torch.png",
-            "_v": 1598200883993
+            "_v": 1600011071076
         },
         {
             "id": "f88eea80-c5b4-4e10-b49f-7a8aa8bd477e",
@@ -41040,7 +41030,7 @@
             "numFrames": 2,
             "type": "animated",
             "filename": "turnip.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         },
         {
             "id": "6f1e5757-a472-4531-8a65-aee22751e917",
@@ -41048,7 +41038,7 @@
             "numFrames": 1,
             "type": "static",
             "filename": "turnip_squash.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         },
         {
             "id": "735c26e5-eee4-43ad-a668-a2ab93f84bd8",
@@ -41056,15 +41046,275 @@
             "numFrames": 1,
             "type": "static",
             "filename": "ui_weapon.png",
-            "_v": 1598200883993
+            "_v": 1600011071080
         }
     ],
-    "music": [
+    "palettes": [
         {
-            "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
-            "name": "template",
-            "filename": "template.mod",
-            "_v": 1598200883986
+            "id": "default-bg-1",
+            "name": "Default BG 1",
+            "colors": [
+                "F8E8C8",
+                "D89048",
+                "A82820",
+                "082048"
+            ],
+            "defaultName": "Default BG 1",
+            "defaultColors": [
+                "F8E8C8",
+                "D89048",
+                "A82820",
+                "301850"
+            ]
+        },
+        {
+            "id": "default-bg-2",
+            "name": "Default BG 2",
+            "colors": [
+                "E0F8A0",
+                "78C838",
+                "488818",
+                "082048"
+            ],
+            "defaultName": "Default BG 2",
+            "defaultColors": [
+                "E0F8A0",
+                "78C838",
+                "488818",
+                "081800"
+            ]
+        },
+        {
+            "id": "default-bg-3",
+            "name": "Default BG 3",
+            "colors": [
+                "F8D8A8",
+                "E0A878",
+                "785888",
+                "082048"
+            ],
+            "defaultName": "Default BG 3",
+            "defaultColors": [
+                "F8D8A8",
+                "E0A878",
+                "785888",
+                "002030"
+            ]
+        },
+        {
+            "id": "default-bg-4",
+            "name": "Default BG 4",
+            "colors": [
+                "B8D0D0",
+                "D880D8",
+                "8000A0",
+                "082048"
+            ],
+            "defaultName": "Default BG 4",
+            "defaultColors": [
+                "B8D0D0",
+                "D880D8",
+                "8000A0",
+                "380000"
+            ]
+        },
+        {
+            "id": "default-bg-5",
+            "name": "Default BG 5",
+            "colors": [
+                "F8F8B8",
+                "90C8C8",
+                "486878",
+                "082048"
+            ],
+            "defaultName": "Default BG 5",
+            "defaultColors": [
+                "F8F8B8",
+                "90C8C8",
+                "486878",
+                "082048"
+            ]
+        },
+        {
+            "id": "default-bg-6",
+            "name": "Default BG 6",
+            "colors": [
+                "F8D8B0",
+                "78C078",
+                "688840",
+                "082048"
+            ],
+            "defaultName": "Default BG 6",
+            "defaultColors": [
+                "F8D8B0",
+                "78C078",
+                "688840",
+                "583820"
+            ]
+        },
+        {
+            "id": "default-sprite",
+            "name": "Default Sprites",
+            "colors": [
+                "F8F0E0",
+                "D88078",
+                "C88068",
+                "082048"
+            ],
+            "defaultName": "Default Sprites",
+            "defaultColors": [
+                "F8F0E0",
+                "D88078",
+                "B05010",
+                "000000"
+            ]
+        },
+        {
+            "id": "default-ui",
+            "name": "Default UI",
+            "colors": [
+                "F8F8B8",
+                "90C8C8",
+                "486878",
+                "082048"
+            ],
+            "defaultName": "Default UI",
+            "defaultColors": [
+                "F8F8B8",
+                "90C8C8",
+                "486878",
+                "082048"
+            ]
+        },
+        {
+            "id": "474a8d83-8645-4899-b86a-4681b8498709",
+            "name": "Platform Clouds",
+            "colors": [
+                "C8E8F8",
+                "F0F0F0",
+                "3088B0",
+                "202850"
+            ]
+        },
+        {
+            "id": "5dafcf6e-b1d8-4c6b-b105-32d877f561e4",
+            "name": "Platform Grass",
+            "colors": [
+                "C8E8F8",
+                "B0F088",
+                "587878",
+                "202850"
+            ]
+        },
+        {
+            "id": "2801a5c2-3b0b-41b9-90c9-ec2af73d825d",
+            "name": "Platform Tree",
+            "colors": [
+                "C8E8F8",
+                "D89048",
+                "A82820",
+                "202850"
+            ]
+        },
+        {
+            "id": "320dcbf4-2760-4e0d-8e2b-41970675034f",
+            "name": "Top Down Grass",
+            "colors": [
+                "E0F0E0",
+                "B0F088",
+                "509878",
+                "202850"
+            ]
+        },
+        {
+            "id": "036c985f-d774-4a94-813c-9ac43c52627f",
+            "name": "Top Down Tree",
+            "colors": [
+                "E0F0E0",
+                "D89048",
+                "A82820",
+                "202850"
+            ]
+        },
+        {
+            "id": "b550d28a-9cb7-4f19-82fb-d839725f2419",
+            "name": "Top Down Water",
+            "colors": [
+                "E0F0E0",
+                "3098E8",
+                "303898",
+                "202850"
+            ]
+        },
+        {
+            "id": "2ebac764-bebb-4707-920b-2a975675b2cb",
+            "name": "Top Down Cliff",
+            "colors": [
+                "F8E8C8",
+                "D89048",
+                "A82820",
+                "301850"
+            ]
+        },
+        {
+            "id": "9fb1f41b-54d4-43c6-8731-16de50176aa0",
+            "name": "Top Down Ship",
+            "colors": [
+                "E0F0E0",
+                "90C0C0",
+                "E05878",
+                "202850"
+            ]
+        },
+        {
+            "id": "325f5712-ff6c-40e7-b105-c6d795846783",
+            "name": "Space Earth",
+            "colors": [
+                "E8F8E0",
+                "B0F088",
+                "5098E0",
+                "000048"
+            ]
+        },
+        {
+            "id": "d73adccf-4071-4012-b0a6-9c3973a2dc0e",
+            "name": "Space Stars",
+            "colors": [
+                "E8F800",
+                "10B8F0",
+                "C80878",
+                "000048"
+            ]
+        },
+        {
+            "id": "444c886c-6214-48d7-8e3c-4dca4f65dec7",
+            "name": "Cave Wall",
+            "colors": [
+                "F8E8C8",
+                "D89048",
+                "A82820",
+                "082048"
+            ]
+        },
+        {
+            "id": "78b1f1eb-13ad-4822-b109-8a693bae141c",
+            "name": "Machines",
+            "colors": [
+                "F81098",
+                "989898",
+                "404040",
+                "101010"
+            ]
+        },
+        {
+            "id": "0cae84a7-ed50-4b05-b39a-66be5af7ffd2",
+            "name": "Fire",
+            "colors": [
+                "F88000",
+                "F88000",
+                "F8D000",
+                "F82800"
+            ]
         }
     ],
     "customEvents": [
@@ -41852,272 +42102,205 @@
             "description": "Move from bottom of screen to top of screen shooting in the middle"
         }
     ],
-    "palettes": [
+    "music": [
         {
-            "id": "default-bg-1",
-            "name": "Default BG 1",
-            "colors": [
-                "F8E8C8",
-                "D89048",
-                "A82820",
-                "082048"
-            ],
-            "defaultName": "Default BG 1",
-            "defaultColors": [
-                "F8E8C8",
-                "D89048",
-                "A82820",
-                "301850"
-            ]
+            "id": "05ef4530-7c73-4949-9a26-c61ff0df5f16",
+            "name": "Rulz_BattleTheme",
+            "filename": "Rulz_BattleTheme.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-bg-2",
-            "name": "Default BG 2",
-            "colors": [
-                "E0F8A0",
-                "78C838",
-                "488818",
-                "082048"
-            ],
-            "defaultName": "Default BG 2",
-            "defaultColors": [
-                "E0F8A0",
-                "78C838",
-                "488818",
-                "081800"
-            ]
+            "id": "4653812c-82b6-44ce-93b8-eea1d4b6fa71",
+            "name": "Rulz_FastPaceSpeedRace",
+            "filename": "Rulz_FastPaceSpeedRace.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-bg-3",
-            "name": "Default BG 3",
-            "colors": [
-                "F8D8A8",
-                "E0A878",
-                "785888",
-                "082048"
-            ],
-            "defaultName": "Default BG 3",
-            "defaultColors": [
-                "F8D8A8",
-                "E0A878",
-                "785888",
-                "002030"
-            ]
+            "id": "e571be0d-bbaa-44ae-a411-c2b2e6c5ff24",
+            "name": "Rulz_GonaSpace",
+            "filename": "Rulz_GonaSpace.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-bg-4",
-            "name": "Default BG 4",
-            "colors": [
-                "B8D0D0",
-                "D880D8",
-                "8000A0",
-                "082048"
-            ],
-            "defaultName": "Default BG 4",
-            "defaultColors": [
-                "B8D0D0",
-                "D880D8",
-                "8000A0",
-                "380000"
-            ]
+            "id": "2e3e140a-ae8d-4970-8e8b-37b2119c7208",
+            "name": "Rulz_Into the woods",
+            "filename": "Rulz_Into the woods.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-bg-5",
-            "name": "Default BG 5",
-            "colors": [
-                "F8F8B8",
-                "90C8C8",
-                "486878",
-                "082048"
-            ],
-            "defaultName": "Default BG 5",
-            "defaultColors": [
-                "F8F8B8",
-                "90C8C8",
-                "486878",
-                "082048"
-            ]
+            "id": "83b79b0b-6af5-4a01-ac40-2f86fd36ece8",
+            "name": "Rulz_Intro",
+            "filename": "Rulz_Intro.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-bg-6",
-            "name": "Default BG 6",
-            "colors": [
-                "F8D8B0",
-                "78C078",
-                "688840",
-                "082048"
-            ],
-            "defaultName": "Default BG 6",
-            "defaultColors": [
-                "F8D8B0",
-                "78C078",
-                "688840",
-                "583820"
-            ]
+            "id": "0f78c331-7318-48ca-8a6c-a57c15ef423a",
+            "name": "Rulz_LightMood",
+            "filename": "Rulz_LightMood.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-sprite",
-            "name": "Default Sprites",
-            "colors": [
-                "F8F0E0",
-                "D88078",
-                "C88068",
-                "082048"
-            ],
-            "defaultName": "Default Sprites",
-            "defaultColors": [
-                "F8F0E0",
-                "D88078",
-                "B05010",
-                "000000"
-            ]
+            "id": "180f6b13-2ccc-4af9-8ebf-3e3931f2e824",
+            "name": "Rulz_Outside",
+            "filename": "Rulz_Outside.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "default-ui",
-            "name": "Default UI",
-            "colors": [
-                "F8F8B8",
-                "90C8C8",
-                "486878",
-                "082048"
-            ],
-            "defaultName": "Default UI",
-            "defaultColors": [
-                "F8F8B8",
-                "90C8C8",
-                "486878",
-                "082048"
-            ]
+            "id": "a98fc4b6-810e-4fb7-93ee-ef17be6ce95a",
+            "name": "Rulz_Pause_Underground",
+            "filename": "Rulz_Pause_Underground.mod",
+            "settings": {},
+            "_v": 1600011071068
         },
         {
-            "id": "474a8d83-8645-4899-b86a-4681b8498709",
-            "name": "Platform Clouds",
-            "colors": [
-                "C8E8F8",
-                "F0F0F0",
-                "3088B0",
-                "202850"
-            ]
+            "id": "be5e3dd0-dc4f-46b3-aefe-9897de0775c3",
+            "name": "Rulz_SpaceEmergency",
+            "filename": "Rulz_SpaceEmergency.mod",
+            "settings": {},
+            "_v": 1600011071069
         },
         {
-            "id": "5dafcf6e-b1d8-4c6b-b105-32d877f561e4",
-            "name": "Platform Grass",
-            "colors": [
-                "C8E8F8",
-                "B0F088",
-                "587878",
-                "202850"
-            ]
+            "id": "4f7446cc-f5b4-4749-8fd0-f587afe35747",
+            "name": "Rulz_UndergroundCave",
+            "filename": "Rulz_UndergroundCave.mod",
+            "settings": {},
+            "_v": 1600011071069
         },
         {
-            "id": "2801a5c2-3b0b-41b9-90c9-ec2af73d825d",
-            "name": "Platform Tree",
-            "colors": [
-                "C8E8F8",
-                "D89048",
-                "A82820",
-                "202850"
-            ]
-        },
-        {
-            "id": "320dcbf4-2760-4e0d-8e2b-41970675034f",
-            "name": "Top Down Grass",
-            "colors": [
-                "E0F0E0",
-                "B0F088",
-                "509878",
-                "202850"
-            ]
-        },
-        {
-            "id": "036c985f-d774-4a94-813c-9ac43c52627f",
-            "name": "Top Down Tree",
-            "colors": [
-                "E0F0E0",
-                "D89048",
-                "A82820",
-                "202850"
-            ]
-        },
-        {
-            "id": "b550d28a-9cb7-4f19-82fb-d839725f2419",
-            "name": "Top Down Water",
-            "colors": [
-                "E0F0E0",
-                "3098E8",
-                "303898",
-                "202850"
-            ]
-        },
-        {
-            "id": "2ebac764-bebb-4707-920b-2a975675b2cb",
-            "name": "Top Down Cliff",
-            "colors": [
-                "F8E8C8",
-                "D89048",
-                "A82820",
-                "301850"
-            ]
-        },
-        {
-            "id": "9fb1f41b-54d4-43c6-8731-16de50176aa0",
-            "name": "Top Down Ship",
-            "colors": [
-                "E0F0E0",
-                "90C0C0",
-                "E05878",
-                "202850"
-            ]
-        },
-        {
-            "id": "325f5712-ff6c-40e7-b105-c6d795846783",
-            "name": "Space Earth",
-            "colors": [
-                "E8F8E0",
-                "B0F088",
-                "5098E0",
-                "000048"
-            ]
-        },
-        {
-            "id": "d73adccf-4071-4012-b0a6-9c3973a2dc0e",
-            "name": "Space Stars",
-            "colors": [
-                "E8F800",
-                "10B8F0",
-                "C80878",
-                "000048"
-            ]
-        },
-        {
-            "id": "444c886c-6214-48d7-8e3c-4dca4f65dec7",
-            "name": "Cave Wall",
-            "colors": [
-                "F8E8C8",
-                "D89048",
-                "A82820",
-                "082048"
-            ]
-        },
-        {
-            "id": "78b1f1eb-13ad-4822-b109-8a693bae141c",
-            "name": "Machines",
-            "colors": [
-                "F81098",
-                "989898",
-                "404040",
-                "101010"
-            ]
-        },
-        {
-            "id": "0cae84a7-ed50-4b05-b39a-66be5af7ffd2",
-            "name": "Fire",
-            "colors": [
-                "F88000",
-                "F88000",
-                "F8D000",
-                "F82800"
-            ]
+            "id": "f50428ab-a084-4591-9bba-2ba10fe7b1c6",
+            "name": "template",
+            "filename": "template.mod",
+            "settings": {},
+            "_v": 1600011071069
         }
-    ]
+    ],
+    "variables": [
+        {
+            "id": "0",
+            "name": "Quest1"
+        },
+        {
+            "id": "1",
+            "name": "Quest2"
+        },
+        {
+            "id": "2",
+            "name": "Quest3"
+        },
+        {
+            "id": "3",
+            "name": "Quest4"
+        },
+        {
+            "id": "4",
+            "name": "Quest5"
+        },
+        {
+            "id": "5",
+            "name": "Quest6"
+        },
+        {
+            "id": "6",
+            "name": "Quest7"
+        },
+        {
+            "id": "7",
+            "name": "Quest8"
+        },
+        {
+            "id": "8",
+            "name": "Quest9"
+        },
+        {
+            "id": "9",
+            "name": "Quest10"
+        },
+        {
+            "id": "10",
+            "name": "Quest11"
+        },
+        {
+            "id": "11",
+            "name": "Quest12"
+        },
+        {
+            "id": "12",
+            "name": "Turnip Counter"
+        },
+        {
+            "id": "13",
+            "name": "Seen Cat"
+        },
+        {
+            "id": "14",
+            "name": "Used Radio"
+        },
+        {
+            "id": "15",
+            "name": "Seen Duck"
+        },
+        {
+            "id": "16",
+            "name": "Pushed Ice Block"
+        },
+        {
+            "id": "871ea302-1cc1-463c-b9d7-530aac38fe81__L0",
+            "name": "Spoken to gardener"
+        },
+        {
+            "id": "dee20f46-fcaa-4473-94b1-9817dbd99fd8__L0",
+            "name": "Save Choice"
+        },
+        {
+            "id": "4159e95b-34e4-42e8-bf25-67f2078e804f__L0",
+            "name": "Defeated"
+        },
+        {
+            "id": "2f01ca47-9361-4271-b1f2-75d55e85bf1f__L0",
+            "name": "Defeated"
+        },
+        {
+            "id": "98159e3a-0bfe-44ec-8312-9dcef04c253f__L0",
+            "name": "Defeated"
+        },
+        {
+            "id": "4912bee2-387a-472f-ae4f-6679b6149517__L0",
+            "name": "Menu Choice"
+        }
+    ],
+    "settings": {
+        "startSceneId": "382961a1-e615-4b92-92a7-f1a791b50b7a",
+        "startX": 0,
+        "startY": 0,
+        "showCollisions": true,
+        "showConnections": true,
+        "worldScrollX": 0,
+        "worldScrollY": 0,
+        "zoom": 100,
+        "customColorsEnabled": true,
+        "defaultBackgroundPaletteIds": [
+            "default-bg-1",
+            "default-bg-2",
+            "default-bg-3",
+            "default-bg-4",
+            "default-bg-5",
+            "default-bg-6"
+        ],
+        "defaultSpritePaletteId": "default-sprite",
+        "defaultUIPaletteId": "default-ui",
+        "customColorsWhite": "E8F8E0",
+        "customColorsLight": "B0F088",
+        "customColorsDark": "509878",
+        "customColorsBlack": "202850",
+        "startMapId": "cb5e225f-e996-4ca8-b068-09a12ec18b75",
+        "startDirection": "right",
+        "playerSpriteSheetId": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
+    }
 }

@@ -21,8 +21,10 @@ var Channel = function() {
 	};
 	this.volume = {
 		channelVolume: 0,			// Current channel volume.
+		channelVolumeSet: 0,		// GBT keeps standard volume, and uses this on trigger notes
 		sampleVolume:  0,			// Current volume of instrument sample.
-		volumeSlide:   0,			// Volume delta per tick.
+		channelVolumeSlideSet:   0,	// Volume delta per tick before trigger.
+		channelVolumeSlide:   0,	// Volume delta per tick.
 		envelope:      null,		// Volume envelope function object
 	};
 	this.panning = {
@@ -71,8 +73,10 @@ Channel.prototype.reset = function() {
 	this.sample.reversed = false;
 	
 	this.volume.channelVolume = 1; //GBT sets full volume on song start
+	this.volume.channelVolumeSet = 1; // GBT
 	this.volume.sampleVolume  = 1; //GBT sets full volume on song start
-	this.volume.volumeSlide   = 0;
+	this.volume.channelVolumeSlideSet	= 0; //GBT don't use envelope untill new note
+	this.volume.channelVolumeSlide   = 0;
 	this.volume.envelope      = null;
 	
 	this.panning.pan      = 0.5;
@@ -98,6 +102,7 @@ Channel.prototype.reset = function() {
 	this.isMuted      = false;
 	this.tremorMute   = false;
 	this.note         = 0;
+	this.rowNote	  = 0;
 	this.period       = 0;
 	this.noteDelay    = 0;
 	this.loopMark     = 0;

@@ -7,10 +7,10 @@ import getTmp from "../helpers/getTmp";
 
 const rmdir = promisify(rimraf);
 
-const EXPECTED_TOOLS_VERSION = "2.0.0";
-
 const ensureBuildTools = async () => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
+  const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
+  const expectedToolsVersion = await fs.readFile(expectedBuildToolsVersionPath, "utf8");
 
   const tmpPath = getTmp();
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
@@ -20,7 +20,7 @@ const ensureBuildTools = async () => {
   // GBDKDIR doesn't work if path has spaces :-(
   try {
     const toolsVersion = await fs.readFile(tmpBuildToolsVersionPath, "utf8");
-    if(toolsVersion !== EXPECTED_TOOLS_VERSION) {
+    if(toolsVersion !== expectedToolsVersion) {
       throw new Error("Incorrect tools version found");
     }
   } catch (e) {

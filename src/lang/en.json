@@ -251,6 +251,7 @@
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Note: Some events like projectiles and sprite sheet changes currently don't work when used in an input script that is persisted between scenes.",
   "FIELD_ALLOW_FASTFORWARD": "Fast forward text while buttons held",
   "FIELD_IF_COLOR_SUPPORTED": "Run if the game is executing in a device that has color support.",
+  "FIELD_MUSIC_DISABLE_SPEED_CONVERSION": "Disable 50/60 hertz speed conversion",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -463,6 +464,10 @@
   "WARNING_BACKGROUND_TOO_TALL": "Background is too tall, was {height}px tall when maximum is {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Background contains too many pixels, {numPixels} ({width}px * {height}px) when maximum is {maxPixels}",
   "WARNING_BACKGROUND_TOO_MANY_TILES": "Background contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly. Consider reducing the amount of detail in this image.",
+  "WARNING_MUSIC_TOO_LARGE": "Music track {filename} is too large to fit in memory ({bytes} bytes when maximum is {maxBytes}). Consider reducing the number of patterns in the file.",
+  "WARNING_ENGINE_OUT_OF_DATE": "Ejected engine is out of date (found \"{ejectedEngineVersion}\" when latest is \"{expectedEngineVersion}\").\nYou may encounter issues if you don't eject your engine again.",
+  "WARNING_MISSING_UPDATES": "Missing updates",
+  "WARNING_MODIFIED_FILES": "Modified files",
 
   "// 12": "Errors -------------------------------------------------------",
 

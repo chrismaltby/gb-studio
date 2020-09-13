@@ -21,3 +21,15 @@
 .MusicViewer__Filename {
   margin-top: 20px;
 }
+
+.MusicViewer__Settings {
+  margin-top: 20px;
+  background-color: var(--sidebar-border-color);
+  border-radius: 8px;
+  padding: 0px;
+}
+
+.MusicViewer__Settings .FormField > label {
+  display: flex;
+  align-items: center;
+}

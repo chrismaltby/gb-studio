@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-beta2]
+
+### Changed
+
+- Add GBT player and Mod2GBT from custom branch [@RichardULZ](https://github.com/RichardULZ) 
+- Add Ch4 Noise pitch support, rounded to `C, D#, F#, A#, C`
+- Add Ch1-3 Portamento (Pitch bends) `1xx` & `2xx` up to 7F (127 +/-)
+- Add Ch1-2,4 Volume/Envelope propriatary effect `9ve`, vol 0-F, envelope down 1-7, up 9-F, 0/8 no envelope
+- Change `Cxx` preserve last set envelope from `9ve`, to set no envelope again, use `9v0`
+- Fix `Dnn` at end of song/pattern reading invalid data
+- Fix unnececary audio pops on some effects
+- Fix unexpected noise from effect only (at song start)
+- Fix ch4 incorrect volume with effect only
+- Fix Note cut `EC0`
+- Sample project updated to include music by [@RichardULZ](https://github.com/RichardULZ) 
+
 ## [2.0.0-beta1]
 
 ### Added
