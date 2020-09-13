@@ -2,6 +2,7 @@
 
 #include "FadeManager.h"
 #include <gb/cgb.h>
+#include <string.h>
 #include "Palette.h"
 #include "Math.h"
 
@@ -22,39 +23,37 @@ UWORD UpdateColorBlack(UINT8 i, UWORD col) {
 
 void ApplyPaletteChangeColor(UBYTE index) {
   UINT8 c;
-  UWORD palette[32];
   UWORD paletteWhite;
   UWORD* col = BkgPalette;
 
   if (index == 5) {
-    set_bkg_palette(0, 8, BkgPalette);
-    set_sprite_palette(0, 8, SprPalette);
+    memcpy(BkgPaletteBuffer, BkgPalette, 64);
+    memcpy(SprPaletteBuffer, SprPalette, 64);
+    palette_dirty = TRUE;
     return;
   }
 
   if (fade_black) {
     for (c = 0; c != 32; ++c, ++col) {
-      palette[c] = UpdateColorBlack(index, *col);
+      BkgPaletteBuffer[c] = UpdateColorBlack(index, *col);
     }
-    set_bkg_palette(0, 8, palette);
     col = SprPalette;
     for (c = 0; c != 32; c++, ++col) {
-      palette[c] = UpdateColorBlack(index, *col);
+      SprPaletteBuffer[c] = UpdateColorBlack(index, *col);
     }
-    set_sprite_palette(0, 8, palette);
   } else { 
     paletteWhite = RGB2(DespRight(0x1F, index), DespRight(0x1F, index), 
                       DespRight(0x1F, index));
     for (c = 0; c != 32; ++c, ++col) {
-      palette[c] = (UWORD)*col | paletteWhite;
+      BkgPaletteBuffer[c] = (UWORD)*col | paletteWhite;
     }
-    set_bkg_palette(0, 8, palette);
     col = SprPalette;
     for (c = 0; c != 32; ++c, ++col) {
-      palette[c] = (UWORD)*col | paletteWhite;
+      SprPaletteBuffer[c] = (UWORD)*col | paletteWhite;
     }
-    set_sprite_palette(0, 8, palette);
   }
+
+  palette_dirty = TRUE;
 }
 #endif
 

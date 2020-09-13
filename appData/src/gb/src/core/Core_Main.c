@@ -42,6 +42,14 @@ void vbl_update() {
   SCX_REG = draw_scroll_x;
   SCY_REG = scroll_y;
 
+#ifdef CGB
+  if (palette_dirty) {
+    set_bkg_palette(0, 8, BkgPaletteBuffer);
+    set_sprite_palette(0, 8, SprPaletteBuffer);
+    palette_dirty = FALSE;
+  }
+#endif
+
   if (music_mute_frames != 0) {
     music_mute_frames--;
     if (music_mute_frames == 0) {
