@@ -3,18 +3,15 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import throttle from "lodash/throttle";
-import debounce from "lodash/debounce";
 import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
-import * as actions from "../../actions";
-import {
-  getMaxSceneRight,
-  getMaxSceneBottom,
-  getScenesLookup
-} from "../../reducers/entitiesReducer";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
-import { SceneShape } from "../../reducers/stateShape";
+import { SceneShape } from "../../store/stateShape";
+import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class World extends Component {
   constructor(props) {
@@ -52,7 +49,7 @@ class World extends Component {
     }
 
     const { resizeWorldView } = this.props;
-    resizeWorldView(window.innerWidth, window.innerHeight);    
+    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
   }
 
   componentDidUpdate(prevProps) {
@@ -186,9 +183,9 @@ class World extends Component {
     if (e.ctrlKey && !this.blockWheelZoom) {
       e.preventDefault();
       if (e.wheelDelta > 0) {
-        zoomIn("world", e.deltaY * 0.5);
+        zoomIn({section: "world", delta: e.deltaY * 0.5});
       } else {
-        zoomOut("world", e.deltaY * 0.5);
+        zoomOut({section: "world", delta: e.deltaY * 0.5});
       }
     } else {
       // Don't allow mousehwheel zoom while scrolling
@@ -227,19 +224,19 @@ class World extends Component {
 
   onScrollThrottled = throttle((left, top) => {
     const { scrollWorld } = this.props;
-    scrollWorld(left, top);
+    scrollWorld({x:left, y:top});
   }, 50);
 
   onWindowResize = e => {
     const { resizeWorldView } = this.props;
-    resizeWorldView(window.innerWidth, window.innerHeight);
+    resizeWorldView({width: window.innerWidth, height: window.innerHeight});
   }
 
   onAddScene = e => {
-    const { addScene, setTool, prefab } = this.props;
+    const { addScene, setTool, sceneDefaults } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene(hoverX, hoverY, prefab);
-    setTool("select");
+    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults});
+    setTool({tool:"select"});
     this.setState({ hover: false });
   };
 
@@ -318,7 +315,7 @@ World.propTypes = {
   scenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   zoomRatio: PropTypes.number.isRequired,
   focus: PropTypes.bool.isRequired,
-  prefab: PropTypes.shape({}),
+  sceneDefaults: PropTypes.shape({}),
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
@@ -336,24 +333,26 @@ World.propTypes = {
 };
 
 World.defaultProps = {
-  prefab: null,
+  sceneDefaults: null,
   onlyMatchingScene: null
 };
 
 function mapStateToProps(state) {
   const loaded = state.document.loaded;
-  const scenes = state.entities.present.result.scenes;
-  const scenesLookup = getScenesLookup(state);
+  const scenes = sceneSelectors.selectIds(state)
+  const scenesLookup = sceneSelectors.selectEntities(state);
+
   const {
     showConnections
-  } = state.entities.present.result.settings;
+  } = state.project.present.settings;
   const {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
-    showLayers
+    showLayers,
+    sceneDefaults
   } = state.editor;
   
-  const { worldSidebarWidth: sidebarWidth } = state.settings;
+  const { worldSidebarWidth: sidebarWidth } = state.editor;
 
   const viewportWidth = window.innerWidth - sidebarWidth - 17;
   const viewportHeight = window.innerHeight - 40 - 17;
@@ -375,7 +374,7 @@ function mapStateToProps(state) {
   const onlyMatchingScene = (matchingScenes.length === 1
     && scenesLookup[matchingScenes[0]]) || null;
 
-  const { selected: tool, prefab } = state.tools;
+  const { tool } = state.editor;
 
   return {
     scenes,
@@ -384,7 +383,7 @@ function mapStateToProps(state) {
     scrollX,
     scrollY,
     tool,
-    prefab,
+    sceneDefaults,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
     sidebarWidth,
@@ -395,25 +394,16 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  addScene: actions.addScene,
-  setTool: actions.setTool,
-  selectWorld: actions.selectWorld,
-  removeSelectedEntity: actions.removeSelectedEntity,
-  dragPlayerStart: actions.dragPlayerStart,
-  dragPlayerStop: actions.dragPlayerStop,
-  dragDestinationStart: actions.dragDestinationStart,
-  dragDestinationStop: actions.dragDestinationStop,
-  dragActorStop: actions.dragActorStop,
-  dragTriggerStop: actions.dragTriggerStop,
-  copyScene: actions.copyScene,
-  copyActor: actions.copyActor,
-  copyTrigger: actions.copyTrigger,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut,
-  copySelectedEntity: actions.copySelectedEntity,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
-  scrollWorld: actions.scrollWorld,
-  resizeWorldView: actions.resizeWorldView,
+  addScene: entitiesActions.addScene,
+  setTool: editorActions.setTool,
+  selectWorld: editorActions.selectWorld,
+  removeSelectedEntity: entitiesActions.removeSelectedEntity,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut,
+  copySelectedEntity: clipboardActions.copySelectedEntity,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
+  scrollWorld: editorActions.scrollWorld,
+  resizeWorldView: editorActions.resizeWorldView,
 };
 
 export default connect(

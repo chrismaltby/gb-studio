@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import * as actions from "../../actions";
+import editorActions from "../../store/features/editor/editorActions";
 
 const SidebarTabs = ({ values, value, onChange, buttons, secondary }) => (
   <div className={cx("SidebarTabs", {"SidebarTabs--Secondary": secondary})}>
@@ -136,14 +136,14 @@ Sidebar.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  const { worldSidebarWidth: width } = state.settings;
+  const { worldSidebarWidth: width } = state.editor;
   return {
     width
   };
 }
 
 const mapDispatchToProps = {
-  resizeWorldSidebar: actions.resizeWorldSidebar
+  resizeWorldSidebar: editorActions.resizeWorldSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import ImageViewer from "../../components/assets/ImageViewer";
-import * as actions from "../../actions";
-import { getSpriteSheets } from "../../reducers/entitiesReducer";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import electronActions from "../../store/features/electron/electronActions";
 
 class SpritesPage extends Component {
   constructor(props) {
@@ -66,7 +66,7 @@ SpritesPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getSpriteSheets(state);
+  const files = spriteSheetSelectors.selectAll(state);
   return {
     files,
     id
@@ -74,7 +74,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(

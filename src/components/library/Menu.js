@@ -7,11 +7,13 @@ const Menu = ({ up, right, ...props }) => (
 );
 
 Menu.propTypes = {
-  right: PropTypes.bool
+  right: PropTypes.bool,
+  up: PropTypes.bool
 };
 
 Menu.defaultProps = {
-  right: false
+  right: false,
+  up: false
 };
 
 const MenuItem = props => <div className="MenuItem" {...props} />;

@@ -10,19 +10,19 @@ import CustomEventEditor from "./CustomEventEditor";
 class EditorSidebar extends Component {
   render() {
     const { type, entityId, sceneId } = this.props;
-    if (type === "triggers") {
+    if (type === "trigger") {
       return <TriggerEditor key={entityId} id={entityId} sceneId={sceneId} />;
     }
-    if (type === "actors") {
+    if (type === "actor") {
       return <ActorEditor key={entityId} id={entityId} sceneId={sceneId} />;
     }
-    if (type === "scenes") {
+    if (type === "scene") {
       return <SceneEditor key={sceneId} id={sceneId} />;
     }
     if (type === "world") {
       return <WorldEditor />;
     }
-    if (type === "customEvents") {
+    if (type === "customEvent") {
       return <CustomEventEditor key="entityId" id={entityId} />;
     }
     return <div />;

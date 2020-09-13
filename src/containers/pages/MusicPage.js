@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import FilesSidebar from "../../components/assets/FilesSidebar";
 import MusicViewer from "../../components/assets/MusicViewer";
-import * as actions from "../../actions";
-import { getMusic } from "../../reducers/entitiesReducer";
+import { musicSelectors } from "../../store/features/entities/entitiesState";
+import electronActions from "../../store/features/electron/electronActions";
 
 class MusicPage extends Component {
   constructor(props) {
@@ -66,7 +66,7 @@ MusicPage.defaultProps = {
 
 function mapStateToProps(state) {
   const { id } = state.navigation;
-  const files = getMusic(state);
+  const files = musicSelectors.selectAll(state);
   return {
     files,
     id
@@ -74,7 +74,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  openHelp: actions.openHelp
+  openHelp: electronActions.openHelp
 };
 
 export default connect(

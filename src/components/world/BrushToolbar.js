@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
 import {
   PaintBucketIcon,
   SquareIcon,
@@ -27,17 +26,18 @@ import {
   TILE_PROP_LADDER
 } from "../../consts";
 import PaletteBlock from "../library/PaletteBlock";
-import {
-  getSettings,
-  getPalettesLookup,
-  getScenesLookup,
-} from "../../reducers/entitiesReducer";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
 import PaletteSelect from "../forms/PaletteSelect";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
+import editorActions from "../../store/features/editor/editorActions";
+import { paletteSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
+import { getSettings } from "../../store/features/settings/settingsState";
+import settingsActions from "../../store/features/settings/settingsActions";
+import navigationActions from "../../store/features/navigation/navigationActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
@@ -125,26 +125,26 @@ class BrushToolbar extends Component {
 
   setBrush = (brush) => (e) => {
     e.stopPropagation();
-    const { setSelectedBrush } = this.props;
-    setSelectedBrush(brush);
+    const { setBrush } = this.props;
+    setBrush({brush});
   };
 
   setSelectedPalette = (index) => (e) => {
     const { setSelectedPalette, setSelectedTileType, showPalettes, showTileTypes } = this.props;
     if(showPalettes){
-      setSelectedPalette(index);
+      setSelectedPalette({paletteIndex:index});
     }
     if (showTileTypes && tileTypes[index]) {
       const { selectedTileType } = this.props;
 
       if (e.shiftKey && collisionDirectionFlags.includes(tileTypes[index].flag)) {
         if (selectedTileType !== tileTypes[index].flag && selectedTileType & tileTypes[index].flag) {
-          setSelectedTileType(selectedTileType & COLLISION_ALL & ~tileTypes[index].flag);
+          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL & ~tileTypes[index].flag});
         } else {
-          setSelectedTileType(selectedTileType & COLLISION_ALL | tileTypes[index].flag);
+          setSelectedTileType({tileType:selectedTileType & COLLISION_ALL | tileTypes[index].flag});
         }
       } else {
-        setSelectedTileType(tileTypes[index].flag);
+        setSelectedTileType({tileType:tileTypes[index].flag});
       }
     }
   };
@@ -174,9 +174,9 @@ class BrushToolbar extends Component {
     if (sceneId) {
       const newIds = [].concat(sceneBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
-      editScene(sceneId, {
+      editScene({sceneId, changes:{
         paletteIds: newIds,
-      });
+      }});
     } else {
       const newIds = [].concat(defaultBackgroundPaletteIds);
       newIds[modalColorIndex] = newPalette;
@@ -193,7 +193,7 @@ class BrushToolbar extends Component {
 
   toggleShowLayers = (e) => {
     const { setShowLayers, showLayers } = this.props;
-    setShowLayers(!showLayers);
+    setShowLayers({showLayers: !showLayers});
   };
 
   render() {
@@ -368,7 +368,7 @@ BrushToolbar.propTypes = {
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
   setSelectedTileType: PropTypes.func.isRequired,
-  setSelectedBrush: PropTypes.func.isRequired,
+  setBrush: PropTypes.func.isRequired,
   setShowLayers: PropTypes.func.isRequired,
   palettes: PropTypes.arrayOf(PaletteShape).isRequired,
   defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
@@ -385,14 +385,14 @@ BrushToolbar.defaultProps = {
 
 function mapStateToProps(state) {
   const { selectedPalette, selectedTileType, selectedBrush, showLayers } = state.editor;
-  const selectedTool = state.tools.selected;
+  const selectedTool = state.editor.tool;
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
 
   const settings = getSettings(state);
-  const palettesLookup = getPalettesLookup(state);
-  const scenesLookup = getScenesLookup(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
+  const scenesLookup = sceneSelectors.selectEntities(state);
 
   const { scene: sceneId } = state.editor;
 
@@ -439,14 +439,14 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setSelectedPalette: actions.setSelectedPalette,
-  setSelectedTileType: actions.setSelectedTileType,
-  setSelectedBrush: actions.setSelectedBrush,
-  setShowLayers: actions.setShowLayers,
-  setSection: actions.setSection,
-  setNavigationId: actions.setNavigationId,
-  editProjectSettings: actions.editProjectSettings,
-  editScene: actions.editScene,
+  setSelectedPalette: editorActions.setSelectedPalette,
+  setSelectedTileType: editorActions.setSelectedTileType,
+  setBrush: editorActions.setBrush,
+  setShowLayers: editorActions.setShowLayers,
+  setSection: navigationActions.setSection,
+  setNavigationId: navigationActions.setNavigationId,
+  editProjectSettings: settingsActions.editSettings,
+  editScene: entitiesActions.editScene,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BrushToolbar);

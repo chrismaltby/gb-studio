@@ -1,7 +1,7 @@
 import electron from "electron";
 
 const dialog = electron.remote ? electron.remote.dialog : electron.dialog;
-const win = electron.remote.getCurrentWindow();
+const win = electron.remote?.getCurrentWindow();
 
 export default () => {
     // eslint-disable-next-line global-require

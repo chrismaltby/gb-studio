@@ -6,7 +6,8 @@ import { assetFilename } from "../../lib/helpers/gbstudio";
 // eslint-disable-next-line import/no-unresolved
 import SpriteSheetCanasWorker from "./SpriteSheetCanvas.worker";
 import { DMG_PALETTE } from "../../consts";
-import { PaletteShape } from "../../reducers/stateShape";
+import { PaletteShape } from "../../store/stateShape";
+import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
 
 const workerPool = [];
 for(let i=0; i<navigator.hardwareConcurrency; i++) {
@@ -131,8 +132,7 @@ SpriteSheetCanvas.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const spriteSheet =
-    state.entities.present.entities.spriteSheets[props.spriteSheetId];
+  const spriteSheet = spriteSheetSelectors.selectById(state, props.spriteSheetId);
   return {
     spriteSheet,
     projectRoot: state.document && state.document.root

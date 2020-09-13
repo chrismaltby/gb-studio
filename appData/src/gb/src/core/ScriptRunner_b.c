@@ -149,6 +149,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_PalSetUI_b, 2},            // 0x66
     {Script_ActorStopUpdate_b, 0},     // 0x67
     {Script_ActorSetAnimate_b, 1},     // 0x68
+    {Script_IfColorSupported_b, 2},    // 0x69
 };
 
 void ScriptTimerUpdate_b() {
@@ -2261,4 +2262,10 @@ void Script_ActorStopUpdate_b() {
 
 void Script_ActorSetAnimate_b() {
   actors[active_script_ctx.script_actor].animate = script_cmd_args[0];
+}
+
+void Script_IfColorSupported_b() {
+  if (_cpu == CGB_TYPE) {
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  }
 }

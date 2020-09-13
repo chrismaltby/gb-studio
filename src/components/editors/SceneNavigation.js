@@ -9,14 +9,11 @@ import {
   SceneShape,
   ActorShape,
   TriggerShape
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { SidebarHeading } from "./Sidebar";
 import l10n from "../../lib/helpers/l10n";
-import * as actions from "../../actions";
-import {
-  getActorsLookup,
-  getTriggersLookup
-} from "../../reducers/entitiesReducer";
+import editorActions from "../../store/features/editor/editorActions";
+import { actorSelectors, triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
 
 class SceneNavigation extends Component {
   render() {
@@ -32,7 +29,7 @@ class SceneNavigation extends Component {
                 key={actorId}
                 onClick={() => {
                   const { selectActor } = this.props;
-                  selectActor(scene.id, actorId);
+                  selectActor({sceneId: scene.id, actorId});
                 }}
                 className={cx({ Navigation__Error: index >= MAX_ACTORS })}
               >
@@ -50,7 +47,7 @@ class SceneNavigation extends Component {
                 key={triggerId}
                 onClick={() => {
                   const { selectTrigger } = this.props;
-                  selectTrigger(scene.id, triggerId);
+                  selectTrigger({sceneId: scene.id, triggerId});
                 }}
                 className={cx({ Navigation__Error: index >= MAX_TRIGGERS })}
               >
@@ -76,15 +73,15 @@ SceneNavigation.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  const scene = state.entities.present.entities.scenes[props.sceneId];
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
+  const scene = sceneSelectors.selectById(state, props.sceneId);  
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
   return { scene, actorsLookup, triggersLookup };
 }
 
 const mapDispatchToProps = {
-  selectActor: actions.selectActor,
-  selectTrigger: actions.selectTrigger
+  selectActor: editorActions.selectActor,
+  selectTrigger: editorActions.selectTrigger
 };
 
 export default connect(

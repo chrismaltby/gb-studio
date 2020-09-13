@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
-import * as actions from "../../actions";
 import { FormField } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
 import Sidebar, { SidebarColumn, SidebarHeading } from "./Sidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
-import { CustomEventShape } from "../../reducers/stateShape";
+import { CustomEventShape } from "../../store/stateShape";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
-import {
-  getCustomEvents,
-  getCustomEventsLookup
-} from "../../reducers/entitiesReducer";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -25,7 +23,7 @@ class CustomEventEditor extends Component {
 
   onEditVariableName = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       variables: {
         ...customEvent.variables,
         [key]: {
@@ -33,12 +31,12 @@ class CustomEventEditor extends Component {
           name: castEventValue(e)
         }
       }
-    });
+    }});
   };
 
   onEditActorName = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       actors: {
         ...customEvent.actors,
         [key]: {
@@ -46,19 +44,19 @@ class CustomEventEditor extends Component {
           name: castEventValue(e)
         }
       }
-    });
+    }});
   };
 
   onEdit = key => e => {
     const { editCustomEvent, customEvent } = this.props;
-    editCustomEvent(customEvent.id, {
+    editCustomEvent({customEventId: customEvent.id, changes: {
       [key]: castEventValue(e)
-    });
+    }});
   };
-
+ 
   onRemove = () => () => {
     const { removeCustomEvent, customEvent } = this.props;
-    removeCustomEvent(customEvent.id);
+    removeCustomEvent({customEventId: customEvent.id});
   };
 
   render() {
@@ -190,9 +188,8 @@ CustomEventEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const customEvents = getCustomEvents(state);
-  const customEventsLookup = getCustomEventsLookup(state);
-  const customEvent = customEventsLookup[props.id];
+  const customEvents = customEventSelectors.selectAll(state);
+  const customEvent = customEventSelectors.selectById(state, props.id);
   const index = customEvents.findIndex(p => p.id === props.id);
   return {
     customEvent,
@@ -201,9 +198,9 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editCustomEvent: actions.editCustomEvent,
-  removeCustomEvent: actions.removeCustomEvent,
-  selectSidebar: actions.selectSidebar
+  editCustomEvent: entitiesActions.editCustomEvent,
+  removeCustomEvent: entitiesActions.removeCustomEvent,
+  selectSidebar: editorActions.selectSidebar
 };
 
 export default connect(

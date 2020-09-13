@@ -5,7 +5,7 @@ import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { LATEST_PROJECT_VERSION } from "./migrateProject";
 
-const { dialog } = remote;
+const dialog = remote && remote.dialog;
 
 export const needsUpdate = currentVersion => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {

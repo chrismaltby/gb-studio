@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
-import * as actions from "../../actions";
 import { PlayIcon } from "../library/Icons";
 import Button from "../library/Button";
 import l10n from "../../lib/helpers/l10n";
+import soundfxActions from "../../store/features/soundfx/soundfxActions";
 
 const options = [
   {
@@ -35,9 +35,9 @@ class SoundEffectSelect extends Component {
     } = this.props;
     const playType = type || value;
     if (playType === "beep") {
-      playSoundFxBeep(pitch);
+      playSoundFxBeep({pitch});
     } else if (playType === "tone") {
-      playSoundFxTone(frequency, duration);
+      playSoundFxTone({frequency, duration});
     } else if (playType === "crash") {
       playSoundFxCrash();
     }
@@ -132,9 +132,9 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  playSoundFxBeep: actions.playSoundFxBeep,
-  playSoundFxTone: actions.playSoundFxTone,
-  playSoundFxCrash: actions.playSoundFxCrash
+  playSoundFxBeep: soundfxActions.playSoundFxBeep,
+  playSoundFxTone: soundfxActions.playSoundFxTone,
+  playSoundFxCrash: soundfxActions.playSoundFxCrash
 };
 
 export default connect(

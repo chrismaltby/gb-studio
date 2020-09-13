@@ -21,9 +21,12 @@ import {
   FolderIcon,
   LoadingIcon
 } from "../components/library/Icons";
-import * as actions from "../actions";
 import l10n from "../lib/helpers/l10n";
 import { zoomForSection } from "../lib/helpers/gbstudio";
+import editorActions from "../store/features/editor/editorActions";
+import navigationActions from "../store/features/navigation/navigationActions";
+import electronActions from "../store/features/electron/electronActions";
+import buildGameActions from "../store/features/buildGame/buildGameActions";
 
 const sectionNames = {
   world: l10n("NAV_GAME_WORLD"),
@@ -58,21 +61,21 @@ class AppToolbar extends Component {
     e.preventDefault();
     e.stopPropagation();
     const { zoomIn, section } = this.props;
-    zoomIn(section);
+    zoomIn({section});
   };
 
   onZoomOut = e => {
     e.preventDefault();
     e.stopPropagation();
     const { zoomOut, section } = this.props;
-    zoomOut(section);
+    zoomOut({section});
   };
 
   onZoomReset = e => {
     e.preventDefault();
     e.stopPropagation();
     const { zoomReset, section } = this.props;
-    zoomReset(section);
+    zoomReset({section});
   };
 
   onRun = async e => {
@@ -252,8 +255,8 @@ function mapStateToProps(state) {
   const loaded = state.document.loaded;
   return {
     projectRoot: state.document && state.document.root,
-    modified: state.document && state.document.modified,
-    name: state.entities.present.result.name,
+    modified: state.document.modified,
+    name: state.project.present.metadata.name,
     section,
     zoom,
     showZoom: ["world", "sprites", "backgrounds", "ui"].indexOf(section) > -1,
@@ -265,13 +268,13 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  setSection: actions.setSection,
-  zoomIn: actions.zoomIn,
-  zoomOut: actions.zoomOut,
-  zoomReset: actions.zoomReset,
-  editSearchTerm: actions.editSearchTerm,
-  buildGame: actions.buildGame,
-  openFolder: actions.openFolder
+  setSection: navigationActions.setSection,
+  zoomIn: editorActions.zoomIn,
+  zoomOut: editorActions.zoomOut,
+  zoomReset: editorActions.zoomReset,
+  editSearchTerm: editorActions.editSearchTerm,
+  buildGame: buildGameActions.buildGame,
+  openFolder: electronActions.openFolder
 };
 
 export default connect(

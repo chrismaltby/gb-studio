@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
 import SpriteTypeSelect from "../forms/SpriteTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
@@ -18,10 +17,10 @@ import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
 import { SceneIcon } from "../library/Icons";
-import { ActorShape, SceneShape, SpriteShape } from "../../reducers/stateShape";
+import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
-import { getSettings } from "../../reducers/entitiesReducer";
+import { getSettings } from "../../store/features/settings/settingsState";
 import {
   SPRITE_TYPE_STATIC,
   SPRITE_TYPE_ACTOR,
@@ -29,6 +28,10 @@ import {
   SPRITE_TYPE_ANIMATED,
 } from "../../consts";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -91,7 +94,7 @@ class ActorEditor extends Component {
   };
 
   onEdit = (key) => (e) => {
-    const { editActor, sceneId, actor } = this.props;
+    const { editActor, actor } = this.props;
     const { scriptMode } = this.state;
 
     if (key === "collisionGroup" && scriptMode === "hit" && !e) {
@@ -101,9 +104,9 @@ class ActorEditor extends Component {
       this.onSetScriptMode("hit");
     }
 
-    editActor(sceneId, actor.id, {
+    editActor({actorId: actor.id, changes:{
       [key]: castEventValue(e),
-    });
+    }});
   };
 
   onEditScript = this.onEdit("script");
@@ -131,7 +134,7 @@ class ActorEditor extends Component {
 
   onRemove = (e) => {
     const { removeActor, sceneId, actor } = this.props;
-    removeActor(sceneId, actor.id);
+    removeActor({ sceneId, actorId: actor.id });
   };
 
   readClipboard = (e) => {
@@ -466,7 +469,7 @@ class ActorEditor extends Component {
             <li
               onClick={() => {
                 const { selectScene } = this.props;
-                selectScene(scene.id);
+                selectScene({sceneId: scene.id});
               }}
             >
               <div className="EditorSidebar__Icon">
@@ -559,10 +562,9 @@ ActorEditor.defaultProps = {
 };
 
 function mapStateToProps(state, props) {
-  const actor = state.entities.present.entities.actors[props.id];
-  const scene = state.entities.present.entities.scenes[props.sceneId];
-  const spriteSheet =
-    actor && state.entities.present.entities.spriteSheets[actor.spriteSheetId];
+  const actor = actorSelectors.selectById(state, props.id);
+  const scene = sceneSelectors.selectById(state, props.sceneId);
+  const spriteSheet = actor && spriteSheetSelectors.selectById(state, actor.spriteSheetId);
   const index = scene.actors.indexOf(props.id);
   const settings = getSettings(state);
   const colorsEnabled = settings.customColorsEnabled;
@@ -582,14 +584,14 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  editActor: actions.editActor,
-  removeActor: actions.removeActor,
-  copyActor: actions.copyActor,
-  pasteClipboardEntity: actions.pasteClipboardEntity,
-  selectScene: actions.selectScene,
-  selectSidebar: actions.selectSidebar,
-  setScriptTab: actions.setScriptTab,
-  setScriptTabSecondary: actions.setScriptTabSecondary,
+  editActor: entitiesActions.editActor,
+  removeActor: entitiesActions.removeActor,
+  copyActor: clipboardActions.copyActor,
+  pasteClipboardEntity: clipboardActions.pasteClipboardEntity,
+  selectScene: editorActions.selectScene,
+  selectSidebar: editorActions.selectSidebar,
+  setScriptTab: editorActions.setScriptTab,
+  setScriptTabSecondary: editorActions.setScriptTabSecondary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActorEditor);

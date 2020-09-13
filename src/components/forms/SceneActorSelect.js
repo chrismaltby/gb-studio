@@ -3,13 +3,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Select, { components } from "react-select";
 import ActorCanvas from "../world/ActorCanvas";
-import { ActorShape } from "../../reducers/stateShape";
+import { ActorShape } from "../../store/stateShape";
 import {
-  getSceneActorIds,
-  getActorsLookup,
   getSettings,
-} from "../../reducers/entitiesReducer";
+} from "../../store/features/settings/settingsState";
 import { getCachedObject, createCacheFunction } from "../../lib/helpers/cache";
+import { actorSelectors, getSceneActorIds } from "../../store/features/entities/entitiesState";
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
@@ -43,7 +42,7 @@ DropdownIndicator.defaultProps = {
 const DropdownIndicatorWithData = (direction, frame) =>
   connect((state, ownProps) => {
     const actorId = ownProps.selectProps.value.id;
-    const actorsLookup = getActorsLookup(state);
+    const actorsLookup = actorSelectors.selectEntities(state);
     const settings = getSettings(state);
     const playerSpriteSheetId = settings.playerSpriteSheetId;
     const actor =
@@ -90,7 +89,7 @@ Option.defaultProps = {
 };
 
 const OptionWithData = connect((state, ownProps) => {
-  const actorsLookup = getActorsLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
   const settings = getSettings(state);
   const playerSpriteSheetId = settings.playerSpriteSheetId;
   const {
@@ -175,7 +174,7 @@ SceneActorSelect.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const actorIds = getSceneActorIds(state, { id: state.editor.scene });
-  const actorsLookup = getActorsLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
   const contextType = state.editor.type;
   const contextEntityId = state.editor.entityId;
   const value = ownProps.value;
@@ -186,7 +185,7 @@ function mapStateToProps(state, ownProps) {
 
   const options = cachedObj(
     [].concat(
-      contextType === "actors"
+      contextType === "actor"
         ? {
             value: "$self$",
             label: `Self (${selfActorName})`,

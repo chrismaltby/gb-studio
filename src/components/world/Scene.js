@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
-import * as actions from "../../actions";
 import getCoords from "../../lib/helpers/getCoords";
 import Actor from "./Actor";
 import Trigger from "./Trigger";
@@ -14,17 +13,9 @@ import {
   EventShape,
   BackgroundShape,
   PaletteShape,
-} from "../../reducers/stateShape";
+} from "../../store/stateShape";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import SceneCursor from "./SceneCursor";
-import {
-  getActorsLookup,
-  getTriggersLookup,
-  getScenesLookup,
-  getBackgroundsLookup,
-  getSettings,
-  getPalettesLookup,
-} from "../../reducers/entitiesReducer";
 import ColorizedImage from "./ColorizedImage";
 import {
   TOOL_COLORS,
@@ -34,6 +25,9 @@ import {
 } from "../../consts";
 import { getCachedObject } from "../../lib/helpers/cache";
 import SceneInfo from "./SceneInfo";
+import { sceneSelectors, actorSelectors, triggerSelectors, backgroundSelectors, paletteSelectors } from "../../store/features/entities/entitiesState";
+import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 
 const TILE_SIZE = 8;
 
@@ -80,8 +74,8 @@ class Scene extends Component {
 
     if (tX !== this.lastTX || tY !== this.lastTY || !hovered) {
       if (tX >= 0 && tY >= 0 && tX < width && tY < height) {
-        sceneHover(id, tX, tY);
-        moveSelectedEntity(id, tX, tY);
+        sceneHover({sceneId: id, x: tX, y: tY});
+        moveSelectedEntity({sceneId: id, x: tX, y: tY});
       }
       this.lastTX = tX;
       this.lastTY = tY;
@@ -90,7 +84,8 @@ class Scene extends Component {
 
   onMouseLeave = (e) => {
     const { sceneHover } = this.props;
-    sceneHover("", this.lastTX, this.lastTY);
+    sceneHover({sceneId: "", x: this.lastTX, y: this.lastTY});
+
   };
 
   onStartDrag = (e) => {
@@ -98,7 +93,7 @@ class Scene extends Component {
     this.lastPageX = e.pageX;
     this.lastPageY = e.pageY;
 
-    selectScene(id);
+    selectScene({ sceneId: id });
 
     this.dragging = true;
   };
@@ -113,7 +108,7 @@ class Scene extends Component {
       this.lastPageX = e.pageX;
       this.lastPageY = e.pageY;
 
-      moveScene(id, x + dragDeltaX, y + dragDeltaY);
+      moveScene({sceneId: id, x: x + dragDeltaX, y: y + dragDeltaY});
     }
   };
 
@@ -136,7 +131,6 @@ class Scene extends Component {
       hovered,
       palettes,
       sceneFiltered,
-      simplifiedRender,
       showEntities,
       showCollisions,
       labelOffsetLeft,
@@ -214,7 +208,7 @@ class Scene extends Component {
               palettes={palettes}
             />
           )}
-          {!simplifiedRender && showCollisions && (
+          {showCollisions && (
             <div className="Scene__Collisions">
               <SceneCollisions
                 width={width}
@@ -228,23 +222,21 @@ class Scene extends Component {
             enabled={hovered}
             sceneFiltered={sceneFiltered}
           />
-          {!simplifiedRender &&
-            showEntities &&
+          {showEntities &&
             triggers.map((triggerId) => (
               <Trigger key={triggerId} id={triggerId} sceneId={id} />
             ))}
-          {!simplifiedRender &&
-            showEntities &&
+          {showEntities &&
             actors.map((actorId) => (
               <Actor key={actorId} id={actorId} sceneId={id} />
             ))}
-          {!simplifiedRender && event && (
+          {event && (
             <div className="Scene__EventHelper">
               <EventHelper event={event} scene={scene} />
             </div>
           )}
         </div>
-        {selected && !simplifiedRender && (
+        {selected && (
           <div
             className="Scene__Info"
             onMouseDown={this.onStartDrag}
@@ -283,7 +275,6 @@ Scene.propTypes = {
   sceneHover: PropTypes.func.isRequired,
   sceneName: PropTypes.string.isRequired,
   sceneFiltered: PropTypes.bool.isRequired,
-  simplifiedRender: PropTypes.bool.isRequired,
   labelOffsetLeft: PropTypes.number.isRequired,
   labelOffsetRight: PropTypes.number.isRequired
 };
@@ -297,13 +288,13 @@ Scene.defaultProps = {
 function mapStateToProps(state, props) {
   const { scene: sceneId, dragging: editorDragging, showLayers } = state.editor;
 
-  const scenesLookup = getScenesLookup(state);
-  const actorsLookup = getActorsLookup(state);
-  const triggersLookup = getTriggersLookup(state);
-  const backgroundsLookup = getBackgroundsLookup(state);
-  const settings = getSettings(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+  const backgroundsLookup = backgroundSelectors.selectEntities(state);
+  const settings = state.project.present.settings;
 
-  const scene = scenesLookup[props.id];
+  const scene = sceneSelectors.selectById(state, props.id);
+
   const image = backgroundsLookup[scene.backgroundId];
 
   const sceneEventVisible =
@@ -321,17 +312,15 @@ function mapStateToProps(state, props) {
   const selected = sceneId === props.id;
   const dragging = selected && editorDragging;
   const hovered = state.editor.hover.sceneId === props.id;
-  const tool = state.tools.selected;
+  const tool = state.editor.tool;
 
-  const { worldSidebarWidth: sidebarWidth } = state.settings;
+  const { worldSidebarWidth: sidebarWidth } = state.editor;
 
   const {
     worldScrollX,
     worldScrollY,
     worldViewWidth,
     worldViewHeight,
-    worldScrollThrottledX,
-    worldScrollThrottledY,
     zoom,
   } = state.editor;
   const zoomRatio = zoom / 100;
@@ -341,22 +330,11 @@ function mapStateToProps(state, props) {
   const viewBoundsWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
   const viewBoundsHeight = worldViewHeight / zoomRatio;
 
-  const viewBoundsThrottledX = worldScrollThrottledX / zoomRatio;
-  const viewBoundsThrottledY = worldScrollThrottledY / zoomRatio;
-  const viewBoundsThrottledWidth = (worldViewWidth - sidebarWidth) / zoomRatio;
-  const viewBoundsThrottledHeight = worldViewHeight / zoomRatio;
-
   const visible =
     scene.x + scene.width * 8 > viewBoundsX &&
     scene.x < viewBoundsX + viewBoundsWidth &&
     scene.y + scene.height * 8 + 50 > viewBoundsY &&
     scene.y < viewBoundsY + viewBoundsHeight;
-
-  const fullRender =
-    scene.x + scene.width * 8 > viewBoundsThrottledX &&
-    scene.x < viewBoundsThrottledX + viewBoundsThrottledWidth &&
-    scene.y + scene.height * 8 + 50 > viewBoundsThrottledY &&
-    scene.y < viewBoundsThrottledY + viewBoundsThrottledHeight;
 
   const offsetLabels = (scene.width * 8) > viewBoundsWidth / 2;
   const labelOffsetLeft = offsetLabels ? Math.min(Math.max(0, viewBoundsX - scene.x + 10), (scene.width * 8) - 100) : 0;
@@ -381,7 +359,7 @@ function mapStateToProps(state, props) {
     (tool !== TOOL_COLORS || showLayers) &&
     (settings.showCollisions || tool === TOOL_COLLISIONS);
 
-  const palettesLookup = getPalettesLookup(state);
+  const palettesLookup = paletteSelectors.selectEntities(state);
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
   const sceneBackgroundPaletteIds = scene.paletteIds || [];
@@ -410,7 +388,7 @@ function mapStateToProps(state, props) {
     scene,
     visible,
     projectRoot: state.document && state.document.root,
-    prefab: state.tools.prefab,
+    prefab: undefined,
     event,
     image,
     width: image ? image.width : 32,
@@ -421,7 +399,6 @@ function mapStateToProps(state, props) {
     hovered,
     sceneName,
     sceneFiltered,
-    simplifiedRender: !fullRender,
     palettes,
     showEntities,
     showCollisions,
@@ -431,10 +408,10 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  moveScene: actions.moveScene,
-  selectScene: actions.selectScene,
-  moveSelectedEntity: actions.moveSelectedEntity,
-  sceneHover: actions.sceneHover,
+  moveScene: entitiesActions.moveScene,
+  selectScene: editorActions.selectScene,
+  moveSelectedEntity: entitiesActions.moveSelectedEntity,
+  sceneHover: editorActions.sceneHover,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scene);

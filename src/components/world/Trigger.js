@@ -2,15 +2,16 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
-import * as actions from "../../actions";
+import editorActions from "../../store/features/editor/editorActions";
+import { triggerSelectors } from "../../store/features/entities/entitiesState";
 
 class Trigger extends Component {
   onMouseDown = e => {
     e.stopPropagation();
     e.preventDefault();
     const { id, sceneId, dragTriggerStart, setTool } = this.props;
-    dragTriggerStart(sceneId, id);
-    setTool("select");
+    dragTriggerStart({sceneId, triggerId:id});
+    setTool({tool:"select"});
     window.addEventListener("mouseup", this.onMouseUp);
   };
 
@@ -56,10 +57,12 @@ Trigger.defaultProps = {
 
 function mapStateToProps(state, props) {
   const { type: editorType, entityId, scene: sceneId } = state.editor;
-  const trigger = state.entities.present.entities.triggers[props.id];
+
+  const trigger = triggerSelectors.selectById(state, props.id);
+
   const { x, y, width, height } = trigger;
   const selected =
-    editorType === "triggers" &&
+    editorType === "trigger" &&
     sceneId === props.sceneId &&
     entityId === props.id;
   return {
@@ -72,9 +75,9 @@ function mapStateToProps(state, props) {
 }
 
 const mapDispatchToProps = {
-  dragTriggerStart: actions.dragTriggerStart,
-  dragTriggerStop: actions.dragTriggerStop,
-  setTool: actions.setTool
+  dragTriggerStart: editorActions.dragTriggerStart,
+  dragTriggerStop: editorActions.dragTriggerStop,
+  setTool: editorActions.setTool
 };
 
 export default connect(

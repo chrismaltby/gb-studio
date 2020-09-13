@@ -5,8 +5,8 @@ import { ActionCreators } from "redux-undo";
 import { ipcRenderer, clipboard } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
-import * as actions from "./actions";
-import configureStore from "./store/configureStore";
+import mapValues from "lodash/mapValues";
+import store from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";
 import App from "./components/app/App";
 import "./lib/electron/handleFullScreen";
@@ -14,25 +14,45 @@ import AppContainerDnD from "./components/app/AppContainerDnD";
 import plugins from "./lib/plugins/plugins";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
-import { CMD_STD_ERR, CMD_STD_OUT, SET_SECTION, CMD_START, CMD_COMPLETE } from "./actions/actionTypes";
+import editorActions from "./store/features/editor/editorActions";
+import entitiesActions from "./store/features/entities/entitiesActions";
+import settingsActions from "./store/features/settings/settingsActions";
+import navigationActions from "./store/features/navigation/navigationActions";
+import projectActions from "./store/features/project/projectActions";
+import buildGameActions from "./store/features/buildGame/buildGameActions";
+import clipboardActions from "./store/features/clipboard/clipboardActions";
+import errorActions from "./store/features/error/errorActions";
 
-const store = configureStore();
+const actions = {
+  ...editorActions,
+  ...entitiesActions,
+  ...settingsActions,
+  ...navigationActions,
+  ...buildGameActions,
+  ...clipboardActions,
+};
+
+const vmActions = mapValues(actions, (fn, key) => {
+  // Strip proxy object from VM2 output
+  return (payload) => actions[key](JSON.parse(JSON.stringify(payload)));
+});
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
-store.dispatch(actions.loadProject(projectPath));
+store.dispatch(projectActions.openProject(projectPath));
+
 watchProject(projectPath, {
-  onAddSprite: f => store.dispatch(actions.loadSprite(f)),
-  onAddBackground: f => store.dispatch(actions.loadBackground(f)),
-  onAddMusic: f => store.dispatch(actions.loadMusic(f)),
-  onChangedSprite: f => store.dispatch(actions.loadSprite(f)),
-  onChangedBackground: f => store.dispatch(actions.loadBackground(f)),
-  onChangedMusic: f => store.dispatch(actions.loadMusic(f)),
-  onRemoveSprite: f => store.dispatch(actions.removeSprite(f)),
-  onRemoveBackground: f => store.dispatch(actions.removeBackground(f)),
-  onRemoveMusic: f => store.dispatch(actions.removeMusic(f)),
-  onChangedUI: f => store.dispatch(actions.editUI())
+  onAddSprite: f => store.dispatch(projectActions.loadSprite(f)),
+  onAddBackground: f => store.dispatch(projectActions.loadBackground(f)),
+  onAddMusic: f => store.dispatch(projectActions.loadMusic(f)),
+  onChangedSprite: f => store.dispatch(projectActions.loadSprite(f)),
+  onChangedBackground: f => store.dispatch(projectActions.loadBackground(f)),
+  onChangedMusic: f => store.dispatch(projectActions.loadMusic(f)),
+  onRemoveSprite: f => store.dispatch(projectActions.removeSprite(f)),
+  onRemoveBackground: f => store.dispatch(projectActions.removeBackground(f)),
+  onRemoveMusic: f => store.dispatch(projectActions.removeMusic(f)),
+  onChangedUI: f => store.dispatch(projectActions.loadUI())
 });
 
 window.ActionCreators = ActionCreators;
@@ -47,22 +67,29 @@ window.addEventListener("error", (error) => {
   }  
   error.stopPropagation();
   error.preventDefault();
+  // eslint-disable-next-line no-console
   console.error(error);
-  store.dispatch(actions.setGlobalError(error.message, error.filename, error.lineno, error.colno, error.error.stack));
+  store.dispatch(errorActions.setGlobalError({
+    message: error.message,
+    filename: error.filename,
+    line: error.lineno,
+    col: error.colno,
+    stackTrace: error.error.stack
+  }));
   return false;
 });
 
 const onSaveProject = () => {
-  store.dispatch(actions.saveProject());  
+  store.dispatch(projectActions.saveProject());  
 }
 
 const onSaveAndCloseProject = async () => {
-  await store.dispatch(actions.saveProject());
+  await store.dispatch(projectActions.saveProject());
   window.close();  
 }
 
 const onSaveProjectAs = (event, pathName) => {
-  store.dispatch(actions.saveAsProjectAction(pathName));
+  store.dispatch(projectActions.saveProject(pathName));
 }
 
 const onUndo = () => {
@@ -74,56 +101,39 @@ const onRedo = () => {
 }
 
 const onSetSection =  (event, section) => {
-  store.dispatch(actions.setSection(section));
+  store.dispatch(navigationActions.setSection(section));
 }
 
 const onReloadAssets = () => {
-  store.dispatch(actions.reloadAssets());
+  store.dispatch(projectActions.reloadAssets());
 }
 
 const onUpdateSetting = (event, setting, value) => {
   store.dispatch(
-    actions.editProjectSettings({
+    settingsActions.editSettings({
       [setting]: value
     })
   );
 }
 
-const onBuildStart = () => {
-  store.dispatch({ type: CMD_START });
-}
-
-const onBuildComplete = () => {
-  store.dispatch({ type: CMD_COMPLETE });
-}
-
-const onBuildStdOut = (event, message) => {
-  store.dispatch({ type: CMD_STD_OUT, text: message });
-}
-
-const onBuildStdErr = (event, message) => {
-  store.dispatch({ type: CMD_STD_ERR, text: message });
-  store.dispatch({ type: SET_SECTION, section: "build" });
-}
-
 const onZoom = (event, zoomType) => {
   const state = store.getState();
   if (zoomType === "in") {
-    store.dispatch(actions.zoomIn(state.navigation.section));
+    store.dispatch(editorActions.zoomIn({ section: state.navigation.section }));
   } else if (zoomType === "out") {
-    store.dispatch(actions.zoomOut(state.navigation.section));
+    store.dispatch(editorActions.zoomOut({ section: state.navigation.section }));
   } else {
-    store.dispatch(actions.zoomReset(state.navigation.section));
+    store.dispatch(editorActions.zoomReset({ section: state.navigation.section }));
   }
 }
 
 const onRun = () => {
-  store.dispatch(actions.buildGame());
+  store.dispatch(buildGameActions.buildGame());
 }
 
 const onBuild = (event, buildType, eject) => {
   store.dispatch(
-    actions.buildGame({
+    buildGameActions.buildGame({
       buildType,
       exportBuild: !eject,
       ejectBuild: eject
@@ -132,20 +142,19 @@ const onBuild = (event, buildType, eject) => {
 }
 
 const onEjectEngine = () => {
-  console.log("GOT EJECT ENGINE FROM MAIN 12 3")
-  store.dispatch(actions.ejectEngine());
+  store.dispatch(buildGameActions.ejectEngine());
 }
 
 const onPluginRun = (event, pluginId) => {
   if (plugins.menu[pluginId] && plugins.menu[pluginId].run) {
-    plugins.menu[pluginId].run(store, actions);
+    plugins.menu[pluginId].run(store, vmActions);
   }
 }
 
 const onPasteInPlace = (event) => {
   try {
     const clipboardData = JSON.parse(clipboard.readText());
-    store.dispatch(actions.pasteClipboardEntityInPlace(clipboardData));
+    store.dispatch(clipboardActions.pasteClipboardEntityInPlace(clipboardData));
   } catch (err) {
     // Clipboard isn't pastable, just ignore it
   }
@@ -159,10 +168,6 @@ ipcRenderer.on("redo", onRedo);
 ipcRenderer.on("section", onSetSection);
 ipcRenderer.on("reloadAssets", onReloadAssets);
 ipcRenderer.on("updateSetting", onUpdateSetting);
-ipcRenderer.on("build-start", onBuildStart);
-ipcRenderer.on("build-complete", onBuildComplete);
-ipcRenderer.on("build-stdout", onBuildStdOut);
-ipcRenderer.on("build-stderr", onBuildStdErr);
 ipcRenderer.on("zoom", onZoom);
 ipcRenderer.on("run", onRun);
 ipcRenderer.on("build", onBuild);
@@ -174,16 +179,16 @@ const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");
 
 if (worldSidebarWidth) {
-  store.dispatch(actions.resizeWorldSidebar(worldSidebarWidth));
+  store.dispatch(editorActions.resizeWorldSidebar(worldSidebarWidth));
 }
 if (filesSidebarWidth) {
-  store.dispatch(actions.resizeFilesSidebar(filesSidebarWidth));
+  store.dispatch(editorActions.resizeFilesSidebar(filesSidebarWidth));
 }
 
 window.addEventListener("resize", debounce(() => {
   const state = store.getState();
-  store.dispatch(actions.resizeWorldSidebar(state.settings.worldSidebarWidth));
-  store.dispatch(actions.resizeFilesSidebar(state.settings.filesSidebarWidth));
+  store.dispatch(editorActions.resizeWorldSidebar(state.editor.worldSidebarWidth));
+  store.dispatch(editorActions.resizeFilesSidebar(state.editor.filesSidebarWidth));
 }, 500));
 
 // Overide Accelerator undo for windows, fixes chrome undo conflict
