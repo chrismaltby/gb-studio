@@ -570,24 +570,12 @@ var Effects = {
 		handler: function(registers, param, tick, channel, player) {
 			if (tick === 0) {
 				if (param <= 32) {
-					var tempo = 128
-					switch (param) { // Compensate for GBT Speed Conversion
-						case 1:			tempo = 154; break;
-						case 2: case 3:	tempo = 150; break;
-						case 4:			tempo = 149; break;
-						case 5:			tempo = 124; break;
-						case 6:			tempo = 127.5; break;
-						case 7:			tempo = 131; break;
-						case 8:			tempo = 134; break;
-						case 9:			tempo = 135; break;
-						case 10:		tempo = 125; break;
-						case 11:		tempo = 127; break;
-						default:		tempo = 128; break;
+					if (player.speedConversion) { 
+						param = Math.floor((param*60)/50);
 					}
-					Effects.SET_TEMPO.handler (registers, tempo, tick, channel, player);
 					Effects.SET_SPEED.handler (registers, param, tick, channel, player);
 				} else {
-					Effects.SET_TEMPO.handler (registers, param, tick, channel, player);
+					//Effects.SET_TEMPO.handler (registers, param, tick, channel, player);
 				}
 			}
 		}

@@ -27,7 +27,7 @@ var Module = function() {
 	this.signedSample    = true;		// Is sample data signed or unsigned
 
 	this.defaultTempo  = 6;				// Default number of ticks per row
-	this.defaultBPM    = 125;			// Default BPM
+	this.defaultBPM    = 150;			// Default BPM
 	this.defaultVolume = 1.0;			// Default global volume
 };
 

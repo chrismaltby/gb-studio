@@ -26,6 +26,7 @@ var ScripTracker = function() {
 
   this.sampleRate = 0; // Playback sample rate defined by the audioContext.
   this.bpm = 0; // Current BPM.
+  this.speedConversion = true; // Default convert 50/60hz ticks per second.
   this.ticksPerRow = 0; // Current number of ticks in one row (tempo).
   this.samplesPerTick = 0; // Number of samples to process for the current tick.
   this.sampleCount = 0; // Number of samples processed for the current tick.
@@ -487,7 +488,7 @@ ScripTracker.prototype.loadModule = function(url, disableSpeedConversion) {
   if (this.isPlaying) this.stop();
   this.module = null;
 
-  console.log("disableSpeedConversion", disableSpeedConversion);
+  this.speedConversion = !disableSpeedConversion;
 
   var fileExt = url
     .split(".")
