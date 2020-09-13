@@ -22,6 +22,7 @@ import settingsActions from "../../store/features/settings/settingsActions";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";
 import { getMetadata } from "../../store/features/metadata/metadataState";
 import navigationActions from "../../store/features/navigation/navigationActions";
+import FadeStyleSelect from "../../components/forms/FadeStyleSelect";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {
@@ -43,6 +44,13 @@ class SettingsPage extends Component {
     this.onEditSetting("defaultBackgroundPaletteIds")(paletteIds);
   };
 
+  onResetFadeSettings = () => {
+    const { editProjectSettings } = this.props;
+    editProjectSettings({
+      defaultFadeStyle: "white",
+    });
+  }
+
   render() {
     const { scenes, settings, scenesLookup, setSection } = this.props;
 
@@ -52,6 +60,7 @@ class SettingsPage extends Component {
       defaultUIPaletteId,
       defaultSpritePaletteId,
       defaultBackgroundPaletteIds,
+      defaultFadeStyle
     } = settings;
 
     const scenesLength = scenes.length;
@@ -138,6 +147,21 @@ class SettingsPage extends Component {
                 </Button>
               </div>
             </ToggleableCheckBoxField>
+          </section>
+
+          <section>
+            <h2>{l10n("SETTINGS_FADE")}</h2>
+            <FormField quarterWidth>
+              <label htmlFor="defaultFadeStyle">
+                {l10n("FIELD_DEFAULT_FADE_STYLE")}
+                <FadeStyleSelect value={defaultFadeStyle} onChange={this.onEditSetting("defaultFadeStyle")} />
+              </label>
+            </FormField>
+            <div style={{ marginTop: 30 }}>
+              <Button onClick={this.onResetFadeSettings}>
+                {l10n("FIELD_RESTORE_DEFAULT")}
+              </Button>
+            </div>            
           </section>
 
           <section>
