@@ -2,7 +2,7 @@ import { mocked } from "ts-jest/utils";
 import actions from "../../../../src/store/features/music/musicActions";
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import { RootState } from "../../../../src/store/configureStore";
-import { dummyBackground } from "../../../dummydata";
+import { dummyBackground, dummyMusic } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
 import ScripTracker from "../../../../src/lib/vendor/scriptracker/scriptracker";
 
@@ -36,6 +36,16 @@ test("Should trigger call to play music", async () => {
       project: {
         present: {
           entities: {
+            music: {
+              entities: {
+                track1: {
+                  ...dummyMusic,
+                  id: "track1",
+                  filename: "track1.mod"
+                }
+              },
+              ids: ["track1"]
+            },
             backgrounds: {
               entities: {
                 bg1: {
@@ -53,11 +63,11 @@ test("Should trigger call to play music", async () => {
   } as unknown) as MiddlewareAPI<Dispatch<AnyAction>, RootState>;
 
   const next = jest.fn();
-  const action = actions.playMusic({ filename: "track1.mod" });
+  const action = actions.playMusic({ musicId: "track1" });
 
   middleware(store)(next)(action);
 
-  expect(loadSpy).toBeCalledWith("file://track1.mod");
+  expect(loadSpy).toBeCalledWith("file:///root/path/assets/music/track1.mod", false);
 });
 
 test("Should trigger a call to pause music", async () => {

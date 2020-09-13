@@ -97,6 +97,7 @@ export const dummyMusic: Music = {
   name: "",
   filename: "",
   _v: 0,
+  settings: {}
 };
 
 export const dummyProjectData: ProjectData = {

@@ -24,10 +24,9 @@ class MusicViewer extends Component {
   };
 
   onPlay = () => {
-    const { projectRoot, file, play } = this.props;
+    const { file, play } = this.props;
     if (file) {
-      const filename = assetFilename(projectRoot, "music", file);
-      play({filename});
+      play({ musicId: file.id });
     }
   };
 
