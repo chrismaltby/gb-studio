@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix unexpected noise from effect only (at song start)
 - Fix ch4 incorrect volume with effect only
 - Fix Note cut `EC0`
+- Sample project updated to include music by [@RichardULZ](https://github.com/RichardULZ) 
 
 ## [2.0.0-beta1]
 
