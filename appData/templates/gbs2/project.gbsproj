@@ -42281,9 +42281,9 @@
         "startY": 0,
         "showCollisions": true,
         "showConnections": true,
-        "worldScrollX": 215,
+        "worldScrollX": 0,
         "worldScrollY": 0,
-        "zoom": 200,
+        "zoom": 100,
         "customColorsEnabled": true,
         "defaultBackgroundPaletteIds": [
             "default-bg-1",
