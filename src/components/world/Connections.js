@@ -97,8 +97,8 @@ class Connections extends Component {
     window.removeEventListener("mouseup", this.onDragDestinationStop);
   };
 
-  renderConnection = ({ x1, y1, x2, y2, qx, qy, eventId }) => (
-    <g key={eventId}>
+  renderConnection = ({ x1, y1, x2, y2, qx, qy, eventId, sceneId }) => (
+    <g key={`c_${sceneId}_${eventId}`}>
       <path
         d={`M${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`}
         e="M10 80 Q 95 10 180 80"
@@ -109,8 +109,8 @@ class Connections extends Component {
     </g>
   );
 
-  renderMarker = ({ x, y, direction, onMouseDown, eventId, className }) => (
-    <g key={eventId} className={className} onMouseDown={onMouseDown}>
+  renderMarker = ({ x, y, direction, onMouseDown, eventId, sceneId, className }) => (
+    <g key={`m_${sceneId}_${eventId}`} className={className} onMouseDown={onMouseDown}>
       <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
