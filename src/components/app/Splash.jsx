@@ -173,7 +173,7 @@ class Splash extends Component {
           nameError: l10n("ERROR_PROJECT_ALREADY_EXISTS"),
           creating: false,
         });
-      } else if (String(err.message).startsWith("ENOTDIR")) {
+      } else if (String(err.message).startsWith("ENOTDIR") || String(err.message).startsWith("EEXIST")) {
         this.setState({
           pathError: l10n("ERROR_PROJECT_PATH_INVALID"),
           creating: false,
