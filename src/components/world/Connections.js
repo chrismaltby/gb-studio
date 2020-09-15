@@ -274,6 +274,7 @@ class Connections extends Component {
               y: y2,
               direction,
               eventId,
+              sceneId,
               className: "Connections__Destination",
               onMouseDown: this.onDragDestinationStart(
                 eventId,
