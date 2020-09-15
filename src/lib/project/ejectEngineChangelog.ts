@@ -26,6 +26,20 @@ const changes: EngineChange[] = [{
         "src/core/Camera_a.s",
         "src/states/Shmup.c"
     ]
+}, {
+    version: "2.0.0-e4",
+    description: "Add fade to black support",
+    modifiedFiles: [
+        "include/FadeManager.h",
+        "include/Palette.h",
+        "include/ScriptRunner.h",
+        "src/core/Core_Main.c",
+        "src/core/FadeManager.c",
+        "src/core/FadeManager_b.c",
+        "src/core/Palette.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c"
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
