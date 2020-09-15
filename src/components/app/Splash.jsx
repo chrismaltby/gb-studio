@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import { ipcRenderer, remote } from "electron";
+import settings from "electron-settings";
 import cx from "classnames";
 import Path from "path";
 import { DotsIcon } from "../library/Icons";
@@ -14,7 +15,7 @@ import "../../lib/helpers/handleFirstTab";
 const {dialog} = require('electron').remote;
 
 const getLastUsedPath = () => {
-  const storedPath = localStorage.getItem("__lastUsedPath");
+  const storedPath = settings.get("__lastUsedPath");
   if (storedPath) {
     return Path.normalize(storedPath);
   }
@@ -22,15 +23,15 @@ const getLastUsedPath = () => {
 };
 
 const setLastUsedPath = (path) => {
-  localStorage.setItem("__lastUsedPath", path);
+  settings.set("__lastUsedPath", path);
 };
 
 const getLastUsedTab = () => {
-  return localStorage.getItem("__lastUsedSplashTab") || "info";
+  return settings.get("__lastUsedSplashTab") || "info";
 }
 
 const setLastUsedTab = (tab) => {
-  localStorage.setItem("__lastUsedSplashTab", tab);
+  settings.set("__lastUsedSplashTab", tab);
 }
 
 class Splash extends Component {
