@@ -2,45 +2,70 @@
 
 #include "FadeManager.h"
 #include <gb/cgb.h>
+#include <string.h>
 #include "Palette.h"
 #include "Math.h"
 
 static UBYTE fade_frame;
-static UBYTE fade_timer;
 static FADE_DIRECTION fade_direction;
 
-static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x42, 0x82, 0xD2, 0xD2};
-static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4};
+static const UBYTE obj_fade_vals[] = {0x00, 0x00, 0x40, 0x80, 0x90, 0xD0, 0xD0};
+static const UBYTE bgp_fade_vals[] = {0x00, 0x00, 0x40, 0x90, 0xA4, 0xE4, 0xE4};
 
-UWORD UpdateColor(UINT8 i, UWORD col) {
-  return RGB2(PAL_RED(col) | DespRight(0x1F, i - 1), PAL_GREEN(col) | DespRight(0x1F, i - 1),
-              PAL_BLUE(col) | DespRight(0x1F, i - 1));
+static const UBYTE obj_fade_black_vals[] = {0xFF, 0xFF, 0xF8, 0xE4, 0xD4, 0xD0, 0xD0};
+static const UBYTE bgp_fade_black_vals[] = {0xFF, 0xFF, 0xFE, 0xE9, 0xE5, 0xE4, 0xE4};
+
+#ifdef CGB
+UWORD UpdateColorBlack(UINT8 i, UWORD col) {
+  return RGB2(DespRight(PAL_RED(col), 5 - i),  DespRight(PAL_GREEN(col), 5 - i),
+              DespRight(PAL_BLUE(col), 5 - i));
 }
 
 void ApplyPaletteChangeColor(UBYTE index) {
-  UINT8 pal, c;
-  UWORD palette[4];
-  UWORD palette_s[4];
+  UINT8 c;
+  UWORD paletteWhite;
   UWORD* col = BkgPalette;
-  UWORD* col_s = SprPalette;
 
-  if (index == 0) {
-    index = 1;
+  if (index == 5) {
+    memcpy(BkgPaletteBuffer, BkgPalette, 64);
+    memcpy(SprPaletteBuffer, SprPalette, 64);
+    palette_dirty = TRUE;
+    return;
   }
 
-  for (pal = 0; pal < 8; pal++) {
-    for (c = 0; c < 4; ++c, ++col, ++col_s) {
-      palette[c] = UpdateColor(index, *col);
-      palette_s[c] = UpdateColor(index, *col_s);
-    };
-    set_bkg_palette(pal, 1, palette);
-    set_sprite_palette(pal, 1, palette_s);
+  if (fade_black) {
+    for (c = 0; c != 32; ++c, ++col) {
+      BkgPaletteBuffer[c] = UpdateColorBlack(index, *col);
+    }
+    col = SprPalette;
+    for (c = 0; c != 32; c++, ++col) {
+      SprPaletteBuffer[c] = UpdateColorBlack(index, *col);
+    }
+  } else { 
+    paletteWhite = RGB2(DespRight(0x1F, index), DespRight(0x1F, index), 
+                      DespRight(0x1F, index));
+    for (c = 0; c != 32; ++c, ++col) {
+      BkgPaletteBuffer[c] = (UWORD)*col | paletteWhite;
+    }
+    col = SprPalette;
+    for (c = 0; c != 32; ++c, ++col) {
+      SprPaletteBuffer[c] = (UWORD)*col | paletteWhite;
+    }
   }
+
+  palette_dirty = TRUE;
 }
+#endif
 
 void ApplyPaletteChangeDMG(UBYTE index) {
-  OBP0_REG = obj_fade_vals[index];
-  BGP_REG = bgp_fade_vals[index];
+  if (!fade_black) {
+    OBP0_REG = obj_fade_vals[index];
+    BGP_REG = bgp_fade_vals[index];
+  }
+  else {
+    OBP0_REG = obj_fade_black_vals[index];
+    BGP_REG = bgp_fade_black_vals[index];
+  }
 }
 
 void FadeIn_b() {
@@ -97,8 +122,9 @@ void FadeUpdate_b() {
 void ApplyPaletteChange_b() {
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
-    ApplyPaletteChangeColor(5);
+    ApplyPaletteChangeColor(fade_timer);
   } else
 #endif
-    ApplyPaletteChangeDMG(5);
+    ApplyPaletteChangeDMG(fade_timer);
 }
+

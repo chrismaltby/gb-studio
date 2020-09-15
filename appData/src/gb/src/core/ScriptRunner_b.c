@@ -150,6 +150,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorStopUpdate_b, 0},     // 0x67
     {Script_ActorSetAnimate_b, 1},     // 0x68
     {Script_IfColorSupported_b, 2},    // 0x69
+    {Script_FadeSetSettings_b, 1},     // 0x6A
 };
 
 void ScriptTimerUpdate_b() {
@@ -664,6 +665,17 @@ void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
   active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
+}
+
+/*
+ * Command: FadeSetSettings
+ * ----------------------------
+ * Set Fade settings.
+ *
+ *   arg0: Fade style (0=white, 1=black)
+ */
+void Script_FadeSetSettings_b() {
+  fade_black = script_cmd_args[0];
 }
 
 /*
