@@ -19,7 +19,7 @@ _UpdateCamera::
     ; Add camera offset x to de and store on stack
         ld hl, #_camera_offset
         ld b, (hl)
-        ld a, #0
+        ld a, #8
         sub a, b
         _signed_add_a d, e
 
@@ -131,7 +131,7 @@ _UpdateCamera::
     ; Add camera offset y to de and store on stack
         ld hl, #(_camera_offset + 1)
         ld b, (hl)
-        ld a, #0
+        ld a, #8
         sub a, b
         _signed_add_a d, e
 

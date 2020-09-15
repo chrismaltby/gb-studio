@@ -251,6 +251,10 @@
   "FIELD_PERSIST_BETWEEN_SCENES_WARNING": "Note: Some events like projectiles and sprite sheet changes currently don't work when used in an input script that is persisted between scenes.",
   "FIELD_ALLOW_FASTFORWARD": "Fast forward text while buttons held",
   "FIELD_IF_COLOR_SUPPORTED": "Run if the game is executing in a device that has color support.",
+  "FIELD_FADE_STYLE": "Fade style",
+  "FIELD_DEFAULT_FADE_STYLE": "Default Fade Style",
+  "FIELD_FADE_WHITE": "Fade to white",
+  "FIELD_FADE_BLACK": "Fade to black",
   "FIELD_MUSIC_DISABLE_SPEED_CONVERSION": "Disable 50/60 hertz speed conversion",
 
   "// 7": "Asset Viewer ---------------------------------------------",
@@ -373,6 +377,7 @@
   "EVENT_ACTOR_STOP_UPDATE": "Actor: Stop \"On Update\" Script",
   "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
   "EVENT_IF_COLOR_SUPPORTED": "If Device Supports Color",
+  "EVENT_FADE_SETTINGS": "Fade: Change Settings",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -479,6 +484,7 @@
   "ERROR_MISSING_PROJECT": "Project file is missing",
   "ERROR_MOVED_OR_DELETED": "It may have moved location or been deleted",
   "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "Please select a different location",
+  "ERROR_PROJECT_PATH_INVALID": "Invalid directory path",
 
   "// 13": "Splash -------------------------------------------------------",
 
@@ -560,6 +566,7 @@
   "SETTINGS_CPU": "CPU",
   "SETTINGS_GBC": "GB Color Options",
   "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)",
+  "SETTINGS_FADE": "Fade Options",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

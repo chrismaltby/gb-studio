@@ -42,6 +42,7 @@ import {
   actorFramesPerDir,
   isMBC1,
   collisionGroupDec,
+  fadeStyleDec
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
@@ -384,6 +385,7 @@ const compile = async (
     startDirection,
     startMoveSpeed = "1",
     startAnimSpeed = "3",
+    defaultFadeStyle = "white"
   } = projectData.settings;
 
   const bankNums = banked.exportUsedBankNumbers();
@@ -485,6 +487,7 @@ const compile = async (
     `extern unsigned int start_player_sprite;\n` +
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
+    `extern unsigned char start_fade_style;\n` +
     `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
@@ -521,6 +524,7 @@ const compile = async (
     `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
+    `unsigned char start_fade_style = ${fadeStyleDec(defaultFadeStyle)};\n` +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;

@@ -186,5 +186,6 @@ void Script_PalSetUI_b();
 void Script_ActorStopUpdate_b();
 void Script_ActorSetAnimate_b();
 void Script_IfColorSupported_b();
+void Script_FadeSetSettings_b();
 
 #endif

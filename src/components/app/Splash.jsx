@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { Component } from "react";
 import { ipcRenderer, remote } from "electron";
+import settings from "electron-settings";
 import cx from "classnames";
 import Path from "path";
 import { DotsIcon } from "../library/Icons";
@@ -14,7 +15,7 @@ import "../../lib/helpers/handleFirstTab";
 const {dialog} = require('electron').remote;
 
 const getLastUsedPath = () => {
-  const storedPath = localStorage.getItem("__lastUsedPath");
+  const storedPath = settings.get("__lastUsedPath");
   if (storedPath) {
     return Path.normalize(storedPath);
   }
@@ -22,15 +23,15 @@ const getLastUsedPath = () => {
 };
 
 const setLastUsedPath = (path) => {
-  localStorage.setItem("__lastUsedPath", path);
+  settings.set("__lastUsedPath", path);
 };
 
 const getLastUsedTab = () => {
-  return localStorage.getItem("__lastUsedSplashTab") || "info";
+  return settings.get("__lastUsedSplashTab") || "info";
 }
 
 const setLastUsedTab = (tab) => {
-  localStorage.setItem("__lastUsedSplashTab", tab);
+  settings.set("__lastUsedSplashTab", tab);
 }
 
 class Splash extends Component {
@@ -119,6 +120,7 @@ class Splash extends Component {
       setLastUsedPath(newPath);
       this.setState({
         path: newPath,
+        pathError: null
       });
     }
   };
@@ -166,11 +168,22 @@ class Splash extends Component {
       });
       ipcRenderer.send("open-project", { projectPath });
     } catch (err) {
+      console.error(err);
       if (err === ERR_PROJECT_EXISTS) {
         this.setState({
           nameError: l10n("ERROR_PROJECT_ALREADY_EXISTS"),
           creating: false,
         });
+      } else if (String(err.message).startsWith("ENOTDIR") || String(err.message).startsWith("EEXIST")) {
+        this.setState({
+          pathError: l10n("ERROR_PROJECT_PATH_INVALID"),
+          creating: false,
+        });        
+      } else {
+        this.setState({
+          pathError: err.message,
+          creating: false,
+        });        
       }
     }
   };
@@ -325,11 +338,11 @@ class Splash extends Component {
                 />
                 <div className="Splash__InputButton">
                   <DotsIcon />
+                  <input
+                    className="Splash__InputButton"
+                    onClick={this.onSelectFolder}
+                  />                  
                 </div>
-                <input
-                  className="Splash__InputButton"
-                  onClick={this.onSelectFolder}
-                />
               </label>
             </div>
             <div className="Splash__FlexSpacer" />

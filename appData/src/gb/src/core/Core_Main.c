@@ -42,6 +42,14 @@ void vbl_update() {
   SCX_REG = draw_scroll_x;
   SCY_REG = scroll_y;
 
+#ifdef CGB
+  if (palette_dirty) {
+    set_bkg_palette(0, 8, BkgPaletteBuffer);
+    set_sprite_palette(0, 8, SprPaletteBuffer);
+    palette_dirty = FALSE;
+  }
+#endif
+
   if (music_mute_frames != 0) {
     music_mute_frames--;
     if (music_mute_frames == 0) {
@@ -128,6 +136,7 @@ int core_start() {
   player.enabled = TRUE;
   player.move_speed = start_player_move_speed;
   player.anim_speed = start_player_anim_speed;
+  fade_black = start_fade_style;
 
   state_running = 0;
   next_state = start_scene_index;
@@ -211,7 +220,10 @@ int core_start() {
       wait_vbl_done();
       FadeUpdate();
     }
-    DISPLAY_OFF
+    if (!fade_black)
+    {
+      DISPLAY_OFF
+    }
 
     state_running = 1;
     current_state = next_state;
@@ -224,8 +236,8 @@ int core_start() {
     // Disable timer script
     timer_script_duration = 0;
 
-    BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
-    OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
+    //BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
+    //OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
     UIInit();
     LoadScene(current_state);

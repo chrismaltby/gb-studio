@@ -96,6 +96,7 @@ import {
   ACTOR_STOP_UPDATE,
   ACTOR_SET_ANIMATE,
   IF_COLOR_SUPPORTED,
+  FADE_SET_SETTINGS
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -123,6 +124,7 @@ import {
   actorFramesPerDir,
   spriteTypeDec,
   textSpeedDec,
+  fadeStyleDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
@@ -1045,6 +1047,12 @@ class ScriptBuilder {
     output.push(cmd(FADE_OUT));
     output.push(speed);
   };
+
+  fadeSetSettings = (style = "white") => {
+    const output = this.output;
+    output.push(cmd(FADE_SET_SETTINGS));
+    output.push(fadeStyleDec(style));
+  };  
 
   // Music
 
