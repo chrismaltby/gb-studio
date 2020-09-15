@@ -484,6 +484,7 @@
   "ERROR_MISSING_PROJECT": "Project file is missing",
   "ERROR_MOVED_OR_DELETED": "It may have moved location or been deleted",
   "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "Please select a different location",
+  "ERROR_PROJECT_PATH_INVALID": "Invalid directory path",
 
   "// 13": "Splash -------------------------------------------------------",
 

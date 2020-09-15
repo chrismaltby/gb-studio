@@ -151,10 +151,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  bottom: 4px;
+  bottom: 9px;
   right: 4px;
-  border-radius: 4px;
-  height: 33px;
+  border-radius: 2px;
+  height: 32px;
   width: 40px;
   user-select: none;
   cursor: default;

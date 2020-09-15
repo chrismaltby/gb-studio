@@ -119,6 +119,7 @@ class Splash extends Component {
       setLastUsedPath(newPath);
       this.setState({
         path: newPath,
+        pathError: null
       });
     }
   };
@@ -166,11 +167,22 @@ class Splash extends Component {
       });
       ipcRenderer.send("open-project", { projectPath });
     } catch (err) {
+      console.error(err);
       if (err === ERR_PROJECT_EXISTS) {
         this.setState({
           nameError: l10n("ERROR_PROJECT_ALREADY_EXISTS"),
           creating: false,
         });
+      } else if (String(err.message).startsWith("ENOTDIR")) {
+        this.setState({
+          pathError: l10n("ERROR_PROJECT_PATH_INVALID"),
+          creating: false,
+        });        
+      } else {
+        this.setState({
+          pathError: err.message,
+          creating: false,
+        });        
       }
     }
   };
@@ -325,11 +337,11 @@ class Splash extends Component {
                 />
                 <div className="Splash__InputButton">
                   <DotsIcon />
+                  <input
+                    className="Splash__InputButton"
+                    onClick={this.onSelectFolder}
+                  />                  
                 </div>
-                <input
-                  className="Splash__InputButton"
-                  onClick={this.onSelectFolder}
-                />
               </label>
             </div>
             <div className="Splash__FlexSpacer" />
