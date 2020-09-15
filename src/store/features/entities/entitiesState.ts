@@ -61,6 +61,7 @@ import {
   ProjectEntitiesData,
   SceneData,
   EntityKey,
+  MusicSettings,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 
@@ -446,6 +447,24 @@ const loadMusic: CaseReducer<
     });
   } else {
     musicAdapter.addOne(state.music, action.payload.data);
+  }
+};
+
+const editMusicSettings: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ musicId: string; changes: Partial<MusicSettings> }>
+> = (state, action) => {
+  const music = localMusicSelectors.selectById(state, action.payload.musicId);
+  if (music) {
+    musicAdapter.updateOne(state.music, {
+      id: music.id,
+      changes: {
+        settings: {
+          ...music.settings,
+          ...action.payload.changes,
+        },
+      },
+    });
   }
 };
 
@@ -1897,6 +1916,12 @@ const entitiesSlice = createSlice({
 
     editCustomEvent,
     removeCustomEvent,
+
+    /**************************************************************************
+     * Music
+     */
+
+    editMusicSettings,
   },
   extraReducers: (builder) =>
     builder

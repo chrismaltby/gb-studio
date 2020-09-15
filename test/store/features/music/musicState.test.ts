@@ -9,7 +9,7 @@ test("Should set playing to true while playing music", () => {
     ...initialState,
     playing: false,
   };
-  const action = actions.playMusic({ filename: "file.mod" });
+  const action = actions.playMusic({ musicId: "track1" });
   const newState = reducer(state, action);
   expect(newState.playing).toBe(true);
 });

@@ -24,7 +24,7 @@ void Start_Shmup() {
 
   if (player.dir.x < 0) {
     // Right to left scrolling
-    camera_offset.x = 48;
+    camera_offset.x = 56;
     shooter_horizontal = 1;
     shooter_direction = -1;
     // Set dir x to face right so sprite doesn't flip
@@ -32,17 +32,17 @@ void Start_Shmup() {
     player.dir.x = 1;
   } else if (player.dir.x > 0) {
     // Left to right scrolling
-    camera_offset.x = -64;
+    camera_offset.x = -56;
     shooter_horizontal = 1;
     shooter_direction = 1;
   } else if (player.dir.y < 0) {
     // Bottom to top scrolling
-    camera_offset.y = 48;
+    camera_offset.y = 56;
     shooter_horizontal = 0;
     shooter_direction = -1;
   } else {
     // Top to bottom scrolling
-    camera_offset.y = -48;
+    camera_offset.y = -40;
     shooter_horizontal = 0;
     shooter_direction = 1;
   }

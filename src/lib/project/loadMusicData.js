@@ -13,6 +13,7 @@ const loadMusicData = projectRoot => async filename => {
     plugin,
     name: file.replace(/.mod/i, ""),
     filename: file,
+    settings: {},
     _v: Date.now()
   };
 };

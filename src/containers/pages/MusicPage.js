@@ -54,7 +54,10 @@ MusicPage.propTypes = {
   files: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
+      name: PropTypes.string.isRequired,
+      settings: PropTypes.shape({
+        disableSpeedConversion: PropTypes.bool,
+      }),
     })
   ).isRequired,
   openHelp: PropTypes.func.isRequired

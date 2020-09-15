@@ -12,7 +12,7 @@ const musicSlice = createSlice({
   name: "music",
   initialState,
   reducers: {
-    playMusic: (state, _action: PayloadAction<{ filename: string }>) => {
+    playMusic: (state, _action: PayloadAction<{ musicId: string }>) => {
       state.playing = true;
     },
     pauseMusic: (state, _action: PayloadAction<void>) => {

@@ -51,11 +51,16 @@ export type Background = {
   _v: number;
 };
 
+export type MusicSettings = {
+  disableSpeedConversion?: boolean;
+};
+
 export type Music = {
   id: string;
   name: string;
   filename: string;
   plugin?: string;
+  settings: MusicSettings;
   _v: number;
 };
 
