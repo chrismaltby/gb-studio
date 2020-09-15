@@ -17,7 +17,14 @@ const changes: EngineChange[] = [{
     description: "Improved music playback",
     modifiedFiles: [
         "src/core/gbt_player.s",
-        "src/core/gbt_player_bank1.s"        
+        "src/core/gbt_player_bank1.s"
+    ]
+}, {
+    version: "2.0.0-e3",
+    description: "Fixed camera offset",
+    modifiedFiles: [
+        "src/core/Camera_a.s",
+        "src/states/Shmup.c"
     ]
 }];
 
