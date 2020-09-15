@@ -545,7 +545,7 @@
   "DIALOG_ENABLE_COLOR_MODE_DESCRIPTION": "Atualmente, seu projeto está com o modo de cores desabilitado. Deseja habilitá-lo?\n\nOs projetos do modo de cores funcionarão com dispositivos GB e GBC.\n\nVocê pode desabilitar isso mais tarde em 'Configurações'.",
   "DIALOG_ENABLE_COLOR": "Habilitar Cores",
   "DIALOG_REPLACE_CUSTOM_EVENT": "Substituir Evento Personalizado \"{name}\"?",
-  "DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION": "O script colado contém uma versão modificada de um evento personalizado existente. Gostaria de substituir o evento personalizado pela versão em sua área de transferência ou manter o evento personalizado existente?
+  "DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION": "O script colado contém uma versão modificada de um evento personalizado existente. Gostaria de substituir o evento personalizado pela versão em sua área de transferência ou manter o evento personalizado existente?",
 
   "// 16": "Settings ----------------------------------------------------",
 
