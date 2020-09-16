@@ -1580,11 +1580,7 @@ const editCustomEvent: CaseReducer<
           const fixedArgs = memo;
           if (isVariableField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fix(event.args[arg]);
-          } else {
-            fixedArgs[arg] = event.args[arg];
-          }
-
-          if (isPropertyField(event.command, arg, event.args[arg])) {
+          } else if (isPropertyField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fixProperty(event.args[arg]);
           } else {
             fixedArgs[arg] = event.args[arg];
@@ -1617,6 +1613,7 @@ const editCustomEvent: CaseReducer<
       const args = e.args;
 
       if (!args) return;
+      if (e.args.__comment) return;
 
       if (args.actorId && args.actorId !== "player") {
         const letter = String.fromCharCode(
