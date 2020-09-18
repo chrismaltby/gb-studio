@@ -126,6 +126,7 @@ export const dummyProjectData: ProjectData = {
     defaultBackgroundPaletteIds: ["", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
+    defaultFadeStyle: "white"
   },
 };
 
