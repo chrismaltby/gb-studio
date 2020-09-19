@@ -42,7 +42,7 @@ const Group = ({ label, actor, ...props }) => {
 };
 
 const GroupWithData = connect((state, ownProps) => {
-  const actorsLookup = getActorsLookup(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
   const actorIds = getSceneActorIds(state, { id: state.editor.scene });
   const settings = getSettings(state);
   const playerSpriteSheetId = settings.playerSpriteSheetId;
