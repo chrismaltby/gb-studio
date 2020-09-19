@@ -13,6 +13,7 @@
 #include "UI.h"
 #include "Input.h"
 #include "data_ptrs.h"
+#include "ParentedActors.h"
 
 #define MAX_PLAYER_SPRITE_SIZE 24
 
@@ -260,11 +261,19 @@ void LoadScene(UINT16 index) {
     actors[i].hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
 
     actors[i].movement_ctx = 0;
+    actors[i].parent_actor = *(data_ptr++);
     actors[i].script_control = FALSE;
   }
 
   actors_active[0] = 0;
   actors_active_size = 1;
+  for (i = 1; i != actors_len; i++) {
+    if (actors[i].parent_actor != i) {
+      actors[i].start_pos.x = actors[i].pos.x - actors[actors[i].parent_actor].pos.x;
+      actors[i].start_pos.y = actors[i].pos.y - actors[actors[i].parent_actor].pos.y;
+    }
+  }
+  PositionParentedActors();
 
   // Load triggers
   for (i = 0; i != triggers_len; i++) {

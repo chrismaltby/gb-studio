@@ -1207,7 +1207,6 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2P
     return lookup;
   };
 
-
   return flatten(
     actors.map((actor, actorIndex) => {
       const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
@@ -1217,6 +1216,11 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2P
       const initialFrame =
         actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
       const collisionGroup = collisionGroupDec(actor.collisionGroup);
+      const actorParent = 
+        actor.actorParent === "player" ? 0 : actor.actorParent === "$self$" ? actorIndex + 1 : actors.findIndex(a => a.id === actor.actorParent) + 1;
+      const rel_x = actor.x - actors[actorParent].x;
+      const rel_y = actor.y - actors[actorParent].y;
+      console.log(rel_x, rel_y);
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
         actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
@@ -1243,7 +1247,8 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2P
         hi(hit2Ptrs[actorIndex].offset),   
         hit3Ptrs[actorIndex].bank, // Hit collision group 3 bank ptr
         lo(hit3Ptrs[actorIndex].offset), // Hit collision group 3 offset ptr
-        hi(hit3Ptrs[actorIndex].offset)
+        hi(hit3Ptrs[actorIndex].offset),
+        actorParent
       ];
     })
   );

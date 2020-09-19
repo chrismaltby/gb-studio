@@ -55,6 +55,7 @@ typedef struct {
   BankPtr hit_2_ptr; // 39
   BankPtr hit_3_ptr; // 42  
   UBYTE movement_ctx; // 45
+  UBYTE parent_actor; // 46
 } Actor;
 
 typedef enum {

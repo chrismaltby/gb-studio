@@ -19,6 +19,7 @@
 #include "gbt_player.h"
 #include "data_ptrs.h"
 #include "main.h"
+#include "ParentedActors.h"
 
 UBYTE game_time;
 UINT16 next_state;
@@ -170,6 +171,7 @@ int core_start() {
 
     UpdateCamera();
     RefreshScroll_b();
+    PositionParentedActors();
     UpdateActors();
     UpdateProjectiles_b();
     UIOnInteract_b();

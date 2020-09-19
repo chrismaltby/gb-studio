@@ -32,6 +32,7 @@ import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../stor
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import ActorSelect from "../forms/ActorSelect";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -445,6 +446,18 @@ class ActorEditor extends Component {
                 />
                 <div className="FormCheckbox" />
                 Pin to screen
+              </label>
+            </FormField>
+
+            <FormField>
+              <label htmlFor="actorParent">
+                <ActorSelect
+                  id="actorParent"
+                  value={actor.actorParent}
+                  //direction={argValue(args.direction)}
+                  //frame={argValue(args.frame)}
+                  onChange={this.onEdit("actorParent")}
+                />
               </label>
             </FormField>
 
