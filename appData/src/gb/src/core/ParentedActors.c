@@ -10,6 +10,7 @@ void PositionParentedActors() {
   {
 	const UBYTE parent_actor = actors[i].parent_actor;
 	if (parent_actor != i) {
+		// quick and dirty check if parent actor is active
 		if (actors[i].sprite_index == 0 && actors[parent_actor].sprite_index != 0) {
 			ActivateActor(i);
 		}

@@ -267,13 +267,14 @@ void LoadScene(UINT16 index) {
 
   actors_active[0] = 0;
   actors_active_size = 1;
+
+  // set actor start positions to relative position from parent (where applicable)
   for (i = 1; i != actors_len; i++) {
     if (actors[i].parent_actor != i) {
       actors[i].start_pos.x = actors[i].pos.x - actors[actors[i].parent_actor].pos.x;
       actors[i].start_pos.y = actors[i].pos.y - actors[actors[i].parent_actor].pos.y;
     }
   }
-  PositionParentedActors();
 
   // Load triggers
   for (i = 0; i != triggers_len; i++) {

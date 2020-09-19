@@ -451,6 +451,7 @@ class ActorEditor extends Component {
 
             <FormField>
               <label htmlFor="actorParent">
+                Parent Actor
                 <ActorSelect
                   id="actorParent"
                   value={actor.actorParent}

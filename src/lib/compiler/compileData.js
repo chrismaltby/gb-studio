@@ -1218,9 +1218,6 @@ export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2P
       const collisionGroup = collisionGroupDec(actor.collisionGroup);
       const actorParent = 
         actor.actorParent === "player" ? 0 : actor.actorParent === "$self$" ? actorIndex + 1 : actors.findIndex(a => a.id === actor.actorParent) + 1;
-      const rel_x = actor.x - actors[actorParent].x;
-      const rel_y = actor.y - actors[actorParent].y;
-      console.log(rel_x, rel_y);
       return [
         getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
         actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
