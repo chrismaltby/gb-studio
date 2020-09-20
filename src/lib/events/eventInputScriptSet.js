@@ -5,7 +5,6 @@ const id = "EVENT_SET_INPUT_SCRIPT";
 const fields = [
   {
     key: "input",
-    label: l10n("FIELD_ON_PRESS"),
     type: "input",
     defaultValue: "b"
   },
@@ -25,8 +24,22 @@ const fields = [
     ]
   },  
   {
+    key: "__scriptTabs",
+    type: "tabs",
+    defaultValue: "press",
+    values: {
+      press: l10n("FIELD_ON_PRESS"),
+    }
+  },
+  {
     key: "true",
-    type: "events"
+    type: "events",
+    conditions: [
+      {
+        key: "__scriptTabs",
+        in: [undefined, "press"]
+      }
+    ]
   }
 ];
 
