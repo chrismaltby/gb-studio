@@ -18,9 +18,9 @@ void PositionParentedActors() {
 		actors[i].pos.y = actors[parent_actor].pos.y + actors[i].start_pos.y;
 		actors[i].dir.x = actors[parent_actor].dir.x;
 		actors[i].dir.y = actors[parent_actor].dir.y;
-		actors[i].frame = actors[parent_actor].frame;
+		actors[i].frame = actors[i].frames_len == actors[parent_actor].frames_len ? actors[parent_actor].frame : actors[i].frame;
 		actors[i].enabled = parent_actor != 0 ? actors[parent_actor].enabled : TRUE;
-		actors[i].rerender = TRUE;
+		actors[i].rerender = actors[parent_actor].rerender;
 	}
   }
 }
