@@ -292,7 +292,7 @@ const patchCustomEventCallArgs = (
     if (event.args.customEventId !== customEventId) {
       return event;
     }
-    const newArgs = Object.assign({ ...event.args, __name: name });
+    const newArgs = Object.assign({ ...event.args });
     Object.keys(newArgs).forEach((k) => {
       if (
         k.startsWith("$") &&
