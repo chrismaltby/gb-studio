@@ -38,6 +38,10 @@ const eventHandlers = {
     if (!handler.id) {
       throw new Error(`Event handler ${path} is missing id`);
     }
+    if (handler.fields) {
+      // Convert fields from proxy to plain javascript object
+      handler.fields = JSON.parse(JSON.stringify(handler.fields));
+    }
     return {
       ...memo,
       [handler.id]: handler

@@ -67,6 +67,10 @@ const plugins = {
       return memo;
     }
     pluginEventFilepaths[path] = plugin.id;
+    if (plugin.fields) {
+      // Convert fields from proxy to plain javascript object
+      plugin.fields = JSON.parse(JSON.stringify(plugin.fields));
+    }    
     return {
       ...memo,
       [plugin.id]: plugin
