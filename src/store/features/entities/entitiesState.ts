@@ -638,6 +638,9 @@ const editScene: CaseReducer<
         }
       }
 
+      patch.width = background.width;
+      patch.height = background.height;
+
       scene.actors.forEach((actorId) => {
         const actor = actors[actorId];
         if (actor) {
