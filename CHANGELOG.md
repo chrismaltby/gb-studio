@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix DE localisation
+- Fix issue where changing a scene's background image would not update the scene's dimensions until the project was reloaded.
 
 ## [2.0.0-beta2]
 
