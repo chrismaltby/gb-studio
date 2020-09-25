@@ -666,6 +666,8 @@ export const precompileVariables = (scenes) => {
   for (let i = 0; i < 100; i++) {
     variables.push(String(i));
   }
+  variables.push(TMP_VAR_1);
+  variables.push(TMP_VAR_2);
 
   walkScenesEvents(scenes, (cmd) => {
     if (eventHasArg(cmd, "variable")) {
@@ -687,8 +689,6 @@ export const precompileVariables = (scenes) => {
       }
     }
   });
-  variables.push(TMP_VAR_1);
-  variables.push(TMP_VAR_2);
   return variables;
 };
 
