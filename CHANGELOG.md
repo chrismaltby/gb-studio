@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing a scene's background image would not update the scene's dimensions until the project was reloaded.
 - Fix issue where editing custom events would reset instance of the event to be labelled as "EVENT_CALL_CUSTOM_EVENT" [@pau-tomas](https://github.com/pau-tomas)
 - Fix unnecessary full recompiles when new local variables are added [@RichardULZ](https://github.com/RichardULZ) 
+- Fix bug in Platformer scenes where player faces the wrong way after changing direction for a few frames [@um3k](https://github.com/um3k)
 
 ## [2.0.0-beta2]
 
