@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix unnecessary full recompiles when new local variables are added [@RichardULZ](https://github.com/RichardULZ) 
 - Fix bug in Platformer scenes where player faces the wrong way after changing direction for a few frames [@um3k](https://github.com/um3k)
 - Fix bug causing crash when selecting values in the property dropdown [@pau-tomas](https://github.com/pau-tomas)
+- Fix bug where hidden pinned actors would sometimes become visible while scrolling
 
 ## [2.0.0-beta2]
 
