@@ -24,6 +24,11 @@ void ActivateActor_b(UBYTE i) {
     return;
   }
 
+  // If actor is disabled don't activate it
+  if (!actors[i].enabled) {
+    return;
+  }
+
   // Stop if actor already active
   for (j = 0; j != actors_active_size; j++) {
     if (actors_active[j] == i) {
