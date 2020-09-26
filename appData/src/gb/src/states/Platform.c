@@ -116,6 +116,7 @@ void Update_Platform() {
       player.dir.y = -1;
       player.rerender = TRUE;
     }
+ 
     if (INPUT_LEFT) {
       player.dir.x = -1;
       if (INPUT_A) {
@@ -124,6 +125,9 @@ void Update_Platform() {
       } else {
         pl_vel_x -= WALK_ACC;
         pl_vel_x = CLAMP(pl_vel_x, -MAX_WALK_VEL, -MIN_WALK_VEL);
+      } 
+      if (INPUT_LEFT_PRESSED) { // update player facing direction if button pressed this frame
+        player.rerender = TRUE;
       }
     } else if (INPUT_RIGHT) {
       player.dir.x = 1;
@@ -133,6 +137,9 @@ void Update_Platform() {
       } else {
         pl_vel_x += WALK_ACC;
         pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_WALK_VEL);
+      }
+      if (INPUT_RIGHT_PRESSED) { // update player facing direction if button pressed this frame
+        player.rerender = TRUE;
       }
     } else if (grounded) {
       if (pl_vel_x < 0) {
