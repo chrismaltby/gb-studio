@@ -6,6 +6,7 @@ import {
   Actor,
   Trigger,
   Palette,
+  CustomEvent,
 } from "../src/store/features/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -98,6 +99,15 @@ export const dummyMusic: Music = {
   filename: "",
   _v: 0,
   settings: {}
+};
+
+export const dummyCustomEvent: CustomEvent = {
+  id: "",
+  name: "",
+  description: "",
+  variables: {},
+  actors: {},
+  script: [],
 };
 
 export const dummyProjectData: ProjectData = {
