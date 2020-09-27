@@ -10,6 +10,7 @@ import {
   Trigger,
   CustomEvent,
   EntitiesState,
+  SceneData,
 } from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import loadProjectData from "../../../lib/project/loadProjectData";
@@ -22,6 +23,7 @@ import { SettingsState } from "../settings/settingsState";
 import { MetadataState } from "../metadata/metadataState";
 import parseAssetPath from "../../../lib/helpers/path/parseAssetPath";
 import { denormalizeEntities } from "../entities/entitiesHelpers";
+import { compressProject } from "../../../lib/helpers/compression";
 
 let saving: boolean = false;
 
@@ -39,11 +41,6 @@ export type ProjectData = {
   music: Music[];
   variables: Variable[];
   settings: SettingsState;
-};
-
-type SceneData = Omit<Scene, "actors" | "triggers"> & {
-  actors: Actor[];
-  triggers: Trigger[];
 };
 
 export const denormalizeProject = (project: {
@@ -218,7 +215,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
     try {
       const normalizedProject = denormalizeProject(state.project.present);
 
-      const data = {
+      const data = await compressProject({
         ...normalizedProject,
         settings: {
           ...normalizedProject.settings,
@@ -226,7 +223,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
           worldScrollX: state.editor.worldScrollX,
           worldScrollY: state.editor.worldScrollY,
         },
-      };
+      });
 
       if (newPath) {
         // Save As

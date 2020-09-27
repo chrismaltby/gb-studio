@@ -6,6 +6,7 @@ import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
 import { indexByFn } from "../helpers/array";
 import makeId from "../helpers/makeId";
+import { decompressProject } from "../helpers/compression";
 
 const elemKey = (elem) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
@@ -26,7 +27,9 @@ const sortByName = (a, b) => {
 };
 
 const loadProject = async (projectPath) => {
-  const json = migrateProject(await fs.readJson(projectPath));
+  const json = migrateProject(
+    await decompressProject(await fs.readJson(projectPath))
+  );
 
   const projectRoot = path.dirname(projectPath);
 
