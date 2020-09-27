@@ -1,6 +1,6 @@
 import glob from "glob";
 import { promisify } from "util";
-import uuidv4 from "uuid/v4";
+import makeId from "../helpers/makeId";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 
 const globAsync = promisify(glob);
@@ -9,7 +9,7 @@ const loadMusicData = projectRoot => async filename => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "music");
 
   return {
-    id: uuidv4(),
+    id: makeId(),
     plugin,
     name: file.replace(/.mod/i, ""),
     filename: file,

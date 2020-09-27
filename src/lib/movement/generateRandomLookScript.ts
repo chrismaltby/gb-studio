@@ -1,16 +1,16 @@
-import uuid from "uuid/v4";
+import makeId from "../helpers/makeId";
 
 const generateRandomLookScript = () => {
   return [
     {
-      id: uuid(),
+      id: makeId(),
       command: "EVENT_WAIT",
       args: {
         time: 1,
       },
     },
     {
-      id: uuid(),
+      id: makeId(),
       command: "EVENT_VARIABLE_MATH",
       args: {
         vectorX: "T0",
@@ -23,7 +23,7 @@ const generateRandomLookScript = () => {
       },
     },
     {
-      id: uuid(),
+      id: makeId(),
       command: "EVENT_SWITCH",
       args: {
         variable: "T0",
@@ -65,7 +65,7 @@ const generateRandomLookScript = () => {
       children: {
         true0: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_ACTOR_SET_DIRECTION",
             args: {
               actorId: "$self$",
@@ -76,13 +76,13 @@ const generateRandomLookScript = () => {
             },
           },
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true1: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_ACTOR_SET_DIRECTION",
             args: {
               actorId: "$self$",
@@ -93,13 +93,13 @@ const generateRandomLookScript = () => {
             },
           },
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true2: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_ACTOR_SET_DIRECTION",
             args: {
               actorId: "$self$",
@@ -110,13 +110,13 @@ const generateRandomLookScript = () => {
             },
           },
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true3: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_ACTOR_SET_DIRECTION",
             args: {
               actorId: "$self$",
@@ -127,99 +127,99 @@ const generateRandomLookScript = () => {
             },
           },
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true4: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true5: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true6: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true7: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true8: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true9: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true10: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true11: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true12: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true13: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true14: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         true15: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
         false: [
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_WAIT",
             args: {
               time: 0.5,
             },
           },
           {
-            id: uuid(),
+            id: makeId(),
             command: "EVENT_END",
           },
         ],
       },
     },
     {
-      id: uuid(),
+      id: makeId(),
       command: "EVENT_END",
     },
   ];

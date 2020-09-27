@@ -33,7 +33,6 @@ import {
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
 import settingsActions from "../settings/settingsActions";
-import uuid from "uuid";
 import {
   replaceInvalidCustomEventVariables,
   replaceInvalidCustomEventActors,
@@ -64,6 +63,7 @@ import {
   MusicSettings,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
+import makeId from "../../../lib/helpers/makeId";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -566,7 +566,7 @@ const addScene: CaseReducer<
     for (let actor of action.payload.defaults.actors) {
       addActorToScene(state, fixedScene, {
         ...actor,
-        id: uuid(),
+        id: makeId(),
       });
     }
   }
@@ -575,7 +575,7 @@ const addScene: CaseReducer<
     for (let trigger of action.payload.defaults.triggers) {
       addTriggerToScene(state, fixedScene, {
         ...trigger,
-        id: uuid(),
+        id: makeId(),
       });
     }
   }
@@ -1806,7 +1806,7 @@ const entitiesSlice = createSlice({
         return {
           payload: {
             ...payload,
-            sceneId: uuid(),
+            sceneId: makeId(),
           },
         };
       },
@@ -1834,7 +1834,7 @@ const entitiesSlice = createSlice({
         return {
           payload: {
             ...payload,
-            actorId: uuid(),
+            actorId: makeId(),
           },
         };
       },
@@ -1863,7 +1863,7 @@ const entitiesSlice = createSlice({
         return {
           payload: {
             ...payload,
-            triggerId: uuid(),
+            triggerId: makeId(),
           },
         };
       },
@@ -1891,7 +1891,7 @@ const entitiesSlice = createSlice({
       prepare: () => {
         return {
           payload: {
-            paletteId: uuid(),
+            paletteId: makeId(),
           },
         };
       },
@@ -1908,7 +1908,7 @@ const entitiesSlice = createSlice({
       prepare: () => {
         return {
           payload: {
-            customEventId: uuid(),
+            customEventId: makeId(),
           },
         };
       },

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import cx from "classnames";
-import uuid from "uuid/v4";
 import { DragSource, DropTarget } from "react-dnd";
 import { TriangleIcon } from "../library/Icons";
 import AddCommandButton from "./AddCommandButton";
@@ -18,6 +17,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { EventShape } from "../../store/stateShape";
 import events from "../../lib/events";
+import makeId from "../../lib/helpers/makeId";
 
 const COMMENT_PREFIX = "//";
 
@@ -367,7 +367,7 @@ class ScriptEditorEvent extends Component {
                     {(
                       action.children[key] || [
                         {
-                          id: uuid(),
+                          id: makeId(),
                           command: EVENT_END
                         }
                       ]

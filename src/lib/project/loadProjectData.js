@@ -1,11 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
-import uuid from "uuid/v4";
 import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
 import { indexByFn } from "../helpers/array";
+import makeId from "../helpers/makeId";
 
 const elemKey = (elem) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
@@ -91,7 +91,7 @@ const loadProject = async (projectPath) => {
     if (!entity.id) {
       return {
         ...entity,
-        id: uuid(),
+        id: makeId(),
       };
     }
     return entity;

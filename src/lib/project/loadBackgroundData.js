@@ -1,8 +1,8 @@
 import glob from "glob";
 import { promisify } from "util";
-import uuid from "uuid/v4";
 import sizeOf from "image-size";
 import parseAssetPath from "../helpers/path/parseAssetPath";
+import makeId from "../helpers/makeId";
 
 const TILE_SIZE = 8;
 
@@ -14,7 +14,7 @@ const loadBackgroundData = projectRoot => async filename => {
   try {
     const size = await sizeOfAsync(filename);
     return {
-      id: uuid(),
+      id: makeId(),
       plugin,
       name: file.replace(/.png/i, ""),
       width: Math.min(Math.floor(size.width / TILE_SIZE), 255),

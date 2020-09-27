@@ -1,5 +1,5 @@
-import uuid from "uuid/v4";
 import { EVENT_CALL_CUSTOM_EVENT } from "../compiler/eventTypes";
+import makeId from "./makeId";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
@@ -278,7 +278,7 @@ const regenerateEventIds = event => {
     {},
     event,
     {
-      id: uuid(),
+      id: makeId(),
       __type: undefined,
       __customEvents: undefined
     },

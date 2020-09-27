@@ -1,9 +1,9 @@
 import glob from "glob";
 import { promisify } from "util";
-import uuidv4 from "uuid/v4";
 import sizeOf from "image-size";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 import { spriteTypeFromNumFrames } from "../helpers/gbstudio";
+import makeId from "../helpers/makeId";
 
 const FRAME_SIZE = 16;
 
@@ -17,7 +17,7 @@ const loadSpriteData = projectRoot => async filename => {
     const numFrames = size.width / FRAME_SIZE;
 
     return {
-      id: uuidv4(),
+      id: makeId(),
       plugin,
       name: file.replace(/.png/i, ""),
       numFrames,

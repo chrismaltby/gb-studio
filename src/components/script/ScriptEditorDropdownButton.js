@@ -3,13 +3,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 import { EVENT_END } from "../../lib/compiler/eventTypes";
 import { regenerateEventIds } from "../../lib/helpers/eventSystem";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import makeId from "../../lib/helpers/makeId";
 
 class ScriptEditorDropdownButton extends Component {
   constructor() {
@@ -41,7 +41,7 @@ class ScriptEditorDropdownButton extends Component {
   onRemoveScript = (e) => {
     this.onChange([
       {
-        id: uuid(),
+        id: makeId(),
         command: EVENT_END,
       },
     ]);
@@ -58,7 +58,7 @@ class ScriptEditorDropdownButton extends Component {
             clipboardEvent,
             !Array.isArray(clipboardEvent)
               ? {
-                  id: uuid(),
+                  id: makeId(),
                   command: EVENT_END,
                 }
               : []
@@ -150,7 +150,7 @@ ScriptEditorDropdownButton.defaultProps = Object.create(
       enumerable: true,
       get: () => [
         {
-          id: uuid(),
+          id: makeId(),
           command: EVENT_END,
         },
       ],

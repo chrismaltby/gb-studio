@@ -1,8 +1,8 @@
 import { readFile, copy } from "fs-extra";
 import buildProject from "../lib/compiler/buildProject";
 import Path from "path";
-import uuid from "uuid";
 import os from "os";
+import makeId from "../lib/helpers/makeId";
 
 const usage = () => {
     console.log("usage: gb-studio-cli <command> [<args>]");
@@ -15,7 +15,7 @@ const usage = () => {
 
 const compile = async (projectFile: string, buildType: string = "rom") => {
     console.log(projectFile);
-    const buildUUID = uuid();
+    const buildUUID = makeId();
     const projectRoot = Path.resolve(Path.dirname(projectFile));
     const project = JSON.parse(await readFile(projectFile, "utf8"));
     const outputRoot = process.env.GBS_OUTPUT_ROOT || Path.normalize(`${os.tmpdir()}/${buildUUID}`);

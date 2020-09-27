@@ -58,6 +58,7 @@
     "image-size": "^0.7.1",
     "json-loader": "^0.5.7",
     "lodash": "^4.17.14",
+    "nanoid": "^3.1.12",
     "normalizr": "^3.4.0",
     "prop-types": "^15.7.2",
     "raw-loader": "^4.0.0",
@@ -79,7 +80,6 @@
     "rimraf": "^2.6.3",
     "semver": "7",
     "ts-flood-fill": "^1.0.2",
-    "uuid": "^3.3.2",
     "vm2": "3.9.2"
   },
   "devDependencies": {
@@ -98,7 +98,6 @@
     "@types/react": "^16.9.14",
     "@types/react-dom": "^16.9.4",
     "@types/rimraf": "^2.0.3",
-    "@types/uuid": "^3.4.6",
     "@types/webpack-env": "^1.14.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",

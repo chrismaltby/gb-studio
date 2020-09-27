@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 import debounce from "lodash/debounce";
 import {
   EVENT_END
@@ -21,6 +20,7 @@ import l10n from "../../lib/helpers/l10n";
 import { sceneSelectors, spriteSheetSelectors, musicSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
+import makeId from "../../lib/helpers/makeId";
 
 class ScriptEditor extends Component {
 
@@ -135,7 +135,7 @@ class ScriptEditor extends Component {
         ? defaultChildren[field.key]
         : [
             {
-              id: uuid(),
+              id: makeId(),
               command: EVENT_END
             }
           ];
@@ -149,7 +149,7 @@ class ScriptEditor extends Component {
       root,
       id,
       JSON.parse(JSON.stringify({
-        id: uuid(),
+        id: makeId(),
           command,
           args: defaultArgs,
         ...childFields.length > 0 && {
@@ -264,7 +264,7 @@ ScriptEditor.defaultProps = Object.create(
       enumerable: true,
       get: () => [
         {
-          id: uuid(),
+          id: makeId(),
           command: EVENT_END
         }
       ]
