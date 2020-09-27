@@ -148,14 +148,14 @@ class ScriptEditor extends Component {
     const input = prependEvent(
       root,
       id,
-      {
+      JSON.parse(JSON.stringify({
         id: uuid(),
           command,
           args: defaultArgs,
         ...childFields.length > 0 && {
           children
         }
-      }
+      }))
     );
     this.onChange(input);
   };
