@@ -40,6 +40,12 @@ const changes: EngineChange[] = [{
         "src/core/ScriptRunner_b.c",
         "src/core/Scroll.c"
     ]
+}, {
+    version: "2.0.0-e5",
+    description: "Fix bug in Platformer scenes where player faces the wrong way after changing direction for a few frames",
+    modifiedFiles: [
+        "src/states/Platform.c"
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

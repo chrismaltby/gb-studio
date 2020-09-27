@@ -8,7 +8,7 @@ export type ScriptEvent = {
   id: string;
   command: string;
   args: any;
-  children: Dictionary<ScriptEvent[]>;
+  children?: Dictionary<ScriptEvent[]>;
 };
 
 export type Actor = {

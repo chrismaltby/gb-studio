@@ -292,7 +292,7 @@ const patchCustomEventCallArgs = (
     if (event.args.customEventId !== customEventId) {
       return event;
     }
-    const newArgs = Object.assign({ ...event.args, __name: name });
+    const newArgs = Object.assign({ ...event.args });
     Object.keys(newArgs).forEach((k) => {
       if (
         k.startsWith("$") &&
@@ -637,6 +637,9 @@ const editScene: CaseReducer<
           patch.collisions[i] = 0;
         }
       }
+
+      patch.width = background.width;
+      patch.height = background.height;
 
       scene.actors.forEach((actorId) => {
         const actor = actors[actorId];
@@ -1580,11 +1583,7 @@ const editCustomEvent: CaseReducer<
           const fixedArgs = memo;
           if (isVariableField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fix(event.args[arg]);
-          } else {
-            fixedArgs[arg] = event.args[arg];
-          }
-
-          if (isPropertyField(event.command, arg, event.args[arg])) {
+          } else if (isPropertyField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fixProperty(event.args[arg]);
           } else {
             fixedArgs[arg] = event.args[arg];
@@ -1617,6 +1616,7 @@ const editCustomEvent: CaseReducer<
       const args = e.args;
 
       if (!args) return;
+      if (e.args.__comment) return;
 
       if (args.actorId && args.actorId !== "player") {
         const letter = String.fromCharCode(

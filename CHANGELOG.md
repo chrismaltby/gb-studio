@@ -5,10 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-beta3]
+
+### Fixed
+
+- Fix DE localisation
+- Fix issue where changing a scene's background image would not update the scene's dimensions until the project was reloaded.
+- Fix issue where editing custom events would reset instance of the event to be labelled as "EVENT_CALL_CUSTOM_EVENT" [@pau-tomas](https://github.com/pau-tomas)
+- Fix unnecessary full recompiles when new local variables are added [@RichardULZ](https://github.com/RichardULZ) 
+- Fix bug in Platformer scenes where player faces the wrong way after changing direction for a few frames [@um3k](https://github.com/um3k)
+- Fix bug causing crash when selecting values in the property dropdown [@pau-tomas](https://github.com/pau-tomas)
+- Fix bug where hidden pinned actors would sometimes become visible while scrolling
+
 ## [2.0.0-beta2]
+
+### Added
+
+- Add ability to change scene transitions to "Fade To Black" through global setting with new event to change dynamically [@RichardULZ](https://github.com/RichardULZ) 
+- Add menu item and keyboard shortcut to switch project, opening the recent projects list [@patrickmollohan](https://github.com/patrickmollohan)
+- Add option to persist player sprite changes between scenes (was previously always persisted) unchecking this will cause the sprite change to only be temporary for the current scene, useful for menus or switching genre
+- Add event to check if current device supports color [@pau-tomas](https://github.com/pau-tomas)
+- Add support for property fields within Custom Events [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to clamp Add & Subtract events to within 0 to 255 without wrapping [@Jarod-Lee](https://github.com/Jarod-Lee)
+- Dutch localisation. [@Auroriax](https://github.com/Auroriax)
+
+### Fixed
+
+- Fix issue with project path selector choosing first file in project preventing people from creating new projects [@RichardULZ](https://github.com/RichardULZ) 
+- Fix issues using image and music assets with uppercase file extensions [@zdurgan](https://github.com/zdurgan)
+- Fix issues with "!!!!" being interpreted as a dialogue speed command [@RichardULZ](https://github.com/RichardULZ) 
+- Fix collision events which were not firing in Top Down scenes unless player was moving [@pau-tomas](https://github.com/pau-tomas)
+- Fix display of scene connections when scene switch events are used in collision or movement scripts [@pau-tomas](https://github.com/pau-tomas)
+- Fix display of coloured sprites to use 3 colors from palette rather than 4 matching how they appear in game
+- Fix issue where extra destination markers get drawn when switching between connected scenes
+- Fix camera centering on player to match 1.2.0
+- Fix screen tearing during fade transitions
 
 ### Changed
 
+- Sample project updated to include music by [@RichardULZ](https://github.com/RichardULZ) 
+- Improved error message when player sprite sheet isn't set [@pau-tomas](https://github.com/pau-tomas)
+- Improve wording on Enable Color mode modal to make it clearer that the change can be reversed
 - Add GBT player and Mod2GBT from custom branch [@RichardULZ](https://github.com/RichardULZ) 
 - Add Ch4 Noise pitch support, rounded to `C, D#, F#, A#, C`
 - Add Ch1-3 Portamento (Pitch bends) `1xx` & `2xx` up to 7F (127 +/-)
@@ -19,11 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix unexpected noise from effect only (at song start)
 - Fix ch4 incorrect volume with effect only
 - Fix Note cut `EC0`
-- Sample project updated to include music by [@RichardULZ](https://github.com/RichardULZ) 
+- Updated Brazilian Portuguese localisation. [@laetemn](https://github.com/laetemn)
+- Updated German localisation. [@WAUthethird](https://github.com/WAUthethird)
+- Updated Portuguese localisation. [@toxworks](https://github.com/toxworks)
 
 ## [2.0.0-beta1]
 
-### Added
+### Added
 
 - Add full color support, each scene can contain up to six 4-color palette (24 colors per scene) and seven different sprite palettes.
 - Add additional genres to Scene Type dropdown, "Platformer", "Shoot Em' Up", "Point and Click" and "Adventure", each one affects player handling in that scene. A single project can use any/all genres as required
@@ -62,8 +101,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom events updated to support union types [@pau-tomas](https://github.com/pau-tomas)
 - Add additional Animation Speed option "None". Setting this will prevent actor from animating at all. Static actors will now cycle through frames while moving unless this value is set.
 - Add support for macOS full screen mode
-- Add menu item and keyboard shortcut to switch project, opening the recent projects list [@patrickmollohan](https://github.com/patrickmollohan)
-- Add option to persist player sprite changes between scenes (was previously always persisted) unchecking this will cause the sprite change to only be temporary for the current scene, useful for menus or switching genre
 
 ### Fixed
 
@@ -74,7 +111,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent actor sprites from overlapping dialogue boxes
 - Fix issues when trying to use more than 256 sprites in a single game
 - Fix issues when saving progress if project contained more than 256 scenes
-- Fix issues using image and music assets with uppercase file extensions [@zdurgan](https://github.com/zdurgan)
 
 ### Changed
 
@@ -83,7 +119,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When not in color mode the Game World section will display images in the same palette as the emulator
 - Event "Attach Script To Button" now doesn't persist between scenes by default, old functionality is still available using a new "persist" checkbox but new events that depend on sprite memory layout may have issues when persist is enabled (Projectiles/Attack/Actor Set Sprite Sheet) 
 - Top Down scenes now use the last pressed direction button for current movement direction improving controls when using a keyboard
-- Improved error message when player sprite sheet isn't set [@pau-tomas](https://github.com/pau-tomas)
 
 ### Removed
 

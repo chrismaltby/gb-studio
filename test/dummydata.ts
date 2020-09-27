@@ -6,6 +6,7 @@ import {
   Actor,
   Trigger,
   Palette,
+  CustomEvent,
 } from "../src/store/features/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -100,6 +101,15 @@ export const dummyMusic: Music = {
   settings: {}
 };
 
+export const dummyCustomEvent: CustomEvent = {
+  id: "",
+  name: "",
+  description: "",
+  variables: {},
+  actors: {},
+  script: [],
+};
+
 export const dummyProjectData: ProjectData = {
   name: "",
   _version: "2.0.0",
@@ -126,6 +136,7 @@ export const dummyProjectData: ProjectData = {
     defaultBackgroundPaletteIds: ["", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
+    defaultFadeStyle: "white"
   },
 };
 
