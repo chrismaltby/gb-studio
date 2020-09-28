@@ -473,6 +473,8 @@
   "WARNING_ENGINE_OUT_OF_DATE": "Ejected engine is out of date (found \"{ejectedEngineVersion}\" when latest is \"{expectedEngineVersion}\").\nYou may encounter issues if you don't eject your engine again.",
   "WARNING_MISSING_UPDATES": "Missing updates",
   "WARNING_MODIFIED_FILES": "Modified files",
+  "WARNING_TOO_MANY_ONSCREEN_ACTORS": "Too many actors may be onscreen at once around \"{actorName}\"",
+  "WARNING_ONSCREEN_ACTORS_LIMIT": "Only {maxOnscreen} actors can be visible on screen at once",
 
   "// 12": "Errors -------------------------------------------------------",
 

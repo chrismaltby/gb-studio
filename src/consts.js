@@ -18,8 +18,12 @@ const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
 const MAX_ACTORS = 30;
+const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
+const SCREEN_WIDTH = 20;
+const SCREEN_HEIGHT = 18;
+const MAX_ONSCREEN = 10;
 
 const MIDDLE_MOUSE = 2;
 
@@ -71,7 +75,11 @@ export {
   eventsRoot,
   assetsRoot,
   MAX_ACTORS,
+  MAX_ACTORS_SMALL,
   MAX_TRIGGERS,
   MAX_FRAMES,
+  MAX_ONSCREEN,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
   MIDDLE_MOUSE
 };
