@@ -76,3 +76,11 @@ test("should treat variable characters as length=1 in character limits", () => {
     trimlines("Hell#L0#\nWorld", 5)
   ).toBe("Hell#L0#\nWorld");   
 });
+
+test("should allow trimming text to a single line using third arg", () => {
+  expect(trimlines("Obsid$", 6, 1)).toBe("Obsid$");
+  expect(trimlines("Obsid $", 6, 1)).toBe("Obsid ");
+  expect(trimlines("Obsidian", 6, 1)).toBe("Obsidi");
+  expect(trimlines("Obsi\n$", 6, 1)).toBe("Obsi");
+  expect(trimlines("\n\n\n\n\n\n", 6, 1)).toBe("");
+});
