@@ -64,11 +64,16 @@ import {
   MusicSettings,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
+import { clone } from "../../../lib/helpers/clone";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
+
+const inodeToRecentBackground: Dictionary<Background> = {}
+const inodeToRecentSpriteSheet: Dictionary<SpriteSheet> = {}
+const inodeToRecentMusic: Dictionary<Music> = {}
 
 const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
@@ -362,15 +367,16 @@ const loadBackground: CaseReducer<
   }>
 > = (state, action) => {
   const backgrounds = localBackgroundSelectors.selectAll(state);
-  const existingAsset = backgrounds.find(matchAsset(action.payload.data));
+  const existingAsset = backgrounds.find(matchAsset(action.payload.data))
+    || inodeToRecentBackground[action.payload.data.inode]
+  const existingId = existingAsset?.id;
 
-  if (existingAsset) {
-    backgroundsAdapter.updateOne(state.backgrounds, {
-      id: existingAsset.id,
-      changes: {
-        ...action.payload.data,
-        id: existingAsset.id,
-      },
+  if (existingId) {
+    delete inodeToRecentBackground[action.payload.data.inode];
+    backgroundsAdapter.upsertOne(state.backgrounds, {
+      ...existingAsset,
+      ...action.payload.data,
+      id: existingId,
     });
     fixAllScenesWithModifiedBackgrounds(state);
   } else {
@@ -388,6 +394,7 @@ const removeBackground: CaseReducer<
   const backgrounds = localBackgroundSelectors.selectAll(state);
   const existingAsset = backgrounds.find(matchAsset(action.payload));
   if (existingAsset) {
+    inodeToRecentBackground[existingAsset.inode] = clone(existingAsset);
     backgroundsAdapter.removeOne(state.backgrounds, existingAsset.id);
   }
 };
@@ -399,15 +406,16 @@ const loadSprite: CaseReducer<
   }>
 > = (state, action) => {
   const spriteSheets = localSpriteSheetSelectors.selectAll(state);
-  const existingAsset = spriteSheets.find(matchAsset(action.payload.data));
+  const existingAsset = spriteSheets.find(matchAsset(action.payload.data))
+    || inodeToRecentSpriteSheet[action.payload.data.inode];
+  const existingId = existingAsset?.id;
 
-  if (existingAsset) {
-    spriteSheetsAdapter.updateOne(state.spriteSheets, {
-      id: existingAsset.id,
-      changes: {
-        ...action.payload.data,
-        id: existingAsset.id,
-      },
+  if (existingId) {
+    delete inodeToRecentSpriteSheet[action.payload.data.inode];
+    spriteSheetsAdapter.upsertOne(state.spriteSheets, {
+      ...existingAsset,
+      ...action.payload.data,
+      id: existingId,
     });
   } else {
     spriteSheetsAdapter.addOne(state.spriteSheets, action.payload.data);
@@ -424,6 +432,7 @@ const removeSprite: CaseReducer<
   const spriteSheets = localSpriteSheetSelectors.selectAll(state);
   const existingAsset = spriteSheets.find(matchAsset(action.payload));
   if (existingAsset) {
+    inodeToRecentSpriteSheet[existingAsset.inode] = clone(existingAsset);
     spriteSheetsAdapter.removeOne(state.spriteSheets, existingAsset.id);
   }
 };
@@ -435,15 +444,20 @@ const loadMusic: CaseReducer<
   }>
 > = (state, action) => {
   const music = localMusicSelectors.selectAll(state);
-  const existingAsset = music.find(matchAsset(action.payload.data));
+  const existingAsset = music.find(matchAsset(action.payload.data))
+    || inodeToRecentMusic[action.payload.data.inode];
+  const existingId = existingAsset?.id;
 
-  if (existingAsset) {
-    musicAdapter.updateOne(state.music, {
-      id: existingAsset.id,
-      changes: {
-        ...action.payload.data,
-        id: existingAsset.id,
-      },
+  if (existingId) {
+    delete inodeToRecentMusic[action.payload.data.inode];
+    musicAdapter.upsertOne(state.music, {
+      ...existingAsset,
+      ...action.payload.data,
+      id: existingId,
+      settings: {
+        ...existingAsset?.settings,
+        ...action.payload.data.settings
+      }
     });
   } else {
     musicAdapter.addOne(state.music, action.payload.data);
@@ -478,6 +492,7 @@ const removeMusic: CaseReducer<
   const music = localMusicSelectors.selectAll(state);
   const existingAsset = music.find(matchAsset(action.payload));
   if (existingAsset) {
+    inodeToRecentMusic[existingAsset.inode] = clone(existingAsset);
     musicAdapter.removeOne(state.music, existingAsset.id);
   }
 };
