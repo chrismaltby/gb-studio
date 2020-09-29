@@ -2,6 +2,7 @@ import glob from "glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import sizeOf from "image-size";
+import { stat } from "fs-extra";
 import parseAssetPath from "../helpers/path/parseAssetPath";
 
 const TILE_SIZE = 8;
@@ -13,6 +14,8 @@ const loadBackgroundData = projectRoot => async filename => {
   const { file, plugin } = parseAssetPath(filename, projectRoot, "backgrounds");
   try {
     const size = await sizeOfAsync(filename);
+    const fileStat = await stat(filename, { bigint: true });
+    const inode = fileStat.ino.toString();
     return {
       id: uuid(),
       plugin,
@@ -22,6 +25,7 @@ const loadBackgroundData = projectRoot => async filename => {
       imageWidth: size.width,
       imageHeight: size.height,
       filename: file,
+      inode,
       _v: Date.now()
     };
   } catch (e) {

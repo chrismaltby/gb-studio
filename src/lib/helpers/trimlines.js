@@ -19,7 +19,7 @@ export const lineLength = (line) => {
     .length
 }
 
-const trimlines = (string, maxCharsPerLine = CHARS_PER_LINE) => {
+const trimlines = (string, maxCharsPerLine = CHARS_PER_LINE, maxLines = LINE_MAX) => {
   let lengthCount = 0;
 
   return string
@@ -54,7 +54,7 @@ const trimlines = (string, maxCharsPerLine = CHARS_PER_LINE) => {
         }
       }
 
-      if (lineIndex === LINE_MAX - 1) {
+      if (lineIndex === maxLines - 1) {
         return line.substring(0, cropLength);
       }
 
@@ -84,7 +84,7 @@ const trimlines = (string, maxCharsPerLine = CHARS_PER_LINE) => {
       }
       return line;
     })
-    .slice(0, LINE_MAX)
+    .slice(0, maxLines)
     .join("\n");
 
 };

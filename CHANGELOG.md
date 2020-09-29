@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue with calling javascript functions from events prevent text cropping from working as expected
+- Fix issue with text cropping in menu events where it was possible for menu items to span multiple lines
 
 ## [2.0.0-beta3]
 

@@ -77,7 +77,7 @@ const watchProject = async (
       ignored: /^.*\.(?!(mod|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      musicAwaitWriteFinish
+      awaitWriteFinish: musicAwaitWriteFinish
     })
     .on("add", onAddMusic)
     .on("change", onChangedMusic)
