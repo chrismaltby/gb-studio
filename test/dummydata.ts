@@ -81,6 +81,7 @@ export const dummyBackground: Background = {
   height: 1,
   imageWidth: 1,
   imageHeight: 1,
+  inode: "0",
   _v: 0,
 };
 
@@ -90,6 +91,7 @@ export const dummySpriteSheet: SpriteSheet = {
   filename: "",
   numFrames: 1,
   type: "static",
+  inode: "1",  
   _v: 0,
 };
 
@@ -97,6 +99,7 @@ export const dummyMusic: Music = {
   id: "",
   name: "",
   filename: "",
+  inode: "2",  
   _v: 0,
   settings: {}
 };
