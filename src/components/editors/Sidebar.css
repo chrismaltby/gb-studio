@@ -214,6 +214,10 @@
   height: 26px;
 }
 
+.SidebarTabs--Small .SidebarTabs__Tab:first-child {
+  margin-left: 1px;
+}
+
 .SidebarTabs__Tab {
   padding: 0 10px;
   opacity: 0.5;
