@@ -186,6 +186,17 @@
   border-top: 1px solid var(--sidebar-border-color);  
 }
 
+.SidebarTabs--Small {
+  padding-bottom: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  height: 26px;
+  line-height: 21px;
+  margin: 0px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
 .SidebarTabs__FluidSpacer {
   flex: 1;
 }
@@ -197,6 +208,14 @@
   padding-top: 1px;
   padding-right: 10px;
   box-sizing: border-box;
+}
+
+.SidebarTabs--Small .SidebarTabs__Container {
+  height: 26px;
+}
+
+.SidebarTabs--Small .SidebarTabs__Tab:first-child {
+  margin-left: 1px;
 }
 
 .SidebarTabs__Tab {

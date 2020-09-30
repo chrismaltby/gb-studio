@@ -64,6 +64,10 @@
   font-weight: normal;
 }
 
+.ScriptEditorEvent__Tabs + div {
+  padding-top: 0;
+}
+
 /* Conditional Level 1 */
 
 .ScriptEditorEvent--Conditional > .ScriptEditorEvent__Content > .ScriptEventForm {

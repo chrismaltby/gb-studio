@@ -256,6 +256,7 @@
   "FIELD_FADE_WHITE": "Fade to white",
   "FIELD_FADE_BLACK": "Fade to black",
   "FIELD_MUSIC_DISABLE_SPEED_CONVERSION": "Disable 50/60 hertz speed conversion",
+  "FIELD_ON_TIMER_END": "On Timer End",
   "FIELD_NUM_ACTORS_LABEL": "Number of actors in scene",
   "FIELD_NUM_FRAMES_LABEL": "Number of frames used by actors in scene",
   "FIELD_NUM_TRIGGERS_LABEL": "Number of triggers in scene",

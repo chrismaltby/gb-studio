@@ -8,6 +8,7 @@ import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import { SidebarTabs } from "../editors/Sidebar";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -83,6 +84,23 @@ class ScriptEventForm extends Component {
 
       if (field.type === "events") {
         return renderEvents(field.key);
+      }
+
+      if (field.type === "tabs") {
+        return (
+          <div className="ScriptEditorEvent__Tabs">
+            <SidebarTabs
+              small
+              value={value[field.key]}
+              values={field.values}
+              onChange={(v) => {
+                const newValue = {};
+                newValue[field.key] = v;
+                onChange(newValue);
+              }}
+            />                    
+          </div>
+        )
       }
 
       const fieldValue = field.multiple
