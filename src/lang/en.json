@@ -260,7 +260,7 @@
   "FIELD_NUM_FRAMES_LABEL": "Number of frames used by actors in scene",
   "FIELD_NUM_TRIGGERS_LABEL": "Number of triggers in scene",
   "FIELD_ACTORS_COUNT": "This scene has used {actorCount} of {maxActors} available",
-  "FIELD_FRAMES_COUNT": "This scene has used {frameCount} or {maxFrames} available",
+  "FIELD_FRAMES_COUNT": "This scene has used {frameCount} of {maxFrames} available",
   "FIELD_TRIGGERS_COUNT": "This scene has used {triggerCount} of {maxTriggers} available",
   "FIELD_WARNING": "Warning",
 
