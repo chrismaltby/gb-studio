@@ -375,6 +375,7 @@ UBYTE ScriptUpdate_MoveCamera() {
 UBYTE ScriptUpdate_CamShake() {
   if (shake_time == 0) {
     scroll_offset_x = 0;
+    scroll_offset_y = 0;
     return TRUE;
   }
 
@@ -383,6 +384,7 @@ UBYTE ScriptUpdate_CamShake() {
   // Handle Shake
   if (shake_time != 0) {
     scroll_offset_x = (INT16)(shake_time & 0x5);
+    scroll_offset_y = (INT16)(shake_time & 0x5);
   }
 
   return FALSE;
