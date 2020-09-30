@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import cx from "classnames";
@@ -16,6 +17,11 @@ import { sceneSelectors, actorSelectors, triggerSelectors, spriteSheetSelectors 
 import clamp from "../../lib/helpers/clamp";
 import l10n from "../../lib/helpers/l10n";
 
+const Portal = (props) => {
+  const root = document.getElementById("MenuPortal");
+  return ReactDOM.createPortal(props.children, root);
+}
+
 class SceneInfo extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +31,11 @@ class SceneInfo extends Component {
       frameCount: 0,
       triggerCount: 0,
       warnings: [],
+      tooltipType: "",
+      tooltipX: 100,
+      tooltipY: 100
     };
+    this.tooltipTimer = null;
     this.debouncedRecalculateCounts = debounce(this.recalculateCounts, 100);
   }
 
@@ -48,6 +58,10 @@ class SceneInfo extends Component {
     ) {
       this.debouncedRecalculateCounts();
     }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.tooltipTimer);
   }
 
   recalculateCounts = () => {
@@ -141,6 +155,14 @@ class SceneInfo extends Component {
 
     checkForTooCloseActors();
 
+    const maxActors = (scene.width <= SCREEN_WIDTH && scene.height <= SCREEN_HEIGHT)
+      ? MAX_ACTORS_SMALL
+      : MAX_ACTORS;
+
+    if (scene.actors.length > maxActors) {
+      warnings.push(l10n("WARNING_ACTORS_LIMIT"));
+    }
+
     this.setState({
       loaded: true,
       actorCount: scene.actors.length,
@@ -150,8 +172,39 @@ class SceneInfo extends Component {
     });
   };
 
+  onHoverOn = (type) => (e) => {
+    this.openTooltip(type, e, 500);
+  }
+
+  onOpenTooltip = (type) => (e) => {
+    this.openTooltip(type, e, 0);
+  }  
+
+  openTooltip = (type, e, delay) => {
+    clearTimeout(this.tooltipTimer);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const tooltip = document.getElementById(`scene_info_${type}`);
+    tooltip.style.display = "block";
+    const tooltipHeight = tooltip.clientHeight;
+    tooltip.style.removeProperty("display");    
+    this.tooltipTimer = setTimeout(() => {
+      this.setState({
+        tooltipType: type,
+        tooltipX: Math.max(50, rect.left),
+        tooltipY: Math.min(window.innerHeight - tooltipHeight - 50, window.innerHeight - rect.top + 5)
+      })
+    }, delay);
+  }
+
+  onHoverOff = (e) => {
+    clearTimeout(this.tooltipTimer);
+    this.setState({
+      tooltipType: "",
+    })    
+  }
+
   render() {
-    const { loaded, actorCount, frameCount, triggerCount, warnings } = this.state;
+    const { loaded, actorCount, frameCount, triggerCount, warnings, tooltipType, tooltipX, tooltipY } = this.state;
     const { scene } = this.props;
 
     if (!loaded) {
@@ -162,44 +215,109 @@ class SceneInfo extends Component {
       ? MAX_ACTORS_SMALL
       : MAX_ACTORS;
 
+    const actorWarning = warnings.length > 0;
+    const actorError = actorCount > maxActors;
+
     return (
       <>
         <span
-          title={`Number of actors in scene. This scene has used ${actorCount} of ${maxActors} available.`}
-          className={cx({
-            "Scene__Info--Warning": actorCount === maxActors,
-            "Scene__Info--Error": actorCount > maxActors,
+          className={cx("Scene__InfoButton", {
+            "Scene__Info--Warning": actorWarning,
+            "Scene__Info--Error": actorError,
           })}
+          onMouseEnter={this.onHoverOn("actors")}
+          onMouseDown={this.onOpenTooltip("actors")}
+          onMouseLeave={this.onHoverOff}
+          aria-describedby="scene_info_actors"
         >
           A: {actorCount}/{maxActors}
+          <Portal>
+            <div
+              id="scene_info_actors"
+              role="tooltip"
+              className={cx("Scene__Tooltip", {
+                "Scene__Tooltip--Visible": tooltipType === "actors",
+              })}
+              style={{
+                left: tooltipX,
+                bottom: tooltipY,
+              }}
+            >
+              <div>{l10n("FIELD_NUM_ACTORS_LABEL")}</div>
+              <div>{l10n("FIELD_ACTORS_COUNT", { actorCount, maxActors })}</div>
+              {warnings.length > 0 && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
+              {warnings.length > 0 &&
+                warnings.map((warning) => (
+                  <div key={warning} className="Scene__Info--Error">
+                    {warning}
+                  </div>
+              ))}              
+            </div>
+          </Portal>
         </span>
+
         {"\u00A0 \u00A0"}
         <span
-          title={`Number of frames used by actors in scene. ${
-            frameCount <= MAX_FRAMES
-              ? `This scene has used ${frameCount} or ${MAX_FRAMES} available.`
-              : `This scene is over available limits and may have rendering issues. ` +
-                `Try reducing number of actors in scene or use static and non animated ` +
-                `sprites where possible.`
-          } Stay within limits to prevent tile data overwriting sprite data.`}
-          className={cx({
+          className={cx("Scene__InfoButton", {
             "Scene__Info--Warning": frameCount === MAX_FRAMES,
             "Scene__Info--Error": frameCount > MAX_FRAMES,
           })}
+          onMouseEnter={this.onHoverOn("frames")}
+          onClick={this.onOpenTooltip("frames")}
+          onMouseLeave={this.onHoverOff}
+          aria-describedby="scene_info_frames"
         >
           F: {frameCount}/{MAX_FRAMES}
         </span>
+        <Portal>
+          <div
+            id="scene_info_frames"
+            role="tooltip"
+            className={cx("Scene__Tooltip", {
+              "Scene__Tooltip--Visible": tooltipType === "frames",
+            })}
+            style={{
+              left: tooltipX,
+              bottom: tooltipY,
+            }}
+          >
+            <div>{l10n("FIELD_NUM_FRAMES_LABEL")}</div>
+            <div>{l10n("FIELD_FRAMES_COUNT", {frameCount, maxFrames: MAX_FRAMES})}</div>
+            {frameCount > MAX_FRAMES && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
+            {frameCount > MAX_FRAMES && <div>{l10n("WARNING_FRAMES_LIMIT")}</div>}
+          </div>
+        </Portal>
         {"\u00A0 \u00A0"}
         <span
-          title={`Number of triggers in scene. This scene has used ${triggerCount} of ${MAX_TRIGGERS} available.`}
-          className={cx({
+          className={cx("Scene__InfoButton", {
             "Scene__Info--Warning": triggerCount === MAX_TRIGGERS,
             "Scene__Info--Error": triggerCount > MAX_TRIGGERS,
           })}
+          onMouseEnter={this.onHoverOn("triggers")}
+          onClick={this.onOpenTooltip("triggers")}
+          onMouseLeave={this.onHoverOff}          
+          aria-describedby="scene_info_triggers"
         >
           T: {triggerCount}/{MAX_TRIGGERS}
         </span>
-        {warnings.length > 0 && warnings.map((warning) => <div key={warning} className="Scene__Info--Error">{warning}</div>)}
+        <Portal>
+          <div
+            id="scene_info_triggers"
+            role="tooltip"
+            className={cx("Scene__Tooltip", {
+              "Scene__Tooltip--Visible": tooltipType === "triggers",
+            })}
+            style={{
+              left: tooltipX,
+              bottom: tooltipY,
+            }}
+          >
+            <div>{l10n("FIELD_NUM_TRIGGERS_LABEL")}</div>
+            <div>{l10n("FIELD_TRIGGERS_COUNT", { triggerCount, maxTriggers: MAX_TRIGGERS })}</div>
+            {triggerCount > MAX_TRIGGERS && <div className="Scene__TooltipTitle">{l10n("FIELD_WARNING")}</div>}
+            {triggerCount > MAX_TRIGGERS && <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>}
+          </div>
+        </Portal>
       </>
     );
   }

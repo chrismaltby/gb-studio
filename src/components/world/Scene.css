@@ -92,12 +92,65 @@
   padding: 10px 20px;
 }
 
-.Scene__Info--Warning {
-  color: rgb(243, 168, 30);
+.Scene__InfoButton {
+  position: relative;
+  border-radius: 4px;
+  padding: 2px;
 }
 
-.Scene__Info--Error {
-  color: rgb(243, 0, 0);
+.Scene__InfoButton:hover {
+  background-color: rgba(128,128,128,0.2);
+}
+
+.Scene__InfoButton.Scene__Info--Warning {
+  background: rgb(243, 168, 30);
+  color: #fff;
+}
+
+.Scene__InfoButton.Scene__Info--Error {
+  background: rgb(243, 0, 0);
+  color: #fff;
+}
+
+.Scene__InfoButton.Scene__Info--Warning:hover,
+.Scene__InfoButton.Scene__Info--Error:hover {
+  opacity: 0.8;
+}
+
+.Scene__Tooltip {
+  display: none;
+  position: absolute;
+  color: var(--main-text-color);
+  background-color: var(--menu-bg-color);
+  border-radius: 4px;
+  padding: 4px 0;
+  overflow: auto;
+  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
+    0 4px 11px hsla(0, 0%, 0%, 0.1);
+  min-width: 60px;
+  z-index: 1001;
+  font-size: 11px;
+  line-height: normal;
+  font-weight: normal;
+  padding: 5px 10px;
+  max-width: 230px;
+  transform: translateX(-10px);  
+  z-index: 10000;
+}
+
+.Scene__Tooltip--Visible {
+  display: block;
+}
+
+.Scene__Tooltip div {
+  margin: 5px 0px;
+}
+
+.Scene__Tooltip .Scene__TooltipTitle {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: rgba(128,128,128);
+  margin-top: 10px;  
 }
 
 .Scene__Image {
