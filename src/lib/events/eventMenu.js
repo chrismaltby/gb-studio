@@ -2,7 +2,7 @@ const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
 
 const trimMenuItem = (string) => {
-  return trimlines(string, 6);
+  return trimlines(string, 6, 1);
 };
 
 const id = "EVENT_MENU";
