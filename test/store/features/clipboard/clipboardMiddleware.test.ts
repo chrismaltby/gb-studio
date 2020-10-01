@@ -54,7 +54,7 @@ test("Should be able to copy actor to clipboard", async () => {
   );
 });
 
-test("Should be include referenced variables when copying actor", async () => {
+test("Should include referenced variables when copying actor", async () => {
   mockedClipboard.writeText.mockClear();
 
   const store = ({

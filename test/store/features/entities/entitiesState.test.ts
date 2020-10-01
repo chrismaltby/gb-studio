@@ -937,6 +937,54 @@ test("Should be able to add an actor to a scene", () => {
   expect(newState.actors.entities[newActorId]?.spriteSheetId).toBe("sprite1");
 });
 
+test("Should be able to add an actor to a scene with default values and variables", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+    spriteSheets: {
+      entities: {
+        sprite1: {
+          ...dummySpriteSheet,
+          id: "sprite1",
+          filename: "sprite1.png",
+        },
+      },
+      ids: ["sprite1"],
+    },
+  };
+
+  const action = actions.addActor({
+    sceneId: "scene1",
+    x: 2,
+    y: 4,
+    defaults: {
+      id: "clipboard_id",
+      name: "Clipboard Actor Name",
+    },
+    variables: [{ id: "clipboard_id__L0", name: "Clipboard Variable Name" }],
+  });
+
+  const newState = reducer(state, action);
+
+  const newActorId = action.payload.actorId;
+
+  expect(newState.scenes.entities["scene1"]?.actors).toEqual([newActorId]);
+  expect(newState.actors.entities[newActorId]?.name).toBe("Clipboard Actor Name");
+  expect(newState.variables.entities[`${newActorId}__L0`]?.name).toBe("Clipboard Variable Name");
+});
+
 test("Should be able to move an actor with a scene", () => {
   const state: EntitiesState = {
     ...initialState,
