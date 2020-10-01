@@ -757,8 +757,8 @@ test("Should be able to lock camera with speed flag", () => {
 test("Should be able to shake camera for a number of frames", () => {
   const output = [];
   const sb = new ScriptBuilder(output);
-  sb.cameraShake(3);
-  expect(output).toEqual([cmd(CAMERA_SHAKE), 3]);
+  sb.cameraShake(true, false, 3);
+  expect(output).toEqual([cmd(CAMERA_SHAKE), 1, 0, 3]);
 });
 
 test("Should be able to conditionally execute if variable is true", () => {
