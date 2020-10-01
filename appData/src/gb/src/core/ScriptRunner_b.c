@@ -36,6 +36,8 @@ UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
+UBYTE should_shake_x = FALSE;
+UBYTE should_shake_y = FALSE;
 UBYTE after_lock_camera = FALSE;
 Actor* tmp_actor;
 
@@ -67,7 +69,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorShow_b, 0},           // 0x14
     {Script_ActorHide_b, 0},           // 0x15
     {Script_ActorSetEmote_b, 1},       // 0x16
-    {Script_CameraShake_b, 1},         // 0x17
+    {Script_CameraShake_b, 3},         // 0x17
     {Script_Noop_b, 0},                // 0x18
     {Script_ShowOverlay_b, 3},         // 0x19
     {Script_HideOverlay_b, 0},         // 0x1A
@@ -383,8 +385,10 @@ UBYTE ScriptUpdate_CamShake() {
 
   // Handle Shake
   if (shake_time != 0) {
-    scroll_offset_x = (INT16)(shake_time & 0x5);
-    scroll_offset_y = (INT16)(shake_time & 0x5);
+    if (should_shake_x)
+      scroll_offset_x = (INT16)(shake_time & 0x5);
+    if (should_shake_y)
+      scroll_offset_y = (INT16)((shake_time & 0xA) >> 1);
   }
 
   return FALSE;
@@ -902,7 +906,9 @@ void Script_ActorSetEmote_b() {
  *   arg0: Number of frames to shake for
  */
 void Script_CameraShake_b() {
-  shake_time = script_cmd_args[0];
+  should_shake_x = script_cmd_args[0];
+  should_shake_y = script_cmd_args[1];
+  shake_time = script_cmd_args[2];
   active_script_ctx.script_update_fn = ScriptUpdate_CamShake;
 }
 

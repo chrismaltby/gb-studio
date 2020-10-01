@@ -11,6 +11,18 @@ const fields = [
     max: 10,
     step: 0.1,
     defaultValue: 0.5
+  },
+  {
+    key: "shouldShakeX",
+    type: "checkbox",
+    label: l10n("FIELD_X"),
+    defaultValue: true
+  },
+  {
+    key: "shouldShakeY",
+    type: "checkbox",
+    label: l10n("FIELD_Y"),
+    defaultValue: false
   }
 ];
 
@@ -20,7 +32,7 @@ const compile = (input, helpers) => {
   // Convert seconds into frames (60fps)
   while (seconds > 0) {
     const time = Math.min(seconds, 1);
-    cameraShake(Math.ceil(60 * time));
+    cameraShake(input.shouldShakeX, input.shouldShakeY, Math.ceil(60 * time));
     seconds -= time;
   }
 };
