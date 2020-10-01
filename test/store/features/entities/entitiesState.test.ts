@@ -450,6 +450,7 @@ test("Should be able to add a scene with defaults and variables", () => {
     x: 110,
     y: 220,
     defaults: {
+      id: "scene1",
       name: "Clipboard Scene Name",
       actors: [{
         ...dummyActor,
@@ -472,7 +473,10 @@ test("Should be able to add a scene with defaults and variables", () => {
     },
     variables: [{
       id: "trigger1__L0",
-      name: "Clipboard Trigger Name"
+      name: "Clipboard Trigger Var Name"
+    },{
+      id: "scene1__L0",
+      name: "Clipboard Scene Var Name"
     }]
   });
 
@@ -481,8 +485,9 @@ test("Should be able to add a scene with defaults and variables", () => {
   expect(newState.scenes.ids.length).toBe(1);
   expect(newState.actors.ids.length).toBe(1);
   expect(newState.triggers.ids.length).toBe(1);
-  expect(newState.variables.ids.length).toBe(1);
-  expect(newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name).toBe("Clipboard Trigger Name");
+  expect(newState.variables.ids.length).toBe(2);
+  expect(newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name).toBe("Clipboard Trigger Var Name");
+  expect(newState.variables.entities[`${newState.scenes.ids[0]}__L0`]?.name).toBe("Clipboard Scene Var Name");
   expect(newState.triggers.entities[newState.triggers.ids[0]]?.script[0]?.args?.actorId).toBe(newState.actors.ids[0]);
 });
 
@@ -1164,6 +1169,50 @@ test("Should be able to add a trigger to a scene", () => {
   expect(newState.triggers.entities[newTriggerId]?.y).toBe(3);
   expect(newState.triggers.entities[newTriggerId]?.width).toBe(4);
   expect(newState.triggers.entities[newTriggerId]?.height).toBe(2);
+});
+
+test("Should be able to add a trigger to a scene with defaults and variables", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummyScene,
+          id: "scene1",
+          width: 10,
+          height: 5,
+          actors: [],
+          triggers: [],
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const action = actions.addTrigger({
+    sceneId: "scene1",
+    x: 1,
+    y: 3,
+    width: 4,
+    height: 2,
+    defaults: {
+      id: "trigger1",
+      name: "Clipboard Trigger"
+    },
+    variables: [{
+      id: "trigger1__L0",
+      name: "Clipboard Variable Name"
+    }]
+  });
+
+  const newState = reducer(state, action);
+
+  const newTriggerId = action.payload.triggerId;
+
+  expect(newState.triggers.ids.length).toBe(1);
+  expect(newState.variables.ids.length).toBe(1);
+  expect(newState.triggers.entities[newTriggerId]?.id).not.toBe("trigger1");
+  expect(newState.variables.entities[`${newTriggerId}__L0`]?.name).toBe("Clipboard Variable Name");
 });
 
 test("Should be able to move a trigger with a scene", () => {
