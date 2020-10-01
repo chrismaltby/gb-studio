@@ -714,3 +714,27 @@
   > .ScriptEditorEvent__Command.EventComment {
   background: var(--comment-event-color-alt);
 }
+
+.ScriptEditor__Presets {
+  padding: 10px;
+  padding-bottom: 30px;
+}
+
+.ScriptEditor__PresetsLabel {
+  font-size: 11px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.ScriptEditor__PresetsButtons {
+  display: flex;
+}
+
+.ScriptEditor__PresetsButtons > * {
+  width: 100%;
+  margin-right: 5px;
+}
+
+.ScriptEditor__PresetsButtons > *:last-child {
+  margin-right: 0;
+}

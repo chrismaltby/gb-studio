@@ -9,7 +9,7 @@ import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
-import { DropdownButton } from "../library/Button";
+import Button, { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
@@ -32,6 +32,8 @@ import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../stor
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import generateRandomWalkScript from "../../lib/movement/generateRandomWalkScript";
+import generateRandomLookScript from "../../lib/movement/generateRandomLookScript";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -469,7 +471,7 @@ class ActorEditor extends Component {
             <li
               onClick={() => {
                 const { selectScene } = this.props;
-                selectScene({sceneId: scene.id});
+                selectScene({ sceneId: scene.id });
               }}
             >
               <div className="EditorSidebar__Icon">
@@ -527,6 +529,31 @@ class ActorEditor extends Component {
                   onChange={scripts[scriptMode][scriptModeSecondary].onChange}
                   entityId={actor.id}
                 />
+              )}
+
+            {scriptMode === "update" &&
+              (!scripts.update.value || scripts.update.value.length <= 1) && (
+                <div className="ScriptEditor__Presets">
+                  <div className="ScriptEditor__PresetsLabel">
+                    {l10n("FIELD_OR_CHOOSE_PRESET")}
+                  </div>
+                  <div className="ScriptEditor__PresetsButtons">
+                    <Button
+                      onClick={() => {
+                        this.onEditUpdateScript(generateRandomWalkScript());
+                      }}
+                    >
+                      {l10n("FIELD_MOVEMENT_RANDOM_WALK")}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        this.onEditUpdateScript(generateRandomLookScript());
+                      }}
+                    >
+                      {l10n("FIELD_MOVEMENT_RANDOM_ROTATION")}
+                    </Button>
+                  </div>
+                </div>
               )}
           </div>
         </SidebarColumn>

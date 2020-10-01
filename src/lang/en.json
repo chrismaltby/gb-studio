@@ -264,6 +264,7 @@
   "FIELD_FRAMES_COUNT": "This scene has used {frameCount} of {maxFrames} available",
   "FIELD_TRIGGERS_COUNT": "This scene has used {triggerCount} of {maxTriggers} available",
   "FIELD_WARNING": "Warning",
+  "FIELD_OR_CHOOSE_PRESET": "or choose from presets",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
