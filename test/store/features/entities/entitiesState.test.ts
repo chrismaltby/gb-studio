@@ -439,6 +439,53 @@ test("Should be able to add a scene", () => {
   expect(newState.scenes.entities[newState.scenes.ids[0]]?.y).toBe(220);
 });
 
+test("Should be able to add a scene with defaults and variables", () => {
+  jest.mock('../../../../src/consts')
+
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const action = actions.addScene({
+    x: 110,
+    y: 220,
+    defaults: {
+      name: "Clipboard Scene Name",
+      actors: [{
+        ...dummyActor,
+        id: "actor1",
+        name: "Clipboard Actor",
+        x: 5,
+        y: 3
+      }],
+      triggers: [{
+        ...dummyTrigger,
+        id: "trigger1",
+        script: [{
+          id: "event1",
+          command: "EVENT_ACTOR_MOVE_TO",
+          args: {
+            actorId: "actor1"
+          }
+        }]
+      }]
+    },
+    variables: [{
+      id: "trigger1__L0",
+      name: "Clipboard Trigger Name"
+    }]
+  });
+
+  const newState = reducer(state, action);
+
+  expect(newState.scenes.ids.length).toBe(1);
+  expect(newState.actors.ids.length).toBe(1);
+  expect(newState.triggers.ids.length).toBe(1);
+  expect(newState.variables.ids.length).toBe(1);
+  expect(newState.variables.entities[`${newState.triggers.ids[0]}__L0`]?.name).toBe("Clipboard Trigger Name");
+  expect(newState.triggers.entities[newState.triggers.ids[0]]?.script[0]?.args?.actorId).toBe(newState.actors.ids[0]);
+});
+
 test("Should be able to move a scene", () => {
   const state: EntitiesState = {
     ...initialState,

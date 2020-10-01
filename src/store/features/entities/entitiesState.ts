@@ -592,7 +592,7 @@ const addScene: CaseReducer<
   }
 
   // Add any variables from clipboard
-  if (action.payload.defaults?.id && action.payload.variables) {
+  if (action.payload.variables) {
     const newVariables = action.payload.variables.map((variable) => {
       let newId = variable.id;
       for (var id in idReplacements) {
