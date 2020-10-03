@@ -7,7 +7,7 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
-import { SceneShape } from "../../store/stateShape";
+import { SceneShape, VariableShape } from "../../store/stateShape";
 import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
@@ -233,9 +233,9 @@ class World extends Component {
   }
 
   onAddScene = e => {
-    const { addScene, setTool, sceneDefaults } = this.props;
+    const { addScene, setTool, sceneDefaults, clipboardVariables } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults});
+    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults, variables: clipboardVariables});
     setTool({tool:"select"});
     this.setState({ hover: false });
   };
@@ -316,6 +316,7 @@ World.propTypes = {
   zoomRatio: PropTypes.number.isRequired,
   focus: PropTypes.bool.isRequired,
   sceneDefaults: PropTypes.shape({}),
+  clipboardVariables: PropTypes.arrayOf(VariableShape).isRequired,
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
@@ -349,7 +350,8 @@ function mapStateToProps(state) {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
     showLayers,
-    sceneDefaults
+    sceneDefaults,
+    clipboardVariables
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.editor;
@@ -384,6 +386,7 @@ function mapStateToProps(state) {
     scrollY,
     tool,
     sceneDefaults,
+    clipboardVariables,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
     sidebarWidth,

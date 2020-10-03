@@ -29,6 +29,7 @@ import {
   isVariableField,
   isPropertyField,
   walkEvents,
+  replaceEventActorIds,
 } from "../../../lib/helpers/eventSystem";
 import clamp from "../../../lib/helpers/clamp";
 import { RootState } from "../../configureStore";
@@ -544,6 +545,7 @@ const addScene: CaseReducer<
     x: number;
     y: number;
     defaults?: Partial<SceneData>;
+    variables?: Variable[];
   }>
 > = (state, action) => {
   const scenesTotal = localSceneSelectors.selectTotal(state);
@@ -573,7 +575,42 @@ const addScene: CaseReducer<
     }
   );
 
-  const fixedScene = mapSceneEvents(newScene, regenerateEventIds);
+  // Generate new ids
+  const idReplacements:Dictionary<string> = {};
+  if (action.payload.defaults?.id) {
+    idReplacements[action.payload.defaults.id] = action.payload.sceneId;
+  }
+  if (action.payload.defaults?.actors) {
+    for (let actor of action.payload.defaults.actors) {
+      idReplacements[actor.id] = uuid();
+    }
+  }
+  if (action.payload.defaults?.triggers) {
+    for (let trigger of action.payload.defaults.triggers) {
+      idReplacements[trigger.id] = uuid();
+    }
+  }
+
+  // Add any variables from clipboard
+  if (action.payload.variables) {
+    const newVariables = action.payload.variables.map((variable) => {
+      let newId = variable.id;
+      for (var id in idReplacements) {
+        if (variable.id.startsWith(id)) {
+          newId = variable.id.replace(id, idReplacements[id] || newId);
+          break;
+        }
+      }
+      return {
+        ...variable,
+        id: newId
+      }
+    });
+
+    variablesAdapter.upsertMany(state.variables, newVariables);
+  }
+
+  const fixedScene = mapSceneEvents(newScene, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
 
   scenesAdapter.addOne(state.scenes, fixedScene);
 
@@ -581,8 +618,8 @@ const addScene: CaseReducer<
     for (let actor of action.payload.defaults.actors) {
       addActorToScene(state, fixedScene, {
         ...actor,
-        id: uuid(),
-      });
+        id: idReplacements[actor.id] || uuid(),
+      }, idReplacements);
     }
   }
 
@@ -590,8 +627,8 @@ const addScene: CaseReducer<
     for (let trigger of action.payload.defaults.triggers) {
       addTriggerToScene(state, fixedScene, {
         ...trigger,
-        id: uuid(),
-      });
+        id: idReplacements[trigger.id] || uuid()
+      }, idReplacements);
     }
   }
 };
@@ -765,6 +802,7 @@ const addActor: CaseReducer<
     x: number;
     y: number;
     defaults?: Partial<Actor>;
+    variables?: Variable[];
   }>
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
@@ -775,6 +813,17 @@ const addActor: CaseReducer<
   const spriteSheetId = first(localSpriteSheetSelectors.selectAll(state))?.id;
   if (!spriteSheetId) {
     return;
+  }
+
+  // Add any variables from clipboard
+  if (action.payload.defaults?.id && action.payload.variables) {
+    const newVariables = action.payload.variables.map((variable) => {
+      return {
+        ...variable,
+        id: variable.id.replace(action.payload.defaults?.id || "", action.payload.actorId)
+      }
+    });
+    variablesAdapter.upsertMany(state.variables, newVariables);
   }
 
   const newActor = Object.assign(
@@ -802,11 +851,11 @@ const addActor: CaseReducer<
     }
   );
 
-  addActorToScene(state, scene, newActor);
+  addActorToScene(state, scene, newActor, {});
 };
 
-const addActorToScene = (state: EntitiesState, scene: Scene, actor: Actor) => {
-  const fixedActor = mapActorEvents(actor, regenerateEventIds);
+const addActorToScene = (state: EntitiesState, scene: Scene, actor: Actor, idReplacements: Dictionary<string>) => {
+  const fixedActor = mapActorEvents(actor, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
 
   // Add to scene
   scene.actors = ([] as string[]).concat(scene.actors, fixedActor.id);
@@ -1057,6 +1106,7 @@ const addTrigger: CaseReducer<
     width: number;
     height: number;
     defaults?: Partial<Trigger>;
+    variables?: Variable[];
   }>
 > = (state, action) => {
   const scene = localSceneSelectors.selectById(state, action.payload.sceneId);
@@ -1066,6 +1116,17 @@ const addTrigger: CaseReducer<
 
   const width = Math.min(action.payload.width, scene.width);
   const height = Math.min(action.payload.height, scene.height);
+
+  // Add any variables from clipboard
+  if (action.payload.defaults?.id && action.payload.variables) {
+    const newVariables = action.payload.variables.map((variable) => {
+      return {
+        ...variable,
+        id: variable.id.replace(action.payload.defaults?.id || "", action.payload.triggerId)
+      }
+    });
+    variablesAdapter.upsertMany(state.variables, newVariables);
+  }
 
   const newTrigger: Trigger = Object.assign(
     {
@@ -1084,19 +1145,20 @@ const addTrigger: CaseReducer<
   );
 
   // Add to scene
-  addTriggerToScene(state, scene, newTrigger);
+  addTriggerToScene(state, scene, newTrigger, {});
 };
 
 const addTriggerToScene = (
   state: EntitiesState,
   scene: Scene,
-  trigger: Trigger
+  trigger: Trigger,
+  idReplacements: Dictionary<string>
 ) => {
-  const fixedActor = mapTriggerEvents(trigger, regenerateEventIds);
+  const fixedTrigger = mapTriggerEvents(trigger, (event) => replaceEventActorIds(idReplacements, regenerateEventIds(event)));
 
   // Add to scene
-  scene.triggers = ([] as string[]).concat(scene.triggers, fixedActor.id);
-  triggersAdapter.addOne(state.triggers, fixedActor);
+  scene.triggers = ([] as string[]).concat(scene.triggers, fixedTrigger.id);
+  triggersAdapter.addOne(state.triggers, fixedTrigger);
 };
 
 const editTrigger: CaseReducer<
@@ -1817,6 +1879,7 @@ const entitiesSlice = createSlice({
         x: number;
         y: number;
         defaults?: Partial<SceneData>;
+        variables?: Variable[];
       }) => {
         return {
           payload: {
@@ -1845,6 +1908,7 @@ const entitiesSlice = createSlice({
         x: number;
         y: number;
         defaults?: Partial<Actor>;
+        variables?: Variable[];
       }) => {
         return {
           payload: {
@@ -1874,6 +1938,7 @@ const entitiesSlice = createSlice({
         width: number;
         height: number;
         defaults?: Partial<Trigger>;
+        variables?: Variable[];
       }) => {
         return {
           payload: {

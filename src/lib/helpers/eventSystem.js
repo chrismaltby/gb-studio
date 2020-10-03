@@ -1,5 +1,6 @@
 import uuid from "uuid/v4";
 import { EVENT_CALL_CUSTOM_EVENT } from "../compiler/eventTypes";
+import events from "../../lib/events";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
@@ -290,6 +291,32 @@ const regenerateEventIds = event => {
   );
 };
 
+const replaceEventActorIds = (replacementIds, event) => {
+  const events = require("../events").default;
+  const eventSchema = events[event.command];
+
+  if (!eventSchema) {
+    return event;
+  }
+
+  const patchArgs = {};
+  eventSchema.fields.forEach((field) => {
+    if (field.type === "actor") {
+      if (replacementIds[event.args[field.key]]) {
+        patchArgs[field.key] = replacementIds[event.args[field.key]];
+      }
+    }
+  });
+
+  return {
+    ...event,
+    args: {
+      ...event.args,
+      ...patchArgs
+    }
+  }
+}
+
 const filterEvents = (data, fn) => {
   return data.reduce((memo, o) => {
     if (fn(o)) {
@@ -402,6 +429,7 @@ export {
   prependEvent,
   appendEvent,
   regenerateEventIds,
+  replaceEventActorIds,
   removeEventIds,
   filterEvents,
   findEvent,
