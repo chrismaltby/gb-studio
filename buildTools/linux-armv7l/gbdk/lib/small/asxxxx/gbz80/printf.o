@@ -1,0 +1,21 @@
+XL2
+H 7 areas 4 global symbols
+M printf
+O -mgbz80
+S _putchar Ref0000
+S .__.ABS. Def0000
+S ___printf Ref0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 1B flags 0 addr 0
+S _printf Def0000
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 03 00
+T 00 00 F8 02 4D 44 03 03 11 00 00 C5 21 00 00 E5
+R 00 00 03 00 02 09 00 00
+T 0E 00 D5 F8 08 2A 66 6F E5 CD 00 00 E8 08 C9
+R 00 00 03 00 02 0A 02 00

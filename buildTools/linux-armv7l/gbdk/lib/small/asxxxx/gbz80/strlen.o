@@ -1,0 +1,15 @@
+XL2
+H 1 areas 3 global symbols
+M strlen
+S .__.ABS. Def0000
+A _CODE size E flags 0 addr 0
+S .strlen Def0005
+S _strlen Def0000
+T 00 00
+R 00 00 00 00
+T 00 00 F8 02 2A 66 6F
+R 00 00 00 00
+T 05 00
+R 00 00 00 00
+T 05 00 11 00 00 2A B7 C8 13 18 FA
+R 00 00 00 00

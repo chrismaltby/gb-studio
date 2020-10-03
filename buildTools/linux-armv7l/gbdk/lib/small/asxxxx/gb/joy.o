@@ -1,0 +1,56 @@
+XL2
+H 5 areas 17 global symbols
+S .add_int Ref0000
+S _main Ref0000
+S __cpu Ref0000
+S .OAM Ref0000
+S .wait_vbl_done Ref0000
+S banked_ret Ref0000
+S .reset Ref0000
+S .mode Ref0000
+S .refresh_OAM Ref0000
+S .add_VBL Ref0000
+S .__.ABS. Def0000
+S banked_call Ref0000
+S .STACK Ref0000
+S .remove_int Ref0000
+S .int Ref0000
+S __current_bank Ref0000
+S .display_off Ref0000
+S .set_mode Ref0000
+A _CODE size 0 flags 0 addr 0
+A _HEADER_JOY size 0 flags 8 addr 0
+A _HEADER_JOY0 size 8 flags 8 addr 60
+A _BASE size 22 flags 0 addr 0
+S .remove_JOY Def001C
+S _add_JOY Def0000
+S .add_JOY Def000B
+S _remove_JOY Def0011
+A _BSS size 10 flags 0 addr 0
+S .int_0x60 Def0000
+T 60 00
+R 00 00 02 00
+T 60 00
+R 00 00 02 00
+T 60 00 F5 E5 21 00 00 C3 00 00
+R 00 00 02 00 00 05 04 00 02 08 0E 00
+T 00 00
+R 00 00 03 00
+T 00 00 C5 F8 04 4E 23 46 CD 0B 00 C1 C9
+R 00 00 03 00 00 09 03 00
+T 0B 00
+R 00 00 03 00
+T 0B 00 21 00 00 C3 00 00
+R 00 00 03 00 00 03 04 00 02 06 00 00
+T 11 00
+R 00 00 03 00
+T 11 00 C5 F8 04 4E 23 46 CD 1C 00 C1 C9
+R 00 00 03 00 00 09 03 00
+T 1C 00
+R 00 00 03 00
+T 1C 00 21 00 00 C3 00 00
+R 00 00 03 00 00 03 04 00 02 06 0D 00
+T 00 00
+R 00 00 04 00
+T 00 00
+R 00 00 04 00
