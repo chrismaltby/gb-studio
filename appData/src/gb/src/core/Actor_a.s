@@ -36,8 +36,7 @@
         sla c
         ld b, #0
         add hl, bc
-        ld a, e
-        ld (hl), a
+        ld (hl), e
         pop bc
         ret
 
@@ -46,9 +45,9 @@
         ld hl, #_shadow_OAM+2 
         sla c
         sla c
+        ld a, b
         ld b, #0
         add hl, bc
-        ld a, b
         ld (hl), a
         pop bc
         ret
@@ -60,8 +59,7 @@
         _add_a h, l
         ld a, b
         ld (hl+), a
-        ld a, c
-        ld (hl), a
+        ld (hl), c
         pop af
         ret
 
