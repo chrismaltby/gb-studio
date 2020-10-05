@@ -2,7 +2,7 @@ import childProcess from "child_process";
 import fs from "fs-extra";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
-import buildMakeBat from "./buildMakeBat";
+import buildMakeScript from "./buildMakeScript";
 import { hexDec } from "../helpers/8bit";
 import getTmp from "../helpers/getTmp";
 import { isMBC1 } from "./helpers";
@@ -122,16 +122,19 @@ const makeBuild = async ({
 
   await fetchCachedObjData(buildRoot, env);
 
-  const makeBat = await buildMakeBat(buildRoot, {
+  const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh"
+  
+  const makeScript = await buildMakeScript(buildRoot, {
     CART_TYPE: env.CART_TYPE,
     CART_SIZE: env.CART_SIZE,
     customColorsEnabled: settings.customColorsEnabled,
     gbcFastCPUEnabled: settings.gbcFastCPUEnabled,
-    profile
+    profile,
+    platform: process.platform
   });
-  await fs.writeFile(`${buildRoot}/make.bat`, makeBat);
+  await fs.writeFile(`${buildRoot}/${makeScriptFile}`, makeScript);
 
-  const command = process.platform === "win32" ? "make.bat" : "make";
+  const command = process.platform === "win32" ? makeScriptFile : `/bin/sh ${makeScriptFile}`;
   const args = ["rom"];
 
   const options = {
