@@ -9,6 +9,7 @@ UBYTE await_input;
 UBYTE input_wait;
 BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
 UBYTE input_script_persist;
+UBYTE input_override_default;
 
 void HandleInputScripts() {
   UBYTE input_index, input_joy;

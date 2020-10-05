@@ -2008,6 +2008,8 @@ void Script_SetInputScript_b() {
     UNSET_BIT_MASK(input_script_persist, input);
   }
 
+  SET_BIT_MASK(input_override_default, input);
+
   index = 0;
   while (!(input & 1) && input != 0) {
     index += 1;
@@ -2027,6 +2029,8 @@ void Script_RemoveInputScript_b() {
   UBYTE input, index;
 
   input = script_cmd_args[0];
+
+  UNSET_BIT_MASK(input_override_default, input);
 
   index = 0;
   for (index = 0; index != 8; ++index) {
