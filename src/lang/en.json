@@ -598,6 +598,10 @@
   "GAMETYPE_PLATFORMER": "Platformer",
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
-  "GAMETYPE_POINT_N_CLICK": "Point and Click"
+  "GAMETYPE_POINT_N_CLICK": "Point and Click",
 
+  "// 20": "Compiler -----------------------------------------------------",
+
+  "COMPILER_COMPILING": "Compiling",
+  "COMPILER_LINKING": "Linking"
 }
