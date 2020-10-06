@@ -15,6 +15,9 @@ declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
 
+declare var PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
+declare var PREFERENCES_WINDOW_WEBPACK_ENTRY: any;
+
 type SplashTab = "info" | "new" | "recent";
 
 // Stop app launching during squirrel install
@@ -29,6 +32,7 @@ app.allowRendererProcessReuse = false;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any = null;
 let splashWindow: any = null;
+let preferencesWindow: any = null
 let playWindow: any = null;
 let hasCheckedForUpdate = false;
 
@@ -86,6 +90,38 @@ const createSplash = async (forceTab?: SplashTab) => {
     splashWindow = null;
   });
 };
+
+const createPreferences = async (forceTab?: SplashTab) => {
+  // Create the browser window.
+  preferencesWindow = new BrowserWindow({
+    width: 600,
+    height: 280,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      devTools: isDevMode,
+      preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY
+    }
+  });
+
+  preferencesWindow.setMenu(null);
+  preferencesWindow.loadURL(PREFERENCES_WINDOW_WEBPACK_ENTRY);
+
+  preferencesWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
+      preferencesWindow.show();
+    }, 40);
+  });
+
+  preferencesWindow.on("closed", () => {
+    preferencesWindow = null;
+  });
+};
+
 
 const createWindow = async (projectPath: string) => {
   const mainWindowState = windowStateKeeper({
@@ -428,6 +464,14 @@ menu.on("pasteInPlace", () => {
 menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });
+
+menu.on("preferences", () => {
+  if (!preferencesWindow) {
+    createPreferences();
+  } else {
+    preferencesWindow.show();
+  }
+})
 
 menu.on("updateSetting", (setting: string, value: any) => {
   settings.set(setting, value);
