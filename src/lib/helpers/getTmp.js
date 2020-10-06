@@ -1,9 +1,12 @@
 import fs from "fs-extra";
 import os from "os";
+import settings from "electron-settings";
 
-export default () => {
+export default (create = true) => {
   let tmpPath = os.tmpdir();
-  if (
+  if (settings.get("tmpDir")) {
+    tmpPath = settings.get("tmpDir");
+  } else if (
     tmpPath.indexOf(" ") === -1 &&
     tmpPath.indexOf(".itch") === -1 &&
     (process.platform !== "win32" || tmpPath.length < 35)
@@ -12,6 +15,8 @@ export default () => {
   } else if (process.platform === "win32") {
     tmpPath = "C:\\tmp";
   } else tmpPath = "/tmp";
-  fs.ensureDirSync(tmpPath);
+  if (create) {
+    fs.ensureDirSync(tmpPath);
+  }
   return tmpPath;
 };

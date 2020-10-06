@@ -1,0 +1,96 @@
+.Preferences {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.Preferences__Info {
+  white-space: pre-wrap;
+}
+
+.Preferences__FlexSpacer {
+  flex-grow: 1;
+}
+
+.Preferences__FormGroup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+}
+
+.Preferences__FormGroup label {
+  color: #999;
+  padding-bottom: 5px;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.Preferences__FormGroup label input,
+.Preferences__FormGroup label select {
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.Preferences__FormGroup label.Preferences__Label--Error {
+  color: #e91e63;
+}
+
+.Preferences__FormGroup input,
+.Preferences__FormGroup select {
+  height: 28px;
+  font-size: 16px;
+  padding: 5px 10px;
+  padding-right: 42px;
+  border-radius: 4px;
+  background-color: var(--input-bg-color);
+  border: 1px solid var(--input-border-color);
+  color: var(--input-text-color);
+}
+
+.Preferences__FormGroup select {
+  height: 40px;
+}
+
+.Preferences__FormGroup input:focus,
+.Preferences__FormGroup select:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0px 2px var(--highlight-color);
+}
+
+.Preferences__InputButton {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 9px;
+  right: 4px;
+  border-radius: 2px;
+  height: 32px;
+  width: 40px;
+  user-select: none;
+  cursor: default;
+}
+
+input.Preferences__InputButton {
+  opacity: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.Preferences__InputButton:hover {
+  background-color: #e8e7e8;
+}
+
+.Preferences__InputButton:active {
+  background-color: #cdcdcd;
+}
+
+.Preferences__InputButton svg {
+  fill: var(--main-text-color);
+}
