@@ -27,6 +27,7 @@ import { ConnectIcon, CheckIcon, BlankIcon } from "../library/Icons";
 import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
+import l10n from "../../lib/helpers/l10n";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
@@ -84,7 +85,7 @@ class ScriptEventFormInput extends Component {
   }  
 
   render() {
-    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope } = this.props;
+    const { type, id, value, defaultValue, args, field, entityId, allowRename, scope, defaultBackgroundPaletteIds, defaultUIPaletteId } = this.props;
 
     if (type === "textarea") {
       return (
@@ -160,8 +161,43 @@ class ScriptEventFormInput extends Component {
       );
     }
     if (type === "palette") {
+      if (field.paletteType === "background") {
+        return (
+          <PaletteSelect
+            id={id}
+            value={value}
+            onChange={this.onChange}
+            prefix={`${field.paletteIndex + 1}: `}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={
+              defaultBackgroundPaletteIds[field.paletteIndex] || ""
+            }
+          />
+        );
+      }
+      if (field.paletteType === "ui") {
+        return (
+          <PaletteSelect
+            id={id}
+            value={value}
+            onChange={this.onChange}
+            optional
+            optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            optionalDefaultPaletteId={
+              defaultUIPaletteId || ""
+            }
+          />
+        );
+      }      
       return (
-        <PaletteSelect id={id} value={value} onChange={this.onChange} optional />
+        <PaletteSelect
+          id={id}
+          value={value}
+          onChange={this.onChange}
+          optional
+          optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+        />
       );
     }
     if (type === "sprite") {
@@ -318,7 +354,9 @@ ScriptEventFormInput.propTypes = {
   defaultValue: EventDefaultValueShape,
   allowRename: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  scope: PropTypes.string.isRequired
+  scope: PropTypes.string.isRequired,
+  defaultBackgroundPaletteIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  defaultUIPaletteId: PropTypes.string.isRequired
 };
 
 ScriptEventFormInput.defaultProps = {
@@ -328,15 +366,21 @@ ScriptEventFormInput.defaultProps = {
   defaultValue: undefined,
   args: {},
   type: "",
-  allowRename: true
+  allowRename: true,
 };
 
 function mapStateToProps(state) {
   const scope = state.editor.type === "customEvent"
     ? "customEvent"
     : "global";
+  const settings = state.project.present.settings;
+  const defaultBackgroundPaletteIds =
+    settings.defaultBackgroundPaletteIds || [];
+  const defaultUIPaletteId = settings.defaultUIPaletteId || "";
   return {
-    scope
+    scope,
+    defaultBackgroundPaletteIds,
+    defaultUIPaletteId
   };
 }
 
