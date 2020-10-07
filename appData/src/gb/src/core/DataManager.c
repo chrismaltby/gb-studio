@@ -135,8 +135,9 @@ void LoadPlayerSpritePalette(UINT16 index) {
 }
 
 UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
-  UBYTE bank, sprite_frames, size, load_size;
-  UBYTE* data_ptr;
+  UBYTE sprite_frames, size, load_size;
+  static UBYTE bank; 
+  static UBYTE* data_ptr;
 
   PUSH_BANK(DATA_PTRS_BANK);
   bank = sprite_bank_ptrs[index].bank;
@@ -160,8 +161,9 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
 }
 
 void LoadScene(UINT16 index) {
-  UBYTE bank, i, k;
-  UBYTE* data_ptr;
+  UBYTE i, k;
+  static UBYTE bank;
+  static UBYTE* data_ptr;
 
   PUSH_BANK(DATA_PTRS_BANK);
   bank = scene_bank_ptrs[index].bank;
