@@ -2011,13 +2011,13 @@ void Script_SetInputScript_b() {
   SET_BIT_MASK(input_override_default, input);
 
   index = 0;
-  while (!(input & 1) && input != 0) {
-    index += 1;
+  for (index = 0; index != 8; ++index) {
+    if (input & 1) {
+      input_script_ptrs[index].bank = script_cmd_args[2];
+      input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
+    }
     input = input >> 1;
   }
-
-  input_script_ptrs[index].bank = script_cmd_args[2];
-  input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
 }
 
 /*

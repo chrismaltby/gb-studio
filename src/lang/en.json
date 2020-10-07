@@ -264,6 +264,8 @@
   "FIELD_FRAMES_COUNT": "This scene has used {frameCount} of {maxFrames} available",
   "FIELD_TRIGGERS_COUNT": "This scene has used {triggerCount} of {maxTriggers} available",
   "FIELD_WARNING": "Warning",
+  "FIELD_TMP_DIRECTORY": "Temp Directory",
+  "FIELD_TMP_DIRECTORY_INFO": "The location where temporary files are stored during the build of your game.\nIf you are unable to build your game due to permissions errors you can change this to a folder that you have access to.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -467,6 +469,7 @@
   "MENU_EJECT_ENGINE": "Eject Engine",
   "MENU_EJECT_PROJECT_BUILD": "Export Project Source",
   "MENU_PASTE_IN_PLACE": "Paste in Place",
+  "MENU_PREFERENCES": "Preferences...",
 
   "// 11": "Warnings -----------------------------------------------------",
 

@@ -74,6 +74,16 @@ module.exports = {
                 "vendor-lodash",
               ],
             },
+            {
+              html: "./src/preferences.html",
+              js: "./src/PreferencesRoot.js",
+              name: "preferences_window",
+              additionalChunks: [
+                "vendor-react",
+                "vendor-hotloader",
+                "vendor-lodash",
+              ],
+            },            
           ],
         },
       },
