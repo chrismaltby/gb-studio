@@ -42,6 +42,10 @@ const migrateProject = project => {
       data = migrateFrom200r1To200r2Events(data);
       release = "2";
     }
+    if (release === "2") {
+      data = migrateFrom200r2To200r3Events(data);
+      release = "3";
+    }    
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -55,6 +59,21 @@ const migrateProject = project => {
 
   return data;
 };
+
+/*
+ * Helper function to make sure that all migrated functions
+ * include the original metadata such as label text and comment status
+ */
+const generateMigrateMeta = (event) => (newEvent) => {
+  return {
+    ...newEvent,
+    args: {
+      ...newEvent.args,
+      __comment: event.args.__comment,
+      __label: event.args.__label        
+    }
+  }
+}
 
 /*
  * In version 1 Actors using sprites with 3 or 6 frames and movementType static
@@ -335,16 +354,7 @@ export const migrateFrom120To200Actors = (data) => {
  * needs to be added to all sound scripts to make old functionality the default
  */
 export const migrateFrom120To200Event = event => {
-  const migrateMeta = (newEvent) => {
-    return {
-      ...newEvent,
-      args: {
-        ...newEvent.args,
-        __comment: event.args.__comment,
-        __label: event.args.__label        
-      }
-    }
-  }
+  const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_SOUND_PLAY_EFFECT") {
     return migrateMeta({
       ...event,
@@ -588,16 +598,7 @@ export const migrateFrom120To200Collisions = data => {
  * to use the new default
  */
 export const migrateFrom200r1To200r2Event = (event) => {
-  const migrateMeta = (newEvent) => {
-    return {
-      ...newEvent,
-      args: {
-        ...newEvent.args,
-        __comment: event.args.__comment,
-        __label: event.args.__label,
-      },
-    };
-  };
+  const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_PLAYER_SET_SPRITE") {
     return migrateMeta({
       ...event,
@@ -619,6 +620,40 @@ const migrateFrom200r1To200r2Events = data => {
       return {
         ...customEvent,
         script: mapEvents(customEvent.script, migrateFrom200r1To200r2Event)
+      }
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r2 only allowed a script to be attached to
+ * a single input at once. This migration updates existing
+ * EVENT_SET_INPUT_SCRIPT events to use array values
+ */
+export const migrateFrom200r2To200r3Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_SET_INPUT_SCRIPT") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        input: Array.isArray(event.args.input)
+          ? event.args.input
+          : [event.args.input],
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r2To200r3Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r2To200r3Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r2To200r3Event)
       }
     })
   };
