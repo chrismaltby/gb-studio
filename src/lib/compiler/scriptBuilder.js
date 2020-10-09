@@ -96,7 +96,10 @@ import {
   ACTOR_STOP_UPDATE,
   ACTOR_SET_ANIMATE,
   IF_COLOR_SUPPORTED,
-  FADE_SET_SETTINGS
+  FADE_SET_SETTINGS,
+  ACTOR_FACE_PLAYER,
+  ACTOR_FACE_PLAYER_HORIZONTAL,
+  ACTOR_FACE_PLAYER_VERTICAL,
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -1198,7 +1201,25 @@ class ScriptBuilder {
       output,
     });
 
-  }
+  };
+
+  actorFacePlayer = (inverted) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_FACE_PLAYER));
+    output.push(inverted);
+  };
+
+  actorFacePlayerHorizontal = (inverted) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_FACE_PLAYER_HORIZONTAL));
+    output.push(inverted);
+  };
+
+  actorFacePlayerVertical = (inverted) => {
+    const output = this.output;
+    output.push(cmd(ACTOR_FACE_PLAYER_VERTICAL));
+    output.push(inverted);
+  };
 
   // Helpers
 

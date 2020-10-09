@@ -187,5 +187,8 @@ void Script_ActorStopUpdate_b();
 void Script_ActorSetAnimate_b();
 void Script_IfColorSupported_b();
 void Script_FadeSetSettings_b();
+void Script_ActorFacePlayer_b();
+void Script_ActorFacePlayerHorizontal_b();
+void Script_ActorFacePlayerVertical_b();
 
 #endif

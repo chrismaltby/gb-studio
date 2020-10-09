@@ -20,6 +20,7 @@
 #include "Projectiles.h"
 #include "states/Platform.h"
 #include <rand.h>
+#include <stdlib.h>
 
 #define RAM_START_PTR 0xA000
 #define RAM_START_VARS_PTR 0xA0FF
@@ -151,6 +152,9 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetAnimate_b, 1},     // 0x68
     {Script_IfColorSupported_b, 2},    // 0x69
     {Script_FadeSetSettings_b, 1},     // 0x6A
+    {Script_ActorFacePlayer_b, 1},     // 0x6B
+    {Script_ActorFacePlayerHorizontal_b, 1}, // 0x6C 
+    {Script_ActorFacePlayerVertical_b, 1},   // 0x6D
 };
 
 void ScriptTimerUpdate_b() {
@@ -2279,5 +2283,54 @@ void Script_ActorSetAnimate_b() {
 void Script_IfColorSupported_b() {
   if (_cpu == CGB_TYPE) {
     active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  }
+}
+
+void Script_ActorFacePlayer_b() {
+  if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
+    WORD difference_x = player.pos.x - actors[active_script_ctx.script_actor].pos.x;
+    WORD difference_y = player.pos.y - actors[active_script_ctx.script_actor].pos.y;
+    if (abs(difference_x) > abs(difference_y)) {
+      if (script_cmd_args[0]) {
+        actors[active_script_ctx.script_actor].dir.x = (difference_x < 0) ? 1 : -1;
+      } else {
+        actors[active_script_ctx.script_actor].dir.x = (difference_x < 0) ? -1 : 1;
+      }
+      actors[active_script_ctx.script_actor].dir.y = 0;
+    } else {
+      actors[active_script_ctx.script_actor].dir.x = 0;
+      if (script_cmd_args[0]) {
+        actors[active_script_ctx.script_actor].dir.y = (difference_y < 0) ? 1 : -1;
+      } else {
+        actors[active_script_ctx.script_actor].dir.y = (difference_y < 0) ? -1 : 1;
+      }
+    }
+    actors[active_script_ctx.script_actor].rerender = TRUE;
+  }
+}
+
+void Script_ActorFacePlayerHorizontal_b() {
+  if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
+    WORD difference = player.pos.x - actors[active_script_ctx.script_actor].pos.x;
+    if (script_cmd_args[0]) {
+      actors[active_script_ctx.script_actor].dir.x = (difference < 0) ? 1 : -1;
+    } else {
+      actors[active_script_ctx.script_actor].dir.x = (difference < 0) ? -1 : 1;
+    }
+    actors[active_script_ctx.script_actor].dir.y = 0;
+    actors[active_script_ctx.script_actor].rerender = TRUE;
+  }
+}
+
+void Script_ActorFacePlayerVertical_b() {
+  if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
+    WORD difference = player.pos.y - actors[active_script_ctx.script_actor].pos.y;
+    actors[active_script_ctx.script_actor].dir.x = 0;
+    if (script_cmd_args[0]) {
+        actors[active_script_ctx.script_actor].dir.y = (difference < 0) ? 1 : -1;
+    } else {
+        actors[active_script_ctx.script_actor].dir.y = (difference < 0) ? -1 : 1;
+    }
+    actors[active_script_ctx.script_actor].rerender = TRUE;
   }
 }
