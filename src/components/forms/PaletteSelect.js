@@ -30,11 +30,15 @@ class PaletteSelect extends Component {
       ? DMG_PALETTE
       : palettes.find((p) => p.id === currentValue)
       || palettes.find((p) => p.id === optionalDefaultPaletteId)
-      || DMG_PALETTE;
+      || null;
 
     return (
       <components.DropdownIndicator {...props}>
-        <PaletteBlock colors={current.colors} size={16} />
+        {current && value !== "keep" ? (
+          <PaletteBlock colors={current.colors} size={16} />
+        ) : (
+          <div style={{width: 16, height: 16}} />
+        )}
       </components.DropdownIndicator>
     );
   };
@@ -43,12 +47,20 @@ class PaletteSelect extends Component {
     const { palettes, optionalDefaultPaletteId } = this.props;
     const { value, label } = props;
     const currentValue = value === "" ? optionalDefaultPaletteId : value;
-    const current = palettes.find((p) => p.id === currentValue) || DMG_PALETTE;
+    const current = currentValue === DMG_PALETTE.id
+      ? DMG_PALETTE
+      : palettes.find((p) => p.id === currentValue)
+      || palettes.find((p) => p.id === optionalDefaultPaletteId)
+      || null;
     return (
       <components.Option {...props}>
         <div style={{ display: "flex" }}>
           <div style={{ flexGrow: 1 }}>{label}</div>
-          <PaletteBlock colors={current.colors} size={16} />
+          {current && value !== "keep" ? (
+            <PaletteBlock colors={current.colors} size={16} />
+          ) : (
+            <div style={{width: 16, height: 16}} />
+          )}
         </div>
       </components.Option>
     );
@@ -56,15 +68,24 @@ class PaletteSelect extends Component {
 
 
   render() {
-    const { palettes, id, value, onChange, optional, optionalLabel, prefix } = this.props;
+    const { palettes, id, value, onChange, optional, optionalLabel, canKeep, keepLabel, prefix } = this.props;
     
     const optionalPalette = {
       id: "",
       name: optionalLabel
     };
     
-    const current = value === "" ? optionalPalette : palettes.find((p) => p.id === value) || DMG_PALETTE;
+    let current;
+    if (value === "") {
+      current = optionalPalette;
+    } else if (value === "keep") {
+      current = null;
+    } else {
+      current = palettes.find((p) => p.id === value) || DMG_PALETTE;
+    }
+
     const currentIndex = value === "" && optional ? 0 : palettes.indexOf(current);
+
     let options = [];
     
     if (optional) {
@@ -73,6 +94,13 @@ class PaletteSelect extends Component {
         label: optionalLabel
       });
     };
+
+    if (canKeep) {
+      options = options.concat({
+        value: "keep",
+        label: keepLabel
+      })
+    }
     
     options = options.concat(
       {
@@ -87,6 +115,15 @@ class PaletteSelect extends Component {
       })
     );
 
+    let label;
+    if (current) {
+      label = current.name || `Palette ${currentIndex + 1}`;
+    } else if (value === "keep") {
+      label = keepLabel;
+    } else {
+      label = "None";
+    }
+
     return (
       <Select
         id={id}
@@ -94,7 +131,7 @@ class PaletteSelect extends Component {
         classNamePrefix="ReactSelect"
         options={options}
         value={{ 
-          label: prefix + (current ? current.name || `Palette ${currentIndex + 1}` : "None"), 
+          label: prefix + label, 
           value 
         }}
         onChange={data => {
@@ -121,6 +158,8 @@ PaletteSelect.propTypes = {
   optional: PropTypes.bool,
   optionalDefaultPaletteId: PropTypes.string,
   optionalLabel: PropTypes.string,
+  canKeep: PropTypes.bool,
+  keepLabel: PropTypes.string,
   prefix: PropTypes.string
 };
 
@@ -132,7 +171,9 @@ PaletteSelect.defaultProps = {
   optional: false,
   optionalDefaultPaletteId: "dmg",
   optionalLabel: "None",
-  prefix: ""
+  canKeep: false,
+  keepLabel: "Keep",
+  prefix: "",
 };
 
 function mapStateToProps(state) {

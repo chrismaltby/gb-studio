@@ -5,6 +5,7 @@ const fields = [
     key: "palette",
     type: "palette",
     defaultValue: "",
+    paletteType: "ui"
   }
 ];
 

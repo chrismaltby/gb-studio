@@ -30,5 +30,6 @@ extern UWORD SprPaletteBuffer[32];
 extern UWORD BkgPaletteBuffer[32];
 
 extern UBYTE palette_dirty;
+extern UBYTE palette_update_mask;
 
 #endif

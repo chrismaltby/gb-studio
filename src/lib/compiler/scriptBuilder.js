@@ -116,6 +116,7 @@ import {
   moveSpeedDec,
   animSpeedDec,
   collisionMaskDec,
+  paletteMaskDec,
   combineMultipleChoiceText,
   collisionGroupDec,
   actorRelativeDec,
@@ -353,11 +354,12 @@ class ScriptBuilder {
 
   // Palette
 
-  paletteSetBackground = (eventId) => {
+  paletteSetBackground = (eventId, mask) => {
     const output = this.output;
     const { eventPaletteIndexes } = this.options;
     const paletteIndex = eventPaletteIndexes[eventId] || 0;
     output.push(cmd(PALETTE_SET_BACKGROUND));
+    output.push(paletteMaskDec(mask));
     output.push(hi(paletteIndex));
     output.push(lo(paletteIndex));
   }
