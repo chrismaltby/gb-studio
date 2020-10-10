@@ -12,6 +12,7 @@ import {
   Actor,
   Trigger,
   SceneData,
+  Variable,
 } from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";
@@ -43,6 +44,7 @@ export interface EditorState {
   actorDefaults?: Partial<Actor>;
   triggerDefaults?: Partial<Trigger>;
   sceneDefaults?: Partial<SceneData>;
+  clipboardVariables: Variable[];
   type: EditorSelectionType;
   worldFocus: boolean;
   scene: string;
@@ -121,6 +123,7 @@ export const initialState: EditorState = {
   profile: false,
   worldSidebarWidth: 300,
   filesSidebarWidth: 300,
+  clipboardVariables: []
 };
 
 const editorSlice = createSlice({
@@ -427,6 +430,10 @@ const editorSlice = createSlice({
       state.sceneDefaults = action.payload;
       state.tool = "scene";
     },
+
+    setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {
+      state.clipboardVariables = action.payload;
+    },    
   },
   extraReducers: (builder) =>
     builder

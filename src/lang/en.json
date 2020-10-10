@@ -258,6 +258,16 @@
   "FIELD_MUSIC_DISABLE_SPEED_CONVERSION": "Disable 50/60 hertz speed conversion",
   "FIELD_HORIZONTAL": "Horizontal",
   "FIELD_VERTICAL": "Vertical",
+  "FIELD_ON_TIMER_END": "On Timer End",
+  "FIELD_NUM_ACTORS_LABEL": "Number of actors in scene",
+  "FIELD_NUM_FRAMES_LABEL": "Number of frames used by actors in scene",
+  "FIELD_NUM_TRIGGERS_LABEL": "Number of triggers in scene",
+  "FIELD_ACTORS_COUNT": "This scene has used {actorCount} of {maxActors} available",
+  "FIELD_FRAMES_COUNT": "This scene has used {frameCount} of {maxFrames} available",
+  "FIELD_TRIGGERS_COUNT": "This scene has used {triggerCount} of {maxTriggers} available",
+  "FIELD_WARNING": "Warning",
+  "FIELD_TMP_DIRECTORY": "Temp Directory",
+  "FIELD_TMP_DIRECTORY_INFO": "The location where temporary files are stored during the build of your game.\nIf you are unable to build your game due to permissions errors you can change this to a folder that you have access to.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -461,6 +471,7 @@
   "MENU_EJECT_ENGINE": "Eject Engine",
   "MENU_EJECT_PROJECT_BUILD": "Export Project Source",
   "MENU_PASTE_IN_PLACE": "Paste in Place",
+  "MENU_PREFERENCES": "Preferences...",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -475,6 +486,11 @@
   "WARNING_ENGINE_OUT_OF_DATE": "Ejected engine is out of date (found \"{ejectedEngineVersion}\" when latest is \"{expectedEngineVersion}\").\nYou may encounter issues if you don't eject your engine again.",
   "WARNING_MISSING_UPDATES": "Missing updates",
   "WARNING_MODIFIED_FILES": "Modified files",
+  "WARNING_TOO_MANY_ONSCREEN_ACTORS": "Too many actors may be onscreen at once around \"{actorName}\"",
+  "WARNING_ONSCREEN_ACTORS_LIMIT": "Only {maxOnscreen} actors can be visible on screen at once",
+  "WARNING_FRAMES_LIMIT": "This scene is over available limits and may have rendering issues. Try reducing number of actors in scene or use static and non animated sprites where possible. Stay within limits to prevent tile data overwriting sprite data",
+  "WARNING_ACTORS_LIMIT": "This scene contains too many actors, some actors will not be visible during gameplay",
+  "WARNING_TRIGGERS_LIMIT": "This scene contains too many triggers, some triggers will not be included during gameplay",
 
   "// 12": "Errors -------------------------------------------------------",
 
@@ -587,6 +603,10 @@
   "GAMETYPE_PLATFORMER": "Platformer",
   "GAMETYPE_ADVENTURE": "Adventure",
   "GAMETYPE_SHMUP": "Shoot Em' Up",
-  "GAMETYPE_POINT_N_CLICK": "Point and Click"
+  "GAMETYPE_POINT_N_CLICK": "Point and Click",
 
+  "// 20": "Compiler -----------------------------------------------------",
+
+  "COMPILER_COMPILING": "Compiling",
+  "COMPILER_LINKING": "Linking"
 }

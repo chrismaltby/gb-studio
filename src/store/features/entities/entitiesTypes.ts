@@ -48,6 +48,7 @@ export type Background = {
   imageWidth: number;
   imageHeight: number;
   plugin?: string;
+  inode: string;
   _v: number;
 };
 
@@ -61,6 +62,7 @@ export type Music = {
   filename: string;
   plugin?: string;
   settings: MusicSettings;
+  inode: string;
   _v: number;
 };
 
@@ -103,6 +105,7 @@ export type SpriteSheet = {
   type: SpriteType;
   numFrames: number;
   plugin?: string;
+  inode: string;
   _v: number;
 };
 

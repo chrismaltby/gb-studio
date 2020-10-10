@@ -176,10 +176,10 @@ int core_start() {
     UIUpdate_b();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
-      HandleInputScripts();
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
+      HandleInputScripts();
     }
 
     ScriptTimerUpdate();

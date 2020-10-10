@@ -3,11 +3,14 @@ import path from "path";
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
 
-const rootDir = isDist
-  ? __dirname.substr(0, __dirname.lastIndexOf(".webpack"))
-  : isCli
-  ? __dirname.substr(0, __dirname.lastIndexOf("out/cli"))
-  : __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
+let rootDir = __dirname.substr(0, __dirname.lastIndexOf("node_modules"));
+if (isDist) {
+  rootDir = __dirname.substr(0, __dirname.lastIndexOf(".webpack")); 
+} else if (isCli) {
+  rootDir = __dirname.substr(0, __dirname.lastIndexOf("out/cli")); 
+} else if (process.env.NODE_ENV === "test") {
+  rootDir = path.normalize(`${__dirname}/../`);
+}
 
 const engineRoot = path.normalize(`${rootDir}/appData/src`);
 const buildToolsRoot = path.normalize(`${rootDir}/buildTools`);
@@ -18,8 +21,12 @@ const eventsRoot = path.normalize(`${rootDir}/src/lib/events`);
 const assetsRoot = path.normalize(`${rootDir}/src/assets`);
 
 const MAX_ACTORS = 30;
+const MAX_ACTORS_SMALL = 10;
 const MAX_TRIGGERS = 30;
 const MAX_FRAMES = 25;
+const SCREEN_WIDTH = 20;
+const SCREEN_HEIGHT = 18;
+const MAX_ONSCREEN = 10;
 
 const MIDDLE_MOUSE = 2;
 
@@ -71,7 +78,11 @@ export {
   eventsRoot,
   assetsRoot,
   MAX_ACTORS,
+  MAX_ACTORS_SMALL,
   MAX_TRIGGERS,
   MAX_FRAMES,
+  MAX_ONSCREEN,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
   MIDDLE_MOUSE
 };
