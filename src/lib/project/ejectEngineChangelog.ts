@@ -68,6 +68,15 @@ const changes: EngineChange[] = [{
         "src/core/Scroll.c",
         "src/core/Scroll_b.c",
     ]
+}, {
+    version: "2.0.0-e8",
+    description: "Add support for preserving some background palettes while palette swapping",
+    modifiedFiles: [
+        "include/Palette.h",
+        "src/core/DataManager.c",
+        "src/core/Palette.c",
+        "src/core/ScriptRunner_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
