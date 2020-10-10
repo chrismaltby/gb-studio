@@ -680,6 +680,7 @@
   width: 100%;
   box-sizing: border-box;
   height: auto;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .ScriptEditorEvent__FormRow {
