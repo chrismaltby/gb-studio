@@ -40,7 +40,7 @@ void vbl_update() {
   // Update background scroll in vbl
   // interupt to prevent tearing
   SCX_REG = draw_scroll_x;
-  SCY_REG = scroll_y;
+  SCY_REG = draw_scroll_y;
 
 #ifdef CGB
   if (palette_dirty) {
