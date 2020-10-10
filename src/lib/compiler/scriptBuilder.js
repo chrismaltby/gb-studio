@@ -1030,9 +1030,11 @@ class ScriptBuilder {
     output.push(speedFlag);
   };
 
-  cameraShake = (frames) => {
+  cameraShake = (shouldShakeX, shouldShakeY, frames) => {
     const output = this.output;
     output.push(cmd(CAMERA_SHAKE));
+    output.push(shouldShakeX ? 1 : 0);
+    output.push(shouldShakeY ? 1 : 0);
     output.push(frames);
   };
 

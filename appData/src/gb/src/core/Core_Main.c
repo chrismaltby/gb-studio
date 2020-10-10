@@ -40,7 +40,7 @@ void vbl_update() {
   // Update background scroll in vbl
   // interupt to prevent tearing
   SCX_REG = draw_scroll_x;
-  SCY_REG = scroll_y;
+  SCY_REG = draw_scroll_y;
 
 #ifdef CGB
   if (palette_dirty) {
@@ -176,10 +176,10 @@ int core_start() {
     UIUpdate_b();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
-      HandleInputScripts();
       PUSH_BANK(stateBanks[scene_type]);
       updateFuncs[scene_type]();
       POP_BANK;
+      HandleInputScripts();
     }
 
     ScriptTimerUpdate();

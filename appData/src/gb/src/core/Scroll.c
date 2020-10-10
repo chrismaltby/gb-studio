@@ -10,10 +10,12 @@
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
 INT16 draw_scroll_x = 0;
+INT16 draw_scroll_y = 0;
 UINT16 scroll_x_max = 0;
 UINT16 scroll_y_max = 0;
 
 INT16 scroll_offset_x = 0;
+INT16 scroll_offset_y = 0;
 
 INT16 pending_h_x, pending_h_y;
 UINT8 pending_h_i;

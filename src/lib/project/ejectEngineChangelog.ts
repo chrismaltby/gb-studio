@@ -46,6 +46,28 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/states/Platform.c"
     ]
+}, {
+    version: "2.0.0-e6",
+    description: "Updates to the 'Attach Script to Button' event:\n" +
+        "   * Add support to attach script to multiple buttons\n" +
+        "   * Always override default button behavior on attach",
+    modifiedFiles: [
+        "include/Input.h",
+        "src/core/Core_Main.c",
+        "src/core/Input.c",
+        "src/core/ScriptRunner_b.c"
+    ]
+}, {
+    version: "2.0.0-e7",
+    description: "Adds support for vertical and diagonal camera shake",
+    modifiedFiles: [
+        "include/Scroll.h",
+        "src/core/Actor_a.s",
+        "src/core/Core_Main.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/core/Scroll_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

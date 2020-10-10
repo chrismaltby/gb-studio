@@ -37,6 +37,8 @@ UBYTE scene_stack_ptr = 0;
 SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
+UBYTE should_shake_x = FALSE;
+UBYTE should_shake_y = FALSE;
 UBYTE after_lock_camera = FALSE;
 Actor* tmp_actor;
 
@@ -68,7 +70,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorShow_b, 0},           // 0x14
     {Script_ActorHide_b, 0},           // 0x15
     {Script_ActorSetEmote_b, 1},       // 0x16
-    {Script_CameraShake_b, 1},         // 0x17
+    {Script_CameraShake_b, 3},         // 0x17
     {Script_Noop_b, 0},                // 0x18
     {Script_ShowOverlay_b, 3},         // 0x19
     {Script_HideOverlay_b, 0},         // 0x1A
@@ -376,6 +378,7 @@ UBYTE ScriptUpdate_MoveCamera() {
 UBYTE ScriptUpdate_CamShake() {
   if (shake_time == 0) {
     scroll_offset_x = 0;
+    scroll_offset_y = 0;
     return TRUE;
   }
 
@@ -383,7 +386,10 @@ UBYTE ScriptUpdate_CamShake() {
 
   // Handle Shake
   if (shake_time != 0) {
-    scroll_offset_x = (INT16)(shake_time & 0x5);
+    if (should_shake_x)
+      scroll_offset_x = (INT16)(shake_time & 0x5);
+    if (should_shake_y)
+      scroll_offset_y = (INT16)((shake_time & 0xA) >> 1);
   }
 
   return FALSE;
@@ -901,7 +907,9 @@ void Script_ActorSetEmote_b() {
  *   arg0: Number of frames to shake for
  */
 void Script_CameraShake_b() {
-  shake_time = script_cmd_args[0];
+  should_shake_x = script_cmd_args[0];
+  should_shake_y = script_cmd_args[1];
+  shake_time = script_cmd_args[2];
   active_script_ctx.script_update_fn = ScriptUpdate_CamShake;
 }
 
@@ -2009,14 +2017,16 @@ void Script_SetInputScript_b() {
     UNSET_BIT_MASK(input_script_persist, input);
   }
 
+  SET_BIT_MASK(input_override_default, input);
+
   index = 0;
-  while (!(input & 1) && input != 0) {
-    index += 1;
+  for (index = 0; index != 8; ++index) {
+    if (input & 1) {
+      input_script_ptrs[index].bank = script_cmd_args[2];
+      input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
+    }
     input = input >> 1;
   }
-
-  input_script_ptrs[index].bank = script_cmd_args[2];
-  input_script_ptrs[index].offset = (script_cmd_args[3] * 256) + script_cmd_args[4];
 }
 
 /*
@@ -2028,6 +2038,8 @@ void Script_RemoveInputScript_b() {
   UBYTE input, index;
 
   input = script_cmd_args[0];
+
+  UNSET_BIT_MASK(input_override_default, input);
 
   index = 0;
   for (index = 0; index != 8; ++index) {
