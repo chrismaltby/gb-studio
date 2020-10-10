@@ -2311,11 +2311,10 @@ void Script_ActorFacePlayer_b() {
 
 void Script_ActorFacePlayerHorizontal_b() {
   if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
-    WORD difference = player.pos.x - actors[active_script_ctx.script_actor].pos.x;
     if (script_cmd_args[0]) {
-      actors[active_script_ctx.script_actor].dir.x = (difference < 0) ? 1 : -1;
+      actors[active_script_ctx.script_actor].dir.x = (player.pos.x < actors[active_script_ctx.script_actor].pos.x) ? 1 : -1;
     } else {
-      actors[active_script_ctx.script_actor].dir.x = (difference < 0) ? -1 : 1;
+      actors[active_script_ctx.script_actor].dir.x = (player.pos.x < actors[active_script_ctx.script_actor].pos.x) ? -1 : 1;
     }
     actors[active_script_ctx.script_actor].dir.y = 0;
     actors[active_script_ctx.script_actor].rerender = TRUE;
@@ -2324,12 +2323,11 @@ void Script_ActorFacePlayerHorizontal_b() {
 
 void Script_ActorFacePlayerVertical_b() {
   if (ACTOR_ON_TILE(active_script_ctx.script_actor)) {
-    WORD difference = player.pos.y - actors[active_script_ctx.script_actor].pos.y;
     actors[active_script_ctx.script_actor].dir.x = 0;
     if (script_cmd_args[0]) {
-        actors[active_script_ctx.script_actor].dir.y = (difference < 0) ? 1 : -1;
+        actors[active_script_ctx.script_actor].dir.y = (player.pos.y < actors[active_script_ctx.script_actor].pos.y) ? 1 : -1;
     } else {
-        actors[active_script_ctx.script_actor].dir.y = (difference < 0) ? -1 : 1;
+        actors[active_script_ctx.script_actor].dir.y = (player.pos.y < actors[active_script_ctx.script_actor].pos.y) ? -1 : 1;
     }
     actors[active_script_ctx.script_actor].rerender = TRUE;
   }
