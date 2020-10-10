@@ -6,7 +6,7 @@ const fields = [
   {
     key: "input",
     type: "input",
-    defaultValue: "b"
+    defaultValue: ["b"]
   },
   {
     key: "persist",
