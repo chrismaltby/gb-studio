@@ -173,6 +173,8 @@ class ScriptEventFormInput extends Component {
             optionalDefaultPaletteId={
               defaultBackgroundPaletteIds[field.paletteIndex] || ""
             }
+            canKeep
+            keepLabel={l10n("FIELD_DONT_MODIFY")}
           />
         );
       }

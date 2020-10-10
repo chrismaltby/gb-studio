@@ -273,3 +273,12 @@ export const fadeStyleDec = (style) => {
   }
   return 0;
 }
+
+export const paletteMaskDec = (mask) => {
+  return mask.reduce((memo, value, index) => {
+    if (!value) {
+      return memo;
+    }
+    return memo + Math.pow(2, index);
+  }, 0);
+}

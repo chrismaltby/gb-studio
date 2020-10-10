@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "data_ptrs.h"
 #include "Projectiles.h"
+#include "Palette.h"
 #include "states/Platform.h"
 #include <rand.h>
 
@@ -144,7 +145,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_IfActorRelActor_b, 4},     // 0x61
     {Script_PlayerBounce_b, 1},        // 0x62
     {Script_WeaponAttack_b, 2},        // 0x63
-    {Script_PalSetBackground_b, 2},    // 0x64
+    {Script_PalSetBackground_b, 3},    // 0x64
     {Script_PalSetSprite_b, 2},        // 0x65
     {Script_PalSetUI_b, 2},            // 0x66
     {Script_ActorStopUpdate_b, 0},     // 0x67
@@ -2251,7 +2252,8 @@ void Script_WeaponAttack_b() {
 }
 
 void Script_PalSetBackground_b() {
-  LoadPalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  palette_update_mask = script_cmd_args[0];
+  LoadPalette((script_cmd_args[1] * 256) + script_cmd_args[2]);
   ApplyPaletteChange();
 }
 
