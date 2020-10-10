@@ -96,7 +96,8 @@ import {
   ACTOR_STOP_UPDATE,
   ACTOR_SET_ANIMATE,
   IF_COLOR_SUPPORTED,
-  FADE_SET_SETTINGS
+  FADE_SET_SETTINGS,
+  IF_ACTOR_IN_BOUNDARY
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -1202,7 +1203,20 @@ class ScriptBuilder {
       output,
     });
 
-  }
+  };
+
+  ifActorInBoundary = (x1, y1, x2, y2, truePath = [], falsePath = []) => {
+    const output = this.output;
+    output.push(cmd(IF_ACTOR_IN_BOUNDARY));
+    output.push(x1);
+    output.push(x2);
+    output.push(y1);
+    output.push(y2);
+    compileConditional(truePath, falsePath, {
+      ...this.options,
+      output,
+    });
+  };
 
   // Helpers
 

@@ -105,6 +105,7 @@ export const ACTOR_STOP_UPDATE = "ACTOR_STOP_UPDATE";
 export const ACTOR_SET_ANIMATE = "ACTOR_SET_ANIMATE";
 export const IF_COLOR_SUPPORTED = "IF_COLOR_SUPPORTED";
 export const FADE_SET_SETTINGS = "FADE_SET_SETTINGS";
+export const IF_ACTOR_IN_BOUNDARY = "IF_ACTOR_IN_BOUNDARY";
 
 export const scriptCommands = [
   END,
@@ -214,6 +215,7 @@ export const scriptCommands = [
   ACTOR_SET_ANIMATE,
   IF_COLOR_SUPPORTED,
   FADE_SET_SETTINGS,
+  IF_ACTOR_IN_BOUNDARY,
 ];
 
 export const commandIndex = key => {

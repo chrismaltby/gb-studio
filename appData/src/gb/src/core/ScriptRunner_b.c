@@ -154,6 +154,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetAnimate_b, 1},     // 0x68
     {Script_IfColorSupported_b, 2},    // 0x69
     {Script_FadeSetSettings_b, 1},     // 0x6A
+    {Script_IfActorInBoundary_b, 6},   // 0x6B
 };
 
 void ScriptTimerUpdate_b() {
@@ -2293,5 +2294,13 @@ void Script_ActorSetAnimate_b() {
 void Script_IfColorSupported_b() {
   if (_cpu == CGB_TYPE) {
     active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
+  }
+}
+
+void Script_IfActorInBoundary_b() {
+  UBYTE tile_x = actors[active_script_ctx.script_actor].pos.x >> 3;
+  UBYTE tile_y = actors[active_script_ctx.script_actor].pos.y >> 3;
+  if (tile_x >= script_cmd_args[0] && tile_x <= script_cmd_args[1] && tile_y >= script_cmd_args[2] && tile_y <= script_cmd_args[3]) {
+    active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[4] * 256) + script_cmd_args[5];
   }
 }

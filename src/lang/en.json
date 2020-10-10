@@ -293,6 +293,7 @@
   "EVENT_IF_INPUT": "If Joypad Input Pressed",
   "EVENT_IF_ACTOR_AT_POSITION": "If Actor At Position",
   "EVENT_IF_ACTOR_DIRECTION": "If Actor Facing Direction",
+  "EVENT_IF_ACTOR_IN_BOUNDARY": "If Actor In Boundary",
   "EVENT_SET_TRUE": "Variable: Set To 'True'",
   "EVENT_SET_FALSE": "Variable: Set To 'False'",
   "EVENT_SET_VALUE": "Variable: Set To Value",
