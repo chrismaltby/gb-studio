@@ -5,6 +5,7 @@ test("shouldn't modify strings under line limit", () => {
 });
 
 test("should trim strings over line limit", () => {
+  expect(trimlines("0123456789012345678")).toBe("012345678901234567", 18);
   expect(trimlines("01234567890123456789")).toBe("012345678901234567", 18);
 });
 
@@ -16,6 +17,12 @@ test("should trim full string to 52 characters", () => {
   expect(
     trimlines("012345678901234567\n012345678901234567\n012345678901234567")
   ).toBe("012345678901234567\n012345678901234567\n0123456789012345", 18);
+});
+
+test("should keep cropped word on last line", () => {
+  expect(
+    trimlines("012345678901234567\n012345678901234567\n012345678901 234567")
+  ).toBe("012345678901234567\n012345678901234567\n012345678901 234", 18);
 });
 
 test("should allow 52 characters to be distributed any way across the three lines", () => {
@@ -75,6 +82,30 @@ test("should treat variable characters as length=1 in character limits", () => {
   expect(
     trimlines("Hell#L0#\nWorld", 5)
   ).toBe("Hell#L0#\nWorld");   
+});
+
+test("should treat variables as length=3 in total limits", () => {
+  expect(
+    trimlines("$L0$Hello\nWorld", 5, 1)
+  ).toBe("$L0$He");  
+  expect(
+    trimlines("He$L0$\nWorld", 5, 1)
+  ).toBe("He$L0$");    
+  expect(
+    trimlines("Hello$L0$\nWorld", 5, 1)
+  ).toBe("Hello");   
+});
+
+test("should treat variable characters as length=1 in total limits", () => {
+  expect(
+    trimlines("HelloWorld", 5, 1)
+  ).toBe("Hello");
+  expect(
+    trimlines("#L0#HelloWorld", 5, 1)
+  ).toBe("#L0#Hell"); 
+  expect(
+    trimlines("01234567890123456#L0#\n01234567890123456#L0#\n012345678901234#L0#67")
+  ).toBe("01234567890123456#L0#\n01234567890123456#L0#\n012345678901234#L0#", 18);
 });
 
 test("should allow trimming text to a single line using third arg", () => {

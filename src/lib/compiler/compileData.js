@@ -32,7 +32,6 @@ import {
 } from "./eventTypes";
 import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
-  combineMultipleChoiceText,
   dirDec,
   dirToXDec,
   dirToYDec,
@@ -709,11 +708,6 @@ export const precompileStrings = (scenes) => {
           }
         }
       } else if (strings.indexOf(text) === -1) {
-        strings.push(text);
-      }
-    } else if (cmd.command === EVENT_CHOICE) {
-      const text = combineMultipleChoiceText(cmd.args);
-      if (strings.indexOf(text) === -1) {
         strings.push(text);
       }
     }
