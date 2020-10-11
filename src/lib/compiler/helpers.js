@@ -143,12 +143,6 @@ export const actorFramesPerDir = (spriteType, numFrames) => {
   return numFrames;
 };
 
-export const combineMultipleChoiceText = (args) => {
-  const trueText = args.trueText || "Choice A";
-  const falseText = args.falseText || "Choice B";
-  return `${trueText}\n${falseText}`;
-};
-
 export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
 
 export const replaceInvalidCustomEventVariables = (variable) => {

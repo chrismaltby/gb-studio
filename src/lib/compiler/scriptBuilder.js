@@ -117,7 +117,6 @@ import {
   animSpeedDec,
   collisionMaskDec,
   paletteMaskDec,
-  combineMultipleChoiceText,
   collisionGroupDec,
   actorRelativeDec,
   moveTypeDec,
@@ -128,6 +127,7 @@ import {
   fadeStyleDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
+import trimlines from "../helpers/trimlines";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
 
 class ScriptBuilder {
@@ -387,7 +387,11 @@ class ScriptBuilder {
   textDialogue = (inputText = " ", avatarId) => {
     const output = this.output;
     const { strings, avatars, variables, event } = this.options;
-    const text = this.replaceVariables(inputText, variables, event);
+    let text = this.replaceVariables(inputText, variables, event);
+
+    const maxPerLine = avatarId ? 16 : 18;
+    text = trimlines(text, maxPerLine);
+
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
       strings.push(text);
@@ -411,7 +415,11 @@ class ScriptBuilder {
   textChoice = (setVariable, args) => {
     const output = this.output;
     const { strings, variables, event } = this.options;
-    const choiceText = combineMultipleChoiceText(args);
+
+    const trueText = trimlines(args.trueText || "", 17, 1)  || "Choice A";
+    const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
+    const choiceText = `${trueText}\n${falseText}`;
+
     const text = this.replaceVariables(choiceText, variables, event);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
@@ -437,7 +445,7 @@ class ScriptBuilder {
     const output = this.output;
     const { strings, variables, event } = this.options;
     const menuText = options
-      .map((option, index) => option || `Item ${index + 1}`)
+      .map((option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`)
       .join("\n");
     const text = this.replaceVariables(menuText, variables, event);
     let stringIndex = strings.indexOf(text);
