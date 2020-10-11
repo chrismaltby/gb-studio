@@ -168,7 +168,10 @@ textarea {
   width: 100%;
   height: auto;
   resize: none;
-  line-height: 16px;
+  line-height: 15px;
+  font-size: 13px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
 }
 
 .FormField select {
