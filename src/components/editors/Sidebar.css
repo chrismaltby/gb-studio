@@ -223,12 +223,22 @@
   opacity: 0.5;
   border-top: 1px solid transparent;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .SidebarTabs__Tab--Active {
   background: var(--input-bg-color);
   opacity: 1;
   outline: 1px solid var(--input-border-color);
+}
+
+.SidebarTabs:not(:hover) .SidebarTabs__Tab--Active {
+  overflow: visible;
+}
+
+.SidebarTabs__Tab:hover {
+  overflow: visible;  
 }
 
 .SidebarTabs--Secondary .SidebarTabs__Tab--Active {
