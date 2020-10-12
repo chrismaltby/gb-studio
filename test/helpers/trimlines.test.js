@@ -21,8 +21,8 @@ test("should trim full string to 52 characters", () => {
 
 test("should keep cropped word on last line", () => {
   expect(
-    trimlines("012345678901234567\n012345678901234567\n012345678901 234567")
-  ).toBe("012345678901234567\n012345678901234567\n012345678901 234", 18);
+    trimlines("012345678901234567\n012345678901234567\n0123456789\n01 2345678901234567")
+  ).toBe("012345678901234567\n012345678901234567\n0123456789\n01 234", 18);
 });
 
 test("should allow 52 characters to be distributed any way across the three lines", () => {
@@ -41,6 +41,19 @@ test("should allow 52 characters to be distributed any way across the three line
     trimlines("01234567890123456\n01234567890123456\n012345678901234567")
   ).toBe("01234567890123456\n01234567890123456\n012345678901234567", 18);
 });
+
+test("should allow 52 characters to be distributed any way across the four lines", () => {
+  // 18 / 18 / 10 / 6
+  expect(
+    trimlines("012345678901234567\n012345678901234567\n0123456789\n012345")
+  ).toBe("012345678901234567\n012345678901234567\n0123456789\n012345");
+
+  // 2 / 14 / 18 / 18
+  expect(
+    trimlines("01\n01234567890123\n012345678901234567\n012345678901234567")
+  ).toBe("01\n01234567890123\n012345678901234567\n012345678901234567");
+});
+
 
 test("should not include command codes in character limits", () => {
   expect(
