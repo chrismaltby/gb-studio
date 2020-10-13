@@ -7,6 +7,7 @@ import { FlexGrow } from "../ui/spacing/Spacing";
 import {
   SplashAppTitle,
   SplashContent,
+  SplashCreateButton,
   SplashCredits,
   SplashCreditsBackground,
   SplashCreditsCloseButton,
@@ -299,11 +300,11 @@ export default () => {
                 </FormField>
               </FormRow>
               <FlexGrow />
-              <FormRow>
+              <SplashCreateButton>
                 <Button variant="primary" size="large">
                   {creating ? l10n("SPLASH_CREATING") : l10n("SPLASH_CREATE")}
                 </Button>
-              </FormRow>
+              </SplashCreateButton>
             </SplashForm>
           </SplashContent>
         )}

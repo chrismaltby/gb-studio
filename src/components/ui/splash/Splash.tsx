@@ -327,6 +327,10 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
   );
 };
 
+export const SplashCreateButton = styled.div`
+  padding: 0px 10px;
+`;
+
 const SplashCreditsFadeAnimation = keyframes`
   from {
     opacity: 0;

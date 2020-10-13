@@ -59,6 +59,7 @@ const createSplash = async (forceTab?: SplashTab) => {
   splashWindow = new BrowserWindow({
     width: 640,
     height: 400,
+    useContentSize: true,
     resizable: false,
     maximizable: false,
     titleBarStyle: "hiddenInset",
