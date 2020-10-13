@@ -57,10 +57,12 @@ const validProjectExt = [".json", ".gbsproj"];
 const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
-    width: 700,
-    height: 450,
+    width: 640,
+    height: 400,
+    useContentSize: true,
     resizable: false,
     maximizable: false,
+    titleBarStyle: "hiddenInset",
     fullscreenable: false,
     show: false,
     autoHideMenuBar: true,
