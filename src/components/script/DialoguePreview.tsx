@@ -103,19 +103,19 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
     projectRoot,
     "ui",
     frameAsset
-  )}`;
+  )}?_v=${uiVersion}`;
 
   const asciiFilename = `file:///${assetFilename(
     projectRoot,
     "ui",
     asciiAsset
-  )}`;
+  )}?_v=${uiVersion}`;
 
   const avatarFilename = avatarAsset ? `file:///${assetFilename(
     projectRoot,
     "sprites",
     avatarAsset
-  )}` : "";
+  )}?_v=${avatarAsset._v || 0}` : "";
 
   // Load frame image
   useEffect(() => {
