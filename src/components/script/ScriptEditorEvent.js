@@ -18,6 +18,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { EventShape } from "../../store/stateShape";
 import events from "../../lib/events";
+import { ScriptEditorEventHelper } from "./ScriptEditorEventHelper";
 
 const COMMENT_PREFIX = "//";
 
@@ -355,6 +356,9 @@ class ScriptEditorEvent extends Component {
               </div>
             )}
 
+            {open && events[command] && events[command].fields && (
+              <ScriptEditorEventHelper event={action} />
+            )}
             {open && events[command] && events[command].fields && (
               <ScriptEventForm
                 id={action.id}

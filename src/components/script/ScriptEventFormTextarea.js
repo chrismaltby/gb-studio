@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { textNumLines } from "../../lib/helpers/trimlines";
+import { totalLength, textNumLines } from "../../lib/helpers/trimlines";
 
 class ScriptEventFormTextArea extends Component {
-  onChange = e => {
+  onChange = (e) => {
     const { onChange } = this.props;
     const el = e.currentTarget;
     const cursorPosition = el.selectionStart;
@@ -15,32 +15,39 @@ class ScriptEventFormTextArea extends Component {
   };
 
   render() {
-    const { id, value, rows, placeholder } = this.props;
+    const { id, value, rows, placeholder, maxlength } = this.props;
     return (
-      <textarea
-        id={id}
-        value={value || ""}
-        rows={rows || textNumLines(value)}
-        placeholder={placeholder}
-        onChange={this.onChange}
-      />
+      <div className="ScriptEventFormTextArea">
+        <textarea
+          id={id}
+          value={value || ""}
+          rows={rows || textNumLines(value)}
+          placeholder={placeholder}
+          onChange={this.onChange}
+        />
+        <div className="ScriptEventFormTextArea__Stats">
+          {totalLength(value)} / {maxlength}
+        </div>
+      </div>
     );
   }
 }
 
 ScriptEventFormTextArea.propTypes = {
-    id: PropTypes.string,
-    value: PropTypes.string,
-    rows: PropTypes.number,
-    placeholder: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-}
+  id: PropTypes.string,
+  value: PropTypes.string,
+  rows: PropTypes.number,
+  maxlength: PropTypes.number,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
 
 ScriptEventFormTextArea.defaultProps = {
-    id: undefined,
-    value: "",
-    rows: 3,
-    placeholder: undefined
-}
+  id: undefined,
+  value: "",
+  rows: undefined,
+  maxlength: 52,
+  placeholder: undefined,
+};
 
 export default ScriptEventFormTextArea;
