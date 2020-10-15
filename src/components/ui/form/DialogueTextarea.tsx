@@ -4,6 +4,7 @@ import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import { NamedVariable } from "../../../lib/helpers/variables";
 import keyBy from "lodash/keyBy";
 import { Dictionary } from "@reduxjs/toolkit";
+import { totalLength } from "../../../lib/helpers/trimlines";
 
 const speedCodes = [
   {
@@ -35,6 +36,7 @@ const speedCodes = [
 const speedCodeLookup = keyBy(speedCodes, "id");
 
 const DialogueTextareaWrapper = styled.div`
+  position: relative;
   display: inline-block;
   width: 100%;
 
@@ -61,7 +63,7 @@ const DialogueTextareaWrapper = styled.div`
     font-variant-east-asian: normal;
     font-variant-ligatures: normal;
     font-variant-numeric: normal;
-    font-weight: 700;     
+    font-weight: 700;
   }
 
   .MentionsInput__highlighter__substring {
@@ -152,6 +154,14 @@ const DialogueTextareaWrapper = styled.div`
   }
 `;
 
+const CharacterCount = styled.div`
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  opacity: 0.5;
+  font-size: 11px;
+`;
+
 const searchVariables = (variables: NamedVariable[], wrapper: string) => (
   query: string
 ): SuggestionDataItem[] => {
@@ -174,6 +184,7 @@ export interface DialogueTextareaProps {
   value: string;
   placeholder?: string;
   variables: NamedVariable[];
+  maxlength?: number;
   onChange: (newValue: string) => void;
 }
 
@@ -182,6 +193,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   value,
   onChange,
   variables,
+  maxlength,
   placeholder,
 }) => {
   const [variablesLookup, setVariablesLookup] = useState<
@@ -233,6 +245,11 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           }
         />
       </MentionsInput>
+      {maxlength && (
+        <CharacterCount>
+          {totalLength(value)} / {maxlength}
+        </CharacterCount>
+      )}
     </DialogueTextareaWrapper>
   );
 };

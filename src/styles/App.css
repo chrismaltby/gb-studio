@@ -43,7 +43,6 @@
 @import url("./../components/script/ScriptEditor.css");
 @import url("./../components/script/DialogueReviewScene.css");
 @import url("./../components/forms/CollisionMaskPicker.css");
-@import url("./../components/script/ScriptEventFormTextArea.css");
 
 html,
 body {

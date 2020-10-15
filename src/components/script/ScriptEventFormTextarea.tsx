@@ -1,14 +1,16 @@
 import React, { useState, useEffect, FC } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { totalLength } from "../../lib/helpers/trimlines";
 import { DialogueTextarea } from "../ui/form/DialogueTextarea";
 import {
   customEventSelectors,
   variableSelectors,
 } from "../../store/features/entities/entitiesState";
 import { RootState } from "../../store/configureStore";
-import { NamedVariable, namedVariablesByContext } from "../../lib/helpers/variables";
+import {
+  NamedVariable,
+  namedVariablesByContext,
+} from "../../lib/helpers/variables";
 
 interface ScriptEventFormTextAreaProps {
   id?: string;
@@ -37,22 +39,25 @@ const ScriptEventFormTextArea: FC<ScriptEventFormTextAreaProps> = ({
   );
 
   useEffect(() => {
-    setVariables(namedVariablesByContext(editorType, entityId, variablesLookup, customEvent));
+    setVariables(
+      namedVariablesByContext(
+        editorType,
+        entityId,
+        variablesLookup,
+        customEvent
+      )
+    );
   }, [entityId, variablesLookup, editorType, customEvent]);
 
   return (
-    <div className="ScriptEventFormTextArea">
-      <DialogueTextarea
-        id={id}
-        value={value || ""}
-        onChange={onChange}
-        variables={variables}
-        placeholder={placeholder}
-      />
-      <div className="ScriptEventFormTextArea__Stats">
-        {totalLength(value)} / {maxlength}
-      </div>
-    </div>
+    <DialogueTextarea
+      id={id}
+      value={value || ""}
+      onChange={onChange}
+      variables={variables}
+      placeholder={placeholder}
+      maxlength={maxlength}
+    />
   );
 };
 

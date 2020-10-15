@@ -6,12 +6,17 @@
 .ScriptEventForm__InputRow {
   display: block;
   position: relative;
+  margin-bottom: 3px;
+}
+
+.ScriptEventForm__InputRow:last-child {
+  margin-bottom: 0;
 }
 
 .ScriptEventForm__BtnRow {
   position: absolute;
   right: 4px;
-  bottom: 7px;
+  bottom: 4px;
   display: flex;
 }
 
