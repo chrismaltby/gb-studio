@@ -157,8 +157,8 @@ const SCRIPT_CMD script_cmds[] = {
 };
 
 void ScriptTimerUpdate_b() {
-  // Don't update timer while script is running
-  if (active_script_ctx.script_ptr != 0) {
+  // Don't update timer while a non-background script is running
+  if (script_ctxs[0].script_ptr != 0) {
     return;
   }
 
