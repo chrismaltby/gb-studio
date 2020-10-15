@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Increased line limit in dialogue boxes to four lines
 
+### Fixed
+
+- Fix issue where sidebar tabs could become hidden if translation wasn't able to fit in space available
+
 ## [2.0.0-beta4]
 
 ### Added
