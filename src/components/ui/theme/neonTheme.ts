@@ -9,12 +9,25 @@ const darkheme: ThemeInterface = {
     highlightText: "#ffffff",
     text: "#f5dcec",
     secondaryText: "#777777",
+    conditional: {
+      level1: "#01579b",
+      level2: "#bf360c",
+      level3: "#1b5e20",
+      level4: "#311b92",
+    },
+    token: {
+      variable: "#9ccc65",
+      character: "#ffd54f",
+      speed: "#90caf9",     
+      text: "#000000", 
+    },
     toolbar: {
       background: "linear-gradient(to bottom, #630d86 0%, #271738 100%)",
       border: "#000000",
       inactiveBackground: "#3e4142",
       inactiveBorder: "#000000",
-      textShadow: "0px 0px 5px rgba(206,89,55,0.81), 0px 0px 10px rgba(206,89,55,0.81)",
+      textShadow:
+        "0px 0px 5px rgba(206,89,55,0.81), 0px 0px 10px rgba(206,89,55,0.81)",
     },
     button: {
       background: "linear-gradient(to bottom, #521386 0%, #2f2058 100%)",
@@ -47,12 +60,12 @@ const darkheme: ThemeInterface = {
       border: "#791e94",
     },
     document: {
-      background: "#20142e"
+      background: "#20142e",
     },
     list: {
       selectedBackground: "#000000",
-      activeBackground: "#333333"
-    }
+      activeBackground: "#333333",
+    },
   },
   borderRadius: 4,
 };

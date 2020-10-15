@@ -9,6 +9,18 @@ const darkheme: ThemeInterface = {
     highlightText: "#ffffff",
     text: "#b7babb",
     secondaryText: "#777777",
+    conditional: {
+      level1: "#01579b",
+      level2: "#bf360c",
+      level3: "#1b5e20",
+      level4: "#311b92",
+    },
+    token: {
+      variable: "#9ccc65",
+      character: "#ffd54f",
+      speed: "#90caf9",     
+      text: "#000000",  
+    }, 
     toolbar: {
       background: "linear-gradient(to bottom, #3e4142 0%, #282a2a 100%)",
       border: "#000000",
