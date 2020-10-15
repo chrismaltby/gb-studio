@@ -64,11 +64,13 @@ class SpriteSheetSelect extends Component {
     const { value, direction, frame } = this.props;
     return (
       <components.DropdownIndicator {...props}>
-        <SpriteSheetCanvas
-          spriteSheetId={value}
-          direction={direction}
-          frame={frame}
-        />
+        {value ? (
+          <SpriteSheetCanvas
+            spriteSheetId={value}
+            direction={direction}
+            frame={frame}
+          />
+        ) : <div style={{width: 16, height: 16}} />}
       </components.DropdownIndicator>
     );
   };

@@ -42,6 +42,14 @@ module.exports = [
       }
     ]
   },
+  {
+    test: /\.(png|jpe?g|gif|mp4)$/i,
+    exclude: /(node_modules|.webpack)/,
+    loader: "file-loader",
+    options: {
+      publicPath: "..", // move up from 'main_window'
+    },
+  }
   // Put your webpack loader rules in this array.  This is where you would put
   // your ts-loader configuration for instance:
   /**

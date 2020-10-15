@@ -93,6 +93,7 @@ class ScriptEventFormInput extends Component {
           id={id}
           value={value}
           rows={field.rows}
+          maxlength={args.avatarId ? 48 : 52}
           placeholder={field.placeholder}
           onChange={this.onChange}
         />

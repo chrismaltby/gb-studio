@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-beta5]
+
+### Added
+
+- Add new Splash screen with animated template previews, easier access to documentation and credits easter egg (click the power light)
+- Add live preview of how dialogue will appear in game when hovering over "Display Dialogue" events using ascii.png, frame.png and avatar sprites
+- Add character count to dialogue event text input (52 characters max, or 48 if using an avatar)
+
+### Changed
+
+- Increased line limit in dialogue boxes to four lines
+
 ## [2.0.0-beta4]
 
 ### Added

@@ -5,7 +5,7 @@
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
-  "version": "2.0.0-beta4",
+  "version": "2.0.0-beta5",
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "scripts": {
@@ -25,7 +25,8 @@
     "make:cli": "webpack --config webpack.cli.config.js",
     "cli": "node out/cli/gb-studio-cli.js",
     "cli:watch": "sh -c 'PROJECT_FILE=$0; PROJECT_ROOT=$(dirname $PROJECT_FILE); fswatch -0 out/cli/gb-studio-cli.js appData/src/gb | xargs -0 -I {} sh -c \"npm run cli compile $PROJECT_FILE && open $PROJECT_ROOT/build/rom/game.gb\";'",
-    "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start"
+    "analyze-bundle": "env ANALYZE_BUNDLE=1 electron-forge start",
+    "fetch-contributors": "curl https://api.github.com/repos/chrismaltby/gb-studio/contributors > contributors.json"
   },
   "keywords": [],
   "author": "GB Studio",
@@ -40,6 +41,8 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@types/classnames": "^2.2.10",
     "@types/react-redux": "^7.1.9",
+    "@types/react-window": "^1.8.2",
+    "@types/styled-components": "^5.1.4",
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
@@ -51,6 +54,7 @@
     "electron-settings": "^3.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
+    "focus-visible": "^5.2.0",
     "fs-extra": "^7.0.1",
     "gbdkjs": "^2.1.4",
     "ggbgfx": "^1.0.0",
@@ -65,6 +69,7 @@
     "react-dnd": "^2.6.0",
     "react-dnd-html5-backend": "^2.6.0",
     "react-dom": "^16.12.0",
+    "react-focus-lock": "^2.4.1",
     "react-helmet": "^6.0.0",
     "react-highlight-words": "^0.16.0",
     "react-hot-loader": "^4.12.18",
@@ -72,12 +77,14 @@
     "react-scroll-into-view-if-needed": "^2.1.7",
     "react-select": "^3.1.0",
     "react-select-async-paginate": "^0.3.10",
+    "react-window": "^1.8.5",
     "redux": "^4.0.0",
     "redux-thunk": "^2.2.0",
     "redux-undo": "1.0.1",
     "reselect": "^4.0.0",
     "rimraf": "^2.6.3",
     "semver": "7",
+    "styled-components": "^5.2.0",
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
     "vm2": "3.9.2"
@@ -115,6 +122,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.2",
+    "file-loader": "^6.1.1",
     "fork-ts-checker-webpack-plugin": "^3.1.1",
     "git-revision-webpack-plugin": "^3.0.6",
     "jest": "^24.9.0",
