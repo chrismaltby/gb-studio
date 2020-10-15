@@ -165,7 +165,7 @@
   height: 36px;
   line-height: 36px;
   margin: 0px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   border-bottom: 1px solid var(--sidebar-border-color);
   border-top: 1px solid var(--sidebar-border-color);
@@ -207,6 +207,7 @@
   height: 36px;
   padding-top: 1px;
   padding-right: 10px;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -239,6 +240,11 @@
 
 .SidebarTabs__Tab:hover {
   overflow: visible;  
+}
+
+.SidebarTabs--Secondary .SidebarTabs__Tab {
+  padding-right: 0px;
+  flex-grow: 1;
 }
 
 .SidebarTabs--Secondary .SidebarTabs__Tab--Active {
