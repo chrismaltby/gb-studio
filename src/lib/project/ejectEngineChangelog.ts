@@ -77,6 +77,12 @@ const changes: EngineChange[] = [{
         "src/core/Palette.c",
         "src/core/ScriptRunner_b.c",
     ]
+}, {
+    version: "2.0.0-e9",
+    description: "Fix movement in Adventure mode",
+    modifiedFiles: [
+        "include/Input.h",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
