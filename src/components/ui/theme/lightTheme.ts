@@ -9,6 +9,18 @@ const lightTheme: ThemeInterface = {
     highlightText: "#ffffff",
     text: "#3b3a3b",
     secondaryText: "#999999",
+    conditional: {
+      level1: "#b3e5fc",
+      level2: "#ffccbc",
+      level3: "#c8e6c9",
+      level4: "#d1c4e9",
+    },
+    token: {
+      variable: "#9ccc65",
+      character: "#ffd54f",
+      speed: "#90caf9",
+      text: "#000000",
+    },
     toolbar: {
       background: "linear-gradient(to bottom, #e8e7e8 0%, #d1d0d1 100%)",
       border: "#abaaab",

@@ -96,6 +96,7 @@ class ScriptEventFormInput extends Component {
           maxlength={args.avatarId ? 48 : 52}
           placeholder={field.placeholder}
           onChange={this.onChange}
+          entityId={entityId}
         />
       );
     }

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new Splash screen with animated template previews, easier access to documentation and credits easter egg (click the power light)
 - Add live preview of how dialogue will appear in game when hovering over "Display Dialogue" events using ascii.png, frame.png and avatar sprites
 - Add character count to dialogue event text input (52 characters max, or 48 if using an avatar)
+- Add autocomplete and syntax highlighting for variables and speed codes in dialogue
 
 ### Changed
 
