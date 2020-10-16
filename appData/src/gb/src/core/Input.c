@@ -41,6 +41,7 @@ void RemoveInputScripts() {
   for (i = 0; i != 8; ++i) {
     if (!GET_BIT(input_script_persist, i)) {
       input_script_ptrs[i].bank = 0;
+      UNSET_BIT(input_override_default, i);
     }
   }
 }

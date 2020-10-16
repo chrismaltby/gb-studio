@@ -91,7 +91,9 @@ const renderButton = (id, value, onChange) => input => (
       onChange={() => {
         if (Array.isArray(value)) {
           if (value.indexOf(input.key) > -1) {
-            onChange(value.filter(i => i !== input.key));
+            if (value.length > 1) {
+              onChange(value.filter(i => i !== input.key));
+            }
           } else {
             onChange([].concat(value, input.key));
           }

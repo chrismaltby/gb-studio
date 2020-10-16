@@ -83,6 +83,12 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "include/Input.h",
     ]
+}, {
+    version: "2.0.0-e10",
+    description: "Fix bug where an attached script overrides default behavior even when not persisted between scenes",
+    modifiedFiles: [
+        "src/core/Input.c ",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
