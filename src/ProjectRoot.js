@@ -9,11 +9,13 @@ import "./lib/electron/handleFullScreen";
 import "./lib/helpers/handleTheme";
 import "./styles/App.css";
 import "./initProject";
+import GlobalStyle from "./components/ui/globalStyle";
 
 const render = () => {
   ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider>
+        <GlobalStyle />
         <AppContainerDnD>
           <App />
         </AppContainerDnD>

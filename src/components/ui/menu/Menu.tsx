@@ -53,7 +53,26 @@ export const MenuDivider = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.menu.divider};
 `;
 
-export const MenuAccelerator = styled.div`
+export interface MenuAcceleratorProps {
+  accelerator: string;
+}
+
+export const acceleratorForPlatform = (accelerator: string) => {
+  if (process.platform === "darwin") {
+    return accelerator
+      .replace(/CommandOrControl\+/g, "⌘")
+      .replace(/Shift\+/g, "⇧")
+      .replace(/Alt\+/g, "⌥");
+  }
+  return accelerator
+    .replace(/CommandOrControl\+/g, "ctrl+")
+    .replace(/Shift\+/g, "shift+")
+    .replace(/Alt\+/g, "alt+");
+};
+
+export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>((props) => ({
+  children: acceleratorForPlatform(props.accelerator)
+}))<MenuAcceleratorProps>`
   flex-grow: 1;
   font-size: 0.8em;
   text-align: right;
