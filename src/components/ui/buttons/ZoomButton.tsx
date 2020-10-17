@@ -68,7 +68,7 @@ const ZoomLabel = styled.button<ZoomLabelProps>`
   justify-content: center;
   align-items: center;
   font-size: 13px;
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   width: 98px;
   height: 26px;
   flex-shrink: 0;

@@ -10,12 +10,11 @@ export interface MenuProps {
 export const Menu = styled.div<MenuProps>`
   display: flex;
   flex-direction: column;
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   width: max-content;
   min-width: 100px;
   user-select: none;
-  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
-    0 4px 11px hsla(0, 0%, 0%, 0.1);
+  box-shadow: ${props => props.theme.colors.menu.boxShadow};
   background: ${props => props.theme.colors.menu.background};
   color: ${props => props.theme.colors.text};
   font-size: ${props => props.theme.typography.fontSize};
@@ -65,9 +64,9 @@ export const acceleratorForPlatform = (accelerator: string) => {
       .replace(/Alt\+/g, "⌥");
   }
   return accelerator
-    .replace(/CommandOrControl\+/g, "ctrl+")
-    .replace(/Shift\+/g, "shift+")
-    .replace(/Alt\+/g, "alt+");
+    .replace(/CommandOrControl\+/g, "Ctrl+")
+    .replace(/Shift\+/g, "Shift+")
+    .replace(/Alt\+/g, "Alt+");
 };
 
 export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>((props) => ({

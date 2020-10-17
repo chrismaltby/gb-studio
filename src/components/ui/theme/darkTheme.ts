@@ -46,6 +46,7 @@ const darkheme: ThemeInterface = {
       hoverBackground: "#282a2a",
       activeBackground: "#333333",
       divider: "#282a2a",
+      boxShadow: "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
     },
     input: {
       background: "#000000",

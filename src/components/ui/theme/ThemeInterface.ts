@@ -44,6 +44,7 @@ export interface ThemeInterface {
       hoverBackground: string;
       activeBackground: string;
       divider: string;
+      boxShadow: string;
     };
     input: {
       background: string;
