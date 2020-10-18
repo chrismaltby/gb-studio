@@ -99,7 +99,7 @@ const fields = [
         in: ["add", "sub"],
       }
     ],
-    defaultValue: true,
+    defaultValue: false,
   },
   {
     key: "note1",
