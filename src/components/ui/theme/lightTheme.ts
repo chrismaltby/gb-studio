@@ -46,6 +46,7 @@ const lightTheme: ThemeInterface = {
       hoverBackground: "#e8e7e8",
       activeBackground: "#e0e0e0",
       divider: "#d1d0d1",
+      boxShadow: "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
     },
     input: {
       background: "#ffffff",

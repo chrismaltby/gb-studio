@@ -3,6 +3,8 @@ import { ipcRenderer, remote } from "electron";
 import { ThemeProvider } from "styled-components";
 import lightTheme from "./lightTheme";
 import darkTheme from "./darkTheme";
+import lightThemeWin from "./lightThemeWin";
+import darkThemeWin from "./darkThemeWin";
 import neonTheme from "./neonTheme";
 import settings from "electron-settings";
 import { ThemeInterface } from "./ThemeInterface";
@@ -15,6 +17,12 @@ type ThemeId = typeof themeIds[number];
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,
   dark: darkTheme,
+  neon: neonTheme,
+};
+
+const windowsThemes: Record<ThemeId, ThemeInterface> = {
+  light: lightThemeWin,
+  dark: darkThemeWin,
   neon: neonTheme,
 };
 
@@ -36,7 +44,11 @@ const Provider: FC = ({ children }) => {
         settings.get("theme"),
         nativeTheme.shouldUseDarkColors
       );
-      setTheme(themes[themeId]);
+      if (process.platform === "darwin") {
+        setTheme(themes[themeId]);
+      } else {
+        setTheme(windowsThemes[themeId]);
+      }
     };
 
     nativeTheme.on("updated", () => {

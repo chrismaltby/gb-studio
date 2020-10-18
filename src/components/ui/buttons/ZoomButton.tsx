@@ -5,6 +5,9 @@ import { MinusIcon, PlusIcon } from "../icons/Icons";
 export interface ZoomButtonProps {
   readonly zoom: number;
   readonly size?: "small" | "medium";
+  readonly title?: string;
+  readonly titleIn?: string;
+  readonly titleOut?: string;
   readonly onZoomIn?: () => void;
   readonly onZoomOut?: () => void;
   readonly onZoomReset?: () => void;
@@ -25,7 +28,7 @@ const ZoomButtonWrapper = styled.div`
 
 const ZoomInnerButton = styled.button<ZoomInnerButtonProps>`
   position: absolute;
-  top: 4px;
+  top: 5px;
   left: ${props => (props.pin === "left" ? "4px" : "auto")};
   right: ${props => (props.pin === "right" ? "4px" : "auto")};
   display: block;
@@ -36,6 +39,7 @@ const ZoomInnerButton = styled.button<ZoomInnerButtonProps>`
   line-height: 16px;
   padding: 0;
   border: 0;
+  flex-shrink: 0;
 
   :active {
     background: ${props => props.theme.colors.button.nestedActiveBackground};
@@ -64,9 +68,9 @@ const ZoomLabel = styled.button<ZoomLabelProps>`
   justify-content: center;
   align-items: center;
   font-size: 13px;
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   width: 98px;
-  height: 24px;
+  height: 26px;
   flex-shrink: 0;
   white-space: nowrap;
   box-sizing: border-box;
@@ -95,15 +99,19 @@ const smallStyles = css`
 
 export const ZoomButton: React.FC<ZoomButtonProps> = ({
   zoom,
+  title,
+  titleIn,
+  titleOut,
   onZoomIn,
   onZoomOut,
   onZoomReset,
   size,
 }) => (
-  <ZoomButtonWrapper onClick={onZoomReset}>
+  <ZoomButtonWrapper title={title} onClick={onZoomReset}>
     <ZoomInnerButton
+      title={titleOut}
       pin="left"
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation();
         onZoomOut?.();
       }}
@@ -112,8 +120,9 @@ export const ZoomButton: React.FC<ZoomButtonProps> = ({
     </ZoomInnerButton>
     <ZoomLabel size={size}>{zoom}%</ZoomLabel>
     <ZoomInnerButton
+      title={titleIn}
       pin="right"
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation();
         onZoomIn?.();
       }}

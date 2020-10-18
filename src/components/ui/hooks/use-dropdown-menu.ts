@@ -1,5 +1,6 @@
 // Imports
 import React, { useState, useRef, createRef, useEffect } from "react";
+import useWindowFocus from "./use-window-focus";
 
 // Create interface for button properties
 interface ButtonProps
@@ -25,6 +26,7 @@ export default function useDropdownMenu(itemCount: number) {
   const currentFocusIndex = useRef<number | null>(null);
   const firstRun = useRef(true);
   const clickedOpen = useRef(false);
+  const windowFocus = useWindowFocus();
 
   // Create refs
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -63,6 +65,13 @@ export default function useDropdownMenu(itemCount: number) {
       clickedOpen.current = false;
     }
   }, [isOpen]);
+
+  // Close menu if window loses focus
+  useEffect(() => {
+    if (!windowFocus && isOpen) {
+      setIsOpen(false);
+    }
+  }, [windowFocus]);
 
   // Handle listening for clicks and auto-hiding the menu
   useEffect(() => {

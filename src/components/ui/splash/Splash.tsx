@@ -215,7 +215,7 @@ export const SplashTemplateButton = styled.input.attrs({
   height: 80px;
   margin: 0;
   padding: 0;
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   -webkit-appearance: none;
   :focus {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
@@ -230,7 +230,7 @@ export const SplashTemplateLabel = styled.label`
   height: 80px;
   background-color: #fff;
   border: 2px solid ${(props) => props.theme.colors.input.background};
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   -webkit-appearance: none;
   box-sizing: border-box;
 

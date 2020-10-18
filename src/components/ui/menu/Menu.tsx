@@ -10,12 +10,11 @@ export interface MenuProps {
 export const Menu = styled.div<MenuProps>`
   display: flex;
   flex-direction: column;
-  border-radius: 4px;
+  border-radius: ${props => props.theme.borderRadius}px;
   width: max-content;
   min-width: 100px;
   user-select: none;
-  box-shadow: 0 0 0 1px rgba(150, 150, 150, 0.3),
-    0 4px 11px hsla(0, 0%, 0%, 0.1);
+  box-shadow: ${props => props.theme.colors.menu.boxShadow};
   background: ${props => props.theme.colors.menu.background};
   color: ${props => props.theme.colors.text};
   font-size: ${props => props.theme.typography.fontSize};
@@ -53,7 +52,26 @@ export const MenuDivider = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.menu.divider};
 `;
 
-export const MenuAccelerator = styled.div`
+export interface MenuAcceleratorProps {
+  accelerator: string;
+}
+
+export const acceleratorForPlatform = (accelerator: string) => {
+  if (process.platform === "darwin") {
+    return accelerator
+      .replace(/CommandOrControl\+/g, "⌘")
+      .replace(/Shift\+/g, "⇧")
+      .replace(/Alt\+/g, "⌥");
+  }
+  return accelerator
+    .replace(/CommandOrControl\+/g, "Ctrl+")
+    .replace(/Shift\+/g, "Shift+")
+    .replace(/Alt\+/g, "Alt+");
+};
+
+export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>((props) => ({
+  children: acceleratorForPlatform(props.accelerator)
+}))<MenuAcceleratorProps>`
   flex-grow: 1;
   font-size: 0.8em;
   text-align: right;

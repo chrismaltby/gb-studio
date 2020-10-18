@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "../buttons/Button";
+import { DropdownButton } from "../buttons/DropdownButton";
 
 export interface ToolbarProps {
   readonly children?: ReactNode;
+  readonly focus?: boolean;
 }
 
 export const Toolbar = styled.div<ToolbarProps>`
@@ -12,9 +14,9 @@ export const Toolbar = styled.div<ToolbarProps>`
   height: 38px;
   font-size: 13px;
   flex-shrink: 0;
-  background: ${props => props.theme.colors.toolbar.background};
-  color: ${props => props.theme.colors.text};
-  border-bottom: 1px solid ${props => props.theme.colors.toolbar.border};
+  background: ${(props) => props.theme.colors.toolbar.background};
+  color: ${(props) => props.theme.colors.text};
+  border-bottom: 1px solid ${(props) => props.theme.colors.toolbar.border};
   display: flex;
   align-items: center;
   padding-left: 10px;
@@ -25,25 +27,44 @@ export const Toolbar = styled.div<ToolbarProps>`
   position: relative;
   z-index: 1000;
 
+  .Platform__darwin & {
+    padding-left: 80px;
+  }
+
+  .full-screen & {
+    padding-left: 10px;
+  }
+
   & > *:not(:last-child) {
     margin-right: 5px;
   }
 
   ${Button} {
     -webkit-app-region: no-drag;
-    border: 1px solid ${props => props.theme.colors.button.toolbar.border};
+    border: 1px solid ${(props) => props.theme.colors.button.toolbar.border};
     border-top: 1px solid
-      ${props => props.theme.colors.button.toolbar.borderTop};
-    height: 24px;
+      ${(props) => props.theme.colors.button.toolbar.borderTop};
+    height: 26px;
     padding: 0px 10px;
+    flex-shrink: 0;
 
     svg {
       width: 17px;
       height: 17px;
     }
   }
+
+  ${(props) => (props.focus === false ? blurStyles : "")}
+`;
+
+const blurStyles = css`
+  background: ${(props) => props.theme.colors.toolbar.inactiveBackground};
+  opacity: 0.5;
 `;
 
 export const ToolbarText = styled.div`
-  text-shadow: ${props => props.theme.colors.toolbar.textShadow};
+  text-shadow: ${(props) => props.theme.colors.toolbar.textShadow};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;

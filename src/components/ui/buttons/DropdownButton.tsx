@@ -15,6 +15,7 @@ import { Button, ButtonProps } from "./Button";
 
 export interface DropdownButtonProps {
   readonly label?: ReactNode;
+  readonly title?: string;
   readonly children?: ReactNode;
   readonly showArrow?: boolean;
   readonly menuDirection?: "left" | "right";
@@ -40,6 +41,7 @@ export const MenuWrapper = styled.div<MenuWrapperProps>`
 
 export const Wrapper = styled.div`
   position: relative;
+  flex-shrink: 0;
   [aria-expanded="false"] + ${MenuWrapper} {
     display: none;
   }
@@ -47,6 +49,7 @@ export const Wrapper = styled.div`
 
 export const ArrowWrapper = styled.div`
   margin-right: -5px;
+  margin-top: -1px;
   &&&& > svg {
     transform: rotate(180deg);
     height: 8px;
@@ -57,6 +60,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
   size,
   variant,
   label,
+  title,
   children,
   showArrow,
   menuDirection,
@@ -95,6 +99,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
   return (
     <Wrapper>
       <Button
+        title={title}
         size={size}
         variant={variant}
         {...buttonProps}
