@@ -78,7 +78,7 @@ const AppToolbar: FC = () => {
   const windowFocus = useWindowFocus();
   const windowSize = useWindowSize();
   const smallZoom = (windowSize.width || 0) < 900;
-  const showTitle = (windowSize.width || 0) > 800;
+  const showTitle = (process.platform === "darwin") && ((windowSize.width || 0) > 800);
 
   const onRun = useCallback(() => {
     dispatch(buildGameActions.buildGame({ buildType: "web" }));
@@ -148,7 +148,7 @@ const AppToolbar: FC = () => {
   return (
     <Toolbar focus={windowFocus}>
       <Helmet>
-        <title>{name}</title>
+        <title>{`GB Studio - ${(name || "Untitled")}${modified ? ` (${l10n("TOOLBAR_MODIFIED")})` : ''}`}</title>
       </Helmet>
       <DropdownButton
         label={
