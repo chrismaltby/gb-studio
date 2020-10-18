@@ -8,6 +8,7 @@ import warningsMiddleware from "./features/warnings/warningsMiddleware";
 import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
+import engineMiddleware from "./features/engine/engineMiddleware";
 
 export type RootState = ReturnType<typeof rootReducer>;
 
@@ -15,22 +16,21 @@ const store = configureStore({
   reducer: rootReducer,
   devTools: {
     latency: 200,
-    actionsBlacklist: [
-      "editor/sceneHover"
-    ]
+    actionsBlacklist: ["editor/sceneHover"],
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false,
-    immutableCheck: false
+    immutableCheck: false,
   }).concat([
     electronMiddleware,
     projectMiddleware,
+    engineMiddleware,
     buildGameMiddleware,
     musicMiddleware,
     soundFxMiddleware,
     warningsMiddleware,
     undoMiddleware,
-    clipboardMiddleware
+    clipboardMiddleware,
   ]),
 });
 

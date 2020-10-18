@@ -47,5 +47,15 @@ extern unsigned char start_player_anim_speed;
 extern unsigned char start_fade_style;
 extern unsigned char script_variables[114];
 extern const unsigned int music_track_101__Data[];
+extern WORD plat_min_vel;
+extern WORD plat_walk_vel;
+extern WORD plat_run_vel;
+extern WORD plat_walk_acc;
+extern WORD plat_run_acc;
+extern WORD plat_dec;
+extern WORD plat_jump_vel;
+extern WORD plat_grav;
+extern WORD plat_hold_grav;
+extern WORD plat_max_fall_vel;
 
 #endif

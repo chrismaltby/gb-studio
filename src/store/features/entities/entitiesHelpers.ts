@@ -26,6 +26,7 @@ const sceneSchema = new schema.Entity("scenes", {
 });
 const customEventsSchema = new schema.Entity("customEvents");
 const palettesSchema = new schema.Entity("palettes");
+const enginePropsSchema = new schema.Entity("engineProps");
 
 const projectSchema = {
   scenes: [sceneSchema],
@@ -35,6 +36,7 @@ const projectSchema = {
   variables: [variablesSchema],
   customEvents: [customEventsSchema],
   palettes: [palettesSchema],
+  engineProps: [enginePropsSchema]
 };
 
 type ProjectSchemaKey = keyof typeof projectSchema;
@@ -54,6 +56,7 @@ export const denormalizeEntities = (
     customEvents: state.customEvents.ids,
     music: state.music.ids,
     variables: state.variables.ids,
+    engineProps: state.engineProps.ids,
   };
   const entities: Record<EntityKey, Dictionary<any>> = {
     actors: state.actors.entities,
@@ -65,6 +68,7 @@ export const denormalizeEntities = (
     customEvents: state.customEvents.entities,
     music: state.music.entities,
     variables: state.variables.entities,
+    engineProps: state.engineProps.entities
   };
   return denormalize(input, projectSchema, entities);
 };

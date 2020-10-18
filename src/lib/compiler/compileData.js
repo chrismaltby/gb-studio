@@ -73,6 +73,7 @@ const compile = async (
   projectData,
   {
     projectRoot = "/tmp",
+    engineFields = [],
     tmpPath = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
@@ -487,6 +488,7 @@ const compile = async (
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
     `extern unsigned char start_fade_style;\n` +
+    compileEngineFields(engineFields, projectData.engineProps, true) + '\n' +
     `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
@@ -524,6 +526,7 @@ const compile = async (
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
     `unsigned char start_fade_style = ${fadeStyleDec(defaultFadeStyle)};\n` +
+    compileEngineFields(engineFields, projectData.engineProps) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
@@ -658,6 +661,16 @@ const precompile = async (
     eventPaletteIndexes
   };
 };
+
+export const compileEngineFields = (engineFields, engineProps, header) => {
+  let fieldDef = "";
+  for(const engineField of engineFields) {
+    const prop = engineProps.find((p) => p.id === engineField.key);
+    const value = prop && prop.value || engineField.defaultValue;
+    fieldDef += `${header ? "extern " : ""}${engineField.type} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+  }
+  return fieldDef;
+}
 
 export const precompileVariables = (scenes) => {
   const variables = [];

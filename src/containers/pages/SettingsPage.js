@@ -23,6 +23,7 @@ import { sceneSelectors } from "../../store/features/entities/entitiesState";
 import { getMetadata } from "../../store/features/metadata/metadataState";
 import navigationActions from "../../store/features/navigation/navigationActions";
 import FadeStyleSelect from "../../components/forms/FadeStyleSelect";
+import EnginePropsEditor from "../../components/settings/EnginePropsEditor";
 
 class SettingsPage extends Component {
   onEditSetting = (key) => (e) => {
@@ -95,6 +96,8 @@ class SettingsPage extends Component {
           </p>
         </PageHeader>
         <PageContent>
+          <EnginePropsEditor />
+          
           <section>
             <h2>{l10n("SETTINGS_GBC")}</h2>
 

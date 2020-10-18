@@ -13,6 +13,7 @@ import navigationActions from "./store/features/navigation/navigationActions";
 import projectActions from "./store/features/project/projectActions";
 import buildGameActions from "./store/features/buildGame/buildGameActions";
 import clipboardActions from "./store/features/clipboard/clipboardActions";
+import engineActions from "./store/features/engine/engineActions";
 import errorActions from "./store/features/error/errorActions";
 
 const actions = {
@@ -34,6 +35,7 @@ const projectPath = urlParams.get("path");
 
 if (projectPath) {
   store.dispatch(projectActions.openProject(projectPath));
+  store.dispatch(engineActions.scanEngine(projectPath));
 }
 
 watchProject(projectPath, {

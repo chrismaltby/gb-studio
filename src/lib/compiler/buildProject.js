@@ -15,6 +15,7 @@ const buildProject = async (
     projectRoot = "/tmp",
     tmpPath = "/tmp",
     profile = false,
+    engineFields = [],
     outputRoot = "/tmp/testing",
     progress = (_msg) => {},
     warnings = (_msg) => {},
@@ -22,6 +23,7 @@ const buildProject = async (
 ) => {
   const compiledData = await compile(data, {
     projectRoot,
+    engineFields,
     tmpPath,
     progress,
     warnings,

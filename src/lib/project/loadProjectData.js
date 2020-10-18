@@ -174,6 +174,8 @@ const loadProject = async (projectPath) => {
     }
   }
 
+  const fixedEngineProps = (json.engineProps || []);
+
   return {
     ...json,
     backgrounds: fixedBackgroundIds,
@@ -182,6 +184,7 @@ const loadProject = async (projectPath) => {
     scenes: fixedScenes,
     customEvents: fixedCustomEvents,
     palettes: fixedPalettes,
+    engineProps: fixedEngineProps
   };
 };
 
