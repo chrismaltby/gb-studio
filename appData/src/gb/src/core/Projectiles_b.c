@@ -118,8 +118,8 @@ void UpdateProjectiles_b() {
           continue;
         }
 
-        if ((projectiles[i].pos.x + 16 >= actors[a].pos.x) &&
-            (projectiles[i].pos.x <= actors[a].pos.x + 16) &&
+        if ((projectiles[i].pos.x + 12 >= actors[a].pos.x) &&
+            (projectiles[i].pos.x <= actors[a].pos.x + 12) &&
             (projectiles[i].pos.y + 8 >= actors[a].pos.y) &&
             (projectiles[i].pos.y <= actors[a].pos.y + 8)) {
           hit = a;
