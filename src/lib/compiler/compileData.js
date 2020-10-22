@@ -667,8 +667,8 @@ export const compileEngineFields = (engineFields, engineProps, header) => {
   for(const engineField of engineFields) {
     const prop = engineProps.find((p) => p.id === engineField.key);
     const customValue = prop && prop.value;
-    const value = customValue !== undefined ? customValue : engineField.defaultValue;
-    fieldDef += `${header ? "extern " : ""}${engineField.type} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+    const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
+    fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
   }
   return fieldDef;
 }
