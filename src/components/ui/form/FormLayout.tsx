@@ -20,15 +20,27 @@ export const FormHeader = styled.div`
   }
 `;
 
-export const FormRow = styled.div`
+export interface FormRowProps {
+  readonly size?: "medium" | "large";
+}
+
+export const FormRow = styled.div<FormRowProps>`
   display: flex;
   padding: 0 10px;
   width: 100%;
   box-sizing: border-box;
 
   & > * {
-    margin-right: 10px;
-    margin-bottom: 10px;
+    ${(props) =>
+      props.size === "large"
+        ? css`
+            margin-right: 20px;
+            margin-bottom: 20px;
+          `
+        : css`
+            margin-right: 10px;
+            margin-bottom: 10px;
+          `}
   }
 
   & > *:last-child {

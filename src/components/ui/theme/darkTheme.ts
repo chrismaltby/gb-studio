@@ -18,9 +18,9 @@ const darkheme: ThemeInterface = {
     token: {
       variable: "#9ccc65",
       character: "#ffd54f",
-      speed: "#90caf9",     
-      text: "#000000",  
-    }, 
+      speed: "#90caf9",
+      text: "#000000",
+    },
     toolbar: {
       background: "linear-gradient(to bottom, #3e4142 0%, #282a2a 100%)",
       border: "#000000",
@@ -46,7 +46,8 @@ const darkheme: ThemeInterface = {
       hoverBackground: "#282a2a",
       activeBackground: "#333333",
       divider: "#282a2a",
-      boxShadow: "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
+      boxShadow:
+        "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
     },
     input: {
       background: "#000000",
@@ -55,17 +56,24 @@ const darkheme: ThemeInterface = {
       text: "#b7babb",
       border: "#333333",
     },
+    card: {
+      background: "#3e4142",
+      text: "#b7babb",
+      border: "#111111",
+      divider: "#333333",
+      boxShadow: "3px 3px 10px rgba(0, 0, 0, 1)",
+    },
     sidebar: {
       background: "#222222",
       border: "#000000",
     },
     document: {
-      background: "#444444"
+      background: "#444444",
     },
     list: {
       selectedBackground: "#000000",
-      activeBackground: "#333333"
-    }
+      activeBackground: "#333333",
+    },
   },
   borderRadius: 4,
 };

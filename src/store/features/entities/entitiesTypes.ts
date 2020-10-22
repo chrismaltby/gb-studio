@@ -100,7 +100,7 @@ export type CustomEvent = {
 
 export type EngineProp = {
   id: string;
-  value: any;
+  value: number | string | boolean | undefined;
 };
 
 export type SpriteSheet = {

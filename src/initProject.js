@@ -49,6 +49,7 @@ watchProject(projectPath, {
   onRemoveBackground: (f) => store.dispatch(projectActions.removeBackground(f)),
   onRemoveMusic: (f) => store.dispatch(projectActions.removeMusic(f)),
   onChangedUI: (f) => store.dispatch(projectActions.loadUI()),
+  onChangedEngineSchema: (f) => store.dispatch(engineActions.scanEngine(projectPath))
 });
 
 window.ActionCreators = ActionCreators;

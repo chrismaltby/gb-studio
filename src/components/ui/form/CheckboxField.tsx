@@ -4,9 +4,10 @@ import { Checkbox } from "./Checkbox";
 import { Label } from "./Label";
 
 export interface CheckboxFieldProps {
-  name: string;
-  label?: string;
-  checked?: boolean;
+  readonly name: string;
+  readonly label?: string;
+  readonly checked?: boolean;
+  readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Wrapper = styled.div`
@@ -23,9 +24,10 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
   name,
   label,
   checked,
+  onChange,
 }) => (
   <Wrapper>
-    <Checkbox id={name} name={name} checked={checked} />
+    <Checkbox id={name} name={name} checked={checked} onChange={onChange} />
     {label && <Label htmlFor={name}>{label}</Label>}
   </Wrapper>
 );

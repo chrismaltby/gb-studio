@@ -46,7 +46,8 @@ const lightTheme: ThemeInterface = {
       hoverBackground: "#e8e7e8",
       activeBackground: "#e0e0e0",
       divider: "#d1d0d1",
-      boxShadow: "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
+      boxShadow:
+        "0 0 0 1px rgba(150, 150, 150, 0.3), 0 4px 11px hsla(0, 0%, 0%, 0.1)",
     },
     input: {
       background: "#ffffff",
@@ -55,17 +56,24 @@ const lightTheme: ThemeInterface = {
       text: "#3b3a3b",
       border: "#d4d4d4",
     },
+    card: {
+      background: "#ffffff",
+      text: "#3b3a3b",
+      border: "#cccccc",
+      divider: "#eeeeee",
+      boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.1)",
+    },
     sidebar: {
       background: "#f2f2f2",
       border: "#d4d4d4",
     },
     document: {
-      background: "#f9f9f9"
+      background: "#f9f9f9",
     },
     list: {
       selectedBackground: "#dddddd",
-      activeBackground: "#eaeaea"
-    }
+      activeBackground: "#eaeaea",
+    },
   },
   borderRadius: 4,
 };

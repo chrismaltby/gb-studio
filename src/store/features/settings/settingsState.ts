@@ -16,6 +16,7 @@ export type SettingsState = {
   worldScrollY: number;
   zoom: number;
   customColorsEnabled: boolean;
+  customHead: string;
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
@@ -32,6 +33,7 @@ export const initialState: SettingsState = {
   worldScrollY: 0,
   zoom: 100,
   customColorsEnabled: false,
+  customHead: "",
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",

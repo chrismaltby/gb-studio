@@ -18,7 +18,7 @@ export interface ThemeInterface {
       character: string;
       speed: string;
       text: string;
-    }
+    };
     toolbar: {
       background: string;
       inactiveBackground: string;
@@ -52,6 +52,13 @@ export interface ThemeInterface {
       activeBackground: string;
       text: string;
       border: string;
+    };
+    card: {
+      background: string;
+      text: string;
+      border: string;
+      divider: string;
+      boxShadow: string;
     };
     sidebar: {
       background: string;

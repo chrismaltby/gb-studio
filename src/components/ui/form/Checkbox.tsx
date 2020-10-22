@@ -6,6 +6,7 @@ export interface CheckboxProps {
   readonly id: string;
   readonly name: string;
   readonly checked?: boolean;
+  readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
@@ -23,17 +24,17 @@ const StyledCheckbox = styled.div`
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: ${props => props.theme.colors.input.background};
-  color: ${props => props.theme.colors.input.text};
-  border: 1px solid ${props => props.theme.colors.input.border};
+  background: ${(props) => props.theme.colors.input.background};
+  color: ${(props) => props.theme.colors.input.text};
+  border: 1px solid ${(props) => props.theme.colors.input.border};
   border-radius: 4px;
   ${HiddenCheckbox}:checked + & {
-    background: ${props => props.theme.colors.highlight};
-    border: 1px solid ${props => props.theme.colors.highlight};
+    background: ${(props) => props.theme.colors.highlight};
+    border: 1px solid ${(props) => props.theme.colors.highlight};
   }
   ${HiddenCheckbox}:focus + & {
-    border: 1px solid ${props => props.theme.colors.highlight};
-    box-shadow: 0 0 0px 2px ${props => props.theme.colors.highlight} !important;
+    border: 1px solid ${(props) => props.theme.colors.highlight};
+    box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight} !important;
     transition: box-shadow 0.2s cubic-bezier(0.175, 0.885, 0.71, 2.65);
   }
 
@@ -70,10 +71,17 @@ export const Checkbox: FC<CheckboxProps> = ({
   id,
   name,
   checked,
+  onChange,
   ...props
 }) => (
   <CheckboxContainer>
-    <HiddenCheckbox id={id} name={name} checked={checked} {...props} />
+    <HiddenCheckbox
+      id={id}
+      name={name}
+      checked={checked}
+      onChange={onChange}
+      {...props}
+    />
     <StyledCheckbox>
       <Icon viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />
