@@ -1156,7 +1156,7 @@ export const precompileScenes = (
         const spriteIndex = usedSprites.findIndex(
           (sprite) => sprite.id === spriteId
         );
-        if (memo.indexOf(spriteIndex) === -1) {
+        if (spriteIndex !== -1 && memo.indexOf(spriteIndex) === -1) {
           memo.push(spriteIndex);
         }
         return memo;
