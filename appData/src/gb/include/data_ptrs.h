@@ -57,5 +57,6 @@ extern WORD plat_jump_vel;
 extern WORD plat_grav;
 extern WORD plat_hold_grav;
 extern WORD plat_max_fall_vel;
+UBYTE *engine_fields_addr = &plat_min_vel;
 
 #endif

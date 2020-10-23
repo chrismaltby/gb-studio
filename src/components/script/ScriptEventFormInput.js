@@ -28,10 +28,11 @@ import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
 import l10n from "../../lib/helpers/l10n";
+import { VariablePairSelect } from "../forms/VariablePairSelect";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
-    if(arg.type === "variable" || arg.type === "property") {
+    if(arg.type === "variable" || arg.type === "variablePair" || arg.type === "property") {
       return undefined;
     }
     return arg.value;
@@ -226,6 +227,16 @@ class ScriptEventFormInput extends Component {
         />
       );
     }
+    if (type === "variablePair") {
+      return (
+        <VariablePairSelect
+          id={id}
+          value={value || "0:0"}
+          entityId={entityId}
+          onChange={this.onChange}
+        />
+      );
+    }    
     if (type === "direction") {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
     }

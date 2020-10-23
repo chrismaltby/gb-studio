@@ -46,6 +46,7 @@ import {
 import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
+import { precompileEngineFields } from "../helpers/engineFields";
 
 const indexById = indexBy("id");
 
@@ -96,6 +97,8 @@ const compile = async (
 
   const cartType = projectData.settings.cartType;
 
+  const precompiledEngineFields = precompileEngineFields(engineFields);
+
   const banked = new BankedData({
     bankSize,
     bankOffset,
@@ -141,6 +144,7 @@ const compile = async (
         banked,
         warnings,
         loop,
+        engineFields: precompiledEngineFields,
         output: alreadyCompiled || [],
       });
     };
@@ -664,11 +668,14 @@ const precompile = async (
 
 export const compileEngineFields = (engineFields, engineProps, header) => {
   let fieldDef = "";
-  for(const engineField of engineFields) {
-    const prop = engineProps.find((p) => p.id === engineField.key);
-    const customValue = prop && prop.value;
-    const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
-    fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+  if (engineFields.length > 0) {
+    for(const engineField of engineFields) {
+      const prop = engineProps.find((p) => p.id === engineField.key);
+      const customValue = prop && prop.value;
+      const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
+      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+    }
+    fieldDef += `${header ? "extern " : ""}UBYTE *engine_fields_addr${!header ? ` = &${engineFields[0].key}` : ""};\n`
   }
   return fieldDef;
 }

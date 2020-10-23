@@ -68,7 +68,7 @@ const fieldMax = (
   }
 };
 
-const EnginePropField: FC<EnginePropFieldProps> = ({
+export const EnginePropField: FC<EnginePropFieldProps> = ({
   field,
   value,
   onChange,

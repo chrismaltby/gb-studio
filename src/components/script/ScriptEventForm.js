@@ -5,10 +5,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
-import { CustomEventShape } from "../../store/stateShape";
+import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import { customEventSelectors, enginePropSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
+import { is16BitCType } from "../../lib/helpers/engineFields";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -19,7 +20,7 @@ class ScriptEventForm extends Component {
   // }
 
   getFields() {
-    const { command, value, customEvents } = this.props;
+    const { command, value, customEvents, engineFields } = this.props;
     const eventCommands = (events[command] && events[command].fields) || [];
     if (value.customEventId && customEvents[value.customEventId]) {
       const customEvent = customEvents[value.customEventId];
@@ -52,6 +53,46 @@ class ScriptEventForm extends Component {
         }) || [];
 
       return [].concat(description, eventCommands, usedVariables, usedActors);
+    }
+    if (value.engineFieldKey) {
+      const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
+      if (engineField) {
+        if (command === "EVENT_ENGINE_FIELD_UPDATE") {
+          if (is16BitCType(engineField.cType)) {
+            return [].concat(
+              eventCommands,
+              {
+                key: "value",
+                type: "union",
+                types: ["number", "variablePair"],
+                defaultType: "number",
+                min: 0,
+                max: 65535,
+                defaultValue: {
+                  number: 0,
+                  variable: "LAST_VARIABLE",
+                },
+              }
+            );
+          } 
+          return [].concat(eventCommands, {
+            key: "value",
+            type: "union",
+            types: ["number", "variable"],
+            defaultType: "number",
+            min: 0,
+            max: 255,
+            defaultValue: {
+              number: 0,
+              variable: "LAST_VARIABLE",
+            },
+          });
+        }
+      } else {
+        return [].concat(eventCommands, {
+          label: `Unknown field "${value.engineFieldKey}"`
+        })
+      }
     }
     return eventCommands;
   }
@@ -132,22 +173,27 @@ ScriptEventForm.propTypes = {
   entityId: PropTypes.string.isRequired,
   command: PropTypes.string.isRequired,
   value: PropTypes.shape({
-    customEventId: PropTypes.string
+    customEventId: PropTypes.string,
+    engineFieldKey: PropTypes.string
   }),
   onChange: PropTypes.func.isRequired,
   renderEvents: PropTypes.func.isRequired,
-  customEvents: PropTypes.objectOf(CustomEventShape)
+  customEvents: PropTypes.objectOf(CustomEventShape),
+  engineFields: PropTypes.objectOf(EngineFieldShape)
 };
 
 ScriptEventForm.defaultProps = {
   value: {},
-  customEvents: []
+  customEvents: [],
+  engineFields: []
 };
 
 function mapStateToProps(state) {
   const customEvents = customEventSelectors.selectEntities(state);
+  const engineFields = state.engine.fields;
   return {
-    customEvents
+    customEvents,
+    engineFields
   };
 }
 
