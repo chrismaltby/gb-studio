@@ -143,7 +143,7 @@ class ScriptEditorEvent extends Component {
         postUpdate({
           ...action.args,
           ...newValue
-        })
+        }, action.args)
       );
     }
     return onEdit(id, newValue);

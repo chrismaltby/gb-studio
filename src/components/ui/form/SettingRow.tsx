@@ -25,6 +25,7 @@ export const SettingRowLabel = styled.label`
   height: 28px;
   display: flex;
   align-items: center;
+  font-size: ${(props) => props.theme.typography.fontSize};
 `;
 
 export const SettingRowInput = styled.div`

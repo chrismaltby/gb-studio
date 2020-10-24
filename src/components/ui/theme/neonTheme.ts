@@ -2,7 +2,9 @@ import { ThemeInterface } from "./ThemeInterface";
 
 const darkheme: ThemeInterface = {
   typography: {
-    fontSize: "13px",
+    fontSize: "11px",
+    menuFontSize: "12px",
+    toolbarFontSize: "13px",
   },
   colors: {
     highlight: "#f6019d",

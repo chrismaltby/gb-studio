@@ -2,7 +2,9 @@ import { ThemeInterface } from "./ThemeInterface";
 
 const lightTheme: ThemeInterface = {
   typography: {
-    fontSize: "13px",
+    fontSize: "12px",
+    menuFontSize: "12px",
+    toolbarFontSize: "13px",
   },
   colors: {
     highlight: "#c92c61",

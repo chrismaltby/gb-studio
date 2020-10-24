@@ -713,17 +713,21 @@ class ScriptBuilder {
     const engineField = engineFields[key];
     if (engineField !== undefined) {
       const cType = engineField.field.cType;
+      let newValue = value;
+      if (newValue === "" || newValue === undefined) {
+        newValue = engineField.field.defaultValue || 0
+      }
       if (is16BitCType(cType)) {
         output.push(cmd(ENGINE_FIELD_UPDATE_WORD));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
-        output.push(hi(value));
-        output.push(lo(value));
+        output.push(hi(newValue));
+        output.push(lo(newValue));
       } else {
         output.push(cmd(ENGINE_FIELD_UPDATE));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
-        output.push(value);
+        output.push(newValue);
       }
     }
   }

@@ -29,6 +29,10 @@ import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
 import l10n from "../../lib/helpers/l10n";
 import { VariablePairSelect } from "../forms/VariablePairSelect";
+import EngineFieldSelect from "../forms/EngineFieldSelect";
+import { SliderField } from "../ui/form/SliderField";
+import { CheckboxField } from "../ui/form/CheckboxField";
+import { Input } from "../ui/form/Input";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
@@ -103,7 +107,7 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "text") {
       return (
-        <input
+        <Input
           id={id}
           type="text"
           value={value || ""}
@@ -115,7 +119,7 @@ class ScriptEventFormInput extends Component {
     }
     if (type === "number") {
       return (
-        <input
+        <Input
           id={id}
           type="number"
           value={value !== undefined && value !== null ? value : ""}
@@ -127,18 +131,30 @@ class ScriptEventFormInput extends Component {
         />
       );
     }
-    if (type === "checkbox") {
-      return [
-        <input
-          key="0"
+    if (type === "slider") {
+      return (
+        <SliderField
           id={id}
-          type="checkbox"
-          className="Checkbox"
-          checked={value || false}
+          value={typeof value === "number" ? value : undefined}
+          defaultValue={defaultValue}
+          min={field.min}
+          max={field.max}
+          step={field.step}
+          placeholder={defaultValue}
           onChange={this.onChange}
-        />,
-        <div key="1" className="FormCheckbox" />
-      ];
+        />
+      );
+    }    
+    if (type === "checkbox") {
+      return <CheckboxField
+        id={id}
+        name={id}
+        label={field.checkboxLabel || field.label}
+        type="checkbox"
+        className="Checkbox"
+        checked={value || false}
+        onChange={this.onChange}
+      />
     }
     if (type === "select") {
       return (
@@ -311,6 +327,13 @@ class ScriptEventFormInput extends Component {
         />
       );
     }
+    if (type === "engineField") {
+      return <EngineFieldSelect
+        id={id}
+        value={value}
+        onChange={this.onChange}
+      />
+    }
     if (type === "property") {
       return (
         <PropertySelect
@@ -319,10 +342,10 @@ class ScriptEventFormInput extends Component {
           onChange={this.onChange}
         />
       );
-    }    
-    if(type === "union") {
+    }   
+    if (type === "union") {
       const currentType = (value && value.type) || (field.defaultType);
-      const currentValue = value && value.value;
+      const currentValue = value ? value.value : undefined;
       return (
         <div style={{display: "flex", alignItems:"center"}}>
           <div style={{flexGrow:1, marginRight: 2}}>

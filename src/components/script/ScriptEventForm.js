@@ -10,6 +10,7 @@ import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors, enginePropSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
 import { is16BitCType } from "../../lib/helpers/engineFields";
+import l10n from "../../lib/helpers/l10n";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -57,6 +58,7 @@ class ScriptEventForm extends Component {
     if (value.engineFieldKey) {
       const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
       if (engineField) {
+        const fieldType = engineField.type || "number";
         if (command === "EVENT_ENGINE_FIELD_UPDATE") {
           if (is16BitCType(engineField.cType)) {
             return [].concat(
@@ -64,13 +66,15 @@ class ScriptEventForm extends Component {
               {
                 key: "value",
                 type: "union",
-                types: ["number", "variablePair"],
-                defaultType: "number",
-                min: 0,
-                max: 65535,
+                checkboxLabel: l10n(engineField.label),
+                types: [fieldType, "variablePair"],
+                defaultType: fieldType,
+                min: Math.max(0, engineField.min || 0),
+                max: Math.min(65535, engineField.max || 65535),
+                options: engineField.options || [],
                 defaultValue: {
-                  number: 0,
-                  variable: "LAST_VARIABLE",
+                  [fieldType]: engineField.defaultValue || 0,
+                  variable: "0:0",
                 },
               }
             );
@@ -78,13 +82,15 @@ class ScriptEventForm extends Component {
           return [].concat(eventCommands, {
             key: "value",
             type: "union",
-            types: ["number", "variable"],
-            defaultType: "number",
-            min: 0,
-            max: 255,
+            checkboxLabel: l10n(engineField.label),
+            types: [fieldType, "variable"],
+            defaultType: fieldType,
+            min: Math.max(0, engineField.min || 0),
+            max: Math.min(255, engineField.max || 255),
+            options: engineField.options || [],
             defaultValue: {
-              number: 0,
-              variable: "LAST_VARIABLE",
+              [fieldType]: engineField.defaultValue || 0,
+              variable: "0",
             },
           });
         }

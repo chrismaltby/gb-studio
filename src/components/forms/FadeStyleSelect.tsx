@@ -1,16 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import l10n from "../../lib/helpers/l10n";
-import { Select } from "../ui/form/Select";
+import { Select, Option } from "../ui/form/Select";
 
 interface FadeStyleSelectProps {
   value?: string;
   onChange?: (newValue: string) => void;
-}
-
-interface Option {
-  value: string;
-  label: string;
 }
 
 type FadeStyle = "white" | "black";

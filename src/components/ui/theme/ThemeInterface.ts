@@ -1,6 +1,8 @@
 export interface ThemeInterface {
   typography: {
     fontSize: string;
+    menuFontSize: string;
+    toolbarFontSize: string;
   };
   colors: {
     text: string;

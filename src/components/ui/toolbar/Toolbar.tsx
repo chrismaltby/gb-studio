@@ -12,7 +12,7 @@ export const Toolbar = styled.div<ToolbarProps>`
   display: flex;
   box-sizing: border-box;
   height: 38px;
-  font-size: 13px;
+  font-size: ${(props) => props.theme.typography.toolbarFontSize};
   flex-shrink: 0;
   background: ${(props) => props.theme.colors.toolbar.background};
   color: ${(props) => props.theme.colors.text};
@@ -47,6 +47,7 @@ export const Toolbar = styled.div<ToolbarProps>`
     height: 26px;
     padding: 0px 10px;
     flex-shrink: 0;
+    font-size: 13px;
 
     svg {
       width: 17px;

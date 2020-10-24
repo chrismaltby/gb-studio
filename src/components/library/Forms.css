@@ -383,3 +383,7 @@ body .FormField .ReactSelect__indicator-separator {
 .FormField .ReactSelectContainer .ReactSelect__indicator .Button svg {
   height: 10px;
 }
+
+.FormField .CustomSelect__input input {
+  height: auto;
+}
