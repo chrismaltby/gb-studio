@@ -33,6 +33,7 @@ import EngineFieldSelect from "../forms/EngineFieldSelect";
 import { SliderField } from "../ui/form/SliderField";
 import { CheckboxField } from "../ui/form/CheckboxField";
 import { Input } from "../ui/form/Input";
+import { Select } from "../ui/form/Select";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
@@ -53,9 +54,9 @@ class ScriptEventFormInput extends Component {
       // Toggle direction
       newValue = "";
     }
-    if (type === "variable") {
+    if (type === "variable" || type === "select") {
       newValue = newValue.value;
-    }
+    }  
     if (updateFn) {
       newValue = updateFn(newValue, field, args);
     }
@@ -157,18 +158,19 @@ class ScriptEventFormInput extends Component {
       />
     }
     if (type === "select") {
+      const options = field.options.map(([value, label]) => ({
+        value,
+        label
+      }));
+      const currentValue = options.find((o) => o.value === value) || options[0];
       return (
-        <select
+        <Select
           id={id}
+          name={id}
+          value={currentValue}
+          options={options}
           onChange={this.onChange}
-          value={value || field.options[0][0]}
-        >
-          {field.options.map(option => (
-            <option key={option[0]} value={option[0]}>
-              {option[1]}
-            </option>
-          ))}
-        </select>
+        />
       );
     }
     if (type === "scene") {
