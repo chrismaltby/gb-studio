@@ -152,7 +152,7 @@ class ScriptEventFormInput extends Component {
         label={field.checkboxLabel || field.label}
         type="checkbox"
         className="Checkbox"
-        checked={value || false}
+        checked={typeof value === "boolean" ? value : defaultValue || false}
         onChange={this.onChange}
       />
     }

@@ -714,6 +714,12 @@ class ScriptBuilder {
     if (engineField !== undefined) {
       const cType = engineField.field.cType;
       let newValue = value;
+      if (newValue === true) {
+        newValue = 1;
+      }
+      if (newValue === false) {
+        newValue = 0;
+      }      
       if (newValue === "" || newValue === undefined) {
         newValue = engineField.field.defaultValue || 0
       }
