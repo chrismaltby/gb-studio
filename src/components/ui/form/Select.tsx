@@ -6,6 +6,11 @@ export interface Option {
   label: string;
 }
 
+export interface OptGroup {
+  label: string;
+  options: Option[];
+}
+
 export const Select = styled(WindowedSelect).attrs({
   classNamePrefix: "CustomSelect",
 })`
