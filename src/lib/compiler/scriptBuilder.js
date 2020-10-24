@@ -724,12 +724,20 @@ class ScriptBuilder {
         newValue = 0;
       }      
       if (is16BitCType(cType)) {
+        if (newValue < 0) {
+          // Convert negative to two's complement
+          newValue = 0xFFFF & ~(-newValue-1);
+        }
         output.push(cmd(ENGINE_FIELD_UPDATE_WORD));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
         output.push(hi(newValue));
         output.push(lo(newValue));
       } else {
+        if (newValue < 0) {
+          // Convert negative to two's complement
+          newValue = 0xFF & ~(-newValue-1);
+        }        
         output.push(cmd(ENGINE_FIELD_UPDATE));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
