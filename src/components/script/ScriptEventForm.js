@@ -9,7 +9,7 @@ import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors, enginePropSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
-import { is16BitCType } from "../../lib/helpers/engineFields";
+import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
 import l10n from "../../lib/helpers/l10n";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
@@ -69,8 +69,8 @@ class ScriptEventForm extends Component {
                 checkboxLabel: l10n(engineField.label),
                 types: [fieldType, "variablePair"],
                 defaultType: fieldType,
-                min: Math.max(0, engineField.min || 0),
-                max: Math.min(65535, engineField.max || 65535),
+                min: clampToCType(engineField.min || -Infinity, engineField.cType),
+                max: clampToCType(engineField.max || Infinity, engineField.cType),
                 options: engineField.options || [],
                 defaultValue: {
                   [fieldType]: engineField.defaultValue || 0,
@@ -85,8 +85,8 @@ class ScriptEventForm extends Component {
             checkboxLabel: l10n(engineField.label),
             types: [fieldType, "variable"],
             defaultType: fieldType,
-            min: Math.max(0, engineField.min || 0),
-            max: Math.min(255, engineField.max || 255),
+            min: clampToCType(engineField.min || -Infinity, engineField.cType),
+            max: clampToCType(engineField.max || Infinity, engineField.cType),
             options: engineField.options || [],
             defaultValue: {
               [fieldType]: engineField.defaultValue || 0,
