@@ -7,9 +7,10 @@ import events from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
-import { customEventSelectors, enginePropSelectors } from "../../store/features/entities/entitiesState";
+import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
 import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
+import { EVENT_ENGINE_FIELD_STORE, EVENT_ENGINE_FIELD_UPDATE } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
@@ -55,11 +56,11 @@ class ScriptEventForm extends Component {
 
       return [].concat(description, eventCommands, usedVariables, usedActors);
     }
-    if (value.engineFieldKey) {
+    if ((command === EVENT_ENGINE_FIELD_UPDATE || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
       const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
       if (engineField) {
         const fieldType = engineField.type || "number";
-        if (command === "EVENT_ENGINE_FIELD_UPDATE") {
+        if (command === EVENT_ENGINE_FIELD_UPDATE) {
           if (is16BitCType(engineField.cType)) {
             return [].concat(
               eventCommands,
@@ -94,6 +95,26 @@ class ScriptEventForm extends Component {
             },
           });
         }
+        if (command === EVENT_ENGINE_FIELD_STORE) {
+          if (is16BitCType(engineField.cType)) {
+            return [].concat(
+              eventCommands,
+              {
+                key: "value",
+                type: "variablePair",
+                defaultValue: "0:0"
+              }
+            );
+          } 
+          return [].concat(
+            eventCommands,
+            {
+              key: "value",
+              type: "variable",
+              defaultValue: "0"
+            }
+          );
+        }        
       } else {
         return [].concat(eventCommands, {
           label: `Unknown field "${value.engineFieldKey}"`

@@ -2313,7 +2313,7 @@ void Script_EngFieldSetWord_b()
 {
   UWORD *ptr;
   ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
-  *ptr = (script_cmd_args[2] * 255) + script_cmd_args[3];
+  *ptr = (script_cmd_args[2] * 256) + script_cmd_args[3];
 }
 
 void Script_EngFieldSetVar_b()
@@ -2332,7 +2332,7 @@ void Script_EngFieldSetWordVar_b()
   ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
   var_hi = script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]];
   var_lo = script_variables[(script_cmd_args[4] * 256) + script_cmd_args[5]];
-  *ptr = (var_hi * 255) + var_lo;
+  *ptr = (var_hi * 256) + var_lo;
 }
 
 void Script_EngFieldStore_b()
@@ -2347,6 +2347,6 @@ void Script_EngFieldStoreWord_b()
   UBYTE *ptr;
   ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
   script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]] = *ptr;
-  ptr += 2;
+  ptr += 1;
   script_variables[(script_cmd_args[4] * 256) + script_cmd_args[5]] = *ptr;
 }

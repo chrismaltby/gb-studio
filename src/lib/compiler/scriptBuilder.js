@@ -761,14 +761,14 @@ class ScriptBuilder {
         output.push(hi(hiIndex));
         output.push(lo(hiIndex));
         output.push(hi(loIndex));
-        output.push(lo(loIndex));        
+        output.push(lo(loIndex));
       } else {
         const loIndex = this.getVariableIndex(loVariable, variables);
         output.push(cmd(ENGINE_FIELD_UPDATE_VAR));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
         output.push(hi(loIndex));
-        output.push(lo(loIndex));             
+        output.push(lo(loIndex));
       }
     }
   }  
@@ -785,17 +785,17 @@ class ScriptBuilder {
         output.push(cmd(ENGINE_FIELD_STORE_WORD));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
+        output.push(hi(loIndex));
+        output.push(lo(loIndex));
         output.push(hi(hiIndex));
         output.push(lo(hiIndex));
-        output.push(hi(loIndex));
-        output.push(lo(loIndex));        
       } else {
         const loIndex = this.getVariableIndex(loVariable, variables);
         output.push(cmd(ENGINE_FIELD_STORE));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
         output.push(hi(loIndex));
-        output.push(lo(loIndex));             
+        output.push(lo(loIndex));
       }
     }
   }    
