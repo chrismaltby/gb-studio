@@ -72,6 +72,46 @@ void DeactivateActor_b(UBYTE i) {
   }
 }
 
+UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) {
+  UBYTE tile_x, tile_y;
+  UBYTE hit_actor = 0;
+
+  tile_x = player.pos.x >> 3;
+  tile_y = player.pos.y >> 3;
+
+  if (grid_size == 16) {
+    if (player.dir.y == -1) {
+      hit_actor = ActorAt3x3Tile(tile_x - 1, tile_y - 3, inc_noclip);
+    } else if (player.dir.y == 1) {
+      hit_actor = ActorAt3x3Tile(tile_x - 1, tile_y + 1, inc_noclip);
+    } else {
+      if (player.dir.x == -1) {
+        hit_actor = ActorAt3x3Tile(tile_x - 3, tile_y - 1, inc_noclip);
+      } else if (player.dir.x == 1) {
+        hit_actor = ActorAt3x3Tile(tile_x + 1, tile_y - 1, inc_noclip);
+      }
+    }      
+  } else {
+    if (player.dir.y == -1) {
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, inc_noclip);
+    } else if (player.dir.y == 1) {
+      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y + 2, inc_noclip);
+    } else {
+      if (player.dir.x == -1) {
+        hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, inc_noclip);
+      } else if (player.dir.x == 1) {
+        hit_actor = ActorAt1x2Tile(tile_x + 2, tile_y, inc_noclip);
+      }
+    }
+  }
+  if (hit_actor == 0) {
+    hit_actor = NO_ACTOR_COLLISON;
+  }
+
+  return hit_actor;
+}
+
+
 UBYTE ActorInFrontOfActor_b(UBYTE i) {
   UBYTE tile_x, tile_y;
   UBYTE hit_actor = 0;
@@ -234,6 +274,50 @@ UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
+UBYTE ActorAt2x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+
+    if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
+      continue;
+    }
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
+    if ((ty == a_ty || ty == a_ty - 1 || ty == a_ty - 2) && (tx == a_tx || tx == a_tx - 1)) {
+      return a;
+    }
+  }
+
+  return NO_ACTOR_COLLISON;
+}
+
+UBYTE ActorAt3x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+  UBYTE i;
+
+  for (i = actors_active_size - 1; i != 0xFF; i--) {
+    UBYTE a = actors_active[i];
+    UBYTE a_tx, a_ty;
+
+    if (!actors[a].enabled || (!inc_noclip && !actors[a].collisionsEnabled)) {
+      continue;
+    }
+
+    a_tx = DIV_8(actors[a].pos.x);
+    a_ty = DIV_8(actors[a].pos.y);
+
+    if ((ty == a_ty || ty == a_ty - 1 || ty == a_ty - 2) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) {
+      return a;
+    }
+  }
+
+  return NO_ACTOR_COLLISON;
+}
+
 UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
   UBYTE i;
 
@@ -244,8 +328,8 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
       continue;
     }
 
-    if ((player.pos.x + 16 >= actors[a].pos.x) && (player.pos.x <= actors[a].pos.x + 16) &&
-        (player.pos.y + 8 >= actors[a].pos.y) && (player.pos.y <= actors[a].pos.y + 8)) {
+    if ((player.pos.x + 15 >= actors[a].pos.x) && (player.pos.x <= actors[a].pos.x + 15) &&
+        (player.pos.y + 7 >= actors[a].pos.y) && (player.pos.y <= actors[a].pos.y + 7)) {
       return a;
     }
   }

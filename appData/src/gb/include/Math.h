@@ -35,6 +35,7 @@ void SeedRand();
 #define MOD_2(a) ((a)&1)
 #define MOD_4(a) ((a)&3)
 #define MOD_8(a) ((a)&7)
+#define MOD_16(a) ((a)&15)
 #define MOD_32(a) ((a)&31)
 #define MOD_64(a) ((a)&63)
 #define MOD_128(a) ((a)&127)

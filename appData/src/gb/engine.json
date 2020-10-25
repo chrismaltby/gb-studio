@@ -100,6 +100,18 @@
       "defaultValue": 20000,
       "min": 0,
       "max": 24560
-    }  
+    },
+    {
+      "key": "topdown_grid",
+      "label": "FIELD_GRID_SIZE",
+      "group": "GAMETYPE_TOP_DOWN",
+      "type": "select",
+      "options": [
+        [8, "FIELD_GRID_8PX"],
+        [16, "FIELD_GRID_16PX"]
+      ],
+      "cType": "UBYTE",
+      "defaultValue": 8
+    }
   ]
 }
