@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import VariableSelect from "../forms/VariableSelect";
+import { VariableSelect } from "../forms/VariableSelectv2";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
@@ -54,7 +54,7 @@ class ScriptEventFormInput extends Component {
       // Toggle direction
       newValue = "";
     }
-    if (type === "variable" || type === "select") {
+    if (type === "select") {
       newValue = newValue.value;
     }  
     if (updateFn) {

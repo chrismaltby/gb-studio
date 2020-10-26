@@ -1,3 +1,4 @@
+import uniq from "lodash/uniq";
 import { EditorSelectionType } from "../../store/features/editor/editorState";
 import {
   CustomEvent,
@@ -18,6 +19,12 @@ export interface NamedVariable {
   id: string; // The id to use in dropdown value
   code: string; // The code to use in dialogue (when wrapped by $ or #)
   name: string; // The user defined name or default when not named
+  group: string; // Group name that variable belongs to
+}
+
+export interface VariableGroup {
+  name: string; // The group name
+  variables: NamedVariable[]; // Variables in the group
 }
 
 /******************************************************************************
@@ -50,6 +57,7 @@ export const namedCustomEventVariables = (
       id: variable,
       code: customEventVariableCode(variable),
       name: customEventVariableName(variable, customEvent),
+      group: "",
     }));
   }
   return [];
@@ -64,18 +72,32 @@ export const namedEntityVariables = (
       id: localVariableCode(variable),
       code: localVariableCode(variable),
       name: localVariableName(variable, entityId, variablesLookup),
+      group: "Local",
     })),
     tempVariables.map((variable) => ({
       id: tempVariableCode(variable),
       code: tempVariableCode(variable),
       name: tempVariableName(variable),
+      group: "Temporary",
     })),
     allVariables.map((variable) => ({
       id: variable,
       code: globalVariableCode(variable),
       name: globalVariableName(variable, variablesLookup),
+      group: "Global",
     }))
   );
+};
+
+export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {
+  const groups = uniq(variables.map((f) => f.group));
+  return groups.map((g) => {
+    const groupVariables = variables.filter((f) => f.group === g);
+    return {
+      name: g,
+      variables: groupVariables,
+    };
+  });
 };
 
 /******************************************************************************

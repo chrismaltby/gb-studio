@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import WindowedSelect from "react-windowed-select";
+import { CSSProperties } from "react";
 
 export interface Option {
   value: string;
@@ -11,8 +12,18 @@ export interface OptGroup {
   options: Option[];
 }
 
+const menuPortalEl = document.getElementById("MenuPortal");
+
 export const Select = styled(WindowedSelect).attrs({
   classNamePrefix: "CustomSelect",
+  styles: {
+    option: (base: CSSProperties) => ({
+      ...base,
+      height: 25,
+    }),
+  },
+  menuPlacement: "auto",
+  menuPortalTarget: menuPortalEl,
 })`
   .CustomSelect__control {
     height: 28px;
@@ -50,13 +61,12 @@ export const Select = styled(WindowedSelect).attrs({
   }
 
   .CustomSelect__indicator-separator {
-    margin: 0;
-    background: ${(props) => props.theme.colors.input.border};
+    display: none;
   }
 
   .CustomSelect__dropdown-indicator {
     padding: 0;
-    width: 26px;
+    width: 20px;
     display: flex;
     justify-content: center;
   }
