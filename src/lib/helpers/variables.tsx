@@ -168,3 +168,23 @@ export const globalVariableName = (
 export const globalVariableCode = (variable: string) => {
   return variable.padStart(2, "0");
 };
+
+/*****************************************************************************/
+
+export const prevVariable = (variable: string) => {
+  const start = variable[0];
+  if (start === "T" || start === "L") {
+    const value = parseInt(variable.substr(1), 10) - 1;
+    return `${start}${value}`;
+  }
+  return String(parseInt(variable, 10) - 1);
+};
+
+export const nextVariable = (variable: string) => {
+  const start = variable[0];
+  if (start === "T" || start === "L") {
+    const value = parseInt(variable.substr(1), 10) + 1;
+    return `${start}${value}`;
+  }
+  return String(parseInt(variable, 10) + 1);
+};

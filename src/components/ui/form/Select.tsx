@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import WindowedSelect from "react-windowed-select";
 import { CSSProperties } from "react";
+export { components } from "react-select";
 
 export interface Option {
   value: string;

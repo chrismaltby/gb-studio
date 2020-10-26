@@ -1,5 +1,10 @@
 import React, { useState, useEffect, FC } from "react";
-import { Select as DefaultSelect, Option, OptGroup } from "../ui/form/Select";
+import {
+  Select as DefaultSelect,
+  Option,
+  OptGroup,
+  components,
+} from "../ui/form/Select";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +17,7 @@ import {
   groupVariables,
   NamedVariable,
   namedVariablesByContext,
+  nextVariable,
 } from "../../lib/helpers/variables";
 import { RelativePortal } from "../ui/layout/RelativePortal";
 import { Tooltip } from "../ui/tooltips/Tooltip";
@@ -25,6 +31,8 @@ import useDelayedState from "../ui/hooks/use-delayed-state";
 import { Input } from "../ui/form/Input";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import l10n from "../../lib/helpers/l10n";
+import { Dictionary } from "@reduxjs/toolkit";
+import { keyBy } from "lodash";
 
 interface VariableSelectProps {
   id?: string;
@@ -43,6 +51,10 @@ const Select = styled(DefaultSelect)`
   .CustomSelect__control {
     padding-left: 22px;
   }
+`;
+
+const OtherVariable = styled.span`
+  opacity: 0.5;
 `;
 
 const VariableSizeIndicator = styled.div`
@@ -64,7 +76,6 @@ const VariableSizeIndicator = styled.div`
   opacity: 0.8;
 
   :hover {
-    /* background-color: #ddd; */
     opacity: 1;
   }
 
@@ -165,6 +176,9 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [variables, setVariables] = useState<NamedVariable[]>([]);
+  const [namedVariablesLookup, setNamedVariablesLookup] = useState<
+    Dictionary<NamedVariable>
+  >({});
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
   const [currentValue, setCurrentValue] = useState<Option>();
@@ -188,6 +202,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
       variablesLookup,
       customEvent
     );
+    setNamedVariablesLookup(keyBy(variables, "id"));
     const groupedVariables = groupVariables(variables);
     const groupedOptions: OptGroup[] = groupedVariables.map((g) => ({
       label: g.name,
@@ -278,7 +293,11 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           )}
           {type === "16bit" && (
             <Tooltip style={{ width: 200 }}>
-              16-bit number with a maximum value of...
+              16-bit number with a maximum value of 65535.
+              <br />
+              Value is calculated using two 8-bit variables:
+              <br />
+              ($Health * 256) + $Variable 25
             </Tooltip>
           )}
         </RelativePortal>
@@ -299,6 +318,19 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           options={options}
           onChange={(newValue: Option) => {
             onChange(newValue.value);
+          }}
+          getOptionLabel={(option: Option, a: any, b: any) => {
+            return (
+              <>
+                {option.label}
+                {type === "16bit" && (
+                  <OtherVariable>
+                    {" "}
+                    & {namedVariablesLookup[nextVariable(option.value)]?.name}
+                  </OtherVariable>
+                )}
+              </>
+            );
           }}
         />
       )}

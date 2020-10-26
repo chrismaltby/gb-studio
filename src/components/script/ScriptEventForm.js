@@ -68,14 +68,15 @@ class ScriptEventForm extends Component {
                 key: "value",
                 type: "union",
                 checkboxLabel: l10n(engineField.label),
-                types: [fieldType, "variablePair"],
+                types: [fieldType, "variable"],
                 defaultType: fieldType,
                 min: clampToCType(engineField.min || -Infinity, engineField.cType),
                 max: clampToCType(engineField.max || Infinity, engineField.cType),
+                variableType: "16bit",
                 options: engineField.options || [],
                 defaultValue: {
                   [fieldType]: engineField.defaultValue || 0,
-                  variable: "0:0",
+                  variable: "0",
                 },
               }
             );
@@ -101,8 +102,9 @@ class ScriptEventForm extends Component {
               eventCommands,
               {
                 key: "value",
-                type: "variablePair",
-                defaultValue: "0:0"
+                type: "variable",
+                defaultValue: "0",
+                variableType: "16bit"
               }
             );
           } 

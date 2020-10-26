@@ -242,6 +242,7 @@ class ScriptEventFormInput extends Component {
           entityId={entityId}
           onChange={this.onChange}
           allowRename={allowRename}
+          type={field.variableType}
         />
       );
     }
