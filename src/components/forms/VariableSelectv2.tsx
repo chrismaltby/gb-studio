@@ -202,15 +202,25 @@ export const VariableSelect: FC<VariableSelectProps> = ({
       variablesLookup,
       customEvent
     );
-    setNamedVariablesLookup(keyBy(variables, "id"));
+    const namedLookup = keyBy(variables, "id");
+    setNamedVariablesLookup(namedLookup);
     const groupedVariables = groupVariables(variables);
-    const groupedOptions: OptGroup[] = groupedVariables.map((g) => ({
-      label: g.name,
-      options: g.variables.map((v) => ({
+    const groupedOptions: OptGroup[] = groupedVariables.map((g) => {
+      const options = g.variables.map((v) => ({
         value: v.id,
         label: `${v.name}`,
-      })),
-    }));
+      }));
+      const filteredOptions =
+        type === "16bit"
+          ? options.filter((o) => {
+              return namedLookup[nextVariable(o.value)];
+            })
+          : options;
+      return {
+        label: g.name,
+        options: filteredOptions,
+      };
+    });
     setVariables(variables);
     setOptions(groupedOptions);
   }, [entityId, variablesLookup, editorType, customEvent]);
@@ -296,8 +306,13 @@ export const VariableSelect: FC<VariableSelectProps> = ({
               16-bit number with a maximum value of 65535.
               <br />
               Value is calculated using two 8-bit variables:
-              <br />
-              ($Health * 256) + $Variable 25
+              {currentValue && (
+                <>
+                  <br />
+                  (${currentValue.label} * 256) + $
+                  {namedVariablesLookup[nextVariable(currentValue.value)]?.name}
+                </>
+              )}
             </Tooltip>
           )}
         </RelativePortal>
