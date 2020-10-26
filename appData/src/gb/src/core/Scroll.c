@@ -6,6 +6,7 @@
 #include "DataManager.h"
 #include "GameTime.h"
 #include "FadeManager.h"
+#include "data_ptrs.h"
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
@@ -225,7 +226,7 @@ void RenderScreen() {
   UINT8 i, temp;
   INT16 y;
 
-  if (!fade_black)
+  if (!fade_style)
   {
     DISPLAY_OFF
   } else if (!fade_timer == 0)

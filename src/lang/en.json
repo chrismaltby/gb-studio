@@ -405,6 +405,8 @@
   "EVENT_ACTOR_SET_ANIMATE": "Actor: Set Animate While Stationary",
   "EVENT_IF_COLOR_SUPPORTED": "If Device Supports Color",
   "EVENT_FADE_SETTINGS": "Fade: Change Settings",
+  "EVENT_ENGINE_FIELD_SET": "Engine: Field Update",
+  "EVENT_ENGINE_FIELD_STORE": "Engine: Store Field In Variable",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -604,6 +606,7 @@
   "SETTINGS_GBC": "GB Color Options",
   "SETTINGS_CUSTOM_HEADER": "Custom Header (Web Build)",
   "SETTINGS_FADE": "Fade Options",
+  "SETTINGS_ENGINE": "Engine",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

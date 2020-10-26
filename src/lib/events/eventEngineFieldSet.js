@@ -1,4 +1,4 @@
-const id = "EVENT_ENGINE_FIELD_UPDATE";
+const id = "EVENT_ENGINE_FIELD_SET";
 
 const fields = [
   {

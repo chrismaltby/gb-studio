@@ -160,7 +160,7 @@ class ScriptEventFormInput extends Component {
     if (type === "select") {
       const options = field.options.map(([value, label]) => ({
         value,
-        label
+        label: l10n(label)
       }));
       const currentValue = options.find((o) => o.value === value) || options[0];
       return (

@@ -131,7 +131,7 @@ export const EnginePropField: FC<EnginePropFieldProps> = ({
       typeof value === "number" ? value : Number(field.defaultValue);
     const options = (field.options || []).map(([value, label]) => ({
       value,
-      label,
+      label: l10n(label),
     }));
     const selectedOption = options.find((option) => option.value === theValue);
     return (
@@ -170,7 +170,9 @@ const EnginePropsEditor: FC<EnginePropsEditorProps> = ({ searchTerm }) => {
           searchMatches={group.searchMatches}
         >
           <CardAnchor id={`settings${group.name}`} />
-          <CardHeading>{l10n(group.name)}</CardHeading>
+          <CardHeading>
+            {l10n("SETTINGS_ENGINE")}: {l10n(group.name)}
+          </CardHeading>
           {group.fields.map((field) => (
             <SearchableSettingRow
               searchTerm={searchTerm}

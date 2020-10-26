@@ -10,7 +10,7 @@ import ScriptEventFormField from "./ScriptEventFormField";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import { SidebarTabs } from "../editors/Sidebar";
 import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
-import { EVENT_ENGINE_FIELD_STORE, EVENT_ENGINE_FIELD_UPDATE } from "../../lib/compiler/eventTypes";
+import { EVENT_ENGINE_FIELD_STORE, EVENT_ENGINE_FIELD_SET } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
@@ -56,11 +56,11 @@ class ScriptEventForm extends Component {
 
       return [].concat(description, eventCommands, usedVariables, usedActors);
     }
-    if ((command === EVENT_ENGINE_FIELD_UPDATE || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
+    if ((command === EVENT_ENGINE_FIELD_SET || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
       const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
       if (engineField) {
         const fieldType = engineField.type || "number";
-        if (command === EVENT_ENGINE_FIELD_UPDATE) {
+        if (command === EVENT_ENGINE_FIELD_SET) {
           if (is16BitCType(engineField.cType)) {
             return [].concat(
               eventCommands,

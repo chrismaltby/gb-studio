@@ -112,6 +112,18 @@
       ],
       "cType": "UBYTE",
       "defaultValue": 8
+    },
+    {
+      "key": "fade_style",
+      "label": "FIELD_FADE_STYLE",
+      "group": "SETTINGS_FADE",
+      "type": "select",
+      "options": [
+        [0, "FIELD_FADE_WHITE"],
+        [1, "FIELD_FADE_BLACK"]
+      ],
+      "cType": "UBYTE",
+      "defaultValue": 0
     }
   ]
 }
