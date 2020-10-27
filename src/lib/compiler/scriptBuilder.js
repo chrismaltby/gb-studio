@@ -136,6 +136,7 @@ import { hi, lo } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
 import { is16BitCType } from "../helpers/engineFields";
+import { nextVariable } from "../helpers/variables";
 
 class ScriptBuilder {
   constructor(output, options) {
@@ -746,15 +747,16 @@ class ScriptBuilder {
     }
   }
 
-  engineFieldSetToVariable = (key, hiVariable, loVariable) => {
+  engineFieldSetToVariable = (key, variable) => {
     const output = this.output;
     const { engineFields, variables } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
       const cType = engineField.field.cType;
       if (is16BitCType(cType)) {
-        const hiIndex = this.getVariableIndex(hiVariable, variables);
-        const loIndex = this.getVariableIndex(loVariable, variables);
+        const loVariable = nextVariable(variable);
+        const hiIndex = this.getVariableIndex(variable, variables);
+        const loIndex = this.getVariableIndex(loVariable, variables); 
         output.push(cmd(ENGINE_FIELD_UPDATE_VAR_WORD));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
@@ -763,24 +765,25 @@ class ScriptBuilder {
         output.push(hi(loIndex));
         output.push(lo(loIndex));
       } else {
-        const loIndex = this.getVariableIndex(loVariable, variables);
+        const variableIndex = this.getVariableIndex(variable, variables);
         output.push(cmd(ENGINE_FIELD_UPDATE_VAR));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
-        output.push(hi(loIndex));
-        output.push(lo(loIndex));
+        output.push(hi(variableIndex));
+        output.push(lo(variableIndex));
       }
     }
   }  
 
-  engineFieldStoreInVariable = (key, hiVariable, loVariable) => {
+  engineFieldStoreInVariable = (key, variable) => {
     const output = this.output;
     const { engineFields, variables } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined) {
       const cType = engineField.field.cType;
       if (is16BitCType(cType)) {
-        const hiIndex = this.getVariableIndex(hiVariable, variables);
+        const loVariable = nextVariable(variable);
+        const hiIndex = this.getVariableIndex(variable, variables);
         const loIndex = this.getVariableIndex(loVariable, variables);
         output.push(cmd(ENGINE_FIELD_STORE_WORD));
         output.push(hi(engineField.offset));
@@ -790,12 +793,12 @@ class ScriptBuilder {
         output.push(hi(hiIndex));
         output.push(lo(hiIndex));
       } else {
-        const loIndex = this.getVariableIndex(loVariable, variables);
+        const variableIndex = this.getVariableIndex(variable, variables);
         output.push(cmd(ENGINE_FIELD_STORE));
         output.push(hi(engineField.offset));
         output.push(lo(engineField.offset));
-        output.push(hi(loIndex));
-        output.push(lo(loIndex));
+        output.push(hi(variableIndex));
+        output.push(lo(variableIndex));
       }
     }
   }    

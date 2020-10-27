@@ -12,6 +12,7 @@ import { SidebarTabs } from "../editors/Sidebar";
 import { clampToCType, is16BitCType } from "../../lib/helpers/engineFields";
 import { EVENT_ENGINE_FIELD_STORE, EVENT_ENGINE_FIELD_SET } from "../../lib/compiler/eventTypes";
 import l10n from "../../lib/helpers/l10n";
+import { setDefault } from "../../lib/helpers/setDefault";
 
 const genKey = (id, key, index) => `${id}_${key}_${index || 0}`;
 
@@ -56,6 +57,7 @@ class ScriptEventForm extends Component {
 
       return [].concat(description, eventCommands, usedVariables, usedActors);
     }
+    
     if ((command === EVENT_ENGINE_FIELD_SET || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
       const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
       if (engineField) {
@@ -70,8 +72,8 @@ class ScriptEventForm extends Component {
                 checkboxLabel: l10n(engineField.label),
                 types: [fieldType, "variable"],
                 defaultType: fieldType,
-                min: clampToCType(engineField.min || -Infinity, engineField.cType),
-                max: clampToCType(engineField.max || Infinity, engineField.cType),
+                min: clampToCType(setDefault(engineField.min, -Infinity), engineField.cType),
+                max: clampToCType(setDefault(engineField.max, Infinity), engineField.cType),
                 variableType: "16bit",
                 options: engineField.options || [],
                 defaultValue: {
@@ -87,8 +89,8 @@ class ScriptEventForm extends Component {
             checkboxLabel: l10n(engineField.label),
             types: [fieldType, "variable"],
             defaultType: fieldType,
-            min: clampToCType(engineField.min || -Infinity, engineField.cType),
-            max: clampToCType(engineField.max || Infinity, engineField.cType),
+            min: clampToCType(setDefault(engineField.min, -Infinity), engineField.cType),
+            max: clampToCType(setDefault(engineField.max, Infinity), engineField.cType),            
             options: engineField.options || [],
             defaultValue: {
               [fieldType]: engineField.defaultValue || 0,

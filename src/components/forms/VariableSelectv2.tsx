@@ -1,10 +1,5 @@
 import React, { useState, useEffect, FC } from "react";
-import {
-  Select as DefaultSelect,
-  Option,
-  OptGroup,
-  components,
-} from "../ui/form/Select";
+import { Select as DefaultSelect, Option, OptGroup } from "../ui/form/Select";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -89,6 +84,7 @@ const VariableSizeIndicator = styled.div`
 const VariableRenameInput = styled(Input)`
   &&&& {
     padding-left: 25px;
+    padding-right: 32px;
     height: 28px;
   }
 `;
@@ -110,8 +106,8 @@ const VariableRenameButton = styled.button`
   font-weight: bold;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  background: transparent;
-  border-color: transparent;
+  background: ${(props) => props.theme.colors.input.background};
+  border-color: ${(props) => props.theme.colors.input.background};
 
   ${Wrapper}:hover & {
     opacity: 1;
@@ -165,6 +161,13 @@ const VariableRenameCompleteButton = styled.button`
   }
 `;
 
+export const VariableToken = styled.span`
+  background: ${(props) => props.theme.colors.token.variable};
+  box-shadow: 0 0 0px 1px ${(props) => props.theme.colors.token.variable};
+  border-radius: 5px;
+  color: ${(props) => props.theme.colors.token.text};
+`;
+
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
   type = "8bit",
@@ -175,6 +178,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const [tooltipVisible, setTooltipVisible] = useDelayedState(false);
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
+  const [renameId, setRenameId] = useState("");
   const [variables, setVariables] = useState<NamedVariable[]>([]);
   const [namedVariablesLookup, setNamedVariablesLookup] = useState<
     Dictionary<NamedVariable>
@@ -193,7 +197,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
   const valueIsLocal = value && value.startsWith("L");
   const valueIsTemp = value && value.startsWith("T");
-  const canRename = allowRename && !valueIsTemp;
+  const canRename = !valueIsTemp && editorType !== "customEvent";
 
   useEffect(() => {
     const variables = namedVariablesByContext(
@@ -211,7 +215,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         label: `${v.name}`,
       }));
       const filteredOptions =
-        type === "16bit"
+        type === "16bit" && editorType !== "customEvent"
           ? options.filter((o) => {
               return namedLookup[nextVariable(o.value)];
             })
@@ -253,6 +257,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const onRenameStart = () => {
     if (currentValue) {
       setEditValue(currentValue.label);
+      setRenameId(currentValue.value);
       setRenameVisible(true);
     }
   };
@@ -272,23 +277,37 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   };
 
   const onRenameFinish = () => {
-    setRenameVisible(false);
-    if (value) {
+    if (renameId) {
       if (valueIsLocal) {
         dispatch(
           entitiesActions.renameVariable({
-            variableId: `${entityId}__${value}`,
+            variableId: `${entityId}__${renameId}`,
             name: editValue,
           })
         );
       } else {
         dispatch(
           entitiesActions.renameVariable({
-            variableId: value || "0",
+            variableId: renameId || "0",
             name: editValue,
           })
         );
       }
+    }
+
+    if (type === "16bit" && value === renameId) {
+      // If editing 16-bit rename the second variable
+      // once finished editing the first
+      const next = namedVariablesLookup[nextVariable(value)];
+      if (next) {
+        setEditValue(next.name);
+        setRenameId(next.id);
+        setRenameVisible(true);
+      } else {
+        setRenameVisible(false);
+      }
+    } else {
+      setRenameVisible(false);
     }
   };
 
@@ -308,9 +327,15 @@ export const VariableSelect: FC<VariableSelectProps> = ({
               Value is calculated using two 8-bit variables:
               {currentValue && (
                 <>
-                  <br />
-                  (${currentValue.label} * 256) + $
-                  {namedVariablesLookup[nextVariable(currentValue.value)]?.name}
+                  <br />(<VariableToken>${currentValue.label}</VariableToken> *
+                  256) +{" "}
+                  <VariableToken>
+                    $
+                    {editorType === "customEvent"
+                      ? `${currentValue.label}+1`
+                      : namedVariablesLookup[nextVariable(currentValue.value)]
+                          ?.name}
+                  </VariableToken>
                 </>
               )}
             </Tooltip>
@@ -320,6 +345,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
 
       {renameVisible ? (
         <VariableRenameInput
+          key={renameId}
           value={editValue}
           onChange={onRename}
           onKeyDown={onRenameKeyDown}
@@ -335,14 +361,20 @@ export const VariableSelect: FC<VariableSelectProps> = ({
             onChange(newValue.value);
           }}
           getOptionLabel={(option: Option, a: any, b: any) => {
+            let otherVariable = "";
+            if (type === "16bit") {
+              if (editorType === "customEvent") {
+                otherVariable = `${option.label}+1`;
+              } else {
+                otherVariable =
+                  namedVariablesLookup[nextVariable(option.value)]?.name || "";
+              }
+            }
             return (
               <>
                 {option.label}
-                {type === "16bit" && (
-                  <OtherVariable>
-                    {" "}
-                    & {namedVariablesLookup[nextVariable(option.value)]?.name}
-                  </OtherVariable>
+                {type === "16bit" && otherVariable && (
+                  <OtherVariable> & {otherVariable}</OtherVariable>
                 )}
               </>
             );

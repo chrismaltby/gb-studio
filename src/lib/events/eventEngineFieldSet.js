@@ -20,12 +20,8 @@ const compile = (input, helpers) => {
   const { engineFieldSetToValue, engineFieldSetToVariable } = helpers;
   if (!input.value) {
     engineFieldSetToValue(input.engineFieldKey);
-  }
-  else if (input.value.type === "variable") {
-    engineFieldSetToVariable(input.engineFieldKey, null, input.value.value);
-  } else if (input.value.type === "variablePair") {
-    const [hiVariable = "0", loVariable = "0"] = (input.value.value||"").split(":");
-    engineFieldSetToVariable(input.engineFieldKey, hiVariable, loVariable);
+  } else if (input.value.type === "variable") {
+    engineFieldSetToVariable(input.engineFieldKey, input.value.value);
   } else {
     engineFieldSetToValue(input.engineFieldKey, input.value.value);
   }

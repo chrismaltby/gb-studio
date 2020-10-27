@@ -18,17 +18,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { engineFieldStoreInVariable } = helpers;
-
-  if (!input.value) {
-    engineFieldStoreInVariable(input.engineFieldKey, "0", "0");
-  }
-  else if (input.value.indexOf(":") > -1) {
-    const [hiVariable = "0", loVariable = "0"] = (input.value||"").split(":");
-    engineFieldStoreInVariable(input.engineFieldKey, hiVariable, loVariable);
-  }
-  else {
-    engineFieldStoreInVariable(input.engineFieldKey, null, input.value);
-  }
+  engineFieldStoreInVariable(input.engineFieldKey, input.value);
 };
 
 module.exports = {
