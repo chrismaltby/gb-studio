@@ -275,6 +275,8 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   const onRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       onRenameFinish();
+    } else if (e.key === "Escape") {
+      setRenameVisible(false);      
     }
   };
 
