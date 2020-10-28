@@ -10,7 +10,6 @@ import { Button } from "../../components/ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
-import FadeStyleSelect from "../../components/forms/FadeStyleSelect";
 import EngineFieldsEditor from "../../components/settings/EngineFieldsEditor";
 import { Checkbox } from "../../components/ui/form/Checkbox";
 import { Input } from "../../components/ui/form/Input";
@@ -75,8 +74,7 @@ const SettingsPage: FC = () => {
     customHead,
     defaultUIPaletteId,
     defaultSpritePaletteId,
-    defaultBackgroundPaletteIds,
-    defaultFadeStyle,
+    defaultBackgroundPaletteIds
   } = settings;
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,12 +117,6 @@ const SettingsPage: FC = () => {
     [defaultBackgroundPaletteIds]
   );
 
-  const onResetFadeSettings = () => {
-    editSettings({
-      defaultFadeStyle: "white",
-    });
-  };
-
   return (
     <SettingsPageWrapper>
       {showMenu && (
@@ -150,9 +142,6 @@ const SettingsPage: FC = () => {
                 {l10n(group.name)}
               </SettingsMenuItem>
             ))}
-            <SettingsMenuItem onClick={onMenuItem("settingsFade")}>
-              {l10n("SETTINGS_FADE")}
-            </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>
               {l10n("SETTINGS_CONTROLS")}
             </SettingsMenuItem>
@@ -275,33 +264,6 @@ const SettingsPage: FC = () => {
         </SearchableCard>
 
         <EngineFieldsEditor searchTerm={searchTerm} />
-
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[
-            l10n("SETTINGS_FADE"),
-            l10n("FIELD_DEFAULT_FADE_STYLE"),
-          ]}
-        >
-          <CardAnchor id="settingsFade" />
-          <CardHeading>{l10n("SETTINGS_FADE")}</CardHeading>
-          <SearchableSettingRow>
-            <SettingRowLabel>
-              {l10n("FIELD_DEFAULT_FADE_STYLE")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <FadeStyleSelect
-                value={defaultFadeStyle}
-                onChange={onEditSetting("defaultFadeStyle")}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-          <CardButtons>
-            <Button onClick={onResetFadeSettings}>
-              {l10n("FIELD_RESTORE_DEFAULT")}
-            </Button>
-          </CardButtons>
-        </SearchableCard>
 
         <SearchableCard
           searchTerm={searchTerm}

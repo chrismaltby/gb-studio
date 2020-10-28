@@ -8,7 +8,6 @@ import { VariableSelect } from "../forms/VariableSelectv2";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
-import FadeStyleSelect from "../forms/FadeStyleSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
@@ -268,9 +267,6 @@ class ScriptEventFormInput extends Component {
     if (type === "fadeSpeed") {
       return <FadeSpeedSelect id={id} value={value} onChange={this.onChange} />;
     }
-    if (type === "fadeStyle") {
-      return <FadeStyleSelect id={id} value={value} onChange={this.onChange} />
-    }    
     if (type === "cameraSpeed") {
       return (
         <CameraSpeedSelect

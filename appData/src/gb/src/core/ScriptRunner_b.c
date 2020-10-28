@@ -154,13 +154,12 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorStopUpdate_b, 0},     // 0x67
     {Script_ActorSetAnimate_b, 1},     // 0x68
     {Script_IfColorSupported_b, 2},    // 0x69
-    {Script_FadeSetSettings_b, 1},     // 0x6A
-    {Script_EngFieldSet_b, 3},         // 0x6B
-    {Script_EngFieldSetWord_b, 4},     // 0x6C
-    {Script_EngFieldSetVar_b, 4},      // 0x6D
-    {Script_EngFieldSetWordVar_b, 6},  // 0x6E
-    {Script_EngFieldStore_b, 4},       // 0x6F
-    {Script_EngFieldStoreWord_b, 6},   // 0x70    
+    {Script_EngFieldSet_b, 3},         // 0x6A
+    {Script_EngFieldSetWord_b, 4},     // 0x6B
+    {Script_EngFieldSetVar_b, 4},      // 0x6C
+    {Script_EngFieldSetWordVar_b, 6},  // 0x6D
+    {Script_EngFieldStore_b, 4},       // 0x6E
+    {Script_EngFieldStoreWord_b, 6},   // 0x6F    
 };
 
 void ScriptTimerUpdate_b() {

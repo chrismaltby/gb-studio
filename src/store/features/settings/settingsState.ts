@@ -4,8 +4,6 @@ import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false
 
-type FadeStyle = "white" | "black"
-
 export type SettingsState = {
   startSceneId: string;
   startX: number;
@@ -20,7 +18,6 @@ export type SettingsState = {
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
-  defaultFadeStyle: FadeStyle;
 }
 
 export const initialState: SettingsState = {
@@ -43,8 +40,7 @@ export const initialState: SettingsState = {
     "default-bg-6",
   ],
   defaultSpritePaletteId: "default-sprite",
-  defaultUIPaletteId: "default-ui",
-  defaultFadeStyle: "white"
+  defaultUIPaletteId: "default-ui"
 };
 
 const settingsSlice = createSlice({
