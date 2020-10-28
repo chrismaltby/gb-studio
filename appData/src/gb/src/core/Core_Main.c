@@ -1,6 +1,7 @@
 #include "Core_Main.h"
 
 #include <gb/cgb.h>
+#include <string.h>
 
 #include "Actor.h"
 #include "BankManager.h"
@@ -20,12 +21,12 @@
 #include "data_ptrs.h"
 #include "main.h"
 
-UBYTE game_time;
+UBYTE game_time = 0;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
 UINT8 state_running = 0;
-UINT8 vbl_count;
+UINT8 vbl_count = 0;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
 
@@ -122,6 +123,11 @@ int core_start() {
   // Position Window Layer
   WX_REG = 7;
   WY_REG = MAXWNDPOSY + 1U;
+
+  // Initialize structures
+  memset(&actors, 0, sizeof(actors));
+  memset(&active_script_ctx, 0, sizeof(active_script_ctx));
+  memset(&script_ctxs, 0, sizeof(script_ctxs));
 
   // Initialise Player
   player.sprite = 0;

@@ -24,12 +24,12 @@ Actor actors[MAX_ACTORS];
 Actor* actor_ptrs[MAX_ACTORS];
 UBYTE actors_active[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_size = 0;
-UBYTE actor_move_settings;
+UBYTE actor_move_settings = 0;
 
 Pos map_next_pos;
 Vector2D map_next_dir;
 UWORD map_next_sprite = 0;
-UBYTE player_iframes;
+UBYTE player_iframes = 0;
 
 void ActorsInit() {
   UBYTE i;

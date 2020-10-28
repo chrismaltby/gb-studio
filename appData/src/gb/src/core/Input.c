@@ -2,13 +2,13 @@
 
 #include "ScriptRunner.h"
 
-UBYTE joy;
+UBYTE joy = 0;
 UBYTE last_joy;
 UBYTE recent_joy;
 UBYTE await_input;
-UBYTE input_wait;
+UBYTE input_wait = 0;
 BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
-UBYTE input_script_persist;
+UBYTE input_script_persist = 0;
 
 void HandleInputScripts() {
   UBYTE input_index, input_joy;
