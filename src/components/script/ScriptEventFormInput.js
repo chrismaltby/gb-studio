@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
-import { VariableSelect } from "../forms/VariableSelectv2";
+import { VariableSelect } from "../forms/VariableSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";
 import FadeSpeedSelect from "../forms/FadeSpeedSelect";
@@ -27,7 +27,6 @@ import PropertySelect from "../forms/PropertySelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { EventValueShape, EventDefaultValueShape } from "../../store/stateShape";
 import l10n from "../../lib/helpers/l10n";
-import { VariablePairSelect } from "../forms/VariablePairSelect";
 import EngineFieldSelect from "../forms/EngineFieldSelect";
 import { SliderField } from "../ui/form/SliderField";
 import { CheckboxField } from "../ui/form/CheckboxField";
@@ -36,7 +35,7 @@ import { Select } from "../ui/form/Select";
 
 const argValue = (arg) => {
   if(arg && arg.value !== undefined) {
-    if(arg.type === "variable" || arg.type === "variablePair" || arg.type === "property") {
+    if(arg.type === "variable" || arg.type === "property") {
       return undefined;
     }
     return arg.value;
@@ -245,16 +244,6 @@ class ScriptEventFormInput extends Component {
         />
       );
     }
-    if (type === "variablePair") {
-      return (
-        <VariablePairSelect
-          id={id}
-          value={value || "0:0"}
-          entityId={entityId}
-          onChange={this.onChange}
-        />
-      );
-    }    
     if (type === "direction") {
       return <DirectionPicker id={id} value={value} onChange={this.onChange} />;
     }
