@@ -681,17 +681,6 @@ void Script_FadeIn_b() {
 }
 
 /*
- * Command: FadeSetSettings
- * ----------------------------
- * Set Fade settings.
- *
- *   arg0: Fade style (0=white, 1=black)
- */
-void Script_FadeSetSettings_b() {
-  fade_black = script_cmd_args[0];
-}
-
-/*
  * Command: LoadScene
  * ----------------------------
  * Load a new scene.

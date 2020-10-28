@@ -41,7 +41,6 @@ import {
   actorFramesPerDir,
   isMBC1,
   collisionGroupDec,
-  fadeStyleDec
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
