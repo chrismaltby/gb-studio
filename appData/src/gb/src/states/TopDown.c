@@ -19,7 +19,7 @@ void Start_TopDown() {
   if (topdown_grid == 16) {
     // Snap to 16px grid
     player.pos.x = MUL_16(DIV_16(player.pos.x));
-    player.pos.y = MUL_16(DIV_16(player.pos.y));
+    player.pos.y = 8 + MUL_16(DIV_16(player.pos.y));
   }
 }
 
@@ -30,7 +30,7 @@ void Update_TopDown() {
   tile_y = DIV_8(player.pos.y);
 
   // Is player on an 8x8px tile?
-  if ((topdown_grid == 16 && (MOD_16(player.pos.x) == 0 && MOD_16(player.pos.y) == 0)) ||
+  if ((topdown_grid == 16 && (MOD_16(player.pos.x) == 0 && MOD_16(player.pos.y) == 8)) ||
       (topdown_grid ==  8 && (MOD_8(player.pos.x)  == 0 && MOD_8(player.pos.y)  == 0))) {
     // Player landed on an tile
     // so stop movement for now
