@@ -317,18 +317,16 @@ export const VariableSelect: FC<VariableSelectProps> = ({
         <RelativePortal pin="top-right" offsetX={80} offsetY={33}>
           {type === "8bit" && (
             <Tooltip style={{ width: 120 }}>
-              8-bit number with a maximum value of 255
+              {l10n("FIELD_8BIT_DESCRIPTION")}
             </Tooltip>
           )}
           {type === "16bit" && (
-            <Tooltip style={{ width: 200 }}>
-              16-bit number with a maximum value of 65535.
-              <br />
-              Value is calculated using two 8-bit variables:
+            <Tooltip style={{ width: 250, maxWidth: 250 }}>
+              <p>{l10n("FIELD_16BIT_DESCRIPTION")}</p>
+              <p>{l10n("FIELD_16BIT_CALCULATION")}:</p>
               {currentValue && (
-                <>
-                  <br />(<VariableToken>${currentValue.label}</VariableToken> *
-                  256) +{" "}
+                <p>
+                  (<VariableToken>${currentValue.label}</VariableToken> * 256) +{" "}
                   <VariableToken>
                     $
                     {editorType === "customEvent"
@@ -336,7 +334,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
                       : namedVariablesLookup[nextVariable(currentValue.value)]
                           ?.name}
                   </VariableToken>
-                </>
+                </p>
               )}
             </Tooltip>
           )}

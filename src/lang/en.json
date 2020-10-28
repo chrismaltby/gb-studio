@@ -283,6 +283,9 @@
   "FIELD_GRID_SIZE": "Grid Size",
   "FIELD_GRID_8PX": "8px Grid",
   "FIELD_GRID_16PX": "16px Grid",
+  "FIELD_8BIT_DESCRIPTION": "8-bit number with a maximum value of 255.",
+  "FIELD_16BIT_DESCRIPTION": "16-bit number with a maximum value of 65535.",
+  "FIELD_16BIT_CALCULATION": "Value is calculated using two 8-bit variables",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

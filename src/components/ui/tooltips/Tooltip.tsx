@@ -13,8 +13,18 @@ export const Tooltip = styled.div`
   font-size: 11px;
   line-height: normal;
   font-weight: normal;
-  padding: 5px 10px;
+  padding: 10px;
   max-width: 230px;
   transform: translateX(-10px);
   z-index: 10000;
+
+  p {
+    margin: 10px 0;
+  }
+  p:first-child {
+    margin-top: 0;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
 `;
