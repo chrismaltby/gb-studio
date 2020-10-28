@@ -33,7 +33,7 @@ export const Select = styled(WindowedSelect).attrs({
     color: ${(props) => props.theme.colors.input.text};
     border: 1px solid ${(props) => props.theme.colors.input.border};
     font-size: ${(props) => props.theme.typography.fontSize};
-    border-radius: 4px;
+    border-radius: ${(props) => props.theme.borderRadius}px;
   }
 
   .CustomSelect__control:hover {

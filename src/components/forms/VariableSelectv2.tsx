@@ -59,8 +59,10 @@ const VariableSizeIndicator = styled.div`
   width: 24px;
   height: 26px;
   background-color: ${(props) => props.theme.colors.input.border};
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
+  border-top-left-radius: ${(props) =>
+    Math.max(0, props.theme.borderRadius - 1)}px;
+  border-bottom-left-radius: ${(props) =>
+    Math.max(0, props.theme.borderRadius - 1)}px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -96,7 +98,7 @@ const VariableRenameButton = styled.button`
   width: 22px;
   height: 22px;
   border: 0;
-  border-radius: 3px;
+  border-radius: ${(props) => Math.max(0, props.theme.borderRadius - 1)}px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -137,7 +139,7 @@ const VariableRenameCompleteButton = styled.button`
   width: 22px;
   height: 22px;
   border: 0;
-  border-radius: 3px;
+  border-radius: ${(props) => Math.max(0, props.theme.borderRadius - 1)}px;
   display: flex;
   flex-direction: column;
   justify-content: center;
