@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
 import { Select, Option, OptGroup } from "../ui/form/Select";
 import l10n from "../../lib/helpers/l10n";
-import { useGroupedEngineProps } from "../settings/useGroupedEngineProps";
+import { useGroupedEngineFields } from "../settings/useGroupedEngineFields";
 
 interface EngineFieldSelectProps {
   value?: string;
@@ -15,7 +15,7 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   value,
   onChange,
 }) => {
-  const groupedFields = useGroupedEngineProps();
+  const groupedFields = useGroupedEngineFields();
   const engineFields = useSelector((state: RootState) => state.engine.fields);
   const [options, setOptions] = useState<OptGroup[]>([]);
 

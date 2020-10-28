@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { fields } from "../../../lib/events/eventActorCollisionsDisable";
 
-export type EnginePropFieldType = "number" | "slider" | "checkbox" | "select";
+export type EngineFieldType = "number" | "slider" | "checkbox" | "select";
 
-export type EnginePropCType = "UBYTE" | "UWORD" | "BYTE" | "WORD";
+export type EngineFieldCType = "UBYTE" | "UWORD" | "BYTE" | "WORD";
 
-export type EnginePropSchemaField = {
+export type EngineFieldSchema = {
   key: string;
   label: string;
   group: string;
-  type: EnginePropFieldType;
-  cType: EnginePropCType;
+  type: EngineFieldType;
+  cType: EngineFieldCType;
   defaultValue: any;
   min?: number;
   max?: number;
@@ -18,7 +18,7 @@ export type EnginePropSchemaField = {
 };
 
 export interface EngineState {
-  fields: EnginePropSchemaField[];
+  fields: EngineFieldSchema[];
 }
 
 export const initialState: EngineState = {
@@ -29,10 +29,7 @@ const engineSlice = createSlice({
   name: "engine",
   initialState,
   reducers: {
-    setEngineFields: (
-      state,
-      action: PayloadAction<EnginePropSchemaField[]>
-    ) => {
+    setEngineFields: (state, action: PayloadAction<EngineFieldSchema[]>) => {
       state.fields = action.payload;
     },
   },

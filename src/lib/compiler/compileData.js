@@ -492,7 +492,7 @@ const compile = async (
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
     `extern unsigned char start_fade_style;\n` +
-    compileEngineFields(engineFields, projectData.engineProps, true) + '\n' +
+    compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
     `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
@@ -530,7 +530,7 @@ const compile = async (
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
     `unsigned char start_fade_style = ${fadeStyleDec(defaultFadeStyle)};\n` +
-    compileEngineFields(engineFields, projectData.engineProps) + '\n' +
+    compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
@@ -666,11 +666,11 @@ const precompile = async (
   };
 };
 
-export const compileEngineFields = (engineFields, engineProps, header) => {
+export const compileEngineFields = (engineFields, engineFieldValues, header) => {
   let fieldDef = "";
   if (engineFields.length > 0) {
     for(const engineField of engineFields) {
-      const prop = engineProps.find((p) => p.id === engineField.key);
+      const prop = engineFieldValues.find((p) => p.id === engineField.key);
       const customValue = prop && prop.value;
       const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
       fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`

@@ -1,17 +1,16 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import { off } from "electron-settings";
 import {
-  EnginePropCType,
-  EnginePropSchemaField,
+  EngineFieldCType,
+  EngineFieldSchema,
 } from "../../store/features/engine/engineState";
 
 interface PrecompiledEngineField {
   offset: number;
-  field: EnginePropSchemaField;
+  field: EngineFieldSchema;
 }
 
 export const precompileEngineFields = (
-  engineFields: EnginePropSchemaField[]
+  engineFields: EngineFieldSchema[]
 ): Dictionary<PrecompiledEngineField> => {
   let offset = 0;
   const offsets: Dictionary<PrecompiledEngineField> = {};
@@ -29,11 +28,11 @@ export const precompileEngineFields = (
   return offsets;
 };
 
-export const is16BitCType = (cType: EnginePropCType): boolean => {
+export const is16BitCType = (cType: EngineFieldCType): boolean => {
   return cType === "WORD" || cType === "UWORD";
 };
 
-export const minForCType = (cType: EnginePropCType): number => {
+export const minForCType = (cType: EngineFieldCType): number => {
   if (cType === "WORD") {
     return -32768;
   }
@@ -43,7 +42,7 @@ export const minForCType = (cType: EnginePropCType): number => {
   return 0;
 };
 
-export const maxForCType = (cType: EnginePropCType): number => {
+export const maxForCType = (cType: EngineFieldCType): number => {
   if (cType === "UWORD") {
     return 65535;
   }
@@ -56,7 +55,10 @@ export const maxForCType = (cType: EnginePropCType): number => {
   return 255;
 };
 
-export const clampToCType = (value: number, cType: EnginePropCType): number => {
+export const clampToCType = (
+  value: number,
+  cType: EngineFieldCType
+): number => {
   const min = minForCType(cType);
   const max = maxForCType(cType);
   return Math.max(min, Math.min(max, value));

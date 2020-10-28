@@ -1,40 +1,40 @@
 import React, { FC } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  EnginePropCType,
-  EnginePropSchemaField,
+  EngineFieldCType,
+  EngineFieldSchema,
 } from "../../store/features/engine/engineState";
-import { enginePropSelectors } from "../../store/features/entities/entitiesState";
+import { engineFieldValueSelectors } from "../../store/features/entities/entitiesState";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import { Button } from "../ui/buttons/Button";
 import l10n from "../../lib/helpers/l10n";
 import { SliderField } from "../ui/form/SliderField";
-import { useGroupedEngineProps } from "./useGroupedEngineProps";
+import { useGroupedEngineFields } from "./useGroupedEngineFields";
 import { CardAnchor, CardButtons, CardHeading } from "../ui/cards/Card";
 import { SearchableCard } from "../ui/cards/SearchableCard";
 import { SearchableSettingRow } from "../ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "../ui/form/SettingRow";
-import { EngineProp } from "../../store/features/entities/entitiesTypes";
+import { EngineFieldValue } from "../../store/features/entities/entitiesTypes";
 import { Input } from "../ui/form/Input";
 import { Checkbox } from "../ui/form/Checkbox";
 import clamp from "../../lib/helpers/clamp";
 import { Select } from "../ui/form/Select";
 
-const { editEngineProp, removeEngineProp } = entitiesActions;
+const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
-export interface EnginePropsEditorProps {
+export interface EngineFieldsEditorProps {
   searchTerm?: string;
 }
 
-export interface EnginePropFieldProps {
-  field: EnginePropSchemaField;
-  value: EngineProp["value"];
-  onChange: (newValue: EngineProp["value"]) => void;
+export interface EngineFieldInputProps {
+  field: EngineFieldSchema;
+  value: EngineFieldValue["value"];
+  onChange: (newValue: EngineFieldValue["value"]) => void;
 }
 
 const fieldMin = (
   customMin: number | undefined,
-  cType: EnginePropCType
+  cType: EngineFieldCType
 ): number => {
   let min = 0;
   if (cType === "BYTE") {
@@ -51,7 +51,7 @@ const fieldMin = (
 
 const fieldMax = (
   customMax: number | undefined,
-  cType: EnginePropCType
+  cType: EngineFieldCType
 ): number => {
   let max = 255;
   if (cType === "BYTE") {
@@ -68,7 +68,7 @@ const fieldMax = (
   }
 };
 
-export const EnginePropField: FC<EnginePropFieldProps> = ({
+export const EngineFieldInput: FC<EngineFieldInputProps> = ({
   field,
   value,
   onChange,
@@ -147,16 +147,16 @@ export const EnginePropField: FC<EnginePropFieldProps> = ({
   return <div>Unknown type {field.type}</div>;
 };
 
-const EnginePropsEditor: FC<EnginePropsEditorProps> = ({ searchTerm }) => {
+const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({ searchTerm }) => {
   const dispatch = useDispatch();
-  const values = useSelector(enginePropSelectors.selectEntities);
-  const groupedFields = useGroupedEngineProps();
+  const values = useSelector(engineFieldValueSelectors.selectEntities);
+  const groupedFields = useGroupedEngineFields();
 
-  const resetToDefault = (fields: EnginePropSchemaField[]) => () => {
+  const resetToDefault = (fields: EngineFieldSchema[]) => () => {
     fields.forEach((field) => {
       dispatch(
-        removeEngineProp({
-          enginePropId: field.key,
+        removeEngineFieldValue({
+          engineFieldId: field.key,
         })
       );
     });
@@ -182,13 +182,13 @@ const EnginePropsEditor: FC<EnginePropsEditorProps> = ({ searchTerm }) => {
                 {l10n(field.label)}
               </SettingRowLabel>
               <SettingRowInput>
-                <EnginePropField
+                <EngineFieldInput
                   field={field}
                   value={values[field.key]?.value}
                   onChange={(e) => {
                     dispatch(
-                      editEngineProp({
-                        enginePropId: field.key,
+                      editEngineFieldValue({
+                        engineFieldId: field.key,
                         value: e,
                       })
                     );
@@ -210,4 +210,4 @@ const EnginePropsEditor: FC<EnginePropsEditorProps> = ({ searchTerm }) => {
   );
 };
 
-export default EnginePropsEditor;
+export default EngineFieldsEditor;

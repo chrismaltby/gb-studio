@@ -11,11 +11,11 @@ import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
 import navigationActions from "../../store/features/navigation/navigationActions";
 import FadeStyleSelect from "../../components/forms/FadeStyleSelect";
-import EnginePropsEditor from "../../components/settings/EnginePropsEditor";
+import EngineFieldsEditor from "../../components/settings/EngineFieldsEditor";
 import { Checkbox } from "../../components/ui/form/Checkbox";
 import { Input } from "../../components/ui/form/Input";
 import { RootState } from "../../store/configureStore";
-import { useGroupedEngineProps } from "../../components/settings/useGroupedEngineProps";
+import { useGroupedEngineFields } from "../../components/settings/useGroupedEngineFields";
 import { NavigationSection } from "../../store/features/navigation/navigationState";
 import { Textarea } from "../../components/ui/form/Textarea";
 import useWindowSize from "../../components/ui/hooks/use-window-size";
@@ -45,7 +45,7 @@ const SettingsPage: FC = () => {
   );
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [scrollToId, setScrollToId] = useState<string>("");
-  const groupedFields = useGroupedEngineProps();
+  const groupedFields = useGroupedEngineFields();
   const editSettings = useCallback(
     (patch: Partial<SettingsState>) => {
       dispatch(settingsActions.editSettings(patch));
@@ -274,7 +274,7 @@ const SettingsPage: FC = () => {
           )}
         </SearchableCard>
 
-        <EnginePropsEditor searchTerm={searchTerm} />
+        <EngineFieldsEditor searchTerm={searchTerm} />
 
         <SearchableCard
           searchTerm={searchTerm}

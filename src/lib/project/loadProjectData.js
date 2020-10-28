@@ -174,7 +174,7 @@ const loadProject = async (projectPath) => {
     }
   }
 
-  const fixedEngineProps = (json.engineProps || []);
+  const fixedEngineFieldValues = (json.engineFieldValues || []);
 
   return {
     ...json,
@@ -184,7 +184,7 @@ const loadProject = async (projectPath) => {
     scenes: fixedScenes,
     customEvents: fixedCustomEvents,
     palettes: fixedPalettes,
-    engineProps: fixedEngineProps
+    engineFieldValues: fixedEngineFieldValues
   };
 };
 

@@ -4,10 +4,10 @@ import { readJSON } from "fs-extra";
 import { RootState } from "../../configureStore";
 import actions from "./engineActions";
 import { engineRoot } from "../../../consts";
-import { EnginePropSchemaField } from "./engineState";
+import { EngineFieldSchema } from "./engineState";
 
 interface EngineData {
-  fields?: EnginePropSchemaField[];
+  fields?: EngineFieldSchema[];
 }
 
 const engineMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
@@ -32,7 +32,7 @@ const engineMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
       defaultEngine = await readJSON(defaultEngineJsonPath);
     }
 
-    let fields: EnginePropSchemaField[] = [];
+    let fields: EngineFieldSchema[] = [];
 
     if (localEngine && localEngine.fields) {
       fields = localEngine.fields;

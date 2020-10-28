@@ -99,7 +99,7 @@ export type CustomEvent = {
   script: ScriptEvent[];
 };
 
-export type EngineProp = {
+export type EngineFieldValue = {
   id: string;
   value: number | string | boolean | undefined;
 };
@@ -158,7 +158,7 @@ export interface EntitiesState {
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
   variables: EntityState<Variable>;
-  engineProps: EntityState<EngineProp>;
+  engineFieldValues: EntityState<EngineFieldValue>;
 }
 
 export type Asset = {

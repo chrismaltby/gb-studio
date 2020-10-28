@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import l10n from "../../lib/helpers/l10n";
 import { RootState } from "../../store/configureStore";
-import { EnginePropSchemaField } from "../../store/features/engine/engineState";
+import { EngineFieldSchema } from "../../store/features/engine/engineState";
 
-export type EnginePropGroup = {
+export type EngineFieldGroup = {
   name: string;
   searchMatches: string[];
-  fields: EnginePropSchemaField[];
+  fields: EngineFieldSchema[];
 };
 
-export const useGroupedEngineProps = () => {
+export const useGroupedEngineFields = () => {
   const fields = useSelector((state: RootState) => state.engine.fields);
-  const [groupedFields, setGroupedFields] = useState<EnginePropGroup[]>([]);
+  const [groupedFields, setGroupedFields] = useState<EngineFieldGroup[]>([]);
 
   useEffect(() => {
     const groups = uniq(fields.map((f) => f.group));
