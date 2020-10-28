@@ -187,7 +187,10 @@ class AddCommandButton extends Component {
           );
         })
         .map(key => {
-          const name = l10n(key) || events[key].name || key;
+          const localisedKey = l10n(key);
+          const name = localisedKey !== key
+            ? localisedKey
+            : events[key].name || key;
           const searchName = `${name.toUpperCase()} ${key.toUpperCase()}`;
           return {
             ...events[key],

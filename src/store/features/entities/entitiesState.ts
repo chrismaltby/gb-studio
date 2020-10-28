@@ -26,6 +26,7 @@ import {
   regenerateEventIds,
   patchEvents,
   mapEvents,
+  getField,
   isVariableField,
   isPropertyField,
   walkEvents,
@@ -1662,7 +1663,7 @@ const editCustomEvent: CaseReducer<
       if (event.args) {
         const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
           const fixedArgs = memo;
-          if (isVariableField(event.command, arg, event.args[arg])) {
+          if (isVariableField(event.command, arg, event.args)) {
             fixedArgs[arg] = fix(event.args[arg]);
           } else if (isPropertyField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fixProperty(event.args[arg]);
@@ -1720,21 +1721,24 @@ const editCustomEvent: CaseReducer<
       }
 
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(e.command, arg, args[arg])) {
-          const addVariable = (variable: string) => {
+        if (isVariableField(e.command, arg, args)) {
+          const addVariable = (variable: string, type?: "8bit" | "16bit") => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable)
             );
+            const newType = variables[variable]?.type === "16bit" ? "16bit" : type;
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
+              type: newType
             };
           };
           const variable = args[arg];
+          const field = getField(e.command, arg, args);
           if (variable != null && variable.type === "variable") {
-            addVariable(variable.value);
+            addVariable(variable.value, field.variableType);
           } else {
-            addVariable(variable);
+            addVariable(variable, field.variableType);
           }
         }
 

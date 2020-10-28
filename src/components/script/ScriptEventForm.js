@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import events from "../../lib/events";
+import events, { engineFieldUpdateEvents, engineFieldStoreEvents } from "../../lib/events";
 import rerenderCheck from "../../lib/helpers/reactRerenderCheck";
 import { CustomEventShape, EngineFieldShape } from "../../store/stateShape";
 import ScriptEventFormField from "./ScriptEventFormField";
@@ -42,7 +42,8 @@ class ScriptEventForm extends Component {
             label: `${v.name}`,
             defaultValue: "LAST_VARIABLE",
             key: `$variable[${v.id}]$`,
-            type: "variable"
+            type: "variable",
+            variableType: v.type
           };
         }) || [];
       const usedActors =
@@ -61,64 +62,12 @@ class ScriptEventForm extends Component {
     if ((command === EVENT_ENGINE_FIELD_SET || command === EVENT_ENGINE_FIELD_STORE) && value.engineFieldKey) {
       const engineField = engineFields.find((e) => e.key === value.engineFieldKey);
       if (engineField) {
-        const fieldType = engineField.type || "number";
         if (command === EVENT_ENGINE_FIELD_SET) {
-          if (is16BitCType(engineField.cType)) {
-            return [].concat(
-              eventCommands,
-              {
-                key: "value",
-                type: "union",
-                checkboxLabel: l10n(engineField.label),
-                types: [fieldType, "variable"],
-                defaultType: fieldType,
-                min: clampToCType(setDefault(engineField.min, -Infinity), engineField.cType),
-                max: clampToCType(setDefault(engineField.max, Infinity), engineField.cType),
-                variableType: "16bit",
-                options: engineField.options || [],
-                defaultValue: {
-                  [fieldType]: engineField.defaultValue || 0,
-                  variable: "0",
-                },
-              }
-            );
-          } 
-          return [].concat(eventCommands, {
-            key: "value",
-            type: "union",
-            checkboxLabel: l10n(engineField.label),
-            types: [fieldType, "variable"],
-            defaultType: fieldType,
-            min: clampToCType(setDefault(engineField.min, -Infinity), engineField.cType),
-            max: clampToCType(setDefault(engineField.max, Infinity), engineField.cType),            
-            options: engineField.options || [],
-            defaultValue: {
-              [fieldType]: engineField.defaultValue || 0,
-              variable: "0",
-            },
-          });
+          return engineFieldUpdateEvents[engineField.key] && engineFieldUpdateEvents[engineField.key].fields || [];
         }
         if (command === EVENT_ENGINE_FIELD_STORE) {
-          if (is16BitCType(engineField.cType)) {
-            return [].concat(
-              eventCommands,
-              {
-                key: "value",
-                type: "variable",
-                defaultValue: "0",
-                variableType: "16bit"
-              }
-            );
-          } 
-          return [].concat(
-            eventCommands,
-            {
-              key: "value",
-              type: "variable",
-              defaultValue: "0"
-            }
-          );
-        }        
+          return engineFieldStoreEvents[engineField.key] && engineFieldStoreEvents[engineField.key].fields || [];
+        }   
       } else {
         return [].concat(eventCommands, {
           label: `Unknown field "${value.engineFieldKey}"`

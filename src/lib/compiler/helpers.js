@@ -155,7 +155,7 @@ export const replaceInvalidCustomEventVariables = (variable) => {
   }
 
   // Support the case for "union" values
-  if (variable !== null && variable.type === "variable") {
+  if (variable && variable.type === "variable") {
     return {
       ...variable,
       value: getValidVariableIndex(variable.value)

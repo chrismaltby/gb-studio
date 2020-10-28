@@ -82,6 +82,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  type?: "8bit" | "16bit";
 };
 
 export type CustomEventActor = {

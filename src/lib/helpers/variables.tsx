@@ -171,7 +171,7 @@ export const globalVariableCode = (variable: string) => {
 
 /*****************************************************************************/
 
-export const prevVariable = (variable: string) => {
+export const prevVariable = (variable: string = "0") => {
   const start = variable[0];
   if (start === "T" || start === "L") {
     const value = parseInt(variable.substr(1), 10) - 1;
@@ -180,7 +180,7 @@ export const prevVariable = (variable: string) => {
   return String(parseInt(variable, 10) - 1);
 };
 
-export const nextVariable = (variable: string) => {
+export const nextVariable = (variable: string = "0") => {
   const start = variable[0];
   if (start === "T" || start === "L") {
     const value = parseInt(variable.substr(1), 10) + 1;
