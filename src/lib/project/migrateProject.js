@@ -45,7 +45,12 @@ const migrateProject = project => {
     if (release === "2") {
       data = migrateFrom200r2To200r3Events(data);
       release = "3";
-    }    
+    }
+    if (release === "3") {
+      data = migrateFrom200r3To200r4EngineFieldValues(data);
+      data = migrateFrom200r3To200r4Events(data);
+      release = "4";
+    }      
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -658,5 +663,55 @@ const migrateFrom200r2To200r3Events = data => {
     })
   };
 };
+
+/*
+ * Version 2.0.0 r3 used a separate event for handling updating the
+ * fade style, this has now been merged into EVENT_ENGINE_FIELD_SET
+ */
+export const migrateFrom200r3To200r4Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_FADE_SETTINGS") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        ...event.args,
+        engineFieldKey: "fade_style",
+        value: {
+          type: "select",
+          value: event.args.style === "black" ? 1 : 0
+        }
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r3To200r4Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r3To200r4Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r3To200r4Event)
+      }
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r3 stored the default fade style in settings, this
+ * has now been moved to an engine field value
+ */
+export const migrateFrom200r3To200r4EngineFieldValues = data => {
+  return {
+    ...data,
+    engineFieldValues: [].concat(data.engineFieldValues||[], {
+      id: "fade_style",
+      value: data.settings.defaultFadeStyle === "black" ? 1 : 0
+    })
+  }
+}
 
 export default migrateProject;
