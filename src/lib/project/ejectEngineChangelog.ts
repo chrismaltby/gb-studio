@@ -87,7 +87,13 @@ const changes: EngineChange[] = [{
     version: "2.0.0-e10",
     description: "Fix bug where an attached script overrides default behavior even when not persisted between scenes",
     modifiedFiles: [
-        "src/core/Input.c ",
+        "src/core/Input.c",
+    ]
+}, {
+    version: "2.0.0-e11",
+    description: "Improve collision detection between actors and projectiles",
+    modifiedFiles: [
+        "src/core/Projectiles_b.c",
     ]
 }];
 
