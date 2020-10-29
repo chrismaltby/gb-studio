@@ -1,10 +1,21 @@
-import { Dictionary, Middleware } from "@reduxjs/toolkit";
+import { Middleware } from "@reduxjs/toolkit";
 import Path from "path";
 import { readJSON } from "fs-extra";
 import { RootState } from "../../configureStore";
 import actions from "./engineActions";
 import { engineRoot } from "../../../consts";
 import { EngineFieldSchema } from "./engineState";
+import events, {
+  engineFieldUpdateEvents,
+  engineFieldStoreEvents,
+} from "../../../lib/events";
+import {
+  EVENT_ENGINE_FIELD_SET,
+  EVENT_ENGINE_FIELD_STORE,
+} from "../../../lib/compiler/eventTypes";
+import { clampToCType, is16BitCType } from "../../../lib/helpers/engineFields";
+import l10n from "../../../lib/helpers/l10n";
+import { setDefault } from "../../../lib/helpers/setDefault";
 
 interface EngineData {
   fields?: EngineFieldSchema[];
@@ -40,9 +51,96 @@ const engineMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
       fields = defaultEngine.fields;
     }
 
+    updateEngineFieldEvents(fields);
+
     store.dispatch(actions.setEngineFields(fields));
   }
   next(action);
+};
+
+const updateEngineFieldEvents = (engineFields: EngineFieldSchema[]) => {
+  const fieldUpdateHandler = events[EVENT_ENGINE_FIELD_SET];
+  const fieldStoreHandler = events[EVENT_ENGINE_FIELD_STORE];
+
+  if (!fieldUpdateHandler || !fieldStoreHandler) {
+    return;
+  }
+
+  engineFields.forEach((engineField) => {
+    const fieldType = engineField.type || "number";
+
+    const updateValueField = is16BitCType(engineField.cType)
+      ? {
+          key: "value",
+          type: "union",
+          checkboxLabel: l10n(engineField.label),
+          types: [fieldType, "variable"],
+          defaultType: fieldType,
+          min: clampToCType(
+            setDefault(engineField.min, -Infinity),
+            engineField.cType
+          ),
+          max: clampToCType(
+            setDefault(engineField.max, Infinity),
+            engineField.cType
+          ),
+          variableType: "16bit",
+          options: engineField.options || [],
+          defaultValue: {
+            [fieldType]: engineField.defaultValue || 0,
+            variable: "0",
+          },
+        }
+      : {
+          key: "value",
+          type: "union",
+          checkboxLabel: l10n(engineField.label),
+          types: [fieldType, "variable"],
+          defaultType: fieldType,
+          min: clampToCType(
+            setDefault(engineField.min, -Infinity),
+            engineField.cType
+          ),
+          max: clampToCType(
+            setDefault(engineField.max, Infinity),
+            engineField.cType
+          ),
+          options: engineField.options || [],
+          defaultValue: {
+            [fieldType]: engineField.defaultValue || 0,
+            variable: "0",
+          },
+        };
+
+    const storeValueField = is16BitCType(engineField.cType)
+      ? {
+          key: "value",
+          type: "variable",
+          defaultValue: "0",
+          variableType: "16bit",
+        }
+      : {
+          key: "value",
+          type: "variable",
+          defaultValue: "0",
+        };
+
+    engineFieldUpdateEvents[engineField.key] = {
+      ...fieldUpdateHandler,
+      fields: ([] as any[]).concat(
+        fieldUpdateHandler.fields || [],
+        updateValueField
+      ),
+    };
+
+    engineFieldStoreEvents[engineField.key] = {
+      ...fieldStoreHandler,
+      fields: ([] as any[]).concat(
+        fieldStoreHandler.fields || [],
+        storeValueField
+      ),
+    };
+  });
 };
 
 export default engineMiddleware;
