@@ -95,6 +95,26 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/core/Projectiles_b.c",
     ]
+}, {
+    version: "2.0.0-e12",
+    description: "Add support for Engine Fields updatable from settings page and using events:\n" +
+        "   * Configurable platformer velocity, acceleration and gravity values\n" +
+        "   * Top down grid size configurable to 8px or 16px",
+    modifiedFiles: [
+        "include/Actor.h",
+        "include/Math.h",
+        "include/ScriptRunner.h",
+        "include/data_ptrs.h",
+        "src/core/Actor.c",
+        "src/core/Actor_b.c",
+        "src/core/Core_Main.c",
+        "src/core/FadeManager_b.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/states/Adventure.c",
+        "src/states/Platform.c",
+        "src/states/TopDown.c",        
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
