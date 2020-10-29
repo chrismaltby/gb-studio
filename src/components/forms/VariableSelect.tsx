@@ -28,6 +28,7 @@ import entitiesActions from "../../store/features/entities/entitiesActions";
 import l10n from "../../lib/helpers/l10n";
 import { Dictionary } from "@reduxjs/toolkit";
 import { keyBy } from "lodash";
+import { EditorSelectionType } from "../../store/features/editor/editorState";
 
 interface VariableSelectProps {
   id?: string;
@@ -170,6 +171,30 @@ export const VariableToken = styled.span`
   color: ${(props) => props.theme.colors.token.text};
 `;
 
+const formatOptionLabel = (
+  type: "8bit" | "16bit",
+  editorType: EditorSelectionType,
+  namedVariablesLookup: Dictionary<NamedVariable>
+) => (option: Option) => {
+  let otherVariable = "";
+  if (type === "16bit") {
+    if (editorType === "customEvent") {
+      otherVariable = `${option.label}+1`;
+    } else {
+      otherVariable =
+        namedVariablesLookup[nextVariable(option.value)]?.name || "";
+    }
+  }
+  return (
+    <>
+      {option.label}
+      {type === "16bit" && otherVariable && (
+        <OtherVariable> & {otherVariable}</OtherVariable>
+      )}
+    </>
+  );
+};
+
 export const VariableSelect: FC<VariableSelectProps> = ({
   value,
   type = "8bit",
@@ -276,7 +301,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     if (e.key === "Enter") {
       onRenameFinish();
     } else if (e.key === "Escape") {
-      setRenameVisible(false);      
+      setRenameVisible(false);
     }
   };
 
@@ -362,25 +387,11 @@ export const VariableSelect: FC<VariableSelectProps> = ({
           onChange={(newValue: Option) => {
             onChange(newValue.value);
           }}
-          getOptionLabel={(option: Option, a: any, b: any) => {
-            let otherVariable = "";
-            if (type === "16bit") {
-              if (editorType === "customEvent") {
-                otherVariable = `${option.label}+1`;
-              } else {
-                otherVariable =
-                  namedVariablesLookup[nextVariable(option.value)]?.name || "";
-              }
-            }
-            return (
-              <>
-                {option.label}
-                {type === "16bit" && otherVariable && (
-                  <OtherVariable> & {otherVariable}</OtherVariable>
-                )}
-              </>
-            );
-          }}
+          formatOptionLabel={formatOptionLabel(
+            type,
+            editorType,
+            namedVariablesLookup
+          )}
         />
       )}
       <VariableSizeIndicator
