@@ -39,7 +39,6 @@ const engineMiddleware: Middleware<{}, RootState> = (store) => (next) => async (
     try {
       localEngine = await readJSON(localEngineJsonPath);
     } catch (e) {
-      console.log("Unable to get local engine");
       defaultEngine = await readJSON(defaultEngineJsonPath);
     }
 
