@@ -13,6 +13,12 @@ const readEngineVersion = async (path) => {
   return (await fs.readJSON(path, "utf8")).version;
 }
 
+const readEngineVersionLegacy = async (path) => {
+  return (await fs.readFile(path, "utf8"))
+    .replace(/#.*/g, "")
+    .trim();
+}
+
 const ejectBuild = async ({
   projectType = "gb",
   outputRoot = "/tmp",
@@ -44,7 +50,12 @@ const ejectBuild = async ({
     try {
       ejectedEngineVersion = await readEngineVersion(ejectedEngineMetaPath);
     } catch (e) {
-      ejectedEngineVersion = "2.0.0-e1";
+      try {
+        const ejectedEngineVersionLegacyPath = `${localCorePath}/engine_version`;
+        ejectedEngineVersion = await readEngineVersionLegacy(ejectedEngineVersionLegacyPath);
+      } catch (e2) {
+        ejectedEngineVersion = "2.0.0-e1";
+      }
     }
     if (ejectedEngineVersion !== expectedEngineVersion) {
       warnings(
