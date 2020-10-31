@@ -103,6 +103,8 @@
     "@electron-forge/maker-zip": "6.0.0-beta.49",
     "@electron-forge/plugin-webpack": "6.0.0-beta.49",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@testing-library/jest-dom": "^5.11.5",
+    "@testing-library/react": "^11.1.0",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/electron-settings": "^3.1.1",
     "@types/fs-extra": "^8.0.1",
