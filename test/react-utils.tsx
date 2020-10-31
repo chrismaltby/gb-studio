@@ -9,15 +9,17 @@ type RenderParameters = Parameters<typeof render>;
 
 const customRender = (
   ui: RenderParameters[0],
-  store: Store<RootState, AnyAction>,
-  options: RenderParameters[1] = {}
+  store?: Store<RootState, AnyAction>,
+  options?: RenderParameters[1]
 ) => {
   return render(ui, {
-    wrapper: ({ children }) => (
-      <Provider store={store}>
-        <ThemeProvider>{children}</ThemeProvider>
-      </Provider>
-    ),
+    wrapper: store
+      ? ({ children }) => (
+          <Provider store={store}>
+            <ThemeProvider>{children}</ThemeProvider>
+          </Provider>
+        )
+      : ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
     ...options,
   });
 };
