@@ -445,9 +445,17 @@ class ScriptBuilder {
   ) => {
     const output = this.output;
     const { strings, variables, event } = this.options;
-    const menuText = options
+    let menuText;
+    if(options.length > 4 || layout === "menu"){
+      menuText = options
       .map((option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`)
       .join("\n");
+    }
+    else{
+      menuText = options
+      .map((option, index) => trimlines(option || "", 16, 1) || `Item ${index + 1}`)
+      .join("\n");
+    }
     const text = this.replaceVariables(menuText, variables, event);
     let stringIndex = strings.indexOf(text);
     if (stringIndex === -1) {
