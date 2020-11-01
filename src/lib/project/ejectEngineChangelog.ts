@@ -95,6 +95,15 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/core/Projectiles_b.c",
     ]
+}, {
+    version: "2.0.0-e12",
+    description: "Add support for offsetting weapon attack, and flip attack while facing left if using static sprite",
+    modifiedFiles: [
+        "include/Projectiles.h",
+        "src/core/Projectiles.c",
+        "src/core/Projectiles_b.c",
+        "src/core/ScriptRunner_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

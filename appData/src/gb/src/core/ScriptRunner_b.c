@@ -146,7 +146,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorSetSprite_b, 2},      // 0x60
     {Script_IfActorRelActor_b, 4},     // 0x61
     {Script_PlayerBounce_b, 1},        // 0x62
-    {Script_WeaponAttack_b, 2},        // 0x63
+    {Script_WeaponAttack_b, 3},        // 0x63
     {Script_PalSetBackground_b, 3},    // 0x64
     {Script_PalSetSprite_b, 2},        // 0x65
     {Script_PalSetUI_b, 2},            // 0x66
@@ -2259,8 +2259,9 @@ void Script_WeaponAttack_b() {
   WeaponAttack(script_cmd_args[0],  // Sprite
                palette,             // Palette index
                active_script_ctx.script_actor,
-               script_cmd_args[1] & 0xF,  // Collision group
-               script_cmd_args[1] >> 4);  // Collision mask
+               script_cmd_args[1],
+               script_cmd_args[2] & 0xF,  // Collision group
+               script_cmd_args[2] >> 4);  // Collision mask
 }
 
 void Script_PalSetBackground_b() {

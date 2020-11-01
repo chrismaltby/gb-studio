@@ -3,7 +3,7 @@
 #include "BankManager.h"
 
 void ProjectilesInit_b();
-void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask);
+void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE offset, UBYTE col_group, UBYTE col_mask);
 void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE palette,
                         WORD x,
@@ -23,9 +23,9 @@ void ProjectilesInit() {
   POP_BANK;
 }
 
-void WeaponAttack(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
+void WeaponAttack(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE offset, UBYTE col_group, UBYTE col_mask) {
   PUSH_BANK(PROJECTILE_BANK);
-  WeaponAttack_b(sprite, palette, actor, col_group, col_mask);
+  WeaponAttack_b(sprite, palette, actor, offset, col_group, col_mask);
   POP_BANK;
 }
 
