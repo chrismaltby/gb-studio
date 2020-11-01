@@ -334,13 +334,14 @@ class ScriptBuilder {
 
   // Weapons
 
-  weaponAttack = (spriteSheetId, collisionGroup, collisionMask) => {
+  weaponAttack = (spriteSheetId, offset = 10, collisionGroup, collisionMask) => {
     const output = this.output;
     const { sprites, scene } = this.options;
     const spriteSceneIndex = getSpriteSceneIndex(spriteSheetId, sprites, scene);
     
     output.push(cmd(WEAPON_ATTACK));
     output.push(spriteSceneIndex);
+    output.push(offset);
     output.push(((collisionMaskDec(collisionMask)) << 4) + collisionGroupDec(collisionGroup));
   }
 

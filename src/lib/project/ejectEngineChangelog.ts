@@ -97,6 +97,15 @@ const changes: EngineChange[] = [{
     ]
 }, {
     version: "2.0.0-e12",
+    description: "Add support for offsetting weapon attack, and flip attack while facing left if using static sprite",
+    modifiedFiles: [
+        "include/Projectiles.h",
+        "src/core/Projectiles.c",
+        "src/core/Projectiles_b.c",
+        "src/core/ScriptRunner_b.c",
+    ]
+}, {
+    version: "2.0.0-e13",
     description: "Add support for Engine Fields updatable from settings page and using events:\n" +
         "   * Configurable platformer velocity, acceleration and gravity values\n" +
         "   * Top down grid size configurable to 8px or 16px",
@@ -113,7 +122,7 @@ const changes: EngineChange[] = [{
         "src/core/Scroll.c",
         "src/states/Adventure.c",
         "src/states/Platform.c",
-        "src/states/TopDown.c",        
+        "src/states/TopDown.c",
     ]
 }];
 
