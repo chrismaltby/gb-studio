@@ -270,6 +270,7 @@
   "FIELD_TMP_DIRECTORY": "Temp Directory",
   "FIELD_TMP_DIRECTORY_INFO": "The location where temporary files are stored during the build of your game.\nIf you are unable to build your game due to permissions errors you can change this to a folder that you have access to.",
   "FIELD_DONT_MODIFY": "Don't modify",
+  "FIELD_OFFSET": "Offset",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
