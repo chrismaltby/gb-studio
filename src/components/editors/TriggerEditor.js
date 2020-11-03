@@ -68,7 +68,7 @@ class TriggerEditor extends Component {
     const { clipboardData } = this.state;
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("TRIGGER")}
@@ -183,7 +183,7 @@ class TriggerEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
+          {/* <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
           <ul>
             <li onClick={() => selectScene({sceneId: scene.id})}>
               <div className="EditorSidebar__Icon">
@@ -191,7 +191,7 @@ class TriggerEditor extends Component {
               </div>
               {scene.name || `Scene ${index + 1}`}
             </li>
-          </ul>
+          </ul> */}
         </SidebarColumn>
 
         <SidebarColumn>
@@ -215,7 +215,7 @@ class TriggerEditor extends Component {
             />
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </>
     );
   }
 }

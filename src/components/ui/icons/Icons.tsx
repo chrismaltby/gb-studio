@@ -265,6 +265,24 @@ export const Bits8Icon = () => (
   </svg>
 );
 
+export const ColumnRightIcon = () => (
+  <svg width="24px" height="24px" viewBox="0 0 24 24">
+    <path d="M23,1 L23,23 L1,23 L1,1 L23,1 Z M21,3 L3,3 L3,21 L21,21 L21,3 Z M19,5 L19,19 L13,19 L13,5 L19,5 Z"></path>
+  </svg>  
+);
+
+export const ColumnLeftIcon = () => (
+  <svg width="24px" height="24px" viewBox="0 0 24 24">
+    <path d="M23,1 L23,23 L1,23 L1,1 L23,1 Z M21,3 L3,3 L3,21 L21,21 L21,3 Z M11,5 L11,19 L5,19 L5,5 L11,5 Z"></path>
+  </svg>  
+);
+
+export const NavigationIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M20 9h-17v-6h17l3 3-3 3zm-6 10h-4v5h4v-5zm0-19h-4v2h4v-2zm-10 11h17v6h-17l-3-3 3-3z"/>
+  </svg>  
+);
+
 export const Bits16Icon = () => (
   <svg width="24px" height="24px" viewBox="0 0 24 24">
     <path

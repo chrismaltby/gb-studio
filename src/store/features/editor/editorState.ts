@@ -8,12 +8,7 @@ import {
   DRAG_PLAYER,
 } from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
-import {
-  Actor,
-  Trigger,
-  SceneData,
-  Variable,
-} from "../entities/entitiesTypes";
+import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";
@@ -81,6 +76,7 @@ export interface EditorState {
   lastScriptTabSecondary: string;
   worldSidebarWidth: number;
   filesSidebarWidth: number;
+  navigatorSplitSizes: number[];
   profile: boolean;
 }
 
@@ -123,7 +119,8 @@ export const initialState: EditorState = {
   profile: false,
   worldSidebarWidth: 300,
   filesSidebarWidth: 300,
-  clipboardVariables: []
+  clipboardVariables: [],
+  navigatorSplitSizes: [300, 100, 100],
 };
 
 const editorSlice = createSlice({
@@ -433,7 +430,11 @@ const editorSlice = createSlice({
 
     setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {
       state.clipboardVariables = action.payload;
-    },    
+    },
+
+    setNavigatorSplitSizes: (state, action: PayloadAction<number[]>) => {
+      state.navigatorSplitSizes = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -494,6 +495,15 @@ const editorSlice = createSlice({
           action.payload.data.settings?.worldScrollX || state.worldScrollX;
         state.worldScrollY =
           action.payload.data.settings?.worldScrollY || state.worldScrollY;
+        if (
+          initialState.navigatorSplitSizes.length ===
+          action.payload.data.settings?.navigatorSplitSizes?.length
+        ) {
+          // Only use navigatorSplitSizes if correct number of splits provided
+          state.navigatorSplitSizes =
+            action.payload.data.settings?.navigatorSplitSizes ||
+            state.navigatorSplitSizes;
+        }
       })
       // When UI changes increment UI version number
       .addMatcher(

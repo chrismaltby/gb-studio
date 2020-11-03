@@ -183,7 +183,7 @@ class SceneEditor extends Component {
     };
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("SCENE")}
@@ -335,7 +335,7 @@ class SceneEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          <SceneNavigation sceneId={scene.id} />
+          {/* <SceneNavigation sceneId={scene.id} /> */}
         </SidebarColumn>
 
         <SidebarColumn>
@@ -385,7 +385,7 @@ class SceneEditor extends Component {
             )}            
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </>
     );
   }
 }

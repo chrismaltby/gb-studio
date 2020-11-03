@@ -1,8 +1,8 @@
 .Sidebar {
-  right: 0;
-  position: fixed;
-  top: 38px;
-  bottom: 0px;
+  /* right: 0; */
+  /* position: fixed; */
+  /* top: 38px; */
+  /* bottom: 0px; */
   display: flex;
   flex-direction: row;
 }

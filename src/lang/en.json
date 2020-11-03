@@ -287,6 +287,9 @@
   "FIELD_16BIT_DESCRIPTION": "16-bit number with a maximum value of 65535.",
   "FIELD_16BIT_CALCULATION": "Value is calculated using two 8-bit variables",
   "FIELD_OFFSET": "Offset",
+  "FIELD_VARIABLES": "Variables",
+  "FIELD_SCENES": "Scenes",
+  "FIELD_FUNCTIONS": "Functions",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
+import styled from "styled-components";
 import SpriteTypeSelect from "../forms/SpriteTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
@@ -51,6 +52,15 @@ const hitTabs = {
   hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
   hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
 };
+
+const ScrollPane = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+`;
 
 class ActorEditor extends Component {
   constructor(props) {
@@ -223,7 +233,7 @@ class ActorEditor extends Component {
     };
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <ScrollPane>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
@@ -464,7 +474,7 @@ class ActorEditor extends Component {
             </ToggleableFormField>
           </div>
 
-          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
+          {/* <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
           <ul>
             <li
               onClick={() => {
@@ -477,7 +487,7 @@ class ActorEditor extends Component {
               </div>
               {scene.name || `Scene ${index + 1}`}
             </li>
-          </ul>
+          </ul> */}
         </SidebarColumn>
 
         <SidebarColumn>
@@ -530,7 +540,7 @@ class ActorEditor extends Component {
               )}
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </ScrollPane>
     );
   }
 }

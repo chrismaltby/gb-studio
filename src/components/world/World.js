@@ -259,7 +259,6 @@ class World extends Component {
       <div
         ref={this.scrollRef}
         className="World"
-        style={worldStyle}
         onMouseMove={this.onMouseMove}
         onMouseOver={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}

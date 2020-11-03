@@ -54,7 +54,7 @@ class WorldEditor extends Component {
     } = settings;
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <div>
         <SidebarColumn>
           <SidebarHeading title={l10n("PROJECT")} />
 
@@ -206,7 +206,7 @@ class WorldEditor extends Component {
             </div>
           )}
         </SidebarColumn>
-
+{/* 
         <SidebarColumn>
           <div>
             <SidebarHeading title={l10n("SIDEBAR_CUSTOM_EVENTS")} />
@@ -222,8 +222,8 @@ class WorldEditor extends Component {
               </Button>
             </div>
           </div>
-        </SidebarColumn>
-      </Sidebar>
+        </SidebarColumn> */}
+      </div>
     );
   }
 }

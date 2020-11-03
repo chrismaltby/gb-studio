@@ -18,7 +18,8 @@ export type SettingsState = {
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
-}
+  navigatorSplitSizes: number[];
+};
 
 export const initialState: SettingsState = {
   startSceneId: "",
@@ -40,7 +41,8 @@ export const initialState: SettingsState = {
     "default-bg-6",
   ],
   defaultSpritePaletteId: "default-sprite",
-  defaultUIPaletteId: "default-ui"
+  defaultUIPaletteId: "default-ui",
+  navigatorSplitSizes: [300, 100, 100],
 };
 
 const settingsSlice = createSlice({
