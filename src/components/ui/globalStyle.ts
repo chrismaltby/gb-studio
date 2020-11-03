@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
     z-index: 10000;
   }
 
-  .js-focus-visible :focus:not(.focus-visible) {
+  .js-focus-visible :focus:not(.focus-visible):not(select) {
     outline: none;
     box-shadow: none !important;
   }
