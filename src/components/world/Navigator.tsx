@@ -9,6 +9,7 @@ import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import editorActions from "../../store/features/editor/editorActions";
 import { NavigatorScenes } from "./NavigatorScenes";
+import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
 
 const COLLAPSED_SIZE = 30;
 
@@ -58,8 +59,9 @@ export const Navigator = () => {
           onToggle={() => togglePane(1)}
           collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
         >
-          {l10n("FIELD_FUNCTIONS")}
+          {l10n("SIDEBAR_CUSTOM_EVENTS")}
         </SplitPaneHeader>
+        <NavigatorCustomEvents height={splitSizes[1] - 30} />
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(1)} />
       <Pane style={{ height: splitSizes[2] }}>

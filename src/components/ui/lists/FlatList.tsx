@@ -29,7 +29,7 @@ export interface FlatListProps<T> {
   readonly items: T[];
   readonly selectedId: string;
   readonly setSelectedId: (id: string, item: T) => void;
-  readonly onKeyDown: (e: KeyboardEvent) => void;
+  readonly onKeyDown?: (e: KeyboardEvent) => void;
   readonly children?: (props: {
     selected: boolean;
     item: T;

@@ -72,6 +72,14 @@ const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
 const NavigatorSceneRow = styled.div`
   display: flex;
   align-items: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+
+const NavigatorSceneRowLabel = styled.div`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 interface NavigatorArrowProps {
@@ -80,6 +88,7 @@ interface NavigatorArrowProps {
 
 const NavigatorArrow = styled.span<NavigatorArrowProps>`
   display: inline-flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
   width: 20px;
@@ -95,6 +104,8 @@ const NavigatorArrow = styled.span<NavigatorArrowProps>`
 `;
 
 const NavigatorEntityRow = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
   padding-left: 15px;
   svg {
     fill: ${(props) => props.theme.colors.text};
@@ -156,7 +167,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
           : scene.item
       )
     );
-  }, [scenes, actorsLookup, triggersLookup, openSceneIds, sceneId, editorType]);
+  }, [scenes, actorsLookup, triggersLookup, openSceneIds]);
 
   const setSelectedId = (id: string, item: SceneNavigatorItem) => {
     if (item.type === "actor") {
@@ -215,7 +226,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
             >
               <ArrowIcon />
             </NavigatorArrow>
-            {item.name}
+            <NavigatorSceneRowLabel>{item.name}</NavigatorSceneRowLabel>
           </NavigatorSceneRow>
         ) : (
           <NavigatorEntityRow>
