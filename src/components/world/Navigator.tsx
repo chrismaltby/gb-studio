@@ -8,6 +8,7 @@ import useWindowSize from "../ui/hooks/use-window-size";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import editorActions from "../../store/features/editor/editorActions";
+import { NavigatorScenes } from "./NavigatorScenes";
 
 const COLLAPSED_SIZE = 30;
 
@@ -15,7 +16,9 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const Pane = styled.div``;
+const Pane = styled.div`
+  overflow: hidden;
+`;
 
 export const Navigator = () => {
   const splitSizes = useSelector(
@@ -47,6 +50,7 @@ export const Navigator = () => {
         >
           {l10n("FIELD_SCENES")}
         </SplitPaneHeader>
+        <NavigatorScenes height={splitSizes[0] - 30} />
       </Pane>
       <SplitPaneVerticalDivider onMouseDown={onDragStart(0)} />
       <Pane style={{ height: splitSizes[1] }}>

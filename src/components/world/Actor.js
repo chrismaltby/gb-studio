@@ -12,8 +12,6 @@ import { getSettings } from "../../store/features/settings/settingsState";
 
 class Actor extends Component {
   onMouseDown = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
     const { actor, sceneId, dragActorStart, setTool } = this.props;
     dragActorStart({sceneId, actorId:actor.id});
     setTool({tool:"select"});

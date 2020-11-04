@@ -78,6 +78,7 @@ export interface EditorState {
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
   profile: boolean;
+  focusSceneId: string;
 }
 
 export const initialState: EditorState = {
@@ -121,6 +122,7 @@ export const initialState: EditorState = {
   filesSidebarWidth: 300,
   clipboardVariables: [],
   navigatorSplitSizes: [300, 100, 100],
+  focusSceneId: "",
 };
 
 const editorSlice = createSlice({
@@ -395,6 +397,7 @@ const editorSlice = createSlice({
 
     editSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
+      state.focusSceneId = "";
     },
 
     setScriptTab: (state, action: PayloadAction<string>) => {
@@ -434,6 +437,10 @@ const editorSlice = createSlice({
 
     setNavigatorSplitSizes: (state, action: PayloadAction<number[]>) => {
       state.navigatorSplitSizes = action.payload;
+    },
+
+    setFocusSceneId: (state, action: PayloadAction<string>) => {
+      state.focusSceneId = action.payload;
     },
   },
   extraReducers: (builder) =>

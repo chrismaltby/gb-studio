@@ -12,13 +12,16 @@ export const ListItem = styled.div`
   margin-left: 5px;
   width: calc(100% - 10px);
   border-radius: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
   :active {
-    background: ${props => props.theme.colors.list.activeBackground};
+    background: ${(props) => props.theme.colors.list.activeBackground};
   }
 
   &[data-selected="true"] {
-    background: ${props => props.theme.colors.list.selectedBackground};
+    background: ${(props) => props.theme.colors.list.selectedBackground};
   }
 
   :focus {

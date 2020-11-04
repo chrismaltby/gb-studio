@@ -350,7 +350,8 @@ function mapStateToProps(state) {
     worldScrollY: scrollY,
     showLayers,
     sceneDefaults,
-    clipboardVariables
+    clipboardVariables,
+    focusSceneId
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.editor;
@@ -373,7 +374,7 @@ function mapStateToProps(state) {
     : [];
 
   const onlyMatchingScene = (matchingScenes.length === 1
-    && scenesLookup[matchingScenes[0]]) || null;
+    && scenesLookup[matchingScenes[0]]) || scenesLookup[focusSceneId] || null;
 
   const { tool } = state.editor;
 

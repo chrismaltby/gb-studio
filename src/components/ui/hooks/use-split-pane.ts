@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 
 type SplitDirection = "horizontal" | "vertical";
 
-// const collapsedSize = 30;
-// const reopenSize = 130;
-
 const useSplitPane = ({
   sizes,
   setSizes,
