@@ -161,10 +161,10 @@ class World extends Component {
       this.dragDistance.y -= e.movementY;      
     } else {
       const boundingRect = e.currentTarget.getBoundingClientRect();
-      const x = e.pageX + e.currentTarget.scrollLeft - 0;
+      const x = e.pageX + e.currentTarget.scrollLeft - boundingRect.x;
       const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
 
-      this.offsetX = e.pageX;
+      this.offsetX = e.pageX - boundingRect.x;
       this.offsetY = e.pageY - boundingRect.y;
 
       if (tool === "scene") {

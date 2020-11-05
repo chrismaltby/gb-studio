@@ -1,5 +1,5 @@
 .StatusBar {
-  position: fixed;
+  position: absolute;
   bottom: 16px;
   left: 0px;
   background-color: var(--main-bg-color);

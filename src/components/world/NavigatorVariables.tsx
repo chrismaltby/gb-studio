@@ -1,14 +1,22 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
-import { customEventSelectors } from "../../store/features/entities/entitiesState";
+import {
+  customEventSelectors,
+  variableSelectors,
+} from "../../store/features/entities/entitiesState";
 import { FlatList } from "../ui/lists/FlatList";
 import editorActions from "../../store/features/editor/editorActions";
-import { CustomEvent } from "../../store/features/entities/entitiesTypes";
+import {
+  CustomEvent,
+  Variable,
+} from "../../store/features/entities/entitiesTypes";
 import styled from "styled-components";
 import { CodeIcon } from "../library/Icons";
+import { allVariables } from "../../lib/helpers/variables";
+import { VariableIcon } from "../ui/icons/Icons";
 
-interface NavigatorCustomEventsProps {
+interface NavigatorVariablesProps {
   height: number;
 }
 
@@ -17,14 +25,14 @@ interface NavigatorItem {
   name: string;
 }
 
-const customEventToNavigatorItem = (
-  customEvent: CustomEvent,
-  customEventIndex: number
+const variableToNavigatorItem = (
+  variable: Variable | undefined,
+  variableCode: string
 ): NavigatorItem => ({
-  id: customEvent.id,
-  name: customEvent.name
-    ? customEvent.name
-    : `Custom Event ${customEventIndex + 1}`,
+  id: variableCode,
+  name: variable?.name
+    ? variable.name
+    : `Variable ${parseInt(variableCode, 10) + 1}`,
 });
 
 const collator = new Intl.Collator(undefined, {
@@ -48,24 +56,26 @@ const NavigatorEntityRow = styled.div`
   }
 `;
 
-export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
-  height,
-}) => {
+export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
-  const customEvents = useSelector((state: RootState) =>
-    customEventSelectors.selectAll(state)
+  const variablesLookup = useSelector((state: RootState) =>
+    variableSelectors.selectEntities(state)
   );
   const entityId = useSelector((state: RootState) => state.editor.entityId);
   const editorType = useSelector((state: RootState) => state.editor.type);
-  const selectedId = editorType === "customEvent" ? entityId : "";
+  const selectedId = editorType === "variable" ? entityId : "";
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setItems(customEvents.map(customEventToNavigatorItem).sort(sortByName));
-  }, [customEvents]);
+    setItems(
+      allVariables
+        .map((value) => variableToNavigatorItem(variablesLookup[value], value))
+        .sort(sortByName)
+    );
+  }, [variablesLookup]);
 
   const setSelectedId = (id: string) => {
-    dispatch(editorActions.selectCustomEvent({ customEventId: id }));
+    dispatch(editorActions.selectVariable({ variableId: id }));
   };
 
   return (
@@ -76,7 +86,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
       height={height}
       children={({ selected, item }) => (
         <NavigatorEntityRow>
-          <CodeIcon />
+          <VariableIcon />
           {item.name}
         </NavigatorEntityRow>
       )}

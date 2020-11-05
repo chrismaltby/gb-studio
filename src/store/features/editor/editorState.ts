@@ -30,7 +30,8 @@ export type EditorSelectionType =
   | "scene"
   | "actor"
   | "trigger"
-  | "customEvent";
+  | "customEvent"
+  | "variable";
 
 export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
 
@@ -211,6 +212,12 @@ const editorSlice = createSlice({
       state.type = "customEvent";
       state.scene = "";
       state.entityId = action.payload.customEventId;
+    },
+
+    selectVariable: (state, action: PayloadAction<{ variableId: string }>) => {
+      state.type = "variable";
+      state.scene = "";
+      state.entityId = action.payload.variableId;
     },
 
     selectActor: (

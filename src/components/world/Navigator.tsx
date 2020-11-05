@@ -8,10 +8,15 @@ import useWindowSize from "../ui/hooks/use-window-size";
 import { SplitPaneVerticalDivider } from "../ui/splitpane/SplitPaneDivider";
 import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
 import editorActions from "../../store/features/editor/editorActions";
+import entitiesActions from "../../store/features/entities/entitiesActions";
 import { NavigatorScenes } from "./NavigatorScenes";
 import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
+import { Button } from "../ui/buttons/Button";
+import { PlusIcon } from "../ui/icons/Icons";
+import { NavigatorVariables } from "./NavigatorVariables";
 
 const COLLAPSED_SIZE = 30;
+const REOPEN_SIZE = 205;
 
 const Wrapper = styled.div`
   height: 100%;
@@ -38,9 +43,25 @@ export const Navigator = () => {
     setSizes: updateSplitSizes,
     minSizes: [COLLAPSED_SIZE, COLLAPSED_SIZE, COLLAPSED_SIZE],
     collapsedSize: COLLAPSED_SIZE,
+    reopenSize: REOPEN_SIZE,
     maxTotal: height,
     direction: "vertical",
   });
+
+  const onAddScene = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    dispatch(editorActions.setTool({ tool: "scene" }));
+  };
+
+  const onAddCustomEvent = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    dispatch(entitiesActions.addCustomEvent());
+    if (Math.floor(splitSizes[1]) <= COLLAPSED_SIZE) {
+      togglePane(1);
+    }
+  };
 
   return (
     <Wrapper>
@@ -48,6 +69,11 @@ export const Navigator = () => {
         <SplitPaneHeader
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
+          buttons={
+            <Button variant="transparent" size="small" onClick={onAddScene}>
+              <PlusIcon />
+            </Button>
+          }
         >
           {l10n("FIELD_SCENES")}
         </SplitPaneHeader>
@@ -58,6 +84,15 @@ export const Navigator = () => {
         <SplitPaneHeader
           onToggle={() => togglePane(1)}
           collapsed={Math.floor(splitSizes[1]) <= COLLAPSED_SIZE}
+          buttons={
+            <Button
+              variant="transparent"
+              size="small"
+              onClick={onAddCustomEvent}
+            >
+              <PlusIcon />
+            </Button>
+          }
         >
           {l10n("SIDEBAR_CUSTOM_EVENTS")}
         </SplitPaneHeader>
@@ -71,6 +106,7 @@ export const Navigator = () => {
         >
           {l10n("FIELD_VARIABLES")}
         </SplitPaneHeader>
+        <NavigatorVariables height={splitSizes[2] - 30} />
       </Pane>
     </Wrapper>
   );
