@@ -116,22 +116,22 @@ void Update_Platform() {
       player.dir.y = -1;
       player.rerender = TRUE;
     }
- 
+
     if (INPUT_LEFT) {
       player.dir.x = -1;
-      if (INPUT_A) {
+      if (INPUT_B) {
         pl_vel_x -= RUN_ACC;
         pl_vel_x = CLAMP(pl_vel_x, -MAX_RUN_VEL, -MIN_WALK_VEL);
       } else {
         pl_vel_x -= WALK_ACC;
         pl_vel_x = CLAMP(pl_vel_x, -MAX_WALK_VEL, -MIN_WALK_VEL);
-      } 
+      }
       if (INPUT_LEFT_PRESSED) { // update player facing direction if button pressed this frame
         player.rerender = TRUE;
       }
     } else if (INPUT_RIGHT) {
       player.dir.x = 1;
-      if (INPUT_A) {
+      if (INPUT_B) {
         pl_vel_x += RUN_ACC;
         pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_RUN_VEL);
       } else {
@@ -160,7 +160,7 @@ void Update_Platform() {
   tile_x = pl_pos_x >> 7;
   tile_y = pl_pos_y >> 7;
 
-  if (grounded && INPUT_A_PRESSED) {
+  if (grounded && INPUT_B_PRESSED) {
     if (player.dir.x == 1) {
       hit_actor = ActorAtTile(tile_x + 2, tile_y, TRUE);
     } else {
@@ -172,7 +172,7 @@ void Update_Platform() {
   }
 
   // Jump
-  if (INPUT_B_PRESSED && grounded) {
+  if (INPUT_A_PRESSED && grounded) {
     if (!( (((pl_pos_x >> 4) & 0x7) != 7 &&
           TileAt(tile_x, tile_y - 1) & COLLISION_BOTTOM) ||  // Left Edge
           (((pl_pos_x >> 4) & 0x7) != 0 &&
@@ -184,7 +184,7 @@ void Update_Platform() {
 
   if (!on_ladder) {
     // Gravity
-    if (INPUT_B && pl_vel_y < 0) {
+    if (INPUT_A && pl_vel_y < 0) {
       pl_vel_y += HOLD_GRAV;
     } else {
       pl_vel_y += GRAV;
@@ -198,7 +198,7 @@ void Update_Platform() {
 
   // Left Collision
   if (pl_vel_x < 0) {
-    if (TileAt(tile_x, tile_y) & COLLISION_RIGHT || 
+    if (TileAt(tile_x, tile_y) & COLLISION_RIGHT ||
         TileAt(tile_x, tile_y_ceil) & COLLISION_RIGHT) {
       pl_vel_x = 0;
       pl_pos_x = ((tile_x + 1) * 8) << 4;
