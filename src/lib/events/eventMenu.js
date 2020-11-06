@@ -1,8 +1,22 @@
 const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
 
-const trimMenuItem = (string) => {
-  return trimlines(string, 6, 1);
+const updateVars = (args) => {
+  const options = {};
+
+  for(let i = 0; i < 8; i++){
+    
+    if(args.items < 5 && args.layout === "dialogue")
+    {
+      options[`option${i+1}`] = trimlines(args[`option${i+1}`], 16, 1);
+    }
+    else
+    {
+      options[`option${i+1}`] = trimlines(args[`option${i+1}`], 6, 1);
+    }
+  }
+
+  return options;
 };
 
 const id = "EVENT_MENU";
@@ -20,7 +34,14 @@ const fields = [].concat(
       type: "number",
       min: 2,
       max: 8,
-      defaultValue: 2
+      defaultValue: 2,
+      postUpdate: (args) => {
+          vars = updateVars(args);
+          return {
+            ...args,
+            ...vars
+          };
+      }
     }
   ],
   Array(8)
@@ -31,7 +52,13 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        updateFn: trimMenuItem,
+        postUpdate: (args) => {
+            vars = updateVars(args);
+            return {
+              ...args,
+              ...vars
+            };
+        },
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -44,7 +71,13 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: i + 1 }),
         type: "text",
-        updateFn: trimMenuItem,
+        postUpdate: (args) => {
+            vars = updateVars(args);
+            return {
+              ...args,
+              ...vars
+            };
+        },
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: i + 1 }),
         conditions: [
@@ -61,7 +94,13 @@ const fields = [].concat(
         key: `option${i + 1}`,
         label: l10n("FIELD_SET_TO_VALUE_IF", { value: 0 }),
         type: "text",
-        updateFn: trimMenuItem,
+        postUpdate: (args) => {
+            vars = updateVars(args);
+            return {
+              ...args,
+              ...vars
+            };
+        },
         defaultValue: "",
         placeholder: l10n("FIELD_ITEM", { value: 0 }),
         conditions: [
@@ -96,7 +135,14 @@ const fields = [].concat(
         ["dialogue", l10n("FIELD_LAYOUT_DIALOGUE")],
         ["menu", l10n("FIELD_LAYOUT_MENU")]
       ],
-      defaultValue: "dialogue"
+      defaultValue: "dialogue",
+      postUpdate: (args) => {
+          vars = updateVars(args);
+          return {
+            ...args,
+            ...vars
+          };
+      }
     }
 );
 
