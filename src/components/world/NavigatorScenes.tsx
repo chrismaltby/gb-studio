@@ -25,6 +25,7 @@ interface SceneNavigatorItem {
   sceneId: string;
   name: string;
   type: "scene" | "actor" | "trigger";
+  labelColor?: string;
 }
 
 const sceneToNavigatorItem = (
@@ -35,6 +36,7 @@ const sceneToNavigatorItem = (
   sceneId: scene.id,
   name: scene.name ? scene.name : `Scene ${sceneIndex + 1}`,
   type: "scene",
+  labelColor: scene.labelColor,
 });
 
 const actorToNavigatorItem = (

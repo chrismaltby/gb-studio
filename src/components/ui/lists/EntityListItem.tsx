@@ -9,6 +9,7 @@ interface EntityListItemWrapperProps {
 interface EntityListItemProps {
   item: {
     name: string;
+    labelColor?: string;
   };
   type: "scene" | "actor" | "trigger";
   nestLevel?: number;
@@ -19,6 +20,10 @@ interface EntityListItemProps {
 
 interface NavigatorArrowProps {
   open: boolean;
+}
+
+interface EntityLabelColorProps {
+  color: string;
 }
 
 const NavigatorArrow = styled.span<NavigatorArrowProps>`
@@ -43,6 +48,7 @@ const EnitityListItem = styled.div<EntityListItemWrapperProps>`
   align-items: center;
   text-overflow: ellipsis;
   overflow: hidden;
+  width: 100%;
   padding-left: ${(props) => (props.nestLevel || 0) * 15}px;
 `;
 
@@ -60,6 +66,17 @@ const EnitityLabel = styled.div`
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-grow: 1;
+`;
+
+const EntityLabelColor = styled.div.attrs<EntityLabelColorProps>((props) => ({
+  className: `label--${props.color}`,
+}))`
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-left: 5px;
 `;
 
 export const EntityListItem: FC<EntityListItemProps> = ({
@@ -88,6 +105,7 @@ export const EntityListItem: FC<EntityListItemProps> = ({
         </EnitityIcon>
       )}
       <EnitityLabel>{item.name}</EnitityLabel>
+      {item.labelColor && <EntityLabelColor color={item.labelColor} />}
     </EnitityListItem>
   );
 };

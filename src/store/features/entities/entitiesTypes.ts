@@ -118,6 +118,7 @@ export type SpriteSheet = {
 export type Scene = {
   id: string;
   name: string;
+  labelColor?: string;
   x: number;
   y: number;
   width: number;
