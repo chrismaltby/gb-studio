@@ -83,14 +83,10 @@ export const FlatList = <T extends FlatListItem>({
     }
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (selectedId) {
-        throttledNext.current(items, selectedId);
-      }
+      throttledNext.current(items, selectedId || "");
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (selectedId) {
-        throttledPrev.current(items, selectedId);
-      }
+      throttledPrev.current(items, selectedId || "");
     } else if (e.key === "Home") {
       const nextItem = items[0];
       setSelectedId?.(nextItem.id, nextItem);
