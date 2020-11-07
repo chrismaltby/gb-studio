@@ -44,6 +44,9 @@ const EnitityListItem = styled.div<EntityListItemWrapperProps>`
   text-overflow: ellipsis;
   overflow: hidden;
   padding-left: ${(props) => (props.nestLevel || 0) * 15}px;
+`;
+
+const EnitityIcon = styled.div`
   svg {
     fill: ${(props) => props.theme.colors.text};
     width: 10px;
@@ -74,8 +77,16 @@ export const EntityListItem: FC<EntityListItemProps> = ({
           <ArrowIcon />
         </NavigatorArrow>
       )}
-      {type === "actor" && <ActorIcon />}
-      {type === "trigger" && <TriggerIcon />}
+      {type === "actor" && (
+        <EnitityIcon>
+          <ActorIcon />
+        </EnitityIcon>
+      )}
+      {type === "trigger" && (
+        <EnitityIcon>
+          <TriggerIcon />
+        </EnitityIcon>
+      )}
       <EnitityLabel>{item.name}</EnitityLabel>
     </EnitityListItem>
   );
