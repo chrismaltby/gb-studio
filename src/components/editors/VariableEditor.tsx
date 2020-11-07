@@ -114,8 +114,9 @@ const UsesWrapper = styled.div`
   right: 0;
 `;
 
-const UsesHeader = styled.div`
-  font-weight: bold;
+const UseMessage = styled.div`
+  padding: 5px 10px;
+  font-size: 11px;
 `;
 
 export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
@@ -287,27 +288,35 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
               variant="transparent"
               menuDirection="right"
             >
-              <MenuItem onClick={onCopyVar}>Copy Embed Code</MenuItem>
+              <MenuItem onClick={onCopyVar}>
+                {l10n("MENU_VARIABLE_COPY_EMBED")}
+              </MenuItem>
               <MenuItem onClick={onCopyChar}>
-                Copy Embed Character Code
+                {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
               </MenuItem>
             </DropdownButton>
           </FormHeader>
         </FormContainer>
         <UsesWrapper ref={ref as RefObject<HTMLDivElement>}>
-          <SplitPaneHeader collapsed={false}>Variable Uses</SplitPaneHeader>
-          <FlatList
-            items={variableUses}
-            height={height - 30}
-            setSelectedId={setSelectedId}
-            children={({ selected, item }) =>
-              item.type === "scene" ? (
-                <EntityListItem item={item} type={item.type} />
-              ) : (
-                <EntityListItem item={item} type={item.type} nestLevel={1} />
-              )
-            }
-          />
+          <SplitPaneHeader collapsed={false}>
+            {l10n("SIDEBAR_VARIABLE_USES")}
+          </SplitPaneHeader>
+          {variableUses.length > 0 ? (
+            <FlatList
+              items={variableUses}
+              height={height - 30}
+              setSelectedId={setSelectedId}
+              children={({ selected, item }) =>
+                item.type === "scene" ? (
+                  <EntityListItem item={item} type={item.type} />
+                ) : (
+                  <EntityListItem item={item} type={item.type} nestLevel={1} />
+                )
+              }
+            />
+          ) : (
+            <UseMessage>{l10n("FIELD_VARIABLE_NOT_USED")}</UseMessage>
+          )}
         </UsesWrapper>
       </SidebarColumn>
     </Sidebar>

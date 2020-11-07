@@ -70,12 +70,17 @@ export const Navigator = () => {
           onToggle={() => togglePane(0)}
           collapsed={Math.floor(splitSizes[0]) <= COLLAPSED_SIZE}
           buttons={
-            <Button variant="transparent" size="small" onClick={onAddScene}>
+            <Button
+              variant="transparent"
+              size="small"
+              title={l10n("TOOL_ADD_SCENE_LABEL")}
+              onClick={onAddScene}
+            >
               <PlusIcon />
             </Button>
           }
         >
-          {l10n("FIELD_SCENES")}
+          {l10n("SIDEBAR_SCENES")}
         </SplitPaneHeader>
         <NavigatorScenes height={splitSizes[0] - 30} />
       </Pane>
@@ -88,6 +93,7 @@ export const Navigator = () => {
             <Button
               variant="transparent"
               size="small"
+              title={l10n("SIDEBAR_CREATE_CUSTOM_EVENT")}
               onClick={onAddCustomEvent}
             >
               <PlusIcon />
@@ -104,7 +110,7 @@ export const Navigator = () => {
           onToggle={() => togglePane(2)}
           collapsed={Math.floor(splitSizes[2]) <= COLLAPSED_SIZE}
         >
-          {l10n("FIELD_VARIABLES")}
+          {l10n("SIDEBAR_VARIABLES")}
         </SplitPaneHeader>
         <NavigatorVariables height={splitSizes[2] - 30} />
       </Pane>
