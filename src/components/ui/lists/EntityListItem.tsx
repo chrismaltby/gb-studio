@@ -1,6 +1,11 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { ActorIcon, ArrowIcon, TriggerIcon } from "../icons/Icons";
+import {
+  ActorIcon,
+  ArrowIcon,
+  TriggerIcon,
+  VariableIcon,
+} from "../icons/Icons";
 
 interface EntityListItemWrapperProps {
   nestLevel?: number;
@@ -11,7 +16,7 @@ interface EntityListItemProps {
     name: string;
     labelColor?: string;
   };
-  type: "scene" | "actor" | "trigger";
+  type: "scene" | "actor" | "trigger" | "variable";
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
@@ -102,6 +107,11 @@ export const EntityListItem: FC<EntityListItemProps> = ({
       {type === "trigger" && (
         <EnitityIcon>
           <TriggerIcon />
+        </EnitityIcon>
+      )}
+      {type === "variable" && (
+        <EnitityIcon>
+          <VariableIcon />
         </EnitityIcon>
       )}
       <EnitityLabel>{item.name}</EnitityLabel>

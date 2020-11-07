@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import styled from "styled-components";
 import SpriteTypeSelect from "../forms/SpriteTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
 import ScriptEditor from "../script/ScriptEditor";
@@ -464,21 +463,6 @@ class ActorEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          {/* <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-          <ul>
-            <li
-              onClick={() => {
-                const { selectScene } = this.props;
-                selectScene({sceneId: scene.id});
-              }}
-            >
-              <div className="EditorSidebar__Icon">
-                <SceneIcon />
-              </div>
-              {scene.name || `Scene ${index + 1}`}
-            </li>
-          </ul> */}
         </SidebarColumn>
 
         <SidebarColumn>

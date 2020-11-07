@@ -182,16 +182,6 @@ class TriggerEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          {/* <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-          <ul>
-            <li onClick={() => selectScene({sceneId: scene.id})}>
-              <div className="EditorSidebar__Icon">
-                <SceneIcon />
-              </div>
-              {scene.name || `Scene ${index + 1}`}
-            </li>
-          </ul> */}
         </SidebarColumn>
 
         <SidebarColumn>

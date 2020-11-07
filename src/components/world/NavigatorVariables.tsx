@@ -1,20 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
-import {
-  customEventSelectors,
-  variableSelectors,
-} from "../../store/features/entities/entitiesState";
+import { variableSelectors } from "../../store/features/entities/entitiesState";
 import { FlatList } from "../ui/lists/FlatList";
 import editorActions from "../../store/features/editor/editorActions";
-import {
-  CustomEvent,
-  Variable,
-} from "../../store/features/entities/entitiesTypes";
-import styled from "styled-components";
-import { CodeIcon } from "../library/Icons";
+import { Variable } from "../../store/features/entities/entitiesTypes";
 import { allVariables } from "../../lib/helpers/variables";
-import { VariableIcon } from "../ui/icons/Icons";
+import { EntityListItem } from "../ui/lists/EntityListItem";
 
 interface NavigatorVariablesProps {
   height: number;
@@ -43,18 +35,6 @@ const collator = new Intl.Collator(undefined, {
 const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
-
-const NavigatorEntityRow = styled.div`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-`;
 
 export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
@@ -85,10 +65,7 @@ export const NavigatorVariables: FC<NavigatorVariablesProps> = ({ height }) => {
       setSelectedId={setSelectedId}
       height={height}
       children={({ selected, item }) => (
-        <NavigatorEntityRow>
-          <VariableIcon />
-          {item.name}
-        </NavigatorEntityRow>
+        <EntityListItem type="variable" item={item} />
       )}
     />
   );
