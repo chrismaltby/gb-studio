@@ -334,8 +334,6 @@ class SceneEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          {/* <SceneNavigation sceneId={scene.id} /> */}
         </SidebarColumn>
 
         <SidebarColumn>
