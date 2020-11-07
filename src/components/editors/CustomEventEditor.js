@@ -68,7 +68,7 @@ class CustomEventEditor extends Component {
     }
 
     return (
-      <SidebarMultiColumnAuto onMouseDown={selectSidebar}>
+      <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("CUSTOM_EVENT")}

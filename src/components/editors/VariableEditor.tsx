@@ -272,8 +272,12 @@ export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
     dispatch(editorActions.setFocusSceneId(item.sceneId));
   };
 
+  const selectSidebar = () => {
+    dispatch(editorActions.selectSidebar());
+  };
+
   return (
-    <Sidebar>
+    <Sidebar onClick={selectSidebar}>
       <SidebarColumn>
         <FormContainer>
           <FormHeader>

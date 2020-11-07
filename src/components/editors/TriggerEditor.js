@@ -68,7 +68,7 @@ class TriggerEditor extends Component {
     const { clipboardData } = this.state;
 
     return (
-      <SidebarMultiColumnAuto>
+      <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("TRIGGER")}

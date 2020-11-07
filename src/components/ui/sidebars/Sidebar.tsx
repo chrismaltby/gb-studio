@@ -6,6 +6,10 @@ interface SidebarProps {
   multiColumn?: boolean;
 }
 
+interface SidebarMultiColumnAutoProps {
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}
+
 export const SidebarColumn = styled.div``;
 
 export const Sidebar = styled.div<SidebarProps>`
@@ -36,12 +40,16 @@ const scrollStyles = css`
   height: 100%;
 `;
 
-export const SidebarMultiColumnAuto: FC = ({ children }) => {
+export const SidebarMultiColumnAuto: FC<SidebarMultiColumnAutoProps> = ({
+  children,
+  onClick,
+}) => {
   const { ref, width } = useDimensions();
   return (
     <Sidebar
       ref={ref as React.RefObject<HTMLDivElement>}
       multiColumn={width >= 500}
+      onClick={onClick}
     >
       {children}
     </Sidebar>

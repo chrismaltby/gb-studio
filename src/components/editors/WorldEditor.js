@@ -2,7 +2,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import useDimensions from "react-cool-dimensions";
 import SceneSelect from "../forms/SceneSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelect";
@@ -23,7 +22,7 @@ import metadataActions from "../../store/features/metadata/metadataActions";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
-import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
+import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
 
 const WorldEditor = ({
   metadata,
@@ -35,7 +34,6 @@ const WorldEditor = ({
   editProjectSettings,
   editProject,
 }) => {
-  const { ref, width } = useDimensions();
 
   const { name, author, notes } = metadata;
   const {
@@ -62,8 +60,9 @@ const WorldEditor = ({
     });
   };
 
+
   return (
-    <Sidebar ref={ref} multiColumn={width >= 500}>
+    <SidebarMultiColumnAuto onClick={selectSidebar}>
       <SidebarColumn>
         <SidebarHeading title={l10n("PROJECT")} />
 
@@ -215,7 +214,7 @@ const WorldEditor = ({
           </FormField>
         </SidebarColumn>
       )}
-    </Sidebar>
+    </SidebarMultiColumnAuto>
   );
 };
 

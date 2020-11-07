@@ -224,7 +224,7 @@ class ActorEditor extends Component {
     };
 
     return (
-      <SidebarMultiColumnAuto>
+      <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
