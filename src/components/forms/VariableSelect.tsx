@@ -29,6 +29,7 @@ import l10n from "../../lib/helpers/l10n";
 import { Dictionary } from "@reduxjs/toolkit";
 import { keyBy } from "lodash";
 import { EditorSelectionType } from "../../store/features/editor/editorState";
+import editorActions from "../../store/features/editor/editorActions";
 
 interface VariableSelectProps {
   id?: string;
@@ -340,8 +341,22 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     }
   };
 
+  const onJumpToVariable = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (e.altKey) {
+      if (
+        value &&
+        editorType !== "customEvent" &&
+        Number.isInteger(Number(value))
+      ) {
+        dispatch(editorActions.selectVariable({ variableId: value }));
+      }
+    }
+  };
+
   return (
-    <Wrapper>
+    <Wrapper onClick={onJumpToVariable}>
       {tooltipVisible && (
         <RelativePortal pin="top-right" offsetX={80} offsetY={33}>
           {type === "8bit" && (
