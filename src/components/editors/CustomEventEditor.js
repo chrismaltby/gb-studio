@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import { FormField } from "../library/Forms";
 import l10n from "../../lib/helpers/l10n";
-import Sidebar, { SidebarColumn, SidebarHeading } from "./Sidebar";
+import { SidebarHeading } from "./Sidebar";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { CustomEventShape } from "../../store/stateShape";
 import { DropdownButton } from "../library/Button";
@@ -14,6 +14,7 @@ import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 
 class CustomEventEditor extends Component {
   constructor() {
@@ -67,7 +68,7 @@ class CustomEventEditor extends Component {
     }
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <SidebarMultiColumnAuto onMouseDown={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("CUSTOM_EVENT")}
@@ -170,7 +171,7 @@ class CustomEventEditor extends Component {
             />
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </SidebarMultiColumnAuto>
     );
   }
 }

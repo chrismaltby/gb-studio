@@ -16,8 +16,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
-import { SceneIcon } from "../library/Icons";
+import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
@@ -33,6 +32,7 @@ import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../stor
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -52,15 +52,6 @@ const hitTabs = {
   hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
   hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
 };
-
-const ScrollPane = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: auto;
-`;
 
 class ActorEditor extends Component {
   constructor(props) {
@@ -233,7 +224,7 @@ class ActorEditor extends Component {
     };
 
     return (
-      <ScrollPane>
+      <SidebarMultiColumnAuto>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
@@ -540,7 +531,7 @@ class ActorEditor extends Component {
               )}
           </div>
         </SidebarColumn>
-      </ScrollPane>
+      </SidebarMultiColumnAuto>
     );
   }
 }

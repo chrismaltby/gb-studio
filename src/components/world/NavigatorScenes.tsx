@@ -14,8 +14,7 @@ import {
   Trigger,
 } from "../../store/features/entities/entitiesTypes";
 import styled from "styled-components";
-import { ArrowIcon, TriggerIcon } from "../library/Icons";
-import { ActorIcon } from "../ui/icons/Icons";
+import { EntityListItem } from "../ui/lists/EntityListItem";
 
 interface NavigatorScenesProps {
   height: number;
@@ -68,53 +67,6 @@ const collator = new Intl.Collator(undefined, {
 const sortByName = (a: SceneNavigatorItem, b: SceneNavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
-
-const NavigatorSceneRow = styled.div`
-  display: flex;
-  align-items: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-`;
-
-const NavigatorSceneRowLabel = styled.div`
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-interface NavigatorArrowProps {
-  open: boolean;
-}
-
-const NavigatorArrow = styled.span<NavigatorArrowProps>`
-  display: inline-flex;
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  width: 20px;
-  height: 20px;
-  margin-left: -5px;
-
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 8px;
-    height: 8px;
-    transform: rotate(${(props) => (props.open ? 90 : 0)}deg);
-  }
-`;
-
-const NavigatorEntityRow = styled.div`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding-left: 15px;
-  svg {
-    fill: ${(props) => props.theme.colors.text};
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    opacity: 0.5;
-  }
-`;
 
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
   const [openSceneIds, setOpenSceneIds] = useState<string[]>([]);
@@ -219,21 +171,15 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({ height }) => {
       }}
       children={({ selected, item }) =>
         item.type === "scene" ? (
-          <NavigatorSceneRow>
-            <NavigatorArrow
-              open={isOpen(item.id)}
-              onClick={toggleSceneOpen(item.id)}
-            >
-              <ArrowIcon />
-            </NavigatorArrow>
-            <NavigatorSceneRowLabel>{item.name}</NavigatorSceneRowLabel>
-          </NavigatorSceneRow>
+          <EntityListItem
+            item={item}
+            type={item.type}
+            collapsable={true}
+            collapsed={!isOpen(item.id)}
+            onToggleCollapse={toggleSceneOpen(item.id)}
+          />
         ) : (
-          <NavigatorEntityRow>
-            {item.type === "actor" && <ActorIcon />}
-            {item.type === "trigger" && <TriggerIcon />}
-            {item.name}
-          </NavigatorEntityRow>
+          <EntityListItem item={item} type={item.type} nestLevel={1} />
         )
       }
     />

@@ -174,7 +174,7 @@
   padding-right: 10px;
   display: flex;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 0px;
 }
 
 .SidebarTabs--Secondary {
@@ -209,10 +209,12 @@
   padding-right: 10px;
   width: 100%;
   box-sizing: border-box;
+  margin-top: -2px;
 }
 
 .SidebarTabs--Small .SidebarTabs__Container {
   height: 26px;
+  margin-top: 0px;
 }
 
 .SidebarTabs--Small .SidebarTabs__Tab:first-child {

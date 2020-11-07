@@ -16,7 +16,7 @@ interface RowProps<T> {
   readonly data: {
     readonly items: T[];
     readonly selectedId: string;
-    readonly setSelectedId: (value: string, item: T) => void;
+    readonly setSelectedId?: (value: string, item: T) => void;
     readonly renderItem: (props: {
       selected: boolean;
       item: T;
@@ -27,8 +27,8 @@ interface RowProps<T> {
 export interface FlatListProps<T> {
   readonly height: number;
   readonly items: T[];
-  readonly selectedId: string;
-  readonly setSelectedId: (id: string, item: T) => void;
+  readonly selectedId?: string;
+  readonly setSelectedId?: (id: string, item: T) => void;
   readonly onKeyDown?: (e: KeyboardEvent) => void;
   readonly children?: (props: {
     selected: boolean;
@@ -51,7 +51,7 @@ const Row = <T extends FlatListItem>({ index, style, data }: RowProps<T>) => {
   return (
     <div
       style={style}
-      onClick={() => data.setSelectedId(item.id, item)}
+      onClick={() => data.setSelectedId?.(item.id, item)}
       data-id={item.id}
     >
       <ListItem tabIndex={-1} data-selected={data.selectedId === item.id}>
@@ -83,17 +83,21 @@ export const FlatList = <T extends FlatListItem>({
     }
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      throttledNext.current(items, selectedId);
+      if (selectedId) {
+        throttledNext.current(items, selectedId);
+      }
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      throttledPrev.current(items, selectedId);
+      if (selectedId) {
+        throttledPrev.current(items, selectedId);
+      }
     } else if (e.key === "Home") {
       const nextItem = items[0];
-      setSelectedId(nextItem.id, nextItem);
+      setSelectedId?.(nextItem.id, nextItem);
       setFocus(nextItem.id);
     } else if (e.key === "End") {
       const nextItem = items[items.length - 1];
-      setSelectedId(nextItem.id, nextItem);
+      setSelectedId?.(nextItem.id, nextItem);
       setFocus(nextItem.id);
     } else {
       handleSearch(e.key);
@@ -107,7 +111,7 @@ export const FlatList = <T extends FlatListItem>({
       const nextIndex = currentIndex + 1;
       const nextItem = items[nextIndex];
       if (nextItem) {
-        setSelectedId(nextItem.id, nextItem);
+        setSelectedId?.(nextItem.id, nextItem);
         setFocus(nextItem.id);
       }
     }, 150)
@@ -119,7 +123,7 @@ export const FlatList = <T extends FlatListItem>({
       const nextIndex = currentIndex - 1;
       const nextItem = items[nextIndex];
       if (nextItem) {
-        setSelectedId(nextItem.id, nextItem);
+        setSelectedId?.(nextItem.id, nextItem);
         setFocus(nextItem.id);
       }
     }, 150)
@@ -139,7 +143,7 @@ export const FlatList = <T extends FlatListItem>({
       });
     }
     if (next) {
-      setSelectedId(next.id, next);
+      setSelectedId?.(next.id, next);
       setFocus(next.id);
     }
   };
