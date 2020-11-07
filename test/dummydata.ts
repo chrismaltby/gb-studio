@@ -141,6 +141,8 @@ export const dummyProjectData: ProjectData = {
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
     customHead: "",
+    navigatorSplitSizes: [300, 100, 100],
+    showNavigator: true,
   },
 };
 
