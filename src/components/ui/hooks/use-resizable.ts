@@ -14,9 +14,9 @@ const useResizable = ({
   minSize: number;
   maxSize: number;
   direction: ResizeDirection;
-  onResize: (newValue: number) => void;
-  onResizeComplete: (newValue: number) => void;
-}) => {
+  onResize?: (newValue: number) => void;
+  onResizeComplete?: (newValue: number) => void;
+}): [number, React.Dispatch<React.SetStateAction<number>>, () => void] => {
   const [size, setSize] = useState(initialSize);
   const [isResizing, setIsResizing] = useState(false);
 

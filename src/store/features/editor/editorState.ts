@@ -76,6 +76,7 @@ export interface EditorState {
   lastScriptTabScene: string;
   lastScriptTabSecondary: string;
   worldSidebarWidth: number;
+  navigatorSidebarWidth: number;
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
   profile: boolean;
@@ -120,6 +121,7 @@ export const initialState: EditorState = {
   lastScriptTabSecondary: "",
   profile: false,
   worldSidebarWidth: 300,
+  navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
   clipboardVariables: [],
   navigatorSplitSizes: [300, 100, 100],
@@ -393,6 +395,10 @@ const editorSlice = createSlice({
         window.innerWidth - 70,
         Math.max(300, action.payload)
       );
+    },
+
+    resizeNavigatorSidebar: (state, action: PayloadAction<number>) => {
+      state.navigatorSidebarWidth = action.payload;
     },
 
     resizeFilesSidebar: (state, action: PayloadAction<number>) => {

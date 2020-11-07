@@ -19,6 +19,7 @@ export type SettingsState = {
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
   navigatorSplitSizes: number[];
+  showNavigator: boolean;
 };
 
 export const initialState: SettingsState = {
@@ -43,6 +44,7 @@ export const initialState: SettingsState = {
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
   navigatorSplitSizes: [300, 100, 100],
+  showNavigator: true,
 };
 
 const settingsSlice = createSlice({
@@ -63,6 +65,10 @@ const settingsSlice = createSlice({
       state.startSceneId = action.payload.sceneId;
       state.startX = action.payload.x;
       state.startY = action.payload.y;
+    },
+
+    setShowNavigator: (state, action: PayloadAction<boolean>) => {
+      state.showNavigator = action.payload;
     },
   },
   extraReducers: (builder) =>
