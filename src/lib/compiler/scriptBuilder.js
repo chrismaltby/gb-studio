@@ -96,7 +96,12 @@ import {
   ACTOR_STOP_UPDATE,
   ACTOR_SET_ANIMATE,
   IF_COLOR_SUPPORTED,
-  FADE_SET_SETTINGS
+  ENGINE_FIELD_UPDATE,
+  ENGINE_FIELD_UPDATE_WORD,
+  ENGINE_FIELD_UPDATE_VAR,
+  ENGINE_FIELD_UPDATE_VAR_WORD,
+  ENGINE_FIELD_STORE,
+  ENGINE_FIELD_STORE_WORD
 } from "../events/scriptCommands";
 import {
   getActorIndex,
@@ -124,11 +129,12 @@ import {
   actorFramesPerDir,
   spriteTypeDec,
   textSpeedDec,
-  fadeStyleDec,
 } from "./helpers";
 import { hi, lo } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
+import { is16BitCType } from "../helpers/engineFields";
+import { nextVariable } from "../helpers/variables";
 
 class ScriptBuilder {
   constructor(output, options) {
@@ -699,6 +705,103 @@ class ScriptBuilder {
     throw new Error(`Union type "${unionValue.type}" unknown.`);    
   }
 
+  // Engine Fields
+
+  engineFieldSetToValue = (key, value) => {
+    const output = this.output;
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.field.cType;
+      let newValue = value;
+      if (newValue === "" || newValue === undefined) {
+        newValue = engineField.field.defaultValue || 0
+      }      
+      if (newValue === true) {
+        newValue = 1;
+      }
+      if (newValue === false) {
+        newValue = 0;
+      }      
+      if (is16BitCType(cType)) {
+        if (newValue < 0) {
+          // Convert negative to two's complement
+          newValue = 0xFFFF & ~(-newValue-1);
+        }
+        output.push(cmd(ENGINE_FIELD_UPDATE_WORD));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(hi(newValue));
+        output.push(lo(newValue));
+      } else {
+        if (newValue < 0) {
+          // Convert negative to two's complement
+          newValue = 0xFF & ~(-newValue-1);
+        }        
+        output.push(cmd(ENGINE_FIELD_UPDATE));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(newValue);
+      }
+    }
+  }
+
+  engineFieldSetToVariable = (key, variable) => {
+    const output = this.output;
+    const { engineFields, variables } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.field.cType;
+      if (is16BitCType(cType)) {
+        const loVariable = nextVariable(variable);
+        const hiIndex = this.getVariableIndex(variable, variables);
+        const loIndex = this.getVariableIndex(loVariable, variables); 
+        output.push(cmd(ENGINE_FIELD_UPDATE_VAR_WORD));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(hi(hiIndex));
+        output.push(lo(hiIndex));
+        output.push(hi(loIndex));
+        output.push(lo(loIndex));
+      } else {
+        const variableIndex = this.getVariableIndex(variable, variables);
+        output.push(cmd(ENGINE_FIELD_UPDATE_VAR));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(hi(variableIndex));
+        output.push(lo(variableIndex));
+      }
+    }
+  }  
+
+  engineFieldStoreInVariable = (key, variable) => {
+    const output = this.output;
+    const { engineFields, variables } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.field.cType;
+      if (is16BitCType(cType)) {
+        const loVariable = nextVariable(variable);
+        const hiIndex = this.getVariableIndex(variable, variables);
+        const loIndex = this.getVariableIndex(loVariable, variables);
+        output.push(cmd(ENGINE_FIELD_STORE_WORD));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(hi(loIndex));
+        output.push(lo(loIndex));
+        output.push(hi(hiIndex));
+        output.push(lo(hiIndex));
+      } else {
+        const variableIndex = this.getVariableIndex(variable, variables);
+        output.push(cmd(ENGINE_FIELD_STORE));
+        output.push(hi(engineField.offset));
+        output.push(lo(engineField.offset));
+        output.push(hi(variableIndex));
+        output.push(lo(variableIndex));
+      }
+    }
+  }    
+
   // Scenes
 
   sceneSwitch = (sceneId, x = 0, y = 0, direction = "down", fadeSpeed = 2) => {
@@ -1060,12 +1163,6 @@ class ScriptBuilder {
     output.push(cmd(FADE_OUT));
     output.push(speed);
   };
-
-  fadeSetSettings = (style = "white") => {
-    const output = this.output;
-    output.push(cmd(FADE_SET_SETTINGS));
-    output.push(fadeStyleDec(style));
-  };  
 
   // Music
 

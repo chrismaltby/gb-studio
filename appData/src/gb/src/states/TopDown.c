@@ -8,12 +8,19 @@
 #include "GameTime.h"
 #include "Input.h"
 #include "Trigger.h"
+#include "data_ptrs.h"
 
 void Start_TopDown() {
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = 0;
   camera_deadzone.y = 0;
+
+  if (topdown_grid == 16) {
+    // Snap to 16px grid
+    player.pos.x = MUL_16(DIV_16(player.pos.x));
+    player.pos.y = 8 + MUL_16(DIV_16(player.pos.y));
+  }
 }
 
 void Update_TopDown() {
@@ -23,8 +30,9 @@ void Update_TopDown() {
   tile_y = DIV_8(player.pos.y);
 
   // Is player on an 8x8px tile?
-  if (MOD_8(player.pos.x) == 0 && MOD_8(player.pos.y) == 0) {
-    // Player landed on an 8x8px tile
+  if ((topdown_grid == 16 && (MOD_16(player.pos.x) == 0 && MOD_16(player.pos.y) == 8)) ||
+      (topdown_grid ==  8 && (MOD_8(player.pos.x)  == 0 && MOD_8(player.pos.y)  == 0))) {
+    // Player landed on an tile
     // so stop movement for now
     player.moving = FALSE;
 
@@ -36,69 +44,77 @@ void Update_TopDown() {
 
     // Check input to set player movement
     if (INPUT_RECENT_LEFT) {
-      UBYTE tile_left = tile_x - 1;
-
       player.dir.x = -1;
       player.dir.y = 0;
       player.rerender = TRUE;
 
       // Check for collisions to left of player
-      hit_actor = ActorAt1x2Tile(tile_left - 1, tile_y, FALSE);
-      if (tile_x != 0 && !(TileAt2x1(tile_left, tile_y) & COLLISION_RIGHT) &&
-          (hit_actor == NO_ACTOR_COLLISON)) {
-        player.moving = TRUE;
+      if (topdown_grid == 16) {
+        UBYTE tile_left = tile_x - 2;
+        if (tile_x != 0 && !(TileAt2x2(tile_left, tile_y-1) & COLLISION_RIGHT)) {
+          player.moving = TRUE;
+        }
+      } else {
+        UBYTE tile_left = tile_x - 1;
+        if (tile_x != 0 && !(TileAt2x1(tile_left, tile_y) & COLLISION_RIGHT)) {
+          player.moving = TRUE;
+        }
       }
 
-      player.hit_actor = hit_actor;
-
     } else if (INPUT_RECENT_RIGHT) {
-      UBYTE tile_right = tile_x + 1;
-
       player.dir.x = 1;
       player.dir.y = 0;
       player.rerender = TRUE;
 
       // Check for collisions to right of player
-      hit_actor = ActorAt1x2Tile(tile_right + 1, tile_y, FALSE);
-      if (tile_x != image_tile_width - 2 && !(TileAt2x1(tile_right, tile_y) & COLLISION_LEFT) &&
-          (hit_actor == NO_ACTOR_COLLISON)) {
-        player.moving = TRUE;
+      if (topdown_grid == 16) {
+        UBYTE tile_right = tile_x + 2;
+        if (tile_x != image_tile_width - 2 && !(TileAt2x2(tile_right, tile_y-1) & COLLISION_LEFT)) {
+          player.moving = TRUE;
+        }
+      } else {    
+        UBYTE tile_right = tile_x + 1;
+        if (tile_x != image_tile_width - 2 && !(TileAt2x1(tile_right, tile_y) & COLLISION_LEFT)) {
+          player.moving = TRUE;
+        }
       }
 
-      player.hit_actor = hit_actor;
-
     } else if (INPUT_RECENT_UP) {
-      UBYTE tile_up = tile_y - 1;
 
       player.dir.x = 0;
       player.dir.y = -1;
       player.rerender = TRUE;
 
       // Check for collisions above player
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_up, FALSE);
-      if (tile_y != 0 && !(TileAt2x1(tile_x, tile_up) & COLLISION_BOTTOM) && (hit_actor == NO_ACTOR_COLLISON)) {
-        player.moving = TRUE;
+      if (topdown_grid == 16) {
+        UBYTE tile_up = tile_y - 3;
+        if (tile_y != 0 && !(TileAt2x2(tile_x, tile_up) & COLLISION_BOTTOM)) {
+          player.moving = TRUE;
+        }        
+      } else {
+        UBYTE tile_up = tile_y - 1;
+        if (tile_y != 0 && !(TileAt2x1(tile_x, tile_up) & COLLISION_BOTTOM)) {
+          player.moving = TRUE;
+        }
       }
 
-      player.hit_actor = hit_actor;
-
     } else if (INPUT_RECENT_DOWN) {
-      UBYTE tile_down = tile_y + 1;
-
       player.dir.x = 0;
       player.dir.y = 1;
       player.rerender = TRUE;
 
       // Check for collisions below player
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down + 1, FALSE);
-      if (tile_y != image_tile_height - 1 && !(TileAt2x1(tile_x, tile_down) & COLLISION_TOP) && (hit_actor == NO_ACTOR_COLLISON)) {
-        hit_actor = ActorAt3x1Tile(tile_x - 1, tile_down, FALSE);
-        if (hit_actor == NO_ACTOR_COLLISON) {
+      if (topdown_grid == 16) {
+        UBYTE tile_down = tile_y + 1;
+        if (tile_y != image_tile_height - 1 && !(TileAt2x2(tile_x, tile_down) & COLLISION_TOP)) {
+          player.moving = TRUE;
+        }
+      } else {
+        UBYTE tile_down = tile_y + 1;
+        if (tile_y != image_tile_height - 1 && !(TileAt2x1(tile_x, tile_down) & COLLISION_TOP)) {
           player.moving = TRUE;
         }
       }
-
-      player.hit_actor = hit_actor;
     }
 
     hit_actor = ActorOverlapsPlayer(FALSE);
@@ -109,10 +125,17 @@ void Update_TopDown() {
       }
     }
 
-    if (INPUT_A_PRESSED) {
-      // Find actor in front of player
-      hit_actor = ActorInFrontOfPlayer();
+    // Check if walked in to actor
+    if (player.moving) {
+      hit_actor = ActorInFrontOfPlayer(topdown_grid, FALSE);
+      if (hit_actor != NO_ACTOR_COLLISON) {
+        player.hit_actor = hit_actor;
+        player.moving = FALSE;
+      }
+    }
 
+    if (INPUT_A_PRESSED) {
+      hit_actor = ActorInFrontOfPlayer(topdown_grid, TRUE);
       if (hit_actor != NO_ACTOR_COLLISON && !actors[hit_actor].collision_group) {
         // Turn actor to face player
         actors[hit_actor].dir.x = -player.dir.x;

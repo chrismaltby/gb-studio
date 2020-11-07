@@ -41,11 +41,11 @@ import {
   actorFramesPerDir,
   isMBC1,
   collisionGroupDec,
-  fadeStyleDec
 } from "./helpers";
 import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
+import { precompileEngineFields } from "../helpers/engineFields";
 
 const indexById = indexBy("id");
 
@@ -73,6 +73,7 @@ const compile = async (
   projectData,
   {
     projectRoot = "/tmp",
+    engineFields = [],
     tmpPath = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
@@ -94,6 +95,8 @@ const compile = async (
   });
 
   const cartType = projectData.settings.cartType;
+
+  const precompiledEngineFields = precompileEngineFields(engineFields);
 
   const banked = new BankedData({
     bankSize,
@@ -140,6 +143,7 @@ const compile = async (
         banked,
         warnings,
         loop,
+        engineFields: precompiledEngineFields,
         output: alreadyCompiled || [],
       });
     };
@@ -384,7 +388,6 @@ const compile = async (
     startDirection,
     startMoveSpeed = "1",
     startAnimSpeed = "3",
-    defaultFadeStyle = "white"
   } = projectData.settings;
 
   const bankNums = banked.exportUsedBankNumbers();
@@ -486,7 +489,7 @@ const compile = async (
     `extern unsigned int start_player_sprite;\n` +
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
-    `extern unsigned char start_fade_style;\n` +
+    compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
     `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
@@ -523,7 +526,7 @@ const compile = async (
     `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
-    `unsigned char start_fade_style = ${fadeStyleDec(defaultFadeStyle)};\n` +
+    compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
   output[`banks.h`] = bankHeader;
@@ -658,6 +661,20 @@ const precompile = async (
     eventPaletteIndexes
   };
 };
+
+export const compileEngineFields = (engineFields, engineFieldValues, header) => {
+  let fieldDef = "";
+  if (engineFields.length > 0) {
+    for(const engineField of engineFields) {
+      const prop = engineFieldValues.find((p) => p.id === engineField.key);
+      const customValue = prop && prop.value;
+      const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
+      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+    }
+    fieldDef += `${header ? "extern " : ""}UBYTE *engine_fields_addr${!header ? ` = &${engineFields[0].key}` : ""};\n`
+  }
+  return fieldDef;
+}
 
 export const precompileVariables = (scenes) => {
   const variables = [];

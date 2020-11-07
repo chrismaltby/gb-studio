@@ -124,6 +124,10 @@ export const EVENT_SOUND_PLAY_BEEP = "EVENT_SOUND_PLAY_BEEP";
 // Call CustomEvent
 export const EVENT_CALL_CUSTOM_EVENT = "EVENT_CALL_CUSTOM_EVENT";
 
+// Engine fields
+export const EVENT_ENGINE_FIELD_SET = "EVENT_ENGINE_FIELD_SET";
+export const EVENT_ENGINE_FIELD_STORE = "EVENT_ENGINE_FIELD_STORE";
+
 export const EventsOnlyForActors = [EVENT_ACTOR_PUSH];
 export const EventsHidden = [
   EVENT_MATH_ADD,

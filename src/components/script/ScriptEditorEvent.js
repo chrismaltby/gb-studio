@@ -143,7 +143,7 @@ class ScriptEditorEvent extends Component {
         postUpdate({
           ...action.args,
           ...newValue
-        })
+        }, action.args)
       );
     }
     return onEdit(id, newValue);
@@ -230,11 +230,12 @@ class ScriptEditorEvent extends Component {
     const hasElse = action.children && action.children.false;
     const disabledElse = action.args && action.args.__disableElse;
 
-    const eventName =
-      action.args.__name ||
-      l10n(command) ||
-      (events[command] && events[command].name) ||
-      command;
+    const localisedCommand = l10n(command);
+    const defaultCommandName = localisedCommand !== command
+      ? localisedCommand
+      : (events[command] && events[command].name) || command;
+
+    const eventName = action.args.__name || defaultCommandName;
 
     const labelName = action.args.__label
       ? action.args.__label

@@ -41,8 +41,8 @@ const Provider: FC = ({ children }) => {
   useEffect(() => {
     const updateAppTheme = () => {
       const themeId = toThemeId(
-        settings.get("theme"),
-        nativeTheme.shouldUseDarkColors
+        settings.get?.("theme"),
+        nativeTheme?.shouldUseDarkColors
       );
       if (process.platform === "darwin") {
         setTheme(themes[themeId]);
@@ -51,11 +51,11 @@ const Provider: FC = ({ children }) => {
       }
     };
 
-    nativeTheme.on("updated", () => {
+    nativeTheme?.on("updated", () => {
       updateAppTheme();
     });
 
-    ipcRenderer.on("update-theme", () => {
+    ipcRenderer?.on("update-theme", () => {
       updateAppTheme();
     });
 

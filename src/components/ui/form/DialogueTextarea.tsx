@@ -93,6 +93,7 @@ const DialogueTextareaWrapper = styled.div`
 
   .MentionsInput__suggestions {
     background-color: transparent !important;
+    z-index: 10000 !important;
   }
 
   .MentionsInput__suggestions__list {

@@ -20,6 +20,7 @@
 #include "Projectiles.h"
 #include "Palette.h"
 #include "states/Platform.h"
+#include "data_ptrs.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000
@@ -153,7 +154,12 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_ActorStopUpdate_b, 0},     // 0x67
     {Script_ActorSetAnimate_b, 1},     // 0x68
     {Script_IfColorSupported_b, 2},    // 0x69
-    {Script_FadeSetSettings_b, 1},     // 0x6A
+    {Script_EngFieldSet_b, 3},         // 0x6A
+    {Script_EngFieldSetWord_b, 4},     // 0x6B
+    {Script_EngFieldSetVar_b, 4},      // 0x6C
+    {Script_EngFieldSetWordVar_b, 6},  // 0x6D
+    {Script_EngFieldStore_b, 4},       // 0x6E
+    {Script_EngFieldStoreWord_b, 6},   // 0x6F    
 };
 
 void ScriptTimerUpdate_b() {
@@ -672,17 +678,6 @@ void Script_FadeIn_b() {
   FadeIn();
   FadeSetSpeed(script_cmd_args[0]);
   active_script_ctx.script_update_fn = ScriptUpdate_AwaitFade;
-}
-
-/*
- * Command: FadeSetSettings
- * ----------------------------
- * Set Fade settings.
- *
- *   arg0: Fade style (0=white, 1=black)
- */
-void Script_FadeSetSettings_b() {
-  fade_black = script_cmd_args[0];
 }
 
 /*
@@ -2295,4 +2290,53 @@ void Script_IfColorSupported_b() {
   if (_cpu == CGB_TYPE) {
     active_script_ctx.script_ptr = active_script_ctx.script_start_ptr + (script_cmd_args[0] * 256) + script_cmd_args[1];
   }
+}
+
+void Script_EngFieldSet_b()
+{
+  UBYTE *ptr;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  *ptr = script_cmd_args[2];
+}
+
+void Script_EngFieldSetWord_b()
+{
+  UWORD *ptr;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  *ptr = (script_cmd_args[2] * 256) + script_cmd_args[3];
+}
+
+void Script_EngFieldSetVar_b()
+{
+  UBYTE *ptr;
+  UBYTE var_lo;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  var_lo = script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]];
+  *ptr = var_lo;
+}
+
+void Script_EngFieldSetWordVar_b()
+{
+  UWORD *ptr;
+  UBYTE var_lo, var_hi;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  var_hi = script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]];
+  var_lo = script_variables[(script_cmd_args[4] * 256) + script_cmd_args[5]];
+  *ptr = (var_hi * 256) + var_lo;
+}
+
+void Script_EngFieldStore_b()
+{
+  UBYTE *ptr;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]] = *ptr;
+}
+
+void Script_EngFieldStoreWord_b()
+{
+  UBYTE *ptr;
+  ptr = engine_fields_addr + ((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  script_variables[(script_cmd_args[2] * 256) + script_cmd_args[3]] = *ptr;
+  ptr += 1;
+  script_variables[(script_cmd_args[4] * 256) + script_cmd_args[5]] = *ptr;
 }

@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
     z-index: 10000;
   }
 
-  .js-focus-visible :focus:not(.focus-visible) {
+  .js-focus-visible :focus:not(.focus-visible):not(select) {
     outline: none;
     box-shadow: none !important;
   }
@@ -49,6 +49,36 @@ const GlobalStyle = createGlobalStyle`
 
   div::-webkit-scrollbar-corner {
     background: var(--main-bg-color);
+  }
+
+  body .CustomSelect__menu {
+    z-index: 100;
+    min-width: 200px;
+    right: 0;
+  }
+
+  body .CustomSelect__menu-list {
+    background: ${(props) => props.theme.colors.menu.background};
+    color: ${(props) => props.theme.colors.text};
+    font-size: ${(props) => props.theme.typography.menuFontSize};
+    border-radius: 4px;
+  }
+
+  body .CustomSelect__option {
+    padding: 5px 10px;
+    background: ${(props) => props.theme.colors.menu.background};
+  }
+
+  body .CustomSelect__option--is-selected {
+    color: ${(props) => props.theme.colors.highlight};
+  }
+
+  body .CustomSelect__option--is-focused {
+    background: ${(props) => props.theme.colors.menu.hoverBackground};
+  }
+
+  body .CustomSelect__option:active {
+    background: ${(props) => props.theme.colors.menu.activeBackground};
   }
 `;
 

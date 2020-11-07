@@ -6,6 +6,8 @@
 #include "DataManager.h"
 #include "GameTime.h"
 #include "FadeManager.h"
+#include "Palette.h"
+#include "data_ptrs.h"
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;
@@ -225,16 +227,23 @@ void RenderScreen() {
   UINT8 i, temp;
   INT16 y;
 
-  if (!fade_black)
+  if (!fade_style)
   {
     DISPLAY_OFF
   } else if (!fade_timer == 0)
   {
-    // Set palette black if not already, then restore.
-    temp = fade_timer;
-    fade_timer = 0;
-    ApplyPaletteChange();
-    fade_timer = temp;
+    // Immediately set all palettes black while screen renders.
+    #ifdef CGB
+    if (_cpu == CGB_TYPE) {
+      for (UBYTE c = 0; c != 32; ++c) {
+        BkgPaletteBuffer[c] = RGB_BLACK;
+      }
+      set_bkg_palette(0, 8, BkgPaletteBuffer);
+      set_sprite_palette(0, 8, BkgPaletteBuffer);
+    } else
+    #endif
+      OBP0_REG = 0xFF;
+      BGP_REG = 0xFF;
   }
 
   // Clear pending rows/ columns

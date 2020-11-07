@@ -82,6 +82,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  type?: "8bit" | "16bit";
 };
 
 export type CustomEventActor = {
@@ -96,6 +97,11 @@ export type CustomEvent = {
   variables: Dictionary<CustomEventVariable>;
   actors: Dictionary<CustomEventActor>;
   script: ScriptEvent[];
+};
+
+export type EngineFieldValue = {
+  id: string;
+  value: number | string | boolean | undefined;
 };
 
 export type SpriteSheet = {
@@ -152,6 +158,7 @@ export interface EntitiesState {
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
   variables: EntityState<Variable>;
+  engineFieldValues: EntityState<EngineFieldValue>;
 }
 
 export type Asset = {

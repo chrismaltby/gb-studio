@@ -136,7 +136,6 @@ int core_start() {
   player.enabled = TRUE;
   player.move_speed = start_player_move_speed;
   player.anim_speed = start_player_anim_speed;
-  fade_black = start_fade_style;
 
   state_running = 0;
   next_state = start_scene_index;
@@ -220,7 +219,7 @@ int core_start() {
       wait_vbl_done();
       FadeUpdate();
     }
-    if (!fade_black)
+    if (!fade_style)
     {
       DISPLAY_OFF
     }
