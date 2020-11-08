@@ -393,9 +393,9 @@ UBYTE ScriptUpdate_CamShake() {
   // Handle Shake
   if (shake_time != 0) {
     if (should_shake_x)
-      scroll_offset_x = (INT16)(shake_time & 0x5);
+      scroll_offset_x = (INT16)(shake_time & 0x5) * 2 - 5;
     if (should_shake_y)
-      scroll_offset_y = (INT16)((shake_time & 0xA) >> 1);
+      scroll_offset_y = (INT16)(shake_time & 0xA) - 5;
   }
 
   return FALSE;

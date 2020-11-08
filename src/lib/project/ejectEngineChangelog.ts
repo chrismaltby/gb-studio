@@ -124,6 +124,12 @@ const changes: EngineChange[] = [{
         "src/states/Platform.c",
         "src/states/TopDown.c",
     ]
+}, {
+    version: "2.0.0-e14",
+    description: "Keep the camera centered on the scene when shaking",
+    modifiedFiles: [
+        "src/core/ScriptRunner_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
