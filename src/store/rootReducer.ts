@@ -8,6 +8,7 @@ import document from "./features/document/documentState";
 import editor from "./features/editor/editorState";
 import settings from "./features/settings/settingsState";
 import metadata from "./features/metadata/metadataState";
+import engine from "./features/engine/engineState";
 import error from "./features/error/errorState";
 import navigation from "./features/navigation/navigationState";
 
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   music,
   navigation,
   document,
+  engine,
   project: undoable(
     combineReducers({ entities, settings, metadata }),
     {

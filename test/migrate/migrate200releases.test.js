@@ -23,6 +23,7 @@ test("should migrate player set sprite with persist=true to match old default", 
 test("should migrate EVENT_PLAYER_SET_SPRITE events from 2.0.0 r1 to 2.0.0 r2", () => {
   const oldProject = {
     _version: "2.0.0",
+    settings: {},
     scenes: [
       {
         actors: [],
@@ -48,7 +49,8 @@ test("should migrate EVENT_PLAYER_SET_SPRITE events from 2.0.0 r1 to 2.0.0 r2", 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
     _version: "2.0.0",
-    _release: "3",
+    _release: "4",
+    settings: {},
     scenes: [
       {
         actors: [],
@@ -71,6 +73,10 @@ test("should migrate EVENT_PLAYER_SET_SPRITE events from 2.0.0 r1 to 2.0.0 r2", 
     ],
     backgrounds: [],
     customEvents: [],
+    engineFieldValues: [{
+      id: "fade_style",
+      value: 0
+    }],    
   });
 });
 
@@ -78,6 +84,7 @@ test("should not migrate EVENT_PLAYER_SET_SPRITE events if already on 2.0.0 r2+"
   const oldProject = {
     _version: "2.0.0",
     _release: "3",
+    settings: {},
     scenes: [
       {
         actors: [],
@@ -102,12 +109,13 @@ test("should not migrate EVENT_PLAYER_SET_SPRITE events if already on 2.0.0 r2+"
     customEvents: [],
   };
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
-  expect(newProject).toEqual(oldProject);
+  expect(newProject.scenes).toEqual(oldProject.scenes);
 });
 
-test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r3", () => {
+test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r4", () => {
   const oldProject = {
     _version: "2.0.0",
+    settings: {},
     scenes: [
       {
         actors: [],
@@ -133,7 +141,8 @@ test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r3", (
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
     _version: "2.0.0",
-    _release: "3",
+    _release: "4",
+    settings: {},    
     scenes: [
       {
         actors: [],
@@ -155,12 +164,17 @@ test("should migrate EVENT_SET_INPUT_SCRIPT events from 2.0.0 r2 to 2.0.0 r3", (
     ],
     backgrounds: [],
     customEvents: [],
+    engineFieldValues: [{
+      id: "fade_style",
+      value: 0
+    }],    
   });
 });
 
 test("should not migrate 2.0.0 r2 EVENT_SET_INPUT_SCRIPT events if they already were arrays (not sure if possible)", () => {
   const oldProject = {
     _version: "2.0.0",
+    settings: {},    
     scenes: [
       {
         actors: [],
@@ -186,7 +200,8 @@ test("should not migrate 2.0.0 r2 EVENT_SET_INPUT_SCRIPT events if they already 
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
     _version: "2.0.0",
-    _release: "3",
+    _release: "4",
+    settings: {},    
     scenes: [
       {
         actors: [],
@@ -206,6 +221,10 @@ test("should not migrate 2.0.0 r2 EVENT_SET_INPUT_SCRIPT events if they already 
         playerHit3Script: [],
       },
     ],
+    engineFieldValues: [{
+      id: "fade_style",
+      value: 0
+    }],
     backgrounds: [],
     customEvents: [],
   });

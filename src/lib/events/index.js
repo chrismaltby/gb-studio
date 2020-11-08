@@ -1,10 +1,10 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import glob from "glob";
+import fs from "fs";
 import plugins, { pluginEmitter } from "../plugins/plugins";
 import { eventsRoot } from "../../consts";
-import fs from "fs";
-import * as l10n from "../../lib/helpers/l10n";
+import * as l10n from "../helpers/l10n";
 import * as eventHelpers from "./helpers";
 import * as gbStudioHelpers from "../helpers/gbstudio";
 import * as eventSystemHelpers from "../helpers/eventSystem";
@@ -58,4 +58,12 @@ pluginEmitter.on("remove-event", plugin => {
   delete eventHandlers[plugin.id];
 });
 
+const engineFieldUpdateEvents = {};
+const engineFieldStoreEvents = {};
+
 export default eventHandlers;
+
+export {
+  engineFieldUpdateEvents,
+  engineFieldStoreEvents
+}

@@ -93,6 +93,7 @@ const compileEntityEvents = (input = [], options = {}) => {
           }
         );
       } catch (e) {
+        console.error(e);
         throw new Error(
           `Compiling "${command}" failed with error "${e}". ${JSON.stringify(
             location

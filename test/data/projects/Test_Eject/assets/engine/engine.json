@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0-e12",
+  "fields": [
+    {
+      "key": "test_field_1",
+      "label": "FIELD_MIN_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 304,
+      "min": 0,
+      "max": 16384
+    },
+    {
+      "key": "test_field_2",
+      "label": "FIELD_GRID_SIZE",
+      "group": "GAMETYPE_TOP_DOWN",
+      "type": "select",
+      "options": [
+        [8, "FIELD_GRID_8PX"],
+        [16, "FIELD_GRID_16PX"]
+      ],
+      "cType": "UBYTE",
+      "defaultValue": 8
+    }
+  ]
+}

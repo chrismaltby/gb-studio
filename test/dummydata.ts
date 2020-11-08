@@ -20,6 +20,7 @@ import { initialState as initialNavigationState } from "../src/store/features/na
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
 import { initialState as initialWarningsState } from "../src/store/features/warnings/warningsState";
+import { initialState as initialEngineState } from "../src/store/features/engine/engineState";
 
 export const dummyScene: SceneData = {
   id: "",
@@ -91,7 +92,7 @@ export const dummySpriteSheet: SpriteSheet = {
   filename: "",
   numFrames: 1,
   type: "static",
-  inode: "1",  
+  inode: "1",
   _v: 0,
 };
 
@@ -99,9 +100,9 @@ export const dummyMusic: Music = {
   id: "",
   name: "",
   filename: "",
-  inode: "2",  
+  inode: "2",
   _v: 0,
-  settings: {}
+  settings: {},
 };
 
 export const dummyCustomEvent: CustomEvent = {
@@ -139,7 +140,7 @@ export const dummyProjectData: ProjectData = {
     defaultBackgroundPaletteIds: ["", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
-    defaultFadeStyle: "white"
+    customHead: "",
   },
 };
 
@@ -164,6 +165,9 @@ export const dummyRootState: RootState = {
   },
   warnings: {
     ...initialWarningsState,
+  },
+  engine: {
+    ...initialEngineState,
   },
   project: {
     past: [],

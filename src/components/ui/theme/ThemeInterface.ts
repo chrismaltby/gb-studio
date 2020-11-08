@@ -1,6 +1,8 @@
 export interface ThemeInterface {
   typography: {
     fontSize: string;
+    menuFontSize: string;
+    toolbarFontSize: string;
   };
   colors: {
     text: string;
@@ -18,7 +20,7 @@ export interface ThemeInterface {
       character: string;
       speed: string;
       text: string;
-    }
+    };
     toolbar: {
       background: string;
       inactiveBackground: string;
@@ -52,6 +54,13 @@ export interface ThemeInterface {
       activeBackground: string;
       text: string;
       border: string;
+    };
+    card: {
+      background: string;
+      text: string;
+      border: string;
+      divider: string;
+      boxShadow: string;
     };
     sidebar: {
       background: string;

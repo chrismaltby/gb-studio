@@ -14,20 +14,8 @@
 #include "Scroll.h"
 #include "Sprite.h"
 #include "Trigger.h"
+#include "data_ptrs.h"
 
-#define MIN_WALK_VEL 0x130
-#define WALK_ACC 0x98
-#define RUN_ACC 0xe4
-#define RELEASE_DEC 0xd0
-#define SKID_DEC 0x1a0
-#define MAX_WALK_VEL 0x1900
-#define MAX_RUN_VEL 0x2900
-#define SKID_TURN_VEL 0x900
-#define JUMP_MOMENTUM 0x98
-#define JUMP_VEL 0x4000
-#define HOLD_GRAV 0x200
-#define GRAV 0x700
-#define MAX_FALL_VEL 0x4E20
 #define PLATFORM_CAMERA_DEADZONE_X 4
 #define PLATFORM_CAMERA_DEADZONE_Y 16
 
@@ -90,9 +78,9 @@ void Update_Platform() {
     player.dir.y = -1;
     pl_vel_x = 0;
     if (INPUT_UP) {
-      pl_vel_y = -MAX_WALK_VEL;
+      pl_vel_y = -plat_walk_vel;
     } else if (INPUT_DOWN) {
-      pl_vel_y = MAX_WALK_VEL;
+      pl_vel_y = plat_walk_vel;
     } else {
       if (INPUT_LEFT) {
         on_ladder = FALSE;
@@ -120,11 +108,11 @@ void Update_Platform() {
     if (INPUT_LEFT) {
       player.dir.x = -1;
       if (INPUT_A) {
-        pl_vel_x -= RUN_ACC;
-        pl_vel_x = CLAMP(pl_vel_x, -MAX_RUN_VEL, -MIN_WALK_VEL);
+        pl_vel_x -= plat_run_acc;
+        pl_vel_x = CLAMP(pl_vel_x, -plat_run_vel, -plat_min_vel);
       } else {
-        pl_vel_x -= WALK_ACC;
-        pl_vel_x = CLAMP(pl_vel_x, -MAX_WALK_VEL, -MIN_WALK_VEL);
+        pl_vel_x -= plat_walk_acc;
+        pl_vel_x = CLAMP(pl_vel_x, -plat_walk_vel, -plat_min_vel);
       } 
       if (INPUT_LEFT_PRESSED) { // update player facing direction if button pressed this frame
         player.rerender = TRUE;
@@ -132,23 +120,23 @@ void Update_Platform() {
     } else if (INPUT_RIGHT) {
       player.dir.x = 1;
       if (INPUT_A) {
-        pl_vel_x += RUN_ACC;
-        pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_RUN_VEL);
+        pl_vel_x += plat_run_acc;
+        pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_run_vel);
       } else {
-        pl_vel_x += WALK_ACC;
-        pl_vel_x = CLAMP(pl_vel_x, MIN_WALK_VEL, MAX_WALK_VEL);
+        pl_vel_x += plat_walk_acc;
+        pl_vel_x = CLAMP(pl_vel_x, plat_min_vel, plat_walk_vel);
       }
       if (INPUT_RIGHT_PRESSED) { // update player facing direction if button pressed this frame
         player.rerender = TRUE;
       }
     } else if (grounded) {
       if (pl_vel_x < 0) {
-        pl_vel_x += RELEASE_DEC;
+        pl_vel_x += plat_dec;
         if (pl_vel_x > 0) {
           pl_vel_x = 0;
         }
       } else if (pl_vel_x > 0) {
-        pl_vel_x -= RELEASE_DEC;
+        pl_vel_x -= plat_dec;
         if (pl_vel_x < 0) {
           pl_vel_x = 0;
         }
@@ -177,7 +165,7 @@ void Update_Platform() {
           TileAt(tile_x, tile_y - 1) & COLLISION_BOTTOM) ||  // Left Edge
           (((pl_pos_x >> 4) & 0x7) != 0 &&
            TileAt(tile_x + 1, tile_y - 1) & COLLISION_BOTTOM))) {  // Right edge
-      pl_vel_y = -JUMP_VEL;
+      pl_vel_y = -plat_jump_vel;
       grounded = FALSE;
     }
   }
@@ -185,13 +173,13 @@ void Update_Platform() {
   if (!on_ladder) {
     // Gravity
     if (INPUT_B && pl_vel_y < 0) {
-      pl_vel_y += HOLD_GRAV;
+      pl_vel_y += plat_hold_grav;
     } else {
-      pl_vel_y += GRAV;
+      pl_vel_y += plat_grav;
     }
   }
 
-  pl_vel_y = MIN(pl_vel_y, MAX_FALL_VEL);
+  pl_vel_y = MIN(pl_vel_y, plat_max_fall_vel);
   pl_pos_y += pl_vel_y >> 8;
   tile_y = pl_pos_y >> 7;
   tile_y_ceil = (pl_pos_y - 7u) >> 7;

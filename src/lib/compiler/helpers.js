@@ -155,7 +155,7 @@ export const replaceInvalidCustomEventVariables = (variable) => {
   }
 
   // Support the case for "union" values
-  if (variable !== null && variable.type === "variable") {
+  if (variable && variable.type === "variable") {
     return {
       ...variable,
       value: getValidVariableIndex(variable.value)
@@ -257,16 +257,6 @@ export const heightDec = (type) => {
 export const textSpeedDec = (speed) => TEXT_SPEED_LOOKUP[speed] !== undefined
   ? TEXT_SPEED_LOOKUP[speed]
   : 0x1;
-
-export const fadeStyleDec = (style) => {
-  if (style === "white") {
-    return 0;
-  }
-  if (style === "black") {
-    return 1;
-  }
-  return 0;
-}
 
 export const paletteMaskDec = (mask) => {
   return mask.reduce((memo, value, index) => {

@@ -10,14 +10,14 @@ export interface MenuProps {
 export const Menu = styled.div<MenuProps>`
   display: flex;
   flex-direction: column;
-  border-radius: ${props => props.theme.borderRadius}px;
+  border-radius: ${(props) => props.theme.borderRadius}px;
   width: max-content;
   min-width: 100px;
   user-select: none;
-  box-shadow: ${props => props.theme.colors.menu.boxShadow};
-  background: ${props => props.theme.colors.menu.background};
-  color: ${props => props.theme.colors.text};
-  font-size: ${props => props.theme.typography.fontSize};
+  box-shadow: ${(props) => props.theme.colors.menu.boxShadow};
+  background: ${(props) => props.theme.colors.menu.background};
+  color: ${(props) => props.theme.colors.text};
+  font-size: ${(props) => props.theme.typography.menuFontSize};
   padding: 4px 0;
 `;
 
@@ -34,22 +34,22 @@ export const MenuItem = styled.div<MenuItemProps>`
 
   &:hover,
   &:focus {
-    background: ${props => props.theme.colors.menu.hoverBackground};
+    background: ${(props) => props.theme.colors.menu.hoverBackground};
     outline: none;
     box-shadow: none;
   }
 
   &:active {
-    background: ${props => props.theme.colors.menu.activeBackground};
+    background: ${(props) => props.theme.colors.menu.activeBackground};
   }
 
   ${Menu}:hover &:focus&:not(:hover) {
-    background: ${props => props.theme.colors.menu.activeBackground};
+    background: ${(props) => props.theme.colors.menu.activeBackground};
   }
 `;
 
 export const MenuDivider = styled.div`
-  border-bottom: 1px solid ${props => props.theme.colors.menu.divider};
+  border-bottom: 1px solid ${(props) => props.theme.colors.menu.divider};
 `;
 
 export interface MenuAcceleratorProps {
@@ -69,14 +69,16 @@ export const acceleratorForPlatform = (accelerator: string) => {
     .replace(/Alt\+/g, "Alt+");
 };
 
-export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>((props) => ({
-  children: acceleratorForPlatform(props.accelerator)
-}))<MenuAcceleratorProps>`
+export const MenuAccelerator = styled.div.attrs<MenuAcceleratorProps>(
+  (props) => ({
+    children: acceleratorForPlatform(props.accelerator),
+  })
+)<MenuAcceleratorProps>`
   flex-grow: 1;
   font-size: 0.8em;
   text-align: right;
   margin-left: 20px;
-  color: ${props => props.theme.colors.secondaryText};
+  color: ${(props) => props.theme.colors.secondaryText};
 `;
 
 export const MenuOverlay = styled.div`

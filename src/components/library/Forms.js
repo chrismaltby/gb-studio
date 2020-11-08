@@ -43,7 +43,8 @@ export const FormField = ({
   thirdWidth,
   quarterWidth,
   alignCheckbox,
-  children
+  children,
+  style
 }) => (
   <div
     className={cx(
@@ -61,6 +62,7 @@ export const FormField = ({
         "FormField--AlignCheckbox": alignCheckbox
       }
     )}
+    style={style}
   >
     {children}
   </div>

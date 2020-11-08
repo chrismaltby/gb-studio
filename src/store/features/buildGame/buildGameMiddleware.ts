@@ -40,6 +40,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
       const projectRoot = state.document && state.document.root;
       const project = denormalizeProject(state.project.present);
       const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+      const engineFields = state.engine.fields;
 
       await rmdir(outputRoot);
 
@@ -51,6 +52,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
         projectRoot,
         buildType,
         outputRoot,
+        engineFields,
         tmpPath: getTmp(),
         profile: state.editor.profile,
         progress: (message) => {

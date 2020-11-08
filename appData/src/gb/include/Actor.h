@@ -20,7 +20,6 @@
 #define NO_ACTOR_COLLISON 0xFF
 
 #define player (actors[0])
-#define ActorInFrontOfPlayer() (ActorInFrontOfActor(0))
 
 #define ACTOR_ON_TILE_X(i) ((actors[(i)].pos.x & 7) == 0)
 #define ACTOR_ON_TILE_Y(i) ((actors[(i)].pos.y & 7) == 0)
@@ -135,6 +134,24 @@ UBYTE ActorAt1x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
 
 /**
+ * Return index of actor at given tile coordinates (check 3 tiles wide, 3 tile high)
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorAt3x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+
+/**
+ * Return index of actor at given tile coordinates (check 2 tiles wide, 3 tile high)
+ *
+ * @param tx Left tile
+ * @param ty Top tile
+ * @return index of actor at tile in actors array
+ */
+UBYTE ActorAt2x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
+
+/**
  * Return index of actor at given tile coordinates (check 1 tile wide, 2 tiles high)
  *
  * @param tx Left tile
@@ -149,6 +166,14 @@ UBYTE ActorAt1x2Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip);
  * @return index of overlapping actor in actors array
  */
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip);
+
+/**
+ * Return index of actor currently in front of player
+ *
+ * @param grid_size 8 or 16px grid size
+ * @return index of overlapping actor in actors array
+ */
+UBYTE ActorInFrontOfPlayer(UBYTE grid_size, UBYTE inc_noclip);
 
 /**
  * Return index of actor in front of given actor relative to the actor's current direction

@@ -26,6 +26,7 @@ import {
   regenerateEventIds,
   patchEvents,
   mapEvents,
+  getField,
   isVariableField,
   isPropertyField,
   walkEvents,
@@ -63,6 +64,7 @@ import {
   SceneData,
   EntityKey,
   MusicSettings,
+  EngineFieldValue,
 } from "./entitiesTypes";
 import { normalizeEntities } from "./entitiesHelpers";
 import { clone } from "../../../lib/helpers/clone";
@@ -101,6 +103,7 @@ const musicAdapter = createEntityAdapter<Music>({
   sortComparer: sortByFilename,
 });
 const variablesAdapter = createEntityAdapter<Variable>();
+const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
 export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
@@ -112,6 +115,7 @@ export const initialState: EntitiesState = {
   customEvents: customEventsAdapter.getInitialState(),
   music: musicAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
+  engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
 const moveSelectedEntity = ({
@@ -358,6 +362,7 @@ const loadProject: CaseReducer<
   musicAdapter.setAll(state.music, entities.music || {});
   customEventsAdapter.setAll(state.customEvents, entities.customEvents || {});
   variablesAdapter.setAll(state.variables, entities.variables || {});
+  engineFieldValuesAdapter.setAll(state.engineFieldValues, entities.engineFieldValues || {});
   fixAllScenesWithModifiedBackgrounds(state);
 };
 
@@ -1658,7 +1663,7 @@ const editCustomEvent: CaseReducer<
       if (event.args) {
         const fixedEventArgs = Object.keys(event.args).reduce((memo, arg) => {
           const fixedArgs = memo;
-          if (isVariableField(event.command, arg, event.args[arg])) {
+          if (isVariableField(event.command, arg, event.args)) {
             fixedArgs[arg] = fix(event.args[arg]);
           } else if (isPropertyField(event.command, arg, event.args[arg])) {
             fixedArgs[arg] = fixProperty(event.args[arg]);
@@ -1716,21 +1721,24 @@ const editCustomEvent: CaseReducer<
       }
 
       Object.keys(args).forEach((arg) => {
-        if (isVariableField(e.command, arg, args[arg])) {
-          const addVariable = (variable: string) => {
+        if (isVariableField(e.command, arg, args)) {
+          const addVariable = (variable: string, type?: "8bit" | "16bit") => {
             const letter = String.fromCharCode(
               "A".charCodeAt(0) + parseInt(variable)
             );
+            const newType = variables[variable]?.type === "16bit" ? "16bit" : type;
             variables[variable] = {
               id: variable,
               name: oldVariables[variable]?.name || `Variable ${letter}`,
+              type: newType
             };
           };
           const variable = args[arg];
+          const field = getField(e.command, arg, args);
           if (variable != null && variable.type === "variable") {
-            addVariable(variable.value);
+            addVariable(variable.value, field.variableType);
           } else {
-            addVariable(variable);
+            addVariable(variable, field.variableType);
           }
         }
 
@@ -1837,6 +1845,21 @@ const removeCustomEvent: CaseReducer<
     action.payload.customEventId
   );
 };
+
+/**************************************************************************
+ * Engine Field Values
+ */ 
+
+const editEngineFieldValue: CaseReducer<EntitiesState, PayloadAction<{ engineFieldId: string, value: any }>> = (state, action) => {
+  engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {
+    id: action.payload.engineFieldId,
+    value: action.payload.value
+  })
+}
+
+const removeEngineFieldValue: CaseReducer<EntitiesState, PayloadAction<{ engineFieldId: string }>> = (state, action) => {
+  engineFieldValuesAdapter.removeOne(state.engineFieldValues, action.payload.engineFieldId);
+}
 
 /**************************************************************************
  * General Assets
@@ -2002,6 +2025,13 @@ const entitiesSlice = createSlice({
      */
 
     editMusicSettings,
+
+    /**************************************************************************
+     * Engine Field Values
+     */ 
+
+     editEngineFieldValue,
+     removeEngineFieldValue,
   },
   extraReducers: (builder) =>
     builder
@@ -2081,6 +2111,9 @@ export const musicSelectors = musicAdapter.getSelectors(
 );
 export const variableSelectors = variablesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.variables
+);
+export const engineFieldValueSelectors = engineFieldValuesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.engineFieldValues
 );
 
 export const getMaxSceneRight = createSelector(
