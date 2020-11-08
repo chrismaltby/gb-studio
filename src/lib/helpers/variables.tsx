@@ -164,7 +164,7 @@ export const globalVariableName = (
 };
 
 export const globalVariableDefaultName = (variable: string) => {
-  return `Variable ${variable.padStart(3, "0")}`;
+  return `Variable ${variable}`;
 };
 
 export const globalVariableCode = (variable: string) => {

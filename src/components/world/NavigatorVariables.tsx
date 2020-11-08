@@ -5,7 +5,10 @@ import { variableSelectors } from "../../store/features/entities/entitiesState";
 import { FlatList } from "../ui/lists/FlatList";
 import editorActions from "../../store/features/editor/editorActions";
 import { Variable } from "../../store/features/entities/entitiesTypes";
-import { allVariables } from "../../lib/helpers/variables";
+import {
+  allVariables,
+  globalVariableDefaultName,
+} from "../../lib/helpers/variables";
 import { EntityListItem } from "../ui/lists/EntityListItem";
 
 interface NavigatorVariablesProps {
@@ -24,7 +27,7 @@ const variableToNavigatorItem = (
   id: variableCode,
   name: variable?.name
     ? variable.name
-    : `Variable ${parseInt(variableCode, 10) + 1}`,
+    : globalVariableDefaultName(variableCode),
 });
 
 const collator = new Intl.Collator(undefined, {
