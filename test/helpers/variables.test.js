@@ -70,7 +70,7 @@ test("Should get default variable name for global when no custom name provided",
         name: "My Variable Name",
       },
     })
-  ).toBe("Variable 051");
+  ).toBe("Variable 51");
 });
 
 test("Should get variable code for temporary", () => {
