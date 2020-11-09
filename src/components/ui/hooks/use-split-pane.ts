@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import clamp from "../../../lib/helpers/clamp";
 
 type SplitDirection = "horizontal" | "vertical";
 
@@ -22,18 +23,20 @@ const useSplitPane = ({
   (index: number) => (ev: React.MouseEvent<HTMLElement, MouseEvent>) => void,
   (index: number) => void
 ] => {
-  const [startDragSizes, setStartDragSizes] = useState(sizes);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeIndex, setResizeIndex] = useState(-1);
+  const startOffset = useRef<number>(0);
+  const startAbsSizes = useRef<number[]>([]);
 
   const height = sizes.reduce((memo, a) => memo + a, 0);
-  const unCollapsedHeight = sizes
-    .filter((a) => a > collapsedSize)
-    .reduce((memo, a) => memo + a, 0);
 
   // Reset panes to fit height
   useEffect(() => {
     if (maxTotal > 0) {
+      const unCollapsedHeight = sizes
+        .filter((a) => a > collapsedSize)
+        .reduce((memo, a) => memo + a, 0);
+
       const collapsedHeight = height - unCollapsedHeight;
       const unCollapsedNewHeight = maxTotal - collapsedHeight;
 
@@ -48,108 +51,18 @@ const useSplitPane = ({
     }
   }, [maxTotal]);
 
-  const setValueAtIndex = (changedIndex: number, newValue: number) => {
-    const currentValue = sizes[changedIndex];
-    const diff = newValue - currentValue;
-
-    if (diff > 0) {
-      // Moving right, add to current index and subtract from right
-      let newValues = sizes.map((v, i) => {
-        if (i === changedIndex) {
-          return v + diff;
-        }
-        if (i === changedIndex + 1) {
-          return Math.max(minSizes[i], v - diff);
-        }
-        return v;
-      });
-
-      let overAmount =
-        minSizes[changedIndex + 1] - (sizes[changedIndex + 1] - diff);
-
-      if (overAmount > 0) {
-        // Take overflow from right
-        for (let i = changedIndex + 1; i < newValues.length; i++) {
-          let prevWidth = newValues[i];
-          let newWidth = Math.max(minSizes[i], newValues[i] - overAmount);
-          let diffWidth = prevWidth - newWidth;
-          overAmount -= diffWidth;
-          newValues[i] = newWidth;
-        }
-      } else {
-        // Reuse initial positions if possible
-        let pos = 0;
-        let offset = 0;
-        for (let i = changedIndex; i >= 0; i--) {
-          pos += newValues[i];
-        }
-
-        for (let i = 0; i < changedIndex + 1; i++) {
-          let remaining = pos - offset;
-          for (let j = i + 1; j < changedIndex + 1; j++) {
-            remaining -= minSizes[j];
-          }
-          if (i === changedIndex) {
-            newValues[i] = Math.min(newValues[i], remaining);
-          } else {
-            newValues[i] = Math.min(startDragSizes[i], remaining);
-          }
-          offset += newValues[i];
-        }
-      }
-
-      if (overAmount <= 0) {
-        setSizes(newValues);
-      }
-    } else if (diff < 0) {
-      // Moving left, subtrack from current index and add to right
-      let newValues = sizes.map((v, i) => {
-        if (i === changedIndex + 1) {
-          return v - diff;
-        }
-        if (i === changedIndex) {
-          return Math.max(minSizes[i], v + diff);
-        }
-        return v;
-      });
-
-      let overAmount = minSizes[changedIndex] - (sizes[changedIndex] + diff);
-
-      if (overAmount > 0) {
-        // Take overflow from left
-        for (let i = changedIndex - 1; i >= 0; i--) {
-          let prevWidth = newValues[i];
-          let newWidth = Math.max(minSizes[i], newValues[i] - overAmount);
-          let diffWidth = prevWidth - newWidth;
-          overAmount -= diffWidth;
-          newValues[i] = newWidth;
-        }
-      } else {
-        // Reuse initial positions if possible
-        let pos = 0;
-        let offset = 0;
-        for (let i = changedIndex + 1; i < sizes.length; i++) {
-          pos += newValues[i];
-        }
-
-        for (let i = sizes.length - 1; i > changedIndex; i--) {
-          let remaining = pos - offset;
-          for (let j = i - 1; j > changedIndex; j--) {
-            remaining -= minSizes[j];
-          }
-          if (i === changedIndex + 1) {
-            newValues[i] = Math.min(newValues[i], remaining);
-          } else {
-            newValues[i] = Math.min(startDragSizes[i], remaining);
-          }
-          offset += newValues[i];
-        }
-      }
-
-      if (overAmount <= 0) {
-        setSizes(newValues);
-      }
-    }
+  const resizePaneBy = (resizePane: number, resizeBy: number) => {
+    setSizes(
+      toSplitRel(
+        resizeAbsPaneBy(
+          resizePane,
+          resizeBy,
+          startAbsSizes.current,
+          minSizes,
+          maxTotal
+        )
+      )
+    );
   };
 
   useEffect(() => {
@@ -161,7 +74,7 @@ const useSplitPane = ({
         window.removeEventListener("mouseup", onDragStop);
       };
     }
-  }, [isResizing, startDragSizes, sizes]);
+  }, [isResizing, sizes]);
 
   const onDragStop = () => {
     setIsResizing(false);
@@ -169,18 +82,23 @@ const useSplitPane = ({
 
   const onDragMove = (e: MouseEvent) => {
     if (direction === "vertical") {
-      setValueAtIndex(resizeIndex, sizes[resizeIndex] + e.movementY);
+      resizePaneBy(resizeIndex, e.pageY - startOffset.current);
     } else {
-      setValueAtIndex(resizeIndex, sizes[resizeIndex] + e.movementX);
+      resizePaneBy(resizeIndex, e.pageX - startOffset.current);
     }
   };
 
   const onDragStart = (index: number) => (
-    _e: React.MouseEvent<HTMLElement, MouseEvent>
+    e: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
-    setStartDragSizes(sizes);
+    startAbsSizes.current = toSplitAbs(sizes);
     setIsResizing(true);
     setResizeIndex(index);
+    if (direction === "horizontal") {
+      startOffset.current = e.pageX;
+    } else {
+      startOffset.current = e.pageY;
+    }
   };
 
   const resetSizes = (newSizes: number[]) => {
@@ -267,6 +185,52 @@ const useSplitPane = ({
   };
 
   return [onDragStart, onTogglePane];
+};
+
+export const toSplitAbs = (arr: number[]) => {
+  let total = 0;
+  return arr.map((v) => {
+    total += v;
+    return total;
+  });
+};
+
+export const toSplitRel = (arr: number[]) => {
+  return arr.map((v, i) => {
+    if (i === 0) {
+      return v;
+    }
+    return v - arr[i - 1];
+  });
+};
+
+var add = (a: number, b: number) => a + b;
+
+export const resizeAbsPaneBy = (
+  resizePane: number,
+  resizeBy: number,
+  absStartSizes: number[],
+  minSizes: number[],
+  maxTotal: number
+) => {
+  const resizeTo = absStartSizes[resizePane] + resizeBy;
+  return absStartSizes.map((v, i) => {
+    if (resizeBy < 0) {
+      if (i <= resizePane) {
+        const splitMin = minSizes.slice(0, i + 1).reduce(add, 0);
+        const splitMinBetween = minSizes.slice(i, resizePane).reduce(add, 0);
+        return clamp(resizeTo - splitMinBetween, splitMin, v);
+      }
+    } else if (resizeBy > 0) {
+      if (i >= resizePane) {
+        const splitMax =
+          maxTotal - minSizes.slice(i + 1, minSizes.length).reduce(add, 0);
+        const splitMinBetween = minSizes.slice(resizePane, i).reduce(add, 0);
+        return clamp(resizeTo + splitMinBetween, v, splitMax);
+      }
+    }
+    return v;
+  });
 };
 
 export default useSplitPane;

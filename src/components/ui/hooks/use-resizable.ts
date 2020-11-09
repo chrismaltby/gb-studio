@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type ResizeDirection = "left" | "right" | "top" | "bottom";
 
@@ -16,9 +16,15 @@ const useResizable = ({
   direction: ResizeDirection;
   onResize?: (newValue: number) => void;
   onResizeComplete?: (newValue: number) => void;
-}): [number, React.Dispatch<React.SetStateAction<number>>, () => void] => {
+}): [
+  number,
+  React.Dispatch<React.SetStateAction<number>>,
+  (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+] => {
   const [size, setSize] = useState(initialSize);
   const [isResizing, setIsResizing] = useState(false);
+  const startSize = useRef<number>(0);
+  const startOffset = useRef<number>(0);
 
   useEffect(() => {
     if (isResizing) {
@@ -31,7 +37,13 @@ const useResizable = ({
     }
   }, [isResizing, size]);
 
-  const onDragStart = () => {
+  const onDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (direction === "left" || direction === "right") {
+      startOffset.current = e.pageX;
+    } else {
+      startOffset.current = e.pageY;
+    }
+    startSize.current = size;
     setIsResizing(true);
     setSize(clampSize(size));
   };
@@ -53,13 +65,13 @@ const useResizable = ({
 
   const onDragMove = (e: MouseEvent) => {
     if (direction === "left") {
-      updateSize(size - e.movementX);
+      updateSize(startSize.current - (e.pageX - startOffset.current));
     } else if (direction === "right") {
-      updateSize(size + e.movementX);
+      updateSize(startSize.current + (e.pageX - startOffset.current));
     } else if (direction === "top") {
-      updateSize(size - e.movementY);
+      updateSize(startSize.current - (e.pageY - startOffset.current));
     } else if (direction === "bottom") {
-      updateSize(size + e.movementY);
+      updateSize(startSize.current + (e.pageY - startOffset.current));
     }
   };
 
