@@ -8,8 +8,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
-import { SceneIcon } from "../library/Icons";
+import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { TriggerShape, SceneShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
@@ -17,6 +16,7 @@ import { triggerSelectors, sceneSelectors } from "../../store/features/entities/
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 
 class TriggerEditor extends Component {
   constructor() {
@@ -68,7 +68,7 @@ class TriggerEditor extends Component {
     const { clipboardData } = this.state;
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("TRIGGER")}
@@ -182,16 +182,6 @@ class TriggerEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-          <ul>
-            <li onClick={() => selectScene({sceneId: scene.id})}>
-              <div className="EditorSidebar__Icon">
-                <SceneIcon />
-              </div>
-              {scene.name || `Scene ${index + 1}`}
-            </li>
-          </ul>
         </SidebarColumn>
 
         <SidebarColumn>
@@ -215,7 +205,7 @@ class TriggerEditor extends Component {
             />
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </SidebarMultiColumnAuto>
     );
   }
 }

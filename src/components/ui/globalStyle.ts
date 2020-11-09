@@ -80,6 +80,34 @@ const GlobalStyle = createGlobalStyle`
   body .CustomSelect__option:active {
     background: ${(props) => props.theme.colors.menu.activeBackground};
   }
+
+  .label--red {
+    background: #e20e2b;
+  }
+
+  .label--orange {
+    background: #ff5722;
+  }
+
+  .label--yellow {
+    background: #ffc107;
+  }
+
+  .label--green {
+    background: #4caf50;
+  }
+
+  .label--blue {
+    background: #03a9f4;
+  }
+
+  .label--purple {
+    background: #9c27b0;
+  }
+
+  .label--gray {
+    background: #9e9e9e;
+  }
 `;
 
 export default GlobalStyle;

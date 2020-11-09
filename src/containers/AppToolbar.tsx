@@ -19,9 +19,12 @@ import { FixedSpacer, FlexGrow } from "../components/ui/spacing/Spacing";
 import { SearchInput } from "../components/ui/form/SearchInput";
 import { Button } from "../components/ui/buttons/Button";
 import {
+  ColumnLeftIcon,
+  ColumnRightIcon,
   ExportIcon,
   FolderIcon,
   LoadingIcon,
+  NavigationIcon,
   PlayIcon,
 } from "../components/ui/icons/Icons";
 import { RootState } from "../store/configureStore";
@@ -183,7 +186,7 @@ const AppToolbar: FC = () => {
           onZoomOut={onZoomOut}
           onZoomReset={onZoomReset}
         />
-      )}
+      )} 
       <FlexGrow />
       {showTitle && (
         <ToolbarText>

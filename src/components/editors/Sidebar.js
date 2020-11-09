@@ -122,7 +122,7 @@ class Sidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div style={{ width }} className="Sidebar__Content">
+        <div className="Sidebar__Content">
           {children}
         </div>
       </div>

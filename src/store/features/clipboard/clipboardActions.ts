@@ -16,6 +16,7 @@ import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 
+const copyText = createAction<string>("clipboard/copyText");
 const copyActor = createAction<Actor>("clipboard/copyActor");
 const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
 const copyScene = createAction<Scene>("clipboard/copyScene");
@@ -117,6 +118,7 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
 };
 
 export default {
+  copyText,
   copyActor,
   copyTrigger,
   copyScene,

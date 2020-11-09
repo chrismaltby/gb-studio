@@ -362,11 +362,16 @@ ipcMain.on("document-unmodified", () => {
 });
 
 ipcMain.on("project-loaded", (event, settings) => {
-  const { showCollisions, showConnections } = settings;
+  const { showCollisions, showConnections, showNavigator } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnectionsAll").checked = showConnections === "all";
   menu.ref().getMenuItemById("showConnectionsSelected").checked = showConnections === "selected" || showConnections === true;
   menu.ref().getMenuItemById("showConnectionsNone").checked = showConnections === false;
+  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
+});
+
+ipcMain.on("set-show-navigator", (event, showNavigator) => {
+  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
 ipcMain.on("set-menu-plugins", (event, plugins) => {

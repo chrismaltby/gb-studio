@@ -161,10 +161,10 @@ class World extends Component {
       this.dragDistance.y -= e.movementY;      
     } else {
       const boundingRect = e.currentTarget.getBoundingClientRect();
-      const x = e.pageX + e.currentTarget.scrollLeft - 0;
+      const x = e.pageX + e.currentTarget.scrollLeft - boundingRect.x;
       const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
 
-      this.offsetX = e.pageX;
+      this.offsetX = e.pageX - boundingRect.x;
       this.offsetY = e.pageY - boundingRect.y;
 
       if (tool === "scene") {
@@ -259,7 +259,6 @@ class World extends Component {
       <div
         ref={this.scrollRef}
         className="World"
-        style={worldStyle}
         onMouseMove={this.onMouseMove}
         onMouseOver={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
@@ -351,7 +350,8 @@ function mapStateToProps(state) {
     worldScrollY: scrollY,
     showLayers,
     sceneDefaults,
-    clipboardVariables
+    clipboardVariables,
+    focusSceneId
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.editor;
@@ -374,7 +374,7 @@ function mapStateToProps(state) {
     : [];
 
   const onlyMatchingScene = (matchingScenes.length === 1
-    && scenesLookup[matchingScenes[0]]) || null;
+    && scenesLookup[matchingScenes[0]]) || scenesLookup[focusSceneId] || null;
 
   const { tool } = state.editor;
 

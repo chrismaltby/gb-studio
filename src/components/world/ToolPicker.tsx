@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import cx from "classnames";
 import { connect } from "react-redux";
 import {
@@ -26,20 +25,8 @@ interface ToolPickerActionProps {
   setTool: (args: { tool: Tool }) => void;
 }
 
-class ToolPicker extends React.Component<ToolPickerProps & ToolPickerActionProps, ToolPickerState> {
-  static propTypes = {
-    selected: PropTypes.oneOf([
-      "triggers",
-      "actors",
-      "collisions",
-      "colors",
-      "scene",
-      "eraser",
-      "select",
-    ] as const).isRequired,
-    setTool: PropTypes.func.isRequired,
-  };
-
+class ToolPicker extends Component<ToolPickerProps & ToolPickerActionProps, ToolPickerState> {
+  
   state = {
     add: false,
   };

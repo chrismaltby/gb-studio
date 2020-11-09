@@ -191,6 +191,8 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     } catch (err) {
       // Ignore
     }
+  } else if (actions.copyText.match(action)) {
+    clipboard.writeText(action.payload);
   }
 
   next(action);

@@ -8176,6 +8176,11 @@ react-clientside-effect@^1.2.2:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
+react-cool-dimensions@^1.1.10:
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/react-cool-dimensions/-/react-cool-dimensions-1.1.10.tgz#3daf1b250fa921141dc4fa3211a452d89f46abde"
+  integrity sha512-tVf5sfbETeY5ZZ04WyFPt/GuBY69dlj01V2ujdk+z5vAf6HzEUje1oZ+RgrotSe7bUxMFffDG6QbqqqpIZJgeQ==
+
 react-dnd-html5-backend@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.6.0.tgz#590cd1cca78441bb274edd571fef4c0b16ddcf8e"

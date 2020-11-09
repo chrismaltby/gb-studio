@@ -180,12 +180,16 @@ ipcRenderer.on("paste-in-place", onPasteInPlace);
 
 const worldSidebarWidth = settings.get("worldSidebarWidth");
 const filesSidebarWidth = settings.get("filesSidebarWidth");
+const navigatorSidebarWidth = settings.get("navigatorSidebarWidth");
 
 if (worldSidebarWidth) {
   store.dispatch(editorActions.resizeWorldSidebar(worldSidebarWidth));
 }
 if (filesSidebarWidth) {
   store.dispatch(editorActions.resizeFilesSidebar(filesSidebarWidth));
+}
+if (navigatorSidebarWidth) {
+  store.dispatch(editorActions.resizeNavigatorSidebar(navigatorSidebarWidth));
 }
 
 window.addEventListener(

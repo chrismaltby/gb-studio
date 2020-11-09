@@ -7,7 +7,7 @@ export const FormContainer = styled.div``;
 export const FormHeader = styled.div`
   display: flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 4px 10px 4px 4px;
   margin-bottom: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
 

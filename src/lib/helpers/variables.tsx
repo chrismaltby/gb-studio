@@ -160,9 +160,11 @@ export const globalVariableName = (
   variable: string,
   variablesLookup: VariablesLookup
 ) => {
-  return (
-    variablesLookup[variable]?.name || `Variable ${variable.padStart(3, "0")}`
-  );
+  return variablesLookup[variable]?.name || globalVariableDefaultName(variable);
+};
+
+export const globalVariableDefaultName = (variable: string) => {
+  return `Variable ${variable}`;
 };
 
 export const globalVariableCode = (variable: string) => {

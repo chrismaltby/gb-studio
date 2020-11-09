@@ -63,6 +63,9 @@
   "SIDEBAR_ON_HIT": "On Hit",
   "SIDEBAR_ON_PLAYER_HIT": "On Player Hit",
   "SIDEBAR_ON_UPDATE": "On Update",
+  "SIDEBAR_SCENES": "Scenes",
+  "SIDEBAR_VARIABLES": "Variables",
+  "SIDEBAR_VARIABLE_USES": "Variable Uses",
 
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Name",
@@ -287,6 +290,7 @@
   "FIELD_16BIT_DESCRIPTION": "16-bit number with a maximum value of 65535.",
   "FIELD_16BIT_CALCULATION": "Value is calculated using two 8-bit variables",
   "FIELD_OFFSET": "Offset",
+  "FIELD_VARIABLE_NOT_USED": "Variable hasn't been used in project",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -493,6 +497,9 @@
   "MENU_EJECT_PROJECT_BUILD": "Export Project Source",
   "MENU_PASTE_IN_PLACE": "Paste in Place",
   "MENU_PREFERENCES": "Preferences...",
+  "MENU_SHOW_NAVIGATOR": "Show Navigator",
+  "MENU_VARIABLE_COPY_EMBED": "Copy Embed Code",
+  "MENU_VARIABLE_COPY_EMBED_CHAR": "Copy Embed Character Code",
 
   "// 11": "Warnings -----------------------------------------------------",
 

@@ -3,6 +3,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 interface EventHandler {
   id: string;
   fields: any[];
+  name?: string;
   compile: (input: any, helpers: any) => void;
 }
 

@@ -42,6 +42,8 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     settings.set("worldSidebarWidth", action.payload);
   } else if (editorActions.resizeFilesSidebar.match(action)) {
     settings.set("filesSidebarWidth", action.payload);
+  } else if (editorActions.resizeNavigatorSidebar.match(action)) {
+    settings.set("navigatorSidebarWidth", action.payload);    
   } else if (
     editorActions.setTool.match(action) &&
     action.payload.tool === "colors"
@@ -61,6 +63,8 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     }
   } else if (projectActions.loadProject.fulfilled.match(action)) {
     ipcRenderer.send("project-loaded", action.payload.data.settings);
+  } else if (settingsActions.setShowNavigator.match(action)) {
+    ipcRenderer.send("set-show-navigator", action.payload);    
   } else if (projectActions.loadProject.rejected.match(action)) {
     const window = remote.getCurrentWindow();
     window.close();

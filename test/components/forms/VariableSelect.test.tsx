@@ -36,7 +36,7 @@ test("Should use default variable name with not renamed", () => {
     store,
     {}
   );
-  expect(screen.getByText("Variable 000")).toBeInTheDocument();
+  expect(screen.getByText("Variable 0")).toBeInTheDocument();
 });
 
 test("Should use default custom event variable name with not renamed", () => {

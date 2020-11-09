@@ -319,6 +319,15 @@ const buildMenu = async (plugins = []) => {
             }
           ]
         },
+        {
+          id: "showNavigator",
+          label: l10n("MENU_SHOW_NAVIGATOR"),
+          checked: settings.get("showNavigator") !== false,
+          type: "checkbox",
+          click: item => {
+            notifyListeners("updateSetting", "showNavigator", item.checked);
+          }
+        },
         { type: "separator" },
         {
           label: l10n("MENU_ZOOM_RESET"),
