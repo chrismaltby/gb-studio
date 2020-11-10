@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-e14",
+  "version": "2.0.0-e15",
   "fields": [
     {
       "key": "plat_min_vel",
@@ -70,7 +70,7 @@
       "defaultValue": 16384,
       "min": 0,
       "max": 32768
-    },   
+    },
     {
       "key": "plat_grav",
       "label": "FIELD_GRAVITY",
@@ -80,7 +80,7 @@
       "defaultValue": 1792,
       "min": 0,
       "max": 8192
-    },   
+    },
     {
       "key": "plat_hold_grav",
       "label": "FIELD_GRAVITY_JUMP",
@@ -90,7 +90,7 @@
       "defaultValue": 512,
       "min": 0,
       "max": 8192
-    },       
+    },
     {
       "key": "plat_max_fall_vel",
       "label": "FIELD_MAX_FALL_VEL",

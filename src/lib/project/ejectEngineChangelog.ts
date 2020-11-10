@@ -130,6 +130,12 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/core/ScriptRunner_b.c",
     ]
+}, {
+    version: "2.0.0-e15",
+    description: "Use A button for jump and B to run in Platform mode",
+    modifiedFiles: [
+        "src/states/Platform.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
