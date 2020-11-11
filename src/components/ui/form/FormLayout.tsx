@@ -49,8 +49,6 @@ export const FormRow = styled.div<FormRowProps>`
 `;
 
 export const FormDivider = styled.div`
-  margin-left: -10px;
-  margin-right: -10px;
   margin-bottom: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
 `;

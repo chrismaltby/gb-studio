@@ -841,6 +841,8 @@ const addActor: CaseReducer<
       direction: "down",
       moveSpeed: "1",
       animSpeed: "3",
+      paletteId: "",
+      isPinned: false,
       script: [],
       startScript: [],
       updateScript: [],

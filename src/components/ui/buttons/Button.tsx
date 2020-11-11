@@ -6,6 +6,7 @@ import { ThemeInterface } from "../theme/ThemeInterface";
 export interface ButtonProps {
   readonly size?: "small" | "medium" | "large";
   readonly variant?: "normal" | "primary" | "transparent";
+  readonly selected?: boolean;
   readonly children?: ReactNode;
   readonly theme?: ThemeInterface;
 }
@@ -14,8 +15,8 @@ export const Button = styled.button<ButtonProps>`
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: ${props => props.theme.typography.fontSize};
-  border-radius: ${props => props.theme.borderRadius}px;
+  font-size: ${(props) => props.theme.typography.fontSize};
+  border-radius: ${(props) => props.theme.borderRadius}px;
   height: 28px;
   min-width: 24px;
   white-space: nowrap;
@@ -28,14 +29,14 @@ export const Button = styled.button<ButtonProps>`
   svg {
     max-width: 100%;
     max-height: 100%;
-    fill: ${props => props.theme.colors.button.text};
+    fill: ${(props) => props.theme.colors.button.text};
   }
 
-  ${props => (props.size === "small" ? smallStyles : "")}
-  ${props => (props.size === "large" ? largeStyles : "")}
-  ${props => (props.variant === "normal" ? normalStyles : "")}
-  ${props => (props.variant === "primary" ? primaryStyles : "")}
-  ${props => (props.variant === "transparent" ? transparentStyles : "")}
+  ${(props) => (props.size === "small" ? smallStyles : "")}
+  ${(props) => (props.size === "large" ? largeStyles : "")}
+  ${(props) => (props.variant === "normal" ? normalStyles : "")}
+  ${(props) => (props.variant === "primary" ? primaryStyles : "")}
+  ${(props) => (props.variant === "transparent" ? transparentStyles : "")}
 `;
 
 const smallStyles = css`
@@ -52,18 +53,18 @@ const largeStyles = css`
 `;
 
 const normalStyles = css`
-  background: ${props => props.theme.colors.button.background};
-  border: 1px solid ${props => props.theme.colors.button.border};
-  border-top: 1px solid ${props => props.theme.colors.button.borderTop};
-  color: ${props => props.theme.colors.button.text};
+  background: ${(props) => props.theme.colors.button.background};
+  border: 1px solid ${(props) => props.theme.colors.button.border};
+  border-top: 1px solid ${(props) => props.theme.colors.button.borderTop};
+  color: ${(props) => props.theme.colors.button.text};
 
   :active {
-    background: ${props => props.theme.colors.button.activeBackground};
+    background: ${(props) => props.theme.colors.button.activeBackground};
   }
 `;
 
 const primaryStyles = css`
-  background: ${props => props.theme.colors.highlight};
+  background: ${(props) => props.theme.colors.highlight};
   border-color: transparent;
   color: #fff;
 
@@ -72,11 +73,11 @@ const primaryStyles = css`
   }
 
   :active {
-    background: #fff;
-    color: ${props => props.theme.colors.highlight};
+    opacity: 0.8;
   }
   :focus {
-    box-shadow: 0 0 0px 2px #fff, 0 0 0px 4px ${props => props.theme.colors.highlight};
+    box-shadow: 0 0 0px 2px #fff,
+      0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
 `;
 

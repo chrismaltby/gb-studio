@@ -18,9 +18,13 @@ export type Actor = {
   y: number;
   spriteSheetId: string;
   spriteType: ActorSpriteType;
+  paletteId: string;
   frame: number;
+  moveSpeed: number;
+  animSpeed: number;
   direction: ActorDirection;
   animate: boolean;
+  isPinned: boolean;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];

@@ -13,7 +13,7 @@ import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { SceneShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
-import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelectOld";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";

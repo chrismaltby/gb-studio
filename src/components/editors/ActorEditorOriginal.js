@@ -18,7 +18,7 @@ import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
-import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelectOld";
 import { getSettings } from "../../store/features/settings/settingsState";
 import {
   SPRITE_TYPE_STATIC,

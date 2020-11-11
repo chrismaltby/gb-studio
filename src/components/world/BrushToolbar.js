@@ -29,7 +29,7 @@ import PaletteBlock from "../library/PaletteBlock";
 import { PaletteShape } from "../../store/stateShape";
 import Modal, { ModalFade, ModalContent } from "../library/Modal";
 import Button from "../library/Button";
-import PaletteSelect from "../forms/PaletteSelect";
+import PaletteSelect from "../forms/PaletteSelectOld";
 import { FormField } from "../library/Forms";
 import { getCachedObject } from "../../lib/helpers/cache";
 import editorActions from "../../store/features/editor/editorActions";

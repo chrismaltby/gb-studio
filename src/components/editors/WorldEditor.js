@@ -16,7 +16,7 @@ import {
   ProjectMetadataShape,
 } from "../../store/stateShape";
 import { DMG_PALETTE } from "../../consts";
-import PaletteSelect from "../forms/PaletteSelect";
+import PaletteSelect from "../forms/PaletteSelectOld";
 import settingsActions from "../../store/features/settings/settingsActions";
 import metadataActions from "../../store/features/metadata/metadataActions";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";

@@ -6,6 +6,9 @@ export interface CoordinateInputProps {
   coordinate: "x" | "y" | "w" | "h";
   name: string;
   value?: number;
+  min?: number;
+  max?: number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Wrapper = styled.div`
@@ -31,16 +34,27 @@ const Label = styled.label`
   font-size: 11px;
   color: #999;
   text-transform: uppercase;
-  border-right: 1px solid ${props => props.theme.colors.input.border};
+  border-right: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
 export const CoordinateInput: FC<CoordinateInputProps> = ({
   name,
   coordinate = "x",
   value,
+  min,
+  max,
+  onChange,
 }) => (
   <Wrapper>
-    <StyledInput id={name} name={name} type="number" value={value} />
+    <StyledInput
+      id={name}
+      name={name}
+      type="number"
+      value={value}
+      min={min}
+      max={max}
+      onChange={onChange}
+    />
     <Label htmlFor={name}>{coordinate}</Label>
   </Wrapper>
 );

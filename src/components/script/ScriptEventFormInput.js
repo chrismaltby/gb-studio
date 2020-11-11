@@ -11,7 +11,7 @@ import FadeSpeedSelect from "../forms/FadeSpeedSelect";
 import CameraSpeedSelect from "../forms/CameraSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
-import PaletteSelect from "../forms/PaletteSelect";
+import PaletteSelect from "../forms/PaletteSelectOld";
 import ActorSelect from "../forms/ActorSelect";
 import EmoteSelect from "../forms/EmoteSelect";
 import OverlayColorSelect from "../forms/OverlayColorSelect";
