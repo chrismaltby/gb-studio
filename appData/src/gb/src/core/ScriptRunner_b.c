@@ -1900,7 +1900,7 @@ void Script_StackPush_b() {
  * Pop the script pointer from the stack
  * Retrieve script start ptr for if statements, script bank for long scripts.
  */
-void Script_StackPop_b() {
+void Script_StackPop_b() __banked {
   script_stack_ptr--;
   active_script_ctx.script_ptr_bank = script_bank_stack[script_stack_ptr];
   active_script_ctx.script_ptr = script_stack[script_stack_ptr];

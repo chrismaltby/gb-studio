@@ -108,9 +108,7 @@ void ScriptRunnerUpdate() {
     POP_BANK;
     if (script_stack_ptr) {
       // Return from Actor Invocation
-      PUSH_BANK(SCRIPT_RUNNER_BANK);
       Script_StackPop_b();
-      POP_BANK;
       ScriptSaveCtx();
       active_script_ctx.script_ptr = 0;
       return;

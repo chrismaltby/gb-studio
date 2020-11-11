@@ -98,8 +98,6 @@ void ProjectileLaunch_b(UBYTE sprite,
 }
 
 void UpdateProjectiles_b() __banked {
-//  static UBYTE hit;
-//  UBYTE i, k, j, frame, flip, fo;
   UBYTE i, k, j, hit, frame, flip, fo;
   UINT16 screen_x;
   UINT16 screen_y;

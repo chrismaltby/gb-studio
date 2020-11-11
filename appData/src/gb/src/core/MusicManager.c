@@ -17,20 +17,18 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank) {
     current_index = index;
     music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
-    PUSH_BANK(return_bank);
     PUSH_BANK(DATA_PTRS_BANK);
     gbt_play((void*)music_tracks[index], music_bank, 7);
     gbt_loop(loop);
     POP_BANK;
-    POP_BANK;
+    SWITCH_ROM(return_bank);
   }
 }
 
 void MusicStop(UBYTE return_bank) {
-  PUSH_BANK(return_bank);
   gbt_stop();
   current_index = MAX_MUSIC;
-  POP_BANK;
+  SWITCH_ROM(return_bank);
 }
 
 void MusicUpdate() {

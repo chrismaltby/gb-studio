@@ -14,7 +14,7 @@ void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE move_speed,
                         UBYTE life_time,
                         UBYTE col_group,
-                        UBYTE col_mask);
+                        UBYTE col_mask) __banked;
 void UpdateProjectiles_b() __banked;
 
 void ProjectilesInit() {
