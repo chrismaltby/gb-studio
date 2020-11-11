@@ -28,7 +28,7 @@ UBYTE timer_script_time = 0;
 BankPtr timer_script_ptr = {0};
 UBYTE ctx_cmd_remaining = 5;
 
-void ScriptTimerUpdate_b();
+void ScriptTimerUpdate_b() __banked;
 
 void ScriptRunnerInit() {
   ScriptCtxPoolReset();
@@ -152,9 +152,7 @@ void ScriptRunnerUpdate() {
 }
 
 void ScriptTimerUpdate() {
-  PUSH_BANK(SCRIPT_RUNNER_BANK);
   ScriptTimerUpdate_b();
-  POP_BANK;
 }
 
 void ScriptSaveCtx() {

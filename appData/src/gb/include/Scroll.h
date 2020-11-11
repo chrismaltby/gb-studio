@@ -38,7 +38,7 @@ void RefreshScroll();
 /**
  * Same as RefreshScroll() but requires manually switching to bank 1 first
  */
-void RefreshScroll_b();
+void RefreshScroll_b() __banked;
 
 /**
  * Rerender all onscreen tiles and load all onscreen actors

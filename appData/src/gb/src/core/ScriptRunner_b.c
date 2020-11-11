@@ -153,7 +153,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_FadeSetSettings_b, 1},     // 0x6A
 };
 
-void ScriptTimerUpdate_b() {
+void ScriptTimerUpdate_b() __banked {
   // Don't update timer while script is running
   if (active_script_ctx.script_ptr != 0) {
     return;

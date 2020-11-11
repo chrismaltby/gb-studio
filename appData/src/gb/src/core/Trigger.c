@@ -11,15 +11,11 @@ UBYTE triggers_len;
 UBYTE last_trigger_tx;
 UBYTE last_trigger_ty;
 
-UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a);
+UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) __banked;
 
 UBYTE TriggerAtTile(UBYTE tx_a, UBYTE ty_a) {
-  UBYTE val;
-  PUSH_BANK(TRIGGER_BANK);
-  val = TriggerAtTile_b(tx_a, ty_a);
-  POP_BANK;
-  return val;
-}
+  return TriggerAtTile_b(tx_a, ty_a);
+ }
 
 void TriggerRunScript(UBYTE i) {
   ScriptStart(&triggers[i].events_ptr);

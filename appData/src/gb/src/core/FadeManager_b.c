@@ -68,7 +68,7 @@ void ApplyPaletteChangeDMG(UBYTE index) {
   }
 }
 
-void FadeIn_b() {
+void FadeIn_b() __banked {
   fade_frame = 0;
   fade_direction = FADE_IN;
   fade_running = TRUE;
@@ -81,7 +81,7 @@ void FadeIn_b() {
     ApplyPaletteChangeDMG(fade_timer);
 }
 
-void FadeOut_b() {
+void FadeOut_b() __banked {
   fade_frame = 0;
   fade_direction = FADE_OUT;
   fade_running = TRUE;
@@ -94,7 +94,7 @@ void FadeOut_b() {
     ApplyPaletteChangeDMG(fade_timer);
 }
 
-void FadeUpdate_b() {
+void FadeUpdate_b()  __banked {
   if (fade_running) {
     if ((fade_frame & fade_frames_per_step) == 0) {
       if (fade_direction == FADE_IN) {
@@ -119,7 +119,7 @@ void FadeUpdate_b() {
   }
 }
 
-void ApplyPaletteChange_b() {
+void ApplyPaletteChange_b() __banked {
 #ifdef CGB
   if (_cpu == CGB_TYPE) {
     ApplyPaletteChangeColor(fade_timer);

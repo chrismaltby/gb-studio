@@ -55,7 +55,7 @@ void UIUpdate();
 /**
  * Same as UIUpdate() but requires manually switching to bank 1 first
  */
-void UIUpdate_b();
+void UIUpdate_b() __banked;
 
 /**
  * Handle joypad input for UI
@@ -65,7 +65,7 @@ void UIOnInteract();
 /**
  * Same as UIOnInteract() but requires manually switching to bank 1 first
  */
-void UIOnInteract_b();
+void UIOnInteract_b() __banked;
 
 /**
  * Reset UI ready for new scene start

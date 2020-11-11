@@ -91,6 +91,8 @@ int core_start() {
   }
 #endif
 
+  display_off();
+
   // Init LCD
   LCDC_REG = 0x67;
 

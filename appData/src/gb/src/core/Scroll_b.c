@@ -9,7 +9,7 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y);
 void ScrollUpdateRowR();
 void ScrollUpdateColumnR();
 
-void RefreshScroll_b() {
+void RefreshScroll_b() __banked {
   INT16 x, y;
   INT16 current_column, new_column, current_row, new_row;
   UBYTE render = FALSE;

@@ -2,8 +2,8 @@
 
 #include "BankManager.h"
 
-void ProjectilesInit_b();
-void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask);
+void ProjectilesInit_b() __banked;
+void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask) __banked;
 void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE palette,
                         WORD x,
@@ -15,18 +15,14 @@ void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE life_time,
                         UBYTE col_group,
                         UBYTE col_mask);
-void UpdateProjectiles_b();
+void UpdateProjectiles_b() __banked;
 
 void ProjectilesInit() {
-  PUSH_BANK(PROJECTILE_BANK);
   ProjectilesInit_b();
-  POP_BANK;
 }
 
 void WeaponAttack(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE col_group, UBYTE col_mask) {
-  PUSH_BANK(PROJECTILE_BANK);
   WeaponAttack_b(sprite, palette, actor, col_group, col_mask);
-  POP_BANK;
 }
 
 void ProjectileLaunch(UBYTE sprite,
@@ -40,14 +36,10 @@ void ProjectileLaunch(UBYTE sprite,
                       UBYTE life_time,
                       UBYTE col_group,
                       UBYTE col_mask) {
-  PUSH_BANK(PROJECTILE_BANK);
   ProjectileLaunch_b(sprite, palette, x, y, dir_x, dir_y, moving, move_speed, life_time, col_group,
                      col_mask);
-  POP_BANK;
 }
 
 void UpdateProjectiles() {
-  PUSH_BANK(PROJECTILE_BANK);
   UpdateProjectiles_b();
-  POP_BANK;
 }

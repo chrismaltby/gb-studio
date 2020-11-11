@@ -10,19 +10,19 @@
 #include "Math.h"
 #include "data_ptrs.h"
 
-void UIInit_b();
-void UIUpdate_b();
-void UIReset_b();
-void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height);
-void UIDrawDialogueFrame_b(UBYTE h);
-void UISetColor_b(UWORD image_index);
-void UIShowText_b();
-void UIOnInteract_b();
+void UIInit_b() __banked;
+void UIUpdate_b() __banked;
+void UIReset_b() __banked;
+void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked;
+void UIDrawDialogueFrame_b(UBYTE h) __banked;
+void UISetColor_b(UWORD image_index) __banked;
+void UIShowText_b() __banked;
+void UIOnInteract_b() __banked;
 void UIShowMenu_b(UWORD flag_index,
                   UBYTE bank,
                   UWORD bank_offset,
                   UBYTE layout,
-                  UBYTE cancel_config);
+                  UBYTE cancel_config) __banked;
 
 UBYTE ui_block = FALSE;
 UBYTE win_pos_x;
@@ -58,35 +58,25 @@ unsigned char text_lines[80] = "";
 unsigned char tmp_text_lines[80] = "";
 
 void UIInit() {
-  PUSH_BANK(UI_BANK);
   ui_block = FALSE;
   text_drawn = TRUE;
   UIInit_b();
-  POP_BANK;
 }
 
 void UIUpdate() {
-  PUSH_BANK(UI_BANK);
   UIUpdate_b();
-  POP_BANK;
 }
 
 void UIReset() {
-  PUSH_BANK(UI_BANK);
   UIReset_b();
-  POP_BANK;
 }
 
 void UIDrawFrame(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
-  PUSH_BANK(UI_BANK);
   UIDrawFrame_b(x, y, width, height);
-  POP_BANK;
 }
 
 void UIDrawDialogueFrame(UBYTE h) {
-  PUSH_BANK(UI_BANK);
   UIDrawDialogueFrame_b(h);
-  POP_BANK;
 }
 
 void UIShowText(UBYTE bank, UWORD bank_offset) {
@@ -100,9 +90,7 @@ void UIShowText(UBYTE bank, UWORD bank_offset) {
   strcat(tmp_text_lines, ptr);
   POP_BANK;
 
-  PUSH_BANK(UI_BANK);
   UIShowText_b();
-  POP_BANK;
 }
 
 void UIShowAvatar(UBYTE avatar_index) {
@@ -134,10 +122,8 @@ void UIShowAvatar(UBYTE avatar_index) {
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
-  PUSH_BANK(UI_BANK);
   UIShowMenu_b(flag_index, bank, bank_offset, 0,
                MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
-  POP_BANK;
 }
 
 void UIShowMenu(UWORD flag_index,
@@ -145,9 +131,7 @@ void UIShowMenu(UWORD flag_index,
                 UWORD bank_offset,
                 UBYTE layout,
                 UBYTE cancel_config) {
-  PUSH_BANK(UI_BANK);
   UIShowMenu_b(flag_index, bank, bank_offset, layout, cancel_config);
-  POP_BANK;
 }
 
 void UISetPos(UBYTE x, UBYTE y) {
@@ -173,9 +157,7 @@ UBYTE UIIsClosed() {
 }
 
 void UIOnInteract() {
-  PUSH_BANK(UI_BANK);
   UIOnInteract_b();
-  POP_BANK;
 }
 
 UBYTE UIAtDest() {
@@ -183,7 +165,5 @@ UBYTE UIAtDest() {
 }
 
 void UISetColor(UBYTE color) {
-  PUSH_BANK(UI_BANK);
   UISetColor_b(color);
-  POP_BANK;
 }

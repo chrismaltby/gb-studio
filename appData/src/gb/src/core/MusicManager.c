@@ -34,8 +34,9 @@ void MusicStop(UBYTE return_bank) {
 }
 
 void MusicUpdate() {
+  UINT8 _bank = _current_bank;
   gbt_update();
-  REFRESH_BANK;
+  SWITCH_ROM(_bank);
 
   if (tone_frames != 0) {
     tone_frames--;

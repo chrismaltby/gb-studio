@@ -28,7 +28,7 @@ UINT8 pending_w_i;
 Pos* scroll_target = 0;
 
 void ScrollUpdateRow(INT16 x, INT16 y);
-void RefreshScroll_b();
+void RefreshScroll_b() __banked;
 
 /* Update pending (up to 5) rows */
 void ScrollUpdateRowR() {
@@ -207,9 +207,7 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
 }
 
 void RefreshScroll() {
-  PUSH_BANK(SCROLL_BANK);
   RefreshScroll_b();
-  POP_BANK;
 }
 
 void InitScroll() {

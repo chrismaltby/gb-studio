@@ -27,11 +27,9 @@ UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char* ptr) {
 }
 
 void ReadBankedBankPtr(UBYTE bank, BankPtr* to, BankPtr* from) {
-  BankPtr bank_ptr;
   PUSH_BANK(bank);
-  memcpy(&bank_ptr, from, sizeof(BankPtr));
+  memcpy(to, from, sizeof(BankPtr));
   POP_BANK;
-  memcpy(to, &bank_ptr, sizeof(BankPtr));
 }
 
 void MemcpyBanked(UBYTE bank, void* to, void* from, size_t n) {

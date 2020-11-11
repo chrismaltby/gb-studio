@@ -45,7 +45,7 @@ void UpdateProjectiles();
 /**
  * Same as UpdateProjectiles() but requires manually switching to bank 1 first
  */
-void UpdateProjectiles_b();
+void UpdateProjectiles_b() __banked;
 
 /**
  * Create weapon attack projectile infront of specified actor relative to their facing direction
