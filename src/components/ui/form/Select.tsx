@@ -129,6 +129,14 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
   }
 `;
 
+const ValuePreview = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+`;
+
 const OptionLabelWithPreviewWrapper = styled.div`
   display: flex;
   white-space: nowrap;
@@ -152,7 +160,9 @@ export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
 }) => (
   <OptionLabelWithPreviewWrapper>
     <OptionLabelPreview>
-      <OptionLabelPreviewOffset>{preview}</OptionLabelPreviewOffset>
+      <OptionLabelPreviewOffset>
+        <ValuePreview>{preview}</ValuePreview>
+      </OptionLabelPreviewOffset>
     </OptionLabelPreview>
     {children}
   </OptionLabelWithPreviewWrapper>
@@ -186,7 +196,9 @@ export const SingleValueWithPreview: FC<SingleValueWithPreviewProps> = ({
 }) => (
   <SingleValueWithPreviewWrapper>
     <SingleValuePreview>
-      <SingleValuePreviewOffset>{preview}</SingleValuePreviewOffset>
+      <SingleValuePreviewOffset>
+        <ValuePreview>{preview}</ValuePreview>
+      </SingleValuePreviewOffset>
     </SingleValuePreview>
     {children}
   </SingleValueWithPreviewWrapper>

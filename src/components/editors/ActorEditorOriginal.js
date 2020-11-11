@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
 import SpriteTypeSelect from "../forms/SpriteTypeSelect";
-import SpriteSheetSelect from "../forms/SpriteSheetSelect";
+import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";
 import { FormField, ToggleableFormField } from "../library/Forms";
@@ -18,7 +18,7 @@ import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
-import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelectOld";
+import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../store/features/settings/settingsState";
 import {
   SPRITE_TYPE_STATIC,

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import SceneSelect from "../forms/SceneSelect";
 import BackgroundSelect from "../forms/BackgroundSelect";
-import SpriteSheetSelect from "../forms/SpriteSheetSelect";
+import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { VariableSelect } from "../forms/VariableSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import InputPicker from "../forms/InputPicker";

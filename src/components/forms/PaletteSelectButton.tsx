@@ -131,25 +131,23 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
           <NoValue />
         )}
       </Button>
-      <div style={{ position: "absolute", top: "100%", left: "100%" }}>
-        <RelativePortal pin="top-right">
-          {isOpen && (
-            <SelectMenu>
-              <PaletteSelect
-                name={name}
-                value={value}
-                type={type}
-                onChange={onSelectChange}
-                onBlur={closeMenu}
-                optional={optional}
-                optionalLabel={optionalLabel}
-                optionalDefaultPaletteId={optionalDefaultPaletteId}
-                {...selectMenuStyleProps}
-              />
-            </SelectMenu>
-          )}
-        </RelativePortal>
-      </div>
+      <RelativePortal pin="top-right" offsetY={28}>
+        {isOpen && (
+          <SelectMenu>
+            <PaletteSelect
+              name={name}
+              value={value}
+              type={type}
+              onChange={onSelectChange}
+              onBlur={closeMenu}
+              optional={optional}
+              optionalLabel={optionalLabel}
+              optionalDefaultPaletteId={optionalDefaultPaletteId}
+              {...selectMenuStyleProps}
+            />
+          </SelectMenu>
+        )}
+      </RelativePortal>
     </Wrapper>
   );
 };

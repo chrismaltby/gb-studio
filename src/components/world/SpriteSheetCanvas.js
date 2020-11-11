@@ -112,17 +112,18 @@ class SpriteSheetCanvas extends Component {
   }
 }
 
-SpriteSheetCanvas.propTypes = {
-  projectRoot: PropTypes.string.isRequired,
-  direction: PropTypes.string,
-  frame: PropTypes.number,
-  spriteSheet: PropTypes.shape({
-    filename: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    _v: PropTypes.number
-  }),
-  palette: PaletteShape
-};
+// SpriteSheetCanvas.propTypes = {
+//   spriteSheetId: PropTypes.string.isRequired,
+//   projectRoot: PropTypes.string.isRequired,
+//   direction: PropTypes.string,
+//   frame: PropTypes.number,
+//   spriteSheet: PropTypes.shape({
+//     filename: PropTypes.string.isRequired,
+//     type: PropTypes.string.isRequired,
+//     _v: PropTypes.number
+//   }),
+//   palette: PaletteShape
+// };
 
 SpriteSheetCanvas.defaultProps = {
   direction: "down",

@@ -61,12 +61,13 @@ import { NumberField } from "../ui/form/NumberField";
 import { Select } from "../ui/form/Select";
 import { SelectField } from "../ui/form/SelectField";
 import { CheckboxField } from "../ui/form/CheckboxField";
-import SpriteSheetSelect from "../forms/SpriteSheetSelect";
+import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import { PaletteSelect } from "../forms/PaletteSelect";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
-import { DMG_PALETTE } from "../../consts";
+import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
 
 interface ActorEditorProps {
   id: string;
@@ -264,10 +265,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           </FormRow>
           <FormDivider />
 
-          <FormRow>
+          {/* <FormRow>
             <FormField name="actorSprite" label={l10n("FIELD_SPRITE_SHEET")}>
               <SpriteSheetSelect
-                id="actorSprite"
+                name="actorSprite"
                 value={actor.spriteSheetId}
                 direction={actor.direction}
                 frame={
@@ -278,7 +279,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   //   ? actor.frame
                   //   : 0
                 }
-                onChange={onChangeField("spriteSheetId")}
+                onChange={onChangeString("spriteSheetId")}
               />
             </FormField>
             <FormField name="actorSprite" label={l10n("FIELD_PALETTE")}>
@@ -291,16 +292,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 optionalDefaultPaletteId={defaultSpritePaletteId}
               />
             </FormField>
-            {/* <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
-              <DirectionPicker
-                id="actorDirection"
-                value={actor.direction}
-                onChange={onChangeField("direction")}
-              />
-            </FormField> */}
-          </FormRow>
+          </FormRow> */}
 
           <FormRow>
+            <SpriteSheetSelectButton
+              name="actorSprite"
+              value={actor.spriteSheetId}
+              direction={actor.direction}
+              frame={actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame : 0}
+              onChange={onChangeString("spriteSheetId")}
+              includeInfo
+            />
             <PaletteSelectButton
               name="actorPalette"
               type="sprite"
@@ -312,11 +314,18 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             />
           </FormRow>
           <FormRow>
-            <NumberField
+            <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
+              <DirectionPicker
+                id="actorDirection"
+                value={actor.direction}
+                onChange={onChangeField("direction")}
+              />
+            </FormField>
+            {/* <NumberField
               name="frame"
               label={l10n("FIELD_INITIAL_FRAME")}
               placeholder="0"
-            />
+            /> */}
             <SelectField
               name="spriteType"
               label={l10n("FIELD_ACTOR_TYPE")}
