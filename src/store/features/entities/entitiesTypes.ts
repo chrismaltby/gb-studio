@@ -25,6 +25,7 @@ export type Actor = {
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
+  collisionGroup: string[];
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];

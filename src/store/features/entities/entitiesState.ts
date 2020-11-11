@@ -843,6 +843,7 @@ const addActor: CaseReducer<
       animSpeed: "3",
       paletteId: "",
       isPinned: false,
+      collisionGroup: [],
       script: [],
       startScript: [],
       updateScript: [],

@@ -1,22 +1,10 @@
-import React, {
-  FC,
-  RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  globalVariableCode,
-  globalVariableDefaultName,
-} from "../../lib/helpers/variables";
 import { RootState } from "../../store/configureStore";
 import {
   actorSelectors,
   sceneSelectors,
-  triggerSelectors,
-  variableSelectors,
+  spriteSheetSelectors,
 } from "../../store/features/entities/entitiesState";
 import { DropdownButton } from "../ui/buttons/DropdownButton";
 import { EditableText } from "../ui/form/EditableText";
@@ -27,16 +15,10 @@ import {
   FormHeader,
   FormRow,
 } from "../ui/form/FormLayout";
-import { MenuDivider, MenuItem } from "../ui/menu/Menu";
+import { MenuItem } from "../ui/menu/Menu";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
-import {
-  isVariableField,
-  walkActorEvents,
-  walkSceneEvents,
-  walkTriggerEvents,
-} from "../../lib/helpers/eventSystem";
 import {
   Actor,
   Scene,
@@ -44,115 +26,105 @@ import {
   Trigger,
 } from "../../store/features/entities/entitiesTypes";
 import l10n from "../../lib/helpers/l10n";
-import events from "../../lib/events";
-import { Sidebar, SidebarColumn } from "../ui/sidebars/Sidebar";
-import { FlatList } from "../ui/lists/FlatList";
-import { EntityListItem } from "../ui/lists/EntityListItem";
-import { Dictionary } from "@reduxjs/toolkit";
-import useDimensions from "react-cool-dimensions";
-import styled from "styled-components";
-import { SplitPaneHeader } from "../ui/splitpane/SplitPaneHeader";
+import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Checkbox } from "../ui/form/Checkbox";
 import { PinIcon } from "../ui/icons/Icons";
 import castEventValue from "../../lib/helpers/castEventValue";
-import { TextField } from "../ui/form/TextField";
-import { NumberField } from "../ui/form/NumberField";
-import { Select } from "../ui/form/Select";
 import { SelectField } from "../ui/form/SelectField";
 import { CheckboxField } from "../ui/form/CheckboxField";
-import { SpriteSheetSelect } from "../forms/SpriteSheetSelect";
-import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import DirectionPicker from "../forms/DirectionPicker";
-import { PaletteSelect } from "../forms/PaletteSelect";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
-import { DMG_PALETTE, SPRITE_TYPE_STATIC } from "../../consts";
+import {
+  DMG_PALETTE,
+  SPRITE_TYPE_ACTOR,
+  SPRITE_TYPE_ACTOR_ANIMATED,
+  SPRITE_TYPE_ANIMATED,
+  SPRITE_TYPE_STATIC,
+} from "../../consts";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
+import WorldEditor from "./WorldEditor";
+import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
+import { SidebarTabs } from "./Sidebar";
+import ScriptEditor from "../script/ScriptEditor";
+import { NumberField } from "../ui/form/NumberField";
+import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";
+import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
+import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 
 interface ActorEditorProps {
   id: string;
   sceneId: string;
 }
 
-type VariableUse = {
-  id: string;
-  name: string;
-  sceneId: string;
-  scene: Scene;
-  sceneIndex: number;
-  event: ScriptEvent;
-} & (
-  | {
-      type: "scene";
-    }
-  | {
-      type: "actor";
-      actor: Actor;
-      actorIndex: number;
-      scene: Scene;
-      sceneIndex: number;
-    }
-  | {
-      type: "trigger";
-      trigger: Trigger;
-      triggerIndex: number;
-      scene: Scene;
-      sceneIndex: number;
-    }
-);
+interface ScriptHandler {
+  value: ScriptEvent[];
+  onChange: (newValue: ScriptEvent[]) => void;
+}
 
-const eventName = (event: ScriptEvent) => {
-  const localisedCommand = l10n(event.command);
-  return localisedCommand !== event.command
-    ? localisedCommand
-    : events[event.command]?.name || event.command;
-};
-
-const sceneName = (scene: Scene, sceneIndex: number) =>
-  scene.name ? scene.name : `Scene ${sceneIndex + 1}`;
+interface ScriptHandlers {
+  start: ScriptHandler;
+  interact: ScriptHandler;
+  update: ScriptHandler;
+  hit: {
+    hitPlayer: ScriptHandler;
+    hit1: ScriptHandler;
+    hit2: ScriptHandler;
+    hit3: ScriptHandler;
+  };
+}
 
 const actorName = (actor: Actor, actorIndex: number) =>
   actor.name ? actor.name : `Actor ${actorIndex + 1}`;
 
-const triggerName = (trigger: Trigger, triggerIndex: number) =>
-  trigger.name ? trigger.name : `Trigger ${triggerIndex + 1}`;
-
-const onVariableEventContainingId = (
-  id: string,
-  callback: (event: ScriptEvent) => void
-) => (event: ScriptEvent) => {
-  if (event.args) {
-    for (let arg in event.args) {
-      if (isVariableField(event.command, arg, event.args)) {
-        const argValue = event.args[arg];
-        if (
-          argValue === id ||
-          (argValue?.type === "variable" && argValue?.value === id)
-        ) {
-          callback(event);
-        }
-      }
-    }
-  }
+const defaultTabs = {
+  interact: l10n("SIDEBAR_ON_INTERACT"),
+  start: l10n("SIDEBAR_ON_INIT"),
+  update: l10n("SIDEBAR_ON_UPDATE"),
 };
 
-const UsesWrapper = styled.div`
-  position: absolute;
-  top: 38px;
-  left: 0;
-  bottom: 0;
-  right: 0;
-`;
+const collisionTabs = {
+  hit: l10n("SIDEBAR_ON_HIT"),
+  start: l10n("SIDEBAR_ON_INIT"),
+  update: l10n("SIDEBAR_ON_UPDATE"),
+};
 
-const UseMessage = styled.div`
-  padding: 5px 10px;
-  font-size: 11px;
-`;
+const hitTabs = {
+  hitPlayer: l10n("FIELD_PLAYER"),
+  hit1: l10n("FIELD_COLLISION_GROUP_N", { n: 1 }),
+  hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
+  hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
+};
 
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useSelector((state: RootState) =>
     actorSelectors.selectById(state, id)
   );
+  const spriteSheet = useSelector((state: RootState) =>
+    spriteSheetSelectors.selectById(state, actor?.spriteSheetId || "")
+  );
+  const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
+  const secondaryTabs = Object.keys(hitTabs);
+
+  const lastScriptTab = useSelector(
+    (state: RootState) => state.editor.lastScriptTab
+  );
+  const lastScriptTabSecondary = useSelector(
+    (state: RootState) => state.editor.lastScriptTabSecondary
+  );
+  const initialTab = tabs.includes(lastScriptTab) ? lastScriptTab : tabs[0];
+  const initialSecondaryTab = secondaryTabs.includes(lastScriptTabSecondary)
+    ? lastScriptTabSecondary
+    : secondaryTabs[0];
+
+  const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
+    initialTab as keyof ScriptHandlers
+  );
+  const [scriptModeSecondary, setScriptModeSecondary] = useState<
+    keyof ScriptHandlers["hit"]
+  >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
+
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, sceneId)
   );
@@ -160,9 +132,20 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     (state: RootState) =>
       state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
+
   const actorIndex = scene?.actors.indexOf(id) || 0;
 
   const dispatch = useDispatch();
+
+  const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
+    setScriptMode(mode);
+    dispatch(editorActions.setScriptTab(mode));
+  };
+
+  const onChangeScriptModeSecondary = (mode: keyof ScriptHandlers["hit"]) => {
+    setScriptModeSecondary(mode);
+    dispatch(editorActions.setScriptTabSecondary(mode));
+  };
 
   const onChangeField = (key: keyof Actor) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -179,6 +162,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   };
 
   const onChangeString = (key: keyof Actor) => (editValue: string) => {
+    dispatch(
+      entitiesActions.editActor({
+        actorId: id,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
+
+  const onChangeScript = (key: keyof Actor) => (editValue: ScriptEvent[]) => {
     dispatch(
       entitiesActions.editActor({
         actorId: id,
@@ -206,11 +200,86 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   };
 
   if (!scene || !actor) {
-    return <Sidebar onClick={selectSidebar}>None</Sidebar>;
+    return <WorldEditor />;
   }
 
+  const showDirectionInput =
+    spriteSheet &&
+    spriteSheet.type !== SPRITE_TYPE_STATIC &&
+    spriteSheet.type !== SPRITE_TYPE_ANIMATED &&
+    actor.spriteType !== SPRITE_TYPE_STATIC;
+
+  const showFrameInput =
+    spriteSheet &&
+    spriteSheet.numFrames > 1 &&
+    actor.spriteType === SPRITE_TYPE_STATIC;
+
+  const showSpriteTypeSelect =
+    spriteSheet &&
+    spriteSheet.type !== "static" &&
+    spriteSheet.type !== "animated";
+
+  const showAnimatedCheckbox =
+    ((actor.animSpeed as unknown) as String) !== "" &&
+    spriteSheet &&
+    spriteSheet.numFrames > 1 &&
+    (actor.spriteType === SPRITE_TYPE_STATIC ||
+      spriteSheet.type !== SPRITE_TYPE_ACTOR);
+
+  const showAnimSpeed =
+    spriteSheet &&
+    (spriteSheet.type === SPRITE_TYPE_ACTOR_ANIMATED ||
+      (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
+
+  const showCollisionGroup = !actor.isPinned;
+
+  const onEditScript = onChangeScript("script");
+
+  const onEditStartScript = onChangeScript("startScript");
+
+  const onEditUpdateScript = onChangeScript("updateScript");
+
+  const onEditHit1Script = onChangeScript("hit1Script");
+
+  const onEditHit2Script = onChangeScript("hit2Script");
+
+  const onEditHit3Script = onChangeScript("hit3Script");
+
+  const scripts = {
+    start: {
+      value: actor.startScript,
+      onChange: onEditStartScript,
+    },
+    interact: {
+      value: actor.script,
+      onChange: onEditScript,
+    },
+    update: {
+      value: actor.updateScript,
+      onChange: onEditUpdateScript,
+    },
+    hit: {
+      hitPlayer: {
+        value: actor.script,
+        onChange: onEditScript,
+      },
+      hit1: {
+        value: actor.hit1Script,
+        onChange: onEditHit1Script,
+      },
+      hit2: {
+        value: actor.hit2Script,
+        onChange: onEditHit2Script,
+      },
+      hit3: {
+        value: actor.hit3Script,
+        onChange: onEditHit3Script,
+      },
+    },
+  } as const;
+
   return (
-    <Sidebar onClick={selectSidebar}>
+    <SidebarMultiColumnAuto onClick={selectSidebar}>
       <SidebarColumn>
         <FormContainer>
           <FormHeader>
@@ -314,72 +383,134 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             />
           </FormRow>
           <FormRow>
-            <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
-              <DirectionPicker
-                id="actorDirection"
-                value={actor.direction}
-                onChange={onChangeField("direction")}
+            {showDirectionInput && (
+              <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
+                <DirectionPicker
+                  id="actorDirection"
+                  value={actor.direction}
+                  onChange={onChangeField("direction")}
+                />
+              </FormField>
+            )}
+            {showFrameInput && (
+              <NumberField
+                name="frame"
+                label={l10n("FIELD_INITIAL_FRAME")}
+                placeholder="0"
+              />
+            )}
+            {showSpriteTypeSelect && (
+              <FormField name="spriteType" label={l10n("FIELD_ACTOR_TYPE")}>
+                <SpriteTypeSelect
+                  name="actorMovement"
+                  value={actor.spriteType}
+                  onChange={onChangeString("spriteType")}
+                />
+              </FormField>
+            )}
+          </FormRow>
+          {showAnimatedCheckbox && (
+            <FormRow>
+              <CheckboxField
+                name="animated"
+                label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
+                checked={actor.animate}
+                onChange={onChangeField("animate")}
+              />
+            </FormRow>
+          )}
+          <FormDivider />
+          <FormRow>
+            <FormField
+              name="actorMoveSpeed"
+              label={l10n("FIELD_MOVEMENT_SPEED")}
+            >
+              <MovementSpeedSelect
+                id="actorMoveSpeed"
+                value={actor.moveSpeed}
+                onChange={onChangeField("moveSpeed")}
               />
             </FormField>
-            {/* <NumberField
-              name="frame"
-              label={l10n("FIELD_INITIAL_FRAME")}
-              placeholder="0"
-            /> */}
-            <SelectField
-              name="spriteType"
-              label={l10n("FIELD_ACTOR_TYPE")}
-              options={[
-                { value: "static", label: l10n("FIELD_MOVEMENT_STATIC") },
-                { value: "actor", label: l10n("ACTOR") },
-              ]}
-              value={{ value: "actor", label: l10n("ACTOR") }}
-            />
+            {showAnimSpeed && (
+              <FormField
+                name="actorAnimSpeed"
+                label={l10n("FIELD_ANIMATION_SPEED")}
+              >
+                <AnimationSpeedSelect
+                  id="actorAnimSpeed"
+                  value={actor.animSpeed}
+                  onChange={onChangeField("animSpeed")}
+                />
+              </FormField>
+            )}
           </FormRow>
-          <FormRow>
-            <CheckboxField
-              name="animated"
-              label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
-              checked={actor.animate}
-              onChange={onChangeField("animate")}
-            />
-          </FormRow>
-
-          <FormDivider />
-          <FormRow>
-            <SelectField
-              name="spriteType"
-              label={l10n("FIELD_ACTOR_TYPE")}
-              options={[
-                { value: "static", label: l10n("FIELD_MOVEMENT_STATIC") },
-                { value: "actor", label: l10n("ACTOR") },
-              ]}
-              value={{ value: "actor", label: l10n("ACTOR") }}
-            />
-            <SelectField
-              name="spriteType"
-              label={l10n("FIELD_ACTOR_TYPE")}
-              options={[
-                { value: "static", label: l10n("FIELD_MOVEMENT_STATIC") },
-                { value: "actor", label: l10n("ACTOR") },
-              ]}
-              value={{ value: "actor", label: l10n("ACTOR") }}
-            />
-          </FormRow>
-          <FormDivider />
-          <FormRow>
-            <SelectField
-              name="spriteType"
-              label={l10n("FIELD_ACTOR_TYPE")}
-              options={[
-                { value: "static", label: l10n("FIELD_MOVEMENT_STATIC") },
-                { value: "actor", label: l10n("ACTOR") },
-              ]}
-              value={{ value: "actor", label: l10n("ACTOR") }}
-            />
-          </FormRow>
+          {showCollisionGroup && (
+            <>
+              <FormDivider />
+              <FormRow>
+                <FormField
+                  name="actorCollisionGroup"
+                  label={l10n("FIELD_COLLISION_GROUP")}
+                >
+                  <CollisionMaskPicker
+                    id="actorCollisionGroup"
+                    value={actor.collisionGroup}
+                    onChange={onChangeField("collisionGroup")}
+                  />
+                </FormField>
+              </FormRow>
+            </>
+          )}
         </FormContainer>
       </SidebarColumn>
-    </Sidebar>
+      <SidebarColumn>
+        <SidebarTabs
+          value={scriptMode}
+          values={actor.collisionGroup ? collisionTabs : defaultTabs}
+          onChange={onChangeScriptMode}
+          buttons={
+            scriptMode !== "hit" &&
+            scripts[scriptMode] && (
+              <ScriptEditorDropdownButton
+                value={scripts[scriptMode].value}
+                onChange={scripts[scriptMode].onChange}
+              />
+            )
+          }
+        />
+        {scriptMode === "hit" && (
+          <SidebarTabs
+            secondary
+            value={scriptModeSecondary}
+            values={hitTabs}
+            onChange={onChangeScriptModeSecondary}
+            buttons={
+              <ScriptEditorDropdownButton
+                value={scripts[scriptMode][scriptModeSecondary].value}
+                onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+              />
+            }
+          />
+        )}
+        {scriptMode !== "hit" && scripts[scriptMode] && (
+          <ScriptEditor
+            value={scripts[scriptMode].value}
+            type="actor"
+            onChange={scripts[scriptMode].onChange}
+            entityId={actor.id}
+          />
+        )}
+        {scriptMode === "hit" &&
+          scripts[scriptMode] &&
+          scripts[scriptMode][scriptModeSecondary] && (
+            <ScriptEditor
+              value={scripts[scriptMode][scriptModeSecondary].value}
+              type="actor"
+              onChange={scripts[scriptMode][scriptModeSecondary].onChange}
+              entityId={actor.id}
+            />
+          )}
+      </SidebarColumn>
+    </SidebarMultiColumnAuto>
   );
 };

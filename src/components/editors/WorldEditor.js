@@ -218,17 +218,17 @@ const WorldEditor = ({
   );
 };
 
-WorldEditor.propTypes = {
-  metadata: ProjectMetadataShape.isRequired,
-  scenesLength: PropTypes.number.isRequired,
-  settings: SettingsShape.isRequired,
-  defaultSpritePaletteId: PropTypes.string.isRequired,
-  colorsEnabled: PropTypes.bool.isRequired,
-  editProject: PropTypes.func.isRequired,
-  editProjectSettings: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired,
-  addCustomEvent: PropTypes.func.isRequired,
-};
+// WorldEditor.propTypes = {
+//   metadata: ProjectMetadataShape.isRequired,
+//   scenesLength: PropTypes.number.isRequired,
+//   settings: SettingsShape.isRequired,
+//   defaultSpritePaletteId: PropTypes.string.isRequired,
+//   colorsEnabled: PropTypes.bool.isRequired,
+//   editProject: PropTypes.func.isRequired,
+//   editProjectSettings: PropTypes.func.isRequired,
+//   selectSidebar: PropTypes.func.isRequired,
+//   addCustomEvent: PropTypes.func.isRequired,
+// };
 
 function mapStateToProps(state) {
   const metadata = state.project.present.metadata;

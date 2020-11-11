@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { clipboard } from "electron";
 import { connect } from "react-redux";
-import SpriteTypeSelect from "../forms/SpriteTypeSelect";
+import {SpriteTypeSelect} from "../forms/SpriteTypeSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import ScriptEditor from "../script/ScriptEditor";
 import DirectionPicker from "../forms/DirectionPicker";

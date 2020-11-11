@@ -104,6 +104,7 @@ const typeLabel = (spriteSheet?: SpriteSheet): string => {
 };
 
 export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
+  name,
   value,
   direction,
   frame,
@@ -175,6 +176,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   return (
     <Wrapper includeInfo={includeInfo}>
       <Button
+        id={name}
         ref={buttonRef}
         onClick={toggleMenu}
         onFocus={onButtonFocus}

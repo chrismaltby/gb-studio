@@ -151,7 +151,7 @@ const OptionLabelPreview = styled.div`
 `;
 
 const OptionLabelPreviewOffset = styled.div`
-  transform: translate(0px, -10px);
+  transform: translate(-3px, -10px);
 `;
 
 export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
