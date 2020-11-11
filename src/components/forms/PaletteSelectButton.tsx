@@ -3,14 +3,8 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/configureStore";
 import { paletteSelectors } from "../../store/features/entities/entitiesState";
-import { Palette } from "../../store/features/entities/entitiesTypes";
 import PaletteBlock from "../library/PaletteBlock";
-import {
-  Option,
-  Select,
-  SelectMenu,
-  selectMenuStyleProps,
-} from "../ui/form/Select";
+import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
 import { RelativePortal } from "../ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 
@@ -19,7 +13,10 @@ type PaletteSelectProps = {
   value?: string;
   type?: "tile" | "sprite";
   onChange?: (newId: string) => void;
-} & React.ComponentProps<typeof Select>;
+  optional?: boolean;
+  optionalLabel?: string;
+  optionalDefaultPaletteId?: string;
+};
 
 const Wrapper = styled.div`
   position: relative;
@@ -48,14 +45,21 @@ const Button = styled.button`
   }
 `;
 
+const NoValue = styled.div`
+  width: 24px;
+`;
+
 export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   value,
   type,
   onChange,
+  optional,
+  optionalLabel,
+  optionalDefaultPaletteId,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const palette = useSelector((state: RootState) =>
-    paletteSelectors.selectById(state, value || "")
+    paletteSelectors.selectById(state, value || optionalDefaultPaletteId || "")
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
@@ -121,7 +125,11 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
-        <PaletteBlock type={type} colors={palette?.colors || []} size={22} />
+        {palette ? (
+          <PaletteBlock type={type} colors={palette?.colors || []} size={22} />
+        ) : (
+          <NoValue />
+        )}
       </Button>
       <div style={{ position: "absolute", top: "100%", left: "100%" }}>
         <RelativePortal pin="top-right">
@@ -133,6 +141,9 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
                 type={type}
                 onChange={onSelectChange}
                 onBlur={closeMenu}
+                optional={optional}
+                optionalLabel={optionalLabel}
+                optionalDefaultPaletteId={optionalDefaultPaletteId}
                 {...selectMenuStyleProps}
               />
             </SelectMenu>

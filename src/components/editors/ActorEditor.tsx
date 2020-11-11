@@ -66,6 +66,7 @@ import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import DirectionPicker from "../forms/DirectionPicker";
 import { PaletteSelect } from "../forms/PaletteSelect";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
+import { DMG_PALETTE } from "../../consts";
 
 interface ActorEditorProps {
   id: string;
@@ -153,6 +154,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
   const scene = useSelector((state: RootState) =>
     sceneSelectors.selectById(state, sceneId)
+  );
+  const defaultSpritePaletteId = useSelector(
+    (state: RootState) =>
+      state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
   const actorIndex = scene?.actors.indexOf(id) || 0;
 
@@ -281,6 +286,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 name="actorPalette"
                 value={actor.paletteId}
                 onChange={onChangeString("paletteId")}
+                optional
+                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                optionalDefaultPaletteId={defaultSpritePaletteId}
               />
             </FormField>
             {/* <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
@@ -298,6 +306,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               type="sprite"
               value={actor.paletteId}
               onChange={onChangeString("paletteId")}
+              optional
+              optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+              optionalDefaultPaletteId={defaultSpritePaletteId}
             />
           </FormRow>
           <FormRow>
