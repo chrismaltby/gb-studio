@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import TriggerEditor from "./TriggerEditor";
+import { TriggerEditor } from "./TriggerEditor";
 import { ActorEditor } from "./ActorEditor";
 import SceneEditor from "./SceneEditor";
 import WorldEditor from "./WorldEditor";

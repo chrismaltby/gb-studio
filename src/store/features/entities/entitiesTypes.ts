@@ -38,6 +38,7 @@ export type Actor = {
 export type Trigger = {
   id: string;
   name: string;
+  notes?: string;
   x: number;
   y: number;
   width: number;
@@ -124,6 +125,7 @@ export type SpriteSheet = {
 export type Scene = {
   id: string;
   name: string;
+  notes?: string;
   labelColor?: string;
   x: number;
   y: number;
