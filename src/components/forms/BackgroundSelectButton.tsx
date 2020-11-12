@@ -1,37 +1,64 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { assetFilename } from "../../lib/helpers/gbstudio";
+import l10n from "../../lib/helpers/l10n";
 import { RootState } from "../../store/configureStore";
-import { paletteSelectors } from "../../store/features/entities/entitiesState";
-import PaletteBlock from "../library/PaletteBlock";
+import {
+  paletteSelectors,
+  backgroundSelectors,
+} from "../../store/features/entities/entitiesState";
+import {
+  Palette,
+  Background,
+} from "../../store/features/entities/entitiesTypes";
 import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
 import { RelativePortal } from "../ui/layout/RelativePortal";
-import { PaletteSelect } from "./PaletteSelect";
+import { BackgroundSelect } from "./BackgroundSelect";
 
-type PaletteSelectProps = {
+interface BackgroundSelectProps {
   name: string;
   value?: string;
-  type?: "tile" | "sprite";
+  includeInfo?: boolean;
   onChange?: (newId: string) => void;
-  optional?: boolean;
-  optionalLabel?: string;
-  optionalDefaultPaletteId?: string;
-};
+}
 
-const Wrapper = styled.div`
+interface WrapperProps {
+  includeInfo?: boolean;
+}
+
+const Wrapper = styled.div<WrapperProps>`
   position: relative;
-  display: inline-flex;
+  display: flex;
+  min-width: 0;
+  ${(props) =>
+    props.includeInfo
+      ? css`
+          width: 100%;
+        `
+      : ""}
+`;
+
+const Thumbnail = styled.div`
+  width: 46px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 
 const ButtonCover = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 28px;
-  height: 28px;
+  width: 54px;
+  height: 48px;
 `;
 
 const Button = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border: 1px solid ${(props) => props.theme.colors.input.border};
@@ -39,7 +66,8 @@ const Button = styled.button`
   border-radius: ${(props) => props.theme.borderRadius}px;
   padding: 1px;
   box-sizing: border-box;
-  height: 28px;
+  height: 48px;
+  width: 54px;
   flex-shrink: 0;
 
   :hover {
@@ -52,25 +80,50 @@ const Button = styled.button`
     background: ${(props) => props.theme.colors.input.activeBackground};
     box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight} !important;
   }
+
+  canvas {
+    width: 48px;
+    image-rendering: pixelated;
+  }
+`;
+
+const SpriteInfo = styled.div`
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  font-size: 11px;
+`;
+
+const SpriteInfoRow = styled.div`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+`;
+
+const SpriteInfoField = styled.span`
+  font-weight: bold;
+  margin-right: 5px;
 `;
 
 const NoValue = styled.div`
   width: 24px;
 `;
 
-export const PaletteSelectButton: FC<PaletteSelectProps> = ({
+export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
+  name,
   value,
-  type,
   onChange,
-  optional,
-  optionalLabel,
-  optionalDefaultPaletteId,
+  includeInfo,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const palette = useSelector((state: RootState) =>
-    paletteSelectors.selectById(state, value || optionalDefaultPaletteId || "")
+  const background = useSelector((state: RootState) =>
+    backgroundSelectors.selectById(state, value || "")
   );
+  const projectRoot = useSelector((state: RootState) => state.document.root);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
 
@@ -141,7 +194,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   };
 
   return (
-    <Wrapper>
+    <Wrapper includeInfo={includeInfo}>
       <Button
         id={name}
         ref={buttonRef}
@@ -149,30 +202,48 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
-        {palette ? (
-          <PaletteBlock type={type} colors={palette?.colors || []} size={22} />
+        {background ? (
+          <Thumbnail
+            style={{
+              backgroundImage:
+                background &&
+                `url("file://${assetFilename(
+                  projectRoot,
+                  "backgrounds",
+                  background
+                )}?_v=${background._v}")`,
+            }}
+          />
         ) : (
           <NoValue />
         )}
       </Button>
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
-      <RelativePortal pin="top-right" offsetY={28}>
-        {isOpen && (
-          <SelectMenu>
-            <PaletteSelect
-              name={name}
-              value={value}
-              type={type}
-              onChange={onSelectChange}
-              onBlur={closeMenu}
-              optional={optional}
-              optionalLabel={optionalLabel}
-              optionalDefaultPaletteId={optionalDefaultPaletteId}
-              {...selectMenuStyleProps}
-            />
-          </SelectMenu>
-        )}
-      </RelativePortal>
+      <SpriteInfo>
+        <SpriteInfoRow>
+          <SpriteInfoField>{l10n("FIELD_NAME")}:</SpriteInfoField>
+          {background?.name}
+        </SpriteInfoRow>
+        <SpriteInfoRow>
+          <SpriteInfoField>{l10n("FIELD_DIMENSIONS")}:</SpriteInfoField>
+          {background?.width} x {background?.height}
+        </SpriteInfoRow>
+      </SpriteInfo>
+      <div style={{ position: "absolute", top: "100%", left: "0%" }}>
+        <RelativePortal pin="top-left">
+          {isOpen && (
+            <SelectMenu>
+              <BackgroundSelect
+                name={name}
+                value={value}
+                onChange={onSelectChange}
+                onBlur={closeMenu}
+                {...selectMenuStyleProps}
+              />
+            </SelectMenu>
+          )}
+        </RelativePortal>
+      </div>
     </Wrapper>
   );
 };

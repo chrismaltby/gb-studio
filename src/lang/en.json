@@ -292,6 +292,7 @@
   "FIELD_OFFSET": "Offset",
   "FIELD_VARIABLE_NOT_USED": "Variable hasn't been used in project",
   "FIELD_NONE": "None",
+  "FIELD_DIMENSIONS": "Dimensions",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

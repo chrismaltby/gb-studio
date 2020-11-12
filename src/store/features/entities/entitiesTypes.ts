@@ -124,6 +124,7 @@ export type SpriteSheet = {
 
 export type Scene = {
   id: string;
+  type: string;
   name: string;
   notes?: string;
   labelColor?: string;
@@ -132,6 +133,7 @@ export type Scene = {
   width: number;
   height: number;
   backgroundId: string;
+  paletteIds: string[];
   collisions: number[];
   tileColors: number[];
   actors: string[];

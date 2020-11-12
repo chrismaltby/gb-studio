@@ -35,12 +35,12 @@ class BackgroundWarnings extends Component {
   }
 }
 
-BackgroundWarnings.propTypes = {
-  id: PropTypes.string.isRequired,
-  warnings: PropTypes.arrayOf(PropTypes.string).isRequired,
-  modifiedTimestamp: PropTypes.number,
-  checkBackgroundWarnings: PropTypes.func.isRequired,
-};
+// BackgroundWarnings.propTypes = {
+//   id: PropTypes.string.isRequired,
+//   warnings: PropTypes.arrayOf(PropTypes.string).isRequired,
+//   modifiedTimestamp: PropTypes.number,
+//   checkBackgroundWarnings: PropTypes.func.isRequired,
+// };
 
 BackgroundWarnings.defaultProps = {
   modifiedTimestamp: 0

@@ -65,6 +65,7 @@ const Button = styled.button`
   box-sizing: border-box;
   height: 54px;
   width: 54px;
+  flex-shrink: 0;
 
   :hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
