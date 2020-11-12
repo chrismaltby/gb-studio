@@ -24,6 +24,7 @@ export const NumberField: FC<NumberFieldProps> = ({
   min,
   max,
   placeholder,
+  onChange,
 }) => (
   <Wrapper>
     {label && <Label htmlFor={name}>{label}</Label>}
@@ -35,6 +36,7 @@ export const NumberField: FC<NumberFieldProps> = ({
       min={min}
       max={max}
       placeholder={placeholder}
+      onChange={onChange}
     />
   </Wrapper>
 );

@@ -29,7 +29,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select
-      id={name}
+      name={name}
       value={currentValue}
       options={options}
       onChange={(newValue: MovementSpeedOption) => {

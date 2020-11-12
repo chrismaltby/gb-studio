@@ -170,6 +170,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
             name="x"
             coordinate="x"
             value={trigger.x}
+            placeholder="0"
             min={0}
             max={scene.width - trigger.width}
             onChange={onChangeFieldInput("x")}
@@ -178,6 +179,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
             name="y"
             coordinate="y"
             value={trigger.y}
+            placeholder="0"
             min={0}
             max={scene.height - trigger.height}
             onChange={onChangeFieldInput("y")}
@@ -189,6 +191,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
             name="width"
             coordinate="w"
             value={trigger.width}
+            placeholder="1"
             min={1}
             max={scene.width - trigger.x}
             onChange={onChangeFieldInput("width")}
@@ -197,6 +200,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
             name="height"
             coordinate="h"
             value={trigger.height}
+            placeholder="1"
             min={1}
             max={scene.height - trigger.y}
             onChange={onChangeFieldInput("height")}

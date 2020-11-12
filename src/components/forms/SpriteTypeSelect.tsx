@@ -28,7 +28,7 @@ export const SpriteTypeSelect: FC<SpriteTypeSelectProps> = ({
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select
-      id={name}
+      name={name}
       value={currentValue}
       options={options}
       onChange={(newValue: SpriteTypeOption) => {
@@ -37,30 +37,3 @@ export const SpriteTypeSelect: FC<SpriteTypeSelectProps> = ({
     />
   );
 };
-
-// class SpriteTypeSelect extends Component {
-//   render() {
-//     const { id, value, onChange } = this.props;
-//     return (
-//       <select id={id} value={value} onChange={onChange}>
-//         <option value="static">{l10n("FIELD_MOVEMENT_STATIC")}</option>
-//         <option value="actor">
-//           {l10n("ACTOR")}
-//         </option>
-//       </select>
-//     );
-//   }
-// }
-
-// SpriteTypeSelect.propTypes = {
-//   id: PropTypes.string,
-//   value: PropTypes.string,
-//   onChange: PropTypes.func.isRequired
-// };
-
-// SpriteTypeSelect.defaultProps = {
-//   id: undefined,
-//   value: "static"
-// };
-
-// export default SpriteTypeSelect;

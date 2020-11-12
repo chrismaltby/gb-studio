@@ -259,7 +259,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     spriteSheet.type !== "animated";
 
   const showAnimatedCheckbox =
-    ((actor.animSpeed as unknown) as String) !== "" &&
+    actor.animSpeed !== null &&
     spriteSheet &&
     spriteSheet.numFrames > 1 &&
     (actor.spriteType === SPRITE_TYPE_STATIC ||
@@ -372,16 +372,18 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               name="x"
               coordinate="x"
               value={actor.x}
+              placeholder="0"
               min={0}
-              max={255}
+              max={scene.width - 2}
               onChange={onChangeFieldInput("x")}
             />
             <CoordinateInput
               name="y"
               coordinate="y"
               value={actor.y}
+              placeholder="0"
               min={0}
-              max={255}
+              max={scene.height - 1}
               onChange={onChangeFieldInput("y")}
             />
             <DropdownButton
@@ -390,8 +392,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               showArrow={false}
               variant={actor.isPinned ? "primary" : "normal"}
               style={{
-                padding: 5,
-                minWidth: 36,
+                padding: "5px 0",
+                minWidth: 28,
               }}
             >
               <MenuItem onClick={onToggleField("isPinned")}>
@@ -429,7 +431,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           </FormRow>
           <FormRow>
             {showDirectionInput && (
-              <FormField name="actorSprite" label={l10n("FIELD_DIRECTION")}>
+              <FormField name="actorDirection" label={l10n("FIELD_DIRECTION")}>
                 <DirectionPicker
                   id="actorDirection"
                   value={actor.direction}
@@ -442,12 +444,16 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 name="frame"
                 label={l10n("FIELD_INITIAL_FRAME")}
                 placeholder="0"
+                min={0}
+                max={(spriteSheet?.numFrames || 1) - 1}
+                value={actor.frame}
+                onChange={onChangeFieldInput("frame")}
               />
             )}
             {showSpriteTypeSelect && (
               <FormField name="spriteType" label={l10n("FIELD_ACTOR_TYPE")}>
                 <SpriteTypeSelect
-                  name="actorMovement"
+                  name="spriteType"
                   value={actor.spriteType}
                   onChange={onChangeField("spriteType")}
                 />

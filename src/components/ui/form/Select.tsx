@@ -48,7 +48,8 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
       height: 26,
     }),
   },
-  // menuPlacement: "auto",
+  inputId: props.name,
+  menuPlacement: "auto",
   menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
 }))`
   .CustomSelect__control {
