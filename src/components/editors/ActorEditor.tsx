@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { clipboard } from "electron";
 import { RootState } from "../../store/configureStore";
 import {
   actorSelectors,
@@ -15,7 +16,7 @@ import {
   FormHeader,
   FormRow,
 } from "../ui/form/FormLayout";
-import { MenuItem } from "../ui/menu/Menu";
+import { MenuDivider, MenuItem } from "../ui/menu/Menu";
 import entitiesActions from "../../store/features/entities/entitiesActions";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
@@ -102,6 +103,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, actor?.spriteSheetId || "")
   );
+  const [clipboardData, setClipboardData] = useState<any>(null);
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
 
@@ -202,6 +204,32 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     dispatch(editorActions.selectSidebar());
   };
 
+  const onCopy = () => {
+    if (actor) {
+      dispatch(clipboardActions.copyActor(actor));
+    }
+  };
+
+  const onPaste = () => {
+    if (clipboardData) {
+      dispatch(clipboardActions.pasteClipboardEntity(clipboardData));
+    }
+  };
+
+  const onRemove = () => {
+    if (actor) {
+      dispatch(entitiesActions.removeActor({ actorId: actor.id, sceneId }));
+    }
+  };
+
+  const readClipboard = () => {
+    try {
+      setClipboardData(JSON.parse(clipboard.readText()));
+    } catch (err) {
+      setClipboardData(null);
+    }
+  };
+
   if (!scene || !actor) {
     return <WorldEditor />;
   }
@@ -296,9 +324,18 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               size="small"
               variant="transparent"
               menuDirection="right"
+              onMouseDown={readClipboard}
             >
-              <MenuItem>{l10n("MENU_COPY_ACTOR")}</MenuItem>
-              <MenuItem>{l10n("MENU_PASTE_ACTOR")}</MenuItem>
+              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
+              {clipboardData && clipboardData.__type === "actor" && (
+                <MenuItem onClick={onPaste}>
+                  {l10n("MENU_PASTE_ACTOR")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              <MenuItem onClick={onRemove}>
+                {l10n("MENU_DELETE_ACTOR")}
+              </MenuItem>
             </DropdownButton>
           </FormHeader>
 
