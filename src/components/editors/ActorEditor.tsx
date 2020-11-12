@@ -455,6 +455,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                     id="actorCollisionGroup"
                     value={actor.collisionGroup}
                     onChange={onChangeField("collisionGroup")}
+                    includeNone
                   />
                 </FormField>
               </FormRow>

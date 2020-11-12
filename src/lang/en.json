@@ -291,6 +291,7 @@
   "FIELD_16BIT_CALCULATION": "Value is calculated using two 8-bit variables",
   "FIELD_OFFSET": "Offset",
   "FIELD_VARIABLE_NOT_USED": "Variable hasn't been used in project",
+  "FIELD_NONE": "None",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
