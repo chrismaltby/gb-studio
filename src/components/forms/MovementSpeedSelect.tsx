@@ -23,7 +23,7 @@ const options: MovementSpeedOption[] = [
 
 export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
   name,
-  value,
+  value = 1,
   onChange,
 }) => {
   const currentValue = options.find((o) => o.value === value);

@@ -4,17 +4,17 @@ import { Select } from "../ui/form/Select";
 
 interface AnimationSpeedSelectProps {
   name: string;
-  value?: number;
-  onChange?: (newValue: number | undefined) => void;
+  value?: number | null;
+  onChange?: (newValue: number | null) => void;
 }
 
 interface AnimationSpeedOption {
-  value: number | undefined;
+  value: number | null;
   label: string;
 }
 
 const options: AnimationSpeedOption[] = [
-  { value: undefined, label: "None" },
+  { value: null, label: "None" },
   { value: 0, label: `${l10n("FIELD_SPEED")} 0 (${l10n("FIELD_SLOWER")})` },
   { value: 1, label: `${l10n("FIELD_SPEED")} 1` },
   { value: 2, label: `${l10n("FIELD_SPEED")} 2` },

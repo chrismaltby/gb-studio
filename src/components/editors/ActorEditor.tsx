@@ -49,6 +49,7 @@ import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";
 import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
+import { KeysMatching } from "../../lib/helpers/types";
 
 interface ActorEditorProps {
   id: string;
@@ -158,7 +159,20 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     dispatch(editorActions.setScriptTabSecondary(mode));
   };
 
-  const onChangeField = (key: keyof Actor) => (
+  const onChangeField = <T extends keyof Actor>(key: T) => (
+    editValue: Actor[T]
+  ) => {
+    dispatch(
+      entitiesActions.editActor({
+        actorId: id,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
+
+  const onChangeFieldInput = (key: keyof Actor) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const editValue = castEventValue(e);
@@ -172,40 +186,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     );
   };
 
-  const onChangeString = (key: keyof Actor) => (editValue: string) => {
-    dispatch(
-      entitiesActions.editActor({
-        actorId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
-
-  const onChangeNumber = (key: keyof Actor) => (editValue: number) => {
-    dispatch(
-      entitiesActions.editActor({
-        actorId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
-
-  const onChangeScript = (key: keyof Actor) => (editValue: ScriptEvent[]) => {
-    dispatch(
-      entitiesActions.editActor({
-        actorId: id,
-        changes: {
-          [key]: editValue,
-        },
-      })
-    );
-  };
-
-  const onToggleField = (key: keyof Actor) => () => {
+  const onToggleField = (key: KeysMatching<Actor, boolean>) => () => {
     const currentValue = !!actor?.[key];
     dispatch(
       entitiesActions.editActor({
@@ -255,17 +236,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
 
   const showCollisionGroup = !actor.isPinned;
 
-  const onEditScript = onChangeScript("script");
+  const onEditScript = onChangeField("script");
 
-  const onEditStartScript = onChangeScript("startScript");
+  const onEditStartScript = onChangeField("startScript");
 
-  const onEditUpdateScript = onChangeScript("updateScript");
+  const onEditUpdateScript = onChangeField("updateScript");
 
-  const onEditHit1Script = onChangeScript("hit1Script");
+  const onEditHit1Script = onChangeField("hit1Script");
 
-  const onEditHit2Script = onChangeScript("hit2Script");
+  const onEditHit2Script = onChangeField("hit2Script");
 
-  const onEditHit3Script = onChangeScript("hit3Script");
+  const onEditHit3Script = onChangeField("hit3Script");
 
   const scripts = {
     start: {
@@ -309,7 +290,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               name="name1"
               placeholder={actorName(actor, actorIndex)}
               value={actor.name || ""}
-              onChange={onChangeField("name")}
+              onChange={onChangeFieldInput("name")}
             />
             <DropdownButton
               size="small"
@@ -328,7 +309,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               value={actor.x}
               min={0}
               max={255}
-              onChange={onChangeField("x")}
+              onChange={onChangeFieldInput("x")}
             />
             <CoordinateInput
               name="y"
@@ -336,7 +317,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               value={actor.y}
               min={0}
               max={255}
-              onChange={onChangeField("y")}
+              onChange={onChangeFieldInput("y")}
             />
             <DropdownButton
               menuDirection="right"
@@ -366,7 +347,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   ? actor.paletteId || defaultSpritePaletteId
                   : undefined
               }
-              onChange={onChangeString("spriteSheetId")}
+              onChange={onChangeField("spriteSheetId")}
               includeInfo
             />
             {colorsEnabled && (
@@ -374,7 +355,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 name="actorPalette"
                 type="sprite"
                 value={actor.paletteId}
-                onChange={onChangeString("paletteId")}
+                onChange={onChangeField("paletteId")}
                 optional
                 optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
                 optionalDefaultPaletteId={defaultSpritePaletteId}
@@ -387,7 +368,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 <DirectionPicker
                   id="actorDirection"
                   value={actor.direction}
-                  onChange={onChangeField("direction")}
+                  onChange={onChangeFieldInput("direction")}
                 />
               </FormField>
             )}
@@ -403,7 +384,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 <SpriteTypeSelect
                   name="actorMovement"
                   value={actor.spriteType}
-                  onChange={onChangeString("spriteType")}
+                  onChange={onChangeField("spriteType")}
                 />
               </FormField>
             )}
@@ -414,7 +395,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 name="animated"
                 label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
                 checked={actor.animate}
-                onChange={onChangeField("animate")}
+                onChange={onChangeFieldInput("animate")}
               />
             </FormRow>
           )}
@@ -427,7 +408,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               <MovementSpeedSelect
                 name="actorMoveSpeed"
                 value={actor.moveSpeed}
-                onChange={onChangeNumber("moveSpeed")}
+                onChange={onChangeField("moveSpeed")}
               />
             </FormField>
             {showAnimSpeed && (
@@ -438,7 +419,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 <AnimationSpeedSelect
                   name="actorAnimSpeed"
                   value={actor.animSpeed}
-                  // onChange={onChangeNumber("animSpeed")}
+                  onChange={onChangeField("animSpeed")}
                 />
               </FormField>
             )}
@@ -454,7 +435,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                   <CollisionMaskPicker
                     id="actorCollisionGroup"
                     value={actor.collisionGroup}
-                    onChange={onChangeField("collisionGroup")}
+                    onChange={onChangeFieldInput("collisionGroup")}
                     includeNone
                   />
                 </FormField>

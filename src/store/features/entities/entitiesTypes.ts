@@ -21,7 +21,7 @@ export type Actor = {
   paletteId: string;
   frame: number;
   moveSpeed: number;
-  animSpeed: number;
+  animSpeed: number | null;
   direction: ActorDirection;
   animate: boolean;
   isPinned: boolean;
