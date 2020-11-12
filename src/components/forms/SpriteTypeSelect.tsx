@@ -27,16 +27,14 @@ export const SpriteTypeSelect: FC<SpriteTypeSelectProps> = ({
 }) => {
   const currentValue = options.find((o) => o.value === value);
   return (
-    <div>
-      <Select
-        id={name}
-        value={currentValue}
-        options={options}
-        onChange={(newValue: SpriteTypeOption) => {
-          onChange?.(newValue.value);
-        }}
-      />
-    </div>
+    <Select
+      id={name}
+      value={currentValue}
+      options={options}
+      onChange={(newValue: SpriteTypeOption) => {
+        onChange?.(newValue.value);
+      }}
+    />
   );
 };
 

@@ -2,8 +2,14 @@ import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import uniq from "lodash/uniq";
 import { RootState } from "../../store/configureStore";
-import { spriteSheetSelectors } from "../../store/features/entities/entitiesState";
-import { SpriteSheet } from "../../store/features/entities/entitiesTypes";
+import {
+  paletteSelectors,
+  spriteSheetSelectors,
+} from "../../store/features/entities/entitiesState";
+import {
+  Palette,
+  SpriteSheet,
+} from "../../store/features/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -20,6 +26,7 @@ interface SpriteSheetSelectProps extends SelectCommonProps {
   value?: string;
   direction?: string;
   frame?: number;
+  paletteId?: string;
   onChange?: (newId: string) => void;
   filter?: (spriteSheet: SpriteSheet) => boolean;
   optional?: boolean;
@@ -73,6 +80,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   value,
   direction,
   frame,
+  paletteId,
   onChange,
   filter,
   optional,
@@ -81,6 +89,9 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
 }) => {
   const spriteSheets = useSelector((state: RootState) =>
     spriteSheetSelectors.selectAll(state)
+  );
+  const palette = useSelector((state: RootState) =>
+    paletteSelectors.selectById(state, paletteId || "")
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentSpriteSheet, setCurrentSpriteSheet] = useState<SpriteSheet>();
@@ -150,6 +161,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={option.value}
                 direction={direction}
                 frame={frame}
+                palette={palette}
               />
             }
           >
@@ -165,6 +177,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
                 spriteSheetId={value}
                 direction={direction}
                 frame={frame}
+                palette={palette}
               />
             }
           >

@@ -8,8 +8,8 @@ import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import MovementSpeedSelect from "../forms/MovementSpeedSelect";
-import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
+import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
+import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { SidebarHeading } from "./Sidebar";
 import {
   SettingsShape,

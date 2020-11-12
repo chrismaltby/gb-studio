@@ -21,9 +21,7 @@ import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import {
   Actor,
-  Scene,
   ScriptEvent,
-  Trigger,
 } from "../../store/features/entities/entitiesTypes";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
@@ -31,7 +29,6 @@ import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Checkbox } from "../ui/form/Checkbox";
 import { PinIcon } from "../ui/icons/Icons";
 import castEventValue from "../../lib/helpers/castEventValue";
-import { SelectField } from "../ui/form/SelectField";
 import { CheckboxField } from "../ui/form/CheckboxField";
 import DirectionPicker from "../forms/DirectionPicker";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
@@ -49,8 +46,8 @@ import { SidebarTabs } from "./Sidebar";
 import ScriptEditor from "../script/ScriptEditor";
 import { NumberField } from "../ui/form/NumberField";
 import { SpriteTypeSelect } from "../forms/SpriteTypeSelect";
-import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
-import MovementSpeedSelect from "../forms/MovementSpeedSelect";
+import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
+import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 
 interface ActorEditorProps {
@@ -132,6 +129,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     (state: RootState) =>
       state.project.present.settings.defaultSpritePaletteId || DMG_PALETTE.id
   );
+  const colorsEnabled = useSelector(
+    (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
 
@@ -162,6 +162,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   };
 
   const onChangeString = (key: keyof Actor) => (editValue: string) => {
+    dispatch(
+      entitiesActions.editActor({
+        actorId: id,
+        changes: {
+          [key]: editValue,
+        },
+      })
+    );
+  };
+
+  const onChangeNumber = (key: keyof Actor) => (editValue: number) => {
     dispatch(
       entitiesActions.editActor({
         actorId: id,
@@ -333,54 +344,31 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             </DropdownButton>
           </FormRow>
           <FormDivider />
-
-          {/* <FormRow>
-            <FormField name="actorSprite" label={l10n("FIELD_SPRITE_SHEET")}>
-              <SpriteSheetSelect
-                name="actorSprite"
-                value={actor.spriteSheetId}
-                direction={actor.direction}
-                frame={
-                  0
-                  // spriteSheet &&
-                  // spriteSheet.numFrames > 1 &&
-                  // actor.spriteType === SPRITE_TYPE_STATIC
-                  //   ? actor.frame
-                  //   : 0
-                }
-                onChange={onChangeString("spriteSheetId")}
-              />
-            </FormField>
-            <FormField name="actorSprite" label={l10n("FIELD_PALETTE")}>
-              <PaletteSelect
-                name="actorPalette"
-                value={actor.paletteId}
-                onChange={onChangeString("paletteId")}
-                optional
-                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                optionalDefaultPaletteId={defaultSpritePaletteId}
-              />
-            </FormField>
-          </FormRow> */}
-
           <FormRow>
             <SpriteSheetSelectButton
               name="actorSprite"
               value={actor.spriteSheetId}
               direction={actor.direction}
               frame={actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame : 0}
+              paletteId={
+                colorsEnabled
+                  ? actor.paletteId || defaultSpritePaletteId
+                  : undefined
+              }
               onChange={onChangeString("spriteSheetId")}
               includeInfo
             />
-            <PaletteSelectButton
-              name="actorPalette"
-              type="sprite"
-              value={actor.paletteId}
-              onChange={onChangeString("paletteId")}
-              optional
-              optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-              optionalDefaultPaletteId={defaultSpritePaletteId}
-            />
+            {colorsEnabled && (
+              <PaletteSelectButton
+                name="actorPalette"
+                type="sprite"
+                value={actor.paletteId}
+                onChange={onChangeString("paletteId")}
+                optional
+                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                optionalDefaultPaletteId={defaultSpritePaletteId}
+              />
+            )}
           </FormRow>
           <FormRow>
             {showDirectionInput && (
@@ -426,9 +414,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               label={l10n("FIELD_MOVEMENT_SPEED")}
             >
               <MovementSpeedSelect
-                id="actorMoveSpeed"
+                name="actorMoveSpeed"
                 value={actor.moveSpeed}
-                onChange={onChangeField("moveSpeed")}
+                onChange={onChangeNumber("moveSpeed")}
               />
             </FormField>
             {showAnimSpeed && (
@@ -437,9 +425,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
                 label={l10n("FIELD_ANIMATION_SPEED")}
               >
                 <AnimationSpeedSelect
-                  id="actorAnimSpeed"
+                  name="actorAnimSpeed"
                   value={actor.animSpeed}
-                  onChange={onChangeField("animSpeed")}
+                  // onChange={onChangeNumber("animSpeed")}
                 />
               </FormField>
             )}
