@@ -229,15 +229,15 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
       <SpriteInfo>
         <SpriteInfoRow>
-          <SpriteInfoField>Name:</SpriteInfoField>
+          <SpriteInfoField>{l10n("FIELD_NAME")}:</SpriteInfoField>
           {spriteSheet?.name}
         </SpriteInfoRow>
         <SpriteInfoRow>
-          <SpriteInfoField>Frames:</SpriteInfoField>
+          <SpriteInfoField>{l10n("FIELD_SPRITE_FRAMES")}:</SpriteInfoField>
           {spriteSheet?.numFrames}
         </SpriteInfoRow>
         <SpriteInfoRow>
-          <SpriteInfoField>Type:</SpriteInfoField>
+          <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
           {typeLabel(spriteSheet)}
         </SpriteInfoRow>
       </SpriteInfo>
