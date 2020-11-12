@@ -82,6 +82,7 @@ export const Select = styled(WindowedSelect).attrs((props) => ({
 
   .CustomSelect__placeholder {
     margin: 0;
+    margin-left: 2px;
   }
 
   .CustomSelect__indicator-separator {

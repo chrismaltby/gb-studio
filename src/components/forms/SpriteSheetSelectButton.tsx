@@ -44,6 +44,14 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 `;
 
+const ButtonCover = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 54px;
+  height: 54px;
+`;
+
 const Button = styled.button`
   display: flex;
   align-items: center;
@@ -122,6 +130,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   optionalLabel,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const timerRef = useRef<number | null>(null);
   const spriteSheet = useSelector((state: RootState) =>
     spriteSheetSelectors.selectById(state, value || "")
   );
@@ -162,8 +171,9 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
     }
   };
 
-  const toggleMenu = () => {
-    setIsOpen((open) => !open);
+  const openMenu = () => {
+    setIsOpen(true);
+    cancelDelayedButtonFocus();
   };
 
   const closeMenu = () => {
@@ -184,12 +194,24 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
     setButtonFocus(false);
   };
 
+  const delayedButtonFocus = () => {
+    timerRef.current = setTimeout(() => {
+      buttonRef.current?.focus();
+    }, 100);
+  };
+
+  const cancelDelayedButtonFocus = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
   return (
     <Wrapper includeInfo={includeInfo}>
       <Button
         id={name}
         ref={buttonRef}
-        onClick={toggleMenu}
+        onClick={openMenu}
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
@@ -204,6 +226,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
           <NoValue />
         )}
       </Button>
+      {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
       <SpriteInfo>
         <SpriteInfoRow>
           <SpriteInfoField>Name:</SpriteInfoField>

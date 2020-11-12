@@ -23,6 +23,14 @@ const Wrapper = styled.div`
   display: inline-flex;
 `;
 
+const ButtonCover = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+`;
+
 const Button = styled.button`
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
@@ -58,6 +66,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   optionalDefaultPaletteId,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const timerRef = useRef<number | null>(null);
   const palette = useSelector((state: RootState) =>
     paletteSelectors.selectById(state, value || optionalDefaultPaletteId || "")
   );
@@ -95,8 +104,9 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     }
   };
 
-  const toggleMenu = () => {
-    setIsOpen((open) => !open);
+  const openMenu = () => {
+    setIsOpen(true);
+    cancelDelayedButtonFocus();
   };
 
   const closeMenu = () => {
@@ -117,11 +127,24 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     setButtonFocus(false);
   };
 
+  const delayedButtonFocus = () => {
+    timerRef.current = setTimeout(() => {
+      buttonRef.current?.focus();
+    }, 100);
+  };
+
+  const cancelDelayedButtonFocus = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
   return (
     <Wrapper>
       <Button
+        id={name}
         ref={buttonRef}
-        onClick={toggleMenu}
+        onClick={openMenu}
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
@@ -131,6 +154,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
           <NoValue />
         )}
       </Button>
+      {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
       <RelativePortal pin="top-right" offsetY={28}>
         {isOpen && (
           <SelectMenu>
