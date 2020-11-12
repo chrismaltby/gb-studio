@@ -14,6 +14,7 @@ export type ScriptEvent = {
 export type Actor = {
   id: string;
   name: string;
+  notes?: string;
   x: number;
   y: number;
   spriteSheetId: string;

@@ -51,6 +51,7 @@ import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { KeysMatching } from "../../lib/helpers/types";
+import { NoteField } from "../ui/form/NoteField";
 
 interface ActorEditorProps {
   id: string;
@@ -104,6 +105,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     spriteSheetSelectors.selectById(state, actor?.spriteSheetId || "")
   );
   const [clipboardData, setClipboardData] = useState<any>(null);
+  const [notesOpen, setNotesOpen] = useState<boolean>(!!actor?.notes);
   const tabs = Object.keys(actor?.collisionGroup ? collisionTabs : defaultTabs);
   const secondaryTabs = Object.keys(hitTabs);
 
@@ -175,7 +177,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   };
 
   const onChangeFieldInput = (key: keyof Actor) => (
-    e: React.ChangeEvent<HTMLInputElement>
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const editValue = castEventValue(e);
     dispatch(
@@ -230,6 +234,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     }
   };
 
+  const onAddNotes = () => {
+    setNotesOpen(true);
+  };
+
   if (!scene || !actor) {
     return <WorldEditor />;
   }
@@ -263,6 +271,8 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
       (actor.spriteType === SPRITE_TYPE_STATIC && spriteSheet.numFrames > 1));
 
   const showCollisionGroup = !actor.isPinned;
+
+  const showNotes = actor.notes || notesOpen;
 
   const onEditScript = onChangeField("script");
 
@@ -326,6 +336,14 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               menuDirection="right"
               onMouseDown={readClipboard}
             >
+              {!showNotes && (
+                <>
+                  <MenuItem onClick={onAddNotes}>
+                    {l10n("FIELD_ADD_NOTES")}
+                  </MenuItem>
+                  <MenuDivider />
+                </>
+              )}
               <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
               {clipboardData && clipboardData.__type === "actor" && (
                 <MenuItem onClick={onPaste}>
@@ -338,6 +356,16 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               </MenuItem>
             </DropdownButton>
           </FormHeader>
+
+          {showNotes && (
+            <FormRow>
+              <NoteField
+                autofocus
+                value={actor.notes || ""}
+                onChange={onChangeFieldInput("notes")}
+              />
+            </FormRow>
+          )}
 
           <FormRow>
             <CoordinateInput
