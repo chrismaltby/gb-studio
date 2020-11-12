@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/configureStore";
 import {
@@ -134,6 +134,17 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
+
+  // Make sure currently selected script tab is availble
+  // when collision group is modified otherwise use first available tab
+  useEffect(() => {
+    const tabs = Object.keys(
+      actor?.collisionGroup ? collisionTabs : defaultTabs
+    );
+    if (!tabs.includes(scriptMode)) {
+      setScriptMode(tabs[0] as keyof ScriptHandlers);
+    }
+  }, [scriptMode, actor?.collisionGroup]);
 
   const dispatch = useDispatch();
 
