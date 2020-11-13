@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { assetFilename } from "../../lib/helpers/gbstudio";
 import l10n from "../../lib/helpers/l10n";
@@ -8,6 +8,7 @@ import {
   paletteSelectors,
   backgroundSelectors,
 } from "../../store/features/entities/entitiesState";
+import warningsActions from "../../store/features/warnings/warningsActions";
 import {
   Palette,
   Background,
@@ -116,12 +117,23 @@ const SpriteInfoTitle = styled.div`
   font-weight: bold;
 `;
 
-const SpriteInfoRow = styled.div`
+interface SpriteInfoRowProps {
+  error?: boolean;
+}
+
+const SpriteInfoRow = styled.div<SpriteInfoRowProps>`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   flex-grow: 1;
   opacity: 0.7;
+
+  ${(props) =>
+    props.error
+      ? css`
+          color: red;
+        `
+      : ""}
 `;
 
 const SpriteInfoField = styled.span`
@@ -146,6 +158,16 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   const projectRoot = useSelector((state: RootState) => state.document.root);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
+  const numTiles = useSelector(
+    (state: RootState) => state.warnings.backgrounds[value || ""]?.numTiles
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (value) {
+      dispatch(warningsActions.checkBackgroundWarnings(value));
+    }
+  }, [value]);
 
   useEffect(() => {
     if (buttonFocus) {
@@ -246,8 +268,9 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
                 <SpriteInfoField>Size:</SpriteInfoField>
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
-              <SpriteInfoRow>
-                <SpriteInfoField>Tiles:</SpriteInfoField>XX
+              <SpriteInfoRow error={numTiles > 192}>
+                <SpriteInfoField>Tiles:</SpriteInfoField>
+                {numTiles}
               </SpriteInfoRow>
             </SpriteInfo>
           )}

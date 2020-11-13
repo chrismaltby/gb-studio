@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface CachedWarnings {
   id: string;
   warnings: string[];
+  numTiles: number;
   timestamp: number;
 }
 
@@ -25,12 +26,17 @@ const warningsSlice = createSlice({
     },
     setBackgroundWarnings: (
       state,
-      action: PayloadAction<{ id: string; warnings: string[] }>
+      action: PayloadAction<{
+        id: string;
+        warnings: string[];
+        numTiles: number;
+      }>
     ) => {
       state.backgroundsLoading = false;
       state.backgrounds[action.payload.id] = {
         id: action.payload.id,
         warnings: action.payload.warnings,
+        numTiles: action.payload.numTiles,
         timestamp: Date.now(),
       };
     },
