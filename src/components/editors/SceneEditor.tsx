@@ -37,7 +37,7 @@ import { NoteField } from "../ui/form/NoteField";
 import { SceneTypeSelect } from "../forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
-import { LabelButton } from "../ui/buttons/LabelButton";
+import { LabelButton, LabelColor } from "../ui/buttons/LabelButton";
 
 interface SceneEditorProps {
   id: string;
@@ -235,7 +235,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               value={scene.name || ""}
               onChange={onChangeFieldInput("name")}
             />
-            {scene.labelColor && <LabelButton color={scene.labelColor} />}
+            {scene.labelColor && <LabelColor color={scene.labelColor} />}
             <DropdownButton
               size="small"
               variant="transparent"

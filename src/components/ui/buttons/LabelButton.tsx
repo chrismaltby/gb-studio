@@ -1,9 +1,13 @@
 import { Dictionary } from "@reduxjs/toolkit";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 interface LabelButtonProps {
   color?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
+interface LabelColorProps {
+  color?: string;
 }
 
 const colors: Dictionary<string> = {
@@ -30,13 +34,23 @@ export const LabelButton = styled.button.attrs<LabelButtonProps>((props) => ({
   background-color: transparent;
   opacity: 0.9;
 
-  ${(props) =>
-    props.onClick
-      ? css`
-          :hover {
-            opacity: 1;
-            transform: scale(1.25);
-          }
-        `
-      : ""}
+  :hover {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+`;
+
+export const LabelColor = styled.div.attrs<LabelColorProps>((props) => ({
+  style: {
+    backgroundColor: colors[props.color || ""],
+    border: `2px solid ${colors[props.color || ""] || props.theme.colors.text}`,
+  },
+  title: props.color,
+}))`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  background-color: transparent;
+  opacity: 0.9;
 `;
