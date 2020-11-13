@@ -1,22 +1,18 @@
-/* eslint-disable jsx-a11y/label-has-for */
-import React, { Component, FC, useState } from "react";
-import PropTypes from "prop-types";
+import React, { FC, useState } from "react";
 import { clipboard } from "electron";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { BackgroundSelect } from "../forms/BackgroundSelect";
+import { useDispatch, useSelector } from "react-redux";
 import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import { SidebarHeading, SidebarTabs } from "./Sidebar";
-import { SceneShape } from "../../store/stateShape";
+import { SidebarTabs } from "./Sidebar";
 import WorldEditor from "./WorldEditor";
-import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelectOld";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import settingsActions from "../../store/features/settings/settingsActions";
 import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 import {
   FormContainer,
@@ -24,6 +20,7 @@ import {
   FormField,
   FormHeader,
   FormRow,
+  FormSectionTitle,
 } from "../ui/form/FormLayout";
 import { EditableText } from "../ui/form/EditableText";
 import { RootState } from "../../store/configureStore";
@@ -38,6 +35,9 @@ import { SceneTypeSelect } from "../forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
 import { LabelButton, LabelColor } from "../ui/buttons/LabelButton";
+import { CoordinateInput } from "../ui/form/CoordinateInput";
+import DirectionPicker from "../forms/DirectionPicker";
+import { SettingsState } from "../../store/features/settings/settingsState";
 
 interface SceneEditorProps {
   id: string;
@@ -82,6 +82,18 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
+  const startSceneId = useSelector(
+    (state: RootState) => state.project.present.settings.startSceneId
+  );
+  const startX = useSelector(
+    (state: RootState) => state.project.present.settings.startX
+  );
+  const startY = useSelector(
+    (state: RootState) => state.project.present.settings.startY
+  );
+  const startDirection = useSelector(
+    (state: RootState) => state.project.present.settings.startDirection
   );
   const defaultBackgroundPaletteIds = useSelector(
     (state: RootState) =>
@@ -144,6 +156,19 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
         changes: {
           [key]: editValue,
         },
+      })
+    );
+  };
+
+  const onChangeSettingFieldInput = (key: keyof SettingsState) => (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const editValue = castEventValue(e);
+    dispatch(
+      settingsActions.editSettings({
+        [key]: editValue,
       })
     );
   };
@@ -223,6 +248,8 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
       },
     },
   } as const;
+
+  const isStartingScene = startSceneId === id;
 
   return (
     <SidebarMultiColumnAuto onClick={selectSidebar}>
@@ -351,6 +378,47 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               />
             </FormField>
           </FormRow>
+
+          {isStartingScene && (
+            <>
+              <FormSectionTitle>
+                {l10n("SIDEBAR_STARTING_SCENE")}
+              </FormSectionTitle>
+              <FormRow>
+                <CoordinateInput
+                  name="x"
+                  coordinate="x"
+                  value={startX}
+                  placeholder="0"
+                  min={0}
+                  max={scene.width - 2}
+                  onChange={onChangeSettingFieldInput("startX")}
+                />
+                <CoordinateInput
+                  name="y"
+                  coordinate="y"
+                  value={startY}
+                  placeholder="0"
+                  min={0}
+                  max={scene.height - 1}
+                  onChange={onChangeSettingFieldInput("startY")}
+                />
+              </FormRow>
+
+              <FormRow>
+                <FormField
+                  name="actorDirection"
+                  label={l10n("FIELD_DIRECTION")}
+                >
+                  <DirectionPicker
+                    id="actorDirection"
+                    value={startDirection}
+                    onChange={onChangeSettingFieldInput("startDirection")}
+                  />
+                </FormField>
+              </FormRow>
+            </>
+          )}
         </FormContainer>
       </SidebarColumn>
       <SidebarColumn>

@@ -89,3 +89,18 @@ export const FormField: FC<FormFieldProps> = ({
     {children}
   </FormFieldWrapper>
 );
+
+export const FormSectionTitle = styled.div`
+  height: 36px;
+  line-height: 36px;
+  margin: 0px;
+  font-size: 14px;
+  font-weight: bold;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  text-align: left;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;

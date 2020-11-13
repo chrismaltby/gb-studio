@@ -1,13 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
+import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
-type ShowConnectionsSetting = "all" | "selected" | true | false
+type ShowConnectionsSetting = "all" | "selected" | true | false;
 
 export type SettingsState = {
   startSceneId: string;
   startX: number;
   startY: number;
+  startDirection: ActorDirection;
   showCollisions: boolean;
   showConnections: ShowConnectionsSetting;
   worldScrollX: number;
@@ -26,6 +28,7 @@ export const initialState: SettingsState = {
   startSceneId: "",
   startX: 0,
   startY: 0,
+  startDirection: "down",
   showCollisions: true,
   showConnections: "selected",
   worldScrollX: 0,
@@ -75,9 +78,9 @@ const settingsSlice = createSlice({
     builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
       return {
         ...state,
-        ...action.payload.data.settings
+        ...action.payload.data.settings,
       };
-    }),  
+    }),
 });
 
 export const getSettings = (state: RootState) => state.project.present.settings;

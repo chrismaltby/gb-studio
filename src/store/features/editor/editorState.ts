@@ -493,9 +493,9 @@ const editorSlice = createSlice({
         }
       })
       // Set to world editor when moving player start position
-      .addCase(settingsActions.editPlayerStartAt, (state, _action) => {
-        state.scene = "";
-        state.type = "world";
+      .addCase(settingsActions.editPlayerStartAt, (state, action) => {
+        state.scene = action.payload.sceneId;
+        state.type = "scene";
         state.worldFocus = true;
       })
       // Force React Select dropdowns to reload with new name
