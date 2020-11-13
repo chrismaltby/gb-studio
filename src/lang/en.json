@@ -294,6 +294,8 @@
   "FIELD_NONE": "None",
   "FIELD_DIMENSIONS": "Dimensions",
   "FIELD_SPRITE": "Sprite",
+  "FIELD_SIZE": "Size",
+  "FIELD_TILES": "Tiles",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

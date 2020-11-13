@@ -265,11 +265,11 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
               <SpriteInfoTitle>{background?.name}</SpriteInfoTitle>
 
               <SpriteInfoRow>
-                <SpriteInfoField>Size:</SpriteInfoField>
+                <SpriteInfoField>{l10n("FIELD_SIZE")}:</SpriteInfoField>
                 {background?.width}x{background?.height}
               </SpriteInfoRow>
               <SpriteInfoRow error={numTiles > 192}>
-                <SpriteInfoField>Tiles:</SpriteInfoField>
+                <SpriteInfoField>{l10n("FIELD_TILES")}:</SpriteInfoField>
                 {numTiles}
               </SpriteInfoRow>
             </SpriteInfo>
