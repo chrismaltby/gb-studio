@@ -52,6 +52,7 @@ import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { KeysMatching } from "../../lib/helpers/types";
 import { NoteField } from "../ui/form/NoteField";
+import { TabBar } from "../ui/tabs/Tabs";
 
 interface ActorEditorProps {
   id: string;
@@ -82,13 +83,13 @@ const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
   start: l10n("SIDEBAR_ON_INIT"),
   update: l10n("SIDEBAR_ON_UPDATE"),
-};
+} as const;
 
 const collisionTabs = {
   hit: l10n("SIDEBAR_ON_HIT"),
   start: l10n("SIDEBAR_ON_INIT"),
   update: l10n("SIDEBAR_ON_UPDATE"),
-};
+} as const;
 
 const hitTabs = {
   hitPlayer: l10n("FIELD_PLAYER"),
@@ -96,6 +97,9 @@ const hitTabs = {
   hit2: l10n("FIELD_COLLISION_GROUP_N", { n: 2 }),
   hit3: l10n("FIELD_COLLISION_GROUP_N", { n: 3 }),
 };
+
+type DefaultTab = keyof typeof defaultTabs;
+type CollisionTab = keyof typeof collisionTabs;
 
 export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   const actor = useSelector((state: RootState) =>
@@ -520,23 +524,43 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         </FormContainer>
       </SidebarColumn>
       <SidebarColumn>
-        <SidebarTabs
-          value={scriptMode}
-          values={actor.collisionGroup ? collisionTabs : defaultTabs}
-          onChange={onChangeScriptMode}
-          buttons={
-            scriptMode !== "hit" &&
-            scripts[scriptMode] && (
-              <ScriptEditorDropdownButton
-                value={scripts[scriptMode].value}
-                onChange={scripts[scriptMode].onChange}
-              />
-            )
-          }
-        />
+        {!actor.collisionGroup && (
+          <TabBar
+            value={scriptMode as DefaultTab}
+            values={defaultTabs}
+            overflow={scriptMode === "hit"}
+            onChange={onChangeScriptMode}
+            buttons={
+              scriptMode !== "hit" &&
+              scripts[scriptMode] && (
+                <ScriptEditorDropdownButton
+                  value={scripts[scriptMode].value}
+                  onChange={scripts[scriptMode].onChange}
+                />
+              )
+            }
+          />
+        )}
+        {actor.collisionGroup && (
+          <TabBar
+            value={scriptMode as CollisionTab}
+            values={collisionTabs}
+            overflow={scriptMode === "hit"}
+            onChange={onChangeScriptMode}
+            buttons={
+              scriptMode !== "hit" &&
+              scripts[scriptMode] && (
+                <ScriptEditorDropdownButton
+                  value={scripts[scriptMode].value}
+                  onChange={scripts[scriptMode].onChange}
+                />
+              )
+            }
+          />
+        )}
         {scriptMode === "hit" && (
-          <SidebarTabs
-            secondary
+          <TabBar
+            variant="secondary"
             value={scriptModeSecondary}
             values={hitTabs}
             onChange={onChangeScriptModeSecondary}

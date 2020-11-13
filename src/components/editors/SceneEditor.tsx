@@ -38,6 +38,8 @@ import { LabelButton, LabelColor } from "../ui/buttons/LabelButton";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import DirectionPicker from "../forms/DirectionPicker";
 import { SettingsState } from "../../store/features/settings/settingsState";
+import { TabBar } from "../ui/tabs/Tabs";
+import { Label } from "../ui/form/Label";
 
 interface SceneEditorProps {
   id: string;
@@ -381,9 +383,10 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
           {isStartingScene && (
             <>
-              <FormSectionTitle>
-                {l10n("SIDEBAR_STARTING_SCENE")}
-              </FormSectionTitle>
+              <FormDivider />
+              <FormRow>
+                <Label>{l10n("FIELD_START_POSITION")}</Label>
+              </FormRow>
               <FormRow>
                 <CoordinateInput
                   name="x"
@@ -422,10 +425,11 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
         </FormContainer>
       </SidebarColumn>
       <SidebarColumn>
-        <SidebarTabs
+        <TabBar
           value={scriptMode}
           values={defaultTabs}
           onChange={onChangeScriptMode}
+          overflow={scriptMode === "hit"}
           buttons={
             scriptMode !== "hit" &&
             scripts[scriptMode] && (
@@ -437,8 +441,8 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
           }
         />
         {scriptMode === "hit" && scripts[scriptMode] && (
-          <SidebarTabs
-            secondary
+          <TabBar
+            variant="secondary"
             value={scriptModeSecondary}
             values={scripts[scriptMode].tabs}
             onChange={onChangeScriptModeSecondary}

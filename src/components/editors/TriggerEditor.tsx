@@ -23,6 +23,7 @@ import { RootState } from "../../store/configureStore";
 import { Trigger } from "../../store/features/entities/entitiesTypes";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { NoteField } from "../ui/form/NoteField";
+import { TabBar } from "../ui/tabs/Tabs";
 
 interface TriggerEditorProps {
   id: string;
@@ -207,7 +208,7 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
 
       <SidebarColumn>
         <div>
-          <SidebarTabs
+          <TabBar
             values={{
               trigger: l10n("SIDEBAR_ON_TRIGGER"),
             }}

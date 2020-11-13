@@ -296,6 +296,7 @@
   "FIELD_SPRITE": "Sprite",
   "FIELD_SIZE": "Size",
   "FIELD_TILES": "Tiles",
+  "FIELD_START_POSITION": "Start Position",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
