@@ -37,6 +37,7 @@ import { NoteField } from "../ui/form/NoteField";
 import { SceneTypeSelect } from "../forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "../forms/BackgroundSelectButton";
 import { PaletteSelectButton } from "../forms/PaletteSelectButton";
+import { LabelButton } from "../ui/buttons/LabelButton";
 
 interface SceneEditorProps {
   id: string;
@@ -234,18 +235,47 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               value={scene.name || ""}
               onChange={onChangeFieldInput("name")}
             />
+            {scene.labelColor && <LabelButton color={scene.labelColor} />}
             <DropdownButton
               size="small"
               variant="transparent"
               menuDirection="right"
               onMouseDown={readClipboard}
             >
+              <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
+                <div style={{ display: "flex" }}>
+                  <div style={{ marginRight: 5 }}>
+                    <LabelButton
+                      onClick={() => onChangeField("labelColor")("")}
+                    />
+                  </div>
+                  {[
+                    "red",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "blue",
+                    "purple",
+                    "gray",
+                  ].map((color) => (
+                    <div
+                      key={color}
+                      style={{ marginRight: color === "gray" ? 0 : 5 }}
+                    >
+                      <LabelButton
+                        color={color}
+                        onClick={() => onChangeField("labelColor")(color)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </MenuItem>
+              <MenuDivider />
               {!showNotes && (
                 <MenuItem onClick={onAddNotes}>
                   {l10n("FIELD_ADD_NOTES")}
                 </MenuItem>
               )}
-              {!showNotes && <MenuDivider />}
               <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
               {clipboardData && clipboardData.__type === "scene" && (
                 <MenuItem onClick={onPaste}>

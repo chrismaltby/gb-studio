@@ -134,12 +134,9 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
               onMouseDown={readClipboard}
             >
               {!showNotes && (
-                <>
-                  <MenuItem onClick={onAddNotes}>
-                    {l10n("FIELD_ADD_NOTES")}
-                  </MenuItem>
-                  <MenuDivider />
-                </>
+                <MenuItem onClick={onAddNotes}>
+                  {l10n("FIELD_ADD_NOTES")}
+                </MenuItem>
               )}
               <MenuItem onClick={onCopy}>{l10n("MENU_COPY_TRIGGER")}</MenuItem>
               {clipboardData && clipboardData.__type === "trigger" && (
