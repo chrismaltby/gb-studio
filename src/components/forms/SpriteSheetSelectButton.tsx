@@ -143,7 +143,7 @@ const typeLabel = (spriteSheet?: SpriteSheet): string => {
   if (spriteSheet.type === "actor_animated" || spriteSheet.type === "actor") {
     return l10n("ACTOR");
   }
-  return l10n("FIELD_MOVEMENT_STATIC");
+  return l10n("FIELD_SPRITE");
 };
 
 export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
@@ -260,14 +260,14 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
             <SpriteInfo>
               <SpriteInfoTitle>{spriteSheet?.name}</SpriteInfoTitle>
               <SpriteInfoRow>
+                <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
+                {typeLabel(spriteSheet)}
+              </SpriteInfoRow>
+              <SpriteInfoRow>
                 <SpriteInfoField>
                   {l10n("FIELD_SPRITE_FRAMES")}:
                 </SpriteInfoField>
                 {spriteSheet?.numFrames}
-              </SpriteInfoRow>
-              <SpriteInfoRow>
-                <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
-                {typeLabel(spriteSheet)}
               </SpriteInfoRow>
             </SpriteInfo>
           )}
