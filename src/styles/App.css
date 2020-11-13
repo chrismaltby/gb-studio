@@ -1,4 +1,5 @@
 @import url("./Splash.css");
+@import url("./Preferences.css");
 @import url("./RTL.css");
 @import url("./../components/forms/DirectionPicker.css");
 @import url("./../components/forms/CustomPalettePicker.css");
@@ -80,7 +81,7 @@ body {
 
 .App__Content {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 38px);
   display: flex;
   flex-direction: row;
 }
@@ -111,13 +112,6 @@ div::-webkit-scrollbar-thumb {
 
 div::-webkit-scrollbar-corner {
   background: var(--main-bg-color);
-}
-
-body:not(.user-is-tabbing) button:focus,
-body:not(.user-is-tabbing) input:focus,
-body:not(.user-is-tabbing) select:focus,
-body:not(.user-is-tabbing) textarea:focus {
-  outline: none;
 }
 
 @keyframes Rotating {

@@ -15,7 +15,8 @@ const watchProject = async (
     onRemoveSprite = () => {},
     onRemoveBackground = () => {},
     onRemoveUI = () => {},
-    onRemoveMusic = () => {}
+    onRemoveMusic = () => {},
+    onChangedEngineSchema = () => {},
   }
 ) => {
   const projectRoot = Path.dirname(projectPath);
@@ -24,6 +25,7 @@ const watchProject = async (
   const musicRoot = `${projectRoot}/assets/music`;
   const uiRoot = `${projectRoot}/assets/ui`;
   const pluginsRoot = `${projectRoot}/plugins`;
+  const engineSchema = `${projectRoot}/assets/engine/engine.json`;
 
   const awaitWriteFinish = {
     stabilityThreshold: 1000,
@@ -77,12 +79,22 @@ const watchProject = async (
       ignored: /^.*\.(?!(mod|MOD)$)[^.]+$/,
       ignoreInitial: true,
       persistent: true,
-      musicAwaitWriteFinish
+      awaitWriteFinish: musicAwaitWriteFinish
     })
     .on("add", onAddMusic)
     .on("change", onChangedMusic)
     .on("unlink", onRemoveMusic);
 
+  const engineSchemaWatcher = chokidar
+    .watch(engineSchema, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish
+    })
+    .on("add", onChangedEngineSchema)
+    .on("change", onChangedEngineSchema)
+    .on("unlink", onChangedEngineSchema);    
+    
   const pluginsWatcher = chokidar
     .watch(pluginsRoot, {
       ignored: /^.*\.(?!(png|mod|PNG|MOD)$)[^.]+$/,
@@ -126,6 +138,7 @@ const watchProject = async (
     backgroundWatcher.close();
     uiWatcher.close();
     musicWatcher.close();
+    engineSchemaWatcher.close();
     pluginsWatcher.close();
   };
 

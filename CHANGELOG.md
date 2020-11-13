@@ -5,11 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-beta5]
+
+### Added
+
+- Add new Splash screen with animated template previews, easier access to documentation and credits easter egg (click the power light)
+- Add live preview of how dialogue will appear in game when hovering over "Display Dialogue" events using ascii.png, frame.png and avatar sprites
+- Add character count to dialogue event text input (52 characters max, or 48 if using an avatar)
+- Add autocomplete and syntax highlighting for variables and speed codes in dialogue
+
+### Changed
+
+- Increased line limit in dialogue boxes to four lines
+
+### Fixed
+
+- Fix issue where sidebar tabs could become hidden if translation wasn't able to fit in space available
+
 ## [2.0.0-beta4]
+
+### Added
+
+- Add ability to override only some of the scene palettes in a Set Background Palette event by using the new "Don't Modify" option
+- Add preferences window allowing manual override of temporary files location
+- Add warning if too many actors are clustered close together in scene (only 10 actors can be onscreen at once)
+- Add ability for input scripts to be attached to multiple buttons at once [@patrickmollohan](https://github.com/patrickmollohan)
+
+### Changed
+
+- Updated text events to use monospace font making it easier to determine how text will appear in game
+- Removed dependency of XCode/Command Line Tools being installed on MacOS by no longer using GNU Make during build
+- Add ability to shake vertically and diagonally in Camera Shake event [@Xeyler](https://github.com/Xeyler) + [@patrickmollohan](https://github.com/patrickmollohan)
+- Change UI of Timer and Attach Script events to include tabs for visual consistency [@pau-tomas](https://github.com/pau-tomas)
+- Decrease min width of project window to 640px to allow working on smaller screen sizes [@patrickmollohan](https://github.com/patrickmollohan)
 
 ### Fixed
 
 - Fix issue with calling javascript functions from events prevent text cropping from working as expected
+- Fix issue with text cropping in menu events where it was possible for menu items to span multiple lines
+- Fix issue with text cropped where variables and speed codes contributed more characters to string length than they should
+- Fix issue where renaming assets in file system would cause uses of that asset in the project to become disconnected
+- Fix copy/paste to keep actor references in events and to preserve local variable names
+- Input scripts override default button behaviour again matching 1.2.0 functionality [@pau-tomas](https://github.com/pau-tomas)
 
 ## [2.0.0-beta3]
 

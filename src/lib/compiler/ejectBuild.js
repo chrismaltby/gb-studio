@@ -10,6 +10,10 @@ import l10n from "../helpers/l10n";
 const rmdir = promisify(rimraf);
 
 const readEngineVersion = async (path) => {
+  return (await fs.readJSON(path, "utf8")).version;
+}
+
+const readEngineVersionLegacy = async (path) => {
   return (await fs.readFile(path, "utf8"))
     .replace(/#.*/g, "")
     .trim();
@@ -25,7 +29,7 @@ const ejectBuild = async ({
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;
-  const expectedEngineVersionPath = `${corePath}/engine_version`;
+  const expectedEngineMetaPath = `${corePath}/engine.json`;
 
   progress(`Unlink ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
@@ -34,19 +38,24 @@ const ejectBuild = async ({
 
   await copy(corePath, outputRoot);
   
-  const expectedEngineVersion = await readEngineVersion(expectedEngineVersionPath);
+  const expectedEngineVersion = await readEngineVersion(expectedEngineMetaPath);
 
   try {
     progress("Looking for local engine in assets/engine");
     await copy(localCorePath, outputRoot);
     progress("Copy local engine");
 
-    const ejectedEngineVersionPath = `${localCorePath}/engine_version`;
+    const ejectedEngineMetaPath = `${localCorePath}/engine.json`;
     let ejectedEngineVersion;
     try {
-      ejectedEngineVersion = await readEngineVersion(ejectedEngineVersionPath);
+      ejectedEngineVersion = await readEngineVersion(ejectedEngineMetaPath);
     } catch (e) {
-      ejectedEngineVersion = "2.0.0-e1";
+      try {
+        const ejectedEngineVersionLegacyPath = `${localCorePath}/engine_version`;
+        ejectedEngineVersion = await readEngineVersionLegacy(ejectedEngineVersionLegacyPath);
+      } catch (e2) {
+        ejectedEngineVersion = "2.0.0-e1";
+      }
     }
     if (ejectedEngineVersion !== expectedEngineVersion) {
       warnings(

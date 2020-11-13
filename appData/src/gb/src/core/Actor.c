@@ -10,6 +10,7 @@
 void UpdateActors_b() __banked;
 void ActivateActor_b(UBYTE i) __banked;
 void DeactivateActor_b(UBYTE i) __banked;
+UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) __banked;
 UBYTE ActorInFrontOfActor_b(UBYTE i) __banked;
 UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir) __banked;
 void InitPlayer_b() __banked;
@@ -17,6 +18,8 @@ UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
+UBYTE ActorAt2x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
+UBYTE ActorAt3x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked;
 UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) __banked;
 void ActorRunCollisionScripts_b() __banked;
 
@@ -78,8 +81,20 @@ UBYTE ActorAt3x1Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return ActorAt3x1Tile_b(tx, ty, inc_noclip);
 }
 
+UBYTE ActorAt2x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+  return ActorAt2x3Tile_b(tx, ty, inc_noclip);
+}
+
+UBYTE ActorAt3x3Tile(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+  return ActorAt3x3Tile_b(tx, ty, inc_noclip);
+}
+
 UBYTE ActorOverlapsPlayer(UBYTE inc_noclip) {
   return ActorOverlapsPlayer_b(inc_noclip);
+}
+
+UBYTE ActorInFrontOfPlayer(UBYTE grid_size, UBYTE inc_noclip) {
+  return ActorInFrontOfPlayer_b(grid_size, inc_noclip);
 }
 
 UBYTE ActorInFrontOfActor(UBYTE i) {

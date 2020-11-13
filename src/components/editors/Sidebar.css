@@ -1,8 +1,4 @@
 .Sidebar {
-  right: 0;
-  position: fixed;
-  top: 38px;
-  bottom: 0px;
   display: flex;
   flex-direction: row;
 }
@@ -165,7 +161,7 @@
   height: 36px;
   line-height: 36px;
   margin: 0px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   border-bottom: 1px solid var(--sidebar-border-color);
   border-top: 1px solid var(--sidebar-border-color);
@@ -174,7 +170,7 @@
   padding-right: 10px;
   display: flex;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 0px;
 }
 
 .SidebarTabs--Secondary {
@@ -184,6 +180,17 @@
   margin-top: -2px;
   background: var(--input-bg-color);
   border-top: 1px solid var(--sidebar-border-color);  
+}
+
+.SidebarTabs--Small {
+  padding-bottom: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  height: 26px;
+  line-height: 21px;
+  margin: 0px;
+  font-size: 12px;
+  margin-left: 10px;
 }
 
 .SidebarTabs__FluidSpacer {
@@ -196,7 +203,18 @@
   height: 36px;
   padding-top: 1px;
   padding-right: 10px;
+  width: 100%;
   box-sizing: border-box;
+  margin-top: -2px;
+}
+
+.SidebarTabs--Small .SidebarTabs__Container {
+  height: 26px;
+  margin-top: 0px;
+}
+
+.SidebarTabs--Small .SidebarTabs__Tab:first-child {
+  margin-left: 1px;
 }
 
 .SidebarTabs__Tab {
@@ -204,12 +222,27 @@
   opacity: 0.5;
   border-top: 1px solid transparent;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .SidebarTabs__Tab--Active {
   background: var(--input-bg-color);
   opacity: 1;
   outline: 1px solid var(--input-border-color);
+}
+
+.SidebarTabs:not(:hover) .SidebarTabs__Tab--Active {
+  overflow: visible;
+}
+
+.SidebarTabs__Tab:hover {
+  overflow: visible;  
+}
+
+.SidebarTabs--Secondary .SidebarTabs__Tab {
+  padding-right: 0px;
+  flex-grow: 1;
 }
 
 .SidebarTabs--Secondary .SidebarTabs__Tab--Active {

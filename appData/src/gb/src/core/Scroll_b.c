@@ -62,6 +62,7 @@ void RefreshScroll_b() __banked {
   scroll_x = x;
   scroll_y = y;
   draw_scroll_x = x + scroll_offset_x;
+  draw_scroll_y = y + scroll_offset_y;
 
   if (render) {
     RenderScreen();

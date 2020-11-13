@@ -95,7 +95,7 @@ const buildMenu = async (plugins = []) => {
           }
         },
         { role: "delete" },
-        { role: "selectall" }
+        { role: "selectall" },
       ]
     },
     {
@@ -319,6 +319,15 @@ const buildMenu = async (plugins = []) => {
             }
           ]
         },
+        {
+          id: "showNavigator",
+          label: l10n("MENU_SHOW_NAVIGATOR"),
+          checked: settings.get("showNavigator") !== false,
+          type: "checkbox",
+          click: item => {
+            notifyListeners("updateSetting", "showNavigator", item.checked);
+          }
+        },
         { type: "separator" },
         {
           label: l10n("MENU_ZOOM_RESET"),
@@ -396,11 +405,18 @@ const buildMenu = async (plugins = []) => {
             openAbout();
           }
         },
-        { type: "separator" },
         {
           label: l10n("MENU_CHECK_FOR_UPDATES"),
           click: () => {
             notifyListeners("checkUpdates");
+          }
+        },        
+        { type: "separator" },
+        {
+          label: l10n("MENU_PREFERENCES"),
+          accelerator: "CommandOrControl+,",
+          click: () => {
+            notifyListeners("preferences");
           }
         },
         { type: "separator" },
@@ -447,6 +463,18 @@ const buildMenu = async (plugins = []) => {
         }
       }
     );
+
+    // Edit Preferences for Windows / Linux
+    template[1].submenu.push(
+      { type: "separator" },
+      {
+        label: l10n("MENU_PREFERENCES"),
+        accelerator: "CommandOrControl+,",
+        click: () => {
+          notifyListeners("preferences");
+        }
+      }
+    );
   }
 
   menu = Menu.buildFromTemplate(template);
@@ -472,7 +500,8 @@ const listeners = {
   build: [],
   ejectEngine: [],
   ejectProject: [],
-  pasteInPlace: []
+  pasteInPlace: [],
+  preferences: []
 };
 
 const notifyListeners = (event, ...data) => {

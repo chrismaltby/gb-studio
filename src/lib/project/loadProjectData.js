@@ -5,13 +5,14 @@ import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
-import { indexByFn } from "../helpers/array";
+import { indexByFn, indexBy } from "../helpers/array";
 
 const elemKey = (elem) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
 };
 
 const indexByFilename = indexByFn(elemKey);
+const indexByInode = indexBy("inode");
 
 const sortByName = (a, b) => {
   const aName = a.name.toUpperCase();
@@ -38,10 +39,11 @@ const loadProject = async (projectPath) => {
 
   // Merge stored backgrounds data with file system data
   const oldBackgroundByFilename = indexByFilename(json.backgrounds || []);
+  const oldBackgroundByInode = indexByInode(json.backgrounds || []);
 
   const fixedBackgroundIds = backgrounds
     .map((background) => {
-      const oldBackground = oldBackgroundByFilename[elemKey(background)];
+      const oldBackground = oldBackgroundByFilename[elemKey(background)] || oldBackgroundByInode[background.inode];
       if (oldBackground) {
         return {
           ...background,
@@ -54,10 +56,11 @@ const loadProject = async (projectPath) => {
 
   // Merge stored sprite data with file system data
   const oldSpriteByFilename = indexByFilename(json.spriteSheets || []);
+  const oldSpriteByInode = indexByInode(json.spriteSheets || []);
 
   const fixedSpriteIds = sprites
     .map((sprite) => {
-      const oldSprite = oldSpriteByFilename[elemKey(sprite)];
+      const oldSprite = oldSpriteByFilename[elemKey(sprite)] || oldSpriteByInode[sprite.inode];
       if (oldSprite) {
         return {
           ...sprite,
@@ -70,10 +73,11 @@ const loadProject = async (projectPath) => {
 
   // Merge stored music data with file system data
   const oldMusicByFilename = indexByFilename(json.music || []);
+  const oldMusicByInode = indexByInode(json.music || []);
 
   const fixedMusicIds = music
     .map((track) => {
-      const oldTrack = oldMusicByFilename[elemKey(track)];
+      const oldTrack = oldMusicByFilename[elemKey(track)] || oldMusicByInode[track.inode];
       if (oldTrack) {
         return {
           ...track,
@@ -170,6 +174,8 @@ const loadProject = async (projectPath) => {
     }
   }
 
+  const fixedEngineFieldValues = (json.engineFieldValues || []);
+
   return {
     ...json,
     backgrounds: fixedBackgroundIds,
@@ -178,6 +184,7 @@ const loadProject = async (projectPath) => {
     scenes: fixedScenes,
     customEvents: fixedCustomEvents,
     palettes: fixedPalettes,
+    engineFieldValues: fixedEngineFieldValues
   };
 };
 

@@ -9,6 +9,7 @@ UBYTE await_input;
 UBYTE input_wait = 0;
 BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
 UBYTE input_script_persist = 0;
+UBYTE input_override_default;
 
 void HandleInputScripts() {
   UBYTE input_index, input_joy;
@@ -40,6 +41,7 @@ void RemoveInputScripts() {
   for (i = 0; i != 8; ++i) {
     if (!GET_BIT(input_script_persist, i)) {
       input_script_ptrs[i].bank = 0;
+      UNSET_BIT(input_override_default, i);
     }
   }
 }

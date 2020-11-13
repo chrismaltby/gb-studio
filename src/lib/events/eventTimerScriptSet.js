@@ -16,8 +16,22 @@ const fields = [
     defaultValue: 10.0
   },
   {
+    key: "__scriptTabs",
+    type: "tabs",
+    defaultValue: "end",
+    values: {
+      end: l10n("FIELD_ON_TIMER_END"),
+    }
+  },
+  {
     key: "script",
-    type: "events"
+    type: "events",
+    conditions: [
+      {
+        key: "__scriptTabs",
+        in: [undefined, "end"]
+      }
+    ]
   }
 ];
 

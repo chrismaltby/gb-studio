@@ -1,5 +1,6 @@
 import uuid from "uuid/v4";
-import { EVENT_CALL_CUSTOM_EVENT } from "../compiler/eventTypes";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_ENGINE_FIELD_SET, EVENT_ENGINE_FIELD_STORE } from "../compiler/eventTypes";
+// import events from "../../lib/events";
 
 const mapValues = (obj, fn) =>
   Object.entries(obj).reduce((memo, [key, value]) => {
@@ -290,6 +291,32 @@ const regenerateEventIds = event => {
   );
 };
 
+const replaceEventActorIds = (replacementIds, event) => {
+  const events = require("../events").default;
+  const eventSchema = events[event.command];
+
+  if (!eventSchema) {
+    return event;
+  }
+
+  const patchArgs = {};
+  eventSchema.fields.forEach((field) => {
+    if (field.type === "actor") {
+      if (replacementIds[event.args[field.key]]) {
+        patchArgs[field.key] = replacementIds[event.args[field.key]];
+      }
+    }
+  });
+
+  return {
+    ...event,
+    args: {
+      ...event.args,
+      ...patchArgs
+    }
+  }
+}
+
 const filterEvents = (data, fn) => {
   return data.reduce((memo, o) => {
     if (fn(o)) {
@@ -328,21 +355,42 @@ const eventHasArg = (event, argName) => {
   );
 };
 
-const events = require("../events").default;
+const getField = (cmd, fieldName, args) => {
+  const {
+    default: events,
+    engineFieldUpdateEvents,
+    engineFieldStoreEvents,
+  } = require("../events");
 
-const isVariableField = (cmd, fieldName, fieldValue) => {
-  const event = events[cmd];
+  let event = events[cmd];
+
+  if (cmd === EVENT_ENGINE_FIELD_SET && args.engineFieldKey && engineFieldUpdateEvents[args.engineFieldKey]) {
+    event = engineFieldUpdateEvents[args.engineFieldKey];
+  }
+  else if (cmd === EVENT_ENGINE_FIELD_STORE && args.engineFieldKey && engineFieldStoreEvents[args.engineFieldKey]) {
+    event = engineFieldStoreEvents[args.engineFieldKey];
+  }
+
   if (!event) return false;
-  const field = event.fields.find((f) => f.key === fieldName)
+
+  const field = event.fields.find((f) => f.key === fieldName);
+
+  return field;
+};
+
+
+const isVariableField = (cmd, fieldName, args) => {
+  const field = getField(cmd, fieldName, args);
   return (
     field && (
       field.type === "variable" ||
-      (field.type === "union" && fieldValue.type === "variable")
+      (field.type === "union" && args[fieldName] && args[fieldName].type === "variable")
     )
   )
 };
 
 const isPropertyField = (cmd, fieldName, fieldValue) => {
+  const events = require("../events").default;
   const event = events[cmd];
   if (!event) return false;
   const field = event.fields.find((f) => f.key === fieldName)
@@ -402,10 +450,12 @@ export {
   prependEvent,
   appendEvent,
   regenerateEventIds,
+  replaceEventActorIds,
   removeEventIds,
   filterEvents,
   findEvent,
   eventHasArg,
+  getField,
   isVariableField,
   isPropertyField,
   getCustomEventIdsInEvents,

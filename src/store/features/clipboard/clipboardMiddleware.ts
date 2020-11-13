@@ -11,6 +11,7 @@ import {
   customEventSelectors,
   actorSelectors,
   triggerSelectors,
+  variableSelectors,
 } from "../entities/entitiesState";
 import {
   CustomEvent,
@@ -30,6 +31,10 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const usedCustomEvents = usedCustomEventIds
       .map((id) => customEventsLookup[id])
       .filter((i) => i);
+    const allVariables = variableSelectors.selectAll(state);
+    const usedVariables = allVariables.filter((variable) => {
+      return variable.id.startsWith(action.payload.id);
+    });
     clipboard.writeText(
       JSON.stringify(
         {
@@ -37,6 +42,8 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "actor",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
+          __variables:
+            usedVariables.length > 0 ? usedVariables : undefined
         },
         null,
         4
@@ -51,6 +58,10 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const usedCustomEvents = usedCustomEventIds
       .map((id) => customEventsLookup[id])
       .filter((i) => i);
+    const allVariables = variableSelectors.selectAll(state);
+    const usedVariables = allVariables.filter((variable) => {
+      return variable.id.startsWith(action.payload.id);
+    });      
     clipboard.writeText(
       JSON.stringify(
         {
@@ -58,6 +69,8 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "trigger",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
+          __variables:
+            usedVariables.length > 0 ? usedVariables : undefined            
         },
         null,
         4
@@ -79,6 +92,13 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     const usedCustomEvents = usedCustomEventIds
       .map((id) => customEventsLookup[id])
       .filter((i) => i);
+    const allVariables = variableSelectors.selectAll(state);
+
+    const entityIds = [action.payload.id, ...action.payload.actors, ...action.payload.triggers];
+    console.log({entityIds})
+    const usedVariables = allVariables.filter((variable) => {
+      return entityIds.find((id) => variable.id.startsWith(id))
+    });   
 
     clipboard.writeText(
       JSON.stringify(
@@ -87,6 +107,8 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
           __type: "scene",
           __customEvents:
             usedCustomEvents.length > 0 ? usedCustomEvents : undefined,
+          __variables:
+            usedVariables.length > 0 ? usedVariables : undefined
         },
         null,
         4
@@ -169,6 +191,8 @@ const clipboardMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     } catch (err) {
       // Ignore
     }
+  } else if (actions.copyText.match(action)) {
+    clipboard.writeText(action.payload);
   }
 
   next(action);

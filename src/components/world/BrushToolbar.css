@@ -1,5 +1,5 @@
 .BrushToolbar {
-  position: fixed;
+  position: absolute;
   height: 36px;
   left: 56px;
   top: -45px;
@@ -13,7 +13,7 @@
 }
 
 .BrushToolbar--Visible {
-  top: 45px;
+  top: 10px;
 }
 
 .BrushToolbar__Item {

@@ -15,8 +15,7 @@ import l10n from "../../lib/helpers/l10n";
 import MovementSpeedSelect from "../forms/MovementSpeedSelect";
 import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
-import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
-import { SceneIcon } from "../library/Icons";
+import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
@@ -32,6 +31,7 @@ import { actorSelectors, sceneSelectors, spriteSheetSelectors } from "../../stor
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 
 const defaultTabs = {
   interact: l10n("SIDEBAR_ON_INTERACT"),
@@ -223,7 +223,7 @@ class ActorEditor extends Component {
     };
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <SidebarMultiColumnAuto onClick={selectSidebar}>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("ACTOR")}
@@ -463,21 +463,6 @@ class ActorEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          <SidebarHeading title={l10n("SIDEBAR_NAVIGATION")} />
-          <ul>
-            <li
-              onClick={() => {
-                const { selectScene } = this.props;
-                selectScene({sceneId: scene.id});
-              }}
-            >
-              <div className="EditorSidebar__Icon">
-                <SceneIcon />
-              </div>
-              {scene.name || `Scene ${index + 1}`}
-            </li>
-          </ul>
         </SidebarColumn>
 
         <SidebarColumn>
@@ -530,7 +515,7 @@ class ActorEditor extends Component {
               )}
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </SidebarMultiColumnAuto>
     );
   }
 }

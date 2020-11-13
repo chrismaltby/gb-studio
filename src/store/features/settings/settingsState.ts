@@ -4,8 +4,6 @@ import projectActions from "../project/projectActions";
 
 type ShowConnectionsSetting = "all" | "selected" | true | false
 
-type FadeStyle = "white" | "black"
-
 export type SettingsState = {
   startSceneId: string;
   startX: number;
@@ -16,11 +14,13 @@ export type SettingsState = {
   worldScrollY: number;
   zoom: number;
   customColorsEnabled: boolean;
+  customHead: string;
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
-  defaultFadeStyle: FadeStyle;
-}
+  navigatorSplitSizes: number[];
+  showNavigator: boolean;
+};
 
 export const initialState: SettingsState = {
   startSceneId: "",
@@ -32,6 +32,7 @@ export const initialState: SettingsState = {
   worldScrollY: 0,
   zoom: 100,
   customColorsEnabled: false,
+  customHead: "",
   defaultBackgroundPaletteIds: [
     "default-bg-1",
     "default-bg-2",
@@ -42,7 +43,8 @@ export const initialState: SettingsState = {
   ],
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
-  defaultFadeStyle: "white"
+  navigatorSplitSizes: [300, 100, 100],
+  showNavigator: true,
 };
 
 const settingsSlice = createSlice({
@@ -63,6 +65,10 @@ const settingsSlice = createSlice({
       state.startSceneId = action.payload.sceneId;
       state.startX = action.payload.x;
       state.startY = action.payload.y;
+    },
+
+    setShowNavigator: (state, action: PayloadAction<boolean>) => {
+      state.showNavigator = action.payload;
     },
   },
   extraReducers: (builder) =>

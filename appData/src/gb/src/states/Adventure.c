@@ -65,7 +65,7 @@ void Update_Adventure() {
   tile_y = (player.pos.y + 7) >> 3;
 
   if (INPUT_A_PRESSED) {
-    hit_actor = ActorInFrontOfPlayer();
+    hit_actor = ActorInFrontOfPlayer(8, TRUE);
     if (hit_actor != NO_ACTOR_COLLISON) {
       ScriptStart(&actors[hit_actor].events_ptr);
     }
@@ -134,7 +134,7 @@ void Update_Adventure() {
   // Actor Collisions
   hit_actor = ActorOverlapsPlayer(FALSE);
   if (hit_actor && hit_actor != NO_ACTOR_COLLISON) {
-    if (hit_actor == ActorInFrontOfPlayer()) {
+    if (hit_actor == ActorInFrontOfPlayer(8, FALSE)) {
       player.moving = FALSE;
     }
     if (player_iframes == 0) {

@@ -101,7 +101,7 @@ textarea {
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
-  height: 30px;
+  height: 28px;
 }
 
 .FormField .Input--Large {
@@ -168,7 +168,10 @@ textarea {
   width: 100%;
   height: auto;
   resize: none;
-  line-height: 16px;
+  line-height: 15px;
+  font-size: 13px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
 }
 
 .FormField select {
@@ -379,4 +382,8 @@ body .FormField .ReactSelect__indicator-separator {
 
 .FormField .ReactSelectContainer .ReactSelect__indicator .Button svg {
   height: 10px;
+}
+
+.FormField .CustomSelect__input input {
+  height: auto;
 }

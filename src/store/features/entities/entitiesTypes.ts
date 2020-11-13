@@ -48,6 +48,7 @@ export type Background = {
   imageWidth: number;
   imageHeight: number;
   plugin?: string;
+  inode: string;
   _v: number;
 };
 
@@ -61,6 +62,7 @@ export type Music = {
   filename: string;
   plugin?: string;
   settings: MusicSettings;
+  inode: string;
   _v: number;
 };
 
@@ -80,6 +82,7 @@ export type Variable = {
 export type CustomEventVariable = {
   id: string;
   name: string;
+  type?: "8bit" | "16bit";
 };
 
 export type CustomEventActor = {
@@ -96,6 +99,11 @@ export type CustomEvent = {
   script: ScriptEvent[];
 };
 
+export type EngineFieldValue = {
+  id: string;
+  value: number | string | boolean | undefined;
+};
+
 export type SpriteSheet = {
   id: string;
   name: string;
@@ -103,12 +111,14 @@ export type SpriteSheet = {
   type: SpriteType;
   numFrames: number;
   plugin?: string;
+  inode: string;
   _v: number;
 };
 
 export type Scene = {
   id: string;
   name: string;
+  labelColor?: string;
   x: number;
   y: number;
   width: number;
@@ -149,6 +159,7 @@ export interface EntitiesState {
   customEvents: EntityState<CustomEvent>;
   music: EntityState<Music>;
   variables: EntityState<Variable>;
+  engineFieldValues: EntityState<EngineFieldValue>;
 }
 
 export type Asset = {

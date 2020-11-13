@@ -8,11 +8,7 @@ import {
   DRAG_PLAYER,
 } from "../../../consts";
 import { zoomIn, zoomOut } from "../../../lib/helpers/zoom";
-import {
-  Actor,
-  Trigger,
-  SceneData,
-} from "../entities/entitiesTypes";
+import { Actor, Trigger, SceneData, Variable } from "../entities/entitiesTypes";
 import navigationActions from "../navigation/navigationActions";
 import projectActions from "../project/projectActions";
 import settingsActions from "../settings/settingsActions";
@@ -34,7 +30,8 @@ export type EditorSelectionType =
   | "scene"
   | "actor"
   | "trigger"
-  | "customEvent";
+  | "customEvent"
+  | "variable";
 
 export type ZoomSection = "world" | "sprites" | "backgrounds" | "ui";
 
@@ -43,6 +40,7 @@ export interface EditorState {
   actorDefaults?: Partial<Actor>;
   triggerDefaults?: Partial<Trigger>;
   sceneDefaults?: Partial<SceneData>;
+  clipboardVariables: Variable[];
   type: EditorSelectionType;
   worldFocus: boolean;
   scene: string;
@@ -78,8 +76,11 @@ export interface EditorState {
   lastScriptTabScene: string;
   lastScriptTabSecondary: string;
   worldSidebarWidth: number;
+  navigatorSidebarWidth: number;
   filesSidebarWidth: number;
+  navigatorSplitSizes: number[];
   profile: boolean;
+  focusSceneId: string;
 }
 
 export const initialState: EditorState = {
@@ -120,7 +121,11 @@ export const initialState: EditorState = {
   lastScriptTabSecondary: "",
   profile: false,
   worldSidebarWidth: 300,
+  navigatorSidebarWidth: 200,
   filesSidebarWidth: 300,
+  clipboardVariables: [],
+  navigatorSplitSizes: [300, 100, 100],
+  focusSceneId: "",
 };
 
 const editorSlice = createSlice({
@@ -209,6 +214,12 @@ const editorSlice = createSlice({
       state.type = "customEvent";
       state.scene = "";
       state.entityId = action.payload.customEventId;
+    },
+
+    selectVariable: (state, action: PayloadAction<{ variableId: string }>) => {
+      state.type = "variable";
+      state.scene = "";
+      state.entityId = action.payload.variableId;
     },
 
     selectActor: (
@@ -386,6 +397,10 @@ const editorSlice = createSlice({
       );
     },
 
+    resizeNavigatorSidebar: (state, action: PayloadAction<number>) => {
+      state.navigatorSidebarWidth = action.payload;
+    },
+
     resizeFilesSidebar: (state, action: PayloadAction<number>) => {
       state.filesSidebarWidth = Math.min(
         window.innerWidth - 70,
@@ -395,6 +410,7 @@ const editorSlice = createSlice({
 
     editSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
+      state.focusSceneId = "";
     },
 
     setScriptTab: (state, action: PayloadAction<string>) => {
@@ -426,6 +442,18 @@ const editorSlice = createSlice({
     setSceneDefaults: (state, action: PayloadAction<Partial<SceneData>>) => {
       state.sceneDefaults = action.payload;
       state.tool = "scene";
+    },
+
+    setClipboardVariables: (state, action: PayloadAction<Variable[]>) => {
+      state.clipboardVariables = action.payload;
+    },
+
+    setNavigatorSplitSizes: (state, action: PayloadAction<number[]>) => {
+      state.navigatorSplitSizes = action.payload;
+    },
+
+    setFocusSceneId: (state, action: PayloadAction<string>) => {
+      state.focusSceneId = action.payload;
     },
   },
   extraReducers: (builder) =>
@@ -487,6 +515,15 @@ const editorSlice = createSlice({
           action.payload.data.settings?.worldScrollX || state.worldScrollX;
         state.worldScrollY =
           action.payload.data.settings?.worldScrollY || state.worldScrollY;
+        if (
+          initialState.navigatorSplitSizes.length ===
+          action.payload.data.settings?.navigatorSplitSizes?.length
+        ) {
+          // Only use navigatorSplitSizes if correct number of splits provided
+          state.navigatorSplitSizes =
+            action.payload.data.settings?.navigatorSplitSizes ||
+            state.navigatorSplitSizes;
+        }
       })
       // When UI changes increment UI version number
       .addMatcher(

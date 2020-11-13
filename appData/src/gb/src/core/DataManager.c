@@ -88,8 +88,28 @@ void LoadPalette(UINT16 index) {
   POP_BANK;
 
   PUSH_BANK(bank);
-  memcpy(BkgPalette, data_ptr, 48);
-  POP_BANK;
+  if (palette_update_mask == 0x3F) {
+    memcpy(BkgPalette, data_ptr, 48);
+  } else {
+    if (palette_update_mask & 0x1) {
+      memcpy(BkgPalette, data_ptr, 8);
+    }
+    if (palette_update_mask & 0x2) {
+      memcpy(BkgPalette + 4, data_ptr + 8, 8);
+    }
+    if (palette_update_mask & 0x4) {
+      memcpy(BkgPalette + 8, data_ptr + 16, 8);
+    }
+    if (palette_update_mask & 0x8) {
+      memcpy(BkgPalette + 12, data_ptr + 24, 8);
+    }    
+    if (palette_update_mask & 0x10) {
+      memcpy(BkgPalette + 16, data_ptr + 32, 8);
+    }    
+    if (palette_update_mask & 0x20) {
+      memcpy(BkgPalette + 20, data_ptr + 40, 8);
+    }            
+  }  POP_BANK;
 }
 
 void LoadUIPalette(UINT16 index) {

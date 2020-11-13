@@ -143,12 +143,6 @@ export const actorFramesPerDir = (spriteType, numFrames) => {
   return numFrames;
 };
 
-export const combineMultipleChoiceText = (args) => {
-  const trueText = args.trueText || "Choice A";
-  const falseText = args.falseText || "Choice B";
-  return `${trueText}\n${falseText}`;
-};
-
 export const isMBC1 = (cartType) => cartType === "03" || cartType === "02";
 
 export const replaceInvalidCustomEventVariables = (variable) => {
@@ -161,7 +155,7 @@ export const replaceInvalidCustomEventVariables = (variable) => {
   }
 
   // Support the case for "union" values
-  if (variable !== null && variable.type === "variable") {
+  if (variable && variable.type === "variable") {
     return {
       ...variable,
       value: getValidVariableIndex(variable.value)
@@ -264,12 +258,11 @@ export const textSpeedDec = (speed) => TEXT_SPEED_LOOKUP[speed] !== undefined
   ? TEXT_SPEED_LOOKUP[speed]
   : 0x1;
 
-export const fadeStyleDec = (style) => {
-  if (style === "white") {
-    return 0;
-  }
-  if (style === "black") {
-    return 1;
-  }
-  return 0;
+export const paletteMaskDec = (mask) => {
+  return mask.reduce((memo, value, index) => {
+    if (!value) {
+      return memo;
+    }
+    return memo + Math.pow(2, index);
+  }, 0);
 }

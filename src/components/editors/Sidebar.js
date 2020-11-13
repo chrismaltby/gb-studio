@@ -4,8 +4,13 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import editorActions from "../../store/features/editor/editorActions";
 
-const SidebarTabs = ({ values, value, onChange, buttons, secondary }) => (
-  <div className={cx("SidebarTabs", {"SidebarTabs--Secondary": secondary})}>
+const SidebarTabs = ({ values, value, onChange, buttons, secondary, small }) => (
+  <div className={cx("SidebarTabs", 
+    {
+      "SidebarTabs--Secondary": secondary,
+      "SidebarTabs--Small": small
+    })}
+  >
     <div className="SidebarTabs__Container">
       {Object.keys(values).map((key, index) => (
         <div
@@ -29,13 +34,15 @@ SidebarTabs.propTypes = {
   values: PropTypes.objectOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
   buttons: PropTypes.node,
-  secondary: PropTypes.bool
+  secondary: PropTypes.bool,
+  small: PropTypes.bool
 };
 
 SidebarTabs.defaultProps = {
   buttons: null,
   value: null,
   secondary: false,
+  small: false,
   onChange: () => {}
 };
 
@@ -115,7 +122,7 @@ class Sidebar extends Component {
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
         />
-        <div style={{ width }} className="Sidebar__Content">
+        <div className="Sidebar__Content">
           {children}
         </div>
       </div>

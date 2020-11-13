@@ -5,6 +5,7 @@
 #include <string.h>
 #include "Palette.h"
 #include "Math.h"
+#include "data_ptrs.h"
 
 static UBYTE fade_frame;
 static FADE_DIRECTION fade_direction;
@@ -33,7 +34,7 @@ void ApplyPaletteChangeColor(UBYTE index) {
     return;
   }
 
-  if (fade_black) {
+  if (fade_style) {
     for (c = 0; c != 32; ++c, ++col) {
       BkgPaletteBuffer[c] = UpdateColorBlack(index, *col);
     }
@@ -58,7 +59,7 @@ void ApplyPaletteChangeColor(UBYTE index) {
 #endif
 
 void ApplyPaletteChangeDMG(UBYTE index) {
-  if (!fade_black) {
+  if (!fade_style) {
     OBP0_REG = obj_fade_vals[index];
     BGP_REG = bgp_fade_vals[index];
   }

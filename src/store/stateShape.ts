@@ -125,3 +125,8 @@ export const EventDefaultValueShape = PropTypes.oneOfType([
     direction: PropTypes.string,
   }),
 ]);
+
+export const EngineFieldShape = PropTypes.shape({
+  key: PropTypes.string,
+  label: PropTypes.string,
+});

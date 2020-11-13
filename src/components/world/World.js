@@ -7,7 +7,7 @@ import Scene from "./Scene";
 import WorldHelp from "./WorldHelp";
 import Connections from "./Connections";
 import { MIDDLE_MOUSE, TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER } from "../../consts";
-import { SceneShape } from "../../store/stateShape";
+import { SceneShape, VariableShape } from "../../store/stateShape";
 import { sceneSelectors, getMaxSceneRight, getMaxSceneBottom } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
@@ -161,10 +161,10 @@ class World extends Component {
       this.dragDistance.y -= e.movementY;      
     } else {
       const boundingRect = e.currentTarget.getBoundingClientRect();
-      const x = e.pageX + e.currentTarget.scrollLeft - 0;
+      const x = e.pageX + e.currentTarget.scrollLeft - boundingRect.x;
       const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
 
-      this.offsetX = e.pageX;
+      this.offsetX = e.pageX - boundingRect.x;
       this.offsetY = e.pageY - boundingRect.y;
 
       if (tool === "scene") {
@@ -233,9 +233,9 @@ class World extends Component {
   }
 
   onAddScene = e => {
-    const { addScene, setTool, sceneDefaults } = this.props;
+    const { addScene, setTool, sceneDefaults, clipboardVariables } = this.props;
     const { hoverX, hoverY } = this.state;
-    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults});
+    addScene({x: hoverX, y: hoverY, defaults: sceneDefaults, variables: clipboardVariables});
     setTool({tool:"select"});
     this.setState({ hover: false });
   };
@@ -259,7 +259,6 @@ class World extends Component {
       <div
         ref={this.scrollRef}
         className="World"
-        style={worldStyle}
         onMouseMove={this.onMouseMove}
         onMouseOver={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
@@ -316,6 +315,7 @@ World.propTypes = {
   zoomRatio: PropTypes.number.isRequired,
   focus: PropTypes.bool.isRequired,
   sceneDefaults: PropTypes.shape({}),
+  clipboardVariables: PropTypes.arrayOf(VariableShape).isRequired,
   sidebarWidth: PropTypes.number.isRequired,
   showConnections: PropTypes.bool.isRequired,
   tool: PropTypes.string.isRequired,
@@ -349,7 +349,9 @@ function mapStateToProps(state) {
     worldScrollX: scrollX,
     worldScrollY: scrollY,
     showLayers,
-    sceneDefaults
+    sceneDefaults,
+    clipboardVariables,
+    focusSceneId
   } = state.editor;
   
   const { worldSidebarWidth: sidebarWidth } = state.editor;
@@ -372,7 +374,7 @@ function mapStateToProps(state) {
     : [];
 
   const onlyMatchingScene = (matchingScenes.length === 1
-    && scenesLookup[matchingScenes[0]]) || null;
+    && scenesLookup[matchingScenes[0]]) || scenesLookup[focusSceneId] || null;
 
   const { tool } = state.editor;
 
@@ -384,6 +386,7 @@ function mapStateToProps(state) {
     scrollY,
     tool,
     sceneDefaults,
+    clipboardVariables,
     zoomRatio: (state.editor.zoom || 100) / 100,
     showConnections: (!!showConnections) && (showLayers || (tool !== TOOL_COLORS && tool !== TOOL_COLLISIONS && tool !== TOOL_ERASER)),
     sidebarWidth,

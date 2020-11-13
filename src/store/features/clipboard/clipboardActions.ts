@@ -10,11 +10,13 @@ import {
   Scene,
   ScriptEvent,
   SceneData,
+  Variable,
 } from "../entities/entitiesTypes";
 import { RootState } from "../../configureStore";
 import editorActions from "../editor/editorActions";
 import entitiesActions from "../entities/entitiesActions";
 
+const copyText = createAction<string>("clipboard/copyText");
 const copyActor = createAction<Actor>("clipboard/copyActor");
 const copyTrigger = createAction<Trigger>("clipboard/copyTrigger");
 const copyScene = createAction<Scene>("clipboard/copyScene");
@@ -62,6 +64,10 @@ const pasteClipboardEntity = (clipboardData: any) => (
     dispatch(pasteCustomEvents());
     dispatch(editorActions.setTriggerDefaults(clipboardTrigger));
   }
+  if (clipboardData.__variables) {
+    const clipboardVariables = clipboardData.__variables as Variable[];
+    dispatch(editorActions.setClipboardVariables(clipboardVariables));
+  }
 };
 
 const pasteClipboardEntityInPlace = (clipboardData: any) => (
@@ -79,6 +85,7 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         x: clipboardScene.x,
         y: clipboardScene.y,
         defaults: clipboardScene,
+        variables: clipboardData.__variables
       })
     );
   } else if (sceneId && clipboardData.__type === "actor") {
@@ -90,6 +97,7 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         x: clipboardActor.x,
         y: clipboardActor.y,
         defaults: clipboardActor,
+        variables: clipboardData.__variables
       })
     );
   } else if (sceneId && clipboardData.__type === "trigger") {
@@ -103,12 +111,14 @@ const pasteClipboardEntityInPlace = (clipboardData: any) => (
         width: clipboardTrigger.width,
         height: clipboardTrigger.height,
         defaults: clipboardTrigger,
+        variables: clipboardData.__variables
       })
     );
   }
 };
 
 export default {
+  copyText,
   copyActor,
   copyTrigger,
   copyScene,

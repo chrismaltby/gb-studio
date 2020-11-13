@@ -225,6 +225,7 @@ const saveProject = createAsyncThunk<void, string | undefined>(
           zoom: state.editor.zoom,
           worldScrollX: state.editor.worldScrollX,
           worldScrollY: state.editor.worldScrollY,
+          navigatorSplitSizes: state.editor.navigatorSplitSizes,
         },
       };
 

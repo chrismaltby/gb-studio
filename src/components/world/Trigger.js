@@ -7,8 +7,6 @@ import { triggerSelectors } from "../../store/features/entities/entitiesState";
 
 class Trigger extends Component {
   onMouseDown = e => {
-    e.stopPropagation();
-    e.preventDefault();
     const { id, sceneId, dragTriggerStart, setTool } = this.props;
     dragTriggerStart({sceneId, triggerId:id});
     setTool({tool:"select"});

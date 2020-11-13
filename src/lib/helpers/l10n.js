@@ -112,7 +112,7 @@ export const replaceParams = (string, params) => {
 
 export const makeTranslator = l10nStrings => (key, params = null) => {
   // console.log("LOCALISE", key, l10nStrings[key], l10nStrings);
-  const l10nString = l10nStrings[key];
+  const l10nString = l10nStrings[key] || key;
   if (params) {
     return replaceParams(l10nString, params);
   }

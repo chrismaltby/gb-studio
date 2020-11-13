@@ -1,8 +1,8 @@
 .World {
-  position: fixed;
+  position: absolute;
   left: 0px;
-  right: 300px;
-  top: 38px;
+  right: 0;
+  top: 0;
   bottom: 0px;
   overflow: auto;
 }

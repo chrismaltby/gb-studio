@@ -42,6 +42,15 @@ const migrateProject = project => {
       data = migrateFrom200r1To200r2Events(data);
       release = "2";
     }
+    if (release === "2") {
+      data = migrateFrom200r2To200r3Events(data);
+      release = "3";
+    }
+    if (release === "3") {
+      data = migrateFrom200r3To200r4EngineFieldValues(data);
+      data = migrateFrom200r3To200r4Events(data);
+      release = "4";
+    }      
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -55,6 +64,21 @@ const migrateProject = project => {
 
   return data;
 };
+
+/*
+ * Helper function to make sure that all migrated functions
+ * include the original metadata such as label text and comment status
+ */
+const generateMigrateMeta = (event) => (newEvent) => {
+  return {
+    ...newEvent,
+    args: {
+      ...newEvent.args,
+      __comment: event.args.__comment,
+      __label: event.args.__label        
+    }
+  }
+}
 
 /*
  * In version 1 Actors using sprites with 3 or 6 frames and movementType static
@@ -335,16 +359,7 @@ export const migrateFrom120To200Actors = (data) => {
  * needs to be added to all sound scripts to make old functionality the default
  */
 export const migrateFrom120To200Event = event => {
-  const migrateMeta = (newEvent) => {
-    return {
-      ...newEvent,
-      args: {
-        ...newEvent.args,
-        __comment: event.args.__comment,
-        __label: event.args.__label        
-      }
-    }
-  }
+  const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_SOUND_PLAY_EFFECT") {
     return migrateMeta({
       ...event,
@@ -588,16 +603,7 @@ export const migrateFrom120To200Collisions = data => {
  * to use the new default
  */
 export const migrateFrom200r1To200r2Event = (event) => {
-  const migrateMeta = (newEvent) => {
-    return {
-      ...newEvent,
-      args: {
-        ...newEvent.args,
-        __comment: event.args.__comment,
-        __label: event.args.__label,
-      },
-    };
-  };
+  const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_PLAYER_SET_SPRITE") {
     return migrateMeta({
       ...event,
@@ -623,5 +629,89 @@ const migrateFrom200r1To200r2Events = data => {
     })
   };
 };
+
+/*
+ * Version 2.0.0 r2 only allowed a script to be attached to
+ * a single input at once. This migration updates existing
+ * EVENT_SET_INPUT_SCRIPT events to use array values
+ */
+export const migrateFrom200r2To200r3Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_SET_INPUT_SCRIPT") {
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        input: Array.isArray(event.args.input)
+          ? event.args.input
+          : [event.args.input],
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r2To200r3Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r2To200r3Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r2To200r3Event)
+      }
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r3 used a separate event for handling updating the
+ * fade style, this has now been merged into EVENT_ENGINE_FIELD_SET
+ */
+export const migrateFrom200r3To200r4Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_FADE_SETTINGS") {
+    return migrateMeta({
+      ...event,
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        ...event.args,
+        engineFieldKey: "fade_style",
+        value: {
+          type: "select",
+          value: event.args.style === "black" ? 1 : 0
+        }
+      },
+    });
+  }
+  return event;
+};
+
+const migrateFrom200r3To200r4Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r3To200r4Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r3To200r4Event)
+      }
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r3 stored the default fade style in settings, this
+ * has now been moved to an engine field value
+ */
+export const migrateFrom200r3To200r4EngineFieldValues = data => {
+  return {
+    ...data,
+    engineFieldValues: [].concat(data.engineFieldValues||[], {
+      id: "fade_style",
+      value: data.settings.defaultFadeStyle === "black" ? 1 : 0
+    })
+  }
+}
 
 export default migrateProject;

@@ -2,7 +2,7 @@ const trimlines = require("../helpers/trimlines");
 const l10n = require("../helpers/l10n").default;
 
 const trimChoiceItem = (string) => {
-  return trimlines(string, 17);
+  return trimlines(string, 17, 1);
 };
 
 const id = "EVENT_CHOICE";

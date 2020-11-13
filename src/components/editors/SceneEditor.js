@@ -10,9 +10,8 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { DropdownButton } from "../library/Button";
 import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
-import Sidebar, { SidebarHeading, SidebarColumn, SidebarTabs } from "./Sidebar";
+import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { SceneShape } from "../../store/stateShape";
-import SceneNavigation from "./SceneNavigation";
 import WorldEditor from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import LabelButton from "../library/LabelButton";
@@ -22,6 +21,7 @@ import { sceneSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";
 import clipboardActions from "../../store/features/clipboard/clipboardActions";
 import entitiesActions from "../../store/features/entities/entitiesActions";
+import { SidebarMultiColumnAuto, SidebarColumn } from "../ui/sidebars/Sidebar";
 
 const defaultTabs = {
   start: l10n("SIDEBAR_ON_INIT"),
@@ -183,7 +183,7 @@ class SceneEditor extends Component {
     };
 
     return (
-      <Sidebar onMouseDown={selectSidebar}>
+      <SidebarMultiColumnAuto>
         <SidebarColumn>
           <SidebarHeading
             title={l10n("SCENE")}
@@ -334,8 +334,6 @@ class SceneEditor extends Component {
               />
             </ToggleableFormField>
           </div>
-
-          <SceneNavigation sceneId={scene.id} />
         </SidebarColumn>
 
         <SidebarColumn>
@@ -385,7 +383,7 @@ class SceneEditor extends Component {
             )}            
           </div>
         </SidebarColumn>
-      </Sidebar>
+      </SidebarMultiColumnAuto>
     );
   }
 }

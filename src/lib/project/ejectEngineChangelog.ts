@@ -46,6 +46,90 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/states/Platform.c"
     ]
+}, {
+    version: "2.0.0-e6",
+    description: "Updates to the 'Attach Script to Button' event:\n" +
+        "   * Add support to attach script to multiple buttons\n" +
+        "   * Always override default button behavior on attach",
+    modifiedFiles: [
+        "include/Input.h",
+        "src/core/Core_Main.c",
+        "src/core/Input.c",
+        "src/core/ScriptRunner_b.c"
+    ]
+}, {
+    version: "2.0.0-e7",
+    description: "Adds support for vertical and diagonal camera shake",
+    modifiedFiles: [
+        "include/Scroll.h",
+        "src/core/Actor_a.s",
+        "src/core/Core_Main.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/core/Scroll_b.c",
+    ]
+}, {
+    version: "2.0.0-e8",
+    description: "Add support for preserving some background palettes while palette swapping",
+    modifiedFiles: [
+        "include/Palette.h",
+        "src/core/DataManager.c",
+        "src/core/Palette.c",
+        "src/core/ScriptRunner_b.c",
+    ]
+}, {
+    version: "2.0.0-e9",
+    description: "Fix movement in Adventure mode",
+    modifiedFiles: [
+        "include/Input.h",
+    ]
+}, {
+    version: "2.0.0-e10",
+    description: "Fix bug where an attached script overrides default behavior even when not persisted between scenes",
+    modifiedFiles: [
+        "src/core/Input.c",
+    ]
+}, {
+    version: "2.0.0-e11",
+    description: "Improve collision detection between actors and projectiles",
+    modifiedFiles: [
+        "src/core/Projectiles_b.c",
+    ]
+}, {
+    version: "2.0.0-e12",
+    description: "Add support for offsetting weapon attack, and flip attack while facing left if using static sprite",
+    modifiedFiles: [
+        "include/Projectiles.h",
+        "src/core/Projectiles.c",
+        "src/core/Projectiles_b.c",
+        "src/core/ScriptRunner_b.c",
+    ]
+}, {
+    version: "2.0.0-e13",
+    description: "Add support for Engine Fields updatable from settings page and using events:\n" +
+        "   * Configurable platformer velocity, acceleration and gravity values\n" +
+        "   * Top down grid size configurable to 8px or 16px",
+    modifiedFiles: [
+        "include/Actor.h",
+        "include/Math.h",
+        "include/ScriptRunner.h",
+        "include/data_ptrs.h",
+        "src/core/Actor.c",
+        "src/core/Actor_b.c",
+        "src/core/Core_Main.c",
+        "src/core/FadeManager_b.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/states/Adventure.c",
+        "src/states/Platform.c",
+        "src/states/TopDown.c",
+    ]
+}, {
+    version: "2.0.0-e14",
+    description: "Keep the camera centered on the scene when shaking",
+    modifiedFiles: [
+        "src/core/ScriptRunner_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

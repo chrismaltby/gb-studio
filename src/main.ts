@@ -15,6 +15,9 @@ declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var SPLASH_WINDOW_WEBPACK_ENTRY: any;
 
+declare var PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
+declare var PREFERENCES_WINDOW_WEBPACK_ENTRY: any;
+
 type SplashTab = "info" | "new" | "recent";
 
 // Stop app launching during squirrel install
@@ -29,6 +32,7 @@ app.allowRendererProcessReuse = false;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any = null;
 let splashWindow: any = null;
+let preferencesWindow: any = null
 let playWindow: any = null;
 let hasCheckedForUpdate = false;
 
@@ -53,10 +57,12 @@ const validProjectExt = [".json", ".gbsproj"];
 const createSplash = async (forceTab?: SplashTab) => {
   // Create the browser window.
   splashWindow = new BrowserWindow({
-    width: 700,
-    height: 450,
+    width: 640,
+    height: 400,
+    useContentSize: true,
     resizable: false,
     maximizable: false,
+    titleBarStyle: "hiddenInset",
     fullscreenable: false,
     show: false,
     autoHideMenuBar: true,
@@ -87,6 +93,38 @@ const createSplash = async (forceTab?: SplashTab) => {
   });
 };
 
+const createPreferences = async (forceTab?: SplashTab) => {
+  // Create the browser window.
+  preferencesWindow = new BrowserWindow({
+    width: 600,
+    height: 280,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      devTools: isDevMode,
+      preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY
+    }
+  });
+
+  preferencesWindow.setMenu(null);
+  preferencesWindow.loadURL(PREFERENCES_WINDOW_WEBPACK_ENTRY);
+
+  preferencesWindow.webContents.on("did-finish-load", () => {
+    setTimeout(() => {
+      preferencesWindow.show();
+    }, 40);
+  });
+
+  preferencesWindow.on("closed", () => {
+    preferencesWindow = null;
+  });
+};
+
+
 const createWindow = async (projectPath: string) => {
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
@@ -97,9 +135,9 @@ const createWindow = async (projectPath: string) => {
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
     y: mainWindowState.y,
-    width: Math.max(800, mainWindowState.width),
+    width: Math.max(640, mainWindowState.width),
     height: Math.max(600, mainWindowState.height),
-    minWidth: 800,
+    minWidth: 640,
     minHeight: 600,
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
@@ -324,11 +362,16 @@ ipcMain.on("document-unmodified", () => {
 });
 
 ipcMain.on("project-loaded", (event, settings) => {
-  const { showCollisions, showConnections } = settings;
+  const { showCollisions, showConnections, showNavigator } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
   menu.ref().getMenuItemById("showConnectionsAll").checked = showConnections === "all";
   menu.ref().getMenuItemById("showConnectionsSelected").checked = showConnections === "selected" || showConnections === true;
   menu.ref().getMenuItemById("showConnectionsNone").checked = showConnections === false;
+  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
+});
+
+ipcMain.on("set-show-navigator", (event, showNavigator) => {
+  menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
 ipcMain.on("set-menu-plugins", (event, plugins) => {
@@ -428,6 +471,14 @@ menu.on("pasteInPlace", () => {
 menu.on("checkUpdates", () => {
   checkForUpdate(true);
 });
+
+menu.on("preferences", () => {
+  if (!preferencesWindow) {
+    createPreferences();
+  } else {
+    preferencesWindow.show();
+  }
+})
 
 menu.on("updateSetting", (setting: string, value: any) => {
   settings.set(setting, value);

@@ -32,7 +32,7 @@ const compile = (input, helpers) => {
 
     Object.keys(e.args).forEach((arg) => {
       const argValue = e.args[arg];
-      if (isVariableField(e.command, arg, argValue)) {
+      if (isVariableField(e.command, arg, e.args)) {
         if (argValue !== null && argValue.type === "variable") {
           e.args[arg] = {
             ...argValue,
