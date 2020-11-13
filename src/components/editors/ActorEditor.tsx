@@ -337,13 +337,11 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
               onMouseDown={readClipboard}
             >
               {!showNotes && (
-                <>
-                  <MenuItem onClick={onAddNotes}>
-                    {l10n("FIELD_ADD_NOTES")}
-                  </MenuItem>
-                  <MenuDivider />
-                </>
+                <MenuItem onClick={onAddNotes}>
+                  {l10n("FIELD_ADD_NOTES")}
+                </MenuItem>
               )}
+              {!showNotes && <MenuDivider />}
               <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
               {clipboardData && clipboardData.__type === "actor" && (
                 <MenuItem onClick={onPaste}>

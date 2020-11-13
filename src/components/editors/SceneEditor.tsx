@@ -241,13 +241,11 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               onMouseDown={readClipboard}
             >
               {!showNotes && (
-                <>
-                  <MenuItem onClick={onAddNotes}>
-                    {l10n("FIELD_ADD_NOTES")}
-                  </MenuItem>
-                  <MenuDivider />
-                </>
+                <MenuItem onClick={onAddNotes}>
+                  {l10n("FIELD_ADD_NOTES")}
+                </MenuItem>
               )}
+              {!showNotes && <MenuDivider />}
               <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
               {clipboardData && clipboardData.__type === "scene" && (
                 <MenuItem onClick={onPaste}>
