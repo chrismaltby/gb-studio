@@ -272,6 +272,49 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
           )}
 
           <FormRow>
+            <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
+              <BackgroundSelectButton
+                name="backgroundId"
+                value={scene.backgroundId}
+                onChange={onChangeField("backgroundId")}
+                includeInfo
+              />
+            </FormField>
+            {colorsEnabled && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gridTemplateRows: "1fr 1fr",
+                  gap: 5,
+                  marginTop: 18,
+                  flexShrink: 0,
+                }}
+              >
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <PaletteSelectButton
+                    key={index}
+                    name={`scenePalette${index}`}
+                    value={(scene.paletteIds && scene.paletteIds[index]) || ""}
+                    onChange={onEditPaletteId(index)}
+                    optional
+                    optionalDefaultPaletteId={
+                      defaultBackgroundPaletteIds[index] || ""
+                    }
+                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                  />
+                ))}
+              </div>
+            )}
+          </FormRow>
+
+          <FormRow>
+            <BackgroundWarnings id={scene.backgroundId} />
+          </FormRow>
+
+          <FormDivider />
+
+          <FormRow>
             <FormField name="type" label={l10n("FIELD_TYPE")}>
               <SceneTypeSelect
                 name="type"
@@ -280,37 +323,6 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               />
             </FormField>
           </FormRow>
-
-          <FormDivider />
-
-          <FormRow>
-            <BackgroundSelectButton
-              name="backgroundId"
-              value={scene.backgroundId}
-              onChange={onChangeField("backgroundId")}
-            />
-          </FormRow>
-
-          <FormRow>
-            <BackgroundWarnings id={scene.backgroundId} />
-          </FormRow>
-          {colorsEnabled && (
-            <FormRow>
-              {[0, 1, 2, 3, 4, 5].map((index) => (
-                <PaletteSelectButton
-                  key={index}
-                  name={`scenePalette${index}`}
-                  value={(scene.paletteIds && scene.paletteIds[index]) || ""}
-                  onChange={onEditPaletteId(index)}
-                  optional
-                  optionalDefaultPaletteId={
-                    defaultBackgroundPaletteIds[index] || ""
-                  }
-                  optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                />
-              ))}
-            </FormRow>
-          )}
         </FormContainer>
       </SidebarColumn>
       <SidebarColumn>

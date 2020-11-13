@@ -36,6 +36,7 @@ const Wrapper = styled.div<WrapperProps>`
   position: relative;
   display: flex;
   min-width: 0;
+  width: 60px;
   ${(props) =>
     props.includeInfo
       ? css`
@@ -48,24 +49,22 @@ const ButtonCover = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 54px;
-  height: 54px;
+  width: 100%;
+  height: 100%;
 `;
 
 const Button = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0;
+  text-align: left;
   background: ${(props) => props.theme.colors.input.background};
   color: ${(props) => props.theme.colors.input.text};
   border: 1px solid ${(props) => props.theme.colors.input.border};
   font-size: ${(props) => props.theme.typography.fontSize};
   border-radius: ${(props) => props.theme.borderRadius}px;
-  padding: 1px;
-  box-sizing: border-box;
-  height: 54px;
-  width: 54px;
+  padding: 0;
+  width: 100%;
   flex-shrink: 0;
+  align-items: stretch;
 
   :hover {
     background: ${(props) => props.theme.colors.input.hoverBackground};
@@ -84,13 +83,41 @@ const Button = styled.button`
   }
 `;
 
+const ButtonContent = styled.div`
+  display: flex;
+  width: 100%;
+  height: 58px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  padding: 5px;
+`;
+
+const PreviewWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 100%;
+`;
+
 const SpriteInfo = styled.div`
   margin-left: 5px;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
   width: 100%;
   font-size: 11px;
+  height: 100%;
+
+  & > *:not(:last-child) {
+    margin-bottom: 3px;
+  }
+`;
+
+const SpriteInfoTitle = styled.div`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  font-weight: bold;
 `;
 
 const SpriteInfoRow = styled.div`
@@ -98,10 +125,10 @@ const SpriteInfoRow = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
   flex-grow: 1;
+  opacity: 0.7;
 `;
 
 const SpriteInfoField = styled.span`
-  font-weight: bold;
   margin-right: 5px;
 `;
 
@@ -216,32 +243,38 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
         onFocus={onButtonFocus}
         onBlur={onButtonBlur}
       >
-        {spriteSheet ? (
-          <SpriteSheetCanvas
-            spriteSheetId={value}
-            direction={direction}
-            frame={frame}
-            palette={palette}
-          />
-        ) : (
-          <NoValue />
-        )}
+        <ButtonContent>
+          {spriteSheet ? (
+            <PreviewWrapper>
+              <SpriteSheetCanvas
+                spriteSheetId={value}
+                direction={direction}
+                frame={frame}
+                palette={palette}
+              />
+            </PreviewWrapper>
+          ) : (
+            <NoValue />
+          )}
+          {includeInfo && (
+            <SpriteInfo>
+              <SpriteInfoTitle>{spriteSheet?.name}</SpriteInfoTitle>
+              <SpriteInfoRow>
+                <SpriteInfoField>
+                  {l10n("FIELD_SPRITE_FRAMES")}:
+                </SpriteInfoField>
+                {spriteSheet?.numFrames}
+              </SpriteInfoRow>
+              <SpriteInfoRow>
+                <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
+                {typeLabel(spriteSheet)}
+              </SpriteInfoRow>
+            </SpriteInfo>
+          )}
+        </ButtonContent>
       </Button>
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
-      <SpriteInfo>
-        <SpriteInfoRow>
-          <SpriteInfoField>{l10n("FIELD_NAME")}:</SpriteInfoField>
-          {spriteSheet?.name}
-        </SpriteInfoRow>
-        <SpriteInfoRow>
-          <SpriteInfoField>{l10n("FIELD_SPRITE_FRAMES")}:</SpriteInfoField>
-          {spriteSheet?.numFrames}
-        </SpriteInfoRow>
-        <SpriteInfoRow>
-          <SpriteInfoField>{l10n("FIELD_TYPE")}:</SpriteInfoField>
-          {typeLabel(spriteSheet)}
-        </SpriteInfoRow>
-      </SpriteInfo>
+
       <div style={{ position: "absolute", top: "100%", left: "0%" }}>
         <RelativePortal pin="top-left">
           {isOpen && (

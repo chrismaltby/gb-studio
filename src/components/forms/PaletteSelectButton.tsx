@@ -21,6 +21,11 @@ type PaletteSelectProps = {
 const Wrapper = styled.div`
   position: relative;
   display: inline-flex;
+  min-width: 0;
+  flex-shrink: 0;
+  & * {
+    min-width: 0;
+  }
 `;
 
 const ButtonCover = styled.div`

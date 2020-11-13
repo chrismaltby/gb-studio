@@ -63,6 +63,7 @@ interface FormFieldWrapperProps {
 
 const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
   width: 100%;
+  min-width: 0;
   ${(props) =>
     props.variant === "error"
       ? css`
