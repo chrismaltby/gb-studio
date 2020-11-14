@@ -50,7 +50,10 @@ const migrateProject = project => {
       data = migrateFrom200r3To200r4EngineFieldValues(data);
       data = migrateFrom200r3To200r4Events(data);
       release = "4";
-    }      
+    }
+    if (release === "4") {
+      data = migrateFrom200r4To200r5Events(data);
+    }
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -713,5 +716,79 @@ export const migrateFrom200r3To200r4EngineFieldValues = data => {
     })
   }
 }
+
+/*
+ * Version 2.0.0 r4 used string values for animSpeed and moveSpeed,
+ * animSpeed is now number|null and moveSpeed is number
+ */
+export const migrateFrom200r4To200r5Event = (event) => {
+  const migrateMeta = generateMigrateMeta(event);
+  if (event.args && event.command === "EVENT_ACTOR_SET_ANIMATION_SPEED") {
+    let speed = event.args.speed;
+    if (speed === "") {
+      speed = null;
+    }
+    else if (speed === undefined) {
+      speed = 3;
+    }
+    else {
+      speed = parseInt(speed, 10);
+    }
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        speed
+      },
+    });
+  }
+  if (event.args && event.command === "EVENT_ACTOR_SET_MOVEMENT_SPEED") {
+    let speed = event.args.speed;
+    if (speed === "" || speed === undefined) {
+      speed = 3;
+    }
+    else {
+      speed = parseInt(speed, 10);
+    }
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        speed
+      },
+    });
+  }  
+  if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
+    let speed = event.args.speed;
+    if (speed === "" || speed === undefined) {
+      speed = 3;
+    }
+    else {
+      speed = parseInt(speed, 10);
+    }
+    return migrateMeta({
+      ...event,
+      args: {
+        ...event.args,
+        speed
+      },
+    });
+  }    
+  return event;
+};
+
+const migrateFrom200r4To200r5Events = data => {
+  return {
+    ...data,
+    scenes: mapScenesEvents(data.scenes, migrateFrom200r4To200r5Event),
+    customEvents: (data.customEvents || []).map((customEvent) => {
+      return {
+        ...customEvent,
+        script: mapEvents(customEvent.script, migrateFrom200r4To200r5Event)
+      }
+    })
+  };
+};
+
 
 export default migrateProject;
