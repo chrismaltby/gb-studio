@@ -130,6 +130,43 @@ const changes: EngineChange[] = [{
     modifiedFiles: [
         "src/core/ScriptRunner_b.c",
     ]
+}, {
+    version: "2.0.0-e15",
+    description: "Update to GBDK 2020 v4 for performance:\n" +
+    "   * Replace all bank push pop with __banked for performance\n" +
+    "   * Fix actor and sprite asm for GBDK 2020 v4",
+    modifiedFiles: [
+        "include/Projectiles.h",
+        "include/ScriptRunner.h",
+        "include/Scroll.h",
+        "include/UI.h",
+        "include/data_ptrs.h",
+        "src/core/Actor.c",
+        "src/core/Actor_a.s",
+        "src/core/Actor_b.c",
+        "src/core/BankData.c",
+        "src/core/BankManager.c",
+        "src/core/Core_Main.c",
+        "src/core/DataManager.c",
+        "src/core/FadeManager.c",
+        "src/core/FadeManager_b.c",
+        "src/core/Input.c",
+        "src/core/MusicManager.c",
+        "src/core/Palette.c",
+        "src/core/Projectiles.c",
+        "src/core/Projectiles_b.c",
+        "src/core/ScriptRunner.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/core/Scroll_b.c",
+        "src/core/Sprite.c",
+        "src/core/Sprite_b.c",
+        "src/core/Trigger.c",
+        "src/core/Trigger_b.c",
+        "src/core/UI.c",
+        "src/core/UI_b.c",
+        "src/core/gbt_player.s",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {

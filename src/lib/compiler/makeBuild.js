@@ -116,7 +116,7 @@ const makeBuild = async ({
     !settings.gbcFastCPUEnabled
   ) {
     let makeFile = await fs.readFile(`${buildRoot}/Makefile`, "utf8");
-    makeFile = makeFile.replace("-Wl-yp0x143=0x80", "");
+    makeFile = makeFile.replace("-Wm-yC", "");
     await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
   }
 

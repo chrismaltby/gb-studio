@@ -10,7 +10,7 @@ export default async (
   buildRoot,
   { CART_TYPE, CART_SIZE, customColorsEnabled, profile, platform }
 ) => {
-  const cmds = platform === "win32" ? ["set __COMPAT_LAYER=WIN7RTM"] : ["#!/bin/bash", "set -e"];
+  const cmds = platform === "win32" ? [""] : ["#!/bin/bash", "set -e"];
   const objFiles = [];
 
   const CC = platform === "win32"
@@ -21,7 +21,7 @@ export default async (
 
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
-    LFLAGS += " -Wl-yp0x143=0x80";
+    LFLAGS += " -Wm-yC";
   }
 
   if (profile) {
@@ -45,16 +45,12 @@ export default async (
     const objFile = `${file
       .replace(/src.*\//, "obj/")
       .replace(/\.[cs]$/, "")}.o`;
-    if (
-      file.indexOf("data/bank_") === -1 &&
-      file.indexOf("music/music_bank_") === -1
-    ) {
+
       if (!(await pathExists(objFile))) {
         addCommand(
           `${l10n("COMPILER_COMPILING")}: ${Path.relative(buildRoot, file)}`,
           `${CC} ${CFLAGS} -c -o ${objFile} ${file}`
         );
-      }
     }
     objFiles.push(objFile);
   }

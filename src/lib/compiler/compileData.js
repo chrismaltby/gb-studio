@@ -535,11 +535,11 @@ const compile = async (
     const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
     output[`bank_${bank}.c`] = bankDataBank;
   });
-
+/* 
   bankObjectData.forEach((bankDataBank, index) => {
     const bank = bankDataBank.match(/M bank_([0-9]+)/)[1];
     output[`bank_${bank}.o`] = bankDataBank;
-  });
+  });*/
 
   const maxDataBank = banked.getMaxWriteBank();
 
