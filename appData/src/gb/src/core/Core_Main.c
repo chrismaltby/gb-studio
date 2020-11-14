@@ -127,9 +127,16 @@ int core_start() {
   WY_REG = MAXWNDPOSY + 1U;
 
   // Initialize structures
+  memset(&script_variables, 0, sizeof(script_variables));
+
   memset(&actors, 0, sizeof(actors));
   memset(&active_script_ctx, 0, sizeof(active_script_ctx));
   memset(&script_ctxs, 0, sizeof(script_ctxs));
+
+  memset(&SprPalette, 0, sizeof(SprPalette));
+  memset(&BkgPalette, 0, sizeof(BkgPalette));
+  memset(&SprPaletteBuffer, 0, sizeof(SprPaletteBuffer));
+  memset(&BkgPaletteBuffer, 0, sizeof(BkgPaletteBuffer));
 
   // Initialise Player
   player.sprite = 0;
