@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/configureStore";
 import { paletteSelectors } from "../../store/features/entities/entitiesState";
@@ -7,6 +7,7 @@ import PaletteBlock from "../library/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
 import { RelativePortal } from "../ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
+import navigationActions from "../../store/features/navigation/navigationActions";
 
 type PaletteSelectProps = {
   name: string;
@@ -78,6 +79,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (buttonFocus) {
@@ -145,8 +147,17 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     }
   };
 
+  const onJumpToPalette = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (e.altKey) {
+      if (palette) {
+        dispatch(navigationActions.setSection("palettes"));
+        dispatch(navigationActions.setNavigationId(palette.id || ""));
+      }
+    }
+  };
+
   return (
-    <Wrapper>
+    <Wrapper onClick={onJumpToPalette}>
       <Button
         id={name}
         ref={buttonRef}
