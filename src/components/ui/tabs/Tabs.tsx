@@ -62,7 +62,11 @@ const Tabs = styled.div<TabsProps>`
       : ""}
 `;
 
-const Tab = styled.div<TabProps>`
+const Tab = styled.button<TabProps>`
+  border: 0;
+  font-size: 12px;
+  font-weight: bold;
+  background: transparent;
   display: flex;
   align-items: center;
   padding: 0 10px;
@@ -83,12 +87,22 @@ const Tab = styled.div<TabProps>`
     -webkit-mask-image: none;
   }
 
+  &.focus-visible:focus {
+    position: relative;
+    z-index: 100;
+    border-bottom: 4px solid ${(props) => props.theme.colors.highlight};
+    box-shadow: none;
+    opacity: 1;
+    overflow: visible;
+    -webkit-mask-image: none;
+  }
+
   ${(props) =>
     props.selected && props.variant !== "secondary"
       ? css`
           background: var(--input-bg-color);
           opacity: 1;
-          outline: 1px solid var(--input-border-color);
+          outline: 1px solid var(--input-border-color) !important;
           overflow: visible;
           -webkit-mask-image: none;
         `

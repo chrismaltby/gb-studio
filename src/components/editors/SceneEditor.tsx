@@ -413,11 +413,11 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
               <>
                 <FormDivider />
                 <FormRow>
-                  <Label>{l10n("FIELD_START_POSITION")}</Label>
+                  <Label htmlFor="startX">{l10n("FIELD_START_POSITION")}</Label>
                 </FormRow>
                 <FormRow>
                   <CoordinateInput
-                    name="x"
+                    name="startX"
                     coordinate="x"
                     value={startX}
                     placeholder="0"
@@ -426,7 +426,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
                     onChange={onChangeSettingFieldInput("startX")}
                   />
                   <CoordinateInput
-                    name="y"
+                    name="startY"
                     coordinate="y"
                     value={startY}
                     placeholder="0"
