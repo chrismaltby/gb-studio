@@ -63,6 +63,7 @@ const Tabs = styled.div<TabsProps>`
 `;
 
 const Tab = styled.button<TabProps>`
+  color: ${(props) => props.theme.colors.text};
   border: 0;
   font-size: 12px;
   font-weight: bold;
