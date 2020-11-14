@@ -7,7 +7,7 @@ interface TabBarProps<T extends string> {
   onChange?: (newValue: T) => void;
   buttons?: ReactNode;
   variant?: "normal" | "secondary";
-  overflow?: boolean;
+  overflowActiveTab?: boolean;
 }
 
 interface WrapperProps {
@@ -15,7 +15,7 @@ interface WrapperProps {
 }
 
 interface TabsProps {
-  overflow?: boolean;
+  overflowActiveTab?: boolean;
 }
 
 interface TabProps {
@@ -55,7 +55,7 @@ const Tabs = styled.div<TabsProps>`
   box-sizing: border-box;
 
   ${(props) =>
-    props.overflow
+    props.overflowActiveTab
       ? css`
           height: 38px;
         `
@@ -126,7 +126,7 @@ export const TabBar = <T extends string>({
   onChange,
   buttons,
   variant,
-  overflow,
+  overflowActiveTab,
 }: TabBarProps<T>) => {
   const tabKeys = Object.keys(values) as T[];
 
@@ -136,7 +136,7 @@ export const TabBar = <T extends string>({
 
   return (
     <Wrapper variant={variant}>
-      <Tabs overflow={overflow}>
+      <Tabs overflowActiveTab={overflowActiveTab}>
         {tabKeys.map((tab, index) => (
           <Tab
             selected={value !== undefined ? tab === value : index === 0}

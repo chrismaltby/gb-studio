@@ -528,7 +528,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           <TabBar
             value={scriptMode as DefaultTab}
             values={defaultTabs}
-            overflow={scriptMode === "hit"}
+            overflowActiveTab={scriptMode === "hit"}
             onChange={onChangeScriptMode}
             buttons={
               scriptMode !== "hit" &&
@@ -545,7 +545,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
           <TabBar
             value={scriptMode as CollisionTab}
             values={collisionTabs}
-            overflow={scriptMode === "hit"}
+            overflowActiveTab={scriptMode === "hit"}
             onChange={onChangeScriptMode}
             buttons={
               scriptMode !== "hit" &&

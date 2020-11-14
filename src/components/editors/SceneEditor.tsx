@@ -429,7 +429,7 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
           value={scriptMode}
           values={defaultTabs}
           onChange={onChangeScriptMode}
-          overflow={scriptMode === "hit"}
+          overflowActiveTab={scriptMode === "hit"}
           buttons={
             scriptMode !== "hit" &&
             scripts[scriptMode] && (
