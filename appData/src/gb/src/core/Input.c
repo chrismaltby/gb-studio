@@ -7,7 +7,7 @@ UBYTE last_joy;
 UBYTE recent_joy;
 UBYTE await_input;
 UBYTE input_wait = 0;
-BankPtr input_script_ptrs[NUM_INPUTS] = {{0}};
+BankPtr input_script_ptrs[NUM_INPUTS];
 UBYTE input_script_persist = 0;
 UBYTE input_override_default = 0;
 

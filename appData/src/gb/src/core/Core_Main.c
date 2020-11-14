@@ -30,6 +30,8 @@ UINT8 vbl_count = 0;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
 
+extern SCENE_STATE scene_stack;
+
 void SetScene(UINT16 state) {
   state_running = 0;
   next_state = state;
@@ -128,6 +130,14 @@ int core_start() {
 
   // Initialize structures
   memset(&script_variables, 0, sizeof(script_variables));
+
+  memset(&input_script_ptrs, 0, sizeof(input_script_ptrs));
+
+  memset(&scene_stack, 0, sizeof(scene_stack));
+  memset(&script_cmd_args, 0, sizeof(script_cmd_args));
+  memset(&script_stack, 0, sizeof(script_stack));
+  memset(&script_bank_stack, 0, sizeof(script_bank_stack));
+  memset(&script_start_stack, 0, sizeof(script_bank_stack));
 
   memset(&actors, 0, sizeof(actors));
   memset(&active_script_ctx, 0, sizeof(active_script_ctx));

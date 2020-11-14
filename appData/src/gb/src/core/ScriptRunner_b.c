@@ -35,7 +35,7 @@ void ScriptHelper_ClampCamDest();
 
 UBYTE* RAMPtr;
 UBYTE scene_stack_ptr = 0;
-SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
+SCENE_STATE scene_stack[MAX_SCENE_STATES];
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
 UBYTE should_shake_x = FALSE;
