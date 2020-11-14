@@ -297,6 +297,8 @@
   "FIELD_SIZE": "Size",
   "FIELD_TILES": "Tiles",
   "FIELD_START_POSITION": "Start Position",
+  "FIELD_PROJECT_NAME": "Project Name",
+  "FIELD_MORE_SETTINGS": "More Settings",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

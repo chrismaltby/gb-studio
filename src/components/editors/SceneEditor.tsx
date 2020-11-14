@@ -5,7 +5,7 @@ import ScriptEditor from "../script/ScriptEditor";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarTabs } from "./Sidebar";
-import WorldEditor from "./WorldEditor";
+import WorldEditor from "./WorldEditorOriginal";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "../world/BackgroundWarnings";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";

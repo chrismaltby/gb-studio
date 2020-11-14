@@ -25,6 +25,7 @@ export const Button = styled.button<ButtonProps>`
   font-weight: normal;
   border-width: 1px;
   overflow: hidden;
+  flex-shrink: 0;
 
   svg {
     max-width: 100%;

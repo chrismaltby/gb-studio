@@ -7,8 +7,11 @@ type ShowConnectionsSetting = "all" | "selected" | true | false;
 
 export type SettingsState = {
   startSceneId: string;
+  playerSpriteSheetId: string;
   startX: number;
   startY: number;
+  startMoveSpeed: number;
+  startAnimSpeed: number | null;
   startDirection: ActorDirection;
   showCollisions: boolean;
   showConnections: ShowConnectionsSetting;
@@ -20,14 +23,18 @@ export type SettingsState = {
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
+  playerPaletteId: string;
   navigatorSplitSizes: number[];
   showNavigator: boolean;
 };
 
 export const initialState: SettingsState = {
   startSceneId: "",
+  playerSpriteSheetId: "",
   startX: 0,
   startY: 0,
+  startMoveSpeed: 1,
+  startAnimSpeed: 3,
   startDirection: "down",
   showCollisions: true,
   showConnections: "selected",
@@ -46,6 +53,7 @@ export const initialState: SettingsState = {
   ],
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
+  playerPaletteId: "",
   navigatorSplitSizes: [300, 100, 100],
   showNavigator: true,
 };

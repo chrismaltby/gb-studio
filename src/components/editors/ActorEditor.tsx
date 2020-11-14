@@ -41,7 +41,7 @@ import {
   SPRITE_TYPE_STATIC,
 } from "../../consts";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
-import WorldEditor from "./WorldEditor";
+import WorldEditor from "./WorldEditorOriginal";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { SidebarTabs } from "./Sidebar";
 import ScriptEditor from "../script/ScriptEditor";
@@ -329,7 +329,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         <FormContainer>
           <FormHeader>
             <EditableText
-              name="name1"
+              name="name"
               placeholder={actorName(actor, actorIndex)}
               value={actor.name || ""}
               onChange={onChangeFieldInput("name")}

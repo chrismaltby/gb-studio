@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import SceneSelect from "../forms/SceneSelect";
+import SceneSelect from "../forms/SceneSelectOld";
 import { BackgroundSelect } from "../forms/BackgroundSelect";
 import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { VariableSelect } from "../forms/VariableSelect";

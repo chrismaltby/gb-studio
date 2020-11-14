@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { TriggerEditor } from "./TriggerEditor";
 import { ActorEditor } from "./ActorEditor";
 import { SceneEditor } from "./SceneEditor";
-import WorldEditor from "./WorldEditor";
+import { WorldEditor } from "./WorldEditor";
 import CustomEventEditor from "./CustomEventEditor";
 import { VariableEditor } from "./VariableEditor";
 

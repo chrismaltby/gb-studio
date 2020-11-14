@@ -2,7 +2,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import SceneSelect from "../forms/SceneSelect";
+import SceneSelect from "../forms/SceneSelectOld";
 import DirectionPicker from "../forms/DirectionPicker";
 import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { FormField, ToggleableFormField } from "../library/Forms";
