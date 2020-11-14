@@ -7,7 +7,7 @@ import { DropdownButton } from "../ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "../ui/menu/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarTabs } from "./Sidebar";
-import WorldEditor from "./WorldEditorOriginal";
+import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import {
   triggerSelectors,

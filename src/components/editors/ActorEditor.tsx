@@ -41,7 +41,7 @@ import {
   SPRITE_TYPE_STATIC,
 } from "../../consts";
 import { SpriteSheetSelectButton } from "../forms/SpriteSheetSelectButton";
-import WorldEditor from "./WorldEditorOriginal";
+import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { SidebarTabs } from "./Sidebar";
 import ScriptEditor from "../script/ScriptEditor";

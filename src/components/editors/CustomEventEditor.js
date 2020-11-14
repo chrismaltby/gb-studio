@@ -9,7 +9,7 @@ import castEventValue from "../../lib/helpers/castEventValue";
 import { CustomEventShape } from "../../store/stateShape";
 import { DropdownButton } from "../library/Button";
 import { MenuItem } from "../library/Menu";
-import WorldEditor from "./WorldEditor";
+import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";

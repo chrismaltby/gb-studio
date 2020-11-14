@@ -12,7 +12,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { SceneShape } from "../../store/stateShape";
-import WorldEditor from "./WorldEditor";
+import { WorldEditor } from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelectOld";
 import LabelButton from "../library/LabelButton";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";

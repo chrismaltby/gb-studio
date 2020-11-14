@@ -17,7 +17,7 @@ import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { ActorShape, SceneShape, SpriteShape } from "../../store/stateShape";
-import WorldEditor from "./WorldEditor";
+import { WorldEditor } from "./WorldEditor";
 import PaletteSelect, { DMG_PALETTE } from "../forms/PaletteSelect";
 import { getSettings } from "../../store/features/settings/settingsState";
 import {
