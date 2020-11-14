@@ -24,6 +24,8 @@ import { Trigger } from "../../store/features/entities/entitiesTypes";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { NoteField } from "../ui/form/NoteField";
 import { TabBar } from "../ui/tabs/Tabs";
+import { Button } from "../ui/buttons/Button";
+import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
 
 interface TriggerEditorProps {
   id: string;
@@ -43,6 +45,9 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
   const [clipboardData, setClipboardData] = useState<any>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(!!trigger?.notes);
   const triggerIndex = scene?.triggers.indexOf(id) || 0;
+  const lockScriptEditor = useSelector(
+    (state: RootState) => state.editor.lockScriptEditor
+  );
 
   const dispatch = useDispatch();
 
@@ -111,101 +116,123 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
     setNotesOpen(true);
   };
 
+  const onToggleLockScriptEditor = () => {
+    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  };
+
   if (!scene || !trigger) {
     return <WorldEditor />;
   }
 
   const showNotes = trigger.notes || notesOpen;
 
+  const lockButton = (
+    <Button
+      size="small"
+      variant={lockScriptEditor ? "primary" : "transparent"}
+      onClick={onToggleLockScriptEditor}
+      title={
+        lockScriptEditor
+          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+      }
+    >
+      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+    </Button>
+  );
+
   return (
     <SidebarMultiColumnAuto onClick={selectSidebar}>
-      <SidebarColumn>
-        <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={triggerName(trigger, triggerIndex)}
-              value={trigger.name || ""}
-              onChange={onChangeFieldInput("name")}
-            />
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={readClipboard}
-            >
-              {!showNotes && (
-                <MenuItem onClick={onAddNotes}>
-                  {l10n("FIELD_ADD_NOTES")}
+      {!lockScriptEditor && (
+        <SidebarColumn>
+          <FormContainer>
+            <FormHeader>
+              <EditableText
+                name="name"
+                placeholder={triggerName(trigger, triggerIndex)}
+                value={trigger.name || ""}
+                onChange={onChangeFieldInput("name")}
+              />
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+                onMouseDown={readClipboard}
+              >
+                {!showNotes && (
+                  <MenuItem onClick={onAddNotes}>
+                    {l10n("FIELD_ADD_NOTES")}
+                  </MenuItem>
+                )}
+                <MenuItem onClick={onCopy}>
+                  {l10n("MENU_COPY_TRIGGER")}
                 </MenuItem>
-              )}
-              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_TRIGGER")}</MenuItem>
-              {clipboardData && clipboardData.__type === "trigger" && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_PASTE_TRIGGER")}
+                {clipboardData && clipboardData.__type === "trigger" && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_TRIGGER")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
+                <MenuItem onClick={onRemove}>
+                  {l10n("MENU_DELETE_TRIGGER")}
                 </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={onRemove}>
-                {l10n("MENU_DELETE_TRIGGER")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
-        </FormContainer>
+              </DropdownButton>
+            </FormHeader>
+          </FormContainer>
 
-        {showNotes && (
+          {showNotes && (
+            <FormRow>
+              <NoteField
+                autofocus
+                value={trigger.notes || ""}
+                onChange={onChangeFieldInput("notes")}
+              />
+            </FormRow>
+          )}
+
           <FormRow>
-            <NoteField
-              autofocus
-              value={trigger.notes || ""}
-              onChange={onChangeFieldInput("notes")}
+            <CoordinateInput
+              name="x"
+              coordinate="x"
+              value={trigger.x}
+              placeholder="0"
+              min={0}
+              max={scene.width - trigger.width}
+              onChange={onChangeFieldInput("x")}
+            />
+            <CoordinateInput
+              name="y"
+              coordinate="y"
+              value={trigger.y}
+              placeholder="0"
+              min={0}
+              max={scene.height - trigger.height}
+              onChange={onChangeFieldInput("y")}
             />
           </FormRow>
-        )}
 
-        <FormRow>
-          <CoordinateInput
-            name="x"
-            coordinate="x"
-            value={trigger.x}
-            placeholder="0"
-            min={0}
-            max={scene.width - trigger.width}
-            onChange={onChangeFieldInput("x")}
-          />
-          <CoordinateInput
-            name="y"
-            coordinate="y"
-            value={trigger.y}
-            placeholder="0"
-            min={0}
-            max={scene.height - trigger.height}
-            onChange={onChangeFieldInput("y")}
-          />
-        </FormRow>
-
-        <FormRow>
-          <CoordinateInput
-            name="width"
-            coordinate="w"
-            value={trigger.width}
-            placeholder="1"
-            min={1}
-            max={scene.width - trigger.x}
-            onChange={onChangeFieldInput("width")}
-          />
-          <CoordinateInput
-            name="height"
-            coordinate="h"
-            value={trigger.height}
-            placeholder="1"
-            min={1}
-            max={scene.height - trigger.y}
-            onChange={onChangeFieldInput("height")}
-          />
-        </FormRow>
-      </SidebarColumn>
-
+          <FormRow>
+            <CoordinateInput
+              name="width"
+              coordinate="w"
+              value={trigger.width}
+              placeholder="1"
+              min={1}
+              max={scene.width - trigger.x}
+              onChange={onChangeFieldInput("width")}
+            />
+            <CoordinateInput
+              name="height"
+              coordinate="h"
+              value={trigger.height}
+              placeholder="1"
+              min={1}
+              max={scene.height - trigger.y}
+              onChange={onChangeFieldInput("height")}
+            />
+          </FormRow>
+        </SidebarColumn>
+      )}
       <SidebarColumn>
         <div>
           <TabBar
@@ -213,10 +240,13 @@ export const TriggerEditor: FC<TriggerEditorProps> = ({ id, sceneId }) => {
               trigger: l10n("SIDEBAR_ON_TRIGGER"),
             }}
             buttons={
-              <ScriptEditorDropdownButton
-                value={trigger.script}
-                onChange={onChangeField("script")}
-              />
+              <>
+                {lockButton}
+                <ScriptEditorDropdownButton
+                  value={trigger.script}
+                  onChange={onChangeField("script")}
+                />
+              </>
             }
           />
           <ScriptEditor

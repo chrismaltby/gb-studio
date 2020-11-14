@@ -28,7 +28,7 @@ import l10n from "../../lib/helpers/l10n";
 import { SidebarColumn, SidebarMultiColumnAuto } from "../ui/sidebars/Sidebar";
 import { CoordinateInput } from "../ui/form/CoordinateInput";
 import { Checkbox } from "../ui/form/Checkbox";
-import { PinIcon } from "../ui/icons/Icons";
+import { LockIcon, LockOpenIcon, PinIcon } from "../ui/icons/Icons";
 import castEventValue from "../../lib/helpers/castEventValue";
 import { CheckboxField } from "../ui/form/CheckboxField";
 import DirectionPicker from "../forms/DirectionPicker";
@@ -53,6 +53,7 @@ import CollisionMaskPicker from "../forms/CollisionMaskPicker";
 import { KeysMatching } from "../../lib/helpers/types";
 import { NoteField } from "../ui/form/NoteField";
 import { TabBar } from "../ui/tabs/Tabs";
+import { Button } from "../ui/buttons/Button";
 
 interface ActorEditorProps {
   id: string;
@@ -140,6 +141,9 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   );
   const colorsEnabled = useSelector(
     (state: RootState) => state.project.present.settings.customColorsEnabled
+  );
+  const lockScriptEditor = useSelector(
+    (state: RootState) => state.editor.lockScriptEditor
   );
 
   const actorIndex = scene?.actors.indexOf(id) || 0;
@@ -242,6 +246,10 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     setNotesOpen(true);
   };
 
+  const onToggleLockScriptEditor = () => {
+    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  };
+
   if (!scene || !actor) {
     return <WorldEditor />;
   }
@@ -323,206 +331,226 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
     },
   } as const;
 
+  const lockButton = (
+    <Button
+      size="small"
+      variant={lockScriptEditor ? "primary" : "transparent"}
+      onClick={onToggleLockScriptEditor}
+      title={
+        lockScriptEditor
+          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+      }
+    >
+      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+    </Button>
+  );
+
   return (
     <SidebarMultiColumnAuto onClick={selectSidebar}>
-      <SidebarColumn>
-        <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={actorName(actor, actorIndex)}
-              value={actor.name || ""}
-              onChange={onChangeFieldInput("name")}
-            />
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={readClipboard}
-            >
-              {!showNotes && (
-                <MenuItem onClick={onAddNotes}>
-                  {l10n("FIELD_ADD_NOTES")}
+      {!lockScriptEditor && (
+        <SidebarColumn>
+          <FormContainer>
+            <FormHeader>
+              <EditableText
+                name="name"
+                placeholder={actorName(actor, actorIndex)}
+                value={actor.name || ""}
+                onChange={onChangeFieldInput("name")}
+              />
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+                onMouseDown={readClipboard}
+              >
+                {!showNotes && (
+                  <MenuItem onClick={onAddNotes}>
+                    {l10n("FIELD_ADD_NOTES")}
+                  </MenuItem>
+                )}
+                <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
+                {clipboardData && clipboardData.__type === "actor" && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_ACTOR")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
+                <MenuItem onClick={onRemove}>
+                  {l10n("MENU_DELETE_ACTOR")}
                 </MenuItem>
-              )}
-              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_ACTOR")}</MenuItem>
-              {clipboardData && clipboardData.__type === "actor" && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_PASTE_ACTOR")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={onRemove}>
-                {l10n("MENU_DELETE_ACTOR")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
+              </DropdownButton>
+            </FormHeader>
 
-          {showNotes && (
+            {showNotes && (
+              <FormRow>
+                <NoteField
+                  autofocus
+                  value={actor.notes || ""}
+                  onChange={onChangeFieldInput("notes")}
+                />
+              </FormRow>
+            )}
+
             <FormRow>
-              <NoteField
-                autofocus
-                value={actor.notes || ""}
-                onChange={onChangeFieldInput("notes")}
-              />
-            </FormRow>
-          )}
-
-          <FormRow>
-            <CoordinateInput
-              name="x"
-              coordinate="x"
-              value={actor.x}
-              placeholder="0"
-              min={0}
-              max={scene.width - 2}
-              onChange={onChangeFieldInput("x")}
-            />
-            <CoordinateInput
-              name="y"
-              coordinate="y"
-              value={actor.y}
-              placeholder="0"
-              min={0}
-              max={scene.height - 1}
-              onChange={onChangeFieldInput("y")}
-            />
-            <DropdownButton
-              menuDirection="right"
-              label={<PinIcon />}
-              showArrow={false}
-              variant={actor.isPinned ? "primary" : "normal"}
-              style={{
-                padding: "5px 0",
-                minWidth: 28,
-              }}
-            >
-              <MenuItem onClick={onToggleField("isPinned")}>
-                <Checkbox id="pin" name="pin" checked={actor.isPinned} /> Pin to
-                Screen
-              </MenuItem>
-            </DropdownButton>
-          </FormRow>
-          <FormDivider />
-          <FormRow>
-            <FormField name="actorSprite" label={l10n("FIELD_SPRITE_SHEET")}>
-              <SpriteSheetSelectButton
-                name="actorSprite"
-                value={actor.spriteSheetId}
-                direction={actor.direction}
-                frame={
-                  actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame : 0
-                }
-                paletteId={
-                  colorsEnabled
-                    ? actor.paletteId || defaultSpritePaletteId
-                    : undefined
-                }
-                onChange={onChangeField("spriteSheetId")}
-                includeInfo
-              />
-            </FormField>
-
-            {colorsEnabled && (
-              <div style={{ marginTop: 18 }}>
-                <PaletteSelectButton
-                  name="actorPalette"
-                  type="sprite"
-                  value={actor.paletteId}
-                  onChange={onChangeField("paletteId")}
-                  optional
-                  optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
-                  optionalDefaultPaletteId={defaultSpritePaletteId}
-                />
-              </div>
-            )}
-          </FormRow>
-          <FormRow>
-            {showDirectionInput && (
-              <FormField name="actorDirection" label={l10n("FIELD_DIRECTION")}>
-                <DirectionPicker
-                  id="actorDirection"
-                  value={actor.direction}
-                  onChange={onChangeFieldInput("direction")}
-                />
-              </FormField>
-            )}
-            {showFrameInput && (
-              <NumberField
-                name="frame"
-                label={l10n("FIELD_INITIAL_FRAME")}
+              <CoordinateInput
+                name="x"
+                coordinate="x"
+                value={actor.x}
                 placeholder="0"
                 min={0}
-                max={(spriteSheet?.numFrames || 1) - 1}
-                value={actor.frame}
-                onChange={onChangeFieldInput("frame")}
+                max={scene.width - 2}
+                onChange={onChangeFieldInput("x")}
               />
-            )}
-            {showSpriteTypeSelect && (
-              <FormField name="spriteType" label={l10n("FIELD_ACTOR_TYPE")}>
-                <SpriteTypeSelect
-                  name="spriteType"
-                  value={actor.spriteType}
-                  onChange={onChangeField("spriteType")}
-                />
-              </FormField>
-            )}
-          </FormRow>
-          {showAnimatedCheckbox && (
-            <FormRow>
-              <CheckboxField
-                name="animated"
-                label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
-                checked={actor.animate}
-                onChange={onChangeFieldInput("animate")}
+              <CoordinateInput
+                name="y"
+                coordinate="y"
+                value={actor.y}
+                placeholder="0"
+                min={0}
+                max={scene.height - 1}
+                onChange={onChangeFieldInput("y")}
               />
-            </FormRow>
-          )}
-          <FormDivider />
-          <FormRow>
-            <FormField
-              name="actorMoveSpeed"
-              label={l10n("FIELD_MOVEMENT_SPEED")}
-            >
-              <MovementSpeedSelect
-                name="actorMoveSpeed"
-                value={actor.moveSpeed}
-                onChange={onChangeField("moveSpeed")}
-              />
-            </FormField>
-            {showAnimSpeed && (
-              <FormField
-                name="actorAnimSpeed"
-                label={l10n("FIELD_ANIMATION_SPEED")}
+              <DropdownButton
+                menuDirection="right"
+                label={<PinIcon />}
+                showArrow={false}
+                variant={actor.isPinned ? "primary" : "normal"}
+                style={{
+                  padding: "5px 0",
+                  minWidth: 28,
+                }}
               >
-                <AnimationSpeedSelect
-                  name="actorAnimSpeed"
-                  value={actor.animSpeed}
-                  onChange={onChangeField("animSpeed")}
+                <MenuItem onClick={onToggleField("isPinned")}>
+                  <Checkbox id="pin" name="pin" checked={actor.isPinned} /> Pin
+                  to Screen
+                </MenuItem>
+              </DropdownButton>
+            </FormRow>
+            <FormDivider />
+            <FormRow>
+              <FormField name="actorSprite" label={l10n("FIELD_SPRITE_SHEET")}>
+                <SpriteSheetSelectButton
+                  name="actorSprite"
+                  value={actor.spriteSheetId}
+                  direction={actor.direction}
+                  frame={
+                    actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame : 0
+                  }
+                  paletteId={
+                    colorsEnabled
+                      ? actor.paletteId || defaultSpritePaletteId
+                      : undefined
+                  }
+                  onChange={onChangeField("spriteSheetId")}
+                  includeInfo
                 />
               </FormField>
-            )}
-          </FormRow>
-          {showCollisionGroup && (
-            <>
-              <FormDivider />
-              <FormRow>
+
+              {colorsEnabled && (
+                <div style={{ marginTop: 18 }}>
+                  <PaletteSelectButton
+                    name="actorPalette"
+                    type="sprite"
+                    value={actor.paletteId}
+                    onChange={onChangeField("paletteId")}
+                    optional
+                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                    optionalDefaultPaletteId={defaultSpritePaletteId}
+                  />
+                </div>
+              )}
+            </FormRow>
+            <FormRow>
+              {showDirectionInput && (
                 <FormField
-                  name="actorCollisionGroup"
-                  label={l10n("FIELD_COLLISION_GROUP")}
+                  name="actorDirection"
+                  label={l10n("FIELD_DIRECTION")}
                 >
-                  <CollisionMaskPicker
-                    id="actorCollisionGroup"
-                    value={actor.collisionGroup}
-                    onChange={onChangeFieldInput("collisionGroup")}
-                    includeNone
+                  <DirectionPicker
+                    id="actorDirection"
+                    value={actor.direction}
+                    onChange={onChangeFieldInput("direction")}
                   />
                 </FormField>
+              )}
+              {showFrameInput && (
+                <NumberField
+                  name="frame"
+                  label={l10n("FIELD_INITIAL_FRAME")}
+                  placeholder="0"
+                  min={0}
+                  max={(spriteSheet?.numFrames || 1) - 1}
+                  value={actor.frame}
+                  onChange={onChangeFieldInput("frame")}
+                />
+              )}
+              {showSpriteTypeSelect && (
+                <FormField name="spriteType" label={l10n("FIELD_ACTOR_TYPE")}>
+                  <SpriteTypeSelect
+                    name="spriteType"
+                    value={actor.spriteType}
+                    onChange={onChangeField("spriteType")}
+                  />
+                </FormField>
+              )}
+            </FormRow>
+            {showAnimatedCheckbox && (
+              <FormRow>
+                <CheckboxField
+                  name="animated"
+                  label={l10n("FIELD_ANIMATE_WHEN_STATIONARY")}
+                  checked={actor.animate}
+                  onChange={onChangeFieldInput("animate")}
+                />
               </FormRow>
-            </>
-          )}
-        </FormContainer>
-      </SidebarColumn>
+            )}
+            <FormDivider />
+            <FormRow>
+              <FormField
+                name="actorMoveSpeed"
+                label={l10n("FIELD_MOVEMENT_SPEED")}
+              >
+                <MovementSpeedSelect
+                  name="actorMoveSpeed"
+                  value={actor.moveSpeed}
+                  onChange={onChangeField("moveSpeed")}
+                />
+              </FormField>
+              {showAnimSpeed && (
+                <FormField
+                  name="actorAnimSpeed"
+                  label={l10n("FIELD_ANIMATION_SPEED")}
+                >
+                  <AnimationSpeedSelect
+                    name="actorAnimSpeed"
+                    value={actor.animSpeed}
+                    onChange={onChangeField("animSpeed")}
+                  />
+                </FormField>
+              )}
+            </FormRow>
+            {showCollisionGroup && (
+              <>
+                <FormDivider />
+                <FormRow>
+                  <FormField
+                    name="actorCollisionGroup"
+                    label={l10n("FIELD_COLLISION_GROUP")}
+                  >
+                    <CollisionMaskPicker
+                      id="actorCollisionGroup"
+                      value={actor.collisionGroup}
+                      onChange={onChangeFieldInput("collisionGroup")}
+                      includeNone
+                    />
+                  </FormField>
+                </FormRow>
+              </>
+            )}
+          </FormContainer>
+        </SidebarColumn>
+      )}
       <SidebarColumn>
         {!actor.collisionGroup && (
           <TabBar
@@ -531,12 +559,16 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             overflowActiveTab={scriptMode === "hit"}
             onChange={onChangeScriptMode}
             buttons={
-              scriptMode !== "hit" &&
-              scripts[scriptMode] && (
-                <ScriptEditorDropdownButton
-                  value={scripts[scriptMode].value}
-                  onChange={scripts[scriptMode].onChange}
-                />
+              scriptMode !== "hit" && scripts[scriptMode] ? (
+                <>
+                  {lockButton}
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode].value}
+                    onChange={scripts[scriptMode].onChange}
+                  />
+                </>
+              ) : (
+                lockButton
               )
             }
           />
@@ -548,12 +580,16 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
             overflowActiveTab={scriptMode === "hit"}
             onChange={onChangeScriptMode}
             buttons={
-              scriptMode !== "hit" &&
-              scripts[scriptMode] && (
-                <ScriptEditorDropdownButton
-                  value={scripts[scriptMode].value}
-                  onChange={scripts[scriptMode].onChange}
-                />
+              scriptMode !== "hit" && scripts[scriptMode] ? (
+                <>
+                  {lockButton}
+                  <ScriptEditorDropdownButton
+                    value={scripts[scriptMode].value}
+                    onChange={scripts[scriptMode].onChange}
+                  />
+                </>
+              ) : (
+                lockButton
               )
             }
           />

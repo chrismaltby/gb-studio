@@ -44,6 +44,14 @@ const smallStyles = css`
   font-size: 9px;
   padding: 6px;
   height: 22px;
+
+  svg {
+    height: 10px;
+    width: 10px;
+    max-width: 10px;
+    max-height: 10px;
+    margin: 0 -6px;
+  }
 `;
 
 const largeStyles = css`

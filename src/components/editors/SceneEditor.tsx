@@ -40,6 +40,8 @@ import DirectionPicker from "../forms/DirectionPicker";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import { TabBar } from "../ui/tabs/Tabs";
 import { Label } from "../ui/form/Label";
+import { Button } from "../ui/buttons/Button";
+import { LockIcon, LockOpenIcon } from "../ui/icons/Icons";
 
 interface SceneEditorProps {
   id: string;
@@ -121,6 +123,10 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
+  const lockScriptEditor = useSelector(
+    (state: RootState) => state.editor.lockScriptEditor
+  );
+
   const dispatch = useDispatch();
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
@@ -209,6 +215,10 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
     setNotesOpen(true);
   };
 
+  const onToggleLockScriptEditor = () => {
+    dispatch(editorActions.setLockScriptEditor(!lockScriptEditor));
+  };
+
   if (!scene) {
     return <WorldEditor />;
   }
@@ -253,177 +263,196 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
 
   const isStartingScene = startSceneId === id;
 
+  const lockButton = (
+    <Button
+      size="small"
+      variant={lockScriptEditor ? "primary" : "transparent"}
+      onClick={onToggleLockScriptEditor}
+      title={
+        lockScriptEditor
+          ? l10n("FIELD_UNLOCK_SCRIPT_EDITOR")
+          : l10n("FIELD_LOCK_SCRIPT_EDITOR")
+      }
+    >
+      {lockScriptEditor ? <LockIcon /> : <LockOpenIcon />}
+    </Button>
+  );
+
   return (
     <SidebarMultiColumnAuto onClick={selectSidebar}>
-      <SidebarColumn>
-        <FormContainer>
-          <FormHeader>
-            <EditableText
-              name="name"
-              placeholder={sceneName(scene, sceneIndex)}
-              value={scene.name || ""}
-              onChange={onChangeFieldInput("name")}
-            />
-            {scene.labelColor && <LabelColor color={scene.labelColor} />}
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={readClipboard}
-            >
-              <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
-                <div style={{ display: "flex" }}>
-                  <div style={{ marginRight: 5 }}>
-                    <LabelButton
-                      onClick={() => onChangeField("labelColor")("")}
-                    />
-                  </div>
-                  {[
-                    "red",
-                    "orange",
-                    "yellow",
-                    "green",
-                    "blue",
-                    "purple",
-                    "gray",
-                  ].map((color) => (
-                    <div
-                      key={color}
-                      style={{ marginRight: color === "gray" ? 0 : 5 }}
-                    >
+      {!lockScriptEditor && (
+        <SidebarColumn>
+          <FormContainer>
+            <FormHeader>
+              <EditableText
+                name="name"
+                placeholder={sceneName(scene, sceneIndex)}
+                value={scene.name || ""}
+                onChange={onChangeFieldInput("name")}
+              />
+              {scene.labelColor && <LabelColor color={scene.labelColor} />}
+              <DropdownButton
+                size="small"
+                variant="transparent"
+                menuDirection="right"
+                onMouseDown={readClipboard}
+              >
+                <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
+                  <div style={{ display: "flex" }}>
+                    <div style={{ marginRight: 5 }}>
                       <LabelButton
-                        color={color}
-                        onClick={() => onChangeField("labelColor")(color)}
+                        onClick={() => onChangeField("labelColor")("")}
                       />
                     </div>
+                    {[
+                      "red",
+                      "orange",
+                      "yellow",
+                      "green",
+                      "blue",
+                      "purple",
+                      "gray",
+                    ].map((color) => (
+                      <div
+                        key={color}
+                        style={{ marginRight: color === "gray" ? 0 : 5 }}
+                      >
+                        <LabelButton
+                          color={color}
+                          onClick={() => onChangeField("labelColor")(color)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </MenuItem>
+                <MenuDivider />
+                {!showNotes && (
+                  <MenuItem onClick={onAddNotes}>
+                    {l10n("FIELD_ADD_NOTES")}
+                  </MenuItem>
+                )}
+                <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
+                {clipboardData && clipboardData.__type === "scene" && (
+                  <MenuItem onClick={onPaste}>
+                    {l10n("MENU_PASTE_SCENE")}
+                  </MenuItem>
+                )}
+                <MenuDivider />
+                <MenuItem onClick={onRemove}>
+                  {l10n("MENU_DELETE_SCENE")}
+                </MenuItem>
+              </DropdownButton>
+            </FormHeader>
+
+            {showNotes && (
+              <FormRow>
+                <NoteField
+                  autofocus
+                  value={scene.notes || ""}
+                  onChange={onChangeFieldInput("notes")}
+                />
+              </FormRow>
+            )}
+
+            <FormRow>
+              <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
+                <BackgroundSelectButton
+                  name="backgroundId"
+                  value={scene.backgroundId}
+                  onChange={onChangeField("backgroundId")}
+                  includeInfo
+                />
+              </FormField>
+              {colorsEnabled && (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    gridTemplateRows: "1fr 1fr",
+                    gap: 5,
+                    marginTop: 18,
+                    flexShrink: 0,
+                  }}
+                >
+                  {[0, 1, 2, 3, 4, 5].map((index) => (
+                    <PaletteSelectButton
+                      key={index}
+                      name={`scenePalette${index}`}
+                      value={
+                        (scene.paletteIds && scene.paletteIds[index]) || ""
+                      }
+                      onChange={onEditPaletteId(index)}
+                      optional
+                      optionalDefaultPaletteId={
+                        defaultBackgroundPaletteIds[index] || ""
+                      }
+                      optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                    />
                   ))}
                 </div>
-              </MenuItem>
-              <MenuDivider />
-              {!showNotes && (
-                <MenuItem onClick={onAddNotes}>
-                  {l10n("FIELD_ADD_NOTES")}
-                </MenuItem>
               )}
-              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
-              {clipboardData && clipboardData.__type === "scene" && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_PASTE_SCENE")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              <MenuItem onClick={onRemove}>
-                {l10n("MENU_DELETE_SCENE")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
-
-          {showNotes && (
-            <FormRow>
-              <NoteField
-                autofocus
-                value={scene.notes || ""}
-                onChange={onChangeFieldInput("notes")}
-              />
             </FormRow>
-          )}
 
-          <FormRow>
-            <FormField name="backgroundId" label={l10n("FIELD_BACKGROUND")}>
-              <BackgroundSelectButton
-                name="backgroundId"
-                value={scene.backgroundId}
-                onChange={onChangeField("backgroundId")}
-                includeInfo
-              />
-            </FormField>
-            {colorsEnabled && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gridTemplateRows: "1fr 1fr",
-                  gap: 5,
-                  marginTop: 18,
-                  flexShrink: 0,
-                }}
-              >
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <PaletteSelectButton
-                    key={index}
-                    name={`scenePalette${index}`}
-                    value={(scene.paletteIds && scene.paletteIds[index]) || ""}
-                    onChange={onEditPaletteId(index)}
-                    optional
-                    optionalDefaultPaletteId={
-                      defaultBackgroundPaletteIds[index] || ""
-                    }
-                    optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+            <FormRow>
+              <BackgroundWarnings id={scene.backgroundId} />
+            </FormRow>
+
+            <FormDivider />
+
+            <FormRow>
+              <FormField name="type" label={l10n("FIELD_TYPE")}>
+                <SceneTypeSelect
+                  name="type"
+                  value={scene.type}
+                  onChange={onChangeField("type")}
+                />
+              </FormField>
+            </FormRow>
+
+            {isStartingScene && (
+              <>
+                <FormDivider />
+                <FormRow>
+                  <Label>{l10n("FIELD_START_POSITION")}</Label>
+                </FormRow>
+                <FormRow>
+                  <CoordinateInput
+                    name="x"
+                    coordinate="x"
+                    value={startX}
+                    placeholder="0"
+                    min={0}
+                    max={scene.width - 2}
+                    onChange={onChangeSettingFieldInput("startX")}
                   />
-                ))}
-              </div>
+                  <CoordinateInput
+                    name="y"
+                    coordinate="y"
+                    value={startY}
+                    placeholder="0"
+                    min={0}
+                    max={scene.height - 1}
+                    onChange={onChangeSettingFieldInput("startY")}
+                  />
+                </FormRow>
+
+                <FormRow>
+                  <FormField
+                    name="actorDirection"
+                    label={l10n("FIELD_DIRECTION")}
+                  >
+                    <DirectionPicker
+                      id="actorDirection"
+                      value={startDirection}
+                      onChange={onChangeSettingFieldInput("startDirection")}
+                    />
+                  </FormField>
+                </FormRow>
+              </>
             )}
-          </FormRow>
-
-          <FormRow>
-            <BackgroundWarnings id={scene.backgroundId} />
-          </FormRow>
-
-          <FormDivider />
-
-          <FormRow>
-            <FormField name="type" label={l10n("FIELD_TYPE")}>
-              <SceneTypeSelect
-                name="type"
-                value={scene.type}
-                onChange={onChangeField("type")}
-              />
-            </FormField>
-          </FormRow>
-
-          {isStartingScene && (
-            <>
-              <FormDivider />
-              <FormRow>
-                <Label>{l10n("FIELD_START_POSITION")}</Label>
-              </FormRow>
-              <FormRow>
-                <CoordinateInput
-                  name="x"
-                  coordinate="x"
-                  value={startX}
-                  placeholder="0"
-                  min={0}
-                  max={scene.width - 2}
-                  onChange={onChangeSettingFieldInput("startX")}
-                />
-                <CoordinateInput
-                  name="y"
-                  coordinate="y"
-                  value={startY}
-                  placeholder="0"
-                  min={0}
-                  max={scene.height - 1}
-                  onChange={onChangeSettingFieldInput("startY")}
-                />
-              </FormRow>
-
-              <FormRow>
-                <FormField
-                  name="actorDirection"
-                  label={l10n("FIELD_DIRECTION")}
-                >
-                  <DirectionPicker
-                    id="actorDirection"
-                    value={startDirection}
-                    onChange={onChangeSettingFieldInput("startDirection")}
-                  />
-                </FormField>
-              </FormRow>
-            </>
-          )}
-        </FormContainer>
-      </SidebarColumn>
+          </FormContainer>
+        </SidebarColumn>
+      )}
       <SidebarColumn>
         <TabBar
           value={scriptMode}
@@ -431,12 +460,16 @@ export const SceneEditor: FC<SceneEditorProps> = ({ id }) => {
           onChange={onChangeScriptMode}
           overflowActiveTab={scriptMode === "hit"}
           buttons={
-            scriptMode !== "hit" &&
-            scripts[scriptMode] && (
-              <ScriptEditorDropdownButton
-                value={scripts[scriptMode].value}
-                onChange={scripts[scriptMode].onChange}
-              />
+            scriptMode !== "hit" && scripts[scriptMode] ? (
+              <>
+                {lockButton}
+                <ScriptEditorDropdownButton
+                  value={scripts[scriptMode].value}
+                  onChange={scripts[scriptMode].onChange}
+                />
+              </>
+            ) : (
+              lockButton
             )
           }
         />

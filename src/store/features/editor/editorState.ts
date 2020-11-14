@@ -75,6 +75,7 @@ export interface EditorState {
   lastScriptTab: string;
   lastScriptTabScene: string;
   lastScriptTabSecondary: string;
+  lockScriptEditor: boolean;
   worldSidebarWidth: number;
   navigatorSidebarWidth: number;
   filesSidebarWidth: number;
@@ -119,6 +120,7 @@ export const initialState: EditorState = {
   lastScriptTab: "",
   lastScriptTabScene: "",
   lastScriptTabSecondary: "",
+  lockScriptEditor: false,
   profile: false,
   worldSidebarWidth: 300,
   navigatorSidebarWidth: 200,
@@ -423,6 +425,10 @@ const editorSlice = createSlice({
 
     setScriptTabSecondary: (state, action: PayloadAction<string>) => {
       state.lastScriptTabSecondary = action.payload;
+    },
+
+    setLockScriptEditor: (state, action: PayloadAction<boolean>) => {
+      state.lockScriptEditor = action.payload;
     },
 
     setProfiling: (state, action: PayloadAction<boolean>) => {
