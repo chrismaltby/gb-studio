@@ -8,6 +8,7 @@ import { SelectMenu, selectMenuStyleProps } from "../ui/form/Select";
 import { RelativePortal } from "../ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "../../store/features/navigation/navigationActions";
+import { DMG_PALETTE } from "../../consts";
 
 type PaletteSelectProps = {
   name: string;
@@ -74,9 +75,13 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number | null>(null);
-  const palette = useSelector((state: RootState) =>
-    paletteSelectors.selectById(state, value || optionalDefaultPaletteId || "")
-  );
+  const palette =
+    useSelector((state: RootState) =>
+      paletteSelectors.selectById(
+        state,
+        value || optionalDefaultPaletteId || ""
+      )
+    ) || DMG_PALETTE;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [buttonFocus, setButtonFocus] = useState<boolean>(false);
   const dispatch = useDispatch();
