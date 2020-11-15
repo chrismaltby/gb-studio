@@ -57,3 +57,4 @@ These builds reflects the latest changes from the `develop` branch and are updat
 
 [![Windows_x86_64](https://img.shields.io/static/v1.svg?label=&message=64%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86_64.zip?branch=develop&filter=successful)
 [![Windows_x86](https://img.shields.io/static/v1.svg?label=&message=32%20bit&color=blue&logo=windows&style=for-the-badge&logoColor=white)](https://circleci.com/api/v1.1/project/github/chrismaltby/gb-studio/latest/artifacts/0/builds/gb-studio-develop-windows_x86.zip?branch=develop&filter=successful)
+
