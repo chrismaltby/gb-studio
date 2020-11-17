@@ -53,6 +53,8 @@ const migrateProject = project => {
     }
     if (release === "4") {
       data = migrateFrom200r4To200r5Events(data);
+      data = migrateFrom200r4To200r5Actors(data);
+      release = "5";      
     }
   }
 
@@ -745,7 +747,7 @@ export const migrateFrom200r4To200r5Event = (event) => {
   if (event.args && event.command === "EVENT_ACTOR_SET_MOVEMENT_SPEED") {
     let speed = event.args.speed;
     if (speed === "" || speed === undefined) {
-      speed = 3;
+      speed = 1;
     }
     else {
       speed = parseInt(speed, 10);
@@ -761,7 +763,7 @@ export const migrateFrom200r4To200r5Event = (event) => {
   if (event.args && event.command === "EVENT_LAUNCH_PROJECTILE") {
     let speed = event.args.speed;
     if (speed === "" || speed === undefined) {
-      speed = 3;
+      speed = 2;
     }
     else {
       speed = parseInt(speed, 10);
@@ -790,5 +792,57 @@ const migrateFrom200r4To200r5Events = data => {
   };
 };
 
+/*
+ * Version 2.0.0 r4 used string values for animSpeed and moveSpeed,
+ * animSpeed is now number|null and moveSpeed is number
+ */
+const migrateFrom200r4To200r5Actors = data => {
+
+  const fixMoveSpeed = (speed) => {
+    if (speed === undefined) {
+      return 1;
+    }
+    const parsedSpeed = parseInt(speed, 10);
+    if (Number.isNaN(parsedSpeed)) {
+      return 1;
+    }
+    return parsedSpeed;
+  };
+
+  const fixAnimSpeed = (speed) => {
+    if (speed === "" || speed === null) {
+      return null;
+    }
+    if (speed === undefined) {
+      return 3;
+    }
+    const parsedSpeed = parseInt(speed, 10);
+    if (Number.isNaN(parsedSpeed)) {
+      return 3;
+    }
+    return parsedSpeed;
+  };  
+
+  return {
+    ...data,
+    settings: {
+      ...data.settings,
+      startMoveSpeed: fixMoveSpeed(data.settings.startMoveSpeed),
+      startAnimSpeed: fixAnimSpeed(data.settings.startAnimSpeed),
+    },
+    scenes: data.scenes.map(scene => {
+      return {
+        ...scene,
+        actors: scene.actors.map(actor => {
+          return {
+            ...actor,
+            moveSpeed: fixMoveSpeed(actor.moveSpeed),
+            animSpeed: fixAnimSpeed(actor.animSpeed),
+          };
+        })
+      };
+    })
+  };
+};
 
 export default migrateProject;

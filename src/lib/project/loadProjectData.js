@@ -102,44 +102,11 @@ const loadProject = async (projectPath) => {
     return entity;
   };
 
-  const fixMoveSpeed = (speed) => {
-    if (speed === undefined) {
-      return 1;
-    }
-    const parsedSpeed = parseInt(speed, 10);
-    if (Number.isNaN(parsedSpeed)) {
-      return 1;
-    }
-    return parsedSpeed;
-  };
-
-  const fixAnimSpeed = (speed) => {
-    if (speed === "" || speed === null) {
-      return null;
-    }
-    if (speed === undefined) {
-      return 3;
-    }
-    const parsedSpeed = parseInt(speed, 10);
-    if (Number.isNaN(parsedSpeed)) {
-      return 3;
-    }
-    return parsedSpeed;
-  };
-
-  const fixActorFieldTypes = (actor) => {
-    return {
-      ...actor,
-      moveSpeed: fixMoveSpeed(actor.moveSpeed),
-      animSpeed: fixAnimSpeed(actor.animSpeed),
-    };
-  };
-
   // Fix ids on actors and triggers
   const fixedScenes = (json.scenes || []).map((scene) => {
     return {
       ...scene,
-      actors: scene.actors.map(addMissingEntityId).map(fixActorFieldTypes),
+      actors: scene.actors.map(addMissingEntityId),
       triggers: scene.triggers.map(addMissingEntityId),
     };
   });
