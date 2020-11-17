@@ -9,25 +9,24 @@
 
 /** Move the cursor to an absolute position.
  */
-void
-gotoxy(UINT8 x,
-	   UINT8 y);
+void gotoxy(UINT8 x, UINT8 y);
 
 /** Get the current X position of the cursor.
  */
-UINT8
-posx(void);
+UINT8 posx(void);
 
 /** Get the current Y position of the cursor.
  */
-UINT8
-posy(void);
+UINT8 posy(void);
 
 /** Writes out a single character at the current cursor
     position.
     Does not update the cursor or interpret the character.
 */
-void
-setchar(char c);
+void setchar(char c);
+
+/** Clears the screen
+*/
+void cls();
 
 #endif /* _CONSOLE_H */

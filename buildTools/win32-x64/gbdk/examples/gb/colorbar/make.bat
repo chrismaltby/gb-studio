@@ -1,2 +1,3 @@
-..\..\bin\lcc -Wa-l -c -o colorbar.o colorbar.c
-..\..\bin\lcc -Wl-m -Wl-yp0x143=0x80 -o colorbar.gb colorbar.o
+REM Automatically generated from Makefile
+..\..\..\bin\lcc -Wa-l -Wl-m -DGBDK_2_COMPAT -c -o colorbar.o colorbar.c
+..\..\..\bin\lcc -Wa-l -Wl-m -DGBDK_2_COMPAT -Wm-yC -o colorbar.gb colorbar.o

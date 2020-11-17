@@ -15,9 +15,14 @@
 #ifndef NONBANKED
 #define NONBANKED
 #endif
-
 #ifndef BANKED
 #define BANKED
+#endif
+#ifndef CRITICAL
+#define CRITICAL
+#endif
+#ifndef INTERRUPT
+#define INTERRUPT
 #endif
 
 /** TRUE or FALSE.

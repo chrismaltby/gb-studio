@@ -98,8 +98,8 @@
 #define foreCGBPal7c2 19026
 #define foreCGBPal7c3 0
 /* CGBpalette entries. */
-extern unsigned char foreCGB[];
+extern const unsigned char foreCGB[];
 /* Start of tile array. */
-extern unsigned char fore[];
+extern const unsigned char fore[];
 
 /* End of FORE.H */

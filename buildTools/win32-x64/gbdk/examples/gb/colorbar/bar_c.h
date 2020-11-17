@@ -98,8 +98,8 @@
 #define bar_cCGBPal7c2 19026
 #define bar_cCGBPal7c3 12684
 /* CGBpalette entries. */
-extern unsigned char bar_cCGB[];
+extern const unsigned char bar_cCGB[];
 /* Start of tile array. */
-extern unsigned char bar_c[];
+extern const unsigned char bar_c[];
 
 /* End of BAR_C.H */

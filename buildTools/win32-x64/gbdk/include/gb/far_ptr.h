@@ -7,7 +7,7 @@
 #define FAR_OFS(ptr) (((union __far_ptr *)&ptr)->segofs.ofs)
 #define FAR_FUNC(ptr, typ) ((typ)(((union __far_ptr *)&ptr)->segfn.fn))
 
-#define FAR_CALL(ptr, typ, ...) (__call_banked_bank=FAR_SEG(ptr),__call_banked_addr=(((union __far_ptr *)&ptr)->segofs.ofs),((typ)(&__call__banked))(__VA_ARGS__))
+#define FAR_CALL(ptr, typ, ...) (__call_banked_ptr=ptr,((typ)(&__call__banked))(__VA_ARGS__))
 
 typedef unsigned long FAR_PTR;
 
@@ -23,8 +23,9 @@ union __far_ptr {
     } segfn;
 };
 
-extern void * __call_banked_addr;
-extern unsigned char __call_banked_bank;
+extern volatile FAR_PTR __call_banked_ptr;
+extern volatile void * __call_banked_addr;
+extern volatile unsigned char __call_banked_bank;
 
 void __call__banked();
 long to_far_ptr(void* ofs, int seg);
