@@ -17,6 +17,11 @@ const Wrapper = styled.div`
 
   ${Label} {
     margin-left: 5px;
+    margin-bottom: 0px;
+  }
+
+  input {
+    margin-bottom: -2px;
   }
 `;
 

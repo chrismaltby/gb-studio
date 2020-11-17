@@ -75,6 +75,7 @@ export interface EditorState {
   lastScriptTab: string;
   lastScriptTabScene: string;
   lastScriptTabSecondary: string;
+  lockScriptEditor: boolean;
   worldSidebarWidth: number;
   navigatorSidebarWidth: number;
   filesSidebarWidth: number;
@@ -119,6 +120,7 @@ export const initialState: EditorState = {
   lastScriptTab: "",
   lastScriptTabScene: "",
   lastScriptTabSecondary: "",
+  lockScriptEditor: false,
   profile: false,
   worldSidebarWidth: 300,
   navigatorSidebarWidth: 200,
@@ -425,6 +427,10 @@ const editorSlice = createSlice({
       state.lastScriptTabSecondary = action.payload;
     },
 
+    setLockScriptEditor: (state, action: PayloadAction<boolean>) => {
+      state.lockScriptEditor = action.payload;
+    },
+
     setProfiling: (state, action: PayloadAction<boolean>) => {
       state.profile = action.payload;
     },
@@ -493,9 +499,9 @@ const editorSlice = createSlice({
         }
       })
       // Set to world editor when moving player start position
-      .addCase(settingsActions.editPlayerStartAt, (state, _action) => {
-        state.scene = "";
-        state.type = "world";
+      .addCase(settingsActions.editPlayerStartAt, (state, action) => {
+        state.scene = action.payload.sceneId;
+        state.type = "scene";
         state.worldFocus = true;
       })
       // Force React Select dropdowns to reload with new name

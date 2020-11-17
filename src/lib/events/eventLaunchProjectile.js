@@ -31,7 +31,7 @@ const fields = [
     key: "speed",
     label: l10n("FIELD_SPEED"),
     type: "moveSpeed",
-    defaultValue: "2"
+    defaultValue: 2
   },
   {
     key: "collisionGroup",

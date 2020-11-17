@@ -102,12 +102,12 @@ const OptionShape = PropTypes.shape({
   filename: PropTypes.string.isRequired,
 });
 
-SceneSelect.propTypes = {
-  id: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(OptionShape.isRequired).isRequired,
-  selectedIndex: PropTypes.number.isRequired,
-};
+// SceneSelect.propTypes = {
+//   id: PropTypes.string,
+//   onChange: PropTypes.func.isRequired,
+//   options: PropTypes.arrayOf(OptionShape.isRequired).isRequired,
+//   selectedIndex: PropTypes.number.isRequired,
+// };
 
 SceneSelect.defaultProps = {
   id: undefined,

@@ -49,8 +49,6 @@ export const FormRow = styled.div<FormRowProps>`
 `;
 
 export const FormDivider = styled.div`
-  margin-left: -10px;
-  margin-right: -10px;
   margin-bottom: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
 `;
@@ -65,6 +63,7 @@ interface FormFieldWrapperProps {
 
 const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
   width: 100%;
+  min-width: 0;
   ${(props) =>
     props.variant === "error"
       ? css`
@@ -90,3 +89,18 @@ export const FormField: FC<FormFieldProps> = ({
     {children}
   </FormFieldWrapper>
 );
+
+export const FormSectionTitle = styled.div`
+  height: 36px;
+  line-height: 36px;
+  margin: 0px;
+  font-size: 14px;
+  font-weight: bold;
+  border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  text-align: left;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;

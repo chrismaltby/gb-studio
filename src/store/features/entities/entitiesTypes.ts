@@ -14,13 +14,19 @@ export type ScriptEvent = {
 export type Actor = {
   id: string;
   name: string;
+  notes?: string;
   x: number;
   y: number;
   spriteSheetId: string;
   spriteType: ActorSpriteType;
+  paletteId: string;
   frame: number;
+  moveSpeed: number;
+  animSpeed: number | null;
   direction: ActorDirection;
   animate: boolean;
+  isPinned: boolean;
+  collisionGroup: string;
   script: ScriptEvent[];
   startScript: ScriptEvent[];
   updateScript: ScriptEvent[];
@@ -32,6 +38,7 @@ export type Actor = {
 export type Trigger = {
   id: string;
   name: string;
+  notes?: string;
   x: number;
   y: number;
   width: number;
@@ -117,13 +124,16 @@ export type SpriteSheet = {
 
 export type Scene = {
   id: string;
+  type: string;
   name: string;
+  notes?: string;
   labelColor?: string;
   x: number;
   y: number;
   width: number;
   height: number;
   backgroundId: string;
+  paletteIds: string[];
   collisions: number[];
   tileColors: number[];
   actors: string[];

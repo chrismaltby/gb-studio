@@ -10,7 +10,7 @@ import { MenuItem, MenuDivider } from "../library/Menu";
 import l10n from "../../lib/helpers/l10n";
 import { SidebarHeading, SidebarTabs } from "./Sidebar";
 import { TriggerShape, SceneShape } from "../../store/stateShape";
-import WorldEditor from "./WorldEditor";
+import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "../script/ScriptEditorDropdownButton";
 import { triggerSelectors, sceneSelectors } from "../../store/features/entities/entitiesState";
 import editorActions from "../../store/features/editor/editorActions";

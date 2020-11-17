@@ -98,7 +98,7 @@ class SpriteSheetSelect extends Component {
     const current = spriteSheets.find(s => s.id === value);
     const filteredSpriteSheets = spriteSheets.filter(filter || (() => true))
     const groupedSpriteSheets = groupByPlugin(filteredSpriteSheets);
-
+    
     const options = Object.keys(groupedSpriteSheets)
       .sort()
       .reduce((memo, plugin) => {

@@ -5,7 +5,7 @@ import l10n from "../../lib/helpers/l10n";
 
 class CollisionMaskPicker extends Component {
   render() {
-    const { id, value, includePlayer, onChange } = this.props;
+    const { id, value, includePlayer, includeNone, onChange } = this.props;
     const directions = [].concat(
       includePlayer
         ? [
@@ -37,6 +37,31 @@ class CollisionMaskPicker extends Component {
 
     return (
       <div className="CollisionMaskPicker">
+        {includeNone && (
+          <label htmlFor={`${id}_none`} title={l10n("FIELD_NONE")}>
+            <input
+              id={`${id}_none`}
+              type="checkbox"
+              checked={Array.isArray(value) ? value.length === 0 : !value}
+              onChange={() => {
+                if (Array.isArray(value)) {
+                  onChange([]);
+                } else {
+                  onChange(undefined);
+                }
+              }}
+            />
+            <div
+              className={cx("CollisionMaskPicker__Button", {
+                "CollisionMaskPicker__Button--Active": Array.isArray(value)
+                  ? value.length === 0
+                  : !value,
+              })}
+            >
+              {l10n("FIELD_NONE")}
+            </div>
+          </label>
+        )}
         {directions.map((direction, index) => (
           <label
             htmlFor={`${id}_${index}`}
@@ -58,8 +83,6 @@ class CollisionMaskPicker extends Component {
                   } else {
                     onChange([].concat(value, direction.key));
                   }
-                } else if (value === direction.key) {
-                  onChange(undefined);
                 } else {
                   onChange(direction.key);
                 }
@@ -89,6 +112,7 @@ CollisionMaskPicker.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
   includePlayer: PropTypes.bool,
+  includeNone: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
 };
 
@@ -96,6 +120,7 @@ CollisionMaskPicker.defaultProps = {
   id: undefined,
   value: "",
   includePlayer: false,
+  includeNone: false,
 };
 
 export default CollisionMaskPicker;

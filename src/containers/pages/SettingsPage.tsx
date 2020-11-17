@@ -5,7 +5,7 @@ import l10n from "../../lib/helpers/l10n";
 import castEventValue from "../../lib/helpers/castEventValue";
 import CustomControlsPicker from "../../components/forms/CustomControlsPicker";
 import CartPicker from "../../components/forms/CartPicker";
-import PaletteSelect from "../../components/forms/PaletteSelect";
+import PaletteSelect from "../../components/forms/PaletteSelectOld";
 import { Button } from "../../components/ui/buttons/Button";
 import { SettingsState } from "../../store/features/settings/settingsState";
 import settingsActions from "../../store/features/settings/settingsActions";
@@ -74,7 +74,7 @@ const SettingsPage: FC = () => {
     customHead,
     defaultUIPaletteId,
     defaultSpritePaletteId,
-    defaultBackgroundPaletteIds
+    defaultBackgroundPaletteIds,
   } = settings;
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

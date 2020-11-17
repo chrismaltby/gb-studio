@@ -1,5 +1,5 @@
 import { Middleware, Action } from "@reduxjs/toolkit";
-import { getBackgroundWarnings } from "../../../lib/helpers/validation";
+import { getBackgroundInfo } from "../../../lib/helpers/validation";
 import actions from "./warningsActions";
 import { RootState } from "../../configureStore";
 import { backgroundSelectors } from "../entities/entitiesState";
@@ -16,9 +16,13 @@ const warningsMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     if (background) {
       const cachedWarnings = state.warnings.backgrounds[action.payload];
       if (!cachedWarnings || cachedWarnings.timestamp < background._v) {
-        getBackgroundWarnings(background, projectRoot).then((warnings) => {
+        getBackgroundInfo(background, projectRoot).then((info) => {
           store.dispatch(
-            actions.setBackgroundWarnings({ id: action.payload, warnings })
+            actions.setBackgroundWarnings({
+              id: action.payload,
+              warnings: info.warnings,
+              numTiles: info.numTiles,
+            })
           );
         });
       }
