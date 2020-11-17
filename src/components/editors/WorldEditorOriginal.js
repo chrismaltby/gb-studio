@@ -2,21 +2,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import SceneSelect from "../forms/SceneSelect";
+import SceneSelect from "../forms/SceneSelectOld";
 import DirectionPicker from "../forms/DirectionPicker";
-import SpriteSheetSelect from "../forms/SpriteSheetSelect";
+import SpriteSheetSelect from "../forms/SpriteSheetSelectOld";
 import { FormField, ToggleableFormField } from "../library/Forms";
 import castEventValue from "../../lib/helpers/castEventValue";
 import l10n from "../../lib/helpers/l10n";
-import MovementSpeedSelect from "../forms/MovementSpeedSelect";
-import AnimationSpeedSelect from "../forms/AnimationSpeedSelect";
+import { MovementSpeedSelect } from "../forms/MovementSpeedSelect";
+import { AnimationSpeedSelect } from "../forms/AnimationSpeedSelect";
 import { SidebarHeading } from "./Sidebar";
 import {
   SettingsShape,
   ProjectMetadataShape,
 } from "../../store/stateShape";
 import { DMG_PALETTE } from "../../consts";
-import PaletteSelect from "../forms/PaletteSelect";
+import PaletteSelect from "../forms/PaletteSelectOld";
 import settingsActions from "../../store/features/settings/settingsActions";
 import metadataActions from "../../store/features/metadata/metadataActions";
 import { sceneSelectors } from "../../store/features/entities/entitiesState";
@@ -218,17 +218,17 @@ const WorldEditor = ({
   );
 };
 
-WorldEditor.propTypes = {
-  metadata: ProjectMetadataShape.isRequired,
-  scenesLength: PropTypes.number.isRequired,
-  settings: SettingsShape.isRequired,
-  defaultSpritePaletteId: PropTypes.string.isRequired,
-  colorsEnabled: PropTypes.bool.isRequired,
-  editProject: PropTypes.func.isRequired,
-  editProjectSettings: PropTypes.func.isRequired,
-  selectSidebar: PropTypes.func.isRequired,
-  addCustomEvent: PropTypes.func.isRequired,
-};
+// WorldEditor.propTypes = {
+//   metadata: ProjectMetadataShape.isRequired,
+//   scenesLength: PropTypes.number.isRequired,
+//   settings: SettingsShape.isRequired,
+//   defaultSpritePaletteId: PropTypes.string.isRequired,
+//   colorsEnabled: PropTypes.bool.isRequired,
+//   editProject: PropTypes.func.isRequired,
+//   editProjectSettings: PropTypes.func.isRequired,
+//   selectSidebar: PropTypes.func.isRequired,
+//   addCustomEvent: PropTypes.func.isRequired,
+// };
 
 function mapStateToProps(state) {
   const metadata = state.project.present.metadata;

@@ -102,7 +102,7 @@ export const moveSpeedDec = (moveSpeed) =>
     : 1;
 
 export const animSpeedDec = (animSpeed) => {
-  if (animSpeed === "") {
+  if (animSpeed === "" || animSpeed === null) {
     return 255;
   }
   if (animSpeed === undefined) {

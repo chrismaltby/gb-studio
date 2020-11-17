@@ -1,6 +1,6 @@
 import { assetFilename } from "../helpers/gbstudio";
 import getFileModifiedTime from "../helpers/fs/getModifiedTime";
-import { getBackgroundWarnings } from "../helpers/validation";
+import { getBackgroundInfo } from "../helpers/validation";
 
 const ggbgfx = require("./ggbgfx");
 
@@ -44,7 +44,8 @@ const compileImages = async (imgs, projectPath, tmpPath, { warnings }) => {
     const tilesetLength = Object.keys(tilesetLookup).length;
     tilesetIndexes[i] = i;
 
-    const backgroundWarnings = await getBackgroundWarnings(img, projectPath, tilesetLength);
+    const backgroundInfo = await getBackgroundInfo(img, projectPath, tilesetLength);
+    const backgroundWarnings = backgroundInfo.warnings;
     if (backgroundWarnings.length > 0) {
       backgroundWarnings.forEach((warning) => {
         warnings(`${img.filename}: ${warning}`)

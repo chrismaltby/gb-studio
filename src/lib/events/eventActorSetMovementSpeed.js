@@ -9,7 +9,7 @@ const fields = [
   {
     key: "speed",
     type: "moveSpeed",
-    defaultValue: "1"
+    defaultValue: 1
   }
 ];
 

@@ -20,6 +20,9 @@ export interface DropdownButtonProps {
   readonly showArrow?: boolean;
   readonly menuDirection?: "left" | "right";
   readonly style?: CSSProperties;
+  readonly onMouseDown?: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
 }
 
 interface MenuWrapperProps {
@@ -31,7 +34,7 @@ export const MenuWrapper = styled.div<MenuWrapperProps>`
   margin-top: 2px;
   z-index: 10001;
 
-  ${props =>
+  ${(props) =>
     props.menuDirection === "right"
       ? css`
           right: 0;
@@ -65,9 +68,10 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
   showArrow,
   menuDirection,
   style,
+  onMouseDown,
 }) => {
   const childArray = Children.toArray(children);
-  const menuItemChildren = childArray.filter(child => {
+  const menuItemChildren = childArray.filter((child) => {
     return isValidElement<MenuItemProps>(child) && child.type === MenuItem;
   }) as ReactElement[];
 
@@ -79,7 +83,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
     moveFocus,
   } = useDropdownMenu(menuItemChildren.length);
 
-  const childrenWithProps = childArray.map(child => {
+  const childrenWithProps = childArray.map((child) => {
     if (!isValidElement<MenuItemProps>(child) || child.type !== MenuItem) {
       return child;
     }
@@ -103,6 +107,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = ({
         size={size}
         variant={variant}
         {...buttonProps}
+        onMouseDown={onMouseDown}
         style={{
           ...style,
           ...(showArrow && !label

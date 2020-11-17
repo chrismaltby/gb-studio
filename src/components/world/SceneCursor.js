@@ -49,7 +49,6 @@ class SceneCursor extends Component {
       if (enabled) {
         editPlayerStartAt({sceneId, x, y});
         setTool({tool:TOOL_SELECT});
-        selectWorld();
       }
     }
   };

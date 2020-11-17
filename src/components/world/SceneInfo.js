@@ -139,8 +139,10 @@ class SceneInfo extends Component {
     function checkForTooCloseActors() {
       for (let i=fullScene.actors.length-1; i>0; i--) {
         const actor = fullScene.actors[i];
-        for(let x=actor.x - SCREEN_WIDTH; x<actor.x + SCREEN_WIDTH; x++) {
-          for(let y=actor.y - SCREEN_HEIGHT; y<actor.y + SCREEN_HEIGHT; y++) {
+        const actorX = clamp(actor.x, 0, 255);
+        const actorY = clamp(actor.y, 0, 255);
+        for(let x=actorX - SCREEN_WIDTH; x<actorX + SCREEN_WIDTH; x++) {
+          for(let y=actorY - SCREEN_HEIGHT; y<actorY + SCREEN_HEIGHT; y++) {
             const near = cachedCheckScreenAt(x, y);
             if (near > MAX_ONSCREEN) {
               const actorName = actor.name || `Actor ${i + 1}`

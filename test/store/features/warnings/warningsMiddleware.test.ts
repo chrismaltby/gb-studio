@@ -4,16 +4,19 @@ import actions from "../../../../src/store/features/warnings/warningsActions";
 import { RootState } from "../../../../src/store/configureStore";
 import { dummyBackground } from "../../../dummydata";
 import { MiddlewareAPI, Dispatch, AnyAction } from "@reduxjs/toolkit";
-import { getBackgroundWarnings } from "../../../../src/lib/helpers/validation";
+import { getBackgroundInfo } from "../../../../src/lib/helpers/validation";
 
 const flushPromises = () => new Promise(setImmediate);
 
 jest.mock("../../../../src/lib/helpers/validation");
-const mockedGetBackgroundWarnings = mocked(getBackgroundWarnings, true);
+const mockedGetBackgroundWarnings = mocked(getBackgroundInfo, true);
 
 test("Should trigger call to check background warnings", async () => {
   mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue(["Warning 1"]);
+  mockedGetBackgroundWarnings.mockResolvedValue({
+    numTiles: 10,
+    warnings: ["Warning 1"],
+  });
 
   const store = ({
     getState: () => ({
@@ -53,6 +56,7 @@ test("Should trigger call to check background warnings", async () => {
   expect(store.dispatch).toHaveBeenCalledWith(
     actions.setBackgroundWarnings({
       id: "bg1",
+      numTiles: 10,
       warnings: ["Warning 1"],
     })
   );
@@ -60,7 +64,10 @@ test("Should trigger call to check background warnings", async () => {
 
 test("Should not trigger call to check background warnings if already cached warnings", async () => {
   mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue(["Warning 1"]);
+  mockedGetBackgroundWarnings.mockResolvedValue({
+    numTiles: 10,
+    warnings: ["Warning 1"],
+  });
 
   const store = ({
     getState: () => ({
@@ -109,7 +116,10 @@ test("Should not trigger call to check background warnings if already cached war
 
 test("Should trigger call to check background warnings if cache has expired", async () => {
   mockedGetBackgroundWarnings.mockClear();
-  mockedGetBackgroundWarnings.mockResolvedValue(["Warning 1"]);
+  mockedGetBackgroundWarnings.mockResolvedValue({
+    numTiles: 10,
+    warnings: ["Warning 1"],
+  });
 
   const store = ({
     getState: () => ({
@@ -156,6 +166,7 @@ test("Should trigger call to check background warnings if cache has expired", as
   expect(store.dispatch).toHaveBeenCalledWith(
     actions.setBackgroundWarnings({
       id: "bg1",
+      numTiles: 10,
       warnings: ["Warning 1"],
     })
   );

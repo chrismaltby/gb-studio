@@ -1,13 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../configureStore";
+import { ActorDirection } from "../entities/entitiesTypes";
 import projectActions from "../project/projectActions";
 
-type ShowConnectionsSetting = "all" | "selected" | true | false
+type ShowConnectionsSetting = "all" | "selected" | true | false;
 
 export type SettingsState = {
   startSceneId: string;
+  playerSpriteSheetId: string;
   startX: number;
   startY: number;
+  startMoveSpeed: number;
+  startAnimSpeed: number | null;
+  startDirection: ActorDirection;
   showCollisions: boolean;
   showConnections: ShowConnectionsSetting;
   worldScrollX: number;
@@ -18,14 +23,19 @@ export type SettingsState = {
   defaultBackgroundPaletteIds: [string, string, string, string, string, string];
   defaultSpritePaletteId: string;
   defaultUIPaletteId: string;
+  playerPaletteId: string;
   navigatorSplitSizes: number[];
   showNavigator: boolean;
 };
 
 export const initialState: SettingsState = {
   startSceneId: "",
+  playerSpriteSheetId: "",
   startX: 0,
   startY: 0,
+  startMoveSpeed: 1,
+  startAnimSpeed: 3,
+  startDirection: "down",
   showCollisions: true,
   showConnections: "selected",
   worldScrollX: 0,
@@ -43,6 +53,7 @@ export const initialState: SettingsState = {
   ],
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
+  playerPaletteId: "",
   navigatorSplitSizes: [300, 100, 100],
   showNavigator: true,
 };
@@ -75,9 +86,9 @@ const settingsSlice = createSlice({
     builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
       return {
         ...state,
-        ...action.payload.data.settings
+        ...action.payload.data.settings,
       };
-    }),  
+    }),
 });
 
 export const getSettings = (state: RootState) => state.project.present.settings;

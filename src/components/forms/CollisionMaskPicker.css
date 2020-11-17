@@ -28,7 +28,7 @@
   flex: 1;
   background: var(--input-bg-color);
   font-size: 10px;
-  line-height: 28px;
+  line-height: 26px;
   text-align: center;
   border: 1px solid var(--input-border-color);
   border-right: 0;

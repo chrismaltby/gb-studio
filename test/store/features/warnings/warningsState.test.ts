@@ -23,12 +23,14 @@ test("Should be able to set background warnings", () => {
   const action = actions.setBackgroundWarnings({
     id: "bg1",
     warnings: ["warning 1", "warning 2"],
+    numTiles: 10,
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);
   expect(newState.backgrounds["bg1"]).toMatchObject({
     id: "bg1",
     warnings: ["warning 1", "warning 2"],
+    numTiles: 10,
   });
   expect(newState.backgrounds["bg1"]?.timestamp).toBeGreaterThan(
     Date.now() - 1000
@@ -43,6 +45,7 @@ test("Should replace existing warnings", () => {
       bg1: {
         id: "bg1",
         warnings: ["warning 1", "warning 2"],
+        numTiles: 10,
         timestamp: 0,
       },
     },
@@ -50,12 +53,14 @@ test("Should replace existing warnings", () => {
   const action = actions.setBackgroundWarnings({
     id: "bg1",
     warnings: ["warning 3"],
+    numTiles: 15,
   });
   const newState = reducer(state, action);
   expect(newState.backgroundsLoading).toBe(false);
   expect(newState.backgrounds["bg1"]).toMatchObject({
     id: "bg1",
     warnings: ["warning 3"],
+    numTiles: 15,
   });
   expect(newState.backgrounds["bg1"]?.timestamp).toBeGreaterThan(
     Date.now() - 1000

@@ -6,6 +6,7 @@ import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";
 import migrateProject from "./migrateProject";
 import { indexByFn, indexBy } from "../helpers/array";
+import { setDefault } from "../helpers/setDefault";
 
 const elemKey = (elem) => {
   return (elem.plugin ? `${elem.plugin}/` : "") + elem.filename;
