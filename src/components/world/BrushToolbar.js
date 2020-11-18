@@ -199,6 +199,7 @@ class BrushToolbar extends Component {
   render() {
     const {
       selectedPalette,
+      highlightPalette,
       selectedTileType,
       selectedBrush,
       visible,
@@ -260,7 +261,10 @@ class BrushToolbar extends Component {
                   number: paletteIndex + 1,
                 })} (${paletteIndex + 1}) - ${palettes[paletteIndex].name}`}
               >
-                <PaletteBlock colors={palettes[paletteIndex].colors} />
+                <PaletteBlock
+                  colors={palettes[paletteIndex].colors}
+                  highlight={paletteIndex === highlightPalette}
+                />
               </div>
             ))}
           {showPalettes && <div className="BrushToolbar__Divider" />}
@@ -364,6 +368,7 @@ BrushToolbar.propTypes = {
   showPalettes: PropTypes.bool.isRequired,
   showTileTypes: PropTypes.bool.isRequired,
   selectedPalette: PropTypes.number.isRequired,
+  highlightPalette: PropTypes.number.isRequired,
   selectedTileType: PropTypes.number.isRequired,
   sceneId: PropTypes.string,
   setSelectedPalette: PropTypes.func.isRequired,
@@ -395,6 +400,16 @@ function mapStateToProps(state) {
   const scenesLookup = sceneSelectors.selectEntities(state);
 
   const { scene: sceneId } = state.editor;
+
+  let highlightPalette = -1;
+  const scene = sceneSelectors.selectById(state, state.editor.hover.sceneId);
+
+  if (scene) {
+    const { x, y } = state.editor.hover;
+    highlightPalette = Array.isArray(scene.tileColors)
+      ? scene.tileColors[x + y * scene.width]
+      : 0;
+  }
 
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
@@ -435,6 +450,7 @@ function mapStateToProps(state) {
     defaultBackgroundPaletteIds,
     scenePaletteIds,
     sceneBackgroundPaletteIds,
+    highlightPalette,
   };
 }
 
