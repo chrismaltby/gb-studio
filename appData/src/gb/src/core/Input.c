@@ -3,9 +3,9 @@
 #include "ScriptRunner.h"
 
 UBYTE joy = 0;
-UBYTE last_joy;
-UBYTE recent_joy;
-UBYTE await_input;
+UBYTE last_joy = 0;
+UBYTE recent_joy = 0;
+UBYTE await_input = 0;
 UBYTE input_wait = 0;
 BankPtr input_script_ptrs[NUM_INPUTS];
 UBYTE input_script_persist = 0;
