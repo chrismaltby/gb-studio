@@ -86,7 +86,9 @@ class SceneCursor extends Component {
       removeActorAt,
       removeTriggerAt,
       sceneFiltered,
-      editSearchTerm
+      editSearchTerm,
+      hoverPalette,
+      setSelectedPalette,
     } = this.props;
 
     this.lockX = undefined;
@@ -151,6 +153,11 @@ class SceneCursor extends Component {
         window.addEventListener("mouseup", this.onCollisionsStop);
       }
     } else if (tool === "colors") {
+      if (e.altKey) {
+        setSelectedPalette({paletteIndex: hoverPalette});
+        return;
+      }
+
       if(selectedBrush === BRUSH_FILL) {
         paintColor({ brush: selectedBrush, sceneId, x, y, paletteIndex: selectedPalette });
       } else {
@@ -373,6 +380,7 @@ SceneCursor.propTypes = {
   triggerDefaults: PropTypes.shape(),
   clipboardVariables: PropTypes.arrayOf(VariableShape).isRequired,
   sceneId: PropTypes.string.isRequired,
+  hoverPalette: PropTypes.number.isRequired,
   scene: SceneShape.isRequired,
   showCollisions: PropTypes.bool.isRequired,
   showLayers: PropTypes.bool.isRequired,
@@ -406,6 +414,15 @@ function mapStateToProps(state, props) {
   const showCollisions = state.project.present.settings.showCollisions;
   const scenesLookup = sceneSelectors.selectEntities(state);
   const scene = scenesLookup[props.sceneId];
+
+  let hoverPalette = -1;
+  const hoverScene = sceneSelectors.selectById(state, state.editor.hover.sceneId);
+  if (hoverScene) {
+    hoverPalette = Array.isArray(scene.tileColors)
+      ? scene.tileColors[x + y * scene.width]
+      : 0;
+  }
+
   return {
     x: x || 0,
     y: y || 0,
@@ -419,7 +436,8 @@ function mapStateToProps(state, props) {
     entityId,
     showCollisions,
     scene,
-    showLayers
+    showLayers,
+    hoverPalette
   };
 }
 
@@ -436,7 +454,8 @@ const mapDispatchToProps = {
   setTool: editorActions.setTool,
   editPlayerStartAt: settingsActions.editPlayerStartAt,
   editDestinationPosition: entitiesActions.editDestinationPosition,
-  editSearchTerm: editorActions.editSearchTerm
+  editSearchTerm: editorActions.editSearchTerm,
+  setSelectedPalette: editorActions.setSelectedPalette,
 };
 
 export default connect(
