@@ -2,7 +2,7 @@
 
 #include "Trigger.h"
 
-UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) {
+UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) __banked {
   UBYTE i, tx_b, ty_b, tx_c, ty_c;
 
   for (i = 0; i != triggers_len; i++) {

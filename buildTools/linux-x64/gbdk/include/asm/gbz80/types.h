@@ -10,6 +10,8 @@
 
 #define NONBANKED		__nonbanked
 #define BANKED			__banked
+#define CRITICAL		__critical
+#define INTERRUPT		__interrupt
 
 /** Signed eight bit.
  */

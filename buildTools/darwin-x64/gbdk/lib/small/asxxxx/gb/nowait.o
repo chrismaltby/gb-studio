@@ -1,9 +1,0 @@
-XL2
-H 1 areas 2 global symbols
-S .__.ABS. Def0000
-A _CODE size 7 flags 0 addr 0
-S _nowait_int_handler Def0000
-T 00 00
-R 00 00 00 00
-T 00 00 E8 04 D1 C1 E1 F1 D9
-R 00 00 00 00

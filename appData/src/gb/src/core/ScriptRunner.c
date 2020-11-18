@@ -14,21 +14,21 @@
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);
 ScriptContext active_script_ctx;
 UBYTE script_main_ctx_actor;
-UBYTE script_cmd_args[7] = {0};
+UBYTE script_cmd_args[7];
 UBYTE script_cmd_args_len;
 UBYTE script_stack_ptr = 0;
-UBYTE* script_stack[STACK_SIZE] = {0};
-UBYTE script_bank_stack[STACK_SIZE] = {0};
-UBYTE* script_start_stack[STACK_SIZE] = {0};
-ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS] = {{0}};
+UBYTE* script_stack[STACK_SIZE];
+UBYTE script_bank_stack[STACK_SIZE];
+UBYTE* script_start_stack[STACK_SIZE];
+ScriptContext script_ctxs[MAX_SCRIPT_CONTEXTS];
 UBYTE active_script_ctx_index = 0;
 ScriptContext* script_ctx_ptr;
 UBYTE timer_script_duration = 0;
 UBYTE timer_script_time = 0;
-BankPtr timer_script_ptr = {0};
+BankPtr timer_script_ptr = {0, 0};
 UBYTE ctx_cmd_remaining = 5;
 
-void ScriptTimerUpdate_b();
+void ScriptTimerUpdate_b() __banked;
 
 void ScriptRunnerInit() {
   ScriptCtxPoolReset();
@@ -108,9 +108,7 @@ void ScriptRunnerUpdate() {
     POP_BANK;
     if (script_stack_ptr) {
       // Return from Actor Invocation
-      PUSH_BANK(SCRIPT_RUNNER_BANK);
       Script_StackPop_b();
-      POP_BANK;
       ScriptSaveCtx();
       active_script_ctx.script_ptr = 0;
       return;
@@ -152,9 +150,7 @@ void ScriptRunnerUpdate() {
 }
 
 void ScriptTimerUpdate() {
-  PUSH_BANK(SCRIPT_RUNNER_BANK);
   ScriptTimerUpdate_b();
-  POP_BANK;
 }
 
 void ScriptSaveCtx() {

@@ -17,7 +17,7 @@
 Projectile projectiles[MAX_PROJECTILES];
 UBYTE current_projectile = 0;
 
-void ProjectilesInit_b() {
+void ProjectilesInit_b() __banked {
   UBYTE i;
   for (i = 0; i != MAX_PROJECTILES; i++) {
     projectiles[i].sprite_index = SpritePoolNext();
@@ -25,7 +25,7 @@ void ProjectilesInit_b() {
   }
 }
 
-void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE offset, UBYTE col_group, UBYTE col_mask) {
+void WeaponAttack_b(UBYTE sprite, UBYTE palette, UBYTE actor, UBYTE offset, UBYTE col_group, UBYTE col_mask) __banked {
   if (projectiles[current_projectile].life_time == 0) {
     projectiles[current_projectile].moving = FALSE;
     projectiles[current_projectile].dir.x = actors[actor].dir.x;
@@ -72,7 +72,7 @@ void ProjectileLaunch_b(UBYTE sprite,
                         UBYTE move_speed,
                         UBYTE life_time,
                         UBYTE col_group,
-                        UBYTE col_mask) {
+                        UBYTE col_mask) __banked {
   if (projectiles[current_projectile].life_time == 0) {
     projectiles[current_projectile].pin_actor = NO_ACTOR_PINNED;
     projectiles[current_projectile].moving = moving;
@@ -97,7 +97,7 @@ void ProjectileLaunch_b(UBYTE sprite,
   current_projectile = (current_projectile + 1) % MAX_PROJECTILES;
 }
 
-void UpdateProjectiles_b() {
+void UpdateProjectiles_b() __banked {
   UBYTE i, k, j, hit, frame, flip, fo;
   UINT16 screen_x;
   UINT16 screen_y;

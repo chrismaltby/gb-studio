@@ -186,5 +186,5 @@ void Update_Shmup() {
       player_iframes = SHOOTER_HURT_IFRAMES;
       ScriptStartBg(&actors[hit_actor].events_ptr, hit_actor);
     }
-  }
+  }  
 }

@@ -6,7 +6,7 @@
 UINT8 sprite_active_pool[MAX_SPRITES];
 UBYTE sprite_active_pool_size = 0;
 
-void SpritePoolReset_b() {
+void SpritePoolReset_b() __banked {
   UBYTE i, k;
   sprite_pool[0] = 0;
   for (i = 0; i != MAX_SPRITES; i++) {
@@ -21,7 +21,7 @@ void SpritePoolReset_b() {
   sprite_active_pool_size = 0;
 }
 
-void SpritePoolReturn_b(UINT8 i) {
+void SpritePoolReturn_b(UINT8 i) __banked {
   UBYTE j;
   UBYTE a = 0;
 
@@ -45,7 +45,7 @@ void SpritePoolReturn_b(UINT8 i) {
   }
 }
 
-UINT8 SpritePoolNext_b() {
+UINT8 SpritePoolNext_b() __banked {
   UINT8 next = StackPop(sprite_pool);
   sprite_active_pool[sprite_active_pool_size++] = next;
   

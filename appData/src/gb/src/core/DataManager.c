@@ -28,7 +28,7 @@ UBYTE image_tile_height;
 UINT16 image_width;
 UINT16 image_height;
 UBYTE sprites_len;
-UBYTE actors_len;
+UBYTE actors_len = 0;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
 

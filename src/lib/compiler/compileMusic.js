@@ -190,12 +190,12 @@ ${objectVarDef}${objectIntArray(objectData)}`;
       fileData,
       "utf8"
     );
-
+    /*
     await fs.writeFile(
       `${buildRoot}/obj/music_bank_${musicBank.bank}.o`,
       objectFile,
       "utf8"
-    );
+    );*/
 
   }
 

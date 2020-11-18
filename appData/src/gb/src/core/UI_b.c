@@ -108,7 +108,7 @@ UBYTE current_text_speed;
 void UIDrawTextBufferChar_b();
 void UIDrawMenuCursor_b();
 
-void UIInit_b() {
+void UIInit_b() __banked {
   UBYTE* ptr;
 
 #ifdef CGB
@@ -130,11 +130,11 @@ void UIInit_b() {
   SetBankedBkgData(CURSOR_BANK, 0xCB, 1, ptr);
 }
 
-void UIReset_b() {
+void UIReset_b() __banked {
   UISetPos(0, 144);
 }
 
-void UIUpdate_b() {
+void UIUpdate_b() __banked {
   UBYTE interval;
 
   if (win_speed == 5 && ((game_time & 0x7) != 0)) {
@@ -175,7 +175,7 @@ void UIUpdate_b() {
   WY_REG = win_pos_y;
 }
 
-void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
+void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) __banked {
   UINT16 id = 0;
   UBYTE i, j;
   UBYTE k = 1;
@@ -202,11 +202,11 @@ void UIDrawFrame_b(UBYTE x, UBYTE y, UBYTE width, UBYTE height) {
   }
 }
 
-void UIDrawDialogueFrame_b(UBYTE h) {
+void UIDrawDialogueFrame_b(UBYTE h) __banked {
   UIDrawFrame_b(0, 0, 19, h);
 }
 
-void UISetColor_b(UBYTE color) {
+void UISetColor_b(UBYTE color) __banked {
   UINT16 id = 0;
   UBYTE x, y;
 
@@ -223,7 +223,7 @@ void UISetColor_b(UBYTE color) {
   }
 }
 
-void UIShowText_b() {
+void UIShowText_b() __banked {
   UWORD var_index;
   UBYTE i, j, k;
   UBYTE value;
@@ -414,7 +414,7 @@ void UICloseDialogue_b() {
   ui_block = FALSE;
 }
 
-void UIOnInteract_b() {
+void UIOnInteract_b() __banked {
   if (INPUT_A_PRESSED) {
     if (text_drawn && text_count != 0) {
       if (menu_enabled) {
@@ -460,7 +460,7 @@ void UIShowMenu_b(UWORD flag_index,
                   UBYTE bank,
                   UWORD bank_offset,
                   UBYTE layout,
-                  UBYTE cancel_config) {
+                  UBYTE cancel_config) __banked {
 
   UBYTE tmp_text_draw_speed;
 

@@ -1,12 +1,16 @@
-CC	= ../../../bin/lcc -Wa-l -Wl-m -DGBDK_2_COMPAT=1
+CC	= ../../../bin/lcc -Wa-l -Wl-m
 
 BINS	= gb-dtmf.gb
 
 all:	$(BINS)
 
+make.bat: Makefile
+	@echo "REM Automatically generated from Makefile" > make.bat
+	@make -sn | sed y/\\//\\\\/ | grep -v make >> make.bat
+
 %.s:	%.c
 	$(CC) -S -o $@ $<
-	
+
 %.o:	%.c
 	$(CC) -c -o $@ $<
 
@@ -17,4 +21,4 @@ all:	$(BINS)
 	$(CC) -o $@ $<
 
 clean:
-	rm -f *.o *.lst *.map *.gb
+	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm

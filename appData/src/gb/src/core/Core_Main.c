@@ -1,6 +1,7 @@
 #include "Core_Main.h"
 
 #include <gb/cgb.h>
+#include <string.h>
 
 #include "Actor.h"
 #include "BankManager.h"
@@ -20,14 +21,16 @@
 #include "data_ptrs.h"
 #include "main.h"
 
-UBYTE game_time;
+UBYTE game_time = 0;
 UINT16 next_state;
 UINT8 delta_time;
 UINT16 current_state;
 UINT8 state_running = 0;
-UINT8 vbl_count;
+UINT8 vbl_count = 0;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
+
+extern SCENE_STATE scene_stack;
 
 void SetScene(UINT16 state) {
   state_running = 0;
@@ -90,6 +93,8 @@ int core_start() {
   }
 #endif
 
+  display_off();
+
   // Init LCD
   LCDC_REG = 0x67;
 
@@ -122,6 +127,26 @@ int core_start() {
   // Position Window Layer
   WX_REG = 7;
   WY_REG = MAXWNDPOSY + 1U;
+
+  // Initialize structures
+  memset(&script_variables, 0, sizeof(script_variables));
+
+  memset(&input_script_ptrs, 0, sizeof(input_script_ptrs));
+
+  memset(&scene_stack, 0, sizeof(scene_stack));
+  memset(&script_cmd_args, 0, sizeof(script_cmd_args));
+  memset(&script_stack, 0, sizeof(script_stack));
+  memset(&script_bank_stack, 0, sizeof(script_bank_stack));
+  memset(&script_start_stack, 0, sizeof(script_bank_stack));
+
+  memset(&actors, 0, sizeof(actors));
+  memset(&active_script_ctx, 0, sizeof(active_script_ctx));
+  memset(&script_ctxs, 0, sizeof(script_ctxs));
+
+  memset(&SprPalette, 0, sizeof(SprPalette));
+  memset(&BkgPalette, 0, sizeof(BkgPalette));
+  memset(&SprPaletteBuffer, 0, sizeof(SprPaletteBuffer));
+  memset(&BkgPaletteBuffer, 0, sizeof(BkgPaletteBuffer));
 
   // Initialise Player
   player.sprite = 0;

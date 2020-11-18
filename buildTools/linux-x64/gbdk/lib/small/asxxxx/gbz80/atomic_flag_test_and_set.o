@@ -1,9 +1,0 @@
-XL2
-H 1 areas 2 global symbols
-S .__.ABS. Def0000
-A _CODE size B flags 0 addr 0
-S _atomic_flag_test_and_set Def0000
-T 00 00
-R 00 00 00 00
-T 00 00 D1 E1 E5 D5 AF CB 3E 3F 17 5F C9
-R 00 00 00 00

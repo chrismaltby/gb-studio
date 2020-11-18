@@ -98,8 +98,8 @@
 #define bkgCGBPal7c2 0
 #define bkgCGBPal7c3 31744
 /* CGBpalette entries. */
-extern unsigned char bkgCGB[];
+extern const unsigned char bkgCGB[];
 /* Start of tile array. */
-extern unsigned char bkg[];
+extern const unsigned char bkg[];
 
 /* End of BKG.H */

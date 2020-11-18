@@ -17,7 +17,7 @@
 UBYTE actors_active_delete[MAX_ACTIVE_ACTORS];
 UBYTE actors_active_delete_count = 0;
 
-void ActivateActor_b(UBYTE i) {
+void ActivateActor_b(UBYTE i) __banked {
   UBYTE j;
 
   if (actors_active_size == MAX_ACTIVE_ACTORS) {
@@ -50,7 +50,7 @@ void ActivateActor_b(UBYTE i) {
   }
 }
 
-void DeactivateActor_b(UBYTE i) {
+void DeactivateActor_b(UBYTE i) __banked {
   UBYTE j, a;
 
   a = 0;  // Required to fix GBDK bug
@@ -72,7 +72,7 @@ void DeactivateActor_b(UBYTE i) {
   }
 }
 
-UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) {
+UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) __banked {
   UBYTE tile_x, tile_y;
   UBYTE hit_actor = 0;
 
@@ -112,7 +112,7 @@ UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) {
 }
 
 
-UBYTE ActorInFrontOfActor_b(UBYTE i) {
+UBYTE ActorInFrontOfActor_b(UBYTE i) __banked {
   UBYTE tile_x, tile_y;
   UBYTE hit_actor = 0;
 
@@ -138,7 +138,7 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) {
   return hit_actor;
 }
 
-UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir) {
+UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, COL_CHECK_DIR check_dir) __banked {
   switch (check_dir) {
     case CHECK_DIR_LEFT:  // Check left
       while (start_x != end_tile) {
@@ -187,7 +187,7 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
   return end_tile;
 }
 
-UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -208,7 +208,7 @@ UBYTE ActorAtTile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -229,7 +229,7 @@ UBYTE ActorAt1x2Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -250,7 +250,7 @@ UBYTE ActorAt1x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -274,7 +274,7 @@ UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt2x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt2x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -296,7 +296,7 @@ UBYTE ActorAt2x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorAt3x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
+UBYTE ActorAt3x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -318,7 +318,7 @@ UBYTE ActorAt3x3Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
+UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) __banked {
   UBYTE i;
 
   for (i = actors_active_size - 1; i != 0xFF; i--) {
@@ -337,7 +337,7 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) {
   return NO_ACTOR_COLLISON;
 }
 
-void InitPlayer_b() {
+void InitPlayer_b() __banked {
   UBYTE sprite_frames;
 
   sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
@@ -374,7 +374,7 @@ void InitPlayer_b() {
   player.script_control = FALSE;
 }
 
-void ActorRunCollisionScripts_b() {
+void ActorRunCollisionScripts_b() __banked {
   Actor* actor;
 
   if (player_iframes == 0 && player.hit_actor != NO_ACTOR_COLLISON) {

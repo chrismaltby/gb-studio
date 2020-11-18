@@ -35,7 +35,7 @@ void ScriptHelper_ClampCamDest();
 
 UBYTE* RAMPtr;
 UBYTE scene_stack_ptr = 0;
-SCENE_STATE scene_stack[MAX_SCENE_STATES] = {{0}};
+SCENE_STATE scene_stack[MAX_SCENE_STATES];
 UBYTE emote_timer = 0;
 UBYTE shake_time = 0;
 UBYTE should_shake_x = FALSE;
@@ -162,7 +162,7 @@ const SCRIPT_CMD script_cmds[] = {
     {Script_EngFieldStoreWord_b, 6},   // 0x6F    
 };
 
-void ScriptTimerUpdate_b() {
+void ScriptTimerUpdate_b() __banked {
   // Don't update timer while a non-background script is running
   if (script_ctxs[0].script_ptr != 0) {
     return;
@@ -1904,7 +1904,7 @@ void Script_StackPush_b() {
  * Pop the script pointer from the stack
  * Retrieve script start ptr for if statements, script bank for long scripts.
  */
-void Script_StackPop_b() {
+void Script_StackPop_b() __banked {
   script_stack_ptr--;
   active_script_ctx.script_ptr_bank = script_bank_stack[script_stack_ptr];
   active_script_ctx.script_ptr = script_stack[script_stack_ptr];

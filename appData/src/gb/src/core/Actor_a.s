@@ -29,6 +29,40 @@
     .SCREENWIDTH_PLUS_64 = 224
     .SCREENHEIGHT_PLUS_64 = 208
 
+.set_spr_prop:                                  ;; c - sprite no, e - value, preserves bc, spoils hl
+        push bc
+        ld hl, #_shadow_OAM+3 
+        sla c
+        sla c
+        ld b, #0
+        add hl, bc
+        ld (hl), e
+        pop bc
+        ret
+
+.set_spr_tile:                                  ;; c - sprite no, b - value, preserves bc, spoils hl
+        push bc
+        ld hl, #_shadow_OAM+2 
+        sla c
+        sla c
+        ld a, b
+        ld b, #0
+        add hl, bc
+        ld (hl), a
+        pop bc
+        ret
+.mv_spr:                                        ;; a - spr no, b - Y, c - X, preserves a, bc, spoils hl 
+        push af
+        ld hl, #_shadow_OAM
+        add a
+        add a 
+        _add_a h, l
+        ld a, b
+        ld (hl+), a
+        ld (hl), c
+        pop af
+        ret
+
 _UpdateActors::
 
     ; Reset delete counter
@@ -95,9 +129,6 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl)
         pop bc  ; Restore bc from stack so x can be incremented by 8 for second call
-        push bc        
-        push	af
-        inc	sp
 
         jp move_sprite_pair
 
@@ -247,11 +278,11 @@ _UpdateActors::
         _add_a h, l
         ld a, (hl)
         pop bc  ; Restore bc from stack so x can be incremented by 8 for second call
-        push bc
-        push af
-        inc	sp
 
     move_sprite_pair:
+
+    ; Move sprite (left)
+        call	.mv_spr
 
     ; Build second call data
         ld d, a
@@ -259,17 +290,10 @@ _UpdateActors::
         ld a, c
         add a, #8   ; x + 8
         ld c, a
-        push bc
-        push de
-        inc	sp
+        ld a, d
 
-    ; Move sprite (left) using gbdk fn
-        call	_move_sprite
-        add	sp, #3
-
-    ; Move sprite (right) using gbdk fn
-        call	_move_sprite
-        add	sp, #3
+    ; Move sprite (right)
+        call	.mv_spr
 
     check_rerender:
 
@@ -394,33 +418,19 @@ _UpdateActors::
         jr nz, update_tile_flipped
 
     ; Set sprite tile left b=tile_index*4 c=sprite_index
-        push bc
-        call _set_sprite_tile
-        pop bc
+        call .set_spr_tile
 
     ; Set sprite props left
-        push bc    
-        ld b, e
-        push bc
-        call _set_sprite_prop
-        pop bc
-        pop bc
+        call .set_spr_prop    
 
     ; Set sprite tile right
         inc b
         inc b
         inc c
-        push bc
-        call _set_sprite_tile
-        pop bc
+        call .set_spr_tile
 
     ; Set sprite props right
-        push bc    
-        ld b, e
-        push bc
-        call _set_sprite_prop
-        pop bc
-        pop bc
+        call .set_spr_prop    
 
         jr finished_rerender
 
@@ -428,33 +438,19 @@ _UpdateActors::
     ; Set sprite tile right
         inc b
         inc b
-        push bc
-        call _set_sprite_tile
-        pop bc
+        call .set_spr_tile
 
     ; Set sprite props right
-        push bc    
-        ld b, e
-        push bc
-        call _set_sprite_prop
-        pop bc
-        pop bc
+        call .set_spr_prop    
 
     ; Set sprite tile left
         dec b
         dec b
         inc c
-        push bc
-        call _set_sprite_tile
-        pop bc
+        call .set_spr_tile
 
     ; Set sprite props left
-        push bc    
-        ld b, e
-        push bc
-        call _set_sprite_prop
-        pop bc
-        pop bc
+        call .set_spr_prop    
 
     finished_rerender:
     skip_rerender:
@@ -622,25 +618,15 @@ _UpdateActors::
         jr next_actor
 
     hide_sprite_pair:
-        ld b, #0
-        ld c, #0
-        push bc
-        push af
-        inc sp
+        ld bc, #0
+    ; Move sprite (left)
+        call .mv_spr
 
-    ; Push second call data (sprite value incrementing by 1)
+    ; sprite value incrementing by 1
         inc a
-        push bc
-        push af
-        inc sp
 
-    ; Move sprite (left) using gbdk fn
-        call	_move_sprite
-        add	sp, #3
-
-    ; Move sprite (right) using gbdk fn
-        call	_move_sprite
-        add	sp, #3
+    ; Move sprite (right)
+        call .mv_spr
 
     next_actor:
     ; Clear current actor from stack

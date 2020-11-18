@@ -6,36 +6,38 @@
 #include "Scroll.h"
 
 void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char* ptr) {
-  PUSH_BANK(bank);
-  WaitForMode0Or1();
+  UBYTE _save = _current_bank;
+  SWITCH_ROM(bank);
   set_bkg_data(i, l, ptr);
-  POP_BANK;
+  SWITCH_ROM(_save);
 }
 
 void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char* ptr) {
-  PUSH_BANK(bank);
+  UBYTE _save = _current_bank;
+  SWITCH_ROM(bank);
   set_sprite_data(i, l, ptr);
-  POP_BANK;
+  SWITCH_ROM(_save);
 }
 
 UBYTE ReadBankedUBYTE(UBYTE bank, unsigned char* ptr) {
   UBYTE value;
-  PUSH_BANK(bank);
+  UBYTE _save = _current_bank;
+  SWITCH_ROM(bank);
   value = *(UBYTE*)ptr;
-  POP_BANK;
+  SWITCH_ROM(_save);
   return value;
 }
 
 void ReadBankedBankPtr(UBYTE bank, BankPtr* to, BankPtr* from) {
-  BankPtr bank_ptr;
-  PUSH_BANK(bank);
-  memcpy(&bank_ptr, from, sizeof(BankPtr));
-  POP_BANK;
-  memcpy(to, &bank_ptr, sizeof(BankPtr));
+  UBYTE _save = _current_bank;
+  SWITCH_ROM(bank);
+  memcpy(to, from, sizeof(BankPtr));
+  SWITCH_ROM(_save);
 }
 
 void MemcpyBanked(UBYTE bank, void* to, void* from, size_t n) {
-  PUSH_BANK(bank);
+  UBYTE _save = _current_bank;
+  SWITCH_ROM(bank);
   memcpy(to, from, n);
-  POP_BANK;
+  SWITCH_ROM(_save);
 }

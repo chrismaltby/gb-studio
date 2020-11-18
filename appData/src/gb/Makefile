@@ -7,7 +7,7 @@ LFLAGS = $(LFLAGS_NBANKS) -Wa-l -Wl-m -Wl-j -Wl-yt27 -Wl-ya4
 
 ifdef COLOR
 CFLAGS += -DCGB
-LFLAGS += -Wl-yp0x143=0x80
+LFLAGS += -Wm-yc
 endif
 
 ifdef PROFILE
