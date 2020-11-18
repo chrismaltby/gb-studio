@@ -23,6 +23,7 @@ class World extends Component {
     };
     this.worldDragging = false;
     this.scrollRef = React.createRef();
+    this.worldRef = React.createRef();
     this.scrollContentsRef = React.createRef();
     this.dragDistance = { x:0, y:0 };
   }
@@ -146,7 +147,9 @@ class World extends Component {
     const { selectWorld } = this.props;
     if(this.worldDragging) {
       if(Math.abs(this.dragDistance.x) < 20 && Math.abs(this.dragDistance.y) < 20) {
-        selectWorld();
+        if (e.target === this.worldRef.current) {
+          selectWorld();
+        }
       }
     }
     this.worldDragging = false;
@@ -204,7 +207,6 @@ class World extends Component {
 
   startWorldDragIfAltOrMiddleClick = e => {
     if (e.altKey || e.nativeEvent.which === MIDDLE_MOUSE) {
-      event.preventDefault();
       this.worldDragging = true;
       e.stopPropagation();
     }
@@ -267,6 +269,7 @@ class World extends Component {
       >
         <div ref={this.scrollContentsRef} className="World__Content">
           <div
+            ref={this.worldRef}
             className="World__Grid"
             style={{ width: scrollWidth, height: scrollHeight }}
             onMouseDown={this.startWorldDrag}
