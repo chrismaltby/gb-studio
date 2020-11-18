@@ -91,7 +91,7 @@ const templates: TemplateInfo[] = [
 
 const getLastUsedPath = () => {
   const storedPath = String(settings.get("__lastUsedPath"));
-  if (storedPath) {
+  if (storedPath && storedPath !== "undefined") {
     return Path.normalize(storedPath);
   }
   return remote.app.getPath("documents");
