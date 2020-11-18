@@ -11,7 +11,8 @@ const ContentSize = styled.div`
   border: 1px solid transparent;
   box-sizing: border-box;
   display: inline-block;
-  font-family: "Courier New", Courier, monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 11px;
   font-stretch: 100%;
   font-style: normal;
@@ -28,7 +29,7 @@ const ContentSize = styled.div`
   user-select: none;
   white-space: pre-wrap;
   word-spacing: 0px;
-  min-height: 46px;
+  min-height: 48px;
   opacity: 0;
 `;
 
@@ -45,7 +46,9 @@ export const Textarea = styled.textarea`
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
   padding: 10px;
   margin-bottom: 10px;
-  font-family: "Courier New", Courier, monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 11px;
   resize: none;
   overflow: hidden;
 
