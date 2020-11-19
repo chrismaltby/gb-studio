@@ -9,6 +9,7 @@
 #include "data_ptrs.h"
 #include "Math.h"
 #include <string.h>
+#include <stdlib.h>
 
 #define FRAME_CENTER_OFFSET 64
 
@@ -132,9 +133,8 @@ void UISetColor_b(UBYTE color) __banked {
 
 void UIShowText_b() __banked {
   UWORD var_index;
-  UBYTE i, j, k;
+  UBYTE i, k;
   UBYTE value;
-  unsigned char value_string[6];
 
   ui_block = TRUE;
   current_text_speed = text_draw_speed;
@@ -155,29 +155,12 @@ void UIShowText_b() __banked {
       }
 
       value = script_variables[var_index];
-      j = 0;
 
       // Treat value as lookup in ascii.png
       if (tmp_text_lines[i] == '#') {
         text_lines[k] = value + 32u;
       } else {
-        // Treat value as 8-bit int
-        if (value == 0) {
-          text_lines[k] = '0';
-        } else {
-          // itoa implementation
-          while (value != 0) {
-            value_string[j++] = '0' + (value % 10);
-            value /= 10;
-          }
-          j--;
-          while (j != 255) {
-            text_lines[k] = value_string[j];
-            k++;
-            j--;
-          }
-          k--;
-        }
+        k += strlen(itoa(value, &text_lines[k])) - 1;
       } 
 
       // Jump though input past variable placeholder
