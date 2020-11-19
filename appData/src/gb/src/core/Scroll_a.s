@@ -32,7 +32,7 @@ _GetWinAddr::
         bit     6,a
         jr      Z,.is98
         jr      .is9c
-.GetBkgAddr::
+_GetBkgAddr::
         ldh     a,(.LCDC)
         bit     3,a
         jr      NZ,.is9c
