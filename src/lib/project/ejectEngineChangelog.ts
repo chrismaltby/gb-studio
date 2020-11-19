@@ -167,6 +167,16 @@ const changes: EngineChange[] = [{
         "src/core/UI_b.c",
         "src/core/gbt_player.s",
     ]
+}, {
+    version: "2.0.0-e16",
+    description: "UI code refactor:\n" +
+    "   * Faster and smaller code for UI\n" +
+    "   * Fixed SetTile()",
+    modifiedFiles: [
+        "include/Scroll.h",
+        "src/core/Scroll_a.s",
+        "src/core/UI_b.c",        
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
