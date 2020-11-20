@@ -13,21 +13,28 @@
 
 #define FRAME_CENTER_OFFSET 64
 
-const unsigned char ui_frame_tl_tiles = 0xC0;
-const unsigned char ui_frame_bl_tiles = 0xC6;
-const unsigned char ui_frame_tr_tiles = 0xC2;
-const unsigned char ui_frame_br_tiles = 0xC8;
-const unsigned char ui_frame_t_tiles  = 0xC1;
-const unsigned char ui_frame_b_tiles  = 0xC7;
-const unsigned char ui_frame_l_tiles  = 0xC3;
-const unsigned char ui_frame_r_tiles  = 0xC5;
-const unsigned char ui_frame_bg_tiles = 0xC4;
+#define ui_frame_tl_tiles 0xC0u
+#define ui_frame_bl_tiles 0xC6u
+#define ui_frame_tr_tiles 0xC2u
+#define ui_frame_br_tiles 0xC8u
+#define ui_frame_t_tiles  0xC1u
+#define ui_frame_b_tiles  0xC7u
+#define ui_frame_l_tiles  0xC3u
+#define ui_frame_r_tiles  0xC5u
+#define ui_frame_bg_tiles 0xC4u
+
+#define ui_bkg_tile 0x07u
+#define ui_while_tile 0xC9u
+#define ui_black_tile 0xCAu
+
 const unsigned char ui_white[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-const unsigned char ui_cursor_tiles[1] = {0xCB};
-const unsigned char ui_bg_tiles[1] = {0xC4};
+
+#define ui_cursor_tiles 0xCBu
+#define ui_bg_tiles 0xC4u
+
 const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 
 // The current in progress text speed.
@@ -44,7 +51,7 @@ void UIInit_b() __banked {
 
 #ifdef CGB
   VBK_REG = 1;
-  fill_win_rect(0, 0, 20, 18, 0x07);
+  fill_win_rect(0, 0, 20, 18, ui_bkg_tile);
   VBK_REG = 0;
 #endif
 
@@ -54,8 +61,8 @@ void UIInit_b() __banked {
   ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
   SetBankedBkgData(FRAME_BANK, 192, 9, ptr);
 
-  set_bkg_data(0xC9, 1, ui_white);
-  set_bkg_data(0xCA, 1, ui_black);
+  set_bkg_data(ui_while_tile, 1, ui_white);
+  set_bkg_data(ui_black_tile, 1, ui_black);
 
   ptr = (BankDataPtr(CURSOR_BANK)) + CURSOR_BANK_OFFSET;
   SetBankedBkgData(CURSOR_BANK, 0xCB, 1, ptr);
@@ -123,12 +130,12 @@ void UIDrawDialogueFrame_b(UBYTE h) __banked {
 }
 
 void UISetColor_b(UBYTE color) __banked {
-  UBYTE id = ((color) ? 0xC9 : 0xCA);
+  UBYTE id = ((color) ? ui_while_tile : ui_black_tile);
 
   // Not sure why need to set_bkg_data again but this doesn't
   // work in rom without reseting here
-  set_bkg_data(0xC9, 1, ui_white);
-  set_bkg_data(0xCA, 1, ui_black);
+  set_bkg_data(ui_while_tile, 1, ui_white);
+  set_bkg_data(ui_black_tile, 1, ui_black);
   fill_win_rect(0, 0, 20, 18, id);
 }
 
@@ -366,8 +373,11 @@ void UIShowMenu_b(UWORD flag_index,
 
 void UIDrawMenuCursor_b() {
   UBYTE i;
+  UINT16 addr;
   for (i = 0; i != menu_num_options; i++) {
-    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
-                  menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
+      addr = (UINT16)GetWinAddr() +
+             (i >= text_num_lines ? 10 : 1) +
+             (((i % text_num_lines) + 1) << 5);
+      SetTile(addr, menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
   }
 }
