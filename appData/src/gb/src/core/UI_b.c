@@ -148,9 +148,8 @@ void UIShowText_b() __banked {
         if (l) {
           dest += strlen(itoa(script_variables[var_index], dest));
           src += l + 1; 
-          break;
+          continue;
         }
-        *dest++ = *src++;
         break;
 
       case '#':
@@ -158,9 +157,8 @@ void UIShowText_b() __banked {
         if (l) {
           *dest++ = script_variables[var_index] + 0x20u; 
           src += l + 1; 
-          break;
+          continue;
         }
-        *dest++ = *src++;
         break;
 
       case '!':
@@ -169,16 +167,12 @@ void UIShowText_b() __banked {
           if (l) {
             *dest++ = var_index + 0x10u;
             src += l + 2;
-            break;
+            continue;
           }
         }
-        *dest++ = *src++;
-        break;
-
-      default:
-        *dest++ = *src++;
         break;
     }
+    *dest++ = *src++;
   }
   *dest = 0;
 
