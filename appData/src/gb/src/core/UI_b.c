@@ -37,6 +37,7 @@ UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
 void UIDrawMenuCursor_b();
+UBYTE GetToken_b(unsigned char * src, unsigned char term, UWORD* res) __preserves_regs(b, c);
 
 void UIInit_b() __banked {
   UBYTE* ptr;
@@ -133,55 +134,53 @@ void UISetColor_b(UBYTE color) __banked {
 
 void UIShowText_b() __banked {
   UWORD var_index;
-  UBYTE i, k;
-  UBYTE value;
+  UBYTE i, l;
 
   ui_block = TRUE;
   current_text_speed = text_draw_speed;
 
-  for (i = 1, k = 0; i != 81u; i++) {
-    
-    // Replace variable references in text
-    if (tmp_text_lines[i] == '$' || tmp_text_lines[i] == '#') {
-      if (tmp_text_lines[i + 3] == '$' || tmp_text_lines[i + 3] == '#') {
-        var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
-      } else if (tmp_text_lines[i + 4] == '$' || tmp_text_lines[i + 4] == '#') {
-        var_index = (100 * (tmp_text_lines[i + 1] - '0')) + (10 * (tmp_text_lines[i + 2] - '0')) +
-                    (tmp_text_lines[i + 3] - '0');
-      } else {
-        text_lines[k] = tmp_text_lines[i];
-        ++k;
-        continue;
-      }
+  static unsigned char * src, * dest;
+  src = tmp_text_lines + 1, dest = text_lines;
+  for (i = 0; (*src) && (i != 80u); i++) {
+    switch (*src) {
+      case '$':
+        l = GetToken_b(src + 1, '$', &var_index);
+        if (l) {
+          dest += strlen(itoa(script_variables[var_index], dest));
+          src += l + 1; 
+          break;
+        }
+        *dest++ = *src++;
+        break;
 
-      value = script_variables[var_index];
+      case '#':
+        l = GetToken_b(src + 1, '#', &var_index);
+        if (l) {
+          *dest++ = script_variables[var_index] + 0x20u; 
+          src += l + 1; 
+          break;
+        }
+        *dest++ = *src++;
+        break;
 
-      // Treat value as lookup in ascii.png
-      if (tmp_text_lines[i] == '#') {
-        text_lines[k] = value + 32u;
-      } else {
-        k += strlen(itoa(value, &text_lines[k])) - 1;
-      } 
+      case '!':
+        if (*(src+1) == 'S') {
+          l = GetToken_b(src + 2, '!', &var_index);
+          if (l) {
+            *dest++ = var_index + 0x10u;
+            src += l + 2;
+            break;
+          }
+        }
+        *dest++ = *src++;
+        break;
 
-      // Jump though input past variable placeholder
-      if (var_index >= 100) {
-        i += 4;
-      } else {
-        i += 3;
-      }
-    } else if (tmp_text_lines[i] == '!' && tmp_text_lines[i+3] == '!') {
-      if (tmp_text_lines[i + 1] == 'S') {
-        value = (tmp_text_lines[i + 2] - '0');
-        text_lines[k] = 0x10 + value;  
-        i += 3;
-      } else {
-        text_lines[k] = tmp_text_lines[i];
-      }
-    } else {
-      text_lines[k] = tmp_text_lines[i];
+      default:
+        *dest++ = *src++;
+        break;
     }
-    ++k;
   }
+  *dest = 0;
 
   if (menu_layout) {
     text_num_lines = tmp_text_lines[0];
