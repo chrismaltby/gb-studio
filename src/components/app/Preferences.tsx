@@ -1,79 +1,118 @@
 import React, { useEffect, useState } from "react";
 import Path from "path";
 import settings from "electron-settings";
-import { ipcRenderer, remote } from "electron";
-import { DotsIcon } from "../library/Icons";
 import l10n from "../../lib/helpers/l10n";
-import Button from "../library/Button";
 import getTmp from "../../lib/helpers/getTmp";
+import ThemeProvider from "../ui/theme/ThemeProvider";
+import GlobalStyle from "../ui/globalStyle";
+import { PreferencesWrapper } from "../ui/preferences/Preferences";
+import { FormField, FormRow } from "../ui/form/FormLayout";
+import { TextField } from "../ui/form/TextField";
+import { Button } from "../ui/buttons/Button";
+import { DotsIcon } from "../ui/icons/Icons";
+import { FixedSpacer } from "../ui/spacing/Spacing";
+import { AppSelect } from "../ui/form/AppSelect";
 
 const { dialog } = require("electron").remote;
 
 const Preferences = () => {
   const pathError = "";
-  const [path, setPath] = useState<string>("");
+  const [tmpPath, setTmpPath] = useState<string>("");
+  const [imageEditorPath, setImageEditorPath] = useState<string>("");
+  const [musicEditorPath, setMusicEditorPath] = useState<string>("");
 
   useEffect(() => {
-    setPath(getTmp(false));
+    setTmpPath(getTmp(false));
+    setImageEditorPath(String(settings.get("imageEditorPath") || ""));
+    setMusicEditorPath(String(settings.get("musicEditorPath") || ""));
   }, []);
 
-  const onChangePath = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeTmpPath = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPath = e.currentTarget.value;
-    setPath(newPath);
+    setTmpPath(newPath);
     settings.set("tmpDir", newPath);
   };
 
-  const onSelectFolder = async (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent>
-  ) => {
+  const onChangeImageEditorPath = (path: string) => {
+    setImageEditorPath(path);
+    settings.set("imageEditorPath", path);
+  };
+
+  const onChangeMusicEditorPath = (path: string) => {
+    setMusicEditorPath(path);
+    settings.set("musicEditorPath", path);
+  };
+
+  const onSelectTmpFolder = async () => {
     const path = await dialog.showOpenDialog({
       properties: ["openDirectory"],
     });
     if (path.filePaths[0]) {
-      const newPath = Path.normalize(`${path.filePaths}/`);
-      setPath(newPath);
+      const newPath = Path.normalize(`${path.filePaths[0]}/`);
+      setTmpPath(newPath);
       settings.set("tmpDir", newPath);
     }
   };
 
-  const onRestoreDefault = () => {
+  const onRestoreDefaultTmpPath = () => {
     settings.delete("tmpDir");
-    setPath(getTmp(false));
+    setTmpPath(getTmp(false));
   };
 
   return (
-    <div className="Preferences">
-      <div className="Preferences__FormGroup">
-        <label
-          htmlFor="projectPath"
-          className={pathError ? "Preferences__Label--Error" : ""}
-        >
-          {pathError || l10n("FIELD_TMP_DIRECTORY")}
-          <input id="projectPath" value={path} onChange={onChangePath} />
-          <div className="Preferences__InputButton">
-            <DotsIcon />
-            <input
-              className="Preferences__InputButton"
-              onClick={onSelectFolder}
+    <ThemeProvider>
+      <GlobalStyle />
+
+      <PreferencesWrapper>
+        <FormRow>
+          <TextField
+            name="path"
+            label={l10n("FIELD_TMP_DIRECTORY")}
+            errorLabel={pathError}
+            value={tmpPath}
+            onChange={onChangeTmpPath}
+            additionalRight={
+              <Button onClick={onSelectTmpFolder} type="button">
+                <DotsIcon />
+              </Button>
+            }
+            info={l10n("FIELD_TMP_DIRECTORY_INFO")}
+          />
+        </FormRow>
+        <FormRow>
+          <Button onClick={onRestoreDefaultTmpPath}>
+            {l10n("FIELD_RESTORE_DEFAULT")}
+          </Button>
+        </FormRow>
+
+        <FixedSpacer height={40} />
+
+        <FormRow>
+          <FormField
+            name="musicEditorPath"
+            label={l10n("FIELD_DEFAULT_IMAGE_EDITOR")}
+          >
+            <AppSelect
+              value={imageEditorPath}
+              onChange={onChangeImageEditorPath}
             />
-          </div>
-        </label>
-        <div className="Preferences__Info">
-          {l10n("FIELD_TMP_DIRECTORY_INFO")}
-        </div>
-      </div>
-      <div className="Preferences__FlexSpacer"></div>
-      <div>
-        <Button
-          transparent={false}
-          small={false}
-          large={false}
-          onClick={onRestoreDefault}
-        >
-          {l10n("FIELD_RESTORE_DEFAULT")}
-        </Button>
-      </div>
-    </div>
+          </FormField>
+        </FormRow>
+        <FixedSpacer height={10} />
+
+        <FormRow>
+          <FormField
+            name="musicEditorPath"
+            label={l10n("FIELD_DEFAULT_MUSIC_EDITOR")}
+          >
+            <AppSelect
+              value={musicEditorPath}
+              onChange={onChangeMusicEditorPath}
+            />
+          </FormField>
+        </FormRow>
+      </PreferencesWrapper>
+    </ThemeProvider>
   );
 };
 

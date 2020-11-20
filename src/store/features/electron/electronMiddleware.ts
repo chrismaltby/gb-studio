@@ -24,12 +24,11 @@ import {
   actorSelectors,
   triggerSelectors,
 } from "../entities/entitiesState";
-import {
-  ScriptEvent,
-} from "../entities/entitiesTypes";
+import { ScriptEvent } from "../entities/entitiesTypes";
 import entitiesActions from "../entities/entitiesActions";
 import { Dictionary } from "lodash";
 import actions from "./electronActions";
+import open from "open";
 
 const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   action
@@ -38,12 +37,22 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
     ipcRenderer.send("open-help", action.payload);
   } else if (actions.openFolder.match(action)) {
     remote.shell.openItem(action.payload);
+  } else if (actions.openFile.match(action)) {
+    if (action.payload.type === "image") {
+      const app = String(settings.get("imageEditorPath") || "") || undefined;
+      open(action.payload.filename, { app });
+    } else if (action.payload.type === "music") {
+      const app = String(settings.get("musicEditorPath") || "") || undefined;
+      open(action.payload.filename, { app });
+    } else {
+      remote.shell.openItem(action.payload.filename);
+    }
   } else if (editorActions.resizeWorldSidebar.match(action)) {
     settings.set("worldSidebarWidth", action.payload);
   } else if (editorActions.resizeFilesSidebar.match(action)) {
     settings.set("filesSidebarWidth", action.payload);
   } else if (editorActions.resizeNavigatorSidebar.match(action)) {
-    settings.set("navigatorSidebarWidth", action.payload);    
+    settings.set("navigatorSidebarWidth", action.payload);
   } else if (
     editorActions.setTool.match(action) &&
     action.payload.tool === "colors"
@@ -64,7 +73,7 @@ const electronMiddleware: Middleware<{}, RootState> = (store) => (next) => (
   } else if (projectActions.loadProject.fulfilled.match(action)) {
     ipcRenderer.send("project-loaded", action.payload.data.settings);
   } else if (settingsActions.setShowNavigator.match(action)) {
-    ipcRenderer.send("set-show-navigator", action.payload);    
+    ipcRenderer.send("set-show-navigator", action.payload);
   } else if (projectActions.loadProject.rejected.match(action)) {
     const window = remote.getCurrentWindow();
     window.close();

@@ -301,6 +301,10 @@
   "FIELD_MORE_SETTINGS": "More Settings",
   "FIELD_LOCK_SCRIPT_EDITOR": "Lock Script Editor",
   "FIELD_UNLOCK_SCRIPT_EDITOR": "Unlock Script Editor",
+  "FIELD_DEFAULT_IMAGE_EDITOR": "Default Image Editor",
+  "FIELD_DEFAULT_MUSIC_EDITOR": "Default Music Editor",
+  "FIELD_SYSTEM_DEFAULT": "System Default",
+  "FIELD_CHOOSE_APPLICATION": "Choose Application",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

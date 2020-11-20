@@ -97,7 +97,7 @@ const createPreferences = async (forceTab?: SplashTab) => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
-    height: 280,
+    height: 330,
     resizable: false,
     maximizable: false,
     fullscreenable: false,

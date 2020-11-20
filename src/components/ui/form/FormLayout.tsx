@@ -72,21 +72,31 @@ const FormFieldWrapper = styled.div<FormFieldWrapperProps>`
       : ""}
 `;
 
+const FormFieldInfo = styled.div`
+  opacity: 0.5;
+  display: block;
+  font-size: 11px;
+  margin-top: 5px;
+`;
+
 export interface FormFieldProps {
   readonly name: string;
   readonly label?: string;
+  readonly info?: string;
   readonly variant?: "normal" | "error";
 }
 
 export const FormField: FC<FormFieldProps> = ({
   name,
   label,
+  info,
   variant,
   children,
 }) => (
   <FormFieldWrapper variant={variant}>
     {label && <Label htmlFor={name}>{label}</Label>}
     {children}
+    {info && <FormFieldInfo>{info}</FormFieldInfo>}
   </FormFieldWrapper>
 );
 
