@@ -19,8 +19,11 @@ class MusicViewer extends Component {
   }
 
   onOpen = () => {
-    const { projectRoot, file, openFolder } = this.props;
-    openFolder(`${projectRoot}/assets/music/${file.filename}`);
+    const { projectRoot, file, openFile } = this.props;
+    openFile({
+      filename: `${projectRoot}/assets/music/${file.filename}`,
+      type: "music"
+    });
   };
 
   onPlay = () => {
@@ -114,7 +117,7 @@ MusicViewer.propTypes = {
   playing: PropTypes.bool.isRequired,
   play: PropTypes.func.isRequired,
   pause: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired,
+  openFile: PropTypes.func.isRequired,
   editMusicSettings: PropTypes.func.isRequired,
 };
 
@@ -134,7 +137,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   play: musicActions.playMusic,
   pause: musicActions.pauseMusic,
-  openFolder: electronActions.openFolder,
+  openFile: electronActions.openFile,
   editMusicSettings: entitiesActions.editMusicSettings,
 };
 

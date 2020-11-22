@@ -31,8 +31,11 @@ class ImageViewer extends Component {
   };
 
   onOpen = () => {
-    const { projectRoot, file, folder, openFolder } = this.props;
-    openFolder(`${projectRoot}/assets/${folder}/${file.filename}`);
+    const { projectRoot, file, folder, openFile } = this.props;
+    openFile({
+      filename: `${projectRoot}/assets/${folder}/${file.filename}`,
+      type: "image"
+    });
   };
 
   render() {
@@ -86,7 +89,7 @@ ImageViewer.propTypes = {
   sidebarWidth: PropTypes.number.isRequired,
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
-  openFolder: PropTypes.func.isRequired,
+  openFile: PropTypes.func.isRequired,
 };
 
 ImageViewer.defaultProps = {
@@ -108,7 +111,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 const mapDispatchToProps = {
-  openFolder: electronActions.openFolder,
+  openFile: electronActions.openFile,
   zoomIn: editorActions.zoomIn,
   zoomOut: editorActions.zoomOut
 };
