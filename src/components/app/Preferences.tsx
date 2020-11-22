@@ -10,7 +10,7 @@ import { FormField, FormRow } from "../ui/form/FormLayout";
 import { TextField } from "../ui/form/TextField";
 import { Button } from "../ui/buttons/Button";
 import { DotsIcon } from "../ui/icons/Icons";
-import { FixedSpacer } from "../ui/spacing/Spacing";
+import { FixedSpacer, FlexGrow } from "../ui/spacing/Spacing";
 import { AppSelect } from "../ui/form/AppSelect";
 
 const { dialog } = require("electron").remote;
@@ -85,7 +85,7 @@ const Preferences = () => {
           </Button>
         </FormRow>
 
-        <FixedSpacer height={40} />
+        <FlexGrow />
 
         <FormRow>
           <FormField
