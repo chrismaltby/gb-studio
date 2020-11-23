@@ -845,21 +845,21 @@ const addActor: CaseReducer<
       animSpeed: 3,
       paletteId: "",
       isPinned: false,
-      collisionGroup: [],
+      collisionGroup: "",
       script: [],
       startScript: [],
       updateScript: [],
       hit1Script: [],
       hit2Script: [],
       hit3Script: [],
-    },
+    } as Partial<Actor>,
     action.payload.defaults || {},
     {
       id: action.payload.actorId,
       x: clamp(action.payload.x, 0, scene.width - 2),
       y: clamp(action.payload.y, 0, scene.height - 1),
     }
-  );
+  ) as Actor;
 
   addActorToScene(state, scene, newActor, {});
 };
