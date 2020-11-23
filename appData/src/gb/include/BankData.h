@@ -3,6 +3,18 @@
 
 #include <gb/gb.h>
 
+#define __BANK_PREFIX(A) __bank_##A
+#define TO_FAR_PTR(A) {.bank = (char)&(__BANK_PREFIX(A)), .ptr = (void *)&(A)}
+
+typedef struct far_ptr_t {
+    UINT8 bank;
+    void * ptr;
+} far_ptr_t;
+
+extern const void __bank_font_image;
+extern const unsigned char font_image[];
+
+
 #define BankDataPtr(bank) ((UBYTE *)0x4000)
 
 typedef struct _BankPtr {

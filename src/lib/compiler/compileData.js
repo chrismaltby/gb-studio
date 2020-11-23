@@ -46,6 +46,7 @@ import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import { precompileEngineFields } from "../helpers/engineFields";
+import { dataArrayToC } from "./compileData2";
 
 const indexById = indexBy("id");
 
@@ -109,6 +110,8 @@ const compile = async (
   const frameImagePtr = banked.push(precompiled.frameTiles);
   const cursorImagePtr = banked.push(precompiled.cursorTiles);
   const emotesSpritePtr = banked.push(precompiled.emotesSprite);
+
+  output["font_image.c"] = dataArrayToC("font_image", precompiled.fontTiles);
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked

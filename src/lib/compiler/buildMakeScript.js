@@ -16,6 +16,9 @@ export default async (
   const CC = platform === "win32"
     ? `..\\_gbstools\\gbdk\\bin\\lcc`
     : `../_gbstools/gbdk/bin/lcc`;
+  const PACK = platform === "win32"
+    ? `..\\_gbstools\\gbspack\\gbspack`
+    : `../_gbstools/gbspack/gbspack`;    
   let CFLAGS = `-Wa-l -Iinclude`;
   let LFLAGS = `-Wl-yo${CART_SIZE} -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
 
@@ -54,6 +57,11 @@ export default async (
     }
     objFiles.push(objFile);
   }
+
+  addCommand(
+    `${l10n("COMPILER_PACKING")}`,
+    `${PACK} -b 12 ${objFiles.filter((f) => f.indexOf("font_image") > -1).join(" ")}`
+  );
 
   addCommand(
     `${l10n("COMPILER_LINKING")}: game.gb`,

@@ -29,6 +29,8 @@ const unsigned char ui_cursor_tiles[1] = {0xCB};
 const unsigned char ui_bg_tiles[1] = {0xC4};
 const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 
+const far_ptr_t far_font_data = TO_FAR_PTR(font_image);
+
 // The current in progress text speed.
 // Reset to global value from text_speed each time a dialogue window is opened but can be controlled
 // by using '!S[text-speed]!' commands in text, such as '!S0!' for instant '!S5!' for slow text.
@@ -271,7 +273,8 @@ void UIDrawTextBufferChar_b() {
     if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
-      SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
+      SetBankedBkgData(far_font_data.bank, TEXT_BUFFER_START + i, 1, (UWORD)far_font_data.ptr + (letter * 16));
+
       tile = TEXT_BUFFER_START + i;
       id = (UINT16)GetWinAddr() +
            MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +
