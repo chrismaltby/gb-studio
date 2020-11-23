@@ -59,13 +59,13 @@ void UIInit_b() __banked {
 
   // Load frame tiles from data bank
   ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
-  SetBankedBkgData(FRAME_BANK, 192, 9, ptr);
+  SetBankedBkgData(192, 9, ptr, FRAME_BANK);
 
   set_bkg_data(ui_while_tile, 1, ui_white);
   set_bkg_data(ui_black_tile, 1, ui_black);
 
   ptr = (BankDataPtr(CURSOR_BANK)) + CURSOR_BANK_OFFSET;
-  SetBankedBkgData(CURSOR_BANK, 0xCB, 1, ptr);
+  SetBankedBkgData(0xCB, 1, ptr, CURSOR_BANK);
 }
 
 void UIReset_b() __banked {
@@ -254,7 +254,7 @@ void UIDrawTextBufferChar_b() {
     if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
-      SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
+      SetBankedBkgData(TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16), FONT_BANK);
       tile = TEXT_BUFFER_START + i;
       id = (UINT16)GetWinAddr() +
            MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +

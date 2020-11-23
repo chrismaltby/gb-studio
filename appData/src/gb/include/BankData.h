@@ -18,7 +18,7 @@ typedef struct _BankPtr {
  * @param l number of tiles to write
  * @param ptr memory address of tile data within bank
  */
-void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
+void SetBankedBkgData(UBYTE i, UBYTE l, unsigned char *ptr, UBYTE bank);
 
 /**
  * Call set_sprite_data with data stored in banked memory
@@ -28,7 +28,7 @@ void SetBankedBkgData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
  * @param l number of tiles to write
  * @param ptr memory address of tile data within bank
  */
-void SetBankedSpriteData(UBYTE bank, UBYTE i, UBYTE l, unsigned char *ptr);
+void SetBankedSpriteData(UBYTE i, UBYTE l, unsigned char *ptr, UBYTE bank);
 
 /**
  * Read UBYTE from banked memory location

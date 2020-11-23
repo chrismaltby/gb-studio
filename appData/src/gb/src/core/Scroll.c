@@ -222,7 +222,7 @@ void InitScroll() {
 }
 
 void RenderScreen() {
-  UINT8 i;
+  UINT8 i, temp;
   INT16 y;
 
   if (!fade_style)
