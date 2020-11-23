@@ -56,6 +56,10 @@ const migrateProject = project => {
       data = migrateFrom200r4To200r5Actors(data);
       release = "5";      
     }
+    if (release === "5") {
+      data = migrateFrom200r5To200r6Actors(data);
+      release = "6";      
+    }
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -838,6 +842,33 @@ const migrateFrom200r4To200r5Actors = data => {
             ...actor,
             moveSpeed: fixMoveSpeed(actor.moveSpeed),
             animSpeed: fixAnimSpeed(actor.animSpeed),
+          };
+        })
+      };
+    })
+  };
+};
+
+/*
+ * Version 2.0.0 r5 contained a bug where new actors would have an
+ * empty array as their collision group rather than an empty string
+ * preventing their collision scripts from being able to fire
+ */
+const migrateFrom200r5To200r6Actors = data => {
+
+  return {
+    ...data,
+    scenes: data.scenes.map(scene => {
+      return {
+        ...scene,
+        actors: scene.actors.map(actor => {
+          return {
+            ...actor,
+            collisionGroup: (
+              Array.isArray(actor.collisionGroup)
+                ? actor.collisionGroup[0]
+                : actor.collisionGroup
+            ) || ""
           };
         })
       };
