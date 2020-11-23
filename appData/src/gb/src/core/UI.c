@@ -108,7 +108,7 @@ void UIShowAvatar(UBYTE avatar_index) {
   PUSH_BANK(avatar_bank_ptr.bank);
   memcpy(tmp_avatar_ptr, avatar_ptr + 1, avatar_len * 16);
   POP_BANK
-  SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START, avatar_len, (unsigned char *)tmp_avatar_ptr);
+  SetBankedBkgData(TEXT_BUFFER_START, avatar_len, (unsigned char *)tmp_avatar_ptr, FONT_BANK);
 
   tile1 = TEXT_BUFFER_START;
   tile2 = TEXT_BUFFER_START + 1U;

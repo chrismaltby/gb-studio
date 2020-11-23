@@ -9,24 +9,32 @@
 #include "data_ptrs.h"
 #include "Math.h"
 #include <string.h>
+#include <stdlib.h>
 
 #define FRAME_CENTER_OFFSET 64
 
-const unsigned char ui_frame_tl_tiles = 0xC0;
-const unsigned char ui_frame_bl_tiles = 0xC6;
-const unsigned char ui_frame_tr_tiles = 0xC2;
-const unsigned char ui_frame_br_tiles = 0xC8;
-const unsigned char ui_frame_t_tiles  = 0xC1;
-const unsigned char ui_frame_b_tiles  = 0xC7;
-const unsigned char ui_frame_l_tiles  = 0xC3;
-const unsigned char ui_frame_r_tiles  = 0xC5;
-const unsigned char ui_frame_bg_tiles = 0xC4;
+#define ui_frame_tl_tiles 0xC0u
+#define ui_frame_bl_tiles 0xC6u
+#define ui_frame_tr_tiles 0xC2u
+#define ui_frame_br_tiles 0xC8u
+#define ui_frame_t_tiles  0xC1u
+#define ui_frame_b_tiles  0xC7u
+#define ui_frame_l_tiles  0xC3u
+#define ui_frame_r_tiles  0xC5u
+#define ui_frame_bg_tiles 0xC4u
+
+#define ui_bkg_tile 0x07u
+#define ui_while_tile 0xC9u
+#define ui_black_tile 0xCAu
+
 const unsigned char ui_white[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-const unsigned char ui_cursor_tiles[1] = {0xCB};
-const unsigned char ui_bg_tiles[1] = {0xC4};
+
+#define ui_cursor_tiles 0xCBu
+#define ui_bg_tiles 0xC4u
+
 const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 
 // The current in progress text speed.
@@ -36,13 +44,14 @@ UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
 void UIDrawMenuCursor_b();
+UBYTE GetToken_b(unsigned char * src, unsigned char term, UWORD* res) __preserves_regs(b, c);
 
 void UIInit_b() __banked {
   UBYTE* ptr;
 
 #ifdef CGB
   VBK_REG = 1;
-  fill_win_rect(0, 0, 20, 18, 0x07);
+  fill_win_rect(0, 0, 20, 18, ui_bkg_tile);
   VBK_REG = 0;
 #endif
 
@@ -50,13 +59,13 @@ void UIInit_b() __banked {
 
   // Load frame tiles from data bank
   ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
-  SetBankedBkgData(FRAME_BANK, 192, 9, ptr);
+  SetBankedBkgData(192, 9, ptr, FRAME_BANK);
 
-  set_bkg_data(0xC9, 1, ui_white);
-  set_bkg_data(0xCA, 1, ui_black);
+  set_bkg_data(ui_while_tile, 1, ui_white);
+  set_bkg_data(ui_black_tile, 1, ui_black);
 
   ptr = (BankDataPtr(CURSOR_BANK)) + CURSOR_BANK_OFFSET;
-  SetBankedBkgData(CURSOR_BANK, 0xCB, 1, ptr);
+  SetBankedBkgData(0xCB, 1, ptr, CURSOR_BANK);
 }
 
 void UIReset_b() __banked {
@@ -121,84 +130,58 @@ void UIDrawDialogueFrame_b(UBYTE h) __banked {
 }
 
 void UISetColor_b(UBYTE color) __banked {
-  UBYTE id = ((color) ? 0xC9 : 0xCA);
+  UBYTE id = ((color) ? ui_while_tile : ui_black_tile);
 
   // Not sure why need to set_bkg_data again but this doesn't
   // work in rom without reseting here
-  set_bkg_data(0xC9, 1, ui_white);
-  set_bkg_data(0xCA, 1, ui_black);
+  set_bkg_data(ui_while_tile, 1, ui_white);
+  set_bkg_data(ui_black_tile, 1, ui_black);
   fill_win_rect(0, 0, 20, 18, id);
 }
 
 void UIShowText_b() __banked {
   UWORD var_index;
-  UBYTE i, j, k;
-  UBYTE value;
-  unsigned char value_string[6];
+  UBYTE i, l;
 
   ui_block = TRUE;
   current_text_speed = text_draw_speed;
 
-  for (i = 1, k = 0; i != 81u; i++) {
-    
-    // Replace variable references in text
-    if (tmp_text_lines[i] == '$' || tmp_text_lines[i] == '#') {
-      if (tmp_text_lines[i + 3] == '$' || tmp_text_lines[i + 3] == '#') {
-        var_index = (10 * (tmp_text_lines[i + 1] - '0')) + (tmp_text_lines[i + 2] - '0');
-      } else if (tmp_text_lines[i + 4] == '$' || tmp_text_lines[i + 4] == '#') {
-        var_index = (100 * (tmp_text_lines[i + 1] - '0')) + (10 * (tmp_text_lines[i + 2] - '0')) +
-                    (tmp_text_lines[i + 3] - '0');
-      } else {
-        text_lines[k] = tmp_text_lines[i];
-        ++k;
-        continue;
-      }
-
-      value = script_variables[var_index];
-      j = 0;
-
-      // Treat value as lookup in ascii.png
-      if (tmp_text_lines[i] == '#') {
-        text_lines[k] = value + 32u;
-      } else {
-        // Treat value as 8-bit int
-        if (value == 0) {
-          text_lines[k] = '0';
-        } else {
-          // itoa implementation
-          while (value != 0) {
-            value_string[j++] = '0' + (value % 10);
-            value /= 10;
-          }
-          j--;
-          while (j != 255) {
-            text_lines[k] = value_string[j];
-            k++;
-            j--;
-          }
-          k--;
+  static unsigned char * src, * dest;
+  src = tmp_text_lines + 1, dest = text_lines;
+  for (i = 0; (*src) && (i != 80u); i++) {
+    switch (*src) {
+      case '$':
+        l = GetToken_b(src + 1, '$', &var_index);
+        if (l) {
+          dest += strlen(itoa(script_variables[var_index], dest));
+          src += l + 1; 
+          continue;
         }
-      } 
+        break;
 
-      // Jump though input past variable placeholder
-      if (var_index >= 100) {
-        i += 4;
-      } else {
-        i += 3;
-      }
-    } else if (tmp_text_lines[i] == '!' && tmp_text_lines[i+3] == '!') {
-      if (tmp_text_lines[i + 1] == 'S') {
-        value = (tmp_text_lines[i + 2] - '0');
-        text_lines[k] = 0x10 + value;  
-        i += 3;
-      } else {
-        text_lines[k] = tmp_text_lines[i];
-      }
-    } else {
-      text_lines[k] = tmp_text_lines[i];
+      case '#':
+        l = GetToken_b(src + 1, '#', &var_index);
+        if (l) {
+          *dest++ = script_variables[var_index] + 0x20u; 
+          src += l + 1; 
+          continue;
+        }
+        break;
+
+      case '!':
+        if (*(src+1) == 'S') {
+          l = GetToken_b(src + 2, '!', &var_index);
+          if (l) {
+            *dest++ = var_index + 0x10u;
+            src += l + 2;
+            continue;
+          }
+        }
+        break;
     }
-    ++k;
+    *dest++ = *src++;
   }
+  *dest = 0;
 
   if (menu_layout) {
     text_num_lines = tmp_text_lines[0];
@@ -271,7 +254,7 @@ void UIDrawTextBufferChar_b() {
     if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
-      SetBankedBkgData(FONT_BANK, TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16));
+      SetBankedBkgData(TEXT_BUFFER_START + i, 1, ptr + ((UWORD)letter * 16), FONT_BANK);
       tile = TEXT_BUFFER_START + i;
       id = (UINT16)GetWinAddr() +
            MOD_32((text_x + 1 + avatar_enabled * 2 + menu_enabled +
@@ -390,8 +373,11 @@ void UIShowMenu_b(UWORD flag_index,
 
 void UIDrawMenuCursor_b() {
   UBYTE i;
+  UINT16 addr;
   for (i = 0; i != menu_num_options; i++) {
-    set_win_tiles(i >= text_num_lines ? 10 : 1, (i % text_num_lines) + 1, 1, 1,
-                  menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
+      addr = (UINT16)GetWinAddr() +
+             (i >= text_num_lines ? 10 : 1) +
+             (((i % text_num_lines) + 1) << 5);
+      SetTile(addr, menu_index == (BYTE)i ? ui_cursor_tiles : ui_bg_tiles);
   }
 }

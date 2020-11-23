@@ -177,6 +177,21 @@ const changes: EngineChange[] = [{
         "src/core/Scroll_a.s",
         "src/core/UI_b.c",        
     ]
+}, {
+    version: "2.0.0-e17",
+    description: "UI code refactor:\n" +
+    "   * Faster integer to string conversion\n" +
+    "   * Faster loading of banked data",
+    modifiedFiles: [
+        "include/BankData.h",
+        "include/BankManager.h",
+        "src/core/BankData.c",
+        "src/core/ScriptRunner_b.c",
+        "src/core/Scroll.c",
+        "src/core/UI.c",
+        "src/core/UI_a.s",
+        "src/core/UI_b.c",
+    ]
 }];
 
 const ejectEngineChangelog = (currentVersion: string) => {
