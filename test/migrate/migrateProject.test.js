@@ -37,7 +37,7 @@ test("should migrate conditional events from 1.0.0 to 2.0.0", () => {
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
     _version: "2.0.0",
-    _release: "5",
+    _release: "6",
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 3,
@@ -126,7 +126,7 @@ test("should migrate conditional events from 1.2.0 to 2.0.0", () => {
   const newProject = JSON.parse(JSON.stringify(migrateProject(oldProject)));
   expect(newProject).toEqual({
     _version: "2.0.0",
-    _release: "5",
+    _release: "6",
     settings: {
       startMoveSpeed: 1,
       startAnimSpeed: 3,
