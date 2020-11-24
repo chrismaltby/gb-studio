@@ -1,3 +1,6 @@
+#ifndef VM_H
+#define VM_H
+
 #include "BankData.h"
 
 typedef struct actor_t {
@@ -27,3 +30,5 @@ typedef struct spritesheet_t {
     UINT8 n_frames;
     UINT8 frames[];
 } spritesheet_t;
+
+#endif

@@ -1,6 +1,9 @@
 export const sceneName = (scene: any, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
 
+export const actorName = (actor: any, actorIndex: number) =>
+  actor.name || `Actor ${actorIndex + 1}`;
+
 export const triggerName = (trigger: any, triggerIndex: number) =>
   trigger.name || `Trigger ${triggerIndex + 1}`;
 
@@ -20,23 +23,40 @@ export const compileScene = (scene: any, sceneIndex: number) => {
 
 #include "VM.h"
 // #include "Test.h"
-// #include "scene_${sceneIndex}_actors.h"
-// #include "scene_${sceneIndex}_triggers.h"
+#include "scene_${sceneIndex}_actors.h"
+#include "scene_${sceneIndex}_triggers.h"
+
 const void __at(255) __bank_scene_${sceneIndex}; 
+
 const struct scene_t scene_${sceneIndex} = {
     .width = ${scene.width}, .height = ${scene.height},
     .tiles = TO_FAR_PTR(Test),
     .n_actors = ${scene.actors.length},
     .n_triggers = ${scene.triggers.length},
     .actors = ${
-      scene.actors.length > 0 ? `TO_FAR_PTR(scene_${sceneIndex}_actors` : "0"
+      scene.actors.length > 0 ? `TO_FAR_PTR(scene_${sceneIndex}_actors)` : "0"
     },
     .triggers = ${
       scene.triggers.length > 0
-        ? `TO_FAR_PTR(scene_${sceneIndex}_triggers`
+        ? `TO_FAR_PTR(scene_${sceneIndex}_triggers)`
         : "0"
-    })
+    }
 };
+`;
+};
+
+export const compileSceneHeader = (scene: any, sceneIndex: number) => {
+  return `#ifndef SCENE_${sceneIndex}_H
+#define SCENE_${sceneIndex}_H
+  
+// Scene: ${sceneName(scene, sceneIndex)}
+
+#include "VM.h"
+
+extern const void __bank_scene_${sceneIndex};
+extern const scene_t scene_${sceneIndex};
+
+#endif
 `;
 };
 
@@ -46,11 +66,36 @@ export const compileSceneActors = (scene: any, sceneIndex: number) => {
 // Scene: ${sceneName(scene, sceneIndex)}
 // Actors
 
+#include "VM.h"
+
 const void __at(255) __bank_scene_${sceneIndex}_actors;
 
 const actor_t scene_${sceneIndex}_actors[] = {
-
+  ${scene.actors
+    .map(
+      (actor: any, actorIndex: number) => `// ${actorName(actor, actorIndex)}
+  {
+    .x = ${actor.x}, .y = ${actor.y}
+  }`
+    )
+    .join(",\n  ")}
 };
+`;
+};
+
+export const compileSceneActorsHeader = (scene: any, sceneIndex: number) => {
+  return `#ifndef SCENE_${sceneIndex}_ACTORS_H
+#define SCENE_${sceneIndex}_ACTORS_H
+  
+// Scene: ${sceneName(scene, sceneIndex)}
+// Actors
+
+#include "VM.h"
+
+extern const void __bank_scene_${sceneIndex}_actors;
+extern const actor_t scene_${sceneIndex}_actors[];
+
+#endif
 `;
 };
 
@@ -61,7 +106,6 @@ export const compileSceneTriggers = (scene: any, sceneIndex: number) => {
 // Triggers
 
 #include "VM.h"
-// #include "Test.h"
 
 const void __at(255) __bank_scene_${sceneIndex}_triggers;
 
@@ -79,6 +123,22 @@ const trigger_t scene_${sceneIndex}_triggers[] = {
     )
     .join(",\n  ")}
 };
+`;
+};
+
+export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) => {
+  return `#ifndef SCENE_${sceneIndex}_TRIGGERS_H
+#define SCENE_${sceneIndex}_TRIGGERS_H
+  
+// Scene: ${sceneName(scene, sceneIndex)}
+// Triggers
+
+#include "VM.h"
+
+extern const void __bank_scene_${sceneIndex}_triggers;
+extern const trigger_t scene_${sceneIndex}_triggers[];
+
+#endif
 `;
 };
 
