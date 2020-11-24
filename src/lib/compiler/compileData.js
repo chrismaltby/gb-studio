@@ -46,7 +46,7 @@ import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import { precompileEngineFields } from "../helpers/engineFields";
-import { dataArrayToC } from "./compileData2";
+import { compileScene, compileSceneActors, compileSceneTriggers, compileSpritesheet, compileTileset, dataArrayToC } from "./compileData2";
 
 const indexById = indexBy("id");
 
@@ -231,7 +231,7 @@ const compile = async (
   });
 
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
-    output[`tileset_${tilesetIndex}.c`] = dataArrayToC(`tileset_${tilesetIndex}`, [].concat(Math.ceil(tileset.length / 16), tileset));
+    output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
   });
   
   // Add palette data
@@ -287,10 +287,7 @@ const compile = async (
   });
 
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`sprite_${spriteIndex}.c`] = dataArrayToC(`sprite_${spriteIndex}`, [].concat(
-      sprite.frames,
-      sprite.data
-    ));
+    output[`sprite_${spriteIndex}.c`] = compileSpritesheet(sprite, spriteIndex);
   });
 
   // Add avatar data
@@ -349,6 +346,14 @@ const compile = async (
       });      
     output[`scene_${sceneIndex}_collisions.c`] = dataArrayToC(`scene_${sceneIndex}_collisions`, collisions);
     output[`scene_${sceneIndex}_colors.c`] = dataArrayToC(`scene_${sceneIndex}_colors`, tileColors);
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex);
+
+    if (scene.actors.length > 0) {
+      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex);
+    }
+    if (scene.triggers.length > 0) {
+      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(scene, sceneIndex);
+    }
   });
 
   // Add scene data
