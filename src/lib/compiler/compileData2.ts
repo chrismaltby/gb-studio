@@ -22,15 +22,15 @@ export const compileScene = (scene: any, sceneIndex: number) => {
 // Scene: ${sceneName(scene, sceneIndex)}
 
 #include "VM.h"
-// #include "Test.h"
-#include "scene_${sceneIndex}_actors.h"
-#include "scene_${sceneIndex}_triggers.h"
+#include "background_${scene.backgroundIndex}.h"
+${scene.actors.length > 0 ? `#include "scene_${sceneIndex}_actors.h"` : ""}
+${scene.triggers.length > 0 ? `#include "scene_${sceneIndex}_triggers.h"` : ""}
 
 const void __at(255) __bank_scene_${sceneIndex}; 
 
 const struct scene_t scene_${sceneIndex} = {
     .width = ${scene.width}, .height = ${scene.height},
-    .tiles = TO_FAR_PTR(Test),
+    .background = TO_FAR_PTR(background_${scene.backgroundIndex}),
     .n_actors = ${scene.actors.length},
     .n_triggers = ${scene.triggers.length},
     .actors = ${
@@ -151,10 +151,27 @@ export const compileTileset = (tileset: any, tilesetIndex: number) => {
 
 const void __at(255) __bank_tileset_${tilesetIndex};
 
-const struct tileset_t tileset_${tilesetIndex}[] = {
+const struct tileset_t tileset_${tilesetIndex} = {
   .n_tiles = ${Math.ceil(tileset.length / 16)},
-  tiles = ${tileset}
+  .tiles = {
+    ${tileset}
+  }
 };
+`;
+};
+
+export const compileTilesetHeader = (tileset: any, tilesetIndex: number) => {
+  return `#ifndef TILESET_${tilesetIndex}_H
+#define TILESET_${tilesetIndex}_H
+  
+// Tileset: ${tilesetIndex}  
+
+#include "VM.h"
+
+extern const void __bank_tileset_${tilesetIndex};
+const struct tileset_t tileset_${tilesetIndex};
+
+#endif
 `;
 };
 
@@ -170,9 +187,49 @@ export const compileSpritesheet = (
 
 const void __at(255) __bank_spriteSheet_${spriteSheetIndex};
 
-const struct spritesheet_t spriteSheet_${spriteSheetIndex}[] = {
+const struct spritesheet_t spriteSheet_${spriteSheetIndex} = {
   .n_frames = ${spriteSheet.frames},
-  frames = ${spriteSheet.data}
+  .frames = {
+    ${spriteSheet.data}
+  }
 };
+`;
+};
+
+export const compileBackground = (background: any, backgroundIndex: number) => {
+  return `#pragma bank 255
+
+// Background: ${backgroundIndex}  
+
+#include "VM.h"
+#include "tileset_${background.tilesetIndex}.h"
+
+const void __at(255) __bank_background_${backgroundIndex};
+
+const struct background_t background_${backgroundIndex} = {
+  .width = ${background.width}, .height = ${background.height},
+  .tileset = TO_FAR_PTR(tileset_${background.tilesetIndex}),
+  .tiles = {
+    ${background.data}
+  }
+};
+`;
+};
+
+export const compileBackgroundHeader = (
+  background: any,
+  backgroundIndex: number
+) => {
+  return `#ifndef BACKGROUND_${backgroundIndex}_H
+#define BACKGROUND_${backgroundIndex}_H
+  
+// Background: ${backgroundIndex}  
+
+#include "VM.h"
+
+extern const void __bank_background_${backgroundIndex};
+const struct background_t background_${backgroundIndex};
+
+#endif
 `;
 };

@@ -15,11 +15,17 @@ typedef struct trigger_t {
 
 typedef struct scene_t {
     UINT8 width, height;
-    far_ptr_t tiles, palette, init;
+    far_ptr_t background, palette, init;
     UINT8 type, n_actors, n_triggers;
     far_ptr_t actors;
     far_ptr_t triggers;
 } scene_t;
+
+typedef struct background_t {
+    UINT8 width, height;
+    far_ptr_t tileset;
+    UINT8 tiles[];
+} background_t;
 
 typedef struct tileset_t {
     UINT8 n_tiles;

@@ -47,6 +47,8 @@ import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import { precompileEngineFields } from "../helpers/engineFields";
 import {
+  compileBackground,
+  compileBackgroundHeader,
   compileScene,
   compileSceneActors,
   compileSceneActorsHeader,
@@ -55,6 +57,7 @@ import {
   compileSceneTriggersHeader,
   compileSpritesheet,
   compileTileset,
+  compileTilesetHeader,
   dataArrayToC,
 } from "./compileData2";
 
@@ -242,6 +245,7 @@ const compile = async (
 
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
     output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
+    output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(tileset, tilesetIndex);
   });
   
   // Add palette data
@@ -283,12 +287,8 @@ const compile = async (
   });
 
   precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
-    output[`background_${backgroundIndex}.c`] = dataArrayToC(`background_${backgroundIndex}`, [].concat(
-      background.tilesetIndex,
-      Math.floor(background.width),
-      Math.floor(background.height),
-      background.data
-    ));
+    output[`background_${backgroundIndex}.c`] = compileBackground(background, backgroundIndex);
+    output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(background, backgroundIndex);
   });
 
   // Add sprite data
