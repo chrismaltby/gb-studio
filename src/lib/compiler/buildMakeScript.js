@@ -44,6 +44,17 @@ export default async (
     }
   }
 
+  const getValue = (label, variable, cmd) => {
+    if (platform === "win32") {
+      cmds.push(`@echo ${label}`);
+      cmds.push(`FOR /F "tokens=*" %%g IN ('${cmd}') do (SET VAR=%%g)`);
+    } else {
+      cmds.push(`echo "${label}"`);
+      cmds.push(`${variable}=$(${cmd})`);
+      cmds.push(`echo "VALUE of ${variable} WAS $${variable}"`);
+    }
+  }
+
   for (const file of buildFiles) {
     const objFile = `${file
       .replace(/src.*\//, "obj/")
@@ -58,14 +69,26 @@ export default async (
     objFiles.push(objFile);
   }
 
-  addCommand(
+  getValue(
     `${l10n("COMPILER_PACKING")}`,
-    `${PACK} -b 12 ${objFiles.filter((f) => f.indexOf("font_image") > -1).join(" ")}`
+    "CART_SIZE",
+    `${PACK} -b 12 -c ${objFiles
+      .filter(
+        (f) =>
+          f.indexOf("font_image") > -1 ||
+          f.indexOf("tileset_") > -1 ||
+          f.indexOf("palette_") > -1 ||
+          f.indexOf("background_") > -1 ||
+          f.indexOf("sprite_") > -1 ||
+          f.indexOf("avatar_") > -1 ||
+          f.indexOf("scene_") > -1
+        )
+      .join(" ")}`
   );
 
   addCommand(
     `${l10n("COMPILER_LINKING")}: game.gb`,
-    `${CC} ${LFLAGS} -o build/rom/game.gb ${objFiles.join(" ")}`
+    `${CC} ${LFLAGS} -Wl-yo\${CART_SIZE} -o build/rom/game.gb ${objFiles.join(" ")}`
   );
 
   return cmds.join("\n")

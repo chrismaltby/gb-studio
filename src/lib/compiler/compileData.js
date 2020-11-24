@@ -230,6 +230,10 @@ const compile = async (
     return banked.push([].concat(Math.ceil(tileset.length / 16), tileset));
   });
 
+  precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
+    output[`tileset_${tilesetIndex}.c`] = dataArrayToC(`tileset_${tilesetIndex}`, [].concat(Math.ceil(tileset.length / 16), tileset));
+  });
+  
   // Add palette data
   const palettePtrs = precompiled.usedPalettes.map((palette) => {
     const paletteData = palette.reduce((memo, colors) => {
@@ -241,6 +245,18 @@ const compile = async (
       );
     }, []);
     return banked.push(paletteData);
+  });
+
+  precompiled.usedPalettes.forEach((palette, paletteIndex) => {
+    const paletteData = palette.length > 0 ? palette.reduce((memo, colors) => {
+      return memo.concat(
+        colors.reduce((colorMemo, color) => {
+          const colorVal = convertHexTo15BitDec(color);
+          return colorMemo.concat([lo(colorVal), hi(colorVal)]);
+        }, [])
+      );
+    }, []) : [0];
+    output[`palette_${paletteIndex}.c`] = dataArrayToC(`palette_${paletteIndex}`, paletteData);
   });
 
   // Add background map data
@@ -256,14 +272,37 @@ const compile = async (
     );
   });
 
+  precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
+    output[`background_${backgroundIndex}.c`] = dataArrayToC(`background_${backgroundIndex}`, [].concat(
+      background.tilesetIndex,
+      Math.floor(background.width),
+      Math.floor(background.height),
+      background.data
+    ));
+  });
+
   // Add sprite data
   const spritePtrs = precompiled.usedSprites.map((sprite) => {
     return banked.push([].concat(sprite.frames, sprite.data));
   });
 
+  precompiled.usedSprites.forEach((sprite, spriteIndex) => {
+    output[`sprite_${spriteIndex}.c`] = dataArrayToC(`sprite_${spriteIndex}`, [].concat(
+      sprite.frames,
+      sprite.data
+    ));
+  });
+
   // Add avatar data
   const avatarPtrs = precompiled.usedAvatars.map((avatar) => {
     return banked.push([].concat(avatar.frames, avatar.data));
+  });
+
+  precompiled.usedAvatars.forEach((avatar, avatarIndex) => {
+    output[`avatar_${avatarIndex}.c`] = dataArrayToC(`avatar_${avatarIndex}`, [].concat(
+      avatar.frames,
+      avatar.data
+    ));
   });
 
   // Add scene collisions data
@@ -292,6 +331,24 @@ const compile = async (
       });
 
     return banked.push(tileColors);
+  });
+
+  precompiled.sceneData.forEach((scene, sceneIndex) => {
+    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
+    const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
+    const collisions = Array(collisionsLength)
+      .fill(0)
+      .map((_, index) => {
+        return (scene.collisions && scene.collisions[index]) || 0;
+      });
+    const tileColorsLength = Math.ceil(sceneImage.width * sceneImage.height);
+    const tileColors = Array(tileColorsLength)
+      .fill(0)
+      .map((_, index) => {
+        return (scene.tileColors && scene.tileColors[index]) || 0;
+      });      
+    output[`scene_${sceneIndex}_collisions.c`] = dataArrayToC(`scene_${sceneIndex}_collisions`, collisions);
+    output[`scene_${sceneIndex}_colors.c`] = dataArrayToC(`scene_${sceneIndex}_colors`, tileColors);
   });
 
   // Add scene data
