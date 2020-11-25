@@ -55,7 +55,8 @@ import {
   compileSceneHeader,
   compileSceneTriggers,
   compileSceneTriggersHeader,
-  compileSpritesheet,
+  compileSpriteSheet,
+  compileSpriteSheetHeader,
   compileTileset,
   compileTilesetHeader,
   dataArrayToC,
@@ -297,7 +298,8 @@ const compile = async (
   });
 
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`sprite_${spriteIndex}.c`] = compileSpritesheet(sprite, spriteIndex);
+    output[`sprite_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
+    output[`sprite_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
   });
 
   // Add avatar data

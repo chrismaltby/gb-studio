@@ -1,3 +1,10 @@
+export const BACKGROUND_TYPE = "const struct background_t";
+export const SPRITESHEET_TYPE = "const struct spritesheet_t";
+export const TILESET_TYPE = "const struct tileset_t";
+export const TRIGGER_TYPE = "const struct trigger_t";
+export const ACTOR_TYPE = "const struct actor_t";
+export const SCENE_TYPE = "const struct scene_t";
+
 export const sceneName = (scene: any, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
 
@@ -6,6 +13,130 @@ export const actorName = (actor: any, actorIndex: number) =>
 
 export const triggerName = (trigger: any, triggerIndex: number) =>
   trigger.name || `Trigger ${triggerIndex + 1}`;
+
+export const toFarPtr = (ref: string): string => {
+  return `TO_FAR_PTR(${ref})`;
+};
+
+export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
+#define ${key}_H
+
+${contents}
+
+#endif
+`;
+
+const toBankSymbol = (symbol: string): string => `__bank_${symbol}`;
+
+const toBankSymbolDef = (symbol: string): string =>
+  `extern const void ${toBankSymbol(symbol)}`;
+
+const toBankSymbolInit = (symbol: string): string =>
+  `const void __at(255) ${toBankSymbol(symbol)}`;
+
+const backgroundSymbol = (backgroundIndex: number): string =>
+  `background_${backgroundIndex}`;
+
+const tilesetSymbol = (tilesetIndex: number): string =>
+  `tileset_${tilesetIndex}`;
+
+const spriteSheetSymbol = (spriteSheetIndex: number): string =>
+  `spritesheet_${spriteSheetIndex}`;
+
+const toDataHeader = (type: string, symbol: string, comment: string) =>
+  includeGuard(
+    symbol.toUpperCase(),
+    `${comment}
+
+#include "VM.h"
+
+${toBankSymbolDef(symbol)};
+extern ${type} ${symbol};`
+  );
+
+const sceneSymbol = (sceneIndex: number): string => `scene_${sceneIndex}`;
+
+const sceneActorsSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}_actors`;
+
+const sceneTriggersSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}_triggers`;
+
+export const toStructData = <T extends {}>(
+  object: T,
+  indent: number = 0
+): string => {
+  const keys = (Object.keys(object) as unknown) as [keyof T];
+  return keys
+    .map((key) => {
+      if (object[key] === undefined) {
+        return "";
+      }
+      if (key === "__comment") {
+        return `${" ".repeat(indent)}// ${object[key]}`;
+      }
+      if (Array.isArray(object[key])) {
+        return `${" ".repeat(indent)}.${key} = {
+${" ".repeat(indent * 2)}${((object[key] as unknown) as any[]).join(",")}
+${" ".repeat(indent)}}`;
+      }
+      return `${" ".repeat(indent)}.${key} = ${object[key]}`;
+    })
+    .filter((line) => line.length > 0)
+    .join(",\n");
+};
+
+export const toDataFile = <T extends {}>(
+  type: string,
+  symbol: string,
+  comment: string,
+  object: T,
+  dependencies?: string[]
+) => `#pragma bank 255
+${comment ? "\n" + comment : ""}
+
+#include "VM.h"
+${
+  dependencies
+    ? dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+    : ""
+}
+
+${toBankSymbolInit(symbol)};
+
+${type} ${symbol} = {
+${toStructData(object, 2)}
+};
+`;
+
+export const toDataArrayFile = <T extends {}>(
+  type: string,
+  symbol: string,
+  comment: string,
+  array: [T],
+  dependencies?: string[]
+) => `#pragma bank 255
+${comment ? "\n" + comment : ""}
+
+#include "VM.h"${
+  dependencies
+    ? "\n" +
+      dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+    : ""
+}
+
+${toBankSymbolInit(symbol)};
+
+${type} ${symbol}[] = {
+${array
+  .map(
+    (object) => `  {
+${toStructData(object, 4)}
+  }`
+  )
+  .join(",\n")}
+};
+`;
 
 export const dataArrayToC = (name: string, data: [number]): string => {
   return `#pragma bank 255
@@ -16,220 +147,144 @@ ${data}
 };`;
 };
 
-export const compileScene = (scene: any, sceneIndex: number) => {
-  return `#pragma bank 255
-
-// Scene: ${sceneName(scene, sceneIndex)}
-
-#include "VM.h"
-#include "background_${scene.backgroundIndex}.h"
-${scene.actors.length > 0 ? `#include "scene_${sceneIndex}_actors.h"` : ""}
-${scene.triggers.length > 0 ? `#include "scene_${sceneIndex}_triggers.h"` : ""}
-
-const void __at(255) __bank_scene_${sceneIndex}; 
-
-const struct scene_t scene_${sceneIndex} = {
-    .width = ${scene.width}, .height = ${scene.height},
-    .background = TO_FAR_PTR(background_${scene.backgroundIndex}),
-    .n_actors = ${scene.actors.length},
-    .n_triggers = ${scene.triggers.length},
-    .actors = ${
-      scene.actors.length > 0 ? `TO_FAR_PTR(scene_${sceneIndex}_actors)` : "0"
+export const compileScene = (scene: any, sceneIndex: number) =>
+  toDataFile(
+    SCENE_TYPE,
+    sceneSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}`,
+    // Data
+    {
+      width: scene.width,
+      height: scene.height,
+      background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
+      n_actors: scene.actors.length,
+      n_triggers: scene.triggers.length,
+      actors:
+        scene.actors.length > 0
+          ? toFarPtr(sceneActorsSymbol(sceneIndex))
+          : undefined,
+      triggers:
+        scene.triggers.length > 0
+          ? toFarPtr(sceneTriggersSymbol(sceneIndex))
+          : undefined,
     },
-    .triggers = ${
-      scene.triggers.length > 0
-        ? `TO_FAR_PTR(scene_${sceneIndex}_triggers)`
-        : "0"
+    // Dependencies
+    ([] as string[]).concat(
+      backgroundSymbol(scene.backgroundIndex),
+      scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
+      scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : []
+    )
+  );
+
+export const compileSceneHeader = (scene: any, sceneIndex: number) =>
+  toDataHeader(
+    SCENE_TYPE,
+    sceneSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}`
+  );
+
+export const compileSceneActors = (scene: any, sceneIndex: number) =>
+  toDataArrayFile(
+    ACTOR_TYPE,
+    sceneActorsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
+    scene.actors.map((actor: any, actorIndex: number) => ({
+      __comment: actorName(actor, actorIndex),
+      x: actor.x,
+      y: actor.y,
+    }))
+  );
+
+export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
+  toDataHeader(
+    ACTOR_TYPE,
+    sceneActorsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`
+  );
+
+export const compileSceneTriggers = (scene: any, sceneIndex: number) =>
+  toDataArrayFile(
+    TRIGGER_TYPE,
+    sceneTriggersSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`,
+    scene.triggers.map((trigger: any, triggerIndex: number) => ({
+      __comment: triggerName(trigger, triggerIndex),
+      x: trigger.x,
+      y: trigger.y,
+      width: trigger.width,
+      height: trigger.height,
+    }))
+  );
+
+export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) =>
+  toDataHeader(
+    TRIGGER_TYPE,
+    sceneTriggersSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
+  );
+
+export const compileTileset = (tileset: any, tilesetIndex: number) =>
+  toDataFile(
+    TILESET_TYPE,
+    tilesetSymbol(tilesetIndex),
+    `// Tileset: ${tilesetIndex}`,
+    {
+      n_tiles: Math.ceil(tileset.length / 16),
+      tiles: tileset,
     }
-};
-`;
-};
+  );
 
-export const compileSceneHeader = (scene: any, sceneIndex: number) => {
-  return `#ifndef SCENE_${sceneIndex}_H
-#define SCENE_${sceneIndex}_H
-  
-// Scene: ${sceneName(scene, sceneIndex)}
+export const compileTilesetHeader = (tileset: any, tilesetIndex: number) =>
+  toDataHeader(
+    TILESET_TYPE,
+    tilesetSymbol(tilesetIndex),
+    `// Tileset: ${tilesetIndex}`
+  );
 
-#include "VM.h"
-
-extern const void __bank_scene_${sceneIndex};
-extern const scene_t scene_${sceneIndex};
-
-#endif
-`;
-};
-
-export const compileSceneActors = (scene: any, sceneIndex: number) => {
-  return `#pragma bank 255
-
-// Scene: ${sceneName(scene, sceneIndex)}
-// Actors
-
-#include "VM.h"
-
-const void __at(255) __bank_scene_${sceneIndex}_actors;
-
-const actor_t scene_${sceneIndex}_actors[] = {
-  ${scene.actors
-    .map(
-      (actor: any, actorIndex: number) => `// ${actorName(actor, actorIndex)}
-  {
-    .x = ${actor.x}, .y = ${actor.y}
-  }`
-    )
-    .join(",\n  ")}
-};
-`;
-};
-
-export const compileSceneActorsHeader = (scene: any, sceneIndex: number) => {
-  return `#ifndef SCENE_${sceneIndex}_ACTORS_H
-#define SCENE_${sceneIndex}_ACTORS_H
-  
-// Scene: ${sceneName(scene, sceneIndex)}
-// Actors
-
-#include "VM.h"
-
-extern const void __bank_scene_${sceneIndex}_actors;
-extern const actor_t scene_${sceneIndex}_actors[];
-
-#endif
-`;
-};
-
-export const compileSceneTriggers = (scene: any, sceneIndex: number) => {
-  return `#pragma bank 255
-
-// Scene: ${sceneName(scene, sceneIndex)}
-// Triggers
-
-#include "VM.h"
-
-const void __at(255) __bank_scene_${sceneIndex}_triggers;
-
-const trigger_t scene_${sceneIndex}_triggers[] = {
-  ${scene.triggers
-    .map(
-      (trigger: any, triggerIndex: number) => `// ${triggerName(
-        trigger,
-        triggerIndex
-      )}
-  {
-    .x = ${trigger.x}, .y = ${trigger.y},
-    .width = ${trigger.width}, .height = ${trigger.height}
-  }`
-    )
-    .join(",\n  ")}
-};
-`;
-};
-
-export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) => {
-  return `#ifndef SCENE_${sceneIndex}_TRIGGERS_H
-#define SCENE_${sceneIndex}_TRIGGERS_H
-  
-// Scene: ${sceneName(scene, sceneIndex)}
-// Triggers
-
-#include "VM.h"
-
-extern const void __bank_scene_${sceneIndex}_triggers;
-extern const trigger_t scene_${sceneIndex}_triggers[];
-
-#endif
-`;
-};
-
-export const compileTileset = (tileset: any, tilesetIndex: number) => {
-  return `#pragma bank 255
-
-// Tileset: ${tilesetIndex}  
-
-#include "VM.h"
-
-const void __at(255) __bank_tileset_${tilesetIndex};
-
-const struct tileset_t tileset_${tilesetIndex} = {
-  .n_tiles = ${Math.ceil(tileset.length / 16)},
-  .tiles = {
-    ${tileset}
-  }
-};
-`;
-};
-
-export const compileTilesetHeader = (tileset: any, tilesetIndex: number) => {
-  return `#ifndef TILESET_${tilesetIndex}_H
-#define TILESET_${tilesetIndex}_H
-  
-// Tileset: ${tilesetIndex}  
-
-#include "VM.h"
-
-extern const void __bank_tileset_${tilesetIndex};
-const struct tileset_t tileset_${tilesetIndex};
-
-#endif
-`;
-};
-
-export const compileSpritesheet = (
+export const compileSpriteSheet = (
   spriteSheet: any,
   spriteSheetIndex: number
-) => {
-  return `#pragma bank 255
+) =>
+  toDataFile(
+    SPRITESHEET_TYPE,
+    spriteSheetSymbol(spriteSheetIndex),
+    `// SpriteSheet: ${spriteSheetIndex}`,
+    {
+      n_frames: spriteSheet.frames,
+      frames: spriteSheet.data,
+    }
+  );
 
-// Spritesheet: ${spriteSheet.name}  
+export const compileSpriteSheetHeader = (
+  spriteSheet: any,
+  spriteSheetIndex: number
+) =>
+  toDataHeader(
+    SPRITESHEET_TYPE,
+    spriteSheetSymbol(spriteSheetIndex),
+    `// SpriteSheet: ${spriteSheetIndex}`
+  );
 
-#include "VM.h"
-
-const void __at(255) __bank_spriteSheet_${spriteSheetIndex};
-
-const struct spritesheet_t spriteSheet_${spriteSheetIndex} = {
-  .n_frames = ${spriteSheet.frames},
-  .frames = {
-    ${spriteSheet.data}
-  }
-};
-`;
-};
-
-export const compileBackground = (background: any, backgroundIndex: number) => {
-  return `#pragma bank 255
-
-// Background: ${backgroundIndex}  
-
-#include "VM.h"
-#include "tileset_${background.tilesetIndex}.h"
-
-const void __at(255) __bank_background_${backgroundIndex};
-
-const struct background_t background_${backgroundIndex} = {
-  .width = ${background.width}, .height = ${background.height},
-  .tileset = TO_FAR_PTR(tileset_${background.tilesetIndex}),
-  .tiles = {
-    ${background.data}
-  }
-};
-`;
-};
+export const compileBackground = (background: any, backgroundIndex: number) =>
+  toDataFile(
+    BACKGROUND_TYPE,
+    backgroundSymbol(backgroundIndex),
+    `// Background: ${backgroundIndex}`,
+    {
+      width: background.width,
+      height: background.height,
+      tileset: toFarPtr(tilesetSymbol(background.tilesetIndex)),
+      tiles: background.data,
+    },
+    [tilesetSymbol(background.tilesetIndex)]
+  );
 
 export const compileBackgroundHeader = (
   background: any,
   backgroundIndex: number
-) => {
-  return `#ifndef BACKGROUND_${backgroundIndex}_H
-#define BACKGROUND_${backgroundIndex}_H
-  
-// Background: ${backgroundIndex}  
-
-#include "VM.h"
-
-extern const void __bank_background_${backgroundIndex};
-const struct background_t background_${backgroundIndex};
-
-#endif
-`;
-};
+) =>
+  toDataHeader(
+    BACKGROUND_TYPE,
+    backgroundSymbol(backgroundIndex),
+    `// Background: ${backgroundIndex}`
+  );

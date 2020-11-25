@@ -13,6 +13,9 @@
 #include "UI.h"
 #include "Input.h"
 #include "data_ptrs.h"
+#include "BankData.h"
+#include "VM.h"
+#include "scene_0.h"
 
 #define MAX_PLAYER_SPRITE_SIZE 24
 
@@ -31,6 +34,8 @@ UBYTE sprites_len;
 UBYTE actors_len = 0;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
+
+const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
 
 void LoadTiles(UINT16 index) {
   UBYTE bank, size;
@@ -179,147 +184,81 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
   return size;
 }
 
+// @todo Change LoadScene to take far_ptr to scene rather than scene index
 void LoadScene(UINT16 index) {
   UBYTE bank, i, k;
   UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = scene_bank_ptrs[index].bank;
-  data_ptr = (scene_bank_ptrs[index].offset + (BankDataPtr(bank)));
-
-  collision_bank = collision_bank_ptrs[index].bank;
-  collision_ptr =
-      (unsigned char*)(collision_bank_ptrs[index].offset + (BankDataPtr(collision_bank)));
-  POP_BANK;
+  const struct scene_t* scene;
+  const struct actor_t* scene_actors;
+  const struct trigger_t* scene_triggers;
+  const struct tileset_t* tiles;
+  const struct background_t* background;
+  const far_ptr_t far_background;
+  const far_ptr_t far_tileset;
+  const far_ptr_t far_scene_actors;
+  const far_ptr_t far_scene_triggers;
 
   SpritePoolReset();
   ScriptCtxPoolReset();
 
-  PUSH_BANK(bank);
-  LoadImage((*(data_ptr++) * 256) + *(data_ptr++));
-  LoadImageAttr(index);
-  LoadPalette((*(data_ptr++) * 256) + *(data_ptr++));
-  LoadSpritePalette((*(data_ptr++) * 256) + *(data_ptr++));
-  LoadPlayerSpritePalette(0);
-  LoadUIPalette(1);
-  UIReset();
-  RemoveInputScripts();
+  // Load scene
+  SWITCH_ROM_MBC1(far_scene.bank);
+  scene = (const struct scene_t*)far_scene.ptr;
+  far_background = scene->background;
+  far_scene_actors = scene->actors;
+  far_scene_triggers = scene->triggers;
 
-  ProjectilesInit();
-  InitPlayer();
-  
-  scene_type = (*(data_ptr++)) + 1;
-  sprites_len = (*(data_ptr++)) + 1;
-  actors_len = (*(data_ptr++)) + 1;
-  triggers_len = *(data_ptr++);
+  scene_type = 1;
+  actors_len = scene->n_actors;
+  triggers_len = scene->n_triggers;
 
-  scene_events_start_ptr.bank = *(data_ptr++);
-  scene_events_start_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
+  // Load background
+  SWITCH_ROM_MBC1(far_background.bank);
+  background = (const struct background_t*)far_background.ptr;
+  image_bank = far_background.bank;
+  image_tile_width = background->width;
+  image_tile_height = background->height;
+  image_width = image_tile_width * 8;
+  scroll_x_max = image_width - ((UINT16)SCREENWIDTH);
+  image_height = image_tile_height * 8;
+  scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
+  image_ptr = background->tiles;
+  far_tileset = background->tileset;
 
-  // Load sprites
-  k = 24;
-  for (i = 1; i != sprites_len; i++) {
-    UBYTE sprite_len = LoadSprite((*(data_ptr++) * 256) + *(data_ptr++), k);
-    sprites_info[i].sprite_offset = DIV_4(k);
-    sprites_info[i].frames_len = DIV_4(sprite_len);
-    if (sprites_info[i].frames_len == 6) {
-      sprites_info[i].sprite_type = SPRITE_ACTOR_ANIMATED;
-      sprites_info[i].frames_len = 2;
-    } else if (sprites_info[i].frames_len == 3) {
-      sprites_info[i].sprite_type = SPRITE_ACTOR;
-      sprites_info[i].frames_len = 1;
-    } else {
-      sprites_info[i].sprite_type = SPRITE_STATIC;
-    }
-    k += sprite_len;
-  }
+  // Load tiles
+  SWITCH_ROM_MBC1(far_tileset.bank);
+  tiles = (const struct tileset_t*)far_tileset.ptr;
+  set_bkg_data(0, tiles->n_tiles, tiles->tiles);
 
   // Load actors
-  for (i = 1; i != actors_len; i++) {
-    UBYTE j;
-
-    actors[i].sprite = *(data_ptr++);
-    actors[i].palette_index = *(data_ptr++);
-    actors[i].enabled = TRUE;
-    actors[i].moving = FALSE;
-    actors[i].sprite_type = *(data_ptr++);
-    actors[i].frames_len = *(data_ptr++);
-    actors[i].animate = *(data_ptr++);
-    actors[i].frame = actors[i].animate >> 1;
-    actors[i].animate = actors[i].animate & 0x1;
-    actors[i].pos.x = *(data_ptr++) * 8;
-    actors[i].pos.y = *(data_ptr++) * 8;
-    actors[i].start_pos.x = actors[i].pos.x;
-    actors[i].start_pos.y = actors[i].pos.y;
-
-    j = *(data_ptr++);
-    actors[i].dir.x = j == 2 ? -1 : j == 4 ? 1 : 0;
-    actors[i].dir.y = j == 8 ? -1 : j == 1 ? 1 : 0;
-
-    actors[i].move_speed = *(data_ptr++);
-    actors[i].anim_speed = *(data_ptr++);
-    actors[i].pinned = *(data_ptr++);
-    actors[i].collision_group = actors[i].pinned >> 1;
-    actors[i].pinned = actors[i].pinned & 0x1;
-
-    actors[i].collisionsEnabled = !actors[i].pinned;
-
-    actors[i].events_ptr.bank = *(data_ptr++);
-    actors[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    actors[i].movement_ptr.bank = *(data_ptr++);
-    actors[i].movement_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    actors[i].hit_1_ptr.bank = *(data_ptr++);
-    actors[i].hit_1_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    actors[i].hit_2_ptr.bank = *(data_ptr++);
-    actors[i].hit_2_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    actors[i].hit_3_ptr.bank = *(data_ptr++);
-    actors[i].hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-    actors[i].movement_ctx = 0;
-    actors[i].script_control = FALSE;
+  if (actors_len != 0) {
+    SWITCH_ROM_MBC1(far_scene_actors.bank);
+    scene_actors = (const struct actor_t*)far_scene_actors.ptr;
+    for(i=0; i != actors_len; i++) {
+      actors[i + 1].pos.x = scene_actors->x;
+      actors[i + 1].pos.y = scene_actors->y;
+      scene_actors += sizeof(actor_t);
+    }
   }
-
   actors_active[0] = 0;
   actors_active_size = 1;
 
   // Load triggers
-  for (i = 0; i != triggers_len; i++) {
-    triggers[i].x = *(data_ptr++);
-    triggers[i].y = *(data_ptr++);
-    triggers[i].w = *(data_ptr++);
-    triggers[i].h = *(data_ptr++);
-    data_ptr++;  // Trigger type
-    triggers[i].events_ptr.bank = *(data_ptr++);
-    triggers[i].events_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-  }
-
-  // Initialise scene
-
-  InitScroll();
-
-  // Reset last trigger
-  last_trigger_tx = 0xFF;
-  last_trigger_ty = 0xFF;
-
-  player.hit_1_ptr.bank = *(data_ptr++);
-  player.hit_1_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-  player.hit_2_ptr.bank = *(data_ptr++);
-  player.hit_2_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-  player.hit_3_ptr.bank = *(data_ptr++);
-  player.hit_3_ptr.offset = *(data_ptr++) + (*(data_ptr++) * 256);
-
-  // Enable all pinned actors by default
-  for (i = 1; i != actors_len; i++) {
-    if (actors[i].pinned) {
-      ActivateActor(i);
+  if (triggers_len != 0) {
+    SWITCH_ROM_MBC1(far_scene_triggers.bank);
+    scene_triggers = (const struct trigger_t*)far_scene_triggers.ptr;
+    for(i=0; i != triggers_len; i++) {
+      triggers[i].x = scene_triggers->x;
+      triggers[i].y = scene_triggers->y;
+      triggers[i].w = scene_triggers->width;
+      triggers[i].h = scene_triggers->height;
+      scene_triggers += sizeof(trigger_t);
     }
   }
 
-  POP_BANK;
+  UIReset();
+  RemoveInputScripts();
+  ProjectilesInit();
+  InitPlayer();
+  InitScroll();
 }
