@@ -29,21 +29,14 @@ extern UBYTE actors_len;
  * 
  * @param index tileset index in data_ptrs.h
  */
-void LoadTiles(UINT16 index);
+void LoadTiles(const far_ptr_t *ptr);
 
 /**
  * Load image tiles into background
  * 
  * @param index image index in data_ptrs.h
  */
-void LoadImage(UINT16 index);
-
-/**
- * Load image palette color data into background
- * 
- * @param index image attr index in data_ptrs.h
- */
-void LoadImageAttr(UINT16 index);
+void LoadImage(far_ptr_t *ptr);
 
 /**
  * Load scene palette

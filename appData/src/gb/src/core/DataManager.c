@@ -35,50 +35,26 @@ UBYTE actors_len = 0;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
 
-void LoadTiles(UINT16 index) {
-  UBYTE bank, size;
-  UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = tileset_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(tileset_bank_ptrs[index].offset + (BankDataPtr(bank)));
-  POP_BANK;
-
-  PUSH_BANK(bank);
-  size = *(data_ptr++);
-  set_bkg_data(0, size, data_ptr);
-  POP_BANK;
+void LoadTiles(const far_ptr_t *ptr) {
+  const struct tileset_t* tiles;
+  SWITCH_ROM_MBC1(ptr->bank);
+  tiles = (const struct tileset_t*)ptr->ptr;
+  set_bkg_data(0, tiles->n_tiles, tiles->tiles);  
 }
 
-void LoadImage(UINT16 index) {
-  UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  image_bank = background_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(background_bank_ptrs[index].offset + (BankDataPtr(image_bank)));
-  POP_BANK;
-
-  PUSH_BANK(image_bank);
-
-  LoadTiles(*(data_ptr++));
-
-  image_tile_width = *(data_ptr++);
-  image_tile_height = *(data_ptr++);
+void LoadImage(const far_ptr_t *ptr) {
+  const background_t* background;
+  SWITCH_ROM_MBC1(ptr->bank);
+  background = (background_t*)ptr->ptr;
+  image_bank = ptr->bank;
+  image_tile_width = background->width;
+  image_tile_height = background->height;
   image_width = image_tile_width * 8;
   scroll_x_max = image_width - ((UINT16)SCREENWIDTH);
   image_height = image_tile_height * 8;
   scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
-  image_ptr = data_ptr;
-
-  POP_BANK;
-}
-
-void LoadImageAttr(UINT16 index) {
-  PUSH_BANK(DATA_PTRS_BANK);
-  image_attr_bank = background_attr_bank_ptrs[index].bank;
-  image_attr_ptr =
-      (unsigned char*)(background_attr_bank_ptrs[index].offset + (BankDataPtr(image_attr_bank)));
-  POP_BANK;
+  image_ptr = background->tiles;  
+  LoadTiles(&background->tileset);
 }
 
 void LoadPalette(UINT16 index) {
@@ -214,23 +190,8 @@ void LoadScene(UINT16 index) {
   image_attr_bank = scene->colors.bank; 
   image_attr_ptr = scene->colors.ptr;
 
-  // Load background
-  SWITCH_ROM_MBC1(far_background.bank);
-  background = (background_t*)far_background.ptr;
-  image_bank = far_background.bank;
-  image_tile_width = background->width;
-  image_tile_height = background->height;
-  image_width = image_tile_width * 8;
-  scroll_x_max = image_width - ((UINT16)SCREENWIDTH);
-  image_height = image_tile_height * 8;
-  scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
-  image_ptr = background->tiles;  
-  far_tileset = background->tileset;
-
-  // Load tiles
-  SWITCH_ROM_MBC1(far_tileset.bank);
-  tiles = (tileset_t*)far_tileset.ptr;
-  set_bkg_data(0, tiles->n_tiles, tiles->tiles);
+  // Load background + tiles
+  LoadImage(&far_background);
 
   // // Load actors
   // if (actors_len != 0) {
