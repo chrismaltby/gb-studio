@@ -105,7 +105,9 @@ ${comment ? "\n" + comment : ""}
 #include "VM.h"
 ${
   dependencies
-    ? dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+    ? dependencies
+        .map((dependency) => `#include "data/${dependency}.h"`)
+        .join("\n")
     : ""
 }
 
@@ -128,7 +130,9 @@ ${comment ? "\n" + comment : ""}
 #include "VM.h"${
   dependencies
     ? "\n" +
-      dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+      dependencies
+        .map((dependency) => `#include "data/${dependency}.h"`)
+        .join("\n")
     : ""
 }
 
@@ -157,7 +161,9 @@ ${comment ? "\n" + comment : ""}
 ${
   dependencies
     ? "\n" +
-      dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+      dependencies
+        .map((dependency) => `#include "data/${dependency}.h"`)
+        .join("\n")
     : ""
 }
 

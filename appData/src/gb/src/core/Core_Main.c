@@ -18,7 +18,7 @@
 #include "Sprite.h"
 #include "UI.h"
 #include "gbt_player.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 #include "main.h"
 
 UBYTE game_time = 0;

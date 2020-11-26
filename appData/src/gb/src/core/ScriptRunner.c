@@ -8,7 +8,7 @@
 #include "Input.h"
 #include "Math.h"
 #include "UI.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 #include <string.h>
 
 DECLARE_STACK(script_ctx_pool, MAX_BG_SCRIPT_CONTEXTS);

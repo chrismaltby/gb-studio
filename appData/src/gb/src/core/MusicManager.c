@@ -2,7 +2,7 @@
 
 #include "BankData.h"
 #include "BankManager.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 #include "gbt_player.h"
 
 #define MAX_MUSIC 255

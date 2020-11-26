@@ -583,8 +583,8 @@ const compile = async (
       .join(`\n`)}\n\n#endif\n`;
   output[`data_ptrs.c`] =
     `#pragma bank ${DATA_PTRS_BANK}\n` +
-    `#include "data_ptrs.h"\n` +
-    `#include "banks.h"\n\n` +
+    `#include "data/data_ptrs.h"\n` +
+    `#include "data/banks.h"\n\n` +
     `#ifdef __EMSCRIPTEN__\n` +
     `const unsigned int bank_data_ptrs[] = {\n` +
     bankDataPtrs.join(",") +

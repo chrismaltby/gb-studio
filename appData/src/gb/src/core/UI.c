@@ -8,7 +8,7 @@
 #include "GameTime.h"
 #include "Input.h"
 #include "Math.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 
 void UIInit_b() __banked;
 void UIUpdate_b() __banked;

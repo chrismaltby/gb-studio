@@ -8,7 +8,7 @@
 #include "GameTime.h"
 #include "Input.h"
 #include "Trigger.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 
 void Start_TopDown() {
   camera_offset.x = 0;

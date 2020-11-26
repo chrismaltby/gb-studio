@@ -14,7 +14,7 @@
 #include "Scroll.h"
 #include "Sprite.h"
 #include "Trigger.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 
 #define PLATFORM_CAMERA_DEADZONE_X 4
 #define PLATFORM_CAMERA_DEADZONE_Y 16

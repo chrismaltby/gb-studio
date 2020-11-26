@@ -7,7 +7,7 @@
 #include "GameTime.h"
 #include "FadeManager.h"
 #include "Palette.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 
 INT16 scroll_x = 0;
 INT16 scroll_y = 0;

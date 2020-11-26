@@ -16,11 +16,11 @@
 #include "Sprite.h"
 #include "Scroll.h"
 #include "Camera.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 #include "Projectiles.h"
 #include "Palette.h"
 #include "states/Platform.h"
-#include "data_ptrs.h"
+#include "data/data_ptrs.h"
 #include <rand.h>
 
 #define RAM_START_PTR 0xA000

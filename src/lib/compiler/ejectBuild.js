@@ -69,6 +69,7 @@ const ejectBuild = async ({
     progress("Local engine not found, using default engine");
   }
 
+  await fs.ensureDir(`${outputRoot}/include/data`);
   await fs.ensureDir(`${outputRoot}/src/data`);
   await fs.ensureDir(`${outputRoot}/obj`);
   await fs.ensureDir(`${outputRoot}/build/rom`);
@@ -77,7 +78,7 @@ const ejectBuild = async ({
     if (filename.endsWith(".h")) {
       progress(`Generate header: ${filename}`);
       await fs.writeFile(
-        `${outputRoot}/include/${filename}`,
+        `${outputRoot}/include/data/${filename}`,
         compiledData.files[filename]
       );
     } else if (filename.endsWith(".o")) {
