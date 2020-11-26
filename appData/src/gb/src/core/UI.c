@@ -25,17 +25,17 @@ void UIShowMenu_b(UWORD flag_index,
                   UBYTE cancel_config) __banked;
 
 UBYTE ui_block = FALSE;
-UBYTE win_pos_x;
-UBYTE win_pos_y;
-UBYTE win_dest_pos_x;
-UBYTE win_dest_pos_y;
-UBYTE win_speed;
+UBYTE win_pos_x = 0;
+UBYTE win_pos_y = 0;
+UBYTE win_dest_pos_x = 0;
+UBYTE win_dest_pos_y = 0;
+UBYTE win_speed = 0;
 
-UBYTE text_x;
-UBYTE text_y;
-UBYTE text_drawn;
+UBYTE text_x = 0;
+UBYTE text_y = 0;
+UBYTE text_drawn = 0;
 UBYTE text_count = 0;
-UBYTE text_tile_count;
+UBYTE text_tile_count = 0;
 UBYTE text_wait = 0;
 UBYTE text_in_speed = 1;
 UBYTE text_out_speed = 1;
@@ -48,7 +48,7 @@ UBYTE text_num_lines = 0;
 UBYTE avatar_enabled = 0;
 UBYTE menu_enabled = FALSE;
 BYTE menu_index = 0;
-UWORD menu_flag;
+UWORD menu_flag = 0;
 UBYTE menu_num_options = 2;
 UBYTE menu_cancel_on_last_option = TRUE;
 UBYTE menu_cancel_on_b = TRUE;

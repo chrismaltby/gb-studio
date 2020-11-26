@@ -32,28 +32,28 @@ UINT8 pending_w_i;
 Pos* scroll_target = 0;
 
 void ScrollUpdateRow(INT16 x, INT16 y);
-void RefreshScroll_b() __banked;
 
 /* Update pending (up to 5) rows */
 void ScrollUpdateRowR() {
+  UINT8 _save = _current_bank;
   UINT8 i = 0u;
   UINT16 id;
   UBYTE y_offset;
 
   y_offset = MOD_32(pending_w_y);
 
-  PUSH_BANK(image_bank);
+  SWITCH_ROM_MBC1(image_bank);
 
 #ifdef CGB
   if (_cpu == CGB_TYPE) {  // Color Row Load
     for (i = 0u; i != 5 && pending_w_i != 0; ++i, --pending_w_i) {
       id = 0x9800 + MOD_32(pending_w_x++) + ((UINT16)y_offset << 5);
-      PUSH_BANK(image_attr_bank);
+      SWITCH_ROM_MBC1(image_attr_bank);
       VBK_REG = 1;
       // set_bkg_tiles(MOD_32(pending_w_x), y_offset, 1, 1, pending_w_cmap++);
       SetTile(id, *pending_w_cmap);
       VBK_REG = 0;
-      POP_BANK;
+      SWITCH_ROM_MBC1(image_bank);
       // set_bkg_tiles(MOD_32(pending_w_x++), y_offset, 1, 1, pending_w_map++);
       SetTile(id, *pending_w_map);
       pending_w_map++;
@@ -69,8 +69,7 @@ void ScrollUpdateRowR() {
       pending_w_map++;
     }
   }
-
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
@@ -102,6 +101,7 @@ void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
 }
 
 void ScrollUpdateRow(INT16 x, INT16 y) {
+  UINT8 _save = _current_bank;
   UINT8 i = 0u;
   UINT16 id;
   UBYTE screen_x, screen_y;
@@ -110,7 +110,7 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
   unsigned char* cmap = image_attr_ptr + image_tile_width * y + x;
 #endif
 
-  PUSH_BANK(image_bank);
+  SWITCH_ROM_MBC1(image_bank);
 
   screen_x = x;
   screen_y = MOD_32(y);
@@ -119,11 +119,11 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
     id = 0x9800 + MOD_32(screen_x++) + ((UINT16)screen_y << 5);
 
 #ifdef CGB
-    PUSH_BANK(image_attr_bank);
+    SWITCH_ROM_MBC1(image_attr_bank);
     VBK_REG = 1;
     SetTile(id, *(cmap++));
     VBK_REG = 0;
-    POP_BANK;
+    SWITCH_ROM_MBC1(image_bank);
 #endif
     SetTile(id, *(map++));
   }
@@ -137,17 +137,17 @@ void ScrollUpdateRow(INT16 x, INT16 y) {
       }
     }
   }
-
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 void ScrollUpdateColumnR() {
+  UINT8 _save = _current_bank;
   UINT8 i = 0u;
   UBYTE a = 0;
   UINT16 id = 0;
   UBYTE x_offset;
 
-  PUSH_BANK(image_bank);
+  SWITCH_ROM_MBC1(image_bank);
 
   x_offset = MOD_32(pending_h_x);
 
@@ -155,12 +155,12 @@ void ScrollUpdateColumnR() {
   if (_cpu == CGB_TYPE) {  // Color Column Load
     for (i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i--) {
       id = 0x9800 + (0x1F & (x_offset)) + ((0x1F & (MOD_32(pending_h_y))) << 5);
-      PUSH_BANK(image_attr_bank);
+      SWITCH_ROM_MBC1(image_attr_bank);
       VBK_REG = 1;
       // set_bkg_tiles(x_offset, MOD_32(pending_h_y), 1, 1, pending_h_cmap);
       SetTile(id, *pending_h_cmap);
       VBK_REG = 0;
-      POP_BANK;
+      SWITCH_ROM_MBC1(image_bank);
       // set_bkg_tiles(x_offset, MOD_32(pending_h_y++), 1, 1, pending_h_map);
       SetTile(id, *pending_h_map);
       pending_h_y++;
@@ -178,7 +178,7 @@ void ScrollUpdateColumnR() {
     }
   }
 
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
@@ -210,10 +210,6 @@ void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
 #endif
 }
 
-void RefreshScroll() {
-  RefreshScroll_b();
-}
-
 void InitScroll() {
   pending_w_i = 0;
   pending_h_i = 0;
@@ -222,6 +218,7 @@ void InitScroll() {
 }
 
 void RenderScreen() {
+  UINT8 _save = _current_bank;
   UINT8 i, temp;
   INT16 y;
 
@@ -248,12 +245,11 @@ void RenderScreen() {
   pending_w_i = 0;
   pending_h_i = 0;
 
-  PUSH_BANK(image_bank);
+  SWITCH_ROM_MBC1(image_bank);
   y = scroll_y >> 3;
   for (i = 0u; i != (SCREEN_TILE_REFRES_H) && y != image_height; ++i, y++) {
     ScrollUpdateRow((scroll_x >> 3) - SCREEN_PAD_LEFT, y - SCREEN_PAD_TOP);
   }
-  POP_BANK;
 
   game_time = 0;
 
@@ -262,4 +258,6 @@ void RenderScreen() {
     // Screen palate to nornmal if not fading
     ApplyPaletteChange();
   }
+
+  SWITCH_ROM_MBC1(_save);  
 }

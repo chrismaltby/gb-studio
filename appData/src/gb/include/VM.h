@@ -15,7 +15,7 @@ typedef struct trigger_t {
 
 typedef struct scene_t {
     UINT8 width, height;
-    far_ptr_t background, palette, init;
+    far_ptr_t background, collisions, colors, palette, init;
     UINT8 type, n_actors, n_triggers;
     far_ptr_t actors;
     far_ptr_t triggers;

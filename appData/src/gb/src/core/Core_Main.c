@@ -180,7 +180,7 @@ int core_start() {
     if (!vbl_count) {
       wait_vbl_done();
     }
-    
+
     delta_time = vbl_count == 1u ? 0u : 1u;
     vbl_count = 0;
 
@@ -190,8 +190,6 @@ int core_start() {
       recent_joy = joy & ~last_joy;
     }
 
-    PUSH_BANK(1);
-
     UpdateCamera();
     RefreshScroll_b();
     UpdateActors();
@@ -200,9 +198,8 @@ int core_start() {
     UIUpdate_b();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
-      PUSH_BANK(stateBanks[scene_type]);
+      SWITCH_ROM_MBC1(stateBanks[scene_type]);
       updateFuncs[scene_type]();
-      POP_BANK;
       HandleInputScripts();
     }
 
@@ -230,11 +227,8 @@ int core_start() {
 
     game_time++;
 
-    POP_BANK;
-
     /* Game Core Loop End ***********************************/
   }
-
 
     //  Switch Scene
 
@@ -267,9 +261,8 @@ int core_start() {
     LoadScene(current_state);
 
     // Run scene type init function
-    PUSH_BANK(stateBanks[scene_type]);
+    SWITCH_ROM_MBC1(stateBanks[scene_type]);
     startFuncs[scene_type]();
-    POP_BANK;
 
     game_time = 0;
     old_scroll_x = scroll_x;
@@ -280,11 +273,11 @@ int core_start() {
     FadeIn();
 
     // Run scene init script
-    ScriptStart(&scene_events_start_ptr);
+    // ScriptStart(&scene_events_start_ptr);
     ScriptRestoreCtx(0);
 
     UpdateCamera();
-    RefreshScroll();
+    RefreshScroll_b();
     UpdateActors();
     UIUpdate();
 

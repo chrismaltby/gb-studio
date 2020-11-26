@@ -20,7 +20,7 @@ export default async (
     ? `..\\_gbstools\\gbspack\\gbspack`
     : `../_gbstools/gbspack/gbspack`;    
   let CFLAGS = `-Wa-l -Iinclude`;
-  let LFLAGS = `-Wl-yo${CART_SIZE} -Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
+  let LFLAGS = `-Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
 
   if (customColorsEnabled) {
     CFLAGS += " -DCGB";
@@ -79,7 +79,7 @@ export default async (
           f.indexOf("tileset_") > -1 ||
           f.indexOf("palette_") > -1 ||
           f.indexOf("background_") > -1 ||
-          f.indexOf("sprite_") > -1 ||
+          f.indexOf("spritesheet_") > -1 ||
           f.indexOf("avatar_") > -1 ||
           f.indexOf("scene_") > -1
         )

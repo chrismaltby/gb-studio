@@ -35,11 +35,6 @@ void InitScroll();
 /**
  * Update scroll position and load in any newly visible background tiles and actors
  */
-void RefreshScroll();
-
-/**
- * Same as RefreshScroll() but requires manually switching to bank 1 first
- */
 void RefreshScroll_b() __banked;
 
 /**

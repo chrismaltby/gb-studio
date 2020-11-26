@@ -4,6 +4,7 @@ export const TILESET_TYPE = "const struct tileset_t";
 export const TRIGGER_TYPE = "const struct trigger_t";
 export const ACTOR_TYPE = "const struct actor_t";
 export const SCENE_TYPE = "const struct scene_t";
+export const DATA_TYPE = "const unsigned char";
 
 export const sceneName = (scene: any, sceneIndex: number) =>
   scene.name || `Scene ${sceneIndex + 1}`;
@@ -62,6 +63,12 @@ const sceneActorsSymbol = (sceneIndex: number): string =>
 const sceneTriggersSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_triggers`;
 
+const sceneCollisionsSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}_collisions`;
+
+const sceneColorsSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}_colors`;
+
 export const toStructData = <T extends {}>(
   object: T,
   indent: number = 0
@@ -86,7 +93,7 @@ ${" ".repeat(indent)}}`;
     .join(",\n");
 };
 
-export const toDataFile = <T extends {}>(
+export const toStructDataFile = <T extends {}>(
   type: string,
   symbol: string,
   comment: string,
@@ -109,7 +116,7 @@ ${toStructData(object, 2)}
 };
 `;
 
-export const toDataArrayFile = <T extends {}>(
+export const toStructArrayDataFile = <T extends {}>(
   type: string,
   symbol: string,
   comment: string,
@@ -138,6 +145,29 @@ ${toStructData(object, 4)}
 };
 `;
 
+export const toArrayDataFile = (
+  type: string,
+  symbol: string,
+  comment: string,
+  array: (string | number)[],
+  dependencies?: string[]
+) => `#pragma bank 255
+${comment ? "\n" + comment : ""}
+
+${
+  dependencies
+    ? "\n" +
+      dependencies.map((dependency) => `#include "${dependency}.h"`).join("\n")
+    : ""
+}
+
+${toBankSymbolInit(symbol)};
+
+${type} ${symbol}[] = {
+  ${array.join(",")}
+};
+`;
+
 export const dataArrayToC = (name: string, data: [number]): string => {
   return `#pragma bank 255
 const void __at(255) __bank_${name};
@@ -148,7 +178,7 @@ ${data}
 };
 
 export const compileScene = (scene: any, sceneIndex: number) =>
-  toDataFile(
+  toStructDataFile(
     SCENE_TYPE,
     sceneSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}`,
@@ -157,6 +187,8 @@ export const compileScene = (scene: any, sceneIndex: number) =>
       width: scene.width,
       height: scene.height,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
+      collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
+      colors: toFarPtr(sceneColorsSymbol(sceneIndex)),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       actors:
@@ -171,6 +203,8 @@ export const compileScene = (scene: any, sceneIndex: number) =>
     // Dependencies
     ([] as string[]).concat(
       backgroundSymbol(scene.backgroundIndex),
+      sceneCollisionsSymbol(sceneIndex),
+      sceneColorsSymbol(sceneIndex),
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : []
     )
@@ -184,7 +218,7 @@ export const compileSceneHeader = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneActors = (scene: any, sceneIndex: number) =>
-  toDataArrayFile(
+  toStructArrayDataFile(
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
@@ -203,7 +237,7 @@ export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneTriggers = (scene: any, sceneIndex: number) =>
-  toDataArrayFile(
+  toStructArrayDataFile(
     TRIGGER_TYPE,
     sceneTriggersSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`,
@@ -223,8 +257,46 @@ export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) =>
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
   );
 
+export const compileSceneCollisions = (
+  scene: any,
+  sceneIndex: number,
+  collisions: number[]
+) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    sceneCollisionsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`,
+    collisions
+  );
+
+export const compileSceneCollisionsHeader = (scene: any, sceneIndex: number) =>
+  toDataHeader(
+    DATA_TYPE,
+    sceneCollisionsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`
+  );
+
+export const compileSceneColors = (
+  scene: any,
+  sceneIndex: number,
+  colors: number[]
+) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    sceneColorsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`,
+    colors
+  );
+
+export const compileSceneColorsHeader = (scene: any, sceneIndex: number) =>
+  toDataHeader(
+    DATA_TYPE,
+    sceneColorsSymbol(sceneIndex),
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`
+  );
+
 export const compileTileset = (tileset: any, tilesetIndex: number) =>
-  toDataFile(
+  toStructDataFile(
     TILESET_TYPE,
     tilesetSymbol(tilesetIndex),
     `// Tileset: ${tilesetIndex}`,
@@ -245,7 +317,7 @@ export const compileSpriteSheet = (
   spriteSheet: any,
   spriteSheetIndex: number
 ) =>
-  toDataFile(
+  toStructDataFile(
     SPRITESHEET_TYPE,
     spriteSheetSymbol(spriteSheetIndex),
     `// SpriteSheet: ${spriteSheetIndex}`,
@@ -266,7 +338,7 @@ export const compileSpriteSheetHeader = (
   );
 
 export const compileBackground = (background: any, backgroundIndex: number) =>
-  toDataFile(
+  toStructDataFile(
     BACKGROUND_TYPE,
     backgroundSymbol(backgroundIndex),
     `// Background: ${backgroundIndex}`,

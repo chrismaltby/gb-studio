@@ -55,6 +55,10 @@ import {
   compileSceneHeader,
   compileSceneTriggers,
   compileSceneTriggersHeader,
+  compileSceneCollisions,
+  compileSceneCollisionsHeader,
+  compileSceneColors,
+  compileSceneColorsHeader,
   compileSpriteSheet,
   compileSpriteSheetHeader,
   compileTileset,
@@ -298,8 +302,8 @@ const compile = async (
   });
 
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
-    output[`sprite_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
-    output[`sprite_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
+    output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
+    output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
   });
 
   // Add avatar data
@@ -356,10 +360,12 @@ const compile = async (
       .map((_, index) => {
         return (scene.tileColors && scene.tileColors[index]) || 0;
       });      
-    output[`scene_${sceneIndex}_collisions.c`] = dataArrayToC(`scene_${sceneIndex}_collisions`, collisions);
-    output[`scene_${sceneIndex}_colors.c`] = dataArrayToC(`scene_${sceneIndex}_colors`, tileColors);
     output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex);
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
+    output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(scene, sceneIndex, collisions);
+    output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(scene, sceneIndex);
+    output[`scene_${sceneIndex}_colors.c`] = compileSceneColors(scene, sceneIndex, tileColors);
+    output[`scene_${sceneIndex}_colors.h`] = compileSceneColorsHeader(scene, sceneIndex);
 
     if (scene.actors.length > 0) {
       output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(scene, sceneIndex);
@@ -749,7 +755,7 @@ export const compileEngineFields = (engineFields, engineFieldValues, header) => 
       const prop = engineFieldValues.find((p) => p.id === engineField.key);
       const customValue = prop && prop.value;
       const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
-      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value ? ` = ${value}` : ""};\n`
+      fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value !== undefined ? ` = ${value}` : ""};\n`
     }
     fieldDef += `${header ? "extern " : ""}UBYTE *engine_fields_addr${!header ? ` = &${engineFields[0].key}` : ""};\n`
   }

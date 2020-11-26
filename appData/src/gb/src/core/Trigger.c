@@ -6,10 +6,10 @@
 
 Trigger triggers[MAX_TRIGGERS];
 UBYTE triggers_active[MAX_ACTIVE_TRIGGERS];
-UBYTE triggers_active_size;
-UBYTE triggers_len;
-UBYTE last_trigger_tx;
-UBYTE last_trigger_ty;
+UBYTE triggers_active_size = 0;
+UBYTE triggers_len = 0;
+UBYTE last_trigger_tx = 0;
+UBYTE last_trigger_ty = 0;
 
 UBYTE TriggerAtTile_b(UBYTE tx_a, UBYTE ty_a) __banked;
 

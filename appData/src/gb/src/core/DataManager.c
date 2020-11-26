@@ -35,8 +35,6 @@ UBYTE actors_len = 0;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
 
-const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
-
 void LoadTiles(UINT16 index) {
   UBYTE bank, size;
   UBYTE* data_ptr;
@@ -188,33 +186,37 @@ UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
 void LoadScene(UINT16 index) {
   UBYTE bank, i, k;
   UBYTE* data_ptr;
-  const struct scene_t* scene;
-  const struct actor_t* scene_actors;
-  const struct trigger_t* scene_triggers;
-  const struct tileset_t* tiles;
-  const struct background_t* background;
+  const scene_t* scene;
+  const actor_t* scene_actors;
+  const trigger_t* scene_triggers;
+  const tileset_t* tiles;
+  const background_t* background;
   const far_ptr_t far_background;
   const far_ptr_t far_tileset;
   const far_ptr_t far_scene_actors;
   const far_ptr_t far_scene_triggers;
+  const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
 
   SpritePoolReset();
   ScriptCtxPoolReset();
 
   // Load scene
   SWITCH_ROM_MBC1(far_scene.bank);
-  scene = (const struct scene_t*)far_scene.ptr;
+  scene = (scene_t*)far_scene.ptr;
   far_background = scene->background;
   far_scene_actors = scene->actors;
   far_scene_triggers = scene->triggers;
-
   scene_type = 1;
-  actors_len = scene->n_actors;
-  triggers_len = scene->n_triggers;
+  actors_len = 1;
+  triggers_len = 0;//scene->n_triggers;
+  collision_bank = scene->collisions.bank; 
+  collision_ptr = scene->collisions.ptr;
+  image_attr_bank = scene->colors.bank; 
+  image_attr_ptr = scene->colors.ptr;
 
   // Load background
   SWITCH_ROM_MBC1(far_background.bank);
-  background = (const struct background_t*)far_background.ptr;
+  background = (background_t*)far_background.ptr;
   image_bank = far_background.bank;
   image_tile_width = background->width;
   image_tile_height = background->height;
@@ -222,31 +224,31 @@ void LoadScene(UINT16 index) {
   scroll_x_max = image_width - ((UINT16)SCREENWIDTH);
   image_height = image_tile_height * 8;
   scroll_y_max = image_height - ((UINT16)SCREENHEIGHT);
-  image_ptr = background->tiles;
+  image_ptr = background->tiles;  
   far_tileset = background->tileset;
 
   // Load tiles
   SWITCH_ROM_MBC1(far_tileset.bank);
-  tiles = (const struct tileset_t*)far_tileset.ptr;
+  tiles = (tileset_t*)far_tileset.ptr;
   set_bkg_data(0, tiles->n_tiles, tiles->tiles);
 
-  // Load actors
-  if (actors_len != 0) {
-    SWITCH_ROM_MBC1(far_scene_actors.bank);
-    scene_actors = (const struct actor_t*)far_scene_actors.ptr;
-    for(i=0; i != actors_len; i++) {
-      actors[i + 1].pos.x = scene_actors->x;
-      actors[i + 1].pos.y = scene_actors->y;
-      scene_actors += sizeof(actor_t);
-    }
-  }
+  // // Load actors
+  // if (actors_len != 0) {
+  //   SWITCH_ROM_MBC1(far_scene_actors.bank);
+  //   scene_actors = (actor_t*)far_scene_actors.ptr;
+  //   for(i=0; i != actors_len; i++) {
+  //     actors[i + 1].pos.x = scene_actors->x;
+  //     actors[i + 1].pos.y = scene_actors->y;
+  //     scene_actors += sizeof(actor_t);
+  //   }
+  // }
   actors_active[0] = 0;
   actors_active_size = 1;
 
   // Load triggers
   if (triggers_len != 0) {
     SWITCH_ROM_MBC1(far_scene_triggers.bank);
-    scene_triggers = (const struct trigger_t*)far_scene_triggers.ptr;
+    scene_triggers = (trigger_t*)far_scene_triggers.ptr;
     for(i=0; i != triggers_len; i++) {
       triggers[i].x = scene_triggers->x;
       triggers[i].y = scene_triggers->y;
