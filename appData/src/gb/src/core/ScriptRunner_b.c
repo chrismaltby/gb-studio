@@ -2261,7 +2261,7 @@ void Script_WeaponAttack_b() {
 
 void Script_PalSetBackground_b() {
   palette_update_mask = script_cmd_args[0];
-  LoadPalette((script_cmd_args[1] * 256) + script_cmd_args[2]);
+  // LoadPalette((script_cmd_args[1] * 256) + script_cmd_args[2]);
   ApplyPaletteChange();
 }
 

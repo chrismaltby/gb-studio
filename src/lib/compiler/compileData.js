@@ -63,6 +63,9 @@ import {
   compileSpriteSheetHeader,
   compileTileset,
   compileTilesetHeader,
+  paletteSymbol,
+  compilePalette,
+  compilePaletteHeader,
   dataArrayToC,
 } from "./compileData2";
 
@@ -198,6 +201,8 @@ const compile = async (
         compiledSceneScript
       );
 
+      // output[`scene_${sceneIndex}_script_init.c`] = dataArrayToC(`scene_${sceneIndex}_script_init`, compiledSceneScript);
+
       return banked.push(compiledSceneScript);
     };
 
@@ -208,13 +213,17 @@ const compile = async (
           offset: 0
         };
       }
+      // output[`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}.c`] = dataArrayToC(`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}`, 
+      //   compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
+      // );
+
       return banked.push(
         compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
       );
     };
 
     return {
-      start: bankSceneEvents(scene),
+      start: bankSceneEvents(scene, sceneIndex),
       playerHit1: bankEntityEvents("scene", "playerHit1Script")(scene),
       playerHit2: bankEntityEvents("scene", "playerHit2Script")(scene),
       playerHit3: bankEntityEvents("scene", "playerHit3Script")(scene),
@@ -263,6 +272,7 @@ const compile = async (
         }, [])
       );
     }, []);
+
     return banked.push(paletteData);
   });
 
@@ -275,7 +285,9 @@ const compile = async (
         }, [])
       );
     }, []) : [0];
-    output[`palette_${paletteIndex}.c`] = dataArrayToC(`palette_${paletteIndex}`, paletteData);
+    output[`${paletteSymbol(paletteIndex)}.c`] = compilePalette(paletteData, paletteIndex);
+    output[`${paletteSymbol(paletteIndex)}.h`] = compilePaletteHeader(paletteData, paletteIndex);
+    
   });
 
   // Add background map data
@@ -359,8 +371,11 @@ const compile = async (
       .fill(0)
       .map((_, index) => {
         return (scene.tileColors && scene.tileColors[index]) || 0;
-      });      
-    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex);
+      });
+    const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
+    const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
+  
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette});
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
     output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(scene, sceneIndex, collisions);
     output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(scene, sceneIndex);

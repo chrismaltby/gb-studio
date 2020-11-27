@@ -26,7 +26,13 @@ DATA_OBJS = $(filter-out obj/bank_% obj/data_ptrs%, $(DATA:%.c=$(OBJDIR)/%.o))
 
 all:	$(ROM_BUILD_DIR)/game.gb
 
-.SECONDARY: $(OBJS) 
+.SECONDARY: $(OBJS)
+
+debug:
+	$(eval CFLAGS += -Wf--debug -Wl-m -Wl-w -Wl-y)
+	$(eval CFLAGS += -Wf--nolospre -Wf--nogcse)
+	$(eval LFLAGS += -Wf--debug -Wl-m -Wl-w -Wl-y)
+	@echo "DEBUG mode ON"
 
 $(OBJDIR)/%.o:	src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<

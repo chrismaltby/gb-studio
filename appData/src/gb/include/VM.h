@@ -4,8 +4,7 @@
 #include "BankData.h"
 
 typedef struct actor_t {
-    far_ptr_t spritesheet;
-    UINT8 n_frames, x, y, dir, speed;
+    UINT8 x, y;
 } actor_t;
 
 typedef struct trigger_t {

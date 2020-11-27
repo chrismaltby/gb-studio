@@ -44,6 +44,9 @@ const tilesetSymbol = (tilesetIndex: number): string =>
 const spriteSheetSymbol = (spriteSheetIndex: number): string =>
   `spritesheet_${spriteSheetIndex}`;
 
+export const paletteSymbol = (paletteIndex: number): string =>
+  `palette_${paletteIndex}`;
+
 const toDataHeader = (type: string, symbol: string, comment: string) =>
   includeGuard(
     symbol.toUpperCase(),
@@ -183,7 +186,11 @@ ${data}
 };`;
 };
 
-export const compileScene = (scene: any, sceneIndex: number) =>
+export const compileScene = (
+  scene: any,
+  sceneIndex: number,
+  { bgPalette, actorsPalette }: { bgPalette: number; actorsPalette: number }
+) =>
   toStructDataFile(
     SCENE_TYPE,
     sceneSymbol(sceneIndex),
@@ -195,6 +202,7 @@ export const compileScene = (scene: any, sceneIndex: number) =>
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
       colors: toFarPtr(sceneColorsSymbol(sceneIndex)),
+      palette: toFarPtr(paletteSymbol(bgPalette)),
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       actors:
@@ -211,6 +219,7 @@ export const compileScene = (scene: any, sceneIndex: number) =>
       backgroundSymbol(scene.backgroundIndex),
       sceneCollisionsSymbol(sceneIndex),
       sceneColorsSymbol(sceneIndex),
+      paletteSymbol(bgPalette),
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : []
     )
@@ -365,4 +374,19 @@ export const compileBackgroundHeader = (
     BACKGROUND_TYPE,
     backgroundSymbol(backgroundIndex),
     `// Background: ${backgroundIndex}`
+  );
+
+export const compilePalette = (palette: any, paletteIndex: number) =>
+  toArrayDataFile(
+    DATA_TYPE,
+    paletteSymbol(paletteIndex),
+    `// Palette: ${paletteIndex}\n`,
+    palette
+  );
+
+export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
+  toDataHeader(
+    DATA_TYPE,
+    paletteSymbol(paletteIndex),
+    `// Palette: ${paletteIndex}\n`
   );

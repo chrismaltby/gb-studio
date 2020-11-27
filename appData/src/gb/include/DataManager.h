@@ -5,6 +5,7 @@
 #include <gb/gb.h>
 
 #include "BankData.h"
+#include "VM.h"
 
 #define DATA_MANAGER_BANK 1
 
@@ -29,21 +30,21 @@ extern UBYTE actors_len;
  * 
  * @param index tileset index in data_ptrs.h
  */
-void LoadTiles(const far_ptr_t *ptr);
+void LoadTiles(const tileset_t *tiles, UBYTE bank);
 
 /**
  * Load image tiles into background
  * 
  * @param index image index in data_ptrs.h
  */
-void LoadImage(far_ptr_t *ptr);
+void LoadImage(const background_t *background, UBYTE bank);
 
 /**
  * Load scene palette
  * 
  * @param index palette index in data_ptrs.h
  */
-void LoadPalette(UINT16 index);
+void LoadPalette(const UBYTE *palette, UBYTE bank);
 
 /**
  * Load UI palette
