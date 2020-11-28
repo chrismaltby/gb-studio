@@ -16,9 +16,6 @@
 #include "BankData.h"
 #include "VM.h"
 #include "data/scene_0.h"
-#include "data/scene_0_actors.h"
-#include <gb/bgb_emu.h>
-#include <stdio.h>
 
 #define MAX_PLAYER_SPRITE_SIZE 24
 
@@ -175,7 +172,6 @@ void LoadScene(UINT16 index) {
   const far_ptr_t far_scene_actors;
   const far_ptr_t far_scene_triggers;
   const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
-  const far_ptr_t far_actors = TO_FAR_PTR(scene_0_actors);
 
   // Load scene
   SWITCH_ROM_MBC1(far_scene.bank);
@@ -206,10 +202,9 @@ void LoadScene(UINT16 index) {
     SWITCH_ROM_MBC1(far_scene_actors.bank);
     scene_actors = far_scene_actors.ptr;
     for(i = 1; i != actors_len; i++) {
-      BGB_MESSAGE("ACTOR\n");
       actors[i].sprite = 0;
-      actors[i].pos.x = 8u * scene_actors->x;
-      actors[i].pos.y = 8u * scene_actors->y;
+      actors[i].pos.x = 8 * scene_actors->x;
+      actors[i].pos.y = 8 * scene_actors->y;
       actors[i].start_pos.x = actors[i].pos.x;
       actors[i].start_pos.y = actors[i].pos.y;
       actors[i].movement_ctx = 0;
@@ -218,9 +213,7 @@ void LoadScene(UINT16 index) {
       actors[i].pinned = FALSE;
       actors[i].collisionsEnabled = TRUE;
       actors[i].script_control = FALSE;
-      scene_actors += sizeof(actor_t);
-      // actors[0].pos.x = 16 * 8;
-      // actors[0].pos.y = 8u * scene_actors->y;
+      scene_actors++;
     }
   }
 
@@ -236,7 +229,7 @@ void LoadScene(UINT16 index) {
       triggers[i].y = scene_triggers->y;
       triggers[i].w = scene_triggers->width;
       triggers[i].h = scene_triggers->height;
-      scene_triggers += sizeof(trigger_t);
+      scene_triggers++;
     }
   }
 
