@@ -107,18 +107,11 @@ void LoadUIPalette(UINT16 index) {
   POP_BANK;
 }
 
-void LoadSpritePalette(UINT16 index) {
-  UBYTE bank;
-  UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = palette_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
-  POP_BANK;
-
-  PUSH_BANK(bank);
+void LoadSpritePalette(const UBYTE *data_ptr, UBYTE bank) {
+  UBYTE _save = _current_bank;  
+  SWITCH_ROM_MBC1(bank);  
   memcpy(SprPalette, data_ptr, 56);
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 void LoadPlayerSpritePalette(UINT16 index) {
@@ -135,33 +128,24 @@ void LoadPlayerSpritePalette(UINT16 index) {
   POP_BANK;
 }
 
-UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset) {
-  UBYTE bank, sprite_frames, size, load_size;
-  UBYTE* data_ptr;
+UBYTE LoadSprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank) {
+  UBYTE _save = _current_bank;  
+  UBYTE size;
 
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = sprite_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(sprite_bank_ptrs[index].offset + (BankDataPtr(bank)));
-  POP_BANK;
+  SWITCH_ROM_MBC1(bank);
 
-  PUSH_BANK(bank);
-  sprite_frames = *(data_ptr++);
-  size = sprite_frames * 4;
+  size = sprite->n_frames * 4;
 
-  if (sprite_offset == 0 && sprite_frames > 6) {
-    load_size = MAX_PLAYER_SPRITE_SIZE;
-  } else {
-    load_size = size;
+  if (sprite_offset == 0 && sprite->n_frames > 6) {
+    size = MAX_PLAYER_SPRITE_SIZE;
   }
 
-  set_sprite_data(sprite_offset, load_size, data_ptr);
-  POP_BANK;
+  set_sprite_data(sprite_offset, size, sprite->frames);
 
+  SWITCH_ROM_MBC1(_save);
+  
   return size;
 }
-
-
-
 
 // @todo Change LoadScene to take far_ptr to scene rather than scene index
 void LoadScene(UINT16 index) {
@@ -169,8 +153,11 @@ void LoadScene(UINT16 index) {
   const scene_t* scene;
   const actor_t* scene_actors;
   const trigger_t* scene_triggers;
+  const far_ptr_t* scene_sprite_ptrs;
+  const spritesheet_t* scene_sprite;
   const far_ptr_t far_scene_actors;
   const far_ptr_t far_scene_triggers;
+  const far_ptr_t far_scene_sprites;
   const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
 
   // Load scene
@@ -178,9 +165,11 @@ void LoadScene(UINT16 index) {
   scene = (scene_t*)far_scene.ptr;
   far_scene_actors = scene->actors;
   far_scene_triggers = scene->triggers;
+  far_scene_sprites = scene->sprites;
   scene_type = 1;
   actors_len = scene->n_actors + 1;
   triggers_len = scene->n_triggers;
+  sprites_len = scene->n_sprites;
   collision_bank = scene->collisions.bank; 
   collision_ptr = scene->collisions.ptr;
   image_attr_bank = scene->colors.bank; 
@@ -189,6 +178,7 @@ void LoadScene(UINT16 index) {
   // Load background + tiles
   LoadImage(scene->background.ptr, scene->background.bank);
   LoadPalette(scene->palette.ptr, scene->palette.bank);
+  LoadSpritePalette(scene->sprite_palette.ptr, scene->sprite_palette.bank);
 
   SpritePoolReset();
   ScriptCtxPoolReset();
@@ -197,12 +187,36 @@ void LoadScene(UINT16 index) {
   ProjectilesInit();
   InitPlayer();
 
+  // Load sprites
+  k = 24;
+  if (sprites_len != 0) {
+    SWITCH_ROM_MBC1(far_scene_sprites.bank);
+    scene_sprite_ptrs = far_scene_sprites.ptr;
+    for(i = 1; i != sprites_len; i++) {
+      UBYTE sprite_len = LoadSprite(k, scene_sprite_ptrs->ptr, scene_sprite_ptrs->bank);
+      sprites_info[i].sprite_offset = DIV_4(k);
+      sprites_info[i].frames_len = DIV_4(sprite_len);
+      if (sprites_info[i].frames_len == 6) {
+        sprites_info[i].sprite_type = SPRITE_ACTOR_ANIMATED;
+        sprites_info[i].frames_len = 2;
+      } else if (sprites_info[i].frames_len == 3) {
+        sprites_info[i].sprite_type = SPRITE_ACTOR;
+        sprites_info[i].frames_len = 1;
+      } else {
+        sprites_info[i].sprite_type = SPRITE_STATIC;
+      }
+      k += sprite_len;
+      scene_sprite_ptrs++;
+    }
+  }
+
   // Load actors
   if (actors_len != 0) {
     SWITCH_ROM_MBC1(far_scene_actors.bank);
     scene_actors = far_scene_actors.ptr;
     for(i = 1; i != actors_len; i++) {
-      actors[i].sprite = 0;
+      actors[i].sprite = scene_actors->sprite;
+      actors[i].palette_index = scene_actors->palette;
       actors[i].pos.x = 8 * scene_actors->x;
       actors[i].pos.y = 8 * scene_actors->y;
       actors[i].start_pos.x = actors[i].pos.x;

@@ -58,7 +58,7 @@ void LoadUIPalette(UINT16 index);
  * 
  * @param index palette index in data_ptrs.h
  */
-void LoadSpritePalette(UINT16 index);
+void LoadSpritePalette(const UBYTE *data_ptr, UBYTE bank);
 
 /**
  * Load player sprite palette
@@ -74,7 +74,7 @@ void LoadPlayerSpritePalette(UINT16 index);
  * @param sprite_offset offset into sprite vram
  * @return size of sprite data in vram
  */
-UBYTE LoadSprite(UINT16 index, UBYTE sprite_offset);
+UBYTE LoadSprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank);
 
 /**
  * Load new scene including background image and all actors and triggers

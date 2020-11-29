@@ -340,7 +340,8 @@ UBYTE ActorOverlapsPlayer_b(UBYTE inc_noclip) __banked {
 void InitPlayer_b() __banked {
   UBYTE sprite_frames;
 
-  sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
+  // sprite_frames = DIV_4(LoadSprite(map_next_sprite, 0));
+  sprite_frames = 6;
   player.enabled = TRUE;
   player.moving = FALSE;
   player.palette_index = PLAYER_PALETTE;

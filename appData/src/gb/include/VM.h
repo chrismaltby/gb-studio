@@ -5,6 +5,11 @@
 
 typedef struct actor_t {
     UINT8 x, y;
+    UINT8 sprite, sprite_type, palette;
+    UINT8 n_frames, initial_frame;
+    UINT8 animate, direction;
+    UINT8 move_speed, anim_speed;
+    UINT8 pinned, collision_group;
 } actor_t;
 
 typedef struct trigger_t {
@@ -14,8 +19,10 @@ typedef struct trigger_t {
 
 typedef struct scene_t {
     UINT8 width, height;
-    far_ptr_t background, collisions, colors, palette, init;
-    UINT8 type, n_actors, n_triggers;
+    UINT8 type, n_actors, n_triggers, n_sprites;
+    far_ptr_t background, collisions, colors, palette, sprite_palette;
+    far_ptr_t script_init, script_p_hit1, script_p_hit2, script_p_hit3;
+    far_ptr_t sprites;
     far_ptr_t actors;
     far_ptr_t triggers;
 } scene_t;

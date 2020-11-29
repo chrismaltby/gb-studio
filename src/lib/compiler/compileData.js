@@ -55,6 +55,8 @@ import {
   compileSceneHeader,
   compileSceneTriggers,
   compileSceneTriggersHeader,
+  compileSceneSprites,
+  compileSceneSpritesHeader,
   compileSceneCollisions,
   compileSceneCollisionsHeader,
   compileSceneColors,
@@ -384,12 +386,16 @@ const compile = async (
 
     if (scene.actors.length > 0) {
       output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex);
+      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex, precompiled.usedSprites, precompiled.actorPaletteIndexes);
     }
     if (scene.triggers.length > 0) {
       output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(scene, sceneIndex);
       output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(scene, sceneIndex);
     }
+    if (scene.sprites.length > 0) {
+      output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(scene, sceneIndex);
+      output[`scene_${sceneIndex}_sprites.c`] = compileSceneSprites(scene, sceneIndex);
+    }    
   });
 
   // Add scene data

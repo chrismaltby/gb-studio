@@ -1169,7 +1169,7 @@ void Script_PlayerSetSprite_b() {
   // Load Player Sprite
   sprite_index = (script_cmd_args[0] * 256) + script_cmd_args[1];
 
-  sprite_frames = DIV_4(LoadSprite(sprite_index, 0));
+  // sprite_frames = DIV_4(LoadSprite(sprite_index, 0));
 
   player.sprite = 0;
   player.frame = 0;
@@ -2266,7 +2266,7 @@ void Script_PalSetBackground_b() {
 }
 
 void Script_PalSetSprite_b() {
-  LoadSpritePalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  // LoadSpritePalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
   ApplyPaletteChange();  
 }
 
