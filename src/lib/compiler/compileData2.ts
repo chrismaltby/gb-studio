@@ -447,7 +447,7 @@ export const compileSpriteSheet = (
   toStructDataFile(
     SPRITESHEET_TYPE,
     spriteSheetSymbol(spriteSheetIndex),
-    `// SpriteSheet: ${spriteSheetIndex}`,
+    `// SpriteSheet: ${spriteSheet.name}`,
     {
       n_frames: spriteSheet.frames,
       frames: spriteSheet.data,
@@ -468,7 +468,7 @@ export const compileBackground = (background: any, backgroundIndex: number) =>
   toStructDataFile(
     BACKGROUND_TYPE,
     backgroundSymbol(backgroundIndex),
-    `// Background: ${backgroundIndex}`,
+    `// Background: ${background.name}`,
     {
       width: background.width,
       height: background.height,
