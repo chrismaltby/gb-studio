@@ -72,7 +72,7 @@ export default async (
   getValue(
     `${l10n("COMPILER_PACKING")}`,
     "CART_SIZE",
-    `${PACK} -b 3 -c ${objFiles
+    `${PACK} -b 2 -c ${objFiles
       .filter(
         (f) =>
           f.indexOf("font_image") > -1 ||
