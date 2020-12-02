@@ -138,10 +138,10 @@ export const toStructDataFile = <T extends {}>(
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "VM.h"
-${
+#include "VM.h"${
   dependencies
-    ? dependencies
+    ? "\n" +
+      dependencies
         .map((dependency) => `#include "data/${dependency}.h"`)
         .join("\n")
     : ""
@@ -492,7 +492,7 @@ export const compilePalette = (palette: any, paletteIndex: number) =>
   toArrayDataFile(
     DATA_TYPE,
     paletteSymbol(paletteIndex),
-    `// Palette: ${paletteIndex}\n`,
+    `// Palette: ${paletteIndex}`,
     palette,
     8
   );
