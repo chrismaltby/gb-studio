@@ -3,7 +3,7 @@
 
 #include <gb/gb.h>
 
-void Start_Adventure();
-void Update_Adventure();
+void Start_Adventure() __banked;
+void Update_Adventure() __banked;
 
 #endif

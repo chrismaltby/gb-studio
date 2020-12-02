@@ -15,13 +15,13 @@ void MusicPlay(UBYTE index, UBYTE loop, UBYTE return_bank) {
 
   if (index != current_index) {
     current_index = index;
-    music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
+    // music_bank = ReadBankedUBYTE(DATA_PTRS_BANK, &music_banks[index]);
 
-    PUSH_BANK(DATA_PTRS_BANK);
-    gbt_play((void*)music_tracks[index], music_bank, 7);
-    gbt_loop(loop);
-    POP_BANK;
-    SWITCH_ROM(return_bank);
+    // PUSH_BANK(DATA_PTRS_BANK);
+    // gbt_play((void*)music_tracks[index], music_bank, 7);
+    // gbt_loop(loop);
+    // POP_BANK;
+    // SWITCH_ROM(return_bank);
   }
 }
 

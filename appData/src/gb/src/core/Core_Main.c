@@ -20,6 +20,7 @@
 #include "gbt_player.h"
 #include "data/data_ptrs.h"
 #include "main.h"
+#include "states/TopDown.h"
 
 UBYTE game_time = 0;
 UINT16 next_state;
@@ -157,7 +158,8 @@ int core_start() {
   map_next_pos.y = start_scene_y;
   map_next_dir.x = player.dir.x = start_scene_dir_x;
   map_next_dir.y = player.dir.y = start_scene_dir_y;
-  map_next_sprite = start_player_sprite;
+  map_next_sprite.bank = start_player_sprite.bank;
+  map_next_sprite.ptr = start_player_sprite.ptr;
   player.enabled = TRUE;
   player.move_speed = start_player_move_speed;
   player.anim_speed = start_player_anim_speed;
@@ -198,8 +200,9 @@ int core_start() {
     UIUpdate_b();
 
     if (!script_ctxs[0].script_ptr_bank && !ui_block) {
-      SWITCH_ROM_MBC1(stateBanks[scene_type]);
-      updateFuncs[scene_type]();
+      // SWITCH_ROM_MBC1(stateBanks[scene_type]);
+      // updateFuncs[scene_type]();
+      Update_TopDown();
       HandleInputScripts();
     }
 
@@ -261,8 +264,9 @@ int core_start() {
     LoadScene(current_state);
 
     // Run scene type init function
-    SWITCH_ROM_MBC1(stateBanks[scene_type]);
-    startFuncs[scene_type]();
+    // SWITCH_ROM_MBC1(stateBanks[scene_type]);
+    // startFuncs[scene_type]();
+    Start_TopDown();
 
     game_time = 0;
     old_scroll_x = scroll_x;

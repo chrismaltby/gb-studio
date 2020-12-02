@@ -46,7 +46,7 @@ UBYTE current_text_speed;
 
 void UIDrawTextBufferChar_b();
 void UIDrawMenuCursor_b();
-UBYTE GetToken_b(unsigned char * src, unsigned char term, UWORD* res) __preserves_regs(b, c);
+UBYTE GetToken_b(unsigned char * src, unsigned char term, UWORD* res) __preserves_regs(b, c) __banked;
 
 void UIInit_b() __banked {
   UBYTE* ptr;

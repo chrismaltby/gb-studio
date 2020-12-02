@@ -3,7 +3,7 @@
 
 #include <gb/gb.h>
 
-void Start_PointNClick();
-void Update_PointNClick();
+void Start_PointNClick() __banked;
+void Update_PointNClick() __banked;
 
 #endif

@@ -93,18 +93,11 @@ void LoadPalette(const UBYTE *data_ptr, UBYTE bank) {
   SWITCH_ROM_MBC1(_save);
 }
 
-void LoadUIPalette(UINT16 index) {
-  UBYTE bank;
-  UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = palette_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
-  POP_BANK;
-
-  PUSH_BANK(bank);
+void LoadUIPalette(const UBYTE *data_ptr, UBYTE bank) {
+  UBYTE _save = _current_bank;  
+  SWITCH_ROM_MBC1(bank);  
   memcpy(BkgPalette + UI_PALETTE_OFFSET, data_ptr, 8);
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 void LoadSpritePalette(const UBYTE *data_ptr, UBYTE bank) {
@@ -114,18 +107,11 @@ void LoadSpritePalette(const UBYTE *data_ptr, UBYTE bank) {
   SWITCH_ROM_MBC1(_save);
 }
 
-void LoadPlayerSpritePalette(UINT16 index) {
-  UBYTE bank;
-  UBYTE* data_ptr;
-
-  PUSH_BANK(DATA_PTRS_BANK);
-  bank = palette_bank_ptrs[index].bank;
-  data_ptr = (UBYTE*)(palette_bank_ptrs[index].offset + (BankDataPtr(bank)));
-  POP_BANK;
-
-  PUSH_BANK(bank);
+void LoadPlayerSpritePalette(const UBYTE *data_ptr, UBYTE bank) {
+  UBYTE _save = _current_bank;  
+  SWITCH_ROM_MBC1(bank);  
   memcpy(SprPalette + PLAYER_PALETTE_OFFSET, data_ptr, 8);
-  POP_BANK;
+  SWITCH_ROM_MBC1(_save);
 }
 
 UBYTE LoadSprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank) {
@@ -179,6 +165,7 @@ void LoadScene(UINT16 index) {
   LoadImage(scene->background.ptr, scene->background.bank);
   LoadPalette(scene->palette.ptr, scene->palette.bank);
   LoadSpritePalette(scene->sprite_palette.ptr, scene->sprite_palette.bank);
+  LoadPlayerSpritePalette(start_player_palette.ptr, start_player_palette.bank);
 
   SpritePoolReset();
   ScriptCtxPoolReset();
@@ -192,7 +179,7 @@ void LoadScene(UINT16 index) {
   if (sprites_len != 0) {
     SWITCH_ROM_MBC1(far_scene_sprites.bank);
     scene_sprite_ptrs = far_scene_sprites.ptr;
-    for(i = 1; i != sprites_len; i++) {
+    for(i = 0; i != sprites_len; i++) {
       UBYTE sprite_len = LoadSprite(k, scene_sprite_ptrs->ptr, scene_sprite_ptrs->bank);
       sprites_info[i].sprite_offset = DIV_4(k);
       sprites_info[i].frames_len = DIV_4(sprite_len);
@@ -224,9 +211,13 @@ void LoadScene(UINT16 index) {
       actors[i].movement_ctx = 0;
       actors[i].enabled = TRUE;
       actors[i].moving = FALSE;
-      actors[i].pinned = FALSE;
+      actors[i].pinned = scene_actors->pinned;
       actors[i].collisionsEnabled = TRUE;
       actors[i].script_control = FALSE;
+      actors[i].sprite_type = SPRITE_STATIC;
+      actors[i].animate = scene_actors->animate;
+      actors[i].anim_speed = scene_actors->anim_speed;
+      actors[i].move_speed = scene_actors->move_speed;
       scene_actors++;
     }
   }

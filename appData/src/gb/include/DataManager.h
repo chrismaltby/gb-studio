@@ -51,7 +51,7 @@ void LoadPalette(const UBYTE *palette, UBYTE bank);
  * 
  * @param index palette index in data_ptrs.h
  */
-void LoadUIPalette(UINT16 index);
+void LoadUIPalette(const UBYTE *data_ptr, UBYTE bank);
 
 /**
  * Load sprite palette
@@ -65,7 +65,7 @@ void LoadSpritePalette(const UBYTE *data_ptr, UBYTE bank);
  * 
  * @param index palette index in data_ptrs.h
  */
-void LoadPlayerSpritePalette(UINT16 index);
+void LoadPlayerSpritePalette(const UBYTE *data_ptr, UBYTE bank);
 
 /**
  * Load sprite data at specified location in vram

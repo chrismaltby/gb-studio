@@ -40,7 +40,7 @@ extern int start_scene_x;
 extern int start_scene_y;
 extern char start_scene_dir_x;
 extern char start_scene_dir_y;
-extern unsigned int start_player_sprite;
+extern far_ptr_t start_player_sprite;
 extern unsigned char start_player_move_speed;
 extern unsigned char start_player_anim_speed;
 extern unsigned char script_variables[114];

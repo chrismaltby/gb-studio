@@ -1,4 +1,4 @@
-#pragma bank 5
+#pragma bank 3
 
 #include "states/Shmup.h"
 #include "Actor.h"
@@ -16,7 +16,7 @@ UBYTE shooter_horizontal = 0;
 BYTE shooter_direction = 0;
 UBYTE shooter_reached_end = 0;
 
-void Start_Shmup() {
+void Start_Shmup() __banked {
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = 0;
@@ -52,7 +52,7 @@ void Start_Shmup() {
   player.animate = TRUE;
 }
 
-void Update_Shmup() {
+void Update_Shmup() __banked {
   UBYTE tile_x, tile_y, hit_actor;
 
   tile_x = DIV_8(player.pos.x);

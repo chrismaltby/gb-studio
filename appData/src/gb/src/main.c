@@ -12,7 +12,7 @@ const Void_Func_Void startFuncs[] = {0, Start_TopDown, Start_Platform, Start_Adv
                                      Start_Shmup, Start_PointNClick};
 const Void_Func_Void updateFuncs[] = {0, Update_TopDown, Update_Platform, Update_Adventure,
                                       Update_Shmup, Update_PointNClick};
-const UBYTE stateBanks[] = {0, 5, 5, 5, 5, 5};
+const UBYTE stateBanks[] = {0, 3, 3, 3, 3, 3};
 
 int main() {
     core_start();

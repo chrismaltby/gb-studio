@@ -71,7 +71,7 @@ extern UBYTE actors_active[MAX_ACTIVE_ACTORS];
 extern UBYTE actors_active_size;
 extern Pos map_next_pos;
 extern Vector2D map_next_dir;
-extern UWORD map_next_sprite;
+extern far_ptr_t map_next_sprite;
 extern UBYTE actor_move_settings;
 extern Pos actor_move_dest;
 extern UBYTE player_iframes;

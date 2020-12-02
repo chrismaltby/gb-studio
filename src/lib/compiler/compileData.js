@@ -69,11 +69,13 @@ import {
   compilePalette,
   compilePaletteHeader,
   dataArrayToC,
+  toFarPtr,
+  spriteSheetSymbol,
 } from "./compileData2";
 
 const indexById = indexBy("id");
 
-const DATA_PTRS_BANK = 5;
+const DATA_PTRS_BANK = 4;
 const NUM_MUSIC_BANKS = 30; // To calculate usable banks if MBC1
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
@@ -567,7 +569,8 @@ const compile = async (
     `${
       `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
       `#include "BankData.h"\n` +
-      `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
+      `#include "VM.h"\n` +      
+      // `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
       `#define FONT_BANK ${fontImagePtr.bank}\n` +
       `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
       `#define FRAME_BANK ${frameImagePtr.bank}\n` +
@@ -585,15 +588,16 @@ const compile = async (
         return `extern const BankPtr ${name}[];`;
       })
       .join(`\n`)}\n` +
-    `extern const unsigned int bank_data_ptrs[];\n` +
-    `extern const unsigned int music_tracks[];\n` +
-    `extern const unsigned char music_banks[];\n` +
+    // `extern const unsigned int bank_data_ptrs[];\n` +
+    // `extern const unsigned int music_tracks[];\n` +
+    // `extern const unsigned char music_banks[];\n` +
     `extern unsigned int start_scene_index;\n` +
     `extern int start_scene_x;\n` +
     `extern int start_scene_y;\n` +
     `extern char start_scene_dir_x;\n` +
     `extern char start_scene_dir_y;\n` +
-    `extern unsigned int start_player_sprite;\n` +
+    `extern far_ptr_t start_player_sprite;\n` +
+    `extern far_ptr_t start_player_palette;\n` +
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
@@ -605,43 +609,40 @@ const compile = async (
   output[`data_ptrs.c`] =
     `#pragma bank ${DATA_PTRS_BANK}\n` +
     `#include "data/data_ptrs.h"\n` +
-    `#include "data/banks.h"\n\n` +
-    `#ifdef __EMSCRIPTEN__\n` +
-    `const unsigned int bank_data_ptrs[] = {\n` +
-    bankDataPtrs.join(",") +
-    `\n};\n` +
-    `#endif\n\n` +
-    Object.keys(dataPtrs)
-      .map((name) => {
-        return `const BankPtr ${name}[] = {\n${dataPtrs[name]
-          .map((dataPtr) => {
-            return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
-          })
-          .join(",")}\n};\n`;
-      })
-      .join(`\n`) +
-    `\n` +
-    `const unsigned int music_tracks[] = {\n` +
-    `\n};\n\n` +
-    `const unsigned char music_banks[] = {\n` +
-    `\n};\n\n` +
+    `#include "data/${spriteSheetSymbol(playerSpriteIndex)}.h"\n` +
+    `#include "data/${paletteSymbol(0)}.h"\n\n\n` +
+    // Object.keys(dataPtrs)
+    //   .map((name) => {
+    //     return `const BankPtr ${name}[] = {\n${dataPtrs[name]
+    //       .map((dataPtr) => {
+    //         return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
+    //       })
+    //       .join(",")}\n};\n`;
+    //   })
+    //   .join(`\n`) +
+    // `\n` +
+    // `const unsigned int music_tracks[] = {\n` +
+    // `\n};\n\n` +
+    // `const unsigned char music_banks[] = {\n` +
+    // `\n};\n\n` +
     `unsigned int start_scene_index = ${decHex16(startSceneIndex)};\n` +
     `int start_scene_x = ${decHex16((startX || 0) * 8)};\n` +
     `int start_scene_y = ${decHex16((startY || 0) * 8)};\n\n` +
     `char start_scene_dir_x = ${startDirectionX};\n` +
     `char start_scene_dir_y = ${startDirectionY};\n` +
-    `unsigned int start_player_sprite = ${playerSpriteIndex};\n` +
+    `far_ptr_t start_player_sprite = ${toFarPtr(spriteSheetSymbol(playerSpriteIndex))};\n` +
+    `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
-  output[`banks.h`] = bankHeader;
+  // output[`banks.h`] = bankHeader;
 
-  bankData.forEach((bankDataBank, index) => {
-    const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
-    output[`bank_${bank}.c`] = bankDataBank;
-  });
+  // bankData.forEach((bankDataBank, index) => {
+  //   const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
+  //   output[`bank_${bank}.c`] = bankDataBank;
+  // });
 /* 
   bankObjectData.forEach((bankDataBank, index) => {
     const bank = bankDataBank.match(/M bank_([0-9]+)/)[1];

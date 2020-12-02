@@ -1,4 +1,7 @@
+        .globl  b_GetToken_b
         .area   _CODE_1
+
+b_GetToken_b = 1
 
 ; extracts token from string
 _GetToken_b::

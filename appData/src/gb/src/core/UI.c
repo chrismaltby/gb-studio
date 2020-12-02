@@ -101,24 +101,24 @@ void UIShowAvatar(UBYTE avatar_index) {
 
   unsigned char* tmp_avatar_ptr[100];
 
-  ReadBankedBankPtr(DATA_PTRS_BANK, &avatar_bank_ptr, &avatar_bank_ptrs[avatar_index]);
-  avatar_ptr = (BankDataPtr(avatar_bank_ptr.bank)) + avatar_bank_ptr.offset;
-  avatar_len = MUL_4(ReadBankedUBYTE(avatar_bank_ptr.bank, avatar_ptr));
+  // ReadBankedBankPtr(DATA_PTRS_BANK, &avatar_bank_ptr, &avatar_bank_ptrs[avatar_index]);
+  // avatar_ptr = (BankDataPtr(avatar_bank_ptr.bank)) + avatar_bank_ptr.offset;
+  // avatar_len = MUL_4(ReadBankedUBYTE(avatar_bank_ptr.bank, avatar_ptr));
 
-  PUSH_BANK(avatar_bank_ptr.bank);
-  memcpy(tmp_avatar_ptr, avatar_ptr + 1, avatar_len * 16);
-  POP_BANK
-  SetBankedBkgData(TEXT_BUFFER_START, avatar_len, (unsigned char *)tmp_avatar_ptr, FONT_BANK);
+  // PUSH_BANK(avatar_bank_ptr.bank);
+  // memcpy(tmp_avatar_ptr, avatar_ptr + 1, avatar_len * 16);
+  // POP_BANK
+  // SetBankedBkgData(TEXT_BUFFER_START, avatar_len, (unsigned char *)tmp_avatar_ptr, FONT_BANK);
 
-  tile1 = TEXT_BUFFER_START;
-  tile2 = TEXT_BUFFER_START + 1U;
-  tile3 = TEXT_BUFFER_START + 2U;
-  tile4 = TEXT_BUFFER_START + 3U;
+  // tile1 = TEXT_BUFFER_START;
+  // tile2 = TEXT_BUFFER_START + 1U;
+  // tile3 = TEXT_BUFFER_START + 2U;
+  // tile4 = TEXT_BUFFER_START + 3U;
 
-  set_win_tiles(1, 1, 1, 1, &tile1);
-  set_win_tiles(2, 1, 1, 1, &tile2);
-  set_win_tiles(1, 2, 1, 1, &tile3);
-  set_win_tiles(2, 2, 1, 1, &tile4);
+  // set_win_tiles(1, 1, 1, 1, &tile1);
+  // set_win_tiles(2, 1, 1, 1, &tile2);
+  // set_win_tiles(1, 2, 1, 1, &tile3);
+  // set_win_tiles(2, 2, 1, 1, &tile4);
 }
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {

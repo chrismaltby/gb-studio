@@ -1,4 +1,4 @@
-#pragma bank 5
+#pragma bank 3
 
 #include "states/PointNClick.h"
 #include "Actor.h"
@@ -12,7 +12,7 @@
 
 UBYTE last_hit_trigger = MAX_TRIGGERS;
 
-void Start_PointNClick() {
+void Start_PointNClick() __banked {
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = POINT_N_CLICK_CAMERA_DEADZONE;
@@ -24,7 +24,7 @@ void Start_PointNClick() {
   player.rerender = TRUE;
 }
 
-void Update_PointNClick() {
+void Update_PointNClick() __banked {
   UBYTE tile_x, tile_y, hit_actor, hit_trigger, is_hover_actor, is_hover_trigger;
 
   tile_x = DIV_8(player.pos.x);

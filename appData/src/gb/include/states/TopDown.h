@@ -3,7 +3,7 @@
 
 #include <gb/gb.h>
 
-void Start_TopDown();
-void Update_TopDown();
+void Start_TopDown() __banked;
+void Update_TopDown() __banked;
 
 #endif

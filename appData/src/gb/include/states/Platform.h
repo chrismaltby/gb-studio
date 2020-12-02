@@ -3,8 +3,8 @@
 
 #include <gb/gb.h>
 
-void Start_Platform();
-void Update_Platform();
+void Start_Platform() __banked;
+void Update_Platform() __banked;
 
 extern WORD pl_vel_x;
 extern WORD pl_vel_y;

@@ -6,7 +6,7 @@
 #include "BankData.h"
 #include "Math.h"
 
-#define SCRIPT_RUNNER_BANK 4
+#define SCRIPT_RUNNER_BANK 2
 #define MAX_SCENE_STATES 8
 #define MAX_BG_SCRIPT_CONTEXTS 11
 #define MAX_SCRIPT_CONTEXTS 12

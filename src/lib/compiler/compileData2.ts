@@ -71,7 +71,7 @@ const backgroundSymbol = (backgroundIndex: number): string =>
 const tilesetSymbol = (tilesetIndex: number): string =>
   `tileset_${tilesetIndex}`;
 
-const spriteSheetSymbol = (spriteSheetIndex: number): string =>
+export const spriteSheetSymbol = (spriteSheetIndex: number): string =>
   `spritesheet_${spriteSheetIndex}`;
 
 export const paletteSymbol = (paletteIndex: number): string =>

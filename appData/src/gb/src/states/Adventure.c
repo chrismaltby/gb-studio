@@ -1,4 +1,4 @@
-#pragma bank 5
+#pragma bank 3
 
 #include "states/Adventure.h"
 #include "Actor.h"
@@ -13,7 +13,7 @@
 
 #define ADVENTURE_CAMERA_DEADZONE 8
 
-void Start_Adventure() {
+void Start_Adventure() __banked {
   // Set camera to follow player
   camera_offset.x = 0;
   camera_offset.y = 0;
@@ -21,7 +21,7 @@ void Start_Adventure() {
   camera_deadzone.y = ADVENTURE_CAMERA_DEADZONE;
 }
 
-void Update_Adventure() {
+void Update_Adventure() __banked {
   WORD tile_x, tile_y;
   UBYTE hit_actor = 0;
   UBYTE hit_trigger = 0;

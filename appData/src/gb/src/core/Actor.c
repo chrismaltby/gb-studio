@@ -31,7 +31,7 @@ UBYTE actor_move_settings = 0;
 
 Pos map_next_pos;
 Vector2D map_next_dir;
-UWORD map_next_sprite = 0;
+far_ptr_t map_next_sprite = { .bank = 0, .ptr = 0 };
 UBYTE player_iframes = 0;
 
 void ActorsInit() {

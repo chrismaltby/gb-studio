@@ -72,7 +72,7 @@ export default async (
   getValue(
     `${l10n("COMPILER_PACKING")}`,
     "CART_SIZE",
-    `${PACK} -b 12 -c ${objFiles
+    `${PACK} -b 3 -c ${objFiles
       .filter(
         (f) =>
           f.indexOf("font_image") > -1 ||
@@ -83,7 +83,7 @@ export default async (
           f.indexOf("avatar_") > -1 ||
           f.indexOf("scene_") > -1
         )
-      .join(" ")}`
+      .join(" ")} obj/ScriptRunner_b.o obj/Actor_b.o obj/Trigger_b.o obj/Projectiles_b.o obj/Sprite_b.o obj/Scroll_b.o obj/FadeManager_b.o obj/UI_b.o obj/UI_a.o obj/TopDown.o obj/Adventure.o obj/Platform.o obj/PointNClick.o obj/Shmup.o`
   );
 
   addCommand(

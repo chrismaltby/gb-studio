@@ -1,4 +1,4 @@
-#pragma bank 4
+#pragma bank 2
 
 #include "ScriptRunner.h"
 #include "MusicManager.h"
@@ -1192,9 +1192,9 @@ void Script_PlayerSetSprite_b() {
   player.rerender = TRUE;
 
   // Keep new sprite when switching scene
-  if (script_cmd_args[2]) {
-    map_next_sprite = sprite_index;
-  }
+  // if (script_cmd_args[2]) {
+  //   map_next_sprite = sprite_index;
+  // }
 }
 
 /*
@@ -1297,8 +1297,8 @@ void Script_SaveData_b() {
   }
 
   // Save player sprite
-  RAMPtr[6] = map_next_sprite >> 8;
-  RAMPtr[7] = map_next_sprite & 0xFF;
+  // RAMPtr[6] = map_next_sprite >> 8;
+  // RAMPtr[7] = map_next_sprite & 0xFF;
 
   // Save variable values
   RAMPtr = (UBYTE*)RAM_START_VARS_PTR;
@@ -1339,7 +1339,8 @@ void Script_LoadData_b() {
 
     // Load player sprite
     RAMPtr++;
-    map_next_sprite = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
+    // map_next_sprite = (UWORD)((*(RAMPtr++)) * 256) + *RAMPtr;
+    RAMPtr++;
 
     // Load variable values
     RAMPtr = (UBYTE*)RAM_START_VARS_PTR;
@@ -2271,7 +2272,7 @@ void Script_PalSetSprite_b() {
 }
 
 void Script_PalSetUI_b() {
-  LoadUIPalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
+  // LoadUIPalette((script_cmd_args[0] * 256) + script_cmd_args[1]);
   ApplyPaletteChange();
 }
 

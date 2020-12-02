@@ -1,4 +1,4 @@
-#pragma bank 5
+#pragma bank 3
 
 #include "states/TopDown.h"
 #include "Actor.h"
@@ -10,7 +10,7 @@
 #include "Trigger.h"
 #include "data/data_ptrs.h"
 
-void Start_TopDown() {
+void Start_TopDown() __banked {
   camera_offset.x = 0;
   camera_offset.y = 0;
   camera_deadzone.x = 0;
@@ -23,7 +23,7 @@ void Start_TopDown() {
   }
 }
 
-void Update_TopDown() {
+void Update_TopDown() __banked {
   UBYTE tile_x, tile_y, hit_actor;
 
   tile_x = DIV_8(player.pos.x);
