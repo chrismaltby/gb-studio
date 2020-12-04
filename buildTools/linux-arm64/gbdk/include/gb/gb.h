@@ -4,7 +4,7 @@
 #ifndef _GB_H
 #define _GB_H
 
-#define __GBDK_VERSION 314
+#define __GBDK_VERSION 400
 
 #include <types.h>
 #include <gb/hardware.h>
@@ -35,48 +35,62 @@
 
 /** Screen modes.
     Normally used by internal functions only.
+    @see mode()
  */
 #define	M_DRAWING    0x01U
 #define	M_TEXT_OUT   0x02U
 #define	M_TEXT_INOUT 0x03U
-/** Set this in addition to the others to disable scrolling 
-    If scrolling is disabled, the cursor returns to (0,0) */
+/** Set this in addition to the others to disable scrolling
+
+    If scrolling is disabled, the cursor returns to (0,0)
+    @see mode()
+*/
 #define M_NO_SCROLL  0x04U
-/** Set this to disable \n interpretation */
+/** Set this to disable interpretation
+    @see mode()
+*/
 #define M_NO_INTERP  0x08U
 
-/** If this is set, sprite colours come from OBJ1PAL.  Else
-    they come from OBJ0PAL.
+/** If this is set, sprite colours come from OBJ1PAL. Else
+    they come from OBJ0PAL
+    @see set_sprite_prop().
 */
 #define S_PALETTE    0x10U
 /** If set the sprite will be flipped horizontally.
+    @see set_sprite_prop()
  */
 #define S_FLIPX      0x20U
 /** If set the sprite will be flipped vertically.
+    @see set_sprite_prop()
  */
 #define S_FLIPY      0x40U
 /** If this bit is clear, then the sprite will be displayed
-    ontop of the background and window.
+    on top of the background and window.
+    @see set_sprite_prop()
 */
 #define S_PRIORITY   0x80U
 
 /* Interrupt flags */
-/** Vertical blank interrupt.
-    Occurs at the start of the vertical blank.  During this
-    period the video ram may be freely accessed.
+/** VBlank Interrupt occurs at the start of the vertical blank.
+
+    During this period the video ram may be freely accessed.
+    @see set_interrupts(), @see add_VBL
  */
 #define VBL_IFLAG    0x01U
-/** Interrupt when triggered by the STAT register.
-    See the Pan doc.
+/** LCD Interrupt when triggered by the STAT register.
+    @see set_interrupts(), @see add_LCD
 */
 #define LCD_IFLAG    0x02U
-/** Interrupt when the timer TIMA overflows.
+/** Timer Interrupt when the timer @ref TIMA_REG overflows.
+    @see set_interrupts(), @see add_TIM
  */
 #define TIM_IFLAG    0x04U
-/** Occurs when the serial transfer has completed.
+/** Serial Link Interrupt occurs when the serial transfer has completed.
+    @see set_interrupts(), @see add_SIO
  */
 #define SIO_IFLAG    0x08U
-/** Occurs on a transition of the keypad.
+/** Joypad Interrupt occurs on a transition of the keypad.
+    @see set_interrupts(), @see add_JOY
  */
 #define JOY_IFLAG    0x10U
 
@@ -87,52 +101,88 @@
 /** Height of the visible screen in pixels.
  */
 #define SCREENHEIGHT 0x90U
+/** The Minimum X position of the Window Layer (Left edge of screen) @see move_win()
+ */
 #define MINWNDPOSX   0x07U
+/** The Minimum Y position of the Window Layer (Top edge of screen) @see move_win()
+ */
 #define MINWNDPOSY   0x00U
+/** The Maximum X position of the Window Layer (Right edge of screen) @see move_win()
+ */
 #define MAXWNDPOSX   0xA6U
+/** The Maximum Y position of the Window Layer (Bottom edge of screen) @see move_win()
+ */
 #define MAXWNDPOSY   0x8FU
 
-/* ************************************************************ */
 
 /** Interrupt handlers
  */
 typedef void (*int_handler)(void) NONBANKED;
 
-/** The remove functions will remove any interrupt
-   handler.  A handler of NULL will cause bad things
-   to happen.
+/** The remove functions will remove any interrupt handler.
+
+   A handler of NULL will cause bad things
+   to happen if the given interrupt is enabled.
+
+   Removes the VBL interrupt handler. @see add_VBL()
 */
 void remove_VBL(int_handler h) NONBANKED;
 
+/** Removes the LCD interrupt handler.
+    @see add_LCD(), remove_VBL()
+*/
 void remove_LCD(int_handler h) NONBANKED;
 
+/** Removes the TIM interrupt handler.
+    @see add_TIM(), remove_VBL()
+*/
 void remove_TIM(int_handler h) NONBANKED;
 
+/** Removes the Serial Link / SIO interrupt handler.
+   @see add_SIO(), @see remove_VBL()
+
+    The default SIO ISR gets installed automatically if
+    any of the standard SIO calls are used. These calls
+    include @ref add_SIO(), @ref remove_SIO(),
+    @ref send_byte(), @ref receive_byte().
+
+    The default SIO ISR cannot be removed once installed.
+    Only secondary chained SIO ISRs (added with @ref add_SIO() )
+    can be removed.
+*/
 void remove_SIO(int_handler h) NONBANKED;
 
+/** Removes the JOY interrupt handler.
+    @see add_JOY(), remove_VBL()
+*/
 void remove_JOY(int_handler h) NONBANKED;
 
 /** Adds a V-blank interrupt handler.
-    The handler 'h' will be called whenever a V-blank
-    interrupt occurs.  Up to 4 handlers may be added,
-    with the last added being called last.  If the remove_VBL
-    function is to be called, only three may be added.
-    @see remove_VBL
+
+    @param h  The handler to be called whenever a V-blank
+    interrupt occurs.
+
+    Up to 4 handlers may be added, with the last added being
+    called last.  If the @ref remove_VBL function is to be called,
+    only three may be added.
+
+    Note: The default VBL is installed automatically.
 */
 void add_VBL(int_handler h) NONBANKED;
 
 /** Adds a LCD interrupt handler.
+
     Called when the LCD interrupt occurs, which is normally
-    when LY_REG == LYC_REG.
+    when @ref LY_REG == @ref LYC_REG.
 
     From pan/k0Pa:
     There are various reasons for this interrupt to occur
-    as described by the STAT register ($FF40). One very
+    as described by the @ref STAT_REG register ($FF41). One very
     popular reason is to indicate to the user when the
     video hardware is about to redraw a given LCD line.
-    This can be useful for dynamically controlling the SCX/
-    SCY registers ($FF43/$FF42) to perform special video
-    effects.
+    This can be useful for dynamically controlling the
+    @ref SCX_REG / @ref SCY_REG registers ($FF43/$FF42) to perform
+    special video effects.
 
     @see add_VBL
 */
@@ -141,25 +191,29 @@ void add_LCD(int_handler h) NONBANKED;
 /** Adds a timer interrupt handler.
 
     From pan/k0Pa:
-    This interrupt occurs when the TIMA register ($FF05)
-    changes from $FF to $00.
+    This interrupt occurs when the @ref TIMA_REG
+    register ($FF05) changes from $FF to $00.
 
     @see add_VBL
-*/    
+    @see set_interrupts() with TIM_IFLAG
+*/
 void add_TIM(int_handler h) NONBANKED;
 
-/** Adds a serial transmit complete interrupt handler.
+
+/** Adds a Serial Link transmit complete interrupt handler.
 
     From pan/k0Pa:
     This interrupt occurs when a serial transfer has
     completed on the game link port.
-    
-    @see send_byte, receive_byte, add_VBL
+
+    @see send_byte, receive_byte(), add_VBL()
+    @see set_interrupts() with SIO_IFLAG
 */
 void add_SIO(int_handler h) NONBANKED;
 
-/** Adds a pad tranisition interrupt handler.
-    
+
+/** Adds a joypad button change interrupt handler.
+
     From pan/k0Pa:
     This interrupt occurs on a transition of any of the
     keypad input lines from high to low. Due to the fact
@@ -168,95 +222,153 @@ void add_SIO(int_handler h) NONBANKED;
     or more times for every button press and one or more
     times for every button release.
 
-    @see joypad
+
+
+    @see joypad()
 */
 void add_JOY(int_handler h) NONBANKED;
 
-/** Interrupt handler chain terminator that don't wait for .STAT
 
-    You must add this handler the last in every interrupt handler 
-    chain if you want to change the default interrupt handler 
+/** Interrupt handler chain terminator that does __not__ wait for .STAT
+
+    You must add this handler last in every interrupt handler
+    chain if you want to change the default interrupt handler
     behaviour that waits for LCD controller mode to become 1 or 0
     before return from the interrupt.
+
+    Example:
+    \code{.c}
+    __critical {
+        add_SIO(nowait_int_handler); // Disable wait on VRAM state before returning from SIO interrupt
+    }
+    \endcode
+    @see wait_int_handler()
 */
 void nowait_int_handler(void) NONBANKED;
 
-/** Interrupt handler chain terminator that waits for .STAT and 
-    returns in the BEGINNING of mode0 or mode1 ONLY
+
+/** Default Interrupt handler chain terminator that waits for
+    @see STAT_REG and __only__ returns at the BEGINNING of
+    either Mode 0 or Mode 1.
+
+    Used by default at the end of interrupt chains to help
+    prevent graphical glitches. The glitches are caused when an
+    ISR interrupts a graphics operation in one mode but returns
+    in a different mode for which that graphics operation is not
+    allowed.
+
+    @see nowait_int_handler()
 */
 void wait_int_handler(void) NONBANKED;
 
-/* ************************************************************ */
 
-/** Set the current mode - one of M_* defined above */
+
+/** Set the current screen mode - one of M_* modes
+
+    Normally used by internal functions only.
+
+    @see M_DRAWING, M_TEXT_OUT, M_TEXT_INOUT, M_NO_SCROLL, M_NO_INTERP
+*/
 void mode(UINT8 m) NONBANKED;
 
-/** Returns the current mode */
+/** Returns the current mode
+
+    @see M_DRAWING, M_TEXT_OUT, M_TEXT_INOUT, M_NO_SCROLL, M_NO_INTERP
+*/
 UINT8 get_mode(void) NONBANKED __preserves_regs(b, c);
 
-/** GB type (GB, PGB, CGB) */
+/** GB CPU type
+
+    @see DMG_TYPE, MGB_TYPE, CGB_TYPE, cpu_fast(), cpu_slow()
+*/
 extern UINT8 _cpu;
 
-/** Original GB or Super GB */
-#define DMG_TYPE 0x01 
-/** Pocket GB or Super GB 2 */
+/** Hardware Model: Original GB or Super GB. @see _cpu
+*/
+#define DMG_TYPE 0x01
+/** Hardware Model: Pocket GB or Super GB 2. @see _cpu
+*/
 #define MGB_TYPE 0xFF
-/** Color GB */
-#define CGB_TYPE 0x11 
+/** Hardware Model: Color GB. @see _cpu
+*/
+#define CGB_TYPE 0x11
 
-/** Time in VBL periods (60Hz) */
-extern UINT16 sys_time;	
+/** Global Time Counter in VBL periods (60Hz)
 
-/* ************************************************************ */
+    Increments once per Frame
 
-/** Send byte in _io_out to the serial port */
+    Will wrap around every ~18 minutes (unsigned 16 bits = 65535 / 60 / 60 = 18.2)
+*/
+extern volatile UINT16 sys_time;
+
+
+
+/** Serial Link: Send the byte in @ref _io_out out through the serial port
+
+    Make sure to enable interrupts for the
+    Serial Link before trying to transfer data.
+    @see add_SIO(), remove_SIO()
+    @see set_interrupts() with @ref SIO_IFLAG
+*/
 void send_byte(void);
 
-/** Receive byte from the serial port in _io_in */
+/** Serial Link: Receive a byte from the serial port into @ref _io_in
+
+    Make sure to enable interrupts for the
+    Serial Link before trying to transfer data.
+    @see add_SIO(), remove_SIO()
+    @see set_interrupts() with @ref SIO_IFLAG
+*/
 void receive_byte(void);
 
-/** An OR of IO_* */
-extern UINT8 _io_status;
-/** Byte just read. */
-extern UINT8 _io_in;
-/** Write the byte to send here before calling send_byte()
-    @see send_byte
+/** Serial Link: Current IO Status. An OR of IO_* */
+extern volatile UINT8 _io_status;
+
+/** Serial Link: Byte just read after calling @ref receive_byte()
 */
-extern UINT8 _io_out;
+extern volatile UINT8 _io_in;
+
+/** Serial Link: Write byte to send here before calling @ref send_byte()
+*/
+extern volatile UINT8 _io_out;
 
 /* Status codes */
-/** IO is completed */
-#define IO_IDLE		0x00U		
-/** Sending data */
-#define IO_SENDING	0x01U		
-/** Receiving data */
-#define IO_RECEIVING	0x02U		
-/** Error */
-#define IO_ERROR	0x04U		
+/** Serial Link IO is completed */
+#define IO_IDLE		0x00U
+/** Serial Link Sending data */
+#define IO_SENDING	0x01U
+/** Serial Link Receiving data */
+#define IO_RECEIVING	0x02U
+/** Serial Link Error */
+#define IO_ERROR	0x04U
 
-/* ************************************************************ */
 
-/* Multiple banks */
 
-/** Switches the upper 16k bank of the 32k rom to bank rombank 
-    using the MBC1 controller. 
-    By default the upper 16k bank is 1. Make sure the rom you compile 
-    has more than just bank 0 and bank 1, a 32k rom. This is done by 
-    feeding lcc.exe the following switches:
+/** Tracks current active ROM bank @see SWITCH_ROM_MBC1(), SWITCH_ROM_MBC5()
+    This variable is updated automatically when you call SWITCH_ROM_MBC1 or
+    SWITCH_ROM_MBC5, or call a BANKED function.
+*/
+__REG _current_bank;
 
-    -Wl-yt# where # is the type of cartridge. 1 for ROM+MBC1.
-
-    -Wl-yo# where # is the number of rom banks. 2,4,8,16,32.
+/** Makes MBC1 and other compatible MBCs switch the active ROM bank
+    @param b   ROM bank to switch to
 */
 #define SWITCH_ROM_MBC1(b) \
-  *(unsigned char *)0x2000 = (b)
+  _current_bank = (b), *(unsigned char *)0x2000 = (b)
 
+/** Switches SRAM bank on MBC1 and other compaticle MBCs
+    @param b   SRAM bank to switch to
+*/
 #define SWITCH_RAM_MBC1(b) \
   *(unsigned char *)0x4000 = (b)
 
+/** Enables SRAM on MBC1
+*/
 #define ENABLE_RAM_MBC1 \
   *(unsigned char *)0x0000 = 0x0A
 
+/** Disables SRAM on MBC1
+*/
 #define DISABLE_RAM_MBC1 \
   *(unsigned char *)0x0000 = 0x00
 
@@ -266,70 +378,135 @@ extern UINT8 _io_out;
 #define SWITCH_4_32_MODE_MBC1 \
   *(unsigned char *)0x6000 = 0x01
 
-/* Note the order used here.  Writing the other way around
- * on a MBC1 always selects bank 0 (d'oh)
- */
-/** MBC5 */
-#define SWITCH_ROM_MBC5(b) \
-  *(unsigned char *)0x3000 = (UINT16)(b)>>8; \
-  *(unsigned char *)0x2000 = (UINT8)(b)
+/** Makes MBC5 switch to the active ROM bank; only 4M roms are supported, @see SWITCH_ROM_MBC5_8M()
+    @param b   ROM bank to switch to
 
+    Note the order used here. Writing the other way around on a MBC1 always selects bank 1
+*/
+#define SWITCH_ROM_MBC5(b) \
+  _current_bank = (b), \
+  *(unsigned char *)0x3000 = 0, \
+  *(unsigned char *)0x2000 = (b)
+
+/** Makes MBC5 to switch the active ROM bank; active bank number is not tracked by _current_bank if you use this macro
+    @see _current_bank
+    @param b   ROM bank to switch to
+
+    Note the order used here. Writing the other way around on a MBC1 always selects bank 1
+*/
+#define SWITCH_ROM_MBC5_8M(b) \
+  *(unsigned char *)0x3000 = ((UINT16)(b) >> 8), \
+  *(unsigned char *)0x2000 = (b)
+
+/** Switches SRAM bank on MBC5
+    @param b   SRAM bank to switch to
+*/
 #define SWITCH_RAM_MBC5(b) \
   *(unsigned char *)0x4000 = (b)
 
+/** Enables SRAM on MBC5
+*/
 #define ENABLE_RAM_MBC5 \
   *(unsigned char *)0x0000 = 0x0A
 
+/** Disables SRAM on MBC5
+*/
 #define DISABLE_RAM_MBC5 \
   *(unsigned char *)0x0000 = 0x00
 
-/* ************************************************************ */
+
 
 /** Delays the given number of milliseconds.
-    Uses no timers or interrupts, and can be called with 
+    Uses no timers or interrupts, and can be called with
     interrupts disabled (why nobody knows :)
  */
 void delay(UINT16 d) NONBANKED;
 
-/* ************************************************************ */
+
 
 /** Reads and returns the current state of the joypad.
     Follows Nintendo's guidelines for reading the pad.
     Return value is an OR of J_*
-    @see J_START
+    @see J_START, J_SELECT, J_A, J_B, J_UP, J_DOWN, J_LEFT, J_RIGHT
 */
 UINT8 joypad(void) NONBANKED __preserves_regs(b, c, h, l);
 
-/** Waits until all the keys given in mask are pressed.
+/** Waits until all the buttons given in mask are pressed.
+
+    @param mask Bitmask indicating which buttons to wait for
+
     Normally only used for checking one key, but it will
-    support many, even J_LEFT at the same time as J_RIGHT :)
-    @see joypad, J_START
+    support many, even J_LEFT at the same time as J_RIGHT. :)
+
+    Note: Checks in a loop that doesn't HALT at all, so the CPU
+    will be maxed out until this call returns.
+    @see joypad
+    @see J_START, J_SELECT, J_A, J_B, J_UP, J_DOWN, J_LEFT, J_RIGHT
 */
 UINT8 waitpad(UINT8 mask) NONBANKED __preserves_regs(b, c);
 
-/** Waits for the pad and all buttons to be released.
+/** Waits for the directional pad and all buttons to be released.
+
+    Note: Checks in a loop that doesn't HALT at all, so the CPU
+    will be maxed out until this call returns.
 */
 void waitpadup(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
 
-/* ************************************************************ */
+/** Multiplayer joypad structure.
+
+    Must be initialized with @ref joypad_init() first then it
+    may be used to poll all avaliable joypads with @ref joypad_ex()
+*/
+typedef struct {
+    UINT8 npads;
+    union {
+        struct {
+            UINT8 joy0, joy1, joy2, joy3;
+        };
+        UINT8 joypads[4];
+    };
+} joypads_t;
+
+/** Initializes joypads_t structure for polling multiple joypads
+    (for the GB and ones connected via SGB)
+    @param npads	number of joypads requested (1, 2 or 4)
+    @param joypads	pointer to joypads_t structure to be initialized
+
+    Only required for @ref joypad_ex, not required for calls to regular @ref joypad()
+    @returns number of joypads avaliable
+    @see joypad_ex(), joypads_t
+*/
+UINT8 joypad_init(UINT8 npads, joypads_t * joypads);
+
+/** Polls all avaliable joypads (for the GB and ones connected via SGB)
+    @param joypads	pointer to joypads_t structure to be filled with joypad statuses,
+    	   must be previously initialized with joypad_init()
+
+    @see joypad_init(), joypads_t
+*/
+void joypad_ex(joypads_t * joypads);
+
+
 
 /** Enables unmasked interrupts
-    @see disable_interrupts
+    @see disable_interrupts, set_interrupts
 */
 void enable_interrupts(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
 
 /** Disables interrupts.
+
     This function may be called as many times as you like;
     however the first call to enable_interrupts will re-enable
     them.
-    @see enable_interrupts
+    @see enable_interrupts, set_interrupts
 */
 void disable_interrupts(void) NONBANKED __preserves_regs(a, b, c, d, e, h, l);
 
 /** Clears any pending interrupts and sets the interrupt mask
     register IO to flags.
-    @see VBL_IFLAG
     @param flags	A logical OR of *_IFLAGS
+    @see enable_interrupts(), disable_interrupts()
+    @see VBL_IFLAG, LCD_IFLAG, TIM_IFLAG, SIO_IFLAG, JOY_IFLAG
 */
 void set_interrupts(UINT8 flags) NONBANKED __preserves_regs(b, c, d, e);
 
@@ -338,27 +515,29 @@ void set_interrupts(UINT8 flags) NONBANKED __preserves_regs(b, c, d, e);
 */
 void reset(void) NONBANKED;
 
-/** Waits for the vertical blank interrupt (VBL) to finish.  
-    This can be used to sync animation with the screen 
-    re-draw.  If VBL interrupt is disabled, this function will
-    never return.  If the screen is off this function returns
+/** HALTs the CPU and waits for the vertical blank interrupt (VBL) to finish.
+
+    This is often used in main loops to idle the CPU at low power
+    until it's time to start the next frame. It's also useful for
+    syncing animation with the screen re-draw.
+
+    Warning: If the VBL interrupt is disabled, this function will
+    never return. If the screen is off this function returns
     immediatly.
 */
 void wait_vbl_done(void) NONBANKED __preserves_regs(b, c, d, e, h, l);
 
 /** Turns the display off.
-    Waits until the VBL interrupt before turning the display
-    off.
+
+    Waits until the VBL interrupt before turning the display off.
     @see DISPLAY_ON
 */
 void display_off(void) NONBANKED __preserves_regs(b, c, d, e, h, l);
 
-/* ************************************************************ */
 
-/** Copies data from somewhere in the lower address space
-    to part of hi-ram.
-    @param dst		Offset in high ram (0xFF00 and above)
-    			to copy to.
+
+/** Copies data from somewhere in the lower address space to part of hi-ram.
+    @param dst		Offset in high ram (0xFF00 and above) to copy to.
     @param src		Area to copy from
     @param n		Number of bytes to copy.
 */
@@ -366,7 +545,7 @@ void hiramcpy(UINT8 dst,
           const void *src,
           UINT8 n) NONBANKED __preserves_regs(b, c);
 
-/* ************************************************************ */
+
 
 /** Turns the display back on.
     @see display_off, DISPLAY_OFF
@@ -428,44 +607,112 @@ void hiramcpy(UINT8 dst,
 #define SPRITES_8x8 \
   LCDC_REG&=0xFBU
 
-/* ************************************************************ */
 
-/** Sets the tile patterns in the Background Tile Pattern table.
-    Starting with the tile pattern x and carrying on for n number of
-    tile patterns.Taking the values starting from the pointer
-    data. Note that patterns 128-255 overlap with patterns 128-255
-    of the sprite Tile Pattern table.  
 
-    GBC: Depending on the VBK_REG this determines which bank of
-    Background tile patterns are written to. VBK_REG=0 indicates the
-    first bank, and VBK_REG=1 indicates the second.
+/** Sets VRAM Tile Pattern data for the Background / Window
 
-    @param first_tile	Range 0 - 255
-    @param nb_tiles	Range 0 - 255
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (2 bpp) source tile data
+
+    Writes __nb_tiles__ tiles to VRAM starting at __first_tile__, tile data
+    is sourced from __data__. Each Tile is 16 bytes in size (8x8 pixels, 2 bits-per-pixel).
+
+    Note: Sprite Tiles 128-255 share the same memory region as Background Tiles 128-255.
+
+    GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
+    \li VBK_REG=0 indicates the first bank
+    \li VBK_REG=1 indicates the second
 */
 void set_bkg_data(UINT8 first_tile,
          UINT8 nb_tiles,
          unsigned char *data) NONBANKED __preserves_regs(b, c);
 
+
+/** Sets VRAM Tile Pattern data for the Background / Window using 1bpp source data
+
+    @param first_tile  Index of the first Tile to write
+    @param nb_tiles    Number of Tiles to write
+    @param data        Pointer to (1bpp) source Tile Pattern data
+    @param color       Color
+
+    Similar to @ref set_bkg_data, except source data is 1 bit-per-pixel
+    which gets expanded into 2 bits-per-pixel.
+
+    For a given bit that represent a pixel:
+    \li 0 will be expanded into color 0
+    \li 1 will be expanded into color 1, 2 or 3 depending on color argument
+
+    @see SHOW_BKG, HIDE_BKG, set_bkg_tiles
+*/
+void set_bkg_1bit_data(UINT8 first_tile,
+         UINT8 nb_tiles,
+         unsigned char *data,
+         UINT8 color) NONBANKED __preserves_regs(b, c);
+
+
+/** Copies from Background / Window VRAM Tile Pattern data into a buffer
+
+    @param first_tile  Index of the first Tile to read from
+    @param nb_tiles    Number of Tiles to read
+    @param data        Pointer to destination buffer for Tile Pattern data
+
+    Copies __nb_tiles__ tiles from VRAM starting at __first_tile__, Tile data
+    is copied into __data__.
+
+    Each Tile is 16 bytes, so the buffer pointed to by __data__
+    should be at least __nb_tiles__ x 16 bytes in size.
+
+    @see get_win_data
+*/
 void get_bkg_data(UINT8 first_tile,
          UINT8 nb_tiles,
          unsigned char *data) NONBANKED __preserves_regs(b, c);
 
 
+/** Sets a rectangular region of Tile Map entries for the Background layer.
 
-/** Sets the tiles in the background tile table.
-    Starting at position x,y in tiles and writing across for w tiles
-    and down for h tiles. Taking the values starting from the pointer
-    data.
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 0 - 31
+    @param h      Height of area to set in tiles.   Range 0 - 31
+    @param tiles  Pointer to source Tile Map data
 
-    For the GBC, also see the pan/k00Pa section on VBK_REG.
+    Entries are copied from __tiles__ to the Background Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
 
-    @param x		Range 0 - 31
-    @param y		Range 0 - 31
-    @param w		Range 0 - 31
-    @param h		Range 0 - 31
-    @param data		Pointer to an unsigned char. Usually the 
-    			first element in an array.
+    One byte per Tile map entry.
+
+    Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
+
+    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
+    \li VBK_REG=0 Tile Numbers are written
+    \li VBK_REG=1 Tile Attributes are written
+
+    GBC Tile Attributes are defined as:
+    \li Bit 7 - Priority flag. When this is set, it puts the tile above the sprites
+              with colour 0 being transparent.
+              \n 0: Below sprites
+              \n 1: Above sprites
+              \n Note: @ref SHOW_BKG needs to be set for these priorities to take place.
+    \li Bit 6 - Vertical flip. Dictates which way up the tile is drawn vertically.
+              \n 0: Normal
+              \n 1: Flipped Vertically
+    \li Bit 5 - Horizontal flip. Dictates which way up the tile is drawn horizontally.
+              \n 0: Normal
+              \n 1: Flipped Horizontally
+    \li Bit 4 - Not used
+    \li Bit 3 - Character Bank specification. Dictates from which bank of
+              Background Tile Patterns the tile is taken.
+              \n 0: Bank 0
+              \n 1: Bank 1
+    \li Bit 2 - See bit 0.
+    \li Bit 1 - See bit 0.
+    \li Bit 0 - Bits 0-2 indicate which of the 7 BKG colour palettes the tile is
+              assigned.
+
+    @see SHOW_BKG
+    @see set_bkg_data
 */
 void set_bkg_tiles(UINT8 x,
           UINT8 y,
@@ -473,70 +720,134 @@ void set_bkg_tiles(UINT8 x,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
+
+/** Copies a rectangular region of Background Tile Map entries into a buffer.
+
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to copy in tiles. Range 0 - 31
+    @param h      Height of area to copy in tiles. Range 0 - 31
+    @param tiles  Pointer to destination buffer for Tile Map data
+
+
+    Entries are copied into __tiles__ from the Background Tile Map starting at
+    __x__, __y__ reading across for __w__ tiles and down for __h__ tiles.
+
+    One byte per tile.
+
+    The buffer pointed to by __tiles__ should be at least __x__ x __y__ bytes in size.
+*/
 void get_bkg_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
-/** Moves the background layer to the position specified in x and y in pixels.
-    Where 0,0 is the top left corner of the GB screen. You'll notice the screen
-    wraps around in all 4 directions, and is always under the window layer.
-*/
-void move_bkg(UINT8 x,
-          UINT8 y) NONBANKED __preserves_regs(b, c, d, e);
 
-/** Moves the background relative to it's current position.
+/** Moves the Background Layer to the position specified in __x__ and __y__ in pixels.
+
+    @param x   X axis screen coordinate for Left edge of the Background
+    @param y   Y axis screen coordinate for Top edge of the Background
+
+    0,0 is the top left corner of the GB screen. The Background Layer wraps around the screen,
+    so when part of it goes off the screen it appears on the opposite side (factoring in the
+    larger size of the Background Layer versus the screen size).
+
+    The background layer is always under the Window Layer.
+
+    @see SHOW_BKG, HIDE_BKG
+*/
+inline void move_bkg(UINT8 x, UINT8 y) {
+    SCX_REG=x, SCY_REG=y;
+}
+
+
+/** Moves the Background relative to it's current position.
+
+    @param x   Number of pixels to move the Background on the __X axis__
+               \n Range: -128 - 127
+    @param y   Number of pixels to move the Background on the __Y axis__
+               \n Range: -128 - 127
 
     @see move_bkg
 */
-void scroll_bkg(INT8 x,
-          INT8 y) NONBANKED __preserves_regs(b, c, d, e);
+inline void scroll_bkg(INT8 x, INT8 y) {
+    SCX_REG+=x, SCY_REG+=y;
+}
 
-/* ************************************************************ */
 
-/** Sets the window tile data.
-    This is the same as set_bkg_data, as both the window layer and background
-    layer share the same Tile Patterns.
+
+/** Sets VRAM Tile Pattern data for the Window / Background
+
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (2 bpp) source Tile Pattern data.
+
+    This is the same as @ref set_bkg_data, since the Window Layer and
+    Background Layer share the same Tile pattern data.
+
     @see set_bkg_data
+    @see set_win_tiles
+    @see SHOW_WIN, HIDE_WIN
 */
 void set_win_data(UINT8 first_tile,
           UINT8 nb_tiles,
           unsigned char *data) NONBANKED __preserves_regs(b, c);
 
+
+/** Sets VRAM Tile Pattern data for the Window / Background using 1bpp source data
+
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (1bpp) source Tile Pattern data
+
+    This is the same as @ref set_bkg_1bit_data, since the Window Layer and
+    Background Layer share the same Tile pattern data.
+
+    @see set_bkg_data, set_bkg_1bit_data, set_win_data
+*/
+void set_win_1bit_data(UINT8 first_tile,
+          UINT8 nb_tiles,
+          unsigned char *data) NONBANKED __preserves_regs(b, c);
+
+
+/** Copies from Window / Background VRAM Tile Pattern data into a buffer
+
+    @param first_tile  Index of the first Tile to read from
+    @param nb_tiles    Number of Tiles to read
+    @param data        Pointer to destination buffer for Tile Pattern Data
+
+    This is the same as @ref get_bkg_data, since the Window Layer and
+    Background Layer share the same Tile pattern data.
+
+    @see get_bkg_data
+*/
 void get_win_data(UINT8 first_tile,
           UINT8 nb_tiles,
           unsigned char *data) NONBANKED __preserves_regs(b, c);
 
-/** Sets the tiles in the win tile table. 
-    Starting at position x,y in
-    tiles and writing across for w tiles and down for h tiles. Taking the
-    values starting from the pointer data. Note that patterns 128-255 overlap
-    with patterns 128-255 of the sprite Tile Pattern table.
-	
-    GBC only.
-    Depending on the VBK_REG this determines if you're setting the tile numbers
-    VBK_REG=0; or the attributes for those tiles VBK_REG=1;. The bits in the
-    attributes are defined as:
-    Bit 7 - 	Priority flag. When this is set, it puts the tile above the sprites
-    		with colour 0 being transparent. 0: below sprites, 1: above sprites
-		Note SHOW_BKG needs to be set for these priorities to take place.
-    Bit 6 - 	Vertical flip. Dictates which way up the tile is drawn vertically.
-    		0: normal, 1: upside down.
-    Bit 5 - 	Horizontal flip. Dictates which way up the tile is drawn
-    		horizontally. 0: normal, 1:back to front.
-    Bit 4 - 	Not used.
-    Bit 3 - 	Character Bank specification. Dictates from which bank of
-    		Background Tile Patterns the tile is taken. 0: Bank 0, 1: Bank 1
-    Bit 2 - 	See bit 0.
-    Bit 1 - 	See bit 0. 
-    Bit 0 - 	Bits 0-2 indicate which of the 7 BKG colour palettes the tile is
-		assigned.
 
-    @param x		Range 0 - 31
-    @param y		Range 0 - 31
-    @param w		Range 0 - 31
-    @param h		Range 0 - 31
+/** Sets a rectangular region of Tile Map entries for the Window layer.
+
+    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Window Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 0 - 31
+    @param h      Height of area to set in tiles.	Range 0 - 31
+    @param tiles   Pointer to source Tile Map data
+
+    Entries are copied from __tiles__ to the background Tile Map starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
+
+    One byte per Tile Map entry.
+
+    Note: Patterns 128-255 overlap with patterns 128-255 of the sprite Tile Pattern table.
+
+    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
+    \li VBK_REG=0 Tile Numbers are written
+    \li VBK_REG=1 Tile Attributes are written
+
+    @see set_bkg_tiles For more details about GBC Tile Attributes
+    @see SHOW_WIN, HIDE_WIN
 */
 void set_win_tiles(UINT8 x,
           UINT8 y,
@@ -544,107 +855,302 @@ void set_win_tiles(UINT8 x,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
+
+/** Copies a rectangular region of Window Tile Map entries into a buffer.
+
+    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Window Map tile coordinates. Range 0 - 31
+    @param w      Width of area to copy in tiles. Range 0 - 31
+    @param h      Height of area to copy in tiles. Range 0 - 31
+    @param tiles  Pointer to destination buffer for Tile Map data
+
+    Entries are copied into __tiles__ from the Window Tile Map starting at
+    __x__, __y__ reading across for __w__ tiles and down for __h__ tiles.
+
+    One byte per tile.
+
+    The buffer pointed to by __tiles__ should be at least __x__ x __y__ bytes in size.
+*/
 void get_win_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
-/** Moves the window layer to the position specified in x and y in pixels.
-    Where 7,0 is the top left corner of the GB screen. The window is locked to
-    the bottom right corner, and is always over the background layer.
+
+/** Moves the Window to the __x__, __y__ position on the screen.
+
+    @param x   X coordinate for Left edge of the Window (actual displayed location will be X - 7)
+    @param y   Y coordinate for Top edge of the Window
+
+    7,0 is the top left corner of the screen in Window coordinates. The Window is locked to the bottom right corner.
+
+    The Window is always over the Background layer.
+
     @see SHOW_WIN, HIDE_WIN
 */
-void move_win(UINT8 x,
-          UINT8 y) NONBANKED __preserves_regs(b, c, d, e);
+inline void move_win(UINT8 x, UINT8 y) {
+    WX_REG=x, WY_REG=y;
+}
 
-/** Move the window relative to its current position.
+
+/** Move the Window relative to its current position.
+
+    @param x   Number of pixels to move the window on the __X axis__
+               \n Range: -128 - 127
+    @param y   Number of pixels to move the window on the __Y axis__
+               \n Range: -128 - 127
+
     @see move_win
 */
-void scroll_win(INT8 x,
-          INT8 y) NONBANKED __preserves_regs(b, c, d, e);
+inline void scroll_win(INT8 x, INT8 y) {
+    WX_REG+=x, WY_REG+=y;
+}
 
-/* ************************************************************ */
 
-/** Sets the tile patterns in the Sprite Tile Pattern table.
-    Starting with the tile pattern x and carrying on for n number of
-    tile patterns.Taking the values starting from the pointer
-    data. Note that patterns 128-255 overlap with patterns 128-255 of
-    the Background Tile Pattern table.
-    
-    GBC only.
-    Depending on the VBK_REG this determines which bank of Background tile
-    patterns are written to. VBK_REG=0 indicates the first bank, and VBK_REG=1
-    indicates the second.
+
+/** Sets VRAM Tile Pattern data for Sprites
+
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (2 bpp) source Tile Pattern data
+
+    Writes __nb_tiles__ tiles to VRAM starting at __first_tile__, tile data
+    is sourced from __data__. Each Tile is 16 bytes in size (8x8 pixels, 2 bits-per-pixel).
+
+    Note: Sprite Tiles 128-255 share the same memory region as Background Tiles 128-255.
+
+    GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
+    \li VBK_REG=0 indicates the first bank
+    \li VBK_REG=1 indicates the second
 */
 void set_sprite_data(UINT8 first_tile,
           UINT8 nb_tiles,
           unsigned char *data) NONBANKED __preserves_regs(b, c);
 
+
+/** Sets VRAM Tile Pattern data for Sprites using 1bpp source data
+
+    @param first_tile  Index of the first tile to write
+    @param nb_tiles    Number of tiles to write
+    @param data        Pointer to (1bpp) source Tile Pattern data
+
+    Similar to @ref set_sprite_data, except source data is 1 bit-per-pixel
+    which gets expanded into 2 bits-per-pixel.
+
+    For a given bit that represent a pixel:
+    \li 0 will be expanded into color 0
+    \li 1 will be expanded into color 3
+
+    @see SHOW_SPRITES, HIDE_SPRITES, set_sprite_tile
+*/
+void set_sprite_1bit_data(UINT8 first_tile,
+          UINT8 nb_tiles,
+          unsigned char *data) NONBANKED __preserves_regs(b, c);
+
+
+/** Copies from Sprite VRAM Tile Pattern data into a buffer
+
+    @param first_tile  Index of the first tile to read from
+    @param nb_tiles    Number of tiles to read
+    @param data        Pointer to destination buffer for Tile Pattern data
+
+    Copies __nb_tiles__ tiles from VRAM starting at __first_tile__, tile data
+    is copied into __data__.
+
+    Each Tile is 16 bytes, so the buffer pointed to by __data__
+    should be at least __nb_tiles__ x 16 bytes in size.
+*/
 void get_sprite_data(UINT8 first_tile,
           UINT8 nb_tiles,
           unsigned char *data) NONBANKED __preserves_regs(b, c);
 
-/** Sets sprite n to display tile number t, from the sprite tile data. 
-    If the GB is in 8x16 sprite mode then it will display the next
-    tile, t+1, below the first tile.
-    @param nb		Sprite number, range 0 - 39
+
+/** Sprite Attributes structure
+    @param x     X Coordinate of the sprite on screen
+    @param y     Y Coordinate of the sprite on screen
+    @param tile  Sprite tile number (see @ref set_sprite_tile)
+    @param prop  OAM Property Flags (see @ref set_sprite_prop)
 */
-void set_sprite_tile(UINT8 nb,
-          UINT8 tile) NONBANKED __preserves_regs(b, c);
+typedef struct OAM_item_t {
+    UINT8 y, x;  //< X, Y Coordinates of the sprite on screen
+    UINT8 tile;  //< Sprite tile number
+    UINT8 prop;  //< OAM Property Flags
+} OAM_item_t;
 
-UINT8 get_sprite_tile(UINT8 nb) NONBANKED __preserves_regs(b, c);
 
-/** Sets the property of sprite n to those defined in p.
-    Where the bits in p represent:
-    Bit 7 - 	Priority flag. When this is set the sprites appear behind the
-		background and window layer. 0: infront, 1: behind.
-    Bit 6 - 	Vertical flip. Dictates which way up the sprite is drawn
-		vertically. 0: normal, 1:upside down.
-    Bit 5 - 	Horizontal flip. Dictates which way up the sprite is
-    drawn horizontally. 0: normal, 1:back to front.
-    Bit 4 - 	DMG only. Assigns either one of the two b/w palettes to the sprite.
-		0: OBJ palette 0, 1: OBJ palette 1.
-    Bit 3 -	GBC only. Dictates from which bank of Sprite Tile Patterns the tile
-		is taken. 0: Bank 0, 1: Bank 1
-    Bit 2 -	See bit 0.
-    Bit 1 -	See bit 0. 
-    Bit 0 - 	GBC only. Bits 0-2 indicate which of the 7 OBJ colour palettes the
-		sprite is assigned.
-    
-    @param nb		Sprite number, range 0 - 39
+/** Shadow OAM array in WRAM, that is DMA-transferred into the real OAM each VBlank
 */
-void set_sprite_prop(UINT8 nb,
-          UINT8 prop) NONBANKED __preserves_regs(b, c);
+extern volatile struct OAM_item_t shadow_OAM[];
 
-UINT8 get_sprite_prop(UINT8 nb) NONBANKED __preserves_regs(b, c);
 
-/** Moves the given sprite to the given position on the
-    screen.
-    Dont forget that the top left visible pixel on the screen
-    is at (8,16).  To put sprite 0 at the top left, use
-    move_sprite(0, 8, 16);
+/** Sets sprite number __nb__ to display tile number __tile__.
+
+    @param nb    Sprite number, range 0 - 39
+    @param tile  Selects a tile (0 - 255) from memory at 8000h - 8FFFh
+                 \n In CGB Mode this could be either in VRAM Bank
+                 \n 0 or 1, depending on Bit 3 of the OAM Attribute Flag
+                 \n (see @ref set_sprite_prop)
+
+    In 8x16 mode:
+    \li The sprite will also display the next tile (__tile__ + 1)
+        directly below (y + 8) the first tile.
+    \li The lower bit of the tile number is ignored:
+        the upper 8x8 tile is (__tile__ & 0xFE), and
+        the lower 8x8 tile is (__tile__ | 0x01).
+    \li See: @ref SPRITES_8x16
 */
-void move_sprite(UINT8 nb,
-          UINT8 x,
-          UINT8 y) NONBANKED __preserves_regs(b, c);
+inline void set_sprite_tile(UINT8 nb, UINT8 tile) {
+    shadow_OAM[nb].tile=tile;
+}
 
-/** Moves the given sprite relative to its current position.
+
+/** Returns the tile number of sprite number __nb__.
+
+@param nb    Sprite number, range 0 - 39
+
+@see set_sprite_tile for more details
+*/
+inline UINT8 get_sprite_tile(UINT8 nb) {
+    return shadow_OAM[nb].tile;
+}
+
+
+/** Sets the OAM Property Flags of sprite number __nb__ to those defined in __prop__.
+
+    @param nb    Sprite number, range 0 - 39
+    @param prop  Property setting (see bitfield description)
+
+    The bits in __prop__ represent:
+    \li Bit 7 - Priority flag. When this is set the sprites appear behind the
+              background and window layer.
+              \n 0: infront
+              \n 1: behind
+    \li Bit 6 - Vertical flip. Dictates which way up the sprite is drawn
+              vertically.
+              \n 0: normal
+              \n 1:upside down
+    \li Bit 5 - Horizontal flip. Dictates which way up the sprite is
+              drawn horizontally.
+              \n 0: normal
+              \n  1:back to front
+    \li Bit 4 - DMG/Non-CGB Mode Only. Assigns either one of the two b/w palettes to the sprite.
+              \n 0: OBJ palette 0
+              \n 1: OBJ palette 1
+    \li Bit 3 - GBC only. Dictates from which bank of Sprite Tile Patterns the tile
+              is taken.
+              \n 0: Bank 0
+              \n 1: Bank 1
+    \li Bit 2 - See bit 0.
+    \li Bit 1 - See bit 0.
+    \li Bit 0 - GBC only. Bits 0-2 indicate which of the 7 OBJ colour palettes the
+              sprite is assigned.
+*/
+inline void set_sprite_prop(UINT8 nb, UINT8 prop){
+    shadow_OAM[nb].prop=prop;
+}
+
+
+/** Returns the OAM Property Flags of sprite number __nb__.
+
+    @param nb    Sprite number, range 0 - 39
+    @see set_sprite_prop for property bitfield settings
+*/
+inline UINT8 get_sprite_prop(UINT8 nb){
+    return shadow_OAM[nb].prop;
+}
+
+
+/** Moves sprite number __nb__ to the __x__, __y__ position on the screen.
+
+    @param nb  Sprite number, range 0 - 39
+    @param x   X Position. Specifies the sprites horizontal position on the screen (minus 8).
+               \n An offscreen value (X=0 or X>=168) hides the sprite, but the sprite
+               still affects the priority ordering - a better way to hide a sprite is to set
+               its Y-coordinate offscreen.
+    @param y   Y Position. Specifies the sprites vertical position on the screen (minus 16).
+               \n An offscreen value (for example, Y=0 or Y>=160) hides the sprite.
+
+    Moving the sprite to 0,0 (or similar off-screen location) will hide it.
+*/
+inline void move_sprite(UINT8 nb, UINT8 x, UINT8 y) {
+    OAM_item_t * itm = &shadow_OAM[nb];
+    itm->y=y, itm->x=x;
+}
+
+
+/** Moves sprite number __nb__ relative to its current position.
+
+    @param nb  Sprite number, range 0 - 39
+    @param x   Number of pixels to move the sprite on the __X axis__
+               \n Range: -128 - 127
+    @param y   Number of pixels to move the sprite on the __Y axis__
+               \n Range: -128 - 127
+
+    @see move_sprite for more details about the X and Y position
  */
-void scroll_sprite(UINT8 nb,
-          INT8 x,
-          INT8 y) NONBANKED __preserves_regs(b, c);
+inline void scroll_sprite(UINT8 nb, INT8 x, INT8 y) {
+    OAM_item_t * itm = &shadow_OAM[nb];
+    itm->y+=y, itm->x+=x;
+}
 
-/* ************************************************************ */
 
+
+
+/** Copies Tile Pattern data to an address in VRAM
+
+    @param vram_addr Pointer to destination VRAM Address
+    @param data      Pointer to source buffer
+    @param len       Number of bytes to copy
+
+    Copies __len__ bytes from a buffer at __data__ to VRAM starting at __vram_addr__.
+
+    GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
+    \li VBK_REG=0 indicates the first bank
+    \li VBK_REG=1 indicates the second
+*/
 void set_data(unsigned char *vram_addr,
           unsigned char *data,
           UINT16 len) NONBANKED __preserves_regs(b, c);
 
+
+/** Copies Tile Pattern data from an address in VRAM into a buffer
+
+    @param vram_addr Pointer to source VRAM Address
+    @param data      Pointer to destination buffer
+    @param len       Number of bytes to copy
+
+    Copies __len__ bytes from VRAM starting at __vram_addr__ into a buffer at __data__.
+
+    GBC only: @ref VBK_REG determines which bank of Background tile patterns are written to.
+    \li VBK_REG=0 indicates the first bank
+    \li VBK_REG=1 indicates the second
+*/
 void get_data(unsigned char *data,
           unsigned char *vram_addr,
           UINT16 len) NONBANKED __preserves_regs(b, c);
 
+
+/** Sets a rectangular region of Tile Map entries at a given VRAM Address.
+
+    @param x         X Start position in Map tile coordinates. Range 0 - 31
+    @param y         Y Start position in Map tile coordinates. Range 0 - 31
+    @param w         Width of area to set in tiles. Range 0 - 31
+    @param h         Height of area to set in tiles.   Range 0 - 31
+    @param vram_addr Pointer to destination VRAM Address
+    @param tiles     Pointer to source Tile Map data
+
+    Entries are copied from __tiles__ to Tile Map at address vram_addr starting at
+    __x__, __y__ writing across for __w__ tiles and down for __h__ tiles.
+
+    One byte per Tile map entry.
+
+    There are two 32x32 Tile Maps in VRAM at addresses 9800h-9BFFh and 9C00h-9FFFh.
+
+    GBC only: @ref VBK_REG determines whether Tile Numbers or Tile Attributes get set.
+    \li VBK_REG=0 Tile Numbers are written
+    \li VBK_REG=1 Tile Attributes are written
+*/
 void set_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
@@ -652,11 +1158,78 @@ void set_tiles(UINT8 x,
           unsigned char *vram_addr,
           unsigned char *tiles) NONBANKED __preserves_regs(b, c);
 
+
+/** Copies a rectangular region of Tile Map entries from a given VRAM Address into a buffer.
+
+    @param x         X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y         Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w         Width of area to copy in tiles. Range 0 - 31
+    @param h         Height of area to copy in tiles. Range 0 - 31
+    @param tiles     Pointer to destination buffer for Tile Map data
+    @param vram_addr Pointer to source VRAM Address
+
+    Entries are copied into __tiles__ from the Background Tile Map starting at
+    __x__, __y__ reading across for __w__ tiles and down for __h__ tiles.
+
+    One byte per tile.
+
+    There are two 32x32 Tile Maps in VRAM at addresses 9800h - 9BFFh and 9C00h - 9FFFh.
+
+    The buffer pointed to by __tiles__ should be at least __x__ x __y__ bytes in size.
+*/
 void get_tiles(UINT8 x,
           UINT8 y,
           UINT8 w,
           UINT8 h,
           unsigned char *tiles,
           unsigned char *vram_addr) NONBANKED __preserves_regs(b, c);
+
+
+
+
+/** Initializes the entire Window Tile Map with Tile Number __c__
+    @param c   Tile number to fill with
+
+    Note: This function avoids writes during modes 2 & 3
+*/
+void init_win(UINT8 c) NONBANKED __preserves_regs(b, c);
+
+/** Initializes the entire Background Tile Map with Tile Number __c__
+    @param c   Tile number to fill with
+
+    Note: This function avoids writes during modes 2 & 3
+*/
+void init_bkg(UINT8 c) NONBANKED __preserves_regs(b, c);
+
+/** Fills the VRAM memory region __s__ of size __n__ with Tile Number __c__
+    @param s   Start address in VRAM
+    @param c   Tile number to fill with
+    @param n   Size of memory region (in bytes) to fill
+
+    Note: This function avoids writes during modes 2 & 3
+*/
+void vmemset (void *s, UINT8 c, size_t n) NONBANKED __preserves_regs(b, c);
+
+
+
+/** Fills a rectangular region of Tile Map entries for the Background layer with tile.
+
+    @param x      X Start position in Background Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Background Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 0 - 31
+    @param h      Height of area to set in tiles. Range 0 - 31
+    @param tile   Fill value
+*/
+void fill_bkg_rect(UINT8 x, UINT8 y, UINT8 w, UINT8 h, UINT8 tile) NONBANKED __preserves_regs(b, c);
+
+/** Fills a rectangular region of Tile Map entries for the Window layer with tile.
+
+    @param x      X Start position in Window Map tile coordinates. Range 0 - 31
+    @param y      Y Start position in Window Map tile coordinates. Range 0 - 31
+    @param w      Width of area to set in tiles. Range 0 - 31
+    @param h      Height of area to set in tiles. Range 0 - 31
+    @param tile   Fill value
+*/
+void fill_win_rect(UINT8 x, UINT8 y, UINT8 w, UINT8 h, UINT8 tile) NONBANKED __preserves_regs(b, c);
 
 #endif /* _GB_H */

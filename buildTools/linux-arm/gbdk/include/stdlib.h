@@ -22,44 +22,100 @@ void exit(int status) NONBANKED;
 int getkey(void);
 #endif
 
-/** Returns the absolute value of a int.
+/** Returns the absolute value of int __i__
+    @param i   Int to obtain absolute value of
+
     If i is negative, returns -i; else returns i.
 */
 int abs(int i);
 
-/** Returns the absolute value of a long.
+
+/** Returns the absolute value of long int __num__
+
+    @param num   Long integer to obtain absolute value of
  */
 long labs(long num);
 
-/** Converts an ASCII string to an int.
-    The string may be of the format [\s]*[+-][\d]+[\D]* i.e. any number
-    of spaces, an optional + or -, then an arbitrary number of digits.
+
+/** Converts an ASCII string to an int
+
+    @param s    String to convert to an int
+
+    The string may be of the format
+    \code{.c}
+     [\s]*[+-][\d]+[\D]*
+     \endcode
+    i.e. any number of spaces, an optional + or -, then an
+    arbitrary number of digits.
+
     The result is undefined if the number doesnt fit in an int.
+
+    Returns: Int value of string
  */
 int atoi(const char *s);
 
+
 /** Converts an ASCII string to a long.
+    @param s    String to convert to an long int
+    @see atoi()
+
+    Returns: Long int value of string
  */
 long atol(const char *s);
 
 /** Converts an int into a base 10 ASCII string.
+    @param n    Int to convert to a string
+    @param s    String to store the converted number
+
+    Returns:    Pointer to converted string
  */
 char *itoa(int n, char *s);
 
 /** Converts an unsigned int into a base 10 ASCII string.
+    @param n    Unsigned Int to convert to a string
+    @param s    String to store the converted number
+
+    Returns:    Pointer to converted string
  */
 char *utoa(unsigned int n, char *s);
 
 /** Converts a long into a base 10 ASCII string.
+    @param n    Long int to convert to a string
+    @param s    String to store the converted number
+
+    Returns:    Pointer to converted string
  */
 char *ltoa(long n, char *s);
 
 /** Converts an unsigned long into a base 10 ASCII string.
+    @param n    Unsigned Long Int to convert to a string
+    @param s    String to store the converted number
+
+    Returns:    Pointer to converted string
  */
 char *ultoa(unsigned long n, char *s);
 
+
 /* Searching and sorting utilities (ISO C11 7.22.5) */
+/** search a sorted array of __nmemb__ items
+    @param key      Pointer to object that is the key for the search
+    @param base     Pointer to first object in the array to search
+    @param nmemb    Number of elements in the array
+    @param size     Size in bytes of each element in the array
+    @param compar   Function used to compare two elements of the array
+
+    Returns: Pointer to array entry that matches the search key.
+             If key is not found, NULL is returned.
+*/
 extern void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
+
+
+/** Sort an array of __nmemb__ items
+    @param base     Pointer to first object in the array to sort
+    @param nmemb    Number of elements in the array
+    @param size     Size in bytes of each element in the array
+    @param compar   Function used to compare and sort two elements of the array
+*/
 extern void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *) __reentrant);
 
 #endif

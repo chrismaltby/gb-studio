@@ -18,8 +18,14 @@
 
 /* See gb.h/M_NO_SCROLL and gb.h/M_NO_INTERP */
 
-/** font_t is a handle to a font loaded by font_load() */
+/** font_t is a handle to a font loaded by font_load().
+    It can be used with @ref font_set() */
 typedef UINT16 font_t;
+
+
+/*! \defgroup gbdk_fonts List of gbdk fonts
+   @{
+*/
 
 /** The default fonts */
 extern UINT8 font_spect[], font_italic[], font_ibm[], font_min[];
@@ -27,32 +33,42 @@ extern UINT8 font_spect[], font_italic[], font_ibm[], font_min[];
 /** Backwards compatible font */
 extern UINT8 font_ibm_fixed[];
 
-/** Init the font system.
-    Should be called first.
+ /*! @} End of gbdk_fonts */
+
+
+/** Initializes the font system.
+    Should be called before other font functions.
  */
 void	font_init(void) NONBANKED;
 
-/** Load the font 'font'.
-    Sets the current font to the newly loaded font.
+/** Load a font and set it as the current font.
+    @param font   Pointer to a font to load (usually a gbdk font)
+
+    @return       Handle to the loaded font, which can be used with @ref font_set()
+    @see font_init(), font_set(), gbdk_fonts
  */
 font_t	font_load( void *font ) NONBANKED;
 
-/** Set the current font to 'font_handle', which was returned 
-    from an earlier font_load().  
+/** Set the current font.
+    @param font_handle   handle of a font returned by @ref font_load()
+
     @return		The previously used font handle.
+    @see font_init(), font_load()
 */
 font_t	font_set( font_t font_handle ) NONBANKED;
 
 /* Use mode() and color() to set the font modes and colours */
 
-/** Internal representation of a font.  
+/** Internal representation of a font.
     What a font_t really is */
 typedef struct sfont_handle mfont_handle;
 typedef struct sfont_handle *pmfont_handle;
 
+/** Font handle structure
+*/
 struct sfont_handle {
-    UINT8 first_tile;		/* First tile used */
-    void *font;			/* Pointer to the base of the font */
+    UINT8 first_tile;		/**< First tile used for font */
+    void *font;			/**< Pointer to the base of the font */
 };
 
 #endif /* __FONT_H */

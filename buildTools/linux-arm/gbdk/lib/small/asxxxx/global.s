@@ -121,9 +121,6 @@
 	.endif
 
 	.globl  __current_bank
-
-	.globl	banked_call
-	.globl	banked_ret
 	
 	;; Global variables
 	.globl	.mode
@@ -131,7 +128,7 @@
 	.globl	__cpu
 
 	;; Global routines
-	.globl	.set_mode
+;	.globl	.set_mode	;; don't link mode.o by default
 
 	.globl	.reset
 
@@ -148,8 +145,56 @@
 
 	;; Symbols defined at link time
 	.globl	.STACK
-	.globl	.OAM
+	.globl	_shadow_OAM
 	.globl	.refresh_OAM
 
 	;; Main user routine	
 	.globl	_main
+
+	;; Macro definitions
+
+.macro WAIT_STAT ?lbl
+lbl:	LDH	A, (.STAT)
+	AND	#0x02		; Check if in LCD modes 0 or 1
+	JR 	NZ, lbl
+.endm
+
+.macro ADD_A_REG16 regH regL
+	ADD	regL
+	LD	regL, A
+	ADC	regH
+	SUB	regL
+	LD	regH, A
+.endm
+
+.macro SIGNED_ADD_A_REG16 regH regL ?lbl
+	; If A is negative, we need to subtract 1 from upper byte of 16-bit value
+	BIT	7, A		; set z if a signed bit is 0
+	JR	Z, lbl		; if z is set jump to positive
+	dec	regH		; if negative decrement upper byte
+lbl:
+	ADD_A_REG16	regH, regL
+.endm
+
+.macro SIGNED_SUB_A_REG16 regH regL ?lbl
+	; negate A then add to 16-bit value
+	CPL
+	INC	A
+	SIGNED_ADD_A_REG16	regH, regL
+.endm
+
+.macro MUL_DE_BY_A_RET_HL ?lbl1 ?lbl2 ?lbl3
+	; Multiply DE by A, return result in HL; preserves: BC
+	LD	HL, #0
+lbl1:
+	SRL	A
+	JR	NC, lbl2
+	ADD	HL, DE
+lbl2:
+	JR	Z, lbl3
+	SLA	E
+	RL	D
+	JR	lbl1
+lbl3:
+.endm
+

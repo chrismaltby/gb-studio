@@ -43,10 +43,6 @@ Reporting problems and feature requests
     http://sourceforge.net/project/?group_id=1249
 5.  Check if anyone else has reported the problem
     http://sourceforge.net/bugs/?group_id=1249
-6.  Submit a new bug using the link above.  It is _very_ helpful if you can 
-    show how to reproduce the bug and/or give me the source to try and/or
-    use the --dumpall (lcc -Wf--dumpall) option and send me all of the *.dump
-    files.  Use the email address below.
 
 To download the latest source, get the tarball on sourceforge,
 extract, and type:
