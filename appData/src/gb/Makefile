@@ -57,7 +57,7 @@ $(OBJDIR)/%.o:	src/core/%.s
 
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
-	$(eval CART_SIZE=$(shell $(GBSPACK) -b 12 -c $(DATA_OBJS)))
+	$(eval CART_SIZE=$(shell $(GBSPACK) -b 2 -c $(DATA_OBJS)))
 	$(CC) $(LFLAGS) -Wl-yo$(CART_SIZE) -Iinclude -o $@ $^	
 
 clean:

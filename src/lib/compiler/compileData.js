@@ -68,14 +68,22 @@ import {
   paletteSymbol,
   compilePalette,
   compilePaletteHeader,
+  compileFontImage,
+  compileFontImageHeader,
+  compileFrameImage,
+  compileFrameImageHeader,
+  compileCursorImage,
+  compileCursorImageHeader,
+  compileEmotesImage,
+  compileEmotesImageHeader,
   dataArrayToC,
   toFarPtr,
   spriteSheetSymbol,
+  sceneSymbol,
 } from "./compileData2";
 
 const indexById = indexBy("id");
 
-const DATA_PTRS_BANK = 4;
 const NUM_MUSIC_BANKS = 30; // To calculate usable banks if MBC1
 
 export const EVENT_START_DATA_COMPILE = "EVENT_START_DATA_COMPILE";
@@ -131,12 +139,19 @@ const compile = async (
   });
 
   // Add UI data
-  const fontImagePtr = banked.push(precompiled.fontTiles);
-  const frameImagePtr = banked.push(precompiled.frameTiles);
-  const cursorImagePtr = banked.push(precompiled.cursorTiles);
-  const emotesSpritePtr = banked.push(precompiled.emotesSprite);
+  // const fontImagePtr = banked.push(precompiled.fontTiles);
+  // const frameImagePtr = banked.push(precompiled.frameTiles);
+  // const cursorImagePtr = banked.push(precompiled.cursorTiles);
+  // const emotesSpritePtr = banked.push(precompiled.emotesSprite);
 
-  output["font_image.c"] = dataArrayToC("font_image", precompiled.fontTiles);
+  output["font_image.c"] = compileFontImage(precompiled.fontTiles);
+  output["font_image.h"] = compileFontImageHeader(precompiled.fontTiles);
+  output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
+  output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
+  output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
+  output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
+  output["emotes_image.c"] = compileEmotesImage(precompiled.emotesSprite);
+  output["emotes_image.h"] = compileEmotesImageHeader(precompiled.emotesSprite);
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -566,51 +581,36 @@ const compile = async (
   , 500);
 
   output[`data_ptrs.h`] =
-    `${
-      `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-      `#include "BankData.h"\n` +
-      `#include "VM.h"\n` +      
-      // `#define DATA_PTRS_BANK ${DATA_PTRS_BANK}\n` +
-      `#define FONT_BANK ${fontImagePtr.bank}\n` +
-      `#define FONT_BANK_OFFSET ${fontImagePtr.offset}\n` +
-      `#define FRAME_BANK ${frameImagePtr.bank}\n` +
-      `#define FRAME_BANK_OFFSET ${frameImagePtr.offset}\n` +
-      `#define CURSOR_BANK ${cursorImagePtr.bank}\n` +
-      `#define CURSOR_BANK_OFFSET ${cursorImagePtr.offset}\n` +
-      `#define EMOTES_SPRITE_BANK ${emotesSpritePtr.bank}\n` +
-      `#define EMOTES_SPRITE_BANK_OFFSET ${emotesSpritePtr.offset}\n` +
-      `#define NUM_VARIABLES ${variablesLen}\n` +
-      `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
-      `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n` + 
-      `\n`
-    }${Object.keys(dataPtrs)
-      .map((name) => {
-        return `extern const BankPtr ${name}[];`;
-      })
-      .join(`\n`)}\n` +
-    // `extern const unsigned int bank_data_ptrs[];\n` +
+
+    `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
+    `#include "BankData.h"\n` +
+    `#include "VM.h"\n\n` +
+    `#define NUM_VARIABLES ${variablesLen}\n` +
+    `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
+    `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
     // `extern const unsigned int music_tracks[];\n` +
     // `extern const unsigned char music_banks[];\n` +
-    `extern unsigned int start_scene_index;\n` +
     `extern int start_scene_x;\n` +
     `extern int start_scene_y;\n` +
     `extern char start_scene_dir_x;\n` +
     `extern char start_scene_dir_y;\n` +
+    `extern far_ptr_t start_scene;\n` +
     `extern far_ptr_t start_player_sprite;\n` +
     `extern far_ptr_t start_player_palette;\n` +
     `extern unsigned char start_player_move_speed;\n` +
-    `extern unsigned char start_player_anim_speed;\n` +
+    `extern unsigned char start_player_anim_speed;\n\n` +
+    `// Engine fields\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
     `extern unsigned char script_variables[${variablesLen}];\n${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
-      .join(`\n`)}\n\n#endif\n`;
+      .join(`\n`)}\n#endif\n`;
   output[`data_ptrs.c`] =
-    `#pragma bank ${DATA_PTRS_BANK}\n` +
     `#include "data/data_ptrs.h"\n` +
+    `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
     `#include "data/${spriteSheetSymbol(playerSpriteIndex)}.h"\n` +
-    `#include "data/${paletteSymbol(0)}.h"\n\n\n` +
+    `#include "data/${paletteSymbol(0)}.h"\n\n` +
     // Object.keys(dataPtrs)
     //   .map((name) => {
     //     return `const BankPtr ${name}[] = {\n${dataPtrs[name]
@@ -625,11 +625,11 @@ const compile = async (
     // `\n};\n\n` +
     // `const unsigned char music_banks[] = {\n` +
     // `\n};\n\n` +
-    `unsigned int start_scene_index = ${decHex16(startSceneIndex)};\n` +
     `int start_scene_x = ${decHex16((startX || 0) * 8)};\n` +
-    `int start_scene_y = ${decHex16((startY || 0) * 8)};\n\n` +
+    `int start_scene_y = ${decHex16((startY || 0) * 8)};\n` +
     `char start_scene_dir_x = ${startDirectionX};\n` +
     `char start_scene_dir_y = ${startDirectionY};\n` +
+    `far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
     `far_ptr_t start_player_sprite = ${toFarPtr(spriteSheetSymbol(playerSpriteIndex))};\n` +
     `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +

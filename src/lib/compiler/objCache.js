@@ -19,7 +19,9 @@ export const cacheObjData = async (buildRoot, env) => {
 
   const objFiles = await globAsync(`${buildObjRoot}/*.o`);
   const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
-  const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`);
+  const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`, {
+    ignore: `${buildIncludeRoot}/data/*.h`
+  });
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);
@@ -56,7 +58,9 @@ export const fetchCachedObjData = async (buildRoot, env) => {
   const buildIncludeRoot = Path.normalize(`${buildRoot}/include`);
 
   const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
-  const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`);
+  const includeFiles = await globAsync(`${buildIncludeRoot}/**/*.h`, {
+    ignore: `${buildIncludeRoot}/data/*.h`
+  });
 
   const includeChecksums = await Promise.all(includeFiles.map(checksumFile));
   const includeChecksum = mergeChecksums(includeChecksums);

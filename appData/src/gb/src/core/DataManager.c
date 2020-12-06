@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "Trigger.h"
 #include "Actor.h"
 #include "BankManager.h"
 #include "Palette.h"
@@ -9,13 +10,12 @@
 #include "ScriptRunner.h"
 #include "Scroll.h"
 #include "Sprite.h"
-#include "Trigger.h"
 #include "UI.h"
 #include "Input.h"
 #include "data/data_ptrs.h"
 #include "BankData.h"
 #include "VM.h"
-#include "data/scene_0.h"
+// #include "data/scene_0.h"
 
 #define MAX_PLAYER_SPRITE_SIZE 24
 
@@ -134,21 +134,17 @@ UBYTE LoadSprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank) {
 }
 
 // @todo Change LoadScene to take far_ptr to scene rather than scene index
-void LoadScene(UINT16 index) {
-  UBYTE bank, i, k;
-  const scene_t* scene;
+void LoadScene(const scene_t *scene, UBYTE bank) {
+  UBYTE i, k;
   const actor_t* scene_actors;
   const trigger_t* scene_triggers;
   const far_ptr_t* scene_sprite_ptrs;
-  const spritesheet_t* scene_sprite;
-  const far_ptr_t far_scene_actors;
-  const far_ptr_t far_scene_triggers;
-  const far_ptr_t far_scene_sprites;
-  const far_ptr_t far_scene = TO_FAR_PTR(scene_0);
+  far_ptr_t far_scene_actors;
+  far_ptr_t far_scene_triggers;
+  far_ptr_t far_scene_sprites;
 
   // Load scene
-  SWITCH_ROM_MBC1(far_scene.bank);
-  scene = (scene_t*)far_scene.ptr;
+  SWITCH_ROM_MBC1(bank);
   far_scene_actors = scene->actors;
   far_scene_triggers = scene->triggers;
   far_scene_sprites = scene->sprites;

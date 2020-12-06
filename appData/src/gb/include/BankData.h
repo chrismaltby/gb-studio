@@ -11,10 +11,6 @@ typedef struct far_ptr_t {
     void * ptr;
 } far_ptr_t;
 
-extern const void __bank_font_image;
-extern const unsigned char font_image[];
-
-
 #define BankDataPtr(bank) ((UBYTE *)0x4000)
 
 typedef struct _BankPtr {

@@ -881,17 +881,17 @@ void Script_ActorSetCollisions_b() {
  *   arg0: Emote Id
  */
 void Script_ActorSetEmote_b() {
-  unsigned char* emote_ptr;
-  UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
-  emote_timer = 1;
-  active_script_ctx.script_update_fn = ScriptUpdate_Emote;
-  emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
-  SetBankedSpriteData(EMOTE_SPRITE, 4,
-                      emote_ptr + ((UWORD)script_cmd_args[0] * 64), EMOTES_SPRITE_BANK);
-  set_sprite_prop(0, palette);
-  set_sprite_prop(1, palette);
-  set_sprite_tile(0, EMOTE_SPRITE);
-  set_sprite_tile(1, EMOTE_SPRITE + 2);
+  // unsigned char* emote_ptr;
+  // UBYTE palette = actors[active_script_ctx.script_actor].palette_index;
+  // emote_timer = 1;
+  // active_script_ctx.script_update_fn = ScriptUpdate_Emote;
+  // emote_ptr = (BankDataPtr(EMOTES_SPRITE_BANK)) + EMOTES_SPRITE_BANK_OFFSET;
+  // SetBankedSpriteData(EMOTE_SPRITE, 4,
+  //                     emote_ptr + ((UWORD)script_cmd_args[0] * 64), EMOTES_SPRITE_BANK);
+  // set_sprite_prop(0, palette);
+  // set_sprite_prop(1, palette);
+  // set_sprite_tile(0, EMOTE_SPRITE);
+  // set_sprite_tile(1, EMOTE_SPRITE + 2);
 }
 
 /*

@@ -75,15 +75,19 @@ export default async (
     `${PACK} -b 2 -c ${objFiles
       .filter(
         (f) =>
-          f.indexOf("font_image") > -1 ||
-          f.indexOf("tileset_") > -1 ||
-          f.indexOf("palette_") > -1 ||
-          f.indexOf("background_") > -1 ||
-          f.indexOf("spritesheet_") > -1 ||
-          f.indexOf("avatar_") > -1 ||
-          f.indexOf("scene_") > -1
+          f.indexOf("gbt_player") === -1
+          // f.indexOf("font_image") > -1 ||
+          // f.indexOf("frame_image") > -1 ||
+          // f.indexOf("cursor_image") > -1 ||
+          // f.indexOf("emotes_image") > -1 ||
+          // f.indexOf("tileset_") > -1 ||
+          // f.indexOf("palette_") > -1 ||
+          // f.indexOf("background_") > -1 ||
+          // f.indexOf("spritesheet_") > -1 ||
+          // f.indexOf("avatar_") > -1 ||
+          // f.indexOf("scene_") > -1
         )
-      .join(" ")} obj/ScriptRunner_b.o obj/Actor_b.o obj/Trigger_b.o obj/Projectiles_b.o obj/Sprite_b.o obj/Scroll_b.o obj/FadeManager_b.o obj/UI_b.o obj/UI_a.o obj/TopDown.o obj/Adventure.o obj/Platform.o obj/PointNClick.o obj/Shmup.o`
+      .join(" ")}`
   );
 
   addCommand(

@@ -8,6 +8,9 @@
 #include "Input.h"
 #include "data/data_ptrs.h"
 #include "Math.h"
+#include "data/font_image.h"
+#include "data/frame_image.h"
+#include "data/cursor_image.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -37,7 +40,10 @@ const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x
 
 const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 
-const far_ptr_t far_font_data = TO_FAR_PTR(font_image);
+const far_ptr_t far_font_image = TO_FAR_PTR(font_image);
+const far_ptr_t far_frame_image = TO_FAR_PTR(frame_image);
+const far_ptr_t far_cursor_image = TO_FAR_PTR(cursor_image);
+
 
 // The current in progress text speed.
 // Reset to global value from text_speed each time a dialogue window is opened but can be controlled
@@ -49,8 +55,6 @@ void UIDrawMenuCursor_b();
 UBYTE GetToken_b(unsigned char * src, unsigned char term, UWORD* res) __preserves_regs(b, c) __banked;
 
 void UIInit_b() __banked {
-  UBYTE* ptr;
-
 #ifdef CGB
   VBK_REG = 1;
   fill_win_rect(0, 0, 20, 18, ui_bkg_tile);
@@ -60,14 +64,12 @@ void UIInit_b() __banked {
   UISetPos(0, 144);
 
   // Load frame tiles from data bank
-  ptr = (BankDataPtr(FRAME_BANK)) + FRAME_BANK_OFFSET;
-  SetBankedBkgData(192, 9, ptr, FRAME_BANK);
+  SetBankedBkgData(192, 9, (UWORD)far_frame_image.ptr, far_frame_image.bank);
 
   set_bkg_data(ui_while_tile, 1, ui_white);
   set_bkg_data(ui_black_tile, 1, ui_black);
 
-  ptr = (BankDataPtr(CURSOR_BANK)) + CURSOR_BANK_OFFSET;
-  SetBankedBkgData(0xCB, 1, ptr, CURSOR_BANK);
+  SetBankedBkgData(0xCB, 1, far_cursor_image.ptr, far_cursor_image.bank);
 }
 
 void UIReset_b() __banked {
@@ -214,7 +216,6 @@ void UIDrawTextBufferChar_b() {
   UBYTE i, text_remaining, word_len;
   UBYTE text_size;
   UBYTE tile;
-  UBYTE* ptr;
   UINT16 id;
 
   if (text_wait != 0) {
@@ -233,9 +234,6 @@ void UIDrawTextBufferChar_b() {
     }
 
     letter = text_lines[text_count] - 32;
-
-    // Clear tile data ready for text
-    ptr = BankDataPtr(FONT_BANK) + FONT_BANK_OFFSET;
 
     // Determine if text can fit on line
     text_remaining = 18 - text_x;
@@ -256,7 +254,7 @@ void UIDrawTextBufferChar_b() {
     if (text_lines[text_count] >= ' ') {
       i = text_tile_count + avatar_enabled * 4;
 
-      SetBankedBkgData(TEXT_BUFFER_START + i, 1, (UWORD)far_font_data.ptr + (letter * 16), far_font_data.bank);
+      SetBankedBkgData(TEXT_BUFFER_START + i, 1, (UWORD)far_font_image.ptr + (letter * 16), far_font_image.bank);
 
       tile = TEXT_BUFFER_START + i;
       id = (UINT16)GetWinAddr() +

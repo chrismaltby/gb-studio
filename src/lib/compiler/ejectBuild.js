@@ -76,19 +76,16 @@ const ejectBuild = async ({
 
   for (const filename in compiledData.files) {
     if (filename.endsWith(".h")) {
-      progress(`Generate header: ${filename}`);
       await fs.writeFile(
         `${outputRoot}/include/data/${filename}`,
         compiledData.files[filename]
       );
     } else if (filename.endsWith(".o")) {
-      progress(`Generate object file: ${filename}`);
       await fs.writeFile(
         `${outputRoot}/obj/${filename}`,
         compiledData.files[filename]
       );      
     } else {
-      progress(`Generate data file: ${filename}`);
       await fs.writeFile(
         `${outputRoot}/src/data/${filename}`,
         compiledData.files[filename]

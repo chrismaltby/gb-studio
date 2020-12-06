@@ -30,6 +30,8 @@ UINT8 state_running = 0;
 UINT8 vbl_count = 0;
 INT16 old_scroll_x, old_scroll_y;
 UINT8 music_mute_frames = 0;
+far_ptr_t current_scene;
+far_ptr_t next_scene;
 
 extern SCENE_STATE scene_stack;
 
@@ -165,7 +167,8 @@ int core_start() {
   player.anim_speed = start_player_anim_speed;
 
   state_running = 0;
-  next_state = start_scene_index;
+  memcpy(&next_scene, &start_scene, sizeof(far_ptr_t));
+
   game_time = 0;
   scene_type = 0;
 
@@ -247,7 +250,8 @@ int core_start() {
     }
 
     state_running = 1;
-    current_state = next_state;
+    // current_state = next_state;
+    memcpy(&current_scene, &next_scene, sizeof(far_ptr_t));
 
     // Reset scroll target and camera
     scroll_target = 0;
@@ -261,7 +265,7 @@ int core_start() {
     //OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
     UIInit();
-    LoadScene(current_state);
+    LoadScene(current_scene.ptr, current_scene.bank);
 
     // Run scene type init function
     // SWITCH_ROM_MBC1(stateBanks[scene_type]);

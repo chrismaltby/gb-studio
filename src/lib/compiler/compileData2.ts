@@ -88,21 +88,22 @@ ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol};`
   );
 
-const sceneSymbol = (sceneIndex: number): string => `scene_${sceneIndex}`;
+export const sceneSymbol = (sceneIndex: number): string =>
+  `scene_${sceneIndex}`;
 
-const sceneActorsSymbol = (sceneIndex: number): string =>
+export const sceneActorsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_actors`;
 
-const sceneTriggersSymbol = (sceneIndex: number): string =>
+export const sceneTriggersSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_triggers`;
 
-const sceneSpritesSymbol = (sceneIndex: number): string =>
+export const sceneSpritesSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_sprites`;
 
-const sceneCollisionsSymbol = (sceneIndex: number): string =>
+export const sceneCollisionsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_collisions`;
 
-const sceneColorsSymbol = (sceneIndex: number): string =>
+export const sceneColorsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_colors`;
 
 export const toStructData = <T extends {}>(
@@ -501,5 +502,29 @@ export const compilePaletteHeader = (palette: any, paletteIndex: number) =>
   toDataHeader(
     DATA_TYPE,
     paletteSymbol(paletteIndex),
-    `// Palette: ${paletteIndex}\n`
+    `// Palette: ${paletteIndex}`
   );
+
+export const compileFontImage = (data: any) =>
+  toArrayDataFile(DATA_TYPE, "font_image", `// Font`, data, 16);
+
+export const compileFontImageHeader = (data: any) =>
+  toDataHeader(DATA_TYPE, "font_image", `// Font`);
+
+export const compileFrameImage = (data: any) =>
+  toArrayDataFile(DATA_TYPE, "frame_image", `// Frame`, data, 16);
+
+export const compileFrameImageHeader = (data: any) =>
+  toDataHeader(DATA_TYPE, "frame_image", `// Frame`);
+
+export const compileCursorImage = (data: any) =>
+  toArrayDataFile(DATA_TYPE, "cursor_image", `// Cursor`, data, 16);
+
+export const compileCursorImageHeader = (data: any) =>
+  toDataHeader(DATA_TYPE, "cursor_image", `// Cursor`);
+
+export const compileEmotesImage = (data: any) =>
+  toArrayDataFile(DATA_TYPE, "emotes_image", `// Emotes`, data, 16);
+
+export const compileEmotesImageHeader = (data: any) =>
+  toDataHeader(DATA_TYPE, "emotes_image", `// Emotes`);

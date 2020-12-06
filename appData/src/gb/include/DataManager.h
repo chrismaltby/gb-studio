@@ -81,6 +81,6 @@ UBYTE LoadSprite(UBYTE sprite_offset, const spritesheet_t *sprite, UBYTE bank);
  * 
  * @param index scene index in data_ptrs.h
  */
-void LoadScene(UINT16 index);
+void LoadScene(const scene_t *scene, UBYTE bank);
 
 #endif
