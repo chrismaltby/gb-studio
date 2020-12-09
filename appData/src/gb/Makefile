@@ -22,7 +22,7 @@ DATA = $(foreach dir,src/data,$(notdir $(wildcard $(dir)/*.c)))
 MUSIC = $(foreach dir,src/music,$(notdir $(wildcard $(dir)/*.c))) 
 
 OBJS = $(CLASSES:%.c=$(OBJDIR)/%.o) $(ASM:%.s=$(OBJDIR)/%.o) $(CORE_CLASSES:%.c=$(OBJDIR)/%.o) $(STATE_CLASSES:%.c=$(OBJDIR)/%.o) $(DATA:%.c=$(OBJDIR)/%.o) $(MUSIC:%.c=$(OBJDIR)/%.o) 
-DATA_OBJS = $(filter-out obj/bank_% obj/data_ptrs%, $(DATA:%.c=$(OBJDIR)/%.o))
+PACK_OBJS = $(filter-out obj/gbt_player%, $(OBJS))
 
 all:	$(ROM_BUILD_DIR)/game.gb
 
@@ -57,7 +57,7 @@ $(OBJDIR)/%.o:	src/core/%.s
 
 $(ROM_BUILD_DIR)/%.gb:	$(OBJS)
 	mkdir -p $(ROM_BUILD_DIR)
-	$(eval CART_SIZE=$(shell $(GBSPACK) -b 2 -c $(DATA_OBJS)))
+	$(eval CART_SIZE=$(shell $(GBSPACK) -b 3 -c $(PACK_OBJS)))
 	$(CC) $(LFLAGS) -Wl-yo$(CART_SIZE) -Iinclude -o $@ $^	
 
 clean:

@@ -111,8 +111,8 @@ const compile = async (
     tmpPath = "/tmp",
     bankSize = GB_MAX_BANK_SIZE,
     bankOffset = MIN_DATA_BANK,
-    progress = () => {},
-    warnings = () => {},
+    progress = (_msg) => {},
+    warnings = (_msg) => {},
   } = {}
 ) => {
   const output = {};

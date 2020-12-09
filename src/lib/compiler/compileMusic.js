@@ -20,8 +20,8 @@ const compileMusic = async ({
   musicBanks = [],
   buildRoot = "/tmp",
   projectRoot,
-  progress = () => {},
-  warnings = () => {},
+  progress = (_msg) => {},
+  warnings = (_msg) => {},
 } = {}) => {
   const buildToolsPath = await ensureBuildTools();
   const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);

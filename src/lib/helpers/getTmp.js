@@ -1,12 +1,17 @@
 import fs from "fs-extra";
 import os from "os";
-import settings from "electron-settings";
+import isElectron from "./isElectron";
 
 export default (create = true) => {
   let tmpPath = os.tmpdir();
-  if (settings.get("tmpDir")) {
-    tmpPath = settings.get("tmpDir");
-  } else if (
+  if (isElectron()) {
+    // eslint-disable-next-line global-require
+    const settings = require("electron-settings");
+    if (settings.get("tmpDir")) {
+      tmpPath = settings.get("tmpDir");
+    }
+  }
+  if (
     tmpPath.indexOf(" ") === -1 &&
     tmpPath.indexOf(".itch") === -1 &&
     (process.platform !== "win32" || tmpPath.length < 35)

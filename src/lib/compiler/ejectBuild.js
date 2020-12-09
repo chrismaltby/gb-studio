@@ -24,8 +24,8 @@ const ejectBuild = async ({
   outputRoot = "/tmp",
   projectRoot = "/tmp",
   compiledData,
-  progress = () => {},
-  warnings = () => {},
+  progress = (_msg) => {},
+  warnings = (_msg) => {},
 } = {}) => {
   const corePath = `${engineRoot}/${projectType}`;
   const localCorePath = `${projectRoot}/assets/engine`;

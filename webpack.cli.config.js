@@ -13,11 +13,6 @@ module.exports = {
     __dirname: false,
     __filename: false,
   },
-  watch: true,
-  watchOptions: {
-    poll: true,
-    ignored: /node_modules/
-  },
   entry: Path.resolve(__dirname, "./src/bin/gb-studio-cli.ts"),
   output: {
     filename: 'gb-studio-cli.js',
