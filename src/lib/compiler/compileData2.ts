@@ -226,7 +226,11 @@ ${data}
 export const compileScene = (
   scene: any,
   sceneIndex: number,
-  { bgPalette, actorsPalette }: { bgPalette: number; actorsPalette: number }
+  {
+    color,
+    bgPalette,
+    actorsPalette,
+  }: { color: boolean; bgPalette: number; actorsPalette: number }
 ) =>
   toStructDataFile(
     SCENE_TYPE,
@@ -239,9 +243,11 @@ export const compileScene = (
       type: scene.type ? parseInt(scene.type, 10) : 0,
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
-      colors: toFarPtr(sceneColorsSymbol(sceneIndex)),
-      palette: toFarPtr(paletteSymbol(bgPalette)),
-      sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),
+      colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
+      palette: color ? toFarPtr(paletteSymbol(bgPalette)) : undefined,
+      sprite_palette: color
+        ? toFarPtr(paletteSymbol(actorsPalette))
+        : undefined,
       n_actors: scene.actors.length,
       n_triggers: scene.triggers.length,
       n_sprites: scene.sprites.length,
@@ -262,9 +268,9 @@ export const compileScene = (
     ([] as string[]).concat(
       backgroundSymbol(scene.backgroundIndex),
       sceneCollisionsSymbol(sceneIndex),
-      sceneColorsSymbol(sceneIndex),
-      paletteSymbol(bgPalette),
-      paletteSymbol(actorsPalette),
+      color ? sceneColorsSymbol(sceneIndex) : [],
+      color ? paletteSymbol(bgPalette) : [],
+      color ? paletteSymbol(actorsPalette) : [],
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : []

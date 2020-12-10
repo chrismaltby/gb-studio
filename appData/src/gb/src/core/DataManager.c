@@ -161,7 +161,7 @@ void LoadScene(const scene_t *scene, UBYTE bank) {
   LoadImage(scene->background.ptr, scene->background.bank);
   LoadPalette(scene->palette.ptr, scene->palette.bank);
   LoadSpritePalette(scene->sprite_palette.ptr, scene->sprite_palette.bank);
-  LoadPlayerSpritePalette(start_player_palette.ptr, start_player_palette.bank);
+  // LoadPlayerSpritePalette(start_player_palette.ptr, start_player_palette.bank);
 
   SpritePoolReset();
   ScriptCtxPoolReset();

@@ -129,6 +129,7 @@ const compile = async (
   });
 
   const cartType = projectData.settings.cartType;
+  const customColorsEnabled = projectData.settings.customColorsEnabled;
 
   const precompiledEngineFields = precompileEngineFields(engineFields);
 
@@ -394,7 +395,7 @@ const compile = async (
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
   
-    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette});
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette, color: customColorsEnabled});
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
     output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(scene, sceneIndex, collisions);
     output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(scene, sceneIndex);
@@ -581,22 +582,19 @@ const compile = async (
   , 500);
 
   output[`data_ptrs.h`] =
-
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "BankData.h"\n` +
     `#include "VM.h"\n\n` +
     `#define NUM_VARIABLES ${variablesLen}\n` +
     `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
     `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
-    // `extern const unsigned int music_tracks[];\n` +
-    // `extern const unsigned char music_banks[];\n` +
     `extern int start_scene_x;\n` +
     `extern int start_scene_y;\n` +
     `extern char start_scene_dir_x;\n` +
     `extern char start_scene_dir_y;\n` +
     `extern far_ptr_t start_scene;\n` +
     `extern far_ptr_t start_player_sprite;\n` +
-    `extern far_ptr_t start_player_palette;\n` +
+    (customColorsEnabled ? `extern far_ptr_t start_player_palette;\n` : "") +
     `extern unsigned char start_player_move_speed;\n` +
     `extern unsigned char start_player_anim_speed;\n\n` +
     `// Engine fields\n` +
@@ -610,44 +608,19 @@ const compile = async (
     `#include "data/data_ptrs.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
     `#include "data/${spriteSheetSymbol(playerSpriteIndex)}.h"\n` +
-    `#include "data/${paletteSymbol(0)}.h"\n\n` +
-    // Object.keys(dataPtrs)
-    //   .map((name) => {
-    //     return `const BankPtr ${name}[] = {\n${dataPtrs[name]
-    //       .map((dataPtr) => {
-    //         return `{${decHex(dataPtr.bank)},${decHex16(dataPtr.offset)}}`;
-    //       })
-    //       .join(",")}\n};\n`;
-    //   })
-    //   .join(`\n`) +
-    // `\n` +
-    // `const unsigned int music_tracks[] = {\n` +
-    // `\n};\n\n` +
-    // `const unsigned char music_banks[] = {\n` +
-    // `\n};\n\n` +
+    (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
+    `\n` +
     `int start_scene_x = ${decHex16((startX || 0) * 8)};\n` +
     `int start_scene_y = ${decHex16((startY || 0) * 8)};\n` +
     `char start_scene_dir_x = ${startDirectionX};\n` +
     `char start_scene_dir_y = ${startDirectionY};\n` +
     `far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
     `far_ptr_t start_player_sprite = ${toFarPtr(spriteSheetSymbol(playerSpriteIndex))};\n` +
-    `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` +
+    (customColorsEnabled ? `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
     `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
-
-  // output[`banks.h`] = bankHeader;
-
-  // bankData.forEach((bankDataBank, index) => {
-  //   const bank = bankDataBank.match(/pragma bank ([0-9]+)/)[1];
-  //   output[`bank_${bank}.c`] = bankDataBank;
-  // });
-/* 
-  bankObjectData.forEach((bankDataBank, index) => {
-    const bank = bankDataBank.match(/M bank_([0-9]+)/)[1];
-    output[`bank_${bank}.o`] = bankDataBank;
-  });*/
 
   const maxDataBank = banked.getMaxWriteBank();
 
