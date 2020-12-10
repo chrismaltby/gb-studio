@@ -1,48 +1,33 @@
 import { copy } from "fs-extra";
-import BankedData, {
-  MIN_DATA_BANK,
-  GB_MAX_BANK_SIZE,
-  MBC1,
-  MBC5,
-} from "./bankedData";
 import {
   walkScenesEvents,
   eventHasArg,
   walkSceneEvents,
 } from "../helpers/eventSystem";
 import compileImages from "./compileImages";
-import { indexBy, flatten } from "../helpers/array";
+import { indexBy } from "../helpers/array";
 import ggbgfx from "./ggbgfx";
 import {
   hi,
   lo,
   decHex16,
-  decHex,
   convertHexTo15BitDec,
 } from "../helpers/8bit";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   EVENT_TEXT,
   EVENT_MUSIC_PLAY,
-  EVENT_CHOICE,
   EVENT_END,
   EVENT_PLAYER_SET_SPRITE,
   EVENT_PALETTE_SET_BACKGROUND,
   EVENT_PALETTE_SET_UI
 } from "./eventTypes";
-import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, SPRITE_TYPE_STATIC, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
+import { projectTemplatesRoot, MAX_ACTORS, MAX_TRIGGERS, DMG_PALETTE, TMP_VAR_1, TMP_VAR_2 } from "../../consts";
 import {
-  dirDec,
   dirToXDec,
   dirToYDec,
-  moveSpeedDec,
   animSpeedDec,
-  spriteTypeDec,
-  actorFramesPerDir,
-  isMBC1,
-  collisionGroupDec,
 } from "./helpers";
-import { textNumLines } from "../helpers/trimlines";
 import compileSprites from "./compileSprites";
 import compileAvatars from "./compileAvatars";
 import { precompileEngineFields } from "../helpers/engineFields";
@@ -109,8 +94,6 @@ const compile = async (
     projectRoot = "/tmp",
     engineFields = [],
     tmpPath = "/tmp",
-    bankSize = GB_MAX_BANK_SIZE,
-    bankOffset = MIN_DATA_BANK,
     progress = (_msg) => {},
     warnings = (_msg) => {},
   } = {}
@@ -128,23 +111,11 @@ const compile = async (
     warnings,
   });
 
-  const cartType = projectData.settings.cartType;
   const customColorsEnabled = projectData.settings.customColorsEnabled;
 
   const precompiledEngineFields = precompileEngineFields(engineFields);
 
-  const banked = new BankedData({
-    bankSize,
-    bankOffset,
-    bankController: isMBC1(cartType) ? MBC1 : MBC5,
-  });
-
   // Add UI data
-  // const fontImagePtr = banked.push(precompiled.fontTiles);
-  // const frameImagePtr = banked.push(precompiled.frameTiles);
-  // const cursorImagePtr = banked.push(precompiled.cursorTiles);
-  // const emotesSpritePtr = banked.push(precompiled.emotesSprite);
-
   output["font_image.c"] = compileFontImage(precompiled.fontTiles);
   output["font_image.h"] = compileFontImageHeader(precompiled.fontTiles);
   output["frame_image.c"] = compileFrameImage(precompiled.frameTiles);
@@ -160,6 +131,7 @@ const compile = async (
   await new Promise((resolve) => setTimeout(resolve, 20));
 
   // Add event data
+  let scriptCounter = 0;
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
     const compileScript = (
       script,
@@ -169,7 +141,7 @@ const compile = async (
       loop,
       alreadyCompiled,
     ) => {
-      return compileEntityEvents(script, {
+      const script = compileEntityEvents(scriptCounter, script, {
         scene,
         sceneIndex,
         scenes: precompiled.sceneData,
@@ -184,61 +156,59 @@ const compile = async (
         entityType,
         entityIndex,
         entity,
-        banked,
         warnings,
         loop,
         engineFields: precompiledEngineFields,
         output: alreadyCompiled || [],
       });
+      output[`script_${scriptCounter}.s`] = script;
+      return scriptCounter++;
     };
 
     const bankSceneEvents = (scene, sceneIndex) => {
-      const compiledSceneScript = [];
 
-      // Compile start scripts for actors
-      scene.actors.forEach((actor, actorIndex) => {
-        const actorStartScript = (actor.startScript || []).filter(
-          (event) => event.command !== EVENT_END
-        );
-        compileScript(
-          actorStartScript,
-          "actor",
-          actor,
-          actorIndex,
-          false,
-          compiledSceneScript
-        );
-        compiledSceneScript.splice(-1);
-      });
+      
+      // // Compile start scripts for actors
+      // scene.actors.forEach((actor, actorIndex) => {
+      //   const actorStartScript = (actor.startScript || []).filter(
+      //     (event) => event.command !== EVENT_END
+      //   );
+      //   compileScript(
+      //     actorStartScript,
+      //     "actor",
+      //     actor,
+      //     actorIndex,
+      //     false,
+      //     compiledSceneScript
+      //   );
+      //   compiledSceneScript.splice(-1);
+      // });
 
       // Compile scene start script
-      compileScript(
+      return compileScript(
         scene.script,
         "scene",
         scene,
         sceneIndex,
-        false,
-        compiledSceneScript
+        false
       );
 
-      // output[`scene_${sceneIndex}_script_init.c`] = dataArrayToC(`scene_${sceneIndex}_script_init`, compiledSceneScript);
-
-      return banked.push(compiledSceneScript);
     };
 
     const bankEntityEvents = (entityType, entityScriptField = "script") => (entity, entityIndex) => {
       if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
-        return {
-          bank: 0,
-          offset: 0
-        };
+        return -1;
       }
       // output[`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}.c`] = dataArrayToC(`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}`, 
       //   compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
       // );
 
-      return banked.push(
-        compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
+      return compileScript(
+        entity[entityScriptField],
+        entityType,
+        entity,
+        entityIndex,
+        entityScriptField === "updateScript"
       );
     };
 
@@ -256,26 +226,7 @@ const compile = async (
     };
   });
 
-
-  // Strings
-  const stringPtrs = precompiled.strings.map((string) => {
-    const ascii = [];
-    // Number of lines in string
-    ascii.push(textNumLines(string));
-    for (let i = 0; i < string.length; i++) {
-      const char = string.charCodeAt(i);
-      if (char < 256) {
-        ascii.push(string.charCodeAt(i));
-      }
-    }
-    ascii.push(0);
-    return banked.push(ascii);
-  });
-
-  // Add tileset data
-  const tileSetPtrs = precompiled.usedTilesets.map((tileset, tilesetIndex) => {
-    return banked.push([].concat(Math.ceil(tileset.length / 16), tileset));
-  });
+  console.log(eventPtrs)
 
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
     output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
@@ -283,19 +234,6 @@ const compile = async (
   });
   
   // Add palette data
-  const palettePtrs = precompiled.usedPalettes.map((palette) => {
-    const paletteData = palette.reduce((memo, colors) => {
-      return memo.concat(
-        colors.reduce((colorMemo, color) => {
-          const colorVal = convertHexTo15BitDec(color);
-          return colorMemo.concat([lo(colorVal), hi(colorVal)]);
-        }, [])
-      );
-    }, []);
-
-    return banked.push(paletteData);
-  });
-
   precompiled.usedPalettes.forEach((palette, paletteIndex) => {
     const paletteData = palette.length > 0 ? palette.reduce((memo, colors) => {
       return memo.concat(
@@ -311,38 +249,18 @@ const compile = async (
   });
 
   // Add background map data
-  const backgroundPtrs = precompiled.usedBackgrounds.map((background) => {
-    // banked.nextBank(); // @todo remove this
-    return banked.push(
-      [].concat(
-        background.tilesetIndex,
-        Math.floor(background.width),
-        Math.floor(background.height),
-        background.data
-      )
-    );
-  });
-
   precompiled.usedBackgrounds.forEach((background, backgroundIndex) => {
     output[`background_${backgroundIndex}.c`] = compileBackground(background, backgroundIndex);
     output[`background_${backgroundIndex}.h`] = compileBackgroundHeader(background, backgroundIndex);
   });
 
   // Add sprite data
-  const spritePtrs = precompiled.usedSprites.map((sprite) => {
-    return banked.push([].concat(sprite.frames, sprite.data));
-  });
-
   precompiled.usedSprites.forEach((sprite, spriteIndex) => {
     output[`spritesheet_${spriteIndex}.c`] = compileSpriteSheet(sprite, spriteIndex);
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
   });
 
   // Add avatar data
-  const avatarPtrs = precompiled.usedAvatars.map((avatar) => {
-    return banked.push([].concat(avatar.frames, avatar.data));
-  });
-
   precompiled.usedAvatars.forEach((avatar, avatarIndex) => {
     output[`avatar_${avatarIndex}.c`] = dataArrayToC(`avatar_${avatarIndex}`, [].concat(
       avatar.frames,
@@ -350,34 +268,7 @@ const compile = async (
     ));
   });
 
-  // Add scene collisions data
-  const collisionPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
-    const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
-
-    const collisions = Array(collisionsLength)
-      .fill(0)
-      .map((_, index) => {
-        return (scene.collisions && scene.collisions[index]) || 0;
-      });
-
-    return banked.push(collisions);
-  });
-
-  // Add scene tile colors data
-  const backgroundAttrPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
-    const tileColorsLength = Math.ceil(sceneImage.width * sceneImage.height);
-
-    const tileColors = Array(tileColorsLength)
-      .fill(0)
-      .map((_, index) => {
-        return (scene.tileColors && scene.tileColors[index]) || 0;
-      });
-
-    return banked.push(tileColors);
-  });
-
+  // Add scene data
   precompiled.sceneData.forEach((scene, sceneIndex) => {
     const sceneImage = precompiled.usedBackgrounds[scene.backgroundIndex];
     const collisionsLength = Math.ceil(sceneImage.width * sceneImage.height);
@@ -416,88 +307,6 @@ const compile = async (
     }    
   });
 
-  // Add scene data
-  const scenePtrs = precompiled.sceneData.map((scene, sceneIndex) => {
-    // banked.nextBank(); // @todo remove this
-
-    const sceneBgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
-    const sceneActorPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
-
-    return banked.push(
-      [].concat(
-        hi(scene.backgroundIndex),
-        lo(scene.backgroundIndex),
-        hi(sceneBgPalette),
-        lo(sceneBgPalette),
-        hi(sceneActorPalette),
-        lo(sceneActorPalette),
-        scene.type ? parseInt(scene.type, 10) : 0,
-        scene.sprites.length,
-        scene.actors.length,
-        scene.triggers.length,
-        eventPtrs[sceneIndex].start.bank, // Event bank ptr
-        lo(eventPtrs[sceneIndex].start.offset), // Event offset ptr
-        hi(eventPtrs[sceneIndex].start.offset),
-        flatten(
-          scene.sprites.map((spriteIndex) => [hi(spriteIndex), lo(spriteIndex)])
-        ),
-        compileActors(scene.actors, {
-          eventPtrs: eventPtrs[sceneIndex].actors,
-          movementPtrs: eventPtrs[sceneIndex].actorsMovement,
-          hit1Ptrs: eventPtrs[sceneIndex].actorsHit1,
-          hit2Ptrs: eventPtrs[sceneIndex].actorsHit2,
-          hit3Ptrs: eventPtrs[sceneIndex].actorsHit3,
-          sprites: precompiled.usedSprites,
-          scene,
-          actorPaletteIndexes: precompiled.actorPaletteIndexes
-        }),
-        compileTriggers(scene.triggers, {
-          eventPtrs: eventPtrs[sceneIndex].triggers,
-        }),
-        eventPtrs[sceneIndex].playerHit1.bank, // Player Hit 1 bank ptr
-        lo(eventPtrs[sceneIndex].playerHit1.offset), // Player Hit 1 offset ptr
-        hi(eventPtrs[sceneIndex].playerHit1.offset), 
-        eventPtrs[sceneIndex].playerHit2.bank, // Player Hit 2 bank ptr
-        lo(eventPtrs[sceneIndex].playerHit2.offset), // Player Hit 2 offset ptr
-        hi(eventPtrs[sceneIndex].playerHit2.offset), 
-        eventPtrs[sceneIndex].playerHit3.bank, // Player Hit 3 bank ptr
-        lo(eventPtrs[sceneIndex].playerHit3.offset), // Player Hit 3 offset ptr
-        hi(eventPtrs[sceneIndex].playerHit3.offset),                 
-        // collisions
-      )
-    );
-  });
-
-  // Replace ptrs in banked data
-  banked.mutate((data) => {
-    if (typeof data === "number") {
-      return data;
-    }
-    if (typeof data === "string" && data.startsWith("__REPLACE")) {
-      if (data.startsWith("__REPLACE:STRING_BANK:")) {
-        const index = parseInt(data.replace(/.*:/, ""), 10);
-        return stringPtrs[index].bank;
-      }
-      if (data.startsWith("__REPLACE:STRING_HI:")) {
-        const index = parseInt(data.replace(/.*:/, ""), 10);
-        return hi(stringPtrs[index].offset);
-      }
-      if (data.startsWith("__REPLACE:STRING_LO:")) {
-        const index = parseInt(data.replace(/.*:/, ""), 10);
-        return lo(stringPtrs[index].offset);
-      }
-    }
-    const value = parseInt(data, 10);
-    if (!isNaN(value)) {
-      return value;
-    }
-    if (data === null) {
-      return 0;
-    }
-    warnings(`Non numeric data found while processing banked data "${data}".`);
-    return data;
-  });
-
   let startSceneIndex = precompiled.sceneData.findIndex(
     (m) => m.id === projectData.settings.startSceneId
   );
@@ -515,38 +324,9 @@ const compile = async (
     startAnimSpeed = "3",
   } = projectData.settings;
 
-  const bankNums = banked.exportUsedBankNumbers();
-
-  const bankDataPtrs = bankNums.map((usedBank, num) => {
-    return usedBank ? `&bank_${num}_data` : 0;
-  });
-
-  const fixEmptyDataPtrs = (ptrs) => {
-    if (ptrs.length === 0) {
-      return [{ bank: 0, offset: 0 }];
-    }
-    return ptrs;
-  };
-
-  const dataPtrs = {
-    tileset_bank_ptrs: fixEmptyDataPtrs(tileSetPtrs),
-    background_bank_ptrs: fixEmptyDataPtrs(backgroundPtrs),
-    background_attr_bank_ptrs: fixEmptyDataPtrs(backgroundAttrPtrs),
-    palette_bank_ptrs: fixEmptyDataPtrs(palettePtrs),
-    sprite_bank_ptrs: fixEmptyDataPtrs(spritePtrs),
-    scene_bank_ptrs: fixEmptyDataPtrs(scenePtrs),
-    collision_bank_ptrs: fixEmptyDataPtrs(collisionPtrs),
-    avatar_bank_ptrs: fixEmptyDataPtrs(avatarPtrs),
-  };
-
-  const bankHeader = banked.exportCHeader(bankOffset);
-  const bankData = banked.exportCData(bankOffset);
-  const bankObjectData = banked.exportObjectData(bankOffset);
-
   const musicBanks = [];
   for (let i = 0; i < NUM_MUSIC_BANKS; i++) {
-    banked.currentBank++;
-    musicBanks[i] = banked.getWriteBank();
+    musicBanks[i] = 255;
   }
 
   const music = precompiled.usedMusic.map((track, index) => {
@@ -622,7 +402,7 @@ const compile = async (
     compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
-  const maxDataBank = banked.getMaxWriteBank();
+  const maxDataBank = 255;
 
   return {
     files: output,
@@ -1273,89 +1053,6 @@ export const precompileScenes = (
     };
   });
   return scenesData;
-};
-
-export const compileActors = (actors, { eventPtrs, movementPtrs, hit1Ptrs, hit2Ptrs, hit3Ptrs, sprites, actorPaletteIndexes }) => {
-  // console.log("ACTOR", actor, eventsPtr);
-  const mapSpritesLookup = {};
-  let mapSpritesIndex = 6;
-
-  // console.log({ sprites, eventPtrs });
-
-  const getSpriteOffset = (id) => {
-    if (mapSpritesLookup[id]) {
-      return mapSpritesLookup[id];
-    }
-    const lookup = mapSpritesIndex;
-    mapSpritesLookup[id] = lookup;
-    const sprite = sprites.find((s) => s.id === id);
-
-    if (!sprite) {
-      return 0;
-    }
-
-    // console.log(sprites);
-    mapSpritesIndex += sprite.size / 64;
-    return lookup;
-  };
-
-
-  return flatten(
-    actors.map((actor, actorIndex) => {
-      const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
-      if (!sprite) return [];
-      const spriteFrames = sprite.frames;
-      const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
-      const initialFrame =
-        actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
-      const collisionGroup = collisionGroupDec(actor.collisionGroup);
-      return [
-        getSpriteOffset(actor.spriteSheetId), // Sprite sheet id // Should be an offset index from map sprites not overall sprites
-        actorPaletteIndexes[actor.id] || 0, // Offset into scene actor palettes
-        spriteTypeDec(actor.spriteType, spriteFrames), // Sprite Type
-        actorFrames, // Frames per direction
-        (actor.animate ? 1 : 0) + (initialFrame << 1),
-        actor.x, // X Pos
-        actor.y, // Y Pos
-        dirDec(actor.direction), // Direction
-        moveSpeedDec(actor.moveSpeed),
-        animSpeedDec(actor.animSpeed),
-        (actor.isPinned ? 1 : 0) + (collisionGroup << 1),
-        eventPtrs[actorIndex].bank, // Event bank ptr
-        lo(eventPtrs[actorIndex].offset), // Event offset ptr
-        hi(eventPtrs[actorIndex].offset),
-        movementPtrs[actorIndex].bank, // Movement script bank ptr
-        lo(movementPtrs[actorIndex].offset), // Movement script offset ptr
-        hi(movementPtrs[actorIndex].offset),
-        hit1Ptrs[actorIndex].bank, // Hit collision group 1 bank ptr
-        lo(hit1Ptrs[actorIndex].offset), // Hit collision group 1 offset ptr
-        hi(hit1Ptrs[actorIndex].offset),   
-        hit2Ptrs[actorIndex].bank, // Hit collision group 2 bank ptr
-        lo(hit2Ptrs[actorIndex].offset), // Hit collision group 2 offset ptr
-        hi(hit2Ptrs[actorIndex].offset),   
-        hit3Ptrs[actorIndex].bank, // Hit collision group 3 bank ptr
-        lo(hit3Ptrs[actorIndex].offset), // Hit collision group 3 offset ptr
-        hi(hit3Ptrs[actorIndex].offset)
-      ];
-    })
-  );
-};
-
-export const compileTriggers = (triggers, { eventPtrs }) => {
-  return flatten(
-    triggers.map((trigger, triggerIndex) => {
-      return [
-        trigger.x,
-        trigger.y,
-        Math.max(trigger.width, 1),
-        Math.max(trigger.height, 1),
-        trigger.trigger === "action" ? 1 : 0,
-        eventPtrs[triggerIndex].bank, // Event bank ptr
-        lo(eventPtrs[triggerIndex].offset), // Event offset ptr
-        hi(eventPtrs[triggerIndex].offset),
-      ];
-    })
-  );
 };
 
 // #endregion

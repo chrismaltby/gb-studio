@@ -69,6 +69,7 @@ const getVariableIndex = (variable: string, variables: string[]) => {
 // ------------------------
 
 class ScriptBuilder {
+  byteSize: number;
   output: ScriptOutput;
   options: ScriptBuilderOptions;
   dependencies: string[];
@@ -82,6 +83,7 @@ class ScriptBuilder {
     output: ScriptOutput,
     options: Partial<ScriptBuilderOptions> & Pick<ScriptBuilderOptions, "scene">
   ) {
+    this.byteSize = 0;
     this.output = output;
     this.options = {
       ...options,
@@ -112,7 +114,7 @@ ${
 ___bank_${name} = 255
 .globl ___bank_${name}
 
-${name}::
+_${name}::
 ${this.output.join("\n")}
 `;
   };
@@ -211,7 +213,7 @@ ${this.output.join("\n")}
   };
 
   _string = (str: string) => {
-    this._addCmd(`.asciz "${str.replace(/"/, '\\"')}"`);
+    this._addCmd(`.asciz "${str.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`);
   };
 
   _label = (label: string) => {
@@ -274,6 +276,15 @@ ${this.output.join("\n")}
     this._setConst("^/ACTOR + 3/", useCollisions ? 1 : 0);
     this._setConst("^/ACTOR + 4/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
+    this._assertStackNeutral(stackPtr);
+  };
+
+  // Timing
+
+  nextFrameAwait = () => {
+    const stackPtr = this.stackPtr;
+    this._stackPush(1);
+    this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
   };
 

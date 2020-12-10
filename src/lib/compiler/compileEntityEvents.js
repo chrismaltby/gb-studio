@@ -1,4 +1,4 @@
-import ScriptBuilder from "./scriptBuilder";
+import ScriptBuilder from "./scriptBuilder2";
 import { isVariableField, isPropertyField } from "../helpers/eventSystem";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
@@ -10,9 +10,8 @@ const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
 // and what the args are for each (to build forms)
 // and what the command code is?
 
-const compileEntityEvents = (input = [], options = {}) => {
+const compileEntityEvents = (scriptIndex, input = [], options = {}) => {
   const events = require("../events").default;
-  
   const {
     output = [],
     branch = false,
@@ -22,41 +21,40 @@ const compileEntityEvents = (input = [], options = {}) => {
     entityType,
     entityIndex,
     warnings,
-    loop
+    loop,
   } = options;
   const helpers = {
     ...options,
     isVariableField,
     isPropertyField,
     compileEvents: (childInput, eventOutput = null, eventBranch = true) =>
-      compileEntityEvents(childInput, {
+      compileEntityEvents(scriptIndex, childInput, {
         ...options,
         output: eventOutput || output,
         branch: eventBranch,
-        labels: eventBranch ? options.labels : {}
+        labels: eventBranch ? options.labels : {},
       }),
   };
-  const location = Object.assign(
-    {},
-    scene && {
+  const location = {
+    ...(scene && {
       scene: scene.name || `Scene ${sceneIndex + 1}`,
-    },
-    entityType && {
+    }),
+    ...(entityType && {
       scriptType: entityType,
-    },
-    entityType === "actor" && {
+    }),
+    ...(entityType === "actor" && {
       actor: entity.name || `Actor ${entityIndex + 1}`,
-    },
-    entityType === "trigger" && {
+    }),
+    ...(entityType === "trigger" && {
       actor: entity.name || `Trigger ${entityIndex + 1}`,
-    }
-  );
+    }),
+  };
 
   const scriptBuilder = new ScriptBuilder(output, helpers);
 
   const loopId = `loop_${Math.random()}`;
 
-  if(loop && input.length > 1) {
+  if (loop && input.length > 1) {
     scriptBuilder.labelDefine(loopId);
   }
 
@@ -68,21 +66,24 @@ const compileEntityEvents = (input = [], options = {}) => {
       continue;
     }
     if (events[command]) {
-      if (command === "EVENT_PLAYER_SET_SPRITE") {
-        if (input[i].args && input[i].args.spriteSheetId) {
-          const sprite = options.sprites.find(
-            (s) => s.id === input[i].args.spriteSheetId
-          );
-          if (sprite && sprite.numFrames > 6) {
-            warnings(
-              `Used "Set Player Sprite Sheet" event with a sprite sheet containing more than 6 frames. This may cause graphics corruption. ${JSON.stringify({
-                ...location,
-                filename: sprite.filename
-              })}`
-            );
-          }
-        }
-      }      
+      // @todo - move this to compileData
+      // if (command === "EVENT_PLAYER_SET_SPRITE") {
+      //   if (input[i].args && input[i].args.spriteSheetId) {
+      //     const sprite = options.sprites.find(
+      //       (s) => s.id === input[i].args.spriteSheetId
+      //     );
+      //     if (sprite && sprite.numFrames > 6) {
+      //       warnings(
+      //         `Used "Set Player Sprite Sheet" event with a sprite sheet containing more than 6 frames. This may cause graphics corruption. ${JSON.stringify(
+      //           {
+      //             ...location,
+      //             filename: sprite.filename,
+      //           }
+      //         )}`
+      //       );
+      //     }
+      //   }
+      // }
       try {
         events[command].compile(
           { ...input[i].args, ...input[i].children },
@@ -110,14 +111,13 @@ const compileEntityEvents = (input = [], options = {}) => {
   }
 
   if (!branch) {
-
-    if(loop && input.length > 1) {
+    if (loop && input.length > 1) {
       scriptBuilder.nextFrameAwait();
-      scriptBuilder.labelGoto(loopId);    
+      scriptBuilder.labelGoto(loopId);
     }
-    output.push(0); // End script
+    scriptBuilder.scriptEnd();
 
-    if (output.length > 16383) {
+    if (scriptBuilder.byteSize > 16383) {
       warnings(
         `This script is too big for 1 bank, was ${
           output.length
@@ -129,36 +129,9 @@ const compileEntityEvents = (input = [], options = {}) => {
         "Try splitting this script across multiple actors with *Actor invoke*."
       );
     }
-
-    for (let oi = 0; oi < output.length; oi++) {
-      if (typeof output[oi] === "string" || output[oi] < 0) {
-        const intCmd = Number(output[oi]);
-        if (Number.isInteger(intCmd) && intCmd >= 0) {
-          // If string was equivent to position integer then replace it
-          // in output otherwise
-          output[oi] = intCmd;
-        } else if (
-          !(
-            typeof output[oi] === "string" &&
-            output[oi].startsWith("__REPLACE:")
-          )
-        ) {
-          let reason = "";
-          if (String(output[oi]).startsWith("goto:")) {
-            reason = "Did you remember to define a label in the script?";
-          }
-
-          throw new Error(
-            `Found invalid command "${output[oi]}". ${reason} ${JSON.stringify(
-              location
-            )}`
-          );
-        }
-      }
-    }
   }
 
-  return output;
+  return scriptBuilder.toScriptString("SCRIPT_" + scriptIndex);
 };
 
 export default compileEntityEvents;

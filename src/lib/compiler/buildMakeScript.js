@@ -19,7 +19,7 @@ export default async (
   const PACK = platform === "win32"
     ? `..\\_gbstools\\gbspack\\gbspack`
     : `../_gbstools/gbspack/gbspack`;    
-  let CFLAGS = `-Wa-l -Iinclude`;
+  let CFLAGS = `-Wa-l -Iinclude -Wa-Iinclude`;
   let LFLAGS = `-Wa-l -Wl-m -Wl-j -Wl-yt${CART_TYPE} -Wl-ya4`;
 
   if (customColorsEnabled) {

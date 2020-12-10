@@ -2,7 +2,7 @@ CC = ../_gbstools/gbdk/bin/lcc
 GBSPACK = ../_gbstools/gbspack/gbspack
 ROM_BUILD_DIR = build/rom
 OBJDIR = obj
-CFLAGS = -Wa-l -Iinclude
+CFLAGS = -Wa-l -Iinclude -Wa-Iinclude
 LFLAGS = -Wa-l -Wl-m -Wl-j -Wl-yt27 -Wl-ya4
 
 ifdef COLOR
@@ -44,6 +44,9 @@ $(OBJDIR)/%.o:	src/states/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR)/%.o:	src/data/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<	
+
+$(OBJDIR)/%.o:	src/data/%.s
 	$(CC) $(CFLAGS) -c -o $@ $<	
 
 $(OBJDIR)/%.o:	src/music/%.c
