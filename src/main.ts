@@ -8,6 +8,8 @@ import { checkForUpdate } from "./lib/helpers/updateChecker";
 import switchLanguageDialog from "./lib/electron/dialog/switchLanguageDialog";
 import rimraf from "rimraf";
 import { promisify } from "util";
+import l10n, { locales } from "./lib/helpers/l10n";
+import initElectronL10n from "./lib/helpers/initElectronL10n";
 
 declare var MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
@@ -32,7 +34,7 @@ app.allowRendererProcessReuse = false;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any = null;
 let splashWindow: any = null;
-let preferencesWindow: any = null
+let preferencesWindow: any = null;
 let playWindow: any = null;
 let hasCheckedForUpdate = false;
 
@@ -69,14 +71,12 @@ const createSplash = async (forceTab?: SplashTab) => {
     webPreferences: {
       nodeIntegration: true,
       devTools: isDevMode,
-      preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY
-    }
+      preload: SPLASH_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
   });
 
   splashWindow.setMenu(null);
-  splashWindow.loadURL(
-    `${SPLASH_WINDOW_WEBPACK_ENTRY}?tab=${forceTab || ""}`
-  );
+  splashWindow.loadURL(`${SPLASH_WINDOW_WEBPACK_ENTRY}?tab=${forceTab || ""}`);
 
   splashWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
@@ -106,8 +106,8 @@ const createPreferences = async (forceTab?: SplashTab) => {
     webPreferences: {
       nodeIntegration: true,
       devTools: isDevMode,
-      preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY
-    }
+      preload: PREFERENCES_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
   });
 
   preferencesWindow.setMenu(null);
@@ -124,11 +124,10 @@ const createPreferences = async (forceTab?: SplashTab) => {
   });
 };
 
-
 const createWindow = async (projectPath: string) => {
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
-    defaultHeight: 800
+    defaultHeight: 800,
   });
 
   // Create the browser window.
@@ -145,10 +144,10 @@ const createWindow = async (projectPath: string) => {
     webPreferences: {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
-      webSecurity: process.env.NODE_ENV !== 'development',
+      webSecurity: process.env.NODE_ENV !== "development",
       devTools: isDevMode,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
-    }
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
   });
 
   // Enable documentEdited functionality on windows
@@ -156,15 +155,13 @@ const createWindow = async (projectPath: string) => {
     value: false,
     configurable: true,
     enumerable: true,
-    writable: true
+    writable: true,
   });
 
   mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(
-    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(
-      projectPath
-    )}`
+    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(projectPath)}`
   );
 
   mainWindow.setRepresentedFilename(projectPath);
@@ -190,19 +187,17 @@ const createWindow = async (projectPath: string) => {
 
   mainWindow.on("close", (e: any) => {
     if (mainWindow.documentEdited) {
-      // eslint-disable-next-line global-require
-      const l10n = require("./lib/helpers/l10n").default;
       const choice = dialog.showMessageBoxSync(mainWindow, {
         type: "question",
         buttons: [
           l10n("DIALOG_SAVE"),
           l10n("DIALOG_CANCEL"),
-          l10n("DIALOG_DONT_SAVE")
+          l10n("DIALOG_DONT_SAVE"),
         ],
         defaultId: 0,
         cancelId: 1,
         message: l10n("DIALOG_SAVE_CHANGES", { name: mainWindow.name }),
-        detail: l10n("DIALOG_SAVE_WARNING")
+        detail: l10n("DIALOG_SAVE_WARNING"),
       });
       if (choice === 0) {
         // Save
@@ -250,8 +245,8 @@ const createPlay = async (url: string) => {
       autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: false,
-        webSecurity: process.env.NODE_ENV !== 'development'
-      }
+        webSecurity: process.env.NODE_ENV !== "development",
+      },
     });
   } else {
     playWindow.show();
@@ -269,6 +264,10 @@ const createPlay = async (url: string) => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  initElectronL10n();
+
+  menu.buildMenu([]);
+
   // Enable DevTools.
   if (isDevMode) {
     // enableLiveReload({ strategy: "react-hmr" });
@@ -287,7 +286,6 @@ app.on("ready", async () => {
     createSplash();
   }
 });
-
 
 app.on("open-file", async (e, projectPath) => {
   await app.whenReady();
@@ -330,7 +328,7 @@ ipcMain.on("open-project-picker", async (event, arg) => {
   openProjectPicker();
 });
 
-ipcMain.on("request-recent-projects", async event => {
+ipcMain.on("request-recent-projects", async (event) => {
   splashWindow &&
     splashWindow.webContents.send(
       "recent-projects",
@@ -338,7 +336,7 @@ ipcMain.on("request-recent-projects", async event => {
     );
 });
 
-ipcMain.on("clear-recent-projects", async event => {
+ipcMain.on("clear-recent-projects", async (event) => {
   settings.set("recentProjects", []);
   app.clearRecentDocuments();
 });
@@ -364,9 +362,12 @@ ipcMain.on("document-unmodified", () => {
 ipcMain.on("project-loaded", (event, settings) => {
   const { showCollisions, showConnections, showNavigator } = settings;
   menu.ref().getMenuItemById("showCollisions").checked = showCollisions;
-  menu.ref().getMenuItemById("showConnectionsAll").checked = showConnections === "all";
-  menu.ref().getMenuItemById("showConnectionsSelected").checked = showConnections === "selected" || showConnections === true;
-  menu.ref().getMenuItemById("showConnectionsNone").checked = showConnections === false;
+  menu.ref().getMenuItemById("showConnectionsAll").checked =
+    showConnections === "all";
+  menu.ref().getMenuItemById("showConnectionsSelected").checked =
+    showConnections === "selected" || showConnections === true;
+  menu.ref().getMenuItemById("showConnectionsNone").checked =
+    showConnections === false;
   menu.ref().getMenuItemById("showNavigator").checked = showNavigator;
 });
 
@@ -375,9 +376,8 @@ ipcMain.on("set-show-navigator", (event, showNavigator) => {
 });
 
 ipcMain.on("set-menu-plugins", (event, plugins) => {
-  // eslint-disable-next-line global-require
-  const l10n = require("./lib/helpers/l10n").default;
-  const distinct = <T>(value: T, index: number, self: T[]) => self.indexOf(value) === index;
+  const distinct = <T>(value: T, index: number, self: T[]) =>
+    self.indexOf(value) === index;
 
   const pluginValues = Object.values(plugins);
 
@@ -386,7 +386,7 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
     .filter(distinct);
 
   menu.buildMenu(
-    pluginNames.map(pluginName => {
+    pluginNames.map((pluginName) => {
       return {
         label: pluginName,
         submenu: pluginValues
@@ -400,9 +400,9 @@ ipcMain.on("set-menu-plugins", (event, plugins) => {
               click() {
                 mainWindow &&
                   mainWindow.webContents.send("plugin-run", plugin.id);
-              }
+              },
             };
-          })
+          }),
       };
     })
   );
@@ -478,7 +478,7 @@ menu.on("preferences", () => {
   } else {
     preferencesWindow.show();
   }
-})
+});
 
 menu.on("updateSetting", (setting: string, value: any) => {
   settings.set(setting, value);
@@ -489,7 +489,6 @@ menu.on("updateSetting", (setting: string, value: any) => {
     splashWindow && splashWindow.webContents.send("update-theme", value);
     mainWindow && mainWindow.webContents.send("update-theme", value);
   } else if (setting === "locale") {
-    const locales = require("./lib/helpers/l10n").locales;
     menu.ref().getMenuItemById("localeDefault").checked = value === undefined;
     for (let locale of locales) {
       menu.ref().getMenuItemById(`locale-${locale}`).checked = value === locale;
@@ -497,9 +496,12 @@ menu.on("updateSetting", (setting: string, value: any) => {
     switchLanguageDialog();
   } else {
     if (setting === "showConnections") {
-      menu.ref().getMenuItemById("showConnectionsAll").checked = value === "all";
-      menu.ref().getMenuItemById("showConnectionsSelected").checked = value === "selected" || value === true;
-      menu.ref().getMenuItemById("showConnectionsNone").checked = value === false;
+      menu.ref().getMenuItemById("showConnectionsAll").checked =
+        value === "all";
+      menu.ref().getMenuItemById("showConnectionsSelected").checked =
+        value === "selected" || value === true;
+      menu.ref().getMenuItemById("showConnectionsNone").checked =
+        value === false;
     }
     mainWindow && mainWindow.webContents.send("updateSetting", setting, value);
   }
@@ -521,9 +523,9 @@ const openProjectPicker = async () => {
     filters: [
       {
         name: "Projects",
-        extensions: ["gbsproj", "json"]
-      }
-    ]
+        extensions: ["gbsproj", "json"],
+      },
+    ],
   });
   if (files && files[0]) {
     openProject(files[0]);
@@ -541,8 +543,6 @@ const switchProject = async () => {
 };
 
 const openProject = async (projectPath: string) => {
-  // eslint-disable-next-line global-require
-  const l10n = require("./lib/helpers/l10n").default;
   const ext = Path.extname(projectPath);
   if (validProjectExt.indexOf(ext) === -1) {
     dialog.showErrorBox(
@@ -583,21 +583,24 @@ const addRecentProject = (projectPath: string) => {
     ([] as string[])
       .concat((settings.get("recentProjects") || []) as string[], projectPath)
       .reverse()
-      .filter((filename: string, index: number, arr: string[]) => arr.indexOf(filename) === index) // Only unique
+      .filter(
+        (filename: string, index: number, arr: string[]) =>
+          arr.indexOf(filename) === index
+      ) // Only unique
       .reverse()
       .slice(-10)
   );
   app.addRecentDocument(projectPath);
-}
+};
 
 const saveAsProjectPicker = async () => {
   const files = dialog.showSaveDialogSync({
     filters: [
       {
         name: "Projects",
-        extensions: ["gbsproj", "json"]
-      }
-    ]
+        extensions: ["gbsproj", "json"],
+      },
+    ],
   });
   if (files) {
     saveAsProject(files);

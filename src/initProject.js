@@ -1,11 +1,12 @@
+import Path from "path";
 import { ActionCreators } from "redux-undo";
-import { ipcRenderer, clipboard } from "electron";
+import { ipcRenderer, clipboard, remote } from "electron";
 import settings from "electron-settings";
 import debounce from "lodash/debounce";
 import mapValues from "lodash/mapValues";
 import store from "./store/configureStore";
 import watchProject from "./lib/project/watchProject";
-import plugins from "./lib/plugins/plugins";
+import plugins, { initPlugins } from "./lib/plugins/plugins";
 import editorActions from "./store/features/editor/editorActions";
 import entitiesActions from "./store/features/entities/entitiesActions";
 import settingsActions from "./store/features/settings/settingsActions";
@@ -15,6 +16,9 @@ import buildGameActions from "./store/features/buildGame/buildGameActions";
 import clipboardActions from "./store/features/clipboard/clipboardActions";
 import engineActions from "./store/features/engine/engineActions";
 import errorActions from "./store/features/error/errorActions";
+import initElectronL10n from "./lib/helpers/initElectronL10n";
+
+initElectronL10n();
 
 const actions = {
   ...editorActions,
@@ -34,8 +38,10 @@ const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
 if (projectPath) {
+  const projectRoot = Path.dirname(projectPath);
   store.dispatch(projectActions.openProject(projectPath));
   store.dispatch(engineActions.scanEngine(projectPath));
+  initPlugins(projectRoot);
 }
 
 watchProject(projectPath, {

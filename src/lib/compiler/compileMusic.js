@@ -7,7 +7,6 @@ import { GB_MAX_BANK_SIZE } from "./bankedData";
 import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
 import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
-import getTmp from "../helpers/getTmp";
 import { checksumFile, checksumString } from "../helpers/checksum";
 import l10n from "../helpers/l10n";
 
@@ -19,12 +18,13 @@ const compileMusic = async ({
   music = [],
   musicBanks = [],
   buildRoot = "/tmp",
+  tmpPath = "/tmp",
   projectRoot,
   progress = (_msg) => {},
   warnings = (_msg) => {},
 } = {}) => {
-  const buildToolsPath = await ensureBuildTools();
-  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/music`);
+  const buildToolsPath = await ensureBuildTools(tmpPath);
+  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
   const buildToolsVersion = await readFile(`${buildToolsPath}/tools_version`, "utf8");
 
   await ensureDir(`${buildRoot}/src/music`);

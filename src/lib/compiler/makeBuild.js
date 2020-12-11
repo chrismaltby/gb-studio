@@ -4,7 +4,6 @@ import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
 import buildMakeScript from "./buildMakeScript";
 import { hexDec } from "../helpers/8bit";
-import getTmp from "../helpers/getTmp";
 import { isMBC1 } from "./helpers";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 
@@ -60,6 +59,7 @@ let firstBuild = true;
 
 const makeBuild = async ({
   buildRoot = "/tmp",
+  tmpPath = "/tmp",
   data = {},
   cartSize = 64,
   profile = false,
@@ -72,7 +72,6 @@ const makeBuild = async ({
 
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
 
-  const tmpPath = getTmp();
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
 
   // Symlink build tools so that path doesn't contain any spaces
@@ -93,8 +92,8 @@ const makeBuild = async ({
 
   env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
   env.CART_SIZE = cartSize;
-  env.TMP = getTmp();
-  env.TEMP = getTmp();
+  env.TMP = tmpPath;
+  env.TEMP = tmpPath;
   if (settings.customColorsEnabled) {
     env.COLOR = true;
   }
@@ -120,7 +119,7 @@ const makeBuild = async ({
     await fs.writeFile(`${buildRoot}/Makefile`, makeFile, "utf8");
   }
 
-  await fetchCachedObjData(buildRoot, env);
+  await fetchCachedObjData(buildRoot, tmpPath, env);
 
   const makeScriptFile = process.platform === "win32" ? "make.bat" : "make.sh"
   
@@ -172,7 +171,7 @@ const makeBuild = async ({
           `${buildRoot}/build/rom/game.gb`,
           data.name.toUpperCase()
         );
-        await cacheObjData(buildRoot, env);
+        await cacheObjData(buildRoot, tmpPath, env);
         resolve();
       } else reject(code);
     });

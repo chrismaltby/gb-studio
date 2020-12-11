@@ -2,15 +2,14 @@ import glob from "glob";
 import Path from "path";
 import { promisify } from "util";
 import { ensureDir, copyFile, pathExists } from "fs-extra";
-import getTmp from "../helpers/getTmp";
 import { checksumFile, mergeChecksums, checksumString } from "../helpers/checksum";
 
 const globAsync = promisify(glob);
 
 export const objCache = {};
 
-export const cacheObjData = async (buildRoot, env) => {
-  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/obj`);
+export const cacheObjData = async (buildRoot, tmpPath, env) => {
+  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/obj`);
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
   const buildIncludeRoot = Path.normalize(`${buildRoot}/include`);
@@ -51,8 +50,8 @@ export const cacheObjData = async (buildRoot, env) => {
   }
 };
 
-export const fetchCachedObjData = async (buildRoot, env) => {
-  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache/obj`);
+export const fetchCachedObjData = async (buildRoot, tmpPath, env) => {
+  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/obj`);
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
   const buildIncludeRoot = Path.normalize(`${buildRoot}/include`);

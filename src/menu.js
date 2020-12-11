@@ -2,18 +2,13 @@ import openAboutWindow from "about-window";
 import settings from "electron-settings";
 import { app, Menu, shell } from "electron";
 import { assetsRoot } from "./consts";
+import l10n, { locales } from "./lib/helpers/l10n";
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 let menu;
 
 const buildMenu = async (plugins = []) => {
-  // L10N requires app ready to get locale
-  // eslint-disable-next-line global-require
-  const l10nHelpers = require("./lib/helpers/l10n");
-  const l10n = l10nHelpers.default;
-  const locales = l10nHelpers.locales;
-
   const template = [
     {
       label: l10n("MENU_FILE"),
@@ -480,8 +475,6 @@ const buildMenu = async (plugins = []) => {
   menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 };
-
-app.on("ready", () => buildMenu([]));
 
 const listeners = {
   new: [],

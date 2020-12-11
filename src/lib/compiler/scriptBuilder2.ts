@@ -66,6 +66,10 @@ const getVariableIndex = (variable: string, variables: string[]) => {
   return variables.findIndex((v) => v === variable);
 };
 
+const toValidLabel = (label: string): string => {
+  return label.replace(/[^A-Za-z0-9]/g, "_");
+};
+
 // ------------------------
 
 class ScriptBuilder {
@@ -217,13 +221,15 @@ ${this.output.join("\n")}
   };
 
   _label = (label: string) => {
-    this._assertLabelStackNeutral(label);
-    this.output.push(`${label}$:`);
+    const _label = toValidLabel(label);
+    this._assertLabelStackNeutral(_label);
+    this.output.push(`${_label}$:`);
   };
 
   _jump = (label: string) => {
-    this._assertLabelStackNeutral(label);
-    this._addCmd("VM_JUMP", `${label}$`);
+    const _label = toValidLabel(label);
+    this._assertLabelStackNeutral(_label);
+    this._addCmd("VM_JUMP", `${_label}$`);
   };
 
   _if = (

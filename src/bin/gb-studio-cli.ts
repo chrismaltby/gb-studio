@@ -3,6 +3,7 @@ import Path from "path";
 import os from "os";
 import { engineRoot } from "../consts";
 import { EngineFieldSchema } from "../store/features/engine/engineState";
+import { initPlugins } from "../lib/plugins/plugins";
 
 interface EngineData {
   fields?: EngineFieldSchema[];
@@ -46,11 +47,7 @@ const cmdEject = async (projectFile: string, outputRoot: string) => {
     fields = defaultEngine.fields;
   }
 
-  (global as any).window = {
-    location: {
-      search: "?path=" + projectFile,
-    },
-  };
+  initPlugins(projectRoot);
 
   const compileData = await import("../lib/compiler/compileData").then(
     (module) => module.default
@@ -92,6 +89,7 @@ const cmdEject = async (projectFile: string, outputRoot: string) => {
     musicBanks: compiledData.musicBanks,
     projectRoot,
     buildRoot: outputRoot,
+    tmpPath,
     progress,
     warnings,
   });

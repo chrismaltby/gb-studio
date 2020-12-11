@@ -39,6 +39,7 @@ const buildProject = async (
     music: compiledData.music,
     musicBanks: compiledData.musicBanks,
     projectRoot,
+    tmpPath,
     buildRoot: outputRoot,
     progress,
     warnings,
@@ -65,6 +66,7 @@ const buildProject = async (
 
   await makeBuild({
     buildRoot: outputRoot,
+    tmpPath,
     buildType,
     cartSize,
     data,

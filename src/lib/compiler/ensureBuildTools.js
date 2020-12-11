@@ -3,16 +3,14 @@ import rimraf from "rimraf";
 import { promisify } from "util";
 import { buildToolsRoot } from "../../consts";
 import copy from "../helpers/fsCopy";
-import getTmp from "../helpers/getTmp";
 
 const rmdir = promisify(rimraf);
 
-const ensureBuildTools = async () => {
+const ensureBuildTools = async (tmpPath) => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
   const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
   const expectedToolsVersion = await fs.readFile(expectedBuildToolsVersionPath, "utf8");
 
-  const tmpPath = getTmp();
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
   const tmpBuildToolsVersionPath = `${tmpPath}/_gbstools/tools_version`;
 

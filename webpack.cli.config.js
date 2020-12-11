@@ -23,10 +23,9 @@ module.exports = {
   module: {
     rules: require("./webpack.rules")
   },
-//   plugins: [].concat(plugins, new webpack.DefinePlugin({
-//     $dirname: '__dirname',
-//   })),
-  plugins,
+  plugins: [].concat(plugins, 
+    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),  
+  ),
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"]
   }
