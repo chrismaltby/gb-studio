@@ -50,6 +50,7 @@
     "about-window": "^1.13.2",
     "chokidar": "^3.3.0",
     "classnames": "^2.2.5",
+    "commander": "^6.2.0",
     "copy-webpack-plugin": "^5.0.5",
     "deepmerge": "^3.1.0",
     "electron-compile": "^6.4.4",

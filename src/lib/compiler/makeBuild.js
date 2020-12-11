@@ -63,8 +63,8 @@ const makeBuild = async ({
   data = {},
   cartSize = 64,
   profile = false,
-  progress = () => {},
-  warnings = () => {},
+  progress = (_msg) => {},
+  warnings = (_msg) => {},
 } = {}) => {
     
   const env = Object.create(process.env);

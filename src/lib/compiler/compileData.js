@@ -226,8 +226,6 @@ const compile = async (
     };
   });
 
-  console.log(eventPtrs)
-
   precompiled.usedTilesets.forEach((tileset, tilesetIndex) => {
     output[`tileset_${tilesetIndex}.c`] = compileTileset(tileset, tilesetIndex);
     output[`tileset_${tilesetIndex}.h`] = compileTilesetHeader(tileset, tilesetIndex);
