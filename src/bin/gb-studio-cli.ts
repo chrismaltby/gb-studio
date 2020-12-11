@@ -1,8 +1,8 @@
-import { copy, readJSON } from "fs-extra";
+import { copy, readJSON, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import os from "os";
 import { program } from "commander";
-import { engineRoot } from "../consts";
+import { emulatorRoot, engineRoot } from "../consts";
 import { EngineFieldSchema } from "../store/features/engine/engineState";
 import { initPlugins } from "../lib/plugins/plugins";
 import compileData from "../lib/compiler/compileData";
@@ -15,7 +15,7 @@ interface EngineData {
   fields?: EngineFieldSchema[];
 }
 
-type Command = "export" | "make:rom";
+type Command = "export" | "make:rom" | "make:web";
 
 const main = async (
   command: Command,
@@ -91,6 +91,43 @@ const main = async (
     });
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
     await copy(romTmpPath, destination);
+  } else if (command === "make:web") {
+    // Export web build to destination
+    await makeBuild({
+      buildRoot: tmpBuildDir,
+      tmpPath,
+      data: project,
+      profile: false,
+      progress,
+      warnings,
+    });
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", "game.gb");
+    await copy(emulatorRoot, destination);
+    await copy(romTmpPath, `${destination}/rom/game.gb`);
+    const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
+    const projectName = sanitize(project.name);
+    const author = sanitize(project.author);
+    const colorsHead = project.settings.customColorsEnabled
+      ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
+      : "";
+    const customHead = project.settings.customHead || "";
+    const customControls = JSON.stringify({
+      up: project.settings.customControlsUp,
+      down: project.settings.customControlsDown,
+      left: project.settings.customControlsLeft,
+      right: project.settings.customControlsRight,
+      a: project.settings.customControlsA,
+      b: project.settings.customControlsB,
+      start: project.settings.customControlsStart,
+      select: project.settings.customControlsSelect,
+    });
+    const html = (await readFile(`${destination}/index.html`, "utf8"))
+      .replace(/___PROJECT_NAME___/g, projectName)
+      .replace(/___AUTHOR___/g, author)
+      .replace(/___COLORS_HEAD___/g, colorsHead)
+      .replace(/___PROJECT_HEAD___/g, customHead)
+      .replace(/___CUSTOM_CONTROLS___/g, customControls);
+    await writeFile(`${destination}/index.html`, html);
   }
 };
 
@@ -134,6 +171,13 @@ program
   .description("Build a ROM from project file")
   .action((source, destination) => {
     main("make:rom", source, destination);
+  });
+
+program
+  .command("make:web <projectFile> <destination>")
+  .description("Build for web from project file")
+  .action((source, destination) => {
+    main("make:web", source, destination);
   });
 
 program.option("-d, --onlyData", "Only replace data folder in destination");

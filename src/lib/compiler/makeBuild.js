@@ -153,14 +153,21 @@ const makeBuild = async ({
 
     child.stdout.on("data", (childData) => {
       const lines = childData.toString().split("\n");
-      lines.forEach((line) => {
-        progress(filterLogs(line));
+      lines.forEach((line, lineIndex) => {
+        if (line.length === 0 && lineIndex === lines.length - 1) {
+          return;
+        }
+        const output = filterLogs(line);
+        progress(output);
       });
     });
 
     child.stderr.on("data", (childData) => {
       const lines = childData.toString().split("\n");
-      lines.forEach((line) => {
+      lines.forEach((line, lineIndex) => {
+        if (line.length === 0 && lineIndex === lines.length - 1) {
+          return;
+        }        
         warnings(line);
       });
     });
