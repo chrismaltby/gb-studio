@@ -130,7 +130,7 @@ program
   });
 
 program
-  .command("make:rom <projectFile> <destination>")
+  .command("make:rom <projectFile> <destination.gb>")
   .description("Build a ROM from project file")
   .action((source, destination) => {
     main("make:rom", source, destination);
