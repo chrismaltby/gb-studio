@@ -6,6 +6,8 @@ import copy from "../helpers/fsCopy";
 
 const rmdir = promisify(rimraf);
 
+let firstBuild = true;
+
 const ensureBuildTools = async (tmpPath) => {
   const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
   const expectedBuildToolsVersionPath = `${buildToolsPath}/tools_version`;
@@ -14,19 +16,26 @@ const ensureBuildTools = async (tmpPath) => {
   const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
   const tmpBuildToolsVersionPath = `${tmpPath}/_gbstools/tools_version`;
 
-  // Symlink build tools so that path doesn't contain any spaces
-  // GBDKDIR doesn't work if path has spaces :-(
-  try {
-    const toolsVersion = await fs.readFile(tmpBuildToolsVersionPath, "utf8");
-    if(toolsVersion !== expectedToolsVersion) {
-      throw new Error("Incorrect tools version found");
-    }
-  } catch (e) {
+  if (firstBuild) {
     await rmdir(tmpBuildToolsPath);
     await copy(buildToolsPath, tmpBuildToolsPath, {
-      overwrite: false,
+      overwrite: true,
       mode: 0o755,
-    });
+    });    
+    firstBuild = false;
+  } else {
+    try {
+      const toolsVersion = await fs.readFile(tmpBuildToolsVersionPath, "utf8");
+      if(toolsVersion !== expectedToolsVersion) {
+        throw new Error("Incorrect tools version found");
+      }
+    } catch (e) {
+      await rmdir(tmpBuildToolsPath);
+      await copy(buildToolsPath, tmpBuildToolsPath, {
+        overwrite: false,
+        mode: 0o755,
+      });
+    }
   }
 
   return tmpBuildToolsPath;

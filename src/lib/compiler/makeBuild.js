@@ -6,6 +6,7 @@ import buildMakeScript from "./buildMakeScript";
 import { hexDec } from "../helpers/8bit";
 import { isMBC1 } from "./helpers";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
+import ensureBuildTools from "./ensureBuildTools";
 
 const HEADER_TITLE = 0x134;
 const HEADER_CHECKSUM = 0x14d;
@@ -55,8 +56,6 @@ const patchROM = (romData) => {
   return romData;
 };
 
-let firstBuild = true;
-
 const makeBuild = async ({
   buildRoot = "/tmp",
   tmpPath = "/tmp",
@@ -70,25 +69,10 @@ const makeBuild = async ({
   const env = Object.create(process.env);
   const { settings } = data;
 
-  const buildToolsPath = `${buildToolsRoot}/${process.platform}-${process.arch}`;
+  const buildToolsPath = await ensureBuildTools(tmpPath);
 
-  const tmpBuildToolsPath = `${tmpPath}/_gbstools`;
-
-  // Symlink build tools so that path doesn't contain any spaces
-  // GBDKDIR doesn't work if path has spaces :-(
-  try {
-    await fs.unlink(tmpBuildToolsPath);
-    await fs.ensureSymlink(buildToolsPath, tmpBuildToolsPath);
-  } catch (e) {
-    await copy(buildToolsPath, tmpBuildToolsPath, {
-      overwrite: firstBuild,
-    });
-  }
-
-  firstBuild = false;
-
-  env.PATH = [`${tmpBuildToolsPath}/gbdk/bin`, env.PATH].join(":");
-  env.GBDKDIR = `${tmpBuildToolsPath}/gbdk/`;
+  env.PATH = [`${buildToolsPath}/gbdk/bin`, env.PATH].join(":");
+  env.GBDKDIR = `${buildToolsPath}/gbdk/`;
 
   env.CART_TYPE = parseInt(settings.cartType || "1B", 16);
   env.CART_SIZE = cartSize;
