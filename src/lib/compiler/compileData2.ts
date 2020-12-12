@@ -88,6 +88,17 @@ ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol};`
   );
 
+const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
+  includeGuard(
+    symbol.toUpperCase(),
+    `${comment}
+
+#include "VM.h"
+
+${toBankSymbolDef(symbol)};
+extern ${type} ${symbol}[];`
+  );
+
 export const sceneSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}`;
 
@@ -105,6 +116,9 @@ export const sceneCollisionsSymbol = (sceneIndex: number): string =>
 
 export const sceneColorsSymbol = (sceneIndex: number): string =>
   `scene_${sceneIndex}_colors`;
+
+export const scriptSymbol = (sceneIndex: number): string =>
+  `script_${sceneIndex}`;
 
 export const toStructData = <T extends {}>(
   object: T,
@@ -343,7 +357,7 @@ export const compileSceneActors = (
 };
 
 export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
-  toDataHeader(
+  toArrayDataHeader(
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`
@@ -364,7 +378,7 @@ export const compileSceneTriggers = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) =>
-  toDataHeader(
+  toArrayDataHeader(
     TRIGGER_TYPE,
     sceneTriggersSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Triggers`
@@ -383,7 +397,7 @@ export const compileSceneSprites = (scene: any, sceneIndex: number) =>
   );
 
 export const compileSceneSpritesHeader = (scene: any, sceneIndex: number) =>
-  toDataHeader(
+  toArrayDataHeader(
     FARPTR_TYPE,
     sceneSpritesSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Sprites`
@@ -403,7 +417,7 @@ export const compileSceneCollisions = (
   );
 
 export const compileSceneCollisionsHeader = (scene: any, sceneIndex: number) =>
-  toDataHeader(
+  toArrayDataHeader(
     DATA_TYPE,
     sceneCollisionsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Collisions`
@@ -423,7 +437,7 @@ export const compileSceneColors = (
   );
 
 export const compileSceneColorsHeader = (scene: any, sceneIndex: number) =>
-  toDataHeader(
+  toArrayDataHeader(
     DATA_TYPE,
     sceneColorsSymbol(sceneIndex),
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Colors`
@@ -515,22 +529,29 @@ export const compileFontImage = (data: any) =>
   toArrayDataFile(DATA_TYPE, "font_image", `// Font`, data, 16);
 
 export const compileFontImageHeader = (data: any) =>
-  toDataHeader(DATA_TYPE, "font_image", `// Font`);
+  toArrayDataHeader(DATA_TYPE, "font_image", `// Font`);
 
 export const compileFrameImage = (data: any) =>
   toArrayDataFile(DATA_TYPE, "frame_image", `// Frame`, data, 16);
 
 export const compileFrameImageHeader = (data: any) =>
-  toDataHeader(DATA_TYPE, "frame_image", `// Frame`);
+  toArrayDataHeader(DATA_TYPE, "frame_image", `// Frame`);
 
 export const compileCursorImage = (data: any) =>
   toArrayDataFile(DATA_TYPE, "cursor_image", `// Cursor`, data, 16);
 
 export const compileCursorImageHeader = (data: any) =>
-  toDataHeader(DATA_TYPE, "cursor_image", `// Cursor`);
+  toArrayDataHeader(DATA_TYPE, "cursor_image", `// Cursor`);
 
 export const compileEmotesImage = (data: any) =>
   toArrayDataFile(DATA_TYPE, "emotes_image", `// Emotes`, data, 16);
 
 export const compileEmotesImageHeader = (data: any) =>
-  toDataHeader(DATA_TYPE, "emotes_image", `// Emotes`);
+  toArrayDataHeader(DATA_TYPE, "emotes_image", `// Emotes`);
+
+export const compileScriptHeader = (scriptIndex: number) =>
+  toArrayDataHeader(
+    DATA_TYPE,
+    scriptSymbol(scriptIndex),
+    `// Script ${scriptIndex}`
+  );

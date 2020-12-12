@@ -65,6 +65,7 @@ import {
   toFarPtr,
   spriteSheetSymbol,
   sceneSymbol,
+  compileScriptHeader,
 } from "./compileData2";
 
 const indexById = indexBy("id");
@@ -162,6 +163,7 @@ const compile = async (
         output: alreadyCompiled || [],
       });
       output[`script_${scriptCounter}.s`] = script;
+      output[`script_${scriptCounter}.h`] = compileScriptHeader(scriptCounter);
       return scriptCounter++;
     };
 
