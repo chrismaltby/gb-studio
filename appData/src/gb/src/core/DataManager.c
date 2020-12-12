@@ -12,10 +12,9 @@
 #include "Sprite.h"
 #include "UI.h"
 #include "Input.h"
-#include "data/data_ptrs.h"
 #include "BankData.h"
-#include "VM.h"
-// #include "data/scene_0.h"
+#include "data/data_types.h"
+#include "data/data_ptrs.h"
 
 #define MAX_PLAYER_SPRITE_SIZE 24
 

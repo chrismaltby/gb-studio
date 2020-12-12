@@ -1,4 +1,5 @@
 import { Dictionary } from "@reduxjs/toolkit";
+import flatten from "lodash/flatten";
 import { SPRITE_TYPE_STATIC } from "../../consts";
 import {
   actorFramesPerDir,
@@ -82,7 +83,7 @@ const toDataHeader = (type: string, symbol: string, comment: string) =>
     symbol.toUpperCase(),
     `${comment}
 
-#include "VM.h"
+#include "data/data_types.h"
 
 ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol};`
@@ -93,7 +94,7 @@ const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
     symbol.toUpperCase(),
     `${comment}
 
-#include "VM.h"
+#include "data/data_types.h"
 
 ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol}[];`
@@ -153,7 +154,7 @@ export const toStructDataFile = <T extends {}>(
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "VM.h"${
+#include "data/data_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -178,7 +179,7 @@ export const toStructArrayDataFile = <T extends {}>(
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "VM.h"${
+#include "data/data_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -210,7 +211,7 @@ export const toArrayDataFile = (
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "VM.h"${
+#include "data/data_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -244,7 +245,13 @@ export const compileScene = (
     color,
     bgPalette,
     actorsPalette,
-  }: { color: boolean; bgPalette: number; actorsPalette: number }
+    eventPtrs,
+  }: {
+    color: boolean;
+    bgPalette: number;
+    actorsPalette: number;
+    eventPtrs: any;
+  }
 ) =>
   toStructDataFile(
     SCENE_TYPE,
@@ -277,6 +284,10 @@ export const compileScene = (
         scene.sprites.length > 0
           ? toFarPtr(sceneSpritesSymbol(sceneIndex))
           : undefined,
+      script_init:
+        eventPtrs[sceneIndex].start > -1
+          ? toFarPtr(scriptSymbol(eventPtrs[sceneIndex].start))
+          : undefined,
     },
     // Dependencies
     ([] as string[]).concat(
@@ -287,7 +298,10 @@ export const compileScene = (
       color ? paletteSymbol(actorsPalette) : [],
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
-      scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : []
+      scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
+      eventPtrs[sceneIndex].start > -1
+        ? scriptSymbol(eventPtrs[sceneIndex].start)
+        : []
     )
   );
 
@@ -302,7 +316,8 @@ export const compileSceneActors = (
   scene: any,
   sceneIndex: number,
   sprites: any[],
-  actorPaletteIndexes: any
+  actorPaletteIndexes: any,
+  { eventPtrs }: { eventPtrs: any }
 ) => {
   const mapSpritesLookup: Dictionary<any> = {};
   let mapSpritesIndex = 6;
@@ -351,8 +366,31 @@ export const compileSceneActors = (
         anim_speed: animSpeedDec(actor.animSpeed),
         pinned: actor.isPinned ? "TRUE" : "FALSE",
         collision_group: collisionGroup,
+        script:
+          eventPtrs[sceneIndex].actors[actorIndex] > -1
+            ? toFarPtr(scriptSymbol(eventPtrs[sceneIndex].actors[actorIndex]))
+            : undefined,
+        script_update:
+          eventPtrs[sceneIndex].actorsMovement[actorIndex] > -1
+            ? toFarPtr(
+                scriptSymbol(eventPtrs[sceneIndex].actorsMovement[actorIndex])
+              )
+            : undefined,
       };
-    })
+    }),
+    // Dependencies
+    flatten(
+      scene.actors.map((actor: any, actorIndex: number) => {
+        return ([] as string[]).concat(
+          eventPtrs[sceneIndex].actors[actorIndex] > -1
+            ? scriptSymbol(eventPtrs[sceneIndex].actors[actorIndex])
+            : [],
+          eventPtrs[sceneIndex].actorsMovement[actorIndex] > -1
+            ? scriptSymbol(eventPtrs[sceneIndex].actorsMovement[actorIndex])
+            : []
+        );
+      })
+    )
   );
 };
 

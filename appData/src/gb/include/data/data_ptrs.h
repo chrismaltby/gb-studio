@@ -11,7 +11,6 @@
 // </auto-generated>	
 //------------------------------------------------------------------------------
 #include "BankData.h"
-#include "VM.h"
 
 #define NUM_VARIABLES 500
 #define TMP_VAR_1 100

@@ -131,7 +131,7 @@ const compileEntityEvents = (scriptIndex, input = [], options = {}) => {
     }
   }
 
-  return scriptBuilder.toScriptString("SCRIPT_" + scriptIndex);
+  return scriptBuilder.toScriptString("script_" + scriptIndex);
 };
 
 export default compileEntityEvents;

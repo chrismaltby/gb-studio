@@ -30,6 +30,7 @@ import { is16BitCType } from "../helpers/engineFields";
 import { nextVariable } from "../helpers/variables";
 import { ScriptEvent } from "../../store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
+import { spriteSheetSymbol } from "./compileData2";
 
 type ScriptOutput = string[];
 
@@ -130,8 +131,19 @@ ${this.output.join("\n")}
     }
   };
 
-  private _addBankedDependency = (symbol: string) => {
+  private _addBankedFnDependency = (symbol: string) => {
     const bankSymbol = `b_${symbol}`;
+    const dataSymbol = `_${symbol}`;
+    if (!this.dependencies.includes(bankSymbol)) {
+      this.dependencies.push(bankSymbol);
+    }
+    if (!this.dependencies.includes(dataSymbol)) {
+      this.dependencies.push(dataSymbol);
+    }
+  };
+
+  private _addBankedDataDependency = (symbol: string) => {
+    const bankSymbol = `___bank_${symbol}`;
     const dataSymbol = `_${symbol}`;
     if (!this.dependencies.includes(bankSymbol)) {
       this.dependencies.push(bankSymbol);
@@ -187,7 +199,7 @@ ${this.output.join("\n")}
   };
 
   _invoke = (fn: string, popNum: number, numArgs: number) => {
-    this._addBankedDependency(fn);
+    this._addBankedFnDependency(fn);
     this._addCmd(
       "VM_INVOKE",
       `b_${fn}`,
@@ -250,6 +262,24 @@ ${this.output.join("\n")}
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _loadText = (numInputs: number) => {
+    this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
+  };
+
+  _displayText = (avatar?: number) => {
+    if (avatar) {
+      const avatarSymbol = spriteSheetSymbol(avatar);
+      this._addBankedDataDependency(avatarSymbol);
+      this._addCmd("VM_LOAD_TEXT", `b_${avatarSymbol}`, avatarSymbol);
+    } else {
+      this._addCmd("VM_DISPLAY_TEXT", 0, 0);
+    }
+  };
+
+  _overlayMoveTo = (x: number, y: number, speed: number) => {
+    this._addCmd("VM_OVERLAY_MOVE_TO", x, y, speed);
+  };
+
   _stop = () => {
     this._assertStackNeutral();
     this._addCmd("VM_STOP");
@@ -308,13 +338,17 @@ ${this.output.join("\n")}
     let text = inputText;
     const maxPerLine = avatarId ? 16 : 18;
     text = trimlines(text, maxPerLine);
+
+    this._loadText(0);
+    this._string(text);
+    this._overlayMoveTo(0, 12, 1);
+
     if (avatarId) {
       const avatarIndex = getSpriteIndex(avatarId, avatars);
-      this._invoke("ui_text_avatar", 0, 0);
+      this._displayText(avatarIndex);
     } else {
-      this._invoke("ui_text", 0, 0);
+      this._displayText();
     }
-    this._string(text);
   };
 
   // Control Flow

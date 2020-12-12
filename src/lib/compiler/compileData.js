@@ -201,10 +201,6 @@ const compile = async (
       if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
         return -1;
       }
-      // output[`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}.c`] = dataArrayToC(`scene_${sceneIndex}_${entityType}_${entityIndex}_script_${entityScriptField}`, 
-      //   compileScript(entity[entityScriptField], entityType, entity, entityIndex, entityScriptField === "updateScript")
-      // );
-
       return compileScript(
         entity[entityScriptField],
         entityType,
@@ -286,7 +282,7 @@ const compile = async (
     const bgPalette = precompiled.scenePaletteIndexes[scene.id] || 0;
     const actorsPalette = precompiled.sceneActorPaletteIndexes[scene.id] || 0;
   
-    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette, color: customColorsEnabled});
+    output[`scene_${sceneIndex}.c`] = compileScene(scene, sceneIndex, { bgPalette, actorsPalette, color: customColorsEnabled, eventPtrs });
     output[`scene_${sceneIndex}.h`] = compileSceneHeader(scene, sceneIndex);
     output[`scene_${sceneIndex}_collisions.c`] = compileSceneCollisions(scene, sceneIndex, collisions);
     output[`scene_${sceneIndex}_collisions.h`] = compileSceneCollisionsHeader(scene, sceneIndex);
@@ -295,11 +291,11 @@ const compile = async (
 
     if (scene.actors.length > 0) {
       output[`scene_${sceneIndex}_actors.h`] = compileSceneActorsHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex, precompiled.usedSprites, precompiled.actorPaletteIndexes);
+      output[`scene_${sceneIndex}_actors.c`] = compileSceneActors(scene, sceneIndex, precompiled.usedSprites, precompiled.actorPaletteIndexes, { eventPtrs });
     }
     if (scene.triggers.length > 0) {
       output[`scene_${sceneIndex}_triggers.h`] = compileSceneTriggersHeader(scene, sceneIndex);
-      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(scene, sceneIndex);
+      output[`scene_${sceneIndex}_triggers.c`] = compileSceneTriggers(scene, sceneIndex, { eventPtrs });
     }
     if (scene.sprites.length > 0) {
       output[`scene_${sceneIndex}_sprites.h`] = compileSceneSpritesHeader(scene, sceneIndex);
@@ -364,7 +360,7 @@ const compile = async (
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "BankData.h"\n` +
-    `#include "VM.h"\n\n` +
+    `#include "data/data_types.h"\n\n` +
     `#define NUM_VARIABLES ${variablesLen}\n` +
     `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
     `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
