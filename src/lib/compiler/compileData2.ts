@@ -342,7 +342,7 @@ export const compileSceneActors = (
   return toStructArrayDataFile(
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
-    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors1`,
+    `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`,
     scene.actors.map((actor: any, actorIndex: number) => {
       const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
       if (!sprite) return [];

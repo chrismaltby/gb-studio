@@ -3,12 +3,13 @@ import Path from "path";
 import fs, { readFile, ensureDir, copy, pathExists } from "fs-extra";
 import ensureBuildTools from "./ensureBuildTools";
 import { assetFilename } from "../helpers/gbstudio";
-import { GB_MAX_BANK_SIZE } from "./bankedData";
 import { decHex16, wrap16Bit, lo, hi } from "../helpers/8bit";
 import { flatten } from "../helpers/array";
 import { objectIntArray } from "../helpers/cGeneration";
 import { checksumFile, checksumString } from "../helpers/checksum";
 import l10n from "../helpers/l10n";
+
+const GB_MAX_BANK_SIZE = 16384;
 
 const filterLogs = (str) => {
   return str.replace(/.*[/|\\]([^/|\\]*.mod)/g, "$1");
