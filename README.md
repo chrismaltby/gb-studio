@@ -94,7 +94,7 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
     Make a ROM file from gbsproj
 - **Make Web**
     ```bash
-    > gb-studio-cli make:web path/to/project.gbsproj out/game.gb
+    > gb-studio-cli make:web path/to/project.gbsproj out/
     ```
     Make a Web build from gbsproj
 
