@@ -50,6 +50,12 @@ export const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR(${ref})`;
 };
 
+export const maybeScriptFarPtr = (scriptIndex: number) =>
+  scriptIndex > -1 ? toFarPtr(scriptSymbol(scriptIndex)) : undefined;
+
+export const maybeScriptDependency = (scriptIndex: number) =>
+  scriptIndex > -1 ? scriptSymbol(scriptIndex) : [];
+
 export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
 #define ${key}_H
 
@@ -284,10 +290,10 @@ export const compileScene = (
         scene.sprites.length > 0
           ? toFarPtr(sceneSpritesSymbol(sceneIndex))
           : undefined,
-      script_init:
-        eventPtrs[sceneIndex].start > -1
-          ? toFarPtr(scriptSymbol(eventPtrs[sceneIndex].start))
-          : undefined,
+      script_init: maybeScriptFarPtr(eventPtrs[sceneIndex].start),
+      script_p_hit1: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit1),
+      script_p_hit2: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit2),
+      script_p_hit3: maybeScriptFarPtr(eventPtrs[sceneIndex].playerHit3),
     },
     // Dependencies
     ([] as string[]).concat(
@@ -299,9 +305,10 @@ export const compileScene = (
       scene.actors.length ? sceneActorsSymbol(sceneIndex) : [],
       scene.triggers.length > 0 ? sceneTriggersSymbol(sceneIndex) : [],
       scene.sprites.length > 0 ? sceneSpritesSymbol(sceneIndex) : [],
-      eventPtrs[sceneIndex].start > -1
-        ? scriptSymbol(eventPtrs[sceneIndex].start)
-        : []
+      maybeScriptDependency(eventPtrs[sceneIndex].start),
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit1),
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit2),
+      maybeScriptDependency(eventPtrs[sceneIndex].playerHit3)
     )
   );
 
@@ -339,6 +346,8 @@ export const compileSceneActors = (
     return lookup;
   };
 
+  const events = eventPtrs[sceneIndex];
+
   return toStructArrayDataFile(
     ACTOR_TYPE,
     sceneActorsSymbol(sceneIndex),
@@ -366,28 +375,22 @@ export const compileSceneActors = (
         anim_speed: animSpeedDec(actor.animSpeed),
         pinned: actor.isPinned ? "TRUE" : "FALSE",
         collision_group: collisionGroup,
-        script:
-          eventPtrs[sceneIndex].actors[actorIndex] > -1
-            ? toFarPtr(scriptSymbol(eventPtrs[sceneIndex].actors[actorIndex]))
-            : undefined,
-        script_update:
-          eventPtrs[sceneIndex].actorsMovement[actorIndex] > -1
-            ? toFarPtr(
-                scriptSymbol(eventPtrs[sceneIndex].actorsMovement[actorIndex])
-              )
-            : undefined,
+        script: maybeScriptFarPtr(events.actors[actorIndex]),
+        script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
+        script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
+        script_hit2: maybeScriptFarPtr(events.actorsHit2[actorIndex]),
+        script_hit3: maybeScriptFarPtr(events.actorsHit3[actorIndex]),
       };
     }),
     // Dependencies
     flatten(
       scene.actors.map((actor: any, actorIndex: number) => {
         return ([] as string[]).concat(
-          eventPtrs[sceneIndex].actors[actorIndex] > -1
-            ? scriptSymbol(eventPtrs[sceneIndex].actors[actorIndex])
-            : [],
-          eventPtrs[sceneIndex].actorsMovement[actorIndex] > -1
-            ? scriptSymbol(eventPtrs[sceneIndex].actorsMovement[actorIndex])
-            : []
+          maybeScriptDependency(events.actors[actorIndex]),
+          maybeScriptDependency(events.actorsMovement[actorIndex]),
+          maybeScriptDependency(events.actorsHit1[actorIndex]),
+          maybeScriptDependency(events.actorsHit2[actorIndex]),
+          maybeScriptDependency(events.actorsHit3[actorIndex])
         );
       })
     )
@@ -401,7 +404,11 @@ export const compileSceneActorsHeader = (scene: any, sceneIndex: number) =>
     `// Scene: ${sceneName(scene, sceneIndex)}\n// Actors`
   );
 
-export const compileSceneTriggers = (scene: any, sceneIndex: number) =>
+export const compileSceneTriggers = (
+  scene: any,
+  sceneIndex: number,
+  { eventPtrs }: { eventPtrs: any }
+) =>
   toStructArrayDataFile(
     TRIGGER_TYPE,
     sceneTriggersSymbol(sceneIndex),
@@ -412,7 +419,16 @@ export const compileSceneTriggers = (scene: any, sceneIndex: number) =>
       y: trigger.y,
       width: trigger.width,
       height: trigger.height,
-    }))
+      script: maybeScriptFarPtr(eventPtrs[sceneIndex].triggers[triggerIndex]),
+    })),
+    // Dependencies
+    flatten(
+      scene.triggers.map((trigger: any, triggerIndex: number) => {
+        return ([] as string[]).concat(
+          maybeScriptDependency(eventPtrs[sceneIndex].triggers[triggerIndex])
+        );
+      })
+    )
   );
 
 export const compileSceneTriggersHeader = (scene: any, sceneIndex: number) =>
