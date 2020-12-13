@@ -20,6 +20,9 @@ export const locales = glob
   .map((path) => Path.basename(path, ".json"));
 
 const translate = (key: string, params?: L10NParams): string => {
+  if (process.env.DEBUG_L10N) {
+    return key;
+  }
   const l10nString = l10nStrings[key] || key;
   if (typeof l10nString === "string") {
     if (params) {
@@ -30,7 +33,7 @@ const translate = (key: string, params?: L10NParams): string => {
   return String(l10nString);
 };
 
-const replaceParams = (string: string, params: L10NParams) => {
+export const replaceParams = (string: string, params: L10NParams) => {
   let outputString = string;
   Object.keys(params).forEach((param) => {
     const pattern = new RegExp(`{${param}}`, "g");
@@ -49,6 +52,7 @@ export const loadLanguage = (locale: string) => {
       for (const key in translation) {
         l10nStrings[key] = translation[key];
       }
+      return translation;
     } catch (e) {
       console.warn("No language pack for user setting, falling back to en");
       console.warn(
