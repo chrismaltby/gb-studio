@@ -1,6 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 
 export type BuildType = "web" | "rom";
+export type ProjectExportType = "src" | "data";
 
 const buildGame = createAction(
   "buildGame/build",
@@ -8,22 +9,18 @@ const buildGame = createAction(
     {
       buildType = "web",
       exportBuild = false,
-      ejectBuild = false,
     }: {
       buildType?: BuildType;
       exportBuild?: boolean;
-      ejectBuild?: boolean;
     } = {
       buildType: "web",
       exportBuild: false,
-      ejectBuild: false,
     }
   ) => {
     return {
       payload: {
         buildType,
         exportBuild,
-        ejectBuild,
       },
     };
   }
@@ -31,9 +28,13 @@ const buildGame = createAction(
 
 const deleteBuildCache = createAction("buildGame/deleteCache");
 const ejectEngine = createAction("buildGame/ejectEngine");
+const exportProject = createAction<ProjectExportType>(
+  "buildGame/exportProject"
+);
 
 export default {
   buildGame,
   deleteBuildCache,
   ejectEngine,
+  exportProject,
 };

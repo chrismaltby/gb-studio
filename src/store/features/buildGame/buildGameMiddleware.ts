@@ -26,7 +26,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
     const state = store.getState();
     const dispatch = store.dispatch.bind(store);
 
-    const { buildType, exportBuild, ejectBuild } = action.payload;
+    const { buildType, exportBuild } = action.payload;
     const buildStartTime = Date.now();
 
     if (state.console.status === "running") {
@@ -88,12 +88,9 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
             }`
           )
         );
-      } else if (ejectBuild) {
-        await copy(`${outputRoot}`, `${projectRoot}/build/src`);
-        remote.shell.openItem(`${projectRoot}/build/src`);
       }
 
-      if (buildType === "web" && !exportBuild && !ejectBuild) {
+      if (buildType === "web" && !exportBuild) {
         dispatch(consoleActions.stdOut("-"));
         dispatch(consoleActions.stdOut("Success! Starting emulator..."));
 
@@ -131,9 +128,7 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
     await rmdir(cacheRoot);
     dispatch(consoleActions.clearConsole());
     dispatch(consoleActions.stdOut("Cleared GB Studio caches"));
-    
   } else if (actions.ejectEngine.match(action)) {
-
     const cancel = confirmEjectEngineDialog();
 
     if (cancel) {
@@ -161,7 +156,94 @@ const buildGameMiddleware: Middleware<{}, RootState> = (store) => (
     ejectEngineToDir(outputDir).then(() => {
       remote.shell.openItem(outputDir);
     });
+  } else if (actions.exportProject.match(action)) {
+    const state = store.getState();
+    const dispatch = store.dispatch.bind(store);
 
+    if (state.console.status === "running") {
+      // Stop build if already building
+      return;
+    }
+
+    const exportType = action.payload;
+
+    const buildStartTime = Date.now();
+
+    dispatch(consoleActions.startConsole());
+
+    try {
+      const projectRoot = state.document && state.document.root;
+      const project = denormalizeProject(state.project.present);
+      const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+      const engineFields = state.engine.fields;
+
+      const progress = (message: string) => {
+        if (
+          message !== "'" &&
+          message.indexOf("unknown or unsupported #pragma") === -1
+        ) {
+          dispatch(consoleActions.stdOut(message));
+        }
+      };
+      const warnings = (message: string) => {
+        dispatch(consoleActions.stdErr(message));
+      };
+
+      const compileData = await import(
+        "../../../lib/compiler/compileData"
+      ).then((module) => module.default);
+
+      const ejectBuild = await import("../../../lib/compiler/ejectBuild").then(
+        (module) => module.default
+      );
+
+      // Compile project data
+      const compiledData = await compileData(project, {
+        projectRoot,
+        engineFields,
+        tmpPath: getTmp(),
+        progress,
+        warnings,
+      });
+
+      // Export compiled data to a folder
+      await ejectBuild({
+        projectRoot,
+        outputRoot,
+        compiledData,
+        progress,
+        warnings,
+      });
+
+      const exportRoot = `${projectRoot}/build/src`;
+
+      if (exportType === "data") {
+        const dataSrcTmpPath = Path.join(outputRoot, "src", "data");
+        const dataSrcOutPath = Path.join(exportRoot, "src", "data");
+        const dataIncludeTmpPath = Path.join(outputRoot, "include", "data");
+        const dataIncludeOutPath = Path.join(exportRoot, "include", "data");
+        await copy(dataSrcTmpPath, dataSrcOutPath);
+        await copy(dataIncludeTmpPath, dataIncludeOutPath);
+      } else {
+        await copy(outputRoot, exportRoot);
+      }
+
+      const buildTime = Date.now() - buildStartTime;
+      dispatch(consoleActions.stdOut(`Build Time: ${buildTime}ms`));
+      dispatch(consoleActions.completeConsole());
+
+      remote.shell.openItem(exportRoot);
+    } catch (e) {
+      if (typeof e === "string") {
+        dispatch(navigationActions.setSection("build"));
+        dispatch(consoleActions.stdErr(e));
+      } else {
+        dispatch(navigationActions.setSection("build"));
+        dispatch(consoleActions.stdErr(e.toString()));
+      }
+      dispatch(consoleActions.completeConsole());
+      throw e;
+    }
   }
 
   return next(action);

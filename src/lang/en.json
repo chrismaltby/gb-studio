@@ -514,6 +514,7 @@
   "MENU_SHOW_NAVIGATOR": "Show Navigator",
   "MENU_VARIABLE_COPY_EMBED": "Copy Embed Code",
   "MENU_VARIABLE_COPY_EMBED_CHAR": "Copy Embed Character Code",
+  "MENU_EJECT_PROJECT_DATA": "Export Project Data",
 
   "// 11": "Warnings -----------------------------------------------------",
 

@@ -460,8 +460,12 @@ menu.on("ejectEngine", () => {
   mainWindow && mainWindow.webContents.send("ejectEngine");
 });
 
-menu.on("ejectProject", () => {
-  mainWindow && mainWindow.webContents.send("build", "rom", true);
+menu.on("exportProjectSrc", () => {
+  mainWindow && mainWindow.webContents.send("exportProject", "src");
+});
+
+menu.on("exportProjectData", () => {
+  mainWindow && mainWindow.webContents.send("exportProject", "data");
 });
 
 menu.on("pasteInPlace", () => {
