@@ -43,10 +43,65 @@ Download a release for your operating system from the [GB Studio Downloads](http
 
 Or to run from source, clone this repo then:
 
+- Install latest stable [NodeJS](https://nodejs.org/)
+- Install [Yarn](https://yarnpkg.com/)
+
 ```bash
-$ yarn
-$ npm start
+> cd gb-studio
+
+> yarn
+
+> npm start
 ```
+
+## GB Studio CLI 
+
+Install GB Studio from source as above then
+
+```
+> npm run make:cli
+
+> yarn link
+
+# From any folder you can now run gb-studio-cli
+> gb-studio-cli -V
+2.0.0-beta5
+
+> gb-studio-cli --help
+```
+
+### Update the CLI
+
+Pull the latest code and run make:cli again, yarn link is only needed for the first run.
+
+```
+> npm run make:cli
+```
+
+### CLI Examples
+
+- **Export Project**
+
+    ```
+    gb-studio-cli export path/to/project.gbsproj out/
+    ```
+    Export GBDK project from gbsproj to out directory
+
+- **Export Data**
+    ```
+    gb-studio-cli export -d path/to/project.gbsproj out/
+    ```
+    Export only src/data and include/data from gbsproj to out directory
+- **Make ROM**
+    ```
+    gb-studio-cli make:rom path/to/project.gbsproj out/game.gb
+    ```
+    Make a ROM file from gbsproj
+- **Make Web**
+    ```
+    gb-studio-cli make:web path/to/project.gbsproj out/game.gb
+    ```
+    Make a Web build from gbsproj
 
 ## Documentation
 
