@@ -47,7 +47,7 @@ export const triggerName = (trigger: any, triggerIndex: number) =>
   trigger.name || `Trigger ${triggerIndex + 1}`;
 
 export const toFarPtr = (ref: string): string => {
-  return `TO_FAR_PTR(${ref})`;
+  return `TO_FAR_PTR_T(${ref})`;
 };
 
 export const maybeScriptFarPtr = (scriptIndex: number) =>

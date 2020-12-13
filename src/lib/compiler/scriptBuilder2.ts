@@ -108,7 +108,7 @@ class ScriptBuilder {
 
   toScriptString = (name: string) => {
     this._assertStackNeutral();
-    return `.include "vm.inc"
+    return `.include "vm.i"
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
@@ -341,7 +341,7 @@ ${this.output.join("\n")}
 
     this._loadText(0);
     this._string(text);
-    this._overlayMoveTo(0, 12, 1);
+    this._overlayMoveTo(0, 14, 1);
 
     if (avatarId) {
       const avatarIndex = getSpriteIndex(avatarId, avatars);

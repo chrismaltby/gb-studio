@@ -98,7 +98,7 @@ test("Should be able to generate script string", () => {
   sb.actorSetActive("actor2");
   sb.actorMoveTo(5, 6, true, "horizontal");
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .globl b_vm_actor_activate, _vm_actor_activate
 
@@ -107,7 +107,7 @@ test("Should be able to generate script string", () => {
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
         VM_PUSH         2
         VM_SET          ACTOR, .ARG0
         VM_INVOKE       b_vm_actor_activate, _vm_actor_activate, 1, .ARG0
@@ -132,7 +132,7 @@ test("Should be able to open dialogue boxes", () => {
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .globl b_ui_text, _ui_text
 
@@ -141,7 +141,7 @@ test("Should be able to open dialogue boxes", () => {
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
         VM_INVOKE       b_ui_text, _ui_text, 0, 0
         .asciz \"Hello World\"
         VM_STOP
@@ -185,14 +185,14 @@ test("Should be able to conditionally execute if variable is true with event arr
     ]
   );
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .area _CODE_255
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
         VM_PUSH         1
         VM_IF .EQ       1, .ARG0, 1$, 1
         VM_DEBUG        0
@@ -239,7 +239,7 @@ test("Should be able to conditionally execute if variable is true with function 
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .globl b_ui_text, _ui_text
 
@@ -248,7 +248,7 @@ test("Should be able to conditionally execute if variable is true with function 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
         VM_PUSH         1
         VM_IF .EQ       0, .ARG0, 1$, 1
         VM_INVOKE       b_ui_text, _ui_text, 0, 0
@@ -306,7 +306,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
   sb.scriptEnd();
 
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .globl b_ui_text, _ui_text
 
@@ -315,7 +315,7 @@ test("Should be able to conditionally execute if variable is true with nested fu
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
         VM_PUSH         1
         VM_IF .EQ       0, .ARG0, 1$, 1
         VM_PUSH         1
@@ -356,14 +356,14 @@ test("Should be able to define labels and jump", () => {
   sb.labelGoto("mylabel");
 
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .area _CODE_255
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
 _mylabel$:
         VM_JUMP         _mylabel$
 `
@@ -382,14 +382,14 @@ test("Should be able to define labels and jump", () => {
   sb.labelGoto("mylabel");
 
   expect(sb.toScriptString("MY_SCRIPT")).toEqual(
-    `.include "vm.inc"
+    `.include "vm.i"
 
 .area _CODE_255
 
 ___bank_MY_SCRIPT = 255
 .globl ___bank_MY_SCRIPT
 
-MY_SCRIPT::
+_MY_SCRIPT::
 _mylabel$:
         VM_JUMP         _mylabel$
 `

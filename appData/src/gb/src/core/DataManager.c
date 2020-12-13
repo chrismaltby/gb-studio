@@ -34,9 +34,6 @@ UBYTE actors_len = 0;
 UBYTE scene_type;
 BankPtr scene_events_start_ptr;
 
-#define __BANK_PREFIX(A) __bank_##A
-#define TO_FAR_PTR(A) {.bank = (char)&(__BANK_PREFIX(A)), .ptr = (void *)&(A)}
-#define TO_FAR_ARGS(T, A) (T)(A).ptr, (A).bank
 
 void LoadTiles(const tileset_t* tiles, UBYTE bank) {
   UBYTE _save = _current_bank;  

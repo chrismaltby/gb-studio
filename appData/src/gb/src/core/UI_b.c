@@ -40,9 +40,9 @@ const unsigned char ui_black[16] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x
 
 const UBYTE text_draw_speeds[] = {0x0, 0x1, 0x3, 0x7, 0xF, 0x1F};
 
-const far_ptr_t far_font_image = TO_FAR_PTR(font_image);
-const far_ptr_t far_frame_image = TO_FAR_PTR(frame_image);
-const far_ptr_t far_cursor_image = TO_FAR_PTR(cursor_image);
+const far_ptr_t far_font_image = TO_FAR_PTR_T(font_image);
+const far_ptr_t far_frame_image = TO_FAR_PTR_T(frame_image);
+const far_ptr_t far_cursor_image = TO_FAR_PTR_T(cursor_image);
 
 
 // The current in progress text speed.
