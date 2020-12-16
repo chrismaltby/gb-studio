@@ -536,32 +536,32 @@ export const compileEngineFields = (engineFields, engineFieldValues, header) => 
 export const precompileVariables = (scenes) => {
   const variables = [];
 
-  for (let i = 0; i < 100; i++) {
-    variables.push(String(i));
-  }
-  variables.push(TMP_VAR_1);
-  variables.push(TMP_VAR_2);
+  // for (let i = 0; i < 100; i++) {
+  //   variables.push(String(i));
+  // }
+  // variables.push(TMP_VAR_1);
+  // variables.push(TMP_VAR_2);
 
-  walkScenesEvents(scenes, (cmd) => {
-    if (eventHasArg(cmd, "variable")) {
-      const variable = cmd.args.variable || "0";
-      if (variables.indexOf(variable) === -1) {
-        variables.push(variable);
-      }
-    }
-    if (eventHasArg(cmd, "vectorX")) {
-      const x = cmd.args.vectorX || "0";
-      if (variables.indexOf(x) === -1) {
-        variables.push(x);
-      }
-    }
-    if (eventHasArg(cmd, "vectorY")) {
-      const y = cmd.args.vectorY || "0";
-      if (variables.indexOf(y) === -1) {
-        variables.push(y);
-      }
-    }
-  });
+  // walkScenesEvents(scenes, (cmd) => {
+  //   if (eventHasArg(cmd, "variable")) {
+  //     const variable = cmd.args.variable || "0";
+  //     if (variables.indexOf(variable) === -1) {
+  //       variables.push(variable);
+  //     }
+  //   }
+  //   if (eventHasArg(cmd, "vectorX")) {
+  //     const x = cmd.args.vectorX || "0";
+  //     if (variables.indexOf(x) === -1) {
+  //       variables.push(x);
+  //     }
+  //   }
+  //   if (eventHasArg(cmd, "vectorY")) {
+  //     const y = cmd.args.vectorY || "0";
+  //     if (variables.indexOf(y) === -1) {
+  //       variables.push(y);
+  //     }
+  //   }
+  // });
   return variables;
 };
 

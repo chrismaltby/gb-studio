@@ -46,7 +46,7 @@ interface ScriptBuilderScene {
 interface ScriptBuilderOptions {
   scene: ScriptBuilderScene;
   variables: string[];
-  avatars: ScriptBuilderEntity[];
+  sprites: ScriptBuilderEntity[];
   entity?: ScriptBuilderEntity;
   compileEvents: (events: ScriptEvent[]) => void;
 }
@@ -54,6 +54,25 @@ interface ScriptBuilderOptions {
 type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
 
 type ScriptBuilderComparisonOperator = "EQ" | "GT";
+
+type ScriptBuilderOverlayWaitFlag =
+  | ".UI_WAIT_WINDOW"
+  | ".UI_WAIT_TEXT"
+  | ".UI_WAIT_BTN_A"
+  | ".UI_WAIT_BTN_B"
+  | ".UI_WAIT_BTN_ANY";
+
+type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
+
+type ScriptBuilderOverlayMoveSpeed =
+  | number
+  | ".OVERLAY_TEXT_IN_SPEED"
+  | ".OVERLAY_TEXT_OUT_SPEED";
+
+type ScriptBuilderTextLayout =
+  | 0
+  | ".UI_ENABLE_MENU_ONECOL"
+  | ".UI_ENABLE_MENU_TWOCOL";
 
 type ScriptBuilderPathFunction = () => void;
 
@@ -63,12 +82,31 @@ const getActorIndex = (actorId: string, scene: ScriptBuilderScene) => {
   return scene.actors.findIndex((a) => a.id === actorId) + 1;
 };
 
-const getVariableIndex = (variable: string, variables: string[]) => {
-  return variables.findIndex((v) => v === variable);
+export const getVariableIndex = (variable: string, variables: string[]) => {
+  const normalisedVariable = String(variable)
+    .replace(/\$/g, "")
+    .replace(/^0+([0-9])/, "$1");
+  let variableIndex = variables.indexOf(normalisedVariable);
+  if (variableIndex === -1) {
+    variables.push(normalisedVariable);
+    variableIndex = variables.length - 1;
+  }
+  return variableIndex;
 };
 
 const toValidLabel = (label: string): string => {
   return label.replace(/[^A-Za-z0-9]/g, "_");
+};
+
+const buildOverlayWaitCondition = (flags: ScriptBuilderOverlayWaitFlag[]) => {
+  return unionFlags(flags, ".UI_WAIT_NONE");
+};
+
+const unionFlags = (flags: string[], defaultValue: string = "0") => {
+  if (flags.length === 0) {
+    return defaultValue;
+  }
+  return `^/(${flags.join(" | ")})/`;
 };
 
 // ------------------------
@@ -93,7 +131,7 @@ class ScriptBuilder {
     this.options = {
       ...options,
       variables: options.variables || [],
-      avatars: options.avatars || [],
+      sprites: options.sprites || [],
       compileEvents: options.compileEvents || ((_e) => {}),
     };
     this.dependencies = [];
@@ -153,6 +191,10 @@ ${this.output.join("\n")}
     }
   };
 
+  private _addComment = (comment: string) => {
+    this.output.push(`        ; ${comment}`);
+  };
+
   private _addCmd = (cmd: string, ...args: Array<string | number>) => {
     this.output.push(this._prettyFormatCmd(cmd, args));
   };
@@ -160,7 +202,7 @@ ${this.output.join("\n")}
   private _prettyFormatCmd = (cmd: string, args: Array<string | number>) => {
     if (args.length > 0) {
       return `        ${cmd.padEnd(
-        Math.max(16, cmd.length + 1),
+        Math.max(24, cmd.length + 1),
         " "
       )}${args.join(", ")}`;
     } else {
@@ -220,16 +262,31 @@ ${this.output.join("\n")}
     this._addCmd("VM_POP", num);
   };
 
-  _set = (location: string, value: string | number) => {
+  _set = (location: string | number, value: string | number) => {
     this._addCmd("VM_SET", location, value);
   };
 
-  _setConst = (location: string, value: string | number) => {
+  _setConst = (location: string | number, value: string | number) => {
     this._addCmd("VM_SET_CONST", location, value);
+  };
+
+  _setUInt8 = (cVariable: string, popNum: number) => {
+    this._addDependency(cVariable);
+    this.stackPtr -= popNum;
+    this._addCmd("OP_VM_SET_UINT8", `_${cVariable}`, popNum);
+  };
+
+  _setConstUInt8 = (cVariable: string, value: number) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
   };
 
   _string = (str: string) => {
     this._addCmd(`.asciz "${str.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`);
+  };
+
+  _dw = (...data: Array<string | number>) => {
+    this._addCmd(`.dw ${data.join(", ")}`);
   };
 
   _label = (label: string) => {
@@ -266,22 +323,74 @@ ${this.output.join("\n")}
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
 
-  _displayText = (avatar?: number) => {
+  _loadStructuredText = (inputText: string) => {
+    let text = inputText;
+
+    const inlineVariables = (
+      text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
+    ).map((s) => s.replace(/\$/g, ""));
+
+    const usedVariables = inlineVariables.map((variable) =>
+      this.getVariableIndex(variable)
+    );
+
+    // Replace speed codes
+    text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
+      return `\\02${value}`;
+    });
+
+    inlineVariables.forEach((code) => {
+      text = text.replace(`$${code}$`, "%d");
+    });
+
+    this._loadText(usedVariables.length);
+    if (usedVariables.length > 0) {
+      this._dw(...usedVariables);
+    }
+    this._string(text);
+  };
+
+  _displayText = (avatar?: number, layout: ScriptBuilderTextLayout = 0) => {
     if (avatar) {
       const avatarSymbol = spriteSheetSymbol(avatar);
       this._addBankedDataDependency(avatarSymbol);
-      this._addCmd("VM_LOAD_TEXT", `b_${avatarSymbol}`, avatarSymbol);
+      this._addCmd(
+        "VM_DISPLAY_TEXT",
+        `___bank_${avatarSymbol}`,
+        `_${avatarSymbol}`,
+        layout
+      );
     } else {
-      this._addCmd("VM_DISPLAY_TEXT", 0, 0);
+      this._addCmd("VM_DISPLAY_TEXT", 0, 0, layout);
     }
   };
 
-  _overlayMoveTo = (x: number, y: number, speed: number) => {
+  _choice = (variable: string | number, options: ScriptBuilderChoiceFlag[]) => {
+    this._addCmd("VM_CHOICE", variable, unionFlags(options));
+  };
+
+  _overlayMoveTo = (
+    x: number,
+    y: number,
+    speed: ScriptBuilderOverlayMoveSpeed
+  ) => {
     this._addCmd("VM_OVERLAY_MOVE_TO", x, y, speed);
+  };
+
+  _overlayWait = (
+    modal: boolean,
+    waitFlags: ScriptBuilderOverlayWaitFlag[]
+  ) => {
+    this._addCmd(
+      "VM_OVERLAY_WAIT",
+      modal ? ".UI_MODAL" : ".UI_NONMODAL",
+      buildOverlayWaitCondition(waitFlags)
+    );
   };
 
   _stop = () => {
     this._assertStackNeutral();
+    this._addComment("Stop Script");
     this._addCmd("VM_STOP");
   };
 
@@ -315,6 +424,22 @@ ${this.output.join("\n")}
     this._assertStackNeutral(stackPtr);
   };
 
+  actorMoveRelative = (
+    x: number = 0,
+    y: number = 0,
+    useCollisions: boolean = false,
+    moveType: ScriptBuilderMoveType
+  ) => {
+    // const output = this.output;
+    // output.push(cmd(ACTOR_MOVE_RELATIVE));
+    // output.push(Math.abs(x));
+    // output.push(x < 0 ? 1 : 0);
+    // output.push(Math.abs(y));
+    // output.push(y < 0 ? 1 : 0);
+    // output.push(useCollisions ? 1 : 0);
+    // output.push(moveTypeDec(moveType));
+  };
+
   // Timing
 
   nextFrameAwait = () => {
@@ -334,21 +459,195 @@ ${this.output.join("\n")}
   // Text
 
   textDialogue = (inputText = " ", avatarId?: string) => {
-    const { avatars } = this.options;
+    const { sprites } = this.options;
+
     let text = inputText;
     const maxPerLine = avatarId ? 16 : 18;
     text = trimlines(text, maxPerLine);
+    if (text.split("\n").length === 1) [(text += "\n")];
 
-    this._loadText(0);
-    this._string(text);
-    this._overlayMoveTo(0, 14, 1);
+    // const inlineVariables = (
+    //   text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
+    // ).map((s) => s.replace(/\$/g, ""));
+
+    // const usedVariables = inlineVariables.map((variable) =>
+    //   this.getVariableIndex(variable)
+    // );
+
+    // Replace speed codes
+    // text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
+    //   return `\\02${value}`;
+    // });
+
+    // inlineVariables.forEach((code) => {
+    //   text = text.replace(code, "%d");
+    // });
+
+    const numLines = text.split("\n").length;
+
+    this._addComment("Text Dialogue");
+    this._loadStructuredText(text);
+    // this._loadText(usedVariables.length);
+    // if (usedVariables.length > 0) {
+    //   this._dw(...usedVariables);
+    // }
+    // this._string(text);
+    this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
 
     if (avatarId) {
-      const avatarIndex = getSpriteIndex(avatarId, avatars);
+      const avatarIndex = getSpriteIndex(avatarId, sprites);
       this._displayText(avatarIndex);
     } else {
       this._displayText();
     }
+
+    this._overlayWait(true, [
+      ".UI_WAIT_WINDOW",
+      ".UI_WAIT_TEXT",
+      ".UI_WAIT_BTN_A",
+    ]);
+    this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+  };
+
+  textSetAnimSpeed = (
+    speedIn: number,
+    speedOut: number,
+    textSpeed: number = 1,
+    allowFastForward: boolean = true
+  ) => {
+    this._addComment("Text Set Animation Speed");
+    this._setConstUInt8("text_ff_joypad", allowFastForward ? 1 : 0);
+    this._setConstUInt8("text_draw_speed", textSpeedDec(textSpeed));
+    this._setConstUInt8("text_out_speed", speedOut);
+    this._setConstUInt8("text_in_speed", speedIn);
+  };
+
+  textChoice = (
+    setVariable: string,
+    args: { trueText: string; falseText: string }
+  ) => {
+    const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
+    const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
+    const choiceText = `\\020${trueText}\n${falseText}`;
+    const variableIndex = this.getVariableIndex(setVariable);
+    const numLines = choiceText.split("\n").length;
+
+    this._addComment("Text Multiple Choice");
+    this._loadStructuredText(choiceText);
+    this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
+    this._displayText(undefined, ".UI_ENABLE_MENU_ONECOL");
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._choice(variableIndex, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"]);
+    this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+  };
+
+  textMenu = (
+    setVariable: string,
+    options: string[],
+    layout: string = "menu",
+    cancelOnLastOption: boolean = false,
+    cancelOnB: boolean = false
+  ) => {
+    const variableIndex = this.getVariableIndex(setVariable);
+    const menuText =
+      "\\020" +
+      options
+        .map(
+          (option, index) =>
+            trimlines(option || "", 6, 1) || `Item ${index + 1}`
+        )
+        .join("\n");
+    const numLines = menuText.split("\n").length;
+    const height = layout === "menu" ? numLines : Math.min(numLines, 4);
+    const x = layout === "menu" ? 10 : 0;
+    const layoutFlag =
+      layout === "menu" ? ".UI_ENABLE_MENU_ONECOL" : ".UI_ENABLE_MENU_TWOCOL";
+    const choiceFlags: ScriptBuilderChoiceFlag[] = [];
+    if (cancelOnLastOption) {
+      choiceFlags.push(".UI_MENU_LAST_0");
+    }
+    if (cancelOnB) {
+      choiceFlags.push(".UI_MENU_CANCEL_B");
+    }
+
+    this._addComment("Text Menu");
+    this._loadStructuredText(menuText);
+    if (layout === "menu") {
+      this._overlayMoveTo(10, 18, 0);
+    }
+    this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_TEXT_IN_SPEED");
+    this._displayText(undefined, layoutFlag);
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    this._choice(variableIndex, choiceFlags);
+    this._overlayMoveTo(x, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    if (layout === "menu") {
+      this._overlayMoveTo(0, 18, 0);
+    }
+  };
+
+  // Scenes
+
+  sceneSwitch = (
+    sceneId: string,
+    x: number = 0,
+    y: number = 0,
+    direction: string = "down",
+    fadeSpeed: number = 2
+  ) => {
+    // const output = this.output;
+    // const { scenes } = this.options;
+    // const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
+    // if (sceneIndex > -1) {
+    //   output.push(cmd(SWITCH_SCENE));
+    //   output.push(hi(sceneIndex));
+    //   output.push(lo(sceneIndex));
+    //   output.push(x);
+    //   output.push(y);
+    //   output.push(dirDec(direction));
+    //   output.push(fadeSpeed);
+    //   this.scriptEnd();
+    // }
+  };
+
+  // Variables
+
+  getVariableIndex = (variable = "0") => {
+    const { variables } = this.options;
+    if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
+      const { entity } = this.options;
+      if (entity) {
+        return getVariableIndex(`${entity.id}__${variable}`, variables);
+      }
+      return 0;
+    }
+    return getVariableIndex(variable, variables);
+  };
+
+  variableInc = (variable: string) => {
+    // const output = this.output;
+    const variableIndex = this.getVariableIndex(variable);
+
+    // this._rpn().ref(variableIndex).int8(1).operator("add").stop();
+    // this._set(variableIndex, ".ARG0");
+    // this._stackPop(1);
+
+    /*
+"        VM_RPN
+            .R_REF      VAR_1
+            .R_INT8     1
+            .R_OPERATOR .ADD
+            .R_STOP
+        VM_SET          VAR_1, .ARG0
+        VM_POP          1
+"
+*/
+
+    // output.push(cmd(INC_VALUE));
+    // output.push(hi(variableIndex));
+    // output.push(lo(variableIndex));
   };
 
   // Control Flow
@@ -358,8 +657,7 @@ ${this.output.join("\n")}
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const { variables, compileEvents } = this.options;
-    const variableIndex = getVariableIndex(variable, variables);
+    const variableIndex = this.getVariableIndex(variable);
     const trueLabel = this._getNextLabel();
     const endLabel = this._getNextLabel();
     this._stackPush(1);
