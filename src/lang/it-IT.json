@@ -221,6 +221,7 @@
   "BUILD_EXPORT_ROM": "Esporta ROM",
   "BUILD_EXPORT_WEB": "Esporta per il Web",
   "BUILD_CLEAR": "Ripulisci",
+  "BUILD_EMPTY_BUILD_CACHE": "Svuota la Cache di Compilazione",
 
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_SWITCH_SCENE": "Scena: Cambia Scena",
