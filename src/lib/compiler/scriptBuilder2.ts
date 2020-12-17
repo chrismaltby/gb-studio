@@ -27,8 +27,16 @@ import { hi, lo } from "../helpers/8bit";
 import trimlines from "../helpers/trimlines";
 import { SPRITE_TYPE_ACTOR } from "../../consts";
 import { is16BitCType } from "../helpers/engineFields";
-import { nextVariable } from "../helpers/variables";
-import { ScriptEvent } from "../../store/features/entities/entitiesTypes";
+import {
+  globalVariableName,
+  localVariableName,
+  nextVariable,
+  tempVariableName,
+} from "../helpers/variables";
+import {
+  ScriptEvent,
+  Variable,
+} from "../../store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { spriteSheetSymbol } from "./compileData2";
 
@@ -41,11 +49,19 @@ interface ScriptBuilderEntity {
 interface ScriptBuilderScene {
   id: string;
   actors: ScriptBuilderEntity[];
+  triggers: ScriptBuilderEntity[];
 }
+
+type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
 interface ScriptBuilderOptions {
   scene: ScriptBuilderScene;
+  sceneIndex: number;
+  entityIndex: number;
+  entityType: ScriptBuilderEntityType;
   variables: string[];
+  variablesLookup: VariablesLookup;
+  variableAliasLookup: Dictionary<string>;
   sprites: ScriptBuilderEntity[];
   entity?: ScriptBuilderEntity;
   compileEvents: (events: ScriptEvent[]) => void;
@@ -64,6 +80,8 @@ type ScriptBuilderOverlayWaitFlag =
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
 
+type ScriptBuilderRPNOperatons = ".ADD" | ".SUB";
+
 type ScriptBuilderOverlayMoveSpeed =
   | number
   | ".OVERLAY_TEXT_IN_SPEED"
@@ -75,6 +93,8 @@ type ScriptBuilderTextLayout =
   | ".UI_ENABLE_MENU_TWOCOL";
 
 type ScriptBuilderPathFunction = () => void;
+
+type VariablesLookup = { [name: string]: Variable | undefined };
 
 // - Helpers --------------
 
@@ -94,6 +114,32 @@ export const getVariableIndex = (variable: string, variables: string[]) => {
   return variableIndex;
 };
 
+export const getVariableId = (
+  variable: string,
+  entity?: ScriptBuilderEntity
+) => {
+  if (isVariableLocal(variable)) {
+    if (entity) {
+      return `${entity.id}__${variable}`;
+    }
+  } else if (isVariableTemp(variable)) {
+    return variable;
+  }
+  return String(parseInt(variable));
+};
+
+export const toVariableNumber = (variable: string) => {
+  return variable.replace(/[^0-9]/g, "");
+};
+
+export const isVariableLocal = (variable: string) => {
+  return ["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1;
+};
+
+export const isVariableTemp = (variable: string) => {
+  return ["T0", "T1"].indexOf(variable) > -1;
+};
+
 const toValidLabel = (label: string): string => {
   return label.replace(/[^A-Za-z0-9]/g, "_");
 };
@@ -107,6 +153,10 @@ const unionFlags = (flags: string[], defaultValue: string = "0") => {
     return defaultValue;
   }
   return `^/(${flags.join(" | ")})/`;
+};
+
+const toASMVar = (symbol: string) => {
+  return symbol.toUpperCase().replace(/[^A-Z0-9]/g, "_");
 };
 
 // ------------------------
@@ -130,7 +180,12 @@ class ScriptBuilder {
     this.output = output;
     this.options = {
       ...options,
+      sceneIndex: options.sceneIndex || 0,
+      entityIndex: options.entityIndex || 0,
+      entityType: options.entityType || "scene",
       variables: options.variables || [],
+      variablesLookup: options.variablesLookup || {},
+      variableAliasLookup: options.variableAliasLookup || {},
       sprites: options.sprites || [],
       compileEvents: options.compileEvents || ((_e) => {}),
     };
@@ -147,6 +202,7 @@ class ScriptBuilder {
   toScriptString = (name: string) => {
     this._assertStackNeutral();
     return `.include "vm.i"
+.include "game_globals.i"
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
@@ -196,7 +252,7 @@ ${this.output.join("\n")}
   };
 
   private _addCmd = (cmd: string, ...args: Array<string | number>) => {
-    this.output.push(this._prettyFormatCmd(cmd, args));
+    this.output.push(this._padCmd(cmd, args.join(", "), 8, 24));
   };
 
   private _prettyFormatCmd = (cmd: string, args: Array<string | number>) => {
@@ -207,6 +263,18 @@ ${this.output.join("\n")}
       )}${args.join(", ")}`;
     } else {
       return `        ${cmd}`;
+    }
+  };
+
+  _padCmd = (cmd: string, args: string, nPadStart: number, nPadCmd: number) => {
+    const startPadding = "".padStart(nPadStart);
+    if (args.length > 0) {
+      return `${startPadding}${cmd.padEnd(
+        Math.max(nPadCmd, cmd.length + 1),
+        " "
+      )}${args}`;
+    } else {
+      return `${startPadding}${cmd}`;
     }
   };
 
@@ -301,6 +369,43 @@ ${this.output.join("\n")}
     this._addCmd("VM_JUMP", `${_label}$`);
   };
 
+  _rpn = () => {
+    const output: string[] = [];
+    const stack: number[] = [];
+
+    const rpnCmd = (cmd: string, ...args: Array<string | number>) => {
+      output.push(this._padCmd(cmd, args.join(", "), 12, 12));
+    };
+
+    const rpn = {
+      ref: (variable: string) => {
+        rpnCmd(".R_REF ", variable);
+        stack.push(0);
+        return rpn;
+      },
+      int8: (value: number) => {
+        rpnCmd(".R_INT8", value);
+        return rpn;
+      },
+      operator: (op: ScriptBuilderRPNOperatons) => {
+        rpnCmd(".R_OPERATOR", op);
+        return rpn;
+      },
+      stop: () => {
+        rpnCmd(".R_STOP");
+        this._addCmd("VM_RPN");
+        output.forEach((cmd: string) => {
+          this.output.push(cmd);
+        });
+        stack.forEach((value: number) => {
+          this.stack[this.stackPtr++] = value;
+        });
+      },
+    };
+
+    return rpn;
+  };
+
   _if = (
     operator: ScriptBuilderComparisonOperator,
     valueA: string | number,
@@ -330,8 +435,8 @@ ${this.output.join("\n")}
       text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
     ).map((s) => s.replace(/\$/g, ""));
 
-    const usedVariables = inlineVariables.map((variable) =>
-      this.getVariableIndex(variable)
+    const usedVariableAliases = inlineVariables.map((variable) =>
+      this.getVariableAlias(variable.replace(/^0/g, ""))
     );
 
     // Replace speed codes
@@ -343,9 +448,9 @@ ${this.output.join("\n")}
       text = text.replace(`$${code}$`, "%d");
     });
 
-    this._loadText(usedVariables.length);
-    if (usedVariables.length > 0) {
-      this._dw(...usedVariables);
+    this._loadText(usedVariableAliases.length);
+    if (usedVariableAliases.length > 0) {
+      this._dw(...usedVariableAliases);
     }
     this._string(text);
   };
@@ -458,56 +563,80 @@ ${this.output.join("\n")}
 
   // Text
 
-  textDialogue = (inputText = " ", avatarId?: string) => {
+  textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
     const { sprites } = this.options;
-
-    let text = inputText;
+    const input: string[] = Array.isArray(inputText) ? inputText : [inputText];
     const maxPerLine = avatarId ? 16 : 18;
-    text = trimlines(text, maxPerLine);
-    if (text.split("\n").length === 1) [(text += "\n")];
 
-    // const inlineVariables = (
-    //   text.match(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g) || []
-    // ).map((s) => s.replace(/\$/g, ""));
+    const trimmedInput = input.map((textBlock) => {
+      let text = textBlock;
+      text = trimlines(textBlock, maxPerLine);
+      const lineCount = text.split("\n").length;
+      if (lineCount === 1) {
+        text += "\n";
+      }
+      return text;
+    });
 
-    // const usedVariables = inlineVariables.map((variable) =>
-    //   this.getVariableIndex(variable)
-    // );
+    const initialNumLines = trimmedInput.map(
+      (textBlock) => textBlock.split("\n").length
+    );
 
-    // Replace speed codes
-    // text = text.replace(/!S([0-5])!/g, (_match, value: string) => {
-    //   return `\\02${value}`;
-    // });
+    const maxNumLines = Math.max.apply(null, initialNumLines);
+    const textBoxY = 18 - maxNumLines - 2;
 
-    // inlineVariables.forEach((code) => {
-    //   text = text.replace(code, "%d");
-    // });
-
-    const numLines = text.split("\n").length;
+    // Add additional newlines so all textboxes in a
+    // sequence have the same height
+    const paddedInput = trimmedInput.map((textBlock) => {
+      let text = textBlock;
+      const numLines = text.split("\n").length;
+      if (numLines < maxNumLines) {
+        text += new Array(maxNumLines - numLines + 1).join("\n");
+      }
+      return text;
+    });
 
     this._addComment("Text Dialogue");
-    this._loadStructuredText(text);
-    // this._loadText(usedVariables.length);
-    // if (usedVariables.length > 0) {
-    //   this._dw(...usedVariables);
+    paddedInput.forEach((text, textIndex) => {
+      this._loadStructuredText(text);
+      if (textIndex === 0) {
+        this._overlayMoveTo(0, textBoxY, ".OVERLAY_TEXT_IN_SPEED");
+      }
+      if (avatarId) {
+        const avatarIndex = getSpriteIndex(avatarId, sprites);
+        this._displayText(avatarIndex);
+      } else {
+        this._displayText();
+      }
+      this._overlayWait(true, [
+        ".UI_WAIT_WINDOW",
+        ".UI_WAIT_TEXT",
+        ".UI_WAIT_BTN_A",
+      ]);
+      if (textIndex === paddedInput.length - 1) {
+        this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+        this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+      }
+    });
+
+    // this._loadStructuredText(text);
+
+    // this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
+
+    // if (avatarId) {
+    //   const avatarIndex = getSpriteIndex(avatarId, sprites);
+    //   this._displayText(avatarIndex);
+    // } else {
+    //   this._displayText();
     // }
-    // this._string(text);
-    this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
 
-    if (avatarId) {
-      const avatarIndex = getSpriteIndex(avatarId, sprites);
-      this._displayText(avatarIndex);
-    } else {
-      this._displayText();
-    }
-
-    this._overlayWait(true, [
-      ".UI_WAIT_WINDOW",
-      ".UI_WAIT_TEXT",
-      ".UI_WAIT_BTN_A",
-    ]);
-    this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
-    this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
+    // this._overlayWait(true, [
+    //   ".UI_WAIT_WINDOW",
+    //   ".UI_WAIT_TEXT",
+    //   ".UI_WAIT_BTN_A",
+    // ]);
+    // this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
+    // this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
   };
 
   textSetAnimSpeed = (
@@ -530,7 +659,7 @@ ${this.output.join("\n")}
     const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
     const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
     const choiceText = `\\020${trueText}\n${falseText}`;
-    const variableIndex = this.getVariableIndex(setVariable);
+    const variableAlias = this.getVariableAlias(setVariable);
     const numLines = choiceText.split("\n").length;
 
     this._addComment("Text Multiple Choice");
@@ -538,7 +667,7 @@ ${this.output.join("\n")}
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
     this._displayText(undefined, ".UI_ENABLE_MENU_ONECOL");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableIndex, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"]);
+    this._choice(variableAlias, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"]);
     this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
   };
@@ -550,7 +679,7 @@ ${this.output.join("\n")}
     cancelOnLastOption: boolean = false,
     cancelOnB: boolean = false
   ) => {
-    const variableIndex = this.getVariableIndex(setVariable);
+    const variableAlias = this.getVariableAlias(setVariable);
     const menuText =
       "\\020" +
       options
@@ -580,7 +709,7 @@ ${this.output.join("\n")}
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_TEXT_IN_SPEED");
     this._displayText(undefined, layoutFlag);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
-    this._choice(variableIndex, choiceFlags);
+    this._choice(variableAlias, choiceFlags);
     this._overlayMoveTo(x, 18, ".OVERLAY_TEXT_OUT_SPEED");
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     if (layout === "menu") {
@@ -614,40 +743,94 @@ ${this.output.join("\n")}
 
   // Variables
 
-  getVariableIndex = (variable = "0") => {
-    const { variables } = this.options;
-    if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
-      const { entity } = this.options;
-      if (entity) {
-        return getVariableIndex(`${entity.id}__${variable}`, variables);
-      }
-      return 0;
+  // Unused - use variable alias instead
+  // getVariableIndex = (variable = "0") => {
+  //   const { variables } = this.options;
+  //   if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
+  //     const { entity } = this.options;
+  //     if (entity) {
+  //       return getVariableIndex(`${entity.id}__${variable}`, variables);
+  //     }
+  //     return 0;
+  //   }
+  //   return getVariableIndex(variable, variables);
+  // };
+
+  getVariableAlias = (variable = "0"): string => {
+    const {
+      entity,
+      sceneIndex,
+      entityIndex,
+      entityType,
+      variablesLookup,
+      variableAliasLookup,
+    } = this.options;
+    const id = getVariableId(variable, entity);
+
+    // If already got an alias use that
+    const existingAlias = variableAliasLookup[id];
+    if (existingAlias) {
+      return existingAlias;
     }
-    return getVariableIndex(variable, variables);
+
+    let name = "";
+    if (entity && isVariableLocal(variable)) {
+      const num = toVariableNumber(variable);
+      const localName = localVariableName(num, entity.id, variablesLookup);
+      if (entityType === "scene") {
+        name = `S${sceneIndex}_${localName}`;
+      } else if (entityType === "actor") {
+        name = `S${sceneIndex}A${entityIndex}_${localName}`;
+      } else if (entityType === "trigger") {
+        name = `S${sceneIndex}T${entityIndex}_${localName}`;
+      }
+    } else if (isVariableTemp(variable)) {
+      const num = toVariableNumber(variable);
+      name = tempVariableName(num);
+    } else {
+      const num = toVariableNumber(variable);
+      name = globalVariableName(num, variablesLookup);
+    }
+
+    let alias = "VAR_" + toASMVar(name);
+    let newAlias = alias;
+    let counter = 1;
+
+    // Make sure new alias is unique
+    const aliases = Object.values(variableAliasLookup) as string[];
+    while (aliases.includes(newAlias)) {
+      newAlias = `${alias}_${counter}`;
+      counter++;
+    }
+
+    // New Alias is now unique
+    variableAliasLookup[id] = newAlias;
+
+    return newAlias;
   };
 
   variableInc = (variable: string) => {
-    // const output = this.output;
-    const variableIndex = this.getVariableIndex(variable);
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Increment By 1");
+    this._rpn() //
+      .ref(variableAlias)
+      .int8(1)
+      .operator(".ADD")
+      .stop();
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(1);
+  };
 
-    // this._rpn().ref(variableIndex).int8(1).operator("add").stop();
-    // this._set(variableIndex, ".ARG0");
-    // this._stackPop(1);
-
-    /*
-"        VM_RPN
-            .R_REF      VAR_1
-            .R_INT8     1
-            .R_OPERATOR .ADD
-            .R_STOP
-        VM_SET          VAR_1, .ARG0
-        VM_POP          1
-"
-*/
-
-    // output.push(cmd(INC_VALUE));
-    // output.push(hi(variableIndex));
-    // output.push(lo(variableIndex));
+  variableDec = (variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Decrement By 1");
+    this._rpn() //
+      .ref(variableAlias)
+      .int8(1)
+      .operator(".SUB")
+      .stop();
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(1);
   };
 
   // Control Flow
@@ -657,11 +840,11 @@ ${this.output.join("\n")}
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
-    const variableIndex = this.getVariableIndex(variable);
+    const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this._getNextLabel();
     const endLabel = this._getNextLabel();
     this._stackPush(1);
-    this._if("EQ", variableIndex, ".ARG0", trueLabel, 1);
+    this._if("EQ", variableAlias, ".ARG0", trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -1199,15 +1382,6 @@ ${this.output.join("\n")}
     output.push(lo(indexX));
     output.push(hi(indexY));
     output.push(lo(indexY));
-  };
-
-  variableInc = (variable) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(INC_VALUE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
   };
 
   variableDec = (variable) => {

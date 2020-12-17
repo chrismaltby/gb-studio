@@ -75,7 +75,7 @@ const ejectBuild = async ({
   await fs.ensureDir(`${outputRoot}/build/rom`);
 
   for (const filename in compiledData.files) {
-    if (filename.endsWith(".h")) {
+    if (filename.endsWith(".h") || filename.endsWith(".i")) {
       await fs.writeFile(
         `${outputRoot}/include/data/${filename}`,
         compiledData.files[filename]

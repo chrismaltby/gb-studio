@@ -45,34 +45,7 @@ const compile = (input, helpers) => {
     textRestoreOpenSpeed,
     textRestoreCloseSpeed
   } = helpers;
-  if (Array.isArray(input.text)) {
-    // Handle multiple blocks of text
-    for (let j = 0; j < input.text.length; j++) {
-      const rowText = input.text[j];
-
-      // // Before first box, make close instant
-      // if (j === 0) {
-      //   textSetCloseInstant();
-      // }
-      // // Before last box, restore close speed
-      // if (j === input.text.length - 1) {
-      //   textRestoreCloseSpeed();
-      // }
-
-      textDialogue(rowText || " ", input.avatarId);
-
-      // // After first box, make open instant
-      // if (j === 0) {
-      //   textSetOpenInstant();
-      // }
-      // // After last box, restore open speed
-      // if (j === input.text.length - 1) {
-      //   textRestoreOpenSpeed();
-      // }
-    }
-  } else {
-    textDialogue(input.text || " ", input.avatarId);
-  }
+  textDialogue(input.text || " ", input.avatarId);
 };
 
 module.exports = {

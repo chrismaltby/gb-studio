@@ -1,4 +1,5 @@
 import { copy } from "fs-extra";
+import keyBy from "lodash/keyBy";
 import {
   walkScenesEvents,
   eventHasArg,
@@ -66,6 +67,7 @@ import {
   spriteSheetSymbol,
   sceneSymbol,
   compileScriptHeader,
+  compileGameGlobalsInclude,
 } from "./compileData2";
 
 const indexById = indexBy("id");
@@ -131,6 +133,9 @@ const compile = async (
   // Can maybe move some of the compilation into workers to prevent this
   await new Promise((resolve) => setTimeout(resolve, 20));
 
+  const variablesLookup = keyBy(projectData.variables, "id");
+  const variableAliasLookup = {};
+
   // Add event data
   let scriptCounter = 0;
   const eventPtrs = precompiled.sceneData.map((scene, sceneIndex) => {
@@ -152,6 +157,8 @@ const compile = async (
         backgrounds: precompiled.usedBackgrounds,
         strings: precompiled.strings,
         variables: precompiled.variables,
+        variablesLookup,
+        variableAliasLookup,
         eventPaletteIndexes: precompiled.eventPaletteIndexes,
         labels: {},
         entityType,
@@ -356,6 +363,8 @@ const compile = async (
   const variablesLen = Math.max(
     (Math.ceil(precompiled.variables.length / 50) * 50) + 50
   , 500);
+
+  output['game_globals.i'] = compileGameGlobalsInclude(variableAliasLookup);
 
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +

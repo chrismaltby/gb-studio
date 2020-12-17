@@ -609,3 +609,12 @@ export const compileScriptHeader = (scriptIndex: number) =>
     scriptSymbol(scriptIndex),
     `// Script ${scriptIndex}`
   );
+
+export const compileGameGlobalsInclude = (
+  variableAliasLookup: Dictionary<string>
+) =>
+  (Object.values(variableAliasLookup) as string[]).map(
+    (string, stringIndex) => {
+      return `${string} = ${stringIndex}\n`;
+    }
+  );
