@@ -523,16 +523,16 @@
   "WARNING_BACKGROUND_TOO_WIDE": "Lo Sfondo è troppo ampio: {width}px di larghezza su un massimo di {maxWidth}px",
   "WARNING_BACKGROUND_TOO_TALL": "Lo Sfondo è troppo alto, {height}px di altezza su un massimo di {maxHeight}px",
   "WARNING_BACKGROUND_TOO_MANY_PIXELS": "Lo Sfondo contiene troppi pixel: {numPixels} ({width}px * {height}px) su un massimo di {maxPixels}",
-  "WARNING_BACKGROUND_TOO_MANY_TILES": "Background contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly. Consider reducing the amount of detail in this image.",
-  "WARNING_MUSIC_TOO_LARGE": "Music track {filename} is too large to fit in memory ({bytes} bytes when maximum is {maxBytes}). Consider reducing the number of patterns in the file.",
-  "WARNING_ENGINE_OUT_OF_DATE": "Ejected engine is out of date (found \"{ejectedEngineVersion}\" when latest is \"{expectedEngineVersion}\").\nYou may encounter issues if you don't eject your engine again.",
-  "WARNING_MISSING_UPDATES": "Missing updates",
-  "WARNING_MODIFIED_FILES": "Modified files",
-  "WARNING_TOO_MANY_ONSCREEN_ACTORS": "Too many actors may be onscreen at once around \"{actorName}\"",
-  "WARNING_ONSCREEN_ACTORS_LIMIT": "Only {maxOnscreen} actors can be visible on screen at once",
-  "WARNING_FRAMES_LIMIT": "This scene is over available limits and may have rendering issues. Try reducing number of actors in scene or use static and non animated sprites where possible. Stay within limits to prevent tile data overwriting sprite data",
-  "WARNING_ACTORS_LIMIT": "This scene contains too many actors, some actors will not be visible during gameplay",
-  "WARNING_TRIGGERS_LIMIT": "This scene contains too many triggers, some triggers will not be included during gameplay",
+  "WARNING_BACKGROUND_TOO_MANY_TILES": "Lo sfondo contiene troppe tessere uniche da 8x8px: ({tilesetLength} su un massimo di {maxTilesetLength}). Questo significa che potrebbero non essere mostrate correttamente. Si consiglia di ridurre il livello di dettaglio per questa immagine.",
+  "WARNING_MUSIC_TOO_LARGE": "La traccia musicale {filename} è troppo grande per rimanere in memoria: ({bytes} bytes su un massimo di {maxBytes}). Si consiglia di ridurre il numero di pattern nel file.",
+  "WARNING_ENGINE_OUT_OF_DATE": "L'Engine espulso è datato (versione \"{ejectedEngineVersion}\" quando la più aggiornata è \"{expectedEngineVersion}\").\nPotrebbero presentarsi problemi se non si espelle di nuovo l'engine.",
+  "WARNING_MISSING_UPDATES": "Aggiornamenti mancanti",
+  "WARNING_MODIFIED_FILES": "File modificati",
+  "WARNING_TOO_MANY_ONSCREEN_ACTORS": "Troppi attori potrebbero essere nello schermo allo stesso momento intorno a \"{actorName}\"",
+  "WARNING_ONSCREEN_ACTORS_LIMIT": "Possono essere visibili sullo schermo un massino di {maxOnscreen} attori",
+  "WARNING_FRAMES_LIMIT": "Questa scena è oltre i limiti disponibili e potrebbe provocare problemi di rendering. Prova a ridurre il numero di attori in scena oppure utilizza sprite statici o non animati dove possibile. Rimani nei limiti per evitare che le tessere sovrascrivano i dati degli sprite",
+  "WARNING_ACTORS_LIMIT": "Questa scena contiene troppi attori: alcuni attori non saranno visibili in esecuzione",
+  "WARNING_TRIGGERS_LIMIT": "Questa scena contiene troppi attivatori: alcuni attivatori non verranno inclusi durante l'esecuzione del gioco",
 
   "// 12": "Errors -------------------------------------------------------",
 
@@ -543,17 +543,23 @@
   "ERROR_OPEN_GBSPROJ_FILE": "Seleziona un file .gbsproj o .json",
   "ERROR_MISSING_PROJECT": "Il file di progetto è mancante",
   "ERROR_MOVED_OR_DELETED": "Potrebbe essere spostato oppure eliminato",
+  "ERROR_PLEASE_SELECT_A_DIFFERENT_LOCATION": "SElezionare una locazione differente",
+  "ERROR_PROJECT_PATH_INVALID": "PErcorso non valido",
 
   "// 13": "Splash -------------------------------------------------------",
 
   "SPLASH_NEW": "Nuovo",
   "SPLASH_OPEN": "Apri",
   "SPLASH_RECENT": "Recente",
+  "SPLASH_DOCUMENTATION": "Documentazione",
   "SPLASH_PROJECT_NAME": "Nome progetto",
   "SPLASH_DEFAULT_PROJECT_NAME": "Senza titolo",
   "SPLASH_PROJECT_TEMPLATE": "Template",
   "SPLASH_SAMPLE_PROJECT": "Progetto di esempio",
   "SPLASH_BLANK_PROJECT": "Progetto vuoto",
+  "SPLASH_SAMPLE_PROJECT_DESCRIPTION": "Un template GBC contenente esempi di scene di tipo top down, platformer, punta e clicca e sparatutto",
+  "SPLASH_SAMPLE_PROJECT_ORIGINAL_DESCRIPTION": "Il template originale di GB Studio. Un breve gioco top down a 4 colori",
+  "SPLASH_BLANK_PROJECT_DESCRIPTION": "Uno spazio completamente vuoto",
   "SPLASH_PATH": "Percorso",
   "SPLASH_CREATE": "Crea",
   "SPLASH_CREATING": "In creazione",
@@ -580,6 +586,8 @@
   "DIALOG_OK": "OK",
   "DIALOG_CANCEL": "Annulla",
   "DIALOG_DELETE": "Elimina",
+  "DIALOG_REPLACE": "Sostituisci",
+  "DIALOG_KEEP": "MAntieni quello esistente",
   "DIALOG_UPDATE_AVAILABLE": "Aggiornamento disponibile",
   "DIALOG_UPDATE_DESCRIPTION": "GB Studio {version} disponibile. Vuoi aggiornarlo?",
   "DIALOG_UPDATE_DONT_ASK_AGAIN": "Non chiedermelo più",
@@ -597,7 +605,18 @@
   "DIALOG_DELETE_CUSTOM_EVENT": "Delete Custom Event \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
   "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} utilizzi di questo evento verranno rimossi.\n\nTrovati in: {sceneNames}",
-  
+  "DIALOG_EJECT_ENGINE": "Espellere game engine?",
+  "DIALOG_EJECT_ENGINE_DESCRIPTION": "I file dell'ultimo engine GB Studio verranno copiati in 'assets/engine'. Puoi effettuare delle modifiche a questi file ed andranno a sostituire l'engine predefinito in fase di compilazione. \n\nPer reimpostare i valori predefiniti, elimina 'assets/engine'",
+  "DIALOG_EJECT": "Espelli",
+  "DIALOG_EJECT_ENGINE_REPLACE": "Engine espulso già trovato",
+  "DIALOG_EJECT_ENGINE_REPLACE_DESCRIPTION": "You have already ejected the GB Studio engine to your project.\n\nIf you continue the previously ejected files will be replaced and any changes you made will be lost.",
+  "DIALOG_EJECT_REPLACE": "Replace Engine",
+  "DIALOG_ENABLE_COLOR_MODE": "Enable Color Mode?",
+  "DIALOG_ENABLE_COLOR_MODE_DESCRIPTION": "Your project currently has color mode disabled, would you like to enable it?\n\nColor mode projects will work with both GB and GBC devices.\n\nYou can disable this later in 'Settings'.",
+  "DIALOG_ENABLE_COLOR": "Enable Color",
+  "DIALOG_REPLACE_CUSTOM_EVENT": "Replace Custom Event \"{name}\"?",
+  "DIALOG_REPLACE_CUSTOM_EVENT_DESCRIPTION": "The pasted script contains a modified version of an existing custom event. Would you like to replace the custom event with the version on your clipboard or keep your existing custom event?",
+
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Impostazione",
@@ -611,11 +630,30 @@
   "SETTINGS_CPU": "CPU",
   "SETTINGS_GBC": "Opzioni Colore GB Color",
   "SETTINGS_CUSTOM_HEADER": "Intestazione personalizzata (Web Build)",
+  "SETTINGS_FADE": "Opzioni Dissolvenza",
+  "SETTINGS_ENGINE": "Engine",
 
-  "// 17 ": "Error ------------------------------------------------------",
+  "// 17 ": "Palettes ---------------------------------------------------",
+
+  "PALETTES_EDITOR": "Editor Palette",
+
+  "// 18 ": "Error ------------------------------------------------------",
 
   "ERROR_TITLE": "GB Studio ha riscontrato un errore",
   "ERROR_WHAT_CAN_I_DO": "Cosa posso fare?",
   "ERROR_VIEW_STACK_TRACE": "Visualizza lo Stack Trace",
-  "ERROR_CLOSE": "Chiudi"
+  "ERROR_CLOSE": "Chiudi",
+
+  "// 19 ": "Game Type --------------------------------------------------",
+
+  "GAMETYPE_TOP_DOWN": "Top Down 2D",
+  "GAMETYPE_PLATFORMER": "Platformer",
+  "GAMETYPE_ADVENTURE": "Avventura",
+  "GAMETYPE_SHMUP": "Shoot Em' Up",
+  "GAMETYPE_POINT_N_CLICK": "Punta e Clicca",
+
+  "// 20": "Compiler -----------------------------------------------------",
+
+  "COMPILER_COMPILING": "Compilazione in corso",
+  "COMPILER_LINKING": "Collegamento in corso"
 }
