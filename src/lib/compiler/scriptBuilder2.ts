@@ -726,19 +726,6 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Variables
 
-  // Unused - use variable alias instead
-  // getVariableIndex = (variable = "0") => {
-  //   const { variables } = this.options;
-  //   if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
-  //     const { entity } = this.options;
-  //     if (entity) {
-  //       return getVariableIndex(`${entity.id}__${variable}`, variables);
-  //     }
-  //     return 0;
-  //   }
-  //   return getVariableIndex(variable, variables);
-  // };
-
   getVariableAlias = (variable = "0"): string => {
     if (variable.startsWith(".")) {
       return variable;
