@@ -469,6 +469,14 @@ class ScriptBuilder {
     this._addCmd("VM_CHOICE", variable, unionFlags(options));
   };
 
+  _overlayShow = (x: number, y: number, color: number) => {
+    this._addCmd("VM_OVERLAY_SHOW", x, y, color);
+  };
+
+  _overlayHide = () => {
+    this._addCmd("VM_OVERLAY_HIDE");
+  };
+
   _overlayMoveTo = (
     x: number,
     y: number,
@@ -696,6 +704,22 @@ class ScriptBuilder {
     if (layout === "menu") {
       this._overlayMoveTo(0, 18, 0);
     }
+  };
+
+  overlayShow = (color = "white", x = 0, y = 0) => {
+    this._addComment("Overlay Show");
+    this._overlayShow(x, y, color === "white" ? 1 : 0);
+  };
+
+  overlayHide = () => {
+    this._addComment("Overlay Hide");
+    this._overlayHide();
+  };
+
+  overlayMoveTo = (x = 0, y = 18, speed = 0) => {
+    this._addComment("Overlay Move To");
+    this._overlayMoveTo(x, y, speed);
+    this._overlayWait(true, [".UI_WAIT_WINDOW"]);
   };
 
   // --------------------------------------------------------------------------
