@@ -334,7 +334,7 @@ class ScriptBuilder {
   _setUInt8 = (cVariable: string, popNum: number) => {
     this._addDependency(cVariable);
     this.stackPtr -= popNum;
-    this._addCmd("OP_VM_SET_UINT8", `_${cVariable}`, popNum);
+    this._addCmd("VM_SET_UINT8", `_${cVariable}`, popNum);
   };
 
   _setConstUInt8 = (cVariable: string, value: number) => {
@@ -343,7 +343,7 @@ class ScriptBuilder {
   };
 
   _getUInt8 = (location: string | number, cVariable: string) => {
-    this._addCmd("OP_VM_GET_UINT8", location, `_${cVariable}`);
+    this._addCmd("VM_GET_UINT8", location, `_${cVariable}`);
   };
 
   _string = (str: string) => {
@@ -413,14 +413,28 @@ class ScriptBuilder {
 
   _if = (
     operator: ScriptBuilderComparisonOperator,
-    valueA: string | number,
-    valueB: string | number,
+    variableA: string | number,
+    variableB: string | number,
     label: string,
     popNum: number
   ) => {
     this._addCmd(
       `VM_IF ${operator}`,
-      `${valueA}, ${valueB}, ${label}$, ${popNum}`
+      `${variableA}, ${variableB}, ${label}$, ${popNum}`
+    );
+    this.stackPtr -= popNum;
+  };
+
+  _ifConst = (
+    operator: ScriptBuilderComparisonOperator,
+    variable: string | number,
+    value: string | number,
+    label: string,
+    popNum: number
+  ) => {
+    this._addCmd(
+      `VM_IF_CONST ${operator}`,
+      `${variable}, ${value}, ${label}$, ${popNum}`
     );
     this.stackPtr -= popNum;
   };
@@ -1036,8 +1050,7 @@ class ScriptBuilder {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable True`);
-    this._stackPush(1);
-    this._if(".EQ", variableAlias, ".ARG0", trueLabel, 1);
+    this._ifConst(".EQ", variableAlias, 1, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -1050,8 +1063,8 @@ class ScriptBuilder {
     const endLabel = this.getNextLabel();
     this._addComment(`If Color Supported`);
     this._stackPush(0);
-    this._getUInt8(".ARG0", "__cpu");
-    this._if(".NE", ".ARG0", "0x11", falseLabel, 1);
+    this._getUInt8(".ARG0", "_cpu");
+    this._ifConst(".NE", ".ARG0", "0x11", falseLabel, 1);
     this._compilePath(truePath);
     this._jump(endLabel);
     this._label(falseLabel);
