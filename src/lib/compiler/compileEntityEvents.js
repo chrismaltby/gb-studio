@@ -94,10 +94,10 @@ const compileEntityEvents = (scriptIndex, input = [], options = {}) => {
       compileEventsWithScriptBuilder(scriptBuilder, childInput);
     }
   };
-  
+
   const scriptBuilder = new ScriptBuilder(output, helpers);
 
-  const loopId = scriptBuilder.getNextLabel();
+  const loopId = loop ? scriptBuilder.getNextLabel() : "";
 
   if (loop && input.length > 1) {
     scriptBuilder.labelDefine(loopId);

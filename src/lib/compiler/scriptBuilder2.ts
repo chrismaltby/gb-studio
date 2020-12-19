@@ -69,7 +69,13 @@ interface ScriptBuilderOptions {
 
 type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
 
-type ScriptBuilderComparisonOperator = ".EQ" | ".GT" | ".GTE" | ".LT" | ".LTE";
+type ScriptBuilderComparisonOperator =
+  | ".EQ"
+  | ".NE"
+  | ".GT"
+  | ".GTE"
+  | ".LT"
+  | ".LTE";
 
 type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -334,6 +340,10 @@ class ScriptBuilder {
   _setConstUInt8 = (cVariable: string, value: number) => {
     this._addDependency(cVariable);
     this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
+  };
+
+  _getUInt8 = (location: string | number, cVariable: string) => {
+    this._addCmd("OP_VM_GET_UINT8", location, `_${cVariable}`);
   };
 
   _string = (str: string) => {
@@ -1025,12 +1035,27 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    this._addComment(`If Variable True`);
     this._stackPush(1);
     this._if(".EQ", variableAlias, ".ARG0", trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
     this._compilePath(truePath);
+    this._label(endLabel);
+  };
+
+  ifColorSupported = (truePath = [], falsePath = []) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Color Supported`);
+    this._stackPush(0);
+    this._getUInt8(".ARG0", "__cpu");
+    this._if(".NE", ".ARG0", "0x11", falseLabel, 1);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
     this._label(endLabel);
   };
 
@@ -1969,14 +1994,7 @@ class ScriptBuilder {
 
   // Device
 
-  ifColorSupported = (truePath = [], falsePath = []) => {
-    const output = this.output;
-    output.push(cmd(IF_COLOR_SUPPORTED));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
+
 
   // Helpers
 
