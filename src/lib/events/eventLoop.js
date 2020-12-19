@@ -11,14 +11,12 @@ const compile = (input, helpers) => {
   const {
     labelDefine,
     labelGoto,
-    nextFrameAwait,
+    getNextLabel,
     compileEvents,
-    event
   } = helpers;
-  const loopId = `loop_start_${event.id}`;
+  const loopId = getNextLabel();
   labelDefine(loopId);
   compileEvents(input.true);
-  nextFrameAwait();
   labelGoto(loopId);
 };
 

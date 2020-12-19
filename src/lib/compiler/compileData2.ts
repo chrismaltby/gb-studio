@@ -613,8 +613,8 @@ export const compileScriptHeader = (scriptIndex: number) =>
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<string>
 ) =>
-  (Object.values(variableAliasLookup) as string[]).map(
-    (string, stringIndex) => {
+  (Object.values(variableAliasLookup) as string[])
+    .map((string, stringIndex) => {
       return `${string} = ${stringIndex}\n`;
-    }
-  );
+    })
+    .join("");

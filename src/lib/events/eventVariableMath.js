@@ -57,7 +57,7 @@ const fields = [
     ],
     min: 0,
     max: 255,
-    defaultValue: "1"
+    defaultValue: "0"
   },
   {
     key: "minValue",
@@ -132,57 +132,46 @@ const compile = (input, helpers) => {
     variableSetToValue,
     variableCopy,
     variableSetToRandom,
-    variablesAdd,
-    variablesSub,
-    variablesMul,
-    variablesDiv,
-    variablesMod,
-    temporaryEntityVariable
+    variablesOperation,
+    variableRandomOperation,
+    variableValueOperation,
   } = helpers;
-  const tmp1 = temporaryEntityVariable(0);
-  switch (input.other) {
-    case "true":
-      variableSetToValue(tmp1, 1);
-      break;
-    case "false":
-      variableSetToValue(tmp1, 0);
-      break;
-    case "var": {
-      variableCopy(tmp1, input.vectorY);
-      break;
-    }
-    case "rnd": {
-      const min = input.minValue || 0;
-      const range = Math.min(254, Math.max(0, (input.maxValue || 0) - min));
-      variableSetToRandom(tmp1, min, range);
-      break;
-    }
-    case "val":
-    default:
-      variableSetToValue(tmp1, input.value || 0);
-      break;
+
+  let value = input.value || 0;
+  const min = input.minValue || 0;
+  const range = Math.min(254, Math.max(0, (input.maxValue || 0) - min)) + 1;
+  const operationLookup = {
+    "add": ".ADD",
+    "sub": ".SUB",
+    "mul": ".MUL",
+    "div": ".DIV",
+    "mod": ".MOD",
   }
-  switch (input.operation) {
-    case "add":
-      variablesAdd(input.vectorX, tmp1, input.clamp);
-      break;
-    case "sub":
-      variablesSub(input.vectorX, tmp1, input.clamp);
-      break;
-    case "mul":
-      variablesMul(input.vectorX, tmp1);
-      break;
-    case "div":
-      variablesDiv(input.vectorX, tmp1);
-      break;
-    case "mod":
-      variablesMod(input.vectorX, tmp1);
-      break;
-    case "set":
-    default:
-      variableCopy(input.vectorX, tmp1);
-      break;
+
+  if (input.other === "true") {
+    value = 1;
+  } else if (input.other === "false") {
+    value = 0;
   }
+
+  if (input.operation === "set") {
+    if (input.other === "var") {
+      variableCopy(input.vectorX, input.vectorY);
+    } else if (input.other === "rnd") {
+      variableSetToRandom(input.vectorX, min, range);
+    } else {
+      variableSetToValue(input.vectorX, value);
+    }
+  } else {
+    const operation = operationLookup[input.operation];
+    if (input.other === "var") {
+      variablesOperation(input.vectorX, operation, input.vectorY, input.clamp)
+    } else if (input.other === "rnd") {
+      variableRandomOperation(input.vectorX, operation, min, range, input.clamp)
+    } else if (value !== 0) {
+      variableValueOperation(input.vectorX, operation, value, input.clamp)
+    }
+  } 
 };
 
 module.exports = {

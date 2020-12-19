@@ -899,6 +899,10 @@ export const precompileSprites = async (
         const spriteSheet = spriteLookup[event.args.spriteSheetId];
         usedSprites.push(spriteSheet);
         usedSpriteLookup[event.args.spriteSheetId] = spriteSheet;
+      } else if(event.args.avatarId && !usedSpriteLookup[event.args.avatarId] && spriteLookup[event.args.avatarId]) {
+        const spriteSheet = spriteLookup[event.args.avatarId];
+        usedSprites.push(spriteSheet);
+        usedSpriteLookup[event.args.avatarId] = spriteSheet;
       }
     }
   });

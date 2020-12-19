@@ -64,12 +64,12 @@ interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   sprites: ScriptBuilderEntity[];
   entity?: ScriptBuilderEntity;
-  compileEvents: (events: ScriptEvent[]) => void;
+  compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
 type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
 
-type ScriptBuilderComparisonOperator = "EQ" | "GT";
+type ScriptBuilderComparisonOperator = ".EQ" | ".GT" | ".GTE" | ".LT" | ".LTE";
 
 type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -80,7 +80,7 @@ type ScriptBuilderOverlayWaitFlag =
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
 
-type ScriptBuilderRPNOperatons = ".ADD" | ".SUB";
+type ScriptBuilderRPNOperation = ".ADD" | ".SUB" | ".MUL" | ".DIV" | ".MOD";
 
 type ScriptBuilderOverlayMoveSpeed =
   | number
@@ -187,7 +187,7 @@ class ScriptBuilder {
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       sprites: options.sprites || [],
-      compileEvents: options.compileEvents || ((_e) => {}),
+      compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
     this.dependencies = [];
     this.nextLabel = 1;
@@ -199,24 +199,8 @@ class ScriptBuilder {
     this.labelStackSize = {};
   }
 
-  toScriptString = (name: string) => {
-    this._assertStackNeutral();
-    return `.include "vm.i"
-.include "game_globals.i"
-${
-  this.dependencies.length > 0
-    ? `\n.globl ${this.dependencies.join(", ")}\n`
-    : ""
-}
-.area _CODE_255
-
-___bank_${name} = 255
-.globl ___bank_${name}
-
-_${name}::
-${this.output.join("\n")}
-`;
-  };
+  // --------------------------------------------------------------------------
+  // Private methods
 
   private _addDependency = (symbol: string) => {
     const dataSymbol = `_${symbol}`;
@@ -266,7 +250,12 @@ ${this.output.join("\n")}
     }
   };
 
-  _padCmd = (cmd: string, args: string, nPadStart: number, nPadCmd: number) => {
+  private _padCmd = (
+    cmd: string,
+    args: string,
+    nPadStart: number,
+    nPadCmd: number
+  ) => {
     const startPadding = "".padStart(nPadStart);
     if (args.length > 0) {
       return `${startPadding}${cmd.padEnd(
@@ -303,10 +292,8 @@ ${this.output.join("\n")}
     }
   };
 
-  private _getNextLabel = (): string => {
-    const label = this.nextLabel++;
-    return String(label);
-  };
+  // --------------------------------------------------------------------------
+  // Low Level GB Studio Assembly Operations
 
   _invoke = (fn: string, popNum: number, numArgs: number) => {
     this._addBankedFnDependency(fn);
@@ -369,6 +356,14 @@ ${this.output.join("\n")}
     this._addCmd("VM_JUMP", `${_label}$`);
   };
 
+  _randomize = () => {
+    this._addCmd("VM_RANDOMIZE");
+  };
+
+  _rand = (location: string | number, min: number, range: number) => {
+    this._addCmd("VM_RAND", location, min, range);
+  };
+
   _rpn = () => {
     const output: string[] = [];
     const stack: number[] = [];
@@ -387,7 +382,7 @@ ${this.output.join("\n")}
         rpnCmd(".R_INT8", value);
         return rpn;
       },
-      operator: (op: ScriptBuilderRPNOperatons) => {
+      operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
         return rpn;
       },
@@ -414,7 +409,7 @@ ${this.output.join("\n")}
     popNum: number
   ) => {
     this._addCmd(
-      `VM_IF .${operator}`,
+      `VM_IF ${operator}`,
       `${valueA}, ${valueB}, ${label}$, ${popNum}`
     );
     this.stackPtr -= popNum;
@@ -499,6 +494,9 @@ ${this.output.join("\n")}
     this._addCmd("VM_STOP");
   };
 
+  // --------------------------------------------------------------------------
+  // Actors
+
   actorSetActive = (id: string) => {
     const output = this.output;
     const { scene, entity } = this.options;
@@ -545,6 +543,7 @@ ${this.output.join("\n")}
     // output.push(moveTypeDec(moveType));
   };
 
+  // --------------------------------------------------------------------------
   // Timing
 
   nextFrameAwait = () => {
@@ -561,7 +560,8 @@ ${this.output.join("\n")}
     this._assertStackNeutral(stackPtr);
   };
 
-  // Text
+  // --------------------------------------------------------------------------
+  // UI
 
   textDialogue = (inputText: string | string[] = " ", avatarId?: string) => {
     const { sprites } = this.options;
@@ -618,25 +618,6 @@ ${this.output.join("\n")}
         this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
       }
     });
-
-    // this._loadStructuredText(text);
-
-    // this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_TEXT_IN_SPEED");
-
-    // if (avatarId) {
-    //   const avatarIndex = getSpriteIndex(avatarId, sprites);
-    //   this._displayText(avatarIndex);
-    // } else {
-    //   this._displayText();
-    // }
-
-    // this._overlayWait(true, [
-    //   ".UI_WAIT_WINDOW",
-    //   ".UI_WAIT_TEXT",
-    //   ".UI_WAIT_BTN_A",
-    // ]);
-    // this._overlayMoveTo(0, 18, ".OVERLAY_TEXT_OUT_SPEED");
-    // this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
   };
 
   textSetAnimSpeed = (
@@ -717,6 +698,7 @@ ${this.output.join("\n")}
     }
   };
 
+  // --------------------------------------------------------------------------
   // Scenes
 
   sceneSwitch = (
@@ -741,6 +723,7 @@ ${this.output.join("\n")}
     // }
   };
 
+  // --------------------------------------------------------------------------
   // Variables
 
   // Unused - use variable alias instead
@@ -757,6 +740,10 @@ ${this.output.join("\n")}
   // };
 
   getVariableAlias = (variable = "0"): string => {
+    if (variable.startsWith(".")) {
+      return variable;
+    }
+
     const {
       entity,
       sceneIndex,
@@ -833,6 +820,190 @@ ${this.output.join("\n")}
     this._stackPop(1);
   };
 
+  variableSetToTrue = (variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Set To True");
+    this._setConst(variableAlias, 1);
+  };
+
+  variableSetToFalse = (variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Set To False");
+    this._setConst(variableAlias, 0);
+  };
+
+  variableSetToValue = (variable: string, value: number) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Set To Value");
+    this._setConst(variableAlias, value);
+  };
+
+  variableCopy = (setVariable: string, otherVariable: string) => {
+    const variableAliasA = this.getVariableAlias(setVariable);
+    const variableAliasB = this.getVariableAlias(otherVariable);
+    this._addComment("Variable Copy");
+    this._set(variableAliasA, variableAliasB);
+  };
+
+  variableSetToRandom = (variable: string, min: number, range: number) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment("Variable Set To Random");
+    this._randomize();
+    this._rand(variableAlias, min, range);
+  };
+
+  variablesOperation = (
+    setVariable: string,
+    operation: ScriptBuilderRPNOperation,
+    otherVariable: string,
+    clamp: boolean
+  ) => {
+    const variableAliasA = this.getVariableAlias(setVariable);
+    const variableAliasB = this.getVariableAlias(otherVariable);
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
+    this._addComment(`Variables ${operation}`);
+    this._rpn() //
+      .ref(variableAliasA)
+      .ref(variableAliasB)
+      .operator(operation)
+      .stop();
+
+    if (clamp) {
+      if (operation === ".ADD") {
+        this._stackPush(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 255);
+        this.labelDefine(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPush(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 0);
+        this.labelDefine(clampLabel);
+      }
+    }
+
+    this._set(variableAliasA, ".ARG0");
+    this._stackPop(2);
+  };
+
+  variableValueOperation = (
+    setVariable: string,
+    operation: ScriptBuilderRPNOperation,
+    value: number,
+    clamp: boolean
+  ) => {
+    const variableAliasA = this.getVariableAlias(setVariable);
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
+    this._addComment(`Variables ${operation} Value`);
+    this._rpn() //
+      .ref(variableAliasA)
+      .int8(value)
+      .operator(operation)
+      .stop();
+
+    if (clamp) {
+      if (operation === ".ADD") {
+        this._stackPush(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 255);
+        this.labelDefine(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPush(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 0);
+        this.labelDefine(clampLabel);
+      }
+    }
+
+    this._set(variableAliasA, ".ARG0");
+    this._stackPop(1);
+  };
+
+  variableRandomOperation = (
+    variable: string,
+    operation: ScriptBuilderRPNOperation,
+    min: number,
+    range: number,
+    clamp: boolean
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const clampLabel = clamp ? this.getNextLabel() : "";
+
+    this._addComment(`Variables ${operation} Random`);
+    this._stackPush(0);
+    this._randomize();
+    this._rand(".ARG0", min, range);
+    this._rpn() //
+      .ref(variableAlias)
+      .ref(".ARG1")
+      .operator(operation)
+      .stop();
+
+    if (clamp) {
+      if (operation === ".ADD") {
+        this._stackPush(256);
+        this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 255);
+        this.labelDefine(clampLabel);
+      } else if (operation === ".SUB") {
+        this._stackPush(0);
+        this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
+        this._setConst("ARG0", 0);
+        this.labelDefine(clampLabel);
+      }
+    }
+
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(3);
+  };
+
+  variablesAdd = (
+    setVariable: string,
+    otherVariable: string,
+    clamp: boolean
+  ) => {
+    this.variablesOperation(setVariable, ".ADD", otherVariable, clamp);
+  };
+
+  variablesSub = (
+    setVariable: string,
+    otherVariable: string,
+    clamp: boolean
+  ) => {
+    this.variablesOperation(setVariable, ".SUB", otherVariable, clamp);
+  };
+
+  variablesMul = (setVariable: string, otherVariable: string) => {
+    this.variablesOperation(setVariable, ".MUL", otherVariable, false);
+  };
+
+  variablesDiv = (setVariable: string, otherVariable: string) => {
+    this.variablesOperation(setVariable, ".DIV", otherVariable, false);
+  };
+
+  variablesMod = (setVariable: string, otherVariable: string) => {
+    this.variablesOperation(setVariable, ".MOD", otherVariable, false);
+  };
+
+  // --------------------------------------------------------------------------
+  // Labels
+
+  getNextLabel = (): string => {
+    const label = this.nextLabel++;
+    return String(label);
+  };
+
+  labelDefine = (name: string) => {
+    this._label(name);
+  };
+
+  labelGoto = (name: string) => {
+    this._jump(name);
+  };
+
+  // --------------------------------------------------------------------------
   // Control Flow
 
   ifVariableTrue = (
@@ -841,10 +1012,10 @@ ${this.output.join("\n")}
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
   ) => {
     const variableAlias = this.getVariableAlias(variable);
-    const trueLabel = this._getNextLabel();
-    const endLabel = this._getNextLabel();
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
     this._stackPush(1);
-    this._if("EQ", variableAlias, ".ARG0", trueLabel, 1);
+    this._if(".EQ", variableAlias, ".ARG0", trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -857,7 +1028,7 @@ ${this.output.join("\n")}
     if (typeof path === "function") {
       path();
     } else if (path) {
-      compileEvents(path);
+      compileEvents(this, path);
     }
   };
 
@@ -865,14 +1036,9 @@ ${this.output.join("\n")}
     this._stop();
   };
 
-  // Goto
-
-  labelDefine = (name: string) => {
-    this._label("_" + name);
-  };
-
-  labelGoto = (name: string) => {
-    this._jump("_" + name);
+  compileEvents = (path: ScriptEvent[]) => {
+    const { compileEvents } = this.options;
+    compileEvents(this, path);
   };
 
   /*
@@ -1135,165 +1301,8 @@ ${this.output.join("\n")}
     output.push(lo(paletteIndex));
   };
 
-  // Text
-
-  textDialogue = (inputText = " ", avatarId) => {
-    const output = this.output;
-    const { strings, avatars, variables, event } = this.options;
-    let text = this.replaceVariables(inputText, variables, event);
-
-    const maxPerLine = avatarId ? 16 : 18;
-    text = trimlines(text, maxPerLine);
-
-    let stringIndex = strings.indexOf(text);
-    if (stringIndex === -1) {
-      strings.push(text);
-      stringIndex = strings.length - 1;
-    }
-    if (avatarId) {
-      const avatarIndex = getSpriteIndex(avatarId, avatars);
-      output.push(cmd(TEXT_WITH_AVATAR));
-      output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
-      output.push(`__REPLACE:STRING_HI:${stringIndex}`);
-      output.push(`__REPLACE:STRING_LO:${stringIndex}`);
-      output.push(avatarIndex);
-    } else {
-      output.push(cmd(TEXT));
-      output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
-      output.push(`__REPLACE:STRING_HI:${stringIndex}`);
-      output.push(`__REPLACE:STRING_LO:${stringIndex}`);
-    }
-  };
-
-  textChoice = (setVariable, args) => {
-    const output = this.output;
-    const { strings, variables, event } = this.options;
-
-    const trueText = trimlines(args.trueText || "", 17, 1) || "Choice A";
-    const falseText = trimlines(args.falseText || "", 17, 1) || "Choice B";
-    const choiceText = `${trueText}\n${falseText}`;
-
-    const text = this.replaceVariables(choiceText, variables, event);
-    let stringIndex = strings.indexOf(text);
-    if (stringIndex === -1) {
-      strings.push(text);
-      stringIndex = strings.length - 1;
-    }
-    const variableIndex = this.getVariableIndex(setVariable, variables);
-    output.push(cmd(CHOICE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
-    output.push(`__REPLACE:STRING_HI:${stringIndex}`);
-    output.push(`__REPLACE:STRING_LO:${stringIndex}`);
-  };
-
-  textMenu = (
-    setVariable,
-    options,
-    layout = "menu",
-    cancelOnLastOption = false,
-    cancelOnB = false
-  ) => {
-    const output = this.output;
-    const { strings, variables, event } = this.options;
-    const menuText = options
-      .map(
-        (option, index) => trimlines(option || "", 6, 1) || `Item ${index + 1}`
-      )
-      .join("\n");
-    const text = this.replaceVariables(menuText, variables, event);
-    let stringIndex = strings.indexOf(text);
-    if (stringIndex === -1) {
-      strings.push(text);
-      stringIndex = strings.length - 1;
-    }
-    const variableIndex = this.getVariableIndex(setVariable, variables);
-    output.push(cmd(MENU));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(`__REPLACE:STRING_BANK:${stringIndex}`);
-    output.push(`__REPLACE:STRING_HI:${stringIndex}`);
-    output.push(`__REPLACE:STRING_LO:${stringIndex}`);
-    output.push(layout === "menu" ? 1 : 0);
-    output.push((cancelOnLastOption ? 1 : 0) | (cancelOnB ? 2 : 0));
-  };
-
-  textSetOpenInstant = () => {
-    const output = this.output;
-    output.push(cmd(TEXT_MULTI));
-    output.push(1);
-  };
-
-  textRestoreOpenSpeed = () => {
-    const output = this.output;
-    output.push(cmd(TEXT_MULTI));
-    output.push(3);
-  };
-
-  textSetCloseInstant = () => {
-    const output = this.output;
-    output.push(cmd(TEXT_MULTI));
-    output.push(0);
-  };
-
-  textRestoreCloseSpeed = () => {
-    const output = this.output;
-    output.push(cmd(TEXT_MULTI));
-    output.push(2);
-  };
-
-  textSetAnimSpeed = (
-    speedIn,
-    speedOut,
-    textSpeed = 1,
-    allowFastForward = true
-  ) => {
-    const output = this.output;
-    output.push(cmd(TEXT_SET_ANIM_SPEED));
-    output.push(speedIn);
-    output.push(speedOut);
-    output.push(textSpeedDec(textSpeed));
-    output.push(allowFastForward ? 1 : 0);
-  };
-
   // Variables
 
-  getVariableIndex = (variable = "0", variables) => {
-    if (["L0", "L1", "L2", "L3", "L4", "L5"].indexOf(variable) > -1) {
-      const { entity } = this.options;
-      return getVariableIndex(`${entity.id}__${variable}`, variables);
-    }
-    return getVariableIndex(variable, variables);
-  };
-
-  variableSetToTrue = (variable) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(SET_TRUE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-  };
-
-  variableSetToFalse = (variable) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(SET_FALSE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-  };
-
-  variableSetToValue = (variable, value) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(SET_VALUE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(value);
-  };
   */
 
   //   variableSetToProperty = (variable, property) => {
@@ -1323,75 +1332,6 @@ ${this.output.join("\n")}
   //   };
 
   /*
-  variableCopy = (setVariable, otherVariable) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(COPY_VALUE));
-  };
-
-  variableSetToRandom = (variable, min, range) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(SET_RANDOM_VALUE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(min);
-    output.push(range);
-  };
-
-  variablesAdd = (setVariable, otherVariable, clamp) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(MATH_ADD_VALUE));
-    output.push(clamp ? 1 : 0);
-  };
-
-  variablesSub = (setVariable, otherVariable, clamp) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(MATH_SUB_VALUE));
-    output.push(clamp ? 1 : 0);
-  };
-
-  variablesMul = (setVariable, otherVariable) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(MATH_MUL_VALUE));
-  };
-
-  variablesDiv = (setVariable, otherVariable) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(MATH_DIV_VALUE));
-  };
-
-  variablesMod = (setVariable, otherVariable) => {
-    const output = this.output;
-    this.vectorsLoad(setVariable, otherVariable);
-    output.push(cmd(MATH_MOD_VALUE));
-  };
-
-  vectorsLoad = (variableX, variableY) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const indexX = this.getVariableIndex(variableX, variables);
-    const indexY = this.getVariableIndex(variableY, variables);
-    output.push(cmd(LOAD_VECTORS));
-    output.push(hi(indexX));
-    output.push(lo(indexX));
-    output.push(hi(indexY));
-    output.push(lo(indexY));
-  };
-
-  variableDec = (variable) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(cmd(DEC_VALUE));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-  };
 
   variablesReset = () => {
     const output = this.output;
@@ -1802,36 +1742,7 @@ ${this.output.join("\n")}
     });
   };
 
-  // Goto
 
-  labelDefine = (name) => {
-    const { labels } = this.options;
-    const output = this.output;
-    const ptr = output.length;
-    labels[name] = ptr;
-    for (let i = 0; i < output.length; i++) {
-      if (output[i] === `goto: ${name}`) {
-        output[i] = cmd(JUMP);
-        output[i + 1] = ptr >> 8;
-        output[i + 2] = ptr & 0xff;
-      }
-    }
-  };
-
-  labelGoto = (name) => {
-    const { labels } = this.options;
-    const output = this.output;
-    if (labels[name] !== undefined) {
-      const ptr = labels[name];
-      output.push(cmd(JUMP));
-      output.push(ptr >> 8);
-      output.push(ptr & 0xff);
-    } else {
-      output.push(`goto: ${name}`);
-      output.push(0);
-      output.push(0);
-    }
-  };
 
   // Input
 
@@ -2151,6 +2062,28 @@ ${this.output.join("\n")}
 
   };
 */
+
+  // --------------------------------------------------------------------------
+  // Export
+
+  toScriptString = (name: string) => {
+    this._assertStackNeutral();
+    return `.include "vm.i"
+.include "game_globals.i"
+${
+  this.dependencies.length > 0
+    ? `\n.globl ${this.dependencies.join(", ")}\n`
+    : ""
+}
+.area _CODE_255
+
+___bank_${name} = 255
+.globl ___bank_${name}
+
+_${name}::
+${this.output.join("\n")}
+`;
+  };
 }
 
 export default ScriptBuilder;

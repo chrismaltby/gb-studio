@@ -40,10 +40,6 @@ const fields = [
 const compile = (input, helpers) => {
   const {
     textDialogue,
-    textSetOpenInstant,
-    textSetCloseInstant,
-    textRestoreOpenSpeed,
-    textRestoreCloseSpeed
   } = helpers;
   textDialogue(input.text || " ", input.avatarId);
 };
