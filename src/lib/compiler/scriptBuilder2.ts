@@ -39,6 +39,7 @@ import {
 } from "../../store/features/entities/entitiesTypes";
 import { Dictionary } from "@reduxjs/toolkit";
 import { spriteSheetSymbol } from "./compileData2";
+import { EngineFieldSchema } from "../../store/features/engine/engineState";
 
 type ScriptOutput = string[];
 
@@ -66,6 +67,7 @@ interface ScriptBuilderOptions {
   variableAliasLookup: Dictionary<string>;
   sprites: ScriptBuilderEntity[];
   entity?: ScriptBuilderEntity;
+  engineFields: Dictionary<EngineFieldSchema>;
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
@@ -206,6 +208,7 @@ class ScriptBuilder {
       variables: options.variables || [],
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
+      engineFields: options.engineFields || {},
       sprites: options.sprites || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
@@ -222,12 +225,12 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Private methods
 
-  private _addDependency = (symbol: string) => {
+  #_addDependency(symbol: string) {
     const dataSymbol = `_${symbol}`;
     if (!this.dependencies.includes(dataSymbol)) {
       this.dependencies.push(dataSymbol);
     }
-  };
+  }
 
   private _addBankedFnDependency = (symbol: string) => {
     const bankSymbol = `b_${symbol}`;
@@ -345,10 +348,14 @@ class ScriptBuilder {
     this._addCmd("VM_SET_CONST", location, value);
   };
 
-  _setUInt8 = (cVariable: string, popNum: number) => {
+  _setUInt8 = (cVariable: string, location: string | number) => {
     this._addDependency(cVariable);
-    this.stackPtr -= popNum;
-    this._addCmd("VM_SET_UINT8", `_${cVariable}`, popNum);
+    this._addCmd("VM_SET_UINT8", `_${cVariable}`, location);
+  };
+
+  _setUInt16 = (cVariable: string, location: string | number) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_UINT16", `_${cVariable}`, location);
   };
 
   _setConstUInt8 = (cVariable: string, value: number) => {
@@ -356,8 +363,17 @@ class ScriptBuilder {
     this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
   };
 
+  _setConstUInt16 = (cVariable: string, value: number) => {
+    this._addDependency(cVariable);
+    this._addCmd("VM_SET_CONST_UINT16", `_${cVariable}`, value);
+  };
+
   _getUInt8 = (location: string | number, cVariable: string) => {
     this._addCmd("VM_GET_UINT8", location, `_${cVariable}`);
+  };
+
+  _getUInt16 = (location: string | number, cVariable: string) => {
+    this._addCmd("VM_GET_UINT16", location, `_${cVariable}`);
   };
 
   _string = (str: string) => {
@@ -1082,6 +1098,64 @@ class ScriptBuilder {
   };
 
   // --------------------------------------------------------------------------
+  // Engine Fields
+
+  engineFieldSetToValue = (key: string, value: string | number | boolean) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const cType = engineField.cType;
+      let newValue = value;
+      if (newValue === "" || newValue === undefined) {
+        newValue = engineField.defaultValue || 0;
+      }
+      if (newValue === true) {
+        newValue = 1;
+      }
+      if (newValue === false) {
+        newValue = 0;
+      }
+      const numberValue = Number(newValue);
+      this._addComment(`Engine Field Set To Value`);
+      if (is16BitCType(cType)) {
+        this._setConstUInt16(key, numberValue);
+      } else {
+        this._setConstUInt8(key, numberValue);
+      }
+    }
+  };
+
+  engineFieldSetToVariable = (key: string, variable: string) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const variableAlias = this.getVariableAlias(variable);
+      const cType = engineField.cType;
+      this._addComment(`Engine Field Set To Variable`);
+      if (is16BitCType(cType)) {
+        this._setUInt16(key, variableAlias);
+      } else {
+        this._setUInt8(key, variableAlias);
+      }
+    }
+  };
+
+  engineFieldStoreInVariable = (key: string, variable: string) => {
+    const { engineFields } = this.options;
+    const engineField = engineFields[key];
+    if (engineField !== undefined) {
+      const variableAlias = this.getVariableAlias(variable);
+      const cType = engineField.cType;
+      this._addComment(`Engine Field Store In Variable`);
+      if (is16BitCType(cType)) {
+        this._getUInt16(variableAlias, key);
+      } else {
+        this._getUInt8(variableAlias, key);
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
   // Labels
 
   getNextLabel = (): string => {
@@ -1570,103 +1644,6 @@ class ScriptBuilder {
       return variable;
     }
     throw new Error(`Union type "${unionValue.type}" unknown.`);
-  };
-
-  // Engine Fields
-
-  engineFieldSetToValue = (key, value) => {
-    const output = this.output;
-    const { engineFields } = this.options;
-    const engineField = engineFields[key];
-    if (engineField !== undefined) {
-      const cType = engineField.field.cType;
-      let newValue = value;
-      if (newValue === "" || newValue === undefined) {
-        newValue = engineField.field.defaultValue || 0;
-      }
-      if (newValue === true) {
-        newValue = 1;
-      }
-      if (newValue === false) {
-        newValue = 0;
-      }
-      if (is16BitCType(cType)) {
-        if (newValue < 0) {
-          // Convert negative to two's complement
-          newValue = 0xffff & ~(-newValue - 1);
-        }
-        output.push(cmd(ENGINE_FIELD_UPDATE_WORD));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(hi(newValue));
-        output.push(lo(newValue));
-      } else {
-        if (newValue < 0) {
-          // Convert negative to two's complement
-          newValue = 0xff & ~(-newValue - 1);
-        }
-        output.push(cmd(ENGINE_FIELD_UPDATE));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(newValue);
-      }
-    }
-  };
-
-  engineFieldSetToVariable = (key, variable) => {
-    const output = this.output;
-    const { engineFields, variables } = this.options;
-    const engineField = engineFields[key];
-    if (engineField !== undefined) {
-      const cType = engineField.field.cType;
-      if (is16BitCType(cType)) {
-        const loVariable = nextVariable(variable);
-        const hiIndex = this.getVariableIndex(variable, variables);
-        const loIndex = this.getVariableIndex(loVariable, variables);
-        output.push(cmd(ENGINE_FIELD_UPDATE_VAR_WORD));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(hi(hiIndex));
-        output.push(lo(hiIndex));
-        output.push(hi(loIndex));
-        output.push(lo(loIndex));
-      } else {
-        const variableIndex = this.getVariableIndex(variable, variables);
-        output.push(cmd(ENGINE_FIELD_UPDATE_VAR));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(hi(variableIndex));
-        output.push(lo(variableIndex));
-      }
-    }
-  };
-
-  engineFieldStoreInVariable = (key, variable) => {
-    const output = this.output;
-    const { engineFields, variables } = this.options;
-    const engineField = engineFields[key];
-    if (engineField !== undefined) {
-      const cType = engineField.field.cType;
-      if (is16BitCType(cType)) {
-        const loVariable = nextVariable(variable);
-        const hiIndex = this.getVariableIndex(variable, variables);
-        const loIndex = this.getVariableIndex(loVariable, variables);
-        output.push(cmd(ENGINE_FIELD_STORE_WORD));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(hi(loIndex));
-        output.push(lo(loIndex));
-        output.push(hi(hiIndex));
-        output.push(lo(hiIndex));
-      } else {
-        const variableIndex = this.getVariableIndex(variable, variables);
-        output.push(cmd(ENGINE_FIELD_STORE));
-        output.push(hi(engineField.offset));
-        output.push(lo(engineField.offset));
-        output.push(hi(variableIndex));
-        output.push(lo(variableIndex));
-      }
-    }
   };
 
   // Scenes

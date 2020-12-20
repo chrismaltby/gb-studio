@@ -4,28 +4,14 @@ import {
   EngineFieldSchema,
 } from "../../store/features/engine/engineState";
 
-interface PrecompiledEngineField {
-  offset: number;
-  field: EngineFieldSchema;
-}
-
 export const precompileEngineFields = (
   engineFields: EngineFieldSchema[]
-): Dictionary<PrecompiledEngineField> => {
-  let offset = 0;
-  const offsets: Dictionary<PrecompiledEngineField> = {};
-  for (let engineField of engineFields) {
-    offsets[engineField.key] = {
-      offset,
-      field: engineField,
-    };
-    if (is16BitCType(engineField.cType)) {
-      offset += 2;
-    } else {
-      offset += 1;
-    }
+): Dictionary<EngineFieldSchema> => {
+  const fields: Dictionary<EngineFieldSchema> = {};
+  for (const engineField of engineFields) {
+    fields[engineField.key] = engineField;
   }
-  return offsets;
+  return fields;
 };
 
 export const is16BitCType = (cType: EngineFieldCType): boolean => {
