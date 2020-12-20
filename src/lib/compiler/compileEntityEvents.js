@@ -105,28 +105,39 @@ const compileEntityEvents = (scriptIndex, input = [], options = {}) => {
 
   compileEventsWithScriptBuilder(scriptBuilder, input);
   
-  if (!branch) {
-    if (loop && input.length > 1) {
-      scriptBuilder.nextFrameAwait();
-      scriptBuilder.labelGoto(loopId);
-    }
-    scriptBuilder.scriptEnd();
+  try {
+    if (!branch) {
+      if (loop && input.length > 1) {
+        scriptBuilder.nextFrameAwait();
+        scriptBuilder.labelGoto(loopId);
+      }
+      scriptBuilder.scriptEnd();
 
-    if (scriptBuilder.byteSize > 16383) {
-      warnings(
-        `This script is too big for 1 bank, was ${
-          output.length
-        } bytes, must be under 16384.
-        ${JSON.stringify(location)}
-        `
-      );
-      warnings(
-        "Try splitting this script across multiple actors with *Actor invoke*."
-      );
+      if (scriptBuilder.byteSize > 16383) {
+        warnings(
+          `This script is too big for 1 bank, was ${
+            output.length
+          } bytes, must be under 16384.
+          ${JSON.stringify(location)}
+          `
+        );
+        warnings(
+          "Try splitting this script across multiple actors with *Actor invoke*."
+        );
+      }
     }
+
+    return scriptBuilder.toScriptString(`script_${scriptIndex}`);
+  } catch (e) {
+    throw new Error(
+      `Compiling failed with error "${e}". ${JSON.stringify(
+        location
+      )}`
+    );
   }
 
-  return scriptBuilder.toScriptString(`script_${scriptIndex}`);
+  return "";
+
 };
 
 export default compileEntityEvents;
