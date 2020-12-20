@@ -54,6 +54,8 @@ interface ScriptBuilderScene {
 
 type ScriptBuilderEntityType = "scene" | "actor" | "trigger";
 
+type ScriptBuilderStackVariable = string | number;
+
 interface ScriptBuilderOptions {
   scene: ScriptBuilderScene;
   sceneIndex: number;
@@ -1058,6 +1060,25 @@ class ScriptBuilder {
     this._label(endLabel);
   };
 
+  ifVariableValue = (
+    variable: string,
+    operator: ScriptBuilderComparisonOperator,
+    value: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Variable Value`);
+    this._ifConst(operator, variableAlias, value, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+  };
+
   ifColorSupported = (truePath = [], falsePath = []) => {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -1602,39 +1623,7 @@ class ScriptBuilder {
 
   // Control Flow
 
-  ifVariableTrue = (variable, truePath = [], falsePath = []) => {
-    const output = this.output;
-    const { variables } = this.options;
-    output.push(cmd(IF_TRUE));
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
 
-  ifVariableValue = (
-    variable,
-    operator,
-    comparator,
-    truePath = [],
-    falsePath = []
-  ) => {
-    const output = this.output;
-    const { variables } = this.options;
-    output.push(cmd(IF_VALUE));
-    const variableIndex = this.getVariableIndex(variable, variables);
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(operatorDec(operator));
-    output.push(comparator || 0);
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
 
   caseVariableValue = (variable, cases = {}, falsePath = []) => {
     const output = this.output;
@@ -1946,20 +1935,6 @@ class ScriptBuilder {
     const output = this.output;
     output.push(cmd(CLEAR_DATA));
   };
-
-  // Timing
-
-  nextFrameAwait = () => {
-    const output = this.output;
-    output.push(cmd(NEXT_FRAME));
-  };
-
-  wait = (frames) => {
-    const output = this.output;
-    output.push(cmd(WAIT));
-    output.push(frames);
-  };
-
 
   // Timer Script
 
