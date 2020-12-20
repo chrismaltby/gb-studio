@@ -1079,6 +1079,26 @@ class ScriptBuilder {
     this._label(endLabel);
   };
 
+  ifVariableCompare = (
+    variableA: string,
+    operator: ScriptBuilderComparisonOperator,
+    variableB: string,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const variableAliasA = this.getVariableAlias(variableA);
+    const variableAliasB = this.getVariableAlias(variableB);
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Variable Compare`);
+    this._if(operator, variableAliasA, variableAliasB, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+  };
+
   ifColorSupported = (truePath = [], falsePath = []) => {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
@@ -1702,22 +1722,7 @@ class ScriptBuilder {
     }
   };
 
-  ifVariableCompare = (
-    variableA,
-    operator,
-    variableB,
-    truePath = [],
-    falsePath = []
-  ) => {
-    const output = this.output;
-    this.vectorsLoad(variableA, variableB);
-    output.push(cmd(IF_VALUE_COMPARE));
-    output.push(operatorDec(operator));
-    compileConditional(truePath, falsePath, {
-      ...this.options,
-      output,
-    });
-  };
+
 
   ifInput = (input, truePath = [], falsePath = []) => {
     const output = this.output;

@@ -53,11 +53,21 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { ifVariableCompare } = helpers;
+  const operationLookup = {
+    "==": ".EQ",
+    "!=": ".NE",
+    "<": ".LT",
+    ">": ".GT",
+    "<=": ".LTE",
+    ">=": ".GTE",
+  }
+  const operation = operationLookup[input.operator];
+
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
   ifVariableCompare(
     input.vectorX,
-    input.operator,
+    operation,
     input.vectorY,
     truePath,
     falsePath
