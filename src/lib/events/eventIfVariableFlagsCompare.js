@@ -57,25 +57,12 @@ const fields = [
 
 const compile = (input, helpers) => {
   const {
-    ifVariableValue,
-    variableSetToValue,
-    variableCopy,
-    variablesDiv,
-    variablesMod,
-    temporaryEntityVariable
+    ifVariableBitwiseValue,
   } = helpers;
-  const tmp1 = temporaryEntityVariable(0);
-  const tmp2 = temporaryEntityVariable(1);
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-
-  variableCopy(tmp1, input.variable);
-  variableSetToValue(tmp2, 2 ** input.flag);
-  variablesDiv(tmp1, tmp2);
-  variableSetToValue(tmp2, 2);
-  variablesMod(tmp1, tmp2);
-
-  ifVariableValue(tmp1, "==", 1, truePath, falsePath);
+  const flags =  2 ** input.flag;
+  ifVariableBitwiseValue(input.variable, ".B_AND", flags, truePath, falsePath);
 };
 
 module.exports = {

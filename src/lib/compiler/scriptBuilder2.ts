@@ -77,7 +77,9 @@ type ScriptBuilderComparisonOperator =
   | ".GT"
   | ".GTE"
   | ".LT"
-  | ".LTE";
+  | ".LTE"
+  | ".AND"
+  | ".OR";
 
 type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -88,7 +90,17 @@ type ScriptBuilderOverlayWaitFlag =
 
 type ScriptBuilderChoiceFlag = ".UI_MENU_LAST_0" | ".UI_MENU_CANCEL_B";
 
-type ScriptBuilderRPNOperation = ".ADD" | ".SUB" | ".MUL" | ".DIV" | ".MOD";
+type ScriptBuilderRPNOperation =
+  | ".ADD"
+  | ".SUB"
+  | ".MUL"
+  | ".DIV"
+  | ".MOD"
+  | ".B_AND"
+  | ".B_OR"
+  | ".B_XOR"
+  | ".B_NOT"
+  | ".ABS";
 
 type ScriptBuilderOverlayMoveSpeed =
   | number
@@ -392,10 +404,17 @@ class ScriptBuilder {
       },
       int8: (value: number) => {
         rpnCmd(".R_INT8", value);
+        stack.push(0);
+        return rpn;
+      },
+      int16: (value: number) => {
+        rpnCmd(".R_INT16", value);
+        stack.push(0);
         return rpn;
       },
       operator: (op: ScriptBuilderRPNOperation) => {
         rpnCmd(".R_OPERATOR", op);
+        stack.pop();
         return rpn;
       },
       stop: () => {
@@ -933,7 +952,7 @@ class ScriptBuilder {
     }
 
     this._set(variableAliasA, ".ARG0");
-    this._stackPop(2);
+    this._stackPop(1);
   };
 
   variableValueOperation = (
@@ -1005,7 +1024,7 @@ class ScriptBuilder {
     }
 
     this._set(variableAlias, ".ARG0");
-    this._stackPop(3);
+    this._stackPop(2);
   };
 
   variablesAdd = (
@@ -1034,6 +1053,32 @@ class ScriptBuilder {
 
   variablesMod = (setVariable: string, otherVariable: string) => {
     this.variablesOperation(setVariable, ".MOD", otherVariable, false);
+  };
+
+  variableAddFlags = (variable: string, flags: number) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment(`Variable Add Flags`);
+    this._rpn() //
+      .ref(variableAlias)
+      .int8(flags)
+      .operator(".B_OR")
+      .stop();
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(1);
+  };
+
+  variableClearFlags = (variable: string, flags: number) => {
+    const variableAlias = this.getVariableAlias(variable);
+    this._addComment(`Variable Clear Flags`);
+    this._rpn() //
+      .ref(variableAlias)
+      .int8(-1)
+      .int8(flags)
+      .operator(".B_XOR")
+      .operator(".B_AND")
+      .stop();
+    this._set(variableAlias, ".ARG0");
+    this._stackPop(1);
   };
 
   // --------------------------------------------------------------------------
@@ -1082,7 +1127,7 @@ class ScriptBuilder {
     const variableAlias = this.getVariableAlias(variable);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    this._addComment(`If Variable Value`);
+    this._addComment(`If Variable ${operator} Value`);
     this._ifConst(operator, variableAlias, value, trueLabel, 0);
     this._compilePath(falsePath);
     this._jump(endLabel);
@@ -1102,8 +1147,32 @@ class ScriptBuilder {
     const variableAliasB = this.getVariableAlias(variableB);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
-    this._addComment(`If Variable Compare`);
+    this._addComment(`If Variable ${operator} Variable`);
     this._if(operator, variableAliasA, variableAliasB, trueLabel, 0);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+    this._label(trueLabel);
+    this._compilePath(truePath);
+    this._label(endLabel);
+  };
+
+  ifVariableBitwiseValue = (
+    variable: string,
+    operator: ScriptBuilderRPNOperation,
+    flags: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const variableAlias = this.getVariableAlias(variable);
+    const trueLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Variable ${operator} Value`);
+    this._rpn() //
+      .ref(variableAlias)
+      .int8(flags)
+      .operator(operator)
+      .stop();
+    this._ifConst(".NE", ".ARG0", 0, trueLabel, 1);
     this._compilePath(falsePath);
     this._jump(endLabel);
     this._label(trueLabel);
@@ -1440,25 +1509,7 @@ class ScriptBuilder {
     output.push(cmd(RESET_VARIABLES));
   };
 
-  variableAddFlags = (setVariable, flags) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(setVariable, variables);
-    output.push(cmd(VARIABLE_ADD_FLAGS));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(flags);
-  };
 
-  variableClearFlags = (setVariable, flags) => {
-    const output = this.output;
-    const { variables } = this.options;
-    const variableIndex = this.getVariableIndex(setVariable, variables);
-    output.push(cmd(VARIABLE_CLEAR_FLAGS));
-    output.push(hi(variableIndex));
-    output.push(lo(variableIndex));
-    output.push(flags);
-  };
 
   temporaryEntityVariable = (index) => {
     const { entity } = this.options;
