@@ -522,6 +522,10 @@ class ScriptBuilder {
     );
   };
 
+  _inputWait = (mask: number) => {
+    this._addCmd("VM_INPUT_WAIT", mask);
+  };
+
   _stop = () => {
     this._assertStackNeutral();
     this._addComment("Stop Script");
@@ -746,6 +750,14 @@ class ScriptBuilder {
     this._addComment("Overlay Move To");
     this._overlayMoveTo(x, y, speed);
     this._overlayWait(true, [".UI_WAIT_WINDOW"]);
+  };
+
+  // --------------------------------------------------------------------------
+  // Input
+
+  inputAwait = (input: string[]) => {
+    this._addComment("Wait For Input");
+    this._inputWait(inputDec(input));
   };
 
   // --------------------------------------------------------------------------
