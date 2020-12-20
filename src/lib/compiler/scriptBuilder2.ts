@@ -225,7 +225,7 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Private methods
 
-  #_addDependency(symbol: string) {
+  private _addDependency = (symbol: string) => {
     const dataSymbol = `_${symbol}`;
     if (!this.dependencies.includes(dataSymbol)) {
       this.dependencies.push(dataSymbol);
