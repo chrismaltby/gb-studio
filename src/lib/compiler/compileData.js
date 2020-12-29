@@ -145,9 +145,42 @@ const compile = async (
       entity,
       entityIndex,
       loop,
-      alreadyCompiled,
+      scriptType,
     ) => {
-      const script = compileEntityEvents(scriptCounter, script, {
+      let entityCode = "";
+      let scriptTypeCode = "interact";
+
+      if (entityType === "actor") {
+        const scriptLookup = {
+          script: "interact",
+          updateScript: "update",
+          hit1Script: "hit1",
+          hit2Script: "hit2",
+          hit3Script: "hit3",
+        }
+        entityCode = `a${entityIndex}`;
+        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
+      }
+      else if (entityType === "trigger") {
+        entityCode = `t${entityIndex}`;
+        scriptTypeCode = "interact";
+      }  else if (entityType === "scene") {
+        const scriptLookup = {
+          script: "init",
+          playerHit1Script: "p_hit1",
+          playerHit2Script: "p_hit2",
+          playerHit3Script: "p_hit3",
+        }        
+        scriptTypeCode = scriptLookup[scriptType] || scriptTypeCode;
+      }       
+            
+      const scriptName = `script_s${sceneIndex}${entityCode}_${scriptTypeCode}`
+
+      if (script.length < 2) {
+        return null;
+      }
+
+      const compiledScript = compileEntityEvents(scriptName, script, {
         scene,
         sceneIndex,
         scenes: precompiled.sceneData,
@@ -167,11 +200,13 @@ const compile = async (
         warnings,
         loop,
         engineFields: precompiledEngineFields,
-        output: alreadyCompiled || [],
+        output: [],
       });
-      output[`script_${scriptCounter}.s`] = script;
-      output[`script_${scriptCounter}.h`] = compileScriptHeader(scriptCounter);
-      return scriptCounter++;
+
+
+      output[`${scriptName}.s`] = compiledScript;
+      output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+      return scriptName;
     };
 
     const bankSceneEvents = (scene, sceneIndex) => {
@@ -199,21 +234,23 @@ const compile = async (
         "scene",
         scene,
         sceneIndex,
-        false
+        false,
+        "script"
       );
 
     };
 
     const bankEntityEvents = (entityType, entityScriptField = "script") => (entity, entityIndex) => {
       if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
-        return -1;
+        return null;
       }
       return compileScript(
         entity[entityScriptField],
         entityType,
         entity,
         entityIndex,
-        entityScriptField === "updateScript"
+        entityScriptField === "updateScript",
+        entityScriptField
       );
     };
 

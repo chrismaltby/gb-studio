@@ -193,6 +193,7 @@ class ScriptBuilder {
   stack: number[];
   stackPtr: number;
   labelStackSize: Dictionary<number>;
+  includeActor: boolean;
 
   constructor(
     output: ScriptOutput,
@@ -220,6 +221,7 @@ class ScriptBuilder {
     this.stack = [];
     this.stackPtr = 0;
     this.labelStackSize = {};
+    this.includeActor = false;
   }
 
   // --------------------------------------------------------------------------
@@ -230,7 +232,7 @@ class ScriptBuilder {
     if (!this.dependencies.includes(dataSymbol)) {
       this.dependencies.push(dataSymbol);
     }
-  }
+  };
 
   private _addBankedFnDependency = (symbol: string) => {
     const bankSymbol = `b_${symbol}`;
@@ -476,6 +478,11 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
+  _actorActivate = (addr: string) => {
+    this.includeActor = true;
+    this._addCmd("VM_ACTOR_ACTIVATE", addr);
+  };
+
   _actorMoveTo = (addr: string) => {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
@@ -571,18 +578,19 @@ class ScriptBuilder {
   // Actors
 
   actorSetActive = (id: string) => {
-    const output = this.output;
     const { scene, entity } = this.options;
     const newIndex =
       id === "$self$" && entity
         ? getActorIndex(entity.id, scene)
         : getActorIndex(id, scene);
-    if (newIndex !== this.actorIndex) {
-      this.actorIndex = newIndex;
-      this._stackPush(this.actorIndex);
-      this._set("ACTOR", ".ARG0");
-      this._invoke("vm_actor_activate", 1, 1);
-    }
+    // if (newIndex !== this.actorIndex) {
+
+    this._addComment("Actor Set Active");
+
+    this.actorIndex = newIndex;
+    this._setConst("ACTOR", this.actorIndex);
+    this._actorActivate("ACTOR");
+    // }
   };
 
   actorMoveTo = (
@@ -592,10 +600,11 @@ class ScriptBuilder {
     moveType: ScriptBuilderMoveType
   ) => {
     const stackPtr = this.stackPtr;
-    this._setConst("^/ACTOR + 1/", x);
-    this._setConst("^/ACTOR + 2/", y);
-    this._setConst("^/ACTOR + 3/", useCollisions ? 1 : 0);
-    this._setConst("^/ACTOR + 4/", moveTypeDec(moveType));
+    this._addComment("Actor Move To");
+    this._setConst("^/(ACTOR + 1)/", x * 8);
+    this._setConst("^/(ACTOR + 2)/", y * 8);
+    this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
+    this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
     this._assertStackNeutral(stackPtr);
   };
@@ -606,14 +615,50 @@ class ScriptBuilder {
     useCollisions: boolean = false,
     moveType: ScriptBuilderMoveType
   ) => {
-    // const output = this.output;
-    // output.push(cmd(ACTOR_MOVE_RELATIVE));
-    // output.push(Math.abs(x));
-    // output.push(x < 0 ? 1 : 0);
-    // output.push(Math.abs(y));
-    // output.push(y < 0 ? 1 : 0);
-    // output.push(useCollisions ? 1 : 0);
-    // output.push(moveTypeDec(moveType));
+    const stackPtr = this.stackPtr;
+    this._addComment("Actor Move Relative");
+    this._rpn() //
+      .ref("^/(ACTOR + 1)/")
+      .int16(x * 8)
+      .operator(".ADD")
+      .ref("^/(ACTOR + 2)/")
+      .int16(y * 8)
+      .operator(".ADD")
+      .stop();
+
+    this._set("^/(ACTOR + 1 - 2)/", ".ARG1");
+    this._set("^/(ACTOR + 2 - 2)/", ".ARG0");
+    this._stackPop(2);
+    this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
+    this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
+    this._actorMoveTo("ACTOR");
+
+    this._assertStackNeutral(stackPtr);
+  };
+
+  actorSetPosition = (x = 0, y = 0) => {
+    this._addComment("Actor Set Position");
+    this._addComment("NOT IMPLEMENTED");
+  };
+
+  actorPush = (continueUntilCollision = false) => {
+    this._addComment("Actor Push");
+    this._addComment("NOT IMPLEMENTED");
+  };
+
+  actorShow = () => {
+    this._addComment("Actor Show");
+    this._addComment("NOT IMPLEMENTED");
+  };
+
+  actorHide = () => {
+    this._addComment("Actor Hide");
+    this._addComment("NOT IMPLEMENTED");
+  };
+
+  actorSetCollisions = (enabled: boolean) => {
+    this._addComment("Actor Set Collisions");
+    this._addComment("NOT IMPLEMENTED");
   };
 
   // --------------------------------------------------------------------------
@@ -621,6 +666,7 @@ class ScriptBuilder {
 
   nextFrameAwait = () => {
     const stackPtr = this.stackPtr;
+    this._addComment("Wait 1 Frame");
     this._stackPush(1);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
@@ -628,6 +674,7 @@ class ScriptBuilder {
 
   wait = (frames: number) => {
     const stackPtr = this.stackPtr;
+    this._addComment("Wait N Frames");
     this._stackPush(frames);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
@@ -805,6 +852,8 @@ class ScriptBuilder {
     direction: string = "down",
     fadeSpeed: number = 2
   ) => {
+    this._addComment("Load Scene");
+    this._addComment("NOT IMPLEMENTED");
     // const output = this.output;
     // const { scenes } = this.options;
     // const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
@@ -1268,6 +1317,24 @@ class ScriptBuilder {
     this._label(endLabel);
   };
 
+  ifActorAtPosition = (
+    x: number,
+    y: number,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = []
+  ) => {
+    const falseLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    this._addComment(`If Actor At Position`);
+    this._addComment("NOT IMPLEMENTED - JUMPING TO FALSE PATH");
+    this._jump(falseLabel);
+    this._compilePath(truePath);
+    this._jump(endLabel);
+    this._label(falseLabel);
+    this._compilePath(falsePath);
+    this._label(endLabel);
+  };
+
   caseVariableValue = (
     variable: string,
     cases: { [key: string]: ScriptEvent[] | ScriptBuilderPathFunction } = {},
@@ -1314,17 +1381,16 @@ class ScriptBuilder {
     compileEvents(this, path);
   };
 
+  // actorMoveTo = (x = 0, y = 0, useCollisions = false, moveType) => {
+  //   const output = this.output;
+  //   output.push(cmd(ACTOR_MOVE_TO));
+  //   output.push(x);
+  //   output.push(y);
+  //   output.push(useCollisions ? 1 : 0);
+  //   output.push(moveTypeDec(moveType));
+  // };
+
   /*
-
-  actorMoveTo = (x = 0, y = 0, useCollisions = false, moveType) => {
-    const output = this.output;
-    output.push(cmd(ACTOR_MOVE_TO));
-    output.push(x);
-    output.push(y);
-    output.push(useCollisions ? 1 : 0);
-    output.push(moveTypeDec(moveType));
-  };
-
   actorMoveRelative = (x = 0, y = 0, useCollisions = false, moveType) => {
     const output = this.output;
     output.push(cmd(ACTOR_MOVE_RELATIVE));
@@ -1686,35 +1752,7 @@ class ScriptBuilder {
     output.push(cmd(SCENE_STATE_RESET));
   };
 
-  // Overlays
-
-  overlayShow = (color = "white", x = 0, y = 0) => {
-    const output = this.output;
-    output.push(cmd(OVERLAY_SHOW));
-    output.push(color === "white" ? 1 : 0);
-    output.push(x);
-    output.push(y);
-  };
-
-  overlayHide = () => {
-    const output = this.output;
-    output.push(cmd(OVERLAY_HIDE));
-  };
-
-  overlayMoveTo = (x = 0, y = 18, speed = 0) => {
-    const output = this.output;
-    output.push(cmd(OVERLAY_MOVE_TO));
-    output.push(x);
-    output.push(y);
-    output.push(speed);
-  };
-
   // Control Flow
-
-
-
-
-
 
   ifInput = (input, truePath = [], falsePath = []) => {
     const output = this.output;
@@ -2083,7 +2121,7 @@ class ScriptBuilder {
   toScriptString = (name: string) => {
     this._assertStackNeutral();
     return `.include "vm.i"
-.include "game_globals.i"
+.include "data/game_globals.i"
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
@@ -2091,10 +2129,23 @@ ${
 }
 .area _CODE_255
 
+${this.includeActor ? "ACTOR = -4" : ""}
+
 ___bank_${name} = 255
 .globl ___bank_${name}
 
 _${name}::
+${
+  this.includeActor
+    ? this._padCmd("VM_PUSH", "0", 8, 24) +
+      "\n" +
+      this._padCmd("VM_PUSH", "0", 8, 24) +
+      "\n" +
+      this._padCmd("VM_PUSH", "0", 8, 24) +
+      "\n" +
+      this._padCmd("VM_PUSH", "0", 8, 24)
+    : ""
+}
 ${this.output.join("\n")}
 `;
   };

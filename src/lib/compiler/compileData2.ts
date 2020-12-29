@@ -50,11 +50,11 @@ export const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
-export const maybeScriptFarPtr = (scriptIndex: number) =>
-  scriptIndex > -1 ? toFarPtr(scriptSymbol(scriptIndex)) : undefined;
+export const maybeScriptFarPtr = (scriptSymbol: string) =>
+  scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
-export const maybeScriptDependency = (scriptIndex: number) =>
-  scriptIndex > -1 ? scriptSymbol(scriptIndex) : [];
+export const maybeScriptDependency = (scriptSymbol: string) =>
+  scriptSymbol ? scriptSymbol : [];
 
 export const includeGuard = (key: string, contents: string) => `#ifndef ${key}_H
 #define ${key}_H
@@ -356,23 +356,33 @@ export const compileSceneActors = (
       const sprite = sprites.find((s) => s.id === actor.spriteSheetId);
       if (!sprite) return [];
       const spriteFrames = sprite.frames;
+      const spriteOffset = getSpriteOffset(actor.spriteSheetId);
       const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
       const initialFrame =
         actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
       const collisionGroup = collisionGroupDec(actor.collisionGroup);
       return {
         __comment: actorName(actor, actorIndex),
-        x: actor.x,
-        y: actor.y,
+        x: actor.x * 8,
+        y: actor.y * 8,
+        dir_x: 0,
+        dir_y: 1,
+        sprite_no: 0,
         sprite: getSpriteOffset(actor.spriteSheetId),
         sprite_type: spriteTypeDec(actor.spriteType, spriteFrames),
         palette: actorPaletteIndexes[actor.id] || 0,
         n_frames: actorFrames,
         initial_frame: initialFrame || 0,
         animate: actor.animate ? "TRUE" : "FALSE",
-        direction: dirDec(actor.direction),
+        // direction: dirDec(actor.direction),
         move_speed: moveSpeedDec(actor.moveSpeed),
-        anim_speed: animSpeedDec(actor.animSpeed),
+        // anim_speed: animSpeedDec(actor.animSpeed),
+        anim_tick: 0x7,
+
+        frame: spriteOffset * 4,
+        frame_start: spriteOffset * 4,
+        frame_end: (spriteOffset + actorFrames) * 4,
+
         pinned: actor.isPinned ? "TRUE" : "FALSE",
         collision_group: collisionGroup,
         script: maybeScriptFarPtr(events.actors[actorIndex]),
@@ -603,12 +613,8 @@ export const compileEmotesImage = (data: any) =>
 export const compileEmotesImageHeader = (data: any) =>
   toArrayDataHeader(DATA_TYPE, "emotes_image", `// Emotes`);
 
-export const compileScriptHeader = (scriptIndex: number) =>
-  toArrayDataHeader(
-    DATA_TYPE,
-    scriptSymbol(scriptIndex),
-    `// Script ${scriptIndex}`
-  );
+export const compileScriptHeader = (scriptName: string) =>
+  toArrayDataHeader(DATA_TYPE, scriptName, `// Script ${scriptName}`);
 
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Dictionary<string>
