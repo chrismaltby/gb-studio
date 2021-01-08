@@ -13,7 +13,7 @@
 #include "UI.h"
 #include "Input.h"
 #include "BankData.h"
-#include "data/data_types.h"
+#include "gbs_types.h"
 #include "data/data_ptrs.h"
 
 #define MAX_PLAYER_SPRITE_SIZE 24

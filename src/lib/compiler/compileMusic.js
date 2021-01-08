@@ -67,7 +67,7 @@ const compileMusic = async ({
     };
 
     // Delete mod2gbt compile track, no longer needed
-    await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
+    // await fs.unlink(`${buildRoot}/src/music/${track.dataName}.c`);
   
     progress(`${track.dataName} approx size in bytes: ${musicData.size}`);
 

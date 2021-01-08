@@ -5,7 +5,7 @@
 #include <gb/gb.h>
 
 #include "BankData.h"
-#include "data/data_types.h"
+#include "gbs_types.h"
 
 #define DATA_MANAGER_BANK 1
 

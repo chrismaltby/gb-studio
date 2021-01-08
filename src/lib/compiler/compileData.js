@@ -406,10 +406,11 @@ const compile = async (
   output[`data_ptrs.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
     `#include "BankData.h"\n` +
-    `#include "data/data_types.h"\n\n` +
+    `#include "gbs_types.h"\n\n` +
     `#define NUM_VARIABLES ${variablesLen}\n` +
     `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
     `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
+    `extern const far_ptr_t music_tracks[];\n\n` +
     `extern int start_scene_x;\n` +
     `extern int start_scene_y;\n` +
     `extern char start_scene_dir_x;\n` +
@@ -421,19 +422,19 @@ const compile = async (
     `extern unsigned char start_player_anim_speed;\n\n` +
     `// Engine fields\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
-    `extern unsigned char script_variables[${variablesLen}];\n${music
+    `${music
       .map((track, index) => {
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
-      .join(`\n`)}\n#endif\n`;
+      .join(`\n`)}#endif\n`;
   output[`data_ptrs.c`] =
     `#include "data/data_ptrs.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
     `#include "data/${spriteSheetSymbol(playerSpriteIndex)}.h"\n` +
     (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
     `\n` +
-    `int start_scene_x = ${decHex16((startX || 0) * 8)};\n` +
-    `int start_scene_y = ${decHex16((startY || 0) * 8)};\n` +
+    `int start_scene_x = ${((startX || 0) * 8)};\n` +
+    `int start_scene_y = ${((startY || 0) * 8)};\n` +
     `char start_scene_dir_x = ${startDirectionX};\n` +
     `char start_scene_dir_y = ${startDirectionY};\n` +
     `far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +

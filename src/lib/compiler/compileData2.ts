@@ -89,7 +89,7 @@ const toDataHeader = (type: string, symbol: string, comment: string) =>
     symbol.toUpperCase(),
     `${comment}
 
-#include "data/data_types.h"
+#include "gbs_types.h"
 
 ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol};`
@@ -100,7 +100,7 @@ const toArrayDataHeader = (type: string, symbol: string, comment: string) =>
     symbol.toUpperCase(),
     `${comment}
 
-#include "data/data_types.h"
+#include "gbs_types.h"
 
 ${toBankSymbolDef(symbol)};
 extern ${type} ${symbol}[];`
@@ -160,7 +160,7 @@ export const toStructDataFile = <T extends {}>(
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "data/data_types.h"${
+#include "gbs_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -185,7 +185,7 @@ export const toStructArrayDataFile = <T extends {}>(
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "data/data_types.h"${
+#include "gbs_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -217,7 +217,7 @@ export const toArrayDataFile = (
 ) => `#pragma bank 255
 ${comment ? "\n" + comment : ""}
 
-#include "data/data_types.h"${
+#include "gbs_types.h"${
   dependencies
     ? "\n" +
       dependencies
@@ -267,7 +267,8 @@ export const compileScene = (
     {
       width: scene.width,
       height: scene.height,
-      type: scene.type ? parseInt(scene.type, 10) : 0,
+      // type: scene.type ? parseInt(scene.type, 10) : 0,
+      type: "SCENE_TYPE_TOPDOWN",
       background: toFarPtr(backgroundSymbol(scene.backgroundIndex)),
       collisions: toFarPtr(sceneCollisionsSymbol(sceneIndex)),
       colors: color ? toFarPtr(sceneColorsSymbol(sceneIndex)) : undefined,
@@ -384,7 +385,9 @@ export const compileSceneActors = (
         frame_end: (spriteOffset + actorFrames) * 4,
 
         pinned: actor.isPinned ? "TRUE" : "FALSE",
+
         collision_group: collisionGroup,
+        collisions_enabled: "TRUE",
         script: maybeScriptFarPtr(events.actors[actorIndex]),
         script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
         script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
