@@ -50,6 +50,22 @@ export const toFarPtr = (ref: string): string => {
   return `TO_FAR_PTR_T(${ref})`;
 };
 
+export const toASMCollisionGroup = (group: string) => {
+  if (group === "player") {
+    return "COLLISION_GROUP_PLAYER";
+  }
+  if (group === "1") {
+    return "COLLISION_GROUP_1";
+  }
+  if (group === "2") {
+    return "COLLISION_GROUP_2";
+  }
+  if (group === "3") {
+    return "COLLISION_GROUP_3";
+  }
+  return "COLLISION_GROUP_NONE";
+};
+
 export const maybeScriptFarPtr = (scriptSymbol: string) =>
   scriptSymbol ? toFarPtr(scriptSymbol) : undefined;
 
@@ -361,7 +377,6 @@ export const compileSceneActors = (
       const actorFrames = actorFramesPerDir(actor.spriteType, spriteFrames);
       const initialFrame =
         actor.spriteType === SPRITE_TYPE_STATIC ? actor.frame % actorFrames : 0;
-      const collisionGroup = collisionGroupDec(actor.collisionGroup);
       return {
         __comment: actorName(actor, actorIndex),
         x: actor.x * 8,
@@ -373,7 +388,6 @@ export const compileSceneActors = (
         sprite_type: spriteTypeDec(actor.spriteType, spriteFrames),
         palette: actorPaletteIndexes[actor.id] || 0,
         n_frames: actorFrames,
-        initial_frame: initialFrame || 0,
         animate: actor.animate ? "TRUE" : "FALSE",
         // direction: dirDec(actor.direction),
         move_speed: moveSpeedDec(actor.moveSpeed),
@@ -383,11 +397,11 @@ export const compileSceneActors = (
         frame: spriteOffset * 4,
         frame_start: spriteOffset * 4,
         frame_end: (spriteOffset + actorFrames) * 4,
-
+        // flip_x: direction is left
         pinned: actor.isPinned ? "TRUE" : "FALSE",
 
-        collision_group: collisionGroup,
-        collisions_enabled: "TRUE",
+        collision_group: toASMCollisionGroup(actor.collisionGroup),
+        collision_enabled: "TRUE",
         script: maybeScriptFarPtr(events.actors[actorIndex]),
         script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
         script_hit1: maybeScriptFarPtr(events.actorsHit1[actorIndex]),
