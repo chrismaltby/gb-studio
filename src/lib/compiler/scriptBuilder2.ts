@@ -183,7 +183,6 @@ const toASMVar = (symbol: string) => {
 };
 
 const toASMDir = (direction: string) => {
-  console.log("TO ASM DIR", direction);
   if (direction === "left") {
     return ".DIR_LEFT, 0";
   } else if (direction === "right") {
@@ -920,7 +919,6 @@ class ScriptBuilder {
       this._setConst("^/(ACTOR + 2)/", y * 8);
       this._actorSetPosition("ACTOR");
       const asmDir = toASMDir(direction);
-      console.log("asmDir", asmDir, "direction", direction, x * 8, y * 8);
       if (asmDir) {
         this._actorSetDirection("ACTOR", asmDir);
       }

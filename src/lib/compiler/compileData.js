@@ -237,6 +237,7 @@ const compile = async (
         scene,
         sceneIndex,
         false,
+        true,
         "script"
       );
 
@@ -423,7 +424,7 @@ const compile = async (
     `extern far_ptr_t start_player_sprite;\n` +
     (customColorsEnabled ? `extern far_ptr_t start_player_palette;\n` : "") +
     `extern unsigned char start_player_move_speed;\n` +
-    `extern unsigned char start_player_anim_speed;\n\n` +
+    `extern unsigned char start_player_anim_tick;\n\n` +
     `// Engine fields\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
     `${music
@@ -445,7 +446,7 @@ const compile = async (
     `far_ptr_t start_player_sprite = ${toFarPtr(spriteSheetSymbol(playerSpriteIndex))};\n` +
     (customColorsEnabled ? `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
     `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
-    `unsigned char start_player_anim_speed = ${animSpeedDec(startAnimSpeed)};\n` +
+    `unsigned char start_player_anim_tick = ${animSpeedDec(startAnimSpeed)};\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
@@ -579,7 +580,6 @@ export const compileEngineFields = (engineFields, engineFieldValues, header) => 
       const value = customValue !== undefined ? Number(customValue) : Number(engineField.defaultValue);
       fieldDef += `${header ? "extern " : ""}${engineField.cType} ${engineField.key}${!header && value !== undefined ? ` = ${value}` : ""};\n`
     }
-    fieldDef += `${header ? "extern " : ""}UBYTE *engine_fields_addr${!header ? ` = &${engineFields[0].key}` : ""};\n`
   }
   return fieldDef;
 }
