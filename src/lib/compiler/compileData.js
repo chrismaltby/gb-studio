@@ -145,6 +145,7 @@ const compile = async (
       entity,
       entityIndex,
       loop,
+      lock,
       scriptType,
     ) => {
       let entityCode = "";
@@ -199,6 +200,7 @@ const compile = async (
         entity,
         warnings,
         loop,
+        lock,
         engineFields: precompiledEngineFields,
         output: [],
       });
@@ -244,12 +246,14 @@ const compile = async (
       if(!entity[entityScriptField] || entity[entityScriptField].length <= 1) {
         return null;
       }
+      const lockScript = entityScriptField === "script" && !entity.collisionGroup;
       return compileScript(
         entity[entityScriptField],
         entityType,
         entity,
         entityIndex,
         entityScriptField === "updateScript",
+        lockScript,
         entityScriptField
       );
     };

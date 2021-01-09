@@ -65,6 +65,7 @@ interface ScriptBuilderOptions {
   variables: string[];
   variablesLookup: VariablesLookup;
   variableAliasLookup: Dictionary<string>;
+  scenes: ScriptBuilderScene[];
   sprites: ScriptBuilderEntity[];
   entity?: ScriptBuilderEntity;
   engineFields: Dictionary<EngineFieldSchema>;
@@ -181,6 +182,19 @@ const toASMVar = (symbol: string) => {
   return symbol.toUpperCase().replace(/[^A-Z0-9]/g, "_");
 };
 
+const toASMDir = (direction: string) => {
+  console.log("TO ASM DIR", direction);
+  if (direction === "left") {
+    return ".DIR_LEFT, 0";
+  } else if (direction === "right") {
+    return ".DIR_RIGHT, 0";
+  } else if (direction === "up") {
+    return "0, .DIR_UP";
+  } else if (direction === "down") {
+    return "0, .DIR_DOWN";
+  }
+};
+
 // ------------------------
 
 class ScriptBuilder {
@@ -194,6 +208,7 @@ class ScriptBuilder {
   stackPtr: number;
   labelStackSize: Dictionary<number>;
   includeActor: boolean;
+  headers: string[];
 
   constructor(
     output: ScriptOutput,
@@ -210,6 +225,7 @@ class ScriptBuilder {
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       engineFields: options.engineFields || {},
+      scenes: options.scenes || [],
       sprites: options.sprites || [],
       compileEvents: options.compileEvents || ((_self, _e) => {}),
     };
@@ -222,10 +238,17 @@ class ScriptBuilder {
     this.stackPtr = 0;
     this.labelStackSize = {};
     this.includeActor = false;
+    this.headers = ["vm.i", "data/game_globals.i"];
   }
 
   // --------------------------------------------------------------------------
   // Private methods
+
+  private _includeHeader = (filename: string) => {
+    if (!this.headers.includes(filename)) {
+      this.headers.push(filename);
+    }
+  };
 
   private _addDependency = (symbol: string) => {
     const dataSymbol = `_${symbol}`;
@@ -320,6 +343,18 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Low Level GB Studio Assembly Operations
 
+  _vmLock = () => {
+    this._addCmd("VM_LOCK");
+  };
+
+  _vmUnlock = () => {
+    this._addCmd("VM_UNLOCK");
+  };
+
+  _raiseException = (exception: string, numArgs: number) => {
+    this._addCmd("VM_RAISE", exception, numArgs);
+  };
+
   _invoke = (fn: string, popNum: number, numArgs: number) => {
     this._addBankedFnDependency(fn);
     this._addCmd(
@@ -380,6 +415,12 @@ class ScriptBuilder {
 
   _string = (str: string) => {
     this._addCmd(`.asciz "${str.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`);
+  };
+
+  _importFarPtrData = (farPtr: string) => {
+    this._includeHeader("macro.i");
+    this._addBankedDataDependency(farPtr);
+    this._addCmd(`    IMPORT_FAR_PTR_DATA`, `_${farPtr}`);
   };
 
   _dw = (...data: Array<string | number>) => {
@@ -487,6 +528,14 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _actorSetPosition = (addr: string) => {
+    this._addCmd("VM_ACTOR_SET_POS", addr);
+  };
+
+  _actorSetDirection = (addr: string, asmDir: string) => {
+    this._addCmd("VM_ACTOR_SET_DIR", addr, asmDir);
+  };
+
   _loadText = (numInputs: number) => {
     this._addCmd("VM_LOAD_TEXT", `${numInputs}`);
   };
@@ -566,6 +615,14 @@ class ScriptBuilder {
 
   _inputWait = (mask: number) => {
     this._addCmd("VM_INPUT_WAIT", mask);
+  };
+
+  _fadeIn = (speed: number) => {
+    this._addCmd("VM_FADE_IN", speed);
+  };
+
+  _fadeOut = (speed: number) => {
+    this._addCmd("VM_FADE_OUT", speed);
   };
 
   _stop = () => {
@@ -852,21 +909,24 @@ class ScriptBuilder {
     direction: string = "down",
     fadeSpeed: number = 2
   ) => {
+    this.includeActor = true;
     this._addComment("Load Scene");
-    this._addComment("NOT IMPLEMENTED");
-    // const output = this.output;
-    // const { scenes } = this.options;
-    // const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
-    // if (sceneIndex > -1) {
-    //   output.push(cmd(SWITCH_SCENE));
-    //   output.push(hi(sceneIndex));
-    //   output.push(lo(sceneIndex));
-    //   output.push(x);
-    //   output.push(y);
-    //   output.push(dirDec(direction));
-    //   output.push(fadeSpeed);
-    //   this.scriptEnd();
-    // }
+    const { scenes } = this.options;
+    const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
+    if (sceneIndex > -1) {
+      this._fadeOut(fadeSpeed);
+      this._setConst("ACTOR", 0);
+      this._setConst("^/(ACTOR + 1)/", x * 8);
+      this._setConst("^/(ACTOR + 2)/", y * 8);
+      this._actorSetPosition("ACTOR");
+      const asmDir = toASMDir(direction);
+      console.log("asmDir", asmDir, "direction", direction, x * 8, y * 8);
+      if (asmDir) {
+        this._actorSetDirection("ACTOR", asmDir);
+      }
+      this._raiseException("EXCEPTION_CHANGE_SCENE", 3);
+      this._importFarPtrData(`scene_${sceneIndex}`);
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -1370,6 +1430,14 @@ class ScriptBuilder {
     } else if (path) {
       compileEvents(this, path);
     }
+  };
+
+  lock = () => {
+    this._vmLock();
+  };
+
+  unlock = () => {
+    this._vmUnlock();
   };
 
   scriptEnd = () => {
@@ -2118,10 +2186,9 @@ class ScriptBuilder {
   // --------------------------------------------------------------------------
   // Export
 
-  toScriptString = (name: string) => {
+  toScriptString = (name: string, lock: boolean) => {
     this._assertStackNeutral();
-    return `.include "vm.i"
-.include "data/game_globals.i"
+    return `${this.headers.map((header) => `.include "${header}"`).join("\n")}
 ${
   this.dependencies.length > 0
     ? `\n.globl ${this.dependencies.join(", ")}\n`
@@ -2135,18 +2202,19 @@ ___bank_${name} = 255
 .globl ___bank_${name}
 
 _${name}::
-${
-  this.includeActor
-    ? this._padCmd("VM_PUSH", "0", 8, 24) +
-      "\n" +
-      this._padCmd("VM_PUSH", "0", 8, 24) +
-      "\n" +
-      this._padCmd("VM_PUSH", "0", 8, 24) +
-      "\n" +
-      this._padCmd("VM_PUSH", "0", 8, 24)
-    : ""
-}
-${this.output.join("\n")}
+${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
+      this.includeActor
+        ? "        ; Local Actor\n" +
+          this._padCmd("VM_PUSH", "0", 8, 24) +
+          "\n" +
+          this._padCmd("VM_PUSH", "0", 8, 24) +
+          "\n" +
+          this._padCmd("VM_PUSH", "0", 8, 24) +
+          "\n" +
+          this._padCmd("VM_PUSH", "0", 8, 24) +
+          "\n\n"
+        : ""
+    }${this.output.join("\n")}
 `;
   };
 }

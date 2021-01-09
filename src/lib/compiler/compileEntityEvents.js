@@ -15,6 +15,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
     entityIndex,
     warnings,
     loop,
+    lock
   } = options;
 
   const location = {
@@ -127,7 +128,7 @@ const compileEntityEvents = (scriptName, input = [], options = {}) => {
       }
     }
 
-    return scriptBuilder.toScriptString(scriptName);
+    return scriptBuilder.toScriptString(scriptName, lock);
   } catch (e) {
     throw new Error(
       `Compiling failed with error "${e}". ${JSON.stringify(
