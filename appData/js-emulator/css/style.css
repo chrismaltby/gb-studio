@@ -315,3 +315,12 @@ body {
   }
 }
 
+/* itch.io fix for game size 640 x 576 */
+@media only screen and (min-width: 640px) {
+  .detected-itch #game canvas {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 600px;
+  }
+}
