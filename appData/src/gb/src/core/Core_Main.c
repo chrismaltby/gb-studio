@@ -263,6 +263,10 @@ int core_start() {
     //BGP_REG = PAL_DEF(0U, 1U, 2U, 3U);
     //OBP0_REG = OBP1_REG = PAL_DEF(0U, 0U, 1U, 3U);
 
+    // Force Clear Emote
+    move_sprite(0, 0, 0);
+    move_sprite(1, 0, 0);
+
     UIInit();
     LoadScene(current_state);
 
