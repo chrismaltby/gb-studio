@@ -123,7 +123,7 @@ void UIShowAvatar(UBYTE avatar_index) {
 
 void UIShowChoice(UWORD flag_index, UBYTE bank, UWORD bank_offset) {
   UIShowMenu_b(flag_index, bank, bank_offset, 0,
-               MENU_CANCEL_ON_B_PRESSED | MENU_CANCEL_ON_LAST_OPTION);
+               /*MENU_CANCEL_ON_B_PRESSED | */MENU_CANCEL_ON_LAST_OPTION);
 }
 
 void UIShowMenu(UWORD flag_index,
