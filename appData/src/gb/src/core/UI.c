@@ -147,6 +147,9 @@ void UIMoveTo(UBYTE x, UBYTE y, UBYTE speed) {
   if (speed == 0) {
     win_pos_x = x;
     win_pos_y = y;
+    if (y == MENU_CLOSED_Y) {
+      win_speed = 0xFF;
+    }
   } else {
     win_speed = speed;
   }
