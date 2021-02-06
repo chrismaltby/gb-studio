@@ -13,18 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add live preview of how dialogue will appear in game when hovering over "Display Dialogue" events using ascii.png, frame.png and avatar sprites
 - Add character count to dialogue event text input (52 characters max, or 48 if using an avatar)
 - Add autocomplete and syntax highlighting for variables and speed codes in dialogue
-
 - Add Engine Property Fields for platfomer physics, 2d grid size, and fade style in settings
 - Add Event: Engine: Field Update for changing platformer physics mid game
 - Add 16bit variables for engine property fields only
 - Create Engine.json with ejected engines, to add your own custom engine properties
-
 - Add Navigation side bar to left of the editor, Accessible with Tab key and full keyboard navigation
 - Navigation sidebar lists: All scenes, actors/triggers within each scene, Custom Events, Global Variables
 - Navigation Clicking a variable opens a variable editor, to rename the variable, and list all uses of that variable in your project
 - Alt click a variable field in any event (if currently a global variable) to open the variable editor
 - Drag navigator sidebar completely to the left to hide it, to reenable it use the menu item "View / Show Navigator"
-
 - Add GBDK 2020 v4.0.1
 
 ### Changed
@@ -34,10 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom Events are now listed in navigator sidebar only
 - Updated to GBDK2020 v4.0.1 for massive performance increase, new ejected engine mandatory
 - Engine bank push pop functions replaced with __banked for performance increase
+- Multichoice no longer uses B for option 2, new users mistook A and B buttons as both chose an option, with little indication of result, menu is unaffected.
 
 ### Fixed
 
 - Fix issue where sidebar tabs could become hidden if translation wasn't able to fit in space available
+- Fix Actor speed event while moving caused the player to walk forever, now clamps to 4 pixels
+- Fix Emote sprites no longer stuck on screen after scene change
+- Fix Textbox flash of nothing between instant transitions
+- Fix Bg palette event "Don't modify" no longer breaks per scene palettes
 
 ## [2.0.0-beta4]
 
