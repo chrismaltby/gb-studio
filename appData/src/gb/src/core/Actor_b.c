@@ -93,9 +93,9 @@ UBYTE ActorInFrontOfPlayer_b(UBYTE grid_size, UBYTE inc_noclip) __banked {
     }      
   } else {
     if (player.dir.y == -1) {
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, inc_noclip);
+      hit_actor = ActorAt3x1Tile(tile_x, tile_y - 1, inc_noclip);
     } else if (player.dir.y == 1) {
-      hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y + 2, inc_noclip);
+      hit_actor = ActorAt3x1Tile(tile_x, tile_y + 2, inc_noclip);
     } else {
       if (player.dir.x == -1) {
         hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, inc_noclip);
@@ -120,9 +120,9 @@ UBYTE ActorInFrontOfActor_b(UBYTE i) __banked {
   tile_y = actors[i].pos.y >> 3;
 
   if (actors[i].dir.y == -1) {
-    hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y - 1, TRUE);
+    hit_actor = ActorAt3x1Tile(tile_x, tile_y - 1, TRUE);
   } else if (actors[i].dir.y == 1) {
-    hit_actor = ActorAt3x1Tile(tile_x - 1, tile_y + 2, TRUE);
+    hit_actor = ActorAt3x1Tile(tile_x, tile_y + 2, TRUE);
   } else {
     if (actors[i].dir.x == -1) {
       hit_actor = ActorAt1x2Tile(tile_x - 2, tile_y, TRUE);
@@ -163,7 +163,7 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
     case CHECK_DIR_UP:  // Check up
       while (start_y != end_tile) {
         if (TileAt2x2(start_x, start_y - 2) ||                                      // Tile up
-            (ActorAt3x1Tile(start_x - 1, start_y - 2, FALSE) != NO_ACTOR_COLLISON)  // Actor up
+            (ActorAt3x1Tile(start_x, start_y - 2, FALSE) != NO_ACTOR_COLLISON)  // Actor up
         ) {
           return start_y;
         }
@@ -173,9 +173,9 @@ UBYTE CheckCollisionInDirection_b(UBYTE start_x, UBYTE start_y, UBYTE end_tile, 
     case CHECK_DIR_DOWN:  // Check down
       while (start_y != end_tile) {
         if (TileAt2x2(start_x, start_y) ||  // Tile down
-            ActorAt3x1Tile(start_x - 1, start_y + 1, FALSE) !=
+            ActorAt3x1Tile(start_x, start_y + 1, FALSE) !=
                 NO_ACTOR_COLLISON ||  // Actor down 1 tile
-            ActorAt3x1Tile(start_x - 1, start_y + 2, FALSE) !=
+            ActorAt3x1Tile(start_x, start_y + 2, FALSE) !=
                 NO_ACTOR_COLLISON  // Actor down 2 tiles
         ) {
           return start_y;
@@ -266,7 +266,7 @@ UBYTE ActorAt3x1Tile_b(UBYTE tx, UBYTE ty, UBYTE inc_noclip) __banked {
     a_ty = DIV_8(actors[a].pos.y);
 
 
-    if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx - 2)) {
+    if ((ty == a_ty) && (tx == a_tx || tx == a_tx - 1 || tx == a_tx + 1)) {
       return a;
     }
   }
