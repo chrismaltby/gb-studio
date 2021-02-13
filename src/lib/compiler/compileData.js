@@ -435,8 +435,8 @@ const compile = async (
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
     (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
     `\n` +
-    `const INT16 start_scene_x = ${((startX || 0) * 8)};\n` +
-    `const INT16 start_scene_y = ${((startY || 0) * 8)};\n` +
+    `const INT16 start_scene_x = ${((startX || 0) * 8 * 16)};\n` +
+    `const INT16 start_scene_y = ${((startY || 0) * 8 * 16)};\n` +
     `const direction_e start_scene_dir = ${startDirectionX};\n` +
     `const far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
     (customColorsEnabled ? `const far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
