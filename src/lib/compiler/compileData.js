@@ -1,4 +1,5 @@
 import { copy } from "fs-extra";
+import Path from "path";
 import keyBy from "lodash/keyBy";
 import {
   walkScenesEvents,
@@ -69,6 +70,7 @@ import {
   compileScriptHeader,
   compileGameGlobalsInclude,
 } from "./compileData2";
+import compileSGBImage from "./sgb";
 
 const indexById = indexBy("id");
 
@@ -125,8 +127,7 @@ const compile = async (
   output["frame_image.h"] = compileFrameImageHeader(precompiled.frameTiles);
   output["cursor_image.c"] = compileCursorImage(precompiled.cursorTiles);
   output["cursor_image.h"] = compileCursorImageHeader(precompiled.cursorTiles);
-  output["emotes_image.c"] = compileEmotesImage(precompiled.emotesSprite);
-  output["emotes_image.h"] = compileEmotesImageHeader(precompiled.emotesSprite);
+  output["border.c"] = await compileSGBImage(Path.join(projectRoot, "assets/sgb/sgb.png"))
 
   progress(EVENT_MSG_COMPILING_EVENTS);
   // Hacky small wait to allow console to update before event loop is blocked
@@ -305,13 +306,13 @@ const compile = async (
     output[`spritesheet_${spriteIndex}.h`] = compileSpriteSheetHeader(sprite, spriteIndex);
   });
 
-  // Add avatar data
-  precompiled.usedAvatars.forEach((avatar, avatarIndex) => {
-    output[`avatar_${avatarIndex}.c`] = dataArrayToC(`avatar_${avatarIndex}`, [].concat(
-      avatar.frames,
-      avatar.data
-    ));
-  });
+  // // Add avatar data
+  // precompiled.usedAvatars.forEach((avatar, avatarIndex) => {
+  //   output[`avatar_${avatarIndex}.c`] = dataArrayToC(`avatar_${avatarIndex}`, [].concat(
+  //     avatar.frames,
+  //     avatar.data
+  //   ));
+  // });
 
   // Add scene data
   precompiled.sceneData.forEach((scene, sceneIndex) => {
@@ -408,23 +409,20 @@ const compile = async (
 
   output['game_globals.i'] = compileGameGlobalsInclude(variableAliasLookup);
 
-  output[`data_ptrs.h`] =
+  output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +
-    `#include "BankData.h"\n` +
+    `#include "bankdata.h"\n` +
     `#include "gbs_types.h"\n\n` +
     `#define NUM_VARIABLES ${variablesLen}\n` +
     `#define TMP_VAR_1 ${precompiled.variables.indexOf(TMP_VAR_1)}\n` + 
     `#define TMP_VAR_2 ${precompiled.variables.indexOf(TMP_VAR_2)}\n\n` + 
-    `extern const far_ptr_t music_tracks[];\n\n` +
-    `extern int start_scene_x;\n` +
-    `extern int start_scene_y;\n` +
-    `extern char start_scene_dir_x;\n` +
-    `extern char start_scene_dir_y;\n` +
-    `extern far_ptr_t start_scene;\n` +
-    `extern far_ptr_t start_player_sprite;\n` +
-    (customColorsEnabled ? `extern far_ptr_t start_player_palette;\n` : "") +
-    `extern unsigned char start_player_move_speed;\n` +
-    `extern unsigned char start_player_anim_tick;\n\n` +
+    `extern const INT16 start_scene_x;\n` +
+    `extern const INT16 start_scene_y;\n` +
+    `extern const direction_e start_scene_dir;\n` +
+    `extern const far_ptr_t start_scene;\n` +
+    (customColorsEnabled ? `extern const far_ptr_t start_player_palette;\n` : "") +
+    `extern const UBYTE start_player_move_speed;\n` +
+    `extern const UBYTE start_player_anim_tick;\n\n` +
     `// Engine fields\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues, true) + '\n' +
     `${music
@@ -432,21 +430,18 @@ const compile = async (
         return `extern const unsigned int ${track.dataName}_Data[];`;
       })
       .join(`\n`)}#endif\n`;
-  output[`data_ptrs.c`] =
-    `#include "data/data_ptrs.h"\n` +
+  output[`data_bootstrap.c`] =
+    `#include "data/data_bootstrap.h"\n` +
     `#include "data/${sceneSymbol(startSceneIndex)}.h"\n` +
-    `#include "data/${spriteSheetSymbol(playerSpriteIndex)}.h"\n` +
     (customColorsEnabled ? `#include "data/${paletteSymbol(0)}.h"\n` : "") +
     `\n` +
-    `int start_scene_x = ${((startX || 0) * 8)};\n` +
-    `int start_scene_y = ${((startY || 0) * 8)};\n` +
-    `char start_scene_dir_x = ${startDirectionX};\n` +
-    `char start_scene_dir_y = ${startDirectionY};\n` +
-    `far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
-    `far_ptr_t start_player_sprite = ${toFarPtr(spriteSheetSymbol(playerSpriteIndex))};\n` +
-    (customColorsEnabled ? `far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
-    `unsigned char start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
-    `unsigned char start_player_anim_tick = ${animSpeedDec(startAnimSpeed)};\n` +
+    `const INT16 start_scene_x = ${((startX || 0) * 8)};\n` +
+    `const INT16 start_scene_y = ${((startY || 0) * 8)};\n` +
+    `const direction_e start_scene_dir = ${startDirectionX};\n` +
+    `const far_ptr_t start_scene = ${toFarPtr(sceneSymbol(startSceneIndex))};\n` +
+    (customColorsEnabled ? `const far_ptr_t start_player_palette = ${toFarPtr(paletteSymbol(0))};\n` : "") +
+    `const UBYTE start_player_move_speed = ${animSpeedDec(startMoveSpeed)};\n` +
+    `const UBYTE start_player_anim_tick = ${animSpeedDec(startAnimSpeed)};\n` +
     compileEngineFields(engineFields, projectData.engineFieldValues) + '\n' +
     `unsigned char script_variables[${variablesLen}] = { 0 };\n`;
 
@@ -491,7 +486,6 @@ const precompile = async (
 
   progress(EVENT_MSG_PRE_UI_IMAGES);
   const {
-    emotesSprite,
     fontTiles,
     frameTiles,
     cursorTiles,
@@ -561,7 +555,6 @@ const precompile = async (
     fontTiles,
     frameTiles,
     cursorTiles,
-    emotesSprite,
     usedAvatars,
     usedPalettes,
     scenePaletteIndexes,
@@ -898,10 +891,6 @@ export const precompileUIImages = async (
     projectRoot,
     warnings,
   });
-  const emotesPath = await ensureProjectAsset("assets/ui/emotes.png", {
-    projectRoot,
-    warnings,
-  });
   const cursorPath = await ensureProjectAsset("assets/ui/cursor.png", {
     projectRoot,
     warnings,
@@ -910,9 +899,8 @@ export const precompileUIImages = async (
   const frameTiles = await ggbgfx.imageToTilesDataIntArray(framePath);
   const fontTiles = await ggbgfx.imageToTilesDataIntArray(fontPath);
   const cursorTiles = await ggbgfx.imageToTilesDataIntArray(cursorPath);
-  const emotesSprite = await ggbgfx.imageToSpriteIntArray(emotesPath);
 
-  return { emotesSprite, frameTiles, fontTiles, cursorTiles };
+  return { frameTiles, fontTiles, cursorTiles };
 };
 
 export const precompileSprites = async (

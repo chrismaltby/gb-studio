@@ -32,6 +32,16 @@
       "max": 16384
     },
     {
+      "key": "plat_climb_vel",
+      "label": "FIELD_CLIMB_VEL",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "slider",
+      "cType": "WORD",
+      "defaultValue": 4000,
+      "min": 0,
+      "max": 16384
+    },    
+    {
       "key": "plat_walk_acc",
       "label": "FIELD_WALK_ACC",
       "group": "GAMETYPE_PLATFORMER",

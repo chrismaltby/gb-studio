@@ -184,13 +184,13 @@ const toASMVar = (symbol: string) => {
 
 const toASMDir = (direction: string) => {
   if (direction === "left") {
-    return ".DIR_LEFT, 0";
+    return ".DIR_LEFT";
   } else if (direction === "right") {
-    return ".DIR_RIGHT, 0";
+    return ".DIR_RIGHT";
   } else if (direction === "up") {
-    return "0, .DIR_UP";
+    return ".DIR_UP";
   } else if (direction === "down") {
-    return "0, .DIR_DOWN";
+    return ".DIR_DOWN";
   }
 };
 
@@ -366,9 +366,9 @@ class ScriptBuilder {
     this.stackPtr -= popNum;
   };
 
-  _stackPush = (value: number) => {
+  _stackPushConst = (value: number) => {
     this.stack[this.stackPtr++] = value;
-    this._addCmd("VM_PUSH", value);
+    this._addCmd("VM_PUSH_CONST", value);
   };
 
   _stackPop = (num: number) => {
@@ -396,12 +396,12 @@ class ScriptBuilder {
 
   _setConstUInt8 = (cVariable: string, value: number) => {
     this._addDependency(cVariable);
-    this._addCmd("VM_SET_CONST_UINT8", `_${cVariable}`, value);
+    this._addCmd("VM_SET_CONST_INT8", `_${cVariable}`, value);
   };
 
   _setConstUInt16 = (cVariable: string, value: number) => {
     this._addDependency(cVariable);
-    this._addCmd("VM_SET_CONST_UINT16", `_${cVariable}`, value);
+    this._addCmd("VM_SET_CONST_INT16", `_${cVariable}`, value);
   };
 
   _getUInt8 = (location: string | number, cVariable: string) => {
@@ -657,8 +657,8 @@ class ScriptBuilder {
   ) => {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move To");
-    this._setConst("^/(ACTOR + 1)/", x * 8);
-    this._setConst("^/(ACTOR + 2)/", y * 8);
+    this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
+    this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
     this._setConst("^/(ACTOR + 3)/", useCollisions ? 1 : 0);
     this._setConst("^/(ACTOR + 4)/", moveTypeDec(moveType));
     this._actorMoveTo("ACTOR");
@@ -675,10 +675,10 @@ class ScriptBuilder {
     this._addComment("Actor Move Relative");
     this._rpn() //
       .ref("^/(ACTOR + 1)/")
-      .int16(x * 8)
+      .int16(x * 8 * 16)
       .operator(".ADD")
       .ref("^/(ACTOR + 2)/")
-      .int16(y * 8)
+      .int16(y * 8 * 16)
       .operator(".ADD")
       .stop();
 
@@ -723,7 +723,7 @@ class ScriptBuilder {
   nextFrameAwait = () => {
     const stackPtr = this.stackPtr;
     this._addComment("Wait 1 Frame");
-    this._stackPush(1);
+    this._stackPushConst(1);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
   };
@@ -731,7 +731,7 @@ class ScriptBuilder {
   wait = (frames: number) => {
     const stackPtr = this.stackPtr;
     this._addComment("Wait N Frames");
-    this._stackPush(frames);
+    this._stackPushConst(frames);
     this._invoke("wait_frames", 1, 1);
     this._assertStackNeutral(stackPtr);
   };
@@ -915,8 +915,8 @@ class ScriptBuilder {
     if (sceneIndex > -1) {
       this._fadeOut(fadeSpeed);
       this._setConst("ACTOR", 0);
-      this._setConst("^/(ACTOR + 1)/", x * 8);
-      this._setConst("^/(ACTOR + 2)/", y * 8);
+      this._setConst("^/(ACTOR + 1)/", x * 8 * 16);
+      this._setConst("^/(ACTOR + 2)/", y * 8 * 16);
       this._actorSetPosition("ACTOR");
       const asmDir = toASMDir(direction);
       if (asmDir) {
@@ -1062,12 +1062,12 @@ class ScriptBuilder {
 
     if (clamp) {
       if (operation === ".ADD") {
-        this._stackPush(256);
+        this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
         this.labelDefine(clampLabel);
       } else if (operation === ".SUB") {
-        this._stackPush(0);
+        this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
         this.labelDefine(clampLabel);
@@ -1096,12 +1096,12 @@ class ScriptBuilder {
 
     if (clamp) {
       if (operation === ".ADD") {
-        this._stackPush(256);
+        this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
         this.labelDefine(clampLabel);
       } else if (operation === ".SUB") {
-        this._stackPush(0);
+        this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
         this.labelDefine(clampLabel);
@@ -1123,7 +1123,7 @@ class ScriptBuilder {
     const clampLabel = clamp ? this.getNextLabel() : "";
 
     this._addComment(`Variables ${operation} Random`);
-    this._stackPush(0);
+    this._stackPushConst(0);
     this._randomize();
     this._rand(".ARG0", min, range);
     this._rpn() //
@@ -1134,12 +1134,12 @@ class ScriptBuilder {
 
     if (clamp) {
       if (operation === ".ADD") {
-        this._stackPush(256);
+        this._stackPushConst(256);
         this._if(".GTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 255);
         this.labelDefine(clampLabel);
       } else if (operation === ".SUB") {
-        this._stackPush(0);
+        this._stackPushConst(0);
         this._if(".LTE", ".ARG0", ".ARG1", clampLabel, 1);
         this._setConst("ARG0", 0);
         this.labelDefine(clampLabel);
@@ -1263,6 +1263,19 @@ class ScriptBuilder {
   };
 
   // --------------------------------------------------------------------------
+  // Screen
+
+  fadeIn = (speed = 1) => {
+    this._addComment(`Fade In`);
+    this._fadeIn(speed);
+  };
+
+  fadeOut = (speed = 1) => {
+    this._addComment(`Fade Out`);
+    this._fadeOut(speed);
+  };
+
+  // --------------------------------------------------------------------------
   // Labels
 
   getNextLabel = (): string => {
@@ -1365,7 +1378,7 @@ class ScriptBuilder {
     const falseLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Color Supported`);
-    this._stackPush(0);
+    this._stackPushConst(0);
     this._getUInt8(".ARG0", "_cpu");
     this._ifConst(".NE", ".ARG0", "0x11", falseLabel, 1);
     this._compilePath(truePath);
@@ -1951,19 +1964,7 @@ class ScriptBuilder {
     output.push(frames);
   };
 
-  // Screen
 
-  fadeIn = (speed = 1) => {
-    const output = this.output;
-    output.push(cmd(FADE_IN));
-    output.push(speed);
-  };
-
-  fadeOut = (speed = 1) => {
-    const output = this.output;
-    output.push(cmd(FADE_OUT));
-    output.push(speed);
-  };
 
   // Music
 
@@ -2203,13 +2204,13 @@ _${name}::
 ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
       this.includeActor
         ? "        ; Local Actor\n" +
-          this._padCmd("VM_PUSH", "0", 8, 24) +
+          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n" +
-          this._padCmd("VM_PUSH", "0", 8, 24) +
+          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n" +
-          this._padCmd("VM_PUSH", "0", 8, 24) +
+          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n" +
-          this._padCmd("VM_PUSH", "0", 8, 24) +
+          this._padCmd("VM_PUSH_CONST", "0", 8, 24) +
           "\n\n"
         : ""
     }${this.output.join("\n")}
