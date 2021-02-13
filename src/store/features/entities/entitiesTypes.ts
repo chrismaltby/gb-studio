@@ -3,6 +3,7 @@ import { EntityState, Dictionary } from "@reduxjs/toolkit";
 export type ActorDirection = "up" | "down" | "left" | "right";
 export type ActorSpriteType = "static" | "actor";
 export type SpriteType = "static" | "animated" | "actor" | "actor_animated";
+export type SpriteSheetType = "classic" | "autodetect" | "manual";
 
 export type ScriptEvent = {
   id: string;
@@ -111,15 +112,26 @@ export type EngineFieldValue = {
   value: number | string | boolean | undefined;
 };
 
+export type Metasprite = {
+  xOffset: number;
+  yOffset: number;
+  tile: number;
+  palette: number;
+  flipX: boolean;
+  flipY: boolean;
+};
+
 export type SpriteSheet = {
   id: string;
   name: string;
   filename: string;
-  type: SpriteType;
+  type: SpriteSheetType;
   numFrames: number;
   plugin?: string;
   inode: string;
   _v: number;
+  metasprites: Metasprite[];
+  animations: number[][];
 };
 
 export type Scene = {
