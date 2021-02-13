@@ -162,7 +162,24 @@ export const toStructData = <T extends {}>(
       if (Array.isArray(object[key])) {
         return `${" ".repeat(indent)}.${key} = {
 ${chunk((object[key] as unknown) as any[], perLine)
-  .map((r) => " ".repeat(indent * 2) + r.join(", "))
+  .map(
+    (r) =>
+      " ".repeat(indent * 2) +
+      r
+        .map((v) => {
+          if (v instanceof Object) {
+            return `{\n${toStructData(
+              v,
+              indent + 2 * INDENT_SPACES,
+              perLine
+            )}\n${" ".repeat(indent * 2)}}`;
+          }
+          return v;
+        })
+        .join(
+          r[0] && r[0] instanceof Object ? `,\n${" ".repeat(indent * 2)}` : ", "
+        )
+  )
   .join(",\n")}
 ${" ".repeat(indent)}}`;
       }
@@ -561,15 +578,77 @@ export const compileSpriteSheet = (
   spriteSheet: any,
   spriteSheetIndex: number
 ) =>
-  toStructDataFile(
-    SPRITESHEET_TYPE,
-    spriteSheetSymbol(spriteSheetIndex),
-    `// SpriteSheet: ${spriteSheet.name}`,
-    {
-      n_frames: spriteSheet.frames,
-      data: spriteSheet.data.map(toHex),
-    }
-  );
+  `#pragma bank 255
+// SpriteSheet: ${spriteSheet.name}
+  
+#include "gbs_types.h"
+
+${toBankSymbolInit(spriteSheetSymbol(spriteSheetIndex))};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_0[]  = {
+    {0, 0, 0, 0}, {0, 8, 2, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_1[]  = {
+    {0, 0, 4, 0}, {0, 8, 6, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_2[]  = {
+    {0, 0, 8,  0}, {0, 8, 10, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_3[]  = {
+    {0, 0, 12, 0}, {0, 8, 14, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_4[]  = {
+    {0, 0, 16, 0}, {0, 8, 18, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_5[]  = {
+    {0, 0, 20, 0}, {0, 8, 22, 0}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_6[]  = {
+    {0, 0, 18, 32}, {0, 8, 16, 32}, {metasprite_end}
+};
+
+const metasprite_t ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_7[]  = {
+    {0, 0, 22, 32}, {0, 8, 20, 32}, {metasprite_end}
+};
+
+const metasprite_t * const ${spriteSheetSymbol(
+    spriteSheetIndex
+  )}_metasprites[] = {
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_0,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_1,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_2,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_3,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_4,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_5,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_6,
+    ${spriteSheetSymbol(spriteSheetIndex)}_metasprite_7
+};
+
+${SPRITESHEET_TYPE} ${spriteSheetSymbol(spriteSheetIndex)} = {
+${toStructData(
+  {
+    n_tiles: spriteSheet.frames,
+    n_metasprites: 4,
+    metasprites: `${spriteSheetSymbol(spriteSheetIndex)}_metasprites`,
+    animations: [
+      { start: 0, end: 1 },
+      { start: 0, end: 1 },
+      { start: 0, end: 1 },
+      { start: 0, end: 1 },
+    ],
+    tiles: spriteSheet.data.map(toHex),
+  },
+
+  INDENT_SPACES
+)}
+};
+`;
 
 export const compileSpriteSheetHeader = (
   spriteSheet: any,
